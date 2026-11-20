@@ -1,0 +1,21 @@
+{
+  "preparation_only_failures": [
+    {
+      "kind": "StopIteration",
+      "stage": "first e6 fragment assembly",
+      "cause": "looked for ordinary-post-a-no-update in stages; actual stage is ordinary-post-a-no-update-execution",
+      "native_or_model_execution": false,
+      "fragment_written_before_error": false,
+      "corrected_by": "bind actual exact original stage name; no source result changed"
+    }
+  ],
+  "additional_preparation_observations": [
+    {
+      "scope": "local manifest preparation only",
+      "status": "FAILED_CLOSED_BEFORE_ANY_GITHUB_TREE_OR_REF",
+      "cause": "The two precreated Mac fixture blobs have source files outside the evidence staging directory; recursive evidence traversal correctly failed the complete-static-inclusion assertion.",
+      "correction": "Include their frozen original local paths and exact Git blob/hash bindings in the same final manifest.",
+      "product_or_experiment_executed": false
+    }
+  ]
+}

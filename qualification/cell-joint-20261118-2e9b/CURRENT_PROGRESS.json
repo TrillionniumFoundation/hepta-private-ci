@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-20T06:20:55Z",
+  "observed_at_utc": "2026-11-20T08:30:10.772104Z",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-20T01:20:55-05:00",
+  "observed_at_user_timezone": "2026-11-20T03:30:10.772104-05:00",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -2261,26 +2261,62 @@
       "full_system_cost_known": false
     },
     "latest_independent_weight_recovery": {
-      "status": "BOUNDED_RANGE_RECOVERY_RUNNING",
+      "status": "FAILED_RETAIN_PARTIAL_NO_MODEL_EXECUTION",
       "pr": 6781,
-      "published_evidence_head": "8fb8724cfda350f2da889a79f6af7f7e3febfef8",
+      "published_evidence_head": "6cce823fcef62f3e65856d3a4ff2b428d3bd8c38",
+      "published_tree": "c844e1fce1c264a6d96a916104f50c518c06097a",
+      "evidence_directory": "qualification/cell-e3-independent-base-materials-20261120/recovery-execution-1",
       "unique_owner": "dpty-9c793d930ee32ba9d5e98dab865601b80aad62c8cade3c72d04e3b1fda709b67",
+      "owner_terminal": true,
+      "owner_exit_code": 1,
       "host": "desktop",
       "root": "/home/qian-qi/work/hepta-e3-smollm2-materials-20261120-e9e051/range-recovery-run-1",
       "execution_freeze_sha256": "4fc1811c143e14d0c43136eca4fab38143ec3b877a95fa996add18efdaf19223",
+      "executed_source_sha256": "eb209383a440a349f8207cbfce8416e330ebd6d456c76ab736df809c67c20bea",
+      "terminal_result_sha256": "8429ccfd26c03a8266c596e7560cb728ec9bc57cf312ab3b40f7a1b549b213a2",
+      "readout_sha256": "21774ca85bca8ba57ba8b74980e6a2f612b144ce5b60f5685e92fb12b5a66121",
       "fixed_workers": 4,
       "frozen_nonoverlapping_ranges": 95,
+      "attempted_ranges": 22,
+      "complete_ranges": 18,
+      "partial_ranges": 4,
+      "unknown_terminal_ranges": 0,
       "range_retries": 0,
+      "complete_range_new_bytes": 603979776,
+      "partial_range_new_bytes": 41484288,
+      "new_received_and_written_bytes": 645464064,
+      "old_readonly_prefix_bytes": 255852544,
+      "unique_retained_weight_positions": 901316608,
+      "required_full_weight_bytes": 3422777952,
+      "missing_weight_positions": 2521461344,
+      "logical_sparse_size_is_not_complete_material": true,
+      "full_lfs_sha256_verified": false,
+      "independent_teacher_ready": false,
       "deadline_seconds": 895,
-      "maximum_HTTP_body_bytes": 3427266230,
+      "owner_wall_seconds": 895.1873255110113,
+      "owner_self_cpu_seconds": 3.7177681259999997,
+      "children_cpu_seconds": 14.999877,
+      "nested_worker_wall_not_added_to_parent": true,
+      "independent_extent_readback_passed": true,
+      "independent_extent_readback_seconds": 3.777683761029,
+      "extent_readback_sha256": "26dcb5a827114fbcd691558d4a27746eb2a5a141e30a595655a02a58564bab34",
+      "receipt_archive_sha256": "ecca78131dd1ddc82bad01707d626fed8d2d86603e35f98085dbb5cf058d5326",
+      "receipt_archive_members": 90,
+      "receipt_archive_member_bytes": 132152,
+      "receipt_archive_bytes": 24371,
+      "all_receipt_archive_members_independently_verified": true,
+      "maximum_planned_HTTP_body_bytes": 3427266230,
       "original_maximum_HTTP_body_bytes": 4294967296,
-      "original_partial_retained_read_only": true,
-      "local_no_network_protocol_controls_passed": 9,
+      "actual_conservative_cumulative_HTTP_body_upper_bound": 998538253,
+      "new_model_loads": 0,
+      "new_model_forwards": 0,
       "new_model_calls": 0,
       "new_training_updates": 0,
       "new_native_children": 0,
-      "full_weights_ready": false,
-      "observed_terminal_result": null
+      "third_download_owner_started": false,
+      "original_T2_call_budgets_unchanged": true,
+      "full_system_cost_known": false,
+      "published_blob_validation_scope": "69 new paths read byte-for-byte at exact ref and checked against 512000; original blob script was not run at 6cce"
     }
   },
   "E4": {
@@ -3551,6 +3587,480 @@
       "proposed_unit_mapping_is_not_original_approved_execution": true,
       "proposed_fixed_total_32_single_material_units_cannot_expose_all_64_sources": true,
       "scope": "Integrity/reconstruction within frozen trusted original artifacts; not an unforgeable contribution proof or useful-training proof"
+    },
+    "latest_source_action_codec": {
+      "status": "STATIC_AND_TOKEN_MEASUREMENT_COMPLETE_NO_TRAINING_ADMITTED",
+      "freeze_commit": "bbb907067afa97ed61c0df8967de60f3196b683e",
+      "freeze_tree": "ace112693f241164332cb05d063c00c290be5abe",
+      "source_freeze_sha256": "9b61e52fb89ff2ec06e9bd75db7c60971196488b79bfb1bd809d0c004f157e0c",
+      "source_prefix_commit": "9dade6e90f6227dded45afa1c8462758a511a699",
+      "material_commit": "63f494553a735bd55a3fef7cfe2e76604cd6db7d",
+      "draft_stages": [
+        {
+          "stage": 1,
+          "number": 6786,
+          "head_sha": "b583b39bf1ed4d8b864b51c4b96d9a72a002037b",
+          "base": "research/e5-material-adapter-20261120-e9e051",
+          "branch": "research/e5-source-actions-20261120-e9e051"
+        },
+        {
+          "stage": 2,
+          "number": 6787,
+          "head_sha": "0b446d400ddb5ffcdb0f24eadfba4ef0e7a9cc22",
+          "base": "research/e5-source-actions-20261120-e9e051",
+          "branch": "research/e5-context-graph-20261120-e9e051"
+        },
+        {
+          "stage": 3,
+          "number": 6788,
+          "head_sha": "336556a767f07fc768befaf2a8a6fa958d31f1b3",
+          "base": "research/e5-context-graph-20261120-e9e051",
+          "branch": "research/e5-visible-material-20261120-e9e051"
+        },
+        {
+          "stage": 4,
+          "number": 6789,
+          "head_sha": "2c49532b04b5170411c863c2d9479c85cafb1d0c",
+          "base": "research/e5-visible-material-20261120-e9e051",
+          "branch": "research/e5-visible-context-20261120-e9e051"
+        },
+        {
+          "stage": 5,
+          "number": 6790,
+          "head_sha": "148e37c26586677e83f0e57e100def8805c1a020",
+          "base": "research/e5-visible-context-20261120-e9e051",
+          "branch": "research/e5-source-codec-freeze-20261120-e9e051",
+          "final_tree": "def1b4b5f6fcdb8be50afb89224e0407a0763ab9"
+        }
+      ],
+      "measurement_commit_status": "PUBLISHED_FINAL_EXACT_HEAD_GATE_PASSED",
+      "measurement_candidate": "0a57d319ee479c820c36618d6c713881829c04cc",
+      "counts": {
+        "actual_target_tampering_controls_passed": 32,
+        "changed_runtime_files": 17,
+        "exact_structural_roundtrips": 16,
+        "original_full_sft_bound_failures": 15,
+        "original_generation_bound_failures": 5,
+        "original_input_bound_failures": 15,
+        "original_message_byte_bound_failures": 6,
+        "selected_case_identities": 290,
+        "sources": 16,
+        "static_representations_within_original_bounds": 1,
+        "training_executions_admitted": 0,
+        "v1_static_context_closed": 2,
+        "visible_action_roundtrips": 11
+      },
+      "prefix_1_4_16_representable": {
+        "1": false,
+        "16": false,
+        "4": false
+      },
+      "raw_measurement_sha256": "64cd542ab7cf9792c3b19b70ea8624bf79fc94cf6a4a694ae0b967bb3b6f915c",
+      "tokenizer_readout_sha256": "c52ccbc597eff51027f79bb1c5de8da98392465d9c3d79f2cf139d590d0b4136",
+      "target_readout_sha256": "e5f5ee55da86c539e979166e1a289b994107f596bea38aa1982b1c01f641b211",
+      "source_bounds": {
+        "input_tokens": 4096,
+        "complete_SFT_positions": 3584,
+        "generation_positions": 384,
+        "raw_answer_bytes": 32768,
+        "native_chat_bytes": 65536
+      },
+      "rows": [
+        {
+          "ordinal": 0,
+          "source_id": "github:Delgan/loguru:pull:1541",
+          "prefix_tokens": 61642,
+          "target_tokens": 367,
+          "complete_sft_positions": 62009,
+          "target_bytes": 1148,
+          "visible_action_roundtrip": false,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 1,
+          "source_id": "github:SethMMorton/natsort:pull:196",
+          "prefix_tokens": 4290,
+          "target_tokens": 141,
+          "complete_sft_positions": 4431,
+          "target_bytes": 289,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 2,
+          "source_id": "github:Textualize/rich:pull:4006",
+          "prefix_tokens": 9083,
+          "target_tokens": 856,
+          "complete_sft_positions": 9939,
+          "target_bytes": 2931,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 3,
+          "source_id": "github:coady/multimethod:pull:157",
+          "prefix_tokens": 6978,
+          "target_tokens": 127,
+          "complete_sft_positions": 7105,
+          "target_bytes": 275,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 4,
+          "source_id": "github:dbader/schedule:pull:569",
+          "prefix_tokens": 6498,
+          "target_tokens": 229,
+          "complete_sft_positions": 6727,
+          "target_bytes": 597,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 5,
+          "source_id": "github:erikrose/parsimonious:pull:250",
+          "prefix_tokens": 15102,
+          "target_tokens": 400,
+          "complete_sft_positions": 15502,
+          "target_bytes": 1051,
+          "visible_action_roundtrip": false,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 6,
+          "source_id": "github:jaraco/path:pull:237",
+          "prefix_tokens": 10224,
+          "target_tokens": 145,
+          "complete_sft_positions": 10369,
+          "target_bytes": 297,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 7,
+          "source_id": "github:jawah/charset_normalizer:pull:823",
+          "prefix_tokens": 75705,
+          "target_tokens": 300,
+          "complete_sft_positions": 76005,
+          "target_bytes": 775,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 8,
+          "source_id": "github:litl/backoff:pull:161",
+          "prefix_tokens": 12072,
+          "target_tokens": 434,
+          "complete_sft_positions": 12506,
+          "target_bytes": 1218,
+          "visible_action_roundtrip": false,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 9,
+          "source_id": "github:marshmallow-code/marshmallow:pull:3082",
+          "prefix_tokens": 47797,
+          "target_tokens": 150,
+          "complete_sft_positions": 47947,
+          "target_bytes": 363,
+          "visible_action_roundtrip": false,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 10,
+          "source_id": "github:pyparsing/pyparsing:pull:653",
+          "prefix_tokens": 74108,
+          "target_tokens": 751,
+          "complete_sft_positions": 74859,
+          "target_bytes": 2434,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 11,
+          "source_id": "github:python-attrs/attrs:pull:1593",
+          "prefix_tokens": 1277,
+          "target_tokens": 138,
+          "complete_sft_positions": 1415,
+          "target_bytes": 301,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": true,
+          "static_representation_admitted": true
+        },
+        {
+          "ordinal": 12,
+          "source_id": "github:python-humanize/humanize:pull:479",
+          "prefix_tokens": 22415,
+          "target_tokens": 130,
+          "complete_sft_positions": 22545,
+          "target_bytes": 266,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 13,
+          "source_id": "github:python-jsonschema/jsonschema:pull:1351",
+          "prefix_tokens": 34408,
+          "target_tokens": 456,
+          "complete_sft_positions": 34864,
+          "target_bytes": 1457,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 14,
+          "source_id": "github:tkem/cachetools:pull:441",
+          "prefix_tokens": 6205,
+          "target_tokens": 185,
+          "complete_sft_positions": 6390,
+          "target_bytes": 423,
+          "visible_action_roundtrip": false,
+          "v1_static_context_closed": false,
+          "static_representation_admitted": false
+        },
+        {
+          "ordinal": 15,
+          "source_id": "github:tox-dev/platformdirs:pull:721",
+          "prefix_tokens": 12235,
+          "target_tokens": 250,
+          "complete_sft_positions": 12485,
+          "target_bytes": 655,
+          "visible_action_roundtrip": true,
+          "v1_static_context_closed": true,
+          "static_representation_admitted": false
+        }
+      ],
+      "ordinal_is_zero_based": true,
+      "input_selection_changed_after_freeze": false,
+      "prefix_order_changed": false,
+      "original_two_32_unit_curves_changed": false,
+      "training_execution_admitted": false,
+      "new_model_loads": 0,
+      "new_model_forwards": 0,
+      "new_generations": 0,
+      "new_training_updates": 0,
+      "new_native_task_replays": 0,
+      "growth_curves_remain_null": true,
+      "authenticated_real_users": 0,
+      "arbitrary_python_semantic_completeness_proven": false,
+      "model_usefulness_measured": false,
+      "optimizer_unit_mapping": null,
+      "compute_or_verification_budget": null,
+      "independent_future_panel": null,
+      "costs": {
+        "before": {
+          "argv": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+            "run_before.py",
+            "--materials",
+            "/workspace/scratch/e9e051ab0825/e5_material_adapter/readback-final-1",
+            "--prefix",
+            "/workspace/scratch/e9e051ab0825/e5_material_adapter/SOURCE_PREFIX_FREEZE.json",
+            "--output",
+            "/workspace/scratch/e9e051ab0825/e5_codec_work/before-final"
+          ],
+          "cwd": "/workspace/scratch/e9e051ab0825/e5_codec_work",
+          "exit_code": 0,
+          "model_calls": 0,
+          "native_replays": 0,
+          "python": "3.12.14",
+          "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "schema": "hepta.e5-before-context-owner.v1",
+          "source_sha256": {
+            "context_graph.py": "c8ae634a7cb005119cacdcb59ac9e647de00af78769915ae460241aa5ab3c4be",
+            "count_tokens.py": "bbfbe6cc9d433755ad22440cd23c0621d0ddf26f414531a3f44e2e0debed3092",
+            "run_before.py": "5f3a41bdc87aa2d37b4baaa4f853c2967019abfb92ffbe77fdcf0f960704f364",
+            "run_targets.py": "d004ccce0be01f32e05cda886993e71af8c54e1657307d42eabed809adbac601",
+            "source_actions.py": "f30747a5ddcfab036911b34806e067e02d4600f14ebd7e7f29a4ff07e8e657fc",
+            "source_units.py": "84fc4633fc32e2e644ebc10c28f2c39f61f8e4378cb64201ba804973a6a2a736",
+            "task_fixture_paths.py": "8a8e434d394ff9db9fe1ea3220eb404c50c131e48271c5f98ba7f8c2712d6870",
+            "test_source_actions.py": "e37520e06a2ad8cb25b561c7fc95df5920eb7a55b2c8877cff2a99d329ffca80",
+            "test_visible_context.py": "75e6727da0e597f162066570505af69d3dd632284979509f1848b7b4ac0e0ff8",
+            "visible_context.py": "03bca25959211d413558468a989dc042f6090b23078ff1e2ea2869c04c496961",
+            "visible_material.py": "c83612abb2b31ee8dd5857d659a4ce08104fc701c37f4c4a88d4172a69013ca5"
+          },
+          "timed_out": false,
+          "training_updates": 0,
+          "wall_seconds": 27.995707975002006
+        },
+        "nested_owner_child_times_are_not_additive": true,
+        "target": {
+          "argv": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+            "run_targets.py",
+            "--materials",
+            "/workspace/scratch/e9e051ab0825/e5_material_adapter/readback-final-1",
+            "--contexts",
+            "/workspace/scratch/e9e051ab0825/e5_codec_work/before-final",
+            "--freeze",
+            "/workspace/scratch/e9e051ab0825/e5_codec_work/SOURCE_FREEZE.json",
+            "--output",
+            "/workspace/scratch/e9e051ab0825/e5_codec_work/targets-1"
+          ],
+          "cwd": "/workspace/scratch/e9e051ab0825/e5_codec_work",
+          "exit_code": 0,
+          "input_selection_changed": false,
+          "model_calls": 0,
+          "native_replays": 0,
+          "published_freeze_head": "bbb907067afa97ed61c0df8967de60f3196b683e",
+          "published_freeze_sha256": "9b61e52fb89ff2ec06e9bd75db7c60971196488b79bfb1bd809d0c004f157e0c",
+          "python": "3.12.14",
+          "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "schema": "hepta.e5-target-owner.v1",
+          "timed_out": false,
+          "training_updates": 0,
+          "wall_seconds": 10.91959156500161
+        },
+        "tokenizer_child_self_cpu_seconds": 11.567680956,
+        "tokenizer_child_wall_seconds": 7.4596639550291,
+        "tokenizer_owner": {
+          "argv": [
+            "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python",
+            "/home/qian-qi/work/hepta-e5-source-codec-20261120-e9e051/format-1/source/scripts/cell_experiments/e5_source_codec_v1/count_tokens.py",
+            "--request",
+            "/home/qian-qi/work/hepta-e5-source-codec-20261120-e9e051/tokenizer-measurement-input-1/TOKENIZER_REQUEST.json",
+            "--tokenizer-freeze",
+            "/home/qian-qi/work/hepta-e5-source-codec-20261120-e9e051/tokenizer-measurement-input-1/FROZEN_TOKENIZER.json",
+            "--output",
+            "/home/qian-qi/work/hepta-e5-source-codec-20261120-e9e051/tokenizer-measurement-1"
+          ],
+          "child_wall_seconds": 8.39440273103537,
+          "cwd": "/home/qian-qi/work/hepta-e5-source-codec-20261120-e9e051/format-1/source/scripts/cell_experiments/e5_source_codec_v1",
+          "exit_code": 0,
+          "forward_calls": 0,
+          "generation_calls": 0,
+          "model_loads": 0,
+          "native_replays": 0,
+          "owner_wall_seconds": 8.431659505993593,
+          "result_bytes": 14443,
+          "result_path": "/home/qian-qi/work/hepta-e5-source-codec-20261120-e9e051/tokenizer-measurement-1/RESULT.json",
+          "result_sha256": "c52ccbc597eff51027f79bb1c5de8da98392465d9c3d79f2cf139d590d0b4136",
+          "status": "PASS",
+          "timed_out": false,
+          "training_updates": 0
+        },
+        "tokenizer_peak_rss_kib": 725648
+      },
+      "published_head": "148e37c26586677e83f0e57e100def8805c1a020",
+      "published_tree": "def1b4b5f6fcdb8be50afb89224e0407a0763ab9",
+      "final_publication": {
+        "all_member_readback": true,
+        "archive_bytes": 7336,
+        "archive_path": "FINAL_HEAD_GATE_RECEIPTS.tar.xz",
+        "archive_sha256": "ea26726d2e828ca238ba43e8a613d56dc19e42831d99d7c6a80b555956265d30",
+        "base": "63f494553a735bd55a3fef7cfe2e76604cd6db7d",
+        "draft": true,
+        "head": "148e37c26586677e83f0e57e100def8805c1a020",
+        "measurement_readout_sha256": "64cd542ab7cf9792c3b19b70ea8624bf79fc94cf6a4a694ae0b967bb3b6f915c",
+        "merged": false,
+        "no_new_model_forward_generation_train_native": true,
+        "original_gate_changed_paths": 58,
+        "original_gate_exit_code": 0,
+        "original_gate_wall_seconds": 0.5737474599991401,
+        "pr": 6790,
+        "prefixes_1_4_16_representable": false,
+        "readout_path": "qualification/cell-e5-source-codec-20261120/READOUT.md",
+        "readout_sha256": "e9bf8e62e00f4940a414ce84d7266b87f3f60ebf25a74b51da44bbd30c22e15b",
+        "result_sha256": "cb29b086bf102f1b5fd9a5099b439c9aad7eb6d577f619cdf8e1a757b40416b9",
+        "schema": "hepta.final-head-gate-checkpoint-receipts.v1",
+        "source_freeze_sha256": "9b61e52fb89ff2ec06e9bd75db7c60971196488b79bfb1bd809d0c004f157e0c",
+        "stages": [
+          {
+            "additions": 614,
+            "base": "research/e5-material-adapter-20261120-e9e051",
+            "base_sha": "63f494553a735bd55a3fef7cfe2e76604cd6db7d",
+            "changed_files": 3,
+            "deletions": 0,
+            "draft": true,
+            "head": "research/e5-source-actions-20261120-e9e051",
+            "head_sha": "b583b39bf1ed4d8b864b51c4b96d9a72a002037b",
+            "merged": false,
+            "number": 6786,
+            "state": "open",
+            "updated_at": "2026-11-20T07:29:34Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6786"
+          },
+          {
+            "additions": 748,
+            "base": "research/e5-source-actions-20261120-e9e051",
+            "base_sha": "b583b39bf1ed4d8b864b51c4b96d9a72a002037b",
+            "changed_files": 1,
+            "deletions": 0,
+            "draft": true,
+            "head": "research/e5-context-graph-20261120-e9e051",
+            "head_sha": "0b446d400ddb5ffcdb0f24eadfba4ef0e7a9cc22",
+            "merged": false,
+            "number": 6787,
+            "state": "open",
+            "updated_at": "2026-11-20T07:29:38Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6787"
+          },
+          {
+            "additions": 371,
+            "base": "research/e5-context-graph-20261120-e9e051",
+            "base_sha": "0b446d400ddb5ffcdb0f24eadfba4ef0e7a9cc22",
+            "changed_files": 2,
+            "deletions": 0,
+            "draft": true,
+            "head": "research/e5-visible-material-20261120-e9e051",
+            "head_sha": "336556a767f07fc768befaf2a8a6fa958d31f1b3",
+            "merged": false,
+            "number": 6788,
+            "state": "open",
+            "updated_at": "2026-11-20T07:29:41Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6788"
+          },
+          {
+            "additions": 673,
+            "base": "research/e5-visible-material-20261120-e9e051",
+            "base_sha": "336556a767f07fc768befaf2a8a6fa958d31f1b3",
+            "changed_files": 2,
+            "deletions": 0,
+            "draft": true,
+            "head": "research/e5-visible-context-20261120-e9e051",
+            "head_sha": "2c49532b04b5170411c863c2d9479c85cafb1d0c",
+            "merged": false,
+            "number": 6789,
+            "state": "open",
+            "updated_at": "2026-11-20T07:29:45Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6789"
+          },
+          {
+            "additions": 979,
+            "base": "research/e5-visible-context-20261120-e9e051",
+            "base_sha": "2c49532b04b5170411c863c2d9479c85cafb1d0c",
+            "changed_files": 50,
+            "deletions": 0,
+            "draft": true,
+            "head": "research/e5-source-codec-freeze-20261120-e9e051",
+            "head_sha": "148e37c26586677e83f0e57e100def8805c1a020",
+            "merged": false,
+            "number": 6790,
+            "state": "open",
+            "updated_at": "2026-11-20T07:54:05Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6790"
+          }
+        ],
+        "static_representations": 1,
+        "tokenizer_result_sha256": "c52ccbc597eff51027f79bb1c5de8da98392465d9c3d79f2cf139d590d0b4136",
+        "training_execution_admitted": false,
+        "tree": "def1b4b5f6fcdb8be50afb89224e0407a0763ab9"
+      },
+      "final_head_original_gate_receipts_directory": "qualification/cell-e6-metrics-integration-20261119/e5-codec-final-readback",
+      "measurement_candidate_history_retained": "0a57d319ee479c820c36618d6c713881829c04cc"
     }
   },
   "E6": {
@@ -4562,65 +5072,666 @@
       }
     },
     "latest_original_owner_continuation": {
-      "status": "ACTUAL_DRAIN_NATIVE_PASSED_ORIGINAL_NOUPDATE_READ65_FAILED",
-      "pr": 6776,
-      "published_evidence_head": "ab5e792d1bceb583c246f44d01ee8e433d5c60e8",
-      "original_first_error_source": "27d90883ce4353c6101f02853f0b585837451ece",
-      "native_components_at_that_source_passed": 11,
-      "original_NoUpdate_at_that_source_passed": false,
-      "original_primary_error": "GenerationFenced: original C predecessor or new witness history differs",
-      "actual_drain_source": "b5da8e703986918f5bcd5c7c5c8287dc2838e8a4",
-      "actual_drain_source_tree": "a90945a842d86ccf7bc3bbe5be51cccb4f55bbaa",
-      "actual_drain_source_gate_sha256": "d1daadded4bf9a414c6774b7944ef375c1860a3d729b55f716cbe44d110a5fb4",
-      "source_tests_passed": 275,
-      "protected_rows": 893,
-      "full_call_boundaries": 1138,
-      "native_compilation_exit": 101,
-      "actual_native_tests_in_failed_compile_attempt": 0,
-      "original_NoUpdate_started_after_actual_drain": true,
-      "test_import_repair_in_progress": false,
+      "status": "C_IDENTITY_FIX_NATIVE32_PASS_FULL_ORIGINAL_NOUPDATE6_FAILED_UNAVAILABLE",
+      "source_commit": "640bac3c258ba13534d8208a9c4a0c2977e98339",
+      "source_tree": "43cec80b1143f2188838b87438138243b0c22134",
+      "previous_2b81_read65_trial": {
+        "status": "READ65_NATIVE_CONTROLS_PASS_NEW_C_IDENTITY_FAILURE_RETAINED",
+        "source_commit": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+        "source_tree": "9fd4268ef5ffd63661e067b6ee043f0e522e97ab",
+        "branch_publication_status": "source object created; latest observed #6776 branch still ab5e792d1bceb583c246f44d01ee8e433d5c60e8",
+        "prior_read65_limit_failure_retained": {
+          "source": "e4aeaa2cdd1a4aa884d09cafaeef96968feb7a90",
+          "result_sha256": "0f35886d2338dcb8264c7a77c341db4f10ddfa9ffaa24b7e69e7ee0073253e69",
+          "request_id": 65,
+          "maximum": 64
+        },
+        "compile5": {
+          "result_sha256": "8e66d9694399c538c714859dbe32b2c4221233e7dffec37fe59552c28482ed1f",
+          "actual_native_cases": 0,
+          "only_policy_changed_after_compile": true
+        },
+        "final_strict_source_gate": {
+          "result_sha256": "2fa3ea6857ff60eba6969c2fe1126d24d47789c8569d9e8838f14e31598967ad",
+          "tests": 415,
+          "modules": 47,
+          "protected": 907,
+          "targeted": 320,
+          "full_callers": 1159,
+          "full_cli_exit": 0,
+          "full_cli_wall_seconds": 484.50147454207763,
+          "owner_wall_seconds": 658.0825088378042,
+          "source_inventory_sha256": "5d9cfca75f34ae322a4c73da837afc60490cc987576ff1178c3ce92a913cd599",
+          "source_unchanged": true,
+          "verifier_and_typed_matcher_unchanged": true
+        },
+        "source_freeze": {
+          "result_sha256": "afcd0cce8aaddbf2ce806c608370e6fdd63ec44230a08f12438d9a7409437010",
+          "source_clean": true,
+          "original_blob_policy_tests_exit": 0,
+          "exact_source_blob_policy_exit": 0
+        },
+        "actual_native_components": [
+          {
+            "directory": "native-validation-5",
+            "result_sha256": "0172cb16bed1b064fb5f17167cfeae297eba60658dcb71cd410ac330445a0f04",
+            "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+            "native_cases": 11,
+            "all_passed": true,
+            "actual_command_exit": 0,
+            "command_wall_seconds": 1.6166515499353409,
+            "owner_wall_seconds": 3.535634365864098,
+            "source_unchanged": true
+          },
+          {
+            "directory": "retirement-native-validation-3",
+            "result_sha256": "2dc017a4f427aca853fab89462be2d572edfeabf985a88128ff2c4da2652fe66",
+            "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+            "native_cases": 16,
+            "all_passed": true,
+            "actual_command_exit": 0,
+            "command_wall_seconds": 10.306779567152262,
+            "owner_wall_seconds": 11.070418980903924,
+            "source_unchanged": true
+          },
+          {
+            "directory": "historical-delivery-native-validation-1",
+            "result_sha256": "706ed78728b0894f128ab769e320f3d70e326fdb6bea7256510b7696918573c6",
+            "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+            "native_cases": 5,
+            "all_passed": true,
+            "actual_command_exit": 0,
+            "command_wall_seconds": 0.7152199088595808,
+            "owner_wall_seconds": 1.4830124899744987,
+            "source_unchanged": true
+          }
+        ],
+        "full_original_noupdate5": {
+          "result_sha256": "7e11670e0ea0ca2b09d212aff001395e27c07f71cd69afa21bfae8254629b163",
+          "successful": false,
+          "complete_native_NoUpdate": false,
+          "original_parent_cases": 1,
+          "failed_parent_cases": 1,
+          "actual_test_name": "neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c",
+          "testcase_seconds": 72.279,
+          "junit_sha256": "73db894c78c5c8f45ed2ea717557068ab43b127392f73cdf06253e01b09b6fcd",
+          "owner_wall_seconds": 124.42839698679745,
+          "actual_first_error": "signed ordinary request differs from the published Feature task",
+          "observed_historical_request_id_max": 55,
+          "original_historical_maximum": 64,
+          "whole_parent_read_budget_closure_established": false,
+          "source_unchanged": true,
+          "tracked_bytes_unchanged": true,
+          "compiler_inputs_unchanged": true,
+          "mount_cleanup_successful": true,
+          "pinned_and_original_binary_bytes_unchanged": true
+        },
+        "full_trial_archive": {
+          "files": 415,
+          "uncompressed_bytes": 151537381,
+          "compressed_bytes": 3016552,
+          "sha256": "2e7f694f7765787170554297bbe175eef82bc9a9c398a984543799691a88cbec",
+          "parts": 7,
+          "maximum_part_bytes": 480000,
+          "physical_metadata_only_records": 759,
+          "private_key_bodies_exported": false
+        },
+        "next_c_fixture_fix": {
+          "scope": "one explicit C fixture issuer file",
+          "actual_old_run_and_runtime_fields_match": true,
+          "actual_old_tuple_equals_bundle": true,
+          "new_mapping": {
+            "runtime": "actual decoded configuration.definition.runtime.runtime_digest",
+            "model_tuple": "actual decoded configuration.definition.semantic_digest()",
+            "artifact_set": "selected bundle.digest()"
+          },
+          "product_guard_changed": false,
+          "original_parent_body_changed": false,
+          "original_read_budget_changed": false,
+          "original_authority_deadlines_changed": false,
+          "compiled_or_native_qualified": false
+        },
+        "actual_root_observe_after_fault_tested": false,
+        "actual_new_C_complete": false,
+        "actual_Adopt_complete": false,
+        "actual_cold_D_complete": false,
+        "actual_FinalUse_complete": false,
+        "actual_settlement_complete": false,
+        "joint_qualification_upgraded": false,
+        "cost_windows_are_nested_not_additive": true
+      },
+      "source_inventory_sha256": "c0a3d0a5067ba89cc213969fd6146410ce69cfe9e730578a11734030d35e74fb",
+      "original_tests_and_deadlines_changed": false,
+      "fixture_only_delta_from_2b81": true,
+      "root_read_budget": 64,
+      "source_gate": {
+        "full_source_gate": {
+          "result_sha256": "bb83d4b99fcf90340ce3090e5a2b8c5ee855b0410c3e27d3d6ab33a02554b06b",
+          "original_result": {
+            "status": "completed",
+            "successful": true,
+            "source_parent": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+            "native_cases": 0,
+            "model_calls": 0,
+            "original_parent_runs": 0,
+            "automatic_retry": false,
+            "started_at_ns": "1795160663264868551",
+            "original_source_sha256": "5d9cfca75f34ae322a4c73da837afc60490cc987576ff1178c3ce92a913cd599",
+            "source_before_sha256": "c0a3d0a5067ba89cc213969fd6146410ce69cfe9e730578a11734030d35e74fb",
+            "compile_result_sha256": "c2af1a75d9f440a2e876fec314fbb017e9d51c4c62918aba577d5e3a68039023",
+            "runner_sha256": "520fdde70534b398e9d6ad35787d7cb569fca5efa929f174d09a2b9b01973f8b",
+            "verifier_sha256": "1c2dadc1d631b4004a50c857cd41acd2e6827f775f2efdbd3cbb0d4a47781896",
+            "caller_manifest_sha256": "c3ea4fcb0908af3d99953a464e612c9483265fdea5e24dcfc6dad757d771d6cf",
+            "unchanged_product_and_policy_files_verified": true,
+            "changed_fixture_only": "codex-rs/hepta-agentd/src/ordinary_q24_post_a_c_inputs_tests.rs",
+            "retained_source_gate_sha256": "2fa3ea6857ff60eba6969c2fe1126d24d47789c8569d9e8838f14e31598967ad",
+            "source_tests_wall_seconds": 59.94629264622927,
+            "source_tests_successful": true,
+            "tests_run": 415,
+            "modules": [
+              "test_completed_learning_client_source_closure",
+              "test_current_caller_migrations",
+              "test_current_historical_a_recovery_source_closure",
+              "test_historical_current_trust_client_source_closure",
+              "test_historical_dataset_capability_source_closure",
+              "test_historical_freezer_source_closure",
+              "test_historical_learning_delivery_source_closure",
+              "test_historical_preparation_source_closure",
+              "test_historical_q24_stage_source_closure",
+              "test_historical_recipient_trust_source_closure",
+              "test_historical_startup_operation_source_closure",
+              "test_historical_task_capacity_source_closure",
+              "test_historical_task_read_source_closure",
+              "test_initial_artifact_readview_source_closure",
+              "test_ordinary_original_callers_source_closure",
+              "test_original_c_grant_consumer_source_closure",
+              "test_original_c_grant_source_closure",
+              "test_original_historical_operation_scopes_source_closure",
+              "test_original_learning_owner_source_closure",
+              "test_original_owner_initialization_source_closure",
+              "test_original_owner_operation_source_closure",
+              "test_original_run_start_retention_source_closure",
+              "test_original_task_data_source_closure",
+              "test_original_task_retirement_source_closure",
+              "test_original_training_owner_source_closure",
+              "test_original_training_snapshot_source_closure",
+              "test_post_a_absolute_handoff_source_closure",
+              "test_post_a_artifacts_source_closure",
+              "test_post_a_c_recovery_source_closure",
+              "test_post_a_deadline_source_closure",
+              "test_post_a_installation_source_closure",
+              "test_post_a_learning_client_source_closure",
+              "test_post_a_main_source_closure",
+              "test_post_a_owner_files_source_closure",
+              "test_post_a_physical_preparation_source_closure",
+              "test_publication_refusal_source_closure",
+              "test_q24_completed_history_control_source_closure",
+              "test_q24_freeze_identity_source_closure",
+              "test_q24_original_outcome_control_source_closure",
+              "test_q24_preparation_shared_checks_source_closure",
+              "test_q24_pure_projection_source_closure",
+              "test_q24_root_local_decision_source_closure",
+              "test_q24_training_plan_source_closure",
+              "test_root_learning_bootstrap_source_closure",
+              "test_root_learning_scope_source_closure",
+              "test_root_publication_existing_owner_source_closure",
+              "test_training_source_operation_source_closure"
+            ],
+            "failures": [],
+            "errors": [],
+            "skipped": [],
+            "protected_file_sweep": {
+              "rows": 907,
+              "passed": true,
+              "failures": [],
+              "wall_seconds": 1.2254763776436448
+            },
+            "targeted_callers": {
+              "passed": true,
+              "expected_boundary_count": 320,
+              "failures": [],
+              "wall_seconds": 108.14830765221268
+            },
+            "full_caller_proof_exit": 0,
+            "full_caller_proof_wall_seconds": 474.9121545138769,
+            "source_unchanged_during_tests": true,
+            "source_after_sha256": "c0a3d0a5067ba89cc213969fd6146410ce69cfe9e730578a11734030d35e74fb",
+            "finished_at_ns": "1795161308420841280",
+            "owner_wall_seconds": 645.1559794386849,
+            "owner_self_user_cpu_seconds": 169.480648,
+            "owner_self_system_cpu_seconds": 0.70893,
+            "owner_child_user_cpu_seconds": 474.732508,
+            "owner_child_system_cpu_seconds": 0.167049,
+            "owner_children_max_rss_kib": 440292
+          }
+        },
+        "original_project_justfix": {
+          "result_sha256": "3f6427eab65f6b567eeca6a95688cffc42099d7cc5c7041e9f03204486fdc4fa",
+          "original_result": {
+            "status": "completed",
+            "successful": true,
+            "source_parent": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+            "started_at_ns": "1795161350344290593",
+            "native_cases": 0,
+            "parent_runs": 0,
+            "automatic_retry": false,
+            "root_read_budget": 64,
+            "original_deadlines_changed": false,
+            "scope": "Required original just fix recipe for codex-hepta-agentd only; no workspace-wide lint or native/model execution.",
+            "argv": [
+              "just",
+              "fix",
+              "--locked",
+              "--offline",
+              "-p",
+              "codex-hepta-agentd"
+            ],
+            "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs",
+            "source_inventory_before_sha256": "c0a3d0a5067ba89cc213969fd6146410ce69cfe9e730578a11734030d35e74fb",
+            "source_gate_sha256": "bb83d4b99fcf90340ce3090e5a2b8c5ee855b0410c3e27d3d6ab33a02554b06b",
+            "runner_sha256": "c05fec9401c5ec49b24e8601245c4f3a9569d972b59984e8fffbabfdfa96580b",
+            "cargo_build_jobs": 2,
+            "original_environment_sha256": "c8ddd27960aa7078144c8e827713e28af4293c7e71a3ba0fba9f35225bbbd91e",
+            "cost_scope": "Actual lint command and owner intervals overlap; no native parent timing is concurrent. Dependencies may be checked; only the selected project is requested.",
+            "command_exit": 0,
+            "command_wall_seconds": 268.4650839800015,
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_sha256": "98bcfbec29573addf4bad93132e69eb75154a7c670039a9923abc80f81fff29d",
+            "source_unchanged": true,
+            "source_inventory_after_sha256": "c0a3d0a5067ba89cc213969fd6146410ce69cfe9e730578a11734030d35e74fb",
+            "changed_paths": [],
+            "untracked_after": [],
+            "current_source_gates_remain_applicable": true,
+            "finished_at_ns": "1795161619558571116",
+            "owner_wall_seconds": 269.2142883017659,
+            "self_user_cpu_seconds": 0.46057299999999995,
+            "self_system_cpu_seconds": 0.213041,
+            "child_user_cpu_seconds": 380.038746,
+            "child_system_cpu_seconds": 56.909834,
+            "child_max_rss_kib": 4231520
+          }
+        },
+        "frozen_source": {
+          "result_sha256": "526be7b28d4f5a2bff2520da86e74ea6ebd034bcad71a4486b30fd45bf36f0b1",
+          "original_result": {
+            "successful": true,
+            "source_clean": true,
+            "scanned_inputs_byte_identical": true,
+            "source": "640bac3c258ba13534d8208a9c4a0c2977e98339",
+            "tree": "43cec80b1143f2188838b87438138243b0c22134",
+            "parent": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+            "source_inventory_sha256": "c0a3d0a5067ba89cc213969fd6146410ce69cfe9e730578a11734030d35e74fb",
+            "source_files": 15750,
+            "frozen_at_ns": "1795161675748867703",
+            "source_gate_sha256": "bb83d4b99fcf90340ce3090e5a2b8c5ee855b0410c3e27d3d6ab33a02554b06b",
+            "changed_paths": [
+              "codex-rs/hepta-agentd/src/ordinary_q24_post_a_c_inputs_tests.rs"
+            ],
+            "protected_rows": 907,
+            "classified_boundaries": 1159,
+            "verifier_unchanged": true,
+            "typed_matcher_unchanged": true,
+            "original_blob_policy_tests": {
+              "argv": [
+                "/usr/bin/python3",
+                "-B",
+                "-m",
+                "unittest",
+                "discover",
+                "-s",
+                "scripts/tests",
+                "-p",
+                "test_blob_size_policy.py"
+              ],
+              "exit_code": 0,
+              "wall_seconds": 0.5790361128747463,
+              "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stderr_sha256": "1af5ad9b784fb37a2cd3651b9494b61d289fd5ead2f08debc7fa03ac1d79f196"
+            },
+            "exact_source_blob_policy": {
+              "argv": [
+                "/usr/bin/python3",
+                "-B",
+                "scripts/check_blob_size.py",
+                "--base",
+                "d83f70f38137a99a86a3afd122199ba9cdae4f79",
+                "--head",
+                "640bac3c258ba13534d8208a9c4a0c2977e98339",
+                "--max-bytes",
+                "512000",
+                "--allowlist",
+                ".github/blob-size-allowlist.txt"
+              ],
+              "exit_code": 0,
+              "wall_seconds": 0.2244531880132854,
+              "stdout_sha256": "9ef917d14823a05ea7c745d7fdcced26c3819b09d5febc427bc6588480acbe55",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "project_justfix_result_sha256": "3f6427eab65f6b567eeca6a95688cffc42099d7cc5c7041e9f03204486fdc4fa",
+            "project_justfix_passed": true,
+            "original_history_and_failed_gates_preserved": true,
+            "fixture_only_delta_from_read65_source": true,
+            "original_product_guard_unchanged": true,
+            "native_runs": 0,
+            "root_read_cap": 64,
+            "static_whole_fresh_parent_frames": 63,
+            "static_budget_is_not_native_result": true,
+            "deadlines_changed": false,
+            "owner_wall_seconds": 1.543838177807629,
+            "original_workspace_mutated": false,
+            "original_workspace_scope": "Earlier operation-scope/cold workspaces are unchanged; only this isolated source HEAD is advanced.",
+            "isolated_workspace_head_advanced": true
+          }
+        }
+      },
+      "native_components": [
+        {
+          "name": "original-native11",
+          "started_at_ns": "1795161714334399741",
+          "exit_code": 0,
+          "finished_at_ns": "1795161810677912155",
+          "wall_seconds": 96.34343091817573,
+          "result_sha256": "1145f66a176965666a2cb11c145f4ca30d83f8dc2b9636577967f284b11a5256",
+          "successful": true,
+          "source": "640bac3c258ba13534d8208a9c4a0c2977e98339",
+          "native_cases": 11
+        },
+        {
+          "name": "retirement-native16",
+          "started_at_ns": "1795161810678369808",
+          "exit_code": 0,
+          "finished_at_ns": "1795161822487322085",
+          "wall_seconds": 11.795971697196364,
+          "result_sha256": "26cff4b62a3b7acfbb3ecc2c9c0d7c92e22ccd3d8d3b76530aec37316f09d311",
+          "successful": true,
+          "source": "640bac3c258ba13534d8208a9c4a0c2977e98339",
+          "native_cases": 16
+        },
+        {
+          "name": "historical-delivery-native5",
+          "started_at_ns": "1795161822487919383",
+          "exit_code": 0,
+          "finished_at_ns": "1795161824017825932",
+          "wall_seconds": 1.5297323036938906,
+          "result_sha256": "0005bd3a3aa0bdcf69b344b231b4d530a8bda9881ba21a45dc93fb7789b1e2d0",
+          "successful": true,
+          "source": "640bac3c258ba13534d8208a9c4a0c2977e98339",
+          "native_cases": 5
+        }
+      ],
+      "noupdate6": {
+        "result_sha256": "23a53e8ea3c06b3ee6944751e97552e1bb49ad7350fbce8ca053dd54944fd0a8",
+        "successful": false,
+        "actual_parent_cases": 1,
+        "passed": 0,
+        "failed": 1,
+        "case_name": "neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c",
+        "case_seconds": 75.141,
+        "junit_sha256": "7ae5c821e5355bd095fb6b4a9eb5c02561d8afe8bb1e48a978bf9dc52437816d",
+        "native_command_exit": 100,
+        "native_command_seconds": 75.94715717993677,
+        "owner_seconds": 127.6496213520877,
+        "actual_first_error": "Invalid(\"Unavailable\")",
+        "old_signed_request_guard_passed": true,
+        "max_observed_historical_request": 55,
+        "root_read_maximum": 64,
+        "whole_parent_read_budget_closure_established": false,
+        "source_unchanged": true,
+        "tracked_bytes_unchanged": true,
+        "compiler_inputs_unchanged": true,
+        "mount_cleanup_successful": true,
+        "pinned_and_original_binary_bytes_unchanged": true,
+        "physical_observation": {
+          "C_source_journal_bytes": 6456,
+          "C_source_witness_bytes": 672,
+          "C_cell_journal_bytes": 654,
+          "C_cell_witness_bytes": 224,
+          "C_generation_journal_bytes": 40,
+          "C_generation_witness_bytes": 112,
+          "lengths_are_not_completion_proof": true,
+          "physical_metadata_files": 785,
+          "exported_nonkey_physical_files": 52,
+          "private_key_bodies_exported": false,
+          "original_business_debug_image_bodies_exported": false
+        },
+        "original_archive": {
+          "files": 229,
+          "raw_bytes": 67362373,
+          "compressed_bytes": 1025424,
+          "sha256": "883a9b3af8c599c143a3c575b71863d295f324cd5f608c2ba58ff2d2f4b77200",
+          "parts": 3,
+          "maximum_part_bytes": 480000
+        }
+      },
+      "pipeline_result_sha256": "3330b8369e8aed1fe4851e4184d7ae6d45cf46c62946739c2c75ea516351113f",
+      "pipeline_owner_seconds": 237.42925922106951,
+      "current_source_unavailable_diagnosis": {
+        "historical_exact_root_cause_established": false,
+        "actual_error": "Invalid(\"Unavailable\")",
+        "static_path": "ACK loss recovery calls task.require_current before Source publication; shared Root CURRENT try_lock can fence on concurrent use",
+        "source_unavailable_display": "Circuit task owner is unavailable or fenced",
+        "short_Unavailable_alone_does_not_identify_lane_transport_artifact_finaluse_or_clock": true,
+        "next_candidate": "Read the exact Source publication before CURRENT; Missing/Pending waits only inside the original deadline; after Completed preserve original CURRENT/capture/admission checks",
+        "failure_only_payload_free_phase_diagnostics_planned": true,
+        "generic_exact_replay_serialization_proven": false,
+        "full_Root_plus_Feature_ACK_component_positive_constructed": false,
+        "mechanism_component_controls_must_not_be_reported_as_full_owner_positive": true,
+        "new_candidate_compilation_or_native_at_snapshot": false,
+        "original_2s_ACK_500ms_64_read_and_authority_deadlines_changed": false
+      },
+      "complete_C": false,
       "complete_native_NoUpdate": false,
-      "native_Adopt": false,
-      "fresh_C": false,
-      "cold_fresh_D": false,
-      "FinalUse": false,
-      "settlement_eligible": false,
-      "original_read_cap": 64,
-      "original_deadlines_unchanged": true,
-      "historical_failures_retained": true,
-      "actual_drain_test_import_source": "e4aeaa2cdd1a4aa884d09cafaeef96968feb7a90",
-      "actual_drain_test_import_tree": "05c36cd26f6dfbd1a8fb0e0cfe275755fef80c86",
-      "actual_native_tests_passed": 11,
-      "actual_drain_and_recovery_tests_passed": 16,
-      "actual_native_result_sha256": "e34517cc4cff59befddb56698aab19833a1afd71e0196377b707f24418a8284c",
-      "actual_drain_recovery_result_sha256": "c11d8363c001e8729425593330d470f7042ee6673fdcfca41d43521b9af26924",
-      "original_NoUpdate4_result_sha256": "0f35886d2338dcb8264c7a77c341db4f10ddfa9ffaa24b7e69e7ee0073253e69",
-      "original_NoUpdate4_primary_error": "historical_client.read_limit request_id=65 maximum=64",
-      "original_NoUpdate4_passes": 0,
-      "original_NoUpdate4_failures": 1,
-      "original_NoUpdate4_skips": 0,
-      "original_C_predecessor_witness_error_reproduced": false,
-      "actual_A_generation_journal_bytes": 93,
-      "actual_A_witness_bytes": 224,
-      "actual_C_generation_journal_bytes": 0,
-      "actual_C_witness_bytes": 112,
-      "same_synchronous_owner_scope_repair_in_progress": true,
-      "native_11_and_16_scope": "Exact e4ae import-repair source; the 275/full1138 source scan belongs to b5 and is not relabelled as an e4ae run",
-      "native_compilation_exit_101_scope": "First b5 test-macro compile attempt; retained failure, followed by exact two-import repair",
-      "test_import_repair_native_compile_exit": 0,
-      "published_evidence_directory": "evidence/e6-original-drain-read65-20261120-2e9b",
-      "source_gate_policy_result_sha256": "a82ba3d62189eb3ff9ffe9135fa5858a0e8cc1342bc90daab7630ee548e37437",
-      "static_just_successor_merge_estimated_minimum_reads": 76,
-      "estimate_is_not_an_executed_parent": true,
-      "new_parent_not_started_before_complete_budget_review": true,
-      "original_NoUpdate4_test_case_wall_seconds": 69.972,
-      "original_NoUpdate4_command_wall_seconds": 70.808666,
-      "original_NoUpdate4_owner_wall_seconds": 121.382146,
-      "timings_are_nested_not_additive": true,
-      "static_candidate_status": "LOCAL_UNCOMPILED_SCOPE_COMPOSITION_CANDIDATE",
-      "static_full_parent_budget_not_yet_closed": true,
-      "static_submit_only_estimate_is_not_complete_parent_cost": true,
-      "post_dispatch_and_terminal_acceptance_included_in_remaining_budget_review": true
+      "Adopt_complete": false,
+      "cold_D_complete": false,
+      "FinalUse_complete": false,
+      "settlement_complete": false,
+      "joint_qualification_upgraded": false,
+      "cost_intervals_are_nested_not_additive": true,
+      "published_evidence_head": "02d5b32dd81c4fc820d8468c617908c8f2907a50",
+      "published_evidence_tree": "aa42cce8faa9a30455fb0159103910d2818ac721",
+      "published_evidence_pr": 6776,
+      "publication": {
+        "source_parent": "640bac3c258ba13534d8208a9c4a0c2977e98339",
+        "files": 30,
+        "preexisting_files": 15750,
+        "preexisting_bytes_unchanged": true,
+        "full_original_blob_gate_base": "d83f70f38137a99a86a3afd122199ba9cdae4f79",
+        "full_original_blob_gate_changed_paths": 98,
+        "full_original_blob_gate_exit": 0,
+        "original_blob_tests": 7,
+        "original_blob_tests_exit": 0,
+        "maximum_blob_bytes": 512000,
+        "result_sha256": "c535d73d9b715a417e91d418887b10ce48ad9fa0248a8809db8a8a6525d81458",
+        "new_product_qualification": false,
+        "evidence_directory": "../cell-e6-metrics-integration-20261119/e6-640-publication-readback"
+      }
+    },
+    "latest_cold_D_source_review": {
+      "schema": "hepta.e6.cold-read65.preparation-status.v1",
+      "status": "OBSERVED_NOT_FINAL; formal gates paused until ordinary C succeeds on a new frozen source",
+      "remote_source": "ai395:/home/qq/work/hepta-e6-cold-noupdate-read65-20261120-e9e051/source",
+      "remote_current_label": "OBSERVED_NOT_FINAL",
+      "original_cold_source": "6733159bd974ae6558e138112d81ca2f6da830e2",
+      "common_ancestor": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+      "ordinary_source_captured": "ab5e792d1bceb583c246f44d01ee8e433d5c60e8",
+      "ordinary_latest_confirmed_freeze": "640bac3c258ba13534d8208a9c4a0c2977e98339",
+      "ordinary_latest_confirmed_tree": "43cec80b1143f2188838b87438138243b0c22134",
+      "ordinary_noupdate5_status_from_owner": "failed at original signed-request/Feature identity guard; request55; zero complete C; physical originals held by hia",
+      "ordinary_result_inherited_as_cold_qualification": false,
+      "draft_boundaries": 1214,
+      "draft_protected_records": 927,
+      "draft_conflicts_resolved": 7,
+      "cold_added_files_still_exact_remotely": 36,
+      "pending_local_only_deltas": [
+        "ordinary final3policy/QA alignment after corrected freeze",
+        "existing Artifact helper QA migration retaining all7markers and2locator controls",
+        "three cold D fixture identity changes pending actual ordinary-C diagnosis"
+      ],
+      "remote_gates_deferred_by_root_until_specific_C_fix": true,
+      "new_source_gates": 0,
+      "new_compilations": 0,
+      "new_native_cases": 0,
+      "new_model_calls": 0,
+      "new_D_executions": 0,
+      "new_FinalUse": 0,
+      "physical_energy_and_money": null,
+      "own_remote_owners_running": false,
+      "files": [
+        {
+          "path": "OBSERVED_INTEGRATION_REVIEW.md",
+          "bytes": 10297,
+          "sha256": "27205d674453caf20ba73f9158f44492589c2b0d5c981e10a4525c5318356cfc"
+        },
+        {
+          "path": "ROOT_OBSERVED_PEER_REVIEW.json",
+          "bytes": 3590,
+          "sha256": "22f9f5461e07a03b122e06d3388da9744464a7272c010439a7c2b558ce1023d1"
+        },
+        {
+          "path": "FINAL_PAYLOAD_STATIC_READBACK.json",
+          "bytes": 10711,
+          "sha256": "c33d30361dfd3cd900a48b1a080d4baaffeeb6d7a15b9b4a2e113451ab300e24"
+        },
+        {
+          "path": "ARTIFACT_QA_MIGRATION_READOUT.json",
+          "bytes": 1280,
+          "sha256": "656278dce9a7ffa2dfaeb75506261a4c25ca3b45843ef7ae5a5ef47d8fdad1c2"
+        },
+        {
+          "path": "cold_d_identity_draft/DRAFT_BINDINGS.json",
+          "bytes": 1924,
+          "sha256": "241d9558b7b2bbc75243fccd206767c912b291cfd77b5467a265fcb34fe0a94c"
+        },
+        {
+          "path": "cold_d_identity_draft/READOUT.md",
+          "bytes": 4111,
+          "sha256": "b49eefe238d98616b69ce9e494ad88b534fb5a7d547a8d77eb37fa8965ef6ca0"
+        },
+        {
+          "path": "PLANNED_SOURCE_MODULE_UNION.json",
+          "bytes": 6475,
+          "sha256": "8b051b6a4a2656e940aeb8d46846080c255e055aa0f949b32131d2af99913df1"
+        },
+        {
+          "path": "ACTUAL_DRAIN_PARENT_INTEGRATION.json",
+          "bytes": 1213,
+          "sha256": "be498f15b15a4f0ba05d425c1bde4f0e5310ba7ccc1a9e91d7083ff393fca652"
+        }
+      ],
+      "next_ordinary_frozen_source": "640bac3c258ba13534d8208a9c4a0c2977e98339",
+      "next_ordinary_frozen_tree": "43cec80b1143f2188838b87438138243b0c22134",
+      "remote_gates_still_waiting_owner_release": false,
+      "design_only_adopt_head_use": {
+        "schema": "hepta-artifact-cold-use-design-readout-v1",
+        "status": "DESIGN_ONLY_COMPLETE_FOR_REVIEW",
+        "ordinary_source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+        "ordinary_tree": "9fd4268ef5ffd63661e067b6ee043f0e522e97ab",
+        "cold_source": "6733159bd974ae6558e138112d81ca2f6da830e2",
+        "cold_public_object_claim": false,
+        "complete_bound_source_files": 26,
+        "public_bound_source_files": 18,
+        "source_readback": "all complete original source lengths, SHA256 and Git blob hashes match SOURCE_BINDINGS.json",
+        "wire_ordered_fields": 68,
+        "planned_rejection_controls": 34,
+        "executed_rejection_controls": 0,
+        "product_source_edits": 0,
+        "signatures_issued": 0,
+        "compile": 0,
+        "native": 0,
+        "model": 0,
+        "remote_jobs": 0,
+        "physical_energy": null,
+        "monetary_cost": null,
+        "separate_from": [
+          "original NoUpdate cold composition",
+          "cold_d_identity_draft three-file request correction",
+          "ordinary source gates and NoUpdate owners"
+        ],
+        "production_authority_missing": true,
+        "can_claim": "source-grounded proposed primitive and explicit integration/rejection design",
+        "cannot_claim": [
+          "production issuer/custody/policy enrollment exists",
+          "new signatures or passing controls",
+          "working Adopt cold D",
+          "whole-cold pass",
+          "generic expired CURRENT renewed"
+        ],
+        "artifacts": [
+          {
+            "path": "DESIGN.md",
+            "bytes": 22275,
+            "sha256": "0aff3e8e9bfc1b4a13799d250c11caad02085c73e794320010abe17e95178d8b"
+          },
+          {
+            "path": "API_CONTRACT.md",
+            "bytes": 9974,
+            "sha256": "1533a81900e1a5a689859dc1197cd6bc33d61c7259c1e274bfd9bcaa8202c656"
+          },
+          {
+            "path": "SOURCE_BINDINGS.json",
+            "bytes": 14246,
+            "sha256": "b03c26e2f862dadb52e2801c78c4106b22068c1902f91b6d9ab5804141f39cb7"
+          },
+          {
+            "path": "SOURCE_ANCHORS.json",
+            "bytes": 9482,
+            "sha256": "d4311704124b0bd9ffde13762e6a4e33f26a2b11d340a321ca785e3c1b5add6f"
+          },
+          {
+            "path": "WIRE_CONTRACT.json",
+            "bytes": 26637,
+            "sha256": "40d0c4ce4b3acdaeabf636eb86eb34b3a5ce5d980260ca6c2bef26bd094727c8"
+          },
+          {
+            "path": "PATCH_PLAN.json",
+            "bytes": 12779,
+            "sha256": "f64814123bbd87f50bdf90a0c3b96d78582e2d2b9c162df5517277393b562574"
+          },
+          {
+            "path": "REJECTION_CONTROLS.json",
+            "bytes": 23730,
+            "sha256": "432cfec2ccec8020f6e841d33b426f1b7b76328d9c31c29f22a052659b11996c"
+          },
+          {
+            "path": "build_design_contracts.py",
+            "bytes": 42590,
+            "sha256": "df592f9a0781afde5948f6ec0a52bdfac31259cf6c82f6a602f91878992fb581"
+          }
+        ]
+      },
+      "design_evidence_directory": "../cell-e6-metrics-integration-20261119/adopt-head-use-design",
+      "three_file_D_request_fix_root_peer_sha256": "3dd440d5fa034fd94acbb455c09e8b7bed21fe12731248a3583ce160150fbfb5",
+      "observed_remote_source_root_peer_sha256": "22f9f5461e07a03b122e06d3388da9744464a7272c010439a7c2b558ce1023d1",
+      "ordinary_noupdate6_status": "Original parent failed Invalid(Unavailable); zero completed C; does not qualify cold composition",
+      "remote_gates_waiting_specific_C_fix": true,
+      "next_ordinary_frozen_source_is_not_yet_cold_qualified": true,
+      "pending_source_snapshot_640_inputs_sha256": "66079377d71b92229cd06723f07ac4fcd771afaeb803899d784766b7a7854bc3",
+      "independent_design_peer_review": {
+        "evidence": "../cell-e6-metrics-integration-20261119/checkpoint-next-gate-preparation/E6_DESIGN_REVIEW.md",
+        "original_design_bytes_preserved": true,
+        "late_original_controller_authorization_still_needed": true,
+        "revocation_policy_freshness_after_writer_retirement_still_needed": true,
+        "same_selector_and_head_key_correctly_rejected": true,
+        "planned_controls": 34,
+        "executed_controls": 0
+      },
+      "isolated_primitive_draft": {
+        "evidence": "../cell-e6-metrics-integration-20261119/adopt-head-use-primitive-draft",
+        "source_files": 3,
+        "unformatted_source_lines": 649,
+        "wire_fields": 68,
+        "decode_limit_bytes": 16384,
+        "default_disabled": true,
+        "private_relative_fact_denies_all_product_authority": true,
+        "production_enrollment_or_custody_implemented": false,
+        "module_wired": false,
+        "compiled": false,
+        "native_controls_executed": 0,
+        "signatures_issued": 0,
+        "original_first_draft_revision_preserved": true,
+        "static_readback_sha256": "3dcc8e9f1a51eba22dddc3e8cc0ae7529498a4318c82c55a98124fd1b356a32c",
+        "publication_plan_sha256": "045282aff007bc699115fc4ac9d504c79d5b13bfb7ba221eec021e73fc909908"
+      }
     }
   },
   "Chain": {
@@ -6931,6 +8042,490 @@
       "original_CI_failure_logs_retained": true,
       "derived_CURRENT_spelling_corrected_raw_original_preserved": true,
       "cross_repository_workflow_references_in_original_raw_evidence_still_fail_contract_scan": true
+    },
+    "checkpoint_238_original_blob_validation": {
+      "tested_head": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+      "tested_tree": "74478db5dad451c13483dd575cd5d94c0a3e6864",
+      "base": "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+      "scope": "27 incremental checkpoint changes, not full joint PR or native E6",
+      "changed_files": 27,
+      "maximum_bytes": 512000,
+      "exit_code": 0,
+      "wall_seconds": 118.31996956001967,
+      "result_sha256": "58b3836819fdd1b91c81bb49452da153cd73bc0171356cf884297f9fd2f90ef9",
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/checkpoint-238-readback",
+      "repository_identity_and_gate_bytes_unchanged": true
+    },
+    "latest_238_workflow_observation": {
+      "observed_head": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+      "actual_merge": "79210ce76fba767e5860b492ff35501140edc5db",
+      "expected_base_from_pr": "2742bc37e9f4a74fba32bb534230de55f431e9ea",
+      "actual_merge_base": "061334747ce9d87690c40df48eeedf239156b57d",
+      "engineering": {
+        "run": 44688204955,
+        "conclusion": "success",
+        "tests": 216,
+        "seconds": 44.5,
+        "tested_identity": "prospective merge"
+      },
+      "architecture": {
+        "run": 44688204869,
+        "conclusion": "failure",
+        "source_head_job": 136127502180,
+        "source_head_conclusion": "success",
+        "source_and_tested_sha": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+        "base_merge_job": 136127501877,
+        "base_merge_conclusion": "failure",
+        "required_job": 136141849971,
+        "required_conclusion": "failure"
+      },
+      "blocking": {
+        "run": 44688204950,
+        "conclusion": "failure",
+        "cargo_deny_failure_cause": "not established; three bounded original log retrievals failed with Transport closed",
+        "contract_failure": "four historical references to external Chain workflow paths were interpreted as local source paths",
+        "remaining_application_and_platform_failures": "retained and not classified as flaky or repaired"
+      },
+      "v8": {
+        "run": 44688204865,
+        "conclusion": "success"
+      },
+      "all_ci_passed": false,
+      "jobs_inventory_scope": "original first page, not a complete paginated job inventory",
+      "base_identity_reconciliation": {
+        "schema": "hepta.joint.ci-base-identity-reconciliation.v1",
+        "head": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+        "declared_pr_base": "2742bc37e9f4a74fba32bb534230de55f431e9ea",
+        "base_branch": "feat/cell-joint-candidate-20261118-392934",
+        "fresh_base_branch_ref": "061334747ce9d87690c40df48eeedf239156b57d",
+        "actual_merge": "79210ce76fba767e5860b492ff35501140edc5db",
+        "actual_merge_parents": [
+          "061334747ce9d87690c40df48eeedf239156b57d",
+          "238fc48402f786db3d7f2a80b0abad6c0e5322bb"
+        ],
+        "actual_base_is_direct_child_of_declared_base": true,
+        "base_branch_and_pr_metadata_currently_differ": true,
+        "root_cause_of_metadata_staleness_established": false,
+        "any_source_gate_weakened": false,
+        "any_pr_retargeted": false,
+        "any_branch_ref_mutated": false,
+        "ci_qualification_upgraded": false,
+        "all_members_read_back": true,
+        "archive_bytes": 6828,
+        "archive_sha256": "6648cc485bfb4d74be8f4aba4b33bf483deaba7397c47f9e7ead310286c5207e",
+        "members": [
+          {
+            "path": "actual-base-0613.original-tool.json",
+            "bytes": 3615,
+            "sha256": "60e16156416ba2576672e2a00c9b1578edd7efec7b28d9260b207855e0d0e9b0"
+          },
+          {
+            "path": "actual-base-branch-ref.original-tool.json",
+            "bytes": 1900,
+            "sha256": "ae5d1fb2c0ec6def6e3093fd0033b0442fe3940f57defbac1dea92d37aa86b01"
+          },
+          {
+            "path": "merge-79210.original-tool.json",
+            "bytes": 6697,
+            "sha256": "6e7a46acef659d018325851c81af7c9dda3b3340eee912fa8745c8285546675f"
+          },
+          {
+            "path": "pr-base-2742.original-tool.json",
+            "bytes": 4117,
+            "sha256": "7ace94c0f7cba8ee55b2c3304aa24d7daada7e980a589e6b5e5a0decfffd73d0"
+          },
+          {
+            "path": "raw-pr-6703.original-tool.json",
+            "bytes": 51301,
+            "sha256": "6b835004c6788c9c90969e8e1baa94961592370829d214488e33318b5df93781"
+          }
+        ]
+      },
+      "source_and_gate_bytes_not_changed_to_make_CI_green": true,
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/ci-238-readback",
+      "base_reconciliation_evidence_directory": "../cell-e6-metrics-integration-20261119/ci-base-reconciliation",
+      "mac_fixture_candidate": {
+        "source": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+        "files": [
+          {
+            "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+            "original_git_blob": "d05fa2518b039324504b204ec56d25200ff9a54f",
+            "original_sha256": "e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a",
+            "candidate_sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+            "original_git_blob": "c5011894ce75799131bdbb5ae83eb5939799fd19",
+            "original_sha256": "08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca",
+            "candidate_sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031"
+          }
+        ],
+        "status": "FIXTURE_PATCH_FORMATTED; NATIVE4_AND_NATIVE5_DEPENDENCY_FAILURES; ZERO_NATIVE_CASES",
+        "source_parent": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+        "product_guards_changed": false,
+        "original_test_assertions_changed": false,
+        "old_control_results_relabelled": false,
+        "actual_formatter_exit": 0,
+        "actual_formatter_seconds": 0.28308525,
+        "actual_native_project_tests_completed": false,
+        "original_E6_parent_runs": 0,
+        "new_model_calls": 0,
+        "new_training_updates": 0,
+        "known_inventory_materialized_paths": 11751,
+        "known_inventory_absent_skip_worktree_paths": 3813,
+        "all_codex_rs_materialized": true,
+        "prior_formatter_inventory_failure_sha256": "8dab8db0bb5ab048862aec3b2f990536b9109dfe695d456fe5703607480b7c9c",
+        "prior_locked_offline_missing_dependency_sha256": "14ed67d3cd60d9b985d051f415902b2955ba69c46be70c32c4881d9960677a0c",
+        "prior_native3_interruption_observation_sha256": "fd53ea215f8f0a41c70e41d50a4528aec55b614917b09fff9e3311fe7edfa944",
+        "native3_no_network_progress_claim_supported": false,
+        "active_native4_owner": null,
+        "native4_tool_status": "lost/target_reboot",
+        "native4_actual_process_observation": {
+          "observed_at_utc": "2026-11-20T07:58:59.019645+00:00",
+          "tool_session_previously": "lost/target_reboot; no duplicate Cargo owner launched",
+          "actual_own_process_rows": [
+            "91954     1 91954 Ss         36:46 Fri Nov 20 15:22:13 2026       0.0 /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python",
+            "60091 91971 91955 S+         00:09 Fri Nov 20 15:58:50 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/bin/git",
+            "60092 60091 91955 S+         00:09 Fri Nov 20 15:58:50 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git",
+            "60093 60092 91955 S+         00:09 Fri Nov 20 15:58:50 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git-remote-https",
+            "60897 60091 91955 S+         00:02 Fri Nov 20 15:58:57 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git",
+            "91955 91954 91955 Ss+        36:46 Fri Nov 20 15:22:13 2026       0.0 /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python",
+            "91964 91955 91955 S+         36:45 Fri Nov 20 15:22:14 2026       0.0 /opt/homebrew/bin/just",
+            "91965 91964 91955 S+         36:45 Fri Nov 20 15:22:14 2026       0.0 /opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+            "91968 91965 91955 S+         36:45 Fri Nov 20 15:22:14 2026       0.0 /opt/homebrew/bin/cargo-nextest",
+            "91971 91968 91955 S+         36:45 Fri Nov 20 15:22:14 2026       0.0 /Users/qianqi/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo"
+          ],
+          "files": [
+            {
+              "path": "native-project.CHILD.json",
+              "bytes": 229,
+              "sha256": "83404128264bd198d464df4be87c93261a2257da242b4db0df13054a4995288c",
+              "mtime_ns": "1795159334439120905",
+              "content": "{\"pid\": 91964, \"argv\": [\"/opt/homebrew/bin/just\", \"test\", \"--locked\", \"-p\", \"codex-hepta-agentd\", \"--lib\", \"--retries\", \"0\", \"--test-threads\", \"2\", \"--no-tests\", \"fail\", \"--success-output\", \"final\", \"--failure-output\", \"final\"]}\n",
+              "tail": null
+            },
+            {
+              "path": "native-project.stdout",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "mtime_ns": "1795159334437880034",
+              "content": "",
+              "tail": null
+            },
+            {
+              "path": "native-project.stderr",
+              "bytes": 1968,
+              "sha256": "02b7d8ae2b0dc3ccb9f3d3f34ab7ea29e950739d81827f27e9b77875e0fab88b",
+              "mtime_ns": "1795161523944909392",
+              "content": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\n    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`\nFrom https://github.com/openai-oss-forks/tungstenite-rs\n * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f\n    Updating git repository `https://github.com/openai-oss-forks/crossterm`\nfatal: unable to access 'https://github.com/openai-oss-forks/crossterm/': Failed to connect to github.com port 443 after 75003 ms: Couldn't connect to server\nwarning: spurious network error (3 tries remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 5 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nwarning: spurious network error (2 tries remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 4872 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nwarning: spurious network error (1 try remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\n",
+              "tail": null
+            },
+            {
+              "path": "native-project.EXIT.json",
+              "observed_missing": true
+            },
+            {
+              "path": "RESULT.json",
+              "observed_missing": true
+            }
+          ],
+          "named_dependency_packs": [
+            {
+              "name": "tmp_pack_deZ82t",
+              "bytes": 16383,
+              "mtime_ns": "1795161537840606106"
+            },
+            {
+              "name": "tmp_pack_UglHd2",
+              "bytes": 12410879,
+              "mtime_ns": "1795161523934535851"
+            },
+            {
+              "name": "tmp_pack_6mmzTG",
+              "bytes": 12345343,
+              "mtime_ns": "1795160520814565376"
+            }
+          ]
+        },
+        "duplicate_Cargo_owner_started": false,
+        "PID_kill_used": false,
+        "complete_original_snapshot_sha256": "4d56a039b30841d5843f1d526adb1334a25af4b6d1fb27986c814a47fd3949ea",
+        "complete_original_snapshot_members": 50,
+        "complete_original_snapshot_bytes": 904408,
+        "complete_original_snapshot_uncompressed_bytes": 13265275,
+        "every_archive_member_read_back": true,
+        "evidence_directory": "../cell-e6-metrics-integration-20261119/mac-fixtures-20261120",
+        "native4_actual_process_observation_terminal": {
+          "observed_at_utc": "2026-11-20T08:16:38.541833+00:00",
+          "tool_session_previously": "lost/target_reboot; no duplicate Cargo owner launched",
+          "actual_own_process_rows": [],
+          "files": [
+            {
+              "path": "native-project.stdout",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "mtime_ns": "1795159334437880034",
+              "content": "",
+              "tail": null
+            },
+            {
+              "path": "native-project.stderr",
+              "bytes": 3214,
+              "sha256": "e495fa131f3ebb0ec3c958eff73ee5e5df0d3b5925b6131d08c7869a92fbcaf4",
+              "mtime_ns": "1795162420450733728",
+              "content": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\n    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`\nFrom https://github.com/openai-oss-forks/tungstenite-rs\n * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f\n    Updating git repository `https://github.com/openai-oss-forks/crossterm`\nfatal: unable to access 'https://github.com/openai-oss-forks/crossterm/': Failed to connect to github.com port 443 after 75003 ms: Couldn't connect to server\nwarning: spurious network error (3 tries remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 5 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nwarning: spurious network error (2 tries remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 4872 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nwarning: spurious network error (1 try remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 29 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nerror: failed to load source for dependency `crossterm`\n\nCaused by:\n  unable to update https://github.com/openai-oss-forks/crossterm?rev=45fecb9508105988f42fe6ff0441783ed3717f92#45fecb95\n\nCaused by:\n  failed to fetch into: /Users/qianqi/.cargo/git/db/crossterm-ce0318b92aca4e8d\n\nCaused by:\n  revision 45fecb9508105988f42fe6ff0441783ed3717f92 not found\n\nCaused by:\n  process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: command `/Users/qianqi/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo '--color=auto' test --manifest-path /Users/qianqi/work/hepta-joint-mac-fixtures-20261120-e9e051/source/codex-rs/Cargo.toml --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --lib --locked` exited with code 101\nerror: recipe `test` failed on line 89 with exit code 101\n",
+              "tail": null
+            },
+            {
+              "path": "native-project.EXIT.json",
+              "bytes": 676,
+              "sha256": "3e64e5a4d333f4ca96922ab86e6bea3ac3b131940b210ad4f22477bd6bd30b94",
+              "mtime_ns": "1795162420452287978",
+              "content": "{\n  \"name\": \"native-project\",\n  \"argv\": [\n    \"/opt/homebrew/bin/just\",\n    \"test\",\n    \"--locked\",\n    \"-p\",\n    \"codex-hepta-agentd\",\n    \"--lib\",\n    \"--retries\",\n    \"0\",\n    \"--test-threads\",\n    \"2\",\n    \"--no-tests\",\n    \"fail\",\n    \"--success-output\",\n    \"final\",\n    \"--failure-output\",\n    \"final\"\n  ],\n  \"exit_code\": 101,\n  \"wall_seconds\": 3085.995982125,\n  \"child_user_cpu_seconds\": 4.0883329999999996,\n  \"child_system_cpu_seconds\": 1.978144,\n  \"stdout_bytes\": 0,\n  \"stdout_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n  \"stderr_bytes\": 3214,\n  \"stderr_sha256\": \"e495fa131f3ebb0ec3c958eff73ee5e5df0d3b5925b6131d08c7869a92fbcaf4\"\n}\n",
+              "tail": null
+            },
+            {
+              "path": "RESULT.json",
+              "bytes": 4047,
+              "sha256": "dd55367752fc4bef8fbd6734f5a98dc586cc71044397b2c7c500dd6f041308c3",
+              "mtime_ns": "1795162421413265533",
+              "content": "{\n  \"schema\": \"hepta.joint.mac-fixture-native.v1\",\n  \"source_parent\": \"238fc48402f786db3d7f2a80b0abad6c0e5322bb\",\n  \"scope\": \"two fixture path repairs; original project unit tests; no E6 business parent or model execution\",\n  \"new_model_calls\": 0,\n  \"new_training_updates\": 0,\n  \"original_E6_parent_runs\": 0,\n  \"automatic_retry\": false,\n  \"payload_sha256\": \"fe4fced4cf0b7ea6005ecdef212b19a9624c5be7d9179be282c9cd21a6120067\",\n  \"prior_preflight_failure_sha256\": \"8dab8db0bb5ab048862aec3b2f990536b9109dfe695d456fe5703607480b7c9c\",\n  \"prior_locked_offline_dependency_failure_sha256\": \"14ed67d3cd60d9b985d051f415902b2955ba69c46be70c32c4881d9960677a0c\",\n  \"prior_git_library_interruption_observation_sha256\": \"fd53ea215f8f0a41c70e41d50a4528aec55b614917b09fff9e3311fe7edfa944\",\n  \"dependency_acquisition\": \"Same locked graph using supported CARGO_NET_GIT_FETCH_WITH_CLI=true after terminal Git-library dependency stall; no Cargo.lock/source change; unrelated to original E6 offline harness\",\n  \"inventory_scope\": \"all tracked Git identities plus exact materialized bytes; inherited skip-worktree absent files explicitly listed, not claimed as read\",\n  \"protected_before\": {\n    \"codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs\": \"3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5\",\n    \"codex-rs/hepta-agentd/src/circuit_cell_tests.rs\": \"a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7\",\n    \"codex-rs/Cargo.lock\": \"48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f\",\n    \".github/blob-size-allowlist.txt\": \"56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c\"\n  },\n  \"files\": [\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs\",\n      \"original_git_blob\": \"d05fa2518b039324504b204ec56d25200ff9a54f\",\n      \"original_sha256\": \"e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a\",\n      \"candidate_sha256\": \"8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs\",\n      \"original_git_blob\": \"c5011894ce75799131bdbb5ae83eb5939799fd19\",\n      \"original_sha256\": \"08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca\",\n      \"candidate_sha256\": \"0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031\"\n    }\n  ],\n  \"source_inventory_sha256\": \"60975db166510f721bcae0754d70fe78aaf719155e4c9534c5f7c51560881b3d\",\n  \"unmaterialized_tracked_paths\": 3813,\n  \"materialized_paths\": 11751,\n  \"protected_after\": {\n    \"codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs\": \"3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5\",\n    \"codex-rs/hepta-agentd/src/circuit_cell_tests.rs\": \"a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7\",\n    \"codex-rs/Cargo.lock\": \"48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f\",\n    \".github/blob-size-allowlist.txt\": \"56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c\"\n  },\n  \"protected_unchanged\": true,\n  \"source_unchanged_during_native\": true,\n  \"stages\": [\n    {\n      \"name\": \"native-project\",\n      \"argv\": [\n        \"/opt/homebrew/bin/just\",\n        \"test\",\n        \"--locked\",\n        \"-p\",\n        \"codex-hepta-agentd\",\n        \"--lib\",\n        \"--retries\",\n        \"0\",\n        \"--test-threads\",\n        \"2\",\n        \"--no-tests\",\n        \"fail\",\n        \"--success-output\",\n        \"final\",\n        \"--failure-output\",\n        \"final\"\n      ],\n      \"exit_code\": 101,\n      \"wall_seconds\": 3085.995982125,\n      \"child_user_cpu_seconds\": 4.0883329999999996,\n      \"child_system_cpu_seconds\": 1.978144,\n      \"stdout_bytes\": 0,\n      \"stdout_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n      \"stderr_bytes\": 3214,\n      \"stderr_sha256\": \"e495fa131f3ebb0ec3c958eff73ee5e5df0d3b5925b6131d08c7869a92fbcaf4\"\n    }\n  ],\n  \"owner_wall_seconds\": 3087.3457307090002,\n  \"error\": \"RuntimeError('native-project exited 101')\",\n  \"exit_code\": 1\n}\n",
+              "tail": null
+            }
+          ],
+          "named_dependency_packs": [
+            {
+              "name": "tmp_pack_deZ82t",
+              "bytes": 12410879,
+              "mtime_ns": "1795162420418711594"
+            },
+            {
+              "name": "tmp_pack_UglHd2",
+              "bytes": 12410879,
+              "mtime_ns": "1795161523934535851"
+            },
+            {
+              "name": "tmp_pack_6mmzTG",
+              "bytes": 12345343,
+              "mtime_ns": "1795160520814565376"
+            }
+          ]
+        },
+        "native4_terminal_result_sha256": "dd55367752fc4bef8fbd6734f5a98dc586cc71044397b2c7c500dd6f041308c3",
+        "native4_terminal_result": {
+          "schema": "hepta.joint.mac-fixture-native.v1",
+          "source_parent": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+          "scope": "two fixture path repairs; original project unit tests; no E6 business parent or model execution",
+          "new_model_calls": 0,
+          "new_training_updates": 0,
+          "original_E6_parent_runs": 0,
+          "automatic_retry": false,
+          "payload_sha256": "fe4fced4cf0b7ea6005ecdef212b19a9624c5be7d9179be282c9cd21a6120067",
+          "prior_preflight_failure_sha256": "8dab8db0bb5ab048862aec3b2f990536b9109dfe695d456fe5703607480b7c9c",
+          "prior_locked_offline_dependency_failure_sha256": "14ed67d3cd60d9b985d051f415902b2955ba69c46be70c32c4881d9960677a0c",
+          "prior_git_library_interruption_observation_sha256": "fd53ea215f8f0a41c70e41d50a4528aec55b614917b09fff9e3311fe7edfa944",
+          "dependency_acquisition": "Same locked graph using supported CARGO_NET_GIT_FETCH_WITH_CLI=true after terminal Git-library dependency stall; no Cargo.lock/source change; unrelated to original E6 offline harness",
+          "inventory_scope": "all tracked Git identities plus exact materialized bytes; inherited skip-worktree absent files explicitly listed, not claimed as read",
+          "protected_before": {
+            "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+            "codex-rs/hepta-agentd/src/circuit_cell_tests.rs": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+            "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+            ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+          },
+          "files": [
+            {
+              "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+              "original_git_blob": "d05fa2518b039324504b204ec56d25200ff9a54f",
+              "original_sha256": "e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a",
+              "candidate_sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f"
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+              "original_git_blob": "c5011894ce75799131bdbb5ae83eb5939799fd19",
+              "original_sha256": "08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca",
+              "candidate_sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031"
+            }
+          ],
+          "source_inventory_sha256": "60975db166510f721bcae0754d70fe78aaf719155e4c9534c5f7c51560881b3d",
+          "unmaterialized_tracked_paths": 3813,
+          "materialized_paths": 11751,
+          "protected_after": {
+            "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+            "codex-rs/hepta-agentd/src/circuit_cell_tests.rs": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+            "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+            ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+          },
+          "protected_unchanged": true,
+          "source_unchanged_during_native": true,
+          "stages": [
+            {
+              "name": "native-project",
+              "argv": [
+                "/opt/homebrew/bin/just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "--retries",
+                "0",
+                "--test-threads",
+                "2",
+                "--no-tests",
+                "fail",
+                "--success-output",
+                "final",
+                "--failure-output",
+                "final"
+              ],
+              "exit_code": 101,
+              "wall_seconds": 3085.995982125,
+              "child_user_cpu_seconds": 4.0883329999999996,
+              "child_system_cpu_seconds": 1.978144,
+              "stdout_bytes": 0,
+              "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stderr_bytes": 3214,
+              "stderr_sha256": "e495fa131f3ebb0ec3c958eff73ee5e5df0d3b5925b6131d08c7869a92fbcaf4"
+            }
+          ],
+          "owner_wall_seconds": 3087.3457307090002,
+          "error": "RuntimeError('native-project exited 101')",
+          "exit_code": 1
+        },
+        "native4_owner_terminal_by_OS_and_result": true,
+        "native4_tool_status_disagreement_retained": true,
+        "independent_dependency_preparation": {
+          "scope": "exact same locked crossterm commit; isolated shallow repository",
+          "commit": "45fecb9508105988f42fe6ff0441783ed3717f92",
+          "tree": "f43069917d73c60e5286f56fef318cb13febf204",
+          "owner_wall_seconds": 22.896533,
+          "fetch_wall_seconds": 22.761068,
+          "retained_object_bytes": 166330,
+          "fsck_full_strict_exit": 0,
+          "new_native_cases": 0,
+          "global_Cargo_cache_modified_during_preparation": false,
+          "source_or_lockfile_modified": false,
+          "status": "Exact shallow preparation and 54-member archive independently checked by root",
+          "evidence_directory": "../cell-e6-metrics-integration-20261119/mac-crossterm-shallow"
+        },
+        "native5_agent_report": {
+          "owner": "dpty-5787097273cf95e18b5e691a3ebabaf0c509a6acd97972dd72aa6cfa2a72dd77",
+          "idempotency_key": "mac-fixture-native5-offline-20261120-e9e051",
+          "controller_sha256": "7c6d9541d88719544437be4e9723980243660c2e6d3a5b5a911630fe368b52d2",
+          "result_sha256": "4eb76583bf64b106a94432cbab91a756fae253eb91194b623d3bacc35ca5976f",
+          "terminal": true,
+          "project_command_exit": 101,
+          "project_command_seconds": 0.28980970899999997,
+          "owner_seconds": 1.0810116250000001,
+          "native_cases": 0,
+          "source_inventory_unchanged": true,
+          "Cargo_lock_and_product_guards_unchanged": true,
+          "new_missing_dependency": "https://github.com/openai-oss-forks/tokio-tungstenite",
+          "new_missing_revision": "0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186",
+          "immediate_additional_Cargo_retry": false,
+          "root_has_read_original_receipt_at_this_snapshot": true,
+          "next_work": "Read exact locked Git dependency/cache inventory before bounded exact-commit material preparation",
+          "original_result": {
+            "schema": "hepta.joint.mac-fixture-native.v1",
+            "source_parent": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+            "scope": "two fixture path repairs; original project unit tests; no E6 business parent or model execution",
+            "new_model_calls": 0,
+            "new_training_updates": 0,
+            "original_E6_parent_runs": 0,
+            "automatic_retry": false,
+            "payload_sha256": "fe4fced4cf0b7ea6005ecdef212b19a9624c5be7d9179be282c9cd21a6120067",
+            "prior_preflight_failure_sha256": "8dab8db0bb5ab048862aec3b2f990536b9109dfe695d456fe5703607480b7c9c",
+            "prior_locked_offline_dependency_failure_sha256": "14ed67d3cd60d9b985d051f415902b2955ba69c46be70c32c4881d9960677a0c",
+            "prior_git_library_interruption_observation_sha256": "fd53ea215f8f0a41c70e41d50a4528aec55b614917b09fff9e3311fe7edfa944",
+            "prior_git_cli_dependency_failure_sha256": "dd55367752fc4bef8fbd6734f5a98dc586cc71044397b2c7c500dd6f041308c3",
+            "exact_local_cache_seed_result_sha256": "6fc8ef470a73caac73479c7e7eb8f7d40c2968f0aff50ad345ac468bd43ffc70",
+            "dependency_acquisition": "Original native4 terminal; exact locked crossterm commit seeded once through local Git --update-shallow, with old partial files preserved; this native5 uses --locked --offline and no Cargo.lock/source change",
+            "inventory_scope": "all tracked Git identities plus exact materialized bytes; inherited skip-worktree absent files explicitly listed, not claimed as read",
+            "protected_before": {
+              "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+              "codex-rs/hepta-agentd/src/circuit_cell_tests.rs": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+              "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+              ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+            },
+            "files": [
+              {
+                "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+                "original_git_blob": "d05fa2518b039324504b204ec56d25200ff9a54f",
+                "original_sha256": "e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a",
+                "candidate_sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f"
+              },
+              {
+                "path": "codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+                "original_git_blob": "c5011894ce75799131bdbb5ae83eb5939799fd19",
+                "original_sha256": "08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca",
+                "candidate_sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031"
+              }
+            ],
+            "source_inventory_sha256": "60975db166510f721bcae0754d70fe78aaf719155e4c9534c5f7c51560881b3d",
+            "unmaterialized_tracked_paths": 3813,
+            "materialized_paths": 11751,
+            "protected_after": {
+              "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+              "codex-rs/hepta-agentd/src/circuit_cell_tests.rs": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+              "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+              ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+            },
+            "protected_unchanged": true,
+            "source_unchanged_during_native": true,
+            "stages": [
+              {
+                "name": "native-project",
+                "argv": [
+                  "/opt/homebrew/bin/just",
+                  "test",
+                  "--locked",
+                  "--offline",
+                  "-p",
+                  "codex-hepta-agentd",
+                  "--lib",
+                  "--retries",
+                  "0",
+                  "--test-threads",
+                  "2",
+                  "--no-tests",
+                  "fail",
+                  "--success-output",
+                  "final",
+                  "--failure-output",
+                  "final"
+                ],
+                "exit_code": 101,
+                "wall_seconds": 0.28980970899999997,
+                "child_user_cpu_seconds": 0.18189,
+                "child_system_cpu_seconds": 0.069278,
+                "stdout_bytes": 0,
+                "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stderr_bytes": 812,
+                "stderr_sha256": "9a99fc15d540041793f501c2f79accc7af8fda0a23b59a103b5439272dc80053"
+              }
+            ],
+            "owner_wall_seconds": 1.0810116250000001,
+            "error": "RuntimeError('native-project exited 101')",
+            "exit_code": 1
+          },
+          "evidence_directory": "../cell-e6-metrics-integration-20261119/mac-native5-readback"
+        },
+        "crossterm_cache_seed_agent_report": {
+          "first_attempt_retained": "Overbroad any-Git precheck refused an unrelated Git process before fetch/cache writes",
+          "second_attempt_owner": "dpty-19c98d769829873767f45bccf0ffe55fba7d83b095147fb9b8d9fcf886737b71",
+          "second_result_sha256": "6fc8ef470a73caac73479c7e7eb8f7d40c2968f0aff50ad345ac468bd43ffc70",
+          "local_fetches": 1,
+          "network_fetches": 0,
+          "owner_seconds": 0.276757958,
+          "target_commit": "45fecb9508105988f42fe6ff0441783ed3717f92",
+          "target_tree": "f43069917d73c60e5286f56fef318cb13febf204",
+          "old_partial_pack_hashes_unchanged": true,
+          "configuration_changed": false,
+          "source_or_lockfile_changed": false,
+          "root_has_read_original_receipt_at_this_snapshot": true,
+          "original_seed1_result_sha256": "7683cec5f435efafac561bb3685fbdcae086fd9c49fc8d6847ee5a817684d144"
+        }
+      }
     }
   },
   "environment": {
@@ -6965,7 +8560,7 @@
     "production_eligible": false,
     "full_system_cost_complete": false
   },
-  "interpretation": "The #6709 accounting fix is integrated with its original 114 controls and exact-head formatter evidence. The newly completed original 56-call raw-function student evaluation remains ResearchNoUpdate: both students achieve 1/4 on A, but P and both students finish 0/4 on the prospectively frozen future panel. Weight-path readback confirms the actual changed adapters were used; no specific implementation bug was established. E5 now has 16 distinct public project repair materials after 28 additional native children, with zero new growth-training updates or authenticated users. The additional SmolLM2 material-recovery status is reported separately; historical T2 evidence and used budgets remain. E6 actual-drain work remains a separate original-owner branch until its full parent, fresh C, cold new D and FinalUse pass. Chain's W1 delay fix passes its focused native controls, while original F0 liveness, numeric depletion and complete physical cost remain unclosed. All ten joint qualification flags remain false; independent branch evidence is not a joint qualification.",
+  "interpretation": "The exact #6709 accounting fix and its original controls remain integrated. Original student evaluation remains ResearchNoUpdate (both A students 1/4; future P and both students 0/4); all used call budgets and historical negatives remain. Sixteen public project materials are complete, but source-only bounded codec/token measurements admit no original fixed-prefix training: 15/16 inputs exceed the original limit; growth curves remain null and authenticated users remain zero. E3 bounded material recovery is terminal incomplete. Independent E6 source 640bac3c passes 11+16+5 native components, original source/caller checks and project lint; its original NoUpdate6 parent still fails Invalid(Unavailable) before completed C. Evidence is published at 02d5b32d; precise historical cause remains unknown, with ACK/CURRENT overlap under source-level investigation. Cold composition and default-disabled Adopt primitive remain unqualified. Joint CI at 238 retains real failures and the PR-metadata/base-ref mismatch; two Mac fixture changes are formatted but native attempts remain blocked on exact dependency material. Chain's original liveness and full-system-cost failures remain. All ten joint qualification flags stay false; independent branch evidence is not a joint execution.",
   "original_native_files": [
     {
       "path": "native-v8/RESULT.json",
@@ -7058,7 +8653,7 @@
       "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/original-macos-fixtures.stderr"
     }
   ],
-  "previous_evidence_commit": "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+  "previous_evidence_commit": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
   "next_actual_student_collection": {
     "status": "ORIGINAL_56_CALL_COLLECTION_COMPLETE_NO_UPDATE",
     "evidence_pr": 6778,
@@ -7493,10 +9088,18 @@
   "checkpoint_scope": {
     "historical_joint_execution_source_unchanged": true,
     "independent_branch_passes_are_not_a_joint_execution": true,
-    "previous_current_sha256": "34dd98019a7a009761ede6732688e313735b5e9707dce2f47dd376c350e7152a",
-    "previous_current_exact_bytes": "checkpoint-20261120/previous-current-e4b.json.xz",
+    "previous_current_sha256": "6d56b7f9c89fcfadb56dea8d4d21099974e364fa0d161b03a46b5c4e5dc7a06c",
+    "previous_current_exact_bytes": "checkpoint-20261120/previous-current-238.json.xz",
     "latest_continuation_fields_take_precedence_over_historical_running_snapshots": true,
-    "original_experiment_identities_budgets_and_negative_results_preserved": true
+    "original_experiment_identities_budgets_and_negative_results_preserved": true,
+    "latest_checkpoint_readbacks": {
+      "E6_published_negative": "../cell-e6-metrics-integration-20261119/e6-640-publication-readback",
+      "E5_final_exact_head_gate": "../cell-e6-metrics-integration-20261119/e5-codec-final-readback",
+      "CI_base_identity": "../cell-e6-metrics-integration-20261119/ci-base-reconciliation",
+      "Mac_original_attempts": "../cell-e6-metrics-integration-20261119/mac-fixtures-20261120",
+      "Mac_exact_dependency_material": "../cell-e6-metrics-integration-20261119/mac-crossterm-shallow",
+      "next_checkpoint_original_blob_gate_preparation": "../cell-e6-metrics-integration-20261119/checkpoint-next-gate-preparation"
+    }
   },
   "metrics_integration_6709": {
     "pr": 6703,

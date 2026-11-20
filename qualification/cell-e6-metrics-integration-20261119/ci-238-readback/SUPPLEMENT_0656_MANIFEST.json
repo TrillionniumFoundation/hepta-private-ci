@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.joint.original-ci-observation.v1",
+  "observed_at_utc": "2026-11-20T06:56:44Z",
+  "head": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+  "actual_prospective_merge": "79210ce76fba767e5860b492ff35501140edc5db",
+  "actual_merge_base_parent": "061334747ce9d87690c40df48eeedf239156b57d",
+  "expected_architecture_base": "2742bc37e9f4a74fba32bb534230de55f431e9ea",
+  "scope": "First-page workflow/job observations and exact complete retrieved logs, not all GitHub job logs. Cargo-deny log retrieval remains unavailable after three bounded attempts.",
+  "engineering_tests": 216,
+  "engineering_wall_seconds": 44.5,
+  "engineering_success": true,
+  "blocking_run_status": "completed",
+  "blocking_run_conclusion": "failure",
+  "architecture_source_job_status": "in_progress",
+  "all_ci_passed": false,
+  "archive": "supplement-0656-originals.tar.xz",
+  "archive_bytes": 225444,
+  "archive_sha256": "bf525a1f5d5675b1ced1397571d07c3655fd870523ea6e700c67dba21ef2a6b6",
+  "all_archive_members_read_back": true,
+  "files": [
+    {
+      "path": "blocking_jobs.json",
+      "bytes": 59991,
+      "sha256": "9e48fc465fbfdc67ed93cf01ca730d6c3971b20e147df364decc7a68bd4e4b65"
+    },
+    {
+      "path": "architecture_jobs.json",
+      "bytes": 11667,
+      "sha256": "cc782d6de005aacdb923634d1e8b1f1ad77f8e274efc076bb5fbb7d7a3ad27f7"
+    },
+    {
+      "path": "workflow_runs.json",
+      "bytes": 1988,
+      "sha256": "c356223313a7a0439d7880d2af383a8cada5c6311d58e47fd497dacd4ea57128"
+    },
+    {
+      "path": "engineering_jobs.json",
+      "bytes": 1969,
+      "sha256": "ba12fdbd0826b85ab02234017e9fea6494ae266cb0c363d3e75ac6ed975f372c"
+    },
+    {
+      "path": "engineering_log.log",
+      "bytes": 88284,
+      "sha256": "d78246ebdfe35f9b050c7a173be20ec4e3f90186bf5856a04cfd2db8d61b9769"
+    },
+    {
+      "path": "cargo_log_error_3.json",
+      "bytes": 210,
+      "sha256": "94706eab5bc599a6309f59bd5b1923c166c13dc39ca3a08038dbaf0b15c51b01"
+    },
+    {
+      "path": "windows_log.log",
+      "bytes": 437395,
+      "sha256": "50639d3d7238d0832962645651136a44b2af008d36306b5045ce1fb94846e78b"
+    },
+    {
+      "path": "mac_log.log",
+      "bytes": 3717038,
+      "sha256": "b572acfc03eb7d769e9b7d4e30abb671da35054ef6469f8a46b4426ded9dbaff"
+    },
+    {
+      "path": "architecture_base_log.log",
+      "bytes": 26662,
+      "sha256": "9e9d9b8bf97acd70773437168a2e55f7dec50bbfd4b11f6ae743f7f3c7564d71"
+    }
+  ]
+}

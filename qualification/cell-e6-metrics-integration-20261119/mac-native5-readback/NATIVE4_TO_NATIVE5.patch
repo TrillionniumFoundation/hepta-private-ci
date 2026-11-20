@@ -1,0 +1,68 @@
+--- original-run_native4.py
++++ run_native5.py
+@@ -10,7 +10,7 @@
+ 
+ ROOT = Path('/Users/qianqi/work/hepta-joint-mac-fixtures-20261120-e9e051')
+ SOURCE = ROOT / 'source'
+-OUT = ROOT / 'fixture-native-4'
++OUT = ROOT / 'fixture-native-5'
+ HEAD = '238fc48402f786db3d7f2a80b0abad6c0e5322bb'
+ PAYLOAD_SHA = 'fe4fced4cf0b7ea6005ecdef212b19a9624c5be7d9179be282c9cd21a6120067'
+ 
+@@ -66,9 +66,22 @@
+ observed = json.loads(observed_raw)
+ assert observed['terminal_exit_code'] == -2 and not observed['known_owned_processes_remaining']
+ assert not observed['source_changed'] and not observed['original_wrapper_result_written']
+-known_ids = {80065, 80073, 80074, 80078, 80081}
++prior_native4_raw = (ROOT / 'fixture-native-4/RESULT.json').read_bytes()
++assert sha(prior_native4_raw) == 'dd55367752fc4bef8fbd6734f5a98dc586cc71044397b2c7c500dd6f041308c3'
++prior_native4 = json.loads(prior_native4_raw)
++assert prior_native4['exit_code'] == 1 and prior_native4['protected_unchanged'] and prior_native4['source_unchanged_during_native']
++assert prior_native4['stages'][0]['name'] == 'native-project' and prior_native4['stages'][0]['exit_code'] == 101
++seed_raw = (ROOT / 'dependency-crossterm-cache-seed-2/RESULT.json').read_bytes()
++assert sha(seed_raw) == '6fc8ef470a73caac73479c7e7eb8f7d40c2968f0aff50ad345ac468bd43ffc70'
++seed = json.loads(seed_raw)
++assert seed['status'] == 'EXACT_LOCAL_CACHE_REF_READY' and seed['fsck_exit_code'] == 0 and seed['source_unchanged']
++assert seed['prior_native4_result_sha256'] == sha(prior_native4_raw)
++assert seed['after_ref'] == '45fecb9508105988f42fe6ff0441783ed3717f92' and seed['tree'] == 'f43069917d73c60e5286f56fef318cb13febf204'
++actual_cached_ref = subprocess.check_output(['/usr/bin/git', '--git-dir=/Users/qianqi/.cargo/git/db/crossterm-ce0318b92aca4e8d', 'rev-parse', '--verify', 'refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'], text=True).strip()
++assert actual_cached_ref == seed['after_ref']
++known_ids = {80065, 80073, 80074, 80078, 80081, 91954, 91955, 91964, 91965, 91968, 91971}
+ processes = subprocess.check_output(['/bin/ps', '-axo', 'pid=,ppid=,pgid=,stat=,comm='], text=True)
+-assert not [line for line in processes.splitlines() if int(line.split(None, 1)[0]) in known_ids]
++assert not [line for line in processes.splitlines() if any(int(value) in known_ids for value in line.split(None, 3)[:2]) or int(line.split(None, 3)[2]) in {80065, 91955}]
+ protected = ['codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs',
+              'codex-rs/hepta-agentd/src/circuit_cell_tests.rs',
+              'codex-rs/Cargo.lock', '.github/blob-size-allowlist.txt']
+@@ -80,7 +93,9 @@
+           'prior_preflight_failure_sha256': sha((ROOT / 'fixture-native-1/RESULT.json').read_bytes()),
+           'prior_locked_offline_dependency_failure_sha256': sha((ROOT / 'fixture-native-2/RESULT.json').read_bytes()),
+           'prior_git_library_interruption_observation_sha256': sha(observed_raw),
+-          'dependency_acquisition': 'Same locked graph using supported CARGO_NET_GIT_FETCH_WITH_CLI=true after terminal Git-library dependency stall; no Cargo.lock/source change; unrelated to original E6 offline harness',
++          'prior_git_cli_dependency_failure_sha256': sha(prior_native4_raw),
++          'exact_local_cache_seed_result_sha256': sha(seed_raw),
++          'dependency_acquisition': 'Original native4 terminal; exact locked crossterm commit seeded once through local Git --update-shallow, with old partial files preserved; this native5 uses --locked --offline and no Cargo.lock/source change',
+           'inventory_scope': 'all tracked Git identities plus exact materialized bytes; inherited skip-worktree absent files explicitly listed, not claimed as read',
+           'protected_before': protected_before,
+           'files': [{k: v for k, v in row.items() if k != 'content'} for row in payload['files']]}
+@@ -90,6 +105,7 @@
+ env['CARGO_TARGET_DIR'] = str(ROOT / 'native-target')
+ env['CARGO_BUILD_JOBS'] = '2'
+ env['CARGO_NET_GIT_FETCH_WITH_CLI'] = 'true'
++env['CARGO_NET_OFFLINE'] = 'true'
+ env['GIT_TERMINAL_PROMPT'] = '0'
+ stages = []
+ 
+@@ -131,10 +147,11 @@
+     raw = (json.dumps(frozen, indent=2) + '\n').encode()
+     (OUT / 'SOURCE_INVENTORY.json').write_bytes(raw)
+     intent['source_inventory_sha256'] = sha(raw)
++    assert sha(raw) == prior_native4['source_inventory_sha256'], 'source differs from original terminal native4'
+     intent['unmaterialized_tracked_paths'] = sum(r['kind'] == 'unmaterialized_skip_worktree' for r in frozen)
+     intent['materialized_paths'] = len(frozen) - intent['unmaterialized_tracked_paths']
+     (OUT / 'INTENT.json').write_text(json.dumps(intent, indent=2) + '\n')
+-    run('native-project', ['/opt/homebrew/bin/just', 'test', '--locked', '-p', 'codex-hepta-agentd', '--lib', '--retries', '0', '--test-threads', '2', '--no-tests', 'fail', '--success-output', 'final', '--failure-output', 'final'])
++    run('native-project', ['/opt/homebrew/bin/just', 'test', '--locked', '--offline', '-p', 'codex-hepta-agentd', '--lib', '--retries', '0', '--test-threads', '2', '--no-tests', 'fail', '--success-output', 'final', '--failure-output', 'final'])
+ except Exception as exc:
+     error = repr(exc)
+     (OUT / 'error.txt').write_text(traceback.format_exc())

@@ -1,0 +1,212 @@
+{
+  "schema": "hepta-artifact-cold-use-patch-plan-v1",
+  "status": "PROPOSED_NOT_IMPLEMENTED_NOT_EXECUTED",
+  "not_a_token_only_patch": true,
+  "primitive_layer": [
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_cold_use_grant.rs",
+      "mode": "NEW",
+      "boundary": "Artifact cryptographic fact",
+      "proposed_change": "Canonical new transport and policy data; private authenticated fact; strict current head-role and installed-purpose verification",
+      "must_preserve": "No signing key, default signer, Root capability or generic CURRENT output",
+      "source_evidence": "new proposed module; no existing implementation claimed"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_cold_use_reader.rs",
+      "mode": "NEW",
+      "boundary": "Artifact original physical facts",
+      "proposed_change": "Closed original-config constructor and synchronous scoped actual history/receipt/payload/withdrawal read",
+      "must_preserve": "No public allow_expired, caller-selected historical time, mutable registry, generic current conversion or reusable borrowed capability",
+      "source_evidence": "new proposed module"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/cold_use_selection.rs",
+      "mode": "NEW",
+      "boundary": "independent selector",
+      "proposed_change": "New signature purpose and exact grant/D binding, private purpose-specific selected artifact",
+      "must_preserve": "V1 signing bytes/semantics unchanged; no conversion to generic selected/current types",
+      "source_evidence": "new proposed module"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "mode": "MODIFY_PRIVATE_ONLY",
+      "boundary": "head role/signature/policy",
+      "proposed_change": "Share exact private key/epoch/signature logic; add new-purpose verifier that requires independently installed original policy",
+      "must_preserve": "Current-head and writer-lease verifiers retain original domains and all time/revocation checks",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_read_view.rs",
+      "mode": "MODIFY_PRIVATE_ONLY",
+      "boundary": "historical chain facts",
+      "proposed_change": "Factor private complete chain/snapshot fact scan for historical use while retaining exact final generic current checks",
+      "must_preserve": "discover_current_head_unanchored still requires current signer and unexpired latest CURRENT",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs",
+      "mode": "MODIFY_PRIVATE_ONLY_IF_NEEDED",
+      "boundary": "file ownership and monotonic floor",
+      "proposed_change": "Reuse private original-directory, pending-transaction and monotonic-floor helpers without widening its public current reader",
+      "must_preserve": "Existing original current reader before/after reads, floor updates only on success, and fence behavior",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_withdrawal_frontier.rs",
+      "mode": "MODIFY_PRIVATE_ONLY_IF_NEEDED",
+      "boundary": "actual withdrawal",
+      "proposed_change": "Share only exact original frontier fact checks for new scoped reader",
+      "must_preserve": "No absence-of-revocation claim from a stale fixed trust snapshot; no frontier rollback",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+      "mode": "MODIFY_PRIVATE_ONLY_IF_NEEDED",
+      "boundary": "exact immutable loading",
+      "proposed_change": "Factor content/canonical-file algorithms only if the new selected wrapper needs them",
+      "must_preserve": "Old authorization-bearing PinnedCandidateSpec/RevalidatingCandidate cannot accept a new historical grant as current",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/lib.rs",
+      "mode": "MODIFY_NARROW_EXPORTS",
+      "boundary": "crate boundary",
+      "proposed_change": "Wire proposed modules and only required untrusted data/closed owner interfaces",
+      "must_preserve": "No public constructors for verified operations or cross-crate dependency on Agentd Root types",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    }
+  ],
+  "required_product_layer": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task_enrollment.rs",
+      "mode": "MODIFY_PURPOSE_SPECIFIC",
+      "boundary": "actual Root cold registration",
+      "proposed_change": "An explicit current-vs-cold-use typed input and closed joining of actual finalized C, D files, grant and selector",
+      "must_preserve": "Actual original C/history/retirement/consumer/target/genesis checks and current route are unchanged",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task_context.rs",
+      "mode": "MODIFY_PURPOSE_SPECIFIC",
+      "boundary": "Root operation lifetime",
+      "proposed_change": "Carry independently pinned policy and purpose identity into a new private scoped conjunction",
+      "must_preserve": "Existing session/process/clock/current-revocation/lease checks, non-Send borrow and original deadline",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task_grant.rs",
+      "mode": "MODIFY_PURPOSE_SPECIFIC",
+      "boundary": "actual FinalUse attempt",
+      "proposed_change": "Bind grant digest/nonce/D descriptor in actual profile and intent, while using the original Root signing authority and store",
+      "must_preserve": "No Artifact grant converted to SignedFinalUseGrant; preserve Attempted/Issued and original post-observation",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task_runtime.rs",
+      "mode": "MODIFY_PURPOSE_SPECIFIC",
+      "boundary": "actual operation runtime",
+      "proposed_change": "Reenter original cold-use checks before effects and after returned effects; purpose-specific durable consumption identity",
+      "must_preserve": "No callback borrow across await, no retry of uncertain dispatch, one original ObjectiveStart and FinalUse",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_cold_q24_artifacts.rs",
+      "mode": "MODIFY_EXPLICIT_BRANCH",
+      "boundary": "Artifact loading",
+      "proposed_change": "New readonly historical-use owner from original files/policy; current route keeps original owner service",
+      "must_preserve": "Do not open fresh generic Artifact writer to revive expired CURRENT; no writer authority from the new read branch",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_cold_next_q24.rs",
+      "mode": "MODIFY_EXPLICIT_BRANCH",
+      "boundary": "cold product assembly",
+      "proposed_change": "Use new selected and generation types only for exact authorized same-model D",
+      "must_preserve": "Whole-parent budget, original C unchanged, actual Root controls and original NoUpdate path",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs",
+      "mode": "MODIFY_CLOSED_VARIANT",
+      "boundary": "generation read authority",
+      "proposed_change": "Private RootColdUse variant constructed only from actual Root cold client; explicit scoped readback",
+      "must_preserve": "writer(), with_initial and old generic update/learning routes reject this variant",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+      "mode": "MODIFY_WITH_NEW_PRIVATE_TYPES",
+      "boundary": "selected model and observation",
+      "proposed_change": "New selected wrapper and domain-separated observation including all grant/policy/D fields",
+      "must_preserve": "No ordinary observation digest reuse, model identity truncation or public selected-type conversion",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_cold.rs",
+      "mode": "MODIFY_DEDICATED_ENTRY",
+      "boundary": "same-model cold prepare",
+      "proposed_change": "New entry accepts only exact typed cold-use operation and OwnerDrainedSameModel; common immutable algorithms may be private",
+      "must_preserve": "Actual predecessor lock/drain, complete model equality, empty target/genesis and original C physical state",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "mode": "MODIFY_TYPED_INTERNAL_CORE_OR_NEW_MODULE",
+      "boundary": "prepare/publish/recovery",
+      "proposed_change": "Purpose-specific prepared publication, original FinalUse/CAS and exact published-only recovery; shared mechanics private",
+      "must_preserve": "Old writer() requirements unchanged; no broad fallback or caller-provided completion/allow callback",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "mode": "MODIFY_PURPOSE_SPECIFIC",
+      "boundary": "live use and effect revalidation",
+      "proposed_change": "Dedicated constructor and live provenance that revalidates the exact new purpose at original effect boundaries",
+      "must_preserve": "Expired/revoked grants reject new effects; no learning-owner or generic writer downcast",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_runtime_support.rs",
+      "mode": "REVIEW_AND_MODIFY_ONLY_REQUIRED_TYPED_PLUMBING",
+      "boundary": "runtime/Feature handoff",
+      "proposed_change": "Carry purpose-specific owner/provenance through actual model/runtime setup without collapsing it into ordinary authorization",
+      "must_preserve": "Actual Feature ownership/guard checks and runtime/semantic/bundle distinction",
+      "source_evidence": "pinned in SOURCE_BINDINGS.json"
+    }
+  ],
+  "integration_surfaces_requiring_exact_review_before_implementation": [
+    {
+      "surface": "cold task profile serialization, registration digest and persistent nonce store",
+      "reason": "bind grant/nonce/D descriptor in original durable operation without changing identity on retry",
+      "status": "exact owned source must be added to the implementation inventory before edits; not falsely treated as already implemented"
+    },
+    {
+      "surface": "Root cold client readback and generation CURRENT publication provenance",
+      "reason": "cross-process input must remain data, with closed actual owner construction and live revalidation",
+      "status": "requires concrete new wire/type review; no arbitrary client callback"
+    },
+    {
+      "surface": "production Artifact authority policy enrollment, custody and revocation source",
+      "reason": "there is no current issuer service to attach a fixture key to",
+      "status": "production prerequisite; service path and custody adapter intentionally not invented"
+    }
+  ],
+  "unchanged_semantic_interfaces": [
+    "VerifiedCurrentRegistryViewV1 and generic expired CURRENT rejection",
+    "SignedArtifactSelectionV1 signing domain and all original checks",
+    "LearningArtifactOwnerService::open writer/current semantics",
+    "Artifact V2/V3 publication admission and old learning deadlines",
+    "Root FinalUse authority source and original old-process retirement proof",
+    "original NoUpdate retained CURRENT 600-second route"
+  ],
+  "planned_qa": [
+    "new component tests use explicit test head policy/key only and are labelled fixture evidence",
+    "real original-file/withdrawal/pending-transaction mutation controls",
+    "real signer/consumer witness fault and unknown-outcome recovery controls",
+    "type/source negative controls for all new closed constructors and before/after boundaries",
+    "CALLERS/protected additions preserve the entire final composed cold baseline, including same-path distinct protected constraints",
+    "whole-cold Adopt test remains a separate gate using the original deadlines and actual completed C/retirement/new D"
+  ],
+  "current_source_edits": 0,
+  "current_test_executions": 0
+}

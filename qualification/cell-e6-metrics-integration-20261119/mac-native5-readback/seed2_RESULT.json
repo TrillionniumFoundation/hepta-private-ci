@@ -1,0 +1,252 @@
+{
+  "after_ref": "45fecb9508105988f42fe6ff0441783ed3717f92",
+  "automatic_retries": 0,
+  "before_ref": null,
+  "cache": "/Users/qianqi/.cargo/git/db/crossterm-ce0318b92aca4e8d",
+  "cargo_invocations": 0,
+  "controller_sha256": "178d5161e4d9b6a90733db8a1cf0db0af6323aea1243c4e96309253cd8337c1b",
+  "expected_tree": "f43069917d73c60e5286f56fef318cb13febf204",
+  "fetch_attempts": 1,
+  "finished_at_utc": "2026-11-20T08:24:06.101991+00:00",
+  "fixture_lock_acquired": true,
+  "fsck_exit_code": 0,
+  "global_git_config_edits": 0,
+  "host": "mac",
+  "model_calls": 0,
+  "native_experiment_children": 0,
+  "network_fetches": 0,
+  "new_cache_files": [
+    "objects/pack/pack-2c721297fc4f9a5d6b570517e9f2d62a3d9afa93.idx",
+    "objects/pack/pack-2c721297fc4f9a5d6b570517e9f2d62a3d9afa93.pack",
+    "objects/pack/pack-2c721297fc4f9a5d6b570517e9f2d62a3d9afa93.rev",
+    "refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92",
+    "shallow"
+  ],
+  "old_partial_files": {
+    "objects/pack/tmp_pack_6mmzTG": {
+      "bytes": 12345343,
+      "sha256": "01ada5170df8a00a80be6c26dcd7ca9b450eafab035395840e6a10e6dc5349b1"
+    },
+    "objects/pack/tmp_pack_UglHd2": {
+      "bytes": 12410879,
+      "sha256": "9c0011931cdca33d6b94c3e70b1f81380633ac914d87c4d6ee71b731e0cc04b9"
+    },
+    "objects/pack/tmp_pack_deZ82t": {
+      "bytes": 12410879,
+      "sha256": "335341e1099346574a6359015f56cb0702f11eb3f81489b2215c1926ae61269b"
+    }
+  },
+  "old_partial_files_removed": 0,
+  "only_destination_ref": "refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92",
+  "original_cache_files_preserved_except_fetch_head_shallow_target_ref": true,
+  "original_partial_files_identical_after": true,
+  "owner_wall_seconds": 0.276757958,
+  "prior_native4_result_sha256": "dd55367752fc4bef8fbd6734f5a98dc586cc71044397b2c7c500dd6f041308c3",
+  "prior_zero_fetch_preflight_failure_sha256": "7683cec5f435efafac561bb3685fbdcae086fd9c49fc8d6847ee5a817684d144",
+  "requested_commit": "45fecb9508105988f42fe6ff0441783ed3717f92",
+  "schema": "hepta.mac-crossterm-exact-local-cache-seed.v1",
+  "shallow_result_sha256": "e2d5013e0ff4523588901edee73d34189838d59b40090a9b8079b7a46bd79328",
+  "source_bare": "/Users/qianqi/work/hepta-joint-mac-fixtures-20261120-e9e051/dependency-crossterm-shallow-1/objects.git",
+  "source_edits": 0,
+  "source_unchanged": true,
+  "started_at_utc": "2026-11-20T08:24:05.825247+00:00",
+  "status": "EXACT_LOCAL_CACHE_REF_READY",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-joint-mac-fixtures-20261120-e9e051/source",
+      "exit_code": 0,
+      "name": "source-head-0",
+      "pid": 88746,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "3537fa0b6bb1b2474434c4706f30a6ae23711e6293474a200da81ae81be2182f",
+      "timed_out": false,
+      "timeout_seconds": 5.0,
+      "wall_seconds": 0.016940041999999995
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--name-only"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-joint-mac-fixtures-20261120-e9e051/source",
+      "exit_code": 0,
+      "name": "source-diff-1",
+      "pid": 88747,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 136,
+      "stdout_sha256": "2d3dccb46fe5b72a66e1188417b09b380cf622117b741fb199bd5752045ed3c1",
+      "timed_out": false,
+      "timeout_seconds": 5.0,
+      "wall_seconds": 0.046304042
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "--verify",
+        "refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92"
+      ],
+      "cwd": "/Users/qianqi/.cargo/git/db/crossterm-ce0318b92aca4e8d",
+      "exit_code": 128,
+      "name": "ref-before",
+      "pid": 88748,
+      "stderr_bytes": 32,
+      "stderr_sha256": "9b3fab22fc89a33cf7f4e9d08072e43f29c2999ed2af63b6e8417b2ce9d534b4",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false,
+      "timeout_seconds": 5.0,
+      "wall_seconds": 0.011579457999999987
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "maintenance.auto=false",
+        "-c",
+        "gc.auto=0",
+        "fetch",
+        "--no-tags",
+        "--update-shallow",
+        "/Users/qianqi/work/hepta-joint-mac-fixtures-20261120-e9e051/dependency-crossterm-shallow-1/objects.git",
+        "45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92"
+      ],
+      "cwd": "/Users/qianqi/.cargo/git/db/crossterm-ce0318b92aca4e8d",
+      "exit_code": 0,
+      "name": "local-fetch",
+      "pid": 88749,
+      "stderr_bytes": 222,
+      "stderr_sha256": "fbb0ead9383fdb2917bfa923a898e05d443f02840b782a98ef730a06568be339",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false,
+      "timeout_seconds": 20.0,
+      "wall_seconds": 0.042764542000000016
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "--verify",
+        "refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92"
+      ],
+      "cwd": "/Users/qianqi/.cargo/git/db/crossterm-ce0318b92aca4e8d",
+      "exit_code": 0,
+      "name": "ref-after",
+      "pid": 88756,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "9d5ade6cbc530af359e2540ab5244fec97167c7bdffd07d999cc98984126fa31",
+      "timed_out": false,
+      "timeout_seconds": 5.0,
+      "wall_seconds": 0.011455041999999999
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "cat-file",
+        "commit",
+        "45fecb9508105988f42fe6ff0441783ed3717f92"
+      ],
+      "cwd": "/Users/qianqi/.cargo/git/db/crossterm-ce0318b92aca4e8d",
+      "exit_code": 0,
+      "name": "read-commit",
+      "pid": 88757,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 296,
+      "stdout_sha256": "0f892f25d5722854f0907ba77067b44dddb6f3cee92e04035e9f20b322b33dda",
+      "timed_out": false,
+      "timeout_seconds": 5.0,
+      "wall_seconds": 0.011399416999999995
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "cat-file",
+        "tree",
+        "f43069917d73c60e5286f56fef318cb13febf204"
+      ],
+      "cwd": "/Users/qianqi/.cargo/git/db/crossterm-ce0318b92aca4e8d",
+      "exit_code": 0,
+      "name": "read-root-tree",
+      "pid": 88760,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 357,
+      "stdout_sha256": "585e43dc8fc813e3efad84d04def5b5aa4280ff700bb4c490fe5eb7cd742ab57",
+      "timed_out": false,
+      "timeout_seconds": 5.0,
+      "wall_seconds": 0.011446833000000017
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "fsck",
+        "--full",
+        "--strict",
+        "--no-reflogs",
+        "45fecb9508105988f42fe6ff0441783ed3717f92"
+      ],
+      "cwd": "/Users/qianqi/.cargo/git/db/crossterm-ce0318b92aca4e8d",
+      "exit_code": 0,
+      "name": "fsck",
+      "pid": 88765,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false,
+      "timeout_seconds": 5.0,
+      "wall_seconds": 0.023486667000000017
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-joint-mac-fixtures-20261120-e9e051/source",
+      "exit_code": 0,
+      "name": "source-head-8",
+      "pid": 88770,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "3537fa0b6bb1b2474434c4706f30a6ae23711e6293474a200da81ae81be2182f",
+      "timed_out": false,
+      "timeout_seconds": 5.0,
+      "wall_seconds": 0.011745999999999979
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--name-only"
+      ],
+      "cwd": "/Users/qianqi/work/hepta-joint-mac-fixtures-20261120-e9e051/source",
+      "exit_code": 0,
+      "name": "source-diff-9",
+      "pid": 88771,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 136,
+      "stdout_sha256": "2d3dccb46fe5b72a66e1188417b09b380cf622117b741fb199bd5752045ed3c1",
+      "timed_out": false,
+      "timeout_seconds": 5.0,
+      "wall_seconds": 0.022194500000000006
+    }
+  ],
+  "training_updates": 0,
+  "tree": "f43069917d73c60e5286f56fef318cb13febf204"
+}

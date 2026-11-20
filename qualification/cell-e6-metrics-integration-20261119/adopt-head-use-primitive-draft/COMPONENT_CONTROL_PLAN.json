@@ -1,0 +1,186 @@
+{
+  "schema": "hepta.cold-use.primitive-component-plan.v1",
+  "status": "PLANNED_NOT_EXECUTED",
+  "source_draft": "DRAFT_INVENTORY.json",
+  "controls": [
+    {
+      "id": "P01",
+      "stage": "stage1",
+      "scenario": "full canonical round trip with explicitly marked component data",
+      "required_assertion": "signing/record bytes and 68-field object roundtrip; no fixture policy authority claim",
+      "broader_design_controls": [
+        "CU-08"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P02",
+      "stage": "stage1",
+      "scenario": "each of 68 signing fields and optional predecessor forms",
+      "required_assertion": "derive real Ed25519 fixture signature, mutate each canonical field, and directly verify the changed canonical preimage with unchanged signature; record Signature failure separately from earlier policy/shape rejection",
+      "broader_design_controls": [
+        "CU-03"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P03",
+      "stage": "stage1",
+      "scenario": "shape refusals",
+      "required_assertion": "wrong schema, mode, consumer tag, non-Model artifact, zero required bindings, zero nonce, invalid generation/size, inconsistent bundle/artifact-set and impossible time interval",
+      "broader_design_controls": [
+        "CU-05",
+        "CU-08",
+        "CU-15"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P04",
+      "stage": "stage1",
+      "scenario": "policy/subject cycle separation",
+      "required_assertion": "subject hash changes with each body field; policy/nonce/grant-ID/issuer/time remain outside that subject but inside the complete signed grant; no self-reference; subject derivation succeeds before policy digest/header issuance is constructed, while full signing bytes still reject an incomplete header",
+      "broader_design_controls": [
+        "CU-03",
+        "CU-24"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P05",
+      "stage": "stage2",
+      "scenario": "actual bounded decoder inputs",
+      "required_assertion": "every truncation point, oversize input, huge ID length before allocation, invalid UTF-8/StableId grammar, unsupported Option tags and trailing bytes reject",
+      "broader_design_controls": [
+        "CU-08"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P06",
+      "stage": "stage2",
+      "scenario": "domain and canonical bytes",
+      "required_assertion": "CURRENT/writer/Selector prefixes, unsupported version and altered framing reject; re-encoding exactly equals accepted input",
+      "broader_design_controls": [
+        "CU-03",
+        "CU-08"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P07",
+      "stage": "stage3",
+      "scenario": "default Disabled with otherwise valid fixture material",
+      "required_assertion": "exact Disabled error; no callable enrollment constructor or production switch is introduced",
+      "broader_design_controls": [
+        "CU-02",
+        "CU-30"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P08",
+      "stage": "stage3",
+      "scenario": "explicit relative fixture policy and valid head signature",
+      "required_assertion": "a private DENY_ALL fact only; this positive control must not create a reader, writer, Root receipt, D, FinalUse or publication",
+      "broader_design_controls": [
+        "CU-01",
+        "CU-02"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P09",
+      "stage": "stage3",
+      "scenario": "actual separate fixture signing roles",
+      "required_assertion": "writer-only/selector-only/Root-only signatures reject even if valid under those keys; fixture original head role is independently set",
+      "broader_design_controls": [
+        "CU-01",
+        "CU-18"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P10",
+      "stage": "stage3",
+      "scenario": "policy ID/digest/generation/subject/trust drift",
+      "required_assertion": "mutate or coherently replace supplied data to reach the intended gate and record exact Policy versus Signature failure, without pretending actual policy installation was tested",
+      "broader_design_controls": [
+        "CU-02",
+        "CU-06",
+        "CU-07"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P11",
+      "stage": "stage3",
+      "scenario": "actual current signer epoch/time/revocation checks",
+      "required_assertion": "reuse original signer validation with wrong role/key/epoch, expired or revoked head key and grant extending beyond signer lifetime",
+      "broader_design_controls": [
+        "CU-04",
+        "CU-05"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P12",
+      "stage": "stage3",
+      "scenario": "exact full expected-object mismatch",
+      "required_assertion": "nonce/operation/recipient/generation/actual-request binding mismatch rejects before producing a relative fact; this alone is not physical-owner proof",
+      "broader_design_controls": [
+        "CU-22",
+        "CU-23",
+        "CU-24",
+        "CU-25"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P13",
+      "stage": "stage3",
+      "scenario": "relative time limits",
+      "required_assertion": "issued/not-before/expiry, monotonic time floor, policy maximum lifetime, request expiry and supplied original-use deadline; no fake clock/custody claim",
+      "broader_design_controls": [
+        "CU-05",
+        "CU-06",
+        "CU-32"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P14",
+      "stage": "stage3",
+      "scenario": "strict signature mutation after coherent preceding inputs",
+      "required_assertion": "reach original verify_strict with a wrong signature; verify Signature error specifically rather than treating earlier Binding/Policy error as signature coverage",
+      "broader_design_controls": [
+        "CU-03"
+      ],
+      "executed": false
+    },
+    {
+      "id": "P15",
+      "stage": "stage3",
+      "scenario": "private relative result type controls",
+      "required_assertion": "no Clone/Deserialize/Send/Sync or conversion to current/writer/Root types; lifetime does not survive borrowed verifier; full Root HRTB/cross-await checks are deferred because no Root operation is implemented",
+      "broader_design_controls": [
+        "CU-29",
+        "CU-30"
+      ],
+      "executed": false
+    }
+  ],
+  "all_product_physical_controls_deferred": true,
+  "deferred_boundaries": [
+    "actual installed production policy and current revocation source",
+    "head custody and persistent signing outcomes",
+    "real historical head/registry/payload/withdrawal reads",
+    "actual completed C, process retirement and new D scope",
+    "persistent nonce/Root FinalUse/CAS/recovery/live effects",
+    "full source gates and whole-cold parent"
+  ],
+  "compile": 0,
+  "native": 0,
+  "model": 0,
+  "signatures_issued": 0
+}

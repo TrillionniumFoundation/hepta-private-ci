@@ -6,6 +6,13 @@ use super::*;
 use std::fs;
 use std::os::unix::fs::symlink;
 
+// Select the real fixture parent before creation; product NOFOLLOW checks
+// and deliberate leaf/ancestor aliases below remain unchanged.
+fn material_tempdir() -> tempfile::TempDir {
+    let parent = fs::canonicalize(std::env::temp_dir()).unwrap();
+    tempfile::tempdir_in(parent).unwrap()
+}
+
 fn tensor_file(header: &Value, payload: &[u8]) -> anyhow::Result<Vec<u8>> {
     let header = canonical(header)?;
     let mut bytes = (header.len() as u64).to_le_bytes().to_vec();
@@ -63,7 +70,7 @@ fn research_material_tensors_reject_overlap_holes_trailing_and_nonfinite() -> an
 
 #[test]
 fn research_material_reads_reject_leaf_ancestor_and_hardlink_aliases() {
-    let temp = tempfile::tempdir().unwrap();
+    let temp = material_tempdir();
     let actual = temp.path().join("actual");
     fs::create_dir(&actual).unwrap();
     fs::write(actual.join("file"), b"retained").unwrap();
@@ -80,7 +87,7 @@ fn research_material_reads_reject_leaf_ancestor_and_hardlink_aliases() {
 
 #[test]
 fn research_material_size_reference_and_mutation_checks_use_actual_bytes() {
-    let temp = tempfile::tempdir().unwrap();
+    let temp = material_tempdir();
     let path = temp.path().join("input");
     fs::write(&path, b"before").unwrap();
     let reference =
@@ -97,7 +104,7 @@ fn research_material_size_reference_and_mutation_checks_use_actual_bytes() {
 
 #[test]
 fn research_owner_publication_is_create_only_and_detects_directory_replacement() {
-    let temp = tempfile::tempdir().unwrap();
+    let temp = material_tempdir();
     let path = temp.path().join("owner");
     let owner = Directory::create(path.clone()).unwrap();
     owner.publish("receipt.json", b"original").unwrap();
@@ -111,7 +118,7 @@ fn research_owner_publication_is_create_only_and_detects_directory_replacement()
 
 #[test]
 fn research_owner_concurrent_handles_cas_has_exactly_one_retained_winner() {
-    let temp = tempfile::tempdir().unwrap();
+    let temp = material_tempdir();
     let path = temp.path().join("owner");
     let first = Directory::create(path.clone()).unwrap();
     let second = Directory::create(path).unwrap();
@@ -142,7 +149,7 @@ fn research_owner_concurrent_handles_cas_has_exactly_one_retained_winner() {
 
 #[test]
 fn research_owner_partial_entries_are_observable_and_never_replaced() {
-    let temp = tempfile::tempdir().unwrap();
+    let temp = material_tempdir();
     let owner = Directory::create(temp.path().join("owner")).unwrap();
     owner.publish("reservation.json", b"reserved").unwrap();
     fs::write(temp.path().join("owner/receipt.json"), b"{").unwrap();
@@ -154,7 +161,7 @@ fn research_owner_partial_entries_are_observable_and_never_replaced() {
 
 #[test]
 fn research_owner_initial_freeze_rejects_existing_training_or_evaluation() {
-    let temp = tempfile::tempdir().unwrap();
+    let temp = material_tempdir();
     assert!(require_unstarted(temp.path()).is_ok());
     for name in [
         "training-start.json",

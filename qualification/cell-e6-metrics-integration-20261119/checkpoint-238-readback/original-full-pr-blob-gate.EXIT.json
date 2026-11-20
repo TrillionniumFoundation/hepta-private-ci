@@ -1,0 +1,22 @@
+{
+  "name": "original-full-pr-blob-gate",
+  "argv": [
+    "/usr/bin/python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+    "--head",
+    "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+    "--max-bytes",
+    "512000",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 118.31996956001967,
+  "stdout_bytes": 3721,
+  "stdout_sha256": "3b7670ac037cd0a1403377b660aeba467cb09392cc923d34ee4efa529ecb0bb4",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

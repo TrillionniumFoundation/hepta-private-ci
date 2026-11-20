@@ -1,0 +1,11 @@
+{
+  "schema": "hepta.mac.dependency-diagnostic-limit.v1",
+  "prior_native3": "dpty-58f242f14783e8b6e05b16065fdfcadd7230a4f6f5f1e0deca30f2b6287caa16",
+  "prior_observation_limit": "The old attempt had no new Rust/test or stderr progress for about fourteen minutes. Its actual network transfer or pack-byte progress was not measured before the one PTY Ctrl-C. A claim of proven zero network progress or deadlock is not supported.",
+  "old_records_preserved": true,
+  "native4_observation": "2026-11-20T07:35:34Z",
+  "native4_network_progress": "Git CLI fetched the pinned tungstenite commit and is receiving crossterm pack bytes. tmp_pack_6mmzTG is 7790591 bytes and was modified about four seconds before observation; current dependency acquisition is active.",
+  "native4_result_pending": true,
+  "native_test_success_claimed": false,
+  "another_dependency_retry_owner_started": false
+}
