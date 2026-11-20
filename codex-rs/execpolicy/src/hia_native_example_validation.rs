@@ -41,9 +41,9 @@ struct Transition {
 }
 
 fn step(mode: u64, total: usize, index: usize, misses: usize, hit: bool) -> Transition {
-    let total_word = u64::try_from(total).expect("example-validation count exceeds u64");
-    let index_word = u64::try_from(index).expect("example-validation index exceeds u64");
-    let misses_word = u64::try_from(misses).expect("example-validation misses exceed u64");
+    let total_word = u64::try_from(total).unwrap_or_else(|_| panic!("example-validation count exceeds u64"));
+    let index_word = u64::try_from(index).unwrap_or_else(|_| panic!("example-validation index exceeds u64"));
+    let misses_word = u64::try_from(misses).unwrap_or_else(|_| panic!("example-validation misses exceed u64"));
     let mut source = [0u8; INPUT_BYTES];
     for (i, word) in [1u64, mode, total_word, index_word, misses_word, if hit { 1 } else { 0 }]
         .into_iter()
@@ -72,12 +72,12 @@ fn step(mode: u64, total: usize, index: usize, misses: usize, hit: bool) -> Tran
         u64::from_le_bytes(
             output[offset..offset + 8]
                 .try_into()
-                .expect("example-validation response word width"),
+                .unwrap_or_else(|_| panic!("example-validation response word width")),
         )
     };
     let event = word(0);
-    let next = usize::try_from(word(8)).expect("example-validation next index overflow");
-    let new_misses = usize::try_from(word(16)).expect("example-validation misses overflow");
+    let next = usize::try_from(word(8)).unwrap_or_else(|_| panic!("example-validation next index overflow"));
+    let new_misses = usize::try_from(word(16)).unwrap_or_else(|_| panic!("example-validation misses overflow"));
     assert_eq!(word(24), 0, "HIA example-validation reserved response is nonzero");
     assert!(new_misses <= total && next <= total, "HIA response exceeded example bounds");
     if total == 0 {
@@ -91,7 +91,7 @@ fn step(mode: u64, total: usize, index: usize, misses: usize, hit: bool) -> Tran
             "HIA negative-match response violates the stop contract"
         );
     } else {
-        let successor = index.checked_add(1).expect("example-validation index overflow");
+        let successor = index.checked_add(1).unwrap_or_else(|| panic!("example-validation index overflow"));
         assert_eq!(next, successor, "HIA continuation did not advance one example");
         assert!(
             matches!(event, DONE | NEXT | MISSING | LAST_MISSING | POSITIVE_FINISHED_WITH_MISSES),
