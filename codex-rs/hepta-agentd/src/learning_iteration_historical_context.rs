@@ -17,6 +17,7 @@ pub(crate) struct OriginalHistoricalStageContextV1 {
     checkpoint: Arc<OriginalRootQ24CheckpointV1>,
     source: Arc<historical_source::RegisteredHistoricalLearningSourceV1>,
     verifier: LearningEvidenceVerifierV1,
+    successor: Option<Arc<crate::circuit_q24_successor::SuccessorSlot>>,
 }
 
 impl OriginalHistoricalStageContextV1 {
@@ -63,6 +64,7 @@ impl OriginalHistoricalStageContextV1 {
             checkpoint: Arc::clone(checkpoint),
             source: Arc::clone(source),
             verifier: bootstrap.verifier.clone(),
+            successor: bootstrap.successor.as_ref().map(Arc::clone),
         }))
     }
 
@@ -104,6 +106,39 @@ impl OriginalHistoricalStageContextV1 {
         Ok(())
     }
 
+    /// Both the deferred post-wait admission and the Ready path's admissions
+    /// belong to the real Stage operation. This takes the aggregate's actual
+    /// registered Weak, not a caller-provided substitute slot or cached read.
+    pub(crate) fn require_successor_stage_in_operation(
+        &self,
+        read: &OriginalPreparedReadV1<'_>,
+        registered: Option<&std::sync::Weak<crate::circuit_q24_successor::SuccessorSlot>>,
+        snapshot: &LearningIterationSnapshotV1,
+    ) -> Result<(), LearningIterationRuntimeErrorV1> {
+        let (slot, registered) = match (&self.successor, registered) {
+            (None, None) => return Ok(()),
+            (Some(slot), Some(registered)) => (slot, registered),
+            _ => return Err(LearningIterationRuntimeErrorV1::WrongScope),
+        };
+        self.require_in_operation(read, OriginalHistoricalStageAdmissionV1::NewWork)?;
+        let registered = registered
+            .upgrade()
+            .ok_or(LearningIterationRuntimeErrorV1::Unavailable)?;
+        if !Arc::ptr_eq(slot, &registered) {
+            return Err(LearningIterationRuntimeErrorV1::WrongScope);
+        }
+        let prepared = self.original.prepared();
+        if snapshot.request != prepared.initial().request
+            || snapshot.owners != prepared.initial().owners
+        {
+            return Err(LearningIterationRuntimeErrorV1::WrongScope);
+        }
+        prepared
+            .scope()
+            .validate_request(&snapshot.request, &snapshot.owners)?;
+        slot.require_original_generation_ready(snapshot)
+    }
+
     pub(crate) fn current_time(&self) -> Result<u64, LearningIterationRuntimeErrorV1> {
         require_ready(&self.state)?;
         if !self
@@ -134,4 +169,17 @@ impl OriginalHistoricalStageContextV1 {
     ) -> Result<Digest32, LearningIterationRuntimeErrorV1> {
         OriginalRootQ24CheckpointV1::checkpoint_original(&self.checkpoint, previous, snapshot).await
     }
+}
+
+// Scheduling classification only. No observation or owner capability is
+// created by this predicate; the actual Stage operation supplies its guards.
+pub(crate) fn original_stage_needs_successor(
+    snapshot: &LearningIterationSnapshotV1,
+    stage: LearningIterationStageV1,
+) -> bool {
+    stage == LearningIterationStageV1::NextUse
+        || (stage == LearningIterationStageV1::Selection
+            && !snapshot.receipts.last().is_some_and(|receipt| {
+                receipt.observation.stage() == LearningIterationStageV1::Proposal
+            }))
 }

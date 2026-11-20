@@ -41,6 +41,10 @@ mod history;
 #[path = "circuit_task_source_data_tests.rs"]
 pub(crate) mod data;
 
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_source_ack_fixture_tests.rs"]
+pub(crate) mod ack_fixture;
+
 fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
     Ok(OpenOptions::new()
         .read(true)

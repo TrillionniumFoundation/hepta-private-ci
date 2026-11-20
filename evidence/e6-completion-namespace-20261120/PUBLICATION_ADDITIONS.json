@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.e6.publication-additions.v1",
+  "prior_origin_manifest": "FILE_ORIGINS.json",
+  "files": [
+    {
+      "path": "verification/PUBLICATION_ARCHIVES_REASSEMBLED.json",
+      "source_path": "/workspace/scratch/e9e051ab0825/e6_archive_readback_1/publication-reassembled-1/RESULT.json",
+      "bytes": 536,
+      "sha256": "d6a2a952d6be8a3bb990612f257704e74e9677540ae268956758b4d0e0ed47d7",
+      "kind": "exact_byte_copy"
+    },
+    {
+      "path": "verification/PUBLICATION_FINALIZE_FAILURE_1.json",
+      "source_path": "/workspace/scratch/e9e051ab0825/e6_archive_readback_1/PUBLICATION_FINALIZE_FAILURE_1.json",
+      "bytes": 696,
+      "sha256": "33f9e63c9b1b9b9ff2315c97f7beeae19d56600059ff7ba0e7e5b869ceb5dfa9",
+      "kind": "exact_byte_copy"
+    },
+    {
+      "path": "verification/tools/finalize_publication_v2.py",
+      "source_path": "/workspace/scratch/e9e051ab0825/e6_archive_readback_1/finalize_publication_v2.py",
+      "bytes": 4628,
+      "sha256": "34e5cdf9ae259d45b1f1349f05b9c234bbe643c394531aa091b78901c7be28bf",
+      "kind": "exact_byte_copy"
+    },
+    {
+      "path": "verification/PUBLICATION_BYTE_READBACK.json",
+      "bytes": 32327,
+      "sha256": "ba05bb557e80fb2760122453c5c0520ea00c0f5b3d5ddc35b44cc6ecedbc7738",
+      "kind": "actual_local_publication_readback_before_self_record"
+    }
+  ]
+}

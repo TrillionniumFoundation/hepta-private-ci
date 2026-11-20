@@ -1,0 +1,24 @@
+{
+  "source_parent": "527e62b68bdf704efdd8a521c5a95c664bf69172",
+  "status": "CLOUD_ONLY_UNFORMATTED_UNCOMPILED",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_namespace_tests.rs",
+      "before_sha256": "93ef3c64bde0da9a55489f03a0713bfe89a19a51330ccc5c8820c5f344b20286",
+      "bytes": 7883,
+      "sha256": "29e6ede0a3b43270f1287cd20270852e4d70958db73e6b7fab3b0f19831eb778",
+      "git_blob_oid": "8e7eeb30a5a76ca25b1a1e784a66f721c3f44fd6"
+    }
+  ],
+  "scope": "One existing cfg(test) Root namespace fixture only; product and source policies unchanged.",
+  "native_case_count_changed": false,
+  "prior_failed_component_xml_sha256": "dd588de6932eb4dc41ba6a84c09afb06a9beb2f4eb8dfd585891e73bf98a6e6e",
+  "existing_missing_and_full_target_guards_preserved": true,
+  "new_explicit_checks": [
+    "run_id-only change retains stable slot but full binding comparison rejects it",
+    "cell_id change selects a different slot and remains strict NotFound"
+  ],
+  "track_caller_only_improves_failure_location": true,
+  "host_mutation": false,
+  "format_compile_native_runs": 0
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "hepta-e6-completion-namespace-actual-evidence-v1",
+  "source": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+  "tree": "d07a8a95a2f0921387446063a1a51661cbd62df7",
+  "prior_source": "527e62b68bdf704efdd8a521c5a95c664bf69172",
+  "qualification_scope": "Both source preparations passed their own compile, lint, 467/53 QA, 908 protected rows, 432 targeted boundaries, 1164 full caller checks and original 7/512000 blob gates. Native qualifications are separate below. No ordinary completed learning acceptance, Adopt, fresh cold D or complete FinalUse qualification is granted.",
+  "actual_527e": {
+    "ordinary_components_passed": 47,
+    "original_root_bounds_passed": 1,
+    "new_root_namespace_failed": 1,
+    "root_lane_mechanism_runs": 0,
+    "ordinary_noupdate_parent_runs": 0,
+    "pipeline_result_sha256": "a2c904e349d24674b33b90b39473214b2372b478ff06b94dd74d50bf9ac5c320",
+    "wrapper_result_sha256": "bda9c9b79a193fa65f5cffb56399d0fb1f7437702a77eaa14087419dbba50ade",
+    "pipeline_wall_seconds": 235.11796417133883,
+    "wrapper_wall_seconds": 78.18875660467893,
+    "first_failure": "New namespace fixture changed run_id, which is deliberately excluded from stable scope; observed the correct existing Ready record instead of NotFound. This failed fixture is retained unchanged."
+  },
+  "actual_9df": {
+    "ordinary_components_passed": 47,
+    "original_root_bounds_passed": 1,
+    "new_root_namespace_passed": 1,
+    "root_lane_mechanism_passed": 1,
+    "ordinary_noupdate_parent_runs": 1,
+    "ordinary_noupdate_parent_passed": 0,
+    "pipeline_result_sha256": "32c18112c50dace10230484eb49194290b89dbaaab013c1778ba75b53bed60a0",
+    "wrapper_result_sha256": "69432bd4a092f2cf9b6060fef652fd615df8400f11fe952a98773c292975ef95",
+    "pipeline_wall_seconds": 217.85764268506318,
+    "wrapper_wall_seconds": 76.29479756113142,
+    "parent_command_seconds": 9.565989363007247,
+    "parent_junit_seconds": 8.848,
+    "first_failure": "Parent reported Root lane.observation/cli.serve Unavailable at root.wait_success after completed A/observer and requested daemon shutdown; Root error timestamp/cause unresolved."
+  },
+  "classification": {
+    "ordinary_components": "Original34 + separately counted Ready2 + completed DATA11. DATA API/codec cases do not prove authenticated Root6 acceptance.",
+    "root_lane_mechanism": "Mechanism-level actual Root socket concurrency control, not whole Feature ACK or the original parent.",
+    "physical": "94 exact non-key copies; complete 66-item Root plus three-child-logs inventory and 149-item runtime metadata inventory; three excluded private keys metadata only. Presence/bytes are evidence, not a new authorization or terminal acceptance."
+  },
+  "source_or_original_journal_mutated": false,
+  "archive_native_or_model_runs": 0,
+  "automatic_retry": false,
+  "cold_or_adopt_runs": 0,
+  "original_historical_limit": 64,
+  "original_budget_or_assertions_changed": false
+}

@@ -182,6 +182,75 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         }))
     }
 
+    pub(crate) fn from_original_owners_in_operation(
+        prepared: Arc<CellQ24PreparedLearningV1>,
+        sources: crate::OriginalCellQ24SourceInputsV1,
+        verifier: LearningEvidenceVerifierV1,
+        files: OriginalCellQ24TrainingInputsV1,
+        local: OriginalCellQ24LocalDecisionOwnerV1<FileAnchorWitnessStore>,
+        mut factory: AgentdRootQ24ModelFactoryV1,
+        mode: OriginalCellQ24LearningOpenV1,
+        runtime: &Handle,
+        read: &crate::cell_composed_q24::OriginalPreparedReadV1<'_>,
+    ) -> Result<Arc<Self>, Error> {
+        crate::cell_composed_q24::OriginalPreparedReadV1::require_prepared(read, &prepared)
+            .map_err(unavailable)?;
+        factory
+            .require_learning_scope(prepared.initial(), prepared.scope())
+            .map_err(unavailable)?;
+        factory
+            .require_local_policy(local.policy_digest())
+            .map_err(unavailable)?;
+        runtime
+            .block_on(factory.require_current())
+            .map_err(unavailable)?;
+        local
+            .require_context(prepared.initial(), prepared.scope())
+            .map_err(unavailable)?;
+        let original_verifier = verifier.clone();
+        let opened = initialization::initialize_original_owners_in_operation(
+            Arc::clone(&prepared),
+            sources,
+            verifier,
+            files,
+            mode,
+            read,
+        );
+        // Recheck the original factory even when initialization failed. The
+        // enclosing synchronous assembly still owns its original source borrow.
+        runtime
+            .block_on(factory.require_current())
+            .map_err(unavailable)?;
+        let initialization::OriginalInitialOwnersV1 {
+            experience,
+            dataset,
+            dataset_cut,
+            training,
+        } = opened?;
+        crate::cell_composed_q24::OriginalPreparedReadV1::require_prepared(read, &prepared)
+            .map_err(unavailable)?;
+        Ok(Arc::new(Self {
+            inner: Arc::new(Q24StageState {
+                prepared,
+                verifier: original_verifier,
+                dataset_cut,
+                training: Arc::new(training),
+                owners: Arc::new(Mutex::new(Q24StageOwners {
+                    experience,
+                    dataset,
+                    factory,
+                    local,
+                    evaluation: None,
+                    root_evaluation: None,
+                    generation: None,
+                })),
+                lane: Arc::new(Semaphore::new(/*permits*/ 1)),
+                cancelled: Arc::new(AtomicBool::new(/*val*/ false)),
+                successor: std::sync::OnceLock::new(),
+            }),
+        }))
+    }
+
     pub(crate) fn prepared(&self) -> &CellQ24PreparedLearningV1 {
         &self.inner.prepared
     }
@@ -295,6 +364,16 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 },
             )
             .await
+    }
+
+    pub(crate) async fn install_original_feature_generation(
+        &self,
+        snapshot: LearningIterationSnapshotV1,
+        original: crate::OriginalCircuitFeatureLearningHandoffV1,
+    ) -> Result<(), Error> {
+        self.install_original_feature_generation_in_operation(snapshot.clone(), original)
+            .await?;
+        self.notify_original_successor_generation(&snapshot)
     }
 
     /// The pair retains the published actor and exact ordinary successor intent.

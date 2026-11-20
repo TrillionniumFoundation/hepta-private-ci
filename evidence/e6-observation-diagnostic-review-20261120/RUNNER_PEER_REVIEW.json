@@ -1,0 +1,128 @@
+{
+  "findings": [
+    {
+      "actual_old_results": "Six original9df groups, 47 cases,18 retained XML/stderr/stdout members match original result hashes. All case names unique; no retry/rerun/flaky XML elements or RETRY/FLAKY/TRY n stderr markers. Full original stderr summaries report original case counts passed. No old test was repeated by this review.",
+      "description": "Six independent component groups had no explicit CLI retries setting despite metadata automatic_retry=false. Exact repo local profile inherits default retries=1. External inherited environment was not fully recorded, so this does not prove historical effective retry allowance or an actual rerun.",
+      "id": "R1",
+      "resolution": "Only the six future component argv explicitly add --retries 0 and their drivers require exactly one pair with value0, rejecting --retries= spellings. Existing Root harness already appends --retries0 and is unchanged. Framing18 already had explicit0.",
+      "status": "RESOLVED_FOR_NEW_TEMPLATES_BY_V2; HISTORICAL_FACTS_UNCHANGED"
+    }
+  ],
+  "manifest_v1": {
+    "bytes": 5226,
+    "git_blob": "87018840b89a9b2836af2cfa11fb00ddbee5d6d7",
+    "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/initial_observation_diagnostic_candidate/rev1/runners-final/MANIFEST.json",
+    "sha256": "d2d2ef0a2cf6a8f05150cbaf7cd5ee1693033f1676318597ecde87e69c8c5f1e"
+  },
+  "manifest_v2": {
+    "bytes": 7677,
+    "git_blob": "9a3ce3980ea950744601c5913f2b2810c9c6f184",
+    "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/initial_observation_diagnostic_candidate/rev1/runners-final-v2/MANIFEST.json",
+    "sha256": "c4ae7089db71a09bbe1d9fd6c2b48c1aa536c6606366473a644b38a0095c0c63"
+  },
+  "original47_readback": {
+    "bytes": 27928,
+    "git_blob": "037d4a3dc2b034ed3189072c889522f74c1ba101",
+    "path": "/workspace/scratch/e9e051ab0825/e6_initial_observation_runner_review_1/ORIGINAL47_RETRY_READBACK.json",
+    "sha256": "b744be23c3bd5362bfa70a4b8861e35a3117af3b18e76327c07a7d0eb6c7fa4f"
+  },
+  "pending": [
+    "Actual diagnostic post-format bytes, compile/lint terminal result, full source gate and immutable source/tree/inventory freeze are not bound in these templates yet.",
+    "Future deployment must pin v2 actual eleven runner bytes and protocol manifests; no stale d2d2 driver hash can be substituted.",
+    "Run no original native or parent until that exact source and preconditions are bound and the single owner is authorized.",
+    "Root separately reviews sourcegate/freeze and compile deployment; this peer does not replace those reviews."
+  ],
+  "review_execution": {
+    "AST_parse_only": true,
+    "Git_mutations": 0,
+    "host_calls": 0,
+    "model_calls": 0,
+    "native": 0,
+    "test_or_gate_execution": 0,
+    "training": 0
+  },
+  "review_scope": [
+    "Full 253-line new framing18 executor (19945957b756026362925ef9f071a6614a4db4c44368cc57a76dbab36241a8b9).",
+    "Complete pipeline and whole-parent diffs from retained namespace fixture runners; new pipeline preflight/stage/deployment/protocol paths and parent binary/helper boundary readback.",
+    "Full retry-policy v1-to-v2 delta; all eleven frozen files individually length/SHA verified and parsed without import.",
+    "Exact original 9df nextest config/just/wrapper and fixed original harness; actual original47 tar XML/stderr/stdout read-only review."
+  ],
+  "schema": "hepta.e6.observation-diagnostic-runner-independent-review.v1",
+  "status": "STATIC_REVIEW_NO_ADDITIONAL_BLOCKER; ACTUAL_FREEZE_AND_NATIVE_BINDING_PENDING",
+  "verified": {
+    "failure_boundary": "Any failed stage/result gate stops the next stage. Within each nextest invocation the unchanged original just wrapper still uses --no-fail-fast; this is not a claim that the first failing case cancels all remaining cases in that group.",
+    "framing_command": {
+      "build_jobs": 2,
+      "crate": "codex-hepta-contracts",
+      "locked": true,
+      "offline": true,
+      "retries": 0,
+      "selector": "Eighteen test(=fully_qualified_name) OR entries",
+      "test_threads": 1,
+      "timeout_seconds": 1800,
+      "unchanged_source_case_deadlines": true
+    },
+    "framing_exact_source_controls": {
+      "count": 18,
+      "decomposition": [
+        14,
+        4
+      ],
+      "directly_selected_ignored_children": 0,
+      "duplicate_names": 0,
+      "exact_order_equals_frozen_control_commands": true,
+      "uids": "Ordinary UID1000 component entry; internal original owner lifecycle child is invoked only by its actual parent. No new UID0 authority is introduced."
+    },
+    "framing_result_gate": {
+      "actual_exit_zero_required": true,
+      "exact_full_names": 18,
+      "fresh_xml_reports_required": 1,
+      "no_failure_error_skip": true,
+      "no_timeout_required": true,
+      "source_head_tree_inventory_clean_before_and_after": true
+    },
+    "new_v2_scope": {
+      "changed_files": 7,
+      "old_case_deadlines_and_timeouts_unchanged": true,
+      "pipeline": "Only six argv retry0 plus old argv absence assertions",
+      "six_drivers": "Only four retry preflight lines per driver",
+      "unchanged_templates": 4
+    },
+    "old_selections_and_functions": {
+      "all_whole_parent_defined_functions_AST_unchanged": true,
+      "delivery5_ack2_ready2_data11_root2_mechanism_constants_unchanged": true,
+      "original_harness_sha256": "ee20bff704f8495fabb6133bbb478d82dd14466303e82c4a93ff2ea276c2b3d1",
+      "original_harness_test_already_has_retries0": true,
+      "pipeline_defined_functions_AST_unchanged": true
+    },
+    "original_budgets": {
+      "Root_frame_milliseconds": 500,
+      "Root_mechanism_child_alarm_seconds": 60,
+      "Root_mechanism_lifetime_seconds": 10,
+      "build_jobs": 2,
+      "existing_wrapper_execution_timeout_seconds": 7500,
+      "historical_read_limit": 64,
+      "native_command_seconds": 1800,
+      "original_harness_command_timeout_seconds": 7200,
+      "product_deadlines_changed": false
+    },
+    "source_and_binary_boundary": {
+      "binary_limit": "The framing executor does not independently hash the specifically executed contracts test ELF into its RESULT. Its evidence is the real just/nextest invocation plus exact source/compile/target checks and fresh JUnit, not a separately attested standalone ELF.",
+      "cache": "Retained prior immutable ELF remains historical cache provenance; no prior native result transfers. Native component executes real just test on the current source.",
+      "source": "Each component verifies exact source/tree/inventory, actual source/compile/lint/freeze result hashes and clean tracked bytes, same owned target and original environment/toolchain file hashes.",
+      "whole_parent": "Original current-source helper/product/library builds remain; actual agentd executable is pinned by SHA/size/device/inode/times/0555 and checked again, original product/helper bytes verified, with existing protected bind and UID access checks."
+    },
+    "stage_order": [
+      "separately_counted_framing18",
+      "original11",
+      "retirement16",
+      "delivery5",
+      "Feature_ACK2",
+      "Ready2",
+      "DATA11",
+      "Root_completion2",
+      "Root_lane_mechanism1",
+      "original_whole_NoUpdate1"
+    ]
+  }
+}

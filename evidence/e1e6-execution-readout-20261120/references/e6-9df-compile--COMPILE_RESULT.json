@@ -1,0 +1,101 @@
+{
+  "status": "completed",
+  "successful": true,
+  "source_parent": "527e62b68bdf704efdd8a521c5a95c664bf69172",
+  "started_at_ns": "1795177126254124302",
+  "native_cases": 0,
+  "model_calls": 0,
+  "original_parent_runs": 0,
+  "automatic_retry": false,
+  "original_deadlines_changed": false,
+  "root_read_budget": 64,
+  "original_failed_parent_retained": true,
+  "retained_prior_native_elf": {
+    "original_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target/debug/deps/codex_hepta_agentd-ec11b7f5a2c42017",
+    "retained_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/namespace-fixture-compile-project-fix-1/retained-527e-agentd-test-binary",
+    "sha256": "220168797ebba14a79bf61530978a2e3a066cf908d9933c062ec59f3fe1ee802",
+    "bytes": 1206575808,
+    "device": 66306,
+    "inode": 53511645,
+    "mode": "0555",
+    "original_bytes_and_mode_unchanged": true
+  },
+  "retained_component_result_sha256": "bda9c9b79a193fa65f5cffb56399d0fb1f7437702a77eaa14087419dbba50ade",
+  "source_before_sha256": "cef7b4abff2e0140f7a0d58da117f75a4454b282a797c4853738935ed1d1f89a",
+  "runner_sha256": "6cb09fa9ff83c4bdebeeb09601481de45afd8126bce11ce7bd2a30eb11093767",
+  "changed_paths": [
+    "codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_namespace_tests.rs"
+  ],
+  "new_paths": [],
+  "product_sources_unchanged": true,
+  "original_refusal_policy_and_case_assertions_retained": true,
+  "original_environment_sha256": "c8ddd27960aa7078144c8e827713e28af4293c7e71a3ba0fba9f35225bbbd91e",
+  "cargo_build_jobs": 2,
+  "format": {
+    "argv": [
+      "just",
+      "fmt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.1641675317659974,
+    "child_user_cpu_seconds": 0.06467099999999999,
+    "child_system_cpu_seconds": 0.061509999999999995,
+    "child_max_rss_kib": 51028,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_before_compile_sha256": "e3eb350ec62306da04dfa8e6aec5592a48d8962912204b15d17047f48920405e",
+  "only_refinement_paths": [
+    "codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_namespace_tests.rs"
+  ],
+  "source_files": 15812,
+  "compile": {
+    "argv": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "--list-type",
+      "binaries-only",
+      "--message-format",
+      "json"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 71.15379159804434,
+    "child_user_cpu_seconds": 82.149819,
+    "child_system_cpu_seconds": 5.809336,
+    "child_max_rss_kib": 6011576,
+    "stdout_sha256": "fce07df62376a39a707054dfdc3b51135ac294c9ebe7a60626c3b4dc63207032",
+    "stderr_sha256": "f2783553f0a20b27729840785963051e6294b13166908dbc5ea605f168511898"
+  },
+  "source_unchanged_during_compile": true,
+  "source_after_compile_sha256": "e3eb350ec62306da04dfa8e6aec5592a48d8962912204b15d17047f48920405e",
+  "justfix": {
+    "argv": [
+      "just",
+      "fix",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 103.62612551171333,
+    "child_user_cpu_seconds": 96.165462,
+    "child_system_cpu_seconds": 4.758902999999999,
+    "child_max_rss_kib": 6011576,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "996ffd185e384531b0007903771fc20473b037558b6c50582a2a6567d89cf87b"
+  },
+  "lint_changed_paths": [],
+  "source_unchanged_during_lint": true,
+  "compiled_bytes_remain_current": true,
+  "source_after_lint_sha256": "e3eb350ec62306da04dfa8e6aec5592a48d8962912204b15d17047f48920405e",
+  "source_after_sha256": "e3eb350ec62306da04dfa8e6aec5592a48d8962912204b15d17047f48920405e",
+  "finished_at_ns": "1795177306426197867",
+  "owner_wall_seconds": 180.17207895498723
+}

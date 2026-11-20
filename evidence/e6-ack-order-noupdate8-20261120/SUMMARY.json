@@ -1,0 +1,435 @@
+{
+  "schema": "hepta-e6-ack-order-actual-results-v1",
+  "source": "8996e4c5b6a8662c51f47d9e164b8c839635c796",
+  "tree": "73ad85ec4ac58f2c8901b0e85375e21e27641041",
+  "prior_source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+  "prior_d035_34_components_passed": true,
+  "prior_d035_Root_component_parent_passed": false,
+  "prior_d035_ordinary_parent_runs": 0,
+  "pipeline_successful": false,
+  "new_actual_components": [
+    {
+      "path": "native-validation-8/RESULT.json",
+      "sha256": "a54165197543e87d757fec0a01baf98ea6505c00005ed4b3b1821747d947f2cb",
+      "cases": 11,
+      "full_test_cases": [
+        {
+          "name": "production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+          "classname": "codex-hepta-agentd",
+          "time": "0.010",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+          "classname": "codex-hepta-agentd",
+          "time": "0.010",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+          "classname": "codex-hepta-agentd",
+          "time": "0.333",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+          "classname": "codex-hepta-agentd",
+          "time": "0.356",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+          "classname": "codex-hepta-agentd",
+          "time": "0.377",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+          "classname": "codex-hepta-agentd",
+          "time": "0.430",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+          "classname": "codex-hepta-agentd",
+          "time": "0.454",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+          "classname": "codex-hepta-agentd",
+          "time": "0.529",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+          "classname": "codex-hepta-agentd",
+          "time": "0.649",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion",
+          "classname": "codex-hepta-agentd",
+          "time": "0.833",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner",
+          "classname": "codex-hepta-agentd",
+          "time": "0.879",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "command_seconds": 94.99995548697188,
+      "owner_seconds": 96.88585461629555
+    },
+    {
+      "path": "retirement-native-validation-6/RESULT.json",
+      "sha256": "ff26de45f1146c66118af530f022c96763fc59c166b497760f12a84efa487e31",
+      "cases": 16,
+      "full_test_cases": [
+        {
+          "name": "cell_generation_journal::tests::lost_witness_ack_requires_reconciliation_then_exposes_exact_committed_bytes",
+          "classname": "codex-hepta-neuron",
+          "time": "0.005",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cell_generation_journal::tests::drain_recovery::original_generation_drain_readonly_witness_failure_reopens_the_retained_frame_once",
+          "classname": "codex-hepta-neuron",
+          "time": "0.019",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence",
+          "classname": "codex-hepta-neuron",
+          "time": "0.020",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cell_generation_journal::tests::drain_recovery::original_generation_drain_reopen_and_replay_keep_exact_journal_and_witness",
+          "classname": "codex-hepta-neuron",
+          "time": "0.021",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_pending_generator_claim_survives_reopen_without_signing",
+          "classname": "codex-hepta-agentd",
+          "time": "0.394",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal",
+          "classname": "codex-hepta-agentd",
+          "time": "0.424",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_ack_loss_reopens_same_signature_and_appends_once",
+          "classname": "codex-hepta-agentd",
+          "time": "0.570",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retirement::original_task_terminal_outcome_drains_once_and_readback_never_writes",
+          "classname": "codex-hepta-agentd",
+          "time": "0.583",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_witness_write_failure_repairs_only_exact_retained_append",
+          "classname": "codex-hepta-agentd",
+          "time": "0.599",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_refuses_other_database_and_stays_fenced_after_original_replacement",
+          "classname": "codex-hepta-agentd",
+          "time": "0.877",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_binds_root_scope_and_consumer_without_relaxing_current_task_identity",
+          "classname": "codex-hepta-agentd",
+          "time": "0.941",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_keeps_task_success_until_original_outcome_and_reconcile",
+          "classname": "codex-hepta-agentd",
+          "time": "1.050",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_uses_original_outbox_after_current_advances_and_new_task_runs",
+          "classname": "codex-hepta-agentd",
+          "time": "1.442",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unwitnessed_expired_outcome_cannot_become_historical_ready",
+          "classname": "codex-hepta-agentd",
+          "time": "5.214",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unappended_expired_signatures_never_renew",
+          "classname": "codex-hepta-agentd",
+          "time": "10.185",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_reads_witnessed_history_after_signature_expiry",
+          "classname": "codex-hepta-agentd",
+          "time": "10.239",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "command_seconds": 10.981752763036638,
+      "owner_seconds": 11.750122318044305
+    },
+    {
+      "path": "historical-delivery-native-validation-4/RESULT.json",
+      "sha256": "a512c72cbaa953ceda55927a712050d1967a138e82d878c9fbf543c57d196c4e",
+      "cases": 5,
+      "full_test_cases": [
+        {
+          "name": "learning_owner_journal::historical_delivery::tests::historical_prepared_completion_cold_reopen_returns_exact_key_and_bytes",
+          "classname": "codex-hepta-agentd",
+          "time": "0.008",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "learning_owner_journal::historical_delivery::tests::historical_prepared_completion_full_witness_keeps_exact_append_for_recovery",
+          "classname": "codex-hepta-agentd",
+          "time": "0.008",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "learning_owner_journal::historical_delivery::tests::historical_delivery_completed_claim_cold_reopen_returns_exact_head",
+          "classname": "codex-hepta-agentd",
+          "time": "0.009",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "learning_owner_journal::historical_delivery::tests::historical_delivery_cancelled_claim_cold_reopen_never_redispatches",
+          "classname": "codex-hepta-agentd",
+          "time": "0.009",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "learning_owner_journal::historical_delivery::tests::historical_prepared_claim_drop_before_dispatch_cold_reopen_stays_pending",
+          "classname": "codex-hepta-agentd",
+          "time": "0.009",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "command_seconds": 0.7151118121109903,
+      "owner_seconds": 1.4849699470214546
+    },
+    {
+      "path": "feature-ack-native-validation-2/RESULT.json",
+      "sha256": "e113e909050a2476ebdecd543a24055634c896f67ce296a8e862f98b35d49ef2",
+      "cases": 2,
+      "full_test_cases": [
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_client_drop_keeps_original_source_and_cell_once",
+          "classname": "codex-hepta-agentd",
+          "time": "2.952",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_ack_timeout_recovers_original_completion_without_redispatch",
+          "classname": "codex-hepta-agentd",
+          "time": "5.055",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "command_seconds": 5.756104204338044,
+      "owner_seconds": 6.536222384311259
+    }
+  ],
+  "new_Root_mechanism_parent_passed": true,
+  "new_Root_mechanism_parent_cases": 1,
+  "new_Root_mechanism_terminal_branches": [
+    "StalePrepare",
+    "Revoked"
+  ],
+  "new_Root_mechanism_orders_each": [
+    "SourceFirst",
+    "CurrentFirst"
+  ],
+  "new_Root_mechanism_success_markers_observed": 4,
+  "new_Root_mechanism_raw_log_sha256": "49b8be5d97f7b9aa1b54e428728ab57d4551964be01f34aa3aa9af654a888e90",
+  "new_ordinary_parent_runs": 1,
+  "new_ordinary_parent_passed": false,
+  "new_ordinary_parent_result_sha256": "7b1d06160571f5d59d14ebd9f4aa6e9f454f1ae2afde84ffb6bc6e48c7b37177",
+  "new_ordinary_parent_JUnit_sha256": "83f6c67ebd9ca1924b8e98dba3d160de10020a21bc53c0fe208675490f347509",
+  "first_cause": "Historical request 65 refused by unchanged maximum 64 after local C receipt and Source publication returned; historical delivery maps the post-observation failure to WrongScope and GenerationFenced.",
+  "request_ids_observed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65
+  ],
+  "last_accepted_historical_request": 64,
+  "refused_historical_request": 65,
+  "historical_cap": 64,
+  "C_receipt_returned_elapsed_micros": 5419372,
+  "C_Source_publish_returned_elapsed_micros": 5424108,
+  "C_final_run_start_returned_elapsed_micros": 5424725,
+  "local_C_control_receipt_and_publication_observed": true,
+  "whole_C_and_learning_qualification": false,
+  "NextUse_stage_observed": false,
+  "terminal_Accept_observed": false,
+  "static_63_whole_parent_estimate_refuted": true,
+  "replacement_static_whole_parent_estimate_not_yet_qualified": true,
+  "cold_D_runs": 0,
+  "Adopt_runs": 0,
+  "FinalUse_whole_qualification": false,
+  "deadlines_changed": false,
+  "automatic_retry": false,
+  "source_or_journal_mutated": false,
+  "key_bodies_copied": false,
+  "business_image_bodies_copied": false,
+  "physical_inventory_files": 784,
+  "selected_nonkey_physical_files": 52,
+  "selected_nonkey_physical_bytes": 119591,
+  "physical_manifest_sha256": "4e7a529cf6f8418e1ce338a0c55f21664527f4cfe4ab707e8248de5cce39f727",
+  "unknown_key_and_business_image_bodies_metadata_only": 13,
+  "pipeline_owner_seconds": 264.0621305783279,
+  "complete_owner_seconds": 147.13084805198014,
+  "parent_command_seconds": 90.91851284820586,
+  "Root_mechanism_command_seconds": 3.936604048125446,
+  "qualification_scope": "Source gates, mechanism controls, local C progress and complete original parent remain separate. The current source has new full1159 CLI and new34 native controls, with historical433 mutation/907/398 evidence bound only to d035. Actual Root observe_after fault injection and general same-run replay serialization remain unproved.",
+  "cost_scope": "Keep compile, lint, full-source, preparation, each native family, Root mechanism, original parent, enclosing owners and archive intervals separate. Nested windows overlap; no complete physical energy/network/storage-byte-seconds/provider-charge measurement."
+}

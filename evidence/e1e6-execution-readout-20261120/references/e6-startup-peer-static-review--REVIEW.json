@@ -1,0 +1,36 @@
+{
+  "schema": "e6-startup-two-phase-independent-static-peer-v1",
+  "scope": "two product files only; no compiled/native qualification",
+  "author_manifest_sha256": "4f9f051504946eeb99ee84e33c6392fba648f242f82e1ecc2b80df803ce93378",
+  "author_diff_sha256": "90d09593ed9b2aaf61337d368b8012d28fdec04ff37dc20f799ca978b7ec72e0",
+  "source": "1a9799686243c2be0ee393ba364e091029cfb944",
+  "checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+      "before_bytes_match": true,
+      "before_sha256_match": true,
+      "after_bytes_match": true,
+      "after_sha256_match": true,
+      "before_git_blob_match": true,
+      "after_git_blob_match": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+      "before_bytes_match": true,
+      "before_sha256_match": true,
+      "after_bytes_match": true,
+      "after_sha256_match": true,
+      "before_git_blob_match": true,
+      "after_git_blob_match": true
+    }
+  ],
+  "complete_unified_diff_match": true,
+  "effect_tail_byte_identical": true,
+  "original_join_and_full_delivery_tail_byte_identical": true,
+  "preflight_checks_preserved_except_cancel_result_shape": true,
+  "private_state_and_token_retained": true,
+  "new_host_calls": 0,
+  "native_or_model_execution": 0,
+  "source_gate_execution": 0,
+  "finding": "No static blocker found in the two reviewed product files; policy, compile, native and whole-parent gates remain required."
+}

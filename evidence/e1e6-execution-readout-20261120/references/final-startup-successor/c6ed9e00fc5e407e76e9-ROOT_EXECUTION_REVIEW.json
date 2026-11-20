@@ -1,0 +1,50 @@
+{
+  "review_scope": "Root full runner, actual formatting delta, exact policy rebind and executable payload review; no host execution by this review.",
+  "reviewed_manifests": [
+    {
+      "path": "/workspace/scratch/e9e051ab0825/e6_noupdate14_io_diagnostic_candidate_2/MANIFEST.json",
+      "sha256": "6dafa1f0406c3a3f5e6a132449848bde2bb2cb3959e91a3e64de228f98409698",
+      "members": 22
+    },
+    {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_compile/rev1/MANIFEST.json",
+      "sha256": "935b6f65fae278fccfdd558817e6478f8877418c2b08ff3c9e83288cd83996bd",
+      "members": 4
+    },
+    {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_compile/rev1/EXECUTION_MANIFEST.json",
+      "sha256": "c0a3255f95bed3e83be073347fa74d47054707cd89defcb0692eda7b34c26a4b",
+      "members": 3
+    },
+    {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_format/rev1/actual/MANIFEST.json",
+      "sha256": "a8debbc09c0b5588e2a6ad6cd10ebc47cb580256c8475849420c7ebef7fb213a",
+      "members": 12
+    }
+  ],
+  "full_compile_runner_read": true,
+  "candidate_revision2_diff_read": true,
+  "all_six_before_after_sha256_and_git_oids_verified": true,
+  "four_rust_byte_identical_to_actual_format": true,
+  "only_policy_occurrences_changed": [
+    555,
+    630
+  ],
+  "all_other_906_raw_occurrences_and_required_forbidden_unchanged": true,
+  "payload_sha256": "cc23ab30bbbf6c9402fbebb60f3ff371c0b7c129ad7f41bf8a4019e4257885f4",
+  "meta_sha256": "9f0516bc85825923aed7be1ea09978c79749654c2f8708053cf07575497c1975",
+  "final_source_manifest_sha256": "4736ed43481cb267468b1a6dc506335b4b5994dbdd1c437aef4c03166472711b",
+  "format_result_sha256": "91bdcd9b55fc9af2903c581b3cf06cd209631e0d92813e037218a7992c247b0a",
+  "final_source_inventory_sha256": "25d8b9ccb4fa3196152c630f3d603a7c8894c086af0c0d62570efdd6f43d66cc",
+  "original_bootstrap_byte_identical": true,
+  "full_payload_decoded_to_exact_meta": true,
+  "existing_three_lock_and_build_root_guards_reviewed": true,
+  "fd_and_path_stable_full_binary_hash_per_read_reviewed": true,
+  "original_argv_cleanup_and_individual_1800_second_budgets_reviewed": true,
+  "historical_costs_retained": true,
+  "compile_and_justfix_authorized": true,
+  "native_or_source_gate_authorized": false,
+  "automatic_followup_authorized": false,
+  "same_candidate_failed_stage_continuation_requires_actual_consumed_budget_deduction": true,
+  "diagnostic_transport_repair_claim": false
+}

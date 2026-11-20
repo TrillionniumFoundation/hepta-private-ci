@@ -1,0 +1,25 @@
+{
+  "status": "ROOT_DIRECT_ACTUAL_GATE_PASS_READBACK",
+  "result_sha256": "a3de42e2ec9b4641e31b11eb233a191c678f5ec3d70961bf74cb464b6f1ab6d5",
+  "actual_owner_exit": 0,
+  "source_inventory_sha256": "1c7782e85a9b79fad6e82c0c5022964299451629d2cb96e55b442f96f0059a7a",
+  "source_inventory_file_sha256": "bcd27467e7f8d01fe36298e96761c417f8205fa4c5d44f356dc4625d99032f1c",
+  "tests": 468,
+  "modules": 53,
+  "protected_rows": 908,
+  "targeted": 452,
+  "retained_prior_targeted": 438,
+  "added_targeted": 14,
+  "full_caller_boundaries": 1164,
+  "full_cli_exit": 0,
+  "full_cli_stdout_sha256": "6f486ffe71768d5878acfb3b00f1a9034ca0ed80d0e7f96bec8f5ce97d44c64a",
+  "all_source_changes_four_exact": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+    "qa/b4-no-bypass/test_original_task_retirement_source_closure.py"
+  ],
+  "new_native_runs": 0,
+  "no_ref_updated": true,
+  "rpc_sha256": "40c6e9fd6fca3485b71a119bcc93e1f5c477bbaaec7304dc10b1b3c7a876ee2f"
+}

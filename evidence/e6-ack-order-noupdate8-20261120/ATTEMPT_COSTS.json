@@ -1,0 +1,270 @@
+{
+  "schema": "e6-ack-order-cost-index-v1",
+  "scope": "Original scalar records only; nested owner/command windows overlap. Read archived execution records for command-level detail. No energy, complete network or provider cost claim.",
+  "attempts": [
+    {
+      "path": "raw/ack-marker-compile-project-fix-4/RESULT.json",
+      "sha256": "1fff317491bfdc690da247116f5eb3434ddeab43746b715bd45e5c18737db211",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": true,
+        "owner_wall_seconds": 167.13438759790733
+      }
+    },
+    {
+      "path": "raw/ack-marker-frozen-source-2/RESULT.json",
+      "sha256": "0d361a8f971fee7eb24863dce0f04a99e63309b62dcff2682c7bfd42eb878c15",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": true,
+        "owner_wall_seconds": 1.6770010241307318
+      }
+    },
+    {
+      "path": "raw/ack-marker-native-pipeline-2/RESULT.json",
+      "sha256": "8930265fb124723e11626ba7f53908715718fdb626f3d45b2c470286146a54aa",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": false,
+        "owner_wall_seconds": 264.0621305783279
+      }
+    },
+    {
+      "path": "raw/ack-marker-noupdate8-physical-capture-1/RESULT.json",
+      "sha256": "76d2e7e23fef2febd7d3f3735a13500b38e2461e7772a83de7e548bb8e5ad298",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": true,
+        "wall_seconds": 0.024440087843686342,
+        "child_user_cpu_seconds": 0.0018889999999999998,
+        "child_system_cpu_seconds": 0.003784
+      }
+    },
+    {
+      "path": "raw/ack-marker-noupdate8-physical-readback-1/RESULT.json",
+      "sha256": "dbda33d83c8d080ab4dc93fa2ff7df176586c4d7009cd55dcf446947f9358075",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": true,
+        "command_exit": 0,
+        "wall_seconds": 0.06645955611020327,
+        "child_user_cpu_seconds": 0.0,
+        "child_system_cpu_seconds": 0.004909
+      }
+    },
+    {
+      "path": "raw/ack-marker-source-gate-3/RESULT.json",
+      "sha256": "1241dd778f529ffdebf4239dd31c45e30d7d4b8e775567a6192ee572c7e1b3cf",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": true,
+        "full_caller_proof_exit": 0,
+        "full_caller_proof_wall_seconds": 484.96656067017466,
+        "owner_wall_seconds": 485.72404424194247,
+        "owner_self_user_cpu_seconds": 0.56633,
+        "owner_self_system_cpu_seconds": 0.244438,
+        "owner_child_user_cpu_seconds": 484.730898,
+        "owner_child_system_cpu_seconds": 0.186325
+      }
+    },
+    {
+      "path": "raw/ack-source-candidate-compile-1/RESULT.json",
+      "sha256": "4f10283c150e26792582a4aa6629312a3d820a55d8b6fbb9d71bd952e247f520",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": true,
+        "compile_timeout_seconds": 1800,
+        "command_exit": 0,
+        "command_wall_seconds": 95.91585763404146,
+        "command_child_user_cpu_seconds": 122.044773,
+        "command_child_system_cpu_seconds": 7.834144000000001,
+        "owner_wall_seconds": 98.50286535499617
+      }
+    },
+    {
+      "path": "raw/ack-source-compile-project-fix-2/RESULT.json",
+      "sha256": "ac0c927a37815a22189c3a42099a255723cedb0ac4eecc96174eeb118c779a26",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": true,
+        "owner_wall_seconds": 166.93754131905735
+      }
+    },
+    {
+      "path": "raw/ack-source-compile-project-fix-3/RESULT.json",
+      "sha256": "dc904abda4cdefc27cd1e58506db7c0794e1fe608571e4edc8ad81a28e78efc3",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": true,
+        "owner_wall_seconds": 197.9359987261705
+      }
+    },
+    {
+      "path": "raw/ack-source-frozen-source-1/RESULT.json",
+      "sha256": "29dffe1f73ac04741c2d59112ad5e6edc2b3f7361a18175a9d4891325f3b1f27",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": true,
+        "owner_wall_seconds": 1.7141001001000404
+      }
+    },
+    {
+      "path": "raw/ack-source-native-pipeline-1/RESULT.json",
+      "sha256": "f9bf927ccf172c166864704e085309a99cd7652df3c66e6ad574cbe84f4846fa",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": false,
+        "owner_wall_seconds": 168.5623302697204
+      }
+    },
+    {
+      "path": "raw/ack-source-source-probe-1/RESULT.json",
+      "sha256": "7a796a1e15dcdf1ebb222060d97b83efc4b2c65196606473c6a08f255c18696a",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": false,
+        "source_tests_wall_seconds": 60.308959615882486,
+        "source_tests_successful": false,
+        "full_caller_proof_exit": 125,
+        "full_caller_proof_wall_seconds": 5.2628107368946075e-05,
+        "owner_wall_seconds": 213.6041553793475,
+        "owner_self_user_cpu_seconds": 212.668262,
+        "owner_self_system_cpu_seconds": 0.81587,
+        "owner_child_user_cpu_seconds": 0.025848,
+        "owner_child_system_cpu_seconds": 0.075181
+      }
+    },
+    {
+      "path": "raw/ack-source-source-probe-2/RESULT.json",
+      "sha256": "d0ae06d0fca137c7eccddf85b16df5061beca66b50535da59822a5a249d7b428",
+      "reported_scalar_outcomes_and_costs": {
+        "successful": true,
+        "source_tests_wall_seconds": 60.69034482166171,
+        "source_tests_successful": true,
+        "full_caller_proof_exit": 0,
+        "full_caller_proof_wall_seconds": 479.187976508867,
+        "owner_wall_seconds": 695.5148718371056,
+        "owner_self_user_cpu_seconds": 215.41384299999999,
+        "owner_self_system_cpu_seconds": 0.8069299999999999,
+        "owner_child_user_cpu_seconds": 478.985707,
+        "owner_child_system_cpu_seconds": 0.209414
+      }
+    },
+    {
+      "path": "raw/feature-ack-native-validation-1/RESULT.json",
+      "sha256": "e3a66e8cea110d0c0faeb5b2cc8fb42e09af0ae65467df374364aacced83a3a6",
+      "reported_scalar_outcomes_and_costs": {
+        "command_exit": 0,
+        "command_wall_seconds": 5.742846271023154,
+        "command_child_user_cpu_seconds": 2.3876920000000004,
+        "command_child_system_cpu_seconds": 0.378223,
+        "owner_wall_seconds": 6.516430175863206,
+        "owner_child_user_cpu_seconds": 2.403843,
+        "owner_child_system_cpu_seconds": 0.463526,
+        "owner_self_user_cpu_seconds": 0.5164,
+        "owner_self_system_cpu_seconds": 0.21299,
+        "successful": true
+      }
+    },
+    {
+      "path": "raw/feature-ack-native-validation-2/RESULT.json",
+      "sha256": "e113e909050a2476ebdecd543a24055634c896f67ce296a8e862f98b35d49ef2",
+      "reported_scalar_outcomes_and_costs": {
+        "command_exit": 0,
+        "command_wall_seconds": 5.756104204338044,
+        "command_child_user_cpu_seconds": 2.4228549999999998,
+        "command_child_system_cpu_seconds": 0.375293,
+        "owner_wall_seconds": 6.536222384311259,
+        "owner_child_user_cpu_seconds": 2.443779,
+        "owner_child_system_cpu_seconds": 0.450327,
+        "owner_self_user_cpu_seconds": 0.50476,
+        "owner_self_system_cpu_seconds": 0.24166699999999997,
+        "successful": true
+      }
+    },
+    {
+      "path": "raw/historical-delivery-native-validation-3/RESULT.json",
+      "sha256": "e14da7b4de41a1f83871bc19446c57f3374f0d161900730ebcf46f6eddf4d373",
+      "reported_scalar_outcomes_and_costs": {
+        "command_exit": 0,
+        "command_wall_seconds": 0.7155644306913018,
+        "command_child_user_cpu_seconds": 0.526854,
+        "command_child_system_cpu_seconds": 0.22425799999999999,
+        "owner_wall_seconds": 1.4907563598826528,
+        "owner_child_user_cpu_seconds": 0.55342,
+        "owner_child_system_cpu_seconds": 0.30045099999999997,
+        "owner_self_user_cpu_seconds": 0.495781,
+        "owner_self_system_cpu_seconds": 0.228495,
+        "successful": true
+      }
+    },
+    {
+      "path": "raw/historical-delivery-native-validation-4/RESULT.json",
+      "sha256": "a512c72cbaa953ceda55927a712050d1967a138e82d878c9fbf543c57d196c4e",
+      "reported_scalar_outcomes_and_costs": {
+        "command_exit": 0,
+        "command_wall_seconds": 0.7151118121109903,
+        "command_child_user_cpu_seconds": 0.534771,
+        "command_child_system_cpu_seconds": 0.21313400000000002,
+        "owner_wall_seconds": 1.4849699470214546,
+        "owner_child_user_cpu_seconds": 0.551097,
+        "owner_child_system_cpu_seconds": 0.298068,
+        "owner_self_user_cpu_seconds": 0.512358,
+        "owner_self_system_cpu_seconds": 0.209025,
+        "successful": true
+      }
+    },
+    {
+      "path": "raw/native-validation-7/RESULT.json",
+      "sha256": "6ab5b3e461099cca80a8eead6525ff9d35eef32d8cd31ba1501418d1788977a1",
+      "reported_scalar_outcomes_and_costs": {
+        "command_exit": 0,
+        "command_wall_seconds": 95.0210749139078,
+        "command_child_user_cpu_seconds": 126.22063,
+        "command_child_system_cpu_seconds": 7.8603130000000005,
+        "owner_wall_seconds": 96.90830890927464,
+        "owner_child_user_cpu_seconds": 126.240277,
+        "owner_child_system_cpu_seconds": 7.946247,
+        "owner_self_user_cpu_seconds": 1.511485,
+        "owner_self_system_cpu_seconds": 0.37596899999999994,
+        "successful": true
+      }
+    },
+    {
+      "path": "raw/native-validation-8/RESULT.json",
+      "sha256": "a54165197543e87d757fec0a01baf98ea6505c00005ed4b3b1821747d947f2cb",
+      "reported_scalar_outcomes_and_costs": {
+        "command_exit": 0,
+        "command_wall_seconds": 94.99995548697188,
+        "command_child_user_cpu_seconds": 126.42961100000001,
+        "command_child_system_cpu_seconds": 7.876258,
+        "owner_wall_seconds": 96.88585461629555,
+        "owner_child_user_cpu_seconds": 126.450002,
+        "owner_child_system_cpu_seconds": 7.958067,
+        "owner_self_user_cpu_seconds": 1.5375379999999998,
+        "owner_self_system_cpu_seconds": 0.352644,
+        "successful": true
+      }
+    },
+    {
+      "path": "raw/retirement-native-validation-5/RESULT.json",
+      "sha256": "4c735d47b59bd0f08eaf0348c912341a0d9ca8be6c8b15eb58b8594705ca62cb",
+      "reported_scalar_outcomes_and_costs": {
+        "command_exit": 0,
+        "command_wall_seconds": 10.582551307044923,
+        "command_child_user_cpu_seconds": 9.101040999999999,
+        "command_child_system_cpu_seconds": 0.794592,
+        "owner_wall_seconds": 11.356120876967907,
+        "owner_child_user_cpu_seconds": 9.123753,
+        "owner_child_system_cpu_seconds": 0.8731129999999999,
+        "owner_self_user_cpu_seconds": 0.5260699999999999,
+        "owner_self_system_cpu_seconds": 0.217271,
+        "successful": true
+      }
+    },
+    {
+      "path": "raw/retirement-native-validation-6/RESULT.json",
+      "sha256": "ff26de45f1146c66118af530f022c96763fc59c166b497760f12a84efa487e31",
+      "reported_scalar_outcomes_and_costs": {
+        "command_exit": 0,
+        "command_wall_seconds": 10.981752763036638,
+        "command_child_user_cpu_seconds": 9.071233,
+        "command_child_system_cpu_seconds": 0.7867489999999999,
+        "owner_wall_seconds": 11.750122318044305,
+        "owner_child_user_cpu_seconds": 9.095483,
+        "owner_child_system_cpu_seconds": 0.8634259999999999,
+        "owner_self_user_cpu_seconds": 0.519054,
+        "owner_self_system_cpu_seconds": 0.219284,
+        "successful": true
+      }
+    }
+  ]
+}

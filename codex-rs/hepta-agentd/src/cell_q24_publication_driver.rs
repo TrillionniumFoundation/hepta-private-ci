@@ -52,6 +52,7 @@ pub use root_stage::OriginalCellQ24PublishedArtifactForRootV1;
 pub use root_stage::OriginalCellQ24RetainedArtifactForRootV1;
 pub use root_stage::OriginalCellQ24RootPublicationDriverV1;
 pub use root_stage::OriginalCellQ24SelectedArtifactForRootV1;
+pub(crate) use root_stage::OriginalSuccessorProof;
 pub(crate) use root_stage::OriginalSuccessorPublication;
 pub(crate) use root_stage::require_successor_admission;
 

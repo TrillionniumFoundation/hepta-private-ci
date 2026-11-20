@@ -156,7 +156,12 @@ class SuccessorHistoricalClientSourceTests(unittest.TestCase):
             self.mutate(STORE, change)
 
     def test_same_lane_sequence_profile_and_session_guard_all_commands(self):
-        self.check(CLIENT, "exchange_response", ("self.fenced.load(Ordering::Acquire)", "self.lane.try_lock()", "held.take()", "request_id.checked_add(1)", "response.profile != self.profile", "validate_head(&self.profile, &response.head)?", "*held = Some(lane)"))
+        self.check(CLIENT, "exchange_response", ("self.fenced.load(Ordering::Acquire)", "self.lane.try_lock()", "held.take()", "request_id.checked_add(1)", "response.profile != self.profile", "validate_head(&self.profile, &response.head)", "*held = Some(lane)"))
+        def remove_head_error_propagation(source):
+            marker = '.inspect_err(|_| trace_original_current_failure("head_validation"))?;'
+            self.assertEqual(source.count(marker), 1)
+            return source.replace(marker, marker.replace("?;", ";"), 1)
+        self.mutate(CLIENT, remove_head_error_propagation)
         for occurrence in (0, 1):
             self.reject(CLIENT, "exchange_response", "require_original_publication_session()", occurrence)
         self.check(CLIENT, "exchange", ("self.exchange_response(command)?", "response.successor.is_some()", "self.fence()"))

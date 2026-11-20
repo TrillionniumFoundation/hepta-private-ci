@@ -1,0 +1,61 @@
+{
+  "scope": "Actual R3 compile and lint complete original readback; no native qualification",
+  "logs": [
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/observation-io-compile-project-fix-3/compile.stdout",
+      "sha256": "b1423adcf8dfa2c34eb491b5e4a02ebeb0211e32fa9c93629a613568d033c821",
+      "size": 1970,
+      "version": "66306:56378289:1970:1795210053133791996:1795210053133791996"
+    },
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/observation-io-compile-project-fix-3/compile.stderr",
+      "sha256": "0b8db923a350a9e299a3188f41ec2f4f2c25ff1f9fd065b7e517da487993140c",
+      "size": 27293,
+      "version": "66306:56378290:27293:1795210053054794816:1795210053054794816"
+    },
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/observation-io-compile-project-fix-3/justfix.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "version": "66306:56378293:0:1795210054095844222:1795210054095844222"
+    },
+    {
+      "path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/observation-io-compile-project-fix-3/justfix.stderr",
+      "size": 88499,
+      "sha256": "d58bd96587cbbd4262d1c0fa53b9412e571a0c9d64701660f75c2b65e0833e9e",
+      "version": "66306:56378294:88499:1795210159033005003:1795210159033005003",
+      "chunks": [
+        {
+          "offset": 0,
+          "next_offset": 65536,
+          "chunk_sha256": "1314dd8842bc71f5974a8aa80b337557af877ce73f29cfe65bc34ed9daf4517c",
+          "eof": false
+        },
+        {
+          "offset": 65536,
+          "next_offset": 88499,
+          "chunk_sha256": "638f6481b00389cc8fe8cef84a4d86c992adf3c00ffa0a3fb33fbfd43a2451a5",
+          "eof": true
+        }
+      ]
+    }
+  ],
+  "core_manifest_sha256": "1d2741dbcf6c1c1816b76ec5af2092d089f9426dbfb27f71047e6dbb8a5c4bfb",
+  "result_sha256": "2a0a3689819bf7440fe57d5a390b5a913d91d65782f3e67f7722c8e795d9325e",
+  "successful": true,
+  "compile_seconds": 95.62035547196865,
+  "justfix_seconds": 105.12791442498565,
+  "cumulative_compile_seconds": 332.7800499498844,
+  "cumulative_justfix_seconds": 241.71026227017865,
+  "enclosing_owner_seconds": 204.42652497207746,
+  "no_sum_enclosing_owner_with_nested_command_cost": true,
+  "transport_parameter_errors_retained": [
+    "ACTUAL_JUSTFIX_STDERR_CHUNK_BADARGS_0001.json",
+    "ACTUAL_JUSTFIX_STDERR_CHUNK_BADARGS_0002.json"
+  ],
+  "transport_error_scope": "Unknown field length rejected before remote read; corrected to documented limit, original error RPCs retained.",
+  "native_runs": 0
+}

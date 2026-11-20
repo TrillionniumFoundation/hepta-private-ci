@@ -37,6 +37,17 @@ impl CellQ24PreparedLearningV1 {
 }
 
 impl OriginalPreparedReadV1<'_> {
+    pub(crate) fn original_stage_authorities(
+        &self,
+        trust: &crate::root_historical_task_read_client::OriginalHistoricalLearningTrustV1,
+    ) -> Result<crate::root_historical_task_read_client::OriginalHistoricalStageAuthoritiesV1, Error>
+    {
+        self.revalidate_source()?;
+        let authorities = self.operation.original_stage_authorities(trust)?;
+        self.revalidate_source()?;
+        Ok(authorities)
+    }
+
     pub(crate) fn require_training_batch(
         &self,
         batch: &CellQ24TrainingBatchV1,

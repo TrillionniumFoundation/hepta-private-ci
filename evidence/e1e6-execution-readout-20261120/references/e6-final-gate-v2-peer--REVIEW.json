@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.e6.blob-controller-v2-independent-static-review.v1",
+  "status": "IDENTIFIED_RAW_COMMIT_BINDING_GAP_CLOSED_IN_SOURCE",
+  "v1_sha256": "7a9f7dadf30292910c8dfe803278808d8e8cbbbaf4b2da3dad74208f0facb001",
+  "v2_sha256": "c847a3e6c8d771394c612e38bd9675a1cd3ca18dd1f8d0dfb83f7ec1b50e2592",
+  "v2_bytes": 19509,
+  "review_scope": "Full five-line delta plus surrounding raw/reconstruction stage branches; original v1 and all preparation artifacts retained unchanged.",
+  "findings": [
+    {
+      "check": "Both supplied raw-commit and unsigned reconstruction branches run the same post-put actual-object readback",
+      "result": "PASS_STATIC"
+    },
+    {
+      "check": "Exactly one actual commit tree must equal the completely reconstructed stage tree",
+      "result": "PASS_STATIC"
+    },
+    {
+      "check": "Actual complete parent list must equal the one declared direct predecessor",
+      "result": "PASS_STATIC"
+    },
+    {
+      "check": "No checker/tests/allowlist/budget/manifest/ref behavior changed by the delta",
+      "result": "PASS_STATIC"
+    }
+  ],
+  "limits": [
+    "This is source review and Python syntax parsing only.",
+    "Future head is not yet supplied; original seven tests and full PR blob gate remain unexecuted."
+  ],
+  "controller_executions": 0,
+  "original_seven_tests_executed": 0,
+  "original_blob_gate_executed": 0,
+  "host_calls": 0,
+  "native_or_model_runs": 0
+}

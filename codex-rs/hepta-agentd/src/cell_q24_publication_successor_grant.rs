@@ -9,6 +9,7 @@ impl OriginalCellQ24PreparedPublicationV1 {
         state: Arc<AgentdState>,
         identity: AgentdIdentity,
         slot: Arc<crate::circuit_q24_successor::SuccessorSlot>,
+        proof: OriginalSuccessorProof,
     ) -> Result<(Self, SignedFinalUseGrant), Error> {
         self.original.decision.require_new_work()?;
         require_successor_admission(&state, &identity)?;
@@ -16,7 +17,7 @@ impl OriginalCellQ24PreparedPublicationV1 {
         let snapshot = self.original.decision.snapshot.clone();
         let manifest = self.original.manifest.clone();
         owners
-            .with_original_publication(snapshot, manifest, move || {
+            .with_original_successor_publication(snapshot, manifest, proof, move || {
                 self.original.decision.require_new_work()?;
                 require_successor_admission(&state, &identity)?;
                 slot.require_installation_open()

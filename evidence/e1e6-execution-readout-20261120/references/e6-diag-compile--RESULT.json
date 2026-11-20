@@ -1,0 +1,112 @@
+{
+  "status": "completed",
+  "successful": true,
+  "source_parent": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+  "started_at_ns": "1795180952250097677",
+  "native_cases": 0,
+  "model_calls": 0,
+  "original_parent_runs": 0,
+  "automatic_retry": false,
+  "original_deadlines_changed": false,
+  "root_read_budget": 64,
+  "original_failed_parent_retained": true,
+  "retained_prior_native_elf": {
+    "original_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target/debug/deps/codex_hepta_agentd-ec11b7f5a2c42017",
+    "retained_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/initial-observation-diagnostic-compile-project-fix-1/retained-9df-agentd-test-binary",
+    "sha256": "8a465841957323fb7880c312e6b96f28315da8b76e8fbd055b12825a0a61153e",
+    "bytes": 1206592520,
+    "device": 66306,
+    "inode": 53511657,
+    "mode": "0555",
+    "original_bytes_and_mode_unchanged": true
+  },
+  "retained_component_result_sha256": "69432bd4a092f2cf9b6060fef652fd615df8400f11fe952a98773c292975ef95",
+  "source_before_sha256": "e3eb350ec62306da04dfa8e6aec5592a48d8962912204b15d17047f48920405e",
+  "runner_sha256": "558bfe0543897e4642f20b25aaf2f39b2ef0695766a54877ecad05bb19d48406",
+  "changed_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/authority_host_service.rs",
+    "codex-rs/hepta-contracts/src/authority_host_peer.rs"
+  ],
+  "new_paths": [],
+  "product_sources_unchanged": false,
+  "candidate_scope": "Failure-only phase diagnostics; execution qualification remains pending.",
+  "original_refusal_policy_and_case_assertions_retained": true,
+  "original_environment_sha256": "c8ddd27960aa7078144c8e827713e28af4293c7e71a3ba0fba9f35225bbbd91e",
+  "cargo_build_jobs": 2,
+  "format": {
+    "argv": [
+      "just",
+      "fmt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.31452582124620676,
+    "child_user_cpu_seconds": 0.077056,
+    "child_system_cpu_seconds": 0.082517,
+    "child_max_rss_kib": 57164,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_before_compile_sha256": "20fe46de4b63f5a2bcce469113ebe27b7514f942c7f960a71e4dabaa4f643d0f",
+  "only_refinement_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/authority_host_service.rs",
+    "codex-rs/hepta-contracts/src/authority_host_peer.rs"
+  ],
+  "source_files": 15812,
+  "compile": {
+    "argv": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-contracts",
+      "--lib",
+      "--list-type",
+      "binaries-only",
+      "--message-format",
+      "json"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 189.81685549998656,
+    "child_user_cpu_seconds": 285.48616599999997,
+    "child_system_cpu_seconds": 23.342041000000002,
+    "child_max_rss_kib": 6127312,
+    "stdout_sha256": "df720af4d8927d13e50aa76c21a97d39bce11344a3b6663fb3a32614579ed884",
+    "stderr_sha256": "74d634126789c78c7d33135ceca786bc9ea520a5d663c7005036a47c59744148"
+  },
+  "source_unchanged_during_compile": true,
+  "source_after_compile_sha256": "20fe46de4b63f5a2bcce469113ebe27b7514f942c7f960a71e4dabaa4f643d0f",
+  "justfix": {
+    "argv": [
+      "just",
+      "fix",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-contracts"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 138.28911035507917,
+    "child_user_cpu_seconds": 151.83451199999996,
+    "child_system_cpu_seconds": 9.813347,
+    "child_max_rss_kib": 6127312,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "3f9ff3e91951eda7e487c6c97f16f361ef2b228c5ff37dee33afde72421114ba"
+  },
+  "lint_changed_paths": [],
+  "source_unchanged_during_lint": true,
+  "compiled_bytes_remain_current": true,
+  "source_after_lint_sha256": "20fe46de4b63f5a2bcce469113ebe27b7514f942c7f960a71e4dabaa4f643d0f",
+  "source_after_sha256": "20fe46de4b63f5a2bcce469113ebe27b7514f942c7f960a71e4dabaa4f643d0f",
+  "finished_at_ns": "1795181287094943470",
+  "owner_wall_seconds": 334.84485170291737
+}

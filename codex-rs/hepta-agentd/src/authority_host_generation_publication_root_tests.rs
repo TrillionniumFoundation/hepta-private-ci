@@ -68,6 +68,8 @@ const LIFETIME: Duration = Duration::from_secs(10);
 enum Phase {
     Publish,
     Recover,
+    AckSourcePending,
+    AckCurrentFirst,
     RetiredSession,
     StalePrepare,
     Revoked,
@@ -202,7 +204,13 @@ fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow:
         let claims_path = fixture.local.join("device/authority.claims");
         let claimed = std::fs::read(&claims_path)?;
         anyhow::ensure!(!claimed.is_empty(), "real original nonce append required");
-        for phase in [Phase::Recover, Phase::RetiredSession, terminal] {
+        for phase in [
+            Phase::Recover,
+            Phase::AckSourcePending,
+            Phase::AckCurrentFirst,
+            Phase::RetiredSession,
+            terminal,
+        ] {
             fixture
                 .run_phase(phase)
                 .with_context(|| format!("publication component {phase:?} phase"))?;
@@ -227,6 +235,19 @@ fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow:
             )),
             "{output}"
         );
+        for order in ["SourceFirst", "CurrentFirst"] {
+            let marker = format!(
+                "ROOT_ACK_LANE_MECHANISM order={order} actual_root_stream=true actual_source_files=true whole_product_ack=0 ordinary_c=0"
+            );
+            assert_eq!(
+                output
+                    .lines()
+                    .filter(|line| *line == marker.as_str())
+                    .count(),
+                1,
+                "each original terminal must run the real mechanism exactly once: {output}"
+            );
+        }
         println!("{output}");
     }
     Ok(())

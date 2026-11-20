@@ -40,6 +40,49 @@ pub(crate) struct RootObservationStream {
     end: Instant,
 }
 
+enum ObservationFrameExit {
+    Unfinished,
+    Failed(AgentdRootAuthorityError),
+    Restored,
+}
+
+// This guard outlives the nested frame future below. An error or unfinished
+// future drops its taken stream before this diagnostic runs. A successful
+// frame restores that same stream before marking Restored. No payload or
+// authority is retained in this record, and it controls no I/O or admission.
+struct ObservationFrameDiagnostic {
+    phase: &'static str,
+    exit: ObservationFrameExit,
+    stream_taken: bool,
+    error_kind: Option<std::io::ErrorKind>,
+    raw_os_error: Option<i32>,
+}
+
+impl Drop for ObservationFrameDiagnostic {
+    fn drop(&mut self) {
+        let (exit, error) = match &self.exit {
+            ObservationFrameExit::Restored => return,
+            ObservationFrameExit::Failed(error) => ("failed", Some(error)),
+            // Cancellation and unwinding are both unfinished future drops;
+            // this label does not claim which of them caused the drop.
+            ObservationFrameExit::Unfinished => ("unfinished-future-drop", None),
+        };
+        let _ = std::io::Write::write_fmt(
+            &mut std::io::stderr(),
+            format_args!(
+                "ROOT_OBSERVATION_DIAGNOSTIC phase={} exit={} class={:?} io_kind={:?} raw_os_error={:?} stream_taken={} thread={:?}\n",
+                self.phase,
+                exit,
+                error,
+                self.error_kind,
+                self.raw_os_error,
+                self.stream_taken,
+                std::thread::current().id(),
+            ),
+        );
+    }
+}
+
 impl RootObservationStream {
     /// Bootstrap inside the existing I/O-enabled runtime context, with sole
     /// ownership of an already connected stream and a pre-held root pidfd.
@@ -176,66 +219,111 @@ impl RootObservationStream {
             .exchange
             .try_acquire()
             .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
-        let mut stream = {
-            let mut slot = self
-                .stream
-                .try_lock()
-                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
-            slot.take().ok_or(AgentdRootAuthorityError::Unavailable)?
+        let mut diagnostic = ObservationFrameDiagnostic {
+            phase: "take-stream",
+            exit: ObservationFrameExit::Unfinished,
+            stream_taken: false,
+            error_kind: None,
+            raw_os_error: None,
         };
-        // Cancellation, malformed replies and every uncertain I/O error leave
-        // the original slot empty. No reconnect or automatic retry exists.
-        check_lifetime(self.root.get_ref())?;
-        let deadline = (Instant::now() + self.timeout).min(self.end);
-        if deadline <= Instant::now() {
-            return Err(AgentdRootAuthorityError::Unavailable);
-        }
-        let response = tokio::select! {
-            biased;
-            _ = self.root.readable() => return Err(AgentdRootAuthorityError::Unavailable),
-            _ = tokio::time::sleep_until(tokio::time::Instant::from_std(deadline)) => {
+        let result = async {
+            let mut stream = {
+                let mut slot = self
+                    .stream
+                    .try_lock()
+                    .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+                slot.take().ok_or(AgentdRootAuthorityError::Unavailable)?
+            };
+            diagnostic.stream_taken = true;
+            // Cancellation, malformed replies and every uncertain I/O error leave
+            // the original slot empty. No reconnect or automatic retry exists.
+            diagnostic.phase = "pre-lifetime";
+            check_lifetime(self.root.get_ref())?;
+            let deadline = (Instant::now() + self.timeout).min(self.end);
+            diagnostic.phase = "pre-exchange-deadline";
+            if deadline <= Instant::now() {
                 return Err(AgentdRootAuthorityError::Unavailable);
             }
-            response = framed_exchange(&mut stream, &request) => response?,
-        };
-        check_lifetime(self.root.get_ref())?;
-        let parsed =
-            serde_json::from_slice(&response).map_err(|_| AgentdRootAuthorityError::Unavailable)?;
-        if Instant::now() >= deadline {
-            return Err(AgentdRootAuthorityError::Unavailable);
+            let response = tokio::select! {
+                biased;
+                _ = self.root.readable() => {
+                    diagnostic.phase = "root-pidfd-select";
+                    return Err(AgentdRootAuthorityError::Unavailable);
+                }
+                _ = tokio::time::sleep_until(tokio::time::Instant::from_std(deadline)) => {
+                    diagnostic.phase = "deadline-select";
+                    return Err(AgentdRootAuthorityError::Unavailable);
+                }
+                response = framed_exchange(&mut stream, &request, &mut diagnostic) => response?,
+            };
+            diagnostic.phase = "post-lifetime";
+            check_lifetime(self.root.get_ref())?;
+            diagnostic.phase = "response-decode";
+            let parsed = serde_json::from_slice(&response)
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+            diagnostic.phase = "post-decode-deadline";
+            if Instant::now() >= deadline {
+                return Err(AgentdRootAuthorityError::Unavailable);
+            }
+            // The empty slot is the exclusive token for the complete exchange.
+            // Its mutex only protects synchronous take/restore, never I/O or an
+            // await. The original exchange permit excludes every other slot user,
+            // so restoring the same stream requires no synchronous lock wait.
+            diagnostic.phase = "restore-stream";
+            *self
+                .stream
+                .try_lock()
+                .map_err(|_| AgentdRootAuthorityError::Unavailable)? = Some(stream);
+            Ok(parsed)
         }
-        // The empty slot is the exclusive token for the complete exchange.
-        // Its mutex only protects synchronous take/restore, never I/O or an
-        // await. The original exchange permit excludes every other slot user,
-        // so restoring the same stream requires no synchronous lock wait.
-        *self
-            .stream
-            .try_lock()
-            .map_err(|_| AgentdRootAuthorityError::Unavailable)? = Some(stream);
-        Ok(parsed)
+        .await;
+        diagnostic.exit = match &result {
+            Ok(_) => ObservationFrameExit::Restored,
+            Err(error) => ObservationFrameExit::Failed(*error),
+        };
+        result
     }
 }
 
 async fn framed_exchange(
     stream: &mut tokio::net::UnixStream,
     request: &[u8],
+    diagnostic: &mut ObservationFrameDiagnostic,
 ) -> Result<Vec<u8>, AgentdRootAuthorityError> {
+    diagnostic.phase = "request-header-write";
     stream
         .write_all(&(request.len() as u32).to_be_bytes())
         .await
-        .map_err(unavailable)?;
-    stream.write_all(request).await.map_err(unavailable)?;
+        .map_err(|error| {
+            diagnostic.error_kind = Some(error.kind());
+            diagnostic.raw_os_error = error.raw_os_error();
+            unavailable(error)
+        })?;
+    diagnostic.phase = "request-body-write";
+    stream.write_all(request).await.map_err(|error| {
+        diagnostic.error_kind = Some(error.kind());
+        diagnostic.raw_os_error = error.raw_os_error();
+        unavailable(error)
+    })?;
     let mut prefix = [0; 4];
-    stream.read_exact(&mut prefix).await.map_err(unavailable)?;
+    diagnostic.phase = "response-header-read";
+    stream.read_exact(&mut prefix).await.map_err(|error| {
+        diagnostic.error_kind = Some(error.kind());
+        diagnostic.raw_os_error = error.raw_os_error();
+        unavailable(error)
+    })?;
+    diagnostic.phase = "response-length";
     let length = u32::from_be_bytes(prefix) as usize;
     if length == 0 || length > 16_384 {
         return Err(AgentdRootAuthorityError::Unavailable);
     }
     let mut response = vec![0; length];
-    stream
-        .read_exact(&mut response)
-        .await
-        .map_err(unavailable)?;
+    diagnostic.phase = "response-body-read";
+    stream.read_exact(&mut response).await.map_err(|error| {
+        diagnostic.error_kind = Some(error.kind());
+        diagnostic.raw_os_error = error.raw_os_error();
+        unavailable(error)
+    })?;
     Ok(response)
 }
 

@@ -1,0 +1,85 @@
+daemon_stage=historical.trace.request request_id=1 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=2 maximum=64 purpose=runtime.learning.historical-trust-read.v1
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_trust_client.rs:58
+daemon_stage=historical.trace.request request_id=3 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=4 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=5 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=6 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_historical_preparation.rs:98
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=7 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=8 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_freeze_operation.rs:160
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=9 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=10 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=11 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=12 maximum=64 purpose=runtime.learning.post-a-frozen-learning.v1
+daemon_stage=historical.trace.request request_id=13 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.prepared caller=hepta-agentd/src/cell_q24_prepared_learning.rs:216
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_operation.rs:135
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=14 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=15 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.prepared caller=hepta-agentd/src/production_post_a_q24.rs:144
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_operation.rs:135
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=16 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=17 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.prepared caller=hepta-agentd/src/config_root_learning.rs:37
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_operation.rs:135
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=18 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=19 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.prepared caller=hepta-agentd/src/production_post_a_q24.rs:193
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_operation.rs:135
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=20 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=21 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.prepared caller=hepta-agentd/src/cell_q24_learning_operation_lane.rs:43
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_operation.rs:135
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=22 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=23 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.prepared caller=hepta-agentd/src/cell_q24_learning_operation_lane.rs:43
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_operation.rs:135
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=24 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=25 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.prepared caller=hepta-agentd/src/cell_q24_learning_operation_lane.rs:43
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_operation.rs:135
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=26 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=27 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_historical_ledger.rs:155
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=28 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=29 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.prepared caller=hepta-agentd/src/learning_iteration_historical_source.rs:389
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_operation.rs:135
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=30 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.request request_id=31 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.stage work=restore
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_historical_ledger.rs:155
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical.trace.request request_id=32 maximum=64 purpose=runtime.learning.historical-task-read.v1
+daemon_stage=historical.trace.prepared caller=hepta-agentd/src/cell_q24_learning_historical_stage.rs:63
+daemon_stage=historical.trace.dataset caller=hepta-agentd/src/cell_q24_dataset_operation.rs:135
+daemon_stage=historical.trace.receipt caller=hepta-agentd/src/root_historical_learning_operation.rs:26
+daemon_stage=historical_client.lane_busy
+daemon_stage=historical_client.observe_before_action
+daemon_stage=historical.operation.result
+daemon_stage=historical.operation.fence
+daemon_stage=historical.stage.final_result error=OwnerUnavailable("original Q24 learning owner")
+daemon_stage=historical_client.fenced_after_exchange
+daemon_stage=historical_client.observe_before_action
+daemon_stage=historical.operation.result
+daemon_stage=historical.operation.fence
+daemon_stage=historical.dataset.operation
+daemon_stage=historical.continuation.original_result error=GenerationFenced("original historical learning source: original training material: original Dataset projection: original Root historical Dataset: original complete historical task read unavailable")
+daemon_stage=historical.delivery.original_result error=OwnerUnavailable("original Q24 learning owner")
+daemon_stage=historical.delivery.joined_result error=GenerationFenced("original historical learning source: original learning owner has an unresolved operation")
+hepta-agentd module=circuit-learning-delivery: runtime owner failure retained during shutdown
+Error: agentd protocol error: original Q24 publication binding: successor is closed

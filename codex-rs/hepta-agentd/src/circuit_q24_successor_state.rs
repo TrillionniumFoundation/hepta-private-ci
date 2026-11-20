@@ -317,6 +317,9 @@ impl SuccessorSlot {
     }
 }
 
+#[path = "circuit_q24_successor_ready.rs"]
+mod ready;
+
 #[cfg(test)]
 #[path = "circuit_q24_successor_state_tests.rs"]
 mod tests;

@@ -1,0 +1,12 @@
+tree fe037f5b6617fb647d416e0523685fa4ce08ef2f
+parent 9dfded9cecc74e39a19bccd14b9de9dc46c02c63
+author Qian QI <102159240+ProfHepta@users.noreply.github.com> 1795182399 -0500
+committer Qian QI <102159240+ProfHepta@users.noreply.github.com> 1795182399 -0500
+
+E6: expose original observation failure stages
+
+NoUpdate11 completed A and its observer, then reported an unresolved Root observation Unavailable error. Preserve the original errors and close order while recording payload-free peer frame phases and a local thread tag for service correlation.
+
+Migrate only the affected private CALLERS literal and its exact allowlist digest. Keep public APIs, wire limits, deadlines, authority checks and original cases unchanged.
+
+Exact four-file source passed formatting, both affected crate builds and project lint with no byte changes, plus 467 tests / 53 modules, 908 protected records, 438 affected boundaries and the full 1164-boundary CLI. Complete NoUpdate, cold D, Adopt and FinalUse remain unqualified.

@@ -118,6 +118,8 @@ pub enum OriginalCellQ24TaskLedgerErrorV1 {
     Binding(&'static str),
     #[error("task committed; original Terminal outcome is pending")]
     PendingOutcome,
+    #[error("original task generation retirement: {0}")]
+    Retirement(#[source] crate::AgentdError),
     #[error("original task ledger owner: {0}")]
     Owner(#[from] LearningOriginalOwnerErrorV1),
     #[error("original task ledger: {0}")]

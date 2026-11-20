@@ -1,0 +1,161 @@
+{
+  "additional_new_path_absence": [
+    "qa/b4-no-bypass/test_post_a_startup_source_closure.py"
+  ],
+  "current_cold_entity_is_unknown_for_all_new_six": true,
+  "inherited_six_before_and_three_absences": {
+    "actual_cold_shared_source_reads_performed_this_task": 0,
+    "files": [
+      {
+        "current_evidence": "Absent from complete 310-path common/cold/ordinary-parent difference union; ordinary baseline bytes retained",
+        "direct_cold_entity_readback_complete": false,
+        "expected_bytes": 7591,
+        "expected_git_blob": "b3dbbba9ab2f1613764aec3aa79e3fd6e2002239",
+        "expected_sha256": "d7b199fa69a406793ea62ce3fcbea15ebf4193c82f79374e909f1bbd86ce665b",
+        "path": "codex-rs/hepta-agentd/src/authority_host_completed_record.rs",
+        "required_before_future_application": "Read actual cold-composed target and require byte-exact baseline; mismatch requires new review, never forced replacement"
+      },
+      {
+        "current_evidence": "Absent from complete 310-path common/cold/ordinary-parent difference union; ordinary baseline bytes retained",
+        "direct_cold_entity_readback_complete": false,
+        "expected_bytes": 8337,
+        "expected_git_blob": "64386fbe9015d14ac0f294bf53af8d968eb756af",
+        "expected_sha256": "3ac98fd7f88c302739412336e058feaee35100deaea41886bfaa7259ac712b72",
+        "path": "codex-rs/hepta-agentd/src/authority_host_completed_signatures.rs",
+        "required_before_future_application": "Read actual cold-composed target and require byte-exact baseline; mismatch requires new review, never forced replacement"
+      },
+      {
+        "current_evidence": "Absent from complete 310-path common/cold/ordinary-parent difference union; ordinary baseline bytes retained",
+        "direct_cold_entity_readback_complete": false,
+        "expected_bytes": 17117,
+        "expected_git_blob": "419984870420c0f79b842b62b411d4e110a779e9",
+        "expected_sha256": "ea1819bd00aaadbad85d010cb3232c7809c2aa9f0e24ecef3e775dc9e61824c3",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "required_before_future_application": "Read actual cold-composed target and require byte-exact baseline; mismatch requires new review, never forced replacement"
+      },
+      {
+        "current_evidence": "Absent from complete 310-path common/cold/ordinary-parent difference union; ordinary baseline bytes retained",
+        "direct_cold_entity_readback_complete": false,
+        "expected_bytes": 18974,
+        "expected_git_blob": "02368945a73fc9029a6ff84bcc01085b5179e45a",
+        "expected_sha256": "677f41229a120530b239c9fb48d54c062402abb72729b0358a84017e7f6639cb",
+        "path": "codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_data_tests.rs",
+        "required_before_future_application": "Read actual cold-composed target and require byte-exact baseline; mismatch requires new review, never forced replacement"
+      },
+      {
+        "current_evidence": "Absent from complete 310-path common/cold/ordinary-parent difference union; ordinary baseline bytes retained",
+        "direct_cold_entity_readback_complete": false,
+        "expected_bytes": 8375,
+        "expected_git_blob": "8b635e3d78731cdd4add273d7f25806cb85d0e50",
+        "expected_sha256": "b55b8f516ee9de04a942601f3f71da68942b94c8b79940e4e8a0a0dfe8c50bd3",
+        "path": "qa/b4-no-bypass/test_completed_learning_acceptance_source_closure.py",
+        "required_before_future_application": "Read actual cold-composed target and require byte-exact baseline; mismatch requires new review, never forced replacement"
+      },
+      {
+        "current_evidence": "Absent from complete 310-path common/cold/ordinary-parent difference union; ordinary baseline bytes retained",
+        "direct_cold_entity_readback_complete": false,
+        "expected_bytes": 13176,
+        "expected_git_blob": "b3506d0d0b7dd01c48af4c5711fff04d25bf3fdf",
+        "expected_sha256": "01d144c839d01cbaed79f9a418c3d7045d55f010c421c5c48dbc2941fa1c4cc9",
+        "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+        "required_before_future_application": "Read actual cold-composed target and require byte-exact baseline; mismatch requires new review, never forced replacement"
+      }
+    ],
+    "new_test_path_absence_must_also_be_checked_before_application": [
+      "codex-rs/hepta-agentd/src/authority_host_completed_record_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_completed_tests.rs",
+      "codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_namespace_tests.rs"
+    ],
+    "not_a_missing_cold36_original": true,
+    "ordinary_baseline_must_not_be_reported_as_cold_entity_readback": true
+  },
+  "new_six_shared_before_readbacks": [
+    {
+      "expected_or_historical_identity": {
+        "bytes": 23627,
+        "kind": "regular",
+        "mode": 384,
+        "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+        "sha256": "75702ac778e4cdb4f84d096340e883a852f3b3bc2ee3380c8bfb3003bcd17c8f"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "required": "Read the actual isolated cold target completely under fixed file identity; mismatch returns to review.",
+      "status": "Only ordinary expected baseline retained; actual cold-composed entity is not established."
+    },
+    {
+      "expected_or_historical_identity": {
+        "bytes": 22451,
+        "kind": "regular",
+        "mode": 384,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+        "sha256": "18ee449e057942c8b3728dbb3664140d9302e8d946fd29dc1d372e615416d68c"
+      },
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+      "required": "Read the actual isolated cold target completely under fixed file identity; mismatch returns to review.",
+      "status": "Earlier resolved cold draft is byte-identical to ordinary9df/1a before; this is not a current host readback."
+    },
+    {
+      "expected_or_historical_identity": {
+        "bytes": 14594,
+        "kind": "regular",
+        "mode": 384,
+        "path": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+        "sha256": "1181da280922db3327d4ac2ee5e23333e76a1e996f8696bf7886f9d7156ef3e6"
+      },
+      "path": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+      "required": "Read the actual isolated cold target completely under fixed file identity; mismatch returns to review.",
+      "status": "Only ordinary expected baseline retained; actual cold-composed entity is not established."
+    },
+    {
+      "expected_or_historical_identity": {
+        "bytes": 8014,
+        "kind": "regular",
+        "mode": 384,
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "sha256": "bce1dc55035e85a2c72a4491d51fbb0db4b5bfec685e91389877f855d87ed870"
+      },
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "required": "Read the actual isolated cold target completely under fixed file identity; mismatch returns to review.",
+      "status": "Only ordinary expected baseline retained; actual cold-composed entity is not established."
+    },
+    {
+      "expected_or_historical_identity": {
+        "bytes": 2681,
+        "kind": "regular",
+        "mode": 420,
+        "path": "qa/b4-no-bypass/test_original_task_retirement_source_closure.py",
+        "sha256": "16dbb8377077b43a0f612981a843a1dd029dddb363d645b1ea5d81e31ad2c34c"
+      },
+      "path": "qa/b4-no-bypass/test_original_task_retirement_source_closure.py",
+      "required": "Read the actual isolated cold target completely under fixed file identity; mismatch returns to review.",
+      "status": "Earlier cold final-source preserved bytes equal ordinary9df before; this is not a current host readback."
+    },
+    {
+      "expected_or_historical_identity": {
+        "bytes": null,
+        "git_blob_from673_threeway": "e028f273a4bddcc3e00546e138aad1d6034c1b88",
+        "path": "qa/b4-no-bypass/test_post_a_c_recovery_source_closure.py",
+        "sha256": "900ff0172135b5c1e11e75d042912eb3825c7a3626e33ed35152462567fbe5eb"
+      },
+      "path": "qa/b4-no-bypass/test_post_a_c_recovery_source_closure.py",
+      "required": "Read the actual isolated cold target completely under fixed file identity; mismatch returns to review.",
+      "status": "Known cold-specific prior QA differs; complete cold body and present composed baseline must be read before any semantic merge."
+    }
+  ],
+  "no_host_calls_or_code_mutations_or_execution": true,
+  "other_blockers": [
+    "No actual complete ordinary NoUpdate14 PASS is supplied by this mapping.",
+    "New startup exact committed source/tree still null here; bind real future freeze after actual gates.",
+    "Cold673 original commit/raw metadata and present complete cold working-tree inventory remain outside this partial view; prior GitHub404 is retained, not rewritten.",
+    "Actual cold nextest/AGENTS/owner/lock/target and build-material availability must be reobserved; old environment observations are not current.",
+    "Cold-specific recovery QA900ff body is missing; ordinary097e→7ce12 cannot be copied over it.",
+    "Preserve all earlier cold/read65 semantic resolutions,55 cold-only boundaries,36 originals and3 explicit D fixture corrections; do not rebuild from these9 ordinary paths alone.",
+    "Generic recovery-C parent and20+1 preflight are not fresh-D. The exact UID0 fresh-D original parent must reconstruct real A/B/C retirement custody.",
+    "Adopt240 expiry/authority issue is not solved by this NoUpdate mapping; no use-grant or new production authority introduced."
+  ],
+  "source_body_known_missing": [
+    "qa/b4-no-bypass/test_post_a_c_recovery_source_closure.py"
+  ],
+  "total_absence_paths": 4,
+  "total_shared_before_paths": 12
+}

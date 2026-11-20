@@ -1,0 +1,146 @@
+{
+  "schema": "hepta-e6-settlement-scope-source-review-v1",
+  "status": "SOURCE_REVIEW_COMPLETE_SETTLEMENT_NOT_QUALIFIED",
+  "execution": {
+    "host": 0,
+    "native": 0,
+    "cargo": 0,
+    "model": 0,
+    "training": 0,
+    "tests": 0,
+    "signing": 0,
+    "credential_reads": 0,
+    "git_mutations": 0,
+    "private_api_read_only": true
+  },
+  "scope": {
+    "private_source": "1a9799686243c2be0ee393ba364e091029cfb944",
+    "chain_source": "de5f5766fe44fdc42507afe14b30873060c9e4d2",
+    "reused_FinalUse_source": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+    "remote_source_files": 17,
+    "original_master_E1_E6_plan_exact_artifact_not_located": true,
+    "absence_claim": "No universal absence claim. Existing retained E6 materials have not bound this E6 iteration to the identified settlement main test and original payment receipt."
+  },
+  "original_ordinary": {
+    "parent": "neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c",
+    "business_gate": "Actual Training, independently completed B Evaluation::NoUpdate, retained original bundle, actual selected C and original daemon/Root/source retirement; a closed source, missing owner, completed component test, or process exit alone does not pass.",
+    "root_read_budget": 64,
+    "qualification_limits": {
+      "human_independent_source_authentication": false,
+      "adoption": false,
+      "fresh_D_after_cold_recovery": false,
+      "FinalUse": false,
+      "settlement_eligibility": false,
+      "full_system_cost_complete": false
+    }
+  },
+  "original_joint_qualification": {
+    "whole_joint_native_or_numerical": false,
+    "independent_learning_gain": false,
+    "Circuit_necessity": false,
+    "native_original_owner_adoption": false,
+    "complete_native_NoUpdate": false,
+    "fresh_C_and_cold_fresh_D": false,
+    "FinalUse": false,
+    "settlement_eligible": false,
+    "production_eligible": false,
+    "full_system_cost_complete": false
+  },
+  "distinctions": [
+    {
+      "layer": "E6 research adoption",
+      "evidence": "Research JSON and journals",
+      "settlement": false,
+      "limitation": "Original source explicitly forbids granting native on-chain settlement."
+    },
+    {
+      "layer": "FinalUse",
+      "evidence": "Durable epoch/nonce claim plus separately bound use context",
+      "settlement": false,
+      "limitation": "The 40-byte frame is a nonce consumption record, not cost/escrow/payment completion evidence."
+    },
+    {
+      "layer": "AuthBus",
+      "evidence": "SignedSettlementEvidence and durable reservation/quota transition",
+      "existing_entry": "AuthBusAuthorityHost::settle / store.settle",
+      "limitation": "Concrete Bao product composition is independent of the observed E6 and native Chain payment owner; no current E6 binding was demonstrated."
+    },
+    {
+      "layer": "Chain native funded Task",
+      "evidence": "Original funded contract, completion/delivery operation, signed payment and current native-owner observation",
+      "existing_entry": "Node::observe_current_native_task_operation_v3",
+      "limitation": "Existing native development-ledger fixture/observer is not external-customer money or automatic E6 qualification."
+    },
+    {
+      "layer": "Cross-repository learning business reader",
+      "evidence": "Same-operation declared source/material/request/result mapping",
+      "limitation": "Read-only structural composition; no authenticated import or payment authority. Retained examples economics:[]; all settlement flags false."
+    }
+  ],
+  "existing_source_test_anchors": [
+    "completed_settlement_is_conservative_and_idempotent",
+    "authbus_product_path_reserves_fences_final_use_and_settles_observed_cost",
+    "authbus_timeout_keeps_quota_held_as_indeterminate",
+    "unknown_output_uses_native_once_fence_and_real_delivery_on_both_backends",
+    "current_paid_observation_rechecks_original_receipts_and_settlement_on_both_backends"
+  ],
+  "missing_same_iteration_binding": {
+    "current_E6_original_settlement_receipt": null,
+    "current_E6_funded_request_pre_dispatch_mapping": null,
+    "current_E6_original_delivery_and_payment_operation": null,
+    "current_E6_native_owner_current_paid_observation": null,
+    "current_E6_authenticated_cross_repository_mapping": null,
+    "originally_frozen_E6_settlement_main_test_binding": null,
+    "note": "These are unresolved bindings to existing contracts, not newly authorized executions or an amended E6 acceptance plan."
+  },
+  "receipt_fields_from_existing_contracts": {
+    "authbus": [
+      "issuer_id",
+      "key_epoch",
+      "reservation_id",
+      "operation_id",
+      "status",
+      "observed_cost",
+      "terminal_evidence_digest",
+      "observed_at_ms",
+      "expires_at_ms",
+      "signature",
+      "settlement_digest",
+      "reservation_revision",
+      "quota state",
+      "authority checkpoint"
+    ],
+    "chain": [
+      "claim",
+      "task",
+      "binding",
+      "operation",
+      "target_scope_commitment",
+      "target_receipt_commitment",
+      "original_full_contract",
+      "original_delivery_operation",
+      "current_delivery_anchor",
+      "historical_payment",
+      "current_payment",
+      "observed_anchor",
+      "m12_checkpoint",
+      "native_status=settled",
+      "remaining_native_escrow=0",
+      "current_branch_delivery_membership",
+      "current_branch_payment_membership"
+    ],
+    "mapping": [
+      "original learning operation/invocation/source pair",
+      "pre-dispatch funded request digest",
+      "original completed learning result digest",
+      "same operation payment stage",
+      "original effect intent",
+      "effect_outcome=COMMITTED"
+    ]
+  },
+  "inference": "Passing a future ordinary NoUpdate or cold/fresh-D test would only supply its stated native use evidence; it does not supply these separate original settlement owner facts.",
+  "qualified": false,
+  "settlement_verified": false,
+  "FinalUse_qualification_not_upgraded": true,
+  "no_new_budget_or_acceptance": true
+}

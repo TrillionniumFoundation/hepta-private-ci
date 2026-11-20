@@ -2,6 +2,7 @@
 
 use super::HostIssuerPeer;
 use super::HostIssuerTransportError;
+use super::channel::ChannelWriteDiagnostic;
 use super::channel::OwnerChannel;
 use super::io_error;
 use std::net::Shutdown;
@@ -143,7 +144,14 @@ impl HostAuthorityPeerChannel {
         handle: impl FnOnce(&[u8], Instant) -> Result<Vec<u8>, HostIssuerTransportError>,
     ) -> Result<bool, HostIssuerTransportError> {
         let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
-        let result = self.exchange_inner(&mut stream, handle);
+        let mut failure_stage: &'static str = "peer.exchange.enter";
+        let mut header_diagnostic = ChannelWriteDiagnostic::default();
+        let result = self.exchange_inner(
+            &mut stream,
+            handle,
+            &mut failure_stage,
+            &mut header_diagnostic,
+        );
         match result {
             Ok(true) => {
                 self.stream = Some(stream);
@@ -152,6 +160,30 @@ impl HostAuthorityPeerChannel {
             Ok(false) => Ok(false),
             Err(error) => {
                 let _ = stream.shutdown(Shutdown::Both);
+                // Preserve the original error and close before diagnostics.
+                // Labels and an anonymous local thread tag contain no request or owner data.
+                let _ = std::io::Write::write_fmt(
+                    &mut std::io::stderr(),
+                    format_args!(
+                        "root_stage={failure_stage} thread={:?}\n",
+                        std::thread::current().id(),
+                    ),
+                );
+                if failure_stage == "peer.response-header-write" {
+                    let _ = std::io::Write::write_fmt(
+                        &mut std::io::stderr(),
+                        format_args!(
+                            "root_stage=peer.response-header-detail thread={:?} io_phase={} error_kind={:?} raw_os_error={:?} socket_revents={:?} owner_revents={:?} header_written={}\n",
+                            std::thread::current().id(),
+                            header_diagnostic.phase,
+                            header_diagnostic.error_kind,
+                            header_diagnostic.raw_os_error,
+                            header_diagnostic.socket_revents.map(|flags| flags.bits()),
+                            header_diagnostic.owner_revents.map(|flags| flags.bits()),
+                            header_diagnostic.written,
+                        ),
+                    );
+                }
                 Err(error)
             }
         }
@@ -161,7 +193,10 @@ impl HostAuthorityPeerChannel {
         &self,
         stream: &mut UnixStream,
         handle: impl FnOnce(&[u8], Instant) -> Result<Vec<u8>, HostIssuerTransportError>,
+        failure_stage: &mut &'static str,
+        header_diagnostic: &mut ChannelWriteDiagnostic,
     ) -> Result<bool, HostIssuerTransportError> {
+        *failure_stage = "peer.first-byte";
         let mut length = [0; 4];
         if self
             .owner
@@ -171,22 +206,36 @@ impl HostAuthorityPeerChannel {
             return Ok(false);
         }
         let deadline = self.owner.deadline(self.policy.timeout);
+        *failure_stage = "peer.request-header";
         self.owner.read_until(stream, &mut length[1..], deadline)?;
         let length = u32::from_be_bytes(length) as usize;
+        *failure_stage = "peer.request-length";
         if length == 0 || length > self.policy.request_bound {
             return Err(HostIssuerTransportError::InvalidRequest);
         }
         let mut bytes = vec![0; length];
+        *failure_stage = "peer.request-body";
         self.owner.read_until(stream, &mut bytes, deadline)?;
+        *failure_stage = "peer.pre-handler-owner";
         self.owner.check(deadline)?;
+        *failure_stage = "peer.handler";
         let response = handle(&bytes, deadline)?;
+        *failure_stage = "peer.post-handler-owner";
         self.owner.check(deadline)?;
+        *failure_stage = "peer.response-bound";
         if response.is_empty() || response.len() > self.policy.response_bound {
             return Err(HostIssuerTransportError::Unavailable);
         }
-        self.owner
-            .write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?;
+        *failure_stage = "peer.response-header-write";
+        self.owner.write_until_with_diagnostic(
+            stream,
+            &(response.len() as u32).to_be_bytes(),
+            deadline,
+            Some(header_diagnostic),
+        )?;
+        *failure_stage = "peer.response-body-write";
         self.owner.write_until(stream, &response, deadline)?;
+        *failure_stage = "peer.post-response-owner";
         self.owner.check(deadline)?;
         Ok(true)
     }

@@ -1,0 +1,75 @@
+{
+  "status": "READBACK_OF_EXISTING_TERMINAL_RECORDS_ONLY",
+  "source": "527e62b68bdf704efdd8a521c5a95c664bf69172",
+  "pipeline": {
+    "path": "e6_owner_work/completion_namespace_failure_1/PIPELINE_RESULT.json",
+    "sha256": "a2c904e349d24674b33b90b39473214b2372b478ff06b94dd74d50bf9ac5c320"
+  },
+  "wrapper": {
+    "path": "e6_owner_work/completion_namespace_failure_1/WRAPPER_RESULT.json",
+    "sha256": "bda9c9b79a193fa65f5cffb56399d0fb1f7437702a77eaa14087419dbba50ade"
+  },
+  "actual_native_groups": [
+    {
+      "name": "original-native11",
+      "native_cases": 11,
+      "successful": true,
+      "exit_code": 0
+    },
+    {
+      "name": "retirement-native16",
+      "native_cases": 16,
+      "successful": true,
+      "exit_code": 0
+    },
+    {
+      "name": "historical-delivery-native5",
+      "native_cases": 5,
+      "successful": true,
+      "exit_code": 0
+    },
+    {
+      "name": "feature-ack-native2",
+      "native_cases": 2,
+      "successful": true,
+      "exit_code": 0
+    },
+    {
+      "name": "new-ready-refusal-native2",
+      "native_cases": 2,
+      "successful": true,
+      "exit_code": 0
+    },
+    {
+      "name": "new-completed-data-native11",
+      "native_cases": 11,
+      "successful": true,
+      "exit_code": 0
+    }
+  ],
+  "root_components": [
+    {
+      "name": "root-completed-refusal-original-bounds",
+      "case": "authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity",
+      "passed": true,
+      "requires_actual_uid0": true,
+      "full_learning_acceptance": false
+    },
+    {
+      "name": "root-completed-refusal-observer-namespace",
+      "case": "neuron_generation_current::initial_root_tests::ordinary::cold_acceptance_data::namespace_tests::root_completed_refusal_observer_matches_registered_owner",
+      "passed": false,
+      "requires_actual_uid0": true,
+      "full_learning_acceptance": false
+    }
+  ],
+  "wrapper_terminal": {
+    "status": "driver_failed",
+    "successful": false,
+    "error": "RuntimeError('Original Root completion namespace component failed; ordinary NoUpdate not started: root-completed-refusal-observer-namespace')"
+  },
+  "actual_root_mechanism_parent_executions": 0,
+  "actual_NoUpdate10_parent_executions": 0,
+  "independent_static_repair_review_sha256": "21505fe3b0f8c123fcd4a4b553f4b38e49ba93812a9a413d193bf403f60d6b2f",
+  "new_executions": 0
+}

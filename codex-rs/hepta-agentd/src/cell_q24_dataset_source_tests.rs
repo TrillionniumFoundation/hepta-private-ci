@@ -7,3 +7,15 @@ impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
         self.original.withdraw_source(run_id)
     }
 }
+
+#[cfg(target_os = "linux")]
+impl CircuitTaskSourceReadbackV1<codex_hepta_neuron::FileAnchorWitnessStore> {
+    // The same private writer/lock, solely for installing the already-running
+    // original Feature owner into a component slot. No product API gains it.
+    pub(crate) fn original_successor_owner_for_test(
+        &self,
+    ) -> std::sync::Arc<DurableCircuitTaskSourceV1<codex_hepta_neuron::FileAnchorWitnessStore>>
+    {
+        std::sync::Arc::new(self.original.clone())
+    }
+}

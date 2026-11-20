@@ -28,6 +28,7 @@ impl OriginalCellQ24RootPublicationDriverV1 {
         state: Arc<AgentdState>,
         identity: AgentdIdentity,
         slot: Arc<crate::circuit_q24_successor::SuccessorSlot>,
+        proof: OriginalSuccessorProof,
     ) -> Result<OriginalCellQ24PreparedPublicationV1, Error> {
         let original: &OriginalDecision = &self.driver.original;
         original.decision.require_new_work()?;
@@ -49,7 +50,7 @@ impl OriginalCellQ24RootPublicationDriverV1 {
         let snapshot = original.decision.snapshot.clone();
         let manifest = original.manifest.clone();
         owners
-            .with_original_publication(snapshot, manifest, move || {
+            .with_original_successor_publication(snapshot, manifest, proof, move || {
                 self.driver.original.decision.require_new_work()?;
                 let mut selected = self.selected;
                 revalidate(&self.driver, &mut selected)?;
@@ -78,6 +79,7 @@ impl OriginalCellQ24PreparedPublicationV1 {
         state: Arc<AgentdState>,
         identity: AgentdIdentity,
         slot: Arc<crate::circuit_q24_successor::SuccessorSlot>,
+        proof: OriginalSuccessorProof,
     ) -> Result<PublishedCircuitFeatureTaskV1, Error> {
         let original: &OriginalDecision = &self.original;
         original.decision.require_new_work()?;
@@ -91,7 +93,7 @@ impl OriginalCellQ24PreparedPublicationV1 {
         let snapshot = original.decision.snapshot.clone();
         let manifest = original.manifest.clone();
         owners
-            .with_original_publication(snapshot, manifest, move || {
+            .with_original_successor_publication(snapshot, manifest, proof, move || {
                 self.original.decision.require_new_work()?;
                 validation::require_executable_feature(
                     &self.original.decision.bundle,

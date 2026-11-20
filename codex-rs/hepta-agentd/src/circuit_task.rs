@@ -39,6 +39,10 @@ pub(crate) use source::source_close::OriginalCircuitSourceCloseV1;
 #[cfg(target_os = "linux")]
 pub(crate) use source::source_close::OriginalCircuitSourceClosedV1;
 #[cfg(all(test, target_os = "linux"))]
+pub(crate) use source::tests::ack_fixture::AckSourceFixture;
+#[cfg(all(test, target_os = "linux"))]
+pub(crate) use source::tests::ack_fixture::AckSourceStage;
+#[cfg(all(test, target_os = "linux"))]
 pub(crate) use source::tests::data::publication_data_fixture;
 #[cfg(all(test, target_os = "linux"))]
 pub(crate) use source::tests::data::publication_data_fixture_with_observation;

@@ -25,8 +25,8 @@ class PostAMainSourceTests(unittest.TestCase):
             "codex_hepta_agentd::AgentdProductionLaunch::assemble_original_post_a_q24(", "launch.run(config, arg0_paths).await?"))
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         self.assertEqual(rows["ordinary_post_a_q24_assembly"]["product_callers"], [AGENT + "main.rs"])
-        for key in ("production_original_q24_assemble", "q24_successor_launch_prepare",
-                    "q24_historical_delivery_capture", "q24_historical_delivery_install"):
+        for key in ("q24_original_historical_config_assembly", "q24_successor_launch_prepare",
+                    "q24_historical_delivery_capture_in_operation", "q24_historical_delivery_install_in_operation"):
             self.assertIn(MAIN, rows[key]["product_callers"])
 
     def test_profile_requires_original_handoffs_and_authbus_before_fd_ownership(self):
@@ -59,11 +59,24 @@ class PostAMainSourceTests(unittest.TestCase):
             "OriginalFiles::new()?", "self.take_original_historical_read()?",
             "RootHistoricalTaskReadClientV1::observe_original_task(",
             "OriginalHistoricalTaskReadReceiptV1::activate_current_learning_trust(",
-            "CellQ24DatasetTaskV1::capture_historical(",
-            "CellQ24DatasetFreezePreparationV1::capture_historical(",
+            "CellQ24DatasetFreezePreparationV1::capture_original_historical_task(",
             "owners::SigningFilesData::freeze_original(",
             "OriginalHistoricalTaskReadReceiptV1::install_original_post_a_learning(",
             "OriginalPostAFrozenLearningAckV1::require_prepared_scope(&ack, prepared.scope())?"))
+        # The existing combined constructor still captures the real task
+        # and freezes from the same borrowed Root operation.
+        self.check_markers(AGENT + "cell_q24_dataset_historical_preparation.rs",
+                           "fn capture_original_historical_task(", (
+            "OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?",
+            "OriginalHistoricalLearningTrustV1::with_original_operation(&trust, |read|",
+            "HistoricalDatasetLedgerV1::capture_original_task_in_operation(",
+            "Self::capture_historical_in_operation(config, ledger, &operation)"))
+        self.check_markers(AGENT + "cell_q24_dataset_historical_ledger.rs",
+                           "fn capture_original_task_in_operation(", (
+            "OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?",
+            "CellQ24DatasetTaskV1::capture_historical_in_operation(",
+            "OriginalHistoricalOperationV1::read_for(operation, &trust, &receipt,",
+            "tasks: vec![task]"))
         for occurrence in range(6):
             self.reject_removal(MAIN, "fn assemble_original_post_a_q24(",
                                 "self.require_original_post_a_context(&identity)?", occurrence)
@@ -83,11 +96,11 @@ class PostAMainSourceTests(unittest.TestCase):
     def test_real_learning_and_waiting_c_are_bound_to_the_same_registered_history(self):
         self.check_markers(MAIN, "fn assemble_original_post_a_q24(", (
             "config.with_root_learning_inputs(learning)?", "self.q24_model = Some(model)",
-            "OriginalHistoricalLearningTrustV1::original_stage_authorities(&trust)?",
-            "owners::JournalData::open(", "owners::StageFilesData::into_original_inputs(",
-            "RegisteredHistoricalLearningSourceV1::capture_original_historical_source(",
-            "self.assemble_q24_learning(config, inputs).await?", "take_learning_iteration_bootstrap()",
-            "delivery.open_witness()?", "crate::LearningIterationRuntimeBootstrapV1::with_original_historical_source(",
+            "OriginalPreparedReadV1::original_stage_authorities(",
+            "owners::JournalData::open(", "owners::StageFilesData::prepare_original_inputs_in_operation(",
+            "RegisteredHistoricalLearningSourceV1::capture_original_historical_source_in_operation(",
+            ".assemble_original_historical_q24_learning(config, inputs, Arc::clone(&receipt))", "take_learning_iteration_bootstrap()",
+            "delivery.open_witness()?", "crate::LearningIterationRuntimeBootstrapV1::with_original_historical_source_in_operation(",
             "config.with_learning_iteration_bootstrap(bootstrap)?",
             "prepare_original_q24_successor(config, data.queue_capacity)",
             "OriginalPostAContinuationV1::from_original_inputs(",

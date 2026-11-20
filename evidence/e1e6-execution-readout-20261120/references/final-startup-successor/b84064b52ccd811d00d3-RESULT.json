@@ -1,0 +1,138 @@
+{
+  "successful": true,
+  "source_clean": true,
+  "scanned_inputs_byte_identical": true,
+  "source": "8ce582b0a8619ff9250bc3a0098456112110ef82",
+  "tree": "698ebaaf9cd8706a1850e2531aeb0bc2c37a1f25",
+  "parent": "1f672df3472cc6534ff267fbec9b626a3d710fe6",
+  "previous_isolated_head": "41a0fd9bbbc30051f1e7492cd17eeeb5337aa7a0",
+  "parent_object_reconstruction": {
+    "source": "1f672df3472cc6534ff267fbec9b626a3d710fe6",
+    "tree": "10a995ef976a74fddf2d8653b42398c9390307c6",
+    "parent": "41a0fd9bbbc30051f1e7492cd17eeeb5337aa7a0",
+    "temporary_index": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/observation-io-frozen-source-1/parent-source.index",
+    "files": [
+      {
+        "path": ".github/blob-size-allowlist.txt",
+        "input_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/observation-io-compile-project-fix-3/before-rebind/.github/blob-size-allowlist.txt",
+        "bytes": 15170,
+        "sha256": "d2eb2b1b428869046acf852981084a757fdd3ffbc5b22f0644b2b2b1b88def5d",
+        "git_blob": "2e07ec79991377bc5938246da040c62dbccfa41d"
+      },
+      {
+        "path": "CALLERS.toml",
+        "input_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/observation-io-compile-project-fix-3/before-rebind/CALLERS.toml",
+        "bytes": 1798411,
+        "sha256": "f594a380996ef7c3f2256b7a3a2837e3266885b736f5882e91ae6b7a5eb24c06",
+        "git_blob": "a97fc97c41d2deccc4c6b15d68b63a8c3610c633"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "input_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "bytes": 26249,
+        "sha256": "6e49a89a57142b012497a1e7e25ff085a24ab54235c46827f22751f9b4c87eae",
+        "git_blob": "a9ee180b6b1999f57e5d7ff5bf99420b7fdf560d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+        "input_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs/hepta-agentd/src/root_observation_stream.rs",
+        "bytes": 14577,
+        "sha256": "656eea5ac3cd9a23ef580b46e7f898ad2b072ff202d7eb83cd8fc7107465474b",
+        "git_blob": "cd353d4338d96ff6c62357dab06b5920aa959a94"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+        "input_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs/hepta-contracts/src/authority_host_channel.rs",
+        "bytes": 9061,
+        "sha256": "ba38c594b4b875efb09c759262c24858abb15d34cfc51a4c6f42acd48552096e",
+        "git_blob": "14143850bd27b4a694fde84850ff8d5e3f991b07"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "input_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "bytes": 10409,
+        "sha256": "d1104f360996adf020450449f38637edf91fa379cc8184ee6bfb7439020dbc4a",
+        "git_blob": "8c4978b96aeaa5183db12804e53a1b03db45983e"
+      }
+    ],
+    "full_parent_tree_reconstructed": true,
+    "real_index_unchanged": true,
+    "raw_commit_sha256": "11fd0dc22a3537fb1ed5fe46acf8214a45ea5df8ebc02357e3870acb0a248b15"
+  },
+  "source_inventory_sha256": "019cee0f93b88145076b4a837c2bbdfdbd77181eeafa91dd35e622b1ace41d72",
+  "source_files": 15813,
+  "frozen_at_ns": "1795211203303005827",
+  "source_gate_sha256": "37fdeef3466f56e35939682812f1522c8581436edec7743e3dc1a9332c810e47",
+  "changed_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/root_authority_session.rs",
+    "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+    "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+    "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+    "qa/b4-no-bypass/test_post_a_installation_source_closure.py"
+  ],
+  "protected_rows": 908,
+  "classified_boundaries": 1165,
+  "verifier_unchanged": true,
+  "typed_matcher_unchanged": true,
+  "original_blob_policy_tests": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_blob_size_policy.py"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.6057481961324811,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "401059e9715165a6aa1d3a7082bec4a37cb91b90c04f8da30ee0fc9c7c206644"
+  },
+  "exact_source_blob_policy": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "scripts/check_blob_size.py",
+      "--base",
+      "d83f70f38137a99a86a3afd122199ba9cdae4f79",
+      "--head",
+      "8ce582b0a8619ff9250bc3a0098456112110ef82",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.47499158419668674,
+    "stdout_sha256": "2a5bf0b11050dd03f336b50e86ed7874283cdf81ea6c90a9396d5ebc6ed869e7",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "project_justfix_result_sha256": "2a0a3689819bf7440fe57d5a390b5a913d91d65782f3e67f7722c8e795d9325e",
+  "project_justfix_passed": true,
+  "format_result_sha256": "91bdcd9b55fc9af2903c581b3cf06cd209631e0d92813e037218a7992c247b0a",
+  "diagnostic_only_delta": true,
+  "demonstrated_transport_repair": false,
+  "inherited_startup_preflight_serialization": true,
+  "original_history_and_failed_gates_preserved": true,
+  "source_first_ACK_order_and_failure_diagnostics": true,
+  "successor_admissions_inside_actual_stage": true,
+  "ready_hint_is_authority": false,
+  "real_ready_fixture_is_registered_root_aggregate": false,
+  "original_product_authorization_guards_retained": true,
+  "root_mechanism_is_full_product_ack": false,
+  "same_run_replay_serialization": false,
+  "native_runs": 0,
+  "root_read_cap": 64,
+  "static_whole_fresh_parent_frames": 64,
+  "static_budget_is_not_native_result": true,
+  "deadlines_changed": false,
+  "owner_wall_seconds": 1.9705487871542573,
+  "original_workspace_mutated": false,
+  "original_workspace_scope": "Earlier operation-scope/cold workspaces are unchanged; only this isolated source HEAD is advanced.",
+  "isolated_workspace_head_advanced": true
+}

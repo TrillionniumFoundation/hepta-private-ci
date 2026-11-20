@@ -1,0 +1,172 @@
+{
+  "input_groups": [
+    {
+      "id": "startup_policy_1",
+      "selection": "original_manifest_members_plus_named_extras",
+      "root": "e6_startup_policy_candidate_1",
+      "extras": [
+        "ROOT_FROZEN_POLICY_REVIEW.json"
+      ]
+    },
+    {
+      "id": "startup_policy_2",
+      "selection": "original_manifest_members_plus_named_extras",
+      "root": "e6_startup_policy_candidate_2",
+      "extras": [
+        "ROOT_QA_FORMAT_REVIEW.json"
+      ]
+    },
+    {
+      "id": "startup_policy_peer",
+      "selection": "original_manifest_members_plus_named_extras",
+      "root": "e6_noupdate13_startup_policy_peer_1",
+      "extras": []
+    },
+    {
+      "id": "startup_product_peer",
+      "selection": "original_manifest_members_plus_named_extras",
+      "root": "e6_noupdate13_startup_candidate_peer_1",
+      "extras": []
+    },
+    {
+      "id": "startup_lane_diagnosis",
+      "selection": "original_manifest_members_plus_named_extras",
+      "root": "e6_noupdate13_startup_lane_review_1",
+      "extras": []
+    },
+    {
+      "id": "material_controller_peer",
+      "selection": "original_manifest_members_plus_named_extras",
+      "root": "e6_dependency_material_recovery_peer_1",
+      "extras": []
+    },
+    {
+      "id": "startup_product_1",
+      "selection": "finite_list_observed_under_named_completed_directory",
+      "root": "e6_owner_work/historical_startup_candidate/rev1",
+      "meaning": "static_product_candidate_and_exact_before_sources",
+      "atomic_directory_snapshot_claimed": false
+    },
+    {
+      "id": "startup_qa_initial_draft",
+      "selection": "finite_list_observed_under_named_completed_directory",
+      "root": "e6_owner_work/historical_startup_candidate/rev2",
+      "meaning": "unexecuted_initial_qa_draft_retained",
+      "atomic_directory_snapshot_claimed": false
+    },
+    {
+      "id": "recovery_preflight_1",
+      "selection": "finite_list_observed_under_named_completed_directory",
+      "root": "e6_owner_work/historical_startup_recovery/rev1",
+      "meaning": "actual_bounded_metadata_preflight_and_original_readback",
+      "atomic_directory_snapshot_claimed": false
+    },
+    {
+      "id": "recovery_preflight_2",
+      "selection": "finite_list_observed_under_named_completed_directory",
+      "root": "e6_owner_work/historical_startup_recovery/rev2",
+      "meaning": "actual_bounded_metadata_preflight_and_original_readback",
+      "atomic_directory_snapshot_claimed": false
+    },
+    {
+      "id": "recovery_preflight_3",
+      "selection": "finite_list_observed_under_named_completed_directory",
+      "root": "e6_owner_work/historical_startup_recovery/rev3",
+      "meaning": "actual_bounded_metadata_preflight_and_original_readback",
+      "atomic_directory_snapshot_claimed": false
+    },
+    {
+      "id": "cargo_primary_source_support",
+      "selection": "finite_list_observed_under_named_completed_directory",
+      "root": "e6_owner_work/historical_startup_recovery/primary_cargo",
+      "meaning": "previously_retrieved_primary_source_support_no_new_network",
+      "atomic_directory_snapshot_claimed": false
+    },
+    {
+      "id": "material_controller_design_1",
+      "selection": "finite_list_observed_under_named_completed_directory",
+      "root": "e6_owner_work/historical_startup_recovery/material_plan_1",
+      "meaning": "historical_design_and_existing_offline_mechanism_evidence_no_host_material_qualification",
+      "atomic_directory_snapshot_claimed": false
+    },
+    {
+      "id": "material_controller_design_2",
+      "selection": "finite_list_observed_under_named_completed_directory",
+      "root": "e6_owner_work/historical_startup_recovery/material_plan_2",
+      "meaning": "historical_design_and_existing_offline_mechanism_evidence_no_host_material_qualification",
+      "atomic_directory_snapshot_claimed": false
+    },
+    {
+      "id": "material_attempt_1",
+      "selection": "finite_list_observed_under_named_completed_directory",
+      "root": "e6_owner_work/historical_startup_recovery/material_plan_3",
+      "meaning": "actual_failed_material_attempt_plus_controller_readbacks_and_existing_offline_controls",
+      "atomic_directory_snapshot_claimed": false
+    },
+    {
+      "id": "format_template_only",
+      "selection": "finite_list_observed_under_named_completed_directory",
+      "root": "e6_owner_work/historical_startup_format/rev1",
+      "meaning": "reviewed_template_no_actual_format_execution_in_this_intake",
+      "atomic_directory_snapshot_claimed": false
+    }
+  ],
+  "excluded_generated_files": [],
+  "future": {
+    "status": "PREPARATORY_SLOTS_NOT_EXECUTION_RECEIPTS",
+    "root_session_amendment": {
+      "source": "Explicit parent task message; this transcription is not a credential, controller or source protocol modification.",
+      "scope": "Dependency material continuation only; original native/model/experiment budgets unchanged.",
+      "remaining_work_seconds": 500,
+      "cumulative_returned_body_bytes_limit": 536870912,
+      "body_bytes_already_consumed": 28101366,
+      "body_bytes_remaining_arithmetic": 508769546,
+      "cumulative_git_command_limit": 80,
+      "git_commands_already_consumed": 69,
+      "git_commands_remaining_arithmetic": 11,
+      "maximum_get_attempts_per_exact_package_across_two_owners": 2,
+      "eligible_retry_errors": "Only the specifically reviewed transport failures; exact controller/error set still to be bound.",
+      "original_attempt1_retry_history": 0
+    },
+    "slots": [
+      {
+        "id": "material_continuation",
+        "known_preparation_directory": "e6_owner_work/historical_startup_recovery/material_resume_1",
+        "controller_manifest": null,
+        "payload": null,
+        "owner_start": null,
+        "actual_result": null,
+        "status": "CLOUD_PREPARATION_ONLY_AS_OF_PARENT_HANDOFF_NOT_INCLUDED"
+      },
+      {
+        "id": "actual_format_and_precise_policy_rebind",
+        "source_manifest": null,
+        "owner_start": null,
+        "actual_result": null,
+        "format_delta": null,
+        "status": "PENDING_SUCCESSFUL_MATERIAL_SEAL_AND_EXACT_PAYLOAD"
+      },
+      {
+        "id": "actual_compile_lint",
+        "source_manifest": null,
+        "owner_start": null,
+        "actual_result": null,
+        "status": "NOT_ADMITTED_BY_MATERIAL_OR_FOCUSED_QA_RESULTS"
+      },
+      {
+        "id": "full_original_source_gates_freeze_native",
+        "source_manifest": null,
+        "owner_start": null,
+        "actual_result": null,
+        "status": "PENDING_ORIGINAL_GATES_WITHOUT_INHERITED_QUALIFICATION"
+      }
+    ]
+  },
+  "explicit_limits": [
+    "The original 1a NoUpdate13 failure is not changed by receipt restoration or dependency material retrieval.",
+    "The 256 finite previous host paths include 6 actual missing observations; this is not a business physical closure.",
+    "Local file/index copies are an evidence selection, not a complete host/cache or original-private-material snapshot.",
+    "Reviewed format templates and offline source controls grant no compile or native qualification.",
+    "Future inputs, final pack, source identity and publication remain pending."
+  ]
+}

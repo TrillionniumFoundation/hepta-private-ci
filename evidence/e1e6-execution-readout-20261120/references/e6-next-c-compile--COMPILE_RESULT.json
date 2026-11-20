@@ -1,0 +1,112 @@
+{
+  "status": "completed",
+  "successful": true,
+  "source_parent": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "started_at_ns": "1795187108087686168",
+  "native_cases": 0,
+  "model_calls": 0,
+  "original_parent_runs": 0,
+  "automatic_retry": false,
+  "original_deadlines_changed": false,
+  "root_read_budget": 64,
+  "original_failed_parent_retained": true,
+  "retained_prior_native_elf": {
+    "original_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target/debug/deps/codex_hepta_agentd-ec11b7f5a2c42017",
+    "retained_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/c-generation-drain-compile-project-fix-1/retained-dbd6-agentd-test-binary",
+    "sha256": "c3d1fce0ebe0bae8820b566d01da29bc19369fee4fd0d509e28c433cc237c19a",
+    "bytes": 1206628968,
+    "device": 66306,
+    "inode": 53511783,
+    "mode": "0555",
+    "original_bytes_and_mode_unchanged": true
+  },
+  "retained_component_result_sha256": "98aff6cb4739c04a2e6b4bfb4fdc60d72003f1d6df78ac43df91ec4286255ef0",
+  "source_before_sha256": "20fe46de4b63f5a2bcce469113ebe27b7514f942c7f960a71e4dabaa4f643d0f",
+  "runner_sha256": "4e9ec5ede76e206bf52b836216d4951cf13719a6edccd71c8f805a7c60034b19",
+  "changed_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+    "qa/b4-no-bypass/test_original_task_retirement_source_closure.py"
+  ],
+  "new_paths": [],
+  "product_sources_unchanged": false,
+  "candidate_scope": "Synchronous retirement by the actual installed C owner after completion; all original guards and execution qualification remain pending.",
+  "original_refusal_policy_and_case_assertions_retained": true,
+  "original_environment_sha256": "c8ddd27960aa7078144c8e827713e28af4293c7e71a3ba0fba9f35225bbbd91e",
+  "cargo_build_jobs": 2,
+  "format": {
+    "argv": [
+      "just",
+      "fmt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.3150871703401208,
+    "child_user_cpu_seconds": 0.06763599999999999,
+    "child_system_cpu_seconds": 0.063053,
+    "child_max_rss_kib": 57812,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_before_compile_sha256": "1c7782e85a9b79fad6e82c0c5022964299451629d2cb96e55b442f96f0059a7a",
+  "only_refinement_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+    "qa/b4-no-bypass/test_original_task_retirement_source_closure.py"
+  ],
+  "source_files": 15812,
+  "compile": {
+    "argv": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-contracts",
+      "--lib",
+      "--list-type",
+      "binaries-only",
+      "--message-format",
+      "json"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 105.77378943189979,
+    "child_user_cpu_seconds": 124.992637,
+    "child_system_cpu_seconds": 6.422877,
+    "child_max_rss_kib": 5997564,
+    "stdout_sha256": "df720af4d8927d13e50aa76c21a97d39bce11344a3b6663fb3a32614579ed884",
+    "stderr_sha256": "cdc8135affc8f4ec00810910237ed4269a99d7bf397f0f1a5b5ec9ce59fbc080"
+  },
+  "source_unchanged_during_compile": true,
+  "source_after_compile_sha256": "1c7782e85a9b79fad6e82c0c5022964299451629d2cb96e55b442f96f0059a7a",
+  "justfix": {
+    "argv": [
+      "just",
+      "fix",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-contracts"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 108.92216681269929,
+    "child_user_cpu_seconds": 101.467793,
+    "child_system_cpu_seconds": 4.803541000000001,
+    "child_max_rss_kib": 5997564,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "340fad6e6cd56c4520c6d2926d380ff01c646eaca63808156db33e163d1f6d87"
+  },
+  "lint_changed_paths": [],
+  "source_unchanged_during_lint": true,
+  "compiled_bytes_remain_current": true,
+  "source_after_lint_sha256": "1c7782e85a9b79fad6e82c0c5022964299451629d2cb96e55b442f96f0059a7a",
+  "source_after_sha256": "1c7782e85a9b79fad6e82c0c5022964299451629d2cb96e55b442f96f0059a7a",
+  "finished_at_ns": "1795187327054206369",
+  "owner_wall_seconds": 218.96652444079518
+}

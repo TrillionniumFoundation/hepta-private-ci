@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.e6.adopt-original-authority-read-only-review.v1",
+  "date_utc": "2026-11-20",
+  "status": "READ_ONLY_REVIEW_COMPLETE_NO_NEW_QUALIFICATION",
+  "retirement": {
+    "barrier": "now_ms >= max(actual protected cognitive CURRENT writer_expiry_seconds*1000, actual predecessor authority_lease_expiry_ms)",
+    "post_a_lease_actual_duration_ms": 300000,
+    "fresh_fixed_sleep_after_C": false,
+    "process_exit_alone_sufficient": false
+  },
+  "artifact": {
+    "profile_expiry_ms": "floor(profile_creation_ms/1000)*1000+240000",
+    "head_expiry_ms": "min(profile_expiry_ms, retained_original_current_expiry_ms)",
+    "generic_head_refusal": "now > expiry",
+    "unwired_primitive_refusal": "now > expiry",
+    "authbus_cold_refusal": "now >= expiry",
+    "D_input_creation_requirement": "now < expiry"
+  },
+  "clock_inference": {
+    "origins_differ": true,
+    "bound": "H-R <= (P-W)-60000, minus fractional-second and any retained-head clamp",
+    "source_proves_P_minus_W_lt_60000_for_every_schedule": false,
+    "universal_Adopt_impossibility_from_constants_alone": false,
+    "expired_head_can_be_used_by_old_Root_FinalUse": false
+  },
+  "original_budgets": {
+    "adopt_envelope_seconds": 240,
+    "actual_post_A_writer_seconds": 300,
+    "D_phase_max_seconds": 120,
+    "whole_parent_max_seconds": 480,
+    "original_no_update_head_seconds": 600,
+    "changed": false
+  },
+  "real_existing_typed_chain": [
+    "RootFinalizedColdHistoryV1",
+    "RootColdNextTaskFilesV1",
+    "OriginalColdNextTaskContextV1",
+    "RegisteredColdNextTaskV1",
+    "RootPreparedColdNextTaskGrantV1",
+    "DeploymentFinalUseIssuer::issue_original_cold_next_task_final_use",
+    "original FinalUse consumer and generation CAS"
+  ],
+  "controller": {
+    "actual_root_original_files": true,
+    "separate_from_objective": true,
+    "Root_rederives_full_binding": true,
+    "raw_data_not_custody_or_Artifact_authority": true
+  },
+  "new_Artifact_use": {
+    "required_when_retaining_and_using_expired_head": true,
+    "needed_when_ordinary_head_remains_valid": false,
+    "effect_capable_production_constructor_present": false,
+    "relative_verifier_authority": "DENY_ALL",
+    "missing": [
+      "real independent head-purpose policy and custody admission",
+      "durable signing/use nonce ownership",
+      "actual current withdrawal/key/policy freshness source",
+      "authorized revocation-effect ordering semantics",
+      "scoped historical reader and distinct selection",
+      "Root/generation/live effect integration preserving full original controller"
+    ],
+    "user_permission_reconfirmation_requested": false
+  },
+  "history_preserved": {
+    "original_design_files_verified": 8,
+    "original_planned_controls": 34,
+    "original_controls_executed": 0,
+    "addendum_planned_controls": 12,
+    "addendum_controls_executed": 0,
+    "primitive_remains_unwired": true
+  },
+  "performed": {
+    "read_multiple_files_calls": 1,
+    "known_cold_source_files_read": 3,
+    "new_remote_processes": 0,
+    "credentials_read": 0,
+    "signatures_issued": 0,
+    "native_tasks": 0,
+    "model_calls": 0,
+    "training_updates": 0,
+    "Cargo_commands": 0,
+    "product_source_edits": 0,
+    "Git_ref_mutations": 0,
+    "executed_new_rejection_tests": 0
+  },
+  "source_limits": [
+    "cold original source and observed ordinary baseline remain distinct",
+    "public base helper content is not claimed as direct current cold host read unless independently matched",
+    "no new actual W/P/R/H/D timing record or completed Adopt/cold task was produced",
+    "source/hash review is not compilation or product qualification"
+  ],
+  "local_copy_correction_preserved": "originals/local-copy-newline-correction.json"
+}

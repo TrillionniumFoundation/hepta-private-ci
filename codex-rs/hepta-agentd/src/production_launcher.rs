@@ -39,6 +39,7 @@ pub(crate) use initial_q24::ledger_data::LedgerDeploymentData;
 
 #[path = "production_post_a_q24.rs"]
 mod post_a_q24;
+pub(crate) use post_a_q24::OriginalHistoricalStageInputs;
 pub(crate) use post_a_q24::OriginalPostAContinuationV1;
 
 #[path = "production_launcher_late_writer.rs"]

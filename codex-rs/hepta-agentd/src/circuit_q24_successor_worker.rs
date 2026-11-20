@@ -152,7 +152,9 @@ impl PendingSuccessorOwner {
             &target,
             self.capacity,
         )?;
-        self.context.require_current_successor_context().await?;
+        if !self.context.has_original_historical_source() {
+            self.context.require_current_successor_context().await?;
+        }
         self.slot
             .require_open()
             .map_err(|_| Error::CommitUncertain)?;
@@ -187,10 +189,6 @@ impl PendingSuccessorOwner {
                 result.map_err(|_| Error::CommitUncertain)?.map_err(|_| Error::CommitUncertain)?
             }
         };
-        original
-            .proof
-            .require_current_successor_publication()
-            .await?;
         let issued = match requested {
             OriginalSuccessorGrant::Provided(signed) => Ok((original.prepared, signed)),
             OriginalSuccessorGrant::OriginalRoot => {
@@ -199,14 +197,11 @@ impl PendingSuccessorOwner {
                     Arc::clone(&state),
                     self.context.identity().clone(),
                     Arc::clone(&self.slot),
+                    original.proof.clone(),
                 )
                 .await
             }
         };
-        original
-            .proof
-            .require_current_successor_publication()
-            .await?;
         let (prepared, signed) = issued?;
         self.slot
             .require_open()
@@ -221,11 +216,8 @@ impl PendingSuccessorOwner {
                 Arc::clone(&state),
                 self.context.identity().clone(),
                 Arc::clone(&self.slot),
+                original.proof.clone(),
             )
-            .await?;
-        original
-            .proof
-            .require_current_successor_publication()
             .await?;
         self.slot
             .require_open()
@@ -234,16 +226,34 @@ impl PendingSuccessorOwner {
             &state,
             self.context.identity(),
         )?;
-        let opened = execution.open_original_successor_channel(
-            self.context.identity(),
-            task,
-            original.bundle,
-            original.model,
-            self.capacity,
-        )?;
-        original
+        let identity = self.context.identity().clone();
+        let capacity = self.capacity;
+        let slot = Arc::clone(&self.slot);
+        let actual_state = Arc::clone(&state);
+        let opened = original
             .proof
-            .require_current_successor_publication()
+            .with_current_successor_publication(move || {
+                slot.require_installation_open()
+                    .map_err(|_| Error::CommitUncertain)?;
+                crate::cell_q24_publication_driver::require_successor_admission(
+                    &actual_state,
+                    &identity,
+                )?;
+                let opened = execution.open_original_successor_channel(
+                    &identity,
+                    task,
+                    original.bundle,
+                    original.model,
+                    capacity,
+                );
+                slot.require_installation_open()
+                    .map_err(|_| Error::CommitUncertain)?;
+                crate::cell_q24_publication_driver::require_successor_admission(
+                    &actual_state,
+                    &identity,
+                )?;
+                Ok(opened?)
+            })
             .await?;
         self.slot
             .require_open()

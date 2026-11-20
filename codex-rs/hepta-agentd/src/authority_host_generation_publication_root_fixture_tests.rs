@@ -457,6 +457,8 @@ impl Fixture {
             mode: match phase {
                 Phase::Publish => RootGenerationPublicationModeV1::Reserve,
                 Phase::Recover
+                | Phase::AckSourcePending
+                | Phase::AckCurrentFirst
                 | Phase::RetiredSession
                 | Phase::StalePrepare
                 | Phase::Revoked

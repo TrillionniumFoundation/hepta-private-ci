@@ -98,5 +98,49 @@ async fn feature_socket_client_drop_keeps_original_source_and_cell_once() -> any
         );
         assert_eq!(owner_bytes(&f.session)?, committed);
     }
+    #[cfg(target_os = "linux")]
+    {
+        // This same completed C supplies actual task owners. The learning cut
+        // is explicit component prefix data, not a registered Root aggregate.
+        let final_use = f.version.bytes("final-use/authority.claims")?;
+        let handle = f
+            .session
+            .runtime
+            .state
+            .circuit_task
+            .get()
+            .expect("original direct Feature handle")
+            .clone();
+        let slot =
+            crate::circuit_q24_successor::SuccessorSlot::installed_from_original_feature_for_test(
+                f.coordinator.snapshot(),
+                handle,
+                f.session.source.original_successor_owner_for_test(),
+            )
+            .await?;
+        assert!(slot.original_generation_ready_hint());
+        slot.require_original_generation_ready(f.coordinator.snapshot())?;
+        assert_eq!(owner_bytes(&f.session)?, committed);
+        assert_eq!(f.version.bytes("final-use/authority.claims")?, final_use);
+
+        // The same Ready hint cannot authorize a different prefix. The actual
+        // check fails and closes only this component slot, without dispatch
+        // or any mutation of the still-live original Source/Cell owners.
+        let mut different = f.coordinator.snapshot().clone();
+        different.request.operation_id = StableId::new("feature-ready-other-operation")?;
+        assert!(slot.original_generation_ready_hint());
+        assert!(matches!(
+            slot.require_original_generation_ready(&different),
+            Err(crate::LearningIterationRuntimeErrorV1::WrongScope)
+        ));
+        assert!(!slot.original_generation_ready_hint());
+        assert!(slot.actual_handle().is_err());
+        assert!(matches!(
+            slot.require_original_generation_ready(f.coordinator.snapshot()),
+            Err(crate::LearningIterationRuntimeErrorV1::Unavailable)
+        ));
+        assert_eq!(owner_bytes(&f.session)?, committed);
+        assert_eq!(f.version.bytes("final-use/authority.claims")?, final_use);
+    }
     f.finish().await
 }

@@ -73,20 +73,74 @@ class CompletedLearningAcceptanceSourceClosure(unittest.TestCase):
 
     def test_all_original_signatures_and_full_physical_cuts_are_required(self):
         for marker in (
-            "journal.records.len() != if index == 3 { 2 } else { 1 }",
+            "let local_decision_records = usize::from(context.terminal().local_decision_v2().is_some());",
+            "let expected_signatures = 6 + local_decision_records;",
+            "3 => 2,",
+            "4 => local_decision_records,",
+            "_ => 1,",
+            "journal.records.len() != expected_records",
             "fact.journals != cuts || fact.independent_b != independent_b.acceptance.to_string()",
             "context.require_current_freeze_signer(&freeze)?;",
             "saved == payload",
             "let [(digest, signed)] = matches.as_slice()",
             "context.require_current_signer(&signed)?;",
-            "signatures.len() != 7 || context.terminal().training_no_update_v2().is_some()",
+            "signatures.len() != expected_signatures\n        || context.terminal().training_no_update_v2().is_some()",
             "vec![independent_b.plan_attestation]",
+            "let hashes = match context.terminal().local_decision_v2()",
+            "Some(_) => CompletedSignatureDigests::Seven(",
+            "None => CompletedSignatureDigests::Six(",
             "fact.signatures != hashes",
             "OriginalReceiptVerificationV1::verify(&request, signed, at)",
             "verify_signed_actor_separation(prior, &current, at)",
         ):
             with self.subTest(marker=marker):
                 self.reject("authority_host_completed_signatures", marker)
+
+    def test_signature_data_is_bounded_and_preserves_all_original_digest_checks(self):
+        for before, after in (
+            ("#[serde(untagged)]", ""),
+            ("Six([String; 6])", "Six(Vec<String>)"),
+            ("Seven([String; 7])", "Seven([String; 8])"),
+            ("Seven([String; 7]),", "Seven([String; 7]), Extra([String; 9]),"),
+            ("pub(super) signatures: CompletedSignatureDigests", "pub(super) signatures: Vec<String>"),
+            ("pub(super) journals: [String; 7]", "pub(super) journals: [String; 6]"),
+            ("Self::Six(digests) => digests", "Self::Six(_) => &[]"),
+            ("Self::Seven(digests) => digests", "Self::Seven(_) => &[]"),
+            (".chain(self.journals.iter())", ""),
+            (".chain(self.signatures.as_slice().iter())", ""),
+        ):
+            with self.subTest(before=before, after=after):
+                self.reject("authority_host_completed_record", before, after)
+
+    def test_terminal_shape_cannot_be_guessed_from_a_fixed_or_unbounded_count(self):
+        for before, after in (
+            ("usize::from(context.terminal().local_decision_v2().is_some())", "1"),
+            ("6 + local_decision_records", "7"),
+            ("4 => local_decision_records", "4 => 1"),
+            ("journal.records.len() != expected_records", "journal.records.len() > expected_records"),
+            ("signatures.len() != expected_signatures", "signatures.len() > expected_signatures"),
+            ("Some(_) => CompletedSignatureDigests::Seven(", "Some(_) => CompletedSignatureDigests::Six("),
+            ("None => CompletedSignatureDigests::Six(", "None => CompletedSignatureDigests::Seven("),
+        ):
+            with self.subTest(before=before, after=after):
+                self.reject("authority_host_completed_signatures", before, after)
+
+    def test_observer_preserves_canonical_refusal_namespace_and_actual_signature_shape(self):
+        for before in (
+            "completed_learning_refusal_owner(initial.head_digest, target)?",
+            "scope_digest(target.scope())?",
+            "!initial.is_zero()",
+            "scope.as_array()",
+            "initial.as_array()",
+            "receipt.observation.stage() != LearningIterationStageV1::Proposal",
+            "expected_signatures == 6 + usize::from(terminal.local_decision_v2().is_some())",
+            "values.len() == expected",
+        ):
+            with self.subTest(before=before):
+                self.reject("ordinary_q24_cold_acceptance_data_tests", before)
+        self.reject("ordinary_q24_cold_acceptance_data_tests",
+                    '[("journals", 7), ("signatures", expected_signatures)]',
+                    '[("journals", 6), ("signatures", 7)]')
 
     def test_fresh_time_is_sampled_now_and_cold_time_is_only_the_first_fact(self):
         for before, after in (

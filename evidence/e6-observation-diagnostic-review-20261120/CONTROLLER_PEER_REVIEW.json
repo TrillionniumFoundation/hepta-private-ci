@@ -1,0 +1,89 @@
+{
+  "actual_review_operations": {
+    "git_commands": 0,
+    "host_calls": 0,
+    "models": 0,
+    "native": 0,
+    "original_tests": 0,
+    "prepared_object_byte_checks": 263,
+    "read_full_controller": true,
+    "read_full_helper": true,
+    "read_full_original_checker": true,
+    "read_full_original_seven_tests": true,
+    "size_gate": 0,
+    "training": 0,
+    "v2_ast_parse": true,
+    "v2_import_or_run": false
+  },
+  "authored_v2": {
+    "bytes": 19509,
+    "git_blob": "d42f42cb6028dad774fe0e39f2a206aa203a4b5a",
+    "path": "/workspace/scratch/e9e051ab0825/e6_final_blob_gate_work/final_pr_blob_gate_v2.py",
+    "sha256": "c847a3e6c8d771394c612e38bd9675a1cd3ca18dd1f8d0dfb83f7ec1b50e2592"
+  },
+  "finding": {
+    "additional_authority": false,
+    "consequence": "An inconsistent saved API/raw pair can pass the stage metadata assertions while policy materialization uses a constructed tree different from the actual commit checked by the original gate. This is a static input-validation gap, not evidence that an actual saved GitHub API record was falsified.",
+    "id": "F1",
+    "issue": "The raw-commit OID is checked, but its actual tree/parent headers are not independently compared to the reconstructed stage tree/direct predecessor. Subsequent diff verification compares path/status sets, not blob values, so it is not a replacement for this binding.",
+    "new_budget_or_test": false,
+    "new_lines": 5,
+    "scope": "Optional supplied raw-commit branch; unsigned reconstructed branch already derives its raw tree/parents from the checked API.",
+    "v1_lines": [
+      205,
+      217
+    ],
+    "v2_resolution": "After put(commit), unconditionally cat-file the actual commit object and require exactly one tree header equal to the reconstructed tree plus exactly one parent equal to previous_commit; the same check covers both raw and unsigned branches."
+  },
+  "limitations": [
+    "Controller accepts explicitly declared source stages generally; current four-path scope is a separately frozen execution input obligation, not a generic hardcoded four-path rule.",
+    "The executed flags are set immediately before launch and therefore are attempted-stage markers on launch error; command result/exit/stdout are authoritative for actual execution. No PASS can result from a launch failure.",
+    "No original tests, size gate, controller, native case, model, training or remote-host operation was executed during this review. Existing preparation receipts are author history, not a newly repeated gate."
+  ],
+  "prepared_manifest": {
+    "bytes": 331222,
+    "git_blob": "5bec7d2e433fdddd4597508e558536c093e6d20d",
+    "path": "/workspace/scratch/e9e051ab0825/e6_final_blob_gate_work/prepared-shadow/MANIFEST.json",
+    "sha256": "f455cd2fd4b120957fc496a76e5848eb079926412760a90ffd6f32c4caecd6ae"
+  },
+  "reviewed_v1": {
+    "bytes": 18936,
+    "git_blob": "33721c4ce958ae55bd9da55b3e816f2f397da66e",
+    "path": "/workspace/scratch/e9e051ab0825/e6_final_blob_gate_work/final_pr_blob_gate.py",
+    "sha256": "7a9f7dadf30292910c8dfe803278808d8e8cbbbaf4b2da3dad74208f0facb001"
+  },
+  "schema": "hepta.e6.full-pr-blob-gate-independent-readonly-review.v1",
+  "status": "V1_RAW_COMMIT_METADATA_GAP_FOUND; V2_MINIMAL_SOURCE_CORRECTION_PREPARED_NOT_EXECUTED",
+  "verified_static_properties": [
+    {
+      "anchors": "v1:23-26,180-181,232-241,257",
+      "conclusion": "Final expected and actual name/status diff starts at d83, covering original 153 paths and the net delta of all explicit future stages; not just the last evidence commit.",
+      "topic": "Full original PR scope"
+    },
+    {
+      "anchors": "v1:173-225",
+      "conclusion": "All source changes are explicit manifests; evidence only allows newly absent evidence/ files; no deletion or retained-evidence overwrite. This specific planned source stage must separately freeze exactly the four diagnostic paths.",
+      "topic": "Stage separation"
+    },
+    {
+      "anchors": "v1:29-32,218-225,245-258",
+      "conclusion": "Checker and seven-test blobs are immutable. Allowlist changes require an explicit source manifest entry and exact OID/SHA; evidence cannot migrate it.",
+      "topic": "Original policies"
+    },
+    {
+      "anchors": "v1:56-67,259-267",
+      "conclusion": "PASS requires original tests exit0, Ran 7 tests and OK, followed by original gate exit0 and full exact changed-count header. Timeout120 and max512000 unchanged. A test failure stops the gate and cannot become PASS.",
+      "topic": "Actual original command requirement"
+    },
+    {
+      "anchors": "v1:78-82,99-171; prepare_known_objects.py main guard",
+      "conclusion": "The imported helper has no top-level main side effect; actual controller only loads explicit local objects. New bare repo has no configured fetch route; GIT_NO_LAZY_FETCH=1, GIT_TERMINAL_PROMPT=0, no fetch/clone/network APIs. Untouched identical subtree OIDs are retained without claiming complete repository contents.",
+      "topic": "Object closure and network"
+    },
+    {
+      "anchors": "v1:56-67,274-287",
+      "conclusion": "Original command stdout/stderr/timeouts/results retained; exception traceback retained; finally records shadow identity and all successfully read input/materialized hashes. Review does not claim atomic input snapshots or descendant-process budget enforcement beyond the original subprocess timeout.",
+      "topic": "Failure evidence"
+    }
+  ]
+}

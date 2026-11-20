@@ -1,0 +1,283 @@
+{
+  "observed_at_utc": "2026-11-20T22:07:19.988797+00:00",
+  "reviews": [
+    {
+      "manifest": "e6_owner_work/observation_io_diagnostic_native/rev2/wrapper-full-originals-1/MANIFEST.json",
+      "manifest_sha256": "8d4f66d06283047cdba2a85c11fa3a97a694140d49a6f09b27e575be0369c9ca",
+      "all_declared_members_bytes_sha256_verified": true,
+      "members": 89,
+      "bytes": 11648501,
+      "junit": [
+        {
+          "path": "originals/ordinary-post-a-no-update-fresh-native-observed-0.xml",
+          "cases": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c"
+          ]
+        },
+        {
+          "path": "originals/ordinary-post-a-no-update-prior-junit-1-excluded.xml",
+          "cases": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current"
+          ]
+        },
+        {
+          "path": "originals/ordinary-post-a-no-update.xml",
+          "cases": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c"
+          ]
+        },
+        {
+          "path": "originals/root-ack-lane-mechanism-fresh-native-observed-0.xml",
+          "cases": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current"
+          ]
+        },
+        {
+          "path": "originals/root-ack-lane-mechanism-prior-junit-1-excluded.xml",
+          "cases": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "neuron_generation_current::initial_root_tests::ordinary::cold_acceptance_data::namespace_tests::root_completed_refusal_observer_matches_registered_owner"
+          ]
+        },
+        {
+          "path": "originals/root-ack-lane-mechanism.xml",
+          "cases": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current"
+          ]
+        },
+        {
+          "path": "originals/root-completed-refusal-observer-namespace-fresh-native-observed-0.xml",
+          "cases": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "neuron_generation_current::initial_root_tests::ordinary::cold_acceptance_data::namespace_tests::root_completed_refusal_observer_matches_registered_owner"
+          ]
+        },
+        {
+          "path": "originals/root-completed-refusal-observer-namespace-prior-junit-1-excluded.xml",
+          "cases": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity"
+          ]
+        },
+        {
+          "path": "originals/root-completed-refusal-observer-namespace.xml",
+          "cases": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "neuron_generation_current::initial_root_tests::ordinary::cold_acceptance_data::namespace_tests::root_completed_refusal_observer_matches_registered_owner"
+          ]
+        },
+        {
+          "path": "originals/root-completed-refusal-original-bounds-fresh-native-observed-0.xml",
+          "cases": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity"
+          ]
+        },
+        {
+          "path": "originals/root-completed-refusal-original-bounds-prior-junit-1-excluded.xml",
+          "cases": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "authority_host_runtime::session::historical_read::completed_record::tests::original_seven_signature_record_has_identical_wire_bytes_and_digest",
+            "authority_host_runtime::session::historical_read::completed_record::tests::six_signature_record_is_distinct_and_roundtrips_without_padding",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_rejects_truncated_trailing_and_noncanonical_encoded_payloads",
+            "authority_host_runtime::session::historical_read::completed_record::tests::signature_digest_data_rejects_other_lengths_or_element_types",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_keeps_original_scope_request_owner_and_outer_record_binding",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_excludes_valid_trainer_no_update_for_this_history_purpose",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_replays_missing_duplicate_reordered_and_tampered_receipts",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_requires_the_selected_parent_and_real_next_task_use",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_accepts_evaluated_and_proposed_terminal_histories",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_accepts_all_local_decisions_after_selection_and_actual_use",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_refuses_every_unfinished_prefix_and_vacant_owner"
+          ]
+        },
+        {
+          "path": "originals/root-completed-refusal-original-bounds.xml",
+          "cases": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity"
+          ]
+        }
+      ]
+    },
+    {
+      "manifest": "e6_owner_work/observation_io_diagnostic_native/rev2/actual-components-1/MANIFEST.json",
+      "manifest_sha256": "d7189405386449cbb27bb7b0a80049fc485755bf718e5bfb8177db5ca10c6b6f",
+      "all_declared_members_bytes_sha256_verified": true,
+      "members": 29,
+      "bytes": 377915,
+      "junit": [
+        {
+          "path": "observation-framing-native-validation-4/original-nextest-0.xml",
+          "cases": 18,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "authority_host_issuer_transport::peer::deadline_tests::durable_handler_cannot_emit_success_after_the_shared_frame_deadline",
+            "authority_host_issuer_transport::peer::deadline_tests::durable_handler_is_not_entered_for_an_invalid_original_frame",
+            "authority_host_issuer_transport::peer::deadline_tests::durable_handler_receives_the_original_clamped_frame_deadline",
+            "authority_host_issuer_transport::peer::tests::handler_finishing_after_total_deadline_cannot_emit_success",
+            "authority_host_issuer_transport::peer::tests::ordinary_complete_denial_can_be_followed_by_a_bounded_response",
+            "authority_host_issuer_transport::peer::tests::original_absolute_end_can_only_shorten",
+            "authority_host_issuer_transport::peer::tests::original_absolute_end_crossed_by_handler_emits_no_reply",
+            "authority_host_issuer_transport::peer::tests::original_absolute_end_expiry_closes_before_any_frame",
+            "authority_host_issuer_transport::peer::tests::original_absolute_end_limits_the_idle_socket_wait",
+            "authority_host_issuer_transport::peer::tests::oversized_complete_response_emits_no_success_prefix",
+            "authority_host_issuer_transport::peer::tests::pinned_client_invalid_input_emits_nothing_and_closes",
+            "authority_host_issuer_transport::peer::tests::pinned_client_preserves_complete_request_response_boundaries",
+            "authority_host_issuer_transport::peer::tests::pinned_client_rejects_truncated_oversized_and_late_replies_without_retry",
+            "authority_host_issuer_transport::peer::tests::purpose_bound_rejects_request_before_handler_and_is_permanently_closed",
+            "authority_host_store::tests::issuer_tests::transport_tests::channel_tests::a_complete_exchange_does_not_reset_the_hard_lifetime",
+            "authority_host_store::tests::issuer_tests::transport_tests::channel_tests::arbitrary_descriptor_is_not_an_owner_lifecycle_handle",
+            "authority_host_store::tests::issuer_tests::transport_tests::channel_tests::idle_may_exceed_frame_timeout_but_partial_frame_cannot",
+            "authority_host_store::tests::issuer_tests::transport_tests::channel_tests::owner_exit_ends_idle_session_even_while_descendant_keeps_the_stream_open"
+          ]
+        },
+        {
+          "path": "native-validation-15/original-nextest-0.xml",
+          "cases": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+            "production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner"
+          ]
+        },
+        {
+          "path": "retirement-native-validation-13/original-nextest-0.xml",
+          "cases": 16,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "cell_generation_journal::tests::lost_witness_ack_requires_reconciliation_then_exposes_exact_committed_bytes",
+            "cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence",
+            "cell_generation_journal::tests::drain_recovery::original_generation_drain_reopen_and_replay_keep_exact_journal_and_witness",
+            "cell_generation_journal::tests::drain_recovery::original_generation_drain_readonly_witness_failure_reopens_the_retained_frame_once",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_pending_generator_claim_survives_reopen_without_signing",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_ack_loss_reopens_same_signature_and_appends_once",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_witness_write_failure_repairs_only_exact_retained_append",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retirement::original_task_terminal_outcome_drains_once_and_readback_never_writes",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_refuses_other_database_and_stays_fenced_after_original_replacement",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_binds_root_scope_and_consumer_without_relaxing_current_task_identity",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_keeps_task_success_until_original_outcome_and_reconcile",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_uses_original_outbox_after_current_advances_and_new_task_runs",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unwitnessed_expired_outcome_cannot_become_historical_ready",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unappended_expired_signatures_never_renew",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_reads_witnessed_history_after_signature_expiry"
+          ]
+        },
+        {
+          "path": "historical-delivery-native-validation-11/original-nextest-0.xml",
+          "cases": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "learning_owner_journal::historical_delivery::tests::historical_delivery_completed_claim_cold_reopen_returns_exact_head",
+            "learning_owner_journal::historical_delivery::tests::historical_prepared_completion_cold_reopen_returns_exact_key_and_bytes",
+            "learning_owner_journal::historical_delivery::tests::historical_prepared_completion_full_witness_keeps_exact_append_for_recovery",
+            "learning_owner_journal::historical_delivery::tests::historical_prepared_claim_drop_before_dispatch_cold_reopen_stays_pending",
+            "learning_owner_journal::historical_delivery::tests::historical_delivery_cancelled_claim_cold_reopen_never_redispatches"
+          ]
+        },
+        {
+          "path": "feature-ack-native-validation-9/original-nextest-0.xml",
+          "cases": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_client_drop_keeps_original_source_and_cell_once",
+            "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_ack_timeout_recovers_original_completion_without_redispatch"
+          ]
+        },
+        {
+          "path": "ready-slot-native-validation-7/original-nextest-0.xml",
+          "cases": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "circuit_q24_successor::state::tests::ready_guard_rejects_expiry_and_poison_without_returning_an_owner",
+            "circuit_q24_successor::state::tests::ready_guard_rejects_notification_without_an_installed_original_owner"
+          ]
+        },
+        {
+          "path": "completed-data-native-validation-6/original-nextest-0.xml",
+          "cases": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "names": [
+            "authority_host_runtime::session::historical_read::completed_record::tests::original_seven_signature_record_has_identical_wire_bytes_and_digest",
+            "authority_host_runtime::session::historical_read::completed_record::tests::six_signature_record_is_distinct_and_roundtrips_without_padding",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_rejects_truncated_trailing_and_noncanonical_encoded_payloads",
+            "authority_host_runtime::session::historical_read::completed_record::tests::signature_digest_data_rejects_other_lengths_or_element_types",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_keeps_original_scope_request_owner_and_outer_record_binding",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_excludes_valid_trainer_no_update_for_this_history_purpose",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_replays_missing_duplicate_reordered_and_tampered_receipts",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_requires_the_selected_parent_and_real_next_task_use",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_accepts_evaluated_and_proposed_terminal_histories",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_accepts_all_local_decisions_after_selection_and_actual_use",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_refuses_every_unfinished_prefix_and_vacant_owner"
+          ]
+        }
+      ]
+    }
+  ],
+  "whole_native15": "FAIL; no cold/Adopt/FinalUse/settlement qualification",
+  "scope": "Local full bodies against fixed actual manifests; XML parsed; no rerun or host actions"
+}

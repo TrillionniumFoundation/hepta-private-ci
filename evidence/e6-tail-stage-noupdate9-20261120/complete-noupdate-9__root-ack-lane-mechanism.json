@@ -1,0 +1,67 @@
+{
+  "after": {
+    "commit": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+    "dirty": false,
+    "parents": [
+      "7bb71087b21b0c98998acfaf4d499b6395d929a5"
+    ],
+    "tree": "e047b5fc72284e25a98c0ebb4f2e69a2f6338e56"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+    "dirty": false,
+    "parents": [
+      "7bb71087b21b0c98998acfaf4d499b6395d929a5"
+    ],
+    "tree": "e047b5fc72284e25a98c0ebb4f2e69a2f6338e56"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-contracts",
+    "--lib",
+    "--run-ignored",
+    "only",
+    "--test-threads",
+    "1",
+    "-E",
+    "test(=neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current)",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final",
+    "--no-tests",
+    "fail"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 3.789809765294194,
+  "exit_code": 0,
+  "finished_at": "2026-11-20T10:42:17.186123+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 45627,
+  "log_file": "root-ack-lane-mechanism.json.cd4d7dc126bb49ff966c2529efa04ee1.log",
+  "log_sha256": "bb2c976047802cadf1e21f709230dd0771b872cb3024ad320fa215db7c485983",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 1,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+  "started_at": "2026-11-20T10:42:13.395195+00:00",
+  "status": "passed",
+  "tested_sha": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+  "timed_out": false,
+  "working_directory": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source"
+}

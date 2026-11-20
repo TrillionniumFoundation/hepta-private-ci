@@ -1,0 +1,409 @@
+{
+  "schema": "hepta.e6.original47-retry-readback.v1",
+  "archive": {
+    "path": "/workspace/scratch/e9e051ab0825/e6_archive_readback_1/retained-host/original-evidence.tar.xz",
+    "bytes": 4156344,
+    "sha256": "9d6848aa4145952dbd7b889a76b1f41f67de659ab90c045006c8585c43670341"
+  },
+  "groups": [
+    {
+      "group": "completed-data-native-validation-2",
+      "result_sha256": "425e0fdc435dd743dc35bd6d94855b2e4d4e5027c7b9f9c3673b9e4881333521",
+      "source": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+      "expected_cases": 11,
+      "files": [
+        {
+          "member": "raw/completed-data-native-validation-2/original-nextest-0.xml",
+          "bytes": 2965,
+          "sha256": "b9e87c9a28c106082eb667b74f021a01e6c8a8edc67909a612faf66a0ff2bfb2",
+          "root_attributes": {
+            "name": "nextest-run",
+            "tests": "11",
+            "skipped": "0",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "4fa88e54-9141-403c-925c-a0d6159529fa",
+            "timestamp": "2026-11-20T20:48:14.388+08:00",
+            "time": "0.046"
+          },
+          "tags": {
+            "testsuites": 1,
+            "testsuite": 1,
+            "testcase": 11
+          },
+          "cases": 11,
+          "case_names": [
+            "authority_host_runtime::session::historical_read::completed_record::tests::six_signature_record_is_distinct_and_roundtrips_without_padding",
+            "authority_host_runtime::session::historical_read::completed_record::tests::signature_digest_data_rejects_other_lengths_or_element_types",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_rejects_truncated_trailing_and_noncanonical_encoded_payloads",
+            "authority_host_runtime::session::historical_read::completed_record::tests::original_seven_signature_record_has_identical_wire_bytes_and_digest",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_excludes_valid_trainer_no_update_for_this_history_purpose",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_accepts_evaluated_and_proposed_terminal_histories",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_keeps_original_scope_request_owner_and_outer_record_binding",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_requires_the_selected_parent_and_real_next_task_use",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_replays_missing_duplicate_reordered_and_tampered_receipts",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_accepts_all_local_decisions_after_selection_and_actual_use",
+            "learning_iteration_checkpoint::completed_tests::completed_reader_refuses_every_unfinished_prefix_and_vacant_owner"
+          ],
+          "duplicate_names": false,
+          "retry_or_rerun_elements": []
+        },
+        {
+          "member": "raw/completed-data-native-validation-2/command.stderr",
+          "bytes": 43668,
+          "sha256": "76ad8d2131e445f119bf682593b033b50f4a27c31e7b3755c51798ba403133f7",
+          "run_summary_lines": [
+            "    Starting 11 tests across 1 binary (1357 tests skipped)",
+            "        PASS [   0.008s] ( 1/11) codex-hepta-agentd authority_host_runtime::session::historical_read::completed_record::tests::six_signature_record_is_distinct_and_roundtrips_without_padding",
+            "        PASS [   0.009s] ( 2/11) codex-hepta-agentd authority_host_runtime::session::historical_read::completed_record::tests::signature_digest_data_rejects_other_lengths_or_element_types",
+            "        PASS [   0.010s] ( 3/11) codex-hepta-agentd learning_iteration_checkpoint::completed_tests::completed_reader_rejects_truncated_trailing_and_noncanonical_encoded_payloads",
+            "        PASS [   0.010s] ( 4/11) codex-hepta-agentd authority_host_runtime::session::historical_read::completed_record::tests::original_seven_signature_record_has_identical_wire_bytes_and_digest",
+            "        PASS [   0.010s] ( 5/11) codex-hepta-agentd learning_iteration_checkpoint::completed_tests::completed_reader_excludes_valid_trainer_no_update_for_this_history_purpose",
+            "        PASS [   0.012s] ( 6/11) codex-hepta-agentd learning_iteration_checkpoint::completed_tests::completed_reader_accepts_evaluated_and_proposed_terminal_histories",
+            "        PASS [   0.012s] ( 7/11) codex-hepta-agentd learning_iteration_checkpoint::completed_tests::completed_reader_keeps_original_scope_request_owner_and_outer_record_binding",
+            "        PASS [   0.013s] ( 8/11) codex-hepta-agentd learning_iteration_checkpoint::completed_tests::completed_reader_requires_the_selected_parent_and_real_next_task_use",
+            "        PASS [   0.013s] ( 9/11) codex-hepta-agentd learning_iteration_checkpoint::completed_tests::completed_reader_replays_missing_duplicate_reordered_and_tampered_receipts",
+            "        PASS [   0.014s] (10/11) codex-hepta-agentd learning_iteration_checkpoint::completed_tests::completed_reader_accepts_all_local_decisions_after_selection_and_actual_use",
+            "        PASS [   0.040s] (11/11) codex-hepta-agentd learning_iteration_checkpoint::completed_tests::completed_reader_refuses_every_unfinished_prefix_and_vacant_owner",
+            "     Summary [   0.046s] 11 tests run: 11 passed, 1357 skipped"
+          ],
+          "retry_marker_lines": []
+        },
+        {
+          "member": "raw/completed-data-native-validation-2/command.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_summary_lines": [],
+          "retry_marker_lines": []
+        }
+      ]
+    },
+    {
+      "group": "feature-ack-native-validation-5",
+      "result_sha256": "265a92eaf0fc4a509110a5c42d995ddac00abffc4ddace7edf04d8ccfc62d365",
+      "source": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+      "expected_cases": 2,
+      "files": [
+        {
+          "member": "raw/feature-ack-native-validation-5/original-nextest-0.xml",
+          "bytes": 873,
+          "sha256": "87700e8bf03bdc85e4cb7140d33f807e0e8c7823c6958b9a78a65b78265ba94b",
+          "root_attributes": {
+            "name": "nextest-run",
+            "tests": "2",
+            "skipped": "0",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "61e21d71-0821-4ae2-8002-719762262979",
+            "timestamp": "2026-11-20T20:48:04.063+08:00",
+            "time": "5.031"
+          },
+          "tags": {
+            "testsuites": 1,
+            "testsuite": 1,
+            "testcase": 2
+          },
+          "cases": 2,
+          "case_names": [
+            "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_client_drop_keeps_original_source_and_cell_once",
+            "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_ack_timeout_recovers_original_completion_without_redispatch"
+          ],
+          "duplicate_names": false,
+          "retry_or_rerun_elements": []
+        },
+        {
+          "member": "raw/feature-ack-native-validation-5/command.stderr",
+          "bytes": 42120,
+          "sha256": "d65903bbdc6ac761a9ba54d5572c6d6f4213ac1382101371211c218686a02814",
+          "run_summary_lines": [
+            "    Starting 2 tests across 1 binary (1366 tests skipped)",
+            "        PASS [   2.963s] (1/2) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_client_drop_keeps_original_source_and_cell_once",
+            "        PASS [   5.025s] (2/2) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_ack_timeout_recovers_original_completion_without_redispatch",
+            "     Summary [   5.031s] 2 tests run: 2 passed, 1366 skipped"
+          ],
+          "retry_marker_lines": []
+        },
+        {
+          "member": "raw/feature-ack-native-validation-5/command.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_summary_lines": [],
+          "retry_marker_lines": []
+        }
+      ]
+    },
+    {
+      "group": "historical-delivery-native-validation-7",
+      "result_sha256": "55b5d94f23dd217f3cd2567f3364504777478c722c271e2a6cdbc8ad1d7e0d8a",
+      "source": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+      "expected_cases": 5,
+      "files": [
+        {
+          "member": "raw/historical-delivery-native-validation-7/original-nextest-0.xml",
+          "bytes": 1514,
+          "sha256": "9d50661895c339dd6e981f1af40c8728904f577504feb3c8ca00213d4e3667a2",
+          "root_attributes": {
+            "name": "nextest-run",
+            "tests": "5",
+            "skipped": "0",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "a06ec1aa-5c71-4c50-8d52-c5630b529c12",
+            "timestamp": "2026-11-20T20:48:02.570+08:00",
+            "time": "0.015"
+          },
+          "tags": {
+            "testsuites": 1,
+            "testsuite": 1,
+            "testcase": 5
+          },
+          "cases": 5,
+          "case_names": [
+            "learning_owner_journal::historical_delivery::tests::historical_prepared_completion_cold_reopen_returns_exact_key_and_bytes",
+            "learning_owner_journal::historical_delivery::tests::historical_delivery_cancelled_claim_cold_reopen_never_redispatches",
+            "learning_owner_journal::historical_delivery::tests::historical_delivery_completed_claim_cold_reopen_returns_exact_head",
+            "learning_owner_journal::historical_delivery::tests::historical_prepared_completion_full_witness_keeps_exact_append_for_recovery",
+            "learning_owner_journal::historical_delivery::tests::historical_prepared_claim_drop_before_dispatch_cold_reopen_stays_pending"
+          ],
+          "duplicate_names": false,
+          "retry_or_rerun_elements": []
+        },
+        {
+          "member": "raw/historical-delivery-native-validation-7/command.stderr",
+          "bytes": 42572,
+          "sha256": "a601671d63ff79f22797e895a8dfb7ec361dd5f1fa0f33c357bb44216abecb37",
+          "run_summary_lines": [
+            "    Starting 5 tests across 1 binary (1363 tests skipped)",
+            "        PASS [   0.008s] (1/5) codex-hepta-agentd learning_owner_journal::historical_delivery::tests::historical_prepared_completion_cold_reopen_returns_exact_key_and_bytes",
+            "        PASS [   0.008s] (2/5) codex-hepta-agentd learning_owner_journal::historical_delivery::tests::historical_delivery_cancelled_claim_cold_reopen_never_redispatches",
+            "        PASS [   0.008s] (3/5) codex-hepta-agentd learning_owner_journal::historical_delivery::tests::historical_delivery_completed_claim_cold_reopen_returns_exact_head",
+            "        PASS [   0.008s] (4/5) codex-hepta-agentd learning_owner_journal::historical_delivery::tests::historical_prepared_completion_full_witness_keeps_exact_append_for_recovery",
+            "        PASS [   0.009s] (5/5) codex-hepta-agentd learning_owner_journal::historical_delivery::tests::historical_prepared_claim_drop_before_dispatch_cold_reopen_stays_pending",
+            "     Summary [   0.015s] 5 tests run: 5 passed, 1363 skipped"
+          ],
+          "retry_marker_lines": []
+        },
+        {
+          "member": "raw/historical-delivery-native-validation-7/command.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_summary_lines": [],
+          "retry_marker_lines": []
+        }
+      ]
+    },
+    {
+      "group": "native-validation-11",
+      "result_sha256": "d7990e3818939436f0fe63a9baf47313f2a4698cf4bf64a9c9e167d0b35a31de",
+      "source": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+      "expected_cases": 11,
+      "files": [
+        {
+          "member": "raw/native-validation-11/original-nextest-0.xml",
+          "bytes": 3222,
+          "sha256": "3adad709805cef449a08c0e7292b68d9b7e873767c842fdc32a0b5a41de94a69",
+          "root_attributes": {
+            "name": "nextest-run",
+            "tests": "11",
+            "skipped": "0",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "366cf742-b33d-4bde-be41-a0e073e0f523",
+            "timestamp": "2026-11-20T20:47:46.230+08:00",
+            "time": "0.877"
+          },
+          "tags": {
+            "testsuites": 1,
+            "testsuite": 1,
+            "testcase": 11
+          },
+          "cases": 11,
+          "case_names": [
+            "production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+            "production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion",
+            "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner"
+          ],
+          "duplicate_names": false,
+          "retry_or_rerun_elements": []
+        },
+        {
+          "member": "raw/native-validation-11/command.stderr",
+          "bytes": 44186,
+          "sha256": "adb748513d1c265906e0ae02834eab4fe519042c4278694bba5b557a089c00b5",
+          "run_summary_lines": [
+            "    Starting 11 tests across 1 binary (1357 tests skipped)",
+            "        PASS [   0.009s] ( 1/11) codex-hepta-agentd production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+            "        PASS [   0.009s] ( 2/11) codex-hepta-agentd production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+            "        PASS [   0.345s] ( 3/11) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+            "        PASS [   0.360s] ( 4/11) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+            "        PASS [   0.367s] ( 5/11) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+            "        PASS [   0.440s] ( 6/11) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+            "        PASS [   0.471s] ( 7/11) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+            "        PASS [   0.518s] ( 8/11) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+            "        PASS [   0.639s] ( 9/11) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+            "        PASS [   0.846s] (10/11) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion",
+            "        PASS [   0.869s] (11/11) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner",
+            "     Summary [   0.877s] 11 tests run: 11 passed, 1357 skipped"
+          ],
+          "retry_marker_lines": []
+        },
+        {
+          "member": "raw/native-validation-11/command.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_summary_lines": [],
+          "retry_marker_lines": []
+        }
+      ]
+    },
+    {
+      "group": "ready-slot-native-validation-3",
+      "result_sha256": "eeb3ba871258b2c1bad61ca7eda13a926d0b58fabc4dba3076b5a563aea4363e",
+      "source": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+      "expected_cases": 2,
+      "files": [
+        {
+          "member": "raw/ready-slot-native-validation-3/original-nextest-0.xml",
+          "bytes": 769,
+          "sha256": "4c33f7299ab212fc26809bef687ce72d8c72c5791ab0f2c0217700cbc982308c",
+          "root_attributes": {
+            "name": "nextest-run",
+            "tests": "2",
+            "skipped": "0",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "5c2cd591-8082-4368-9b0c-cce92a63b94f",
+            "timestamp": "2026-11-20T20:48:10.598+08:00",
+            "time": "0.021"
+          },
+          "tags": {
+            "testsuites": 1,
+            "testsuite": 1,
+            "testcase": 2
+          },
+          "cases": 2,
+          "case_names": [
+            "circuit_q24_successor::state::tests::ready_guard_rejects_expiry_and_poison_without_returning_an_owner",
+            "circuit_q24_successor::state::tests::ready_guard_rejects_notification_without_an_installed_original_owner"
+          ],
+          "duplicate_names": false,
+          "retry_or_rerun_elements": []
+        },
+        {
+          "member": "raw/ready-slot-native-validation-3/command.stderr",
+          "bytes": 42016,
+          "sha256": "5e203c9268990d218823385413562e96bc2b00b38735120e6f2aaf01ba83e491",
+          "run_summary_lines": [
+            "    Starting 2 tests across 1 binary (1366 tests skipped)",
+            "        PASS [   0.013s] (1/2) codex-hepta-agentd circuit_q24_successor::state::tests::ready_guard_rejects_expiry_and_poison_without_returning_an_owner",
+            "        PASS [   0.015s] (2/2) codex-hepta-agentd circuit_q24_successor::state::tests::ready_guard_rejects_notification_without_an_installed_original_owner",
+            "     Summary [   0.021s] 2 tests run: 2 passed, 1366 skipped"
+          ],
+          "retry_marker_lines": []
+        },
+        {
+          "member": "raw/ready-slot-native-validation-3/command.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_summary_lines": [],
+          "retry_marker_lines": []
+        }
+      ]
+    },
+    {
+      "group": "retirement-native-validation-9",
+      "result_sha256": "6ab16eaeedaa5c91dd5ffcc341e904cc9cc0fe72a2125ba21153331583e0333e",
+      "source": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+      "expected_cases": 16,
+      "files": [
+        {
+          "member": "raw/retirement-native-validation-9/original-nextest-0.xml",
+          "bytes": 4440,
+          "sha256": "c02675f70df7d45a69e404b4fd99fb9a98d3e6c84d6919d7d466f2d3e1e5e0d4",
+          "root_attributes": {
+            "name": "nextest-run",
+            "tests": "16",
+            "skipped": "0",
+            "failures": "0",
+            "errors": "0",
+            "uuid": "0d4ae05b-6d0b-48a8-9dfa-3f97ba30df06",
+            "timestamp": "2026-11-20T20:47:50.712+08:00",
+            "time": "10.364"
+          },
+          "tags": {
+            "testsuites": 1,
+            "testsuite": 2,
+            "testcase": 16
+          },
+          "cases": 16,
+          "case_names": [
+            "cell_generation_journal::tests::drain_recovery::original_generation_drain_reopen_and_replay_keep_exact_journal_and_witness",
+            "cell_generation_journal::tests::drain_recovery::original_generation_drain_readonly_witness_failure_reopens_the_retained_frame_once",
+            "cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence",
+            "cell_generation_journal::tests::lost_witness_ack_requires_reconciliation_then_exposes_exact_committed_bytes",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_pending_generator_claim_survives_reopen_without_signing",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_ack_loss_reopens_same_signature_and_appends_once",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retirement::original_task_terminal_outcome_drains_once_and_readback_never_writes",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_witness_write_failure_repairs_only_exact_retained_append",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_refuses_other_database_and_stays_fenced_after_original_replacement",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_binds_root_scope_and_consumer_without_relaxing_current_task_identity",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_keeps_task_success_until_original_outcome_and_reconcile",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_uses_original_outbox_after_current_advances_and_new_task_runs",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unwitnessed_expired_outcome_cannot_become_historical_ready",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unappended_expired_signatures_never_renew",
+            "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_reads_witnessed_history_after_signature_expiry"
+          ],
+          "duplicate_names": false,
+          "retry_or_rerun_elements": []
+        },
+        {
+          "member": "raw/retirement-native-validation-9/command.stderr",
+          "bytes": 44732,
+          "sha256": "e7c352ff78534600db1cbefac44fb878a6d84a81976c71d757a8ef7b3e57cc06",
+          "run_summary_lines": [
+            "    Starting 16 tests across 2 binaries (1591 tests skipped)",
+            "        PASS [   0.020s] ( 1/16) codex-hepta-neuron cell_generation_journal::tests::drain_recovery::original_generation_drain_reopen_and_replay_keep_exact_journal_and_witness",
+            "        PASS [   0.021s] ( 2/16) codex-hepta-neuron cell_generation_journal::tests::drain_recovery::original_generation_drain_readonly_witness_failure_reopens_the_retained_frame_once",
+            "        PASS [   0.023s] ( 3/16) codex-hepta-neuron cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence",
+            "        PASS [   0.025s] ( 4/16) codex-hepta-neuron cell_generation_journal::tests::lost_witness_ack_requires_reconciliation_then_exposes_exact_committed_bytes",
+            "        PASS [   0.383s] ( 5/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_pending_generator_claim_survives_reopen_without_signing",
+            "        PASS [   0.432s] ( 6/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal",
+            "        PASS [   0.563s] ( 7/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_ack_loss_reopens_same_signature_and_appends_once",
+            "        PASS [   0.603s] ( 8/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retirement::original_task_terminal_outcome_drains_once_and_readback_never_writes",
+            "        PASS [   0.613s] ( 9/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_witness_write_failure_repairs_only_exact_retained_append",
+            "        PASS [   0.882s] (10/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_refuses_other_database_and_stays_fenced_after_original_replacement",
+            "        PASS [   0.952s] (11/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_binds_root_scope_and_consumer_without_relaxing_current_task_identity",
+            "        PASS [   1.043s] (12/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_keeps_task_success_until_original_outcome_and_reconcile",
+            "        PASS [   1.449s] (13/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_uses_original_outbox_after_current_advances_and_new_task_runs",
+            "        PASS [   5.364s] (14/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unwitnessed_expired_outcome_cannot_become_historical_ready",
+            "        PASS [  10.318s] (15/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unappended_expired_signatures_never_renew",
+            "        PASS [  10.357s] (16/16) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_reads_witnessed_history_after_signature_expiry",
+            "     Summary [  10.364s] 16 tests run: 16 passed, 1591 skipped"
+          ],
+          "retry_marker_lines": []
+        },
+        {
+          "member": "raw/retirement-native-validation-9/command.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "run_summary_lines": [],
+          "retry_marker_lines": []
+        }
+      ]
+    }
+  ],
+  "read_only_tar_extraction": true,
+  "actual_tests_started": 0,
+  "host_calls": 0,
+  "prior_run_has_observed_retry_markers": false,
+  "caveat": "Repository configuration and argv permit one retry unless an inherited environment override applies. This readback establishes only actual retained XML/log observations for these six executions, not a complete historical environment snapshot."
+}

@@ -145,7 +145,10 @@ impl Snapshot {
         self.require_progress(before, phase)?;
         let frames_after_barrier = match phase {
             Phase::Publish | Phase::StalePrepare | Phase::Revoked => 1,
-            Phase::Recover | Phase::RetiredSession => 0,
+            Phase::Recover
+            | Phase::AckSourcePending
+            | Phase::AckCurrentFirst
+            | Phase::RetiredSession => 0,
             Phase::RefusedReopen => unreachable!("handled above"),
         };
         assert_eq!(

@@ -1,0 +1,70 @@
+{
+  "status": "ROOT_INDEPENDENT_ACTUAL_RPC_AND_FULL_FIVE_FILES_MATCH",
+  "source": "1a9799686243c2be0ee393ba364e091029cfb944",
+  "reviewed_at": "2026-11-20T15:50:18.331416+00:00",
+  "owner": {
+    "session_id": "dpty-d86e7367d2132a3a4e1af2c2b212f69d2d655e3d6c7354098733a26b554e07f6",
+    "status": {
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "bytes_seen": 16188,
+      "bytes_stored": 16188,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1795188657289,
+      "exit_code": 1,
+      "output_complete": true,
+      "owner_pid": 185211,
+      "pid": 185212,
+      "state": "exited"
+    },
+    "available_end": 16188
+  },
+  "files": [
+    {
+      "local_path": "e6_owner_work/c_generation_noupdate13_failure/PIPELINE_RESULT.json",
+      "host_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/c-generation-drain-native-pipeline-1/RESULT.json",
+      "bytes": 22359,
+      "sha256": "03b082e8af426d8a73dc8d804038448e9ff62966c6f88da07d5ced92209cb1d7",
+      "version": "66306:53350863:22359:1795188930654773717:1795188930654773717"
+    },
+    {
+      "local_path": "e6_owner_work/c_generation_noupdate13_failure/WRAPPER_RESULT.json",
+      "host_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/complete-noupdate-13/result.json",
+      "bytes": 59215,
+      "sha256": "186818661a00b7af839d167f70292eb910344b9d106d702561d3d821e30658ab",
+      "version": "66306:53351042:59215:1795188930637971715:1795188930637971715"
+    },
+    {
+      "local_path": "e6_owner_work/c_generation_noupdate13_failure/ordinary-post-a-no-update.xml",
+      "host_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/complete-noupdate-13/ordinary-post-a-no-update.xml",
+      "bytes": 14184,
+      "sha256": "0e981d9dd962535df8c1611b622869ed420e6f5511b9a9effe06886d8df90282",
+      "version": "66306:53351037:14184:1795188927833024208:1795188927833024208"
+    },
+    {
+      "local_path": "e6_owner_work/c_generation_noupdate13_failure/ordinary-post-a-no-update.json",
+      "host_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/complete-noupdate-13/ordinary-post-a-no-update.json",
+      "bytes": 1927,
+      "sha256": "c9b85ef4476a98527e5c2ccefb7ffe5c6b8b6522edde9885471c5f558cd941cd",
+      "version": "66306:53351035:1927:1795188927652628615:1795188927681706174"
+    },
+    {
+      "local_path": "e6_owner_work/c_generation_noupdate13_failure/PROTOCOL.json",
+      "host_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/complete-noupdate-13/PROTOCOL.json",
+      "bytes": 24846,
+      "sha256": "417240d3e0e623b771e5b1088784bdfa592ebecd55faf620fccf261821fcf7e1",
+      "version": "66306:53350956:24846:1795188799208664627:1795188799208664627"
+    }
+  ],
+  "interpretation": {
+    "original_controls": "18+47+Root2+mechanism1 PASS",
+    "whole_NoUpdate": "FAIL one failure zero error zero skip",
+    "startup": "continuation physical source request32 competing with Restore; historical_client.lane_busy followed by fenced_after_exchange",
+    "new_C_drain_reached": false,
+    "Adopt_runs": 0,
+    "cold_new_D_runs": 0,
+    "older_9df_cause_inferred": false
+  },
+  "atomic_host_snapshot": false,
+  "first_local_verifier_attempt": "KeyError: content; corrected to actual endpoint text field; no source/native/host mutation"
+}

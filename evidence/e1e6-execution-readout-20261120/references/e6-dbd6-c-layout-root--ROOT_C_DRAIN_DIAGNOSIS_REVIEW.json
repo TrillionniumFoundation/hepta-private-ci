@@ -1,0 +1,22 @@
+{
+  "reviewed_at_utc": "2026-11-20T14:17:14.220563+00:00",
+  "source": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "actual_full_five_file_root_readback": "ROOT_C_PHYSICAL_READBACK.json",
+  "root_direct_readback_sha256": "e51f017fee36567c35773e697669d77f547efea5b09b9cb50ac670e3a62f2c4a",
+  "author_layout_sha256": "081db551d0cc1eb2e879883f92b7d78af86e8b2e702994e9eb624d917f01942c",
+  "independent_layout_sha256": "e744b3f970ef98fb9a5c25191f0f089c5dbaa4073e2d06b50e2d3ce2b82e733c",
+  "full_original_assertion_read": true,
+  "whole_parent_original_execution_and_xml_read": true,
+  "actual_journal_bytes": 40,
+  "actual_witness_bytes": 112,
+  "interpretation": "Exact HPTACG03 target-bound header and no frames; witness header/checksum/context with no anchors. Under exact original reducer only condition 2 (is_drained) is false.",
+  "original_native_evaluation": "Original && short-circuits at the second condition; later six conditions are independently decoded, not separately executed native assertions.",
+  "signature_reverification": false,
+  "new_rust_observer_or_native": 0,
+  "source_analysis": "New C path omits existing original-owner drain before handoff; installed real owner carries the exact task/cell/source capability. Minimal draft confines synchronous drain to that New C owner path.",
+  "product_draft_sha256": "d97753ce03a7c4a32a4805db75c72710fa76d764c0426ca25cec09434053123d",
+  "source_patch_qualified": false,
+  "prior_A_failure_root_cause_resolved": false,
+  "whole_no_update_qualified": false,
+  "cold_or_adopt_qualified": false
+}

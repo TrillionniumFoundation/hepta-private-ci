@@ -177,14 +177,9 @@ impl OriginalArtifactPlan {
             };
             (Some(published), None, head)
         } else {
-            let retained = OriginalCellQ24RetainedArtifactForRootV1::from_original_result(
-                owners,
-                snapshot,
-                authority.clone(),
-            )
-            .await
-            .map_err(refused)?;
-            (None, Some(retained), None)
+            // Wait for independent data before constructing the authenticated
+            // retained phase. No source read or authority crosses that wait.
+            (None, Some((owners, snapshot, authority.clone())), None)
         };
         route.require_current()?;
         lease.require_unchanged()?;
@@ -241,10 +236,15 @@ impl OriginalArtifactPlan {
                     .await
                     .map_err(refused)?
             }
-            (None, Some(retained)) => {
-                OriginalCellQ24RetainedArtifactForRootV1::accept_selection(retained, input)
-                    .await
-                    .map_err(refused)?
+            (None, Some((owners, snapshot, authorities))) => {
+                OriginalCellQ24RetainedArtifactForRootV1::accept_original_result_selection(
+                    owners,
+                    snapshot,
+                    authorities,
+                    input,
+                )
+                .await
+                .map_err(refused)?
             }
             _ => return Err(refused("exact original Artifact branch required")),
         };

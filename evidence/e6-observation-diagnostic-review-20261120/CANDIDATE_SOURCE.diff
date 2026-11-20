@@ -1,0 +1,143 @@
+--- a/.github/blob-size-allowlist.txt
++++ b/.github/blob-size-allowlist.txt
+@@ -88,7 +88,7 @@
+ sha256:bf86fbe86e20c835b0f3243497a5311b2903863cbd6d088a34c6412f5e5d9233 qualification/ordinary-owner-assembly-20261111/native-evidence/9bfdef-original-records.tar.xz
+ sha256:938af64804abc935ab8db125dd6054d64f6e6f73626f07fcca4d661daaac6618 qualification/ordinary-owner-assembly-20261111/native-evidence/3c8dabe-and-early-maintenance-original-records.tar.xz
+ # Exact privileged caller inventory after reviewed ab12b8bc operation scopes; future edits require a new digest.
+-sha256:36fce234efc161c4bb0a2eb0dd5a2e66faa25839c941ce35df6d28bc8db70934 CALLERS.toml
++sha256:5533596462eed0fe608e7271b4aab8b76600909268d989dc1d6dc41d6aaf884a CALLERS.toml
+ sha256:b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9 qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz
+ sha256:aaff3176e000652f54ac97308714aec0e94079ce6b731be5ec45f4622441394a qualification/ordinary-owner-assembly-20261111/native-evidence/v6/original-records.tar.xz
+ 
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -11441,7 +11441,7 @@
+ path = "codex-rs/hepta-contracts/src/authority_host_peer.rs"
+ required = ["pub fn exchange_with_original_deadline("]
+ forbidden = []
+-required_function_order = [{ function = "fn exchange(", sequence = ["handle: impl FnOnce(&[u8])", "self.exchange_with_original_deadline(|bytes, _deadline| handle(bytes))"] }, { function = "fn exchange_with_original_deadline(", sequence = ["handle: impl FnOnce(&[u8], Instant)", "self.stream.take().ok_or(HostIssuerTransportError::Closed)?", "self.exchange_inner(&mut stream, handle)", "Ok(true)", "self.stream = Some(stream)", "Err(error)", "stream.shutdown(Shutdown::Both)", "Err(error)"] }, { function = "fn exchange_inner(", sequence = ["let deadline = self.owner.deadline(self.policy.timeout)", "self.owner.read_until(stream, &mut length[1..], deadline)?", "self.owner.read_until(stream, &mut bytes, deadline)?", "self.owner.check(deadline)?", "let response = handle(&bytes, deadline)?", "self.owner.check(deadline)?", "write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?", "self.owner.write_until(stream, &response, deadline)?", "self.owner.check(deadline)?"] }]
++required_function_order = [{ function = "fn exchange(", sequence = ["handle: impl FnOnce(&[u8])", "self.exchange_with_original_deadline(|bytes, _deadline| handle(bytes))"] }, { function = "fn exchange_with_original_deadline(", sequence = ["handle: impl FnOnce(&[u8], Instant)", "self.stream.take().ok_or(HostIssuerTransportError::Closed)?", "self.exchange_inner(&mut stream, handle, &mut failure_stage)", "Ok(true)", "self.stream = Some(stream)", "Err(error)", "stream.shutdown(Shutdown::Both)", "Err(error)"] }, { function = "fn exchange_inner(", sequence = ["let deadline = self.owner.deadline(self.policy.timeout)", "self.owner.read_until(stream, &mut length[1..], deadline)?", "self.owner.read_until(stream, &mut bytes, deadline)?", "self.owner.check(deadline)?", "let response = handle(&bytes, deadline)?", "self.owner.check(deadline)?", "write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?", "self.owner.write_until(stream, &response, deadline)?", "self.owner.check(deadline)?"] }]
+ 
+ [[protected_file]]
+ path = "codex-rs/hepta-agentd/src/authority_host_post_a_worker.rs"
+--- a/codex-rs/hepta-agentd/src/authority_host_service.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_service.rs
+@@ -309,8 +309,45 @@
+         {
+             checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
+         }
+-        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
+-        while channel.exchange(|bytes| self.handle(lane, bytes))? {}
++        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
++            .inspect_err(|_| {
++                if matches!(lane, HostAuthorityLane::Observation) {
++                    let _ = std::io::Write::write_fmt(
++                        &mut std::io::stderr(),
++                        format_args!(
++                            "root_stage=observation.construct thread={:?}\n",
++                            std::thread::current().id(),
++                        ),
++                    );
++                }
++            })?;
++        while {
++            let mut handler_failed = false;
++            // The handler records only a local diagnostic bit. Report it only
++            // after the original channel has closed the failed stream.
++            channel
++                .exchange(|bytes| {
++                    let handled = self.handle(lane, bytes);
++                    handler_failed = handled.is_err();
++                    handled
++                })
++                .inspect_err(|_| {
++                    if matches!(lane, HostAuthorityLane::Observation) {
++                        let stage = if handler_failed {
++                            "observation.handler"
++                        } else {
++                            "observation.exchange"
++                        };
++                        let _ = std::io::Write::write_fmt(
++                            &mut std::io::stderr(),
++                            format_args!(
++                                "root_stage={stage} thread={:?}\n",
++                                std::thread::current().id(),
++                            ),
++                        );
++                    }
++                })?
++        } {}
+         Ok(())
+     }
+ 
+--- a/codex-rs/hepta-contracts/src/authority_host_peer.rs
++++ b/codex-rs/hepta-contracts/src/authority_host_peer.rs
+@@ -143,7 +143,8 @@
+         handle: impl FnOnce(&[u8], Instant) -> Result<Vec<u8>, HostIssuerTransportError>,
+     ) -> Result<bool, HostIssuerTransportError> {
+         let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
+-        let result = self.exchange_inner(&mut stream, handle);
++        let mut failure_stage: &'static str = "peer.exchange.enter";
++        let result = self.exchange_inner(&mut stream, handle, &mut failure_stage);
+         match result {
+             Ok(true) => {
+                 self.stream = Some(stream);
+@@ -152,6 +153,15 @@
+             Ok(false) => Ok(false),
+             Err(error) => {
+                 let _ = stream.shutdown(Shutdown::Both);
++                // Preserve the original error and close before diagnostics.
++                // Labels and an anonymous local thread tag contain no request or owner data.
++                let _ = std::io::Write::write_fmt(
++                    &mut std::io::stderr(),
++                    format_args!(
++                        "root_stage={failure_stage} thread={:?}\n",
++                        std::thread::current().id(),
++                    ),
++                );
+                 Err(error)
+             }
+         }
+@@ -161,7 +171,9 @@
+         &self,
+         stream: &mut UnixStream,
+         handle: impl FnOnce(&[u8], Instant) -> Result<Vec<u8>, HostIssuerTransportError>,
++        failure_stage: &mut &'static str,
+     ) -> Result<bool, HostIssuerTransportError> {
++        *failure_stage = "peer.first-byte";
+         let mut length = [0; 4];
+         if self
+             .owner
+@@ -171,22 +183,32 @@
+             return Ok(false);
+         }
+         let deadline = self.owner.deadline(self.policy.timeout);
++        *failure_stage = "peer.request-header";
+         self.owner.read_until(stream, &mut length[1..], deadline)?;
+         let length = u32::from_be_bytes(length) as usize;
++        *failure_stage = "peer.request-length";
+         if length == 0 || length > self.policy.request_bound {
+             return Err(HostIssuerTransportError::InvalidRequest);
+         }
+         let mut bytes = vec![0; length];
++        *failure_stage = "peer.request-body";
+         self.owner.read_until(stream, &mut bytes, deadline)?;
++        *failure_stage = "peer.pre-handler-owner";
+         self.owner.check(deadline)?;
++        *failure_stage = "peer.handler";
+         let response = handle(&bytes, deadline)?;
++        *failure_stage = "peer.post-handler-owner";
+         self.owner.check(deadline)?;
++        *failure_stage = "peer.response-bound";
+         if response.is_empty() || response.len() > self.policy.response_bound {
+             return Err(HostIssuerTransportError::Unavailable);
+         }
++        *failure_stage = "peer.response-header-write";
+         self.owner
+             .write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?;
++        *failure_stage = "peer.response-body-write";
+         self.owner.write_until(stream, &response, deadline)?;
++        *failure_stage = "peer.post-response-owner";
+         self.owner.check(deadline)?;
+         Ok(true)
+     }

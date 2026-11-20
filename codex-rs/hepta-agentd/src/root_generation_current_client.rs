@@ -19,6 +19,10 @@ use crate::neuron_generation_current::types::Published;
 mod stream;
 pub(crate) use stream::OriginalPublicationStream;
 
+#[cfg(test)]
+#[path = "root_generation_current_ack_lane_tests.rs"]
+pub(crate) mod ack_lane_tests;
+
 #[path = "root_generation_current_grant.rs"]
 mod grant;
 #[path = "root_generation_current_history.rs"]
@@ -272,6 +276,7 @@ impl RootGenerationCurrentClient {
 
     fn exchange_response(&self, command: Command) -> Result<Response, AgentdError> {
         if self.fenced.load(Ordering::Acquire) {
+            trace_original_current_failure("already_fenced");
             return Err(uncertain());
         }
         if self
@@ -280,17 +285,28 @@ impl RootGenerationCurrentClient {
             .is_err()
         {
             self.fence();
+            trace_original_current_failure("session_before");
             return Err(uncertain());
         }
-        let mut held = self.lane.try_lock().map_err(|_| {
+        let mut held = self.lane.try_lock().map_err(|error| {
             self.fenced.store(true, Ordering::Release);
+            trace_original_current_failure(match &error {
+                std::sync::TryLockError::WouldBlock => "lane_would_block",
+                std::sync::TryLockError::Poisoned(_) => "lane_poisoned",
+            });
             uncertain()
         })?;
-        let mut lane = held.take().ok_or_else(uncertain)?;
+        let mut lane = held.take().ok_or_else(|| {
+            trace_original_current_failure("lane_missing");
+            uncertain()
+        })?;
         // Empty until complete framing, profile and transition validation.
         // Any timeout, loss, concurrent call or malformed response consumes it.
         let request_id = lane.sequence;
-        lane.sequence = request_id.checked_add(1).ok_or_else(uncertain)?;
+        lane.sequence = request_id.checked_add(1).ok_or_else(|| {
+            trace_original_current_failure("sequence_exhausted");
+            uncertain()
+        })?;
         let request = Request {
             schema: self.version.schema(),
             purpose: self.version.purpose().into(),
@@ -300,29 +316,62 @@ impl RootGenerationCurrentClient {
         };
         let stream: &mut OriginalPublicationStream = &mut lane.stream;
         let raw = stream
-            .exchange(&serde_json::to_vec(&request).map_err(|_| uncertain())?)
-            .map_err(|_| uncertain())?;
-        let response: Response = serde_json::from_slice(&raw).map_err(|_| uncertain())?;
+            .exchange(&serde_json::to_vec(&request).map_err(|_| {
+                trace_original_current_failure("request_encoding");
+                uncertain()
+            })?)
+            .map_err(|error| {
+                trace_original_current_failure(match error.kind() {
+                    std::io::ErrorKind::TimedOut => "transport_timed_out",
+                    std::io::ErrorKind::WouldBlock => "transport_would_block",
+                    std::io::ErrorKind::UnexpectedEof => "transport_eof",
+                    std::io::ErrorKind::BrokenPipe => "transport_broken_pipe",
+                    std::io::ErrorKind::ConnectionReset => "transport_connection_reset",
+                    _ => "transport_other",
+                });
+                uncertain()
+            })?;
+        let response: Response = serde_json::from_slice(&raw).map_err(|_| {
+            trace_original_current_failure("response_decoding");
+            uncertain()
+        })?;
         if response.schema != self.version.schema()
             || response.purpose != self.version.purpose()
             || response.request_id != request_id
             || response.profile != self.profile
             || self.fenced.load(Ordering::Acquire)
         {
+            trace_original_current_failure(if self.fenced.load(Ordering::Acquire) {
+                "fenced_during_exchange"
+            } else {
+                "response_binding"
+            });
             return Err(uncertain());
         }
-        validate_head(&self.profile, &response.head)?;
+        validate_head(&self.profile, &response.head)
+            .inspect_err(|_| trace_original_current_failure("head_validation"))?;
         if self
             .connection
             .require_original_publication_session()
             .is_err()
         {
             self.fenced.store(true, Ordering::Release);
+            trace_original_current_failure("session_after");
             return Err(uncertain());
         }
         *held = Some(lane);
         Ok(response)
     }
+}
+
+fn trace_original_current_failure(phase: &'static str) {
+    use std::io::Write;
+
+    let _ = writeln!(
+        std::io::stderr().lock(),
+        "original Root current failure: phase={phase}; pid={}",
+        std::process::id(),
+    );
 }
 
 fn validate_head(profile: &PublicationProfile, head: &CurrentHead) -> Result<(), AgentdError> {

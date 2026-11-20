@@ -1,0 +1,515 @@
+//! Same original Root historical read lane. Only actual responses can form a
+//! receipt; every later physical read is enclosed by live Root revalidation.
+
+use std::io;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+
+use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
+
+use crate::AgentdError;
+use crate::AgentdRootAuthoritySession;
+use crate::root_generation_current_client::OriginalPublicationStream;
+use crate::root_historical_learning_trust_data::HistoricalLearningTrustPinV1;
+use crate::root_historical_learning_trust_data::HistoricalLearningTrustResponseV1;
+use crate::root_historical_learning_trust_data::require_original_trust_reply;
+use crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1;
+use crate::root_historical_task_read_protocol::CompletedLearningAcceptanceResponseV1;
+use crate::root_historical_task_read_protocol::CompletedLearningHistoryResponseV1;
+use crate::root_historical_task_read_protocol::HistoricalReadOperationV1;
+use crate::root_historical_task_read_protocol::HistoricalTaskReadDataV1;
+use crate::root_historical_task_read_protocol::HistoricalTaskReadRequestV1;
+use crate::root_historical_task_read_protocol::MAX_READS;
+use crate::root_historical_task_read_protocol::PURPOSE;
+use crate::root_historical_task_read_protocol::PostAFrozenLearningResponseV1;
+use crate::root_historical_task_read_protocol::require_complete_reply;
+use crate::root_historical_task_read_protocol::require_completed_acceptance_reply;
+use crate::root_historical_task_read_protocol::require_completed_history_reply;
+use crate::root_historical_task_read_protocol::require_post_a_learning_reply;
+use crate::root_production_inputs::RootHistoricalTaskReadConnectionV1;
+
+#[path = "root_historical_task_read_inputs.rs"]
+mod inputs;
+#[path = "root_historical_learning_trust_client.rs"]
+mod learning_trust;
+pub(crate) use learning_trust::OriginalHistoricalLearningTrustV1;
+pub(crate) use learning_trust::OriginalHistoricalOperationV1;
+pub(crate) use learning_trust::OriginalHistoricalStageAuthoritiesV1;
+
+#[path = "root_post_a_learning_client.rs"]
+mod post_a;
+pub(crate) use post_a::OriginalPostAFrozenLearningAckV1;
+
+#[path = "root_completed_learning_history.rs"]
+pub(crate) mod completed_history;
+
+struct Lane {
+    stream: OriginalPublicationStream,
+    sequence: u64,
+}
+
+struct FenceReadOnDrop<'read> {
+    client: &'read RootHistoricalTaskReadClientV1,
+    armed: bool,
+}
+
+impl Drop for FenceReadOnDrop<'_> {
+    fn drop(&mut self) {
+        if self.armed {
+            self.client.fence();
+        }
+    }
+}
+
+enum Reply {
+    Task(Box<HistoricalTaskReadDataV1>),
+    LearningTrust(Box<HistoricalLearningTrustResponseV1>),
+    PostAFrozenLearning(PostAFrozenLearningResponseV1),
+    Acceptance(CompletedLearningAcceptanceResponseV1),
+    History(CompletedLearningHistoryResponseV1),
+}
+
+pub(crate) struct RootHistoricalTaskReadClientV1 {
+    connection: RootHistoricalTaskReadConnectionV1,
+    profile: String,
+    initial: LearningIterationSnapshotV1,
+    learning_trust: HistoricalLearningTrustPinV1,
+    lane: Mutex<Option<Lane>>,
+    fenced: AtomicBool,
+    completed_attempted: AtomicBool,
+}
+
+/// Opaque same-client receipt. Serialized reply data alone cannot construct it
+/// or admit a Dataset view. The actual Root route remains required per read.
+pub(crate) struct OriginalHistoricalTaskReadReceiptV1 {
+    client: Arc<RootHistoricalTaskReadClientV1>,
+    data: HistoricalTaskReadDataV1,
+}
+
+impl RootHistoricalTaskReadClientV1 {
+    fn from_original_stream(
+        stream: OriginalPublicationStream,
+        connection: RootHistoricalTaskReadConnectionV1,
+        profile: String,
+        initial: LearningIterationSnapshotV1,
+        learning_trust: HistoricalLearningTrustPinV1,
+    ) -> Result<Self, AgentdError> {
+        connection.require_original_session()?;
+        learning_trust.require_initial(&initial)?;
+        Ok(Self {
+            connection,
+            profile,
+            initial,
+            learning_trust,
+            lane: Mutex::new(Some(Lane {
+                stream,
+                sequence: 1,
+            })),
+            fenced: AtomicBool::new(false),
+            completed_attempted: AtomicBool::new(false),
+        })
+    }
+
+    pub(crate) fn require_same_original_session(
+        &self,
+        session: &AgentdRootAuthoritySession,
+    ) -> Result<(), AgentdError> {
+        let result = if self.fenced.load(Ordering::Acquire) {
+            Err(AgentdError::GenerationFenced(
+                "original historical read is fenced".into(),
+            ))
+        } else {
+            let connection: &RootHistoricalTaskReadConnectionV1 = &self.connection;
+            connection.require_same_original_session(session)
+        };
+        if result.is_err() {
+            self.fence();
+        }
+        result
+    }
+
+    pub(crate) fn observe_original_task(
+        self: &Arc<Self>,
+    ) -> io::Result<OriginalHistoricalTaskReadReceiptV1> {
+        let data = self.observe()?;
+        Ok(OriginalHistoricalTaskReadReceiptV1 {
+            client: Arc::clone(self),
+            data,
+        })
+    }
+
+    fn observe(&self) -> io::Result<HistoricalTaskReadDataV1> {
+        match self.exchange(HistoricalReadOperationV1::Task)? {
+            Reply::Task(data) => Ok(*data),
+            Reply::LearningTrust(_)
+            | Reply::PostAFrozenLearning(_)
+            | Reply::Acceptance(_)
+            | Reply::History(_) => {
+                self.fence();
+                Err(refused()).inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.unexpected_reply\n",
+                    );
+                })
+            }
+        }
+    }
+
+    fn exchange(&self, operation: HistoricalReadOperationV1) -> io::Result<Reply> {
+        if self.fenced.load(Ordering::Acquire) {
+            return Err(refused()).inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.fenced_before_exchange\n",
+                );
+            });
+        }
+        let mut held = self
+            .lane
+            .try_lock()
+            .inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.lane_busy\n",
+                );
+            })
+            .map_err(|_| {
+                self.fenced.store(true, Ordering::Release);
+                refused()
+            })?;
+        let result = (|| {
+            self.connection
+                .require_original_session()
+                .inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.session_before_exchange\n",
+                    );
+                })
+                .map_err(io::Error::other)?;
+            let mut lane: Lane = held.take().ok_or_else(refused).inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.lane_missing\n",
+                );
+            })?;
+            let request_id = lane.sequence;
+            let _ = std::io::Write::write_fmt(
+                &mut io::stderr(),
+                format_args!(
+                    "daemon_stage=historical.trace.request request_id={request_id} maximum={MAX_READS} purpose={}\n",
+                    operation.purpose(),
+                ),
+            );
+            if !(1..=MAX_READS).contains(&request_id) {
+                return Err(refused()).inspect_err(|_| {
+                    let _ = std::io::Write::write_fmt(&mut io::stderr(),
+                        format_args!("daemon_stage=historical_client.read_limit request_id={request_id} maximum={MAX_READS}\n"));
+                });
+            }
+            let request = serde_json::to_vec(&HistoricalTaskReadRequestV1 {
+                schema: 1,
+                purpose: operation.purpose().into(),
+                request_id,
+                profile: self.profile.clone(),
+            })
+            .map_err(io::Error::other)
+            .inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.request_encode\n",
+                );
+            })?;
+            let bytes = lane
+                .stream
+                .exchange_with_response_bound(&request, operation.response_bound())
+                .inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.transport\n",
+                    );
+                })?;
+            let data = match operation {
+                HistoricalReadOperationV1::Task => Reply::Task(Box::new(
+                    require_complete_reply(&bytes, request_id, &self.profile).inspect_err(
+                        |_| {
+                            let _ = std::io::Write::write_all(
+                                &mut io::stderr(),
+                                b"daemon_stage=historical_client.decode_task\n",
+                            );
+                        },
+                    )?,
+                )),
+                HistoricalReadOperationV1::LearningTrust => Reply::LearningTrust(Box::new(
+                    require_original_trust_reply(
+                        &bytes,
+                        request_id,
+                        &self.profile,
+                        &self.learning_trust,
+                        &self.initial,
+                    )
+                    .inspect_err(|_| {
+                        let _ = std::io::Write::write_all(
+                            &mut io::stderr(),
+                            b"daemon_stage=historical_client.decode_learning_trust\n",
+                        );
+                    })?,
+                )),
+                HistoricalReadOperationV1::PostAFrozenLearning => Reply::PostAFrozenLearning(
+                    require_post_a_learning_reply(&bytes, request_id, &self.profile).inspect_err(
+                        |_| {
+                            let _ = std::io::Write::write_all(
+                                &mut io::stderr(),
+                                b"daemon_stage=historical_client.decode_post_a\n",
+                            );
+                        },
+                    )?,
+                ),
+                HistoricalReadOperationV1::AcceptCompletedLearning => Reply::Acceptance(
+                    require_completed_acceptance_reply(&bytes, request_id, &self.profile)
+                        .inspect_err(|_| {
+                            let _ = std::io::Write::write_all(
+                                &mut io::stderr(),
+                                b"daemon_stage=historical_client.decode_completed_acceptance\n",
+                            );
+                        })?,
+                ),
+                HistoricalReadOperationV1::CaptureCompletedHistory
+                | HistoricalReadOperationV1::ReadCompletedHistory => Reply::History(
+                    require_completed_history_reply(&bytes, request_id, &self.profile, operation)
+                        .inspect_err(|_| {
+                        let _ = std::io::Write::write_all(
+                            &mut io::stderr(),
+                            b"daemon_stage=historical_client.decode_completed_history\n",
+                        );
+                    })?,
+                ),
+            };
+            self.connection
+                .require_original_session()
+                .inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.session_after_exchange\n",
+                    );
+                })
+                .map_err(io::Error::other)?;
+            if self.fenced.load(Ordering::Acquire) {
+                return Err(refused()).inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.fenced_after_exchange\n",
+                    );
+                });
+            }
+            lane.sequence = request_id
+                .checked_add(1)
+                .ok_or_else(refused)
+                .inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.sequence_overflow\n",
+                    );
+                })?;
+            *held = Some(lane);
+            Ok(data)
+        })();
+        if result.is_err() {
+            self.fenced.store(true, Ordering::Release);
+            held.take();
+        }
+        result
+    }
+
+    fn fence(&self) {
+        self.fenced.store(true, Ordering::Release);
+        if let Ok(mut held) = self.lane.try_lock() {
+            held.take();
+        }
+    }
+}
+
+impl OriginalHistoricalTaskReadReceiptV1 {
+    pub(crate) fn require_original_publication_connection(
+        &self,
+        publication: &crate::RootGenerationPublicationConnectionV1,
+    ) -> Result<(), AgentdError> {
+        let result = (|| {
+            if self.client.fenced.load(Ordering::Acquire) {
+                return Err(AgentdError::Io(refused()));
+            }
+            RootHistoricalTaskReadConnectionV1::require_same_original_publication(
+                &self.client.connection,
+                publication,
+            )
+        })();
+        if result.is_err() {
+            self.client.fence();
+        }
+        result
+    }
+
+    pub(crate) fn require_original_client(
+        &self,
+        client: &Arc<RootHistoricalTaskReadClientV1>,
+        session: &AgentdRootAuthoritySession,
+    ) -> Result<(), AgentdError> {
+        RootHistoricalTaskReadClientV1::require_same_original_session(&self.client, session)?;
+        if !Arc::ptr_eq(&self.client, client) {
+            self.client.fence();
+            return Err(AgentdError::GenerationFenced(
+                "historical receipt belongs to another actual Root client".into(),
+            ));
+        }
+        RootHistoricalTaskReadClientV1::require_same_original_session(&self.client, session)
+    }
+
+    pub(crate) fn initial_snapshot(&self) -> &LearningIterationSnapshotV1 {
+        &self.client.initial
+    }
+
+    /// Return only data from another complete physical read by the same Root.
+    /// No consumer-side Source or Cell file is opened after the refusal arms
+    /// return; pure decoding cannot hide a second physical read failure.
+    pub(crate) fn read_original_publication(
+        &self,
+    ) -> io::Result<(
+        crate::CircuitTaskSourcePublicationV1,
+        codex_hepta_neuron::CellDecisionReceiptV1,
+    )> {
+        let result = (|| {
+            let observed: HistoricalTaskReadDataV1 = self.client.observe().inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.publication_observe\n",
+                );
+            })?;
+            if observed != self.data {
+                return Err(refused()).inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.publication_receipt_differs\n",
+                    );
+                });
+            }
+            observed
+                .publication
+                .validate_against(&observed.ledger)
+                .inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.publication_decode\n",
+                    );
+                })
+                .map_err(io::Error::other)
+        })();
+        if result.is_err() {
+            self.client.fence();
+        }
+        result
+    }
+
+    /// Pure decoding and current recipient checks use the Root-observed image.
+    /// No second consumer file read can escape Root's persistent refusal arms.
+    #[track_caller]
+    pub(crate) fn with_current_read<T>(
+        &self,
+        action: impl FnOnce(&RootHistoricalLedgerReadDataV1) -> io::Result<T>,
+    ) -> io::Result<T> {
+        let caller = std::panic::Location::caller();
+        let _ = std::io::Write::write_fmt(
+            &mut std::io::stderr(),
+            format_args!(
+                "daemon_stage=historical.trace.receipt caller={}:{}\n",
+                caller.file(),
+                caller.line(),
+            ),
+        );
+        let mut fence = FenceReadOnDrop {
+            client: &self.client,
+            armed: true,
+        };
+        let result = (|| {
+            if self.client.observe().inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.observe_before_action\n",
+                );
+            })? != self.data
+            {
+                return Err(refused()).inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.receipt_before_action_differs\n",
+                    );
+                });
+            }
+            let value = action(&self.data.ledger).inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.action\n",
+                );
+            });
+            if self.client.observe().inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.observe_after_action\n",
+                );
+            })? != self.data
+            {
+                return Err(refused()).inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.receipt_after_action_differs\n",
+                    );
+                });
+            }
+            value
+        })();
+        if result.is_err() {
+            self.client.fence();
+        }
+        fence.armed = false;
+        result
+    }
+
+    /// Borrow the same complete Root cut for the historical Feature fact.
+    /// There is no local file read or second client between its two physical
+    /// Root observations. The callback result cannot bypass either postcheck.
+    pub(crate) fn with_current_feature_read<T>(
+        &self,
+        action: impl FnOnce(
+            &codex_hepta_neuron::CellGenerationOwnerBindingV1,
+            crate::CircuitTaskSourcePublicationV1,
+            codex_hepta_neuron::CellDecisionReceiptV1,
+        ) -> io::Result<T>,
+    ) -> io::Result<T> {
+        OriginalHistoricalTaskReadReceiptV1::with_current_read(self, |ledger| {
+            let (source, decision) =
+                crate::circuit_task::RootHistoricalTaskPublicationDataV1::validate_against(
+                    &self.data.publication,
+                    ledger,
+                )
+                .inspect_err(|_| {
+                    let _ = std::io::Write::write_all(
+                        &mut io::stderr(),
+                        b"daemon_stage=historical_client.feature_publication_decode\n",
+                    );
+                })
+                .map_err(io::Error::other)?;
+            action(&ledger.target, source, decision).inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut io::stderr(),
+                    b"daemon_stage=historical_client.feature_action\n",
+                );
+            })
+        })
+    }
+}
+
+fn refused() -> io::Error {
+    io::Error::other("original complete historical task read unavailable")
+}

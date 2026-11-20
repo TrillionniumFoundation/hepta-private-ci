@@ -12,6 +12,10 @@ use super::types::invalid;
 use super::types::scope_digest;
 use crate::AgentdError;
 
+#[cfg(all(test, target_os = "linux"))]
+#[path = "neuron_generation_current_ack_lane_tests.rs"]
+mod ack_lane_tests;
+
 pub(super) struct CurrentStore {
     owner_id: String,
     store: Store,

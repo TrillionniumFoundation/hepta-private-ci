@@ -492,26 +492,32 @@ impl AgentdRootAuthoritySession {
 }
 impl Drop for AgentdRootAuthoritySession {
     fn drop(&mut self) {
-        #[cfg(test)]
-        root_session_diagnostic(format_args!("ROOT_SESSION_DIAGNOSTIC phase=session-drop"));
         self.live.cache.fence();
         self.worker.abort();
         // Each original consumer holds this SAME LiveRoot as its clock. Break
         // the strong cycle after fencing; external owners remain independently
         // alive and locked until their own original Arc handles retire.
-        let mut consumers = match self.live.consumers.lock() {
-            Ok(consumers) => consumers,
-            Err(poisoned) => poisoned.into_inner(),
-        };
-        consumers.clear();
+        {
+            let mut consumers = match self.live.consumers.lock() {
+                Ok(consumers) => consumers,
+                Err(poisoned) => poisoned.into_inner(),
+            };
+            consumers.clear();
+        }
+        root_session_diagnostic(format_args!(
+            "ROOT_SESSION_DIAGNOSTIC phase=session-drop abort=requested thread={:?}",
+            std::thread::current().id(),
+        ));
     }
 }
 struct FenceOnDrop(Arc<LiveRoot>);
 impl Drop for FenceOnDrop {
     fn drop(&mut self) {
-        #[cfg(test)]
-        root_session_diagnostic(format_args!("ROOT_SESSION_DIAGNOSTIC phase=worker-drop"));
         self.0.cache.fence();
+        root_session_diagnostic(format_args!(
+            "ROOT_SESSION_DIAGNOSTIC phase=worker-drop cache=fenced thread={:?}",
+            std::thread::current().id(),
+        ));
     }
 }
 struct ActivationAttempt<'a> {

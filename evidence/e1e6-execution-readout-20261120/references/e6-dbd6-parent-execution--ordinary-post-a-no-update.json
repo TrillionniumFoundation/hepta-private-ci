@@ -1,0 +1,68 @@
+{
+  "after": {
+    "commit": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+    "dirty": false,
+    "parents": [
+      "9dfded9cecc74e39a19bccd14b9de9dc46c02c63"
+    ],
+    "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+    "dirty": false,
+    "parents": [
+      "9dfded9cecc74e39a19bccd14b9de9dc46c02c63"
+    ],
+    "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-contracts",
+    "--lib",
+    "--run-ignored",
+    "only",
+    "--test-threads",
+    "1",
+    "-E",
+    "test(=neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c)",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final",
+    "--no-tests",
+    "fail"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 98.31973223993555,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-20T14:00:33.145152+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 44891,
+  "log_file": "ordinary-post-a-no-update.json.a609cad1844f48d192b6b92c89cb93fa.log",
+  "log_sha256": "8e586d8e58a937b92cc70cd84d560fcfbd210dbc0e91d407ff043e9f6b7d1ef5",
+  "minimum_tests": 1,
+  "observed_failed_tests": 1,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "started_at": "2026-11-20T13:58:54.824165+00:00",
+  "status": "failed",
+  "tested_sha": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "timed_out": false,
+  "working_directory": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source"
+}

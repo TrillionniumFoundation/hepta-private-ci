@@ -189,13 +189,21 @@ class RootLearningScopeSourceClosureTests(unittest.TestCase):
             "scope.validate_snapshot(initial)",
             "self\n            .decode_original_snapshot(initial, Some(scope))?",
             "coordinator.next_stage().is_some()",
-            "snapshot.receipts.len() != codec::MAX_RECEIPTS",
+            "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())",
             "snapshot.training_no_update_v2().is_some()",
             "snapshot.receipts.last().is_none_or",
             "LearningIterationStageV1::NextUse",
         ):
             with self.subTest(marker=marker):
                 self.rejects(CHECKPOINT, "fn read_original_completed_scoped(", marker)
+        # Capacity is not the completed-path length. Reintroducing the old
+        # equality would reject valid retained checkpoints after full restore.
+        self.rejects(
+            CHECKPOINT, "fn read_original_completed_scoped(",
+            "coordinator.next_stage().is_some()",
+            replacement=("coordinator.next_stage().is_some()"
+                         " || snapshot.receipts.len() != codec::MAX_RECEIPTS"),
+        )
         self.rejects(CHECKPOINT, "fn load(",
                      "record.decode_original_snapshot(&self.initial, self.scope.as_ref())?")
 

@@ -21,6 +21,8 @@ use codex_hepta_types::Digest32;
 #[cfg(target_os = "linux")]
 #[path = "learning_owner_journal_historical_delivery.rs"]
 mod historical_delivery;
+#[cfg(target_os = "linux")]
+pub(crate) use historical_delivery::OriginalHistoricalDeliveryPreparationV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum LearningOriginalOwnerErrorV1 {

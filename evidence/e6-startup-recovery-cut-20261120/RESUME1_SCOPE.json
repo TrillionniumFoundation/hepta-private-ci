@@ -1,0 +1,107 @@
+{
+  "status": "OLD_STATIC_CANDIDATE_BLOCKED_NO_EXECUTION_RECEIPT",
+  "old_candidate_manifest": {
+    "workspace_path": "e6_owner_work/historical_startup_recovery/material_resume_1/REVIEW_MANIFEST.json",
+    "bytes": 3430,
+    "sha256": "de88757d6f02a00c90d6204070c0b33adc79c81805a7a9d5e7e5c205ced754fa",
+    "git_blob": "ef869c4efe89e98493a0fec9577484bac4988a12",
+    "local_stat": {
+      "device": 27,
+      "inode": 2125911,
+      "bytes": 3430,
+      "mtime_ns": 1795194029146680168,
+      "ctime_ns": 1795194029146680168
+    }
+  },
+  "blocking_peer": {
+    "workspace_path": "e6_material_resume_peer_1/REVIEW.json",
+    "bytes": 1792,
+    "sha256": "e425d4dbf0aa743a0a581dfead344f0cb333dbec75465df4662fc0571dfccd33",
+    "git_blob": "8251eae6df9d958263ad66f730db9e374bd34596",
+    "local_stat": {
+      "device": 27,
+      "inode": 3316808,
+      "bytes": 1792,
+      "mtime_ns": 1795194385337139200,
+      "ctime_ns": 1795194385337139200
+    }
+  },
+  "findings": [
+    {
+      "id": "R1_TRANSPORT_EXCEPTION_MUST_BE_PHASE_TYPED",
+      "lines": [
+        484,
+        584,
+        599,
+        600
+      ],
+      "finding": "Whole download_attempt contains local IO; generic exception types can classify a local TimeoutError/ConnectionResetError as an allowed transport retry.",
+      "minimal_change": "Private retryable transport wrapper created only at request/getresponse/read1; preserve actual IncompleteRead.partial accounting and partial bytes.",
+      "executed_reproduction": false
+    },
+    {
+      "id": "R2_FATAL_STOP_PRECEDES_ERROR_LOGGING",
+      "lines": [
+        575,
+        580,
+        601,
+        610
+      ],
+      "finding": "Two event writes precede STOP; event IO failure can skip worker STOP until main finally, allowing other workers to continue during that gap.",
+      "minimal_change": "Fatal/last-transport STOP+notify before any failure/decision log; logging errors also halt; never clear STOP.",
+      "executed_reproduction": false
+    }
+  ],
+  "existing_offline_controls": {
+    "pin": {
+      "workspace_path": "e6_owner_work/historical_startup_recovery/material_resume_1/offline-controls-1/RESULT.json",
+      "bytes": 1773,
+      "sha256": "00c2b8c84793c07cc23728b6de3b9f0aa239c3048a989e7c8dd3edcd254bc015",
+      "git_blob": "450f00ff890a95dd192338e197a6c1b0d83a8bce",
+      "local_stat": {
+        "device": 27,
+        "inode": 2125908,
+        "bytes": 1773,
+        "mtime_ns": 1795193970981118055,
+        "ctime_ns": 1795193970981118055
+      }
+    },
+    "cases": 9,
+    "wall_seconds": 0.1455601459965692,
+    "actual_https_or_host_qualification": false,
+    "not_rerun_by_this_reviewer": true
+  },
+  "old_candidate_actual_owner": null,
+  "old_candidate_actual_result": null,
+  "frozen_budget_record": {
+    "prior_owner_wall_seconds": 98.30543972132728,
+    "new_work_seconds": 500,
+    "maximum_cumulative_work_seconds": 598.3054397213273,
+    "new_own_group_cleanup_grace_seconds": 3,
+    "prior_body_bytes": 28101366,
+    "new_remaining_body_bytes": 508769546,
+    "cumulative_returned_body_bytes": 536870912,
+    "prior_git_commands": 69,
+    "new_git_commands_max": 11,
+    "cumulative_git_command_limit": 80,
+    "https_workers": 4,
+    "archive_body_max_bytes_each_attempt": 33554432,
+    "global_attempt_limit_per_package": 2,
+    "new_GET_max": 1840
+  },
+  "successor_slot": {
+    "known_directory": "e6_owner_work/historical_startup_recovery/material_resume_2",
+    "expected_minimal_scope": [
+      "private retryable error only from actual network calls",
+      "fatal STOP and notification before potentially failing log IO"
+    ],
+    "review_manifest": null,
+    "payload": null,
+    "actual_owner": null,
+    "actual_result": null,
+    "status": "SEPARATE_PREPARATION_NOT_INCLUDED_IN_THIS_INCREMENT"
+  },
+  "actual_format_slot": null,
+  "actual_compile_slot": null,
+  "original_attempt1_retry_count": 0
+}

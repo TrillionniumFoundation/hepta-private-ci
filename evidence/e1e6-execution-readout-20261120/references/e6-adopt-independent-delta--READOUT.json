@@ -1,0 +1,162 @@
+{
+  "actual_Adopt_execution": false,
+  "actual_Adopt_request_count": null,
+  "actual_NoUpdate12_request_trace": {
+    "bytes": 16551,
+    "git_blob": "778c6105c0bf2a4fc29966810388ec514f93e7e9",
+    "last_purpose": "runtime.learning.completed-acceptance.v1",
+    "ordered_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64
+    ],
+    "original_whole_parent": "FAIL at the separate C drain assertion",
+    "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/initial_observation_noupdate12_failure/childlogs/ordinary-q24-original-process-kJQZLM__stderr.log",
+    "requests": 64,
+    "sha256": "f8f28e6ba08c6780bf60ad7488a0c999b4a7dff3fb75a2b578348104d91bed28",
+    "trace_alone_is_not_acceptance_or_whole_success": true
+  },
+  "additional_historical_request_demand": 10,
+  "additional_outer_operations": 5,
+  "binding_chain": [
+    "Stage or in_original_prepared_lane opens with_original_prepared_operation",
+    "with_original_dataset_operation enters the exact historical trust operation",
+    "with_original_operation calls with_current_read",
+    "with_current_read performs client.observe before and after the synchronous callback, including an action-error return path when the before observation was valid",
+    "current trust activation and original receipt/session identity checks remain inside that operation; borrowed read_for does not call observe"
+  ],
+  "conditional_full_route_request_demand": 74,
+  "deltas": [
+    {
+      "anchors": [
+        "learning_iteration_historical_runtime.rs:88-114",
+        "cell_q24_learning_historical_operation.rs:328-330"
+      ],
+      "extra_historical_requests": 2,
+      "extra_outer_operations": 1,
+      "operation": "Proposal"
+    },
+    {
+      "anchors": [
+        "cell_q24_learning_historical_operation.rs:331-340",
+        "learning_iteration.rs:185-215"
+      ],
+      "extra_historical_requests": 2,
+      "extra_outer_operations": 1,
+      "operation": "LocalDecisionV2 through the first Selection-dispatched operation"
+    },
+    {
+      "anchors": [
+        "production_post_a_artifacts.rs:132-146",
+        "cell_q24_publication_root_stage.rs:50-74",
+        "cell_q24_publication_material.rs:13-50"
+      ],
+      "extra_historical_requests": 2,
+      "extra_outer_operations": 1,
+      "operation": "for_qualified_adoption -> read_original_publication_material"
+    },
+    {
+      "anchors": [
+        "production_post_a_artifacts.rs:150-177",
+        "cell_q24_publication_root_stage.rs:87-156",
+        "cell_q24_publication_material.rs:201-265"
+      ],
+      "extra_historical_requests": 2,
+      "extra_outer_operations": 1,
+      "operation": "fresh Reserve -> publish_candidate -> with_original_publication"
+    },
+    {
+      "anchors": [
+        "production_post_a_c_task.rs:238-273",
+        "cell_q24_training_material.rs:100-201"
+      ],
+      "extra_historical_requests": 2,
+      "extra_outer_operations": 1,
+      "operation": "fresh C Adopt actual_model -> read_original_training_material"
+    }
+  ],
+  "guard_behavior": "Client logs request identity then refuses request_id 65 before request serialization/write. Conditional demand 74 is not a count of performed network calls.",
+  "new_host_rpc_process_native_model_training_signature_database_git_operations": 0,
+  "no_double_counting": [
+    "The Adopt and retained branches each perform one accept_selection/accept_original_result_selection publication operation. This common pair is not subtracted from the five new pairs.",
+    "Reserve/publish_candidate and Recover/recover_published are alternatives, not two operations in one fresh flow.",
+    "The ordinary retained branch does not call the separate from_original_result constructor that would read publication material.",
+    "Repeated read_for/require_original_batch/require_prepared checks within one existing borrowed operation do not create a new historical outer operation.",
+    "B model/decision authority and Current calls remain real work but are not automatically historical-task-read lane requests. No zero-cost assertion is made for them."
+  ],
+  "not_claimed": [
+    "No new C-drain source review or qualification",
+    "No Adopt native execution, source gate, signature verification, full 74-call trace, or completed future route",
+    "No source/policy/budget/authority modification",
+    "No approval of operation fusion across external await or retained authority credentials"
+  ],
+  "original_historical_limit": 64,
+  "scope": "Fresh ordinary Adopt / Reserve / new C, relative to the shared successful NoUpdate control flow. This is a source-only delta review, not a complete Adopt run.",
+  "source_commit": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "source_files_byte_bound_to_exact_inventory": 20,
+  "source_inventory_canonical_sha256": "20fe46de4b63f5a2bcce469113ebe27b7514f942c7f960a71e4dabaa4f643d0f",
+  "source_inventory_path": "/workspace/scratch/e9e051ab0825/e6_owner_work/initial_observation_diagnostic_candidate/rev1/EXPECTED_SOURCE_INVENTORY_RECONSTRUCTED.json",
+  "source_inventory_raw_sha256": "de258a2cf89cdb629d02c1e50d955b6fd01160f36c815d042b975d2dbd087e36",
+  "status": "STATIC_ADDITIONAL_HISTORICAL_READ_DEMAND_CONFIRMED"
+}

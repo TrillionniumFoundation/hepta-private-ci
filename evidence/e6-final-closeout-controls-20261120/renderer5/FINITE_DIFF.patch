@@ -1,0 +1,11 @@
+--- final-closeout-helper-4/render_readout.py
++++ final-report-renderer-5/render_readout.py
+@@ -15,7 +15,7 @@
+ sys.dont_write_bytecode = True
+ import successor_evidence as evidence
+ 
+-FACT = re.compile(r'\{\{fact:([a-z][a-z0-9_]+)\}\}')
++FACT = re.compile(r'\{\{fact:([a-z][a-zA-Z0-9_]+)\}\}')
+ LOCAL_LINK = re.compile(r'\[([^\]]+)\]\((sandbox:/[^)]+)\)')
+ FORBIDDEN_CLAIM = '零遗忘'
+ 

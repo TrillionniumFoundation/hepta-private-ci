@@ -1,0 +1,26 @@
+{
+  "status": "ROOT_PRODUCT_STATIC_REVIEW_NO_BLOCKER_NOT_EXECUTED",
+  "reviewed_at": "2026-11-20T15:50:33.237277+00:00",
+  "manifest_sha256": "4f9f051504946eeb99ee84e33c6392fba648f242f82e1ecc2b80df803ce93378",
+  "diff_sha256": "90d09593ed9b2aaf61337d368b8012d28fdec04ff37dc20f799ca978b7ec72e0",
+  "peer_manifest_sha256": "a1acf6e0a6ae583eefa939da63b21367165bba4ebf40001b37bfe3ad44d0bd3b",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+      "before_sha256": "d97753ce03a7c4a32a4805db75c72710fa76d764c0426ca25cec09434053123d",
+      "after_sha256": "56a5b6edd3cac3ac530bf10eb8cfb2d9a00a6ae78a21b82b33c40b157ce23593",
+      "same_original_tail": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+      "before_sha256": "18ee449e057942c8b3728dbb3664140d9302e8d946fd29dc1d372e615416d68c",
+      "after_sha256": "adb3f433fefe5f12d4143412d0eaa0e6185414ceccf29a7f4d2f36a9a77a46ad",
+      "same_original_tail": true
+    }
+  ],
+  "same_original_startup_checks_and_grants_drop": true,
+  "private_prepared_owner": "consumed original inputs/state/token; no caller-ready flag, no Root borrow across await",
+  "journal_and_shutdown": "preflight before any fresh delivery claim; original Pending/Completed/readback/submit/complete branches and both-futures join unchanged",
+  "scope": "startup serialization only;64/deadlines/lane_busy unchanged; no Adopt budget or C/native qualification",
+  "remaining": "exact CALLERS/protection QA mappings; original compile/lint/source and native gates"
+}

@@ -73,7 +73,7 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
         # operation's physical post-read has returned successfully.
         self.check_markers(AGENT + "production_post_a_q24.rs",
                            "fn assemble_original_post_a_q24(", (
-            "self.assemble_q24_learning(config, inputs).await?",
+            ".assemble_original_historical_q24_learning(config, inputs, Arc::clone(&receipt))",
             "let original_prepared: &CellQ24PreparedLearningV1 = prepared.as_ref()",
             "original_prepared.with_original_prepared_operation(|read|",
             "RegisteredHistoricalLearningSourceV1::capture_original_historical_source_in_operation(",
@@ -86,11 +86,13 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
         self.check_markers(SOURCE, "fn run_delivery(", (
             "require_ready(&state).is_ok() && state.automation_admission_ready()?",
             "handle.reserve()", "self.journal.read(&self.key)",
-            "commit_original_historical_delivery(&self.key",
+            ".prepare_original_historical_delivery(&self.key)",
             "timeout_at(source.end.into(), reservation.submit(source.request().clone()))"))
         for occurrence in (0, 1):
             self.reject_removal(SOURCE, "fn run_delivery(",
-                                "source.require_current_historical_source(state.identity())", occurrence)
+                                "source.require_original_stage_operation(state.identity(), read)?", occurrence)
+            self.reject_removal(SOURCE, "fn run_delivery(",
+                                ".require_original_stage_operation(state.identity(), read)", occurrence + 2)
         self.check_markers(JOURNAL, "fn commit_original_historical_delivery<F>(", (
             "self.journal.claim(key)", "ProductEvaluationExecutionStateV1::Pending",
             "return Err(Error::Pending)", "self.anchor_append(before)?",
@@ -103,7 +105,9 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
                                 "self.readback(reservation, &cancellation).await?", occurrence)
         self.check_markers(SOURCE, "fn run_delivery(", (
             "saved.as_slice() != snapshot.head_digest.as_array()", "Err(JournalError::Pending)",
-            "ProductEvaluationExecutionStoreErrorV1::Missing", "*observed_snapshot = Some(result)"))
+            "ProductEvaluationExecutionStoreErrorV1::Missing",
+            ".complete_original_historical_delivery(result.head_digest.as_array())?",
+            "Ok::<_, JournalError>(result)"))
         self.check_markers(SOURCE, "fn readback(", (
             "cancellation.cancelled()",
             "tokio::time::timeout_at(self.source.end.into(), reservation.readback(self.source.request().clone()))",
@@ -140,7 +144,10 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
             self.assertEqual(rows[name]["product_callers"], [])
         for name in ("q24_historical_delivery_capture_in_operation", "q24_historical_delivery_install_in_operation"):
             self.assertEqual(rows[name]["product_callers"], [AGENT + "production_post_a_q24.rs"])
-        self.assertEqual(rows["q24_historical_delivery_async_claim"]["product_callers"], [SOURCE])
+        self.assertEqual(rows["q24_historical_delivery_async_claim"]["product_callers"], [])
+        for name in ("q24_original_delivery_claim_operation", "q24_original_delivery_complete_operation"):
+            self.assertEqual(rows[name]["product_callers"], [SOURCE])
+            self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
 
 
 if __name__ == "__main__":

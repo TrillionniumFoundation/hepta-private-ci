@@ -330,15 +330,33 @@ impl OriginalCircuitFeatureIngressV1 {
             let observed = tokio::time::timeout_at(
                 deadline,
                 tokio::task::spawn_blocking(move || {
-                    cell.task.require_current()?;
+                    // The source publishes a sealed result only after the
+                    // original driver's CURRENT-gated execution has returned.
+                    // Missing/Pending is data, not permission to overlap that
+                    // execution with another read of its one-shot Root lane.
                     match source.read_run_publication(&identity, &cell.task.source().scope.run_id) {
                         Err(crate::CircuitTaskErrorV1::ReconciliationRequired) => Ok(None),
-                        Err(error) => Err(invalid(error)),
+                        Err(error) => {
+                            trace_original_feature_observation_failure("source_publication");
+                            Err(invalid(error))
+                        }
                         Ok(_) => {
+                            cell.task.require_current().inspect_err(|_| {
+                                trace_original_feature_observation_failure("completed_current")
+                            })?;
                             let completed = OriginalCircuitFeatureLearningSourcesV1::capture(
                                 cell, source, identity,
-                            )?;
-                            completed.require_original_admission(&expected)?;
+                            )
+                            .inspect_err(|_| {
+                                trace_original_feature_observation_failure("completed_capture")
+                            })?;
+                            completed
+                                .require_original_admission(&expected)
+                                .inspect_err(|_| {
+                                    trace_original_feature_observation_failure(
+                                        "completed_admission",
+                                    )
+                                })?;
                             Ok(Some(completed))
                         }
                     }
@@ -366,4 +384,14 @@ impl OriginalCircuitFeatureIngressV1 {
             self.identity.clone(),
         )
     }
+}
+
+fn trace_original_feature_observation_failure(phase: &'static str) {
+    use std::io::Write;
+
+    let _ = writeln!(
+        std::io::stderr().lock(),
+        "original Feature ACK observation failure: phase={phase}; pid={}",
+        std::process::id(),
+    );
 }

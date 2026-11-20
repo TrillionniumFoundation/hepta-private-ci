@@ -109,7 +109,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         }
         if self.inner.has_original_root_evaluation()? {
             return self
-                .with_original_root_publication(snapshot, manifest, work)
+                .with_original_root_publication(snapshot, manifest, None, work)
                 .await;
         }
         let inner = Arc::clone(&self.inner);
@@ -155,10 +155,54 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         }
     }
 
+    /// Carry this exact successor purpose into the existing publication lane.
+    /// Every historical/source/selection check borrows that lane's read; no
+    /// receipt is cached across the caller's await or shared with another owner.
+    pub(crate) async fn with_original_successor_publication<T>(
+        &self,
+        snapshot: LearningIterationSnapshotV1,
+        manifest: Option<CellBackendManifestV2>,
+        successor: crate::cell_q24_publication_driver::OriginalSuccessorProof,
+        work: impl FnOnce() -> Result<T, crate::OriginalCellQ24PublicationErrorV1> + Send + 'static,
+    ) -> Result<T, crate::OriginalCellQ24PublicationErrorV1>
+    where
+        T: Send + 'static,
+    {
+        successor.require_original_publication_owners(self, &snapshot)?;
+        if !successor.has_original_historical_source()
+            || !self.inner.has_original_root_evaluation()?
+        {
+            successor.require_current_successor_publication().await?;
+            let result = self
+                .with_original_publication(snapshot, manifest, work)
+                .await;
+            successor
+                .require_current_successor_publication()
+                .await
+                .map_err(crate::circuit_q24_successor::prepared_uncertain)?;
+            return result;
+        }
+        self.inner.require_snapshot(&snapshot)?;
+        let adopts = matches!(snapshot.receipts.last().map(|receipt| &receipt.observation),
+            Some(LearningIterationObservationV1::LocalDecisionV2(decision))
+                if decision.disposition == LearningLocalDispositionV2::AdoptCandidate);
+        let coordinator =
+            LearningIterationCoordinatorV1::from_snapshot(snapshot.clone()).map_err(Error::from)?;
+        let changed = coordinator
+            .next_task_bundle()
+            .is_some_and(|bundle| bundle != &snapshot.request.selected_bundle);
+        if adopts != changed || adopts != manifest.is_some() {
+            return Err(Error::WrongScope.into());
+        }
+        self.with_original_root_publication(snapshot, manifest, Some(successor), work)
+            .await
+    }
+
     async fn with_original_root_publication<T>(
         &self,
         snapshot: LearningIterationSnapshotV1,
         manifest: Option<CellBackendManifestV2>,
+        successor: Option<crate::cell_q24_publication_driver::OriginalSuccessorProof>,
         work: impl FnOnce() -> Result<T, crate::OriginalCellQ24PublicationErrorV1> + Send + 'static,
     ) -> Result<T, crate::OriginalCellQ24PublicationErrorV1>
     where
@@ -186,10 +230,24 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                         if inner.cancelled.load(Ordering::Acquire) {
                             return Err(Error::CommitUncertain);
                         }
+                        if let Some(proof) = &successor {
+                            let proof: &crate::cell_q24_publication_driver::OriginalSuccessorProof =
+                                proof;
+                            proof
+                                .require_original_successor_operation(read)
+                                .map_err(unavailable)?;
+                        }
                         effect_started.store(true, Ordering::Release);
                         let value = work();
                         if operation.read_publication_material(&snapshot)? != manifest {
                             return Err(Error::WrongScope);
+                        }
+                        if let Some(proof) = &successor {
+                            let proof: &crate::cell_q24_publication_driver::OriginalSuccessorProof =
+                                proof;
+                            proof
+                                .require_original_successor_operation(read)
+                                .map_err(unavailable)?;
                         }
                         Ok(value)
                     })();

@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.e6.root.independent.original-archive-member-readback.v1",
+  "reviewed_at": "2026-11-20T13:35:21.166293+00:00",
+  "status": "PASS",
+  "source": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+  "archives": [
+    {
+      "kind": "host",
+      "archive_bytes": 4156344,
+      "archive_sha256": "9d6848aa4145952dbd7b889a76b1f41f67de659ab90c045006c8585c43670341",
+      "manifest_sha256": "85403eefe5ea729681d3a0bb6750ebf7ed56fc81b5d09016d87647d2917b04ac",
+      "original_members": 791,
+      "original_bytes": 222686491,
+      "total_tar_regular_members": 793,
+      "extra_members": [
+        "MANIFEST.json",
+        "ORIGINAL_FILES.nul"
+      ],
+      "parts": 9,
+      "all_original_member_sha256_and_sizes_match": true,
+      "all_paths_unique_safe_regular": true,
+      "parts_reassemble_byte_exactly": true,
+      "private_key_filename_members": 0,
+      "sidecar_result_sha256": "37905ee3e7bc42f8279cae789e89efb12de5d2f7df7c3f86c03e5817860e369e",
+      "extraction_to_filesystem": false
+    },
+    {
+      "kind": "cloud",
+      "archive_bytes": 2255488,
+      "archive_sha256": "119695fed1e1684dcb7a5b6d9b4350c120c923db863ed0301460d51dbc003127",
+      "manifest_sha256": "7bfb33e3e8c5145183bdbe1a25a47a96e5db52fa0dfd7a4f1b7ef376a1898571",
+      "original_members": 516,
+      "original_bytes": 25904697,
+      "total_tar_regular_members": 517,
+      "extra_members": [
+        "MANIFEST.json"
+      ],
+      "parts": 5,
+      "all_original_member_sha256_and_sizes_match": true,
+      "all_paths_unique_safe_regular": true,
+      "parts_reassemble_byte_exactly": true,
+      "private_key_filename_members": 0,
+      "sidecar_result_sha256": "5edf01dbc9f11d3a86c13c55f6faa989dd0a504c27af13a96651520f0dd1752c",
+      "extraction_to_filesystem": false
+    }
+  ],
+  "host_archive_sha_matches_root_direct_H_result_and_PTY": true,
+  "host_or_model_native_runs": 0,
+  "private_key_bodies_not_sought_or_displayed": true,
+  "not_a_universal_secret_scan": true,
+  "no_learning_or_native_qualification_granted": true
+}

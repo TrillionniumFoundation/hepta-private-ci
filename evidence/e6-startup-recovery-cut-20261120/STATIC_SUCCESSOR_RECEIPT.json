@@ -1,0 +1,102 @@
+{
+  "status": "STATIC_REVISION_INTAKE_NO_RUNTIME_SUCCESS_CLAIM",
+  "manifest_checks": [
+    {
+      "manifest": {
+        "workspace_path": "e6_owner_work/historical_startup_recovery/material_resume_2/REVIEW_MANIFEST.json",
+        "bytes": 4476,
+        "sha256": "c94beb3acad83e6660a793ad3445eff9ea954971cbbbe0418b478b5179b5b930",
+        "git_blob": "685ed6df910307dbf0802e671cc215e10a8012d1",
+        "local_stat": {
+          "device": 27,
+          "inode": 2125991,
+          "bytes": 4476,
+          "mtime_ns": 1795194543405914002,
+          "ctime_ns": 1795194543405914002
+        }
+      },
+      "members_verified": 9,
+      "named_root_readbacks_outside_original_manifest": [
+        "ROOT_BINDING_READBACK.json",
+        "ROOT_PARTIAL_METADATA_READBACK.json"
+      ]
+    },
+    {
+      "manifest": {
+        "workspace_path": "e6_owner_work/historical_startup_format/rev2/REVIEW_MANIFEST.json",
+        "bytes": 815,
+        "sha256": "53917e2e8da5b24d18b012f26e263ae65cb082391e3079cc75470f37f72a593f",
+        "git_blob": "5b7b42e7f315afd94a4522fbe25033ba75852704",
+        "local_stat": {
+          "device": 27,
+          "inode": 2125916,
+          "bytes": 815,
+          "mtime_ns": 1795194068298306215,
+          "ctime_ns": 1795194068298306215
+        }
+      },
+      "members_verified": 3,
+      "named_root_readbacks_outside_original_manifest": [
+        "ROOT_TEMPLATE_DELTA_REVIEW.json"
+      ]
+    }
+  ],
+  "original_resume1_blocked_and_unexecuted_preserved": true,
+  "review_manifest": {
+    "workspace_path": "e6_owner_work/historical_startup_recovery/material_resume_2/REVIEW_MANIFEST.json",
+    "bytes": 4476,
+    "sha256": "c94beb3acad83e6660a793ad3445eff9ea954971cbbbe0418b478b5179b5b930",
+    "git_blob": "685ed6df910307dbf0802e671cc215e10a8012d1",
+    "local_stat": {
+      "device": 27,
+      "inode": 2125991,
+      "bytes": 4476,
+      "mtime_ns": 1795194543405914002,
+      "ctime_ns": 1795194543405914002
+    }
+  },
+  "existing_offline_controls": {
+    "result": {
+      "workspace_path": "e6_owner_work/historical_startup_recovery/material_resume_2/offline-controls-1/RESULT.json",
+      "bytes": 2052,
+      "sha256": "25325b69658306498017e05e45d4a392a8aa23f9d65c9a5abecc0d9f18369629",
+      "git_blob": "1b1fb0b795855ab352339aa7763e993e5596e0a8",
+      "local_stat": {
+        "device": 27,
+        "inode": 2125982,
+        "bytes": 2052,
+        "mtime_ns": 1795194312697594287,
+        "ctime_ns": 1795194312697594287
+      }
+    },
+    "cases": 11,
+    "wall_seconds": 0.1836287020050804,
+    "reruns_by_this_reviewer": 0,
+    "actual_material_or_https_qualification": false
+  },
+  "review_claim": "Private transport error boundaries and fatal-stop-before-log are proposed in a separate revision; independent successor peer and actual runtime are separate receipts.",
+  "successor_peer": null,
+  "actual_material_owner": null,
+  "actual_material_result": null,
+  "actual_format_result_and_seal": null,
+  "actual_compile": null,
+  "fmt_template": {
+    "workspace_path": "e6_owner_work/historical_startup_format/rev2/REVIEW_MANIFEST.json",
+    "bytes": 815,
+    "sha256": "53917e2e8da5b24d18b012f26e263ae65cb082391e3079cc75470f37f72a593f",
+    "git_blob": "5b7b42e7f315afd94a4522fbe25033ba75852704",
+    "local_stat": {
+      "device": 27,
+      "inode": 2125916,
+      "bytes": 815,
+      "mtime_ns": 1795194068298306215,
+      "ctime_ns": 1795194068298306215
+    }
+  },
+  "limitations": [
+    "Root partial readback is metadata comparison, not a new read of partial bodies.",
+    "Format template output2 path and static candidate bytes are not actual material result/seal pins."
+  ],
+  "old_557_and_formal_reports_not_written": true,
+  "pack_executed": false
+}

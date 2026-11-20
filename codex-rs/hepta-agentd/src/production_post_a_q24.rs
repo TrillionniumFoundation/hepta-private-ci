@@ -7,7 +7,6 @@ use crate::CellQ24DatasetFreezePreparationV1;
 use crate::CellQ24PreparedLearningV1;
 use crate::learning_iteration::historical_source::RegisteredHistoricalLearningSourceV1;
 use crate::root_generation_publication_inputs::OriginalPreparedPublicationRoute;
-use crate::root_historical_task_read_client::OriginalHistoricalLearningTrustV1;
 use crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1;
 use crate::root_historical_task_read_client::OriginalPostAFrozenLearningAckV1;
 use crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1;
@@ -32,6 +31,7 @@ mod material;
 #[path = "production_post_a_q24_owners.rs"]
 mod owners;
 pub(super) use handoff::PendingHandoffs;
+pub(crate) use owners::OriginalHistoricalStageInputs;
 
 impl AgentdProductionLaunch {
     /// The explicit ordinary post-A profile uses the same actual Root session
@@ -138,36 +138,52 @@ impl AgentdProductionLaunch {
         config = config.with_root_learning_inputs(learning)?;
         self.q24_model = Some(model);
         self.publication = Some(publication);
-        let authorities = OriginalHistoricalLearningTrustV1::original_stage_authorities(&trust)?;
-        let generation = generation::GenerationFilesData::open_original(
-            data.continuation.generation,
-            &mut files,
-            &authorities,
-        )?;
-        let artifacts = artifacts::OriginalArtifactPlan::open_original(
-            data.continuation.artifacts,
-            &mut files,
-            self.session_end,
-        )?;
-        let task =
-            c_task::CTaskData::open_original(data.continuation.task, &mut files, self.session_end)?;
-        // Retain one tracker from the baseline through every signing/journal
-        // file, including dispatch. Earlier writer/read aliases are refused.
-        let delivery = owners::JournalData::open(
-            &data.delivery,
-            &mut files,
-            prepared.initial().request.envelope.objective_digest,
-            data.delivery_mode,
-        )?;
-        let inputs = owners::StageFilesData::into_original_inputs(
-            data.stages,
-            Arc::clone(&prepared),
-            authorities,
-            &mut files,
-            data.queue_capacity,
-        )?;
-        let (launch, configured, handle, stage_owners) =
-            self.assemble_q24_learning(config, inputs).await?;
+        // One actual source operation selects original roles and admits every
+        // key/file. Its physical postread precedes any witness initialization.
+        let (generation, artifacts, task, delivery, inputs) = prepared
+            .with_original_prepared_operation(|read| -> Result<_, AgentdError> {
+                let authorities =
+                    crate::cell_composed_q24::OriginalPreparedReadV1::original_stage_authorities(
+                        read, &trust,
+                    )
+                    .map_err(refused)?;
+                let generation = generation::GenerationFilesData::open_original(
+                    data.continuation.generation,
+                    &mut files,
+                    &authorities,
+                )?;
+                let artifacts = artifacts::OriginalArtifactPlan::open_original(
+                    data.continuation.artifacts,
+                    &mut files,
+                    self.session_end,
+                )?;
+                let task = c_task::CTaskData::open_original(
+                    data.continuation.task,
+                    &mut files,
+                    self.session_end,
+                )?;
+                // Retain one tracker from the baseline through every signing/journal
+                // file, including dispatch. Earlier writer/read aliases are refused.
+                let delivery = owners::JournalData::open(
+                    &data.delivery,
+                    &mut files,
+                    prepared.initial().request.envelope.objective_digest,
+                    data.delivery_mode,
+                )?;
+                let inputs = owners::StageFilesData::prepare_original_inputs_in_operation(
+                    data.stages,
+                    Arc::clone(&prepared),
+                    authorities,
+                    &mut files,
+                    data.queue_capacity,
+                    read,
+                )?;
+                Ok((generation, artifacts, task, delivery, inputs))
+            })
+            .map_err(refused)??;
+        let (launch, configured, handle, stage_owners) = self
+            .assemble_original_historical_q24_learning(config, inputs, Arc::clone(&receipt))
+            .await?;
         self = launch;
         config = configured;
         let bootstrap = config
@@ -264,6 +280,29 @@ impl AgentdProductionLaunch {
         // The mandatory delivery now owns both the handle and continuation.
         drop(handle);
         Ok((self, config))
+    }
+
+    async fn assemble_original_historical_q24_learning(
+        mut self,
+        config: AgentdConfig,
+        inputs: OriginalHistoricalStageInputs,
+        receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
+    ) -> Result<
+        (
+            Self,
+            AgentdConfig,
+            crate::LearningIterationHandleV1,
+            Arc<crate::OriginalCellQ24LearningStageOwnersV1>,
+        ),
+        AgentdError,
+    > {
+        let factory = self.q24_model.take().ok_or_else(|| {
+            AgentdError::Invalid("original Root Model factory handoff is required".into())
+        })?;
+        let (config, handle, owners) = config
+            .with_original_historical_q24_learning_owners(factory, inputs, receipt)
+            .await?;
+        Ok((self, config, handle, owners))
     }
 
     fn require_original_post_a_context(

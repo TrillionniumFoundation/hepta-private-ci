@@ -1,0 +1,159 @@
+{
+  "status": "ACTUAL_ATTEMPT_1_FAIL_LOCAL_PRIMARY_READBACK_ONLY",
+  "pins": {
+    "result": {
+      "workspace_path": "e6_owner_work/historical_startup_recovery/material_plan_3/actual/RESULT.json",
+      "bytes": 6045,
+      "sha256": "c87e71f268c354d681ac13b72b2af350b210f79518c9614e81a8590742e74ecc",
+      "git_blob": "e42f78537e1b5c34a1dbd21c65a9b44c7e1859f2",
+      "local_stat": {
+        "device": 27,
+        "inode": 2125812,
+        "bytes": 6045,
+        "mtime_ns": 1795193202517115448,
+        "ctime_ns": 1795193202517115448
+      }
+    },
+    "worker": {
+      "workspace_path": "e6_owner_work/historical_startup_recovery/material_plan_3/actual/WORKER_RESULT.json",
+      "bytes": 4353,
+      "sha256": "2789d37098884cd1be0c0a2070a46e1168a88cd9c4eded2c9b0a5637149f4912",
+      "git_blob": "d511d111840a2b97b949c24a25767b652762d0a8",
+      "local_stat": {
+        "device": 27,
+        "inode": 2125813,
+        "bytes": 4353,
+        "mtime_ns": 1795193202517447356,
+        "ctime_ns": 1795193202517447356
+      }
+    },
+    "root_independent_readback": {
+      "workspace_path": "e6_owner_work/historical_startup_recovery/material_plan_3/ROOT_ACTUAL_FAILURE_READBACK.json",
+      "bytes": 3776,
+      "sha256": "b580455a5491057a2365b95447841548d6c37625632cbd721900de180bbf1270",
+      "git_blob": "8fed179d8ea0e4e131903ca281079d4107ebf567",
+      "local_stat": {
+        "device": 27,
+        "inode": 2125822,
+        "bytes": 3776,
+        "mtime_ns": 1795193385772742235,
+        "ctime_ns": 1795193385772742235
+      }
+    },
+    "events": {
+      "workspace_path": "e6_owner_work/historical_startup_recovery/material_plan_3/actual/EVENTS.jsonl",
+      "bytes": 141285,
+      "sha256": "3b90b820e8201899b3fa4fe41b90f43f9c001a658182c859c78de3c85d423ff6",
+      "git_blob": "0a310332de78956bd63f12c2424c3d58db26b3aa",
+      "local_stat": {
+        "device": 27,
+        "inode": 2125817,
+        "bytes": 141285,
+        "mtime_ns": 1795193202521635581,
+        "ctime_ns": 1795193202521635581
+      }
+    },
+    "copied_index_metadata": {
+      "workspace_path": "e6_owner_work/historical_startup_recovery/material_plan_3/actual/INDEX_COPIES.json",
+      "bytes": 518769,
+      "sha256": "1001001cba466f7baa2d9d31a1c61b5dd2f880d27af16a340821ef2ff8a0cf0f",
+      "git_blob": "02e48181204474fc072edbe816ec4e08d0710be1",
+      "local_stat": {
+        "device": 27,
+        "inode": 2125845,
+        "bytes": 518769,
+        "mtime_ns": 1795193448721605265,
+        "ctime_ns": 1795193448721605265
+      }
+    },
+    "git_material_metadata": {
+      "workspace_path": "e6_owner_work/historical_startup_recovery/material_plan_3/actual/GIT_MATERIALS.json",
+      "bytes": 636239,
+      "sha256": "dc3bc228de5266d51ce5e61f9e982fafdf88189228056b29f2098b5feadf9df0",
+      "git_blob": "bbd6c7f4e265460e981c8d0ced2c4d786b0f8ede",
+      "local_stat": {
+        "device": 27,
+        "inode": 2125846,
+        "bytes": 636239,
+        "mtime_ns": 1795193448730782689,
+        "ctime_ns": 1795193448730782689
+      }
+    }
+  },
+  "owner": "dpty-8bc71e23ddb6757582498a79603af5ee9e074d3d14cfd6984ff1e6d919ee6ef7",
+  "source": "1a9799686243c2be0ee393ba364e091029cfb944",
+  "owner_wall_seconds": 98.30543972132728,
+  "worker_wall_seconds_nested_not_additive": 98.29041460296139,
+  "worker_exit_code": 1,
+  "overall_successful": false,
+  "owner_timed_out": false,
+  "original_automatic_retry": false,
+  "attempts_per_started_package": 1,
+  "https_attempts": 172,
+  "completed_archives": 168,
+  "complete_body_bytes": 28091720,
+  "all_returned_body_bytes": 28101366,
+  "partial_failed_body_bytes": 9646,
+  "failures": [
+    {
+      "actual_bytes": 4134,
+      "at_ns": "1795193087998906069",
+      "elapsed_seconds": 97.0320687671192,
+      "error": "The read operation timed out",
+      "error_class": "TimeoutError",
+      "filename": "color_quant-1.1.0.crate",
+      "get_attempts": 1,
+      "stage": "registry-failure",
+      "wall_seconds": 15.642524456605315
+    },
+    {
+      "actual_bytes": 5512,
+      "at_ns": "1795193088472150869",
+      "elapsed_seconds": 97.50531121715903,
+      "error": "material deadline or failure stop",
+      "error_class": "RuntimeError",
+      "filename": "cpufeatures-0.3.1.crate",
+      "get_attempts": 1,
+      "stage": "registry-failure",
+      "wall_seconds": 1.1352800130844116
+    },
+    {
+      "actual_bytes": 0,
+      "at_ns": "1795193088527625469",
+      "elapsed_seconds": 97.56078523723409,
+      "error": "material deadline or failure stop",
+      "error_class": "RuntimeError",
+      "filename": "cpubits-0.1.1.crate",
+      "get_attempts": 1,
+      "stage": "registry-failure",
+      "wall_seconds": 1.496656120289117
+    },
+    {
+      "actual_bytes": 0,
+      "at_ns": "1795193089242871227",
+      "elapsed_seconds": 98.2760316953063,
+      "error": "material deadline or failure stop",
+      "error_class": "RuntimeError",
+      "filename": "cpufeatures-0.2.17.crate",
+      "get_attempts": 1,
+      "stage": "registry-failure",
+      "wall_seconds": 2.128765483852476
+    }
+  ],
+  "source_before": "1c7782e85a9b79fad6e82c0c5022964299451629d2cb96e55b442f96f0059a7a",
+  "source_after": null,
+  "source_after_phase_executed": false,
+  "source_unchanged": null,
+  "index_sparse_entries": 1169,
+  "index_config_json_entries": 1,
+  "copied_index_bytes": 66768904,
+  "git_repositories": 5,
+  "git_objects": 5205,
+  "git_object_bytes": 43161642,
+  "git_commands_used": 69,
+  "version_only_probes": 6,
+  "material_seal_complete": false,
+  "new_target_created": false,
+  "format_compile_native_model_actions_in_attempt": 0,
+  "scope": "Local review of retained receipts and metadata; downloaded archive/Git/cache bodies are not copied into this intake and are not independently revalidated here."
+}

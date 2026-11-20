@@ -1,0 +1,135 @@
+{
+  "actual_route": [
+    "Experience",
+    "Dataset",
+    "Training",
+    "Evaluation",
+    "Selection",
+    "RetainedModelNextUse"
+  ],
+  "receipt_count": 6,
+  "training_receipt": {
+    "operation_id": "ordinary-original-post-a-learning",
+    "predecessor": "0c3b838fe3995aaed988e0fee5ece4e34ddac89102b3e63a3df30ad5a882be3c",
+    "actor_id": "ordinary-trainer",
+    "evidence_digest": "198249a3c9ed3156414e91ce91670585e94aff93b5bf1ca1718654c2ec2dcca8",
+    "observed_unix_seconds": 1795183199,
+    "observation_tag": 2,
+    "observation_type": "Training",
+    "observation": {
+      "candidate": {
+        "artifact_id": "q24-sgd:efa03c9a7e1e541a29efee93d8d1ea76ff2aaa19578e55c7d984cec2ec502a44",
+        "generation": 2,
+        "components": {
+          "base": "edbb9ed7527ef4969edbe928f73ce0ce675b25eb74969572461a02a3277350cb",
+          "heads": "db9b556b8f46d8f69667016ae9131afef5cba2a980038cb07b651f0c07116c90",
+          "composition": "9b9635abfb805d6310d05508519e2593c5a0718ffe1a68c1deec149cff94e67e",
+          "encoder": "edbb9ed7527ef4969edbe928f73ce0ce675b25eb74969572461a02a3277350cb",
+          "tokenizer": "d3d4240037c540301acd7d0c432130d512ec9614b8f981c05a672fadcb6bb2e6",
+          "normalizer": "510243153d58870545bfd1f391d378bf7fb89a5722aef8ddf23ec01aa9fc352c",
+          "calibration": "d41f9a27ed63bdb03959596256178dc4e7864c86f1cfd83e9a70a69ea061af13",
+          "numeric_profile": "f353251f5bd6acc8e5e27d61f46436103f1091f23d0feee0e5aaf463adf144da",
+          "output_schema": "e078dbced8396ae2cf78a3dbd42d7b8015003bb77b57f05bc62c143ed3c11c5d",
+          "state_schema": "1942fb36d481d40850998288eec1b6a1560528c25d985362dd290223f707c8e4",
+          "state_semantics": "2a12f2ef4a04a106b2cd1f0538b9eef8630338657b3ea9de30720cd5da64c3fb",
+          "organ_adapter": null,
+          "cell_adapter": null
+        },
+        "rollback_predecessor": "9864e82c44d7add2b70595ab3539bf8a8b82723e1d13020f9524b97f1c71d6b7",
+        "training_lineage": {
+          "source_bundle": "9864e82c44d7add2b70595ab3539bf8a8b82723e1d13020f9524b97f1c71d6b7",
+          "dataset": "052bb667d0a0b391fec52cf3f25a4f171203792123fb77d333cfea0f5342182f",
+          "update_rule": "5a743239d366afbd889883b12d95729f44991c667f206ddc30ae1dd5b62cbd29",
+          "evaluation_profile": "d60e78a903e14b8a115ee4e7063af32f4ce53452b4e1625e0051f193bdf9ef58"
+        }
+      },
+      "steps": 2,
+      "milliseconds": 3,
+      "artifact_bytes": 172
+    },
+    "byte_start": 1526,
+    "byte_end": 2271
+  },
+  "evaluation_receipt": {
+    "operation_id": "ordinary-original-post-a-learning",
+    "predecessor": "95af485dbd1dd1812206b1a8d68227d2c688b68b209162bd61aa38e9aa717ab1",
+    "actor_id": "ordinary-independent-b-evaluator",
+    "evidence_digest": "b21ad84c787b1f30e2732fe5da3e9cec5561d97af1b2fad9c1e460bb11e0cf7a",
+    "observed_unix_seconds": 1795183200,
+    "observation_tag": 3,
+    "observation_type": "Evaluation",
+    "observation": {
+      "candidate_bundle": "6b6eb4249a9bbaf4063ae9be8b61f22979efd98ce4d20c0d14a013304a1cb40e",
+      "evaluation_profile": "d60e78a903e14b8a115ee4e7063af32f4ce53452b4e1625e0051f193bdf9ef58",
+      "disposition": "NoUpdate"
+    },
+    "byte_start": 2271,
+    "byte_end": 2476
+  },
+  "selection_receipt": {
+    "operation_id": "ordinary-original-post-a-learning",
+    "predecessor": "2c31426f43e62784196927a3fb48015662a40ba6ec3f71a4ef490c4127e89aba",
+    "actor_id": "ordinary-local-selector",
+    "evidence_digest": "39936e6cfe60a041f33e44d8d0ed6cbbecf16618453a1af80d1184ff8fc0e2d3",
+    "observed_unix_seconds": 1795183219,
+    "observation_tag": 5,
+    "observation_type": "Selection",
+    "observation": {
+      "candidate_bundle": "9864e82c44d7add2b70595ab3539bf8a8b82723e1d13020f9524b97f1c71d6b7",
+      "selection_digest": "39936e6cfe60a041f33e44d8d0ed6cbbecf16618453a1af80d1184ff8fc0e2d3"
+    },
+    "byte_start": 2476,
+    "byte_end": 2671
+  },
+  "retained_next_use_receipt": {
+    "operation_id": "ordinary-original-post-a-learning",
+    "predecessor": "3eb2a19ee0a5c0635e8d6323762b0ed509e765bb08c12d4b9c9f9810accd64cf",
+    "actor_id": "ordinary-next-use-observer",
+    "evidence_digest": "efa7886e951417f6628351b1020f568b676dfe8805d18ba611a3b19b6482e4a2",
+    "observed_unix_seconds": 1795183225,
+    "observation_tag": 7,
+    "observation_type": "RetainedModelNextUse",
+    "observation": {
+      "retained_bundle": "9864e82c44d7add2b70595ab3539bf8a8b82723e1d13020f9524b97f1c71d6b7",
+      "state_partition": {
+        "principal_id": "69e03750027e6b1e9f95bd21d227613c0024ec799ebfb7fe281371e1153f9bda",
+        "agent_id": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+        "cell_id": "cell",
+        "run_id": "ordinary-original-c"
+      },
+      "checkpoint_digest": "fbca27a91efaeb10b279294e1e67d2d52660e9deede22aa6b5def53daae6865a",
+      "selection_digest": "39936e6cfe60a041f33e44d8d0ed6cbbecf16618453a1af80d1184ff8fc0e2d3",
+      "committed_step_receipt": "efa7886e951417f6628351b1020f568b676dfe8805d18ba611a3b19b6482e4a2",
+      "task_owner_publication": "932c218f10eaa4b716a27423861963ca636b5062545f3238c81f8cffea662732"
+    },
+    "byte_start": 2671,
+    "byte_end": 3092
+  },
+  "checks": {
+    "training_steps_equal_result": true,
+    "candidate_heads_equal_retained_bytes": true,
+    "evaluation_candidate_bundle_equals_training_result": true,
+    "selected_and_retained_next_use_bundle_equal": true,
+    "baseline_three_matrix_hashes_equal_initial_selected_bundle_components": true
+  },
+  "original_budget": {
+    "maximum_dataset_rows": 8,
+    "maximum_dataset_bytes": 65536,
+    "maximum_training_steps": 8,
+    "maximum_training_milliseconds": 2000,
+    "maximum_artifact_bytes": 1048576
+  },
+  "original_envelope": {
+    "envelope_id": "ordinary-post-a-original-envelope",
+    "base_commit": "ce5ba3a949f1dd461012d1a136debd613bc73bd15dafea00608b8d616e016eb3",
+    "base_tree": "4040548b18ee9140a1803f2b86731e2e07b4186d58961ae885aedf4d9a72c4e5",
+    "objective_digest": "e0a61935b8eb93d2e24e777503c349cf8f4aadcfd372b3ab14be4518dbca7fa0",
+    "grammar_digest": "77cd4fc718801259b339911c8253179e623988ea9d05f8a93fb830a5edf109db",
+    "maximum_files": 4,
+    "maximum_diff_bytes": 65536,
+    "maximum_candidates": 1,
+    "maximum_parallel_sandboxes": 1,
+    "expiry_unix_seconds": 1795183435
+  },
+  "limits": "DATA layout and field equality only. No replay of Coordinator, trust, signatures, currentness or authority."
+}

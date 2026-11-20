@@ -1,0 +1,69 @@
+{
+  "successful": true,
+  "source_clean": true,
+  "scanned_inputs_byte_identical": true,
+  "source": "640bac3c258ba13534d8208a9c4a0c2977e98339",
+  "tree": "43cec80b1143f2188838b87438138243b0c22134",
+  "parent": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+  "source_inventory_sha256": "c0a3d0a5067ba89cc213969fd6146410ce69cfe9e730578a11734030d35e74fb",
+  "source_files": 15750,
+  "frozen_at_ns": "1795161675748867703",
+  "source_gate_sha256": "bb83d4b99fcf90340ce3090e5a2b8c5ee855b0410c3e27d3d6ab33a02554b06b",
+  "changed_paths": [
+    "codex-rs/hepta-agentd/src/ordinary_q24_post_a_c_inputs_tests.rs"
+  ],
+  "protected_rows": 907,
+  "classified_boundaries": 1159,
+  "verifier_unchanged": true,
+  "typed_matcher_unchanged": true,
+  "original_blob_policy_tests": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_blob_size_policy.py"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.5790361128747463,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "1af5ad9b784fb37a2cd3651b9494b61d289fd5ead2f08debc7fa03ac1d79f196"
+  },
+  "exact_source_blob_policy": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "scripts/check_blob_size.py",
+      "--base",
+      "d83f70f38137a99a86a3afd122199ba9cdae4f79",
+      "--head",
+      "640bac3c258ba13534d8208a9c4a0c2977e98339",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.2244531880132854,
+    "stdout_sha256": "9ef917d14823a05ea7c745d7fdcced26c3819b09d5febc427bc6588480acbe55",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "project_justfix_result_sha256": "3f6427eab65f6b567eeca6a95688cffc42099d7cc5c7041e9f03204486fdc4fa",
+  "project_justfix_passed": true,
+  "original_history_and_failed_gates_preserved": true,
+  "fixture_only_delta_from_read65_source": true,
+  "original_product_guard_unchanged": true,
+  "native_runs": 0,
+  "root_read_cap": 64,
+  "static_whole_fresh_parent_frames": 63,
+  "static_budget_is_not_native_result": true,
+  "deadlines_changed": false,
+  "owner_wall_seconds": 1.543838177807629,
+  "original_workspace_mutated": false,
+  "original_workspace_scope": "Earlier operation-scope/cold workspaces are unchanged; only this isolated source HEAD is advanced.",
+  "isolated_workspace_head_advanced": true
+}
