@@ -260,3 +260,30 @@ fn system_time_conversion_respects_platform_checked_range() {
         assert_eq!(Timestamp::from_system_time(converted), Some(upper));
     }
 }
+
+#[test]
+fn system_time_conversion_preserves_signed_fraction_and_normalizes_leap_seconds() {
+    let epoch = std::time::SystemTime::UNIX_EPOCH;
+    for (input, expected) in [
+        (
+            "1969-12-31T23:59:59.500Z",
+            epoch - std::time::Duration::from_millis(/*millis*/ 500),
+        ),
+        ("1970-01-01T00:00:00Z", epoch),
+        (
+            "1970-01-01T00:00:00.000000100Z",
+            epoch + std::time::Duration::from_nanos(/*nanos*/ 100),
+        ),
+        (
+            "1969-12-31T23:59:60.500Z",
+            epoch + std::time::Duration::from_millis(/*millis*/ 500),
+        ),
+        (
+            "2016-12-31T23:59:60.250Z",
+            epoch + std::time::Duration::new(/*secs*/ 1_483_228_800, /*nanos*/ 250_000_000),
+        ),
+    ] {
+        let timestamp = Timestamp::parse_from_rfc3339(input).expect(input);
+        assert_eq!(timestamp.to_system_time(), Some(expected), "{input}");
+    }
+}
