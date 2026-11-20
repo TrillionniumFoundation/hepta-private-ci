@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.e5-original-blob-gate-restored-objects.v1",
+  "source_head": "1818fde55d964a87cfc8aed49f26a6a866a0e0a5",
+  "base": "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+  "original_gate_and_allowlist_sha256": {
+    "scripts/check_blob_size.py": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3",
+    ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+  },
+  "timeout_seconds": 120,
+  "model_calls": 0,
+  "training_updates": 0,
+  "native_task_children": 0,
+  "refs_changed": false,
+  "argv": [
+    "/usr/bin/python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+    "--head",
+    "1818fde55d964a87cfc8aed49f26a6a866a0e0a5",
+    "--max-bytes",
+    "512000",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ]
+}
