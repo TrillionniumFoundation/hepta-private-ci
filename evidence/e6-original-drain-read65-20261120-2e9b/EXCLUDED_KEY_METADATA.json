@@ -1,0 +1,569 @@
+{
+  "schema": "hepta-e6-metadata-only-key-exclusions-v1",
+  "source": "e4aeaa2cdd1a4aa884d09cafaeef96968feb7a90",
+  "physical_inventory_sha256": "f1d4df6277139d2311df140b6d4f931c8faf5550fe47c51eb72bace8585594e8",
+  "key_contents_read_or_published": false,
+  "note": "Only original metadata from the bounded physical inventory is included. Key material remains on the original host. Unconfirmed authority and key files are excluded; this does not classify them as production or test keys. The archive contains exactly five selected non-key physical files plus their metadata.",
+  "metadata_only_excluded_paths": [
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/checkpoint/frontier-v1-cd76d36f8dc417bd825648a1a1955c4a86c484500c449a415d5026ab30a0fe4f.json",
+      "bytes": 1295,
+      "sha256": "ade4eb98542ae8a92a5d084d45e16d959f555fdef46b64d071131396f6d19146",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/checkpoint/frontier-v1-cd76d36f8dc417bd825648a1a1955c4a86c484500c449a415d5026ab30a0fe4f.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/cognitive-material-v1/current-36a5540d40a85e8242817ddb5323daea3cc37f00098aca4d36c82b7cbe00e0ce.json",
+      "bytes": 1602,
+      "sha256": "06dee0d0dbe91f7694b7ff6d097b2fadcaca4e258294281460a4b18ab2da4b09",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/cognitive-material-v1/current-a69eeb994ae7c19f4499b9bf6f7d0c819fe96d4e66f8f21293a873c1ce999fac.json",
+      "bytes": 1307,
+      "sha256": "47755c85dbb198c8d5999e500ccc4ed9f320758e0dc302b55b7d1eb42ebcff41",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/cognitive-material-v1/current-c735b0391675862675bd9732e52b18220fc623b706411b4eb36601b8e2856422.json",
+      "bytes": 1307,
+      "sha256": "6546a2bf130b3a85edbc6bf2443f7e668e9b9deef7d3d294c452407870e74f03",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/cognitive-material-v1/current-f41de8408b5db2422b391460a34aee96afe69b58a245266be54dd465b2df24f1.json",
+      "bytes": 1602,
+      "sha256": "99a3122279f96656e3bf6afd1c76515f96ce39a0f020bb07f6d8cc30b8876109",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/cognitive-material-v1/image-059c07ec2bd94d8a676dd1980c718b4e02daa509f78041aedb00a6d905437844.sqlite3",
+      "bytes": 651264,
+      "sha256": "059c07ec2bd94d8a676dd1980c718b4e02daa509f78041aedb00a6d905437844",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/cognitive-material-v1/image-4015b665b68275c6035db358f0d66da5f4ce6b7e373c2433703f407871f14d5a.sqlite3",
+      "bytes": 651264,
+      "sha256": "4015b665b68275c6035db358f0d66da5f4ce6b7e373c2433703f407871f14d5a",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/cognitive-material-v1/image-508b2e3a114c5b37655c682b949397ef49e3588297faa83cbf4761a69b505640.sqlite3",
+      "bytes": 651264,
+      "sha256": "508b2e3a114c5b37655c682b949397ef49e3588297faa83cbf4761a69b505640",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/device-consumer/frontier-v1-fa51335aaa2a786d07b99987d51e7f047bafc9bf5c8c549d721f799a1d5d581a.json",
+      "bytes": 226,
+      "sha256": "018e8afded4310141d3e0f78b1a4cedf75af52f0303a7641fb103961ac6cad52",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/device-consumer/frontier-v1-fa51335aaa2a786d07b99987d51e7f047bafc9bf5c8c549d721f799a1d5d581a.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-0b1afdf2f67648c25c282d0b7c209a8c2d6c230e4d79974aac75726cc2334397.json",
+      "bytes": 1212,
+      "sha256": "0ed145f520dab8fcbe3303a4c2b9ba707eb061f34be6f1817409255857d39be4",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-0b1afdf2f67648c25c282d0b7c209a8c2d6c230e4d79974aac75726cc2334397.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-0c65b63160e9e170f019c5408390d14a135edcb311c5fda0429484a7793f66c6.json",
+      "bytes": 6803,
+      "sha256": "c1aa207ec702e5a713ac3e3987b066b783df4a54b9ffced8dc167712dd5cd628",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-0c65b63160e9e170f019c5408390d14a135edcb311c5fda0429484a7793f66c6.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-319a3e7d020e0f545a2b383e58a62cead8e5882a4e67e8c453d6d31a73280fb8.json",
+      "bytes": 2338,
+      "sha256": "d4a0902665d31fe3513d67a917d10eb42fbe0495745e04d531aa05f668ca6b6e",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-319a3e7d020e0f545a2b383e58a62cead8e5882a4e67e8c453d6d31a73280fb8.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-6cbdac954114f41737661edec3c32b964aa44caf655aa74855f83abc2f2e2e35.json",
+      "bytes": 1204,
+      "sha256": "abc67fc9a7a26bf5276cde4804ec6a222788d656cb1b58b63aa0e12a20bcc002",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-6cbdac954114f41737661edec3c32b964aa44caf655aa74855f83abc2f2e2e35.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-75edcde58493bb3f0c380cd6b02bea4c964aff1a0edea20fdc5e0145b5a302dd.json",
+      "bytes": 1214,
+      "sha256": "2cfdc9ebf9939447bd4b015aefcbf51a901217094ee2fecf1d915bdabd7549b7",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-75edcde58493bb3f0c380cd6b02bea4c964aff1a0edea20fdc5e0145b5a302dd.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-7cd1fffbd7092c2f4cd52c8e418a49275a9840cad53172f858e64c9643f6e1bd.json",
+      "bytes": 6622,
+      "sha256": "19b041444349d2de5040e74caaaa9970f3196c805606533b5ca71cfad810d928",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-7cd1fffbd7092c2f4cd52c8e418a49275a9840cad53172f858e64c9643f6e1bd.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-8a9859bd4c44f1db6918b672dc3d5bc1f1db28e8b9d4e93ee716e485b96d17ee.json",
+      "bytes": 2447,
+      "sha256": "8cb897e7d3d2688ac587e5ba85bf2602bbc75c6ae6a21d63bc5b09573f370e81",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-8a9859bd4c44f1db6918b672dc3d5bc1f1db28e8b9d4e93ee716e485b96d17ee.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-9817c1a1ede9cffcf6612568cf44f4d2011e1acb9785642b8ddc8359c6b1be6f.json",
+      "bytes": 11955,
+      "sha256": "1ac9c09d4f9026ab0c3cd8a9ce20ac34f36777e9b06126b808955b9d6a364e80",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-9817c1a1ede9cffcf6612568cf44f4d2011e1acb9785642b8ddc8359c6b1be6f.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-a8eb0275f68685cdbb7b4145b83f07ee496e325c25ead840def2394a094f9478.json",
+      "bytes": 5017,
+      "sha256": "2221003ef79ab69fa16ebae20267fca8a956159fdb7dad10f4001e4215806922",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-a8eb0275f68685cdbb7b4145b83f07ee496e325c25ead840def2394a094f9478.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-ac48a050afe86916e8a03372f61805847590a984faa6db096f7a8787470802d6.json",
+      "bytes": 6230,
+      "sha256": "b1e52a49464f6ff7b367faa2eabf2f4c1a08635653539fcfdaaaa0c0ab63019e",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-ac48a050afe86916e8a03372f61805847590a984faa6db096f7a8787470802d6.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json",
+      "bytes": 237,
+      "sha256": "de2d95b9c6167dc8e7c12e2777631e4c0a0eacbfda296e766e24e7ad911377fc",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-bbcfcea153c4d46418d29ce3fe25110290875cb15fdc62a7f705c256d71ed4e2.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-cf45d48d21a5fa2105f536fb76a15a9c147326635cf1a38c08ac423e56d0f4e6.json",
+      "bytes": 4317,
+      "sha256": "9f855b71243f709ae9999243d5b00c2fd280fdeea4f123ec2d2c08415a840800",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-cf45d48d21a5fa2105f536fb76a15a9c147326635cf1a38c08ac423e56d0f4e6.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-cf7428b8571751b98a25d1c70b22a0eb84a53b3d76a7f5bb20e1885fe05848ce.json",
+      "bytes": 4319,
+      "sha256": "18720ddd9ea7fb9cd12677f2c432b7f702ac932dffabcc43354253e2ef8b41f1",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-cf7428b8571751b98a25d1c70b22a0eb84a53b3d76a7f5bb20e1885fe05848ce.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json",
+      "bytes": 235,
+      "sha256": "57c616978e274f3b5fe9927ca974a1b1a057cecb8f898948acfc7d2c07ac45af",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-d3339882f0ae6d917954b94d35f387eaa2fd795855afe00e3a98886823076fba.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-ddef6ff81d081320feb423a68e48f5465c29b336c205a3fc71bc5312dde16075.json",
+      "bytes": 4397,
+      "sha256": "28f0931255d3e6ce913f2a1558d26e7dc21be0e291e26568933da873c1e2ec92",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-ddef6ff81d081320feb423a68e48f5465c29b336c205a3fc71bc5312dde16075.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-e44ed9a89da52dddab39f7ece2106db8a2851717c37ca6dfd2f113a6539467be.json",
+      "bytes": 4148,
+      "sha256": "435c3a2f0b943ce747a917263e90b53ee1a44678653143d929c5158e88b19e50",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-e44ed9a89da52dddab39f7ece2106db8a2851717c37ca6dfd2f113a6539467be.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-e77a4e3bfc12e1f0012937b70e7be0f152015adec71c0f4594eba426ad759ff1.json",
+      "bytes": 1630,
+      "sha256": "6f91e93acf263e19504a44d097b9cfdfa11f2f792869cea6be5256de05894b45",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-e77a4e3bfc12e1f0012937b70e7be0f152015adec71c0f4594eba426ad759ff1.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-ec05370e973eed99c15f99f5dcbee21a88ee4ce1c32ba1c6d7ed6bba379bc57e.json",
+      "bytes": 1352,
+      "sha256": "8d5b81ab34d119ce1a5a46aa0fe76dff3b578a6eb89667d392f4c9c491023f5f",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-ec05370e973eed99c15f99f5dcbee21a88ee4ce1c32ba1c6d7ed6bba379bc57e.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-f2be39acdebeaeb743daba8baf087499167f2baa6ea51d8e5c7c6c825675791f.json",
+      "bytes": 1207,
+      "sha256": "dd1b48cba9b249eafa0b472063e005f0bff677238dfc6e240259fec54e43eda6",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-f2be39acdebeaeb743daba8baf087499167f2baa6ea51d8e5c7c6c825675791f.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-fab3ce4690c59f6ace46aa92d26ffdee840851ad5f3a46c3868d1b01f022243b.json",
+      "bytes": 1220,
+      "sha256": "5a0954bbf93f300d60d58dc4ed1d6929167174606539c44d2daaa9749443145a",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/frontier-v1-fab3ce4690c59f6ace46aa92d26ffdee840851ad5f3a46c3868d1b01f022243b.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/issuer/frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json",
+      "bytes": 2150,
+      "sha256": "5df54bc8c9d7d2199380e964415c64d89a7f67054768f27051ab8d104ac36038",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/issuer/frontier-v1-c981f880a222eba54255e921cf3f3315c92c95996ba6252bf99b80262cf7bbec.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/issuer/issuer.key",
+      "bytes": 32,
+      "sha256": "06780b90584df5039b3f27857dbf9af3f1828407072a84da2fff30dc5af2b543",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/learning-checkpoint/frontier-v1-49f8b24db7ae03bb9263d349c6ab270141570b1b5b31db7c1da4c44e4893dee8.json",
+      "bytes": 3593,
+      "sha256": "be01e286a54cded545c79e3899610e873d28b0c0908e133a1917588e1cfad710",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/learning-checkpoint/frontier-v1-49f8b24db7ae03bb9263d349c6ab270141570b1b5b31db7c1da4c44e4893dee8.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/leases/authority-leases.json",
+      "bytes": 2043,
+      "sha256": "f4bc033b526011fcac841fdd470657c151d2882d8e25229c9fc98137d2668112",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/leases/authority-leases.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/notes-consumer/frontier-v1-fa51335aaa2a786d07b99987d51e7f047bafc9bf5c8c549d721f799a1d5d581a.json",
+      "bytes": 238,
+      "sha256": "b4487e157db7e2a5c3c3af80d83bc7f71ca0f53e0d4b3733001e3cd72ea97f9d",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/notes-consumer/frontier-v1-fa51335aaa2a786d07b99987d51e7f047bafc9bf5c8c549d721f799a1d5d581a.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/q24-model-proposal-factory-v2/frontier-v1-a711317265354879f631477e3658b9565098716d24ac20bb9937a9ad40d8ae91.json",
+      "bytes": 1090,
+      "sha256": "edf86c644e5bed4755f6aee65420d84490a5e50a32ac1ee7c3fcc2d52ab5fbf0",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/q24-model-proposal-factory-v2/frontier-v1-a711317265354879f631477e3658b9565098716d24ac20bb9937a9ad40d8ae91.json.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/authority/q24-model-proposal-factory-v2/proposal.journal",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/ordinary-independent-b-evaluator.key",
+      "bytes": 32,
+      "sha256": "b37361a0be8af8905de1f4384e701365ece4313dd5e064d375eb2851c043ba68",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/ordinary-independent-b-observer.key",
+      "bytes": 32,
+      "sha256": "2cf2c6077769e8f910ed119ac8fa288d12817d4fdcef245576c752a076d3217a",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/ordinary-trainer-original-input.key",
+      "bytes": 32,
+      "sha256": "07a84af7b948e14dffc3a736b33d7661d80f672ae27f869c56fc15e629c98e6e",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/hepta-daemon-learning-root-e6-actual-drain-e4aeaa2c-noupdate-4/source/ordinary-q24-pJeYcW/original-observer.key",
+      "bytes": 32,
+      "sha256": "96079eae5f7d8d33a342209c04ceafd4212296c502e7fa7adfa4a91a13fede1e",
+      "uid": 0,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/data/a-original-generator.key",
+      "bytes": 32,
+      "sha256": "3e9e9a3007d1f8477a30df8e38ebd3bc1e985f2529fe660e0b4efdf05db344a8",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/final-use/device/authority.claims",
+      "bytes": 40,
+      "sha256": "152d5e50b32d24bfdd211b293c638b8b826b090da0e1182bcd786355519d7ddf",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/final-use/device/authority.json",
+      "bytes": 259,
+      "sha256": "42df4d7373e436a6472297c92e7581416f9a4f081a82078214b77bb82e6f8064",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/final-use/device/authority.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/final-use/notes/authority.claims",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/final-use/notes/authority.json",
+      "bytes": 259,
+      "sha256": "42df4d7373e436a6472297c92e7581416f9a4f081a82078214b77bb82e6f8064",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/final-use/notes/authority.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/post-a-data/ordinary-dataset-observer.key",
+      "bytes": 32,
+      "sha256": "4be3e71945f328b2a03b3ca5015f49d9a9300aacba6e25276c1bf08fba68f3f3",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/post-a-data/ordinary-experience-observer.key",
+      "bytes": 32,
+      "sha256": "07a98710826ae6fb9194e7c0a2c46e86227315fa75e42c21ea856d6f2d95d9d2",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/post-a-data/ordinary-freeze-evaluator.key",
+      "bytes": 32,
+      "sha256": "9a142843beb2b5e5a0002a586c12c347ce38bfecc1947805881c22bf55140e08",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/post-a-data/ordinary-local-selector.key",
+      "bytes": 32,
+      "sha256": "f8261a56bbc8efc5675429c512d3b14de7f6a0866c1247fe4865d3968314a1cd",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/post-a-data/ordinary-next-use-observer.key",
+      "bytes": 32,
+      "sha256": "221f20a0e214ef1ede535cba2b4d9ddea2497cb32d19a9fb106d99d40b19ebdd",
+      "uid": 60001,
+      "mode": "0o600"
+    },
+    {
+      "path": "/run/oq-wheUrJ/post-a-data/ordinary-trainer.key",
+      "bytes": 32,
+      "sha256": "07a84af7b948e14dffc3a736b33d7661d80f672ae27f869c56fc15e629c98e6e",
+      "uid": 60001,
+      "mode": "0o600"
+    }
+  ]
+}
