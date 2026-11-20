@@ -73,7 +73,12 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                             read,
                             context.as_ref(),
                         )?;
-                        OriginalQ24StageOperationV1::run(&mut operation, work)
+                        OriginalQ24StageOperationV1::run(&mut operation, work).inspect_err(|error| {
+                            let _ = std::io::Write::write_fmt(
+                                &mut std::io::stderr(),
+                                format_args!("daemon_stage=historical.stage.original_result error={error:?}\n"),
+                            );
+                        })
                     },
                 );
                 // A failed owner call still receives the actual source, state,
@@ -96,6 +101,11 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         if result.is_ok() {
             fence.armed = false;
         }
-        result
+        result.inspect_err(|error| {
+            let _ = std::io::Write::write_fmt(
+                &mut std::io::stderr(),
+                format_args!("daemon_stage=historical.stage.final_result error={error:?}\n"),
+            );
+        })
     }
 }

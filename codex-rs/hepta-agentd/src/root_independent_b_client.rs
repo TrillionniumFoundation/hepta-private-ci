@@ -149,7 +149,13 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                     training_head: snapshot.head_digest.to_string(),
                 },
             };
-            let Observation::Completed(data) = self.exchange(command)? else {
+            let Observation::Completed(data) = self.exchange(command).inspect_err(|error| {
+                let _ = std::io::Write::write_fmt(
+                    &mut std::io::stderr(),
+                    format_args!("daemon_stage=independent_b.completed_exchange error={error:?}\n"),
+                );
+            })?
+            else {
                 return Err(Error::CommitUncertain);
             };
             let receipt = data.receipt.data().map_err(unavailable)?;
@@ -164,13 +170,46 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                 || attestation.trust_digest != snapshot.owners.evidence_trust_digest
                 || original != learning_iteration_receipt_signing_bytes_v1(&receipt)?
             {
+                let _ = std::io::Write::write_fmt(
+                    &mut std::io::stderr(),
+                    format_args!(
+                        "daemon_stage=independent_b.completed_binding training_head={} predecessor={} actor={} bundle={} role={} principal={} trust={} payload={}\n",
+                        data.training_head == snapshot.head_digest.to_string(),
+                        receipt.predecessor == snapshot.head_digest,
+                        receipt.actor_id == snapshot.owners.evaluator,
+                        data.manifest.bundle_digest == candidate.into_array(),
+                        attestation.role == LearningEvidenceRoleV1::Evaluator,
+                        attestation.principal_id == snapshot.owners.evaluator,
+                        attestation.trust_digest == snapshot.owners.evidence_trust_digest,
+                        learning_iteration_receipt_signing_bytes_v1(&receipt)
+                            .is_ok_and(|payload| original == payload),
+                    ),
+                );
                 return Err(Error::WrongScope);
             }
             digest(&data.comparison_digest).map_err(unavailable)?;
             digest(&data.plan_digest).map_err(unavailable)?;
             digest(&data.execution_digest).map_err(unavailable)?;
-            scope.validate_observation(&receipt.observation)?;
-            coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?;
+            scope
+                .validate_observation(&receipt.observation)
+                .inspect_err(|error| {
+                    let _ = std::io::Write::write_fmt(
+                        &mut std::io::stderr(),
+                        format_args!(
+                            "daemon_stage=independent_b.completed_scope error={error:?}\n"
+                        ),
+                    );
+                })?;
+            coordinator
+                .record(receipt.clone(), receipt.observed_unix_seconds)
+                .inspect_err(|error| {
+                    let _ = std::io::Write::write_fmt(
+                        &mut std::io::stderr(),
+                        format_args!(
+                            "daemon_stage=independent_b.completed_coordinator error={error:?}\n"
+                        ),
+                    );
+                })?;
             self.require_initial(snapshot, scope)?;
             Ok(OriginalRootIndependentBEvaluationReadbackV1 {
                 data: *data,
@@ -182,7 +221,12 @@ impl OriginalRootIndependentBEvaluationClientV1 {
         if result.is_err() {
             self.refused.store(true, Ordering::Release);
         }
-        result
+        result.inspect_err(|error| {
+            let _ = std::io::Write::write_fmt(
+                &mut std::io::stderr(),
+                format_args!("daemon_stage=independent_b.original_training error={error:?}\n"),
+            );
+        })
     }
 
     fn exchange(&self, command: Command) -> Result<Observation, Error> {
@@ -204,6 +248,15 @@ impl OriginalRootIndependentBEvaluationClientV1 {
         let raw = lane
             .stream
             .exchange(&serde_json::to_vec(&request).map_err(unavailable)?)
+            .inspect_err(|error| {
+                let _ = std::io::Write::write_fmt(
+                    &mut std::io::stderr(),
+                    format_args!(
+                        "daemon_stage=independent_b.transport sequence={} error={error:?}\n",
+                        request.sequence
+                    ),
+                );
+            })
             .map_err(unavailable)?;
         let response: Response = serde_json::from_slice(&raw).map_err(unavailable)?;
         if serde_json::to_vec(&response).map_err(unavailable)? != raw

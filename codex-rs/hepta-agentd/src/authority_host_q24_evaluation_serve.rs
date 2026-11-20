@@ -206,6 +206,12 @@ fn serve_evaluation_until(
                                         )
                                     },
                                 )
+                                .inspect_err(|error| {
+                                    let _ = std::io::Write::write_fmt(
+                                        &mut std::io::stderr(),
+                                        format_args!("root_stage=independent_b.complete sequence={sequence} error={error:?}\n"),
+                                    );
+                                })
                                 .map_err(|_| HostIssuerTransportError::Unavailable)?
                         }
                         Command::Readback { training_head } => {
@@ -226,6 +232,12 @@ fn serve_evaluation_until(
                                         )
                                     },
                                 )
+                                .inspect_err(|error| {
+                                    let _ = std::io::Write::write_fmt(
+                                        &mut std::io::stderr(),
+                                        format_args!("root_stage=independent_b.readback sequence={sequence} error={error:?}\n"),
+                                    );
+                                })
                                 .map_err(|_| HostIssuerTransportError::Unavailable)?
                         }
                     };
@@ -233,6 +245,12 @@ fn serve_evaluation_until(
                         .checked_add(1)
                         .ok_or(HostIssuerTransportError::Unavailable)?;
                     Ok(response)
+                })
+                .inspect_err(|error| {
+                    let _ = std::io::Write::write_fmt(
+                        &mut std::io::stderr(),
+                        format_args!("root_stage=independent_b.transport next_sequence={sequence} error={error:?}\n"),
+                    );
                 })
                 .map_err(io::Error::other)?;
                 if !exchanged { break; }

@@ -377,7 +377,13 @@ impl OriginalHistoricalLearningDeliveryV1 {
                                 _ = cancelled.cancelled() => Err(LearningIterationRuntimeErrorV1::CommitUncertain),
                                 result = tokio::time::timeout_at(source.end.into(), reservation.submit(source.request().clone())) =>
                                     result.unwrap_or(Err(LearningIterationRuntimeErrorV1::CommitUncertain)),
-                            }.map_err(|_| JournalError::Pending)?;
+                            }.map_err(|error| {
+                                let _ = std::io::Write::write_fmt(
+                                    &mut std::io::stderr(),
+                                    format_args!("daemon_stage=historical.delivery.original_result error={error:?}\n"),
+                                );
+                                JournalError::Pending
+                            })?;
                         require_complete(&source, &result).map_err(|_| JournalError::Binding("original Root delivery is incomplete"))?;
                         source.require_current_historical_source(state.identity()).map_err(|_| JournalError::Binding("post-dispatch historical source"))?;
                         let bytes = result.head_digest.as_array().to_vec();
