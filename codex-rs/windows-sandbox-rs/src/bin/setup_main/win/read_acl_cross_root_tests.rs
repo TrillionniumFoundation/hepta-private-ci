@@ -176,6 +176,7 @@ fn read_subjects(plan: &FilesystemCapabilityPlan) -> ReadAclSubjects {
 
 #[test]
 fn existing_native_token_cannot_gain_a_later_disjoint_read_root() {
+    let _test_guard = super::tests::READ_ACL_TEST_MUTEX.lock().unwrap();
     let fixture = tempfile::tempdir().unwrap();
     let home = fixture.path().join("home");
     let roots = [fixture.path().join("a"), fixture.path().join("b")];
