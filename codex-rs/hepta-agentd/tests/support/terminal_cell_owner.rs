@@ -26,7 +26,7 @@ pub(super) fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn binding() -> Digest32 {
+pub(super) fn binding() -> Digest32 {
     digest("production-ledger-binding")
 }
 
@@ -107,7 +107,7 @@ fn trust_root_key() -> SigningKey {
     SigningKey::from_bytes(&[99; 32])
 }
 
-fn activated_trust() -> ActivatedLearningTrustV1 {
+pub(super) fn activated_trust() -> ActivatedLearningTrustV1 {
     let root_key = trust_root_key();
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
@@ -232,31 +232,6 @@ impl Fixture {
             trust,
             &ledger_directory,
             &witness_directory,
-        )
-        .unwrap()
-    }
-}
-
-impl Fixture {
-    pub(super) fn recover_writer(
-        &self,
-        limit: usize,
-        frontier: LedgerWitnessFrontier,
-    ) -> LedgerWriter {
-        let ledger = DurableLedger::recover(
-            self.file("ledger"),
-            binding(),
-            limit,
-            LedgerRecovery::Acknowledged(frontier.anchor),
-        )
-        .unwrap();
-        let witness = LedgerWitnessStore::recover(self.file("witness"), binding()).unwrap();
-        LedgerWriter::from_durable(
-            ledger,
-            witness,
-            activated_trust(),
-            &self.directory(),
-            &self.directory(),
         )
         .unwrap()
     }

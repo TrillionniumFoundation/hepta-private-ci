@@ -22,6 +22,30 @@ use support::id;
 use support::outcome;
 use support::sign;
 
+// Only this integration target exercises recovery; keep its setup beside
+// the tests that use it instead of in the fixture shared with the subset target.
+impl Fixture {
+    fn recover_writer(&self, limit: usize, frontier: LedgerWitnessFrontier) -> LedgerWriter {
+        let ledger = DurableLedger::recover(
+            self.file("ledger"),
+            support::binding(),
+            limit,
+            LedgerRecovery::Acknowledged(frontier.anchor),
+        )
+        .unwrap();
+        let witness =
+            LedgerWitnessStore::recover(self.file("witness"), support::binding()).unwrap();
+        LedgerWriter::from_durable(
+            ledger,
+            witness,
+            support::activated_trust(),
+            &self.directory(),
+            &self.directory(),
+        )
+        .unwrap()
+    }
+}
+
 fn collect(owner: &mut LedgerWriter, prefix: &str, selected: &str, value: i64) {
     collect_with_support(owner, prefix, selected, value, decision().support_digest);
 }
