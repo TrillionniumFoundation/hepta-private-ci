@@ -67,6 +67,8 @@
 //! `ChatWidget` merges the draft with any existing initial prompt and attachments, rebasing cursor
 //! and placeholder positions while preserving both composers' contents. The draft remains deferred
 //! until protected views close, input is enabled, and required sandbox setup completes.
+//! Text-element rebasing uses checked signed offsets and discards ranges that underflow, overflow,
+//! or are empty.
 //!
 //! # Submission and Prompt Expansion
 //!
@@ -1594,8 +1596,8 @@ impl ChatComposer {
     }
 
     fn shift_text_element(element: TextElement, shift: isize) -> Option<TextElement> {
-        let start = element.byte_range.start.checked_add(shift)?;
-        let end = element.byte_range.end.checked_add(shift)?;
+        let start = element.byte_range.start.checked_add_signed(shift)?;
+        let end = element.byte_range.end.checked_add_signed(shift)?;
         if start >= end {
             return None;
         }
@@ -4957,6 +4959,10 @@ impl ChatComposer {
 #[cfg(test)]
 #[path = "chat_composer_effort_tests.rs"]
 mod effort_tests;
+
+#[cfg(test)]
+#[path = "chat_composer_shift_tests.rs"]
+mod shift_tests;
 
 #[cfg(test)]
 mod tests {

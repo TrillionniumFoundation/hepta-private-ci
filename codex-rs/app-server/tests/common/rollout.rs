@@ -17,8 +17,6 @@ use std::fs;
 use std::fs::FileTimes;
 use std::path::Path;
 use std::path::PathBuf;
-use std::time::Duration;
-use std::time::SystemTime;
 use uuid::Uuid;
 
 pub fn rollout_path(codex_home: &Path, filename_ts: &str, thread_id: &str) -> PathBuf {
@@ -315,18 +313,9 @@ fn create_fake_rollout_with_source_and_parent_thread_id(
 
     fs::write(&file_path, lines.join("\n") + "\n")?;
     let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(meta_rfc3339)?;
-    let nanos = i128::from(parsed.timestamp()) * 1_000_000_000
-        + i128::from(parsed.timestamp_subsec_nanos());
-    let duration = Duration::new(
-        u64::try_from(nanos.unsigned_abs() / 1_000_000_000)?,
-        u32::try_from(nanos.unsigned_abs() % 1_000_000_000)?,
-    );
-    let modified = if nanos < 0 {
-        SystemTime::UNIX_EPOCH.checked_sub(duration)
-    } else {
-        SystemTime::UNIX_EPOCH.checked_add(duration)
-    }
-    .ok_or_else(|| anyhow::anyhow!("rollout timestamp is outside the platform file-time range"))?;
+    let modified = parsed
+        .to_system_time()
+        .ok_or_else(|| anyhow::anyhow!("rollout timestamp is outside the platform file-time range"))?;
     let times = FileTimes::new().set_modified(modified);
     std::fs::OpenOptions::new()
         .append(true)

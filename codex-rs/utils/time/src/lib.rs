@@ -136,6 +136,21 @@ impl Timestamp {
         Self::from_timestamp(seconds, nanoseconds)
     }
 
+    /// Convert to the platform clock, normalizing an explicit leap second to
+    /// the following second. Return `None` outside the platform clock's range.
+    pub fn to_system_time(self) -> Option<SystemTime> {
+        let nanos = i128::from(self.seconds) * 1_000_000_000 + i128::from(self.nanoseconds);
+        let duration = std::time::Duration::new(
+            u64::try_from(nanos.unsigned_abs() / 1_000_000_000).ok()?,
+            u32::try_from(nanos.unsigned_abs() % 1_000_000_000).ok()?,
+        );
+        if nanos < 0 {
+            SystemTime::UNIX_EPOCH.checked_sub(duration)
+        } else {
+            SystemTime::UNIX_EPOCH.checked_add(duration)
+        }
+    }
+
     pub fn timestamp(&self) -> i64 {
         self.seconds
     }

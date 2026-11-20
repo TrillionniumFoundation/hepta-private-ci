@@ -64,5 +64,5 @@ pub(crate) fn recovered_peer(
     OriginalCellQ24TrainingCommandConnectionV1,
     HostAuthorityPeerChannel,
 )> {
-    pair(material, Origin::Recovered(expected), lifetime)
+    pair(material, Origin::Recovered(expected.map(Box::new)), lifetime)
 }

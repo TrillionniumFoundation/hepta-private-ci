@@ -116,7 +116,7 @@ impl Closed {
             publication,
             cell,
             envelopes,
-            expected: [decision, outcome],
+            expected: [*decision, *outcome],
         })
     }
 
