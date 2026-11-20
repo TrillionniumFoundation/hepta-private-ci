@@ -8,6 +8,8 @@ import sys
 import time
 from pathlib import Path
 
+import count_tokens
+
 
 def sha(raw):
     return hashlib.sha256(raw).hexdigest()
@@ -21,9 +23,24 @@ def checked_json(path, expected, maximum=2097152):
     return json.loads(raw)
 
 
+def verify_source(root, freeze):
+    checked = set()
+    for pin in freeze["source_pins"]:
+        path = (root / pin["path"]).resolve()
+        raw = path.read_bytes()
+        if len(raw) != pin["bytes"] or sha(raw) != pin["sha256"]:
+            raise ValueError("target/source implementation changed: " + str(path))
+        checked.add(path)
+    required = {Path(__file__).resolve(), Path(count_tokens.__file__).resolve()}
+    if not required <= checked:
+        raise ValueError(
+            "actual target runner and prefix counter must be source-pinned"
+        )
+
+
 def main():
     parser = argparse.ArgumentParser()
-    for name in ("root", "materials", "freeze", "output"):
+    for name in ("root", "materials", "freeze", "prefix", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
     parser.add_argument("--expected-freeze", required=True)
     args = parser.parse_args()
@@ -31,14 +48,7 @@ def main():
     freeze = checked_json(args.freeze, args.expected_freeze)
     root = args.root
 
-    def verify_source():
-        for pin in freeze["source_pins"]:
-            path = root / pin["path"]
-            raw = path.read_bytes()
-            if len(raw) != pin["bytes"] or sha(raw) != pin["sha256"]:
-                raise ValueError("target/source implementation changed: " + str(path))
-
-    verify_source()
+    verify_source(root, freeze)
     policy = checked_json(
         root / "target-coverage-1/TARGET_POLICY.intent.json", freeze["policy_sha256"]
     )
@@ -48,6 +58,9 @@ def main():
     checked_json(root / "PREINPUT_SOURCE_FREEZE.json", policy["source_freeze_sha256"])
     index = checked_json(
         args.materials / "MATERIAL_INDEX.json", policy["material_index_sha256"]
+    )
+    sources = count_tokens.original_source_ids(
+        args.materials / "MATERIAL_INDEX.json", args.prefix
     )
     pins = policy["ordered_input_pins"]
     assert len(pins) == len(inputs["rows"]) == len(index["materials"]) == 16
@@ -206,7 +219,7 @@ def main():
         (destination / "RESULT.json").write_bytes(canonical(row) + b"\n")
         rows.append(row)
         print(json.dumps(row), flush=True)
-    verify_source()
+    verify_source(root, freeze)
     for pin in pins:
         path = root / "inputs-1" / f"{pin['ordinal']:02d}"
         checked_json(path / "RESULT.json", pin["row_sha256"])
@@ -234,12 +247,14 @@ def main():
     (args.output / "RESULT.json").write_bytes(raw_result)
     request = {
         "schema": "hepta.e5.v2.complete-target-tokenizer-request.v1",
+        "tokenizer_entrypoint": count_tokens.ENTRY,
         "records": requests,
         "source_freeze_sha256": args.expected_freeze,
         "target_readout_sha256": sha(raw_result),
         "tokenizer_freeze_sha256": freeze["tokenizer_freeze_sha256"],
         "source_refusals": [r for r in rows if r["status"] == "SOURCE_REFUSAL"],
     }
+    count_tokens.validate_request(request, sources)
     (args.output / "TOKENIZER_REQUEST.json").write_bytes(canonical(request) + b"\n")
 
 
