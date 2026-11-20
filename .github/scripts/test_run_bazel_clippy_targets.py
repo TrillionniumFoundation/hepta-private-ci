@@ -7,7 +7,6 @@ import shutil
 import subprocess
 import tempfile
 import unittest
-from unittest.mock import patch
 from pathlib import Path
 
 
@@ -146,8 +145,10 @@ class ConfiguredClippyTargetSelectionTests(unittest.TestCase):
         fail_stage="",
         empty_stage="",
         inputs=None,
+        host_system=None,
     ):
         (self.root / "arguments.json").unlink(missing_ok=True)
+        (self.root / "uname-arguments.txt").unlink(missing_ok=True)
         (self.root / "query-inputs.json").write_text(json.dumps(inputs or {}))
         env = dict(os.environ)
         env.update(
@@ -162,6 +163,20 @@ class ConfiguredClippyTargetSelectionTests(unittest.TestCase):
             BAZEL_REPOSITORY_CACHE="fixture-repository-cache",
             BAZEL_REPO_CONTENTS_CACHE="fixture-contents-cache",
         )
+        if host_system is not None:
+            host_env = self.root / "host-env.sh"
+            host_env.write_text(
+                "uname() {\n"
+                '  printf \'%s\\n\' "$*" > "$CLIPPY_UNAME_ARGUMENTS"\n'
+                "  printf '%s\\n' \"$CLIPPY_UNAME_SYSTEM\"\n"
+                "}\n",
+                newline="\n",
+            )
+            env.update(
+                BASH_ENV=host_env.as_posix(),
+                CLIPPY_UNAME_ARGUMENTS=(self.root / "uname-arguments.txt").as_posix(),
+                CLIPPY_UNAME_SYSTEM=host_system,
+            )
         return subprocess.run(
             [self.bash, str(script), *args],
             cwd=self.root,
@@ -333,22 +348,17 @@ class ConfiguredClippyTargetSelectionTests(unittest.TestCase):
                 )
 
     def test_detected_hosts_keep_selection_and_msys_argument_boundaries(self):
-        tools = self.root / "host-tools"
-        tools.mkdir()
-        uname = tools / "uname"
         for system, runner in (
             ("Linux", "Linux"),
             ("Darwin", "macOS"),
             ("MINGW64_NT", "Windows"),
         ):
             with self.subTest(system=system):
-                uname.write_text("#!/bin/sh\nprintf '%s\\n' '" + system + "'\n")
-                uname.chmod(0o755)
-                with patch.dict(
-                    os.environ, {"PATH": str(tools) + os.pathsep + os.environ["PATH"]}
-                ):
-                    detected = self.run_script(self.selector, "")
+                detected = self.run_script(self.selector, "", host_system=system)
                 self.assertEqual(detected.returncode, 0, detected.stderr)
+                self.assertEqual(
+                    (self.root / "uname-arguments.txt").read_text(), "-s\n"
+                )
                 call = self.invocation()
                 explicit = self.run_script(self.selector, runner)
                 self.assertEqual(detected.stdout, explicit.stdout)
@@ -369,15 +379,8 @@ class ConfiguredClippyTargetSelectionTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertEqual(result.stdout, "")
                 self.assertFalse((self.root / "arguments.json").exists())
-        tools = self.root / "unknown-host-tools"
-        tools.mkdir()
-        uname = tools / "uname"
-        uname.write_text("#!/bin/sh\nprintf 'Plan9\\n'\n")
-        uname.chmod(0o755)
-        with patch.dict(
-            os.environ, {"PATH": str(tools) + os.pathsep + os.environ["PATH"]}
-        ):
-            result = self.run_script(self.selector, "")
+        result = self.run_script(self.selector, "", host_system="Plan9")
+        self.assertEqual((self.root / "uname-arguments.txt").read_text(), "-s\n")
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(result.stdout, "")
         self.assertFalse((self.root / "arguments.json").exists())
