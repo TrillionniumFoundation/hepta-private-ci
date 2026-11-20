@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.e5-before-task-visible-unit-selection.v1",
+  "source_prefix_commit": "9dade6e90f6227dded45afa1c8462758a511a699",
+  "material_parent_commit": "63f494553a735bd55a3fef7cfe2e76604cd6db7d",
+  "source_order": "The original case-sensitive 1/4/16 prefixes remain exact; no reranking or substitution.",
+  "selector_inputs": [
+    "complete before runtime bytes",
+    "fixed original native test selectors and complete test source",
+    "fixed task fixtures used in the original before run",
+    "original before failure diagnostics and case identities"
+  ],
+  "selector_excluded": [
+    "after runtime bytes",
+    "runtime_patches",
+    "changed-node or codec-compatibility matrices",
+    "after pass/fail results",
+    "future B/C materials"
+  ],
+  "task_roots": "Select every complete original regression function with its decorators and parameter expressions; recursively retain same-module helpers/constants and required fixture definitions. Generated factories without a provable complete fixture closure are explicit blocked sources.",
+  "runtime_roots": "All project frames in original before failures plus statically resolved targets of every complete fixed selected test/fixture; never an after-derived changed-file set. The before map is the full retained runtime snapshot scope, which is not asserted to be the whole upstream repository.",
+  "closure": "v1_static_context_closed describes only the implemented static graph: complete source units, lexical globals, before import/receiver/ancestor/constructor bindings, required fixtures, and explicit Python/external object API contracts. It is not a proof of arbitrary Python semantic completeness. Missing globals, unresolved project receivers, dynamic namespaces/loaders, class decorators/metaclasses and module initialization effects block v1.",
+  "cython": "Use complete lexical source boundaries. Existing Python/Cython twin modules are coupled; a required unresolved boundary is a source-specific blocker.",
+  "no_context_rewrite": [
+    "no AST unparse",
+    "no head/tail slicing",
+    "no removed fixture",
+    "no reduced parameterization",
+    "no source-specific selection tuned to after answers"
+  ],
+  "action": "One hash-bound JSON payload of source-unit-local stable line replacements/helper insertions; all edits must be represented in that one complete target and reconstruct all changed runtime files exactly.",
+  "limits_unchanged": {
+    "max_input_tokens": 4096,
+    "sft_sequence_positions": 3584,
+    "parent_max_new_tokens": 384,
+    "raw_answer_bytes": 32768,
+    "native_chat_message_bytes": 65536
+  },
+  "missing_execution_bindings": {
+    "unit_to_optimizer_mapping": null,
+    "compute_limit_per_point": null,
+    "verification_budget_per_point": null,
+    "independent_future_panel": null
+  },
+  "model_calls": 0,
+  "training_updates": 0,
+  "native_replays": 0,
+  "fixture_paths": "A bounded, non-executing string path interpreter propagates fixed literal test parameters through named helpers, preserves all parameter choices, and includes complete original script/output fixture bytes. Branch-rebound, late-bound, missing, escaping, unapproved or unresolved paths block v1; the 256-choice/abstract-invocation analysis limit changes no experiment budget.",
+  "class_headers": "A class_header is its exact structural prefix, not a complete class. Required initialization, bases and referenced methods/state writers are separate complete original units; unsupported class construction blocks v1.",
+  "task_after_provenance": "Some fixed original test/fixture bytes come from the upstream after revision and were already used as task inputs in the retained before run. Runtime after bytes remain excluded from input selection.",
+  "interpretation": "Admission is representability in a frozen static codec plus exact original tokenizer bounds; training execution remains false until the independent original E5 execution bindings are frozen."
+}

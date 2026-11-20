@@ -1,0 +1,131 @@
+"""Join already terminal codec measurements; no model/native execution."""
+import hashlib
+import io
+import json
+import pathlib
+import shutil
+import tarfile
+
+ROOT = pathlib.Path(__file__).resolve().parent
+PUB = ROOT / "publication-measurement"
+Q = PUB / "qualification/cell-e5-source-codec-20261120"
+Q.mkdir(parents=True, exist_ok=False)
+
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def obj(path):
+    return json.loads((ROOT / path).read_bytes())
+
+
+def canonical(value):
+    return (json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n").encode()
+
+
+before = obj("before-final/RESULT.json")
+target = obj("targets-1/RESULT.json")
+tokens = obj("tokenizer-measurement-1/RESULT.json")
+freeze_raw = (ROOT / "SOURCE_FREEZE.json").read_bytes()
+assert digest(freeze_raw) == tokens["source_freeze_sha256"] == target["source_freeze_sha256"]
+assert digest((ROOT / "targets-1/RESULT.json").read_bytes()) == tokens["target_readout_sha256"]
+rows = []
+for a, b, c in zip(before["results"], target["results"], tokens["rows"], strict=True):
+    assert a["ordinal"] == b["ordinal"] == c["ordinal"] == len(rows)
+    assert a["source_id"] == b["source_id"] == c["source_id"]
+    assert a["prompt_sha256"] == b["prompt_sha256"] == c["prompt_sha256"]
+    context = obj(f"before-final/{a['ordinal']:02d}/CONTEXT.json")
+    payload = obj(f"targets-1/{a['ordinal']:02d}/TARGET.json")
+    allowed = set(context["allowed_units"])
+    missing = sorted({edit["unit_id"] for edit in payload["edits"]} - allowed)
+    visible_edits = sum(edit["unit_id"] in allowed for edit in payload["edits"])
+    assert (not missing) == b["visible_action_roundtrip"]
+    reasons = list(a["blockers"])
+    if missing:
+        reasons.append("complete target references units absent from the frozen visible set: " + ", ".join(missing))
+    for key in ["fits_original_native_message_bytes_65536", "fits_original_input_4096", "fits_original_sft_3584", "fits_original_generation_384", "fits_original_answer_bytes_32768"]:
+        if not c[key]:
+            reasons.append("original bound not met: " + key)
+    rows.append({**c, "selected_case_count": a["selected_case_count"], "selected_unit_count": a["unit_count"], "allowed_action_unit_count": a["allowed_action_units"], "v1_static_context_closed": a["v1_static_context_closed"], "static_blocker_count": len(a["blockers"]), "structural_roundtrip": b["structural_roundtrip"], "changed_runtime_files": b["changed_runtime_files"], "edit_count": b["edit_count"], "visible_edit_count": visible_edits, "missing_action_unit_ids": missing, "visible_action_roundtrip": b["visible_action_roundtrip"], "negative_controls": b["negative_controls"], "representation_rejection_reasons": reasons})
+
+assert len(rows) == 16 and sum(r["selected_case_count"] for r in rows) == 290
+assert all(r["training_execution_admitted"] is False for r in rows)
+counts = {"sources": len(rows), "selected_case_identities": sum(r["selected_case_count"] for r in rows), "exact_structural_roundtrips": sum(r["structural_roundtrip"] for r in rows), "changed_runtime_files": sum(len(r["changed_runtime_files"]) for r in rows), "visible_action_roundtrips": sum(r["visible_action_roundtrip"] for r in rows), "v1_static_context_closed": sum(r["v1_static_context_closed"] for r in rows), "static_representations_within_original_bounds": sum(r["static_representation_admitted"] for r in rows), "original_input_bound_failures": sum(not r["fits_original_input_4096"] for r in rows), "original_full_sft_bound_failures": sum(not r["fits_original_sft_3584"] for r in rows), "original_generation_bound_failures": sum(not r["fits_original_generation_384"] for r in rows), "original_message_byte_bound_failures": sum(not r["fits_original_native_message_bytes_65536"] for r in rows), "actual_target_tampering_controls_passed": sum(sum(r["negative_controls"].values()) for r in rows), "training_executions_admitted": 0}
+measurement = {
+    "schema": "hepta.e5-codec-measurement-join.v1",
+    "status": "COMPLETE_INFRASTRUCTURE_MEASUREMENT_PREFIXES_NOT_REPRESENTABLE_NO_TRAINING",
+    "prospective_freeze_commit": "bbb907067afa97ed61c0df8967de60f3196b683e",
+    "source_prefix_commit": "9dade6e90f6227dded45afa1c8462758a511a699",
+    "material_commit": "63f494553a735bd55a3fef7cfe2e76604cd6db7d",
+    "source_freeze_sha256": digest(freeze_raw),
+    "before_readout_sha256": digest((ROOT / "before-final/RESULT.json").read_bytes()),
+    "target_readout_sha256": digest((ROOT / "targets-1/RESULT.json").read_bytes()),
+    "tokenizer_readout_sha256": digest((ROOT / "tokenizer-measurement-1/RESULT.json").read_bytes()),
+    "tokenizer_freeze_sha256": tokens["tokenizer_freeze_sha256"],
+    "input_selection_changed_after_freeze": False,
+    "prefix_order_changed": False,
+    "counts": counts,
+    "prefix_1_4_16_representable": tokens["prefix_1_4_16_representable"],
+    "rows": rows,
+    "costs": {
+        "before": obj("before-final-owner-1/RESULT.json"),
+        "target": obj("target-owner-1/RESULT.json"),
+        "tokenizer_owner": obj("tokenizer-measurement-owner-1/RESULT.json"),
+        "tokenizer_child_wall_seconds": tokens["wall_seconds"],
+        "tokenizer_child_self_cpu_seconds": tokens["self_cpu_seconds"],
+        "tokenizer_peak_rss_kib": tokens["peak_rss_kib"],
+        "nested_owner_child_times_are_not_additive": True,
+    },
+    "training_execution_admitted": False,
+    "optimizer_unit_mapping": None,
+    "compute_or_verification_budget": None,
+    "native_candidate_binding": None,
+    "independent_future_panel": None,
+    "model_loads": 0, "forward_calls": 0, "generation_calls": 0,
+    "training_updates": 0, "native_replays": 0,
+    "arbitrary_python_semantic_completeness_proven": False,
+    "model_usefulness_measured": False,
+    "original_two_32_unit_curves_changed": False,
+}
+(Q / "MEASUREMENT_READOUT.json").write_bytes(canonical(measurement))
+shutil.copyfile(ROOT / "targets-1/RESULT.json", Q / "TARGET_READOUT.json")
+shutil.copyfile(ROOT / "tokenizer-measurement-1/RESULT.json", Q / "TOKENIZER_READOUT.json")
+
+members = []
+for name in ["targets-1", "target-owner-1", "tokenizer-measurement-1", "tokenizer-measurement-owner-1"]:
+    members.extend(p for p in (ROOT / name).rglob("*") if p.is_file())
+for name in ["TARGET_OWNER.py.txt", "TOKEN_COUNTER_OWNER.py.txt", "TOKEN_COUNTER_OWNER_START.json", "TOKEN_COUNTER_OWNER_TERMINAL.json", "TOKENIZER_REQUEST_PACKAGE.json", "tokenizer-request-1.tar.gz", "COUNTER_TRANSFER.json", "PUBLISHED_FREEZE.json", "FROZEN_HEAD_FULL_READBACK.json", "FREEZE_BLOB_MAP.json"]:
+    members.append(ROOT / name)
+members = sorted(members, key=lambda p: str(p.relative_to(ROOT)))
+archive_raw = io.BytesIO()
+index = []
+with tarfile.open(fileobj=archive_raw, mode="w:xz", preset=6) as tar:
+    for path in members:
+        raw = path.read_bytes()
+        name = str(path.relative_to(ROOT))
+        info = tarfile.TarInfo(name)
+        info.size = len(raw)
+        info.mode = 0o644
+        info.mtime = 0
+        tar.addfile(info, io.BytesIO(raw))
+        index.append({"path": name, "bytes": len(raw), "sha256": digest(raw), "mode": 0o644})
+data = archive_raw.getvalue()
+parts = []
+for n, start in enumerate(range(0, len(data), 393216)):
+    raw = data[start:start + 393216]
+    name = f"measurement-originals.part-{n:03d}"
+    (Q / name).write_bytes(raw)
+    parts.append({"path": name, "bytes": len(raw), "sha256": digest(raw)})
+restored = b"".join((Q / p["path"]).read_bytes() for p in parts)
+assert restored == data
+with tarfile.open(fileobj=io.BytesIO(restored), mode="r:xz") as tar:
+    assert len(tar.getmembers()) == len(index)
+    for actual, expected in zip(tar.getmembers(), index, strict=True):
+        assert actual.isfile() and actual.name == expected["path"] and actual.mode == expected["mode"]
+        raw = tar.extractfile(actual).read()
+        assert len(raw) == expected["bytes"] and digest(raw) == expected["sha256"]
+archive = {"schema": "hepta.raw-evidence-archive.v1", "archive_name": "measurement-originals.tar.xz", "compression": "xz", "bytes": len(data), "sha256": digest(data), "parts": parts, "members": index, "source_freeze_sha256": digest(freeze_raw), "local_reassembly_and_every_member_readback": True}
+(Q / "MEASUREMENT_ARCHIVE.json").write_bytes(canonical(archive))
+(ROOT / "MEASUREMENT_BUILD.json").write_bytes(canonical({"counts": counts, "archive_bytes": len(data), "archive_sha256": digest(data), "archive_members": len(index), "archive_parts": len(parts), "readout_sha256": digest((Q / "MEASUREMENT_READOUT.json").read_bytes())}))
+print(json.dumps(obj("MEASUREMENT_BUILD.json"), indent=2))
