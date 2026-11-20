@@ -1,0 +1,493 @@
+"""One bounded, explicitly authorized recovery of the frozen public material.
+
+This program never imports a model runtime.  Four independent workers own
+fixed, disjoint segment ordinals.  A failed segment is never retried.
+"""
+
+from pathlib import Path
+import argparse
+import hashlib
+import json
+import os
+import resource
+import shutil
+import signal
+import subprocess
+import sys
+import time
+import urllib.parse
+import urllib.request
+import urllib.error
+
+
+ROOT = Path('/home/qian-qi/work/hepta-e3-smollm2-materials-20261120-e9e051')
+PREP = ROOT / 'range-recovery-execution-freeze-1'
+RUN = ROOT / 'range-recovery-run-1'
+CHUNK = 65536
+PLAN_SHA = 'db664b8449cee85fd414982adcfb8b4c435ee348997d02cc4d998e550ab5d979'
+MANIFEST_SHA = 'b26b537a35456f9ca92e4e28063ff14abf3679dfc38a20566c7ea32bd678a0b1'
+OLD_RESULT_SHA = '17a4ad6bf10b5f46c68a13ee22b93533b0f424c43803e011a909bbfe16d3f57c'
+
+
+class OwnerDeadline(Exception):
+    pass
+
+
+class WorkerStopped(Exception):
+    pass
+
+
+def sha_file(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def version(path):
+    s = Path(path).stat(follow_symlinks=False)
+    return f'{s.st_dev}:{s.st_ino}:{s.st_size}:{s.st_mtime_ns}:{s.st_ctime_ns}'
+
+
+def json_bytes(value):
+    return (json.dumps(value, sort_keys=True, separators=(',', ':')) + '\n').encode()
+
+
+def write_json(path, value, exclusive=True):
+    path = Path(path)
+    data = json_bytes(value)
+    if exclusive:
+        with path.open('xb') as f:
+            f.write(data)
+    else:
+        temporary = path.with_name(path.name + '.tmp')
+        with temporary.open('wb') as f:
+            f.write(data)
+        os.replace(temporary, path)
+    return {'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def exact_json(path, expected):
+    data = Path(path).read_bytes()
+    if hashlib.sha256(data).hexdigest() != expected:
+        raise ValueError('retained source identity changed: ' + str(path))
+    return json.loads(data)
+
+
+def check_segments(plan):
+    cursor = plan['preserved_prefix']['bytes']
+    for index, segment in enumerate(plan['segments']):
+        if segment['ordinal'] != index or segment['start'] != cursor:
+            raise ValueError('segment gap, overlap, or changed ordinal')
+        if segment['end_inclusive'] + 1 != cursor + segment['bytes']:
+            raise ValueError('invalid segment size')
+        expected = f"bytes {cursor}-{segment['end_inclusive']}/{plan['expected_full_weight_bytes']}"
+        if segment['expected_content_range'] != expected:
+            raise ValueError('segment range identity changed')
+        if segment['range_header'] != f"bytes={cursor}-{segment['end_inclusive']}":
+            raise ValueError('segment request identity changed')
+        cursor += segment['bytes']
+    if cursor != plan['expected_full_weight_bytes'] or len(plan['segments']) != 95:
+        raise ValueError('incomplete frozen range partition')
+    if sum(s['bytes'] for s in plan['segments']) != plan['budget']['remaining_disjoint_weight_bytes']:
+        raise ValueError('frozen byte reservation mismatch')
+
+
+def validate_response(response, segment):
+    headers = response.headers
+    observed = {'status': response.status, 'content_range': headers.get('Content-Range'),
+                'content_length': headers.get('Content-Length'),
+                'content_encoding': headers.get('Content-Encoding')}
+    if response.status != 206:
+        raise ValueError('HTTP status is not 206')
+    if observed['content_range'] != segment['expected_content_range']:
+        raise ValueError('HTTP Content-Range differs from exact frozen segment')
+    if observed['content_encoding'] not in (None, '', 'identity'):
+        raise ValueError('HTTP Content-Encoding is not identity')
+    if observed['content_length'] is not None and int(observed['content_length']) != segment['bytes']:
+        raise ValueError('HTTP Content-Length differs from segment')
+    return observed
+
+
+def extent_sha(fd, start, size):
+    h = hashlib.sha256()
+    offset = 0
+    while offset < size:
+        data = os.pread(fd, min(1024 * 1024, size - offset), start + offset)
+        if not data:
+            raise ValueError('local extent became truncated')
+        h.update(data)
+        offset += len(data)
+    return h.hexdigest()
+
+
+def write_at(fd, data, offset):
+    done = 0
+    while done < len(data):
+        written = os.pwrite(fd, data[done:], offset + done)
+        if written <= 0:
+            raise OSError('pwrite made no progress')
+        done += written
+
+
+def consume_body(response, segment, fd, receipt, deadline, progress=None):
+    receipt.update(validate_response(response, segment))
+    h = hashlib.sha256()
+    receipt['body_gate_passed_before_read'] = True
+    last_progress = 0
+    while receipt['written_bytes'] < segment['bytes']:
+        if time.monotonic() >= deadline:
+            raise OwnerDeadline('worker deadline reached')
+        remaining = segment['bytes'] - receipt['written_bytes']
+        data = response.read(min(CHUNK, remaining))
+        receipt['observed_http_body_bytes'] += len(data)
+        if not data:
+            raise ValueError('segment body ended early')
+        if len(data) > remaining:
+            raise ValueError('response reader returned more than requested')
+        write_at(fd, data, segment['start'] + receipt['written_bytes'])
+        receipt['written_bytes'] += len(data)
+        h.update(data)
+        receipt['stream_sha256'] = h.hexdigest()
+        if progress and receipt['written_bytes'] - last_progress >= 4 * 1024 * 1024:
+            progress(receipt)
+            last_progress = receipt['written_bytes']
+    # With exact Content-Length, HTTPResponse returns EOF without another body
+    # byte.  When it is absent, reserve at most one extra validation byte.
+    extra = response.read(1)
+    receipt['observed_http_body_bytes'] += len(extra)
+    if extra:
+        raise ValueError('segment body exceeds frozen range')
+    os.fsync(fd)
+    receipt['local_extent_sha256'] = extent_sha(fd, segment['start'], segment['bytes'])
+    if receipt['local_extent_sha256'] != receipt['stream_sha256']:
+        raise ValueError('stream and local extent SHA256 differ')
+
+
+class NoAutomaticRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def public_url_without_query(url):
+    parsed = urllib.parse.urlsplit(url)
+    return urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, parsed.path, '', ''))
+
+
+def open_public_segment(opener, initial_url, headers, timeout, receipt):
+    url = initial_url
+    visited = set()
+    receipt['redirects'] = []
+    for hop in range(4):
+        parsed = urllib.parse.urlsplit(url)
+        host = (parsed.hostname or '').lower()
+        allowed = host in ('huggingface.co', 'hf.co') or host.endswith('.huggingface.co') or host.endswith('.hf.co')
+        if parsed.scheme != 'https' or not allowed or parsed.username or parsed.password:
+            raise ValueError('redirect outside pinned public artifact delivery domains')
+        if url in visited:
+            raise ValueError('redirect cycle rejected')
+        visited.add(url)
+        request = urllib.request.Request(url, headers=headers)
+        try:
+            return opener.open(request, timeout=timeout)
+        except urllib.error.HTTPError as exc:
+            receipt['last_http_status'] = exc.code
+            receipt['last_http_content_range'] = exc.headers.get('Content-Range')
+            location = exc.headers.get('Location')
+            code = exc.code
+            exc.close()  # Do not consume an unbounded redirect or error body.
+            if code not in (301, 302, 303, 307, 308) or not location:
+                raise
+            if hop == 3:
+                raise ValueError('public redirect hop budget exhausted')
+            destination = urllib.parse.urljoin(url, location)
+            receipt['redirects'].append({'status': code, 'from': public_url_without_query(url),
+                                         'to': public_url_without_query(destination), 'body_consumed_bytes': 0})
+            url = destination
+    raise ValueError('unreachable redirect state')
+
+
+def load_execution(freeze_sha):
+    frozen = exact_json(PREP / 'EXECUTION_FREEZE.json', freeze_sha)
+    if sha_file(Path(__file__)) != frozen['source_sha256']:
+        raise ValueError('execution source changed after freeze')
+    plan = exact_json(ROOT / 'range-recovery-plan-2/PLAN.json', PLAN_SHA)
+    exact_json(ROOT / 'FROZEN_MANIFEST.json', MANIFEST_SHA)
+    old = exact_json(ROOT / 'DOWNLOAD_RESULT.json', OLD_RESULT_SHA)
+    if old['status'] != 'FAILED_MATERIAL_PREPARATION_NO_MODEL_EXECUTION':
+        raise ValueError('original owner is not a retained failure')
+    if frozen['max_network_workers'] != 4 or plan['max_network_workers'] != 4:
+        raise ValueError('worker budget changed')
+    if frozen['single_segment_no_retry'] is not True:
+        raise ValueError('retries are not allowed')
+    check_segments(plan)
+    return frozen, plan
+
+
+def worker(freeze_sha, worker_id, deadline):
+    started = time.monotonic()
+    cpu = time.process_time()
+    frozen, plan = load_execution(freeze_sha)
+    if worker_id not in range(4):
+        raise ValueError('invalid worker ordinal')
+    def stop(signum, frame):
+        raise WorkerStopped('owner requested worker termination')
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoAutomaticRedirect())
+    fd = os.open(RUN / 'model.safetensors.partial', os.O_RDWR | os.O_NOFOLLOW)
+    results = []
+    error = None
+    try:
+        for segment in plan['segments'][worker_id::4]:
+            if time.monotonic() >= deadline:
+                raise OwnerDeadline('worker deadline reached before next segment')
+            ordinal = segment['ordinal']
+            receipt = {'schema': 'hepta.e3-range-segment-receipt.v1', 'worker_id': worker_id,
+                       'segment': segment, 'reserved_bytes': segment['bytes'],
+                       'eof_validation_byte_reserve': 1, 'attempt': 1,
+                       'started_at_ns': str(time.time_ns()), 'written_bytes': 0,
+                       'observed_http_body_bytes': 0, 'stream_sha256': hashlib.sha256(b'').hexdigest(),
+                       'status': 'STARTED', 'body_gate_passed_before_read': False}
+            write_json(RUN / f'segments/{ordinal:03d}.STARTED.json', receipt)
+            t = time.monotonic()
+            active_error = None
+            try:
+                headers = {
+                    'User-Agent': 'Hepta-E3-Public-Range-Recovery/1.0',
+                    'Accept-Encoding': 'identity', 'Range': segment['range_header']}
+                with open_public_segment(opener, plan['immutable_resolve_url'], headers,
+                                         min(30, max(1, deadline - time.monotonic())), receipt) as response:
+                    parsed = urllib.parse.urlsplit(response.geturl())
+                    receipt['final_public_url_without_query'] = urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, parsed.path, '', ''))
+                    receipt['observed_headers'] = {'status': response.status, 'content_range': response.headers.get('Content-Range'),
+                                                   'content_length': response.headers.get('Content-Length'), 'content_encoding': response.headers.get('Content-Encoding')}
+                    consume_body(response, segment, fd, receipt, deadline,
+                                 lambda row: write_json(RUN / f'segments/{ordinal:03d}.PROGRESS.json', row, exclusive=False))
+                receipt['status'] = 'COMPLETE_EXACT_SEGMENT'
+            except BaseException as exc:
+                signal.signal(signal.SIGTERM, signal.SIG_IGN)
+                signal.signal(signal.SIGINT, signal.SIG_IGN)
+                active_error = exc
+                receipt['status'] = 'FAILED_RETAIN_PARTIAL'
+                receipt['error_type'] = type(exc).__name__
+                receipt['reason'] = str(exc).split('?')[0][:500]
+                receipt['local_extent_sha256'] = extent_sha(fd, segment['start'], receipt['written_bytes'])
+                receipt['known_written_extent_matches_stream_sha256'] = receipt['local_extent_sha256'] == receipt['stream_sha256']
+            finally:
+                receipt['wall_seconds'] = time.monotonic() - t
+                receipt['finished_at_ns'] = str(time.time_ns())
+                write_json(RUN / f'segments/{ordinal:03d}.RESULT.json', receipt)
+                results.append(ordinal)
+                print(json.dumps({'worker': worker_id, 'segment': ordinal, 'status': receipt['status'],
+                                  'written_bytes': receipt['written_bytes'], 'wall_seconds': receipt['wall_seconds']}), flush=True)
+            if active_error:
+                raise active_error
+    except BaseException as exc:
+        error = {'error_type': type(exc).__name__, 'reason': str(exc).split('?')[0][:500]}
+    finally:
+        os.close(fd)
+        result = {'schema': 'hepta.e3-range-worker-result.v1', 'worker_id': worker_id,
+                  'status': 'COMPLETE' if error is None else 'FAILED', 'error': error,
+                  'attempted_segment_ordinals': results, 'self_cpu_seconds': time.process_time() - cpu,
+                  'wall_seconds': time.monotonic() - started, 'automatic_retries': 0}
+        write_json(RUN / f'worker-{worker_id}.RESULT.json', result)
+    return 0 if error is None else 1
+
+
+def gather_segments():
+    started = []
+    results = []
+    for path in sorted((RUN / 'segments').glob('*.STARTED.json')):
+        started.append(json.loads(path.read_bytes()))
+    for path in sorted((RUN / 'segments').glob('*.RESULT.json')):
+        results.append(json.loads(path.read_bytes()))
+    return started, results
+
+
+def owner(freeze_sha):
+    start = time.monotonic()
+    cpu = time.process_time()
+    child_before = resource.getrusage(resource.RUSAGE_CHILDREN)
+    deadline = start + 895
+    children = []
+    outputs = []
+    created = False
+    report = {'schema': 'hepta.e3-exact-range-recovery-result.v1', 'execution_freeze_sha256': freeze_sha,
+              'plan_sha256': PLAN_SHA, 'original_manifest_sha256': MANIFEST_SHA,
+              'original_failure_result_sha256': OLD_RESULT_SHA, 'max_network_workers': 4,
+              'alarm_seconds': 895, 'wall_cap_seconds': 900, 'automatic_segment_retries': 0,
+              'new_model_loads': 0, 'new_model_forward_calls': 0, 'new_model_generation_calls': 0,
+              'new_training_updates': 0, 'new_native_children': 0, 'full_system_cost_known': False,
+              'original_E3_12_generation_budget_unchanged': True}
+    def alarm(signum, frame):
+        raise OwnerDeadline('bounded recovery owner deadline reached')
+    signal.signal(signal.SIGALRM, alarm)
+    signal.signal(signal.SIGTERM, alarm)
+    signal.setitimer(signal.ITIMER_REAL, 895)
+    try:
+        frozen, plan = load_execution(freeze_sha)
+        RUN.mkdir(exist_ok=False)
+        created = True
+        (RUN / 'segments').mkdir()
+        write_json(ROOT / 'RANGE_RECOVERY_OWNER.json', {'pid': os.getpid(), 'run': str(RUN),
+                   'freeze_sha256': freeze_sha, 'started_at_ns': str(time.time_ns()),
+                   'idempotency_key': frozen['idempotency_key']})
+        report.update(model_id=plan['model_id'], revision=plan['revision'],
+                      expected_full_weight_sha256=plan['expected_full_weight_sha256'])
+        write_json(RUN / 'INTENT.json', {**report, 'status': 'STARTED', 'started_at_ns': str(time.time_ns()),
+                    'original_prefix': plan['preserved_prefix'], 'budget': frozen['budget']})
+        prefix = Path(plan['preserved_prefix']['path'])
+        if prefix.is_symlink() or version(prefix) != plan['preserved_prefix']['version']:
+            raise ValueError('original prefix version changed')
+        if sha_file(prefix) != plan['preserved_prefix']['sha256']:
+            raise ValueError('original prefix SHA256 changed')
+        if (ROOT / 'materials/model.safetensors').exists():
+            raise ValueError('complete weight unexpectedly already exists')
+        for support in plan['original_completed_support_files']:
+            p = Path(support['path'])
+            if p.is_symlink() or p.stat().st_size != support['bytes'] or sha_file(p) != support['sha256']:
+                raise ValueError('support material changed: ' + support['filename'])
+        disk = shutil.disk_usage(ROOT)
+        report['free_disk_bytes_before'] = disk.free
+        if disk.free < plan['expected_full_weight_bytes'] + 536870912:
+            raise ValueError('insufficient free disk')
+        if frozen['budget']['conservative_cumulative_http_body_upper_bound'] > 4 * 1024**3:
+            raise ValueError('cumulative four GiB admission failed')
+        fd = os.open(RUN / 'model.safetensors.partial', os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+        try:
+            os.ftruncate(fd, plan['expected_full_weight_bytes'])
+            offset = 0
+            with prefix.open('rb') as source:
+                for data in iter(lambda: source.read(1024 * 1024), b''):
+                    write_at(fd, data, offset)
+                    offset += len(data)
+            os.fsync(fd)
+            if offset != plan['preserved_prefix']['bytes']:
+                raise ValueError('copied prefix size changed')
+            if extent_sha(fd, 0, offset) != plan['preserved_prefix']['sha256']:
+                raise ValueError('copied prefix disk SHA mismatch')
+            if version(prefix) != plan['preserved_prefix']['version'] or sha_file(prefix) != plan['preserved_prefix']['sha256']:
+                raise ValueError('original prefix changed while copied')
+        finally:
+            os.close(fd)
+        report['prefix_copy_verified'] = True
+        for worker_id in range(4):
+            out = (RUN / f'worker-{worker_id}.stdout').open('xb')
+            err = (RUN / f'worker-{worker_id}.stderr').open('xb')
+            outputs += [out, err]
+            argv = [sys.executable, str(Path(__file__)), '--freeze-sha', freeze_sha,
+                    '--worker', str(worker_id), '--deadline', repr(deadline)]
+            process = subprocess.Popen(argv, stdout=out, stderr=err, start_new_session=True)
+            children.append(process)
+        write_json(RUN / 'WORKERS.json', {'workers': [{'worker_id': i, 'pid': p.pid,
+                   'assigned_ordinals': [s['ordinal'] for s in plan['segments'][i::4]]} for i, p in enumerate(children)]})
+        last_status = 0
+        while True:
+            states = [p.poll() for p in children]
+            if any(code not in (None, 0) for code in states):
+                raise RuntimeError('a network worker failed; no retry')
+            if all(code == 0 for code in states):
+                break
+            if time.monotonic() - last_status >= 5:
+                started_rows, completed_rows = gather_segments()
+                write_json(RUN / 'STATUS.json', {'status': 'RUNNING', 'wall_seconds': time.monotonic() - start,
+                           'worker_exit_codes': states, 'attempted_segments': len(started_rows),
+                           'complete_segments': sum(r['status'] == 'COMPLETE_EXACT_SEGMENT' for r in completed_rows),
+                           'completed_segment_bytes': sum(r['written_bytes'] for r in completed_rows)}, exclusive=False)
+                last_status = time.monotonic()
+            time.sleep(0.25)
+        started_rows, segment_rows = gather_segments()
+        if len(started_rows) != 95 or len(segment_rows) != 95:
+            raise ValueError('not every frozen segment has a terminal receipt')
+        if any(r['status'] != 'COMPLETE_EXACT_SEGMENT' for r in segment_rows):
+            raise ValueError('a segment is incomplete')
+        actual_sha = sha_file(RUN / 'model.safetensors.partial')
+        if actual_sha != plan['expected_full_weight_sha256']:
+            raise ValueError('full disk weight SHA256 does not match frozen LFS identity')
+        if version(prefix) != plan['preserved_prefix']['version'] or sha_file(prefix) != plan['preserved_prefix']['sha256']:
+            raise ValueError('original prefix changed after recovery')
+        if time.monotonic() >= deadline:
+            raise OwnerDeadline('deadline before ready publication')
+        # link+unlink provides rename-equivalent publication without overwrite.
+        final = ROOT / 'materials/model.safetensors'
+        os.link(RUN / 'model.safetensors.partial', final)
+        (RUN / 'model.safetensors.partial').unlink()
+        report.update(status='COMPLETE_FILES_VERIFIED_NO_MODEL_EXECUTION',
+                      ready_weight_path=str(final), ready_weight_bytes=final.stat().st_size,
+                      ready_weight_sha256=actual_sha, full_lfs_sha256_verified=True,
+                      original_prefix_version_unchanged=True)
+    except BaseException as exc:
+        report.update(status='FAILED_RETAIN_PARTIAL_NO_MODEL_EXECUTION',
+                      error_type=type(exc).__name__, reason=str(exc).split('?')[0][:500],
+                      full_lfs_sha256_verified=False)
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        for process in children:
+            if process.poll() is None:
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+        stop_deadline = min(start + 899, time.monotonic() + 2)
+        while any(p.poll() is None for p in children) and time.monotonic() < stop_deadline:
+            time.sleep(0.02)
+        for process in children:
+            if process.poll() is None:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+            process.wait(timeout=0.5)
+        for stream in outputs:
+            stream.close()
+        child_after = resource.getrusage(resource.RUSAGE_CHILDREN)
+        report['worker_exit_codes'] = [p.returncode for p in children]
+        report['owner_self_cpu_seconds'] = time.process_time() - cpu
+        report['child_cpu_seconds'] = (child_after.ru_utime + child_after.ru_stime) - (child_before.ru_utime + child_before.ru_stime)
+        if created:
+            starts, results = gather_segments()
+            terminals = {r['segment']['ordinal']: r for r in results}
+            missing = [r['segment']['ordinal'] for r in starts if r['segment']['ordinal'] not in terminals]
+            report['attempted_segments'] = len(starts)
+            report['complete_segments'] = sum(r['status'] == 'COMPLETE_EXACT_SEGMENT' for r in results)
+            report['unknown_terminal_segment_ordinals'] = missing
+            report['observed_http_body_bytes_from_terminal_receipts'] = sum(r['observed_http_body_bytes'] for r in results)
+            report['known_new_written_bytes'] = sum(r['written_bytes'] for r in results)
+            report['conservative_new_http_body_upper_bound'] = sum(r['reserved_bytes'] + r['eof_validation_byte_reserve'] for r in starts)
+            report['conservative_cumulative_http_body_upper_bound'] = 63447 + 259228704 + 1048576 + report['conservative_new_http_body_upper_bound']
+            report['http_body_bound_within_original_four_GiB'] = report['conservative_cumulative_http_body_upper_bound'] <= 4 * 1024**3
+            partial = RUN / 'model.safetensors.partial'
+            if partial.exists():
+                s = partial.stat()
+                report['new_sparse_partial'] = {'path': str(partial), 'logical_bytes': s.st_size,
+                       'allocated_bytes': s.st_blocks * 512, 'whole_file_is_not_a_verified_model': True}
+            report['original_prefix_version_unchanged_at_terminal'] = version(ROOT / 'materials/model.safetensors.partial') == plan['preserved_prefix']['version']
+            report['wire_TLS_header_bytes_not_measured'] = True
+            report['wall_seconds'] = time.monotonic() - start
+            report['owner_within_900_seconds'] = report['wall_seconds'] <= 900
+            if not report['owner_within_900_seconds'] or not report['http_body_bound_within_original_four_GiB']:
+                report['status'] = 'FAILED_RETAIN_PARTIAL_NO_MODEL_EXECUTION'
+            write_json(RUN / 'RESULT.json', report)
+            write_json(RUN / 'STATUS.json', report, exclusive=False)
+        print(json.dumps(report), flush=True)
+    return 0 if report.get('status') == 'COMPLETE_FILES_VERIFIED_NO_MODEL_EXECUTION' else 1
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--freeze-sha', required=True)
+    parser.add_argument('--worker', type=int)
+    parser.add_argument('--deadline', type=float)
+    args = parser.parse_args()
+    if args.worker is not None:
+        if args.deadline is None:
+            raise ValueError('worker requires owner monotonic deadline')
+        return worker(args.freeze_sha, args.worker, args.deadline)
+    return owner(args.freeze_sha)
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
