@@ -26,7 +26,15 @@ The archive also retains the earlier `715a7a370ea8a00940805be4008b6e88da0ff8c1` 
 
 ## Exact originals
 
-`original-evidence.tar.xz` contains 177 original files (42,104,141 bytes) plus its internal `MANIFEST.json` and `COHOST_ACTIVITY.json`. Every original file is listed with size and SHA-256. The archive includes the original source gates, raw native stdout/stderr and XML, parent XML and summary, unchanged protocols, runner code, tracked inventories, compiler/ELF checks, freeze receipts, prior NoUpdate7 result, and source diffs.
+The byte-identical archive is stored as three parts, each at most 480,000 bytes, to satisfy the original 512,000-byte changed-blob policy. `archive-parts.json` pins every part and the whole archive. The prior full blob remains at commit `a3dd35298672b6abf321ee26c2a7b60b2d86ef44`; the policy and allowlist are unchanged.
+
+Reassemble into a new path outside the checkout:
+
+```sh
+python3 reassemble.py /tmp/e6-original-evidence-27d90883.tar.xz
+```
+
+The reconstructed `original-evidence.tar.xz` contains 177 original files (42,104,141 bytes) plus its internal `MANIFEST.json` and `COHOST_ACTIVITY.json`. Every original file is listed with size and SHA-256. The archive includes the original source gates, raw native stdout/stderr and XML, parent XML and summary, unchanged protocols, runner code, tracked inventories, compiler/ELF checks, freeze receipts, prior NoUpdate7 result, and source diffs.
 
 The archive is **1,022,756 bytes**, SHA-256:
 
