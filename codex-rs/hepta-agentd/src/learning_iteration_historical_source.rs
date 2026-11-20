@@ -4,6 +4,8 @@
 
 use std::fs::File;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicU8;
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
@@ -312,10 +314,21 @@ impl OriginalHistoricalLearningDeliveryV1 {
         );
         // Both owned futures remain joined after an error or shutdown. An
         // original publisher or issuer already in progress is never detached.
+        let first_failure = AtomicU8::new(0);
         let (delivery, continuation) = tokio::join!(
             async {
                 let result = delivery.await;
                 if result.is_err() {
+                    let _ =
+                        first_failure.compare_exchange(0, 1, Ordering::AcqRel, Ordering::Acquire);
+                    if let Err(error) = &result {
+                        let _ = std::io::Write::write_fmt(
+                            &mut std::io::stderr(),
+                            format_args!(
+                                "daemon_stage=historical.delivery.joined_result error={error:?}\n"
+                            ),
+                        );
+                    }
                     delivery_cancelled.cancel();
                 }
                 result
@@ -323,11 +336,28 @@ impl OriginalHistoricalLearningDeliveryV1 {
             async {
                 let result = continuation.await;
                 if result.is_err() {
+                    let _ =
+                        first_failure.compare_exchange(0, 2, Ordering::AcqRel, Ordering::Acquire);
+                    if let Err(error) = &result {
+                        let _ = std::io::Write::write_fmt(
+                            &mut std::io::stderr(),
+                            format_args!(
+                                "daemon_stage=historical.continuation.original_result error={error:?}\n"
+                            ),
+                        );
+                    }
                     continuation_cancelled.cancel();
                 }
                 result
             },
         );
+        // A failed continuation cancels delivery, which must retain its Pending
+        // journal. That secondary uncertainty must not replace the actual cause.
+        // Both futures have still joined before either original error escapes.
+        if first_failure.load(Ordering::Acquire) == 2 {
+            continuation?;
+            return delivery;
+        }
         delivery?;
         continuation
     }
