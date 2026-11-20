@@ -38,7 +38,10 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
         .enable_all().build()?.block_on(async {
         let mut original_head: Option<types::CurrentHead> = None;
         let mut published_head: Option<types::CurrentHead> = None;
-        for phase in [Phase::Publish, Phase::Recover, Phase::RetiredSession, terminal, Phase::RefusedReopen] {
+        for phase in [
+            Phase::Publish, Phase::Recover, Phase::AckSourcePending, Phase::AckCurrentFirst,
+            Phase::RetiredSession, terminal, Phase::RefusedReopen,
+        ] {
             eprintln!("ROOT_PUBLICATION_CHILD phase={phase:?} step=receive-original-offers");
             let (mut sealed, root_pin) = crate::receive_root_production_handoff(socket.try_clone()?, LIFETIME)
                 .with_context(|| format!("publication {phase:?}: receive original production handoff"))?;
@@ -211,6 +214,16 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
                 assert_eq!(readback.target(), &intent.target);
                 assert_eq!(production.device.capacity()?.used_nonces, 1);
                 assert_eq!(std::fs::read(&claims)?, nonce);
+                if matches!(phase, Phase::AckSourcePending) {
+                    current.store.component_original_ack_lane_order(
+                        crate::root_generation_current_client::ack_lane_tests::AckLaneOrder::SourceFirst,
+                    )?;
+                }
+                if matches!(phase, Phase::AckCurrentFirst) {
+                    current.store.component_original_ack_lane_order(
+                        crate::root_generation_current_client::ack_lane_tests::AckLaneOrder::CurrentFirst,
+                    )?;
+                }
                 assert_eq!(socket.send(b"STABLE")?, 6);
                 control(&socket, b"CHECKED")?;
                 if matches!(phase, Phase::RetiredSession) {

@@ -221,6 +221,15 @@ impl LiveGenerationCurrent {
                 std::io::stderr(),
                 "original Initial current failure: phase={phase}; {detail}"
             );
+        } else {
+            // Keep payloads, grants and authority material out of the Update
+            // failure trace. The existing phase identifies the failed owner.
+            use std::io::Write;
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "original Update current failure: phase={phase}; pid={}",
+                std::process::id(),
+            );
         }
     }
 
