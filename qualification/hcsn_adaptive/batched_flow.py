@@ -27,6 +27,7 @@ import torch
 
 from qualification.hcsn_training.population_generator import finite_volume_generator
 from qualification.hcsn_adaptive.finite_control import continuation_value, solve_impulse_control
+from qualification.hcsn_adaptive.impulse_execution import compile_impulse_policy
 
 
 @dataclass(frozen=True)
@@ -288,6 +289,39 @@ with an existing equity operator evaluated on the returned state's nodes.
         first_hit = torch.matrix_exp(spatial*duration)[:, :c.bins, c.bins]
         return transitioned, increments, first_hit
 
+    def execute_task_policy(self, state, policy, running_reward, reset_payoff, *, drift, dt=None):
+        """Execute one frozen-task interval on complete single-sample state.
+
+        No observation write or boundary movement occurs. The explicit policy,
+        task rewards and drift must be bound separately when resuming a task;
+        an ordinary FlowState snapshot does not contain these external controls.
+        Returned events include voluntary impulses and their signed content.
+        """
+        c, work = self.config, self.edges
+        if work.dtype != torch.float64:
+            raise ValueError("task policy execution requires FP64 transport")
+        self.validate_state(state, 1, self.drive.weight.dtype, self.drive.weight.device)
+        duration = c.dt if dt is None else dt
+        if type(duration) not in (int, float) or not math.isfinite(duration) or duration <= 0:
+            raise ValueError("positive finite task duration required")
+        micros = round(duration*1_000_000)
+        if (not 1 <= micros <= 10**9 or not math.isclose(duration*1_000_000, micros, rel_tol=0, abs_tol=1e-6)
+                or state.time_micros+micros >= 2**63):
+            raise ValueError("task duration must fit the integer-microsecond clock")
+        drift = self._batch_value(drift, work, 1)
+        if bool((drift.abs() > c.drift_limit).any()):
+            raise ValueError("control exceeds the configured physical domain")
+        generator, event, _ = self._generator(drift)
+        reward = torch.as_tensor(running_reward, dtype=work.dtype, device=work.device)
+        payoff = torch.as_tensor(reset_payoff, dtype=work.dtype, device=work.device)
+        if reward.shape != event[0].shape:
+            raise ValueError("one explicit running reward per process state required")
+        kernel = compile_impulse_policy(generator[0], event[0], reward-c.spike_cost*event[0], payoff,
+                                        discount=c.discount, active_count=c.bins, reset_entry=c.bins, policy=policy)
+        receipt = kernel.advance(state.density[0], duration)
+        updated = FlowState(receipt.density[None], state.boundary, state.time_micros+micros, c)
+        self.validate_state(updated, 1, self.drive.weight.dtype, self.drive.weight.device)
+        return updated, receipt
 
     def step(self, inputs, state=None, *, dt=None, drift_override=None, boundary_override=None, feature_mask=None):
         c = self.config
