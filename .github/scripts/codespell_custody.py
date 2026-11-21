@@ -32,6 +32,24 @@ BINARY_ARCHIVE_PATHS = frozenset(
 
 # These retained qualification inputs admit only their registered original bytes.
 QUALIFICATION_SOURCE_SHA256 = {
+    # Preserve the original HCSN CI diagnosis and the three transport-v2 shards
+    # reported by Codespell 2.4.3. Only these exact bytes receive spelling custody.
+    (
+        "qualification/hcsn_adaptive/evidence/20261120-1d88/"
+        "CI_FOLLOWUP.md"
+    ): "a1fd4746646cb21d3e287efa0c01716affc61b05a430acd2dc8c7959517885a3",
+    (
+        "qualification/hcsn_adaptive/evidence/20261120-1d88/"
+        "ci-followup-v1.tar.gz.part-02"
+    ): "ef91bc155c41c5d657fa7f1d9ea112566e2cb0319613fac066b3c3fdef483a7f",
+    (
+        "qualification/hcsn_adaptive/evidence/20261120-1d88/"
+        "runtime-evidence-v1.tar.gz.part-04"
+    ): "beea6be67039d7f1c7638089a6afe19f14d3930e07909b51048e9a311aa8a9e4",
+    (
+        "qualification/hcsn_adaptive/evidence/20261120-1d88/"
+        "runtime-evidence-v1.tar.gz.part-06"
+    ): "7ce22734110efe605c385e46c41496cb02594455d2afbfe2fdde7f08703a7e74",
     (
         "qualification/hcsn_differentiable/evidence/p0p5-20261110/review/"
         "baseline36-c1-native-v1/v2/bootstrap/"
