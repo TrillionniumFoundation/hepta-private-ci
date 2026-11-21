@@ -235,3 +235,7 @@ async fn save_file(cache_path: &PathBuf, cache: &ModelsCacheEntry) -> Result<(),
 fn cache_error(error: impl fmt::Display) -> ModelsCacheError {
     ModelsCacheError::new(error.to_string())
 }
+
+#[cfg(test)]
+#[path = "cache_tests.rs"]
+mod tests;
