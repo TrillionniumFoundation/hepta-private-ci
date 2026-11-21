@@ -1,0 +1,66 @@
+{
+  "files": [
+    {
+      "bytes": 32584,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e6_lifecycle_continuation/cold_noupdate01_candidate_20261121/run_whole_cold_noupdate01.py",
+      "sha256": "1ff1c5d3676aeca6e965628eb987d41881936b4b5e3faf26f4b6e671c4493ad4"
+    },
+    {
+      "bytes": 27943,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e6_lifecycle_continuation/cold_noupdate01_candidate_20261121/native_execution_binding.py",
+      "sha256": "4a4cd15beb9707129688674c0eaafb00705c0c0ef77456ba3b1d36f61964e53f"
+    },
+    {
+      "bytes": 47720,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e6_lifecycle_continuation/cold_noupdate01_candidate_20261121/PROTOCOL.json",
+      "sha256": "d18b0df015576a46e9973bfe517e95577a915a940b5fe59f871ea73961e02d76"
+    },
+    {
+      "bytes": 10270,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e6_lifecycle_continuation/cold_noupdate01_candidate_20261121/run_whole_cold_noupdate01.py.diff",
+      "sha256": "c31537bc42695f406dcb08add79614d3b7eba06d97ce0866505388afdcf44e82"
+    },
+    {
+      "bytes": 3138,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e6_lifecycle_continuation/cold_noupdate01_candidate_20261121/native_execution_binding.py.diff",
+      "sha256": "59373bd2ce6e6a2b86900fbc4d069b67fb3c14b71baee148c99bc00e9e444b86"
+    },
+    {
+      "bytes": 17351,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e6_lifecycle_continuation/cold_noupdate01_candidate_20261121/preflight_extension.py.diff",
+      "sha256": "0477163f68cd4d14b2f696c661e9a9edf8f47f18e57de0105c321a1668714882"
+    }
+  ],
+  "findings": [
+    "The literal m.NO_UPDATE_COLD_PARENT exists in the bound original harness and equals protocol.parent and whole_cold.parent.",
+    "All17 top-level driver functions have exact source-text equality to the retained19 driver; original cleanup/command/helper bodies remain unchanged.",
+    "The only current m.test dispatch is ordinary-whole-cold-no-update with original exact cold parent filter; NAMES, cases and before_command limit1 agree. Success additionally requires binding position1.",
+    "Per-stage binding still requires2packages x2list shapes plus1 agentd case, totaling5claims; those claims are explicitly not the native success authority. Canonical original recorder/JUnit remains required.",
+    "Five runtime file bytes/fullSHA match the concrete full PROTOCOL. Both555 comparisons now use the existing retained_immediate_predecessor key and its complete19 sealed_native_binary. Actual19 and retained18 share exact observed555 pins and retained-copy receipt. No nonexistent prior18 key is used.",
+    "555 preservation stays a no-write same-FD check;700 path calls the unchanged original restoration function. Historical18 failure and skipped mode restoration remain explicitly false/skipped.",
+    "Preflight diff validates real19 H/capture/results/124log entries/4canonical cases and all146originals before current scope; this review inspected these assertions and full concrete protocol, not a new remote revalidation.",
+    "Cold protocol declares one current parent, zero repeated Root component cases and zero warm/cold Adopt attempts;480 whole/remaining120 read limit and original nextest group/zero-retry values are retained."
+  ],
+  "limitations": [
+    "Static source/data review only. No native execution, no control replay, no modified candidate bytes.",
+    "Full77/19 remote collector bytes and all nine Rust caller bodies were not independently reread in this scoped diff review; their complete original verification remains with the owning agents/root.",
+    "Original fixed caller data and analytic Q24 fixture do not establish E2 LoRA adoption, fresh task learning, settlement eligibility or full physical cost."
+  ],
+  "original_harness": {
+    "bytes": 33247,
+    "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e6_lifecycle_continuation/recovered/ORIGINAL_HARNESS.py",
+    "sha256": "ee20bff704f8495fabb6133bbb478d82dd14466303e82c4a93ff2ea276c2b3d1"
+  },
+  "performed": {
+    "candidate_modifications": 0,
+    "local_ast_source_comparison": true,
+    "local_source_reads": true,
+    "mock_controls": 0,
+    "module_imports_from_candidate": 0,
+    "native_executions": 0,
+    "remote_calls": 0
+  },
+  "reviewer": "/root/e2_runtime_continuation",
+  "schema": "hepta.e6.cold01.readonly-diff-peer-review.v1",
+  "status": "NO_NEW_DEFINITE_SOURCE_OR_PROTOCOL_BLOCKER_OBSERVED_WITHIN_SCOPED_REVIEW"
+}
