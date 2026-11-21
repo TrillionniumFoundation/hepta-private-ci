@@ -5,6 +5,7 @@ on:
     branches:
       - research/hcsn-n256-firststep-dense-oracle-ubuntu24-repair-20261120-c06d
       - research/hcsn-n256-firststep-candidate-oracle-compare-20261120-c06d
+      - research/hcsn-n256-firststep-candidate-scipy17-repair-20261120-c06d
     paths:
       - .github/workflows/hepta-contract-gate.yml
       - qualification/hcsn_currentstate_n256_firststep_dense_oracle_dispatch_bridge/**
@@ -25,7 +26,7 @@ permissions:
 
 jobs:
   contract:
-    if: ${{ github.ref_name != 'research/hcsn-n256-firststep-dense-oracle-ubuntu24-repair-20261120-c06d' && github.ref_name != 'research/hcsn-n256-firststep-candidate-oracle-compare-20261120-c06d' }}
+    if: ${{ github.ref_name != 'research/hcsn-n256-firststep-dense-oracle-ubuntu24-repair-20261120-c06d' && github.ref_name != 'research/hcsn-n256-firststep-candidate-oracle-compare-20261120-c06d' && github.ref_name != 'research/hcsn-n256-firststep-candidate-scipy17-repair-20261120-c06d' }}
     name: Validate canonical branch and contract metadata
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -118,8 +119,8 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-  hcsn-n256-candidate-compare:
-    if: ${{ github.event_name == 'push' && github.ref_name == 'research/hcsn-n256-firststep-candidate-oracle-compare-20261120-c06d' }}
+  hcsn-n256-candidate-compare-scipy17-repair:
+    if: ${{ github.event_name == 'push' && github.ref_name == 'research/hcsn-n256-firststep-candidate-scipy17-repair-20261120-c06d' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
@@ -128,7 +129,7 @@ jobs:
       OMP_NUM_THREADS: "1"
       OPENBLAS_NUM_THREADS: "1"
       PYTHONDONTWRITEBYTECODE: "1"
-      UNIQUE_EXECUTION_KEY: hcsn-n256-firststep-candidate-compare-hosted-20261120-c06d-001
+      UNIQUE_EXECUTION_KEY: hcsn-n256-firststep-candidate-scipy17-repair-hosted-20261120-c06d-001
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -153,7 +154,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hcsn-n256-firststep-candidate-oracle-compare-001
+          name: hcsn-n256-firststep-candidate-scipy17-repair-001
           path: qualification/hcsn_currentstate_n256_firststep_candidate_compare/RUN_OUTPUT
           if-no-files-found: error
           retention-days: 30

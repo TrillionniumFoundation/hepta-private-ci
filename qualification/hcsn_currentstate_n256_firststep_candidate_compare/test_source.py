@@ -39,6 +39,28 @@ class SourceTest(unittest.TestCase):
         next_one = struct.pack("<Q", struct.unpack("<Q", one)[0] + 1)
         self.assertEqual(abs(compare._ordered_int(one) - compare._ordered_int(next_one)), 1)
 
+    def test_sparse_sink_is_explicitly_two_dimensional(self):
+        source = (
+            Path(compare.__file__).parents[1]
+            / "hcsn_currentstate_n256_sparse_dynamic_v2_intent"
+            / "sparse_dynamic.py"
+        ).read_text()
+        tree = ast.parse(source)
+        constructors = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "csr_matrix"
+        ]
+        self.assertTrue(any(
+            isinstance(node.args[0], ast.Tuple)
+            and len(node.args[0].elts) == 1
+            and isinstance(node.args[0].elts[0], ast.BinOp)
+            for node in constructors
+            if node.args
+        ))
+
 
 if __name__ == "__main__":
     unittest.main()
