@@ -1,0 +1,74 @@
+{
+  "device": "cpu",
+  "dtype": "float64",
+  "seeds": [
+    11,
+    29,
+    47
+  ],
+  "flow": {
+    "bins": 6,
+    "stages": 2,
+    "content_size": 4,
+    "upper_mode": "reflecting",
+    "transport_precision": "float64",
+    "dt": 30.0,
+    "sigma": 0.035,
+    "base_drift": -0.0015,
+    "drift_scale": 0.008,
+    "refractory": 20.0,
+    "discount": 0.0025,
+    "gain": 0.005,
+    "maintenance": 0.002,
+    "spike_cost": 0.05
+  },
+  "learner": {
+    "steps": 64,
+    "batch_size": 32,
+    "evaluate_every": 8,
+    "ridge": 0.001
+  },
+  "budget": {
+    "wall_seconds": 60.0,
+    "development_queries": 10
+  },
+  "feature_budget": {
+    "wall_seconds": 600.0,
+    "encoder_events": 500000
+  },
+  "experiment_id": "HCSN-P3-UCI864-20261120-1d88-v1",
+  "data_dir": "/home/qian-qi/hcsn-adaptive-20261120-1d88/data/uci864-query-v1",
+  "stage": "P1",
+  "roadmap_stage": "P3",
+  "target_type": "one_hot_classification",
+  "reward_definition": "auxiliary reset-control utility -(normalized temperature sensor S1_Temp-0.5)^2; not occupancy task loss",
+  "variants": [
+    {
+      "id": "fixed_dynamics",
+      "boundary": "fixed",
+      "drift": "fixed",
+      "channels": "dual"
+    },
+    {
+      "id": "input_drift",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "dual"
+    },
+    {
+      "id": "task_continuation",
+      "boundary": "task_continuation",
+      "drift": "input",
+      "channels": "dual"
+    },
+    {
+      "id": "no_call",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "risk_only"
+    }
+  ],
+  "methods": [
+    "ridge"
+  ]
+}
