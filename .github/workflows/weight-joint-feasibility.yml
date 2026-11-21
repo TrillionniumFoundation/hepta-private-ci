@@ -23,8 +23,6 @@ jobs:
       MKL_NUM_THREADS: '1'
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONNOUSERSITE: '1'
-      HEPTA_WSP_INPUT_ROOT: ${{ runner.temp }}/joint-feasibility-no-private-inputs
-      HEPTA_WSP_PREVIOUS_ROOT: ${{ runner.temp }}/joint-feasibility-no-private-previous
     steps:
       - name: Check out exact source head
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -43,4 +41,7 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/joint-feasibility-venv"
           "$RUNNER_TEMP/joint-feasibility-venv/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r requirements.txt
       - name: Run 12 offline synthetic controls
+        env:
+          HEPTA_WSP_INPUT_ROOT: ${{ runner.temp }}/joint-feasibility-no-private-inputs
+          HEPTA_WSP_PREVIOUS_ROOT: ${{ runner.temp }}/joint-feasibility-no-private-previous
         run: '"$RUNNER_TEMP/joint-feasibility-venv/bin/python" -m unittest -v test_synthetic_controls.py'
