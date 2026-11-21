@@ -1,0 +1,36 @@
+name: Continuation research source qualification
+
+on:
+  pull_request:
+    paths:
+      - "qualification/weight_space_continuation_20261121/**"
+      - ".github/workflows/weight-space-continuation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "qualification/weight_space_continuation_20261121/**"
+      - ".github/workflows/weight-space-continuation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-controls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out source head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Compile research source syntax without private inputs
+        run: python3 -m compileall -q qualification/weight_space_continuation_20261121
+      - name: Check offline receipt reader controls
+        run: python3 -m unittest discover -s qualification/weight_space_continuation_20261121/finance -p 'test_financial_audit.py' -v
