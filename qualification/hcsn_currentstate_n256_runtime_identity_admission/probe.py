@@ -109,7 +109,7 @@ def main() -> int:
         "mismatch_fields": sorted(key for key, value in comparisons.items() if not value),
         "admitted": admitted,
         "candidate_execution_authorized": admitted,
-        "candidate_executed": false,
+        "candidate_executed": False,
         "numeric_modules_imported": after,
         "candidate_model_calls": 0,
         "dynamic_steps": 0,

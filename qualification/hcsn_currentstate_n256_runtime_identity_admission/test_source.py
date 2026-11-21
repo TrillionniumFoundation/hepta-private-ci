@@ -36,6 +36,12 @@ class SourceTests(unittest.TestCase):
             if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
         }
         self.assertTrue(called.isdisjoint({"expm", "expm_multiply", "solve_ivp"}))
+        forbidden_json_names = {
+            node.id
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Name) and node.id in {"false", "true", "null"}
+        }
+        self.assertEqual(forbidden_json_names, set())
 
     def test_historical_red_and_hold_are_explicit(self) -> None:
         request = json.loads((HERE / "REQUEST.json").read_text(encoding="utf-8"))
