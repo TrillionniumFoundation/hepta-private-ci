@@ -93,6 +93,9 @@ or interrupted final attempts are not silently retried under another directory.
 
 The write-ahead CostLedger charges construction, common readout fitting, all BP
 forwards/backwards, dev/final, failures and unavailable construction attempts.
+Each candidate's BP work uses one block reservation rather than per-step disk
+flushes. Actual completed optimizer steps are retained, including on failure;
+reserved work remains a conservative upper charge after an interrupted block.
 Initial ceiling: 180 wall seconds across fit/final with declared work caps.
 Operation checks are soft boundaries; root supplies hard watchdog/RSS admission.
 A companion cost JSON is written after primary receipt serialization/checkpoint;

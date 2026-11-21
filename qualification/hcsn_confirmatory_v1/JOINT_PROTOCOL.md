@@ -83,6 +83,11 @@ data/checkpoint input or automatic retry is supported.
 
 The common CostLedger records initialization, every proposed candidate, every
 optimizer step, all feature forwards, dev queries, failures and final evaluations.
+The complete BP block has one write-ahead reservation for its declared work,
+with actual completed optimizer steps retained. Per-step journal flushes do not
+artificially inflate BP cost. A failure retains the full reserved upper charge
+and any known completed count. Shared initial setup/ridge/dev time is measured
+once; every arm's standalone lower bound includes that setup as well as its edit.
 The primary receipt's cost snapshot precedes its serialization; its cost sidecar
 follows serialization/checkpoint and excludes its own write, stdout and exit,
 which require root's external process meter. CPU capabilities/affinity, Torch

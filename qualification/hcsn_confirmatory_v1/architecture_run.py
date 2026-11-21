@@ -53,7 +53,7 @@ def verify(path):
     return cfg
 
 
-def fit_case(kind, task, seed, cfg, ledger):
+def fit_case(kind, task, seed, cfg, ledger, progress):
     import torch
     with ledger.operation("construction_and_fresh_train_dev", proposals=1):
         torch.manual_seed(seed)
@@ -75,10 +75,11 @@ def fit_case(kind, task, seed, cfg, ledger):
     with ledger.operation("bp_candidate", proposals=1):
         trial = copy.deepcopy(model)
         optimizer = torch.optim.Adam(trial.parameters(), lr=cfg["learning_rate"])
-    for _ in range(cfg["steps"]):
-        with ledger.operation("full_mask_bp_step", training_examples=len(train["x"]),
-                              encoder_events=len(train["x"]) * cfg["length"],
-                              forward_examples=len(train["x"]), backward_examples=len(train["x"])):
+    count = len(train["x"]) * cfg["steps"]
+    with ledger.operation("full_mask_bp_block", training_examples=count,
+                          encoder_events=count * cfg["length"],
+                          forward_examples=count, backward_examples=count):
+        for _ in range(cfg["steps"]):
             optimizer.zero_grad(set_to_none=True)
             loss = (trial(train) - torch.from_numpy(train["y"])).square().mean()
             loss += cfg["ridge"] / len(train["x"]) * trial.readout.weight.square().sum()
@@ -87,6 +88,7 @@ def fit_case(kind, task, seed, cfg, ledger):
                 raise FloatingPointError("missing/nonfinite full-model gradient")
             torch.nn.utils.clip_grad_norm_(trial.parameters(), 1., error_if_nonfinite=True)
             optimizer.step()
+            progress["optimizer_steps_completed"] += 1
     with ledger.operation("candidate_development", development_queries=1,
                           encoder_events=len(dev["x"]) * cfg["length"], forward_examples=len(dev["x"])):
         value, _, _ = score(trial, dev)
@@ -98,7 +100,7 @@ def fit_case(kind, task, seed, cfg, ledger):
             "base_dev_mse": baseline, "candidate_dev_mse": value,
             "base_sha256": state_digest(base), "candidate_sha256": state_digest(state(trial)),
             "selected_state": chosen, "selected_sha256": state_digest(chosen),
-            "optimizer_steps": cfg["steps"], "fixed_normalization": "initial train-only features"}
+            "optimizer_steps": progress["optimizer_steps_completed"], "fixed_normalization": "initial train-only features"}
 
 
 def execute(manifest, output, phase, selection_sha):
@@ -123,10 +125,11 @@ def execute(manifest, output, phase, selection_sha):
         for seed in cfg["seeds"]:
             for kind in KINDS:
                 key = f"{task}/{seed}/{kind}"
+                progress = {"optimizer_steps_completed": 0}
                 try:
                     if phase == "fit":
                         before = time.perf_counter()
-                        record = fit_case(kind, task, seed, cfg, ledger)
+                        record = fit_case(kind, task, seed, cfg, ledger, progress)
                         record["whole_fit_case_wall_seconds"] = time.perf_counter() - before
                         save(output / f"fit-{task}-{seed}-{kind}.json", record)
                         selected[key] = record
@@ -154,7 +157,7 @@ def execute(manifest, output, phase, selection_sha):
                                                 "ids": data["ids"].tolist()})
                 except Exception as error:
                     failure = {"case": key, "status": "UNAVAILABLE" if isinstance(error, UnavailableBaseline) else "failed",
-                               "error": repr(error)}
+                               "error": repr(error), "fit_progress": progress if phase == "fit" else None}
                     if phase == "fit":
                         selected[key] = failure
                         save(output / f"fit-{task}-{seed}-{kind}.json", failure)

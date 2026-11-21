@@ -92,6 +92,7 @@ def array_digest(value):
 def fit_case(seed, cfg, ledger):
     import torch
     from qualification.hcsn_adaptive.finite_control import solve_impulse_control
+    shared_start = time.perf_counter()
     g, payoff, discount, initial = process()
     with ledger.operation("fresh_running_reward_measurements",
                           training_examples=6 * cfg["train"]):
@@ -107,6 +108,8 @@ def fit_case(seed, cfg, ledger):
               "G": g.tolist(), "reset_payoff": payoff.tolist(), "discount": discount,
               "initial_distribution": initial.tolist(), "uniformization_rate": float((-g.diagonal()).max()),
               "base_dev_return": incumbent, "methods": {}}
+    shared_seconds = time.perf_counter() - shared_start
+    record["common_setup_seconds"] = shared_seconds
     for method in METHODS:
         started = time.perf_counter()
         try:
@@ -149,6 +152,8 @@ def fit_case(seed, cfg, ledger):
                 "candidate_probability": probability.tolist(), "selected_probability": chosen.tolist(),
                 "candidate_dev_return": value, "diagnostics": diagnostics,
                 "adaptation_wall_seconds": time.perf_counter() - started}
+            arm = record["methods"][method]
+            arm["standalone_wall_lower_bound"] = shared_seconds + arm["adaptation_wall_seconds"]
         except Exception as error:
             record["methods"][method] = {"status": "failed", "error": repr(error),
                                          "completed_work": diagnostics,

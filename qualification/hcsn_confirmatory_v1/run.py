@@ -165,6 +165,7 @@ def execute(manifest, output, phase, selection_sha):
         for seed in cfg["seeds"]:
             key = f"{task}/{seed}"
             try:
+                case_started = time.perf_counter()
                 with ledger.operation("encoder_construction"):
                     model = encoder(task)
                 if phase == "fit":
@@ -185,6 +186,8 @@ def execute(manifest, output, phase, selection_sha):
                               "frozen_parameters": sum(p.numel() for p in model.parameters()),
                               "eligible_mask": ["readout.weight", "readout.bias"],
                               "eligible_parameters": tx.shape[1] + 1}
+                    common_seconds = time.perf_counter() - case_started
+                    record["common_setup_seconds"] = common_seconds
                     for method in METHODS:
                         arm_start = time.perf_counter()
                         try:
@@ -203,7 +206,7 @@ def execute(manifest, output, phase, selection_sha):
                                     "weight": fitted.weight[0].tolist() if accept else [0.] * tx.shape[1],
                                     "bias": float(fitted.bias[0]) if accept else 0.,
                                     "adaptation_wall_seconds": time.perf_counter() - arm_start,
-                                    "standalone_wall_lower_bound": feature_seconds + time.perf_counter() - arm_start}
+                                    "standalone_wall_lower_bound": common_seconds + time.perf_counter() - arm_start}
                         except Exception as error:
                             record["methods"][method] = {"status": "failed", "error": repr(error)}
                     selected[key] = record

@@ -105,6 +105,8 @@ each use one write-ahead work reservation; completed BP solves/backward passes
 are also counted explicitly. This avoids making 128 extra journal flushes the
 reason one algorithm appears slower. In an interrupted block, reservation is
 an upper work charge, and unsettled physical cost remains unknown.
+Shared process/reward/initial-dev setup is measured separately; every controller's
+standalone cost lower bound includes that setup, including never-reset.
 
 Initial fit+final ceiling is 90 wall seconds with frozen work caps. Checks are
 operation boundaries, not a hard OS deadline; root supplies process watchdog/RSS

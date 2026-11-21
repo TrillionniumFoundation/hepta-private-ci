@@ -98,6 +98,7 @@ def score(model, data):
 
 def fit_case(task, seed, cfg, ledger):
     import torch
+    shared_start = time.perf_counter()
     with ledger.operation("new_train_dev"):
         train = generate(cfg["namespace"], seed, task, "train", cfg["train"], cfg["length"])
         dev = generate(cfg["namespace"], seed, task, "dev", cfg["dev"], cfg["length"])
@@ -118,8 +119,11 @@ def fit_case(task, seed, cfg, ledger):
               "base_sha256": state_digest(initial), "base_dev_mse": base_score,
               "eligible_mask": model.mask, "eligible_parameters": sum(p.numel() for p in model.parameters() if p.requires_grad),
               "fixed_normalization": "train-only initial encoder features; unchanged after outer edits", "methods": {}}
+    shared_seconds = time.perf_counter() - shared_start
+    record["common_setup_seconds"] = shared_seconds
     for method in METHODS:
         before = time.perf_counter()
+        completed_steps = 0
         try:
             with ledger.operation("candidate_admission", proposals=1):
                 trial = copy.deepcopy(model)
@@ -130,10 +134,11 @@ def fit_case(task, seed, cfg, ledger):
             if method in ("joint_bp", "program_then_bp"):
                 parameters = [p for p in trial.parameters() if p.requires_grad]
                 optimizer = torch.optim.Adam(parameters, lr=cfg["learning_rate"])
-                for _ in range(cfg["steps"]):
-                    with ledger.operation("joint_bp_step", training_examples=len(train["x"]),
-                                          encoder_events=len(train["x"]) * cfg["length"],
-                                          forward_examples=len(train["x"]), backward_examples=len(train["x"])):
+                count = len(train["x"]) * cfg["steps"]
+                with ledger.operation("joint_bp_block", training_examples=count,
+                                      encoder_events=count * cfg["length"],
+                                      forward_examples=count, backward_examples=count):
+                    for _ in range(cfg["steps"]):
                         optimizer.zero_grad(set_to_none=True)
                         loss = (trial(train) - torch.from_numpy(train["y"])).square().mean()
                         loss += cfg["ridge"] / len(train["x"]) * trial.readout.weight.square().sum()
@@ -142,6 +147,7 @@ def fit_case(task, seed, cfg, ledger):
                             raise FloatingPointError("missing/nonfinite common-mask gradient")
                         torch.nn.utils.clip_grad_norm_(parameters, 1., error_if_nonfinite=True)
                         optimizer.step()
+                        completed_steps += 1
             changed = changes(initial, trial)
             if not all(bool(torch.isfinite(p).all()) for p in trial.parameters()):
                 raise FloatingPointError("nonfinite candidate")
@@ -158,10 +164,14 @@ def fit_case(task, seed, cfg, ledger):
                                          "candidate_dev_mse": value, "edited_names": changed,
                                          "candidate_sha256": state_digest(state(trial)),
                                          "selected_sha256": state_digest(selected), "selected_state": selected,
+                                         "optimizer_steps_completed": completed_steps,
                                          "adaptation_wall_seconds": time.perf_counter() - before,
                                          "direct_scope": "conditional readout only; no nonlinear optimum" if method == "conditional_direct" else None}
+            arm = record["methods"][method]
+            arm["standalone_wall_lower_bound"] = shared_seconds + arm["adaptation_wall_seconds"]
         except Exception as error:
             record["methods"][method] = {"status": "failed", "error": repr(error),
+                                         "optimizer_steps_completed": completed_steps,
                                          "adaptation_wall_seconds": time.perf_counter() - before}
     return record
 

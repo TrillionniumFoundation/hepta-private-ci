@@ -125,7 +125,10 @@ fn fixture(script: &str) -> anyhow::Result<Fixture> {
         authority_epoch: 1,
         grant_id: "use.1".into(),
         nonce: [12; 32],
-        binding: job.binding().map_err(anyhow::Error::msg).context("binding")?,
+        binding: job
+            .binding()
+            .map_err(anyhow::Error::msg)
+            .context("binding")?,
         not_before_unix_ms: now_ms().map_err(anyhow::Error::msg).context("clock")? - 1,
         expires_at_unix_ms: job.deadline_unix_millis,
     };
@@ -295,7 +298,8 @@ fn changed_dependency_or_payload_rejects_before_execution() -> anyhow::Result<()
 
 #[cfg(target_os = "linux")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn runtime_retirement_waits_for_the_actual_child_and_rejects_old_generation() -> anyhow::Result<()> {
+async fn runtime_retirement_waits_for_the_actual_child_and_rejects_old_generation()
+-> anyhow::Result<()> {
     use crate::AgentdError;
     use crate::RuntimeTasks;
     use codex_hepta_types::Generation;

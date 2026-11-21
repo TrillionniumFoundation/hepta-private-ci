@@ -93,6 +93,8 @@ sidecar/stdout/exit costs require root's external process meter. Sharing extract
 features saves campaign work; each independently
 deployed method must also be charged its own feature extraction. Per-arm reported
 standalone time is explicitly a lower bound, not a complete training-speed ratio.
+The shared setup timer includes model construction, new data, full features and
+normalization; each arm's standalone lower bound includes that complete setup.
 
 Primary metric: raw prediction MSE per task and clock regime. First-passage targets
 are probabilities, so this is probability-regression error, not observed-event
