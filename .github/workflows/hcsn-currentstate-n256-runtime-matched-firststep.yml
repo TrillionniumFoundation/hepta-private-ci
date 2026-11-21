@@ -2,7 +2,7 @@ name: hcsn-currentstate-n256-runtime-matched-firststep
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
     paths:
       - "qualification/hcsn_currentstate_n256_runtime_matched_execution/**"
       - ".github/workflows/hcsn-currentstate-n256-runtime-matched-firststep.yml"
