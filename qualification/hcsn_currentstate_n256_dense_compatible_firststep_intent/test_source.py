@@ -55,6 +55,19 @@ class SourceIntentTests(unittest.TestCase):
         self.assertEqual(names.count("_stream_action"), 2)
         self.assertEqual(names.count("_sha_bytes"), 2)
 
+    def test_execution_interface_publishes_rebuilt_boundary(self):
+        function = next(
+            node for node in TREE.body
+            if isinstance(node, ast.FunctionDef) and node.name == "execute"
+        )
+        arguments = [item.arg for item in function.args.args]
+        self.assertEqual(
+            arguments,
+            ["root", "boundary_zip", "oracle_zip", "rebuilt_boundary_path", "output_path"],
+        )
+        calls = [ast.unparse(node) for node in ast.walk(function) if isinstance(node, ast.Call)]
+        self.assertTrue(any(call.startswith("_publish_bytes(rebuilt_boundary_path") for call in calls))
+
 
 if __name__ == "__main__":
     unittest.main()

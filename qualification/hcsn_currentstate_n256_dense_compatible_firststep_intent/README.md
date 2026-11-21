@@ -26,6 +26,11 @@ exponentials, one canonical candidate encode, two canonical final decodes, and
 Success and RED must both publish the rebuilt boundary, candidate capsule,
 complete counters, admission/resource originals, and raw stdout/stderr.
 
+The first source-only head passed all static controls but retained the rebuilt
+boundary only in memory. `SOURCE_REVIEW_RED.json` preserves that incomplete
+interface and its zero numerical counts. The minimal source-only correction
+adds an atomic rebuilt-boundary output before either dense action.
+
 Draft #6823 remains an immutable strict sparse RED: 1,291 of 69,728 coordinates
 differed, with maximum absolute error `0x1.0600000000000p-50` and maximum ULP
 distance 335. Its sparse capsule is not an input to this intent and no result

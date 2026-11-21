@@ -3,6 +3,7 @@
 import hashlib
 import json
 import math
+import os
 import struct
 import zipfile
 from dataclasses import dataclass, replace
@@ -52,6 +53,15 @@ def _sha_bytes(raw):
 
 def _sha_file(path):
     return _sha_bytes(Path(path).read_bytes())
+
+
+def _publish_bytes(path, raw):
+    path = Path(path)
+    if path.exists():
+        raise ValueError("output already exists")
+    temporary = Path(f"{path}.tmp")
+    temporary.write_bytes(raw)
+    os.replace(temporary, path)
 
 
 def _canonical(value):
@@ -372,7 +382,7 @@ def _ordered_int(raw):
     return (0xFFFFFFFFFFFFFFFF - bits) if bits >> 63 else bits + 0x8000000000000000
 
 
-def execute(root, boundary_zip, oracle_zip, output_path):
+def execute(root, boundary_zip, oracle_zip, rebuilt_boundary_path, output_path):
     """Future admitted child entry; source freeze executes this zero times."""
 
     from qualification.hcsn_currentstate_n256_firststep_serializer_v2.serializer import (
@@ -387,6 +397,7 @@ def execute(root, boundary_zip, oracle_zip, output_path):
     np, sparse, expm = _numeric_modules()
     rebuilt, state, pending = _build_boundary_and_structure(root, np, sparse)
     require_exact_boundary(reference, rebuilt)
+    _publish_bytes(rebuilt_boundary_path, rebuilt)
     oracle_raw = _zip_member(oracle_zip, ORACLE_ZIP_SHA256, ORACLE_MEMBER, ORACLE_SHA256)
     oracle = decode(oracle_raw, MAX_CAPSULE_BYTES)
     candidate = _candidate_envelope(oracle, rebuilt, state, pending, np, expm)
