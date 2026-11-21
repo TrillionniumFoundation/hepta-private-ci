@@ -151,13 +151,16 @@ impl ModelsCache for FileModelsCache {
 
     fn refresh_ttl<'a>(
         &'a self,
-        _client_version: &'a str,
+        client_version: &'a str,
     ) -> ModelsCacheFuture<'a, Result<(), ModelsCacheError>> {
         Box::pin(async move {
             let mut entry = load_file(&self.cache_path)
                 .await
                 .map_err(cache_error)?
                 .ok_or_else(|| ModelsCacheError::new("cache not found"))?;
+            if entry.client_version.as_deref() != Some(client_version) {
+                return Err(ModelsCacheError::new("cache client version mismatch"));
+            }
             if entry.is_fresh(self.cache_ttl / 2) {
                 return Ok(());
             }
