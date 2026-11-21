@@ -26,7 +26,7 @@ jobs:
       OPENBLAS_NUM_THREADS: "1"
       PYTHONHASHSEED: "0"
       ADMITTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
-      RUN_OUTPUT: ${{ runner.temp }}/hcsn-n256-runtime-matched-firststep
+      RUN_OUTPUT: /tmp/hcsn-n256-runtime-matched-firststep
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -48,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hcsn-n256-runtime-matched-firststep-20261121-c6bc-001
-          path: ${{ runner.temp }}/hcsn-n256-runtime-matched-firststep
+          path: /tmp/hcsn-n256-runtime-matched-firststep
           if-no-files-found: error
           retention-days: 90
 
