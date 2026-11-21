@@ -1,0 +1,8 @@
+{
+  "command": "python3 '/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-readback-hepta-audit-20261121/44_format_candidate.py' '/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-readback-hepta-audit-20261121/44_waiter_fmt_payload.json'",
+  "host": "rog",
+  "idempotency_key": "hepta-e6-waiter-format-v1-84721-20261121",
+  "runner_sha256": "e46fb0bd474ef9b14dea3a8613d3d6c63ccf8086fc0113d04eeeadf637b6991f",
+  "scope": "new isolated checkout; original just fmt then one-file pinned CI-rustfmt check; zero builds/native",
+  "timeout_seconds": 600
+}

@@ -1,0 +1,67 @@
+{
+  "commands": [
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/source",
+      "elapsed_seconds": 0.013404846016783267,
+      "exit_code": 0,
+      "name": "original-status-before",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9c7e90605f546f68f68c278ce33ec0b0d57b0e41524f9d989dd022863c217ec6"
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/source",
+      "elapsed_seconds": 0.003324744990095496,
+      "exit_code": 0,
+      "name": "original-head-before",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "4de9df117c6be689d33aafb57e6394171e67ebe6e83e47401a4b00e12d516876"
+    },
+    {
+      "command": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "/home/qian-qi/work/hepta-e16-ac5459-20261121/source",
+        "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v1/source"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v1",
+      "elapsed_seconds": 2.207286628021393,
+      "exit_code": 0,
+      "name": "clone",
+      "stderr_sha256": "f5ff1f7233d8f799b4f852f1e83233c024e4a91b1c26c97b90e0d8da5b01db4f",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "84721f3da92ffaac3e7c7e2e39de2df985834370"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v1/source",
+      "elapsed_seconds": 0.006555173022206873,
+      "exit_code": 128,
+      "name": "checkout",
+      "stderr_sha256": "d1a69d44787f1b1967d8e51dd75d9ee659366c7dbba7c82af6ba9a78f1e52f8e",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "error": "checkout failed with exit 128",
+  "error_type": "RuntimeError",
+  "owner_elapsed_seconds": 2.2360126489656977,
+  "schema": "hepta-e6-waiter-format-receipt-v1",
+  "successful": false,
+  "traceback": "Traceback (most recent call last):\n  File \"/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-readback-hepta-audit-20261121/44_format_candidate.py\", line 126, in <module>\n    result = main()\n  File \"/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-readback-hepta-audit-20261121/44_format_candidate.py\", line 77, in main\n    record(\"checkout\", [\"git\", \"checkout\", \"--detach\", BASE], CHECKOUT, 300)\n    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-readback-hepta-audit-20261121/44_format_candidate.py\", line 58, in record\n    raise RuntimeError(f\"{name} failed with exit {process.returncode}\")\nRuntimeError: checkout failed with exit 128\n"
+}

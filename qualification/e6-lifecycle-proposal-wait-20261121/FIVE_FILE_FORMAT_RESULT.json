@@ -1,0 +1,324 @@
+{
+  "base_tree": "8e90cff71a6bc5ccdbe85c1d9f50c03fe546a8f0",
+  "callers_executed": 0,
+  "candidate_rust_files_checked": 3,
+  "commands": [
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.0031159339705482125,
+      "exit_code": 0,
+      "name": "old-head",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7f8b21a0c464a7256d7e8252164b94565c6e5e01fa967e851f45e98d1a43256e"
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.006533411971759051,
+      "exit_code": 0,
+      "name": "old-dirty-paths",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1ab3d3ba92d57a8b67138fc28046a18e708af340724385cf245217a5770aec36"
+    },
+    {
+      "args": [
+        "git",
+        "-c",
+        "gc.auto=0",
+        "-c",
+        "maintenance.auto=false",
+        "fetch",
+        "--depth=1",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "72fb96148a3d12db0d3482f46ab0653f7353d532"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 60.19341845600866,
+      "exit_code": 0,
+      "name": "fetch-published-base",
+      "stderr_sha256": "38b62a7cdbfeca85e41db83c450e293db74725c86b130377e171d3624b64a2a7",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--name-only",
+        "84721f3da92ffaac3e7c7e2e39de2df985834370",
+        "72fb96148a3d12db0d3482f46ab0653f7353d532"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.0045641749748028815,
+      "exit_code": 0,
+      "name": "base-diff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1dc5b7dca71927bef56be4d55b4b97e98a5c9df797fad6d1752cf015a727032b"
+    },
+    {
+      "args": [
+        "git",
+        "checkout",
+        "--detach",
+        "72fb96148a3d12db0d3482f46ab0653f7353d532"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.02344878198346123,
+      "exit_code": 0,
+      "name": "checkout-published-base",
+      "stderr_sha256": "91f6020797d067b1208c46bc973fb732a0e8df94c7e0880a56e301c04bdf7407",
+      "stdout_sha256": "c41257d7aa9030704bc9b31623346199f8ebe7aeae0940ca81556c2bf8a4fd51"
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.004046696005389094,
+      "exit_code": 0,
+      "name": "new-head",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "98f05de75fb5b5df8543ee2a5a299860e24d6eec5c7637a23e8bc7ba0234d174"
+    },
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.004665193962864578,
+      "exit_code": 0,
+      "name": "new-tree",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "aef55f1e208d9c2b2fb9e2c6b6c4fe0a1eb9711d997c36c8c53cb9eb57310a24"
+    },
+    {
+      "args": [
+        "git",
+        "show",
+        "72fb96148a3d12db0d3482f46ab0653f7353d532:codex-rs/hepta-agentd/src/ordinary_q24_post_a_progress_tests.rs"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.005108885990921408,
+      "exit_code": 0,
+      "name": "unchanged-preimage-0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3c3c91dc99b0108eb6452a43db621855e41d3919e8449c55588b401ffd6a9c8"
+    },
+    {
+      "args": [
+        "git",
+        "show",
+        "72fb96148a3d12db0d3482f46ab0653f7353d532:qa/b4-no-bypass/test_publication_frame_deadline_source_closure.py"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.00443783903028816,
+      "exit_code": 0,
+      "name": "unchanged-preimage-1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c8a58b341af49774b5514f5e40c6c4f6f8c592ecea42efb7128f91970a395348"
+    },
+    {
+      "args": [
+        "git",
+        "show",
+        "72fb96148a3d12db0d3482f46ab0653f7353d532:qa/b4-no-bypass/test_root_material_cli_source_closure.py"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.003847162995953113,
+      "exit_code": 0,
+      "name": "unchanged-preimage-2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "301043d8b3d674be1ed8a7db179b68681e24af157c564571905c9e28b92bf958"
+    },
+    {
+      "args": [
+        "python3",
+        "-c",
+        "import importlib.util,json,sys; from pathlib import Path; p=Path('../scripts/format.py'); s=importlib.util.spec_from_file_location('hepta_format',p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m); paths=m.changed_paths(); groups=m.scoped_formatter_groups(paths,check=False); print(json.dumps({'changed_paths':paths,'groups':[{'name':g.name,'commands':[{'args':list(c.args),'cwd':str(c.cwd)} for c in g.commands]} for g in groups]},sort_keys=True,indent=2))"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs",
+      "elapsed_seconds": 0.15028122795047238,
+      "exit_code": 0,
+      "name": "selected-formatters",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d9dc38e98980e097ca66ad711fbd370ffcf118c47381b9dce90cd9c62e16c318"
+    },
+    {
+      "args": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs",
+      "elapsed_seconds": 0.528321543999482,
+      "exit_code": 0,
+      "name": "original-just-fmt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "args": [
+        "rustup",
+        "run",
+        "1.96.0",
+        "rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "--check",
+        "--",
+        "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd/src/ordinary_q24_post_a_progress_tests.rs",
+        "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd/src/ordinary_q24_source_keeper_tests.rs",
+        "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd/src/production_initial_q24_writer.rs"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs",
+      "elapsed_seconds": 0.0229432659689337,
+      "exit_code": 0,
+      "name": "candidate-ci-rustfmt-check",
+      "stderr_sha256": "40fb37a0cb48659f9e05e0228f8de81e088ad05b38d0d3ef39f45fdc488dddd6",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.013411960972007364,
+      "exit_code": 0,
+      "name": "final-dirty-paths",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "fab425ef24e270aa06b9237531722ac273177df431a77a935b0a038e8d6f17d9"
+    },
+    {
+      "args": [
+        "git",
+        "diff"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.009235420962795615,
+      "exit_code": 0,
+      "name": "final-diff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2177df5b888f6aae61a39ebd4a82ed656e6ded0591b8cc01f4fbeaaec1b5897b"
+    }
+  ],
+  "files": [
+    {
+      "after_blob_sha1": "febd25f2b0921b35c683a5d8b25ee08133be0d32",
+      "after_sha256": "4b0d98a11085203161646d177d0af079254e8d4fe5e2dbcb3adae41141202462",
+      "before_blob_sha1": "1a6ae1c8f258743b144a7c8b7229adc9a74143f7",
+      "before_sha256": "e3c3c91dc99b0108eb6452a43db621855e41d3919e8449c55588b401ffd6a9c8",
+      "bytes": 8651,
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_post_a_progress_tests.rs"
+    },
+    {
+      "after_blob_sha1": "e5a29de28968d899fd3cee598107792e93a91dc8",
+      "after_sha256": "f6cea7eb0b03742eaf2ffcbfc0d2260284bc2348ad50181c5f155e17187142ce",
+      "before_blob_sha1": "539bfb0da4b074956b299b23f615da262494a6ba",
+      "before_sha256": "c8a58b341af49774b5514f5e40c6c4f6f8c592ecea42efb7128f91970a395348",
+      "bytes": 2814,
+      "path": "qa/b4-no-bypass/test_publication_frame_deadline_source_closure.py"
+    },
+    {
+      "after_blob_sha1": "f5b1d04538387846bc61498f7896974520c1a65a",
+      "after_sha256": "13ac008e29942d0b92bf0244dc45ef099050947fc9331fb502038f85f3c241e4",
+      "before_blob_sha1": "d3c885a0b0e4c29a3d80fe510146368dcc1066c3",
+      "before_sha256": "301043d8b3d674be1ed8a7db179b68681e24af157c564571905c9e28b92bf958",
+      "bytes": 9091,
+      "path": "qa/b4-no-bypass/test_root_material_cli_source_closure.py"
+    },
+    {
+      "after_blob_sha1": "93a5c8f11800e6f14b997210ab41bca1308dc703",
+      "after_sha256": "4ee08ae84edb6ab267bdf5ed7620e9f516d20024ebdad237bebefcf3f39726ee",
+      "before_blob_sha1": "e7697fe74e89a8719f2a8c65f58a10e99469dc7d",
+      "bytes": 17118,
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_source_keeper_tests.rs"
+    },
+    {
+      "after_blob_sha1": "b90ab0c9868b0a888433097ea88e1857d846bc07",
+      "after_sha256": "1f6ad530a0fa0eb9a5b1c1885fef1e40487e7e145768e6914887d87f117d6eb1",
+      "before_blob_sha1": "3a928f7a9966db0c448a1d5a2d780658853da90b",
+      "bytes": 3671,
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24_writer.rs"
+    }
+  ],
+  "native_tests_executed": 0,
+  "original_just_fmt_executed": true,
+  "owner_elapsed_seconds": 60.997341171023436,
+  "prior_format_receipts_retained": true,
+  "prior_format_source_base": "84721f3da92ffaac3e7c7e2e39de2df985834370",
+  "reviewed_bytes_unchanged_by_formatter": true,
+  "rust_builds_executed": 0,
+  "schema": "hepta-e6-five-file-format-v1",
+  "selected_formatters": {
+    "changed_paths": [
+      "codex-rs/hepta-agentd/src/ordinary_q24_post_a_progress_tests.rs",
+      "codex-rs/hepta-agentd/src/ordinary_q24_source_keeper_tests.rs",
+      "codex-rs/hepta-agentd/src/production_initial_q24_writer.rs",
+      "qa/b4-no-bypass/test_publication_frame_deadline_source_closure.py",
+      "qa/b4-no-bypass/test_root_material_cli_source_closure.py"
+    ],
+    "groups": [
+      {
+        "commands": [
+          {
+            "args": [
+              "rustfmt",
+              "--edition",
+              "2024",
+              "--config",
+              "imports_granularity=Item,skip_children=true",
+              "--",
+              "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd/src/ordinary_q24_post_a_progress_tests.rs"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd"
+          },
+          {
+            "args": [
+              "rustfmt",
+              "--edition",
+              "2024",
+              "--config",
+              "imports_granularity=Item,skip_children=true",
+              "--",
+              "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd/src/ordinary_q24_source_keeper_tests.rs"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd"
+          },
+          {
+            "args": [
+              "rustfmt",
+              "--edition",
+              "2024",
+              "--config",
+              "imports_granularity=Item,skip_children=true",
+              "--",
+              "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd/src/production_initial_q24_writer.rs"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd"
+          }
+        ],
+        "name": "Rust"
+      }
+    ]
+  },
+  "source_base": "72fb96148a3d12db0d3482f46ab0653f7353d532",
+  "source_qa_tests_executed": 0,
+  "successful": true,
+  "whole_repository_format_qualified": false
+}
