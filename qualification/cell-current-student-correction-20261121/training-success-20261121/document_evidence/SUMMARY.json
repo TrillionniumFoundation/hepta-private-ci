@@ -1,0 +1,73 @@
+{
+  "actual_compute": {
+    "outer_model_backwards": 16,
+    "outer_model_forwards": 16,
+    "padded_positions": 57344,
+    "supervised_target_positions": 3516,
+    "unpadded_positions": 37180
+  },
+  "actual_cpu_encoding_evidence_commit": "9ac43214d5c5d27c33021dfa44d1920e54e22902",
+  "actual_envelope_evidence_commit": "4778bbecc11f5f06dd62d84c078b240f2f48ca24",
+  "actual_job": "1a1fd898e0f-ffbe-1f80",
+  "actual_scope_launches_by_packaging_agent": 0,
+  "actual_training_result_status": "COMPLETE",
+  "adapter_model": {
+    "bytes": 2193720,
+    "sha256": "8d5bd43cdfe6ad07652b58c42ccf0d6fa45e71ff11c73fb14d967c3d1885006a"
+  },
+  "all_eleven_original_artifacts_read_back": true,
+  "automatic_retry": false,
+  "cost_scopes_are_nested_not_additive": true,
+  "cuda_peak_allocated_bytes": 4805570048,
+  "cuda_peak_reserved_bytes": 5135925248,
+  "document_cap": 8,
+  "energy_joules": null,
+  "engineering_limits": {
+    "outer_H_timeout_seconds": 1020,
+    "python_absolute_deadline_seconds": 960,
+    "python_alarm_is_not_native_OS_preemption": true,
+    "work_seconds": 900
+  },
+  "execution_sources_unchanged": true,
+  "fresh_content_reads": 0,
+  "full_physical_cost_unknown": true,
+  "global_cap": 16,
+  "installed_metadata_unchanged": 45,
+  "mode": "document_evidence",
+  "model_digest": "c9769528de0d58979687ca83afa8dfb96846755a5965ce73cb7f068a3bd12d13",
+  "native_adoption": false,
+  "native_child_success_not_asserted_by_this_package": true,
+  "new_generation_calls": 0,
+  "new_native_task_executions": 0,
+  "original_artifact_bytes": 2299773,
+  "original_artifact_files": 11,
+  "original_learner_modified": false,
+  "outer_ended_unix_ms": 1795255187485,
+  "outer_exit_code": 0,
+  "outer_terminal": "succeeded",
+  "python_guard_is_not_OS_network_isolation": true,
+  "readback_transport_failures_retained": true,
+  "refused_python_events": {
+    "socket.bind": 1
+  },
+  "root_terminal_review_pending_readback_flag_is_historical": true,
+  "runtime_inputs_unchanged": 172,
+  "runtime_stderr_warning_bytes": 201,
+  "schema": "hepta.e2.document-success-evidence-summary.v1",
+  "scientific_candidate": "dc96ad0c29223dc0fbf0e6165854d8e7cf25331c3f77d57ad30c4f30fc6cf678",
+  "scientific_confirmation_qualified": false,
+  "scientific_source_commit": "dc3397c9e09e29861a0a4fe2267e8ef19e55db01",
+  "selection_publication_not_created": true,
+  "status": "DOCUMENT_COMPLETE_READY_FOR_ROOT_EVIDENCE_COMMIT",
+  "training_self_cpu_seconds": 148.042883041,
+  "training_wall_seconds": 145.95020417496562,
+  "update_bounds": {
+    "durably_completed_updates": 8,
+    "journal_complete": true,
+    "possible_actual_update_upper_bound": 8,
+    "update_completion_uncertain": false
+  },
+  "wrapper_result_status_preserved": "TRAINED_PENDING_OUTER_TERMINAL",
+  "wrapper_self_cpu_seconds": 179.179509092,
+  "wrapper_wall_seconds": 172.12517836899497
+}
