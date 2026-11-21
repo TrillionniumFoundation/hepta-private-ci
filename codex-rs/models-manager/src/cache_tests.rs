@@ -109,3 +109,72 @@ async fn file_cache_ttl_refresh_rejects_missing_or_mismatched_client_version_wit
         assert_eq!(after, before);
     }
 }
+#[tokio::test]
+async fn file_cache_ttl_refresh_keeps_half_ttl_hit_and_preserves_catalog_on_renewal() {
+    let temp = tempfile::tempdir().expect("temporary model cache directory");
+    let path = temp.path().join("models.json");
+    let cache = FileModelsCache::new(path.clone(), Duration::from_secs(3600));
+    let mut entry = ModelsCacheEntry {
+        fetched_at: Utc::now(),
+        etag: Some("unchanged-etag".to_owned()),
+        client_version: Some("current-client".to_owned()),
+        models: Vec::new(),
+    };
+    super::save_file(&path, &entry)
+        .await
+        .expect("store fresh cache");
+    let before = tokio::fs::read(&path).await.expect("read fresh bytes");
+    cache
+        .refresh_ttl("current-client")
+        .await
+        .expect("fresh half-TTL hit");
+    assert_eq!(
+        tokio::fs::read(&path).await.expect("read unchanged bytes"),
+        before
+    );
+
+    entry.fetched_at = Utc::now() - ChronoDuration::hours(2);
+    super::save_file(&path, &entry)
+        .await
+        .expect("store expired cache");
+    let earliest_renewal = Utc::now();
+    cache
+        .refresh_ttl("current-client")
+        .await
+        .expect("revalidate expired cache");
+    let latest_renewal = Utc::now();
+    let renewed = super::load_file(&path)
+        .await
+        .expect("read renewed cache")
+        .expect("renewed cache exists");
+    assert!(renewed.fetched_at >= earliest_renewal);
+    assert!(renewed.fetched_at <= latest_renewal);
+    entry.fetched_at = renewed.fetched_at;
+    assert_eq!(renewed, entry);
+}
+
+#[tokio::test]
+async fn file_cache_corrupt_json_fails_closed_without_replacing_disk_bytes() {
+    let temp = tempfile::tempdir().expect("temporary model cache directory");
+    let path = temp.path().join("models.json");
+    let cache = FileModelsCache::new(path.clone(), Duration::from_secs(3600));
+    let corrupted = b"{not valid json";
+    tokio::fs::write(&path, corrupted)
+        .await
+        .expect("write corrupt cache fixture");
+
+    cache
+        .load("current-client")
+        .await
+        .expect_err("corrupted cache must not be a normal miss");
+    cache
+        .refresh_ttl("current-client")
+        .await
+        .expect_err("corrupted cache must not be renewed");
+    assert_eq!(
+        tokio::fs::read(&path)
+            .await
+            .expect("read preserved corrupt bytes"),
+        corrupted.to_vec()
+    );
+}
