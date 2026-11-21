@@ -17,6 +17,17 @@ use super::OwnedTransportTasks;
 
 const DEADLINE: Duration = Duration::from_secs(/*secs*/ 5);
 
+#[test]
+fn cloned_drain_handle_shares_counters_but_independent_owner_does_not() {
+    let original = AppServerDrainHandle::new();
+    let cloned = original.clone();
+    let independent = AppServerDrainHandle::new();
+    assert!(original.shares_counters_with(&cloned));
+    assert!(cloned.shares_counters_with(&original));
+    assert!(!original.shares_counters_with(&independent));
+    assert!(!independent.shares_counters_with(&original));
+}
+
 struct HeldLock {
     file: Option<File>,
     released: Option<oneshot::Sender<()>>,

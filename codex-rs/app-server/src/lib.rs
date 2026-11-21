@@ -573,10 +573,7 @@ impl PartialEq for AppServerRuntimeOptions {
             && self.remote_control_startup_mode == other.remote_control_startup_mode
             && self.install_shutdown_signal_handler == other.install_shutdown_signal_handler
             && match (&self.graceful_drain, &other.graceful_drain) {
-                (Some(left), Some(right)) => {
-                    Arc::ptr_eq(&left.running_turns, &right.running_turns)
-                        && Arc::ptr_eq(&left.drained, &right.drained)
-                }
+                (Some(left), Some(right)) => left.shares_counters_with(right),
                 (None, None) => true,
                 _ => false,
             }
