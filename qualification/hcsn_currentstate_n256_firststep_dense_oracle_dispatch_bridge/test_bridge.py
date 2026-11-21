@@ -15,14 +15,14 @@ class BridgeTest(unittest.TestCase):
         request = json.loads((HERE / "REQUEST.json").read_text())
         self.assertEqual(request["unique_execution_key"], "hcsn-n256-firststep-dense-oracle-hosted-20261118-c06d-001")
         self.assertEqual((request["prior_numerical_attempt_count"], request["maximum_numerical_attempts"]), (0, 1))
-        self.assertEqual(request["manual_dispatch_limit"], 1)
-        self.assertTrue(request["manual_dispatch_transport_key"].endswith("transport003-after-two-http422-zero-runs"))
+        self.assertEqual(request["manual_dispatch_limit"], 0)
+        self.assertEqual(request["trigger_event"], "push")
 
     def test_registered_workflow_has_exact_branch_dispatch(self):
         workflow = WORKFLOW.read_text()
         self.assertNotIn("hcsn_n256_one_shot", workflow)
         self.assertIn("workflow_dispatch:", workflow)
-        self.assertIn("github.event_name == 'workflow_dispatch'", workflow)
+        self.assertIn("github.event_name == 'push'", workflow)
         self.assertIn("github.ref_name == 'research/hcsn-n256-firststep-dense-oracle-dispatch-bridge-20261120-c06d'", workflow)
         self.assertEqual(workflow.count("dense_oracle_hosted.launcher"), 1)
 
@@ -50,6 +50,12 @@ class BridgeTest(unittest.TestCase):
 
     def test_second_dispatch_rejection_is_zero_run(self):
         rejected = json.loads((HERE / "DISPATCH_002_REJECTION.json").read_text())
+        self.assertEqual((rejected["github_http_status"], rejected["h_exit_code"]), (422, 1))
+        self.assertIsNone(rejected["actions_run_id"])
+        self.assertEqual((rejected["dynamic_steps"], rejected["dense_expm_actions"]), (0, 0))
+
+    def test_third_dispatch_rejection_is_zero_run(self):
+        rejected = json.loads((HERE / "DISPATCH_003_REJECTION.json").read_text())
         self.assertEqual((rejected["github_http_status"], rejected["h_exit_code"]), (422, 1))
         self.assertIsNone(rejected["actions_run_id"])
         self.assertEqual((rejected["dynamic_steps"], rejected["dense_expm_actions"]), (0, 0))

@@ -1,6 +1,12 @@
 name: Hepta contract gate
 
 on:
+  push:
+    branches:
+      - research/hcsn-n256-firststep-dense-oracle-dispatch-bridge-20261120-c06d
+    paths:
+      - .github/workflows/hepta-contract-gate.yml
+      - qualification/hcsn_currentstate_n256_firststep_dense_oracle_dispatch_bridge/**
   workflow_call:
     inputs:
       profile:
@@ -72,7 +78,7 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=no)"
 
   hcsn-n256-one-shot:
-    if: ${{ github.event_name == 'workflow_dispatch' && github.ref_name == 'research/hcsn-n256-firststep-dense-oracle-dispatch-bridge-20261120-c06d' }}
+    if: ${{ github.event_name == 'push' && github.ref_name == 'research/hcsn-n256-firststep-dense-oracle-dispatch-bridge-20261120-c06d' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
