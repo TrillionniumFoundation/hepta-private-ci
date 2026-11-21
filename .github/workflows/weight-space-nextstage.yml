@@ -1,0 +1,44 @@
+name: Weight-space next-stage source qualification
+
+on:
+  pull_request:
+    paths:
+      - "qualification/weight_space_nextstage_20261120/**"
+      - ".github/workflows/weight-space-nextstage.yml"
+  push:
+    branches: [main]
+    paths:
+      - "qualification/weight_space_nextstage_20261120/**"
+      - ".github/workflows/weight-space-nextstage.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  finite-evaluation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        shell: bash
+        working-directory: qualification/weight_space_nextstage_20261120/evaluation
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Show interpreter identity
+        run: python3 --version
+      - name: Verify synthetic evaluator branches
+        run: python3 -m unittest test_evaluation test_specialization -v
+      - name: Exercise explicit synthetic examples
+        run: |
+          python3 demo.py
+          python3 demo_specialization.py
