@@ -18,6 +18,7 @@ ALLOWED_IMPORTS = {
     "json",
     "math",
     "pathlib",
+    "qualification",
     "struct",
     "unittest",
     "zipfile",
@@ -46,6 +47,7 @@ def main():
         or request["dynamic_steps"] != 0
         or request["exponential_actions"] != 0
         or request["provider_calls"] != 0
+        or request["historical_parent_status"] != "RED_NONCANONICAL_INPUT"
         or request["torch_calls"] != 0
         or request["optimizer_steps"] != 0
     ):

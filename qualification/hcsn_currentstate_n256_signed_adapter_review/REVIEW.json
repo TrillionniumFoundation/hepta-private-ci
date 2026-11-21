@@ -4,12 +4,19 @@
     "five_seed_channels_complete": true,
     "matrix_and_seed_round_trip_byte_exact": true,
     "signed_interval_provider_directly_called": false,
-    "sparse_rows_strictly_ordered": true
+    "sparse_rows_strictly_ordered": true,
+    "target_fp64_parser_compatible": true
+  },
+  "historical_parent_adapter": {
+    "encoding": "python_float_hex",
+    "status": "RED_NONCANONICAL_INPUT",
+    "target_fp64_parser_compatible": false
   },
   "lanes": {
     "discounted": {
-      "canonical_adapter_bytes": 62284,
-      "canonical_adapter_sha256": "a11b1c0e1ec4699ae7fc53b47df4d254172a6390c63f5fe4079661dfbf4e7e58",
+      "canonical_adapter_bytes": 50466,
+      "canonical_adapter_sha256": "bf4ca7b25091a0fd2ed2f868a3a2ab40141294fde5ca97470428392899007a38",
+      "canonical_bit_hex_coordinates": 2320,
       "diagonal_positive_coordinates": 0,
       "dimension": 259,
       "matrix_coordinates": 67081,
@@ -19,11 +26,13 @@
       "seed_channels": 5,
       "seed_coordinates": 1295,
       "seed_round_trip_byte_equal": true,
-      "signed_provider_input_coordinates": 2320
+      "signed_provider_input_coordinates": 2320,
+      "target_fp64_parser_compatible": true
     },
     "undiscounted": {
-      "canonical_adapter_bytes": 54745,
-      "canonical_adapter_sha256": "0c0c2cca53f9078703686829b97f51e2923b4eb39916ee5bf8cce90644921515",
+      "canonical_adapter_bytes": 43921,
+      "canonical_adapter_sha256": "8d1cec28ffdd825f3739b516d747b26bd7a85e4d7fabb98b09a2c4957cc5cdab",
+      "canonical_bit_hex_coordinates": 2057,
       "diagonal_positive_coordinates": 0,
       "dimension": 258,
       "matrix_coordinates": 66564,
@@ -33,12 +42,13 @@
       "seed_channels": 5,
       "seed_coordinates": 1290,
       "seed_round_trip_byte_equal": true,
-      "signed_provider_input_coordinates": 2057
+      "signed_provider_input_coordinates": 2057,
+      "target_fp64_parser_compatible": true
     }
   },
-  "parent_head": "da5b77d9d35ee4e595faf0d5f28fd11256fa3135",
+  "parent_head": "1f4143719aca1d7aeec99bda863301dfdd7dd2f3",
   "parent_status": "RED_DUPLICATE_KEY",
-  "schema": "hcsn-n256-authentic-signed-adapter-review-v1",
+  "schema": "hcsn-n256-authentic-signed-adapter-review-v2",
   "scope": {
     "adapter_admitted": false,
     "all_closed": false,
@@ -61,6 +71,7 @@
     "optimizer_steps": 0,
     "provider_calls": 0,
     "seed_coordinate_reads": 2585,
+    "target_parser_input_checks": 4377,
     "torch_calls": 0
   }
 }

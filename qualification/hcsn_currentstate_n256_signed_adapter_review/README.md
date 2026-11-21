@@ -1,11 +1,18 @@
-# Authentic N256 signed-provider adapter review
+# Authentic N256 signed-provider canonical adapter correction
 
-Status: **BYTE-EXACT ADAPTER CLOSED / PROPAGATION HOLD / all_closed=false**.
+Status: **CANONICAL INPUT FIXED / PROPAGATION HOLD / all_closed=false**.
+
+The immutable #6913 parent emitted Python `float.hex()` text.  The target
+signed provider accepts only canonical 16-digit lowercase IEEE-754 binary64
+bit strings, so that historical adapter is `RED_NONCANONICAL_INPUT` even
+though its private encode/decode loop was byte exact.  This follow-up retains
+that failure and changes only the adapter encoding to canonical bit strings.
 
 This stage consumes the two immutable duplicate-run artifacts preserved by
 #6908 and the structural routing result in #6910.  It converts both authentic
-dense augmented matrices into strictly ordered sparse hexadecimal rows and all
-five authentic seed channels into hexadecimal vectors.  It then reconstructs
+dense augmented matrices into strictly ordered sparse canonical-bit rows and
+all five authentic seed channels into canonical-bit vectors.  Every emitted
+coordinate is accepted by the target exact input parser.  It then reconstructs
 the original binary64 arrays and requires byte-for-byte equality, including
 signed zero in the seed arrays.
 
@@ -13,7 +20,7 @@ The adapter performs no propagation, uniformization series, matrix
 exponential, signed interval provider, model, Torch, optimizer, or training
 call.  Its output establishes only that the published authentic bytes can be
 represented without loss by the existing signed/non-substochastic provider
-input schema.
+input schema.  No claim from the incompatible #6913 adapter is transferred.
 
 Provider admission remains blocked on a separately frozen full-N256 execution
 contract, growing-tail resource bound, unique-rounding result, independent raw
