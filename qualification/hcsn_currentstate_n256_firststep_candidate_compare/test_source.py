@@ -54,7 +54,7 @@ class SourceTest(unittest.TestCase):
             and node.func.attr == "csr_matrix"
         ]
         self.assertTrue(any(
-            isinstance(node.args[0], ast.Tuple)
+            isinstance(node.args[0], ast.List)
             and len(node.args[0].elts) == 1
             and isinstance(node.args[0].elts[0], ast.BinOp)
             for node in constructors

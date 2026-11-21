@@ -13,6 +13,7 @@ EXPECTED_PATHS = {
     "qualification/hcsn_currentstate_n256_firststep_candidate_compare/REQUEST.json",
     "qualification/hcsn_currentstate_n256_firststep_candidate_compare/__init__.py",
     "qualification/hcsn_currentstate_n256_firststep_candidate_compare/compare.py",
+    "qualification/hcsn_currentstate_n256_firststep_candidate_compare/compatibility_probe.py",
     "qualification/hcsn_currentstate_n256_firststep_candidate_compare/run.py",
     "qualification/hcsn_currentstate_n256_firststep_candidate_compare/test_source.py",
     "qualification/hcsn_currentstate_n256_firststep_candidate_compare/verify_source.py",
@@ -31,7 +32,7 @@ def _sha(path):
 def main():
     freeze = json.loads((HERE / "SOURCE_FREEZE.json").read_text())
     request = json.loads((HERE / "REQUEST.json").read_text())
-    if freeze.get("schema") != "hcsn-n256-warm1-candidate-oracle-compare-scipy17-repair-freeze-v1":
+    if freeze.get("schema") != "hcsn-n256-warm1-candidate-oracle-compare-listrow-repair-freeze-v1":
         raise ValueError("source freeze schema")
     if freeze.get("parent_commit") != "42aa0ba6153b46c197775634a18db15589ddb199":
         raise ValueError("evidence parent identity")
@@ -42,12 +43,12 @@ def main():
     if observed != files:
         raise ValueError("source freeze byte mismatch")
     exact = {
-        "schema": "hcsn-n256-warm1-candidate-oracle-compare-scipy17-repair-request-v1",
-        "identity": "hcsn-n256-warm1-candidate-oracle-compare-scipy17-repair-20261120-c06d-001",
-        "unique_execution_key": "hcsn-n256-firststep-candidate-scipy17-repair-hosted-20261120-c06d-001",
-        "exact_head_branch": "research/hcsn-n256-firststep-candidate-scipy17-repair-20261120-c06d",
+        "schema": "hcsn-n256-warm1-candidate-oracle-compare-listrow-repair-request-v1",
+        "identity": "hcsn-n256-warm1-candidate-oracle-compare-listrow-repair-20261120-c06d-001",
+        "unique_execution_key": "hcsn-n256-firststep-candidate-listrow-repair-hosted-20261120-c06d-001",
+        "exact_head_branch": "research/hcsn-n256-firststep-candidate-listrow-repair-20261120-c06d",
         "maximum_attempts": 1,
-        "prior_numerical_attempts": 1,
+        "prior_numerical_attempts": 2,
         "oracle_artifact_zip_sha256": "3ba4ef88608cbfc04d83fd82c1f05d7b439edf4f9338365625e79b0d52f02400",
         "oracle_capsule_sha256": "b2a6e204e613fead7c0735b12a335a88d2394c8f4da99cab798133443c55dc18",
         "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
@@ -56,16 +57,26 @@ def main():
         if request.get(name) != value:
             raise ValueError(f"request mismatch: {name}")
     prior = request.get("prior_red")
-    if prior != {
-        "source_commit": "a3373921a0193336837d217c24d0d35dccd9a5ad",
-        "run_id": 44849987440,
-        "job_id": 136678793301,
-        "artifact_id": 14684118589,
-        "artifact_zip_sha256": "a922989c369eddf6685f273334fcad5d02b464a1cec21607f98d9f1f400ccf0a",
-        "evidence_commit": "e081b8bc9faf64b3ee22a292cd1787f3a48345dc",
-        "executed_dynamic_steps": None,
-        "executed_sparse_exponential_actions": None,
-    }:
+    if prior != [
+        {
+            "source_commit": "a3373921a0193336837d217c24d0d35dccd9a5ad",
+            "run_id": 44849987440, "job_id": 136678793301,
+            "artifact_id": 14684118589,
+            "artifact_zip_sha256": "a922989c369eddf6685f273334fcad5d02b464a1cec21607f98d9f1f400ccf0a",
+            "evidence_commit": "e081b8bc9faf64b3ee22a292cd1787f3a48345dc",
+            "executed_dynamic_steps": None,
+            "executed_sparse_exponential_actions": None,
+        },
+        {
+            "source_commit": "8bf624203ad1266082ae52a2ae2ebdc96dc90036",
+            "run_id": 44851090269, "job_id": 136682353885,
+            "artifact_id": 14685257001,
+            "artifact_zip_sha256": "6866e32f050cdd5e1b7cef7e4b60d771d325de48bd21582d3e61f20ed9209eb1",
+            "evidence_commit": "69f642c5d9b41c0a1bc0214aea965af8ea988ff0",
+            "executed_dynamic_steps": None,
+            "executed_sparse_exponential_actions": None,
+        },
+    ]:
         raise ValueError("prior RED or UNKNOWN counters changed")
     if request.get("gate") != {
         "coordinate_identity_equal": True,
@@ -76,6 +87,17 @@ def main():
         raise ValueError("exact comparison gate")
     if freeze.get("prior_red") != request.get("prior_red"):
         raise ValueError("prior RED binding")
+    if request.get("post_failure_development_probe") != {
+        "runtime": "Python 3.12.14 / NumPy 2.3.5 / SciPy 1.17.0",
+        "sparse_constructor_calls": 5, "passes": 3, "reds": 2,
+        "model_calls": 0, "expm_actions": 0, "optimizer_steps": 0,
+    }:
+        raise ValueError("development probe cost")
+    if request.get("hosted_compatibility_probe") != {
+        "sparse_constructor_calls": 1, "model_calls": 0,
+        "expm_actions": 0, "optimizer_steps": 0,
+    }:
+        raise ValueError("hosted compatibility probe cost")
     if any(request["precommit_counts"].values()):
         raise ValueError("precommit numerical work claimed")
     if request.get("historical_negative_and_unknown_preserved") is not True:
