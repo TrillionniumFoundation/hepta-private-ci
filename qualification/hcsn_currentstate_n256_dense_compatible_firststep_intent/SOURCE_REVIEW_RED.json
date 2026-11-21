@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-n256-dense-compatible-firststep-source-review-red-v1",
+  "source_commit": "6cb4e1e38dd5c16f90cfcb55375c4d050dc172b2",
+  "source_tree": "3bb93e61f7af71803afc5f636694e82fa6c7b264",
+  "source_only_run": 44897764927,
+  "source_only_job": 136826978539,
+  "source_only_conclusion": "success",
+  "review_status": "INCOMPLETE_EXECUTION_INTERFACE",
+  "gap": "future execute retained the rebuilt same-run boundary only in memory although the frozen contract requires PASS and RED publication",
+  "numerical_execution": 0,
+  "dynamic_steps": 0,
+  "dense_expm_actions": 0,
+  "sparse_expm_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "minimal_correction": "add an explicit atomic rebuilt-boundary output before either dense action",
+  "historical_record_preserved": true
+}
