@@ -1,6 +1,6 @@
-# N256 warm-1 push YAML repair
+# N256 warm-1 Python 3.12.3 runner repair
 
-Status: **SOURCE RE-FROZEN AFTER THREE ZERO-JOB ADMISSION REDS / ONE SAME-KEY PATH / HOLD / all_closed=false**.
+Status: **SOURCE RE-FROZEN AFTER THREE ZERO-JOB YAML REDS AND ONE ZERO-NUMERICAL RUNTIME RED / ONE SAME-KEY PATH / HOLD / all_closed=false**.
 
 Draft #6637 introduced a new pull-request workflow, and Draft #6813 tried to
 attach the one-shot to another workflow that was present only in its source
@@ -36,6 +36,28 @@ with the unchanged unique execution key.  No later source/evidence commit is
 permitted on this branch.  OpenBao remains byte-for-byte restored.  No
 threshold, runtime, input, resource gate, timeout, or artifact-retention rule
 is changed.
+
+That repair's exact push at source
+`57cce86bc0f31c5fdf0549a76db9a65f1c97c0ef` created contract run
+`44847784583` and job `136671635724`.  Checkout completed, but
+`actions/setup-python` rejected exact Python `3.12.3` because `ubuntu-latest`
+resolved to runner image Ubuntu 26.04, for which the official
+`actions/python-versions` 3.12.3 manifest has no x64 archive.  Install,
+verification, tests, launcher, authentic-input reads, dynamic steps, dense
+exponentials, Torch calls, optimizer steps, and artifact publication all
+remain zero.  The terminal RED remains immutable and does not consume the
+numerical-attempt budget.
+
+This new independently frozen candidate changes only the N256 one-shot runner
+label from `ubuntu-latest` to explicit `ubuntu-24.04` and retargets the exact
+push/guards to a fresh isolated branch.  The requested Python remains exactly
+3.12.3.  The official manifest at Git blob
+`8468b3406cb309a299b2ead4109d0a2b2467153b` lists
+`python-3.12.3-linux-24.04-x64.tar.gz`; it lists no matching Ubuntu 26.04
+archive.  Numerical source, unique key, input, timeout, attempt budget,
+thresholds, and retention remain unchanged.  Publishing the final frozen
+commit is again the only trigger, and no later source/evidence commit is
+permitted on this branch.
 
 A successful run would close only the authentic N256 warm 0→0.001 dense-oracle
 capsule and its bounded cost.  It is not candidate equality, N512, later cycles,
