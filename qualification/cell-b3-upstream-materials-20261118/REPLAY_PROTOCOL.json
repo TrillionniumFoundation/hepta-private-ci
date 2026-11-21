@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.b3.original_replay_protocol.v1",
+  "acquisition_source": "3b5aac3996e3773ebf057e5567a3cae5f4558600",
+  "acquisition_result_sha256": "a1e661c0c9d017f6912279ff251cd740e734fd7863a4dfbabf47df17e90583ee",
+  "sources_sha256": "38575e04211a2e4fc888456f4501de780e9acdb5f92f2f41fca42f66c6af219a",
+  "selection_sha256": "8bb2d80098639a649a1498d8190c800947f2ed287caf4ec44964c5b2ab03fb10",
+  "runner_sha256": "3713cd32ff33dbebd2805377cdc89363380afa880c4df4db6f8a8e54faf2dafd",
+  "environment_freeze_sha256": "82d9d0f044e6b823a40892eea500dd45f819258e289f6c5a5198df0b990e858e",
+  "planned_original_children": 8,
+  "projects": [
+    {
+      "project": "pypa/packaging",
+      "variants": [
+        "before",
+        "after"
+      ],
+      "test_path": "tests/test_requirements.py",
+      "test_nodeids": [
+        "TestRequirementParsing::test_nonempty_arbitrary_version"
+      ]
+    },
+    {
+      "project": "python-semver/python-semver",
+      "variants": [
+        "before",
+        "after"
+      ],
+      "test_path": "tests/test_bump.py",
+      "test_nodeids": [
+        "test_next_version_matches_literal_prerelease_token_family",
+        "test_next_version_rejects_invalid_prerelease_token",
+        "test_next_version_preserves_empty_token_semantics",
+        "test_next_version_ignores_token_for_main_parts"
+      ]
+    },
+    {
+      "project": "mahmoud/boltons",
+      "variants": [
+        "before",
+        "after"
+      ],
+      "test_path": "tests/test_strutils.py",
+      "test_nodeids": [
+        "test_iter_splitlines_unicode_line_endings",
+        "test_iter_splitlines_preserves_numbers_after_spaces",
+        "test_indent_unicode_line_endings"
+      ]
+    },
+    {
+      "project": "python-hyper/h11",
+      "variants": [
+        "before",
+        "after"
+      ],
+      "test_path": "h11/tests/test_headers.py",
+      "test_nodeids": [
+        "test_normalize_and_validate"
+      ]
+    }
+  ],
+  "case_composition": "Each variant copies its exact original selected source files; only selected test file uses the unchanged after-fix bytes in both variants. Original regular docs helpers are added to declared import roots; Git symlink stubs are not materialized.",
+  "acceptance": "At least one real assertion failure and no errors/skips on before; all selected original cases pass without errors/skips on after; equal case sets/counts, unchanged case and original material, no outer timeout.",
+  "per_case_timeout_seconds": 3,
+  "outer_child_timeout_seconds": 120,
+  "retry": false,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "full_upstream_environment_reproduced": false,
+  "full_repository_suite": false,
+  "independent_controller_authenticated": false
+}

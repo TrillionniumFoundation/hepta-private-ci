@@ -1,0 +1,9 @@
+# B3 preparation commitment
+
+The separately frozen preparation source `1a6e6a7ab0bdb71751ac242c8f6f81dcbd09ab84` completed under original owner job `1a1f000da26-ffbe-6c0` with authoritative exit 0 and durable, untruncated logs. Eight real bwrap pytest children executed 60 original cases: before 12/30 and after 30/30, matching the earlier separate eight-child replay. All six explicit patch-admission negative controls passed. These are two distinct 60-case preparation stages, not 60 student evaluations.
+
+Root read the original OWNER_RESULT, protocol, task records, before/after receipts, six negative-control receipts and eight sandbox attestations. Their SHA256 values and every test/source receipt binding matched. Each sandbox reported immutable package/test/dependency mounts, zero effective capabilities, no host canary and network-connect errno 101. Original test case names remained identical across before/after execution. No model call, weight load or training update occurred.
+
+The owner wall interval was 15.935460342036095 seconds and includes its nested preparation stage. Full energy, network and monetary costs remain unknown. Four complete initial prompt sizes were 690, 1550, 862 and 1627 native tokens; exact original fix encodings were 146, 450, 133 and 253 tokens. No truncation was used. The old 384-token output cap cannot express one original fix, while the prospective common 2048 cap accommodates all four.
+
+Only task count, immutable commitments and API shape are released to the learning owner before both new weights and their original training manifests are frozen. Full task and original-fix material stays unreleased to that owner until then. This is operational separation inside shared authorized infrastructure; independent custody/controller certification and pretraining-contamination exclusion are not claimed.

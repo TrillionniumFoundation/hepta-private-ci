@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.B3.original-case-audit.v1",
+  "original_result_sha256": "1861aac95879f5640ebd135cac6594d1cda5bdc9822da9c2b2672b7ebdbd44de",
+  "rows": [
+    {
+      "project": "pypa/packaging",
+      "before_passed": 4,
+      "before_failed": 4,
+      "after_passed": 8,
+      "cases_match": true
+    },
+    {
+      "project": "python-semver/python-semver",
+      "before_passed": 8,
+      "before_failed": 9,
+      "after_passed": 17,
+      "cases_match": true
+    },
+    {
+      "project": "mahmoud/boltons",
+      "before_passed": 0,
+      "before_failed": 4,
+      "after_passed": 4,
+      "cases_match": true
+    },
+    {
+      "project": "python-hyper/h11",
+      "before_passed": 0,
+      "before_failed": 1,
+      "after_passed": 1,
+      "cases_match": true
+    }
+  ]
+}

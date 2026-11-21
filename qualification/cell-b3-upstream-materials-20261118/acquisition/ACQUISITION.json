@@ -1,0 +1,87 @@
+{
+  "acquire_sha256": "5332b803ab7f23d6ec14b5c59e0da68677a021493d87b3f1da60ed09541cf62e",
+  "authenticated_user_count": 0,
+  "completed_child_cpu_seconds": 7.104423,
+  "cost_scope": "Owner includes concurrent raw reads and nested setup; do not add nested wall windows.",
+  "distinct_git_blobs": 110,
+  "downloaded_blob_bytes": 1636560,
+  "existing_environment_modified": false,
+  "finished_at_ns": 1795025733833477921,
+  "full_system_cost_known": false,
+  "gpu_energy_joules": null,
+  "isolated_environment": true,
+  "monetary_cost": null,
+  "network_energy_joules": null,
+  "new_dependency_downloads": 0,
+  "new_model_calls": 0,
+  "new_test_calls": 0,
+  "new_training_updates": 0,
+  "original_requests": 110,
+  "passed": true,
+  "prospective_git_inventory_sha256": "ae4de95c1e64bb0e143dfc1cafd6af2eb19c91f84c25975531d465d6b007bc0a",
+  "schema": "hepta.b3.original_acquisition.v1",
+  "selection_sha256": "8bb2d80098639a649a1498d8190c800947f2ed287caf4ec44964c5b2ab03fb10",
+  "source_commit": "3b5aac3996e3773ebf057e5567a3cae5f4558600",
+  "sources": 4,
+  "sources_sha256": "38575e04211a2e4fc888456f4501de780e9acdb5f92f2f41fca42f66c6af219a",
+  "stages": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "venv",
+        "/home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b/material/venv"
+      ],
+      "child_system_cpu_seconds": 0.319594,
+      "child_user_cpu_seconds": 3.7993509999999997,
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false,
+      "wall_seconds": 4.331626680970658
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b/material/venv/bin/python",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-index",
+        "--find-links",
+        "/home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b/material/wheels",
+        "pytest==9.2.0",
+        "freezegun==1.5.5",
+        "pytest-timeout==2.4.0"
+      ],
+      "child_system_cpu_seconds": 0.274214,
+      "child_user_cpu_seconds": 2.257745,
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9982e76905cb22360f0680c0dfb45a0ca78e3d3d379e63d9026cab4177e05a19",
+      "timed_out": false,
+      "wall_seconds": 2.727091112989001
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b/material/venv/bin/python",
+        "-m",
+        "pip",
+        "freeze",
+        "--all"
+      ],
+      "child_system_cpu_seconds": 0.051058999999999966,
+      "child_user_cpu_seconds": 0.4024600000000005,
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "82d9d0f044e6b823a40892eea500dd45f819258e289f6c5a5198df0b990e858e",
+      "timed_out": false,
+      "wall_seconds": 0.47096816095290706
+    }
+  ],
+  "started_at_ns": 1795025695828560926,
+  "status": "ACQUIRED",
+  "successful_original_requests": 110,
+  "wall_seconds": 38.00512952602003
+}
