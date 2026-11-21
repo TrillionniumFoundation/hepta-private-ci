@@ -1,0 +1,77 @@
+{
+  "schema": "hcsn-n256-runtime-identity-admission-independent-readback-v1",
+  "source_pr": 6894,
+  "final_source_commit": "1db711c8fe084394c63809e77941b3db67d165c6",
+  "attempts": [
+    {
+      "run": 44910798387,
+      "job": 136865986747,
+      "conclusion": "failure",
+      "candidate_executed": false,
+      "artifact_published": false,
+      "error": "NameError at result publication: qualification/production/all_closed used JSON false"
+    },
+    {
+      "run": 44910947077,
+      "job": 136866426687,
+      "conclusion": "failure",
+      "candidate_executed": false,
+      "artifact_published": false,
+      "error": "NameError at result publication: candidate_executed used JSON false"
+    },
+    {
+      "run": 44911092060,
+      "job": 136866866262,
+      "conclusion": "success",
+      "candidate_executed": false,
+      "artifact_id": 14709632873,
+      "artifact_zip_bytes": 1197,
+      "artifact_zip_sha256": "055bd4b6551f2d0524e5a938faea9398d8b77c79ecdbb5509a1ff059029fa7a8"
+    }
+  ],
+  "terminal_result": {
+    "admitted": false,
+    "candidate_execution_authorized": false,
+    "candidate_executed": false,
+    "mismatch_fields": [
+      "numpy_record_sha256",
+      "scipy_record_sha256"
+    ],
+    "exact_matches": [
+      "machine",
+      "python_version",
+      "python_executable_sha256",
+      "numpy_version",
+      "numpy_init_sha256",
+      "scipy_version",
+      "scipy_init_sha256",
+      "thread_environment"
+    ],
+    "numeric_modules_imported": [],
+    "candidate_model_calls": 0,
+    "dynamic_steps": 0,
+    "expm_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0,
+    "qualification": false,
+    "production_adoption": false,
+    "all_closed": false
+  },
+  "artifact_members": {
+    "RESULT.json": {
+      "bytes": 1859,
+      "sha256": "f4bb9d489897e99aae3a363c24e874d23cd2101c61712c8dd21b2096f0e18f0b"
+    },
+    "COST.json": {
+      "bytes": 247,
+      "sha256": "f384a8dc0585043e505ac81648b8541b6c63bc214b9bbce37dad6fa721c2be47"
+    }
+  },
+  "scope": {
+    "historical_6890_red_preserved": true,
+    "c2_full_replay_completed_fits": 0,
+    "hpca_status": "NoUpdate",
+    "global_status": "HOLD",
+    "all_closed": false
+  }
+}
