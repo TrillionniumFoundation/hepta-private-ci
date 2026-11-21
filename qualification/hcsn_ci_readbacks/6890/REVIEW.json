@@ -1,0 +1,147 @@
+{
+  "schema": "hcsn_n256_dense_compatible_firststep_runtime_v3_strict_red_review_v1",
+  "disposition": "TERMINAL_NUMERICAL_RED_HOLD",
+  "all_closed": false,
+  "qualification_granted": false,
+  "no_update": true,
+  "source_pull_request": 6890,
+  "source_head": "89896f5f25b9cb69293e8a40075dd40a0586ee71",
+  "source_tree": "6446541a976205dd338921df61d83166e7edd53c",
+  "checked_merge_head": "55b0df9bde1be56da2cbe06a84b4466e42a3797b",
+  "execution_identity": "hcsn-n256-dense-compatible-firststep-runtime-v3-20261121-c06d-001",
+  "actions_run_id": 44906913033,
+  "actions_job_id": 136854356161,
+  "run_attempt": 1,
+  "conclusion": "failure",
+  "archive": {
+    "bytes": 55627,
+    "sha256": "ba8be7e40b6c54290afc0fca38e4a6543cd5ea1a45f397c2e766f1d8cf2b9f9b",
+    "members": 17,
+    "member_sha256_and_bytes": {
+      "ADMISSION.json": [
+        "cea70ba39d19975017dc2d6176e105e4ebadc5830614bda40a721a2c340e510d",
+        3790
+      ],
+      "CANDIDATE.bin": [
+        "33ee695bfc001ca9bb5555befe384e0dee60e49be32832170ceabfeebee9c6bc",
+        560358
+      ],
+      "CHILD_ERROR.json": [
+        "ccf0840dd98c22bdec32fd8f71221cd808a1fa19ce59127ce0883ec4baca6ac5",
+        363
+      ],
+      "CHILD_STDERR.bin": [
+        "a0870adae55b3ee34b26aaee655f173fa8ca734e31064a18d0c34229b2a2efda",
+        601
+      ],
+      "CHILD_STDOUT.bin": [
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        0
+      ],
+      "COUNTERS.json": [
+        "da2afcac527b1dcd159d666412909caacbd73205102731dfd2fa343505808350",
+        445
+      ],
+      "PARENT_ERROR.json": [
+        "0922171a61d8555388e633206795ca5c7160ecbc3c87ac092a61267bb35f2c7e",
+        360
+      ],
+      "PIP_INSTALL.json": [
+        "10426a600140f49edc50cdc9269ff70441c6b8eadb4b555e24c3531681feac83",
+        320
+      ],
+      "PIP_INSTALL_STDERR.bin": [
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        0
+      ],
+      "PIP_INSTALL_STDOUT.bin": [
+        "8a3dc867a821c30dc9a0abf320fc38fc80e697246495688d90f4facf12c47ab5",
+        1057
+      ],
+      "POST_RESOURCE.json": [
+        "fbecd7c8eb80706d98afeb9abd61382ee0ef0a6d7abe32a5d8699ee1a14597e6",
+        3273
+      ],
+      "PRE_RESOURCE.json": [
+        "23304adc656dd6875327b582dec58cb8f361890909b75261fb16a3711a7c95bf",
+        3273
+      ],
+      "REBUILT_BOUNDARY.bin": [
+        "e580e44a679ecf9e2588c989cd4d026e326e7364331c46d1927b00ccada78fd4",
+        545171
+      ],
+      "RESULT.json": [
+        "1015478b43bc67b279e05c26e24a0141c7482e81efc67d0f5c3f0b14f70d538c",
+        403
+      ],
+      "SOURCE_TRANSPORT.json": [
+        "6930da20d0a0b4417a646e7ebcf0d231cae1c79a000a04738bf40281bbd5be96",
+        424
+      ],
+      "START.json": [
+        "a8cedbd576f2761b4b638b60253b2d6c1284ac44b21f56e07b353d3e782c0458",
+        258
+      ],
+      "TERMINAL.json": [
+        "b979fba04cdaca7036fb95cb1d4358523700cfd0add6eb9480a4dde83bc1edf6",
+        358
+      ]
+    }
+  },
+  "full_job_log": {
+    "bytes": 100713,
+    "sha256": "14f40d8f64b880775904c2c2ef26f488969bb84fa72b0aaff96a09d5e427386a",
+    "includes_utf8_bom": true
+  },
+  "admission": {
+    "admitted": true,
+    "effective_cpus": 4,
+    "mem_available_kib": 15320528,
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "executed_work": {
+    "authentic_distinct_input_file_accesses": 4,
+    "npz_decodes": 1,
+    "candidate_boundary_builds": 1,
+    "boundary_container_encodes": 1,
+    "boundary_exact_comparisons": 68105,
+    "dynamic_steps": 1,
+    "candidate_dense_expm_actions": 2,
+    "candidate_sparse_expm_actions": 0,
+    "oracle_reexecutions": 0,
+    "candidate_canonical_encodes": 1,
+    "canonical_decodes": 2,
+    "final_exact_comparisons": 69728,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "strict_result": {
+    "candidate_capsule_sha256": "33ee695bfc001ca9bb5555befe384e0dee60e49be32832170ceabfeebee9c6bc",
+    "bitwise_mismatch_coordinates": 665,
+    "max_abs_error_hex": "0x1.e000000000000p-54",
+    "max_ulp_distance": 98,
+    "candidate_oracle_bitwise_equal": false,
+    "qualification": false
+  },
+  "terminal": {
+    "status": "RED",
+    "child_exit_code": 1,
+    "detail": "RuntimeError: child exit 1"
+  },
+  "key_consumed": true,
+  "retry_same_identity_forbidden": true,
+  "preserved_history": [
+    "PR #6885 runtime identity RED remains unchanged",
+    "PR #6888 runtime-v2 pre-transport RED remains unchanged",
+    "all earlier RED, OOM, cancelled, and UNKNOWN states remain unchanged"
+  ],
+  "scope_exclusions": [
+    "no N256 numerical qualification",
+    "no current-state full-state qualification",
+    "no finite-domain qualification",
+    "no C2 full replay qualification",
+    "no HPCA update",
+    "no production adoption"
+  ]
+}
