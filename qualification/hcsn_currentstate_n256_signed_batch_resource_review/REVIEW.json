@@ -1,0 +1,97 @@
+{
+  "batch_contract": {
+    "hard_vector_cap": 16,
+    "operator_parse_calls_per_lane": 1,
+    "recurrence_calls_per_vector": 1,
+    "shared_recurrence_across_vectors": false,
+    "transition_build_calls_per_lane": 1
+  },
+  "comparison": {
+    "batch_calls_if_admitted": 2,
+    "batch_duration_parses_if_admitted": 2,
+    "batch_exact_input_conversions_if_admitted": 4379,
+    "batch_operator_parses_if_admitted": 2,
+    "exact_input_conversion_reduction": 7176,
+    "recurrence_channels_if_admitted": 10,
+    "reduction_fraction": "7176/11555",
+    "reduction_percent_exact": "143520/2311",
+    "scalar_calls": 10,
+    "scalar_duration_parses": 10,
+    "scalar_exact_input_conversions": 11555,
+    "scalar_operator_parses": 10,
+    "vector_input_conversions_both_designs": 2585
+  },
+  "finding": {
+    "authentic_execution_admitted": false,
+    "host_peak_rss_bound_available": false,
+    "host_wall_time_bound_available": false,
+    "recurrence_work_unchanged": true,
+    "resource_gate_closed": false,
+    "shared_parse_reduces_exact_input_conversions": true,
+    "valid_host_allocation_available": false
+  },
+  "historical_statuses": {
+    "cause_of_6901_red": "UNKNOWN",
+    "duplicate_key": "RED_DUPLICATE_KEY",
+    "parent_adapter": "RED_NONCANONICAL_INPUT"
+  },
+  "lanes": {
+    "discounted": {
+      "batch_calls_if_admitted": 1,
+      "dimension": 259,
+      "duration_input_conversions_if_admitted": 1,
+      "duration_parse_count_if_admitted": 1,
+      "exact_input_conversions_if_admitted": 2321,
+      "operator_input_conversions_if_admitted": 1025,
+      "operator_parse_count_if_admitted": 1,
+      "recurrence_channels_if_admitted": 5,
+      "vector_count": 5,
+      "vector_input_conversions_if_admitted": 1295
+    },
+    "undiscounted": {
+      "batch_calls_if_admitted": 1,
+      "dimension": 258,
+      "duration_input_conversions_if_admitted": 1,
+      "duration_parse_count_if_admitted": 1,
+      "exact_input_conversions_if_admitted": 2058,
+      "operator_input_conversions_if_admitted": 767,
+      "operator_parse_count_if_admitted": 1,
+      "recurrence_channels_if_admitted": 5,
+      "vector_count": 5,
+      "vector_input_conversions_if_admitted": 1290
+    }
+  },
+  "parent_head": "ff429657381de751718b46b27a2187cdd88080f7",
+  "recurrence_work_if_admitted": {
+    "maximum_bound_roundings_at_default_limit": 2517790,
+    "maximum_row_actions_at_default_limit": 10240,
+    "maximum_sparse_product_contributions": 9195520,
+    "minimum_bound_roundings_at_first_check": 5170,
+    "minimum_row_actions_to_first_tail_check": 5370,
+    "minimum_sparse_product_contributions": 4822260
+  },
+  "schema": "hcsn-n256-authentic-signed-batch-resource-review-v1",
+  "scope": {
+    "all_closed": false,
+    "authentic_provider_execution_admitted": false,
+    "authentic_signed_batch_executed": false,
+    "c2_full_replay_completed_fits": 0,
+    "hpca_status": "NoUpdate",
+    "largegrid_qualification": false,
+    "n256_qualified": false,
+    "production_adoption": false,
+    "unique_rounding_closed": false
+  },
+  "work": {
+    "adapter_lane_calls": 2,
+    "artifact_reads": 1,
+    "authentic_batch_provider_calls": 0,
+    "authentic_recurrence_calls": 0,
+    "batch_source_ast_reads": 1,
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "frozen_review_reads": 2,
+    "optimizer_steps": 0,
+    "torch_calls": 0
+  }
+}
