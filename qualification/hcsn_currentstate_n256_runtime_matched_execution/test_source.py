@@ -32,6 +32,7 @@ class SourceTests(unittest.TestCase):
         self.assertIn("ubuntu\", \"24.04", source)
         self.assertIn('distribution.read_text("RECORD").encode()', source)
         self.assertIn("2ce74da59bd24c1301a77e90b94abfe52bc14d54c0f79f565665b5a59d62734b", source)
+        self.assertIn("e56c4bae4706cb2932b476f0747869a3173bf3ca", source)
 
     def test_bounded_child_and_no_retry(self):
         source = (HERE / "launcher.py").read_text()

@@ -1,8 +1,9 @@
 name: hcsn-currentstate-n256-runtime-matched-firststep
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+  push:
+    branches:
+      - "research/hcsn-n256-runtime-matched-firststep-20261121-c6bc"
     paths:
       - "qualification/hcsn_currentstate_n256_runtime_matched_execution/**"
       - ".github/workflows/hcsn-currentstate-n256-runtime-matched-firststep.yml"
@@ -25,7 +26,8 @@ jobs:
       OMP_NUM_THREADS: "1"
       OPENBLAS_NUM_THREADS: "1"
       PYTHONHASHSEED: "0"
-      ADMITTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      ADMITTED_SOURCE_SHA: ${{ github.sha }}
+      PUSH_BEFORE_SHA: ${{ github.event.before }}
       RUN_OUTPUT: ${{ runner.temp }}/hcsn-n256-runtime-matched-firststep
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
