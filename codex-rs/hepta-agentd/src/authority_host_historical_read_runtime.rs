@@ -192,6 +192,7 @@ pub(in super::super) fn serve_optional(
                                     .ok_or(HostIssuerTransportError::Unavailable)?;
                                 let request_end = session_end
                                     .min(Instant::now() + Duration::from_millis(config.timeout_ms));
+                                let diagnostics = CompletedDiagnostics::new(request.request_id);
                                 bound
                                     .runtime
                                     .observe_complete_task(
@@ -202,8 +203,10 @@ pub(in super::super) fn serve_optional(
                                         operation,
                                         request.request_id,
                                         request_end,
+                                        &diagnostics,
                                     )
-                                    .inspect_err(|_| {
+                                    .inspect_err(|error| {
+                                        diagnostics.log_failure(error);
                                         let _ = std::io::stderr().write_all(
                                             b"root_stage=historical.observe_complete_task\n",
                                         );

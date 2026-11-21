@@ -36,42 +36,46 @@ impl HistoricalTaskReadRuntime {
         accepted: Option<&RootCompletedLearningAcceptanceDataV1>,
         mode: OriginalCompletedPublicationModeV1,
         end: Instant,
+        diagnostics: &CompletedDiagnostics,
     ) -> io::Result<CheckedCompletion> {
-        with_original_checkpoint(&config.state_dir, |checkpoint, checkpoint_digest| {
-            RootRetainedHistoricalCompleteTaskV1::with_original_historical_task(
-                &self.task,
-                service,
-                end,
-                |read| {
-                    fixed.require_original()?;
-                    let (initial, proof, observed) = self.observe_completed_original_task(
-                        service,
-                        config,
-                        registration,
-                        owner,
-                        read,
-                        end,
-                    )?;
-                    let check_profile = |profile| {
-                        self.observe_completed_profile(
+        diagnostics.check(CompletedStage::Checkpoint, || {
+            with_original_checkpoint(&config.state_dir, |checkpoint, checkpoint_digest| {
+                RootRetainedHistoricalCompleteTaskV1::with_original_historical_task(
+                    &self.task,
+                    service,
+                    end,
+                    |read| {
+                        fixed.require_original()?;
+                        let (initial, proof, observed) = self.observe_completed_original_task(
                             service,
                             config,
                             registration,
                             owner,
-                            fixed,
-                            files,
-                            accepted,
-                            mode,
-                            &initial,
-                            &observed,
-                            checkpoint,
-                            checkpoint_digest,
-                            profile,
+                            read,
                             end,
-                        )
-                    };
-                    let result = if let Some(fact) = accepted {
-                        if fact.deployment != fixed.binding.to_string()
+                            diagnostics,
+                        )?;
+                        let check_profile = |profile| {
+                            self.observe_completed_profile(
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                fixed,
+                                files,
+                                accepted,
+                                mode,
+                                &initial,
+                                &observed,
+                                checkpoint,
+                                checkpoint_digest,
+                                profile,
+                                end,
+                                diagnostics,
+                            )
+                        };
+                        let result = if let Some(fact) = accepted {
+                            if fact.deployment != fixed.binding.to_string()
                             || fact.checkpoint != checkpoint_digest.to_string()
                             || fact.original_task
                                 != RootOriginalHistoricalCompleteTaskObservationV1::data_cut_digest(
@@ -83,43 +87,48 @@ impl HistoricalTaskReadRuntime {
                                 "original completed acceptance cut differs",
                             ));
                         }
-                        let profile: HostAuthorityLearningProfileV1 =
-                            serde_json::from_str(&fact.original_profile)
-                                .map_err(io::Error::other)?;
-                        check_profile(profile)
-                    } else {
-                        let plan: &post_a::PostALearningRuntime = self
-                            .post_a
-                            .as_ref()
-                            .ok_or_else(|| io::Error::other("original fresh post-A plan absent"))?;
-                        post_a::PostALearningRuntime::require_completed_plan(
-                            plan,
-                            &fixed.data.original_post_a_deployment,
-                            files.freeze()?,
-                        )?;
-                        post_a::PostALearningRuntime::with_original_derived_profile(
-                            plan,
-                            service,
-                            &registration.registered_identity.identity()?,
-                            &proof,
-                            &initial,
-                            &observed,
-                            &self.learning_trust,
-                            end,
-                            check_profile,
-                        )
-                    };
-                    fixed.require_original()?;
-                    self.metadata.require_metadata_unchanged()?;
-                    RootHistoricalLearningTrustV1::revalidate(
-                        &self.learning_trust,
-                        service,
-                        &initial,
-                    )?;
-                    require_end(end)?;
-                    result
-                },
-            )
+                            let profile: HostAuthorityLearningProfileV1 =
+                                serde_json::from_str(&fact.original_profile)
+                                    .map_err(io::Error::other)?;
+                            check_profile(profile)
+                        } else {
+                            let plan: &post_a::PostALearningRuntime =
+                                self.post_a.as_ref().ok_or_else(|| {
+                                    io::Error::other("original fresh post-A plan absent")
+                                })?;
+                            post_a::PostALearningRuntime::require_completed_plan(
+                                plan,
+                                &fixed.data.original_post_a_deployment,
+                                files.freeze()?,
+                            )?;
+                            post_a::PostALearningRuntime::with_original_derived_profile(
+                                plan,
+                                service,
+                                &registration.registered_identity.identity()?,
+                                &proof,
+                                &initial,
+                                &observed,
+                                &self.learning_trust,
+                                end,
+                                check_profile,
+                            )
+                        };
+                        diagnostics.record_result(CompletedStage::FrozenProfile, &result);
+                        diagnostics.check(CompletedStage::OriginalTaskPostchecks, || {
+                            fixed.require_original()?;
+                            self.metadata.require_metadata_unchanged()?;
+                            RootHistoricalLearningTrustV1::revalidate(
+                                &self.learning_trust,
+                                service,
+                                &initial,
+                            )?;
+                            require_end(end)?;
+                            Ok(())
+                        })?;
+                        result
+                    },
+                )
+            })
         })
     }
 
@@ -139,16 +148,21 @@ impl HistoricalTaskReadRuntime {
         checkpoint_digest: Digest32,
         profile: HostAuthorityLearningProfileV1,
         end: Instant,
+        diagnostics: &CompletedDiagnostics,
     ) -> io::Result<CheckedCompletion> {
-        if profile.original_initial_data()? != *initial {
-            return Err(io::Error::other(
-                "original frozen completed initial differs",
-            ));
-        }
-        let scope = profile.require_cell_scope(initial)?;
+        let scope = diagnostics.check(CompletedStage::ProfileScope, || {
+            if profile.original_initial_data()? != *initial {
+                return Err(io::Error::other(
+                    "original frozen completed initial differs",
+                ));
+            }
+            let scope = profile.require_cell_scope(initial)?;
+            Ok(scope)
+        })?;
         let data_cut =
             RootOriginalHistoricalCompleteTaskObservationV1::data_cut_digest(observed).to_string();
-        with_original_completed_b(
+        diagnostics.check(CompletedStage::IndependentBPostchecks, || {
+            with_original_completed_b(
             &fixed.data.independent_b,
             RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?,
             initial,
@@ -156,7 +170,8 @@ impl HistoricalTaskReadRuntime {
             service,
             end,
             |b| {
-                let (result, _) = with_original_completed_publication(
+                let (result, _) = diagnostics.check(CompletedStage::PublicationPostchecks, || {
+                    with_original_completed_publication(
                     &fixed.data.publication,
                     initial,
                     &scope,
@@ -165,18 +180,32 @@ impl HistoricalTaskReadRuntime {
                     end,
                     mode,
                     |publication| {
-                        CompletedFiles::with_original_records(files, end, |journals| {
+                        diagnostics.check(CompletedStage::JournalPostchecks, || {
+                            CompletedFiles::with_original_records(files, end, |journals| {
                             self.with_original_completed_context(service, config, registration, owner,
-                            &scope, checkpoint, observed, end, |context| {
-                                let b = OriginalCompletedBReadV1::observe(b, context)?;
-                                let publication = OriginalCompletedPublicationReadV1::observe(publication, context)?;
-                                let verified = verify_original_completions(context, journals, &b, accepted)?;
-                                if verified.verified_at > context.current_unix_seconds()?
-                                    || (accepted.is_none() && verified.verified_at >= initial.request.envelope.expiry_unix_seconds)
-                                {
-                                    return Err(io::Error::other("first terminal acceptance must be in original work window"));
-                                }
-                                let fact = RootCompletedLearningAcceptanceDataV1 {
+                            &scope, checkpoint, observed, end, diagnostics, |context| {
+                                let b = diagnostics.check(CompletedStage::IndependentB, || {
+                                    let observed = OriginalCompletedBReadV1::observe(b, context)?;
+                                    Ok(observed)
+                                })?;
+                                let publication = diagnostics.check(CompletedStage::Publication, || {
+                                    let observed = OriginalCompletedPublicationReadV1::observe(publication, context)?;
+                                    Ok(observed)
+                                })?;
+                                let verified = diagnostics.check(CompletedStage::JournalSignatures, || {
+                                    let verified = verify_original_completions(context, journals, &b, accepted)?;
+                                    Ok(verified)
+                                })?;
+                                diagnostics.check(CompletedStage::AcceptanceWindow, || {
+                                    if verified.verified_at > context.current_unix_seconds()?
+                                        || (accepted.is_none() && verified.verified_at >= initial.request.envelope.expiry_unix_seconds)
+                                    {
+                                        return Err(io::Error::other("first terminal acceptance must be in original work window"));
+                                    }
+                                    Ok(())
+                                })?;
+                                let fact = diagnostics.check(CompletedStage::AcceptanceFact, || {
+                                    let fact = RootCompletedLearningAcceptanceDataV1 {
                                     schema: 1, purpose: "runtime.learning.completed-acceptance.v1".into(),
                                     initial: initial.head_digest.to_string(),
                                     target: Digest32::from_array(self.deployment.target.digest().map_err(io::Error::other)?).to_string(),
@@ -196,15 +225,20 @@ impl HistoricalTaskReadRuntime {
                                 }
                                 fact.data_digest()?;
                                 require_end(end)?;
+                                Ok(fact)
+                                })?;
                                 Ok(CheckedCompletion { fact, publication, data_cut: data_cut.clone() })
                             })
                         })
+                        })
                     },
-                )?;
+                )
+                })?;
                 require_end(end)?;
                 Ok(result)
             },
         )
+        })
     }
 
     fn observe_completed_original_task(
@@ -215,60 +249,72 @@ impl HistoricalTaskReadRuntime {
         owner: &OwnedFd,
         read: &mut RootOriginalHistoricalTaskReadV1<'_, '_, '_, '_>,
         end: Instant,
+        diagnostics: &CompletedDiagnostics,
     ) -> io::Result<(
         LearningIterationSnapshotV1,
         String,
         RootOriginalHistoricalCompleteTaskObservationV1,
     )> {
-        service.with_learning_profile(
-            config,
-            registration,
-            owner,
-            &self.deployment.initial,
-            |initial, proof| {
-                if self.profile.require_original_context(
-                    &registration.registered_identity.identity()?,
-                    &proof,
-                    &self.deployment.initial,
-                )? != initial
-                    || self.phase.load(Ordering::Acquire) != SERVING
-                {
-                    return Err(io::Error::other(
-                        "completed original task recipient differs",
-                    ));
-                }
-                self.metadata.require_metadata_unchanged()?;
-                RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?;
-                RootOriginalHistoricalTaskReadV1::require_original_target(
-                    read,
-                    &self.deployment.target,
-                )?;
-                let observed = RootOriginalHistoricalTaskReadV1::observe_original_task(
-                    read,
-                    |identity| {
-                        RootHistoricalSourceInputsV1::open_original_source_deployment(
-                            &self.deployment.source_deployment,
-                            identity,
-                        )
-                    },
-                    || {
-                        RootInitialRunStartFilesV1::open_original_deployment(
-                            &self.deployment.run_start_deployment,
-                        )
-                        .map(Arc::new)
-                    },
-                )?;
-                let ledger =
-                    RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(&observed)?;
-                RootHistoricalLearningTrustV1::require_original_ledger(
-                    &self.learning_trust,
-                    &ledger,
-                )?;
-                self.metadata.require_metadata_unchanged()?;
-                RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?;
-                require_end(end)?;
-                Ok((initial, proof, observed))
-            },
-        )
+        diagnostics.check(CompletedStage::OriginalTask, || {
+            service.with_learning_profile(
+                config,
+                registration,
+                owner,
+                &self.deployment.initial,
+                |initial, proof| {
+                    if self.profile.require_original_context(
+                        &registration.registered_identity.identity()?,
+                        &proof,
+                        &self.deployment.initial,
+                    )? != initial
+                        || self.phase.load(Ordering::Acquire) != SERVING
+                    {
+                        return Err(io::Error::other(
+                            "completed original task recipient differs",
+                        ));
+                    }
+                    self.metadata.require_metadata_unchanged()?;
+                    RootHistoricalLearningTrustV1::revalidate(
+                        &self.learning_trust,
+                        service,
+                        &initial,
+                    )?;
+                    RootOriginalHistoricalTaskReadV1::require_original_target(
+                        read,
+                        &self.deployment.target,
+                    )?;
+                    let observed = RootOriginalHistoricalTaskReadV1::observe_original_task(
+                        read,
+                        |identity| {
+                            RootHistoricalSourceInputsV1::open_original_source_deployment(
+                                &self.deployment.source_deployment,
+                                identity,
+                            )
+                        },
+                        || {
+                            RootInitialRunStartFilesV1::open_original_deployment(
+                                &self.deployment.run_start_deployment,
+                            )
+                            .map(Arc::new)
+                        },
+                    )?;
+                    let ledger = RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(
+                        &observed,
+                    )?;
+                    RootHistoricalLearningTrustV1::require_original_ledger(
+                        &self.learning_trust,
+                        &ledger,
+                    )?;
+                    self.metadata.require_metadata_unchanged()?;
+                    RootHistoricalLearningTrustV1::revalidate(
+                        &self.learning_trust,
+                        service,
+                        &initial,
+                    )?;
+                    require_end(end)?;
+                    Ok((initial, proof, observed))
+                },
+            )
+        })
     }
 }

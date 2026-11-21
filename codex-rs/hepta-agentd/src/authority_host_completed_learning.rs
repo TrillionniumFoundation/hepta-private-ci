@@ -152,43 +152,62 @@ impl HistoricalTaskReadRuntime {
         checkpoint: &crate::LearningIterationCheckpointRecordV1,
         observed: &RootOriginalHistoricalCompleteTaskObservationV1,
         end: Instant,
+        diagnostics: &CompletedDiagnostics,
         action: impl FnOnce(&OriginalCompletedLearningContextV1<'_>) -> io::Result<T>,
     ) -> io::Result<T> {
-        require_end(end)?;
-        self.metadata.require_metadata_unchanged()?;
+        diagnostics.check(CompletedStage::ContextEntry, || {
+            require_end(end)?;
+            self.metadata.require_metadata_unchanged()?;
+            Ok(())
+        })?;
         let result = service.with_learning_profile(
             config,
             registration,
             owner,
             &self.deployment.initial,
             |initial, proof| {
-                let expected = self.profile.require_original_context(
-                    &registration.registered_identity.identity()?,
-                    &proof,
-                    &self.deployment.initial,
-                )?;
-                if expected != initial || self.phase.load(Ordering::Acquire) != SERVING {
-                    return Err(io::Error::other("completed-history recipient changed"));
-                }
-                let terminal =
+                diagnostics.check(CompletedStage::RecipientContext, || {
+                    let expected = self.profile.require_original_context(
+                        &registration.registered_identity.identity()?,
+                        &proof,
+                        &self.deployment.initial,
+                    )?;
+                    if expected != initial || self.phase.load(Ordering::Acquire) != SERVING {
+                        return Err(io::Error::other("completed-history recipient changed"));
+                    }
+                    Ok(())
+                })?;
+                let terminal = diagnostics.check(CompletedStage::TerminalCheckpoint, || {
                     crate::LearningIterationCheckpointRecordV1::read_original_completed_scoped(
                         checkpoint, &initial, scope,
                     )
-                    .map_err(io::Error::other)?;
-                let ledger =
-                    RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(observed)?;
-                let trust = RootHistoricalLearningTrustV1::read_original_payload(
-                    &self.learning_trust,
-                    service,
-                    &initial,
-                    &ledger,
-                )?;
-                let (activated, _) = trust.activate_for_recipient(
-                    &initial,
-                    HostAuthorityService::original_learning_unix_seconds(service)?,
-                )?;
-                trust.require_activation_pin(&initial, &activated, &self.learning_trust.pin)?;
-                require_end(end)?;
+                    .map_err(io::Error::other)
+                })?;
+                let ledger = diagnostics.check(CompletedStage::OriginalLedger, || {
+                    let ledger = RootOriginalHistoricalCompleteTaskObservationV1::ledger_read_data(
+                        observed,
+                    )?;
+                    Ok(ledger)
+                })?;
+                let trust = diagnostics.check(CompletedStage::TrustActivation, || {
+                    RootHistoricalLearningTrustV1::read_original_payload(
+                        &self.learning_trust,
+                        service,
+                        &initial,
+                        &ledger,
+                    )
+                })?;
+                let (activated, _) = diagnostics.check(CompletedStage::TrustActivation, || {
+                    trust.activate_for_recipient(
+                        &initial,
+                        HostAuthorityService::original_learning_unix_seconds(service)?,
+                    )
+                })?;
+                diagnostics.check(CompletedStage::TrustActivation, || {
+                    trust.require_activation_pin(&initial, &activated, &self.learning_trust.pin)?;
+                    require_end(end)?;
+                    Ok(())
+                })?;
                 let context = OriginalCompletedLearningContextV1 {
                     initial: &initial,
                     scope,
@@ -204,17 +223,41 @@ impl HistoricalTaskReadRuntime {
                     not_send: PhantomData,
                 };
                 let value = action(&context);
-                RootHistoricalLearningTrustV1::revalidate(&self.learning_trust, service, &initial)?;
-                context.revalidate_recorded_signers()?;
-                self.metadata.require_metadata_unchanged()?;
-                require_end(end)?;
+                diagnostics.record_result(CompletedStage::ContextAction, &value);
+                diagnostics.check(CompletedStage::ContextTrustPostcheck, || {
+                    RootHistoricalLearningTrustV1::revalidate(
+                        &self.learning_trust,
+                        service,
+                        &initial,
+                    )?;
+                    Ok(())
+                })?;
+                diagnostics.check(CompletedStage::ContextSignerPostcheck, || {
+                    context.revalidate_recorded_signers()?;
+                    Ok(())
+                })?;
+                diagnostics.check(CompletedStage::ContextMetadataPostcheck, || {
+                    self.metadata.require_metadata_unchanged()?;
+                    Ok(())
+                })?;
+                diagnostics.check(CompletedStage::ContextDeadlinePostcheck, || {
+                    require_end(end)?;
+                    Ok(())
+                })?;
                 value
             },
         );
+        diagnostics.record_result(CompletedStage::RecipientPostchecks, &result);
         // The original writer/issuer/pidfd context above has completed before
         // this final deadline check. Outer persistent arms enclose this method.
-        self.metadata.require_metadata_unchanged()?;
-        require_end(end)?;
+        diagnostics.check(CompletedStage::ContextExitMetadata, || {
+            self.metadata.require_metadata_unchanged()?;
+            Ok(())
+        })?;
+        diagnostics.check(CompletedStage::ContextExitDeadline, || {
+            require_end(end)?;
+            Ok(())
+        })?;
         result
     }
 }
