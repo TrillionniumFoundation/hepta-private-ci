@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.specialization-cost-contract.v1",
+  "scope": "finite research worklist only",
+  "required_fields": ["workload_sha256", "protocol_sha256", "hardware", "checkpoint_law_input_pins", "horizon_calls", "phase_seal", "resource_coordinates", "bound_kind", "preparation", "per_task_scope", "failure_costs", "unknowns", "general_ndu_decision", "production_eligible"],
+  "resource_coordinates": {"cpu_seconds": "process CPU including import and necessary validation", "wall_seconds": "elapsed wall on specified shared host", "peak_rss_bytes": "process peak resident memory", "cache_tensor_bytes": "logical additive cache tensors; not total allocated memory", "full_state_tensor_bytes": "logical complete state tensors"},
+  "bound_kinds": {"observed_finite_worklist": "past measurements only", "predeclared_empirical_prediction_envelope": "calibration prediction, subsequently checked, no coverage guarantee", "enforced_abandonment_budget": "resources allotted to failure/timeout as well as success; not a completion guarantee", "owner_pinned_future_bound": "not supplied by this study"},
+  "per_task_scope": ["checkpoint and parameter identity", "fixed-law identity", "full forward state and logits", "complete-state serialization and restore", "one ordinary continuation", "all arrays and metadata comparison"],
+  "forbidden_coercions": ["empirical envelope to owner future bound", "research call count to production demand", "CPU seconds to task utility without explicit conversion", "tolerance equivalence to bitwise equivalence", "HCSN cost evidence to Neuron cost evidence"],
+  "unknowns": ["production demand", "production resource bounds", "resource utility conversion", "unseen state or law equivalence", "durable disk/process restart recovery cost"],
+  "general_ndu_decision": "KEEP_ORIGINAL_AND_STOP",
+  "production_eligible": false
+}
