@@ -1,0 +1,11 @@
+--- a/CALLERS.unpacked.toml
++++ b/CALLERS.unpacked.toml
+@@ -6346,7 +6346,7 @@
+ id = "product_original_holdout_release"
+ symbol = "release_original_holdout"
+ definition_path = "codex-rs/hepta-intelligence-eval/src/product_holdout_release.rs"
+-definition_markers = ["pub(super) fn release_original_holdout<", "FencedFinalHoldoutOwnerV1::read_consumption(original, plan)?"]
++definition_markers = ["pub(super) fn release_original_holdout<", "FencedFinalHoldoutOwnerV1::read_consumption_for_execution(original, plan)?"]
+ product_callers = ["codex-rs/hepta-intelligence-eval/src/product_runner.rs"]
+ caller_markers = ["holdout_release::release_original_holdout("]
+ 

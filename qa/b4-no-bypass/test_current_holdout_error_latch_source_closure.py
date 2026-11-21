@@ -224,9 +224,14 @@ class CurrentHoldoutErrorLatchSourceClosureTests(unittest.TestCase):
                 self.assertEqual(boundary.receiver_type, "FencedFinalHoldoutOwnerV1")
                 self.assertEqual(boundary.definition_path, OWNER)
                 PROOF._verify_boundary(ROOT, boundary, sources, ())
-                with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                # An empty registered set must reject an invented permission;
+                # a nonempty set must reject removal of its actual callers.
+                invalid_callers = () if callers else (RELEASE,)
+                with self.assertRaisesRegex(
+                    PROOF.VerificationFailure, "unexpected" if callers else "missing"
+                ):
                     PROOF._verify_boundary(
-                        ROOT, replace(boundary, product_callers=()), sources, ()
+                        ROOT, replace(boundary, product_callers=invalid_callers), sources, ()
                     )
                 injected = dict(sources)
                 injected[PREFIX + "unregistered_holdout_read.rs"] = (
