@@ -1,0 +1,56 @@
+{
+  "admitted": false,
+  "all_closed": false,
+  "candidate_executed": false,
+  "candidate_execution_authorized": false,
+  "candidate_model_calls": 0,
+  "comparisons": {
+    "machine": true,
+    "numpy_init_sha256": true,
+    "numpy_record_sha256": false,
+    "numpy_version": true,
+    "python_executable_sha256": true,
+    "python_version": true,
+    "scipy_init_sha256": true,
+    "scipy_record_sha256": false,
+    "scipy_version": true,
+    "thread_environment": true
+  },
+  "dense_expm_actions": 0,
+  "dynamic_steps": 0,
+  "identity": "hcsn-n256-runtime-identity-admission-20261121-c6bc-001",
+  "mismatch_fields": [
+    "numpy_record_sha256",
+    "scipy_record_sha256"
+  ],
+  "numeric_modules_imported": [],
+  "observed": {
+    "machine": "x86_64",
+    "numpy": {
+      "init_sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+      "record_sha256": "bf79c62ba269556ce23b984191d6d265e4ed05d366d1cc7bda3e138dbe3f8a80",
+      "version": "2.3.5"
+    },
+    "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+    "python_executable_sha256": "2ce74da59bd24c1301a77e90b94abfe52bc14d54c0f79f565665b5a59d62734b",
+    "python_version": "3.12.3",
+    "scipy": {
+      "init_sha256": "335bc6e0a9909dc7534f9569a3685a92dc8001cb8c63a6da4c239849ff02d4d0",
+      "record_sha256": "94900eedcc86c473afe4836110d54baef222f0c57218d725902c9aa6ab10ff73",
+      "version": "1.17.0"
+    },
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "optimizer_steps": 0,
+  "oracle_runtime_sha256": "0625973f64197245273674586e60ce187571ef1f9d01bc52ea83a30beaa0ad06",
+  "production_adoption": false,
+  "qualification": false,
+  "schema": "hcsn-n256-runtime-identity-admission-result-v1",
+  "sparse_expm_actions": 0,
+  "torch_calls": 0
+}
