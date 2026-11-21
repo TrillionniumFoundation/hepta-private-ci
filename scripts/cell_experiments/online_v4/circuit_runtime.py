@@ -26,6 +26,8 @@ from .circuit_contract import (
 )
 from .onpolicy_feedback import feedback
 
+RELAY_SCOPE = "UTF-8 content in completed callback requests only; delivery, framing, retries and physical network traffic are unmeasured"
+
 
 def _children_cpu():
     if resource is None:
@@ -118,6 +120,7 @@ def run_graph(
                 continue
             request = copy.deepcopy(initial)
             incoming = {}
+            relay_bytes = 0
             previous = next(
                 (node for node in reversed(nodes) if node["status"] == "COMPLETE"), None
             )
@@ -208,6 +211,7 @@ def run_graph(
                     **measured,
                     "dispatch_wall_seconds": dispatch_seconds,
                     "verifier_wall_seconds": verifier_seconds,
+                    "relay_content_bytes": relay_bytes,
                 },
             }
             write_new(call_dir / "STEP.json", node)
@@ -221,6 +225,16 @@ def run_graph(
             "nodes": nodes,
             "model_calls_dispatched": dispatched,
             "verifier_calls_dispatched": verified,
+            "relay_content_bytes": None,
+            "completed_node_relay_content_bytes_lower_bound": sum(
+                node["cost"]["relay_content_bytes"]
+                for node in nodes
+                if node["status"] == "COMPLETE"
+            ),
+            "relay_unaccounted_dispatches": dispatched
+            - sum(node["status"] == "COMPLETE" for node in nodes),
+            "relay_content_bytes_scope": RELAY_SCOPE,
+            "physical_transmitted_bytes": None,
             "error_type": type(error).__name__,
             "error": str(error),
             "cost_complete": False,
@@ -280,6 +294,11 @@ def run_graph(
             ),
             "input_tokens": sum(node["cost"]["input_tokens"] for node in complete),
             "output_tokens": sum(node["cost"]["output_tokens"] for node in complete),
+            "relay_content_bytes": sum(
+                node["cost"]["relay_content_bytes"] for node in complete
+            ),
+            "relay_content_bytes_scope": RELAY_SCOPE,
+            "physical_transmitted_bytes": None,
             "provider_seconds_sum": sum(
                 node["cost"]["provider_seconds"] for node in complete
             ),

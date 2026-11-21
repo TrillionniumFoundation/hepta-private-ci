@@ -12,7 +12,8 @@ from .circuit_contract import (
     validate,
     write_new,
 )
-from .circuit_runtime import run_graph
+from .circuit_runtime import RELAY_SCOPE, run_graph
+from .circuit_admission import evaluation_admission, message_binding
 
 
 def _retained(result, directory):
@@ -64,6 +65,8 @@ def evaluate_suite(
     fixed_graph,
     random_seed,
     execution_binding_digest,
+    message_style="bundled_v4",
+    panel_scope="heldout",
 ):
     """Execute controls and all learned-graph interventions; never select on B/C.
 
@@ -95,6 +98,13 @@ def evaluate_suite(
         and router.record["budget_digest"] == digest(asdict(budget)),
         "Cell registry or budget differs from frozen router",
     )
+    require(
+        router.record["plan"].get("message_style") == message_style
+        and router.record.get("message_binding_digest")
+        == message_binding(cells, message_style),
+        "message style, serialization code, or provider protocol differs from router search",
+    )
+    admission = evaluation_admission(router, records, panel_scope)
     single = Graph("single", (single_cell, single_cell))
     candidate = random.Random(random_seed).choice(router.record["graphs"])
     random_graph = Graph(
@@ -121,7 +131,10 @@ def evaluate_suite(
         "route_under_intervention": "same pre-action frozen route; no retraining or substitution",
         "matching": "same call/token caps; all actual costs retained, not asserted equal",
         "output_selection": OUTPUT_SELECTION,
-        "selection_on_this_panel": False,
+        "selection_on_this_panel": admission["selection_on_this_panel"],
+        "evaluation_admission": admission,
+        "message_style": message_style,
+        "message_binding_digest": router.record["message_binding_digest"],
     }
     write_new(directory / "PLAN.json", plan)
     arms = {key: [] for key in ("single", "fixed", "random_sparse", "learned_sparse")}
@@ -143,7 +156,16 @@ def evaluate_suite(
         }
         for arm, graph in selected.items():
             path = task_dir / arm
-            result = run_graph(record, graph, cells, budget, generate, verify, path)
+            result = run_graph(
+                record,
+                graph,
+                cells,
+                budget,
+                generate,
+                verify,
+                path,
+                message_style=message_style,
+            )
             observed = _retained(result, path)
             arms[arm].append(observed)
             all_rows.append(observed)
@@ -152,7 +174,15 @@ def evaluate_suite(
             path = task_dir / name
             kwargs = {"drop_edge" if kind == "edge" else "drop_cell": value}
             result = run_graph(
-                record, learned, cells, budget, generate, verify, path, **kwargs
+                record,
+                learned,
+                cells,
+                budget,
+                generate,
+                verify,
+                path,
+                message_style=message_style,
+                **kwargs,
             )
             observed = _retained(result, path)
             interventions[name].append(observed)
@@ -164,6 +194,7 @@ def evaluate_suite(
         "status": "COMPLETE",
         "plan_digest": digest(plan),
         "router_digest": router.expected_digest,
+        "evaluation_admission": admission,
         "arms": arms,
         "interventions": interventions,
         "paired": paired,
@@ -174,8 +205,12 @@ def evaluate_suite(
                 "successes": sum(row["success"] is True for row in rows),
                 "unknown": sum(row["success"] is None for row in rows),
                 "model_calls": sum(row["cost"]["model_calls"] for row in rows),
+                "verifier_calls": sum(row["cost"]["verifier_calls"] for row in rows),
                 "input_tokens": sum(row["cost"]["input_tokens"] for row in rows),
                 "output_tokens": sum(row["cost"]["output_tokens"] for row in rows),
+                "relay_content_bytes": sum(
+                    row["cost"]["relay_content_bytes"] for row in rows
+                ),
             }
             for key, rows in arms.items()
         },
@@ -188,12 +223,15 @@ def evaluate_suite(
                 "format_rejections",
                 "input_tokens",
                 "output_tokens",
+                "relay_content_bytes",
             )
         },
         "declared_active_parameter_counts_equal": None
         if None in counts
         else len(counts) == 1,
         "matched_actual_cost_claim": False,
+        "relay_content_bytes_scope": RELAY_SCOPE,
+        "physical_transmitted_bytes": None,
         "full_system_cost_known": False,
         "search_cost_included_in_above_totals": False,
         "search_cost_location": "separate bound SEARCH.json; do not discard or relabel free",

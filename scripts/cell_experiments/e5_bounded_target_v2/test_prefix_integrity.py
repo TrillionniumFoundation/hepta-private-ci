@@ -28,6 +28,9 @@ def fixture(refused=(), closed=16):
     }
     counter = {
         "schema": "hepta.e5-codec-tokenizer-readout.v1",
+        "serialization": "native_chat_v2; separately encode exact inference prefix and full assistant continuation",
+        "truncation": False,
+        **{k: 0 for k in v2.ZERO_COUNTERS},
         **{k: request[k] for k in v2.TUPLE},
         "rows": [],
     }
@@ -52,6 +55,10 @@ def fixture(refused=(), closed=16):
                 "prompt_sha256": v2.sha(prompt.encode()),
                 "prompt_bytes": len(prompt.encode()),
                 "prefix_tokens": 100,
+                "prefix_ids_sha256": "d" * 64,
+                "target_ids_sha256": "e" * 64,
+                "prefix_labels_masked": 100,
+                "all_target_labels_retained": 10,
                 "target_sha256": v2.sha(target.encode()),
                 "target_bytes": len(target.encode()),
                 "target_tokens": 10,
@@ -273,6 +280,7 @@ class PrefixIntegrityTests(unittest.TestCase):
         sources, request, counter = fixture()
         counter["rows"][0].update(
             target_tokens=385,
+            all_target_labels_retained=385,
             complete_sft_positions=485,
             fits_original_generation_384=False,
             static_representation_admitted=False,
@@ -282,6 +290,32 @@ class PrefixIntegrityTests(unittest.TestCase):
                 "prefix_1_4_16_representable"
             ]["1"]
         )
+
+    def test_truncation_and_non_tokenizer_scope_are_not_dropped(self):
+        sources, request, original = fixture()
+        for key, value in (
+            ("truncation", True),
+            ("truncation", None),
+            *((key, value) for key in v2.ZERO_COUNTERS for value in (1, False, None)),
+            ("serialization", "changed-template"),
+        ):
+            counter = {**original, key: value}
+            with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                v2.complete_readout(*serialized(request, counter), sources)
+
+    def test_complete_labels_and_exact_token_identities_are_required(self):
+        sources, request, original = fixture()
+        for key, value in (
+            ("prefix_labels_masked", 99),
+            ("all_target_labels_retained", 9),
+            ("all_target_labels_retained", True),
+            ("prefix_ids_sha256", None),
+            ("target_ids_sha256", "not-a-hash"),
+        ):
+            counter = copy.deepcopy(original)
+            counter["rows"][0][key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                v2.complete_readout(*serialized(request, counter), sources)
 
     def test_pinned_manifest_rejects_self_consistent_reordering(self):
         with tempfile.TemporaryDirectory() as directory:

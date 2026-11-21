@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.e4-reporting-scope-repair.v1",
+  "base": "0d6a3c0e87d74a4bb378e881c29cb7f5baa3f840",
+  "archive": "reporting-validation.tar.gz",
+  "archive_bytes": 27368,
+  "archive_sha256": "16bb6a98d66ee3b2d4efb155bb9f84d02a7471c5b253e63827bb82a6a9e2637f",
+  "members": [
+    {
+      "path": "CI_FAILURE.log",
+      "bytes": 89629,
+      "sha256": "80fdbebf730d7cb405d9eb69afbd9a0653ab725dc62f94f6c17839b1ae33d00b"
+    },
+    {
+      "path": "PRIOR_FAILURES.json",
+      "bytes": 836,
+      "sha256": "75f5808bacbf9a6f0c20b42414f66bdda3e9c6ed5b987b46c96b8cabe9a2e9ad"
+    },
+    {
+      "path": "FIXTURE_MATERIALIZATION.json",
+      "bytes": 1933,
+      "sha256": "f88751ecf6b5f035bc7d9a849591ebc7413dbe44f8f500b55560d54d38153785"
+    },
+    {
+      "path": "test-final/stdout",
+      "bytes": 95,
+      "sha256": "1607574e2ed7dd11d8c04030c5f121e03b2dc9119c84debd17a922b94031ec0e"
+    },
+    {
+      "path": "test-final/stderr",
+      "bytes": 1401,
+      "sha256": "a25a890a82e360d12dcfa377901505f7f04ca2a2b95ea99fcb3949d504be0f11"
+    },
+    {
+      "path": "test-final/RESULT.json",
+      "bytes": 444,
+      "sha256": "6c29a975965e131ead221ca37e6f22e9975a6f7253a7d544e3236e69b255b954"
+    },
+    {
+      "path": "FORMAT_RESULT.json",
+      "bytes": 29363,
+      "sha256": "d30b48a98ac3e2ecc990656c8a238b2e99a7833cd16ac4840385af162527df15"
+    }
+  ],
+  "new_production_scope": "explicit exposed-diagnostic cost reporting with plan/study binding; legacy scope remains unverified",
+  "test_result": {
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "cell_experiments.online_v4.test_reporting_v4"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 7.5858564720110735,
+    "source_hashes": {
+      "reporting_v4.py": "61a9208dc6836696cc3d18063324d6bf16bcb6e026ca59d7b2e36bbd0a71ab82",
+      "test_reporting_v4.py": "98072c85cd31aba91ac9184729b090372adbe368fb02e4da55ccc67ff63d5f80"
+    },
+    "model_calls": 0,
+    "learning_qualification": false
+  },
+  "formatted_source_hashes": {
+    "scripts/cell_experiments/online_v4/reporting_v4.py": "61a9208dc6836696cc3d18063324d6bf16bcb6e026ca59d7b2e36bbd0a71ab82",
+    "scripts/cell_experiments/online_v4/test_reporting_v4.py": "967d9c9fcea3d4d6d2f74603fb4ebf8ee8dfcb32c68af00f1079cc0a8c57886c"
+  },
+  "no_tests_rerun_after_format": true
+}
