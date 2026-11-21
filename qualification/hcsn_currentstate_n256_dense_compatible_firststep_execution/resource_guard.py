@@ -8,13 +8,13 @@ import resource
 import sys
 from pathlib import Path
 
-KEY = "hcsn-n256-dense-compatible-firststep-hosted-20261121-c06d-001"
+KEY = "hcsn-n256-dense-compatible-firststep-runtime-v2-20261121-c06d-001"
 MIN_AVAILABLE_KIB = 8 * 1024 * 1024
 MIN_CGROUP_HEADROOM = 2 * 1024**3
 AS_BYTES = 4 * 1024**3
 THREADS = ("MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS", "OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS")
 EXPECTED_RUNTIME = {
-    "numpy": ("2.3.5", "81412454021a86a9199d8c3ae4b5e1312e7498437ba9e3fdcc6f5919c0a6482c", "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38"),
+    "numpy": ("2.3.5", "b26a041e454c2818928e519579857512360b8d5f124fb31d0971ffb3075ac5bc", "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38"),
     "scipy": ("1.17.0", "d98e3cc57253f7f8c6ca4f5b775a4747815edc9b1bcd5295c9dacc3c8d49c7b0", "335bc6e0a9909dc7534f9569a3685a92dc8001cb8c63a6da4c239849ff02d4d0"),
 }
 
@@ -98,9 +98,9 @@ def admit():
         if os.environ.get("GITHUB_REF") != "refs/heads/research/hcsn-n256-dense-compatible-firststep-20261121-c06d":
             raise ValueError("single research ref identity")
     elif event == "pull_request":
-        if os.environ.get("GITHUB_HEAD_REF") != "research/hcsn-n256-dense-compatible-firststep-opened-20261121-c06d":
+        if os.environ.get("GITHUB_HEAD_REF") != "research/hcsn-n256-dense-compatible-firststep-runtime-v2-20261121-c06d":
             raise ValueError("single activation head identity")
-        if os.environ.get("GITHUB_BASE_REF") != "intent/hcsn-n256-dense-compatible-firststep-execution-20261121-c06d":
+        if os.environ.get("GITHUB_BASE_REF") != "research/hcsn-n256-dense-compatible-runtime-probe-20261121-c06d":
             raise ValueError("single activation base identity")
     else:
         raise ValueError("single dispatch event identity")

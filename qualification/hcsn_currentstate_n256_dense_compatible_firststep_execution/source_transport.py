@@ -17,10 +17,10 @@ from pathlib import Path
 
 
 HERE = Path(__file__).resolve().parent
-KEY = "hcsn-n256-dense-compatible-firststep-hosted-20261121-c06d-001"
-HEAD = "research/hcsn-n256-dense-compatible-firststep-opened-20261121-c06d"
-BASE = "intent/hcsn-n256-dense-compatible-firststep-execution-20261121-c06d"
-RECEIPT_SHA256 = "1be13af8d353621f3ac7bee386979e6d55e8930001426ff275f1cdd7028d5b21"
+KEY = "hcsn-n256-dense-compatible-firststep-runtime-v2-20261121-c06d-001"
+HEAD = "research/hcsn-n256-dense-compatible-firststep-runtime-v2-20261121-c06d"
+BASE = "research/hcsn-n256-dense-compatible-runtime-probe-20261121-c06d"
+RECEIPT_SHA256 = "4ae05c74f7a06161a48124801f7a1e0d65349596b58fcc157641b0db3fc47142"
 
 
 def sha(raw):
@@ -40,7 +40,7 @@ def event_head():
 
 
 def require_transport_identity():
-    receipt = HERE / "SOURCE_WORKFLOW_EXECUTION.json"
+    receipt = HERE / "RUNTIME_V2_EXECUTION.json"
     if sha(receipt.read_bytes()) != RECEIPT_SHA256:
         raise ValueError("source workflow execution receipt identity")
     value = json.loads(receipt.read_text())
@@ -123,7 +123,7 @@ def main():
         write(output / "SOURCE_TRANSPORT_ERROR.json", {"detail": detail})
     finally:
         write(output / "SOURCE_TRANSPORT.json", {
-            "schema": "hcsn-n256-dense-compatible-firststep-source-transport-v1",
+        "schema": "hcsn-n256-dense-compatible-firststep-runtime-v2-source-transport-v1",
             "identity": KEY, "status": status, "detail": detail,
             "elapsed_seconds": time.time() - started,
             "historical_sparse_red_preserved": True,

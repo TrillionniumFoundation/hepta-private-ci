@@ -18,6 +18,13 @@ Python 3.12.16, recorded as a separate runtime amendment rather than inherited
 from the unused Ubuntu 24.04/Python 3.12.3 plan.  Complete PASS or RED originals
 are compressed and chunked into the immutable job log for independent recovery.
 
+The first admitted hosted identity is terminal RED at NumPy RECORD admission
+before numerical import or child start (Actions 44905572946).  A separate
+zero-model probe (Actions 44906137601) measured the installed NumPy RECORD as
+`b26a041e454c2818928e519579857512360b8d5f124fb31d0971ffb3075ac5bc`.
+Runtime-v2 is a new identity with its own one-attempt key; it does not retry,
+repair, or inherit qualification from the terminal first identity.
+
 The child rebuilds the authentic boundary once, publishes its complete bytes,
 requires 68,105 bitwise-equal boundary coordinates, then performs exactly two
 dense exponentials and compares the complete 69,728-coordinate capsule with the

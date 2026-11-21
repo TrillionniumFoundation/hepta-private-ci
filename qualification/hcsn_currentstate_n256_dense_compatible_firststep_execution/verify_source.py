@@ -54,6 +54,12 @@ def main():
             raise ValueError("runtime probe identity")
         if json.loads(runtime_probe.read_text()) != freeze["runtime_probe_contract"]:
             raise ValueError("runtime probe contract")
+    runtime_v2 = HERE / "RUNTIME_V2_EXECUTION.json"
+    if runtime_v2.exists():
+        if sha(runtime_v2) != freeze["runtime_v2_execution_sha256"]:
+            raise ValueError("runtime v2 execution identity")
+        if json.loads(runtime_v2.read_text()) != freeze["runtime_v2_execution_contract"]:
+            raise ValueError("runtime v2 execution contract")
     if any(name in sys.modules for name in ("numpy", "scipy", "torch")):
         raise ValueError("source verifier imported numerical module")
     print("PASS_FROZEN_N256_DENSE_COMPATIBLE_FIRSTSTEP_EXECUTION_SOURCE")
