@@ -36,6 +36,18 @@ def main():
             raise ValueError("opened activation identity")
         if json.loads(opened.read_text()) != freeze["execution_open_contract"]:
             raise ValueError("opened activation contract")
+    newly_opened = HERE / "EXECUTION_OPENED.json"
+    if newly_opened.exists():
+        if sha(newly_opened) != freeze["execution_opened_sha256"]:
+            raise ValueError("newly opened activation identity")
+        if json.loads(newly_opened.read_text()) != freeze["execution_opened_contract"]:
+            raise ValueError("newly opened activation contract")
+    source_execution = HERE / "SOURCE_WORKFLOW_EXECUTION.json"
+    if source_execution.exists():
+        if sha(source_execution) != freeze["source_workflow_execution_sha256"]:
+            raise ValueError("source workflow execution identity")
+        if json.loads(source_execution.read_text()) != freeze["source_workflow_execution_contract"]:
+            raise ValueError("source workflow execution contract")
     if any(name in sys.modules for name in ("numpy", "scipy", "torch")):
         raise ValueError("source verifier imported numerical module")
     print("PASS_FROZEN_N256_DENSE_COMPATIBLE_FIRSTSTEP_EXECUTION_SOURCE")

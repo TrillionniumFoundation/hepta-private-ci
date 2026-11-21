@@ -9,6 +9,15 @@ and a single research ref is created. The one key is
 `hcsn-n256-dense-compatible-firststep-hosted-20261121-c06d-001`; delayed ACKs
 must be reconciled against it and never replaced.
 
+The original push, opened-only, and later-added-workflow transports produced no
+numerical run.  The admitted fallback therefore uses the already registered
+source workflow: its normal and optimized controls run first, and only the last
+optimized test on the exact activation branch may install the frozen wheels and
+invoke the launcher.  The observed `ubuntu-latest` image is Ubuntu 26.04 with
+Python 3.12.16, recorded as a separate runtime amendment rather than inherited
+from the unused Ubuntu 24.04/Python 3.12.3 plan.  Complete PASS or RED originals
+are compressed and chunked into the immutable job log for independent recovery.
+
 The child rebuilds the authentic boundary once, publishes its complete bytes,
 requires 68,105 bitwise-equal boundary coordinates, then performs exactly two
 dense exponentials and compares the complete 69,728-coordinate capsule with the

@@ -98,7 +98,7 @@ def admit():
         if os.environ.get("GITHUB_REF") != "refs/heads/research/hcsn-n256-dense-compatible-firststep-20261121-c06d":
             raise ValueError("single research ref identity")
     elif event == "pull_request":
-        if os.environ.get("GITHUB_HEAD_REF") != "research/hcsn-n256-dense-compatible-firststep-activation-20261121-c06d":
+        if os.environ.get("GITHUB_HEAD_REF") != "research/hcsn-n256-dense-compatible-firststep-opened-20261121-c06d":
             raise ValueError("single activation head identity")
         if os.environ.get("GITHUB_BASE_REF") != "intent/hcsn-n256-dense-compatible-firststep-execution-20261121-c06d":
             raise ValueError("single activation base identity")
@@ -109,8 +109,15 @@ def admit():
         raise ValueError("admitted source commit identity")
     if (os.environ.get("RUNNER_OS"), os.environ.get("RUNNER_ARCH")) != ("Linux", "X64"):
         raise ValueError("runner identity")
-    if sys.version_info[:3] != (3, 12, 3):
+    if sys.version_info[:3] != (3, 12, 16):
         raise ValueError("python identity")
+    os_release = {}
+    for line in Path("/etc/os-release").read_text().splitlines():
+        if "=" in line:
+            name, value = line.split("=", 1)
+            os_release[name] = value.strip('"')
+    if (os_release.get("ID"), os_release.get("VERSION_ID")) != ("ubuntu", "26.04"):
+        raise ValueError("amended runner image identity")
     if any(os.environ.get(name) != "1" for name in THREADS):
         raise ValueError("thread environment")
     if any(name in sys.modules for name in ("numpy", "scipy", "torch")):
