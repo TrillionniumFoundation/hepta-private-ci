@@ -35,14 +35,14 @@ async fn real_selected_initial_query_actual_forward_then_withdrawal_is_sticky() 
             |proof| {
                 let load = proof.measured_load();
                 let forward = proof.measured_forward();
-                assert_eq!(load.generation(), 1);
-                assert_eq!(forward.ready_digest(), load.ready_digest());
-                assert_eq!(proof.scores_q32().map(<[i64]>::len), Some(2));
+                std::assert_eq!(load.generation(), 1);
+                std::assert_eq!(forward.ready_digest(), load.ready_digest());
+                std::assert_eq!(proof.scores_q32().map(<[i64]>::len), Some(2));
                 assert!(!proof.selection_digest().is_zero());
                 assert!(!forward.response_digest().is_zero());
                 assert!(!forward.input_digest().is_zero());
                 let (request, reservation) = forward.control_ids();
-                assert_eq!(reservation, format!("reservation-{request}"));
+                std::assert_eq!(reservation, format!("reservation-{request}"));
                 Ok((
                     proof.selection_digest(),
                     load.ready_digest(),
@@ -57,7 +57,7 @@ async fn real_selected_initial_query_actual_forward_then_withdrawal_is_sticky() 
     let selected = owner.with_current_initial_load(|proof| {
         Ok((proof.selection_digest(), proof.measured().ready_digest()))
     })?;
-    assert_eq!((actual.0, actual.1), selected);
+    std::assert_eq!((actual.0, actual.1), selected);
     fixture.withdraw()?;
     let (mut owner, refused) = tokio::task::spawn_blocking(move || {
         let refused = owner.with_current_initial_read::<()>(
@@ -128,7 +128,7 @@ async fn real_selected_initial_query_refuses_before_claim_and_keeps_cleanup() ->
         })
         .await?;
         assert!(refused.is_err(), "{name}");
-        assert_eq!(fs::read(&journal)?, journal_before);
+        std::assert_eq!(fs::read(&journal)?, journal_before);
         assert!(
             owner
                 .with_current_initial_load::<()>(|_| panic!("closed query revived"))
@@ -197,7 +197,7 @@ async fn real_selected_initial_query_outer_error_closes_owner_and_keeps_complete
     let completed = cold
         .get(&completed_id)
         .ok_or("completed original read missing")?;
-    assert_eq!(completed.state, RequestState::Completed);
+    std::assert_eq!(completed.state, RequestState::Completed);
     assert!(completed.terminal_observation_digest.is_some());
     issuer.await?.map_err(issuer_error)?;
     archive_authority(&authority, &input.output)?;
