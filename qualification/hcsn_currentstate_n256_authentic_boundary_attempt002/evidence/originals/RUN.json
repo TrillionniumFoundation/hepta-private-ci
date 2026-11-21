@@ -1,0 +1,42 @@
+{
+  "all_closed": false,
+  "counters": {
+    "authentic_distinct_input_file_accesses": 8,
+    "boundary_builds": 2,
+    "container_encodes": 2,
+    "dense_exponential_actions": 0,
+    "dynamic_steps": 0,
+    "exact_comparator_calls": 1,
+    "npz_decodes": 2,
+    "optimizer_steps": 0,
+    "sparse_exponential_actions": 0,
+    "torch_calls": 0
+  },
+  "cpu_seconds": 0.25970974699999994,
+  "exact_comparator": {
+    "coordinates_compared": 68105,
+    "mismatches": 0,
+    "status": "EXACT"
+  },
+  "identity": "hcsn-n256-authentic-boundary-attempt002-20261121-c06d",
+  "maximum_rss_kib": 64496,
+  "numerical_modules": {
+    "numpy": true,
+    "scipy": true,
+    "torch": false
+  },
+  "outputs": {
+    "CANDIDATE_BOUNDARY.bin": {
+      "bytes": 545171,
+      "sha256": "e580e44a679ecf9e2588c989cd4d026e326e7364331c46d1927b00ccada78fd4"
+    },
+    "ORACLE_BOUNDARY.bin": {
+      "bytes": 545171,
+      "sha256": "e580e44a679ecf9e2588c989cd4d026e326e7364331c46d1927b00ccada78fd4"
+    }
+  },
+  "qualification": false,
+  "result": "EXACT",
+  "unique_execution_key": "hcsn-n256-authentic-boundary-hosted-20261121-c06d-002",
+  "wall_seconds": 0.2600553035736084
+}
