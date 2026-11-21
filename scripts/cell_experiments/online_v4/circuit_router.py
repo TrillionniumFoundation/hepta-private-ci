@@ -21,6 +21,7 @@ from .circuit_contract import (
     write_new,
 )
 from .circuit_runtime import run_graph
+from .circuit_admission import group_bindings, message_binding
 
 
 @dataclass(frozen=True)
@@ -30,6 +31,7 @@ class RouterPlan:
     ridge: float = 1.0
     output_token_penalty: float = 0.0
     model_call_penalty: float = 0.0
+    message_style: str = "bundled_v4"
 
 
 def prompt_features(record, dimensions):
@@ -57,6 +59,9 @@ def _validate_plan(plan):
     require(
         isinstance(plan, RouterPlan) and is_sha(plan.execution_binding_digest),
         "frozen callback/runtime binding required",
+    )
+    require(
+        plan.message_style in ("bundled_v4", "native_turn_v1"), "unknown message style"
     )
     require(
         type(plan.feature_dimensions) is int
@@ -169,12 +174,16 @@ def fit_router(records, graphs, cells, budget, generate, verify, output_dir, *, 
     )
     for graph in graphs:
         validate(cells, graph, budget)
+    groups = group_bindings(records)
+    message_digest = message_binding(cells, plan.message_style)
     directory = Path(output_dir)
     directory.mkdir(parents=True, exist_ok=False)
     frozen = {
         "schema": "hepta.graph-search-plan.v4",
         "plan": asdict(plan),
         "record_digests": [digest(row) for row in records],
+        "training_group_bindings": groups,
+        "message_binding_digest": message_digest,
         "contracts": [contract_record(cells, graph, budget) for graph in graphs],
         "planned_model_call_opportunities": len(records)
         * len(graphs)
@@ -192,7 +201,16 @@ def fit_router(records, graphs, cells, budget, generate, verify, output_dir, *, 
         feature_costs.append(cost)
         for graph_index, graph in enumerate(graphs):
             location = directory / (f"task-{row_index:04d}") / graph.graph_id
-            result = run_graph(record, graph, cells, budget, generate, verify, location)
+            result = run_graph(
+                record,
+                graph,
+                cells,
+                budget,
+                generate,
+                verify,
+                location,
+                message_style=plan.message_style,
+            )
             require(
                 type(result["success"]) is bool,
                 "unknown business result cannot label router",
@@ -232,6 +250,8 @@ def fit_router(records, graphs, cells, budget, generate, verify, output_dir, *, 
         "training_plan_digest": digest(frozen),
         "training_record_digests": frozen["record_digests"],
         "training_task_ids": [row["task_id"] for row in records],
+        "training_group_bindings": groups,
+        "message_binding_digest": message_digest,
         "feature_spec": frozen["feature_spec"],
         "training_only": "A",
         "frozen": True,

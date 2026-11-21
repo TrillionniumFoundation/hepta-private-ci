@@ -127,6 +127,7 @@ class CircuitRouterTests(unittest.TestCase):
             fixed_graph=Graph("fixed", ("first", "second")),
             random_seed=1729,
             execution_binding_digest=self.plan.execution_binding_digest,
+            panel_scope="exposed_diagnostic",
         )
         self.assertEqual(
             set(report["arms"]), {"single", "fixed", "random_sparse", "learned_sparse"}
@@ -155,6 +156,8 @@ class CircuitRouterTests(unittest.TestCase):
                 )
         self.assertFalse(report["matched_actual_cost_claim"])
         self.assertFalse(report["scientific_qualification"])
+        self.assertTrue(report["evaluation_admission"]["diagnostic_only"])
+        self.assertTrue(report["evaluation_admission"]["selection_on_this_panel"])
 
     def test_token_overrun_keeps_raw_output_and_records_incomplete_cost(self):
         base = ScriptedCells(self.cells)

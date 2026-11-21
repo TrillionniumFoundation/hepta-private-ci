@@ -13,6 +13,13 @@ PREFIX_SHA = "1319a7884200321c108f08bae4c48e9a0e6417b9eb00b34cb1b9d12c0bf38a69"
 LEGACY_SHA = "bbfbe6cc9d433755ad22440cd23c0621d0ddf26f414531a3f44e2e0debed3092"
 TUPLE = ("source_freeze_sha256", "target_readout_sha256", "tokenizer_freeze_sha256")
 GATES = ("v1_static_context_closed", "structural_roundtrip", "visible_action_roundtrip")
+ZERO_COUNTERS = (
+    "model_loads",
+    "forward_calls",
+    "generation_calls",
+    "training_updates",
+    "native_replays",
+)
 
 
 def sha(raw):
@@ -22,6 +29,14 @@ def sha(raw):
 def require(condition, message):
     if not condition:
         raise ValueError(message)
+
+
+def is_sha(value):
+    return (
+        type(value) is str
+        and len(value) == 64
+        and set(value) <= set("0123456789abcdef")
+    )
 
 
 def original_source_ids(index_path, prefix_path):
@@ -66,12 +81,7 @@ def validate_request(request, sources):
     )
     require(request.get("tokenizer_entrypoint", ENTRY) == ENTRY, "wrong v2 entrypoint")
     require(
-        all(
-            type(request.get(k)) is str
-            and len(request[k]) == 64
-            and set(request[k]) <= set("0123456789abcdef")
-            for k in TUPLE
-        ),
+        all(is_sha(request.get(k)) for k in TUPLE),
         "missing source/target/tokenizer binding",
     )
     records = ordered_rows(request.get("records"), sources)
@@ -98,6 +108,16 @@ def complete_readout(request_raw, counter_raw, sources):
     require(
         counter.get("schema") == "hepta.e5-codec-tokenizer-readout.v1",
         "wrong original counter result",
+    )
+    require(counter.get("truncation") is False, "complete untruncated counter required")
+    require(
+        all(type(counter.get(k)) is int and counter[k] == 0 for k in ZERO_COUNTERS),
+        "counter must retain tokenizer-only execution scope",
+    )
+    require(
+        counter.get("serialization")
+        == "native_chat_v2; separately encode exact inference prefix and full assistant continuation",
+        "counter serialization differs from original protocol",
     )
     require(
         counter.get("request_sha256") == sha(request_raw), "counter request changed"
@@ -131,6 +151,9 @@ def complete_readout(request_raw, counter_raw, sources):
         )
         prefix = row.get("prefix_tokens")
         require(type(prefix) is int and prefix >= 0, "invalid prefix token count")
+        require(
+            is_sha(row.get("prefix_ids_sha256")), "missing exact prefix token identity"
+        )
         bounds = {
             "fits_original_native_message_bytes_65536": prompt_bytes <= 65536,
             "fits_original_input_4096": prefix <= 4096,
@@ -141,6 +164,14 @@ def complete_readout(request_raw, counter_raw, sources):
         if target is not None:
             tokens, target_bytes = row.get("target_tokens"), len(target.encode())
             require(type(tokens) is int and tokens >= 0, "invalid target token count")
+            require(
+                is_sha(row.get("target_ids_sha256"))
+                and type(row.get("prefix_labels_masked")) is int
+                and row["prefix_labels_masked"] == prefix
+                and type(row.get("all_target_labels_retained")) is int
+                and row["all_target_labels_retained"] == tokens,
+                "complete target labels or masked prefix changed",
+            )
             require(
                 row.get("target_sha256") == sha(target.encode())
                 and type(row.get("target_bytes")) is int
@@ -191,6 +222,9 @@ def complete_readout(request_raw, counter_raw, sources):
         "source_prefix_sha256": PREFIX_SHA,
         "request_sha256": sha(request_raw),
         "original_counter_sha256": sha(counter_raw),
+        "original_counter_scope": {
+            k: counter[k] for k in ("truncation", "serialization", *ZERO_COUNTERS)
+        },
         **{k: request[k] for k in TUPLE},
         "rows": rows,
         "prefix_1_4_16_representable": {k: prefixes[k] for k in ("1", "4", "16")},
