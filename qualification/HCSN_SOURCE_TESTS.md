@@ -15,7 +15,8 @@ The workflow explicitly loads `finite_control_tests`, `impulse_execution_tests`,
 `uniformized_flow_tests`, `fixed_delay_reference_tests`, `batched_flow_tests`,
 and the confirmatory `tasks_tests`, `joint_tests`, `architecture_tests`,
 `ablation_tests` and `boundary_control_tests`, plus the stdlib outer coordinator
-`campaign_tests`. The explicit allowlist contains 11 modules and 40 tests.
+`campaign_tests` and the read-only `reporting.tests`. The explicit allowlist
+contains 12 modules and 47 tests.
 Import failures, empty modules,
 test failures and skipped tests fail the job. Official CfC must import before
 the suite starts, so its optional-dependency fallback cannot hide an absent
