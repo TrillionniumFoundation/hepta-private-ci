@@ -3,21 +3,39 @@
   "files": [
     {
       "path": "README.md",
-      "source": "publication-ci-repair/README-final.md",
-      "bytes": 21077,
-      "sha256": "30ca0b08b948ed36fa89bfe82bb526b0340cea9d7b4e8c550d204777a1e1ed65",
-      "prior_published_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
-      "prior_published_sha256": "6014a0608a2b08cfda51aac1a4a474283fec73ae6e0f6cbdda8be42853f4a07a",
-      "publication_change": "Update archive access instructions and record the publication packaging followup."
+      "source": "publication-ci-repair/whitespace/README.md",
+      "bytes": 22658,
+      "sha256": "34f6cda42fff5cbce4a107949a79ea607f20fb952e743b78cdcf7f371bc878d1",
+      "prior_published_commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+      "prior_published_sha256": "30ca0b08b948ed36fa89bfe82bb526b0340cea9d7b4e8c550d204777a1e1ed65",
+      "publication_change": "Record the original whitespace-check failure and lossless raw-text archive storage.",
+      "previous_manifest_record": {
+        "path": "README.md",
+        "source": "publication-ci-repair/README-final.md",
+        "bytes": 21077,
+        "sha256": "30ca0b08b948ed36fa89bfe82bb526b0340cea9d7b4e8c550d204777a1e1ed65",
+        "prior_published_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+        "prior_published_sha256": "6014a0608a2b08cfda51aac1a4a474283fec73ae6e0f6cbdda8be42853f4a07a",
+        "publication_change": "Update archive access instructions and record the publication packaging followup."
+      }
     },
     {
       "path": "STATUS.json",
-      "source": "publication-ci-repair/STATUS-final.json",
-      "bytes": 5094,
-      "sha256": "7d89ece2f95c1c0cd18aa442d3483b1390bebbe59087b79849aa2919f55176ea",
-      "prior_published_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
-      "prior_published_sha256": "d531229c405ea0d9c79aa9df8f032aa0af2dbb0806d899cfd7dbe91d41c1433e",
-      "publication_change": "Update archive access instructions and record the publication packaging followup."
+      "source": "publication-ci-repair/whitespace/STATUS.json",
+      "bytes": 6207,
+      "sha256": "06f417dd5bf6961b3107c6285c88cc6ca115056b9045ec0d4baa3be88ace5106",
+      "prior_published_commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+      "prior_published_sha256": "7d89ece2f95c1c0cd18aa442d3483b1390bebbe59087b79849aa2919f55176ea",
+      "publication_change": "Record the original whitespace-check failure and lossless raw-text archive storage.",
+      "previous_manifest_record": {
+        "path": "STATUS.json",
+        "source": "publication-ci-repair/STATUS-final.json",
+        "bytes": 5094,
+        "sha256": "7d89ece2f95c1c0cd18aa442d3483b1390bebbe59087b79849aa2919f55176ea",
+        "prior_published_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+        "prior_published_sha256": "d531229c405ea0d9c79aa9df8f032aa0af2dbb0806d899cfd7dbe91d41c1433e",
+        "publication_change": "Update archive access instructions and record the publication packaging followup."
+      }
     },
     {
       "path": "branch-snapshot-7803.json",
@@ -223,10 +241,17 @@
       "sha256": "c5c0115ce3cfd0c8fffad4ef68a21c03795790b4ccebaee79d5d7ab6ac534773"
     },
     {
-      "path": "formatter-v3-source.patch",
+      "path": "formatter-v3-source.patch.gz",
       "source": "fmt-scope-audit/v3/cumulative-v3.patch",
-      "bytes": 12323,
-      "sha256": "1f3930ad7fae5653c195b26f824f5ab12f84a622dcde983a603ac8ef5b8705c8"
+      "bytes": 3889,
+      "sha256": "02bfb1f892c76c1bd251ee62354f92fbc275b6d21b800fd19cb43b76da457ec5",
+      "encoding": "gzip; original bytes preserved without normalization",
+      "decompressed_bytes": 12323,
+      "decompressed_sha256": "1f3930ad7fae5653c195b26f824f5ab12f84a622dcde983a603ac8ef5b8705c8",
+      "decompressed_git_blob": "c1919c806367e997e0d75d94a49385cc427d68f6",
+      "prior_published_commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+      "prior_published_path": "formatter-v3-source.patch",
+      "publication_change": "Lossless compression preserves original patch and log whitespace while keeping the original Git whitespace check enabled."
     },
     {
       "path": "strict-clippy-execution.json",
@@ -331,10 +356,17 @@
       "sha256": "dd1c983878d1b3d7636639ec2d741d14f541a52068fc7c9ab111303afee83e57"
     },
     {
-      "path": "musl-original-failure.txt",
+      "path": "musl-original-failure.txt.gz",
       "source": "branch-audit/musl-audit/ORIGINAL-FAILED-TEST-EXCERPT.txt",
-      "bytes": 8333,
-      "sha256": "1a12f148e97b5c6a2e37047657f511e5c534f6129da93afa9a1e48e82f36ae38"
+      "bytes": 1624,
+      "sha256": "50a7f1460f7f415e718cde1d5fd0b91bd1591a0303f601ea06edc7b9bc9f3754",
+      "encoding": "gzip; original bytes preserved without normalization",
+      "decompressed_bytes": 8333,
+      "decompressed_sha256": "1a12f148e97b5c6a2e37047657f511e5c534f6129da93afa9a1e48e82f36ae38",
+      "decompressed_git_blob": "e28adc888123edd2cb9303b682c9cbcc55ed3f36",
+      "prior_published_commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+      "prior_published_path": "musl-original-failure.txt",
+      "publication_change": "Lossless compression preserves original patch and log whitespace while keeping the original Git whitespace check enabled."
     },
     {
       "path": "windows-elevated-failures.md",
@@ -349,10 +381,17 @@
       "sha256": "09bbce7c5769d16aa1292dc267d9cc73d6e0291e9731ff88cbc4c65167195804"
     },
     {
-      "path": "earlier-pr6799-body.md",
+      "path": "earlier-pr6799-body.md.gz",
       "source": "publication/pr6799-before.md",
-      "bytes": 65533,
-      "sha256": "530787fd1c2151bcc634b5dd7a57733de965a90be3ba062261869f19215a6531"
+      "bytes": 24340,
+      "sha256": "d66c700d577e47cd243d0bbddaefa53b946169ce8673790d5437278438af12f8",
+      "encoding": "gzip; original bytes preserved without normalization",
+      "decompressed_bytes": 65533,
+      "decompressed_sha256": "530787fd1c2151bcc634b5dd7a57733de965a90be3ba062261869f19215a6531",
+      "decompressed_git_blob": "256d74bf4981e48cc4879b35726c4464b0dfee58",
+      "prior_published_commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+      "prior_published_path": "earlier-pr6799-body.md",
+      "publication_change": "Lossless compression preserves original patch and log whitespace while keeping the original Git whitespace check enabled."
     },
     {
       "path": "current-refs.tsv.gz",
@@ -494,8 +533,13 @@
     }
   ],
   "prior_published_manifest": {
-    "commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
-    "sha256": "469340c8b81c894eeb31f38245df4591250df71e580af1df0b41785030e27a1b",
-    "bytes": 14579
+    "commit": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+    "sha256": "e6285b05de14254808f39fbb08af20e6932f31a935df95cbbbf86387f17e1bff",
+    "bytes": 21792,
+    "earlier_manifest": {
+      "commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+      "sha256": "469340c8b81c894eeb31f38245df4591250df71e580af1df0b41785030e27a1b",
+      "bytes": 14579
+    }
   }
 }

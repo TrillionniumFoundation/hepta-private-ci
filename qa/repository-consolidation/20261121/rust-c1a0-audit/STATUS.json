@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "status": "reviewed_repair_batch_published; evidence_packaging_followup_prepared; repository_consolidation_incomplete",
-  "recorded_at_utc": "2026-11-21T13:27:43.915923+00:00",
+  "status": "reviewed_repair_batch_published; lossless_text_archive_followup_prepared; repository_consolidation_incomplete",
+  "recorded_at_utc": "2026-11-21T14:21:09.328343+00:00",
   "source_commit": "77aae54a30eb37ef7930d01224e5ef312a5014a1",
   "source_tree": "ebf0778517def0426a43e7ae24c46927c82a870d",
   "original_pr_head": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
@@ -93,7 +93,7 @@
   "stop_patch_read_applied_or_reimplemented": false,
   "prior_user_authorization_for_normal_consolidation_remains_in_effect": true,
   "concurrent_unknown_jobs_or_private_checkouts_modified": false,
-  "evidence_commit_policy": "A single-parent evidence-only child of the final reviewed source; current remote head must be freshly read and updated with expected_sha and force=false.",
+  "evidence_commit_policy": "A single-parent QA-only child of the preceding reviewed QA commit; current remote head must be freshly read and updated with expected_sha and force=false.",
   "initial_published_head": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
   "publication_packaging_followup": {
     "original_ci_head": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
@@ -108,5 +108,30 @@
     "archive_parts_manifest": "ARCHIVE-PARTS.json",
     "archive_usage": "ARCHIVE-PARTS-README.md",
     "local_gate_results": "Recorded separately after final combination; not inherited from prior CI."
+  },
+  "publication_whitespace_followup": {
+    "original_ci_head": "bb2ca75092084d22dff2d7a1d6245df75f5cca60",
+    "original_ci_failed_job": 136870143637,
+    "original_ci_run": 44911977664,
+    "failed_command": "git diff --cached --check",
+    "deterministic_merge_completed": true,
+    "rust_tests_or_clippy_reached": false,
+    "full_pr_base": "69ec34ac53176ff1e46a1689048817c91adb5be2",
+    "local_reproduction_exit": 2,
+    "original_files": 3,
+    "original_diagnostics": 13,
+    "storage": "Three lossless gzip files with decompressed byte lengths, SHA-256 and Git blob identities in EVIDENCE-MANIFEST.json.",
+    "original_bytes_preserved": true,
+    "rust_or_production_source_changed": false,
+    "git_whitespace_rules_attributes_ci_rules_or_ignore_lists_changed": false,
+    "preceding_head_codespell_job": {
+      "job_id": 136869516076,
+      "conclusion": "success"
+    },
+    "preceding_head_blob_size_job": {
+      "job_id": 136869516120,
+      "conclusion": "success"
+    },
+    "final_combined_tree_validation": "Recorded after the final combination; prior-head success is not inherited."
   }
 }

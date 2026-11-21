@@ -99,7 +99,7 @@ v3 为 **32 份 AUDIT Rust 副本**逐份核对原 packaging manifest、大小�
 
 具体并发边界仍保留：private `9455785c23e0c8d2407f39283dfe4f80840c0ee5` / tree `e290e07140c1743e31f92f50773541f6ac8760fa` 的旧通过只绑定其原输入，不覆盖该并发 checkout 或接用其未验证成果；冻结 native jobs `19a6`、`19a5`、`19b8`、`19ce` 不查询、重放或恢复；未知 key `hepta-rust-c2d514464ab5-exact-source-copy-01` 及并发 native/helper/private-copy jobs 不触碰。本轮另建的 `5a` 恢复 session 有独立输入和日志，不改变上述具体任务边界。
 
-完整此前 PR 说明保存在 `qa/repository-consolidation/20261121/rust-c1a0-audit/earlier-pr6799-body.md`，保留原 handoff、owner 措辞、STOP 和失败记录作为历史事实。该归档只补一个 Markdown 文件末尾换行；不会用新的通过记录抹去旧的失败或未完成状态。当前执行授权按上文用户指令和具体边界处理。各项发布证据的来源、字节数、SHA-256 及公开副本处理见下方索引。
+完整此前 PR 说明保存在 `qa/repository-consolidation/20261121/rust-c1a0-audit/earlier-pr6799-body.md.gz`，保留原 handoff、owner 措辞、STOP 和失败记录作为历史事实。解压后的文件与先前发布版本逐字一致，仍保留初次归档时补入的一个 Markdown 文件末尾换行；不会用新的通过记录抹去旧的失败或未完成状态。当前执行授权按上文用户指令和具体边界处理。各项发布证据的来源、字节数、SHA-256 及公开副本处理见下方索引。
 
 ## 发布材料的大小与术语修订
 
@@ -108,6 +108,20 @@ v3 为 **32 份 AUDIT Rust 副本**逐份核对原 packaging manifest、大小�
 Codespell 2.4.3 唯一命中来自 `lint-source-review.md` 的 Rust 术语表达；该解释性叙述现使用 `mutable static items`。此次只作一处术语展开，不修改任何原日志、测试结果、断言或源代码审查结论。原叙述仍可在 b9 的不可变 Git 对象中核对；对应 manifest 条目区分原来源摘要与修订后的发布摘要。原 `.codespellrc`、忽略词、custody 清单与规则保持。
 
 原失败来源：[Blob size policy](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44909716197/job/136862721519)、[Codespell](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44909716197/job/136862721594)。这一材料修订没有修复 Windows、AppContainer、musl 或其他仍未关闭的平台问题，也不代替最终 head 的完整 CI。
+
+## 原始文本记录的无损压缩
+
+`bb2ca75092084d22dff2d7a1d6245df75f5cca60` 的原远端 Codespell 与 Blob size policy 均已通过。随后 learning.operator deterministic merge 在成功构造真实合并后，被原 `git diff --cached --check` 拦下；Rust Clippy 和测试尚未开始。原失败见 [job 136870143637](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44911977664/job/136870143637)。本地按完整 PR base `69ec34ac53176ff1e46a1689048817c91adb5be2` 复现相同的三文件、十三条空白诊断。
+
+三份原始文本现以 gzip 保存：历史 PR 正文的 Markdown 行尾空格、原补丁合法的单空格 context 行，以及原 musl 日志的时间戳行尾空格均逐字保留。没有清理、重写或截断原记录；每份压缩文件与解压后原文的大小、SHA-256 和原 Git blob 都登记在 `EVIDENCE-MANIFEST.json`。可用 `gzip -dc 文件名.gz` 读取原文。
+
+| 原始记录 | 当前入口 |
+| --- | --- |
+| 早前完整 PR 正文 | [earlier-pr6799-body.md.gz](earlier-pr6799-body.md.gz) |
+| Formatter v3 原始补丁 | [formatter-v3-source.patch.gz](formatter-v3-source.patch.gz) |
+| musl 原始失败摘录 | [musl-original-failure.txt.gz](musl-original-failure.txt.gz) |
+
+本修订仅改变三份证据的存储表示及导航和摘要。Git 空白规则、属性、CI 检查器、跳过清单、大小限制与 Rust 源码保持；新 head 的完整 CI 仍需实际执行，不能从前一 head 继承资格。
 
 ## 证据导航
 
@@ -122,4 +136,4 @@ Codespell 2.4.3 唯一命中来自 `lint-source-review.md` 的 Rust 术语表达
 | 44/4,203 静态规划及已执行的有限格式检查 | [formatter-v3-full-scope-summary.json](formatter-v3-full-scope-summary.json)、[formatter-v3-full-scope-plan.json.gz](formatter-v3-full-scope-plan.json.gz)、[formatter-v3-format.json](formatter-v3-format.json)、[formatter-v3-format-check.json](formatter-v3-format-check.json)、[formatter-v3-full-ruff.json](formatter-v3-full-ruff.json) |
 | 本轮 5a native 原命令、所有失败/恢复与格式后无重测边界 | [native-validation-index.json](native-validation-index.json)、[native 归档的重组说明](ARCHIVE-PARTS-README.md)、[native-publication-review.json](native-publication-review.json) |
 | 原 6cb 的 102 checks 终态 | [ci-original-6cb-final-summary.json](ci-original-6cb-final-summary.json)、[ci-original-6cb-final-facts.md](ci-original-6cb-final-facts.md) |
-| 早前 PR 全文及历史约束记录 | [earlier-pr6799-body.md](earlier-pr6799-body.md) |
+| 早前 PR 全文及历史约束记录 | [earlier-pr6799-body.md.gz](earlier-pr6799-body.md.gz) |
