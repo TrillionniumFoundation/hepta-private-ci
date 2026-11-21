@@ -2,7 +2,7 @@ name: hcsn-currentstate-n256-runtime-identity-admission
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
     paths:
       - "qualification/hcsn_currentstate_n256_runtime_identity_admission/**"
       - ".github/workflows/hcsn-currentstate-n256-runtime-identity-admission.yml"

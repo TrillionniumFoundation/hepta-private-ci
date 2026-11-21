@@ -117,9 +117,9 @@ def main() -> int:
         "sparse_expm_actions": 0,
         "torch_calls": 0,
         "optimizer_steps": 0,
-        "qualification": false,
-        "production_adoption": false,
-        "all_closed": false,
+        "qualification": False,
+        "production_adoption": False,
+        "all_closed": False,
     }
     cost = {
         "wall_seconds": time.perf_counter() - started_wall,
