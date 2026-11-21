@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-n256-firststep-dense-oracle-no-run-observation-v1",
+  "observed_at_utc": "2026-11-21T00:28:18Z",
+  "source_pr": 6637,
+  "source_head": "3ddb45d203b4573d186bffbc7d1697c6e99e65e6",
+  "observed_pull_request_runs": [
+    {"id": 44257708466, "name": "Hepta architecture convergence", "conclusion": "success"},
+    {"id": 44257708505, "name": "v8-canary", "conclusion": "success"},
+    {"id": 44257708589, "name": "blocking-ci", "conclusion": "failure"}
+  ],
+  "dedicated_one_shot_run_id": null,
+  "dedicated_one_shot_job_id": null,
+  "dedicated_one_shot_artifact_id": null,
+  "n256_input_reads": 0,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "dense_expm_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "historical_negative_and_unknown_preserved": true,
+  "all_closed": false
+}
