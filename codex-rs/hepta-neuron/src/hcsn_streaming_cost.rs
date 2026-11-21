@@ -29,27 +29,63 @@ struct Charge {
     proposals: u64,
 }
 
-#[derive(Deserialize)]
-#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 enum Record {
-    Reserve {
-        identity: String,
-        budget: Budget,
-        previous: String,
-        operation: usize,
-        name: String,
-        charge: Charge,
-    },
-    Settle {
-        identity: String,
-        budget: Budget,
-        previous: String,
-        operation: usize,
-        name: String,
-        status: String,
-        error: Option<String>,
-        cumulative_wall_seconds: f64,
-    },
+    Reserve(ReserveRecord),
+    Settle(SettleRecord),
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum RecordKind {
+    Reserve,
+    Settle,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ReserveRecord {
+    #[serde(rename = "kind")]
+    _kind: RecordKind,
+    identity: String,
+    budget: Budget,
+    previous: String,
+    operation: usize,
+    name: String,
+    charge: Charge,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct SettleRecord {
+    #[serde(rename = "kind")]
+    _kind: RecordKind,
+    identity: String,
+    budget: Budget,
+    previous: String,
+    operation: usize,
+    name: String,
+    status: String,
+    error: Option<String>,
+    cumulative_wall_seconds: f64,
+}
+
+impl Record {
+    fn decode(canonical: &str) -> Result<Self, serde_json::Error> {
+        #[derive(Deserialize)]
+        struct Header {
+            kind: RecordKind,
+        }
+
+        // Internally tagged enums buffer through Serde's Content. With
+        // serde_json/arbitrary_precision, buffered JSON floats become private
+        // Number maps that Content cannot deserialize as f64. Dispatch only on
+        // the tag, then decode the same original bytes into the strict schema.
+        // This also preserves duplicate/unknown-field and numeric-type rejection.
+        match serde_json::from_str::<Header>(canonical)?.kind {
+            RecordKind::Reserve => serde_json::from_str(canonical).map(Self::Reserve),
+            RecordKind::Settle => serde_json::from_str(canonical).map(Self::Settle),
+        }
+    }
 }
 
 #[derive(Deserialize)]
@@ -105,10 +141,10 @@ pub(crate) fn validate_cost(
         if Digest32::of_bytes(item.canonical.as_bytes()).to_string() != item.hash {
             return Err(invalid);
         }
-        let record: Record = serde_json::from_str(&item.canonical).map_err(|_| invalid)?;
+        let record = Record::decode(&item.canonical).map_err(|_| invalid)?;
         let (request, limits, previous) = match &record {
-            Record::Reserve { identity, budget, previous, .. }
-            | Record::Settle { identity, budget, previous, .. } => (identity, budget, previous),
+            Record::Reserve(ReserveRecord { identity, budget, previous, .. })
+            | Record::Settle(SettleRecord { identity, budget, previous, .. }) => (identity, budget, previous),
         };
         if request != &journal.identity
             || previous != &tail.to_string()
@@ -122,7 +158,7 @@ pub(crate) fn validate_cost(
         }
         budget = Some(limits.clone());
         match record {
-            Record::Reserve { operation, name, charge, .. } => {
+            Record::Reserve(ReserveRecord { operation, name, charge, .. }) => {
                 let expected = match name.as_str() {
                     "stream_observation" if [0, batch].contains(&charge.training_examples) => Charge {
                         training_examples: charge.training_examples,
@@ -145,7 +181,7 @@ pub(crate) fn validate_cost(
                     .checked_add(charge.proposals).ok_or(invalid)?;
                 pending = Some((operation, name, charge));
             }
-            Record::Settle { operation, name, status, error, cumulative_wall_seconds, .. } => {
+            Record::Settle(SettleRecord { operation, name, status, error, cumulative_wall_seconds, .. }) => {
                 let (expected_operation, expected_name, charge) = pending.take().ok_or(invalid)?;
                 if operation != expected_operation || name != expected_name
                     || !cumulative_wall_seconds.is_finite() || cumulative_wall_seconds < wall
@@ -182,3 +218,7 @@ pub(crate) fn validate_cost(
     cost.journal_tail = tail;
     Ok(cost)
 }
+
+#[cfg(test)]
+#[path = "hcsn_streaming_cost_tests.rs"]
+mod tests;
