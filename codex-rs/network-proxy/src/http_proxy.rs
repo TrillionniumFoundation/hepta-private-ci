@@ -1347,7 +1347,14 @@ mod tests {
             ..NetworkProxyConfig::default()
         };
         policy.set_allowed_domains(vec!["github.com".to_string()]);
-        let state = Arc::new(network_proxy_state_for_policy(policy));
+        let mut state = network_proxy_state_for_policy(policy);
+        // Preserve the GitHub credential binding without depending on external DNS.
+        // Fixture answers still pass through the normal local/private IP guard.
+        state.set_dns_lookup_for_test(|host, port| {
+            assert_eq!((host, port), ("github.com", 22));
+            Ok(vec![([8, 8, 8, 8], port).into()])
+        });
+        let state = Arc::new(state);
         let mut env = HashMap::from([("GH_TOKEN".to_string(), "ghp-real".to_string())]);
         state.virtualize_child_credentials(&mut env);
 
