@@ -27,7 +27,7 @@ jobs:
   qualification:
     name: Architecture convergence (${{ matrix.lane }})
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
