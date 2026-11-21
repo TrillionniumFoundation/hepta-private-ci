@@ -16,10 +16,10 @@ class BridgeTest(unittest.TestCase):
         self.assertEqual((request["prior_numerical_attempt_count"], request["maximum_numerical_attempts"]), (0, 1))
         self.assertEqual(request["manual_dispatch_limit"], 1)
 
-    def test_registered_workflow_has_exact_opt_in(self):
+    def test_registered_workflow_has_exact_branch_dispatch(self):
         workflow = WORKFLOW.read_text()
-        self.assertIn("hcsn_n256_one_shot", workflow)
-        self.assertIn("default: false", workflow)
+        self.assertNotIn("hcsn_n256_one_shot", workflow)
+        self.assertIn("workflow_dispatch:", workflow)
         self.assertIn("github.event_name == 'workflow_dispatch'", workflow)
         self.assertIn("github.ref_name == 'research/hcsn-n256-firststep-dense-oracle-dispatch-bridge-20261120-c06d'", workflow)
         self.assertEqual(workflow.count("dense_oracle_hosted.launcher"), 1)
@@ -32,8 +32,14 @@ class BridgeTest(unittest.TestCase):
 
     def test_openbao_default_is_preserved(self):
         workflow = WORKFLOW.read_text()
-        self.assertIn("if: ${{ !inputs.hcsn_n256_one_shot }}", workflow)
+        self.assertIn("if: ${{ github.ref_name != 'research/hcsn-n256-firststep-dense-oracle-dispatch-bridge-20261120-c06d' }}", workflow)
         self.assertIn("python3 scripts/verify_openbao_compatibility.py", workflow)
+
+    def test_first_dispatch_rejection_is_zero_run(self):
+        rejected = json.loads((HERE / "DISPATCH_001_REJECTION.json").read_text())
+        self.assertEqual((rejected["github_http_status"], rejected["h_exit_code"]), (422, 1))
+        self.assertIsNone(rejected["actions_run_id"])
+        self.assertEqual((rejected["dynamic_steps"], rejected["dense_expm_actions"]), (0, 0))
 
 
 if __name__ == "__main__":

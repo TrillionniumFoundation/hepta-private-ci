@@ -1,6 +1,6 @@
 # N256 warm-1 registered dispatch bridge
 
-Status: **SOURCE FROZEN / ONE EXPLICIT SAME-KEY PATH / HOLD / all_closed=false**.
+Status: **SOURCE RE-FROZEN AFTER TRANSPORT RED / ONE SAME-KEY PATH / HOLD / all_closed=false**.
 
 Draft #6637 introduced a new pull-request workflow, and Draft #6813 tried to
 attach the one-shot to another workflow that was present only in its source
@@ -9,11 +9,16 @@ neither path.  Exact-head metadata for both drafts has no dedicated N256 run,
 job, artifact, authentic-input read, dynamic step, or matrix exponential.  Both
 transport failures therefore retain zero numerical attempts.
 
-This successor uses the default-branch-registered OpenBao compatibility
-workflow only as a transport identity.  A new boolean input defaults to false,
-so normal workflow calls and dispatches retain the original OpenBao job.  When
-the input is explicitly true on the exact successor branch, the OpenBao job is
-skipped and the unchanged #6637 launcher runs once with the unchanged unique
+The first explicit dispatch was rejected at the GitHub API boundary with HTTP
+422 because its custom input existed only on the candidate ref.  GitHub created
+no Actions run, so that transport RED has zero numerical attempts.  Its exact h
+job ID, command form, stderr, and null Actions identities are retained in
+`DISPATCH_001_REJECTION.json`.
+
+The repaired source keeps the default-branch-registered workflow's bare
+`workflow_dispatch` definition.  Normal calls and dispatches on every other ref
+retain the original OpenBao job.  A dispatch on the exact isolated branch skips
+OpenBao and runs the unchanged #6637 launcher once with the unchanged unique
 execution key.  No threshold, runtime, input, resource gate, timeout, or
 artifact-retention rule is changed.
 

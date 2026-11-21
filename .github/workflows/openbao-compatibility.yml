@@ -4,19 +4,7 @@ on:
   # Automatic pull-request and main-branch fan-out is owned by the two
   # aggregate checks. Deep qualifications remain reusable and manually runnable.
   workflow_call:
-    inputs:
-      hcsn_n256_one_shot:
-        description: Run the branch-exact HCSN N256 one-shot instead of OpenBao checks
-        required: false
-        type: boolean
-        default: false
   workflow_dispatch:
-    inputs:
-      hcsn_n256_one_shot:
-        description: Run the branch-exact HCSN N256 one-shot instead of OpenBao checks
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -27,7 +15,7 @@ concurrency:
 
 jobs:
   compatibility:
-    if: ${{ !inputs.hcsn_n256_one_shot }}
+    if: ${{ github.ref_name != 'research/hcsn-n256-firststep-dense-oracle-dispatch-bridge-20261120-c06d' }}
     name: Verify OpenBao replacement integrity and qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -48,7 +36,7 @@ jobs:
         run: python3 scripts/verify_openbao_compatibility.py
 
   hcsn-n256-one-shot:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.hcsn_n256_one_shot && github.ref_name == 'research/hcsn-n256-firststep-dense-oracle-dispatch-bridge-20261120-c06d' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref_name == 'research/hcsn-n256-firststep-dense-oracle-dispatch-bridge-20261120-c06d' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
