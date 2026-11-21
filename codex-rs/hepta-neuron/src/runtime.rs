@@ -125,6 +125,59 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         })
     }
 
+    /// Recover a first commit whose publication was interrupted, using an
+    /// independently retained expected first checkpoint supplied by the host.
+    ///
+    /// The host must authenticate this initialization intent and bind it to the
+    /// same subject, objective, generation, config and model before calling.
+    /// It must never derive `expected_first` from the journal being recovered.
+    /// An absent/unavailable intent is not permission for unanchored recovery.
+    /// The host must independently establish that initialization is still pending;
+    /// an old first anchor cannot detect rollback of both journal and witness.
+    /// This is not a deletion, revocation, or acknowledged-history repair API.
+    /// The independent witness must positively report no published checkpoint;
+    /// any existing witness continues to use ordinary anchored recovery.
+    /// This entrypoint accepts only the first committed sequence and never
+    /// changes the persistent V1 formats or the behavior of `recover`.
+    #[allow(clippy::too_many_arguments)]
+    pub fn recover_bootstrap_anchored(
+        file: File,
+        native: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        config: NeuronRuntimeConfigV1,
+        expected_first: JournalAnchor,
+        mut witness: W,
+    ) -> Result<Self, NeuronRuntimeError> {
+        config.validate_native(&native)?;
+        if expected_first.sequence != 1 || expected_first.checkpoint_digest.is_zero() {
+            return Err(NeuronRuntimeError::Journal(JournalError::InvalidAnchor));
+        }
+        if witness.current()?.is_some() {
+            return Err(NeuronRuntimeError::BootstrapWitnessPresent);
+        }
+        // The externally supplied anchor is checked before any tail repair.
+        let journal =
+            SparseJournal::open_anchored(file, native, scope, max_records, expected_first)?;
+        let current = journal
+            .current()?
+            .map(|checkpoint| JournalAnchor {
+                sequence: checkpoint.sequence(),
+                checkpoint_digest: checkpoint.digest(),
+            })
+            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
+        if current != expected_first {
+            return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
+        }
+        witness.compare_and_swap(None, expected_first)?;
+        Ok(Self {
+            config,
+            journal,
+            witness,
+            pending: None,
+        })
+    }
+
     pub fn model_request(
         &self,
         input: &NeuronTickInputV1,
