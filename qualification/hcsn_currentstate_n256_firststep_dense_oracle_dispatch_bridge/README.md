@@ -9,20 +9,20 @@ neither path.  Exact-head metadata for both drafts has no dedicated N256 run,
 job, artifact, authentic-input read, dynamic step, or matrix exponential.  Both
 transport failures therefore retain zero numerical attempts.
 
-The first explicit dispatch was rejected at the GitHub API boundary with HTTP
-422 because its custom input existed only on the candidate ref.  GitHub created
-no Actions run, so that transport RED has zero numerical attempts.  Its exact h
-job ID, command form, stderr, and null Actions identities are retained in
-`DISPATCH_001_REJECTION.json`.
+Two explicit OpenBao dispatches were rejected at the GitHub API boundary with
+HTTP 422.  GitHub created no Actions run for either request, so both transport
+REDs have zero numerical attempts.  Their exact h job IDs, command forms,
+stderr, and null Actions identities are retained separately in
+`DISPATCH_001_REJECTION.json` and `DISPATCH_002_REJECTION.json`.
 
-The repaired source keeps the default-branch-registered workflow's bare
-`workflow_dispatch` definition.  Normal calls and dispatches on every other ref
-retain the original OpenBao job.  A dispatch on the exact isolated branch skips
-OpenBao and runs the unchanged #6637 launcher once with the unchanged unique
-execution key.  Its outer transport receipt is separately frozen as
-`hcsn-n256-firststep-dense-oracle-hosted-20261118-c06d-001-dispatch-transport002-after-http422-zero-run`
-so it cannot be confused with the terminal HTTP 422 request.  No threshold,
-runtime, input, resource gate, timeout, or
+The repaired source restores OpenBao byte-for-byte and uses the existing Hepta
+contract gate, whose real workflow-dispatch history includes successful run
+`40463001551`.  Normal calls and dispatches on every other ref retain the
+original contract job.  A dispatch on the exact isolated branch skips that job
+and runs the unchanged #6637 launcher once with the unchanged unique execution
+key.  Its outer transport receipt is separately frozen as
+`hcsn-n256-firststep-dense-oracle-hosted-20261118-c06d-001-dispatch-transport003-after-two-http422-zero-runs`.
+No threshold, runtime, input, resource gate, timeout, or
 artifact-retention rule is changed.
 
 A successful run would close only the authentic N256 warm 0→0.001 dense-oracle
