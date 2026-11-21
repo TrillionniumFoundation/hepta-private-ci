@@ -1,0 +1,28 @@
+# N256 dense-compatible first-step execution admission
+
+Status: **DRAFT / SINGLE ATTEMPT / HOLD / all_closed=false**.
+
+This admission is stacked on Draft #6879 exact head
+`4337d3d50ac25ab2935a2a7773307dc38ef9ab48`. Pull requests execute source-only
+checks. Numerical work is possible only after that exact executable head passes
+and a single research ref is created. The one key is
+`hcsn-n256-dense-compatible-firststep-hosted-20261121-c06d-001`; delayed ACKs
+must be reconciled against it and never replaced.
+
+The child rebuilds the authentic boundary once, publishes its complete bytes,
+requires 68,105 bitwise-equal boundary coordinates, then performs exactly two
+dense exponentials and compares the complete 69,728-coordinate capsule with the
+archived #6818 oracle. No tolerance or ULP rescue is permitted. The archived
+oracle is decoded, not re-executed. PASS and post-build RED retain raw boundary,
+candidate, counters, resource/admission snapshots, and stdout/stderr.
+
+#6823 remains RED with 1,291/69,728 mismatches, maximum absolute error
+`0x1.0600000000000p-50`, and maximum ULP distance 335. A success here could
+cover only fixed authentic N256/C5/phase8 warm 0→0.001 dense-compatible
+propagation. It cannot qualify sparse action, N512, later cycles, arbitrary
+histories, finite-domain all-box accuracy, gradients, full prior, migration,
+full-network training, task benefit, asynchronous complete cost, C2 full replay,
+HPCA custody, production adoption, or `all_closed`.
+
+All historical RED, OOM, cancelled, and UNKNOWN records remain unchanged. C2
+full replay remains 0/6. HPCA remains NoUpdate. Global status remains HOLD.

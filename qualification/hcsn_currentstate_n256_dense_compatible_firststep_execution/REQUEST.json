@@ -1,0 +1,74 @@
+{
+  "schema": "hcsn-n256-dense-compatible-firststep-execution-v1",
+  "identity": "hcsn-n256-dense-compatible-firststep-hosted-20261121-c06d-001",
+  "parent_intent_commit": "4337d3d50ac25ab2935a2a7773307dc38ef9ab48",
+  "unique_execution_key": "hcsn-n256-dense-compatible-firststep-hosted-20261121-c06d-001",
+  "maximum_attempts": 1,
+  "source_stage": {
+    "execution_dispatched": false,
+    "numerical_imports": 0,
+    "dynamic_steps": 0,
+    "dense_expm_actions": 0,
+    "sparse_expm_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "runtime": {
+    "runner": "ubuntu-24.04",
+    "python": "3.12.3",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "threads": 1,
+    "parent_and_child_rlimit_as_bytes": 4294967296,
+    "child_deadline_seconds": 600,
+    "minimum_memavailable_kib": 8388608,
+    "minimum_finite_cgroup_headroom_bytes": 2147483648
+  },
+  "same_run_budget": {
+    "authentic_distinct_input_file_accesses": 4,
+    "npz_decodes": 1,
+    "candidate_boundary_builds": 1,
+    "boundary_container_encodes": 1,
+    "boundary_exact_comparisons": 68105,
+    "dynamic_steps": 1,
+    "candidate_dense_expm_actions": 2,
+    "candidate_sparse_expm_actions": 0,
+    "oracle_reexecutions": 0,
+    "candidate_canonical_encodes": 1,
+    "canonical_decodes": 2,
+    "final_exact_comparisons": 69728,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "archived_inputs": {
+    "boundary_zip": "qualification/hcsn_currentstate_n256_authentic_boundary_attempt002/evidence/originals/artifact.zip",
+    "boundary_zip_sha256": "43d990c1a17e4e075681820caec327e368a0ae3144abdac21ad383d133f3f595",
+    "boundary_sha256": "e580e44a679ecf9e2588c989cd4d026e326e7364331c46d1927b00ccada78fd4",
+    "oracle_zip": "qualification/hcsn_currentstate_n256_firststep_dense_oracle_dispatch_bridge/evidence/run44848445922/ARTIFACT.zip",
+    "oracle_zip_sha256": "3ba4ef88608cbfc04d83fd82c1f05d7b439edf4f9338365625e79b0d52f02400",
+    "oracle_sha256": "b2a6e204e613fead7c0735b12a335a88d2394c8f4da99cab798133443c55dc18"
+  },
+  "pass_gate": {
+    "boundary_bitwise_mismatches": 0,
+    "candidate_oracle_bitwise_mismatches": 0,
+    "tolerance_or_ulp_rescue_allowed": false,
+    "retry_or_replacement_key_allowed": false
+  },
+  "historical_sparse_red": {
+    "draft": 6823,
+    "run": 44851931235,
+    "job": 136685046474,
+    "bitwise_mismatches": 1291,
+    "denominator": 69728,
+    "max_abs_error_hex": "0x1.0600000000000p-50",
+    "max_ulp_distance": 335,
+    "preserved": true
+  },
+  "qualification_scope": "fixed authentic N256 C5 phase8 warm 0-to-0.001 dense-compatible first step only",
+  "sparse_kernel_qualified": false,
+  "largegrid_general_qualified": false,
+  "c2_full_replay_completed_fits": 0,
+  "hpca_status": "NoUpdate",
+  "production_adoption": false,
+  "all_closed": false
+}
