@@ -1,0 +1,45 @@
+{
+  "all_closed": false,
+  "bitwise_mismatches": 665,
+  "capsule_metadata_delta": [],
+  "coordinate_comparisons": 69728,
+  "delta_sign": {
+    "equal_numeric_nonidentical": 0,
+    "observed_greater": 339,
+    "observed_less": 326
+  },
+  "dense_expm_actions": 0,
+  "dynamic_steps": 0,
+  "identity": "hcsn-n256-runtime-v3-mismatch-localization-20261121-c6bc-001",
+  "max_abs_error_hex": "0x1.e000000000000p-54",
+  "max_ulp_distance": 98,
+  "mismatches_by_path": {
+    "state/active": 650,
+    "state/discounted_hit": 5,
+    "state/mass": 5,
+    "state/occupation": 5
+  },
+  "mismatches_by_tensor_class": {
+    "state": 665
+  },
+  "model_calls": 0,
+  "optimizer_steps": 0,
+  "oracle_reexecutions": 0,
+  "parent_red_preserved": true,
+  "production_adoption": false,
+  "qualification": false,
+  "schema": "hcsn-n256-runtime-v3-mismatch-localization-result-v1",
+  "sparse_expm_actions": 0,
+  "torch_calls": 0,
+  "ulp_histogram": {
+    "1": 154,
+    "17-32": 67,
+    "2": 66,
+    "3-4": 93,
+    "33-64": 118,
+    "5-8": 62,
+    "65-128": 37,
+    "9-16": 68,
+    ">128": 0
+  }
+}
