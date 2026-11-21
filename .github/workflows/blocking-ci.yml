@@ -127,6 +127,21 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
+      - name: Reclaim unused hosted SDKs before native tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE"
+          # This ephemeral GitHub-hosted Rust lane does not build Android or .NET.
+          # Keep the exact dependency-impact test commands and all required gates.
+          for unused_sdk in /usr/local/lib/android /usr/share/dotnet; do
+            if [ -d "$unused_sdk" ]; then
+              sudo du -sh "$unused_sdk" || true
+              sudo rm -rf -- "$unused_sdk"
+            fi
+          done
+          df -h "$GITHUB_WORKSPACE"
+
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
