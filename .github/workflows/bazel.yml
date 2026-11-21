@@ -102,6 +102,16 @@ jobs:
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
           )
+          if [[ "${RUNNER_OS}" == "macOS" ]]; then
+            # Bound client-side threads while remote build actions and local
+            # sandboxed tests overlap on the macOS runner.
+            bazel_test_args+=(
+              --jobs=128
+              --loading_phase_threads=8
+              --local_test_jobs=4
+            )
+          fi
+
           ./.github/scripts/run-bazel-ci.sh \
             "${bazel_wrapper_args[@]}" \
             -- \
