@@ -1,0 +1,41 @@
+{
+  "cold_resume_fixture": {
+    "largest_encoded_cursor_bytes": 677,
+    "positive_saved_continuations": 20,
+    "negative_saved_continuations": 20,
+    "highest_included_poisson_index": 20,
+    "complete_certificate_equal_to_scalar": true,
+    "every_output_bit_equal_to_scalar": true,
+    "zero_duration_equal_to_scalar": true
+  },
+  "hard_bounds": {
+    "maximum_cursor_bytes": 131072,
+    "maximum_dimension": 32,
+    "maximum_terms": 1024
+  },
+  "integrity_boundary": {
+    "canonical_json": true,
+    "sha256_body_binding": true,
+    "external_signature_or_custody": false,
+    "hostile_body_and_digest_replacement_prevented": false
+  },
+  "historical_statuses": {
+    "6901_numerical_cause": "UNKNOWN",
+    "6908": "RED_DUPLICATE_KEY",
+    "6913": "RED_NONCANONICAL_INPUT",
+    "c2_full_replay": "0/6",
+    "hpca": "NoUpdate"
+  },
+  "scope": {
+    "all_closed": false,
+    "authentic_provider_calls": 0,
+    "authentic_resource_profile": false,
+    "dynamic_kernel_calls": 0,
+    "exponential_actions": 0,
+    "n256_qualified": false,
+    "optimizer_calls": 0,
+    "resource_gate_closed": false,
+    "torch_calls": 0
+  },
+  "status": "SMALL_SYNTHETIC_ONLY"
+}
