@@ -35,9 +35,13 @@ def measure(model, inputs):
             "total_seconds": finished-start}, features.detach(), state.density.detach(), gradient.detach()
 
 
-def run(output, repetitions):
+def run(output, repetitions, profile="standard"):
     if not 1 <= repetitions <= 7:
         raise ValueError("one to seven retained repeats required")
+    grids = {"standard": ((8, 6, 3), (16, 24, 8), (8, 48, 12)),
+             "large": ((4, 64, 32), (4, 64, 128))}
+    if profile not in grids:
+        raise ValueError("declared standard or large development grid required")
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     # Reserve before any numerical work; interrupted files cannot be overwritten.
@@ -51,11 +55,11 @@ def run(output, repetitions):
     report = {"kind": "development_kernel_comparison", "torch": torch.__version__,
               "python": platform.python_version(), "platform": platform.platform(),
               "threads": [torch.get_num_threads(), torch.get_num_interop_threads()],
-              "torch_config": torch.__config__.show(), "repetitions": repetitions,
+              "torch_config": torch.__config__.show(), "repetitions": repetitions, "profile": profile,
               "sources": {name: hashlib.sha256((source/name).read_bytes()).hexdigest()
                           for name in ("batched_flow.py", "finite_control.py", "uniformized_flow.py", Path(__file__).name)},
               "claims": "FP64 synthetic kernel timings; no task/scaling superiority", "cases": []}
-    for case_index, (batch, bins, stages) in enumerate(((8, 6, 3), (16, 24, 8), (8, 48, 12))):
+    for case_index, (batch, bins, stages) in enumerate(grids[profile]):
         case = {"batch": batch, "bins": bins, "stages": stages, "length": 4, "arms": {}}
         report["cases"].append(case)
         try:
@@ -97,5 +101,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True)
     parser.add_argument("--repetitions", type=int, default=3)
+    parser.add_argument("--profile", choices=("standard", "large"), default="standard")
     args = parser.parse_args()
-    run(args.output, args.repetitions)
+    run(args.output, args.repetitions, args.profile)
