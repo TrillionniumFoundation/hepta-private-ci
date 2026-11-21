@@ -1,0 +1,30 @@
+name: Weight finite contract source checks
+'on':
+  pull_request:
+    paths:
+      - 'qualification/weight_finite_contracts_20261121/**'
+      - '.github/workflows/weight-finite-contracts.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  finite-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Check offline byte identity and cold restoration
+        working-directory: qualification/weight_finite_contracts_20261121
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 -m py_compile *.py
+          python3 offline_controls.py
