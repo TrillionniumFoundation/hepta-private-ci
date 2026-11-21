@@ -1,0 +1,121 @@
+{
+  "append_base_commit": "2b70159464432181d0b2c9509588d74137148216",
+  "archive_container": {
+    "bytes": 10248647,
+    "members": 176,
+    "parts": 29,
+    "sha256": "412cd9263d8b08e5885c823e7a6b4c365e7c4878361c437ff511383b378221e1"
+  },
+  "metadata_increment": {
+    "active_dependency_edges": 71,
+    "all_original_38_selections_unchanged": true,
+    "candidate_digest": "33d4a7edcae8268819e66b71991b10e29807a0cbd359e641049a6a1998c346b7",
+    "closure_sha256": "a7bf67d65bef981338a10d04ec78600932ca20fbd579fc3b4d52f2d664d25b55",
+    "conditional_missing_wheel_bytes": 504322940,
+    "material_rescans": 0,
+    "new_http_attempts": 12,
+    "new_metadata_body_bytes_observed": 3378797,
+    "new_successful_responses": 12,
+    "original_completed_responses_replayed_from_cache": 53,
+    "outer_elapsed_seconds": 39.03839302062988,
+    "outer_exit_code": 0,
+    "phase_outcome": "METADATA_CLOSURE_COMPLETE_REQUIRES_ROOT_REVIEW; independent root review confirms metadata-only closure",
+    "scope_seconds": 120,
+    "selected_packages": 44,
+    "source_job_id": "1a1fcac4f5e-ffbe-1deb",
+    "source_retrieval_warning_retained": true,
+    "source_sha256": "b7a760d8692bd499e6abf8b8a0631526e064c6a2190908e2ddb0227136cf2a91",
+    "whole_wheel_bytes_needed_for_material_completion": 4109714899
+  },
+  "offline_controls": {
+    "initial_local_offline_replay_import_failure_retained": true,
+    "metadata_increment_final_run": {
+      "exit_code": 0,
+      "resource_warning": false,
+      "tests": 15
+    },
+    "metadata_increment_initial_run": {
+      "exit_code": 0,
+      "tests": 12
+    },
+    "metadata_increment_review2_run": {
+      "exit_code": 0,
+      "resource_warning_retained": true,
+      "tests": 15
+    },
+    "original_53_response_replay_source_and_result_retained": true,
+    "stage_a_corrected_prior_run": {
+      "exit_code": 0,
+      "tests": 10
+    },
+    "stage_a_final_approved_run": {
+      "exit_code": 0,
+      "tests": 11
+    },
+    "stage_a_initial_fixture_failure": {
+      "errors": 2,
+      "exit_code": 1,
+      "failures": 0,
+      "tests": 10
+    },
+    "tests_rerun_for_packaging": 0
+  },
+  "retention": {
+    "new_public_network_or_remote_host_commands_for_packaging": 0,
+    "old_execution_evidence_modified": false,
+    "original_7_correction_files_modified": false,
+    "original_local_source_bytes_unchanged": true,
+    "redundant_readback_pages_excluded": 31
+  },
+  "root_original_documents": {
+    "E2_FRESH_READOUT_RULES.md": {
+      "bytes": 5007,
+      "sha256": "4da9213a5f81219d75700fb7c9529e604409a05684c2805620ba953c4f8435f3"
+    },
+    "E2_INCREMENT_TERMINAL_REVIEW.json": {
+      "bytes": 1809,
+      "sha256": "af38135eb4b9746298790c2fcc66de29e009931649e06bbf5de204efc1e9b7c0"
+    }
+  },
+  "schema": "hepta.e2.metadata-recovery-readout.v1",
+  "scope_boundaries": {
+    "automatic_next_phase": false,
+    "cpu_encodings_in_these_two_scopes": 0,
+    "framework_imports_in_these_two_scopes": 0,
+    "installs_in_these_two_scopes": 0,
+    "model_or_native_evaluations_in_these_two_scopes": 0,
+    "old_3600_second_recovery_not_reopened": true,
+    "old_stage_a_failure_not_reclassified": true,
+    "optimizer_updates_in_these_two_scopes": 0,
+    "prior_costs_retained": true,
+    "runtime_ready": false,
+    "scientific_gain_or_retention_claimed": false,
+    "stage_b_execution_evidence_included": false,
+    "wheel_body_downloads_in_these_two_scopes": 0
+  },
+  "stage_a": {
+    "candidate_digest": "1bef34576464ba600e583fa8987363c684ad19a03c3435931b36b2cfbee5eda3",
+    "completed_responses": 53,
+    "controller_sha256": "332bf77f5a416f2c84293f6e7ae878f3f9ca7204d4155732316b65778784f099",
+    "http_attempts": 54,
+    "material_read_bytes_observed": 4030735251,
+    "metadata_body_bytes_observed": 16604448,
+    "original_result_finalization_and_outer_terminal_retained": true,
+    "outer_before_original_deadline": true,
+    "outer_elapsed_seconds": "134.8009338",
+    "outer_exit_code": 2,
+    "phase_outcome": "CONFIRMED_BLOCKED_METADATA_CAP_NO_RUNTIME_READY",
+    "remaining_metadata_cap_at_failure": 172768,
+    "request_54": {
+      "application_body_bytes_observed": 0,
+      "declared_content_length": null,
+      "header_status": "UNKNOWN: executed code did not preserve response headers before guard failure; no retrospective refetch",
+      "physical_total_network_bytes_claimed": false,
+      "refetched_within_original_scope": false,
+      "url": "https://pypi.org/pypi/requests/json"
+    },
+    "scope_goal_succeeded": false,
+    "scope_seconds": 300,
+    "source_job_id": "1a1fc95f9dd-ffbe-1dd5"
+  }
+}
