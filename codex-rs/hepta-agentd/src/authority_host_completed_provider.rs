@@ -22,6 +22,7 @@ impl HistoricalTaskReadRuntime {
         operation: HistoricalReadOperationV1,
         request_id: u64,
         end: Instant,
+        diagnostics: &CompletedDiagnostics,
     ) -> io::Result<Vec<u8>> {
         require_end(end)?;
         let fixed: &CompletedLearningRuntime = self
@@ -61,70 +62,82 @@ impl HistoricalTaskReadRuntime {
                 let (refusal, files) = fixed.original.as_ref().ok_or_else(|| {
                     io::Error::other("fresh original completion descriptors missing")
                 })?;
-                CompletedLearningRecord::accept(
-                    refusal,
-                    root,
-                    &self.deployment.target,
-                    &initial,
-                    end,
-                    || {
-                        fixed.require_original()?;
-                        self.metadata.require_metadata_unchanged()?;
-                        let checked = self.observe_completed_learning(
-                            service,
-                            config,
-                            registration,
-                            owner,
-                            fixed,
-                            files,
-                            None,
-                            mode,
-                            end,
-                        )?;
-                        fixed.require_original()?;
-                        self.metadata.require_metadata_unchanged()?;
-                        require_end(end)?;
-                        Ok((checked.fact.clone(), checked))
-                    },
-                )?
+                diagnostics.check(CompletedStage::TerminalAccept, || {
+                    CompletedLearningRecord::accept(
+                        refusal,
+                        root,
+                        &self.deployment.target,
+                        &initial,
+                        end,
+                        || {
+                            fixed.require_original()?;
+                            self.metadata.require_metadata_unchanged()?;
+                            let checked = self.observe_completed_learning(
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                fixed,
+                                files,
+                                None,
+                                mode,
+                                end,
+                                diagnostics,
+                            )?;
+                            diagnostics.check(CompletedStage::ProviderPostchecks, || {
+                                fixed.require_original()?;
+                                self.metadata.require_metadata_unchanged()?;
+                                require_end(end)?;
+                                Ok(())
+                            })?;
+                            Ok((checked.fact.clone(), checked))
+                        },
+                    )
+                })?
             } else {
                 // Primary fact and all seven file descriptions are opened only
                 // after the existing independent terminal attempt has been Armed.
-                CompletedLearningRecord::read(
-                    root,
-                    &config.state_dir,
-                    &self.deployment.target,
-                    &initial,
-                    end,
-                    |fact| {
-                        fixed.require_original()?;
-                        self.metadata.require_metadata_unchanged()?;
-                        if fact.deployment != fixed.binding.to_string() {
-                            return Err(io::Error::other(
-                                "original completed deployment binding changed",
-                            ));
-                        }
-                        let files = CompletedFiles::retain_original(
-                            fixed.data.files.clone(),
-                            initial.request.envelope.objective_digest,
-                        )?;
-                        let result = self.observe_completed_learning(
-                            service,
-                            config,
-                            registration,
-                            owner,
-                            fixed,
-                            &files,
-                            Some(fact),
-                            mode,
-                            end,
-                        );
-                        fixed.require_original()?;
-                        self.metadata.require_metadata_unchanged()?;
-                        require_end(end)?;
-                        result
-                    },
-                )?
+                diagnostics.check(CompletedStage::TerminalRead, || {
+                    CompletedLearningRecord::read(
+                        root,
+                        &config.state_dir,
+                        &self.deployment.target,
+                        &initial,
+                        end,
+                        |fact| {
+                            fixed.require_original()?;
+                            self.metadata.require_metadata_unchanged()?;
+                            if fact.deployment != fixed.binding.to_string() {
+                                return Err(io::Error::other(
+                                    "original completed deployment binding changed",
+                                ));
+                            }
+                            let files = CompletedFiles::retain_original(
+                                fixed.data.files.clone(),
+                                initial.request.envelope.objective_digest,
+                            )?;
+                            let result = self.observe_completed_learning(
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                fixed,
+                                &files,
+                                Some(fact),
+                                mode,
+                                end,
+                                diagnostics,
+                            );
+                            diagnostics.check(CompletedStage::ProviderPostchecks, || {
+                                fixed.require_original()?;
+                                self.metadata.require_metadata_unchanged()?;
+                                require_end(end)?;
+                                Ok(())
+                            })?;
+                            result
+                        },
+                    )
+                })?
             };
         // No response is formed from an Armed attempt or a caught error.
         require_end(end)?;

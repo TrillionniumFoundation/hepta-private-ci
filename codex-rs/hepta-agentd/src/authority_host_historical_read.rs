@@ -41,6 +41,10 @@ use crate::root_historical_task_read_protocol::WIRE_BOUND;
 mod completed_checkpoint;
 #[path = "authority_host_completed_deployment.rs"]
 mod completed_deployment;
+#[path = "authority_host_completed_diagnostics.rs"]
+mod completed_diagnostics;
+use completed_diagnostics::CompletedDiagnostics;
+use completed_diagnostics::CompletedStage;
 #[path = "authority_host_completed_files.rs"]
 mod completed_files;
 #[path = "authority_host_completed_journal.rs"]
@@ -233,6 +237,7 @@ impl HistoricalTaskReadRuntime {
         operation: HistoricalReadOperationV1,
         request_id: u64,
         end: Instant,
+        diagnostics: &CompletedDiagnostics,
     ) -> io::Result<Vec<u8>> {
         let trust_requested = match operation {
             HistoricalReadOperationV1::Task => false,
@@ -264,6 +269,7 @@ impl HistoricalTaskReadRuntime {
                         operation,
                         request_id,
                         end,
+                        diagnostics,
                     )
                     .inspect_err(|_| {
                         let label: &[u8] = if matches!(
