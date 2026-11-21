@@ -421,7 +421,8 @@ impl NativeAgent {
                     let output = match presentation {
                         Ok(output) => output,
                         Err(error) => {
-                            state.last_error = Some(format!("tool output presentation unavailable: {error}"));
+                            state.last_error =
+                                Some(format!("tool output presentation unavailable: {error}"));
                             owner.checkpoint(state).await?;
                             return Ok(Some(RunOutcome::PendingTool));
                         }
