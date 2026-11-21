@@ -1,0 +1,27 @@
+{
+  "base_commit": "610614ee392b00f8f81e0785f5196974f0b18122",
+  "base_pull_request": 6922,
+  "files": {
+    ".github/workflows/hcsn-currentstate-n256-signed-streaming.yml": "aa4ab9dbbbef1fb0051275fc092df22affc4a35b6653a2e766b5021076771a51",
+    "qualification/hcsn_currentstate_n256_signed_streaming/README.md": "a52ad0656ddcf0cf08fa1b420e5aabc52445a641364ba3e200a5f1110c5fb80b",
+    "qualification/hcsn_currentstate_n256_signed_streaming/REQUEST.json": "77a9fa4511123f3514cc85bfec145d5eb4213918cf349fe46d1c5a1ec6475def",
+    "qualification/hcsn_currentstate_n256_signed_streaming/REVIEW.json": "9284e0c77b609c94b14f659bcfb8ed710ae6f3f0234bd1564c4570b7af9342ea",
+    "qualification/hcsn_currentstate_n256_signed_streaming/__init__.py": "4d8c7fa969cd25b8e6bdbe39615e2be0e5f4e3e71233703e16473a9e07be722f",
+    "qualification/hcsn_currentstate_n256_signed_streaming/streaming.py": "9e01c5bed68318bc6514d7a73f84f066baab990e0dcc604ef953fab4290a581a",
+    "qualification/hcsn_currentstate_n256_signed_streaming/test_streaming.py": "6164a7bf047d090f763b600c303e2ac9b1fc4aac285d8cc9d2f0e5e883840898",
+    "qualification/hcsn_currentstate_n256_signed_streaming/verify_source.py": "d9adada847b617c3ccfd33acbeb4a2ea2924fee24b1f004ea1162c6765de37ac"
+  },
+  "historical_negative_and_unknown_preserved": true,
+  "identity": "hcsn-n256-signed-streaming-small-fixture-20261121-c6bc-v1",
+  "inputs": {
+    "qualification/hcsn_currentstate_n256_non_substochastic_signed_interval/signed_interval.py": "0609297f789485f38970491fcc10d0855be823d2a3b4ad23bc0ddfa16a327fdd",
+    "qualification/hcsn_currentstate_n256_signed_batch_candidate/batch_candidate.py": "12285fd01ff8df80d154d65677fe779147e1e95fddaedec6303d53b8755d107f",
+    "qualification/hcsn_currentstate_n256_signed_batch_resource_review/REVIEW.json": "1940332e2112250cd216fcd07d74759302671b403632fc1444f7d98b31c6170a",
+    "qualification/hcsn_currentstate_n256_signed_batch_resource_review/SOURCE_FREEZE.json": "1c4e6885b002e7da278289e6e97bfe2e150c63914f402a12ede3a8bd78be34e5"
+  },
+  "n256_qualified": false,
+  "numerical_execution_allowed": true,
+  "production_adoption": false,
+  "resource_gate_closed": false,
+  "status": "SMALL_SYNTHETIC_ONLY"
+}
