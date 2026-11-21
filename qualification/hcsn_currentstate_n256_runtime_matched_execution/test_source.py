@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
 
 
 class SourceTests(unittest.TestCase):
@@ -44,6 +45,13 @@ class SourceTests(unittest.TestCase):
         freeze = json.loads((HERE / "SOURCE_FREEZE.json").read_text())
         self.assertEqual(freeze["reused_source_sha256"]["child.py"], "c79068da9c52dc7e9976692a25594959995cf155132ee024392ac13987d1de64")
         self.assertEqual(freeze["reused_source_sha256"]["audit.py"], "f620e9d613bd0a8e7779ccfbd7faf357c3bf534bb6050b1cab0a0d9032c9d83f")
+
+    def test_existing_workflow_dispatcher_is_exactly_scoped(self):
+        source = (ROOT / ".github/workflows/hcsn-currentstate-n256-runtime-identity-admission.yml").read_text()
+        self.assertIn("if: github.head_ref != 'research/hcsn-n256-runtime-matched-firststep-20261121-c6bc'", source)
+        self.assertIn("runtime-matched-firststep:", source)
+        self.assertIn("github.base_ref == 'evidence/hcsn-n256-runtime-matched-dispatch-base-20261121-c6bc'", source)
+        self.assertEqual(source.count("Execute the single bounded numerical attempt"), 1)
 
 
 if __name__ == "__main__":
