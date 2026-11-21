@@ -1,0 +1,192 @@
+{
+  "schema": "hepta.e6.cold01-fix-format-physical-checkpoint.v1",
+  "checkpoint_type": "EVIDENCE_ONLY_APPEND_CANDIDATE_AND_COMPLETED_FORMAT_AND_READONLY_DIAGNOSTIC",
+  "frozen_scope": "No future build, module-trace, unit-test, cold execution, or later E2 source files.",
+  "candidate_source": {
+    "commit": "bf6d51904c8bcda5d50f3782c85ece84cb73a78f",
+    "tree": "03f7135e2c060422f9dbd51bb38c5701cfaefe24",
+    "single_parent": "61503a7d3bc87a5584cd2f20b8b17ea3838fdcfd",
+    "changed_Rust_files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/ordinary_q24_post_a_completed_data_tests.rs",
+        "baseline_bytes": 25230,
+        "baseline_sha256": "64f7818bbb234e01f5076f174955db85e19b2e493927e95f762b200ffeda230e",
+        "candidate_bytes": 25457,
+        "candidate_sha256": "b711d8864ce05ce580431f410c91ee05648f1c3b7c4b95e112c4d1ccfebb35fa",
+        "candidate_git_blob_sha1": "3c1f86fd9845febc61c0f53b6ecf6791c0f7efd7"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/ordinary_q24_cold_publication_data_tests.rs",
+        "baseline_bytes": 3582,
+        "baseline_sha256": "9865add41aa886d071de8042e1284710cafdafce6188a26bcc12fa61e6288504",
+        "candidate_bytes": 3542,
+        "candidate_sha256": "0985f7296bd6027f6e213a0582cfe77c5263a969a11cf8a4eacb0006473ae403",
+        "candidate_git_blob_sha1": "9944220aa5b9adba6b2abef33d352fdde585d6b4"
+      }
+    ],
+    "immutable_commit_and_two_blobs_actually_created_by_root": true,
+    "evidence_tree_applies_Rust_delta": false,
+    "evidence_commit_uses_candidate_as_parent": false,
+    "ref_reachability_created_by_this_checkpoint_for_bf6d": false,
+    "checkpoint_validation_state": "NOT_BUILT_NOT_UNIT_TESTED_NOT_COLD_QUALIFIED"
+  },
+  "semantic_intent": {
+    "original_problem": "Completed C observes the final drained generation; the previous cold conjunction required the same object to be genesis and used its late digest for the first publication target.",
+    "candidate_change": "Retain the original genesis digest from the same checked journal via observe_original_feature_boundary, compare the first publication target to that digest, and separately require the actual final drained observation.",
+    "patch_bytes": 2445,
+    "patch_sha256": "fd4563f96d60afbb3d17b3791c31bfbd39a0a442c1b8cdbb4182cdfabaf72dde",
+    "static_peer_only": true,
+    "semantic_peer_sha256": "676b0192051e947d999182206fa217f608ffc4ff2c2aa1793e0498cb14b46f9b",
+    "all_actual_failed_predicates_identified": false,
+    "test_file_or_test_name_presence_proves_compilation": false
+  },
+  "actual_format": {
+    "host": "rog",
+    "job": "1a1fe1069a8-ffbe-2064",
+    "terminal": "SUCCEEDED",
+    "exit_code": 0,
+    "terminal_unix_ms": 1795263855727,
+    "complete_durable_confirmed": true,
+    "H_stdout_bytes": 294,
+    "H_stdout_sha256": "a95a8c91e16a1ac22c5fbdec12f47d515ae93311a4dfd0418048a9069a062d50",
+    "H_stderr_bytes": 0,
+    "owner_originals": 6,
+    "owner_original_bytes": 50300,
+    "fixed_versions_fullbytes_SHA_verified": true,
+    "actual_format_command": {
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "7f790fb2f907ef9e618c3c7d233d22135ab00580"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-cold01-first-publication-format-v1/source/codex-rs",
+      "direct_child_waited": true,
+      "label": "07-fmt",
+      "limit_seconds": 30,
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timed_out": false,
+      "wall_seconds": 0.1743550159735605
+    },
+    "owner_wall_seconds": 3.740145592018962,
+    "format_wall_seconds": 0.1743550159735605,
+    "durations_nested_not_additive": true,
+    "registered_Rust_scope": 2,
+    "archival_Python_outside_Ruff_registry": 2,
+    "four_source_payload_before_after_unchanged": true,
+    "two_Rust_bodies_equal_candidate_blobs": true,
+    "checkout_head": "7f790fb2f907ef9e618c3c7d233d22135ab00580",
+    "format_reference": "4c55d9bfe1898c0066b3ae7cb05744fe99f6b418",
+    "complete_bf6d_or_61503_checkout": false,
+    "build_or_native_or_collector_calls_in_format_stage": 0,
+    "format_success_qualifies_cold": false
+  },
+  "actual_physical_diagnostic": {
+    "host": "ai395",
+    "job": "1a1fe1384e2-ffbe-2069",
+    "terminal": "SUCCEEDED",
+    "exit_code": 0,
+    "terminal_unix_ms": 1795264055329,
+    "complete_durable_confirmed": true,
+    "H_pages": 5,
+    "H_stdout_bytes": 66804,
+    "H_stdout_sha256": "c2bf21470f781b9db560c415b3f1defaa78be0cd5d72ca62b4e240994c939b4f",
+    "H_stderr_bytes": 0,
+    "stdout_format": "two original NDJSON lines; summary and base64 exact original gzip",
+    "original_archive_bytes": 48927,
+    "original_archive_sha256": "47364fc10bd07779339fbce47456586bab173a01b23ad45c83151f703f7fa5d4",
+    "archive_members": 35,
+    "archive_expanded_bytes": 266636,
+    "retained_source_files": 34,
+    "retained_source_bytes": 242765,
+    "collector_generated_RESULT_bytes": 23871,
+    "logical_source_read_bytes_two_passes": 485530,
+    "all_archive_members_and_34_manifest_rows_verified": true,
+    "complete_second_pass_identity_and_bytes_reported_equal": true,
+    "snapshot_atomic": false,
+    "reader_bytes": 11866,
+    "reader_sha256": "025ff9a2a1b37d6d8a97010e780180fc3922b848133653408d214b6819da6ccb",
+    "inner_alarm_seconds": 30,
+    "H_timeout_seconds": 90,
+    "work_wall_seconds": 0.0024414188228547573,
+    "original_permission_changes": 0,
+    "source_writes": 0,
+    "native_launches": 0,
+    "diagnostic_processes": 1,
+    "only_own_alarm_signal": true,
+    "independent_current_groups_or_mounts_snapshot": false
+  },
+  "actual_fact_scope": {
+    "first_publication_current_equals_completed_current": true,
+    "first_publication_original_profile_equals_registered_profile": true,
+    "registered_refusal_initial_binding_equal": true,
+    "other_publication_predicates_independently_recomputed": false,
+    "prior_errno13_access_failures_reclassified": false
+  },
+  "prior_failed_cold01": {
+    "job": "1a1fdeb7f2f-ffbe-2013",
+    "terminal": "FAILED",
+    "H_exit_code": 1,
+    "source_commit": "61503a7d3bc87a5584cd2f20b8b17ea3838fdcfd",
+    "main_bytes": 56097,
+    "main_sha256": "f9a481ce70e1b84dc7354856e9d1e72496bf443760a52a928a516320ee8a21a6",
+    "canonical_XML_sha256": "68a48dd202735bc0bf0bc50d562f246b0067a67d1c281742f63973756174c2f8",
+    "nextest_exit": 100,
+    "inner_Rust_exit": 101,
+    "cases": 1,
+    "passed": 0,
+    "failed": 1,
+    "error": "actual first publication verification fact differs",
+    "failure_still_retained": true,
+    "published_failure_commit": "c93f22d5c5c34b38078c81ebad27d47f34a11e45"
+  },
+  "scientific_limits": {
+    "fixture": "Q24 analytic lifecycle fixture",
+    "new_successful_cold": false,
+    "true_Adopt": false,
+    "independent_future_task_learning": false,
+    "E2_student_improvement": false,
+    "learning_gain": false,
+    "foundation_model_or_BP_replacement_claim": false,
+    "files_or_commands_are_independent_samples": false
+  },
+  "packaging": {
+    "retained_source_and_control_files": 129,
+    "retained_bytes": 1311203,
+    "local_byte_reviews_only": true,
+    "packager_remote_reads": 0,
+    "packager_ref_mutations": 0,
+    "capture_manifest_sha256": "88907d7a019270e36d0ca581a308c28f273abc558a85f296d7624d0907139ddd",
+    "physical_byte_review_sha256": "e8e788579c73681fcdc0ea325387640e96b202a92f715ca490df981aee51f4d3",
+    "source_format_byte_review_sha256": "90bebe2d97906cb1a4d853496c1fa054d4bbd178dce43231d3f8c0a69cf248c5",
+    "local_display_and_preexecution_packaging_errors_preserved_as_labeled_observations": true,
+    "complete_raw_failed_local_display_output_retained": false,
+    "packager_remote_process_launches": 0,
+    "local_parsing_hashing_archiving_subprocesses_executed": true
+  },
+  "archive": {
+    "name": "cold01-fix-format-and-physical-originals.tar.xz",
+    "kind": "NEW_LOCAL_ARCHIVE_OF_RETAINED_ORIGINALS_AND_LABELED_REVIEWS",
+    "bytes": 299836,
+    "sha256": "54f24989f0ef8f7f8997ce97456302185fcfcd40a86d3d910ed90091a554a863",
+    "compression": "xz",
+    "member_count": 136,
+    "expanded_bytes": 1469022,
+    "member_index": {
+      "name": "MEMBER_INDEX.json",
+      "bytes": 67946,
+      "sha256": "cc3d961a087c9fc6d41dfdb341b11ea71ba6f32e813bd69dcb1b9b37a7114bce"
+    },
+    "all_members_verified_after_packing": true,
+    "original_physical_gzip_preserved_as_member": true,
+    "remote_original_xz_claimed": false
+  }
+}
