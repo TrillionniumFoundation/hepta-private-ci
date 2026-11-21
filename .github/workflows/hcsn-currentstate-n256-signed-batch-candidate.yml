@@ -3,7 +3,14 @@ name: hcsn-currentstate-n256-signed-batch-candidate
 on:
   pull_request:
     paths:
-      - "qualification/hcsn_currentstate_n256_signed_batch_candidate/**"
+      - "qualification/hcsn_currentstate_n256_signed_batch_candidate/README.md"
+      - "qualification/hcsn_currentstate_n256_signed_batch_candidate/REQUEST.json"
+      - "qualification/hcsn_currentstate_n256_signed_batch_candidate/REVIEW.json"
+      - "qualification/hcsn_currentstate_n256_signed_batch_candidate/SOURCE_FREEZE.json"
+      - "qualification/hcsn_currentstate_n256_signed_batch_candidate/__init__.py"
+      - "qualification/hcsn_currentstate_n256_signed_batch_candidate/batch_candidate.py"
+      - "qualification/hcsn_currentstate_n256_signed_batch_candidate/test_batch_candidate.py"
+      - "qualification/hcsn_currentstate_n256_signed_batch_candidate/verify_source.py"
       - ".github/workflows/hcsn-currentstate-n256-signed-batch-candidate.yml"
   workflow_dispatch:
 
