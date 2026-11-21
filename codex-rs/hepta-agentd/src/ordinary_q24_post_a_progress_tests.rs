@@ -9,6 +9,7 @@ use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
+use codex_hepta_learning_artifacts::LearningProposalDispositionV1;
 use codex_hepta_types::Digest32;
 
 use super::post_a_launch::RunningOrdinaryPostA;
@@ -43,7 +44,18 @@ pub(super) async fn wait_for_original_decision(
                     "TrainingNoUpdate cannot satisfy an independent-B business case"
                 );
                 let state = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-                if state.next_stage() == Some(LearningIterationStageV1::Selection) {
+                // Selection also covers the durable Proposal prefix before the
+                // selector records its separate LocalDecisionV2. Observe that
+                // pending prefix under the original deadline and liveness checks.
+                if state.next_stage() == Some(LearningIterationStageV1::Selection)
+                    && !matches!(
+                        snapshot.receipts.last().map(|receipt| &receipt.observation),
+                        Some(LearningIterationObservationV1::Proposal {
+                            disposition: LearningProposalDispositionV1::UpdateCandidates,
+                            ..
+                        })
+                    )
+                {
                     let decision = Decision::new(snapshot.clone())?;
                     decision.require_root_publication()?;
                     anyhow::ensure!(
