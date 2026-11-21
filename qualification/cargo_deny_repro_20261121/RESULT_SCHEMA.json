@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "CHECK_PASSED_NEW_MEASUREMENT_ONLY",
+              "CHECK_FAILED_NEW_DIAGNOSTIC"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "checkout_identity": {
+            "type": "object"
+          },
+          "cleanup": {
+            "const": "RESEARCH_WORK_REMOVED"
+          },
+          "frozen_inputs_unchanged": {
+            "const": true
+          },
+          "metadata_attempts": {
+            "const": 1
+          },
+          "metadata_invocations": {
+            "const": 1
+          },
+          "policy_check_attempts": {
+            "const": 1
+          },
+          "policy_check_invocations": {
+            "const": 1
+          }
+        },
+        "required": [
+          "resource_admission_sha256",
+          "absolute_deadlines",
+          "worker_absolute_deadline_monotonic",
+          "frozen_inputs_unchanged",
+          "policy_check_returncode",
+          "cleanup"
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "absolute_deadlines": {
+      "required": [
+        "first_step_monotonic",
+        "measurement_and_cleanup_monotonic",
+        "job_monotonic"
+      ],
+      "type": "object"
+    },
+    "checkout_identity": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "ci_head": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "cleanup": {
+      "enum": [
+        "RESEARCH_WORK_REMOVED",
+        "INCOMPLETE"
+      ]
+    },
+    "command_count": {
+      "maximum": 30,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "compile_commands": {
+      "const": 0
+    },
+    "contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "frozen_inputs_unchanged": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "metadata_attempts": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "metadata_invocations": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "model_evaluations": {
+      "const": 0
+    },
+    "network_bytes_total": {
+      "type": "null"
+    },
+    "old_ci_equivalence_claimed": {
+      "const": false
+    },
+    "output_bytes_before_worker_receipt": {
+      "maximum": 134217728,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "phases": {
+      "items": {
+        "properties": {
+          "cgroup_cpu_delta_seconds": {
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "returncode": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "wall_seconds": {
+            "minimum": 0,
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "wall_seconds"
+        ],
+        "type": "object"
+      },
+      "maxItems": 34,
+      "type": "array"
+    },
+    "policy_check_attempts": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "policy_check_invocations": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "policy_check_returncode": {
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "policy_edits": {
+      "const": 0
+    },
+    "resource_admission_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "restricted_old_logs_accessed": {
+      "const": 0
+    },
+    "schema": {
+      "const": "hepta.cargo_deny.new_measurement.v2"
+    },
+    "status": {
+      "enum": [
+        "CHECK_PASSED_NEW_MEASUREMENT_ONLY",
+        "CHECK_FAILED_NEW_DIAGNOSTIC",
+        "STOP"
+      ]
+    },
+    "subject_head": {
+      "const": "f0c7ccbf631558f67efee948c8612b29c517e0f6"
+    },
+    "unit": {
+      "pattern": "^hepta-cargo-deny-new-[0-9]+-001[.]service$",
+      "type": "string"
+    },
+    "wall_admissions": {
+      "items": {
+        "properties": {
+          "absolute_deadline": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          },
+          "monotonic_seconds": {
+            "type": "number"
+          },
+          "remaining_seconds": {
+            "type": "number"
+          },
+          "required_seconds": {
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "label",
+          "monotonic_seconds",
+          "absolute_deadline",
+          "remaining_seconds",
+          "required_seconds"
+        ],
+        "type": "object"
+      },
+      "maxItems": 8,
+      "type": "array"
+    },
+    "whole_job_cost_complete": {
+      "const": false
+    },
+    "whole_job_cpu_seconds": {
+      "type": "null"
+    },
+    "worker_absolute_deadline_monotonic": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "schema",
+    "status",
+    "subject_head",
+    "ci_head",
+    "unit",
+    "contract_sha256",
+    "phases",
+    "old_ci_equivalence_claimed",
+    "restricted_old_logs_accessed",
+    "metadata_invocations",
+    "policy_check_invocations",
+    "whole_job_cost_complete",
+    "metadata_attempts",
+    "policy_check_attempts",
+    "wall_admissions",
+    "checkout_identity",
+    "log_capture"
+  ],
+  "title": "Independent cargo-deny measurement R2; bounded logs, owner identity and absolute deadlines",
+  "type": "object"
+}
