@@ -78,3 +78,33 @@ fn rejects_invalid_rfc3339_timestamps() {
         assert_eq!(parse_timestamp(timestamp), None, "{timestamp}");
     }
 }
+
+#[test]
+fn preserves_chrono_rfc3339_edge_forms_before_parser_migration() {
+    for (timestamp, expected) in [
+        ("1970-01-01t00:00:00z", 0_i64),
+        ("1970-01-01T00:00:00.123456789123456789Z", 0),
+        ("1969-12-31T23:59:59.999999999Z", -1),
+        ("1970-01-01T00:30:00+01:00", -1_800),
+        ("1970-01-01T00:30:00-01:00", 5_400),
+        ("1970-01-01T00:00:00+23:59", -86_340),
+        ("2016-12-31T23:59:60Z", 1_483_228_799),
+    ] {
+        assert_eq!(parse_timestamp(timestamp), Some(expected), "{timestamp}");
+    }
+}
+
+#[test]
+fn rejects_out_of_range_rfc3339_edge_forms_before_parser_migration() {
+    for timestamp in [
+        "1970-01-01T00:00:00+24:00",
+        "1970-01-01T00:00:00+23:60",
+        "2016-12-31T23:59:61Z",
+        "1970-01-01T00:00:00.",
+        "1970-01-01T00:00:00.123",
+        "1970-01-01T24:00:00Z",
+        "1970-01-01T00:00:00Z trailing",
+    ] {
+        assert_eq!(parse_timestamp(timestamp), None, "{timestamp}");
+    }
+}
