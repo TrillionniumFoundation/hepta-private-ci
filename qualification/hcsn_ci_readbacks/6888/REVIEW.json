@@ -1,0 +1,67 @@
+{
+  "schema": "hcsn_n256_dense_compatible_firststep_runtime_v2_pretransport_red_review_v1",
+  "disposition": "TERMINAL_RED_HOLD",
+  "all_closed": false,
+  "qualification_granted": false,
+  "no_update": true,
+  "source_pull_request": 6888,
+  "source_head": "38ae1ab2be32006411aafa4a25be22798643a74e",
+  "source_tree": "c25a992a7f8832cdc68aa16297e7f48b5218c502",
+  "source_base_head": "54dc6060fde50e512d5f3af93839af4b0e0ec145",
+  "checked_merge_head": "f5c4402091c27fb68e8916380c4bdf1ab5402c4a",
+  "execution_identity": "hcsn-n256-dense-compatible-firststep-runtime-v2-20261121-c06d-001",
+  "actions_run_id": 44906379499,
+  "actions_job_id": 136852738764,
+  "conclusion": "failure",
+  "ordinary_tests": {
+    "executed": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "optimized_tests": {
+    "executed_before_terminal": 9,
+    "passed": 8,
+    "failed": 1
+  },
+  "terminal_stage": "source_transport.require_transport_identity",
+  "terminal_exception": "KeyError: 'maximum_dispatches'",
+  "mismatch": {
+    "transport_expected_field": "maximum_dispatches",
+    "frozen_receipt_field": "maximum_attempts"
+  },
+  "archive": {
+    "emitted": false,
+    "chunks": 0,
+    "originals_zip": null
+  },
+  "executed_work": {
+    "pip_install": 0,
+    "numerical_module_import": 0,
+    "child_process": 0,
+    "model": 0,
+    "dynamic_step": 0,
+    "expm": 0,
+    "torch": 0,
+    "optimizer": 0
+  },
+  "key_consumed": true,
+  "retry_same_identity_forbidden": true,
+  "preserved_history": [
+    "PR #6885 runtime-identity RED remains unchanged",
+    "PR #6888 runtime-v2 pre-transport RED is not reclassified",
+    "all earlier RED, OOM, cancelled, and UNKNOWN states remain unchanged"
+  ],
+  "scope_exclusions": [
+    "no N256 numerical qualification",
+    "no current-state full-state qualification",
+    "no finite-domain qualification",
+    "no C2 full replay qualification",
+    "no HPCA update"
+  ],
+  "full_job_log": {
+    "path": "qualification/hcsn_ci_readbacks/6888/actions_job_136852738764.log",
+    "bytes": 26467,
+    "sha256": "0e5dd05d034e2555829c865c9107858679289f3db8b0895ada3451593d772178",
+    "includes_utf8_bom": true
+  }
+}
