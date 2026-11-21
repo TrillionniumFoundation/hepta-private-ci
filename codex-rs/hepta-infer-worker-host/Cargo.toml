@@ -40,6 +40,7 @@ sha2 = { workspace = true }
 
 [dev-dependencies]
 codex-hepta-infer-core = { path = "../hepta-infer-core", features = ["qualification-owned-file-read"] }
+codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
 
 tempfile = { workspace = true }

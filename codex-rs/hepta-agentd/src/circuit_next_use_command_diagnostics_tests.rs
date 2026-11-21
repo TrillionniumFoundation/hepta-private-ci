@@ -9,7 +9,7 @@ use super::OriginalCircuitNextUseCommandErrorV1;
 use crate::OriginalCircuitNextUseReceiptErrorV1;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
-pub(super) fn transport_error(phase: &'static str, error: &HostIssuerTransportError) {
+pub(super) fn transport_error(phase: &'static str, error: HostIssuerTransportError) {
     let category = match error {
         HostIssuerTransportError::InvalidConfiguration => "InvalidConfiguration",
         HostIssuerTransportError::PeerDenied => "PeerDenied",
@@ -48,7 +48,7 @@ pub(super) fn command_error(phase: &'static str, error: &OriginalCircuitNextUseC
     };
     eprintln!("HEPTA_C_OBSERVER phase={phase} command={category}");
     if let Command::Transport(transport) = error {
-        transport_error(phase, transport);
+        transport_error(phase, *transport);
     }
     if let Command::Owner(owner) = error {
         owner_error(phase, owner);

@@ -6,6 +6,8 @@ import sys
 import tempfile
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_material_owner_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -31,7 +33,7 @@ class OriginalMaterialOwnerClosureTests(unittest.TestCase):
         start = source.index(function)
         end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        lo, hi = source_marker_span(source, marker, start, end + 1)
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
         self.assertEqual(len(rows), 1)
         with tempfile.TemporaryDirectory() as directory:
@@ -40,7 +42,7 @@ class OriginalMaterialOwnerClosureTests(unittest.TestCase):
             target.parent.mkdir(parents=True)
             target.write_text(source)
             PROOF._verify_protected_files(root, {"protected_file": rows})
-            target.write_text(source[:offset] + source[offset + len(marker):])
+            target.write_text(source[:lo] + source[hi:])
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 

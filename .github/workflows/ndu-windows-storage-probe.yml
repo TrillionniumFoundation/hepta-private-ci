@@ -296,11 +296,23 @@ jobs:
                   "oid": "45378b4bb527ce2b202913ab3b21aad9ef4b1828",
                   "sha256": "12e2413a588b62ff3cc91c70c626a20801f4f84c0f4ea858ca7eb41e83a92185"
               },
-              "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py": {
-                  "bytes": 15565,
+              "codex-rs/.cargo/config.toml": {
+                  "bytes": 634,
                   "mode": "100644",
-                  "oid": "411ccfadd0c78b4374022794fe989ec5c8a5c053",
-                  "sha256": "993b7a6b346d3a8ed68600f654c096c1cd6ffa6a15b551c8cb4dedea2dd81cc9"
+                  "oid": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+                  "sha256": "b8ae1cea341beb2d4a3c8fb81f97a96f4aee1fd53f769c57f140dfe949806a80"
+              },
+              "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_package.py": {
+                  "bytes": 18196,
+                  "mode": "100644",
+                  "oid": "7ef69de20feeb609aef673aef939442e75f490cc",
+                  "sha256": "3832f3024daa58eaca9bb2d69c94fe704b7ef9ba8fa9631bd161713e332273bc"
+              },
+              "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py": {
+                  "bytes": 13713,
+                  "mode": "100644",
+                  "oid": "13bbca92372b08bbe979ca8aa2beca127675d6ad",
+                  "sha256": "dc5b54fc326d2ccc8d985c2040f1679d00d9b26869cd622a1ca2f2db7288ee6f"
               },
               "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.rs": {
                   "bytes": 9611,
@@ -315,10 +327,10 @@ jobs:
                   "sha256": "7bfb9f1d113668715f2a36ad22bd0bf42e3a4f0661bd1db7bc5530571e5e9a33"
               },
               "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_tests.py": {
-                  "bytes": 8800,
+                  "bytes": 9672,
                   "mode": "100644",
-                  "oid": "92da2da73e27619629d0db624014de97cf23fe83",
-                  "sha256": "2597eb597fb74781f39ce68216c53b17a99aef37a29daef4e624030f53d0de40"
+                  "oid": "5e98aea89f9a997fecc921820a9928a6a8d1c75e",
+                  "sha256": "090eccd000e1ef72bc7868d2d8fc3bcedc09ef32464e878cf91f35d920aeac5f"
               },
               "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py": {
                   "bytes": 5488,
@@ -349,7 +361,7 @@ jobs:
           ELEVATED_REFUSAL_METHODS = ['elevated_admission_tests::elevated_raw_token_factories_refuse_live_base_and_capabilities', 'elevated_admission_tests::elevated_capture_refuses_before_provisioning_or_child_launch', 'elevated_admission_tests::elevated_sessions_refuse_before_provisioning_or_child_launch']
           MIC_COLLECTOR_METHODS = ['test_negative_hypothesis_and_refusal_regression_remain_distinct', 'test_missing_duplicate_and_extra_cases_are_rejected', 'test_isolation_success_or_qualification_cannot_replace_the_negative', 'test_broken_controls_and_wrong_errors_cannot_count_as_counterexamples', 'test_missing_or_inexact_production_refusal_is_rejected', 'test_truncated_ambiguous_or_mistyped_json_is_rejected', 'test_historical_raw_negative_without_admission_proof_cannot_qualify']
           PROBE_METHODS = ['test_actual_git_rejects_live_and_index_only_source_changes', 'test_complete_transcript_keeps_false_invariant_as_observed_failure', 'test_incomplete_or_duplicated_native_observation_cannot_complete', 'test_dependency_without_existing_checksum_cannot_enter_probe', 'test_actual_git_rejects_unbound_legacy_admission_changes', 'test_refusal_transcript_cannot_certify_permission_observations']
-          OTHER_LOCK_TOML_SHA256 = "cb1ae0f2f0f03b2df6851bae8ea46862be7462a98922f242a534e8df3c999359"
+          OTHER_LOCK_TOML_SHA256 = "bc7b42fc7bb1c406618d0ad1d0e82832a8f973fa08f0e918ef926f581da33bcb"
           ANYHOW_RECORD = {
               "name": "anyhow",
               "version": "1.0.104",

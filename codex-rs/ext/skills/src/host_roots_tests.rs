@@ -48,6 +48,7 @@ struct BlockingMetadataFileSystem {
 struct BlockingMetadataCalls {
     paths: Mutex<Vec<PathUri>>,
     started: Notify,
+    first_release: Semaphore,
     release: Semaphore,
 }
 
@@ -56,6 +57,7 @@ impl Default for BlockingMetadataCalls {
         Self {
             paths: Mutex::new(Vec::new()),
             started: Notify::new(),
+            first_release: Semaphore::new(0),
             release: Semaphore::new(0),
         }
     }
@@ -120,15 +122,20 @@ impl ExecutorFileSystem for BlockingMetadataFileSystem {
             return self.inner.get_metadata(path, options, sandbox);
         }
 
-        self.calls
-            .paths
-            .lock()
-            .expect("metadata paths lock")
-            .push(path.clone());
+        let first_probe = {
+            let mut paths = self.calls.paths.lock().expect("metadata paths lock");
+            let first_probe = paths.is_empty();
+            paths.push(path.clone());
+            first_probe
+        };
         self.calls.started.notify_one();
         Box::pin(async move {
-            self.calls
-                .release
+            let release = if first_probe {
+                &self.calls.first_release
+            } else {
+                &self.calls.release
+            };
+            release
                 .acquire()
                 .await
                 .expect("metadata release semaphore")
@@ -586,7 +593,8 @@ async fn repo_ancestry_limits_concurrent_probes_and_preserves_order() {
             &expected_probes[..CONCURRENCY_LIMIT]
         );
 
-        calls.release.add_permits(/*n*/ 1);
+        // Release the ordered head even if semaphore waiters registered out of order.
+        calls.first_release.add_permits(/*n*/ 1);
         tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), async {
             loop {
                 let started = calls.started.notified();

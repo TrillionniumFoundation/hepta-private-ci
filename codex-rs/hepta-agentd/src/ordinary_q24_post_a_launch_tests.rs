@@ -295,11 +295,11 @@ fn spawn_original_daemon(
         control.as_raw_fd(),
         app_server.as_raw_fd(),
     ]);
-    Ok(OriginalChild::spawn(
+    OriginalChild::spawn(
         &mut command,
         OriginalChildDescriptors {
             inherited,
             own_pidfd_slot: None,
         },
-    )?)
+    )
 }

@@ -459,7 +459,7 @@ impl OriginalCircuitNextUseCommandClientV1 {
             let bytes = channel.peer.request(&encoded);
             #[cfg(test)]
             if let Err(error) = &bytes {
-                diagnostics::transport_error("client.command_transport", error);
+                diagnostics::transport_error("client.command_transport", *error);
             }
             let bytes = bytes.map_err(|_| Error::CommitUncertain)?;
             Ok::<_, Error>((channel, bytes))

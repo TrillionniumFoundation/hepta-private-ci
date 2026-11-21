@@ -322,7 +322,7 @@ pub(super) async fn start(
 enum LearningProfile {
     None,
     #[cfg(target_os = "linux")]
-    Original(crate::OriginalCellQ24TaskLedgerInputsV1),
+    Original(Box<crate::OriginalCellQ24TaskLedgerInputsV1>),
 }
 
 #[cfg(target_os = "linux")]
@@ -338,7 +338,7 @@ pub(super) async fn start_learning(
         published_task,
         model,
         bundle,
-        LearningProfile::Original(inputs),
+        LearningProfile::Original(Box::new(inputs)),
     )
     .await
 }
@@ -442,7 +442,7 @@ async fn start_profile(
         LearningProfile::None => config.with_q24_circuit_task_profile(profile)?,
         #[cfg(target_os = "linux")]
         LearningProfile::Original(inputs) => {
-            let installed = config.with_q24_learning_task_profile(profile, inputs)?;
+            let installed = config.with_q24_learning_task_profile(profile, *inputs)?;
             ledger = Some(installed.ledger);
             installed.task
         }

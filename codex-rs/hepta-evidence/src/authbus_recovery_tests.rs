@@ -1,3 +1,6 @@
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
+
 use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_authbus::AuthBusAuthorityOwner;
 use codex_hepta_authbus::AuthBusVerifyingKey;
@@ -284,8 +287,11 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
     external = pending;
 
     // Bootstrap the real owner with independently retained private parents.
-    let authority_database = TempDir::new().unwrap();
-    let authority_checkpoint = TempDir::new().unwrap();
+    let authority_directories = &mut tempfile::Builder::new();
+    #[cfg(unix)]
+    authority_directories.permissions(std::fs::Permissions::from_mode(0o700));
+    let authority_database = authority_directories.tempdir().unwrap();
+    let authority_checkpoint = authority_directories.tempdir().unwrap();
     let database_path = authority_database
         .path()
         .canonicalize()

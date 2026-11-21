@@ -52,7 +52,7 @@ fn original_panel_registration_commits_full_nonempty_membership_before_any_resul
         registered.evaluation_profile(),
         changed_plan.evaluation_profile()
     );
-    let mut changed_rule = second.clone();
+    let mut changed_rule = second;
     changed_rule.cohort_rule_digest = Digest32::of_bytes(b"changed-window-or-cluster-policy");
     let changed_rule = Registration::new(
         registered.primary().clone(),
@@ -86,7 +86,7 @@ fn original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks() {
         }],
         vec![Task {
             cohort_rule_digest: Digest32::ZERO,
-            ..retained.clone()
+            ..retained
         }],
         (0..17)
             .map(|index| task(&format!("retention-{index}"), &format!("input-{index}")))

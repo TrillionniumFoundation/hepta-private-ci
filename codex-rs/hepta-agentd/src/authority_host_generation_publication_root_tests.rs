@@ -56,7 +56,7 @@ mod fixture;
 #[path = "authority_host_publication_root_snapshot_tests.rs"]
 mod snapshot;
 #[path = "authority_host_generation_publication_root_support_tests.rs"]
-mod support;
+pub(super) mod support;
 
 const CHILD_TEST: &str = "neuron_generation_current::publication_root_tests::child::original_publication_dedicated_uid_child";
 const RECORDS: u64 = 128;

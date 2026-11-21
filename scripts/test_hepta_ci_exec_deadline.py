@@ -83,6 +83,7 @@ class CommandDeadlineTests(unittest.TestCase):
             try:
                 state = stat.read_text().rsplit(")", 1)[1].split()[0]
             except (FileNotFoundError, ProcessLookupError):
+                # The procfs entry may vanish between opening and reading it.
                 break
             if state == "Z":
                 break

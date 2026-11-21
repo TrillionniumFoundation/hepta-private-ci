@@ -52,8 +52,7 @@ mod fixture;
 mod material;
 #[path = "ordinary_q24_process_tests.rs"]
 pub(crate) mod ordinary;
-#[path = "authority_host_generation_publication_root_support_tests.rs"]
-mod support;
+use super::publication_root_tests::support;
 use descriptors::receive_target_files;
 use descriptors::send_target_files;
 

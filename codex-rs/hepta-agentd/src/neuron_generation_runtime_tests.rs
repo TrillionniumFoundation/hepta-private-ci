@@ -13,8 +13,7 @@ use crate::neuron_generation_service::spawn_neuron_generation_service;
 #[cfg(target_os = "linux")]
 #[path = "neuron_generation_joint_tests.rs"]
 mod joint;
-#[path = "neuron_generation_runtime_test_support.rs"]
-mod support;
+use super::test_support as support;
 
 #[path = "neuron_generation_control_tests.rs"]
 mod control;
@@ -90,6 +89,20 @@ async fn closing_the_last_handle_invalidates_an_idle_drain_observation_immediate
         lifetime.clone(),
     ));
     checked(handle.snapshot().await);
+    const MAXIMUM_FILE_BYTES: usize = 1024 * 1024;
+    let observer = handle.qualification_file_observer();
+    let original_files = [
+        fixture.bytes("generation-journal"),
+        fixture.bytes("generation-witness"),
+    ];
+    assert_eq!(
+        checked(handle.qualification_file_bytes(MAXIMUM_FILE_BYTES).await),
+        original_files
+    );
+    assert_eq!(
+        checked(observer.qualification_file_bytes(MAXIMUM_FILE_BYTES).await),
+        original_files
+    );
     fixture.begin_drain();
     checked(handle.snapshot().await);
     assert_eq!(
@@ -101,6 +114,10 @@ async fn closing_the_last_handle_invalidates_an_idle_drain_observation_immediate
     // poll its receiver and quarantine itself.
     assert!(checked(fixture.state().neuron_generation_drain_blockers()) > 0);
     assert!(!checked(fixture.state().drain_snapshot(/*automation_blockers*/ 0)).drained);
+    assert_eq!(
+        observer.qualification_file_bytes(MAXIMUM_FILE_BYTES).await,
+        Err(CellGenerationErrorV2::Unavailable)
+    );
     tasks.shutdown().await;
 }
 

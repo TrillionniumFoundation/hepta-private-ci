@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/hepta-memory-cell-continuation.yml"
+      - "scripts/hepta_cell_test_helpers.py"
       - "scripts/memory_cell/**"
       - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-bellman-operator/**"
@@ -113,6 +114,16 @@ jobs:
         with:
           name: memory-cell-trained-native-circuit
           path: /tmp/circuit
+      - name: Prepare exact-source joint-generation test helper
+        run: |
+          set -euo pipefail
+          python3 -B scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/memory-cell-native-owner-helpers" \
+            --github-env "$GITHUB_ENV"
+          python3 -B scripts/hepta_cell_test_helpers.py --verify-only \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/memory-cell-native-owner-helpers"
       - name: Test actual Neuron and execute trained parameters through the owner
         run: |
           set -euo pipefail

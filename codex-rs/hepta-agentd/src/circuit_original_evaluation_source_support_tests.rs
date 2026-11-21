@@ -2,11 +2,9 @@
 //! keys, model responses and measurements are explicit mechanism fixtures.
 //! The provider receives no caller-built OPE rows or cached publications.
 use super::*;
-use crate::circuit_original_evaluation_provider::*;
 use crate::circuit_task::cell_q24_dataset_source_test_support as source_fixture;
 use crate::circuit_task::source_test_support as source_support;
 use anyhow::Context;
-use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::FixedQ32;
 use pretty_assertions::assert_eq;

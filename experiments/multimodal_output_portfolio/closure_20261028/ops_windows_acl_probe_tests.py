@@ -31,8 +31,7 @@ def complete_transcript():
 
 class ProbeIntegrityTests(unittest.TestCase):
     def test_actual_git_rejects_live_and_index_only_source_changes(self):
-        paths = (*probe.PRODUCTION, *probe.CONFIG, *((probe.RELATIVE / p).as_posix() for p in probe.HARNESS))
-        paths += ((probe.RELATIVE / "ops_windows_acl_probe.py").as_posix(),)
+        paths = probe.source_paths(ROOT)
         with tempfile.TemporaryDirectory(prefix="hepta-acl-custody-") as temporary:
             fixture = Path(temporary)
             for relative in paths:
@@ -56,10 +55,17 @@ class ProbeIntegrityTests(unittest.TestCase):
             source.write_bytes(original)
             with self.assertRaisesRegex(ValueError, "index differs"):
                 probe.bind_sources(fixture, head)
+            child = fixture / "codex-rs/windows-sandbox-rs/src/fresh_managed_base.rs"
+            child_original = child.read_bytes()
+            child.write_bytes(child_original + b"\n// changed transitive module fixture\n")
+            with self.assertRaisesRegex(ValueError, "working-tree bytes"):
+                probe.bind_sources(fixture, head)
+            child.write_bytes(child_original)
             crate = fixture / "isolated"
             probe.prepare(crate, blobs)
             for path in probe.PRODUCTION:
-                self.assertEqual((crate / "src" / Path(path).name).read_bytes(), blobs[path])
+                self.assertEqual((crate / path.removeprefix("codex-rs/")).read_bytes(), blobs[path])
+            self.assertEqual((crate / "windows-sandbox-rs/src/fresh_managed_base.rs").read_bytes(), child_original)
             self.assertEqual(records[probe.PRODUCTION[0]]["sha256"], probe.sha(original))
 
     def test_complete_transcript_keeps_false_invariant_as_observed_failure(self):
@@ -95,12 +101,19 @@ class ProbeIntegrityTests(unittest.TestCase):
         corrupted = original.replace(f'checksum = "{checksum}"'.encode(), b'checksum = "missing"', 1)
         with self.assertRaisesRegex(ValueError, "checksum"):
             probe.dependency_closure(corrupted)
+        inputs = ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/.cargo/config.toml",
+                  "codex-rs/rust-toolchain.toml",
+                  *(f"codex-rs/{path}/Cargo.toml" for path in probe.packaging.PACKAGE_DIRS.values()))
+        blobs = {path: (ROOT / path).read_bytes() for path in inputs}
+        for path in (*inputs[:4], "codex-rs/windows-sandbox-rs/Cargo.toml"):
+            changed = {**blobs, path: blobs[path] + b"\n"}
+            with self.subTest(lock_profile=path), self.assertRaisesRegex(ValueError, "unreviewed isolated lock profile"):
+                probe.packaging.isolated_lock(selected, changed)
 
 
     def test_actual_git_rejects_unbound_legacy_admission_changes(self):
         legacy = "codex-rs/windows-sandbox-rs/src/legacy_admission.rs"
-        paths = (*probe.PRODUCTION, *probe.CONFIG, *((probe.RELATIVE / p).as_posix() for p in probe.HARNESS))
-        paths += ((probe.RELATIVE / "ops_windows_acl_probe.py").as_posix(), legacy)
+        paths = (*probe.source_paths(ROOT), legacy)
         with tempfile.TemporaryDirectory(prefix="hepta-acl-admission-custody-") as temporary:
             fixture = Path(temporary)
             for relative in dict.fromkeys(paths):

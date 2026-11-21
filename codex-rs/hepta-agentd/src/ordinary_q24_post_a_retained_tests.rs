@@ -71,12 +71,13 @@ impl RetainedOrdinaryQ24Fixture {
         let directory = original.plan.protected.path().join("ordinary-whole-phase");
         std::fs::create_dir(&directory)?;
         super::super::owned_mode(&directory, 0, 0, 0o700)?;
+        let (daemon, root) = self.original_processes();
         for (name, child) in [
             ("a-daemon", &original.daemon),
             ("a-root", &original.root),
             ("a-observer", &original.observer),
-            ("post-a-daemon", &self.daemon),
-            ("post-a-root", &self.root),
+            ("post-a-daemon", daemon),
+            ("post-a-root", root),
             ("independent-source", &self.source),
         ] {
             child.require_dead()?;

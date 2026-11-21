@@ -18,7 +18,8 @@ jobs:
     name: Select blocking CI scope
     # Stdlib Python/Git selection is portable; use the separate ARM runner pool.
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 5
+    # Include exact-candidate checkout and exact-base fetch in the selection budget.
+    timeout-minutes: 15
     outputs:
       inference: ${{ steps.scope.outputs.inference }}
       effects: ${{ steps.scope.outputs.effects }}

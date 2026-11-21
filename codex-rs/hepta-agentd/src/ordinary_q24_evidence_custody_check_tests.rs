@@ -44,13 +44,13 @@ fn original_fixture_error_preserves_existing_directory_and_business_bytes() -> a
         physical(&business)?,
         std::fs::read(&business)?,
     );
-    let failure: io::Result<()> = (move || {
+    let failure: io::Result<()> = {
         let _original = original;
         Err(io::Error::new(
             io::ErrorKind::InvalidData,
             "actual fixture preparation failed before producing a holder",
         ))
-    })();
+    };
     assert_eq!(
         failure
             .expect_err("fixture failure must remain an error")

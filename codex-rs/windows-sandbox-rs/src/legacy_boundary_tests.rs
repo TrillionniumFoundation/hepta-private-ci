@@ -148,6 +148,7 @@ fn direct_legacy_entrypoints_refuse_before_home_acl_or_child_side_effects() -> R
 #[test]
 fn account_broker_entrypoints_refuse_before_home_acl_or_child_side_effects() -> Result<()> {
     use crate::ElevatedSandboxProfileCaptureRequest;
+    use crate::ElevatedWindowsSandboxIsolationUnavailable;
     use crate::WindowsFilesystemIsolationUnavailable;
     use crate::WindowsSandboxProxySettingsMode;
     use crate::WindowsSandboxSessionRequest;
@@ -223,8 +224,8 @@ fn account_broker_entrypoints_refuse_before_home_acl_or_child_side_effects() -> 
             panic!("account broker capture must refuse");
         };
         assert_eq!(
-            error.downcast_ref::<WindowsFilesystemIsolationUnavailable>(),
-            Some(&WindowsFilesystemIsolationUnavailable)
+            error.downcast_ref::<ElevatedWindowsSandboxIsolationUnavailable>(),
+            Some(&ElevatedWindowsSandboxIsolationUnavailable)
         );
 
         for level in [
@@ -264,8 +265,8 @@ fn account_broker_entrypoints_refuse_before_home_acl_or_child_side_effects() -> 
                 );
             } else {
                 assert_eq!(
-                    error.downcast_ref::<WindowsFilesystemIsolationUnavailable>(),
-                    Some(&WindowsFilesystemIsolationUnavailable)
+                    error.downcast_ref::<ElevatedWindowsSandboxIsolationUnavailable>(),
+                    Some(&ElevatedWindowsSandboxIsolationUnavailable)
                 );
             }
         }
@@ -294,8 +295,8 @@ fn account_broker_entrypoints_refuse_before_home_acl_or_child_side_effects() -> 
             panic!("explicit account broker session must refuse");
         };
         assert_eq!(
-            error.downcast_ref::<WindowsFilesystemIsolationUnavailable>(),
-            Some(&WindowsFilesystemIsolationUnavailable)
+            error.downcast_ref::<ElevatedWindowsSandboxIsolationUnavailable>(),
+            Some(&ElevatedWindowsSandboxIsolationUnavailable)
         );
         assert_eq!((home.exists(), marker.exists()), (false, false));
         assert_eq!(dacl_snapshot(cwd)?, original_acl);

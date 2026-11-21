@@ -9,7 +9,10 @@ use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
 
-pub(super) fn write_json(path: &Path, value: &impl serde::Serialize) -> anyhow::Result<()> {
+pub(in crate::neuron_generation_current) fn write_json(
+    path: &Path,
+    value: &impl serde::Serialize,
+) -> anyhow::Result<()> {
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -25,7 +28,7 @@ pub(super) fn write_json(path: &Path, value: &impl serde::Serialize) -> anyhow::
     Ok(())
 }
 
-pub(super) fn pidfd(pid: u32) -> anyhow::Result<OwnedFd> {
+pub(in crate::neuron_generation_current) fn pidfd(pid: u32) -> anyhow::Result<OwnedFd> {
     // SAFETY: pidfd_open creates one new owned pin for the retained parent or child.
     let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
     anyhow::ensure!(fd >= 0, "{}", io::Error::last_os_error());
@@ -33,7 +36,7 @@ pub(super) fn pidfd(pid: u32) -> anyhow::Result<OwnedFd> {
     Ok(unsafe { OwnedFd::from_raw_fd(fd as i32) })
 }
 
-pub(super) fn start_ticks(pid: u32) -> anyhow::Result<u64> {
+pub(in crate::neuron_generation_current) fn start_ticks(pid: u32) -> anyhow::Result<u64> {
     let stat = std::fs::read_to_string(format!("/proc/{pid}/stat"))?;
     Ok(stat
         .rsplit_once(") ")
@@ -43,17 +46,19 @@ pub(super) fn start_ticks(pid: u32) -> anyhow::Result<u64> {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(super) struct ProtectedFile {
-    pub(super) device: u64,
-    pub(super) inode: u64,
-    pub(super) owner: u32,
-    pub(super) group: u32,
-    pub(super) mode: u32,
-    pub(super) links: u64,
-    pub(super) bytes: Vec<u8>,
+pub(in crate::neuron_generation_current) struct ProtectedFile {
+    pub(in crate::neuron_generation_current) device: u64,
+    pub(in crate::neuron_generation_current) inode: u64,
+    pub(in crate::neuron_generation_current) owner: u32,
+    pub(in crate::neuron_generation_current) group: u32,
+    pub(in crate::neuron_generation_current) mode: u32,
+    pub(in crate::neuron_generation_current) links: u64,
+    pub(in crate::neuron_generation_current) bytes: Vec<u8>,
 }
 
-pub(super) fn protected_files(path: &Path) -> anyhow::Result<BTreeMap<PathBuf, ProtectedFile>> {
+pub(in crate::neuron_generation_current) fn protected_files(
+    path: &Path,
+) -> anyhow::Result<BTreeMap<PathBuf, ProtectedFile>> {
     std::fs::read_dir(path)?
         .map(|entry| {
             let path = entry?.path();
@@ -63,7 +68,9 @@ pub(super) fn protected_files(path: &Path) -> anyhow::Result<BTreeMap<PathBuf, P
         .collect()
 }
 
-pub(super) fn protected_file(path: &Path) -> anyhow::Result<ProtectedFile> {
+pub(in crate::neuron_generation_current) fn protected_file(
+    path: &Path,
+) -> anyhow::Result<ProtectedFile> {
     let mut file = File::open(path)?;
     let metadata = file.metadata()?;
     let mut bytes = Vec::new();
@@ -79,7 +86,7 @@ pub(super) fn protected_file(path: &Path) -> anyhow::Result<ProtectedFile> {
     })
 }
 
-pub(super) struct ChildOwner {
+pub(in crate::neuron_generation_current) struct ChildOwner {
     child: Option<Child>,
     deadline: Instant,
     stdout: File,
@@ -87,10 +94,11 @@ pub(super) struct ChildOwner {
 }
 
 impl ChildOwner {
-    pub(super) fn spawn(
+    pub(in crate::neuron_generation_current) fn spawn(
         receive: UnixDatagram,
         state: &Path,
-        terminal: Phase,
+        terminal: impl std::fmt::Debug,
+        child_test: &str,
     ) -> anyhow::Result<Self> {
         let executable = File::open(std::env::current_exe()?)?;
         let inherited = [receive.as_raw_fd(), executable.as_raw_fd()];
@@ -112,7 +120,7 @@ impl ChildOwner {
             .arg(format!("/proc/self/fd/{}", executable.as_raw_fd()))
             .args([
                 "--exact",
-                CHILD_TEST,
+                child_test,
                 "--ignored",
                 "--nocapture",
                 "--test-threads=1",
@@ -160,14 +168,14 @@ impl ChildOwner {
         })
     }
 
-    pub(super) fn pid(&self) -> anyhow::Result<u32> {
+    pub(in crate::neuron_generation_current) fn pid(&self) -> anyhow::Result<u32> {
         self.child
             .as_ref()
             .map(Child::id)
             .ok_or_else(|| anyhow::anyhow!("retained original child required"))
     }
 
-    pub(super) fn release(&mut self) -> anyhow::Result<()> {
+    pub(in crate::neuron_generation_current) fn release(&mut self) -> anyhow::Result<()> {
         self.child
             .as_mut()
             .and_then(|child| child.stdin.as_mut())
@@ -176,7 +184,7 @@ impl ChildOwner {
         Ok(())
     }
 
-    pub(super) fn finish(mut self) -> anyhow::Result<String> {
+    pub(in crate::neuron_generation_current) fn finish(mut self) -> anyhow::Result<String> {
         loop {
             if self
                 .child

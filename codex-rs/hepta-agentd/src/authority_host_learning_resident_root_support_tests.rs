@@ -159,7 +159,7 @@ impl ResidentRootFixture {
         let mut config = HostAuthorityServiceConfig {
             schema_version: 1,
             issuer_record_profile: HostIssuerRecordProfile::Standard,
-            state_dir: state.clone(),
+            state_dir: state,
             required_bind,
             signer_id: initialized.signer_id,
             expected_verifying_key: initialized.verifying_key,

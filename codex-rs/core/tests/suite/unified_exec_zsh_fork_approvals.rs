@@ -708,7 +708,7 @@ fn permission_profile_from_toml(profile: &str) -> Result<PermissionProfile> {
                 // This fixture denies one exact file. GlobPattern requires a
                 // real wildcard and invokes a different, bounded scan contract.
                 _ if *access == FileSystemAccessMode::Deny => FileSystemPath::Path {
-                    path: AbsolutePathBuf::from_absolute_path(path)?.into(),
+                    path: AbsolutePathBuf::from_absolute_path_checked(path)?.into(),
                 },
                 _ => anyhow::bail!("unexpected filesystem entry in test profile: {path}"),
             };

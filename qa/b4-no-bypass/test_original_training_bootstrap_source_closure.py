@@ -181,7 +181,27 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
         ):
             for marker in markers:
                 with self.subTest(function=function, marker=marker):
-                    self.rejects(CONNECTION, function, marker)
+                    if marker != "original_owner_pidfd,\n":
+                        self.rejects(CONNECTION, function, marker)
+                        continue
+                    # Remove the held descriptor argument, not its input binding.
+                    code = self.code(source)
+                    start = code.index(function)
+                    end = PROOF._rust_item_end(code, start)
+                    self.assertIsNotNone(end)
+                    calls = list(re.finditer(
+                        r"\bRootObservationStream\s*::\s*from_stream_for_uid\s*\(",
+                        code[start:end + 1],
+                    ))
+                    self.assertEqual(len(calls), 1)
+                    opening = start + calls[0].end() - 1
+                    closing = PROOF._matching_delimiter(code, opening, "(", ")")
+                    self.assertIsNotNone(closing)
+                    self.assertLessEqual(closing, end)
+                    lo, hi = source_marker_span(source, marker, opening + 1, closing)
+                    changed = source[:lo] + source[hi:]
+                    with self.assertRaises(PROOF.VerificationFailure):
+                        self.verifies(CONNECTION, changed)
         for call in (
             "RootObservationStream::from_stream_for_uid();",
             "RootObservationStream /* extra */ :: from_stream_for_uid ();",
@@ -255,7 +275,7 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
         code = self.function(source, "fn command_response(")
         for match in re.finditer(r"\bState\s*::\s*Awaiting\s*\(", code):
             tail = code[match.end():]
-            if re.match(r"\s*custody\s*\)\s*=>\s*custody\s*,", tail) is None:
+            if re.match(r"\s*custody\s*\)\s*=>\s*\*custody\s*,", tail) is None:
                 raise PROOF.VerificationFailure("Awaiting may only destructure the original custody")
 
     def test_ready_is_retained_before_work_and_failed_initialization_never_rearms(self):

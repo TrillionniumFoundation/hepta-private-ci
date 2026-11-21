@@ -38,19 +38,19 @@ use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::RuntimeTasks;
 
-pub(super) fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
+pub(crate) fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
     match result {
         Ok(value) => value,
         Err(error) => panic!("generation service fixture: {error:?}"),
     }
 }
 
-pub(super) fn poll_pending<F: Future>(future: Pin<&mut F>) {
+pub(crate) fn poll_pending<F: Future>(future: Pin<&mut F>) {
     let mut context = Context::from_waker(Waker::noop());
     assert!(future.poll(&mut context).is_pending());
 }
 
-pub(super) fn host() -> (RuntimeTasks, CancellationToken) {
+pub(crate) fn host() -> (RuntimeTasks, CancellationToken) {
     let cancellation = CancellationToken::new();
     (
         checked(RuntimeTasks::new(
@@ -61,12 +61,12 @@ pub(super) fn host() -> (RuntimeTasks, CancellationToken) {
     )
 }
 
-pub(super) fn generation(value: u64) -> Generation {
+pub(crate) fn generation(value: u64) -> Generation {
     checked(Generation::new(value))
 }
 
 #[derive(Default)]
-pub(super) struct Signals {
+pub(crate) struct Signals {
     pub calls: AtomicUsize,
     pub reads: AtomicUsize,
     pub cancellations: AtomicUsize,
@@ -76,7 +76,7 @@ pub(super) struct Signals {
 }
 
 #[derive(Clone)]
-pub(super) struct Control {
+pub(crate) struct Control {
     directory: PathBuf,
     pub signals: Arc<Signals>,
 }
@@ -160,14 +160,14 @@ impl CellGenerationControlPortV2 for Control {
     }
 }
 
-pub(super) fn cost() -> CellTaskCostV2 {
+pub(crate) fn cost() -> CellTaskCostV2 {
     checked(CellTaskCostV2::new(CellTaskCostIdentityV2 {
         task_digest: [17; 32],
         source_digest: [1; 32],
     }))
 }
 
-pub(super) fn request(
+pub(crate) fn request(
     operation_id: &str,
     predecessor: CellRuntimeSnapshotV2,
 ) -> CellGenerationRequestV2 {
@@ -182,7 +182,7 @@ pub(super) fn request(
     }
 }
 
-pub(super) struct Fixture {
+pub(crate) struct Fixture {
     observers: Mutex<BTreeMap<String, File>>,
     pub directory: tempfile::TempDir,
     pub identity: AgentdIdentity,
@@ -194,7 +194,7 @@ pub(super) struct Fixture {
 }
 
 impl Fixture {
-    pub(super) async fn new() -> Self {
+    pub(crate) async fn new() -> Self {
         let directory = checked(tempfile::tempdir());
         let root = checked(directory.path().canonicalize());
         let fleet_path = root.join("fleet");
@@ -260,7 +260,7 @@ impl Fixture {
         fixture
     }
 
-    pub(super) fn state(&self) -> &Arc<AgentdState> {
+    pub(crate) fn state(&self) -> &Arc<AgentdState> {
         self.state
             .as_ref()
             .unwrap_or_else(|| panic!("live fixture state"))
@@ -277,7 +277,7 @@ impl Fixture {
         checked(self.state().mark_runtime_prerequisites_ready());
     }
 
-    pub(super) async fn reopen_state(&mut self) {
+    pub(crate) async fn reopen_state(&mut self) {
         drop(self.state.take());
         self.state = Some(Arc::new(checked(AgentdState::new(
             self.identity.clone(),
@@ -289,7 +289,7 @@ impl Fixture {
         checked(self.state().mark_app_server_ready());
     }
 
-    pub(super) fn begin_drain(&self) {
+    pub(crate) fn begin_drain(&self) {
         checked(self.registry.compare_and_transition(
             &self.identity.agent_id,
             /*expected_generation*/ 2,
@@ -299,11 +299,11 @@ impl Fixture {
         checked(self.state().mark_draining());
     }
 
-    pub(super) fn journal(&self) -> CellGenerationJournalV2<FileAnchorWitnessStore> {
+    pub(crate) fn journal(&self) -> CellGenerationJournalV2<FileAnchorWitnessStore> {
         self.journal_with("generation", self.config.clone())
     }
 
-    pub(super) fn journal_with(
+    pub(crate) fn journal_with(
         &self,
         stem: &str,
         config: CellGenerationConfigV2,
@@ -344,7 +344,7 @@ impl Fixture {
         journal
     }
 
-    pub(super) fn bytes(&self, name: &str) -> Vec<u8> {
+    pub(crate) fn bytes(&self, name: &str) -> Vec<u8> {
         let observers = checked(self.observers.lock());
         let file = observers
             .get(name)
@@ -352,7 +352,7 @@ impl Fixture {
         checked(crate::test_support::read_file_bytes(file))
     }
 
-    pub(super) fn clock(&self) -> impl FnMut() -> u64 + Send + 'static {
+    pub(crate) fn clock(&self) -> impl FnMut() -> u64 + Send + 'static {
         let ticks = Arc::clone(&self.ticks);
         move || ticks.fetch_add(1, Ordering::SeqCst)
     }

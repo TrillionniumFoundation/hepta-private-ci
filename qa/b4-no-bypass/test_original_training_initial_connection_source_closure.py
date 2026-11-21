@@ -101,7 +101,7 @@ class OriginalTrainingConnectionClosureTests(unittest.TestCase):
                 self.rejects(CONNECTION, "fn bind_original_stream(", marker)
         self.rejects(HELPER, "fn require_original_command_initial(", "wire::context_binding(self, at)?")
         self.rejects(CONNECTION, "fn from_original_stream(", "Origin::Fresh")
-        self.rejects(CONNECTION, "fn recover_from_original_stream(", "Origin::Recovered(expected)", "Origin::Fresh")
+        self.rejects(CONNECTION, "fn recover_from_original_stream(", "Origin::Recovered(expected.map(Box::new))", "Origin::Fresh")
 
     def require_one_initial_transport(self, source):
         code = self.code(source)
@@ -163,7 +163,7 @@ class OriginalTrainingConnectionClosureTests(unittest.TestCase):
             "Origin::Fresh => (false, None)",
             "Origin::Recovered(expected) => (",
             "wire::authenticate_receipt(",
-            ".map(|(receipt, attestation)|",
+            ".map(|original| {\n                        let (receipt, attestation) = *original;",
             "receipt,",
             "attestation,",
             "verified_at)",

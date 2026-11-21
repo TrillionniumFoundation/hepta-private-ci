@@ -43,14 +43,13 @@ mod unix {
     use codex_hepta_supervisor::SupervisorConfig;
     use codex_hepta_supervisor::SupervisorEventKind;
     use codex_hepta_supervisor::UnixProcessDriver;
+    use codex_state::SqliteConfig;
     use codex_uds::UnixStream;
+    use codex_utils_absolute_path::AbsolutePathBuf;
     use serde::Serialize;
     use serde_json::Value;
     use serde_json::json;
-    use sqlx::Connection;
     use sqlx::Row;
-    use sqlx::SqliteConnection;
-    use sqlx::sqlite::SqliteConnectOptions;
     use tokio::io::AsyncBufReadExt;
     use tokio::io::AsyncReadExt;
     use tokio::io::AsyncWriteExt;
@@ -582,14 +581,19 @@ mod unix {
             "store is not a physical file: {}",
             path.display()
         );
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .read_only(true)
-            .pragma("query_only", "ON")
-            .busy_timeout(Duration::from_secs(5));
-        let mut connection = SqliteConnection::connect_with(&options).await?;
+        let parent = path.parent().context("store path has no parent")?;
+        let sqlite =
+            SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(parent.to_path_buf())?);
+        let pool = sqlite.open_read_only_pool(path).await?;
+        let mut connection = pool.acquire().await?;
+        sqlx::query("PRAGMA query_only = ON")
+            .execute(&mut *connection)
+            .await?;
+        sqlx::query("PRAGMA busy_timeout = 5000")
+            .execute(&mut *connection)
+            .await?;
         let integrity: Vec<String> = sqlx::query_scalar("PRAGMA quick_check")
-            .fetch_all(&mut connection)
+            .fetch_all(&mut *connection)
             .await?;
         ensure!(integrity == ["ok"], "store integrity failed: {integrity:?}");
         // SQLx receives only static SQL literals for the two original metadata tables.
@@ -602,12 +606,12 @@ mod unix {
             ),
             _ => bail!("unsupported original metadata table: {table}"),
         };
-        let row = query.fetch_one(&mut connection).await?;
+        let row = query.fetch_one(&mut *connection).await?;
         let schema_version: i64 = row.try_get("schema_version")?;
         let owner: String = row.try_get("owner_agent_id")?;
         ensure!(schema_version > 0 && owner == expected_owner.as_str());
         let journal_mode: String = sqlx::query_scalar("PRAGMA journal_mode")
-            .fetch_one(&mut connection)
+            .fetch_one(&mut *connection)
             .await?;
         ensure!(
             journal_mode == "wal",
@@ -615,12 +619,12 @@ mod unix {
         );
         let migrations: i64 =
             sqlx::query_scalar("SELECT COUNT(*) FROM _sqlx_migrations WHERE success = 1")
-                .fetch_one(&mut connection)
+                .fetch_one(&mut *connection)
                 .await?;
         ensure!(migrations > 0);
         let automation_runs = if table == "automation_meta" {
             let runs: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM automation_runs")
-                .fetch_one(&mut connection)
+                .fetch_one(&mut *connection)
                 .await?;
             ensure!(
                 runs == 0,
@@ -631,6 +635,7 @@ mod unix {
             None
         };
         connection.close().await?;
+        pool.close().await;
         Ok(
             json!({"path": path, "schema_version": schema_version, "owner_agent_id": owner,
             "quick_check": integrity, "journal_mode": journal_mode, "migrations": migrations,
@@ -722,7 +727,7 @@ mod unix {
         ensure!(
             witness.owner_agent_id == agent_id && witness.state == AutomationTaskState::Disabled
         );
-        ensure!(client.automation_list(16).await? == [witness.clone()]);
+        ensure!(client.automation_list(16).await?.as_slice() == std::slice::from_ref(&witness));
         let first_stores = stores(&fixture.layout).await?;
         stage(
             "original_store_witness",
