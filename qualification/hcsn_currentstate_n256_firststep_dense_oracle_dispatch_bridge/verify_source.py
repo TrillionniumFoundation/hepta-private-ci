@@ -42,6 +42,7 @@ def main():
     require(request["original_source_freeze_sha256"] == digest(ORIGINAL / "SOURCE_FREEZE.json"), "original freeze")
     require(request["prior_dedicated_run_count"] == request["prior_numerical_attempt_count"] == 0, "prior attempt")
     require(request["maximum_numerical_attempts"] == request["manual_dispatch_limit"] == 1, "attempt budget")
+    require(request["manual_dispatch_transport_key"].endswith("transport002-after-http422-zero-run"), "transport key")
     require(request["prior_dispatch_rejections"] == 1, "dispatch rejection count")
     require(request["prior_actions_run_count"] == 0, "Actions run count")
     require(observed["cumulative_numerical_attempts"] == 0, "no-run chain")

@@ -15,6 +15,7 @@ class BridgeTest(unittest.TestCase):
         self.assertEqual(request["unique_execution_key"], "hcsn-n256-firststep-dense-oracle-hosted-20261118-c06d-001")
         self.assertEqual((request["prior_numerical_attempt_count"], request["maximum_numerical_attempts"]), (0, 1))
         self.assertEqual(request["manual_dispatch_limit"], 1)
+        self.assertTrue(request["manual_dispatch_transport_key"].endswith("transport002-after-http422-zero-run"))
 
     def test_registered_workflow_has_exact_branch_dispatch(self):
         workflow = WORKFLOW.read_text()
