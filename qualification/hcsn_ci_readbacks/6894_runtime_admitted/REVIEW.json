@@ -1,0 +1,91 @@
+{
+  "schema": "hcsn-n256-runtime-identity-admission-independent-readback-v2",
+  "source_pr": 6894,
+  "final_source_commit": "8a36071740f85408534a2b65badcb09062a41ce1",
+  "previous_evidence_pr": 6895,
+  "previous_evidence_commit": "d3c35427b2ef56549bf88753f5b344cefa795568",
+  "identity": "hcsn-n256-runtime-identity-admission-20261121-c6bc-001",
+  "attempts": [
+    {
+      "run": 44910798387,
+      "job": 136865986747,
+      "conclusion": "failure",
+      "candidate_executed": false,
+      "artifact_published": false,
+      "error": "NameError at result publication: qualification/production/all_closed used JSON false"
+    },
+    {
+      "run": 44910947077,
+      "job": 136866426687,
+      "conclusion": "failure",
+      "candidate_executed": false,
+      "artifact_published": false,
+      "error": "NameError at result publication: candidate_executed used JSON false"
+    },
+    {
+      "run": 44911092060,
+      "job": 136866866262,
+      "conclusion": "success",
+      "candidate_executed": false,
+      "admitted": false,
+      "artifact_id": 14709632873,
+      "artifact_zip_bytes": 1197,
+      "artifact_zip_sha256": "055bd4b6551f2d0524e5a938faea9398d8b77c79ecdbb5509a1ff059029fa7a8",
+      "measurement_mismatch": [
+        "numpy_record_sha256",
+        "scipy_record_sha256"
+      ]
+    },
+    {
+      "run": 44911605026,
+      "job": 136868429440,
+      "conclusion": "success",
+      "candidate_executed": false,
+      "admitted": true,
+      "artifact_id": 14710107556,
+      "artifact_zip_bytes": 1182,
+      "artifact_zip_sha256": "8906773cf69dbb1ec841e735b3d2f2fce2a5b23b627e10676c402bac025aeb28"
+    }
+  ],
+  "correction": {
+    "changed_only": "RECORD identity computation and static source binding",
+    "previous_guard": "raw file bytes",
+    "oracle_and_final_guard": "distribution.read_text(\"RECORD\"), then SHA-256 of record_text.encode()",
+    "threshold_lowered": false,
+    "compared_fields_removed": [],
+    "candidate_invoked": false
+  },
+  "terminal_result": {
+    "admitted": true,
+    "candidate_execution_authorized": true,
+    "candidate_executed": false,
+    "mismatch_fields": [],
+    "exact_comparisons": 10,
+    "numeric_modules_imported": [],
+    "candidate_model_calls": 0,
+    "dynamic_steps": 0,
+    "expm_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0,
+    "qualification": false,
+    "production_adoption": false,
+    "all_closed": false
+  },
+  "artifact_members": {
+    "RESULT.json": {
+      "bytes": 1799,
+      "sha256": "cce921f4eca3232bd5ab4d7eb5875bb1dda79a0c58607c5b4ea7aaa6a2ed37d9"
+    },
+    "COST.json": {
+      "bytes": 246,
+      "sha256": "14564d54ebfafebcb9b622ce1ee40205dc2bd0748adebe40709fb79dba4f1b96"
+    }
+  },
+  "scope": {
+    "historical_6890_red_preserved": true,
+    "c2_full_replay_completed_fits": 0,
+    "hpca_status": "NoUpdate",
+    "global_status": "HOLD",
+    "all_closed": false
+  }
+}
