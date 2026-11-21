@@ -1,3 +1,5 @@
+use super::FileModelsCache;
+use super::ModelsCache;
 use super::ModelsCacheEntry;
 use chrono::Duration as ChronoDuration;
 use chrono::Utc;
@@ -77,5 +79,33 @@ fn original_model_cache_wire_preserves_leap_seconds_and_extended_years() {
         let restored: ModelsCacheEntry =
             serde_json::from_value(encoded).expect("cache timestamp should round trip");
         assert_eq!(restored, original);
+    }
+}
+
+#[tokio::test]
+async fn file_cache_ttl_refresh_rejects_missing_or_mismatched_client_version_without_writing() {
+    let temp = tempfile::tempdir().expect("temporary model cache directory");
+    let path = temp.path().join("models.json");
+    let cache = FileModelsCache::new(path.clone(), Duration::from_secs(3600));
+
+    for cached_version in [None, Some("previous-client")] {
+        let entry = ModelsCacheEntry {
+            fetched_at: Utc::now() - ChronoDuration::hours(2),
+            etag: Some("unchanged-etag".to_owned()),
+            client_version: cached_version.map(str::to_owned),
+            models: Vec::new(),
+        };
+        super::save_file(&path, &entry)
+            .await
+            .expect("write previous client cache");
+        let before = tokio::fs::read(&path).await.expect("read original bytes");
+
+        cache
+            .refresh_ttl("current-client")
+            .await
+            .expect_err("a missing or different client version must not be renewed");
+
+        let after = tokio::fs::read(&path).await.expect("read preserved bytes");
+        assert_eq!(after, before);
     }
 }
