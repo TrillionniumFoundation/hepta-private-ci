@@ -30,6 +30,12 @@ def main():
         value = json.loads(activation.read_text())
         if value != freeze["activation_contract"]:
             raise ValueError("activation contract")
+    opened = HERE / "EXECUTION_OPEN.json"
+    if opened.exists():
+        if sha(opened) != freeze["execution_open_sha256"]:
+            raise ValueError("opened activation identity")
+        if json.loads(opened.read_text()) != freeze["execution_open_contract"]:
+            raise ValueError("opened activation contract")
     if any(name in sys.modules for name in ("numpy", "scipy", "torch")):
         raise ValueError("source verifier imported numerical module")
     print("PASS_FROZEN_N256_DENSE_COMPATIBLE_FIRSTSTEP_EXECUTION_SOURCE")

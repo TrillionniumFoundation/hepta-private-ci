@@ -2,10 +2,9 @@ name: hcsn-currentstate-n256-dense-compatible-firststep-execution-activation
 
 on:
   pull_request:
-    types: [synchronize]
+    types: [opened]
     paths:
-      - "qualification/hcsn_currentstate_n256_dense_compatible_firststep_execution/EXECUTE.json"
-      - ".github/workflows/hcsn-currentstate-n256-dense-compatible-firststep-execution-activation.yml"
+      - "qualification/hcsn_currentstate_n256_dense_compatible_firststep_execution/EXECUTION_OPEN.json"
 
 permissions:
   contents: read
