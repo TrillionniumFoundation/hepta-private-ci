@@ -1,0 +1,47 @@
+import ast
+import json
+import unittest
+from pathlib import Path
+
+
+HERE = Path(__file__).resolve().parent
+
+
+class SourceTests(unittest.TestCase):
+    def test_request_preserves_scope_and_red(self):
+        request = json.loads((HERE / "REQUEST.json").read_text())
+        self.assertEqual(request["maximum_attempts"], 1)
+        self.assertEqual(request["historical_sparse_red"]["bitwise_mismatches"], 1291)
+        self.assertFalse(request["sparse_kernel_qualified"])
+        self.assertFalse(request["all_closed"])
+
+    def test_source_stage_zero_work(self):
+        request = json.loads((HERE / "REQUEST.json").read_text())
+        self.assertEqual(set(request["source_stage"].values()), {False, 0})
+
+    def test_child_defers_numerical_imports(self):
+        tree = ast.parse((HERE / "child.py").read_text())
+        top = [ast.unparse(node) for node in tree.body if isinstance(node, (ast.Import, ast.ImportFrom))]
+        self.assertFalse(any("numpy" in item or "scipy" in item or "torch" in item for item in top))
+
+    def test_strict_no_tolerance_or_sparse_rescue(self):
+        source = (HERE / "child.py").read_text()
+        self.assertNotIn("allclose", source)
+        self.assertNotIn("isclose", source)
+        self.assertNotIn("expm_multiply", source)
+
+    def test_preexec_limit_and_single_deadline(self):
+        source = (HERE / "launcher.py").read_text()
+        self.assertIn("preexec_fn=child_limits", source)
+        self.assertIn("timeout=600", source)
+        self.assertNotIn("retry", source.lower())
+
+    def test_audit_budget_is_exact(self):
+        request = json.loads((HERE / "REQUEST.json").read_text())
+        namespace = {}
+        exec((HERE / "audit.py").read_text(), namespace)
+        self.assertEqual(namespace["EXPECTED"], request["same_run_budget"])
+
+
+if __name__ == "__main__":
+    unittest.main()
