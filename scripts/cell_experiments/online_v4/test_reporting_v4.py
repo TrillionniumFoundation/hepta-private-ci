@@ -104,8 +104,10 @@ class ReportingTests(unittest.TestCase):
         )
         cls.studies, cls.plans = {}, {}
         for panel, record in (("A", a), ("B", b)):
+            diagnostic = copy.deepcopy(record)
+            diagnostic["split"] = "selection"
             evaluate_suite(
-                [record],
+                [diagnostic],
                 registry,
                 budget,
                 ScriptedCells(registry, mode="context"),
@@ -116,6 +118,7 @@ class ReportingTests(unittest.TestCase):
                 fixed_graph=Graph("fixed", ("first", "second")),
                 random_seed=1729,
                 execution_binding_digest="e" * 64,
+                panel_scope="exposed_diagnostic",
             )
             cls.studies[panel], cls.plans[panel] = (
                 read(cls.root / panel / "STUDY.json"),
@@ -156,6 +159,40 @@ class ReportingTests(unittest.TestCase):
         self.assertFalse(report["scientific_qualification"])
         self.assertEqual(report["independent_sample_increment"], 0)
         self.assertFalse(REPORTING_IMPORTED_TORCH)
+        self.assertTrue(
+            all(
+                plan["evaluation_admission"]["diagnostic_only"]
+                for plan in self.plans.values()
+            )
+        )
+        self.assertTrue(report["E4_evaluation_scopes"]["A"]["selection_on_this_panel"])
+        self.assertFalse(
+            report["E4_evaluation_scopes"]["A"]["independent_confirmation"]
+        )
+
+    def test_diagnostic_scope_cannot_be_silently_relabelled_or_omitted(self):
+        for change in ("missing", "heldout", "independent", "unbound"):
+            plans, studies = copy.deepcopy(self.plans), copy.deepcopy(self.studies)
+            admission = plans["A"]["evaluation_admission"]
+            if change == "missing":
+                del plans["A"]["evaluation_admission"]
+                del studies["A"]["evaluation_admission"]
+            else:
+                if change == "heldout":
+                    admission["scope"] = "heldout"
+                    admission["diagnostic_only"] = False
+                elif change == "independent":
+                    admission["independent_confirmation"] = True
+                else:
+                    admission["previously_exposed"] = True
+                if change != "unbound":
+                    studies["A"]["evaluation_admission"] = copy.deepcopy(admission)
+            studies["A"]["plan_digest"] = digest(plans["A"])
+            with self.subTest(change=change):
+                report = self.call(studies=studies, study_plans=plans)
+                self.assertIsNone(report["bound_E4_budget"])
+                self.assertEqual(report["input_validation"], "INCOMPLETE")
+                self.assertFalse(report["scientific_qualification"])
 
     def test_same_initial_context_A_steps_and_fresh_optimizer_are_required(self):
         for key, value in (

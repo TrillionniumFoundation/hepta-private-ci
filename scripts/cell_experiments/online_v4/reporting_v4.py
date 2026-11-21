@@ -67,6 +67,52 @@ def sums(rows, keys):
     }
 
 
+def evaluation_scope(plan, study):
+    selected = plan["selection_on_this_panel"]
+    require(type(selected) is bool, "missing evaluation selection state")
+    admission = plan.get("evaluation_admission")
+    if admission is None:
+        require(
+            selected is False and "evaluation_admission" not in study,
+            "overlap requires an explicit bound diagnostic scope",
+        )
+        return {"scope": "legacy_unverified", "independent_confirmation": False}
+    require(
+        isinstance(admission, dict) and study.get("evaluation_admission") == admission,
+        "evaluation scope binding differs",
+    )
+    scope = admission["scope"]
+    overlap = admission["overlap"]
+    require(
+        scope in ("heldout", "exposed_diagnostic")
+        and isinstance(overlap, dict)
+        and overlap
+        and all(isinstance(values, list) for values in overlap.values()),
+        "invalid evaluation scope or overlap",
+    )
+    for values in overlap.values():
+        for value in values:
+            sha(value)
+    require(
+        admission["selection_on_this_panel"] is selected
+        and selected is any(overlap.values())
+        and admission["diagnostic_only"] is (scope == "exposed_diagnostic")
+        and admission["independent_confirmation"] is False,
+        "evaluation scope declaration differs",
+    )
+    if scope == "heldout":
+        require(
+            selected is False and admission["previously_exposed"] is False,
+            "heldout scope contains fitted or exposed records",
+        )
+    return {
+        "scope": scope,
+        "selection_on_this_panel": selected,
+        "diagnostic_only": admission["diagnostic_only"],
+        "independent_confirmation": False,
+    }
+
+
 def e2_cost(pack, mode):
     freeze, result = pack["freeze"], pack["result"]
     receipt(freeze, E2_SCHEMA, False)
@@ -162,6 +208,7 @@ def aggregate(e2, search, studies, *, search_plan=None, study_plans=None):
     and full system cost remain unknown. This is not provenance authentication.
     """
     issues, ledger, training, seen = [], {}, {}, set()
+    evaluation_scopes = {}
     study_plans = study_plans or {}
 
     def checked(label, callback):
@@ -246,10 +293,10 @@ def aggregate(e2, search, studies, *, search_plan=None, study_plans=None):
                 "execution budget/binding differs",
             )
             require(
-                set(plan["cell_interventions"]) == set(cells)
-                and plan["selection_on_this_panel"] is False,
-                "intervention/selection plan differs",
+                set(plan["cell_interventions"]) == set(cells),
+                "intervention plan differs",
             )
+            evaluation_scopes[panel] = evaluation_scope(plan, studies[panel])
         return budget
 
     budget = checked("E4.budget_binding", budgets)
@@ -363,6 +410,7 @@ def aggregate(e2, search, studies, *, search_plan=None, study_plans=None):
         "issues": issues,
         "same_E2_initial_context_A": shared is True,
         "bound_E4_budget": budget,
+        "E4_evaluation_scopes": evaluation_scopes,
         "components": ledger,
         "reported_scope_totals": sums(values, INFERENCE),
         "known_measured_subtotals": {
