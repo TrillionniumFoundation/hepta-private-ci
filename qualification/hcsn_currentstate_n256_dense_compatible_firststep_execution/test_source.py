@@ -39,9 +39,30 @@ class SourceTests(unittest.TestCase):
         self.assertEqual(value["maximum_dispatches"], 1)
         self.assertTrue(value["historical_negative_and_unknown_preserved"])
         self.assertFalse(value["all_closed"])
-        if sys.flags.optimize == 1 and os.environ.get("GITHUB_ACTIONS") == "true":
+        if (
+            sys.flags.optimize == 1
+            and os.environ.get("GITHUB_ACTIONS") == "true"
+            and os.environ.get("GITHUB_HEAD_REF")
+            == "research/hcsn-n256-dense-compatible-firststep-opened-20261121-c06d"
+        ):
             from . import source_transport
             source_transport.main()
+
+    def test_zzz_single_runtime_identity_probe(self):
+        receipt = HERE / "RUNTIME_PROBE.json"
+        self.assertTrue(receipt.is_file())
+        value = json.loads(receipt.read_text())
+        self.assertEqual(value["maximum_probes"], 1)
+        self.assertEqual(value["model_calls"], 0)
+        self.assertFalse(value["all_closed"])
+        if (
+            sys.flags.optimize == 1
+            and os.environ.get("GITHUB_ACTIONS") == "true"
+            and os.environ.get("GITHUB_HEAD_REF")
+            == "research/hcsn-n256-dense-compatible-runtime-probe-20261121-c06d"
+        ):
+            from . import runtime_probe
+            runtime_probe.main()
 
     def test_preexec_limit_and_single_deadline(self):
         source = (HERE / "launcher.py").read_text()

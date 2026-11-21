@@ -48,6 +48,12 @@ def main():
             raise ValueError("source workflow execution identity")
         if json.loads(source_execution.read_text()) != freeze["source_workflow_execution_contract"]:
             raise ValueError("source workflow execution contract")
+    runtime_probe = HERE / "RUNTIME_PROBE.json"
+    if runtime_probe.exists():
+        if sha(runtime_probe) != freeze["runtime_probe_sha256"]:
+            raise ValueError("runtime probe identity")
+        if json.loads(runtime_probe.read_text()) != freeze["runtime_probe_contract"]:
+            raise ValueError("runtime probe contract")
     if any(name in sys.modules for name in ("numpy", "scipy", "torch")):
         raise ValueError("source verifier imported numerical module")
     print("PASS_FROZEN_N256_DENSE_COMPATIBLE_FIRSTSTEP_EXECUTION_SOURCE")
