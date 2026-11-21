@@ -1,0 +1,186 @@
+{
+  "schema": "hepta-value-record-contract-draft-v1",
+  "status": "DRAFT_INTERFACE_NOT_SCIENCE_RECORD",
+  "pin": "Every pin is {path:absolute-string,bytes:int,sha256:lowerhex64}; hash raw stored bytes, including gzip wrapper when applicable.",
+  "CLIs": {
+    "main": "run_main.py --protocol PROTOCOL_FROZEN.json --output main_attempt001",
+    "confirmation": "run_confirmation.py --protocol PROTOCOL_FROZEN.json --main main_attempt001 --output confirm_attempt001",
+    "reader": "verify_records.py --protocol PROTOCOL_FROZEN.json --main main_attempt001 --confirmation confirm_attempt001 --output reader_attempt001"
+  },
+  "frozen_protocol": {
+    "schema": "hepta-value-retention-frozen-v1",
+    "keys": {
+      "created_utc": "ISO UTC",
+      "output_root": "absolute value directory",
+      "draft_pin": "pin of final DRAFT_PROTOCOL",
+      "source_pins": "map new filename->pin, including reader and every synthetic test",
+      "semantic_sources": "map checked_replay,legacy_task,joint_task,joint_deploy,run_head_edit,planning -> pin",
+      "input_specs": "map fit string->map model,data,teacher,reconstruction,family,publics -> pin, consumed by input_contract.load_fit",
+      "public_domain_source": "pin of joint_protocol.json",
+      "public_domains": "{iid:train_domain,ood:ood_domain,prior_distances:[...]} only",
+      "schedule_fields": "13 semantic public fields from old hash inventory",
+      "history_inputs": "three inventory pins only",
+      "known_schedule_hashes": "sorted3636 unique hashes",
+      "splits": "fit->{GEN:[32 world indices],SELECT:[16],TRAIN_AUDIT:[16],schedule_hashes:[64],rule:string}",
+      "resources": "{affinity_CPU:7,address_space_bytes:536870912,main:{CPU_hard:150,CPU_soft:145,wall_hard:240},confirmation:{CPU_hard:60,CPU_soft:55,wall_hard:120},reader:{CPU_hard:60,CPU_soft:55,wall_hard:120}}",
+      "environment": "interpreter/package/CPU identities at freeze",
+      "review_pins": "static review and synthetic qualification pins",
+      "provenance_sources": "Original causal_core/task_graph/full_MLP source plus current applicable AGENTS pins; metadata audit only, never execute entrypoints."
+    }
+  },
+  "model_entry": {
+    "model_pin": "full candidate JSON.gz pin; KEEP uses exact byte copy of original C",
+    "family": "KEEP,Q,B,G,T or DIAGNOSTIC",
+    "row_mask": "0,7,8 or15",
+    "readout_sha256": "sha256 of F64 little-endian w2 rowmajor192 then b2_4",
+    "canonical_model_sha256": "sha256 canonical decoded JSON; models with same readout and same protected anchor can alias",
+    "exact_norm": "data_contract.exact_radius record",
+    "generation_id": "candidate ID or KEEP",
+    "diagnostic_only": "bool",
+    "generation_record_pin": "optional per-family numerical record"
+  },
+  "graph_manifest": {
+    "path": "main_attempt001/graphs/fit_{fit}/MANIFEST.json",
+    "schema": "hepta-own-law-graph-manifest-v1",
+    "keys": {
+      "fit": "int",
+      "graphs": "list64 of {world_index,graph_pin,row_start,row_end,state_order_sha256}",
+      "model_anchor_pin": "original C pin",
+      "semantic_source_manifest_sha256": "hash canonical semantic_sources"
+    }
+  },
+  "graph_file": "main_attempt001/graphs/fit_{fit}/world_{index:03d}.json.gz; dictionary returned by value_graph.build: schema,public,keys,states,masks,posterior,terminal,edges,qstar,optimal_values,order,initial,state_order_sha256,probability_error. edges[state][action-1] ordered (probability,target,fee) for1/2/3.",
+  "hidden_cache": "main_attempt001/features/fit_{fit}.npz arrays H (all TRAIN rows x49); pin recorded in main fit entry. Reader must reconstruct original hidden from original X/base rather than trust this array.",
+  "phase_record": {
+    "path": "main_attempt001/records/fit_{fit}_{GEN|SELECT|TRAIN_AUDIT}.json",
+    "schema": "hepta-own-law-phase-records-v1",
+    "keys": {
+      "phase": "GEN,SELECT,TRAIN_AUDIT or SEALED_OWN_LAW_CONFIRMATION",
+      "fit": "int",
+      "domain": "iid/ood only forCONF; null forTRAIN",
+      "protocol_sha256": "hash",
+      "world_indices": "list in registered evaluation order",
+      "models": "map arm ID->model_entry used in phase",
+      "arrays_pin": "one npz for entire fit/phase or fit/domain",
+      "worlds": "list of world records defined below",
+      "means": "map arm->equal-world means including utility/optimal_utility/delta and diagnostic summaries",
+      "CPU_seconds": "actual whole phase elapsed process CPU, no clipping",
+      "evaluation_CPU_by_arm": "measured scoring/DP per unique arm; aliases0, sharedI/O separate",
+      "work_delta": "actual value_graph.WORK counters difference",
+      "started_utc": "ISO UTC at this phase entry; GEN incumbent prior evaluation is explicitly pinned when reused.",
+      "completed_utc": "ISO UTC after array serialization, before final record JSON tail.",
+      "precomputed_KEEP_record_pin": "GEN only: pin of preparation/fit_{fit}_GEN_KEEP.json with phase GEN_INCUMBENT_ONLY and same complete worlds/model. Its score/DP results reused, cost paid exactly once."
+    }
+  },
+  "world_record": {
+    "world_index": "original TRAIN index or CONF0..7",
+    "world_id": "public.id",
+    "graph_pin": "pin",
+    "state_order_sha256": "hash",
+    "rows": "int complete lawful states",
+    "arms": "map arm->{metrics:value_graph.evaluate report, array_prefix:string, alias_of:null|earlier unique arm, evaluation_CPU_seconds:actual scoring+DP CPU}. metrics include complete J,own optimum,PDI,terminal mass,cost,counts,score-derived Brier and terminal ranking diagnostics. KEEP computed first and its actual occupancy supplied for all candidate common-weight diagnostics.",
+    "features_pin": "CONF only: pin of original semantic X/H npz, plural field name."
+  },
+  "array_contract": {
+    "prefix": "w{world_index:03d}__{unique_arm}",
+    "keys": "prefix+__scores, __actions, __values, __occupancy, __raw_gap",
+    "shapes": "scores[n,6]; other arrays[n]. Actions int64, all othersfloat64; full state order including zero incumbent occupancy. Aliases share prefix; no fabricated rerun.",
+    "no_hidden_quality_read": "Generation receives GEN slices only; phase files are outputs, not optimizer inputs."
+  },
+  "family_generation": "generation/fit_{fit}_{Q|B|G|T}.json schema hepta-value-family-generation-v1; fit,family,started_utc,completed_utc,protocol_sha256,source_model_pin,problem_pin,screening_pin,raw_payloads_pin,emitted_model_pins,readout_work_delta,checkpoints,CPU_seconds,wall_seconds,nominal_CPU_cap. checkpoints contains every registered slot actual status/residuals/elapsed/acceptance. Optional raw NPZ names {candidate_id}__primal and __dual. slots in main link generation_record_pin, status VALID or UNKNOWN, original checkpoint_report and optional model_pin. Additional lifecycle_CPU_through_record,numerical_call_CPU_seconds,artifact_and_revalidation_CPU_seconds,other_family_bookkeeping_CPU_seconds and lifecycle_scope expose per-family numerical versus saved-artifact work; final record-write tail remains measured in MAIN process.",
+  "candidate_selection_seal": {
+    "path": "main_attempt001/CANDIDATES_AND_SELECT_FROZEN.json",
+    "schema": "hepta-value-candidate-selection-seal-v1",
+    "keys": {
+      "created_utc": "ISOUTC beforeAUDIT andCONF entropy",
+      "protocol_sha256": "hash",
+      "fits": "fit->{models:all valid KEEP+7optimized heads, candidate_slots:all7 statuses, family_choice:{Q,B,G,T}:actual ID, global_choice:actual ID, GEN_record_pin,SELECT_record_pin,SELECT_means:map ID->utility, graph_manifest_pin,hidden_pin,screening_pin}",
+      "source_pins_sha256": "canonical source pin map hash"
+    }
+  },
+  "diagnostic_seal": {
+    "path": "main_attempt001/DIAGNOSTICS_FROZEN.json",
+    "schema": "hepta-value-component-restoration-seal-v1",
+    "keys": {
+      "candidate_selection_seal_pin": "pin",
+      "created_utc": "afterselection seal",
+      "fits": "fit->{G_SELECTED:original selectedID, models:{G_WITH_ORIGINAL_B:model_entry,G_WITH_ORIGINAL_Q:model_entry}}"
+    },
+    "definition": "Retain selectedG Q with originalB, or selectedG B with originalQ. Exact check, never select, no native intent."
+  },
+  "main_results": {
+    "path": "main_attempt001/RESULTS.json",
+    "schema": "hepta-value-main-results-v1",
+    "keys": {
+      "status": "COMPLETED only if all source/graph/AUDIT requirements met; subcandidate numerical UNKNOWN may exist explicitly",
+      "protocol_sha256": "hash",
+      "candidate_selection_seal_pin": "pin",
+      "diagnostic_seal_pin": "pin",
+      "fits": "fit->{models,diagnostic_models,candidate_slots,family_choice,global_choice,phase_records:{GEN,SELECT,TRAIN_AUDIT}:pins,graph_manifest_pin,hidden_pin,phase_summaries,all_TRAIN_summaries}",
+      "work": "actual counters from value_graph andhead_candidates",
+      "resources": "actual child CPU/wall/peakRSS; allocation/raw observations separate",
+      "source_inputs_unchanged": "true afterfull pin recheck",
+      "created_utc": "ISO UTC at main entry.",
+      "completed_utc": "ISO UTC after all required audits and final original pin checks."
+    }
+  },
+  "CONF_entropy": {
+    "path": "confirm_attempt001/CONF_ENTROPY.json",
+    "schema": "hepta-value-confirmation-entropy-v1",
+    "keys": {
+      "created_utc": "after mainRESULTS+selection seal",
+      "entropy_hex": "64lowerhex",
+      "namespace": "hepta-value-retention-20261121/own-law-confirmation/v1",
+      "candidate_selection_seal_pin": "pin",
+      "main_results_pin": "pin",
+      "protocol_sha256": "hash",
+      "external_custodian": false,
+      "main_process_pin": "Pin to successful parent MAIN PROCESS.json; entropy creation follows its completion."
+    }
+  },
+  "CONF_worlds": {
+    "path": "confirm_attempt001/CONF_WORLDS_FROZEN.json",
+    "schema": "hepta-value-confirmation-worlds-v1",
+    "keys": {
+      "entropy_pin": "pin",
+      "candidate_selection_seal_pin": "pin",
+      "protocol_sha256": "hash",
+      "created_utc": "ISO",
+      "known_hash_count": 3636,
+      "world_count": 80,
+      "fits": "fit->{iid|ood:{seed_decimal:string,worlds:[8publics],schedule_hashes:[8]}}"
+    }
+  },
+  "CONF_records": {
+    "graphs": "confirm_attempt001/graphs/fit_{fit}_{domain}_{index:03d}.json.gz, samegraph schema",
+    "features": "confirm_attempt001/features/fit_{fit}_{domain}_{index:03d}.npz with X,H, both original semantic model; pin in CONF world record",
+    "phase_records": "confirm_attempt001/records/fit_{fit}_{iid|ood}.json, same phase schema with domain; arms KEEP,Q_SELECTED,B_SELECTED,G_SELECTED,T_SELECTED,G_WITH_ORIGINAL_B,G_WITH_ORIGINAL_Q. Each model_entry also has selected_candidate_id. Global alias saved explicitly."
+  },
+  "CONF_results": {
+    "path": "confirm_attempt001/RESULTS.json",
+    "schema": "hepta-value-confirmation-results-v1",
+    "keys": {
+      "status": "COMPLETED",
+      "protocol_sha256": "hash",
+      "main_results_pin": "pin",
+      "candidate_selection_seal_pin": "pin",
+      "entropy_pin": "pin",
+      "worlds_seal_pin": "pin",
+      "fits": "fit->{iid|ood:{phase_record_pin:pin,global_alias:arm name,summary:phase means}}",
+      "primary": "four registered paired contrasts, fivefitvalues/mean/SD/SE/range/familywise95 df4 Bonferroni",
+      "work": "actual counters",
+      "resources": "actual CPU/wall/RSS",
+      "source_inputs_and_selected_models_unchanged": true
+    }
+  },
+  "failure_contract": "Every phase outputdirectory create-only. STARTED.json beforework; FAILED.json for technical/timeout failure, partial retained. CONF requires mainRESULTS status COMPLETED, all input/source/model/selection/diagnostic pins reverified, not merely an existing seal.",
+  "reader_contract": "Independent raw model/head/GEN source/choice/PDI/norm/phase verification. Reuse reviewed original semantic definitions and graph reconstruction for source alignment, independently implement head and scalar policy/occupancy/gap/Fraction arithmetic. Independently reconstruct all80 CONF complete X/H (<=327680 rows) plus separate original recursive+semantic execution for80 global policies (<=327680 cached feature rows). Count actual physical, public-feature, hidden, recursive work; no optimizer imports, unbounded replay or result-driven extra checks.",
+  "cost_scope": "Per-unique-arm scoring/DP CPU observed directly; shared coldinputs/DAG/H/screening/I/O/selection/seal CPU retained as separate measured/common scope. For G/T comparison allocate per-fit common research preparation equally across4 candidate families, show raw totals andallocation; do not claim allocated cost is physical per-candidate work. All phases andfailures count, unknown unmetered overhead remainsunknown.",
+  "screening": "screening/fit_{fit}.json schema hepta-value-gen-screening-v1 contains screen report selected rows/proxy mass/global row ids/selectedH hash plus fit,GEN_world_indices,protocol_sha256,problem_pin,incumbent_record_pin,source_input_pins,exact_radius. problem NPZ arrays H,masks,targets,margins; only GEN selected rows.",
+  "reader_success": {
+    "file": "READER_RESULTS.json",
+    "schema": "hepta-value-independent-reader-v1",
+    "status": "PASS",
+    "bindings": "main_results_pin,confirmation_results_pin,protocol_sha256,selection/diagnostic pins,source_pins_sha256,verified_model_identities"
+  }
+}

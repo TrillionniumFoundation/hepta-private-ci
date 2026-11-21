@@ -1,0 +1,48 @@
+name: Weight value retention offline controls
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/weight_value_retention_20261121/**'
+      - '.github/workflows/weight-value-retention.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline_controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      - name: Check out exact pull request head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify checked out identity
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - name: Select Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned numerical dependencies
+        env:
+          VALUE_VENV: ${{ runner.temp }}/hepta-value-retention-venv
+        run: |
+          python -m venv "$VALUE_VENV"
+          "$VALUE_VENV/bin/python" -m pip install --only-binary=:all: --disable-pip-version-check -r qualification/weight_value_retention_20261121/requirements.txt
+      - name: Run sixteen synthetic controls
+        working-directory: qualification/weight_value_retention_20261121
+        env:
+          VALUE_VENV: ${{ runner.temp }}/hepta-value-retention-venv
+        run: |
+          "$VALUE_VENV/bin/python" -m unittest -v test_math_controls.py test_phase_controls.py test_reader_controls.py
