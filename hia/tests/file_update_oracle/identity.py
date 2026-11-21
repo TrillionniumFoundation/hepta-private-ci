@@ -244,11 +244,11 @@ def _exec_server_test_projection(relative, expected, actual, listing):
 
 
 # The original a201 Cargo.lock remains pinned byte for byte. Admit only the
-# ten reviewed first-party Chrono dependency-list changes, and reconstruct
+# eleven reviewed first-party Chrono dependency-list changes, and reconstruct
 # the complete original lock through their exact inverse. Any unrelated
 # dependency, feature, package or ordering change fails closed.
 _LOCK_ORIGINAL_BLOB = "e1fdaf3fde907d24fec7ea787d49c0e29b3eb4bd"
-_LOCK_REVIEWED_BLOB = "93ade5ef3b3255358ff9a52aeba8f7ca1625e9d3"
+_LOCK_REVIEWED_BLOB = "6959b9f7f279c50d12310778ddb98fa92e8b1ca8"
 _LOCK_CHANGES = (
     ("codex-network-proxy", (
         (b' "chrono",\n', b''),
@@ -283,6 +283,10 @@ _LOCK_CHANGES = (
     ("codex-core-plugins", (
         (b' "chrono",\n', b''),
         (b' "thiserror 2.0.21",\n', b' "thiserror 2.0.21",\n "time",\n'),
+    )),
+    ("codex-hooks", (
+        (b' "chrono",\n', b''),
+        (b' "tempfile",\n', b' "tempfile",\n "time",\n'),
     )),
 )
 
@@ -339,7 +343,7 @@ def reviewed_lock_projection(current, original):
     if restored != original:
         raise RuntimeError("reviewed Cargo.lock inverse did not recover original")
 
-    return {"scope": "ten exact first-party Chrono dependency-list changes",
+    return {"scope": "eleven exact first-party Chrono dependency-list changes",
             "reviewed_packages": [package for package, _ in _LOCK_CHANGES],
             "original_blob": original_blob, "current_blob": current_blob,
             "inverse_original_blob": blob(restored), "byte_exact": True}
