@@ -668,23 +668,14 @@ async fn original_next_use_evidence_timing_diagnostic() -> anyhow::Result<()> {
     let evidence_terminal = tokio::task::spawn_blocking(move || evidence_server.join())
         .await?
         .map_err(|_| anyhow::anyhow!("diagnostic original evidence peer panicked"))?;
-    eprintln!(
-        "LEARN_FDE_C_TIMING evidence_peer_terminal={:?}",
-        evidence_terminal,
-    );
+    eprintln!("LEARN_FDE_C_TIMING evidence_peer_terminal={evidence_terminal:?}");
     assert_eq!(f.f.original.bytes()?, before);
     let command_terminal =
         tokio::task::spawn_blocking(move || finish_observer(client, server)).await?;
-    eprintln!(
-        "LEARN_FDE_C_TIMING command_peer_terminal={:?}",
-        command_terminal,
-    );
+    eprintln!("LEARN_FDE_C_TIMING command_peer_terminal={command_terminal:?}");
     let service_terminal =
         tokio::task::spawn_blocking(move || service.finish(false, false)).await?;
-    eprintln!(
-        "LEARN_FDE_C_TIMING underlying_peer_terminal={:?}",
-        service_terminal,
-    );
+    eprintln!("LEARN_FDE_C_TIMING underlying_peer_terminal={service_terminal:?}");
     f.finish(false).await?;
     command_terminal?;
     service_terminal?;

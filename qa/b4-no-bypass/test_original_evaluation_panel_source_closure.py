@@ -154,7 +154,7 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
             "self.qualification.completed_bytes()?",
             "sources\n            .prepare(&self.qualification.config, started_at, training)\n            .await?",
             ".finish_readback(",
-            "drop(sources)",
+            ".await?;\n        let after = self.read_cells()?",
             "let after = self.read_cells()?",
             "if before != after",
         ):

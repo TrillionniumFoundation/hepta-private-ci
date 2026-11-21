@@ -13,11 +13,9 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
 use codex_hepta_learning_artifacts::*;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
-use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_learning_ledger::UnlearningLineageRequestV1;
 use codex_hepta_learning_ledger::unlearning_signing_payload_v1;
 use codex_hepta_types::AuthorityPosture;
@@ -200,10 +198,8 @@ impl PositiveFixture {
             &root,
             &mut writer,
             &credentials,
-            a.source.as_ref(),
-            &a.runtime.identity,
-            &baseline,
-            &bundle,
+            (a.source.as_ref(), &a.runtime.identity),
+            (&baseline, &bundle),
             &previous,
             evaluation_profile,
         )?;

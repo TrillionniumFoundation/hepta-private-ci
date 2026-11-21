@@ -22,7 +22,6 @@ use crate::OriginalCircuitLearningReadErrorV1;
 use crate::OriginalCircuitLearningReadOwnerV1;
 use crate::OriginalCircuitNextUseReceiptConfigV1;
 use crate::OriginalCircuitNextUseReceiptOwnerV1;
-use crate::OriginalCircuitSelectionCommandOwnerV1;
 use crate::OriginalCircuitSelectionCommandReceiptV1;
 use crate::OriginalCircuitSelectionReadbackConnectionV1;
 use crate::OriginalCircuitSelectionReceiptConfigV1;
@@ -40,7 +39,6 @@ pub(super) type Trainer =
     OriginalCellQ24TrainingBootstrapOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 pub(super) type TrainerThread = JoinHandle<Result<u64, OriginalCellQ24TrainingBootstrapErrorV1>>;
 pub(super) type PublishedThread = JoinHandle<Result<u64, OriginalCircuitLearningReadErrorV1>>;
-pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
 
 pub(super) struct InitialTrainer {
     pub(super) connection: OriginalCellQ24TrainingReadbackConnectionV1,
@@ -121,13 +119,10 @@ impl DeepFixture {
             FixedQ32::from_raw(1_i64 << 32),
         )?;
         let (config, optimizer) = material::unstarted_material_with_profile(
-            &root,
             &mut ledger,
             &credentials,
-            a.source.as_ref(),
-            &a.runtime.identity,
-            &baseline,
-            &bundle,
+            (a.source.as_ref(), &a.runtime.identity),
+            (&baseline, &bundle),
             &previous,
             d("deep-readonly-fixed-profile"),
             credentials.observer.principal.principal_id.clone(),

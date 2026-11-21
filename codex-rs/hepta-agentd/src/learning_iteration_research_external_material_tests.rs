@@ -3,7 +3,6 @@
 //! separately checks the new real candidate and durable owner through cold use.
 
 use super::*;
-use anyhow::Context as _;
 use std::fs;
 use std::os::unix::fs::symlink;
 

@@ -87,6 +87,12 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
     }
 }
 
+#[cfg(test)]
+pub(crate) type OriginalEvidenceLateResponseTest = (
+    std::sync::mpsc::Sender<()>,
+    std::thread::JoinHandle<(u64, Result<u64, Error>)>,
+);
+
 // Test-only late-ACK control for the unchanged legacy evidence budget. The
 // actual owner response is completed before this gate; the original framer
 // performs its existing post-handler deadline check and refuses a late reply.
@@ -94,10 +100,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
 pub(crate) fn serve_evidence_late_response<W: AnchorWitnessStore + Send + 'static>(
     owner: std::sync::Arc<OriginalCircuitNextUseCommandOwnerV1<W>>,
     mut channel: HostAuthorityPeerChannel,
-) -> (
-    std::sync::mpsc::Sender<()>,
-    std::thread::JoinHandle<(u64, Result<u64, Error>)>,
-) {
+) -> OriginalEvidenceLateResponseTest {
     let (release, wait) = std::sync::mpsc::channel();
     let peer = std::thread::spawn(move || {
         let mut original_responses = 0_u64;

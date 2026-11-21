@@ -143,7 +143,7 @@ impl RetainedIssuerFixtureV1 {
 }
 
 enum RetainedIssuerReplyV1 {
-    Signed(SignedFinalUseGrant),
+    Signed(Box<SignedFinalUseGrant>),
     Denied,
     LoseAck,
 }
@@ -177,7 +177,7 @@ fn root_reply(
             return Ok(());
         }
         let (grant, denial) = match reply {
-            RetainedIssuerReplyV1::Signed(grant) => (Some(grant), None),
+            RetainedIssuerReplyV1::Signed(grant) => (Some(*grant), None),
             RetainedIssuerReplyV1::Denied => (None, Some("explicit fixture policy denied")),
             RetainedIssuerReplyV1::LoseAck => unreachable!("handled above"),
         };

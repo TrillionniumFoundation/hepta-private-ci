@@ -349,14 +349,14 @@ fn v2_decoder_rejects_legacy_truncation_tail_and_duplicate_real_identity() {
     assert!(
         OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(&tail).is_err()
     );
-    let mut legacy = bytes.clone();
+    let mut legacy = bytes;
     let offset = b"hepta.circuit.original-on-policy-evaluation-policy.v".len();
     legacy[offset] = b'1';
     assert!(
         OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(&legacy)
             .is_err()
     );
-    let mut duplicate = original.clone();
+    let mut duplicate = original;
     duplicate.pairs[1].candidate = duplicate.pairs[0].candidate.clone();
     let duplicate = duplicate
         .canonical_commitment_bytes()

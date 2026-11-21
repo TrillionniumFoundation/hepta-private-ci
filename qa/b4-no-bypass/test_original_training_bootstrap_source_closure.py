@@ -275,7 +275,7 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
         code = self.function(source, "fn command_response(")
         for match in re.finditer(r"\bState\s*::\s*Awaiting\s*\(", code):
             tail = code[match.end():]
-            if re.match(r"\s*custody\s*\)\s*=>\s*custody\s*,", tail) is None:
+            if re.match(r"\s*custody\s*\)\s*=>\s*\*custody\s*,", tail) is None:
                 raise PROOF.VerificationFailure("Awaiting may only destructure the original custody")
 
     def test_ready_is_retained_before_work_and_failed_initialization_never_rearms(self):

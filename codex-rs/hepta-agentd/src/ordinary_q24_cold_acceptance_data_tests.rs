@@ -64,7 +64,7 @@ impl OriginalColdAcceptanceData {
         original.source.require_dead()?;
         let initial = original.plan.profile.original_initial_data()?;
         let service = &original.plan.resources.successor.service;
-        let service_pin = OriginalBusinessSnapshot::capture(&[service.clone()])?;
+        let service_pin = OriginalBusinessSnapshot::capture(std::slice::from_ref(service))?;
         let config: crate::HostAuthorityServiceConfig = serde_json::from_slice(
             &super::observer::read_private(service, /*bound*/ 16 * 1024)?,
         )?;
@@ -79,7 +79,7 @@ impl OriginalColdAcceptanceData {
         paths.extend(record_paths(&checkpoint_directory, checkpoint_owner));
         paths.push(service.clone());
         let immutable = OriginalBusinessSnapshot::capture(&paths)?;
-        service_pin.require_unchanged(&[service.clone()])?;
+        service_pin.require_unchanged(std::slice::from_ref(service))?;
         let result = (|| {
             let accepted: RootCompletedLearningAcceptanceDataV1 =
                 observe_original_record(&config.state_dir, &owner, |_| Ok(()))?
@@ -98,7 +98,7 @@ impl OriginalColdAcceptanceData {
             Ok::<_, anyhow::Error>(accepted)
         })();
         immutable.require_unchanged(&paths)?;
-        service_pin.require_unchanged(&[service.clone()])?;
+        service_pin.require_unchanged(std::slice::from_ref(service))?;
         let accepted = result?;
         let target = &original.plan.resources.original.plan.deployment.target;
         let refusal_owner = format!(
