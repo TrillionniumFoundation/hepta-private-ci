@@ -1,0 +1,75 @@
+{
+  "schema": "hcsn-n256-runtime-matched-firststep-execution-v1",
+  "identity": "hcsn-n256-runtime-matched-firststep-20261121-c6bc-001",
+  "unique_execution_key": "hcsn-n256-runtime-matched-firststep-20261121-c6bc-001",
+  "maximum_attempts": 1,
+  "dispatch": {
+    "draft_open_event_numerical_executions": 0,
+    "first_synchronize_event_numerical_executions": 0,
+    "branch_push_run": 44912883983,
+    "branch_push_jobs": 0,
+    "branch_push_numerical_executions": 0,
+    "second_branch_push_run": 44913190567,
+    "second_branch_push_jobs": 0,
+    "second_branch_push_numerical_executions": 0,
+    "historical_dispatch_pr": 6898,
+    "sole_numerical_dispatch": "opening the new Draft after its isolated base already contains the frozen workflow",
+    "later_source_updates_authorized": false
+  },
+  "parent_runtime_admission_pr": 6894,
+  "parent_runtime_admission_commit": "8a36071740f85408534a2b65badcb09062a41ce1",
+  "parent_runtime_evidence_pr": 6897,
+  "parent_runtime_evidence_commit": "ffc33b17db43f6347d117712e116905441bb1974",
+  "historical_numerical_red": {
+    "pr": 6890,
+    "run": 44906913033,
+    "job": 136854356161,
+    "mismatches": 665,
+    "denominator": 69728,
+    "max_abs_error_hex": "0x1.e000000000000p-54",
+    "max_ulp_distance": 98,
+    "preserved": true
+  },
+  "runtime": {
+    "runner": "ubuntu-24.04",
+    "python": "3.12.3",
+    "python_executable_sha256": "2ce74da59bd24c1301a77e90b94abfe52bc14d54c0f79f565665b5a59d62734b",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "threads": 1,
+    "parent_and_child_rlimit_as_bytes": 4294967296,
+    "child_deadline_seconds": 600,
+    "minimum_memavailable_kib": 8388608,
+    "minimum_finite_cgroup_headroom_bytes": 2147483648
+  },
+  "same_run_budget": {
+    "authentic_distinct_input_file_accesses": 4,
+    "npz_decodes": 1,
+    "candidate_boundary_builds": 1,
+    "boundary_container_encodes": 1,
+    "boundary_exact_comparisons": 68105,
+    "dynamic_steps": 1,
+    "candidate_dense_expm_actions": 2,
+    "candidate_sparse_expm_actions": 0,
+    "oracle_reexecutions": 0,
+    "candidate_canonical_encodes": 1,
+    "canonical_decodes": 2,
+    "final_exact_comparisons": 69728,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "pass_gate": {
+    "boundary_bitwise_mismatches": 0,
+    "candidate_oracle_bitwise_mismatches": 0,
+    "tolerance_or_ulp_rescue_allowed": false,
+    "retry_or_replacement_key_allowed": false
+  },
+  "qualification_scope": "fixed authentic N256 C5 phase8 warm 0-to-0.001 dense-compatible first step only",
+  "sparse_kernel_qualified": false,
+  "largegrid_general_qualified": false,
+  "c2_full_replay_completed_fits": 0,
+  "hpca_status": "NoUpdate",
+  "production_adoption": false,
+  "all_closed": false
+}
+
