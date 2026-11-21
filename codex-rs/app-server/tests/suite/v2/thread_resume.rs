@@ -5599,7 +5599,7 @@ fn mock_responses_config(server_uri: &str) -> MockResponsesConfig {
 #[allow(dead_code)]
 fn set_rollout_mtime(path: &Path, updated_at_rfc3339: &str) -> Result<()> {
     let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(updated_at_rfc3339)?;
-    let times = FileTimes::new().set_modified(parsed.into());
+    let times = FileTimes::new().set_modified(parsed.calendar().into());
     std::fs::OpenOptions::new()
         .append(true)
         .open(path)?
