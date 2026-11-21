@@ -81,6 +81,24 @@ class SourceTests(unittest.TestCase):
             from . import source_transport
             source_transport.main()
 
+    def test_zzzzz_single_runtime_v3_execution(self):
+        receipt = HERE / "RUNTIME_V3_EXECUTION.json"
+        self.assertTrue(receipt.is_file())
+        value = json.loads(receipt.read_text())
+        self.assertEqual(value["maximum_dispatches"], 1)
+        self.assertEqual(value["maximum_attempts"], 1)
+        self.assertEqual(value["prior_actual_numerical_runs_for_this_identity"], 0)
+        self.assertTrue(value["historical_negative_and_unknown_preserved"])
+        self.assertFalse(value["all_closed"])
+        if (
+            sys.flags.optimize == 1
+            and os.environ.get("GITHUB_ACTIONS") == "true"
+            and os.environ.get("GITHUB_HEAD_REF")
+            == "research/hcsn-n256-dense-compatible-firststep-runtime-v3-20261121-c06d"
+        ):
+            from . import source_transport
+            source_transport.main()
+
     def test_preexec_limit_and_single_deadline(self):
         source = (HERE / "launcher.py").read_text()
         self.assertIn("preexec_fn=child_limits", source)
