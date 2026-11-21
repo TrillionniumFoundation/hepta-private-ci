@@ -1,0 +1,25 @@
+{
+  "args": [
+    "--signal=TERM",
+    "--kill-after=5s",
+    "235s",
+    "/usr/bin/python3.12",
+    "-I",
+    "-B",
+    "/home/qian-qi/work/hepta-e16-ac5459-20261121/e2-native-verifier-offline-v1-inputs/restore_native_verifier.py",
+    "/home/qian-qi/work/hepta-e16-ac5459-20261121/e2-native-verifier-offline-v1-inputs/OFFLINE_RESTORE_PLAN.json",
+    "0fbdcbf96f0f14d19aa5d57ab32e18c8732c7d5863113e731d4a647662d9eccd"
+  ],
+  "cols": 160,
+  "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e2-native-verifier-offline-v1-inputs",
+  "env": {
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PATH": "/usr/bin:/bin",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "executable": "/usr/bin/timeout",
+  "host": "desktop",
+  "idempotency_key": "e2-native-verifier-offline-restore-v1-20261121-pty-once",
+  "rows": 50
+}
