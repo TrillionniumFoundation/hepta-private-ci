@@ -1,0 +1,378 @@
+2026-11-21T01:24:29.6156590Z Current runner version: '2.338.2'
+2026-11-21T01:24:29.6192211Z ##[group]Runner Image Provisioner
+2026-11-21T01:24:29.6193482Z Hosted Compute Agent
+2026-11-21T01:24:29.6194583Z Version: 20261111.635
+2026-11-21T01:24:29.6195695Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-21T01:24:29.6197641Z Build Date: 2026-11-11T01:49:01Z
+2026-11-21T01:24:29.6199147Z Worker ID: {47fd96e6-d058-4bc8-b69f-cb790026dbc7}
+2026-11-21T01:24:29.6200411Z Region: eastus
+2026-11-21T01:24:29.6201393Z Cloud: Azure
+2026-11-21T01:24:29.6202284Z ##[endgroup]
+2026-11-21T01:24:29.6204686Z ##[group]Operating System
+2026-11-21T01:24:29.6205775Z Ubuntu
+2026-11-21T01:24:29.6206671Z 24.04.5
+2026-11-21T01:24:29.6207534Z LTS
+2026-11-21T01:24:29.6208779Z ##[endgroup]
+2026-11-21T01:24:29.6209848Z ##[group]Runner Image
+2026-11-21T01:24:29.6210880Z Image: ubuntu-24.04
+2026-11-21T01:24:29.6211958Z Version: 20261116.376.1
+2026-11-21T01:24:29.6214100Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261116.376/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-21T01:24:29.6216859Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261116.376
+2026-11-21T01:24:29.6218855Z ##[endgroup]
+2026-11-21T01:24:29.6220731Z ##[group]GITHUB_TOKEN Permissions
+2026-11-21T01:24:29.6223848Z Contents: read
+2026-11-21T01:24:29.6224940Z Metadata: read
+2026-11-21T01:24:29.6225949Z ##[endgroup]
+2026-11-21T01:24:29.6229523Z Secret source: Actions
+2026-11-21T01:24:29.6231035Z Cache mode: write
+2026-11-21T01:24:29.6232583Z Prepare workflow directory
+2026-11-21T01:24:29.6806736Z Prepare all required actions
+2026-11-21T01:24:29.6879300Z Getting action download info
+2026-11-21T01:24:29.8946077Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-21T01:24:30.0993625Z Download action repository 'actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-21T01:24:30.2051477Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-21T01:24:30.4191307Z Complete job name: hcsn-n256-candidate-compare
+2026-11-21T01:24:30.5077476Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-21T01:24:30.5078866Z with:
+2026-11-21T01:24:30.5079351Z   ref: a3373921a0193336837d217c24d0d35dccd9a5ad
+2026-11-21T01:24:30.5079964Z   persist-credentials: false
+2026-11-21T01:24:30.5080582Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-21T01:24:30.5084343Z   token: ***
+2026-11-21T01:24:30.5084783Z   ssh-strict: true
+2026-11-21T01:24:30.5085216Z   ssh-user: git
+2026-11-21T01:24:30.5085648Z   clean: true
+2026-11-21T01:24:30.5086100Z   sparse-checkout-cone-mode: true
+2026-11-21T01:24:30.5086620Z   fetch-depth: 1
+2026-11-21T01:24:30.5087056Z   fetch-tags: false
+2026-11-21T01:24:30.5087503Z   show-progress: true
+2026-11-21T01:24:30.5088127Z   lfs: false
+2026-11-21T01:24:30.5088549Z   submodules: false
+2026-11-21T01:24:30.5089024Z   set-safe-directory: true
+2026-11-21T01:24:30.5089803Z env:
+2026-11-21T01:24:30.5090222Z   MKL_NUM_THREADS: 1
+2026-11-21T01:24:30.5090718Z   NUMEXPR_NUM_THREADS: 1
+2026-11-21T01:24:30.5091188Z   OMP_NUM_THREADS: 1
+2026-11-21T01:24:30.5091637Z   OPENBLAS_NUM_THREADS: 1
+2026-11-21T01:24:30.5092122Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-21T01:24:30.5092905Z   UNIQUE_EXECUTION_KEY: hcsn-n256-firststep-candidate-compare-hosted-20261120-c06d-001
+2026-11-21T01:24:30.5093718Z ##[endgroup]
+2026-11-21T01:24:30.8326241Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-21T01:24:30.8329678Z ##[group]Getting Git version info
+2026-11-21T01:24:30.8331054Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-21T01:24:30.8333145Z [command]/usr/bin/git version
+2026-11-21T01:24:30.8514912Z git version 2.56.1
+2026-11-21T01:24:30.8542088Z ##[endgroup]
+2026-11-21T01:24:30.8566950Z Temporarily overriding HOME='/home/runner/work/_temp/6bf86699-6e85-49d0-9fa0-aa3789a1d2a0' before making global git config changes
+2026-11-21T01:24:30.8570162Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-21T01:24:30.8574668Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-21T01:24:30.8636866Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-21T01:24:30.8642762Z ##[group]Initializing the repository
+2026-11-21T01:24:30.8647157Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-21T01:24:30.8792163Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-21T01:24:30.8793904Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-21T01:24:30.8795487Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-21T01:24:30.8796677Z hint: call:
+2026-11-21T01:24:30.8797476Z hint:
+2026-11-21T01:24:30.8798644Z hint: 	git config --global init.defaultBranch <name>
+2026-11-21T01:24:30.8799702Z hint:
+2026-11-21T01:24:30.8800677Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-21T01:24:30.8802217Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-21T01:24:30.8803398Z hint:
+2026-11-21T01:24:30.8804048Z hint: 	git branch -m <name>
+2026-11-21T01:24:30.8804908Z hint:
+2026-11-21T01:24:30.8805980Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-21T01:24:30.8808104Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-21T01:24:30.8819584Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-21T01:24:30.8885688Z ##[endgroup]
+2026-11-21T01:24:30.8887021Z ##[group]Disabling automatic garbage collection
+2026-11-21T01:24:30.8890933Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-21T01:24:30.8931767Z ##[endgroup]
+2026-11-21T01:24:30.8933210Z ##[group]Setting up auth
+2026-11-21T01:24:30.8934125Z Removing SSH command configuration
+2026-11-21T01:24:30.8939800Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-21T01:24:30.8984792Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-21T01:24:30.9459487Z Removing HTTP extra header
+2026-11-21T01:24:30.9470867Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-21T01:24:30.9525622Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-21T01:24:30.9788350Z Removing includeIf entries pointing to credentials config files
+2026-11-21T01:24:30.9794042Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-21T01:24:30.9847104Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-21T01:24:31.0120048Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-21T01:24:31.0174268Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:31.0218478Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:31.0263107Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:31.0310923Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:31.0349301Z ##[endgroup]
+2026-11-21T01:24:31.0351075Z ##[group]Fetching the repository
+2026-11-21T01:24:31.0357117Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin a3373921a0193336837d217c24d0d35dccd9a5ad
+2026-11-21T01:24:36.5864093Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-21T01:24:36.5865365Z  * branch            a3373921a0193336837d217c24d0d35dccd9a5ad -> FETCH_HEAD
+2026-11-21T01:24:36.5877012Z [command]/usr/bin/git rev-parse --verify --quiet a3373921a0193336837d217c24d0d35dccd9a5ad^{object}
+2026-11-21T01:24:36.5916121Z a3373921a0193336837d217c24d0d35dccd9a5ad
+2026-11-21T01:24:36.5921871Z ##[endgroup]
+2026-11-21T01:24:36.5922633Z ##[group]Determining the checkout info
+2026-11-21T01:24:36.5923538Z ##[endgroup]
+2026-11-21T01:24:36.5928935Z [command]/usr/bin/git sparse-checkout disable
+2026-11-21T01:24:36.6022771Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-21T01:24:36.6066399Z ##[group]Checking out the ref
+2026-11-21T01:24:36.6070367Z [command]/usr/bin/git checkout --progress --force a3373921a0193336837d217c24d0d35dccd9a5ad
+2026-11-21T01:24:37.6332912Z Updating files:  93% (12810/13672)
+2026-11-21T01:24:37.6397138Z Updating files:  94% (12852/13672)
+2026-11-21T01:24:37.6482756Z Updating files:  95% (12989/13672)
+2026-11-21T01:24:37.6585702Z Updating files:  96% (13126/13672)
+2026-11-21T01:24:37.6714617Z Updating files:  97% (13262/13672)
+2026-11-21T01:24:37.6811233Z Updating files:  98% (13399/13672)
+2026-11-21T01:24:37.6902723Z Updating files:  99% (13536/13672)
+2026-11-21T01:24:37.6903529Z Updating files: 100% (13672/13672)
+2026-11-21T01:24:37.6904044Z Updating files: 100% (13672/13672), done.
+2026-11-21T01:24:37.7059291Z Note: switching to 'a3373921a0193336837d217c24d0d35dccd9a5ad'.
+2026-11-21T01:24:37.7059906Z 
+2026-11-21T01:24:37.7060723Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-21T01:24:37.7061725Z changes and commit them, and you can discard any commits you make in this
+2026-11-21T01:24:37.7062691Z state without impacting any branches by switching back to a branch.
+2026-11-21T01:24:37.7063246Z 
+2026-11-21T01:24:37.7063646Z If you want to create a new branch to retain commits you create, you may
+2026-11-21T01:24:37.7064402Z do so (now or later) by using -c with the switch command. Example:
+2026-11-21T01:24:37.7064873Z 
+2026-11-21T01:24:37.7065055Z   git switch -c <new-branch-name>
+2026-11-21T01:24:37.7065352Z 
+2026-11-21T01:24:37.7065517Z Or undo this operation with:
+2026-11-21T01:24:37.7065769Z 
+2026-11-21T01:24:37.7065905Z   git switch -
+2026-11-21T01:24:37.7066100Z 
+2026-11-21T01:24:37.7066454Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-21T01:24:37.7067072Z 
+2026-11-21T01:24:37.7067417Z HEAD is now at a337392 qualification: freeze N256 warm-1 candidate comparison
+2026-11-21T01:24:37.7107875Z ##[endgroup]
+2026-11-21T01:24:37.7166149Z [command]/usr/bin/git log -1 --format=%H
+2026-11-21T01:24:37.7203697Z a3373921a0193336837d217c24d0d35dccd9a5ad
+2026-11-21T01:24:37.7218525Z ##[group]Removing auth
+2026-11-21T01:24:37.7218890Z Removing SSH command configuration
+2026-11-21T01:24:37.7220948Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-21T01:24:37.7266446Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-21T01:24:37.7568551Z Removing HTTP extra header
+2026-11-21T01:24:37.7570460Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-21T01:24:37.7624061Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-21T01:24:37.7924941Z Removing includeIf entries pointing to credentials config files
+2026-11-21T01:24:37.7948841Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-21T01:24:37.7979630Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-21T01:24:37.7990543Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-21T01:24:37.7991526Z includeif.gitdir:/github/workspace/.git.path
+2026-11-21T01:24:37.7992371Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-21T01:24:37.7993835Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-21T01:24:37.8029185Z /home/runner/work/_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:37.8041503Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:37.8091980Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-21T01:24:37.8125676Z /home/runner/work/_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:37.8137626Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:37.8197228Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-21T01:24:37.8233989Z /github/runner_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:37.8242761Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:37.8289563Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-21T01:24:37.8324020Z /github/runner_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:37.8334152Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config
+2026-11-21T01:24:37.8383093Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-21T01:24:37.8652424Z Removing credentials config '/home/runner/work/_temp/git-credentials-4e50284a-cbce-4e50-8941-5815b5b3542a.config'
+2026-11-21T01:24:37.8662459Z ##[endgroup]
+2026-11-21T01:24:37.8950924Z ##[group]Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+2026-11-21T01:24:37.8951390Z with:
+2026-11-21T01:24:37.8951608Z   python-version: 3.12.3
+2026-11-21T01:24:37.8951850Z   check-latest: false
+2026-11-21T01:24:37.8954302Z   token: ***
+2026-11-21T01:24:37.8954555Z   update-environment: true
+2026-11-21T01:24:37.8954831Z   allow-prereleases: false
+2026-11-21T01:24:37.8955061Z   freethreaded: false
+2026-11-21T01:24:37.8955274Z env:
+2026-11-21T01:24:37.8955457Z   MKL_NUM_THREADS: 1
+2026-11-21T01:24:37.8955672Z   NUMEXPR_NUM_THREADS: 1
+2026-11-21T01:24:37.8955901Z   OMP_NUM_THREADS: 1
+2026-11-21T01:24:37.8956104Z   OPENBLAS_NUM_THREADS: 1
+2026-11-21T01:24:37.8956340Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-21T01:24:37.8956775Z   UNIQUE_EXECUTION_KEY: hcsn-n256-firststep-candidate-compare-hosted-20261120-c06d-001
+2026-11-21T01:24:37.8957218Z ##[endgroup]
+2026-11-21T01:24:38.0421406Z ##[group]Installed versions
+2026-11-21T01:24:38.0511684Z Version 3.12.3 was not found in the local cache
+2026-11-21T01:24:38.0699198Z (node:2413) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-21T01:24:38.0700253Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-21T01:24:38.6966165Z Version 3.12.3 is available for downloading
+2026-11-21T01:24:38.6968410Z Download from "https://github.com/actions/python-versions/releases/download/3.12.3-11057844995/python-3.12.3-linux-24.04-x64.tar.gz"
+2026-11-21T01:24:39.5394533Z Extract downloaded archive
+2026-11-21T01:24:39.5553675Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/064308c4-6e6a-4ab7-8e01-8f93e9ecc4fb -f /home/runner/work/_temp/01e02c61-5f4e-4065-afb3-cad2aa1eea6f
+2026-11-21T01:24:41.6518924Z Execute installation script
+2026-11-21T01:24:41.6640437Z Check if Python hostedtoolcache folder exist...
+2026-11-21T01:24:41.6641040Z Create Python 3.12.3 folder
+2026-11-21T01:24:41.6653915Z Copy Python binaries to hostedtoolcache folder
+2026-11-21T01:24:42.1352211Z Create additional symlinks (Required for the UsePythonVersion Azure Pipelines task and the setup-python GitHub Action)
+2026-11-21T01:24:42.1394993Z Upgrading pip...
+2026-11-21T01:24:45.1866125Z Looking in links: /tmp/tmpzg2sc4cz
+2026-11-21T01:24:45.1874711Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.12.3/x64/lib/python3.12/site-packages (24.0)
+2026-11-21T01:24:47.7630958Z Collecting pip
+2026-11-21T01:24:47.9796436Z Downloading pip-26.3-py3-none-any.whl.metadata (4.6 kB)
+2026-11-21T01:24:48.0490231Z Downloading pip-26.3-py3-none-any.whl (2.0 MB)
+2026-11-21T01:24:48.3844393Z ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 6.0 MB/s eta 0:00:00
+2026-11-21T01:24:48.3844964Z 
+2026-11-21T01:24:48.4048738Z Installing collected packages: pip
+2026-11-21T01:24:48.4050081Z Attempting uninstall: pip
+2026-11-21T01:24:48.4074446Z Found existing installation: pip 24.0
+2026-11-21T01:24:48.4515330Z Uninstalling pip-24.0:
+2026-11-21T01:24:48.4585510Z Successfully uninstalled pip-24.0
+2026-11-21T01:24:49.4313480Z Successfully installed pip-26.3
+2026-11-21T01:24:49.5003025Z Create complete file
+2026-11-21T01:24:49.5043052Z Successfully set up CPython (3.12.3)
+2026-11-21T01:24:49.5043856Z ##[endgroup]
+2026-11-21T01:24:49.5243971Z ##[group]Run python -m pip install --only-binary=:all: -r qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/requirements.txt
+2026-11-21T01:24:49.5245039Z [36;1mpython -m pip install --only-binary=:all: -r qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/requirements.txt[0m
+2026-11-21T01:24:49.5271218Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:24:49.5271474Z env:
+2026-11-21T01:24:49.5271668Z   MKL_NUM_THREADS: 1
+2026-11-21T01:24:49.5271889Z   NUMEXPR_NUM_THREADS: 1
+2026-11-21T01:24:49.5272111Z   OMP_NUM_THREADS: 1
+2026-11-21T01:24:49.5272328Z   OPENBLAS_NUM_THREADS: 1
+2026-11-21T01:24:49.5272566Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-21T01:24:49.5272993Z   UNIQUE_EXECUTION_KEY: hcsn-n256-firststep-candidate-compare-hosted-20261120-c06d-001
+2026-11-21T01:24:49.5273533Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:49.5273968Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-21T01:24:49.5274419Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:49.5274796Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:49.5275176Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:49.5275552Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-21T01:24:49.5275879Z ##[endgroup]
+2026-11-21T01:24:51.5112047Z Collecting numpy==2.3.5 (from -r qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/requirements.txt (line 1))
+2026-11-21T01:24:51.7765470Z   Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-21T01:24:52.0545943Z Collecting scipy==1.17.0 (from -r qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/requirements.txt (line 2))
+2026-11-21T01:24:52.1181179Z   Downloading scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-21T01:24:52.2157300Z Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-11-21T01:24:52.6742583Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 43.9 MB/s  0:00:00
+2026-11-21T01:24:52.7519731Z Downloading scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.0 MB)
+2026-11-21T01:24:53.1650051Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.0/35.0 MB 90.7 MB/s  0:00:00
+2026-11-21T01:24:53.3184831Z Installing collected packages: numpy, scipy
+2026-11-21T01:24:59.5859595Z 
+2026-11-21T01:24:59.5870525Z Successfully installed numpy-2.3.5 scipy-1.17.0
+2026-11-21T01:24:59.6482516Z ##[group]Run python -m qualification.hcsn_currentstate_n256_firststep_candidate_compare.verify_source
+2026-11-21T01:24:59.6483257Z [36;1mpython -m qualification.hcsn_currentstate_n256_firststep_candidate_compare.verify_source[0m
+2026-11-21T01:24:59.6504710Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:24:59.6504958Z env:
+2026-11-21T01:24:59.6505147Z   MKL_NUM_THREADS: 1
+2026-11-21T01:24:59.6505363Z   NUMEXPR_NUM_THREADS: 1
+2026-11-21T01:24:59.6505591Z   OMP_NUM_THREADS: 1
+2026-11-21T01:24:59.6505798Z   OPENBLAS_NUM_THREADS: 1
+2026-11-21T01:24:59.6506034Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-21T01:24:59.6506450Z   UNIQUE_EXECUTION_KEY: hcsn-n256-firststep-candidate-compare-hosted-20261120-c06d-001
+2026-11-21T01:24:59.6506969Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:59.6507391Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-21T01:24:59.6508049Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:59.6508455Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:59.6508825Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:59.6509197Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-21T01:24:59.6509516Z ##[endgroup]
+2026-11-21T01:24:59.7804430Z {"candidate_dynamic_steps": 0, "candidate_sparse_exponential_actions": 0, "files": 13, "optimizer_steps": 0, "oracle_reexecutions": 0, "status": "PASS_SOURCE_FREEZE", "torch_calls": 0}
+2026-11-21T01:24:59.7892361Z ##[group]Run python -m unittest qualification.hcsn_currentstate_n256_firststep_candidate_compare.test_source
+2026-11-21T01:24:59.7893192Z [36;1mpython -m unittest qualification.hcsn_currentstate_n256_firststep_candidate_compare.test_source[0m
+2026-11-21T01:24:59.7893919Z [36;1mpython -O -m unittest qualification.hcsn_currentstate_n256_firststep_candidate_compare.test_source[0m
+2026-11-21T01:24:59.7915695Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:24:59.7915975Z env:
+2026-11-21T01:24:59.7916171Z   MKL_NUM_THREADS: 1
+2026-11-21T01:24:59.7916399Z   NUMEXPR_NUM_THREADS: 1
+2026-11-21T01:24:59.7916620Z   OMP_NUM_THREADS: 1
+2026-11-21T01:24:59.7916833Z   OPENBLAS_NUM_THREADS: 1
+2026-11-21T01:24:59.7917093Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-21T01:24:59.7917520Z   UNIQUE_EXECUTION_KEY: hcsn-n256-firststep-candidate-compare-hosted-20261120-c06d-001
+2026-11-21T01:24:59.7918330Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:59.7918786Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-21T01:24:59.7919202Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:59.7919572Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:59.7919947Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:24:59.7920320Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-21T01:24:59.7920638Z ##[endgroup]
+2026-11-21T01:25:00.2543700Z ....
+2026-11-21T01:25:00.2544496Z ----------------------------------------------------------------------
+2026-11-21T01:25:00.2545221Z Ran 4 tests in 0.006s
+2026-11-21T01:25:00.2545559Z 
+2026-11-21T01:25:00.2545844Z OK
+2026-11-21T01:25:00.7107250Z ....
+2026-11-21T01:25:00.7109419Z ----------------------------------------------------------------------
+2026-11-21T01:25:00.7110598Z Ran 4 tests in 0.006s
+2026-11-21T01:25:00.7110995Z 
+2026-11-21T01:25:00.7111208Z OK
+2026-11-21T01:25:00.7289214Z ##[group]Run python -m qualification.hcsn_currentstate_n256_firststep_candidate_compare.run
+2026-11-21T01:25:00.7289924Z [36;1mpython -m qualification.hcsn_currentstate_n256_firststep_candidate_compare.run[0m
+2026-11-21T01:25:00.7310598Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:25:00.7310843Z env:
+2026-11-21T01:25:00.7311030Z   MKL_NUM_THREADS: 1
+2026-11-21T01:25:00.7311243Z   NUMEXPR_NUM_THREADS: 1
+2026-11-21T01:25:00.7311472Z   OMP_NUM_THREADS: 1
+2026-11-21T01:25:00.7311678Z   OPENBLAS_NUM_THREADS: 1
+2026-11-21T01:25:00.7311909Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-21T01:25:00.7312324Z   UNIQUE_EXECUTION_KEY: hcsn-n256-firststep-candidate-compare-hosted-20261120-c06d-001
+2026-11-21T01:25:00.7312838Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:25:00.7313284Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-21T01:25:00.7313712Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:25:00.7314113Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:25:00.7314507Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:25:00.7314889Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-21T01:25:00.7315203Z ##[endgroup]
+2026-11-21T01:25:01.9896028Z Traceback (most recent call last):
+2026-11-21T01:25:01.9903303Z   File "<frozen runpy>", line 198, in _run_module_as_main
+2026-11-21T01:25:01.9922839Z   File "<frozen runpy>", line 88, in _run_code
+2026-11-21T01:25:01.9923757Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/hcsn_currentstate_n256_firststep_candidate_compare/run.py", line 179, in <module>
+2026-11-21T01:25:01.9924497Z     _child() if args.child else main()
+2026-11-21T01:25:01.9924785Z                                 ^^^^^^
+2026-11-21T01:25:01.9925500Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/hcsn_currentstate_n256_firststep_candidate_compare/run.py", line 155, in main
+2026-11-21T01:25:01.9926249Z     raise RuntimeError("limited numerical child failed")
+2026-11-21T01:25:01.9926606Z RuntimeError: limited numerical child failed
+2026-11-21T01:25:02.0064534Z ##[error]Process completed with exit code 1.
+2026-11-21T01:25:02.0148636Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-21T01:25:02.0149075Z with:
+2026-11-21T01:25:02.0149351Z   name: hcsn-n256-firststep-candidate-oracle-compare-001
+2026-11-21T01:25:02.0149838Z   path: qualification/hcsn_currentstate_n256_firststep_candidate_compare/RUN_OUTPUT
+2026-11-21T01:25:02.0150279Z   if-no-files-found: error
+2026-11-21T01:25:02.0150515Z   retention-days: 30
+2026-11-21T01:25:02.0150741Z   compression-level: 6
+2026-11-21T01:25:02.0150959Z   overwrite: false
+2026-11-21T01:25:02.0151189Z   include-hidden-files: false
+2026-11-21T01:25:02.0151447Z env:
+2026-11-21T01:25:02.0151629Z   MKL_NUM_THREADS: 1
+2026-11-21T01:25:02.0151839Z   NUMEXPR_NUM_THREADS: 1
+2026-11-21T01:25:02.0152057Z   OMP_NUM_THREADS: 1
+2026-11-21T01:25:02.0152264Z   OPENBLAS_NUM_THREADS: 1
+2026-11-21T01:25:02.0152497Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-21T01:25:02.0152913Z   UNIQUE_EXECUTION_KEY: hcsn-n256-firststep-candidate-compare-hosted-20261120-c06d-001
+2026-11-21T01:25:02.0153470Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:25:02.0153891Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib/pkgconfig
+2026-11-21T01:25:02.0154307Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:25:02.0154681Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:25:02.0155055Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.3/x64
+2026-11-21T01:25:02.0155434Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.3/x64/lib
+2026-11-21T01:25:02.0155751Z ##[endgroup]
+2026-11-21T01:25:02.1952613Z (node:2566) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-21T01:25:02.1953962Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-21T01:25:02.2151933Z With the provided path, there will be 9 files uploaded
+2026-11-21T01:25:02.2152813Z Artifact name is valid!
+2026-11-21T01:25:02.2153465Z Root directory input is valid!
+2026-11-21T01:25:02.4908619Z Beginning upload of artifact content to blob storage
+2026-11-21T01:25:02.5250738Z (node:2566) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-21T01:25:02.5588266Z Uploaded bytes 5120
+2026-11-21T01:25:02.5783093Z Finished uploading artifact content to blob storage!
+2026-11-21T01:25:02.5784371Z SHA256 digest of uploaded artifact zip is a922989c369eddf6685f273334fcad5d02b464a1cec21607f98d9f1f400ccf0a
+2026-11-21T01:25:02.5785798Z Finalizing artifact upload
+2026-11-21T01:25:02.9318054Z Artifact hcsn-n256-firststep-candidate-oracle-compare-001.zip successfully finalized. Artifact ID 14684118589
+2026-11-21T01:25:02.9319629Z Artifact hcsn-n256-firststep-candidate-oracle-compare-001 has been successfully uploaded! Final size is 5120 bytes. Artifact ID is 14684118589
+2026-11-21T01:25:02.9321327Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44849987440/artifacts/14684118589
+2026-11-21T01:25:02.9531496Z Post job cleanup.
+2026-11-21T01:25:03.0440236Z [command]/usr/bin/git version
+2026-11-21T01:25:03.0492819Z git version 2.56.1
+2026-11-21T01:25:03.0538418Z Temporarily overriding HOME='/home/runner/work/_temp/01a4b5c2-ec8c-4a64-9a57-056400e49db6' before making global git config changes
+2026-11-21T01:25:03.0539804Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-21T01:25:03.0545741Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-21T01:25:03.0591635Z Removing SSH command configuration
+2026-11-21T01:25:03.0600529Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-21T01:25:03.0658576Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-21T01:25:03.0965087Z Removing HTTP extra header
+2026-11-21T01:25:03.0972692Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-21T01:25:03.1029623Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-21T01:25:03.1347299Z Removing includeIf entries pointing to credentials config files
+2026-11-21T01:25:03.1356834Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-21T01:25:03.1427932Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-21T01:25:03.1900253Z Cleaning up orphan processes
+2026-11-21T01:25:03.2389793Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+
