@@ -23,7 +23,7 @@ struct Input {
 impl Input {
     async fn new() -> Self {
         let temp = tempfile::tempdir().unwrap();
-        let fleet = HeptaFleetRoot::parse(temp.path().to_path_buf())
+        let fleet = HeptaFleetRoot::parse(temp.path().canonicalize().unwrap())
             .unwrap()
             .layout();
         let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000031").unwrap();

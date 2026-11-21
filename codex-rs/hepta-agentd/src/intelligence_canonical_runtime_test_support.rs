@@ -134,6 +134,8 @@ fn fresh_inputs(
 pub(super) async fn runtime_fixture(body_generation: u64, drain_on_build: bool) -> RuntimeFixture {
     let directory = tempfile::tempdir().expect("directory");
     let root = directory.path().canonicalize().expect("root");
+    std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700))
+        .expect("private fixture root");
     let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet");
     let registry = FleetRegistry::initialize(fleet.clone()).expect("registry");
     let workspace = root.join("workspace");
