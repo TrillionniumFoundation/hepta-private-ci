@@ -4,6 +4,10 @@ use codex_windows_sandbox::ensure_allow_mask_aces;
 use codex_windows_sandbox::filesystem_capability_plan;
 use pretty_assertions::assert_eq;
 
+// Both fixture modules share one session-wide native named mutex. Serialize
+// libtest threads here; the nextest profile serializes its separate processes.
+pub(super) static READ_ACL_TEST_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
 fn subjects(plan: &FilesystemCapabilityPlan) -> ReadAclSubjects {
     ReadAclSubjects {
         // Explicit broad normal-side fixture; this never replaces a restrictive SID.
@@ -48,6 +52,9 @@ fn acl_bytes(file: &File) -> Vec<u8> {
 
 #[test]
 fn broad_normal_rx_cannot_skip_same_plan_restrictive_readback() {
+    let _guard = READ_ACL_TEST_LOCK
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let fixture = tempfile::tempdir().unwrap();
     let home = fixture.path().join("home");
     let root = fixture.path().join("runtime");

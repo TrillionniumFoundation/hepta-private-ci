@@ -70,7 +70,7 @@ impl Fixture {
     }
 }
 
-fn assert_unavailable<T>(result: Result<T>) {
+pub(crate) fn assert_unavailable<T>(result: Result<T>) {
     let Err(error) = result else {
         panic!("unqualified elevated backend admitted the request");
     };

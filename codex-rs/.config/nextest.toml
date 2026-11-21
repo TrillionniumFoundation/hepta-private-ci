@@ -37,6 +37,9 @@ max-threads = 1
 [test-groups.windows_sandbox_legacy_sessions]
 max-threads = 1
 
+[test-groups.windows_sandbox_read_acl]
+max-threads = 1
+
 [test-groups.windows_process_heavy]
 max-threads = 2
 
@@ -83,6 +86,13 @@ test-group = 'core_apply_patch_cli_integration'
 # Serialize them to avoid exhausting Windows session/global desktop resources in CI.
 filter = 'package(codex-windows-sandbox) & test(legacy_)'
 test-group = 'windows_sandbox_legacy_sessions'
+
+[[profile.default.overrides]]
+# These fixtures share the native named read-ACL mutex. Nextest uses separate
+# processes, so their in-process lock only covers Bazel's libtest harness.
+platform = 'cfg(windows)'
+filter = 'package(codex-windows-sandbox) & test(win::read_acl::)'
+test-group = 'windows_sandbox_read_acl'
 
 [[profile.default.overrides]]
 # This Codex-home startup path still exceeded the broader Windows-heavy ceiling

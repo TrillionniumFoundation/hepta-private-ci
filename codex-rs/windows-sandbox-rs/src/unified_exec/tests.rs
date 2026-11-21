@@ -11,6 +11,7 @@ use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;
 use super::spawn_windows_sandbox_session_legacy;
 use crate::WindowsSandboxCancellationToken;
+use crate::elevated_admission_tests::assert_unavailable as assert_elevated_unavailable;
 use crate::ipc_framed::Message;
 use crate::ipc_framed::decode_bytes;
 use crate::ipc_framed::read_frame;
@@ -259,18 +260,22 @@ fn legacy_non_tty_cmd_refuses_before_child_launch() {
 }
 
 #[test]
-fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
+fn elevated_non_tty_cmd_refuses_before_env_output_or_exit() {
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
         let cwd = sandbox_cwd();
         let codex_home = sandbox_home("elevated-non-tty-cmd");
         let permission_profile = PermissionProfile::workspace_write();
-        let env_map = HashMap::from([(
-            "CODEX_ELEVATED_TEST".to_string(),
-            "ELEVATED-ENV-OK".to_string(),
-        )]);
-        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
+        let before = snapshot(codex_home.path()).expect("snapshot elevated home");
+        let env_map = HashMap::from([
+            ("CODEX_ELEVATED_TEST".to_owned(), "ELEVATED-ENV-OK".to_owned()),
+            (
+                "SPAWN_MARKER".to_owned(),
+                codex_home.path().join("process-started").display().to_string(),
+            ),
+        ]);
+        let refused = spawn_windows_sandbox_session_elevated_for_permission_profile(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
             codex_home.path(),
@@ -278,7 +283,8 @@ fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
                 "C:\\Windows\\System32\\cmd.exe".to_string(),
                 "/d".to_string(),
                 "/c".to_string(),
-                "echo %CODEX_ELEVATED_TEST% & exit /b 23".to_string(),
+                "echo %CODEX_ELEVATED_TEST% & echo started>\"%SPAWN_MARKER%\" & exit /b 23"
+                    .to_owned(),
             ],
             cwd.as_path(),
             env_map,
@@ -294,14 +300,12 @@ fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
             /*stdin_open*/ false,
             /*use_private_desktop*/ true,
         )
-        .await
-        .expect("spawn elevated non-tty cmd session");
-        let (stdout, exit_code) =
-            collect_elevated_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(10))
-                .await;
-        let stdout = String::from_utf8_lossy(&stdout);
-        assert_eq!(exit_code, 23, "stdout={stdout:?}");
-        assert!(stdout.contains("ELEVATED-ENV-OK"), "stdout={stdout:?}");
+        .await;
+        assert_elevated_unavailable(refused);
+        assert_eq!(
+            snapshot(codex_home.path()).expect("read back elevated home"),
+            before
+        );
     });
 }
 
@@ -799,64 +803,6 @@ fn legacy_tty_cmd_default_desktop_refuses_before_input_or_output() {
     });
 }
 
-async fn collect_elevated_stdout_and_exit(
-    spawned: codex_utils_pty::SpawnedProcess,
-    codex_home: &Path,
-    timeout_duration: Duration,
-) -> (Vec<u8>, i32) {
-    let deadline = tokio::time::Instant::now() + timeout_duration;
-    let codex_utils_pty::SpawnedProcess {
-        session,
-        mut stdout_rx,
-        mut stderr_rx,
-        exit_rx,
-    } = spawned;
-    let result = tokio::time::timeout_at(deadline, async {
-        let stdout = async {
-            let mut bytes = Vec::new();
-            while let Some(chunk) = stdout_rx.recv().await {
-                bytes.extend(chunk);
-            }
-            bytes
-        };
-        let stderr = async {
-            let mut bytes = Vec::new();
-            while let Some(chunk) = stderr_rx.recv().await {
-                bytes.extend(chunk);
-            }
-            bytes
-        };
-        tokio::join!(stdout, stderr, exit_rx)
-    })
-    .await;
-    let cleanup = session.observe_cleanup();
-    eprintln!(
-        "elevated_terminal_observation cleanup={cleanup:?} output_drained={}",
-        result.is_ok()
-    );
-    let (stdout, stderr, exit) = result.unwrap_or_else(|_| {
-        panic!(
-            "timed out waiting for original elevated session and output\n{}",
-            sandbox_log(codex_home)
-        )
-    });
-    let exit_code = exit.expect("original elevated exit observation");
-    assert_eq!(
-        cleanup.expect("observe original retained runner HANDLE"),
-        Some(
-            codex_utils_pty::ProcessCleanupObservation::OwnerTerminated {
-                owner_exit_code: Some(exit_code),
-            }
-        ),
-    );
-    eprintln!(
-        "elevated_terminal_observation exit={exit_code} stdout_bytes={} stderr_bytes={}",
-        stdout.len(),
-        stderr.len()
-    );
-    (stdout, exit_code)
-}
-
 #[test]
 fn legacy_refuses_before_managed_network_setup() {
     current_thread_runtime().block_on(async {
@@ -903,7 +849,7 @@ fn legacy_refuses_before_managed_network_setup() {
 }
 
 #[test]
-fn legacy_non_tty_refuses_before_elevated_cmd_emits_output() {
+fn legacy_and_elevated_non_tty_refuse_before_cmd_emits_output() {
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
@@ -943,17 +889,24 @@ fn legacy_non_tty_refuses_before_elevated_cmd_emits_output() {
             snapshot(codex_home.path()).expect("read back legacy home"),
             before
         );
-        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
+        let refused = spawn_windows_sandbox_session_elevated_for_permission_profile(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
             codex_home.path(),
             vec![
                 "C:\\Windows\\System32\\cmd.exe".to_owned(),
                 "/c".to_owned(),
-                "echo LEGACY-NONTTY-CMD".to_owned(),
+                "echo LEGACY-NONTTY-CMD & echo started>\"%SPAWN_MARKER%\"".to_owned(),
             ],
             cwd.as_path(),
-            HashMap::new(),
+            HashMap::from([(
+                "SPAWN_MARKER".to_owned(),
+                codex_home
+                    .path()
+                    .join("elevated-process-started.txt")
+                    .display()
+                    .to_string(),
+            )]),
             /*proxy_enforced*/ false,
             /*network_proxy_restricting_sid*/ None,
             Some(5_000),
@@ -966,16 +919,12 @@ fn legacy_non_tty_refuses_before_elevated_cmd_emits_output() {
             /*stdin_open*/ false,
             /*use_private_desktop*/ true,
         )
-        .await
-        .expect("spawn explicit elevated non-tty cmd session");
-        println!("cmd spawn returned");
-        let (stdout, exit_code) =
-            collect_elevated_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(10))
-                .await;
-        println!("cmd collect returned exit_code={exit_code}");
-        let stdout = String::from_utf8_lossy(&stdout);
-        assert_eq!(exit_code, 0, "stdout={stdout:?}");
-        assert!(stdout.contains("LEGACY-NONTTY-CMD"), "stdout={stdout:?}");
+        .await;
+        assert_elevated_unavailable(refused);
+        assert_eq!(
+            snapshot(codex_home.path()).expect("read back elevated home"),
+            before
+        );
     });
 }
 
@@ -1034,7 +983,7 @@ fn legacy_non_tty_refuses_before_deny_read_setup() {
 }
 
 #[test]
-fn legacy_refuses_before_elevated_delete_is_limited_to_writable_roots() {
+fn legacy_and_elevated_refuse_before_deleting_owned_roots() {
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
@@ -1137,7 +1086,7 @@ fn legacy_refuses_before_elevated_delete_is_limited_to_writable_roots() {
             snapshot(codex_home.path()).expect("read back legacy home"),
             home_before
         );
-        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
+        let refused = spawn_windows_sandbox_session_elevated_for_permission_profile(
             &permission_profile,
             workspace_roots_for(workspace.as_path()).as_slice(),
             codex_home.path(),
@@ -1161,53 +1110,15 @@ fn legacy_refuses_before_elevated_delete_is_limited_to_writable_roots() {
             /*stdin_open*/ false,
             /*use_private_desktop*/ true,
         )
-        .await
-        .expect("spawn explicit elevated delete session");
-        let (stdout, exit_code) = collect_elevated_stdout_and_exit(
-            spawned,
-            codex_home.path(),
-            Duration::from_secs(/*secs*/ 10),
-        )
         .await;
-        let stdout = String::from_utf8_lossy(&stdout);
-        // Observe only these owned fixture objects after the original child has
-        // completed. Preserve the original postcondition tuple and error checks.
-        {
-            use std::io::Write;
-
-            for (label, path) in [
-                ("outside_file", &outside_file),
-                ("protected_git_directory", &protected_git_dir),
-            ] {
-                let state = fs::metadata(path)
-                    .map(|metadata| (metadata.is_file(), metadata.is_dir(), metadata.len()))
-                    .map_err(|error| (error.kind(), error.raw_os_error()));
-                let _ = writeln!(
-                    std::io::stderr().lock(),
-                    "windows_boundary_diag elevated_metadata={label} path={path:?} state={state:?}"
-                );
-            }
-            let readback = fs::read_to_string(&outside_file)
-                .map(|value| (value.len(), value == "outside"))
-                .map_err(|error| (error.kind(), error.raw_os_error()));
-            let _ = writeln!(
-                std::io::stderr().lock(),
-                "windows_boundary_diag elevated_outside_readback={readback:?}"
-            );
-        }
-
+        assert_elevated_unavailable(refused);
         assert_eq!(
-            (
-                exit_code,
-                workspace_file.exists(),
-                temp_file.exists(),
-                tmp_file.exists(),
-                fs::read_to_string(&outside_file).ok(),
-                protected_git_dir.is_dir(),
-            ),
-            (0, false, false, false, Some("outside".to_string()), true),
-            "stdout={stdout:?}\n{}",
-            sandbox_log(codex_home.path())
+            snapshot(test_root.path()).expect("read back delete fixture after elevated refusal"),
+            before
+        );
+        assert_eq!(
+            snapshot(codex_home.path()).expect("read back elevated home"),
+            home_before
         );
     });
 }
