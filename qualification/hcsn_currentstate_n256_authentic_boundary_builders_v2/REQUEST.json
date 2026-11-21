@@ -1,0 +1,47 @@
+{
+  "schema": "hcsn-n256-authentic-boundary-builders-v2-source-v1",
+  "identity": "hcsn-n256-authentic-boundary-builders-v2-20261121-c06d-001",
+  "parent_pr": 6868,
+  "parent_commit": "acff46363f2543e1b62250edffdc5fe1255682fc",
+  "parent_tree": "29248876071d9f199fd2a87b3ddec9daca7a2094",
+  "execution_allowed": false,
+  "numerical_execution_allowed": false,
+  "unique_execution_key": null,
+  "repair": {
+    "attempt001_run_id": 44880497839,
+    "attempt001_job_id": 136774548054,
+    "attempt001_artifact_id": 14697363698,
+    "attempt001_artifact_zip_sha256": "7b4c9c57e3c14188bd90b132d0952cbd026987ae8e23f4417048dad12c5b39ed",
+    "attempt001_result": "RED",
+    "attempt001_run_result": "ERROR",
+    "attempt001_audit_status": "INCOMPLETE",
+    "attempt001_error": "oracle raw layout: initial",
+    "attempt001_output_containers": 0,
+    "operation": "np.ascontiguousarray(initial, dtype='<f8')",
+    "applied_to": ["dense_oracle", "actual_candidate"]
+  },
+  "source_only_counts": {
+    "authentic_file_reads": 0,
+    "npz_decodes": 0,
+    "numpy_imports": 0,
+    "scipy_imports": 0,
+    "boundary_builds": 0,
+    "container_comparisons": 0,
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "future_attempt002_key": null,
+  "historical_sparse_red_preserved": {
+    "pr": 6823,
+    "mismatches": 1291,
+    "coordinates": 69728,
+    "result": "RED"
+  },
+  "qualification": false,
+  "c2_full_replay_completed_fits": 0,
+  "hpca_update": "NoUpdate",
+  "production_adoption": false,
+  "all_closed": false
+}
