@@ -11,6 +11,11 @@ import struct
 import zipfile
 from pathlib import Path
 
+from qualification.hcsn_currentstate_n256_fp64_input_conversion.fp64_exact import (
+    Fp64InputError,
+    fp64_hex_to_exact_decimal,
+)
+
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -57,6 +62,18 @@ def _unpack(raw, coordinates, label):
     return values
 
 
+def _canonical_hex(value):
+    return struct.pack(">d", value).hex()
+
+
+def _from_canonical_hex(value_hex):
+    try:
+        fp64_hex_to_exact_decimal(value_hex)
+    except Fp64InputError as error:
+        raise SignedAdapterError("target parser compatibility") from error
+    return struct.unpack(">d", bytes.fromhex(value_hex))[0]
+
+
 def adapt_lane(matrix_raw, seed_raw, dimension):
     """Return byte-reversible signed-provider rows and five seed vectors."""
 
@@ -74,14 +91,14 @@ def adapt_lane(matrix_raw, seed_raw, dimension):
             else:
                 off_diagonal_negative += value < 0.0
             if value != 0.0 or math.copysign(1.0, value) < 0.0:
-                sparse.append((column, value.hex()))
+                sparse.append((column, _canonical_hex(value)))
         rows.append(tuple(sparse))
     if diagonal_positive or off_diagonal_negative:
         raise SignedAdapterError("matrix is not Metzler")
 
     vectors = tuple(
         tuple(
-            value.hex()
+            _canonical_hex(value)
             for value in seed[index * dimension : (index + 1) * dimension]
         )
         for index in range(5)
@@ -93,13 +110,19 @@ def adapt_lane(matrix_raw, seed_raw, dimension):
             if column <= prior:
                 raise SignedAdapterError("sparse columns are not ordered")
             prior = column
-            rebuilt_matrix[row_index * dimension + column] = float.fromhex(value_hex)
+            rebuilt_matrix[row_index * dimension + column] = _from_canonical_hex(
+                value_hex
+            )
     rebuilt_matrix_raw = struct.pack(
         f"<{dimension * dimension}d", *rebuilt_matrix
     )
     rebuilt_seed_raw = struct.pack(
         f"<{5 * dimension}d",
-        *(float.fromhex(value_hex) for vector in vectors for value_hex in vector),
+        *(
+            _from_canonical_hex(value_hex)
+            for vector in vectors
+            for value_hex in vector
+        ),
     )
     if rebuilt_matrix_raw != matrix_raw:
         raise SignedAdapterError("matrix round trip")
@@ -126,6 +149,9 @@ def adapt_lane(matrix_raw, seed_raw, dimension):
             "off_diagonal_negative_coordinates": off_diagonal_negative,
             "matrix_round_trip_byte_equal": True,
             "seed_round_trip_byte_equal": True,
+            "target_fp64_parser_compatible": True,
+            "canonical_bit_hex_coordinates": sum(len(row) for row in rows)
+            + 5 * dimension,
             "canonical_adapter_bytes": len(canonical),
             "canonical_adapter_sha256": _sha256(canonical),
         },
@@ -157,15 +183,21 @@ def _compute_review():
         adapted = adapt_lane(left[matrix_name], left[seed_name], dimension)
         lanes[lane] = adapted["review"]
     return {
-        "schema": "hcsn-n256-authentic-signed-adapter-review-v1",
-        "parent_head": "da5b77d9d35ee4e595faf0d5f28fd11256fa3135",
+        "schema": "hcsn-n256-authentic-signed-adapter-review-v2",
+        "parent_head": "1f4143719aca1d7aeec99bda863301dfdd7dd2f3",
         "parent_status": "RED_DUPLICATE_KEY",
+        "historical_parent_adapter": {
+            "encoding": "python_float_hex",
+            "target_fp64_parser_compatible": False,
+            "status": "RED_NONCANONICAL_INPUT",
+        },
         "lanes": lanes,
         "finding": {
             "authentic_dense_bytes_adapter_compatible": True,
             "sparse_rows_strictly_ordered": True,
             "five_seed_channels_complete": True,
             "matrix_and_seed_round_trip_byte_exact": True,
+            "target_fp64_parser_compatible": True,
             "signed_interval_provider_directly_called": False,
         },
         "work": {
@@ -173,6 +205,7 @@ def _compute_review():
             "authentic_adapter_lane_calls": 2,
             "matrix_coordinate_reads": 258 * 258 + 259 * 259,
             "seed_coordinate_reads": 5 * 258 + 5 * 259,
+            "target_parser_input_checks": 767 + 5 * 258 + 1025 + 5 * 259,
             "provider_calls": 0,
             "dynamic_steps": 0,
             "exponential_actions": 0,
