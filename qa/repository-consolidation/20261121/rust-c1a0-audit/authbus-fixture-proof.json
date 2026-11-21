@@ -1,0 +1,51 @@
+{
+  "reviewer": "/root/current_ci_audit",
+  "reviewed_at_utc": "2026-11-21T11:52:19.815844+00:00",
+  "basis_head": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+  "path": "codex-rs/hepta-authbus/src/owner_tests.rs",
+  "decision": "APPROVE_FIXTURE_ONLY_SOURCE_CHANGE",
+  "before": {
+    "git_blob": "b4523b470b6c866776b3c5ae2b66801e74ef94d1",
+    "sha256": "020603a4db7368cc039de9e78a625de063d7374ca01e5fae268021d87c8d1925",
+    "bytes": 8290
+  },
+  "after": {
+    "git_blob": "8045757f7ea65d48534409f07541f5400712b116",
+    "sha256": "a11aea74e296d85b7a66118ba440dfe41b0d9bd5638b88236eec1420e6d8e6d1",
+    "bytes": 8314
+  },
+  "change_summary": [
+    "Replace create-then-chmod with tempfile Builder.permissions(0700) at creation",
+    "Canonicalize each independently owned private TempDir before joining the original filename"
+  ],
+  "source_scope": {
+    "only_tracked_modified_path": "M codex-rs/hepta-authbus/src/owner_tests.rs",
+    "tests_from_first_tokio_attribute_byte_identical": true,
+    "unchanged_test_suffix_sha256": "6c030738845dcc659a26f97e354d96616fc860ecd3ff2d44cd0d3bff53cd3cf9",
+    "unchanged_tests": [
+      "writer_lease_fences_a_second_owner_and_releases_on_drop",
+      "stale_writer_lease_fails_closed_until_explicitly_recovered",
+      "concurrent_mutations_are_serialized_through_one_checkpoint_publisher",
+      "crash_after_external_publication_is_reconciled_without_replaying_mutation",
+      "serialized_mutation_cancellation_preserves_single_operation_slot",
+      "serialized_mutation_rechecks_lease_and_releases_slot_on_rejection"
+    ],
+    "unchanged_test_count": 6,
+    "production_owner_file_byte_identical": true,
+    "production_owner_sha256": "11089275a1ceda308a2d9477df7ae38ad70bc5143604fc404d15b62dce964a3e",
+    "existing_module_cfg": "all(test, unix)",
+    "original_fixture_return_type_and_TempDir_lifetimes_unchanged": true,
+    "original_database_checkpoint_filename_and_owner_id_unchanged": true,
+    "positive_negative_assertions_unchanged": true,
+    "no_test_skip_ignore_or_count_change": true,
+    "no_production_policy_timeout_or_security_gate_change": true
+  },
+  "reasoning": "The production private_parent requires canonical raw parents. Canonicalizing newly owned fixture directories satisfies the pre-existing contract on macOS path aliases without changing the canonicalization refusal itself. Private permissions are installed during directory creation, eliminating the create/chmod interval while preserving existing 0700 requirement. The same two TempDir owners remain retained in the returned fixture.",
+  "validation_claim": "Independent static byte/diff review only; no tests or format commands run by this reviewer. Actual runtime validation and publication belong to parent.",
+  "nonclaims": [
+    "Does not repair the separate unconditional non-Unix AuthBus owner refusals",
+    "Does not authorize C2D production persistence work",
+    "Does not qualify entire repository or aggregate required gates"
+  ],
+  "diff": "diff --git a/codex-rs/hepta-authbus/src/owner_tests.rs b/codex-rs/hepta-authbus/src/owner_tests.rs\nindex b4523b47..8045757f 100644\n--- a/codex-rs/hepta-authbus/src/owner_tests.rs\n+++ b/codex-rs/hepta-authbus/src/owner_tests.rs\n@@ -11,16 +11,19 @@ use tempfile::TempDir;\n type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;\n \n fn private_tempdir() -> TestResult<TempDir> {\n-    let directory = tempfile::tempdir()?;\n-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;\n-    Ok(directory)\n+    Ok(tempfile::Builder::new()\n+        .permissions(std::fs::Permissions::from_mode(0o700))\n+        .tempdir()?)\n }\n \n async fn fixture() -> TestResult<(TempDir, TempDir, PathBuf, PathBuf, AuthBusAuthorityOwner)> {\n     let database_root = private_tempdir()?;\n     let checkpoint_root = private_tempdir()?;\n-    let database = database_root.path().join(\"authority.sqlite\");\n-    let checkpoint = checkpoint_root.path().join(\"authority-checkpoint.json\");\n+    let database = database_root.path().canonicalize()?.join(\"authority.sqlite\");\n+    let checkpoint = checkpoint_root\n+        .path()\n+        .canonicalize()?\n+        .join(\"authority-checkpoint.json\");\n     let owner =\n         AuthBusAuthorityOwner::bootstrap_new(&database, checkpoint.clone(), \"authbus-owner-test\")\n             .await?;\n"
+}

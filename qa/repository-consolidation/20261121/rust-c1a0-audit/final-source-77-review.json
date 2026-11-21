@@ -1,0 +1,335 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/branch_protection_audit",
+  "reviewed_at_utc": "2026-11-21T13:30:14.079157+00:00",
+  "decision": "APPROVE_BOUNDED_REPAIR_SOURCE_AND_CURATED_QA_PUBLICATION_TO_EXISTING_C755; NOT_MAIN_QUALIFICATION",
+  "source": {
+    "commit": "77aae54a30eb37ef7930d01224e5ef312a5014a1",
+    "tree": "ebf0778517def0426a43e7ae24c46927c82a870d",
+    "ordered_parents": [
+      "6e97ba31efe03adaf798e46ef7c26fe96cd85b05"
+    ],
+    "raw_commit_object_hash_recomputed": true,
+    "independent_GitHub_exact_commit_API_agrees": true
+  },
+  "tree_boundary": {
+    "complete_leaf_count": 59349,
+    "actual_git_ls_tree_metadata_read": true,
+    "full_path_mode_oid_Merkle_reconstruction_equals_source_tree": true,
+    "only_changed_path_from_parent": "codex-rs/hepta-authbus/src/owner_tests.rs",
+    "added_or_removed_paths": [],
+    "changed_modes_or_types": [],
+    "unchanged_leaves_from_parent": 59348,
+    "changed_paths_from_6cb": [
+      ".github/workflows/hepta-architecture-convergence.yml",
+      "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+      "codex-rs/hepta-agentd/src/neuron_generation_learning_readback_test_support.rs",
+      "codex-rs/hepta-authbus/src/owner_tests.rs",
+      "scripts/format.py",
+      "scripts/memory_cell/procedural_bundle_trial.py",
+      "scripts/memory_cell/procedural_observations.py",
+      "scripts/memory_cell/test_procedural_bundle_trial.py",
+      "scripts/memory_cell/test_procedural_observations.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "cumulative_changed_path_count": 12,
+    "whole_repository_blob_payload_materialization_claim": false
+  },
+  "exact_line_wrap": {
+    "before_blob": "8045757f7ea65d48534409f07541f5400712b116",
+    "after_blob": "23ff40605963c8ea795fb2613053fbc117db63a0",
+    "before_sha256": "a11aea74e296d85b7a66118ba440dfe41b0d9bd5638b88236eec1420e6d8e6d1",
+    "after_sha256": "14fa4f1826c6f9b1365dc90849438cc556138a964705c17fcc2a95fa2274c93d",
+    "before_bytes": 8314,
+    "after_bytes": 8341,
+    "old_statement": "    let database = database_root.path().canonicalize()?.join(\"authority.sqlite\");\n",
+    "new_statement": "    let database = database_root\n        .path()\n        .canonicalize()?\n        .join(\"authority.sqlite\");\n",
+    "exact_substitution_count": 1,
+    "all_other_bytes_identical": true,
+    "only_line_break_and_indentation_changes": true,
+    "tokens_strings_assertions_test_selection_and_deadlines_changed": false,
+    "matches_original_native_recovery_02_postimage": true,
+    "matches_format_recovery_01_postimage": true,
+    "original_native_diff_preserved_byte_for_byte": true
+  },
+  "native_format_recovery": {
+    "record": "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/FINAL.json",
+    "record_sha256": "05e05aacbfb21f86de1c4fcf6493b6d9c9e5a88ff14539430693b2a4caf5bb55",
+    "actual_frozen_head": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "actual_frozen_head_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+    "worktree_before_and_after": "f80cd064b5237c75b0703df376344edd17e3a745",
+    "worktree_Merkle_rebuilt_from_frozen_5a_and_exact_one_file_postimage": true,
+    "original_commands": [
+      [
+        "just",
+        "fmt",
+        "--base",
+        "6cbad406a4a203201edc0e103c1377d3664e3fbe"
+      ],
+      [
+        "just",
+        "fmt",
+        "--base",
+        "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+        "--check"
+      ]
+    ],
+    "command_exit_codes": [
+      0,
+      0
+    ],
+    "raw_stdout_and_stderr_digest_and_length_checked": true,
+    "all_four_output_streams_empty": true,
+    "same_original_formatter_lockfile_controls_and_scope": true,
+    "tool_repair_only": "Install pinned official uv in task-local tool directory; no persistent system changes",
+    "uv_version": "uv 0.13.9 (x86_64-unknown-linux-gnu)",
+    "uv_asset_bytes": 17068176,
+    "uv_asset_sha256": "a7fbaff2b9a271d85c1bdb540941090fd1ce011797b4abeb48e4dcd39c2471d5",
+    "uv_binary_sha256": "b73acdf73b96c3ac9e56d2fa933427b3ee6a901e3cce6ba1e3ecb3f91ca0d86a",
+    "uv_payload_independently_redownloaded_by_reviewer": false,
+    "original_formatter_blob_used": "44eedef2a4a6d7d9e6bff953267d534416b2bb74",
+    "later_v3_formatter_executed_by_native_recovery_claim": false,
+    "additional_source_changes_during_uv_recovery": [],
+    "tests_executed_after_formatting": false,
+    "old_compilation_and_missing_uv_failures_retained": true
+  },
+  "existing_validation_bindings": {
+    "original_Agentd_tests": {
+      "actual_source": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "passed": 1605,
+      "failed": 0,
+      "profile_skipped": 181
+    },
+    "original_AuthBus_tests": {
+      "actual_source": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "passed": 51,
+      "failed": 0,
+      "profile_skipped": 0
+    },
+    "original_strict_Clippy_and_same_source_helper_builds": "Recorded passes on 5a retained; no new execution claimed",
+    "original_GitHub_scripts": "Actual original 314-case command passed on 5a; 304 unique IDs and added-wrapper failure retained",
+    "original_B4_no_bypass": "1350 original tests passed on 5a; not reclassified as a run on 77",
+    "original_Architecture_scope": "25 original tests passed with the exact 55e workflow overlay, unchanged in 77",
+    "original_formatter_scope": "41 original tests passed with the exact 6e97 two-file overlay, unchanged in 77",
+    "full_locked_Ruff": "1145 files already formatted with the exact 6e97 Python payloads, unchanged in 77",
+    "history_merge_benchmark_suite": "10 original tests passed on the exact unchanged eight-file import closure",
+    "new_tests_or_formatter_execution_by_reviewer": false,
+    "source_paths_different_from_native_formatted_tree": [
+      ".github/workflows/hepta-architecture-convergence.yml",
+      "scripts/format.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "those_three_paths_have_separate_existing_exact_source_reviews": true,
+    "tests_executed_on_77_or_formatted_native_tree_claim": false,
+    "CI_pinned_nextest_0_9_103_equivalence_claim": false,
+    "recorded_native_nextest_version": "0.9.152"
+  },
+  "protection_and_inventory": {
+    "snapshot_sha256": "8a958e0afdd2996f0db621873350b520d3ff26e91f29722b81b8ec8fec22d48b",
+    "snapshot_ref_count": 7812,
+    "snapshot_capture_finished_at": "2026-11-21T13:10:02.517565+00:00",
+    "only_new_graph_node": "77aae54a30eb37ef7930d01224e5ef312a5014a1",
+    "only_new_parent_edge": [
+      "77aae54a30eb37ef7930d01224e5ef312a5014a1",
+      "6e97ba31efe03adaf798e46ef7c26fe96cd85b05"
+    ],
+    "all_parent_chains_complete": true,
+    "candidate_ancestor_count": 44911,
+    "candidate_new_ancestors_since_6cb": [
+      "0847396844638608708608072ec94961bb20458b",
+      "132b3227ae1978b5ae2eba5b64efef53158a92f6",
+      "394e28812368f5174b890cea51ff13e882231756",
+      "4a120a0bba8b493407930924822eb6cf38279976",
+      "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d",
+      "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+      "6e97ba31efe03adaf798e46ef7c26fe96cd85b05",
+      "77aae54a30eb37ef7930d01224e5ef312a5014a1",
+      "8016166226cd6206ba09c83fa64acc91eca368ba",
+      "dbed60c6372a148a934e48e9a08ba88aa2a536e2"
+    ],
+    "known_protected_nodes": 1470,
+    "known_protected_current_names": 538,
+    "known_HIA_intersection": [],
+    "STOP_descendant_intersection": [],
+    "STOP_anchor_not_present_in_complete_graph": true,
+    "ordinary_current_names": 7273,
+    "ordinary_contained_by_candidate": 2858,
+    "ordinary_not_contained_by_candidate": 4415,
+    "ordinary_pending_distinct_tips": 4195,
+    "ordinary_contained_by_current_main": 0,
+    "historical_551st_pin_identity_missing": true,
+    "complete_original_historical_protection_identity_claim": false,
+    "graph_file": "/workspace/scratch/c1a0d7534606/branch-audit/final-source-77-review/SNAPSHOT-7812-WITH-77-PARENTS.tsv",
+    "graph_sha256": "3d6041c9bdb70ef0d3046a028ff1517c6942ef4dc41526c29a1207c0db5b5b8d",
+    "added_parent_edge_file": "/workspace/scratch/c1a0d7534606/branch-audit/final-source-77-review/APPENDED-PARENT-EDGE.tsv"
+  },
+  "publication_assessment": {
+    "bounded_source_fix_and_existing_review_evidence_sufficient_for_existing_C755_candidate_publication": true,
+    "target_branch": "fix/rust-linux-fixtures-20261120-c755",
+    "observed_expected_old_tip": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+    "candidate_is_fast_forward_descendant_of_observed_C755_tip": true,
+    "main_qualified": false,
+    "all_ordinary_branches_audited_or_merged": false,
+    "branch_deletion_approved": false,
+    "scope": "Publish this reviewable repair candidate and curated QA to the existing repair branch; required CI and broader consolidation remain separate.",
+    "concurrent_ref_guard": "Use the current expected C755 tip and a normal non-force fast-forward; the 13:10 snapshot is evidence and does not freeze subsequent remote changes.",
+    "QA_packaging_scope": "Curated publication bundle is owned and checked separately by root/handoff. The original full native ZIP remains an internal historical record and is not approved here for public inclusion.",
+    "original_native_ZIP_payloads_reaudited": false,
+    "unseen_future_QA_commit_tree_approved": false
+  },
+  "limitations": [
+    "The actual native tests ran on clean 5a, followed by one exact formatter-only AuthBus line wrap; no run on final commit 77 is claimed.",
+    "The native fmt recovery used the original formatter. The later v3 formatter has separate original scope-test and local Python-format evidence.",
+    "Original failed attempts remain failed. The successful tool-repair attempt is a separate receipt.",
+    "Actual native nextest is 0.9.152, not claimed as CI-pinned 0.9.103 qualification.",
+    "Main, complete Architecture CI, macOS checks, Musl 500 ms diagnostic, Windows portability, and the 4415 uncovered ordinary names remain unresolved.",
+    "The unrecovered 551st historical pin remains a documented protection-identity limitation.",
+    "Final curated public QA packaging is separately owned; this source review does not approve the original full machine-environment archive for publication."
+  ],
+  "actions": {
+    "read_only_exact_commit_fetch": true,
+    "root_checkout_index_or_refs_mutated_by_reviewer": false,
+    "remote_refs_mutated": false,
+    "tests_or_formatter_run": false,
+    "STOP_source_read_or_executed": false,
+    "remote_native_tasks_queried_or_controlled": false
+  },
+  "previous_reviews": {
+    "6e97_source": "/workspace/scratch/c1a0d7534606/branch-audit/fmt-scope-v3-review/INDEPENDENT-FMT-SOURCE-6E97-REVIEW.json",
+    "7812_inventory": "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/FINAL-LEASE-7812-REVIEW.json",
+    "55e_source_and_original_test_bindings": "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/FINAL-PUBLICATION-REVIEW.json",
+    "old_reports_overwritten": false
+  },
+  "evidence_manifest": {
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-source-77-review/SOURCE-77.commit": {
+      "sha256": "f3379cbe23ac7d190e31f82d7f48bf53b34d52a6ab99dc1664e467e14f4127d9",
+      "bytes": 770
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-source-77-review/GITHUB-COMMIT-77.json": {
+      "sha256": "edb402a3cea81ac44c85bd8e15b4456c83a372d11002049933203a159216289b",
+      "bytes": 5241
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-source-77-review/EXACT-77-FETCH-RESULT.json": {
+      "sha256": "fb19426228885162b7f29a948f39ec7ea04b6617ffc14237cb5145a77a6e600b",
+      "bytes": 709
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/fmt-scope-v3-review/INDEPENDENT-FMT-SOURCE-6E97-REVIEW.json": {
+      "sha256": "c1695739b5bdfabcfa7f61f7e12fe72a404062dc8efffc6ae6d05d002825da57",
+      "bytes": 26890
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/FINAL-LEASE-7812-REVIEW.json": {
+      "sha256": "a0312c72feb388a83920d61bcbf19ff81fe6b8560fca98a190d5b730dfe551b8",
+      "bytes": 7499
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/FINAL-PUBLICATION-REVIEW.json": {
+      "sha256": "4c5b2134de6c9a53506c4e58de9513852856676fe22637f33195efa5e1abb82d",
+      "bytes": 34864
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-source-77-review/source-77-full-tree.nul": {
+      "sha256": "e57ce39d881fc43731a12d6029c9bb4419f9e23307f35052f3c39c457c448156",
+      "bytes": 8368479
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/fmt-scope-v3-review/source-6e97-full-tree.nul": {
+      "sha256": "2b7e9df7b6af0abf16917b65a46364bc860b5fca66b5e1a67ee415bacf81ea54",
+      "bytes": 8368479
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/base-full-tree.nul": {
+      "sha256": "a485ce5fc85e5e4d6c8c47c0a161bbbe2682081a42cc5eb1cfb88b392968df1c",
+      "bytes": 8368479
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-publication-review/parent-full-tree.nul": {
+      "sha256": "199d1693413043fca2aacf7eb3d086b7afff909a37ac41553f2313c31a181618",
+      "bytes": 8368479
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-source-77-review/owner_tests.before.rs": {
+      "sha256": "a11aea74e296d85b7a66118ba440dfe41b0d9bd5638b88236eec1420e6d8e6d1",
+      "bytes": 8314
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-source-77-review/owner_tests.after.rs": {
+      "sha256": "14fa4f1826c6f9b1365dc90849438cc556138a964705c17fcc2a95fa2274c93d",
+      "bytes": 8341
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/formatted-files/codex-rs/hepta-authbus/src/owner_tests.rs": {
+      "sha256": "14fa4f1826c6f9b1365dc90849438cc556138a964705c17fcc2a95fa2274c93d",
+      "bytes": 8341
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/AFTER-files/codex-rs/hepta-authbus/src/owner_tests.rs": {
+      "sha256": "14fa4f1826c6f9b1365dc90849438cc556138a964705c17fcc2a95fa2274c93d",
+      "bytes": 8341
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/FINAL.json": {
+      "sha256": "05e05aacbfb21f86de1c4fcf6493b6d9c9e5a88ff14539430693b2a4caf5bb55",
+      "bytes": 13148
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/UV-VERIFIED.json": {
+      "sha256": "6ec9d3756059295337db3a9ba3b6a9a3f58f302201d83926c58ecf9cbd84773f",
+      "bytes": 971
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/FORMAT-ENVIRONMENT.json": {
+      "sha256": "517cd07cf5a580fba6a13b4a70167d4962362b5e6d1738579bcced49e8e5c746",
+      "bytes": 1557
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/NATIVE-VALIDATION-INDEX.json": {
+      "sha256": "21152940886b1d0546135ddbc14202f44aa81cd0888e8845381db80b0457656b",
+      "bytes": 6644
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/01-original-just-fmt.RESULT.json": {
+      "sha256": "e8295ec3a4f599393248ec5dd883b74136c98ac4eb60a82313290ead71e865c4",
+      "bytes": 1134
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/01-original-just-fmt.stdout.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/01-original-just-fmt.stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/02-original-just-fmt-check.RESULT.json": {
+      "sha256": "446bda072e7922c175f359c4386824f8ad435fb10155fe5ad28649e8007ae93b",
+      "bytes": 1169
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/02-original-just-fmt-check.stdout.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/02-original-just-fmt-check.stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/FINAL-FORMAT.diff": {
+      "sha256": "4df706d350833debff01c76def70620f49879b0b7075ac3fb6ea111bdedbcb21",
+      "bytes": 822
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/format-recovery-01/AFTER.diff": {
+      "sha256": "4df706d350833debff01c76def70620f49879b0b7075ac3fb6ea111bdedbcb21",
+      "bytes": 822
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/FINAL.json": {
+      "sha256": "facb4780be629d9e4d21f131ff1a55211794127c86c7fef540fe43edd2fe7eb0",
+      "bytes": 32942
+    },
+    "/workspace/scratch/c1a0d7534606/native-validation/recovery-02/FINAL.json": {
+      "sha256": "5f4289c0a083cfa707dbaa0c2442875b33578b8e0990b82216fd5dc3c8e68aea",
+      "bytes": 17502
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/SNAPSHOT-7812-COMPLETE-KNOWN-PARENTS.tsv": {
+      "sha256": "b12717f47aec4f756f90e0669b1c7b2b00462bc97a9ed32dfe6b835827a2e938",
+      "bytes": 6679884
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/PROTECTED-7812-KNOWN-DESCENDANTS.json": {
+      "sha256": "9e35146357ae09bed5a2553d7a04f65da0c5f9e108348ba9edab80ab90ab854a",
+      "bytes": 67623
+    },
+    "/workspace/scratch/c1a0d7534606/remote-heads-final-lease.tsv": {
+      "sha256": "8a958e0afdd2996f0db621873350b520d3ff26e91f29722b81b8ec8fec22d48b",
+      "bytes": 771902
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/PROTECTED-7812-CURRENT-REFS.json": {
+      "sha256": "a421217a13d99ec5d57f182073f65238b0f33b8d2681174ff836052b272fcb6c",
+      "bytes": 51156
+    }
+  }
+}

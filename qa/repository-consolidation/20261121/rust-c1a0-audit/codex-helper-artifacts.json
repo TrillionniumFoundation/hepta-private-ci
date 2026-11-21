@@ -1,0 +1,73 @@
+{
+  "artifacts": [
+    {
+      "compiler_artifact": {
+        "executable": "/tmp/hepta-c1a0-native-20261121-01-target/debug/codex",
+        "features": [],
+        "filenames": [
+          "/tmp/hepta-c1a0-native-20261121-01-target/debug/codex"
+        ],
+        "fresh": false,
+        "manifest_path": "/home/qian-qi/hepta-c1a0-native-20261121-01/repo/codex-rs/cli/Cargo.toml",
+        "package_id": "path+file:///home/qian-qi/hepta-c1a0-native-20261121-01/repo/codex-rs/cli#codex-cli@0.0.0",
+        "profile": {
+          "debug_assertions": true,
+          "debuginfo": 0,
+          "opt_level": "0",
+          "overflow_checks": true,
+          "test": false
+        },
+        "reason": "compiler-artifact",
+        "target": {
+          "crate_types": [
+            "bin"
+          ],
+          "doc": true,
+          "doctest": false,
+          "edition": "2024",
+          "kind": [
+            "bin"
+          ],
+          "name": "codex",
+          "src_path": "/home/qian-qi/hepta-c1a0-native-20261121-01/repo/codex-rs/cli/src/main.rs",
+          "test": true
+        }
+      },
+      "executable": {
+        "bytes": 567760912,
+        "device": 51,
+        "elf": {
+          "byte_order": "little",
+          "class": 64,
+          "machine": 62,
+          "type": 3
+        },
+        "git_blob": "4f6f9bfbd7483520ef97819309be53f65192b635",
+        "inode": 4090710,
+        "mode": "0o700",
+        "path": "/tmp/hepta-c1a0-native-20261121-01-target/debug/codex",
+        "sha256": "f90d3db5edbfbae042649c1f3141bc564eae2040f14a2623d8ea59ccb699e389"
+      },
+      "line_number": 2794,
+      "package_name_from_bound_manifest": "codex-cli",
+      "stage": "01-build-codex"
+    }
+  ],
+  "build_finished": {
+    "reason": "build-finished",
+    "success": true
+  },
+  "command_log": {
+    "bytes": 1167086,
+    "device": 66306,
+    "git_blob": "47574fd1f92c72e618100cc51cd8171571030888",
+    "inode": 28772488,
+    "mode": "0o600",
+    "path": "/home/qian-qi/hepta-c1a0-native-20261121-01/validation-01/01-build-codex.exec.json.e9c24bd892b74b6ba1f7050fba039422.log",
+    "sha256": "49233bdb5b79706623ca4846068bdb2f94896a88f9e00c3b503a0761fa7641a5"
+  },
+  "manifest": "/home/qian-qi/hepta-c1a0-native-20261121-01/repo/codex-rs/cli/Cargo.toml",
+  "required_binary": "codex",
+  "source_head": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+  "source_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb"
+}

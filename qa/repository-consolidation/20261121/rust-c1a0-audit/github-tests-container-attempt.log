@@ -1,0 +1,120 @@
+..............................................................................................................Codespell custody validation failed: drift
+...............................................................................................................................................EEEEEE.........../tmp/tmpmzkl8ikn/librusty_v8_ptrcomp_sandbox_release_aarch64-apple-darwin.a.gz
+/tmp/tmpmzkl8ikn/src_binding_ptrcomp_sandbox_release_aarch64-apple-darwin.rs
+/tmp/tmpmzkl8ikn/rusty_v8_ptrcomp_sandbox_release_aarch64-apple-darwin.sha256
+/tmp/tmppt2w_uoy/rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.lib.gz
+/tmp/tmppt2w_uoy/src_binding_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.rs
+/tmp/tmppt2w_uoy/rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.sha256
+{"id": "original", "package": "owner", "exitCode": 100, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": false, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+{"id": "second", "package": "owner", "exitCode": 0, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": true, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+..........{"id": "sandbox-original-failures", "package": "owner", "exitCode": 0, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": true, "processObservation": {"path": "sandbox-original-failures.processes.json", "status": "start_failed", "exhaustive": false}, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.001, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+{"id": "sandbox-original-failures", "package": "owner", "exitCode": 0, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": ["original"], "selectionMatches": true, "passed": false, "processObservation": {"path": "sandbox-original-failures.processes.json", "status": "start_failed", "exhaustive": false}, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "8ed700c578c343fc85fa58e5cad626bbf2cae861ebaf4ef976c1be0fbb65b366"}
+Starting 1 tests across 1 binary (99 tests skipped)
+LEAK [ 0.1s] (1/1) owner original
+{"id": "sandbox-original-failures", "package": "owner", "exitCode": 100, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": false, "processObservation": {"path": "sandbox-original-failures.processes.json", "status": "finish_failed", "exhaustive": false}, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.001, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+.....{"id": "sandbox-original-failures", "package": "owner", "exitCode": 100, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": false, "processObservation": {"status": "write_failed", "kind": "OSError", "exhaustive": false}, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+.............................
+======================================================================
+ERROR: test_cargo_accepts_local_optional_and_forwarded_profiles_without_writes (test_verify_cargo_workspace_manifests.CargoFeatureSemanticsTests.test_cargo_accepts_local_optional_and_forwarded_profiles_without_writes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c1a0d7534606/audit-repo/.github/scripts/test_verify_cargo_workspace_manifests.py", line 104, in setUp
+    subprocess.run(
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'cargo'
+
+======================================================================
+ERROR: test_cargo_failure_is_not_reported_as_success (test_verify_cargo_workspace_manifests.CargoFeatureSemanticsTests.test_cargo_failure_is_not_reported_as_success)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c1a0d7534606/audit-repo/.github/scripts/test_verify_cargo_workspace_manifests.py", line 104, in setUp
+    subprocess.run(
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'cargo'
+
+======================================================================
+ERROR: test_cargo_rejects_unknown_features_and_invalid_optional_dependency (test_verify_cargo_workspace_manifests.CargoFeatureSemanticsTests.test_cargo_rejects_unknown_features_and_invalid_optional_dependency)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c1a0d7534606/audit-repo/.github/scripts/test_verify_cargo_workspace_manifests.py", line 104, in setUp
+    subprocess.run(
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'cargo'
+
+======================================================================
+ERROR: test_git_inventory_ignores_build_junk_but_sees_new_source (test_verify_cargo_workspace_manifests.CargoFeatureSemanticsTests.test_git_inventory_ignores_build_junk_but_sees_new_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c1a0d7534606/audit-repo/.github/scripts/test_verify_cargo_workspace_manifests.py", line 104, in setUp
+    subprocess.run(
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'cargo'
+
+======================================================================
+ERROR: test_manifest_validation_does_not_execute_build_scripts (test_verify_cargo_workspace_manifests.CargoFeatureSemanticsTests.test_manifest_validation_does_not_execute_build_scripts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c1a0d7534606/audit-repo/.github/scripts/test_verify_cargo_workspace_manifests.py", line 104, in setUp
+    subprocess.run(
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'cargo'
+
+======================================================================
+ERROR: test_workspace_optional_defaults_are_not_silently_accepted (test_verify_cargo_workspace_manifests.CargoFeatureSemanticsTests.test_workspace_optional_defaults_are_not_silently_accepted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/c1a0d7534606/audit-repo/.github/scripts/test_verify_cargo_workspace_manifests.py", line 104, in setUp
+    subprocess.run(
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'cargo'
+
+----------------------------------------------------------------------
+Ran 314 tests in 5.086s
+
+FAILED (errors=6)

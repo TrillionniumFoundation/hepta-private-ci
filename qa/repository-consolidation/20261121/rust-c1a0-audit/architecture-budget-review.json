@@ -1,0 +1,19 @@
+{
+  "proposal_only": true,
+  "applied_to_repository": false,
+  "changed_file": ".github/workflows/hepta-architecture-convergence.yml",
+  "changed_yaml_path": "jobs.qualification.timeout-minutes",
+  "before": 60,
+  "after": 120,
+  "yaml_documents_otherwise_identical": true,
+  "original_source_oid": "fa76e846c514cc12e23bbd382246b122fccecf7d",
+  "patch_sha256": "686e13d8c74d4597aaa0f15a6415a3702675db01e97d29c2fab40f83dbd5aafd",
+  "native_commands_and_selection_unchanged": true,
+  "runner_and_resource_flags_unchanged": true,
+  "per_command_timeout_seconds_unchanged": 3600,
+  "required_aggregate_timeout_minutes_unchanged": 5,
+  "product_timeout_and_assertion_changes": false,
+  "HIA_native_60_minute_gate_changes": false,
+  "owner_review_rule": ".github/CODEOWNERS: /.github/ @ProfHepta",
+  "qualification_claim": false
+}

@@ -1,0 +1,396 @@
+{
+  "audited_head": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+  "created_at_utc": "2026-11-21T12:14:57.825255+00:00",
+  "decision": "PURE_FIXTURE_REPAIR_CANNOT_RESOLVE_THE_OBSERVED_FOUR_FAILURES",
+  "confidence": "Definitive for current failure path: unconditional argument-free guard is the first executed backend statement. Does not qualify latent later fixture or backend behavior.",
+  "read_only": true,
+  "tests_run": false,
+  "production_changed": false,
+  "fixtures_changed": false,
+  "remote_changed": false,
+  "primary_proof": {
+    "path": "codex-rs/windows-sandbox-rs/src/elevated_admission.rs",
+    "function": "require_elevated_filesystem_isolation",
+    "lines": [
+      32,
+      33,
+      34
+    ],
+    "signature": "pub fn require_elevated_filesystem_isolation() -> anyhow::Result<()>",
+    "complete_body": "Err(ElevatedWindowsSandboxIsolationUnavailable.into())",
+    "arguments": 0,
+    "reads_fixture_or_acl": false,
+    "environment_or_feature_escape_branch": false
+  },
+  "actual_common_call_chain": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs or unified_exec/delete_permission_tests.rs",
+      "operation": "Each original positive elevated spawn call listed below."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+      "lines": [
+        196,
+        215,
+        235
+      ],
+      "operation": "Public explicit-elevated wrapper forwards request to actual elevated backend; no fixture validation here."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+      "lines": [
+        114,
+        134
+      ],
+      "operation": "First statement calls require_elevated_filesystem_isolation()? and returns its Err."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_admission.rs",
+      "lines": [
+        32,
+        33,
+        34
+      ],
+      "operation": "Unconditionally Err; caller never reaches permissions resolution at backend line143 or prepare_elevated_spawn_context at line148."
+    },
+    {
+      "operation": "Original .expect at tests.rs:298/970/1165 or delete_permission_tests.rs:171 panics. Original stdout/exit/deletion assertions remain unexecuted and must not be rewritten as refusal success."
+    }
+  ],
+  "additional_guarded_paths": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+      "line": 113,
+      "kind": "WindowsSandboxLevel::Elevated public selector before backend selection"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "line": 62,
+      "kind": "Capture entry before request destructuring"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+      "line": 244,
+      "kind": "Direct broker command-runner before filesystem preparation"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "lines": [
+        446,
+        489
+      ],
+      "kind": "Both elevated token-construction helpers"
+    }
+  ],
+  "four_original_tests": [
+    {
+      "name": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "definition_line": 262,
+      "fixture": "Repository workspace cwd and sandbox_home TempDir; workspace-write profile; env CODEX_ELEVATED_TEST=ELEVATED-ENV-OK.",
+      "positive_spawn_line": 273,
+      "failing_expect_line": 298,
+      "postconditions": [
+        "Original cmd must emit ELEVATED-ENV-OK.",
+        "Original numeric exit code must be 23."
+      ],
+      "postcondition_lines": [
+        303,
+        304
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6cbad406a4a203201edc0e103c1377d3664e3fbe/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs"
+    },
+    {
+      "name": "unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "definition_line": 906,
+      "fixture": "Repository workspace cwd and sandbox_home TempDir; records legacy-home snapshot.",
+      "legacy_refusal_and_unchanged_snapshot_lines": [
+        941,
+        942,
+        943,
+        944,
+        945
+      ],
+      "positive_spawn_line": 946,
+      "failing_expect_line": 970,
+      "postconditions": [
+        "Legacy refusal must preserve original fixture snapshot.",
+        "Explicit elevated original cmd must exit 0 and emit LEGACY-NONTTY-CMD."
+      ],
+      "postcondition_lines": [
+        977,
+        978
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6cbad406a4a203201edc0e103c1377d3664e3fbe/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs"
+    },
+    {
+      "name": "unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "definition_line": 1037,
+      "fixture": "Owned TempDir under workspace, explicitly outside USERPROFILE/AppData exclusions. Four sibling workspace/TEMP/TMP/outside roots plus protected .git child.",
+      "legacy_refusal_and_unchanged_snapshot_lines": [
+        1131,
+        1132,
+        1133,
+        1134,
+        1135,
+        1136,
+        1137,
+        1138,
+        1139
+      ],
+      "positive_spawn_line": 1140,
+      "failing_expect_line": 1165,
+      "postconditions": [
+        "Exit 0; workspace/TEMP/TMP files deleted; outside file remains byte-equal to outside; protected .git remains directory."
+      ],
+      "postcondition_lines": [
+        1199,
+        1208
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6cbad406a4a203201edc0e103c1377d3664e3fbe/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs"
+    },
+    {
+      "name": "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "definition_line": 30,
+      "fixture": "Owned TempDir under workspace; host and outside DeleteMatrix have byte-identical explicit protected DACLs. Host ordinary cmd runs first and validates all four native delete routes.",
+      "legacy_refusal_and_unchanged_snapshot_lines": [
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145
+      ],
+      "positive_spawn_line": 146,
+      "failing_expect_line": 171,
+      "postconditions": [
+        "Host ordinary control: neither denied; target-only, parent-only and both deletions succeed.",
+        "Explicit elevated original command exits 0 and emits all four matrix markers.",
+        "Allowed workspace file and directory are deleted.",
+        "All four outside-root file/directory routes survive."
+      ],
+      "postcondition_lines": [
+        44,
+        55,
+        70,
+        183,
+        184,
+        197,
+        201,
+        205
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6cbad406a4a203201edc0e103c1377d3664e3fbe/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs"
+    }
+  ],
+  "fixture_causality": [
+    "Current diagnostic is not a measured rejection of TempDir parent ACL: no path or ACL enters the guard, and no filesystem inspection precedes its return.",
+    "Creating private owned roots can only change data supplied to unreachable later code; it cannot change this unconditional return while preserving production admission and the original positive API calls.",
+    "The four-cell test already explicitly constructs protected DACLs with all four DELETE/FILE_DELETE_CHILD combinations, copies equal ACLs to ordinary-host and restricted trials, and verifies ordinary-host physical deletion behavior before reaching admission.",
+    "Removing the ParentOnly/Both grants or making the external matrix inaccessible would change the original security challenge. A private wrapper directory also does not remove the unconditional admission error.",
+    "The current request is therefore not comparable to a dynamic private-state owner/DACL validation failure. No source-only fixture candidate is proposed."
+  ],
+  "delete_matrix_acl_evidence": {
+    "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+    "protected_dacl_set_lines": [
+      282,
+      285,
+      295,
+      296
+    ],
+    "construction_lines": [
+      432,
+      434,
+      449,
+      450,
+      451,
+      453,
+      454,
+      455,
+      457,
+      458,
+      459
+    ],
+    "identity": "Everyone SID S-1-1-0",
+    "same_acl_assertions": [
+      620,
+      621,
+      623,
+      624,
+      625,
+      626
+    ],
+    "observed_host_matrix": "Exact-current-source process log validates Neither=false/false and TargetOnly/ParentOnly/Both=true/true before elevated refusal."
+  },
+  "pr6798_comparison": {
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6798",
+    "head": "dfc152ae12baaf34a39d32ac205be786c3c3011d",
+    "observed_pr_state": "open draft, not merged as a PR; its fixture changes are present in audited 6cb",
+    "files_present": [
+      {
+        "path": "codex-rs/hepta-shadow-qualification/src/durable.rs",
+        "git_blob": "b718e79e95261cf1bc8233f6f78aa765be031579",
+        "sha256": "cac48ab571ba8b36c4e96b43db12750e0127bcefaf42267714303267d0ce0a54",
+        "6798_fixture_present": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_tests.rs",
+        "git_blob": "481785e08fba4d7166e336c02522301038a3e4a0",
+        "sha256": "d361b49b01a7f5b83834d1bb4cfac206e59f95705d6de9a171ace90a01250ee4",
+        "6798_fixture_present": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_cross_root_tests.rs",
+        "git_blob": "25af829c8ab603ed7e473987f89633c5439004c9",
+        "sha256": "9b87d6dfa92e70a662e142d3d6fd775d0c96c9c95f10d9182df6f25ac74ce9c4",
+        "6798_fixture_present": true
+      }
+    ],
+    "different_failure_paths": [
+      "read_acl tests add one shared test-only mutex around independent fixture bodies to avoid named-mutex interference.",
+      "shadow directory-flush fixture uses existing create_private_directory before its original sync/write/read positive sequence, satisfying path-dependent owner/DACL preconditions."
+    ],
+    "does_not_modify": [
+      "The four failing unified_exec test bodies",
+      "elevated_admission.rs",
+      "Any production elevated launch guard"
+    ],
+    "why_not_applicable": "None of those fixture changes can make the zero-argument unconditional elevated admission return Ok."
+  },
+  "windows_on801_boundary": {
+    "prepared_file": "/workspace/scratch/c755a6a4693a/continuation-20261121-1100/root/windows-on801/PREPARED.json",
+    "candidate": "d701bd1091c682466490d22a13551d9d96e2e2ed",
+    "parent": "8016166226cd6206ba09c83fa64acc91eca368ba",
+    "scope": [
+      ".github/scripts/windows-appcontainer-probe/child_trace.c",
+      ".github/scripts/windows-appcontainer-probe/win32_api.py",
+      ".github/scripts/windows-appcontainer-probe/profile_environment_probe.py",
+      ".github/workflows/ndu-windows-storage-probe.yml"
+    ],
+    "rust_subtree_unchanged_from801": true,
+    "runtime_executed_by_this_review": false,
+    "implication": "Observational AppContainer child/profile diagnostics only; no qualified replacement routing or Rust admission change. Cannot qualify these four original positive sandbox contracts."
+  },
+  "ci_evidence": {
+    "direct_source_job": 136829413586,
+    "run": 44898577556,
+    "direct_source_log": "../ci-logs/job-136829413586.log",
+    "direct_source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44898577556/job/136829413586",
+    "selected_process_scope": {
+      "groups": 11,
+      "cases": 77,
+      "pass": 73,
+      "fail": 4,
+      "retries": 0
+    },
+    "full_original_declaration": {
+      "groups": 19,
+      "cases": 175,
+      "pass": 171,
+      "fail": 4,
+      "qualified": false
+    },
+    "synthetic_merge_job": 136829982417,
+    "synthetic_merge": "7714fcc496317e0d09c8673e172f7749d6147608",
+    "same_source_tree": true
+  },
+  "constraints_preserved": [
+    "No production admission change",
+    "No expectErr conversion or skipped cases",
+    "No timeout/deadline change",
+    "No C2D persistence repair read/applied/executed",
+    "No native/private-owner jobs queried or replayed",
+    "No new tests"
+  ],
+  "inputs": [
+    {
+      "path": "codex-rs/hepta-shadow-qualification/src/durable.rs",
+      "bytes": 7230,
+      "git_blob": "b718e79e95261cf1bc8233f6f78aa765be031579",
+      "sha256": "cac48ab571ba8b36c4e96b43db12750e0127bcefaf42267714303267d0ce0a54"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+      "bytes": 28015,
+      "git_blob": "25a96e9c10f5e8dc24a476e356c4d775c5fc6d14",
+      "sha256": "946ed7393a2e4135f00095a8017dd85f1ce280fe1164b0c06deeaac9decbe7d0"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_cross_root_tests.rs",
+      "bytes": 8027,
+      "git_blob": "25af829c8ab603ed7e473987f89633c5439004c9",
+      "sha256": "9b87d6dfa92e70a662e142d3d6fd775d0c96c9c95f10d9182df6f25ac74ce9c4"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_tests.rs",
+      "bytes": 4640,
+      "git_blob": "481785e08fba4d7166e336c02522301038a3e4a0",
+      "sha256": "d361b49b01a7f5b83834d1bb4cfac206e59f95705d6de9a171ace90a01250ee4"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "bytes": 26946,
+      "git_blob": "96fff2ef3f52a93540b530d7b24018a696466a6b",
+      "sha256": "fd4086b4331aba7d5904748d366683dc79e41697c36396c9cebfb7f917a84683"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_admission.rs",
+      "bytes": 1561,
+      "git_blob": "dab5c85fff38ca88517e555ba2afc9fcbf43d2f3",
+      "sha256": "fafe8cf67b02f02a61bbd56f225825a6c48722d3a9806ad6041f6e5c96fc6d7f"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "bytes": 12342,
+      "git_blob": "2e25639e9c0e04a574a1ab8c321f7f9b5af32c48",
+      "sha256": "6480ef86e03c7aecf89bb36894b556d94d5ad4ea2a05ca7208f7b58a0ce19998"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/legacy_admission.rs",
+      "bytes": 1417,
+      "git_blob": "f1fc37fc9ef53244773504746482a0a77027daaf",
+      "sha256": "eb1048cf27a5a7896d44ae7e32af60a4b25d7f561c4c1b2bf49093ad078189a4"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/legacy_boundary.rs",
+      "bytes": 1750,
+      "git_blob": "37f7b5797f590e8a3f9b0dd1ba1661fb36fb9a73",
+      "sha256": "1b06f85c09af6283cd1591f4d371d6e109598f7ca9236a42400bf42b34e3b2bc"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 23728,
+      "git_blob": "64f1cc5fb31a8d42a46e837a2c3fb7d8770d829c",
+      "sha256": "b01afbf7db4e2ac47e09d416efd95b2840de6ea1295f9479d37379153708dc24"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+      "bytes": 9062,
+      "git_blob": "11824e6499198a7f9fe24ebaca577b595ba7ba4b",
+      "sha256": "73318b67d37763722fc3d44bcc5ec746af0fb21cfec1d7cc6c549fbba74836a8"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "bytes": 10336,
+      "git_blob": "42e301fc58725ea77aec56b38097023201ffd5d3",
+      "sha256": "28cc5408ba7421913fd64378eecc52060c679c68673e6876123d4115852b2c1c"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+      "bytes": 9353,
+      "git_blob": "f049059fdd4c9b128b0a81a4505d358a25dc1b9d",
+      "sha256": "0d3994e3212178d117e8c96990f444ca0f84aa55e643324196ce8961c97400f8"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "bytes": 43465,
+      "git_blob": "824b6843d4b8c105cbfa2b32fe6d7c5c038dfd00",
+      "sha256": "0087c9d4ff0bdf32b575f74422d2f1be9c5452aea999be8879fd0281e2cba580"
+    }
+  ]
+}

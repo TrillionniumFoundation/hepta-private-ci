@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "status": "reviewed_repair_batch_ready_for_existing_pr; repository_consolidation_incomplete",
+  "recorded_at_utc": "2026-11-21T13:27:43.915923+00:00",
+  "source_commit": "77aae54a30eb37ef7930d01224e5ef312a5014a1",
+  "source_tree": "ebf0778517def0426a43e7ae24c46927c82a870d",
+  "original_pr_head": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+  "native_execution_commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+  "native_execution_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+  "native_formatted_worktree_tree": "f80cd064b5237c75b0703df376344edd17e3a745",
+  "native_after_format_tests_executed": false,
+  "source_changes_from_original_head": [
+    "M\t.github/workflows/hepta-architecture-convergence.yml",
+    "M\tcodex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+    "M\tcodex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+    "M\tcodex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+    "M\tcodex-rs/hepta-agentd/src/neuron_generation_learning_readback_test_support.rs",
+    "M\tcodex-rs/hepta-authbus/src/owner_tests.rs",
+    "M\tscripts/format.py",
+    "M\tscripts/memory_cell/procedural_bundle_trial.py",
+    "M\tscripts/memory_cell/procedural_observations.py",
+    "M\tscripts/memory_cell/test_procedural_bundle_trial.py",
+    "M\tscripts/memory_cell/test_procedural_observations.py",
+    "M\tscripts/test_hepta_format_scope.py"
+  ],
+  "source_path_count": 12,
+  "genuine_history_merges": [
+    {
+      "merge": "0847396844638608708608072ec94961bb20458b",
+      "incoming": "4a120a0bba8b493407930924822eb6cf38279976"
+    },
+    {
+      "merge": "132b3227ae1978b5ae2eba5b64efef53158a92f6",
+      "incoming": "dbed60c6372a148a934e48e9a08ba88aa2a536e2"
+    }
+  ],
+  "native_scoped_results": {
+    "strict_clippy_exit": 0,
+    "agentd_passed": 1605,
+    "agentd_failed": 0,
+    "agentd_original_profile_skips": 181,
+    "authbus_passed": 51,
+    "authbus_failed": 0,
+    "authbus_skipped": 0,
+    "original_fmt_exit": 0,
+    "original_fmt_check_exit": 0,
+    "preserved_first_attempt_exit": 1,
+    "preserved_test_recovery_wrapper_exit": 1
+  },
+  "other_scoped_results": {
+    "b4_passed": 1350,
+    "github_original_command_executions": 314,
+    "github_unique_test_ids": 304,
+    "github_original_command_exit": 0,
+    "github_audit_wrapper_error_preserved": true,
+    "architecture_scope_passed": 25,
+    "formatter_scope_passed": 41,
+    "full_ruff_formatted_files": 1145
+  },
+  "test_counts_must_not_be_added_as_disjoint": true,
+  "full_formatter_original_4247_path_scope_executed": false,
+  "full_formatter_original_4247_path_scope_planned": true,
+  "snapshot": {
+    "captured_at_utc": "2026-11-21T13:10:02.517565+00:00",
+    "refs": 7812,
+    "protected_refs": 538,
+    "protected_names_without_hia": 414,
+    "known_protection_nodes": 1470,
+    "ordinary_non_main_refs": 7273,
+    "ordinary_refs_covered_by_candidate": 2858,
+    "ordinary_refs_not_covered": 4415,
+    "distinct_pending_tips": 4195,
+    "ordinary_refs_already_contained_by_main": 0,
+    "historical_551st_protection_pin_unresolved": true
+  },
+  "required_main_contexts": [
+    "CI required",
+    "Architecture required"
+  ],
+  "final_source_full_ci_qualified": false,
+  "main_merged": false,
+  "ordinary_branches_deleted": 0,
+  "hia_branches_mutated": false,
+  "remaining_observed_blockers": [
+    "Windows AuthBus fail-closed non-Unix parent validation",
+    "Windows elevated sandbox fail-closed admission and unqualified AppContainer mechanism",
+    "Musl original 500 ms deadline failure",
+    "Complete architecture and native maintenance qualification",
+    "4415 ordinary tips absent from candidate and corresponding source/behavior review",
+    "Unresolved historical protection pin identity"
+  ],
+  "stop_commit": "d783273c25b3164f5f632482cb7b017fdcb9d756",
+  "stop_patch_read_applied_or_reimplemented": false,
+  "prior_user_authorization_for_normal_consolidation_remains_in_effect": true,
+  "concurrent_unknown_jobs_or_private_checkouts_modified": false,
+  "evidence_commit_policy": "A single-parent evidence-only child of the final reviewed source; current remote head must be freshly read and updated with expected_sha and force=false."
+}

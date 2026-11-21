@@ -1,0 +1,24 @@
+{
+  "head": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+  "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+  "command": [
+    "uv",
+    "--cache-dir",
+    "/workspace/scratch/c1a0d7534606/format-repair/uv-cache",
+    "run",
+    "--frozen",
+    "--offline",
+    "--project",
+    "scripts",
+    "ruff",
+    "format",
+    "--check",
+    "scripts",
+    ".github"
+  ],
+  "exit_code": 0,
+  "stdout": "1145 files already formatted\n",
+  "files": 1145,
+  "tracked_changes": false,
+  "ruff_version": "0.15.13"
+}

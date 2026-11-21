@@ -1,0 +1,60 @@
+{
+  "after": {
+    "commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "dirty": false,
+    "parents": [
+      "394e28812368f5174b890cea51ff13e882231756"
+    ],
+    "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb"
+  },
+  "base_sha": "65b720ec799ac278aadcc54c9466b7d17df235c7",
+  "before": {
+    "commit": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "dirty": false,
+    "parents": [
+      "394e28812368f5174b890cea51ff13e882231756"
+    ],
+    "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb"
+  },
+  "command": [
+    "/home/qian-qi/.cargo/bin/cargo",
+    "+1.96.0",
+    "clippy",
+    "--manifest-path",
+    "codex-rs/Cargo.toml",
+    "--locked",
+    "-p",
+    "codex-hepta-bellman-operator",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-shadow-qualification",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 256.9911667450215,
+  "exit_code": 0,
+  "finished_at": "2026-11-21T12:23:29.886109+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 72976,
+  "log_file": "00-three-package-strict-clippy.exec.json.2403e5f0cde2415eaa765c3bbf4ffd45.log",
+  "log_sha256": "02bda23da2bdae8404178b4e2aa2e83e975039a359b3c67fb52009daae9c477e",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+  "started_at": "2026-11-21T12:19:12.894236+00:00",
+  "status": "passed",
+  "tested_sha": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-c1a0-native-20261121-01/repo"
+}

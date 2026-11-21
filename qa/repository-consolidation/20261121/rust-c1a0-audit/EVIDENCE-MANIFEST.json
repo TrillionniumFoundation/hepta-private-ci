@@ -1,0 +1,383 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "README.md",
+      "source": "publication/README-draft.md",
+      "bytes": 19654,
+      "sha256": "6014a0608a2b08cfda51aac1a4a474283fec73ae6e0f6cbdda8be42853f4a07a"
+    },
+    {
+      "path": "STATUS.json",
+      "source": "publication/STATUS.json",
+      "bytes": 4216,
+      "sha256": "d531229c405ea0d9c79aa9df8f032aa0af2dbb0806d899cfd7dbe91d41c1433e"
+    },
+    {
+      "path": "branch-snapshot-7803.json",
+      "source": "branch-audit/architecture-audit/SNAPSHOT-7803-REVIEW.json",
+      "bytes": 2759,
+      "sha256": "91c5b1a7dccc59421f698f7cd05fba17912a01f5f274626860a8fff11278fa6c"
+    },
+    {
+      "path": "ref-delta-ancestry.json",
+      "source": "branch-audit/architecture-audit/REF-DELTA-ANCESTRY-REVIEW.json",
+      "bytes": 4422,
+      "sha256": "ae807454d6001b8f76b686be90b369f76701536631f249e34776f3ebada8a60b"
+    },
+    {
+      "path": "protected-7803-current-refs.json",
+      "source": "branch-audit/architecture-audit/PROTECTED-7803-CURRENT-REFS.json",
+      "bytes": 51156,
+      "sha256": "7b00654daf3b761af16c62ac7370065fb3dabc801be8ae4dc698707d96919e35"
+    },
+    {
+      "path": "branch-snapshot-7812.json",
+      "source": "branch-audit/final-lease-7812/FINAL-LEASE-7812-REVIEW.json",
+      "bytes": 7499,
+      "sha256": "a0312c72feb388a83920d61bcbf19ff81fe6b8560fca98a190d5b730dfe551b8"
+    },
+    {
+      "path": "ref-delta-7812-ancestry.json",
+      "source": "branch-audit/final-lease-7812/REF-DELTA-ANCESTRY-REVIEW.json",
+      "bytes": 29848,
+      "sha256": "508de32bb48ed3e7d54a059197d31754ff8886eb9f82e454076b6cb34c04097d"
+    },
+    {
+      "path": "protected-current-refs.json",
+      "source": "branch-audit/final-lease-7812/PROTECTED-7812-CURRENT-REFS.json",
+      "bytes": 51156,
+      "sha256": "a421217a13d99ec5d57f182073f65238b0f33b8d2681174ff836052b272fcb6c"
+    },
+    {
+      "path": "protected-known-descendants.json",
+      "source": "branch-audit/final-lease-7812/PROTECTED-7812-KNOWN-DESCENDANTS.json",
+      "bytes": 67623,
+      "sha256": "9e35146357ae09bed5a2553d7a04f65da0c5f9e108348ba9edab80ab90ab854a"
+    },
+    {
+      "path": "final-source-77-review.json",
+      "source": "branch-audit/final-source-77-review/FINAL-SOURCE-77-REVIEW.json",
+      "bytes": 17900,
+      "sha256": "43bbed3b8ae7cb49aa0e52d08d7f784c08c771669f17ce8f5daef9e7632ef47b"
+    },
+    {
+      "path": "final-source-parent-edge.tsv",
+      "source": "branch-audit/final-source-77-review/APPENDED-PARENT-EDGE.tsv",
+      "bytes": 82,
+      "sha256": "8e97c22304ed9cf27884af72f4eff2801f89c63de906862a3b5f98fc30f9d510"
+    },
+    {
+      "path": "lint-source-proof.json",
+      "source": "seven-fix-review/INDEPENDENT-PROOF.json",
+      "bytes": 3487,
+      "sha256": "354e5ae825b5be3e948ee909c8f1541144cc55a77306e4f5036b6a7e6809f3e5"
+    },
+    {
+      "path": "lint-source-review.md",
+      "source": "seven-fix-review/REVIEW.md",
+      "bytes": 8631,
+      "sha256": "7150e79f207df44c6bcd34f793ab0df05452075aac02a24f3db14595c143b1e4"
+    },
+    {
+      "path": "authbus-fixture-proof.json",
+      "source": "authbus-fixture-independent-review.json",
+      "bytes": 4372,
+      "sha256": "b9741f7a812d53cca673dbd4899fcdab3715f9fd9f933693f8a45d9e115f3972"
+    },
+    {
+      "path": "ruff-source-review.json",
+      "source": "format-repair/format-review.json",
+      "bytes": 20838,
+      "sha256": "9f519bbb3cfafe9c42c508e82ac1c077f748997cd8f0a2055566e65bcb959ad0"
+    },
+    {
+      "path": "history-4a-merge-review.json",
+      "source": "branch-audit/candidate-4a-on-5a/MERGE-REVIEW.json",
+      "bytes": 2445,
+      "sha256": "e4e8097e0a8256d129fe694f1978f794446d7f8ee67a77d42e03705dea17a491"
+    },
+    {
+      "path": "history-dbed-merge-review.json",
+      "source": "branch-audit/candidate-dbed-on-084/MERGE-REVIEW.json",
+      "bytes": 1744,
+      "sha256": "6f94fcf31e46d63d4c533561eb458b9af76467ffd2cab0c85d8a526de8dab3ae"
+    },
+    {
+      "path": "history-dbed-conflicts.json",
+      "source": "branch-audit/candidate-dbed-on-084/CONFLICT-RESOLUTION.json",
+      "bytes": 15965,
+      "sha256": "b3f8fd54ffe89529617ed260787ea9b4aac29f17396947aabb3cde2d917f7fce"
+    },
+    {
+      "path": "history-dbed-original-source-review.json",
+      "source": "branch-audit/candidate-dbed-on-084/ORIGINAL-SYNTAX-REVIEW.json",
+      "bytes": 79379,
+      "sha256": "d86efa1b5d2c846c716b3e4bf3c5165dd4893056c33f7ff0c7477ea115281996"
+    },
+    {
+      "path": "architecture-timeline.json",
+      "source": "branch-audit/architecture-audit/TIMELINE-REVIEW.json",
+      "bytes": 1730,
+      "sha256": "88c6141118beb71247b4097b7ca3cb02126b564e694f84a15be9c00b6af9796b"
+    },
+    {
+      "path": "architecture-budget-review.json",
+      "source": "branch-audit/architecture-audit/PROPOSAL-REVIEW.json",
+      "bytes": 825,
+      "sha256": "292453d0e795aa967fd6f9b064c95da828c14ffaa1362ff37a20b119bb27ed5d"
+    },
+    {
+      "path": "architecture-scope-tests.json",
+      "source": "publication/architecture-scope-test-result.json",
+      "bytes": 771,
+      "sha256": "b5f02f14263fe0953cdb4cbdcdf07253b31af46d3170329720b8c5d225564aef"
+    },
+    {
+      "path": "architecture-scope-tests.log",
+      "source": "publication/architecture-scope-test.log",
+      "bytes": 4216,
+      "sha256": "066adad4f537e4bdbc7feea0e94f7805a17a28366216c01d6fd850d3f3182baf"
+    },
+    {
+      "path": "source-55-review.json",
+      "source": "branch-audit/final-publication-review/FINAL-PUBLICATION-REVIEW.json",
+      "bytes": 34864,
+      "sha256": "4c5b2134de6c9a53506c4e58de9513852856676fe22637f33195efa5e1abb82d"
+    },
+    {
+      "path": "source-6e-review.json",
+      "source": "branch-audit/fmt-scope-v3-review/INDEPENDENT-FMT-SOURCE-6E97-REVIEW.json",
+      "bytes": 26890,
+      "sha256": "c1695739b5bdfabcfa7f61f7e12fe72a404062dc8efffc6ae6d05d002825da57"
+    },
+    {
+      "path": "authbus-final-format-review.json",
+      "source": "publication/AUTHBUS-FINAL-FORMAT-REVIEW.json",
+      "bytes": 714,
+      "sha256": "7c16e87b36107c0136f2552810c937186f8dfceb89084621a164bac7310abc4f"
+    },
+    {
+      "path": "formatter-v3-review.json",
+      "source": "fmt-scope-audit/v3/candidate-review.json",
+      "bytes": 2588,
+      "sha256": "159acd91cf53254a2b405108329149c32f47642f28a489e62e0734c0c225a813"
+    },
+    {
+      "path": "formatter-v3-provenance-34.json",
+      "source": "fmt-scope-audit/v3/evidence-provenance-34.json",
+      "bytes": 129327,
+      "sha256": "9b98901da19d1b1e049f36a1d60c510ee466e8793af96f194ac1ddfd6f1f721b"
+    },
+    {
+      "path": "formatter-v3-tests.json",
+      "source": "fmt-scope-audit/v3/actual-scope-tests-result.json",
+      "bytes": 959,
+      "sha256": "7f4dff1310ae860edf373519ecfeb1c43851e44841ca01253336c96879b013ad"
+    },
+    {
+      "path": "formatter-v3-tests.log",
+      "source": "fmt-scope-audit/v3/actual-scope-tests.log",
+      "bytes": 7947,
+      "sha256": "71502284a4f4852b4469a91785697baea4f00d9c940df0528e180dc2271fc6fb"
+    },
+    {
+      "path": "formatter-v3-full-scope-summary.json",
+      "source": "fmt-scope-audit/v3/actual-full-scope-summary.json",
+      "bytes": 1178,
+      "sha256": "9ad72f4c85249f717ff6ef9d1e7308f7453743309927ad7d1b0e97924353f8e8"
+    },
+    {
+      "path": "formatter-v3-full-scope-plan.json.gz",
+      "source": "fmt-scope-audit/v3/actual-full-scope-plan.json.gz",
+      "bytes": 48295,
+      "sha256": "f0ba2bb328727c553432653dea416774eb41d98896ebfdc282226f75355b2849"
+    },
+    {
+      "path": "formatter-v3-format.json",
+      "source": "fmt-scope-audit/v3/final-python-fmt-result.json",
+      "bytes": 1169,
+      "sha256": "6dc515123789282f59f98cd02a17a1f4a418cd84182ef488fdedf7115df79ba3"
+    },
+    {
+      "path": "formatter-v3-format-check.json",
+      "source": "fmt-scope-audit/v3/final-python-fmt-check-result.json",
+      "bytes": 323,
+      "sha256": "1fc537de19a38fac2c55827335ebb0847a6915444ca541a5165e179da5259ae6"
+    },
+    {
+      "path": "formatter-v3-full-ruff.json",
+      "source": "fmt-scope-audit/v3/full-ruff-check-result.json",
+      "bytes": 811,
+      "sha256": "c5c0115ce3cfd0c8fffad4ef68a21c03795790b4ccebaee79d5d7ab6ac534773"
+    },
+    {
+      "path": "formatter-v3-source.patch",
+      "source": "fmt-scope-audit/v3/cumulative-v3.patch",
+      "bytes": 12323,
+      "sha256": "1f3930ad7fae5653c195b26f824f5ab12f84a622dcde983a603ac8ef5b8705c8"
+    },
+    {
+      "path": "strict-clippy-execution.json",
+      "source": "native-validation/00-three-package-strict-clippy.exec.json",
+      "bytes": 1719,
+      "sha256": "a2c2a48cd7fbda9a2c0d7af9a1a7112a7ad7bbc7025a64c31601ff2d45cff363"
+    },
+    {
+      "path": "codex-helper-build.json",
+      "source": "native-validation/01-build-codex.RESULT.json",
+      "bytes": 4701,
+      "sha256": "358eaf0b88f44b5b963f6b6b6e5b0cca9d4078ac52ea343553943568ab5def33"
+    },
+    {
+      "path": "codex-helper-artifacts.json",
+      "source": "native-validation/01-build-codex.ARTIFACTS.json",
+      "bytes": 2412,
+      "sha256": "82b379ae10ca4ffd79584ee8fea26c8d0ca0ae8c91fe6982670ab1c8418db3c1"
+    },
+    {
+      "path": "native-validation-index.json",
+      "source": "native-validation/NATIVE-VALIDATION-INDEX.json",
+      "bytes": 6644,
+      "sha256": "21152940886b1d0546135ddbc14202f44aa81cd0888e8845381db80b0457656b"
+    },
+    {
+      "path": "native-publication-review.json",
+      "source": "native-validation/NATIVE-PUBLICATION-REVIEW.json",
+      "bytes": 107223,
+      "sha256": "6dcc598a477cf7ed09cd0ea137bffcc6c19597f8e75e6f73dcfde96e481f1435"
+    },
+    {
+      "path": "native-evidence-PUBLIC.zip",
+      "source": "native-validation/NATIVE-EVIDENCE-5A-20261121-PUBLIC.zip",
+      "bytes": 1605908,
+      "sha256": "1fe917ebc21b0e4e9ddae589623d6bdab2327c62897a07920e658336cd8141b0"
+    },
+    {
+      "path": "b4-tests.json",
+      "source": "b4-original-current-result.json",
+      "bytes": 504,
+      "sha256": "b20ef24b1cec6f78162ac09ad2c9b24be2cc17b7d4399bfeb6f2e09a9030c854"
+    },
+    {
+      "path": "b4-tests.log",
+      "source": "b4-original-current.log",
+      "bytes": 1453,
+      "sha256": "9c00c6e16fbd0671b088c93a386ba55ce807bb246220952b527a150b40883465"
+    },
+    {
+      "path": "full-ruff-check.json",
+      "source": "full-ruff-result.json",
+      "bytes": 506,
+      "sha256": "61de8a89937a23481beb792e5f4fce7750cac016eca2883c878bcc39f35ae6a1"
+    },
+    {
+      "path": "github-tests-container-attempt.json",
+      "source": "b4-current-result.json",
+      "bytes": 666,
+      "sha256": "a2a3d20eb3cd0aea819af9f7a7667b3bfc222b35722c7334d5d5622e52790aec"
+    },
+    {
+      "path": "github-tests-container-attempt.log",
+      "source": "b4-current.log",
+      "bytes": 12143,
+      "sha256": "50631bd9e7e8c4a16f6adf5898aa60283208efbb6dfabdac1d60dbac8ae04d87"
+    },
+    {
+      "path": "github-tests-native-sparse-attempt.json",
+      "source": "native-validation/github-script-tests-FINAL.json",
+      "bytes": 2382,
+      "sha256": "e5bbbed7a36887b842a386abf500b972e7e3b455207cfeb91e25ab8e19d20eb6"
+    },
+    {
+      "path": "github-tests-native-sparse-attempt.log",
+      "source": "native-validation/github-script-tests-original-command.log",
+      "bytes": 6692,
+      "sha256": "5c7a71e6f0dba51e8aa74ee4f386e8ac094391dadc79960dcd2ccc5c3652a18b"
+    },
+    {
+      "path": "mac-attempt-terminal.json",
+      "source": "mac-authbus-terminal.json",
+      "bytes": 2395,
+      "sha256": "ce402fb703b63db442d2b481578075def42c6538a081f278038fb6d7545600a2"
+    },
+    {
+      "path": "ci-original-6cb-final-summary.json",
+      "source": "current-ci-final-summary.json",
+      "bytes": 19672,
+      "sha256": "4f7c7e48685827b000148824d70f31e991cbb3ca5d82207f77211ab453f983f8"
+    },
+    {
+      "path": "ci-original-6cb-final-facts.md",
+      "source": "current-ci-final-facts.md",
+      "bytes": 5735,
+      "sha256": "1b5b9e6eadcba02ad4f57e6546f028ead0710293dbe60a4fb2ccd4aae57c2acd"
+    },
+    {
+      "path": "musl-timing-review.json",
+      "source": "branch-audit/musl-audit/MUSL-TIMING-REVIEW.json",
+      "bytes": 14789,
+      "sha256": "dcd368f9155c51af094a7c335a1795040a6e3d802c57bfd73db9747e85389537"
+    },
+    {
+      "path": "musl-source-binding.json",
+      "source": "branch-audit/musl-audit/SOURCE-BINDING.json",
+      "bytes": 3186,
+      "sha256": "dd1c983878d1b3d7636639ec2d741d14f541a52068fc7c9ab111303afee83e57"
+    },
+    {
+      "path": "musl-original-failure.txt",
+      "source": "branch-audit/musl-audit/ORIGINAL-FAILED-TEST-EXCERPT.txt",
+      "bytes": 8333,
+      "sha256": "1a12f148e97b5c6a2e37047657f511e5c534f6129da93afa9a1e48e82f36ae38"
+    },
+    {
+      "path": "windows-elevated-failures.md",
+      "source": "windows-fixture-audit/windows-four-failure-review.md",
+      "bytes": 4445,
+      "sha256": "bf827997327f48ec4901e6072e3480eff21c501eeb8169c50fa261af90773408"
+    },
+    {
+      "path": "windows-elevated-failures.json",
+      "source": "windows-fixture-audit/windows-four-failure-review.json",
+      "bytes": 16148,
+      "sha256": "09bbce7c5769d16aa1292dc267d9cc73d6e0291e9731ff88cbc4c65167195804"
+    },
+    {
+      "path": "earlier-pr6799-body.md",
+      "source": "publication/pr6799-before.md",
+      "bytes": 65533,
+      "sha256": "530787fd1c2151bcc634b5dd7a57733de965a90be3ba062261869f19215a6531"
+    },
+    {
+      "path": "current-refs.tsv.gz",
+      "source": "remote-heads-final-lease.tsv",
+      "bytes": 286176,
+      "sha256": "25455d122c32c765610dab68f4cbd821ff111f3561b0ebd19c7d9c3f72de62f8",
+      "decompressed_bytes": 771902,
+      "decompressed_sha256": "8a958e0afdd2996f0db621873350b520d3ff26e91f29722b81b8ec8fec22d48b"
+    },
+    {
+      "path": "all-current-ref-classifications.json.gz",
+      "source": "branch-audit/final-lease-7812/ALL-CURRENT-REF-CLASSIFICATIONS.json",
+      "bytes": 307540,
+      "sha256": "6757a3362645a79382feb1989ac50073040598197b20ee6b4b18721875dd12f1",
+      "decompressed_bytes": 2452200,
+      "decompressed_sha256": "7a298a7bccc06aca43b0e0d17624e9d94510826fac9d188cfc53f9f24fc71ebe"
+    },
+    {
+      "path": "complete-known-parent-graph-7812.tsv.gz",
+      "source": "branch-audit/final-lease-7812/SNAPSHOT-7812-COMPLETE-KNOWN-PARENTS.tsv",
+      "bytes": 3796298,
+      "sha256": "4faa440281f85412a8d3c5463cac94842ec14dde8429eb6737d05201ec827bfb",
+      "decompressed_bytes": 6679884,
+      "decompressed_sha256": "b12717f47aec4f756f90e0669b1c7b2b00462bc97a9ed32dfe6b835827a2e938"
+    },
+    {
+      "path": "graph-provenance.json",
+      "source": "generated provenance",
+      "bytes": 759,
+      "sha256": "77ff10e7be00916fd7487aff221d7ed3a629e75c049c5c2934c2139c0d24d4d4"
+    }
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "status": "declared_native_scoped_gates_completed_with_preserved_failure_and_recovery_history",
+  "frozen_execution_source": {
+    "head": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+    "native_platform": "Linux x86_64 ROG",
+    "rust_toolchain": "1.96.0",
+    "nextest_version": "0.9.152",
+    "ci_pinned_nextest_0_9_103_qualification_claimed": false
+  },
+  "gates": {
+    "three_package_strict_clippy": {
+      "status": "passed",
+      "attempt": "validation-01",
+      "command_exit_code": 0,
+      "record": "00-three-package-strict-clippy.exec.json",
+      "log": "00-three-package-strict-clippy.log",
+      "rerun_after_success": false
+    },
+    "real_same_source_helpers": {
+      "status": "passed",
+      "attempt": "validation-01",
+      "records": [
+        "01-build-codex.ARTIFACTS.json",
+        "02-build-worker-bins.ARTIFACTS.json"
+      ],
+      "migration_rebinding": "recovery-02/REUSED-RUNTIME-HELPERS.json",
+      "rerun_after_success": false
+    },
+    "agentd_original_just_test": {
+      "status": "passed",
+      "attempt": "validation-02",
+      "command_exit_code": 0,
+      "passed": 1605,
+      "failed": 0,
+      "profile_skipped": 181,
+      "original_passed_test_multiset_exact_match": true,
+      "record": "recovery-02/03-agentd-just-test.exec.json",
+      "identity_comparison": "recovery-02/AGENTD-TEST-IDENTITY-COMPARISON.json",
+      "raw_log": "recovery-02/03-agentd-just-test.log"
+    },
+    "authbus_original_just_test": {
+      "status": "passed",
+      "attempt": "validation-02",
+      "command_exit_code": 0,
+      "passed": 51,
+      "failed": 0,
+      "profile_skipped": 0,
+      "record": "recovery-02/04-authbus-just-test.exec.json",
+      "identity_record": "recovery-02/AUTHBUS-TEST-IDENTITIES.json",
+      "raw_log": "recovery-02/04-authbus-just-test.log"
+    },
+    "github_scripts_original_python3_discovery": {
+      "actual_command_status": "passed",
+      "command_exit_code": 0,
+      "executed_test_cases": 314,
+      "unique_test_ids": 304,
+      "original_wrapper_failure_preserved": true,
+      "canonical_independent_receipt": "GITHUB-314-INDEPENDENT-RECONCILIATION.json",
+      "actual_log": "github-script-tests-03-original-command.log",
+      "discovery_only_runtime_proof": "ACTUAL-PYTHON3-DISCOVERY.json"
+    },
+    "original_final_just_fmt_and_check": {
+      "status": "passed_after_missing_tool_repair",
+      "record": "format-recovery-01/FINAL.json",
+      "base": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+      "format_exit_code": 0,
+      "check_exit_code": 0,
+      "tool": "official_uv_0.13.9",
+      "tool_record": "format-recovery-01/UV-VERIFIED.json",
+      "original_formatter_and_lockfile_unchanged": true,
+      "original_failure_record": "recovery-02/FORMATTING-FINAL.json",
+      "tests_run_after_formatting": false
+    }
+  },
+  "preserved_failures": [
+    {
+      "attempt": "validation-01",
+      "agentd_command_exit_code": 101,
+      "agentd_tests_executed": 0,
+      "agentd_failure": "linker SIGBUS",
+      "authbus_command_exit_code": 101,
+      "authbus_tests_executed": 0,
+      "authbus_failure": "EDQUOT writing compile outputs, followed by compiler/linker failure",
+      "record": "FINAL.json"
+    },
+    {
+      "attempt": "validation-02",
+      "overall_exit_code": 1,
+      "rust_test_commands_passed": true,
+      "fmt_exit_code": 1,
+      "check_exit_code": 1,
+      "cause": "uv executable absent",
+      "record": "recovery-02/FINAL.json"
+    },
+    {
+      "attempt": "github-script-tests-03",
+      "original_command_exit_code": 0,
+      "wrapper_exit_status": "failed",
+      "cause": "wrapper assumed 314 unique IDs; original suite actually imports 10 original tests twice",
+      "record": "github-script-tests-03-FINAL.json"
+    }
+  ],
+  "target_relocation": {
+    "record": "TARGET-RELOCATION-FINAL.json",
+    "full_manifest": "TARGET-RELOCATION-FULL-MANIFEST.json.gz",
+    "regular_paths": 19886,
+    "unique_regular_inodes": 19762,
+    "all_file_contents_and_hardlink_topology_verified": true,
+    "original_logical_target": "/tmp/hepta-c1a0-native-20261121-01-target",
+    "canonical_target": "/home/qian-qi/hepta-c1a0-native-20261121-01/target",
+    "old_device": 51,
+    "new_device": 66306,
+    "original_owned_tmp_copy_released_after_copy_verification": true,
+    "foreign_files_or_quota_settings_changed": false
+  },
+  "formatter_output": {
+    "frozen_head_unchanged": "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "before_validation_tree": "cf4965757cc8ef01109c06b40ade160f3a6f57bb",
+    "final_worktree_tree": "f80cd064b5237c75b0703df376344edd17e3a745",
+    "only_changed_path": "codex-rs/hepta-authbus/src/owner_tests.rs",
+    "before_blob": "8045757f7ea65d48534409f07541f5400712b116",
+    "after_blob": "23ff40605963c8ea795fb2613053fbc117db63a0",
+    "pure_line_wrap_proof": "recovery-02/FORMAT-LINE-WRAP-PROOF.json",
+    "exact_source": "format-recovery-01/AFTER-files/codex-rs/hepta-authbus/src/owner_tests.rs",
+    "diff": "format-recovery-01/AFTER.diff",
+    "format_tool_repair_introduced_additional_source_changes": false,
+    "tests_executed_on_formatted_tree": false
+  },
+  "scope_limits": {
+    "full_repository_ci_qualification_claimed": false,
+    "mac_native_qualification_claimed": false,
+    "later_coordinator_commit_qualification_claimed": false,
+    "foreign_owner_repository_target_or_jobs_modified": false,
+    "rejected_C2D_patch_read_applied_or_compiled": false,
+    "unrecorded_ambient_environment_claimed_frozen": false,
+    "new_recovery_outer_budget_is_not_first_attempt_absolute_deadline": true,
+    "hia_or_remote_refs_modified": false
+  },
+  "terminal_sessions": {
+    "original_native": {
+      "id": "dpty-a1eaa9c86ba0344d299de35b0d3674be37e5be9982056f6f6220c0bd84898bfc",
+      "key": "hepta-c1a0-native-validation-5a-20261121-01",
+      "exit_code": 1,
+      "fully_read_bytes": 9302
+    },
+    "target_relocation": {
+      "id": "dpty-f2b63a0becbf94b8f6947fb2c067143389702220649d734fe4378fe148b4cf16",
+      "key": "hepta-c1a0-target-relocation-5a-20261121-01",
+      "exit_code": 0,
+      "fully_read_bytes": 4814
+    },
+    "test_recovery": {
+      "id": "dpty-31d52dcfe1af922a49141a1d5a40ba3e335f37d4225f26a574d3f7bf2403d937",
+      "key": "hepta-c1a0-native-tests-recovery-5a-20261121-01",
+      "exit_code": 1,
+      "fully_read_bytes": 3043
+    },
+    "format_only_recovery": {
+      "id": "dpty-3d4cee4221930bff74ba5009b9cc63d7a0d86570ae5e952d69696296ee9e93ff",
+      "key": "hepta-c1a0-fmt-recovery-uv0139-5a-20261121-01",
+      "exit_code": 0,
+      "fully_read_bytes": 818
+    }
+  }
+}

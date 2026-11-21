@@ -1,0 +1,415 @@
+[
+  {
+    "path": "codex-rs/hepta-intelligence-eval/src/citation_audit.rs",
+    "conflict_count": 3,
+    "default_blob": "d68e1c2c99974c0abf56ed0862bb338cc23f619f",
+    "resolved_blob": "1f33264234f9d0456d3a165fbcb68f4dc187eb1a",
+    "resolved_sha256": "99600f24127c4c12b2179947d476f4f8aea69bb2c895e94e06c9ddca4686cd9a",
+    "resolution_equals_current_bytes": true,
+    "conflicts": [
+      {
+        "default_start_line": 128,
+        "default_end_line": 148,
+        "current_lines": 18,
+        "incoming_lines": 0,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1,18 +0,0 @@\n",
+          "-    /// Retained audit evidence cannot outlive source withdrawal, signer expiry,\n",
+          "-    /// trust rotation, or the host time used at admission.\n",
+          "-    pub fn revalidate_current(\n",
+          "-        &self,\n",
+          "-        verifier: &LearningEvidenceVerifierV1,\n",
+          "-        revoked_roots: &BTreeSet<Digest32>,\n",
+          "-        now: u64,\n",
+          "-    ) -> Result<(), CitationAuditError> {\n",
+          "-        if verifier.trust_digest() != self.trust_digest\n",
+          "-            || now < self.admitted_at\n",
+          "-            || !self.source_roots.is_disjoint(revoked_roots)\n",
+          "-        {\n",
+          "-            return Err(CitationAuditError::Invalid(\"stale citation audit\"));\n",
+          "-        }\n",
+          "-        verify_signed_independent_roles_v1(&self.generator, &self.evaluator, now)?;\n",
+          "-        Ok(())\n",
+          "-    }\n",
+          "-\n"
+        ]
+      },
+      {
+        "default_start_line": 299,
+        "default_end_line": 321,
+        "current_lines": 11,
+        "incoming_lines": 9,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1,11 +1,9 @@\n",
+          "-        if !(cursor <= start\n",
+          "-            && start < end\n",
+          "-            && end <= request.answer.len()\n",
+          "-            && request.answer.is_char_boundary(start)\n",
+          "-            && request.answer.is_char_boundary(end)\n",
+          "-            && request.answer[cursor..start]\n",
+          "+        if !(cursor <= start && start < end && end <= request.answer.len())\n",
+          "+            || !request.answer.is_char_boundary(start)\n",
+          "+            || !request.answer.is_char_boundary(end)\n",
+          "+            || !request.answer[cursor..start]\n",
+          "                 .trim_matches([' ', '\\t', '\\r', '\\n'])\n",
+          "                 .is_empty()\n",
+          "-            && !request.answer[start..end]\n",
+          "+            || request.answer[start..end]\n",
+          "                 .trim_matches([' ', '\\t', '\\r', '\\n'])\n",
+          "-                .is_empty())\n",
+          "+                .is_empty()\n"
+        ]
+      },
+      {
+        "default_start_line": 407,
+        "default_end_line": 421,
+        "current_lines": 12,
+        "incoming_lines": 0,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1,12 +0,0 @@\n",
+          "-        experiment_digest: request.experiment_digest,\n",
+          "-        family_digest: request.family_digest,\n",
+          "-        query_id: request.query_id.clone(),\n",
+          "-        scope: request.scope.clone(),\n",
+          "-        source_roots: request\n",
+          "-            .sources\n",
+          "-            .iter()\n",
+          "-            .map(|source| source.source_root)\n",
+          "-            .collect(),\n",
+          "-        generator: generated,\n",
+          "-        evaluator: evaluated,\n",
+          "-        admitted_at: now,\n"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-intelligence-eval/src/citation_audit_tests.rs",
+    "conflict_count": 1,
+    "default_blob": "80a0a33c2ab46e7b263dabbf4cee89f0bfb2132b",
+    "resolved_blob": "98fdef27d0cedba15c6b354d580b0dd1baeab2f0",
+    "resolved_sha256": "0633e549f7ee847a7b667a3ae6bc3be127e01c75b2cde480e4798219637afd81",
+    "resolution_equals_current_bytes": true,
+    "conflicts": [
+      {
+        "default_start_line": 38,
+        "default_end_line": 42,
+        "current_lines": 1,
+        "incoming_lines": 1,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1 +1 @@\n",
+          "-            end: 22,\n",
+          "+            end: 21,\n"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "scripts/memory_cell/benchmark_collect.py",
+    "conflict_count": 1,
+    "default_blob": "338dc920af2efc7222273f6e4576bddd504d9a3e",
+    "resolved_blob": "64a46570c7388156cff25cfd87fea178cc3cf149",
+    "resolved_sha256": "7e4ca055706d5a083acb58b973b823b5a68beef9eed6ed1890d2589cb6ba1a5e",
+    "resolution_equals_current_bytes": true,
+    "conflicts": [
+      {
+        "default_start_line": 2,
+        "default_end_line": 6,
+        "current_lines": 0,
+        "incoming_lines": 2,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -0,0 +1,2 @@\n",
+          "+\n",
+          "+from __future__ import annotations\n"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "scripts/memory_cell/benchmark_coverage.py",
+    "conflict_count": 1,
+    "default_blob": "e2132b2660aa2b4bfe7b2da257587667ea5a75ed",
+    "resolved_blob": "51f7c72b3a1a1e102c34a8d069fa7c7a5268cf54",
+    "resolved_sha256": "6119bd0df10ec5038379cad9b9e50259bd4ce4b908925caae1cf5460279e3945",
+    "resolution_equals_current_bytes": true,
+    "conflicts": [
+      {
+        "default_start_line": 8,
+        "default_end_line": 12,
+        "current_lines": 0,
+        "incoming_lines": 2,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -0,0 +1,2 @@\n",
+          "+\n",
+          "+from __future__ import annotations\n"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "scripts/memory_cell/citation_audit.py",
+    "conflict_count": 1,
+    "default_blob": "f89c36e942eb56d480f8eb9a2f3023d3fe221830",
+    "resolved_blob": "49d7c955e184e5dcfb55543eecefbe13a00f5499",
+    "resolved_sha256": "3438ed19b0dc6a5005511066e400234aea6a269da7c1eb8e0e6a0bae2a67a9d9",
+    "resolution_equals_current_bytes": true,
+    "conflicts": [
+      {
+        "default_start_line": 8,
+        "default_end_line": 12,
+        "current_lines": 0,
+        "incoming_lines": 2,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -0,0 +1,2 @@\n",
+          "+\n",
+          "+from __future__ import annotations\n"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "scripts/memory_cell/lesions.py",
+    "conflict_count": 1,
+    "default_blob": "de0467f66399bac72a9c9257e84a0afe02bbdef1",
+    "resolved_blob": "731f445d72049e9f94982d9cb93d7918820c2f66",
+    "resolved_sha256": "77fea5ce53e8c779e191d91990907347b74155728842f1affeee938f1a522584",
+    "resolution_equals_current_bytes": true,
+    "conflicts": [
+      {
+        "default_start_line": 2,
+        "default_end_line": 6,
+        "current_lines": 0,
+        "incoming_lines": 2,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -0,0 +1,2 @@\n",
+          "+\n",
+          "+from __future__ import annotations\n"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "scripts/memory_cell/pretrained.py",
+    "conflict_count": 2,
+    "default_blob": "eac0d9e918cdbf2d9d16356fd93dea9a953dd504",
+    "resolved_blob": "a9c92026015e53ddf6fb8b3e5ab7bbe3d4cb07a2",
+    "resolved_sha256": "bd01b8596f5158ae587c9535ef34fcf66d6ce1c76b679cfb78c329b3448ac03a",
+    "resolution_equals_current_bytes": true,
+    "conflicts": [
+      {
+        "default_start_line": 155,
+        "default_end_line": 161,
+        "current_lines": 2,
+        "incoming_lines": 2,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1,2 +1,2 @@\n",
+          "-        self.adapter_config = _canonical_saved_adapter_config(\n",
+          "-            self.model, inference_mode=False\n",
+          "+        self.adapter_config = canonical_config(\n",
+          "+            self.model.peft_config[\"default\"].to_dict()\n"
+        ]
+      },
+      {
+        "default_start_line": 414,
+        "default_end_line": 420,
+        "current_lines": 3,
+        "incoming_lines": 1,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1,3 +1 @@\n",
+          "-            expected_config=_canonical_saved_adapter_config(\n",
+          "-                self.model, inference_mode=True\n",
+          "-            ),\n",
+          "+            expected_config={**self.adapter_config, \"inference_mode\": True},\n"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "scripts/memory_cell/run_native.py",
+    "conflict_count": 2,
+    "default_blob": "54debe99daadcd9def4f46e43f55f2f39e2b660d",
+    "resolved_blob": "1e4ca8e0067f51d0b883fe7e671f5bdc3a81a1dd",
+    "resolved_sha256": "1e62612a167ea4682fbabf17a1498e65eaac5f2b4c20d0cfec74fde62f7a354e",
+    "resolution_equals_current_bytes": true,
+    "conflicts": [
+      {
+        "default_start_line": 75,
+        "default_end_line": 78,
+        "current_lines": 1,
+        "incoming_lines": 0,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1 +0,0 @@\n",
+          "-        \"native_citation.py\",\n"
+        ]
+      },
+      {
+        "default_start_line": 432,
+        "default_end_line": 436,
+        "current_lines": 2,
+        "incoming_lines": 0,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1,2 +0,0 @@\n",
+          "-            if not isinstance(answer, str) or not answer.strip():\n",
+          "-                raise ValueError(\"reader completed without generated answer text\")\n"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "scripts/memory_cell/sessions.py",
+    "conflict_count": 5,
+    "default_blob": "0b3bc8ddbded49ae0a4103bfd7abc5c32d694899",
+    "resolved_blob": "34a5eb8afdfed29b15abe7bd22df5431c7360b1e",
+    "resolved_sha256": "82ad3363cda9ed9d155487a96e0dc409ad66253cf0694498c807c4d1b10baec4",
+    "resolution_equals_current_bytes": true,
+    "conflicts": [
+      {
+        "default_start_line": 8,
+        "default_end_line": 12,
+        "current_lines": 0,
+        "incoming_lines": 2,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -0,0 +1,2 @@\n",
+          "+\n",
+          "+from __future__ import annotations\n"
+        ]
+      },
+      {
+        "default_start_line": 31,
+        "default_end_line": 40,
+        "current_lines": 6,
+        "incoming_lines": 1,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1,6 +1 @@\n",
+          "-    sessions,\n",
+          "-    identities,\n",
+          "-    dates,\n",
+          "-    *,\n",
+          "-    conflict_policy: ConflictPolicy = \"reject\",\n",
+          "-    empty_turns: EmptyTurnPolicy = \"reject\",\n",
+          "+    sessions, identities, dates, *, conflict_policy: ConflictPolicy = \"reject\"\n"
+        ]
+      },
+      {
+        "default_start_line": 72,
+        "default_end_line": 76,
+        "current_lines": 1,
+        "incoming_lines": 1,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1 +1 @@\n",
+          "-        for turn_position, turn in enumerate(turns):\n",
+          "+        for turn in turns:\n"
+        ]
+      },
+      {
+        "default_start_line": 81,
+        "default_end_line": 87,
+        "current_lines": 2,
+        "incoming_lines": 2,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1,2 +1,2 @@\n",
+          "+                or not turn[\"content\"].strip()\n",
+          "                 or len(turn[\"content\"].encode()) > 1_000_000\n",
+          "-                or (empty_turns == \"reject\" and not turn[\"content\"].strip())\n"
+        ]
+      },
+      {
+        "default_start_line": 92,
+        "default_end_line": 107,
+        "current_lines": 13,
+        "incoming_lines": 0,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -1,13 +0,0 @@\n",
+          "-            if not turn[\"content\"].strip():\n",
+          "-                issues.append(\n",
+          "-                    {\n",
+          "-                        \"identity\": identity,\n",
+          "-                        \"position\": position,\n",
+          "-                        \"turn_position\": turn_position,\n",
+          "-                        \"role\": turn[\"role\"],\n",
+          "-                        \"content_sha256\": hashlib.sha256(\n",
+          "-                            turn[\"content\"].encode()\n",
+          "-                        ).hexdigest(),\n",
+          "-                        \"disposition\": \"empty-native-turn-preserved-without-imputation\",\n",
+          "-                    }\n",
+          "-                )\n"
+        ]
+      }
+    ]
+  },
+  {
+    "path": "scripts/memory_cell/tensor_contract.py",
+    "conflict_count": 1,
+    "default_blob": "c7a0ddb3aa9b15eb98185ecda88d9c1ebe0e3850",
+    "resolved_blob": "882841c08da63668b8e116c1c671e7cd41566f19",
+    "resolved_sha256": "9060f62579de6ed0feea7b8ec9cbd066552308c6371ecbd2fb00309d9ddd244a",
+    "resolution_equals_current_bytes": true,
+    "conflicts": [
+      {
+        "default_start_line": 8,
+        "default_end_line": 12,
+        "current_lines": 0,
+        "incoming_lines": 2,
+        "resolution": "current content; original base-to-incoming edit is formatting-only",
+        "incoming_relative_to_current": [
+          "--- current\n",
+          "+++ old-format-branch\n",
+          "@@ -0,0 +1,2 @@\n",
+          "+\n",
+          "+from __future__ import annotations\n"
+        ]
+      }
+    ]
+  }
+]

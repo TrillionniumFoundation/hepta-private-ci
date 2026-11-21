@@ -1,0 +1,51 @@
+..............................................................................................................Codespell custody validation failed: drift
+......../usr/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 401: 'response'>
+  _warnings.warn(self.warn_message, ResourceWarning)
+........./usr/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 302: 'response'>
+  _warnings.warn(self.warn_message, ResourceWarning)
+.../usr/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 302: 'second redirect'>
+  _warnings.warn(self.warn_message, ResourceWarning)
+.........................................................................................E................................................../tmp/tmpqmxi8jla/librusty_v8_ptrcomp_sandbox_release_aarch64-apple-darwin.a.gz
+/tmp/tmpqmxi8jla/src_binding_ptrcomp_sandbox_release_aarch64-apple-darwin.rs
+/tmp/tmpqmxi8jla/rusty_v8_ptrcomp_sandbox_release_aarch64-apple-darwin.sha256
+/tmp/tmpucmzm5pk/rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.lib.gz
+/tmp/tmpucmzm5pk/src_binding_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.rs
+/tmp/tmpucmzm5pk/rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.sha256
+{"id": "original", "package": "owner", "exitCode": 100, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": false, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+{"id": "second", "package": "owner", "exitCode": 0, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": true, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+..........{"id": "sandbox-original-failures", "package": "owner", "exitCode": 0, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": true, "processObservation": {"path": "sandbox-original-failures.processes.json", "status": "start_failed", "exhaustive": false}, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+{"id": "sandbox-original-failures", "package": "owner", "exitCode": 0, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": ["original"], "selectionMatches": true, "passed": false, "processObservation": {"path": "sandbox-original-failures.processes.json", "status": "start_failed", "exhaustive": false}, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "8ed700c578c343fc85fa58e5cad626bbf2cae861ebaf4ef976c1be0fbb65b366"}
+Starting 1 tests across 1 binary (99 tests skipped)
+LEAK [ 0.1s] (1/1) owner original
+{"id": "sandbox-original-failures", "package": "owner", "exitCode": 100, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": false, "processObservation": {"path": "sandbox-original-failures.processes.json", "status": "finish_failed", "exhaustive": false}, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+.....{"id": "sandbox-original-failures", "package": "owner", "exitCode": 100, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": false, "processObservation": {"status": "write_failed", "kind": "OSError", "exhaustive": false}, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0, "logSha256": "4e499e2a7b36c3653f13f969846bd763b24b6fb780524456db3410422f76c9fb"}
+Starting 1 tests across 1 binary (99 tests skipped)
+PASS [ 0.1s] (1/1) owner original
+.............................
+======================================================================
+ERROR: test_consumer_selectors_track_resolved_crate_version (test_rusty_v8_bazel.RustyV8BazelTest.test_consumer_selectors_track_resolved_crate_version)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-c1a0-native-20261121-01/repo/.github/scripts/test_rusty_v8_bazel.py", line 20, in test_consumer_selectors_track_resolved_crate_version
+    ).read_text()
+      ~~~~~~~~~^^
+  File "/usr/lib/python3.14/pathlib/__init__.py", line 788, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/pathlib/__init__.py", line 772, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hepta-c1a0-native-20261121-01/repo/third_party/v8/BUILD.bazel'
+
+----------------------------------------------------------------------
+Ran 314 tests in 3.421s
+
+FAILED (errors=1)

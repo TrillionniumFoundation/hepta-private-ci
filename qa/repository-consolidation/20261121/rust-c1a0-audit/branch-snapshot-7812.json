@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/branch_protection_audit",
+  "evaluated_at_utc": "2026-11-21T13:18:27.000500+00:00",
+  "snapshot_path": "/workspace/scratch/c1a0d7534606/remote-heads-final-lease.tsv",
+  "snapshot_sha256": "8a958e0afdd2996f0db621873350b520d3ff26e91f29722b81b8ec8fec22d48b",
+  "snapshot_started_at": "2026-11-21T13:09:57.814709+00:00",
+  "snapshot_finished_at": "2026-11-21T13:10:02.517565+00:00",
+  "captured_ref_count": 7812,
+  "delta_added_refs": 9,
+  "delta_drifted_refs": 5,
+  "delta_removed_refs": 0,
+  "targeted_fetched_current_tips": 14,
+  "targeted_filter": "tree:0",
+  "local_refs_unchanged_by_fetch": true,
+  "new_tip_graph_nodes": 20,
+  "local_candidate_metadata_nodes_appended": 2,
+  "complete_known_graph_nodes": 79081,
+  "current_reachable_commit_count": 79074,
+  "missing_parents": [],
+  "unknown_current_tips": [],
+  "known_protected_nodes": 1470,
+  "known_protected_current_names": 538,
+  "protected_current_names_without_hia": 414,
+  "added_protection_pins": {
+    "research/e2-own-state-correction-20261121-ac5459": "6cba59d70e697f926e423aaee878c2ca3daa2652"
+  },
+  "old_protection_nodes_retained": true,
+  "known_protection_closure_new_nodes": [
+    "6cba59d70e697f926e423aaee878c2ca3daa2652"
+  ],
+  "all_current_tip_classification_counts": {
+    "ordinary-contained-by-candidate": 2858,
+    "ordinary-not-contained-by-candidate": 4415,
+    "protected": 538,
+    "main": 1
+  },
+  "ordinary_current_names_excluding_main": 7273,
+  "ordinary_current_names_contained_by_candidate": 2858,
+  "ordinary_current_names_absent_from_candidate": 4415,
+  "ordinary_distinct_pending_tips": 4195,
+  "ordinary_current_names_contained_by_main": 0,
+  "candidate": {
+    "commit": "6e97ba31efe03adaf798e46ef7c26fe96cd85b05",
+    "parents": [
+      "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d"
+    ],
+    "tree": "32e6d67edc08532569deaee27a72c2004ce904f1",
+    "commit_object_sha256": "e82e392cbfea57f47621febe8d3e23c3bff12b97a0c4ddf498050e82030d3070"
+  },
+  "candidate_ancestor_count": 44910,
+  "candidate_new_ancestors_from_parent": [
+    "6e97ba31efe03adaf798e46ef7c26fe96cd85b05"
+  ],
+  "candidate_new_ancestors_from_6cb": [
+    "0847396844638608708608072ec94961bb20458b",
+    "132b3227ae1978b5ae2eba5b64efef53158a92f6",
+    "394e28812368f5174b890cea51ff13e882231756",
+    "4a120a0bba8b493407930924822eb6cf38279976",
+    "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d",
+    "5a42644ff02a511e12ce2f95f1c11f85b709835f",
+    "6e97ba31efe03adaf798e46ef7c26fe96cd85b05",
+    "8016166226cd6206ba09c83fa64acc91eca368ba",
+    "dbed60c6372a148a934e48e9a08ba88aa2a536e2"
+  ],
+  "candidate_known_HIA_intersection": [],
+  "candidate_STOP_descendant_intersection": [],
+  "STOP_anchor_in_known_graph": false,
+  "STOP_proof": "Complete candidate parent traversal excludes STOP and every metadata-known descendant; no protected payload was fetched or opened.",
+  "main_tip": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "main_tip_unchanged": true,
+  "integration_tips": {
+    "integration/hepta-single-main-20261113-ab5b": "0cee57ca617e0324e2df8e9447a2c075a6c76952"
+  },
+  "c755_related_tips": {
+    "fix/rust-linux-fixtures-20261120-c755": {
+      "before": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+      "after": "6cbad406a4a203201edc0e103c1377d3664e3fbe",
+      "changed": false
+    }
+  },
+  "historical_551st_pin_gap_unchanged": true,
+  "complete_historical_protection_identity_claim": false,
+  "metadata_inventory_is_full_source_or_behavior_audit": false,
+  "snapshot_does_not_freeze_remote_refs_after_capture": true,
+  "branch_deletion_authorized_by_this_report": false,
+  "new_tip_source_payload_read": false,
+  "STOP_payload_read_or_executed": false,
+  "root_source_index_refs_changed": false,
+  "remote_refs_changed": false,
+  "full_remote_ref_fetch": false,
+  "outputs": {
+    "all_current_ref_classifications": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/ALL-CURRENT-REF-CLASSIFICATIONS.json",
+      "sha256": "7a298a7bccc06aca43b0e0d17624e9d94510826fac9d188cfc53f9f24fc71ebe",
+      "bytes": 2452200
+    },
+    "delta_ancestry": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/REF-DELTA-ANCESTRY-REVIEW.json",
+      "sha256": "508de32bb48ed3e7d54a059197d31754ff8886eb9f82e454076b6cb34c04097d",
+      "bytes": 29848
+    },
+    "protected_current_names": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/PROTECTED-7812-CURRENT-REFS.json",
+      "sha256": "a421217a13d99ec5d57f182073f65238b0f33b8d2681174ff836052b272fcb6c",
+      "bytes": 51156
+    },
+    "protected_known_descendants": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/PROTECTED-7812-KNOWN-DESCENDANTS.json",
+      "sha256": "9e35146357ae09bed5a2553d7a04f65da0c5f9e108348ba9edab80ab90ab854a",
+      "bytes": 67623
+    },
+    "ordinary_covered": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/ORDINARY-COVERED-BY-6e97.json",
+      "sha256": "510a09ec3b8234d36d2d7f1bb5f22a65d67dee51925cbe9f56b1b98d58b50b5e",
+      "bytes": 275552
+    },
+    "ordinary_pending": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/ORDINARY-PENDING-AFTER-6e97.json",
+      "sha256": "a02f6c303b49264a3f8d4fec884d8baf89514be8c08830cba24a708bc5e1d8bd",
+      "bytes": 421713
+    },
+    "complete_graph": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/SNAPSHOT-7812-COMPLETE-KNOWN-PARENTS.tsv",
+      "sha256": "b12717f47aec4f756f90e0669b1c7b2b00462bc97a9ed32dfe6b835827a2e938",
+      "bytes": 6679884
+    },
+    "incremental_graph": {
+      "path": "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/INCREMENTAL-COMMIT-PARENTS.tsv",
+      "sha256": "f1b10649140f754b4f1b72aa6ce52f1d605820514fe13be590b39d8b6ca5603d",
+      "bytes": 1640
+    }
+  },
+  "evidence_manifest": {
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/TARGETED-FETCH-RESULT.json": {
+      "bytes": 2811,
+      "sha256": "90de7609356fbc75ffb98231228e6f52767d053ce541b6c3d978f1dde5faaa84"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/final-lease-7812/REF-DELTA.json": {
+      "bytes": 2471,
+      "sha256": "f857af5a67b7cb3df9526ca1305cc3af8e53404b5b75c400b80af8c99ed40152"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/SNAPSHOT-COMPLETE-KNOWN-PARENTS.tsv": {
+      "bytes": 6678080,
+      "sha256": "89800bf995e3476cc666c9d9f490d9265e78818f6806759c47bf4ff691c9cdbd"
+    },
+    "/workspace/scratch/c1a0d7534606/remote-heads-final-lease.tsv": {
+      "bytes": 771902,
+      "sha256": "8a958e0afdd2996f0db621873350b520d3ff26e91f29722b81b8ec8fec22d48b"
+    },
+    "/workspace/scratch/c1a0d7534606/remote-heads-final-lease.json": {
+      "bytes": 429,
+      "sha256": "cfafb6b0c7f2cde71a73262662480117d77bdfa99a15a5681e76a733b66eaf74"
+    },
+    "/workspace/scratch/c1a0d7534606/remote-heads-before-publication.tsv": {
+      "bytes": 770833,
+      "sha256": "fb1a5b2164cf4e7ccb78ce0caa73b218f54d15890dca702e5fa4f5c91386bd93"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/PROTECTED-7803-KNOWN-DESCENDANTS.json": {
+      "bytes": 67577,
+      "sha256": "0656ccf81becd2ed88be551bdd3c24c381cc8fb625e70a43604d165df19c73fe"
+    },
+    "/workspace/scratch/c1a0d7534606/branch-audit/architecture-audit/PROTECTED-7803-CURRENT-REFS.json": {
+      "bytes": 51156,
+      "sha256": "7b00654daf3b761af16c62ac7370065fb3dabc801be8ae4dc698707d96919e35"
+    }
+  }
+}

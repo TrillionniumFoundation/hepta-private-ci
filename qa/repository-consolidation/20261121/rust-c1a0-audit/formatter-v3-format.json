@@ -1,0 +1,29 @@
+{
+  "base": "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d",
+  "command": [
+    "/workspace/scratch/c1a0d7534606/publication/tools/just",
+    "fmt",
+    "--base",
+    "55e81c7e12deb14e30b177fb7474dd3b1aa97b6d"
+  ],
+  "cwd": "/workspace/scratch/c1a0d7534606/audit-repo/codex-rs",
+  "exit_code": 0,
+  "seconds": 1.3565406799316406,
+  "before_sha256": {
+    "scripts/format.py": "374839d73d51cddde230f514888cd05532f791534bdd35c1842df19b8b2e2be9",
+    "scripts/test_hepta_format_scope.py": "a11eb6fa3d5d4f8fc5edfcec680e20f11dd9f8a4a977005b625dea3db743377c"
+  },
+  "after_sha256": {
+    "scripts/format.py": "374839d73d51cddde230f514888cd05532f791534bdd35c1842df19b8b2e2be9",
+    "scripts/test_hepta_format_scope.py": "a11eb6fa3d5d4f8fc5edfcec680e20f11dd9f8a4a977005b625dea3db743377c"
+  },
+  "python_AST_equal": {
+    "scripts/format.py": true,
+    "scripts/test_hepta_format_scope.py": true
+  },
+  "log_bytes": 0,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "format_diff_bytes": 0,
+  "tests_rerun_after_format": false,
+  "scope": "two newly modified Python files; native 5a Rust formatting owned separately by original native runner"
+}
