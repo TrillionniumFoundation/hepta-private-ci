@@ -24,6 +24,7 @@ name: HCSN source mathematical fixtures
       - qualification/hcsn_prepared/__init__.py
       - qualification/hcsn_prepared/model.py
       - qualification/hcsn_confirmatory_v1/*.py
+      - qualification/hcsn_sixwork/*.py
   workflow_dispatch:
 
 permissions:
@@ -87,6 +88,7 @@ jobs:
               "qualification.hcsn_confirmatory_v1.architecture_tests",
               "qualification.hcsn_confirmatory_v1.ablation_tests",
               "qualification.hcsn_confirmatory_v1.boundary_control_tests",
+              "qualification.hcsn_sixwork.campaign_tests",
           )
           suite = unittest.TestSuite()
           for module in modules:
