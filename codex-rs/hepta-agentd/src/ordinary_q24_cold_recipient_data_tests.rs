@@ -39,7 +39,8 @@ pub(super) struct OriginalColdRecipientData {
 impl OriginalColdRecipientData {
     pub(super) fn observe(plan: &OriginalColdPlan<'_>) -> anyhow::Result<Self> {
         let initial = plan.profile.original_initial_data()?;
-        let metadata_pin = OriginalBusinessSnapshot::capture(std::slice::from_ref(&plan.historical))?;
+        let metadata_pin =
+            OriginalBusinessSnapshot::capture(std::slice::from_ref(&plan.historical))?;
         let metadata_bytes = read_private(&plan.historical, /*bound*/ 65_536)?;
         let metadata: serde_json::Value = serde_json::from_slice(&metadata_bytes)?;
         anyhow::ensure!(

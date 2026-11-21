@@ -9,7 +9,10 @@ use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
 
-pub(in crate::neuron_generation_current) fn write_json(path: &Path, value: &impl serde::Serialize) -> anyhow::Result<()> {
+pub(in crate::neuron_generation_current) fn write_json(
+    path: &Path,
+    value: &impl serde::Serialize,
+) -> anyhow::Result<()> {
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -53,7 +56,9 @@ pub(in crate::neuron_generation_current) struct ProtectedFile {
     pub(in crate::neuron_generation_current) bytes: Vec<u8>,
 }
 
-pub(in crate::neuron_generation_current) fn protected_files(path: &Path) -> anyhow::Result<BTreeMap<PathBuf, ProtectedFile>> {
+pub(in crate::neuron_generation_current) fn protected_files(
+    path: &Path,
+) -> anyhow::Result<BTreeMap<PathBuf, ProtectedFile>> {
     std::fs::read_dir(path)?
         .map(|entry| {
             let path = entry?.path();
@@ -63,7 +68,9 @@ pub(in crate::neuron_generation_current) fn protected_files(path: &Path) -> anyh
         .collect()
 }
 
-pub(in crate::neuron_generation_current) fn protected_file(path: &Path) -> anyhow::Result<ProtectedFile> {
+pub(in crate::neuron_generation_current) fn protected_file(
+    path: &Path,
+) -> anyhow::Result<ProtectedFile> {
     let mut file = File::open(path)?;
     let metadata = file.metadata()?;
     let mut bytes = Vec::new();
