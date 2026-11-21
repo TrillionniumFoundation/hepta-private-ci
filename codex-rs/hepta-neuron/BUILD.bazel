@@ -3,6 +3,7 @@ load("//:defs.bzl", "codex_rust_crate", "hepta_dev_rustc_flags")
 codex_rust_crate(
     name = "hepta-neuron",
     compile_data = [
+        "tests/fixtures/hcsn-streaming-ridge-v1.json",
         "tests/fixtures/joint-synthetic-v1.json",
         "tests/fixtures/perception-bytes-v1.json",
         "tests/support/joint_synthetic.rs",
