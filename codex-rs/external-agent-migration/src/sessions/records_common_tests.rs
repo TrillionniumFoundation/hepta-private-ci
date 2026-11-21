@@ -108,3 +108,26 @@ fn rejects_out_of_range_rfc3339_edge_forms_before_parser_migration() {
         assert_eq!(parse_timestamp(timestamp), None, "{timestamp}");
     }
 }
+
+#[test]
+fn matches_original_rfc3339_calendar_limits_and_complete_consumption() {
+    for (timestamp, expected) in [
+        ("0000-01-01T00:00:00Z", -62_167_219_200_i64),
+        ("9999-12-31T23:59:59Z", 253_402_300_799),
+        ("1970-01-01 00:00:00Z", 0),
+        ("2016-12-31T23:59:60.123456789123Z", 1_483_228_799),
+        ("1970-01-01T00:00:00-23:59", 86_340),
+    ] {
+        assert_eq!(parse_timestamp(timestamp), Some(expected), "{timestamp}");
+    }
+    for timestamp in [
+        "1900-02-29T00:00:00Z",
+        "2000-00-01T00:00:00Z",
+        "1970-01-01T00:00:00+00",
+        "1970-01-01T00:00:00+00:60",
+        "1970-01-01T00:00:00.Z",
+        "1970-01-01T00:00:00Z ",
+    ] {
+        assert_eq!(parse_timestamp(timestamp), None, "{timestamp}");
+    }
+}
