@@ -1,0 +1,42 @@
+{
+  "cost_scopes_additive": false,
+  "linear_time_scaling_claimed": false,
+  "new_global_updates_cap": 16,
+  "new_h_process_timeout_seconds": 1020,
+  "new_original_outer_forwards": {
+    "document_evidence": 16,
+    "native_feedback": 12
+  },
+  "new_per_parent_hard_seconds": 960,
+  "new_per_parent_updates": 8,
+  "new_per_parent_work_seconds": 900,
+  "new_training_or_control_executions": 0,
+  "old_results": {
+    "document_evidence": {
+      "old_energy_joules": null,
+      "old_outer_backwards": 56,
+      "old_outer_forwards": 56,
+      "old_recorded_peak_allocated_bytes": 4805570048,
+      "old_recorded_self_cpu_seconds": 521.344277241,
+      "old_recorded_training_wall_seconds": 511.1806536099757,
+      "old_updates": 32,
+      "original_parent_parameter_digest": "a4f553815fbe76ab872522d7f8c9059dc470ec91919c3521dfc8ce17a37cfb1b"
+    },
+    "native_feedback": {
+      "old_energy_joules": null,
+      "old_outer_backwards": 56,
+      "old_outer_forwards": 56,
+      "old_recorded_peak_allocated_bytes": 4805570048,
+      "old_recorded_self_cpu_seconds": 512.5653227910001,
+      "old_recorded_training_wall_seconds": 502.9867704359931,
+      "old_updates": 32,
+      "original_parent_parameter_digest": "75cf3aeb09dce01e9ae7dbca94abbd2662db80c9e88a720a646ee75db990ad18"
+    }
+  },
+  "old_training_hard_wall_declared": false,
+  "original_protocol_sha256": "e5907ac5c963919d1a947df5274bb6e4a84565ab52f0478eabca91334b3739b5",
+  "rationale": "The new per-parent work cap exceeds each complete historical 32-update/56-forward recorded fit. These 8-update continuations have 16 and 12 planned outer forwards, with the same 3584 padding and frozen engine. Additional pre/post input hashing and scope admission are measured separately. This is a finite engineering termination envelope, not a prediction of runtime or an extension of scientific update budgets.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.current-student-training-engineering-wall-basis.v1",
+  "source_commit": "e147c1d851b0a5b5c03dbeb0285d443bd7057973"
+}
