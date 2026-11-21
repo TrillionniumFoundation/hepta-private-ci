@@ -4,6 +4,8 @@ load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease
 codex_rust_crate(
     name = "hepta-supervisor",
     crate_name = "codex_hepta_supervisor",
+    # Remote test executors need the actual stripping tool in runfiles.
+    extra_binaries_non_windows = ["@llvm//tools:llvm-strip"],
     # The projection integration tests compare generated artifacts with the
     # checked-in fixture set. Bazel must place those runtime files in runfiles.
     test_data_extra = glob(["fixtures/robrix-control-v2/**"]),

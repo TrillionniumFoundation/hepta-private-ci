@@ -217,6 +217,7 @@ def codex_rust_crate(
         crate_name,
         crate_features = [],
         crate_srcs = None,
+        crate_root = None,
         crate_edition = None,
         proc_macro = False,
         build_script_enabled = True,
@@ -272,6 +273,7 @@ def codex_rust_crate(
             Replace the complete transitive closure when public types cross crates.
         unit_test_features: Additional features for the test-only library and harness.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
+        crate_root: Optional explicit library entry point, matching Cargo's lib path.
         crate_edition: Rust edition override, if not default.
             You probably don't want this, it's only here for a single caller.
         proc_macro: Whether this crate builds a proc-macro library.
@@ -382,6 +384,7 @@ def codex_rust_crate(
         lib_rule(
             name = name,
             crate_name = crate_name,
+            crate_root = crate_root,
             crate_features = crate_features,
             aliases = cargo_crate_aliases(),
             deps = all_crate_deps() + maybe_deps + deps_extra,
@@ -406,6 +409,7 @@ def codex_rust_crate(
                 name = unit_test_library,
                 testonly = True,
                 crate_name = crate_name,
+                crate_root = crate_root,
                 crate_features = crate_features + unit_test_features,
                 aliases = cargo_crate_aliases(workspace_replacements = unit_test_dependency_replacements),
                 deps = rust_test_dependencies(unit_test_dependency_replacements) + maybe_deps + deps_extra,

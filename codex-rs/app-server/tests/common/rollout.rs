@@ -313,7 +313,7 @@ fn create_fake_rollout_with_source_and_parent_thread_id(
 
     fs::write(&file_path, lines.join("\n") + "\n")?;
     let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(meta_rfc3339)?;
-    let times = FileTimes::new().set_modified(parsed.into());
+    let times = FileTimes::new().set_modified(parsed.calendar().into());
     std::fs::OpenOptions::new()
         .append(true)
         .open(&file_path)?

@@ -13,6 +13,7 @@ import subprocess
 import sys
 
 try:
+    from scripts.hepta_workflow_history import is_frozen_workflow_history
     from scripts.hepta_metadata import (
         AUTHORITY_KEYS,
         authority_fixture,
@@ -22,6 +23,7 @@ except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
     from hepta_metadata import AUTHORITY_KEYS, authority_fixture, has_schema_version
+    from hepta_workflow_history import is_frozen_workflow_history
 from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -202,8 +204,17 @@ def verify_exact_workflow_references() -> None:
     missing: list[str] = []
     for path in sorted(set(files)):
         try:
-            text = path.read_text(encoding="utf-8")
-        except (OSError, UnicodeDecodeError):
+            raw = path.read_bytes()
+        except OSError:
+            continue
+        try:
+            if is_frozen_workflow_history(path.relative_to(ROOT).as_posix(), raw):
+                continue
+        except ValueError as error:
+            die(str(error))
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeDecodeError:
             continue
         for match in WORKFLOW_REFERENCE_RE.finditer(text):
             prefix = WORKFLOW_REPOSITORY_PREFIX_RE.search(text, 0, match.start())

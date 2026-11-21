@@ -91,6 +91,14 @@ QUALIFICATION_SOURCE_SHA256 = {
         'remote-five-commit-deltas.json'
     ): 'b791017524abeace5ed6c5151398dde77a7c454376ad0a81a90152fc4535c6a6',
     (
+        'qa/repository-consolidation/20261119/windows-c52-cmd-entry-7246/'
+        'codespell-baseline-comparison.json'
+    ): '3aa784685450876595489e7cbd80a6a1427c097b4e09d97a7d73bccf1b44d7b5',
+    (
+        'qa/repository-consolidation/20261119/windows-c52-cmd-entry-7246/'
+        'root-source-review.json'
+    ): '5cf0439b71255c31fc5dd9dda9e36e56dcd2211f73e26a7fd8824bba0f1d12e8',
+    (
         'qualification/continuation-20261021/inventory/OWNER_CANDIDATES.json'
     ): '58d6c1173770ed5934eb3eb42d507fdc3302bb565b7657854fd0588a5bf3d1cf',
     (

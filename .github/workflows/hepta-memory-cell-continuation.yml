@@ -9,6 +9,7 @@ on:
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-intelligence-eval/**"
+      - "scripts/hepta_cell_test_helpers.py"
 permissions:
   contents: read
 concurrency:
@@ -113,6 +114,16 @@ jobs:
         with:
           name: memory-cell-trained-native-circuit
           path: /tmp/circuit
+      - name: Prepare and verify the exact-source joint-generation helper
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/memory-cell-owner-helpers" \
+            --github-env "$GITHUB_ENV"
+          python3 scripts/hepta_cell_test_helpers.py --verify-only \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/memory-cell-owner-helpers"
       - name: Test actual Neuron and execute trained parameters through the owner
         run: |
           set -euo pipefail
@@ -123,7 +134,9 @@ jobs:
         if: always()
         with:
           name: memory-cell-native-owner-evidence
-          path: /tmp/neuron-owner-evidence
+          path: |
+            /tmp/neuron-owner-evidence
+            ${{ runner.temp }}/memory-cell-owner-helpers
           if-no-files-found: warn
   training-owner:
     runs-on: ubuntu-latest

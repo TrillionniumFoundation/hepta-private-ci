@@ -785,6 +785,7 @@ pub(crate) use shared_v2::NeuronSharedFeatureBatchDriverV2;
 pub use shared_v2::SharedNeuronFeatureRequestV2;
 pub use shared_v2::SharedNeuronFeatureResultV2;
 pub use shared_v2::SharedNeuronFeatureResultV3;
+#[expect(deprecated, reason = "retain the explicitly deprecated V2 compatibility API")]
 pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
 pub use shared_v2::canonical_shared_neuron_payload_digest_v3;
 
