@@ -1,9 +1,9 @@
 name: Joint feasibility offline source controls
-'on':
+"on":
   pull_request:
     paths:
-      - 'qualification/weight_joint_feasibility_20261121/**'
-      - '.github/workflows/weight-joint-feasibility.yml'
+      - "qualification/weight_joint_feasibility_20261121/**"
+      - ".github/workflows/weight-joint-feasibility.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,11 +18,11 @@ jobs:
       run:
         working-directory: qualification/weight_joint_feasibility_20261121
     env:
-      OPENBLAS_NUM_THREADS: '1'
-      OMP_NUM_THREADS: '1'
-      MKL_NUM_THREADS: '1'
-      PYTHONDONTWRITEBYTECODE: '1'
-      PYTHONNOUSERSITE: '1'
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONNOUSERSITE: "1"
     steps:
       - name: Check out exact source head
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
