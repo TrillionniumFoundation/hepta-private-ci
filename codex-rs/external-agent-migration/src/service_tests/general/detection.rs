@@ -158,7 +158,8 @@ async fn detect_cursor_repo_lists_skills_from_skills() {
 async fn detect_home_lists_recent_sessions() {
     let (root, external_agent_home, codex_home) = fixture_paths();
     let project_root = root.path().join("repo");
-    let recent_timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    // Detection recency is based on file mtime, not the timestamp in the record.
+    let timestamp = "2020-01-01T00:00:00Z";
     let session_path = external_agent_home
         .join("projects")
         .join("repo")
@@ -170,7 +171,7 @@ async fn detect_home_lists_recent_sessions() {
         serde_json::json!({
             "type": "user",
             "cwd": &project_root,
-            "timestamp": &recent_timestamp,
+            "timestamp": timestamp,
             "message": { "content": "first request" },
         })
         .to_string(),
