@@ -1,0 +1,66 @@
+{
+  "finding": {
+    "authentic_dense_bytes_adapter_compatible": true,
+    "five_seed_channels_complete": true,
+    "matrix_and_seed_round_trip_byte_exact": true,
+    "signed_interval_provider_directly_called": false,
+    "sparse_rows_strictly_ordered": true
+  },
+  "lanes": {
+    "discounted": {
+      "canonical_adapter_bytes": 62284,
+      "canonical_adapter_sha256": "a11b1c0e1ec4699ae7fc53b47df4d254172a6390c63f5fe4079661dfbf4e7e58",
+      "diagonal_positive_coordinates": 0,
+      "dimension": 259,
+      "matrix_coordinates": 67081,
+      "matrix_round_trip_byte_equal": true,
+      "matrix_sparse_coordinates": 1025,
+      "off_diagonal_negative_coordinates": 0,
+      "seed_channels": 5,
+      "seed_coordinates": 1295,
+      "seed_round_trip_byte_equal": true,
+      "signed_provider_input_coordinates": 2320
+    },
+    "undiscounted": {
+      "canonical_adapter_bytes": 54745,
+      "canonical_adapter_sha256": "0c0c2cca53f9078703686829b97f51e2923b4eb39916ee5bf8cce90644921515",
+      "diagonal_positive_coordinates": 0,
+      "dimension": 258,
+      "matrix_coordinates": 66564,
+      "matrix_round_trip_byte_equal": true,
+      "matrix_sparse_coordinates": 767,
+      "off_diagonal_negative_coordinates": 0,
+      "seed_channels": 5,
+      "seed_coordinates": 1290,
+      "seed_round_trip_byte_equal": true,
+      "signed_provider_input_coordinates": 2057
+    }
+  },
+  "parent_head": "da5b77d9d35ee4e595faf0d5f28fd11256fa3135",
+  "parent_status": "RED_DUPLICATE_KEY",
+  "schema": "hcsn-n256-authentic-signed-adapter-review-v1",
+  "scope": {
+    "adapter_admitted": false,
+    "all_closed": false,
+    "authentic_signed_interval_executed": false,
+    "c2_full_replay_completed_fits": 0,
+    "cause_of_6901_red": "UNKNOWN",
+    "hpca_status": "NoUpdate",
+    "n256_qualified": false,
+    "production_adoption": false,
+    "resource_gate_closed": false,
+    "tail_bound_closed": false,
+    "unique_rounding_closed": false
+  },
+  "work": {
+    "artifact_reads": 2,
+    "authentic_adapter_lane_calls": 2,
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "matrix_coordinate_reads": 133645,
+    "optimizer_steps": 0,
+    "provider_calls": 0,
+    "seed_coordinate_reads": 2585,
+    "torch_calls": 0
+  }
+}
