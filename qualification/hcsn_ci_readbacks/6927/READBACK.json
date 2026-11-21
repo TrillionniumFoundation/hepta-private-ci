@@ -1,0 +1,63 @@
+{
+  "identity": "hcsn-n256-authentic-firststep-cursor-readback-20261121-c6bc-v1",
+  "source_pull_request": 6927,
+  "source_head": "f84746057e63e20f4650d6048f4739d047442d62",
+  "source_tree": "2ded9eb8177f7521cbdce541757db4babb61f818",
+  "source_parent": "427d6cdfc7d2a3888ca02fab9dca72cc85fe2009",
+  "workflow_run_id": 44963287745,
+  "workflow_job_id": 137026614929,
+  "workflow_run_attempt": 1,
+  "workflow_conclusion": "success",
+  "workflow_artifact_id": 14730452595,
+  "original_zip_bytes": 304400,
+  "original_zip_sha256": "c82b34925f80ceb724bc9bf45d2097f07bc4a2a1b05ee0cb374421984082dc61",
+  "original_zip_git_blob": "e62c5ae1576250512268040fa80b4d9814bdb52b",
+  "members": 12,
+  "uncompressed_bytes": 859801,
+  "cursor_payloads": 10,
+  "cursor_min_bytes": 81178,
+  "cursor_max_bytes": 89381,
+  "host_github_sha": "d85826827b0e45c533b7a0b9b50c62e824033765",
+  "host_sha_semantics": "pull-request merge SHA; workflow API head_sha binds source_head",
+  "audit": {
+    "zip_crc_clean": true,
+    "canonical_json_payloads": 10,
+    "body_digest_matches": 10,
+    "included_index_one": 10,
+    "numerical_calls": 0,
+    "row_actions": 0,
+    "tail_checks": 0
+  },
+  "executed_work": {
+    "artifact_reads": 1,
+    "adapter_lane_calls": 2,
+    "initial_capsule_builds": 2,
+    "cold_decode_rebuilds": 10,
+    "transition_builds": 12,
+    "target_exact_input_conversions": 20311,
+    "tail_checks": 10,
+    "recurrence_row_actions": 10,
+    "provider_outputs": 0,
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "historical_statuses": {
+    "6908": "RED_DUPLICATE_KEY",
+    "6913": "RED_NONCANONICAL_INPUT",
+    "6901_numerical_cause": "UNKNOWN",
+    "6924_blocking": "FAILURE",
+    "unrelated_push_run_44963269068": "FAILURE_ZERO_JOBS_CAUSE_UNKNOWN",
+    "c2_full_replay": "0/6",
+    "hpca": "NoUpdate"
+  },
+  "scope": {
+    "resource_gate_closed": false,
+    "n256_qualified": false,
+    "provider_completion": false,
+    "arbitrary_mid_recurrence_resume": false,
+    "production_adoption": false,
+    "all_closed": false
+  }
+}
