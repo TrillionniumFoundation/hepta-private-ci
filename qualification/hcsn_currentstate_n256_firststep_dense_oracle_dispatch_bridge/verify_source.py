@@ -1,4 +1,4 @@
-"""Verify the zero-job YAML repair without running numerical code."""
+"""Verify the zero-numerical Ubuntu 24.04 repair without numerical code."""
 
 import hashlib
 import json
@@ -30,6 +30,8 @@ SOURCE_FILES = {
     "PUSH_CONTRACT_REJECTION.json": HERE / "PUSH_CONTRACT_REJECTION.json",
     "PUSH_HOSTED_REJECTION.json": HERE / "PUSH_HOSTED_REJECTION.json",
     "PUSH_FREEZE_REJECTION.json": HERE / "PUSH_FREEZE_REJECTION.json",
+    "PUSH_PYTHON_REJECTION.json": HERE / "PUSH_PYTHON_REJECTION.json",
+    "PYTHON_RUNTIME_AVAILABILITY.json": HERE / "PYTHON_RUNTIME_AVAILABILITY.json",
     "NO_RUN_CHAIN.json": HERE / "NO_RUN_CHAIN.json",
     "REQUEST.json": HERE / "REQUEST.json",
     "__init__.py": HERE / "__init__.py",
@@ -62,6 +64,8 @@ def main():
         json.loads((HERE / name).read_text())
         for name in ("PUSH_CONTRACT_REJECTION.json", "PUSH_HOSTED_REJECTION.json", "PUSH_FREEZE_REJECTION.json")
     ]
+    runtime_rejection = json.loads((HERE / "PUSH_PYTHON_REJECTION.json").read_text())
+    runtime_availability = json.loads((HERE / "PYTHON_RUNTIME_AVAILABILITY.json").read_text())
     require(request["identity"] == freeze["identity"], "identity")
     require(request["base_commit"] == observed["sources"][1]["head"], "base observation")
     require(request["original_launcher_request_sha256"] == digest(ORIGINAL / "REQUEST.json"), "original request")
@@ -71,14 +75,15 @@ def main():
     require(request["prior_dedicated_run_count"] == request["prior_numerical_attempt_count"] == 0, "prior attempt")
     require(request["maximum_numerical_attempts"] == 1 and request["manual_dispatch_limit"] == 0, "attempt budget")
     require(request["trigger_event"] == "push", "trigger event")
-    require(request["trigger_parent"] == "7277d062c6259e95c77ca75c15126bdf353a1b8c", "trigger parent")
-    require(request["prior_push_source_tree"] == "7d31a3910c55d17023211d1d9bc83ffcf51cbc6e", "prior tree")
+    require(request["trigger_parent"] == "57cce86bc0f31c5fdf0549a76db9a65f1c97c0ef", "trigger parent")
+    require(request["prior_push_source_tree"] == "cbeb33a520677364fef04b7086a532d08d1fdacd", "prior tree")
     require(request["prior_dispatch_rejections"] == 3, "dispatch rejection count")
     require(request["prior_push_admission_rejections"] == 3, "push rejection count")
+    require(request["prior_runtime_admission_rejections"] == 1, "runtime rejection count")
     require(request["registered_workflow_id"] == 356353926, "registered workflow")
     require(request["registered_dispatch_success_run_id"] == 40463001551, "dispatch proof")
-    require(request["prior_actions_run_count"] == 3, "Actions run count")
-    require(request["prior_actions_job_count"] == request["prior_artifact_count"] == 0, "zero job/artifact")
+    require(request["prior_actions_run_count"] == 4, "Actions run count")
+    require(request["prior_actions_job_count"] == 1 and request["prior_artifact_count"] == 0, "job/artifact count")
     require(observed["cumulative_numerical_attempts"] == 0, "no-run chain")
     require(all(item["dedicated_run_id"] is None for item in observed["sources"]), "run claim")
     require(rejected["github_http_status"] == 422 and rejected["h_exit_code"] == 1, "dispatch RED")
@@ -97,11 +102,26 @@ def main():
     require(all(item["event"] == "push" and item["status"] == "completed" and item["conclusion"] == "failure" for item in push_rejections), "push RED")
     require(all(item["actions_job_count"] == item["artifact_count"] == 0 for item in push_rejections), "admission before job")
     require(all(item["dynamic_steps"] == item["dense_expm_actions"] == item["optimizer_steps"] == 0 for item in push_rejections), "push numerical count")
+    require(runtime_rejection["source_head"] == request["trigger_parent"], "runtime rejection parent")
+    require(runtime_rejection["source_tree"] == request["prior_push_source_tree"], "runtime rejection tree")
+    require((runtime_rejection["actions_run_id"], runtime_rejection["actions_job_id"], runtime_rejection["check_suite_id"]) == (44847784583, 136671635724, 121386660926), "runtime RED identities")
+    require(runtime_rejection["checkout_completed"] is True and runtime_rejection["setup_python_completed"] is False, "setup-python RED")
+    require(all(runtime_rejection[name] is False for name in ("install_completed", "verifier_completed", "tests_completed", "launcher_completed")), "runtime admission boundary")
+    require(runtime_rejection["artifact_count"] == 0, "runtime artifact count")
+    require(all(runtime_rejection[name] == 0 for name in ("n256_input_reads", "n256_serializer_calls", "dynamic_steps", "dense_expm_actions", "torch_calls", "optimizer_steps")), "runtime numerical count")
+    require(runtime_availability["manifest_blob_sha"] == request["python_versions_manifest_blob_sha"] == "8468b3406cb309a299b2ead4109d0a2b2467153b", "runtime manifest")
+    require(runtime_availability["python_version"] == request["python_version"] == "3.12.3", "exact Python")
+    require(runtime_availability["selected_runner"] == request["runner_label"] == "ubuntu-24.04", "explicit runner")
+    require(runtime_availability["selected_file"] == request["python_versions_manifest_file"] == "python-3.12.3-linux-24.04-x64.tar.gz", "runtime archive")
+    require(runtime_availability["selected_file_available"] is True and runtime_availability["rejected_matching_file_available"] is False, "runtime availability")
+    require(runtime_availability["runtime_execution"] is False, "availability is read-only")
     workflow = WORKFLOW.read_text()
     require("hcsn_n256_one_shot" not in workflow, "no branch-only input")
     require("github.event_name == 'push'" in workflow, "push trigger")
-    require("if: ${{ github.ref_name != 'research/hcsn-n256-firststep-dense-oracle-push-yaml-repair-20261120-c06d' }}" in workflow, "contract default")
+    require("if: ${{ github.ref_name != 'research/hcsn-n256-firststep-dense-oracle-ubuntu24-repair-20261120-c06d' }}" in workflow, "contract default")
     require(request["exact_head_branch"] in workflow, "branch guard")
+    require(workflow.count("runs-on: ubuntu-24.04") == 2 and "runs-on: ubuntu-latest" not in workflow, "explicit supported runner")
+    require("python-version: 3.12.3" in workflow, "exact Python request")
     require(workflow.count("dense_oracle_hosted.launcher") == 1, "launcher count")
     require("if: always()" in workflow, "RED custody")
     invalid_plain = "run: python -m pip install --only-binary=:all: -r"
@@ -117,7 +137,7 @@ def main():
     }, "source counts")
     require(freeze["all_closed"] is False, "all closed")
     print(json.dumps({
-        "identity": request["identity"], "status": "PUSH_YAML_REPAIR_REFROZEN_AFTER_ZERO_JOB_REDS",
+        "identity": request["identity"], "status": "UBUNTU24_REPAIR_REFROZEN_AFTER_ZERO_NUMERICAL_RUNTIME_RED",
         "prior_numerical_attempts": 0, "source_dynamic_steps": 0,
         "source_dense_expm_actions": 0, "all_closed": False,
     }, indent=2, sort_keys=True))

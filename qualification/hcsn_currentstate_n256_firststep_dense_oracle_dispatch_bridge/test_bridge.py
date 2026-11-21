@@ -1,4 +1,4 @@
-"""Static controls for the separately frozen push YAML repair."""
+"""Static controls for the separately frozen Ubuntu 24.04 repair."""
 
 import json
 import unittest
@@ -25,8 +25,11 @@ class BridgeTest(unittest.TestCase):
         self.assertNotIn("hcsn_n256_one_shot", workflow)
         self.assertIn("workflow_dispatch:", workflow)
         self.assertIn("github.event_name == 'push'", workflow)
-        self.assertIn("github.ref_name == 'research/hcsn-n256-firststep-dense-oracle-push-yaml-repair-20261120-c06d'", workflow)
+        self.assertIn("github.ref_name == 'research/hcsn-n256-firststep-dense-oracle-ubuntu24-repair-20261120-c06d'", workflow)
         self.assertEqual(workflow.count("dense_oracle_hosted.launcher"), 1)
+        self.assertEqual(workflow.count("runs-on: ubuntu-24.04"), 2)
+        self.assertNotIn("runs-on: ubuntu-latest", workflow)
+        self.assertIn("python-version: 3.12.3", workflow)
 
     def test_prior_transports_remain_zero(self):
         observed = json.loads((HERE / "NO_RUN_CHAIN.json").read_text())
@@ -36,7 +39,7 @@ class BridgeTest(unittest.TestCase):
 
     def test_contract_default_is_preserved(self):
         workflow = WORKFLOW.read_text()
-        self.assertIn("if: ${{ github.ref_name != 'research/hcsn-n256-firststep-dense-oracle-push-yaml-repair-20261120-c06d' }}", workflow)
+        self.assertIn("if: ${{ github.ref_name != 'research/hcsn-n256-firststep-dense-oracle-ubuntu24-repair-20261120-c06d' }}", workflow)
         self.assertIn("python3 scripts/hepta-docs.py verify --profile", workflow)
 
     def test_openbao_is_restored(self):
@@ -69,6 +72,23 @@ class BridgeTest(unittest.TestCase):
         self.assertTrue(all(row["conclusion"] == "failure" for row in rows))
         self.assertTrue(all(row["actions_job_count"] == row["artifact_count"] == 0 for row in rows))
         self.assertTrue(all(row["dynamic_steps"] == row["dense_expm_actions"] == 0 for row in rows))
+
+    def test_python_runtime_rejection_is_zero_numerical(self):
+        rejected = json.loads((HERE / "PUSH_PYTHON_REJECTION.json").read_text())
+        self.assertEqual((rejected["actions_run_id"], rejected["actions_job_id"]), (44847784583, 136671635724))
+        self.assertTrue(rejected["checkout_completed"])
+        self.assertFalse(rejected["setup_python_completed"])
+        self.assertFalse(rejected["launcher_completed"])
+        self.assertEqual(rejected["artifact_count"], 0)
+        self.assertEqual((rejected["dynamic_steps"], rejected["dense_expm_actions"], rejected["optimizer_steps"]), (0, 0, 0))
+
+    def test_exact_python_is_available_on_explicit_runner(self):
+        available = json.loads((HERE / "PYTHON_RUNTIME_AVAILABILITY.json").read_text())
+        self.assertEqual((available["python_version"], available["selected_runner"]), ("3.12.3", "ubuntu-24.04"))
+        self.assertEqual(available["selected_file"], "python-3.12.3-linux-24.04-x64.tar.gz")
+        self.assertTrue(available["selected_file_available"])
+        self.assertFalse(available["rejected_matching_file_available"])
+        self.assertFalse(available["runtime_execution"])
 
     def test_install_commands_are_valid_folded_scalars(self):
         invalid = "run: python -m pip install --only-binary=:all: -r"
