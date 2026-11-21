@@ -172,7 +172,9 @@ async fn file_cache_corrupt_json_fails_closed_without_replacing_disk_bytes() {
         .await
         .expect_err("corrupted cache must not be renewed");
     assert_eq!(
-        tokio::fs::read(&path).await.expect("read preserved corrupt bytes"),
+        tokio::fs::read(&path)
+            .await
+            .expect("read preserved corrupt bytes"),
         corrupted.to_vec()
     );
 }
