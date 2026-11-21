@@ -372,6 +372,60 @@ def rust_configuration_scope(paths: list[str]) -> list[str]:
     return sorted(selected)
 
 
+def rust_owner_formatter_groups(
+    paths: list[str], owners: list[str], *, check: bool
+) -> tuple[FormatterGroup, ...]:
+    """Limit Rust maintenance to explicit owners after configuration expansion."""
+    if not owners:
+        raise ValueError("Rust maintenance requires an explicit owner")
+    repository = REPO_ROOT.resolve()
+    roots = []
+    for value in owners:
+        owner = Path(value)
+        if not owner.parts or owner.is_absolute() or ".." in owner.parts:
+            raise ValueError(f"invalid Rust maintenance owner: {value!r}")
+        directory = repository / owner
+        manifest = directory / "Cargo.toml"
+        if (
+            not directory.is_dir()
+            or directory.resolve() != directory
+            or not manifest.is_file()
+            or manifest.is_symlink()
+        ):
+            raise ValueError(
+                f"Rust maintenance owner must have a local manifest: {value!r}"
+            )
+        roots.append(owner)
+
+    selected = []
+    # Ancestor configuration can affect unchanged files inside an owner.
+    for value in rust_configuration_scope(paths):
+        path = Path(value)
+        matching = [owner for owner in roots if path.is_relative_to(owner)]
+        if not matching:
+            continue
+        source = repository / path
+        if (
+            not source.is_file()
+            or source.is_symlink()
+            or not any(
+                source.resolve().is_relative_to(repository / owner)
+                for owner in matching
+            )
+        ):
+            raise ValueError(
+                f"Rust formatting input escapes its declared owner: {value!r}"
+            )
+        selected.append(value)
+    if not selected:
+        return ()
+    return (
+        FormatterGroup(
+            "Rust", tuple(rust_file_command(path, check=check) for path in selected)
+        ),
+    )
+
+
 def scoped_formatter_groups(
     paths: list[str], *, check: bool, base: str | None = None
 ) -> tuple[FormatterGroup, ...]:
@@ -453,15 +507,26 @@ def main() -> int:
         "--base",
         help="include committed changes since this exact base, plus local edits",
     )
+    parser.add_argument(
+        "--rust-owner",
+        action="append",
+        metavar="CRATE_DIR",
+        help="limit this operation to Rust files in an explicit owner; repeatable",
+    )
     args = parser.parse_args()
     try:
-        groups = (
-            formatter_groups(check=args.check)
-            if args.all
-            else scoped_formatter_groups(
+        if args.all and args.rust_owner:
+            raise ValueError("--all cannot be combined with --rust-owner")
+        if args.rust_owner:
+            groups = rust_owner_formatter_groups(
+                changed_paths(args.base), args.rust_owner, check=args.check
+            )
+        elif args.all:
+            groups = formatter_groups(check=args.check)
+        else:
+            groups = scoped_formatter_groups(
                 changed_paths(args.base), check=args.check, base=args.base
             )
-        )
     except (ValueError, subprocess.CalledProcessError) as error:
         parser.exit(2, f"Cannot determine formatting scope: {error}\n")
     if not groups:
