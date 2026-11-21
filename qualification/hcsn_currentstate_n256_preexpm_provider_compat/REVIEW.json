@@ -1,0 +1,110 @@
+{
+  "finding": {
+    "finite_metzler_augmented_matrices": true,
+    "positive_row_sums_present": true,
+    "signed_non_substochastic_interval_path_required": true,
+    "signed_seed_channels_present": true,
+    "substochastic_sparse_subgenerator_direct_path_compatible": false,
+    "uniformized_transition_l1_norm_above_one": true
+  },
+  "lanes": {
+    "discounted": {
+      "matrix": {
+        "binary64_duration": {"denominator": "1152921504606846976", "numerator": "1152921504606847"},
+        "binary64_duration_hex": "0x1.0624dd2f1a9fcp-10",
+        "coordinates": 67081,
+        "dimension": 259,
+        "first_possible_growth_tail_check_index": 537,
+        "growth_tail_argument": {"denominator": "79228162514264337593543950336", "numerator": "42659919896236648978772800443065"},
+        "maximum_row_sum": {"denominator": "68719476736", "numerator": "58411555227"},
+        "minimum_row_sum": {"denominator": "1", "numerator": "0"},
+        "negative_row_sums": 0,
+        "nonzero_coordinates": 1025,
+        "off_diagonal_negative_coordinates": 0,
+        "poisson_intensity": {"denominator": "19807040628566084398385987584", "numerator": "10664963138074627559998584400949"},
+        "positive_row_sums": 257,
+        "transition_l1_norm": {"denominator": "1193597543615828", "numerator": "1193599427859545"},
+        "uniformization_rate": {"denominator": "17179869184", "numerator": "9250380963022667"},
+        "zero_row_sums": 2
+      },
+      "matrix_sha256": "efacd2869032877c2c7b7064d2fc24add8c5e3d8d584110414e9dbe34e91fcd7",
+      "seed": {
+        "channels": 5,
+        "coordinates": 1295,
+        "dimension": 259,
+        "negative_coordinates": 744,
+        "positive_coordinates": 536,
+        "rows": [
+          {"negative": 0, "positive": 256, "zero": 3},
+          {"negative": 134, "positive": 122, "zero": 3},
+          {"negative": 103, "positive": 153, "zero": 3},
+          {"negative": 251, "positive": 5, "zero": 3},
+          {"negative": 256, "positive": 0, "zero": 3}
+        ],
+        "zero_coordinates": 15
+      },
+      "seed_sha256": "4e9809e12eedeb7d1d7b9830b31c8d1979305451d60822ddfabb9d3c49da5a57"
+    },
+    "undiscounted": {
+      "matrix": {
+        "binary64_duration": {"denominator": "1152921504606846976", "numerator": "1152921504606847"},
+        "binary64_duration_hex": "0x1.0624dd2f1a9fcp-10",
+        "coordinates": 66564,
+        "dimension": 258,
+        "first_possible_growth_tail_check_index": 537,
+        "growth_tail_argument": {"denominator": "20769187434139310514121985316880384", "numerator": "11183024387469741877277742329934091649"},
+        "maximum_row_sum": {"denominator": "18014398509481984", "numerator": "18014398509481983"},
+        "minimum_row_sum": {"denominator": "17179869184", "numerator": "-1"},
+        "negative_row_sums": 56,
+        "nonzero_coordinates": 767,
+        "off_diagonal_negative_coordinates": 0,
+        "poisson_intensity": {"denominator": "4951760157141521099596496896", "numerator": "2666235832758500036708819576237"},
+        "positive_row_sums": 66,
+        "transition_l1_norm": {"denominator": "9699709454283947638784", "numerator": "9699727468682457120767"},
+        "uniformization_rate": {"denominator": "4294967296", "numerator": "2312590945788371"},
+        "zero_row_sums": 136
+      },
+      "matrix_sha256": "e68bd307585ef4e69a2a479bf9dd0d4cb5e5b272169d98b942c423701043b27f",
+      "seed": {
+        "channels": 5,
+        "coordinates": 1290,
+        "dimension": 258,
+        "negative_coordinates": 744,
+        "positive_coordinates": 536,
+        "rows": [
+          {"negative": 0, "positive": 256, "zero": 2},
+          {"negative": 134, "positive": 122, "zero": 2},
+          {"negative": 103, "positive": 153, "zero": 2},
+          {"negative": 251, "positive": 5, "zero": 2},
+          {"negative": 256, "positive": 0, "zero": 2}
+        ],
+        "zero_coordinates": 10
+      },
+      "seed_sha256": "6d884fc9d1eff2fa43abc23acfcacb0b9ee9bbe4548414b440edd52b945c9bd0"
+    }
+  },
+  "parent_evidence_head": "dcca46569da92ea9d4b44aa32d9a525c29aa0e47",
+  "schema": "hcsn-n256-preexpm-provider-compat-review-v1",
+  "scope": {
+    "all_closed": false,
+    "authentic_signed_interval_executed": false,
+    "authentic_unique_rounding_proved": false,
+    "c2_full_replay_completed_fits": 0,
+    "cause_of_6901_red": "UNKNOWN",
+    "hpca_status": "NoUpdate",
+    "n256_qualified": false,
+    "production_adoption": false,
+    "provider_admitted": false
+  },
+  "source_identity_status": "RED_DUPLICATE_KEY",
+  "work": {
+    "artifact_reads": 2,
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "matrix_coordinate_reads": 133645,
+    "optimizer_steps": 0,
+    "provider_calls": 0,
+    "seed_coordinate_reads": 2585,
+    "torch_calls": 0
+  }
+}
