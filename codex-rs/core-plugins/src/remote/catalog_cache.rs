@@ -1,14 +1,14 @@
 use super::RemotePluginDirectoryItem;
 use super::RemotePluginScope;
 use super::RemotePluginServiceConfig;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_login::CodexAuth;
 use serde::Deserialize;
 use serde::Serialize;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
+use time::Duration as TimeDuration;
+use time::OffsetDateTime;
 use tracing::warn;
 
 // `plugin/list` and other callers that assume all plugins are available locally will be
@@ -57,8 +57,12 @@ impl RemotePluginCatalogCacheKey {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct RemotePluginCatalogDiskCache {
     schema_version: u8,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    fetched_at: Option<DateTime<Utc>>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "time::serde::rfc3339::option"
+    )]
+    fetched_at: Option<OffsetDateTime>,
     plugins: Vec<RemotePluginDirectoryItem>,
 }
 
@@ -109,7 +113,7 @@ pub(crate) fn load_cached_directory_plugins(
         return None;
     }
 
-    let freshness = if is_fresh(cache.fetched_at, Utc::now()) {
+    let freshness = if is_fresh(cache.fetched_at, OffsetDateTime::now_utc()) {
         RemotePluginCatalogCacheFreshness::Fresh
     } else {
         RemotePluginCatalogCacheFreshness::Stale
@@ -133,7 +137,7 @@ pub(crate) fn write_cached_directory_plugins(
     let cache_path = cache_path(codex_home, &cache_key);
     let Ok(contents) = serde_json::to_string_pretty(&RemotePluginCatalogDiskCache {
         schema_version: REMOTE_PLUGIN_CATALOG_DISK_CACHE_SCHEMA_VERSION,
-        fetched_at: Some(Utc::now()),
+        fetched_at: Some(OffsetDateTime::now_utc()),
         plugins: plugins.to_vec(),
     }) else {
         return;
@@ -175,15 +179,15 @@ fn cache_path(codex_home: &Path, cache_key: &RemotePluginCatalogCacheKey) -> Pat
         .join(format!("{cache_key_hash:016x}.json"))
 }
 
-fn is_fresh(fetched_at: Option<DateTime<Utc>>, now: DateTime<Utc>) -> bool {
+fn is_fresh(fetched_at: Option<OffsetDateTime>, now: OffsetDateTime) -> bool {
     let Some(fetched_at) = fetched_at else {
         return false;
     };
-    let Ok(ttl) = chrono::Duration::from_std(REMOTE_PLUGIN_CATALOG_DISK_CACHE_TTL) else {
+    let Ok(ttl) = TimeDuration::try_from(REMOTE_PLUGIN_CATALOG_DISK_CACHE_TTL) else {
         return false;
     };
-    let age = now.signed_duration_since(fetched_at);
-    age >= chrono::Duration::zero() && age <= ttl
+    let age = now - fetched_at;
+    age >= TimeDuration::ZERO && age <= ttl
 }
 
 #[cfg(test)]

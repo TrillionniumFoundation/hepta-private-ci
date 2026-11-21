@@ -1,20 +1,47 @@
 use super::*;
-use chrono::TimeDelta;
 use codex_login::AuthHeaders;
 use pretty_assertions::assert_eq;
+use time::Duration as TimeDuration;
 
 #[test]
 fn catalog_cache_freshness_honors_ttl() {
-    let now = Utc::now();
+    let now = OffsetDateTime::now_utc();
 
     assert!(!is_fresh(/*fetched_at*/ None, now));
     assert!(is_fresh(Some(now), now));
-    assert!(is_fresh(Some(now - TimeDelta::hours(3)), now,));
+    assert!(is_fresh(Some(now - TimeDuration::hours(3)), now,));
     assert!(!is_fresh(
-        Some(now - TimeDelta::hours(3) - TimeDelta::milliseconds(1)),
+        Some(now - TimeDuration::hours(3) - TimeDuration::milliseconds(1)),
         now,
     ));
-    assert!(!is_fresh(Some(now + TimeDelta::milliseconds(1)), now));
+    assert!(!is_fresh(Some(now + TimeDuration::milliseconds(1)), now));
+}
+
+#[test]
+fn catalog_cache_reads_original_rfc3339_timestamp_wire() {
+    let original = serde_json::json!({
+        "schema_version": REMOTE_PLUGIN_CATALOG_DISK_CACHE_SCHEMA_VERSION,
+        "fetched_at": "2026-11-20T12:34:56.789Z",
+        "plugins": [],
+    });
+    let cache: RemotePluginCatalogDiskCache =
+        serde_json::from_value(original.clone()).expect("read original RFC3339 cache");
+    let fetched_at = cache.fetched_at.expect("timestamp is present");
+    assert!(is_fresh(Some(fetched_at), fetched_at + TimeDuration::hours(3)));
+    let after_ttl = fetched_at + TimeDuration::hours(3) + TimeDuration::milliseconds(1);
+    assert!(!is_fresh(Some(fetched_at), after_ttl));
+    let emitted = serde_json::to_value(&cache).expect("serialize RFC3339 cache");
+    assert_eq!(emitted["fetched_at"], original["fetched_at"]);
+}
+
+#[test]
+fn catalog_cache_rejects_invalid_timestamp_without_defaulting_fresh() {
+    let invalid = serde_json::json!({
+        "schema_version": REMOTE_PLUGIN_CATALOG_DISK_CACHE_SCHEMA_VERSION,
+        "fetched_at": "not-an-rfc3339-timestamp",
+        "plugins": [],
+    });
+    assert!(serde_json::from_value::<RemotePluginCatalogDiskCache>(invalid).is_err());
 }
 
 #[test]
@@ -115,7 +142,7 @@ fn header_auth_does_not_cache_private_catalogs_without_a_stable_identity() {
 
         let insecure_cache = RemotePluginCatalogDiskCache {
             schema_version: REMOTE_PLUGIN_CATALOG_DISK_CACHE_SCHEMA_VERSION,
-            fetched_at: Some(Utc::now()),
+            fetched_at: Some(OffsetDateTime::now_utc()),
             plugins: Vec::new(),
         };
         let contents = serde_json::to_string_pretty(&insecure_cache).expect("serialize cache");
