@@ -286,6 +286,14 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
     // Bootstrap the real owner with independently retained private parents.
     let authority_database = TempDir::new().unwrap();
     let authority_checkpoint = TempDir::new().unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        for directory in [&authority_database, &authority_checkpoint] {
+            std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+                .unwrap();
+        }
+    }
     let database_path = authority_database
         .path()
         .canonicalize()
@@ -301,8 +309,26 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
         checkpoint_path,
         "evidence-retirement",
     )
-    .await
-    .unwrap();
+    .await;
+    let authority = if cfg!(unix) {
+        authority.unwrap()
+    } else {
+        // The production checkpoint owner deliberately denies non-Unix hosts.
+        // Exercise that denial, including absence of authority/retirement writes.
+        assert!(matches!(
+            authority,
+            Err(codex_hepta_authbus::AuthBusAuthorityError::UnsafeCheckpoint)
+        ));
+        for directory in [&authority_database, &authority_checkpoint] {
+            assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 0);
+        }
+        assert_eq!(
+            store.authbus_replay_frontier_digest().await.unwrap(),
+            external.digest
+        );
+        assert_eq!(store.pending_authbus_restore_checkpoint().await.unwrap(), None);
+        return;
+    };
     authority
         .admin()
         .enroll_issuer(

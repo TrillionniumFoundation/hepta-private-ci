@@ -210,9 +210,13 @@ mod windows_directory_sync_tests {
 
     #[test]
     fn directory_flush_persists_a_private_artifact() -> Result<(), QualificationError> {
-        let root = tempfile::tempdir()?;
-        sync_directory(root.path())?;
-        let artifact = root.path().join("evidence.json");
+        let temp = tempfile::tempdir()?;
+        // A default Windows tempdir has ambient inherited ACLs. Exercise the
+        // same private-directory constructor required by artifact publication.
+        let root = temp.path().join("private");
+        create_private_directory(&root)?;
+        sync_directory(&root)?;
+        let artifact = root.join("evidence.json");
         write_private_new(&artifact, b"{}")?;
         assert_eq!(read_private_bounded(&artifact, 2)?, b"{}");
         Ok(())

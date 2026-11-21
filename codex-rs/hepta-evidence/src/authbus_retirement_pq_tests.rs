@@ -52,6 +52,14 @@ async fn pq_retirement_requires_the_exact_pinned_revoked_key_and_profile() {
         // Each real owner retains its own independent private checkpoint.
         let authority_database = tempfile::tempdir_in(temp.path()).unwrap();
         let authority_checkpoint = tempfile::tempdir_in(temp.path()).unwrap();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            for directory in [&authority_database, &authority_checkpoint] {
+                std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+                    .unwrap();
+            }
+        }
         let database_path = authority_database
             .path()
             .canonicalize()
@@ -68,15 +76,32 @@ async fn pq_retirement_requires_the_exact_pinned_revoked_key_and_profile() {
                 checkpoint_path,
                 "pq-retirement-profile",
             )
-            .await
-            .unwrap(),
+            .await,
             AuthBusAlgorithm::MlDsa65V2 => AuthBusAuthorityOwner::bootstrap_new_pq(
                 &database_path,
                 checkpoint_path,
                 "pq-retirement-profile",
             )
-            .await
-            .unwrap(),
+            .await,
+        };
+        let authority = if cfg!(unix) {
+            authority.unwrap()
+        } else {
+            // Both production owner algorithms must refuse unsupported hosts
+            // before writing a lease, database, checkpoint or retirement state.
+            assert!(matches!(
+                authority,
+                Err(codex_hepta_authbus::AuthBusAuthorityError::UnsafeCheckpoint)
+            ));
+            for directory in [&authority_database, &authority_checkpoint] {
+                assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 0);
+            }
+            assert_eq!(
+                store.authbus_replay_frontier_digest().await.unwrap(),
+                external.digest
+            );
+            assert_eq!(store.pending_authbus_restore_checkpoint().await.unwrap(), None);
+            continue;
         };
         authority
             .admin()
