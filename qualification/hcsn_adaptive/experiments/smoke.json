@@ -1,0 +1,47 @@
+{
+  "device": "cpu",
+  "dtype": "float64",
+  "seeds": [
+    11
+  ],
+  "flow": {
+    "bins": 6,
+    "stages": 2,
+    "content_size": 4,
+    "upper_mode": "reflecting",
+    "transport_precision": "float64"
+  },
+  "learner": {
+    "steps": 8,
+    "batch_size": 16,
+    "evaluate_every": 4,
+    "ridge": 0.001
+  },
+  "budget": {
+    "wall_seconds": 60.0,
+    "development_queries": 10
+  },
+  "feature_budget": {
+    "wall_seconds": 300.0,
+    "encoder_events": 500000
+  },
+  "experiment_id": "HCSN-ADAPTIVE-SMOKE-20261120-1d88-v1",
+  "data_dir": "/home/qian-qi/hcsn-adaptive-20261120-1d88/data/smoke-independent-v1",
+  "stage": "smoke",
+  "variants": [
+    {
+      "id": "input_drift",
+      "boundary": "fixed",
+      "drift": "input",
+      "channels": "dual"
+    }
+  ],
+  "methods": [
+    "frozen",
+    "ridge",
+    "bp",
+    "zeroth_order",
+    "programmatic_edit",
+    "edit_then_bp"
+  ]
+}
