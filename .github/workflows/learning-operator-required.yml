@@ -52,6 +52,40 @@ jobs:
             scripts/hepta-learning-operator-mutation.py \
             scripts/hepta-learning-operator-receipt.py
 
+      - name: Restore the original HCSN fixture with default JSON features
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ env.SOURCE_SHA }}
+          HEPTA_CI_LANE: source-head
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 -B ../scripts/hepta_ci_exec.py --timeout-seconds 1200 --minimum-tests 8 \
+            --output "$RUNNER_TEMP/hcsn-streaming-features/default.json" \
+            -- just test --locked -p codex-hepta-neuron \
+            -E 'test(hcsn_streaming)' --retries 0
+
+      - name: Restore the same HCSN fixture with arbitrary precision enabled
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ env.SOURCE_SHA }}
+          HEPTA_CI_LANE: source-head
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 -B ../scripts/hepta_ci_exec.py --timeout-seconds 1200 --minimum-tests 8 \
+            --output "$RUNNER_TEMP/hcsn-streaming-features/arbitrary-precision.json" \
+            -- just test --locked -p codex-hepta-neuron \
+            --features serde_json/arbitrary_precision \
+            -E 'test(hcsn_streaming)' --retries 0
+
+      - name: Retain source-bound HCSN feature regression evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-streaming-features-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/hcsn-streaming-features
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Exact-source compile, final-use, shadow, revocation and rollback tests
         shell: bash
         run: |
