@@ -36,8 +36,7 @@ impl OriginalAcceptedPublicationData {
             .published
             .as_ref()
             .ok_or_else(|| anyhow::anyhow!("first accepted publication is absent"))?;
-        let actual_target =
-            Digest32::from_array(original.completed.generation.observation().digest()?);
+        let actual_target = original.completed.original_genesis_observation;
         anyhow::ensure!(
             self.schema == 1
                 && self.purpose == "runtime.learning.original-publication-accepted.v1"
@@ -53,7 +52,7 @@ impl OriginalAcceptedPublicationData {
                 && self.previous_observation
                     == Digest32::from_array(profile.intent.previous_observation).to_string()
                 && self.target_observation == actual_target.to_string()
-                && original.completed.generation.is_genesis()
+                && original.completed.generation.is_drained()
                 && crate::neuron_generation_current::signed_grant_digest(&published.signed)?
                     .into_array()
                     == published.signed_grant_digest

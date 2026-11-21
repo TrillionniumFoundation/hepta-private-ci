@@ -53,6 +53,7 @@ pub(super) struct OriginalCompletedCData {
     pub(super) source: CircuitTaskSourcePublicationV1,
     pub(super) cell: CellOriginalJournalObservationV1,
     pub(super) generation: CellGenerationJournalObservedV1,
+    pub(super) original_genesis_observation: Digest32,
     pub(super) current: CurrentHead,
     pub(super) terminal: LearningIterationSnapshotV1,
 }
@@ -220,7 +221,8 @@ impl OriginalCompletedCData {
                 open_original(&c.generation_witness)?,
                 target.clone(),
             )?;
-            let generation = generation_reader.observe()?;
+            let (generation, original_genesis_observation) =
+                generation_reader.observe_original_feature_boundary()?;
             let observed = generation.observation();
             anyhow::ensure!(
                 generation.owner_binding() == &binding
@@ -384,6 +386,7 @@ impl OriginalCompletedCData {
                 source: publication.clone(),
                 cell,
                 generation,
+                original_genesis_observation: Digest32::from_array(original_genesis_observation),
                 current,
                 terminal: terminal.clone(),
             })
