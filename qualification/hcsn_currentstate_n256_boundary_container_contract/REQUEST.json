@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn-n256-boundary-container-contract-v1",
+  "identity": "hcsn-n256-boundary-container-contract-20261121-c06d-001",
+  "parent_source_pr": 6854,
+  "parent_source_commit": "778b42b174a8bbe3d1735eda1f7e69128459156a",
+  "parent_source_tree": "b8e2f2c12bbc249801912f2596e6dfb82de6adc9",
+  "base_evidence_pr": 6824,
+  "base_evidence_commit": "6b1bc27cc1c0b31830df2a489cb9e12e2f675d1b",
+  "execution_allowed": false,
+  "numerical_execution_allowed": false,
+  "unique_execution_key": null,
+  "scope": "freeze a canonical byte container and independent exact comparator for future authentic pre-exponential boundary originals",
+  "boundary": {
+    "dtype": "<f8",
+    "section_order": [
+      "extended_generator",
+      "initial",
+      "lower_selector",
+      "discounted_selectors"
+    ],
+    "section_shapes": [[257, 257], [5, 257], [257, 1], [257, 2]],
+    "coordinate_denominator": 68105,
+    "mismatch_allowance": 0
+  },
+  "historical_sparse_red": {
+    "source_pr": 6823,
+    "evidence_pr": 6824,
+    "run_id": 44851931235,
+    "job_id": 136685046474,
+    "final_coordinate_denominator": 69728,
+    "mismatch_count": 1291,
+    "result": "RED"
+  },
+  "prior_constructor_red_unknown": [
+    {
+      "run_id": 44849987440,
+      "dynamic_steps": null,
+      "sparse_exponential_actions": null
+    },
+    {
+      "run_id": 44851090269,
+      "dynamic_steps": null,
+      "sparse_exponential_actions": null
+    }
+  ],
+  "source_only_counts": {
+    "authentic_input_reads": 0,
+    "authentic_boundary_builds": 0,
+    "authentic_boundary_comparisons": 0,
+    "dynamic_steps": 0,
+    "dense_exponential_actions": 0,
+    "sparse_exponential_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "development_fixture_results_are_qualification": false,
+  "boundary_compared": false,
+  "qualification": false,
+  "largegrid_qualification": false,
+  "c2_full_replay_completed_fits": 0,
+  "hpca_update": "NoUpdate",
+  "all_closed": false
+}
