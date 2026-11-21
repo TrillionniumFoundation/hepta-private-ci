@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.e5.old-exclusion-publication-summary.v1",
+  "old_evidence_commit": "7f790fb2f907ef9e618c3c7d233d22135ab00580",
+  "old_evidence_path": "qualification/cell-e5-material-adapter-20261120",
+  "material_count": 16,
+  "legacy_selection_entries": 11,
+  "excluded_distinct_owners_projects_and_sources": 17,
+  "historical_selection_only_source": "github:agronholm/exceptiongroup:pull:155",
+  "historical_selection_only_source_has_no_material_ast_binding": true,
+  "source_rows": 1331,
+  "full_file_sha256_unique": 1216,
+  "retained_blob_sha256": 1628,
+  "python_contents_attempted": 488,
+  "python_modules_parsed": 487,
+  "function_nodes": 9145,
+  "function_ast_sha256_unique": 7116,
+  "declared_native_test_module_ast": 17,
+  "declared_native_selected_test_function_ast": 47,
+  "preserved_published_test_function_raw_sha256": 47,
+  "existing_ast_named_fields_in_materials_and_240_metadata_json_blobs": 0,
+  "python_version_used": "3.12.14",
+  "qualified_python3123_replay_executed": false,
+  "cross_version_ast_equivalence_claimed": false,
+  "parse_failures": [
+    {
+      "source_id": "github:Delgan/loguru:pull:1541",
+      "path": "tests/exceptions/source/modern/t_string.py",
+      "bytes": 347,
+      "sha256": "41eed63ebe554f293ef0176b3cedaf4f01b8c9b8307f66ad43640b944367f221",
+      "error_type": "SyntaxError",
+      "line": 11,
+      "raw_sha_and_owner_source_exclusions_preserved": true
+    }
+  ],
+  "python_ast_coverage_complete": false,
+  "metadata_parse_failures": 0,
+  "native_test_fragment_mapping_failures": 0,
+  "recovery": {
+    "parts_full_sha_and_git_sha_verified": 8,
+    "valid_chunks": 46,
+    "read_attempts": 47,
+    "retained_errors": 1,
+    "error": "part-002.bin offset262144 returned MCP UNAVAILABLE / Connection failed. Only the same-version missing range was fetched again. Cause beyond original message UNKNOWN.",
+    "all1645_members_match_bound_root": true,
+    "member_bytes": 14013639,
+    "new_repositories_read": 0,
+    "remote_processes_launched": 0
+  },
+  "qualified_replay_preparation": {
+    "host": "desktop",
+    "actual_expected_executable": "/usr/bin/python3.12",
+    "bytes": 8020928,
+    "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+    "python_version": "3.12.3",
+    "work_limit_seconds": 60,
+    "transport_limit_seconds": 90,
+    "root_dispatches_only": true,
+    "automatic_retry": false,
+    "automatic_next_phase": false,
+    "fingerprint_derivation_code_unchanged_from_local_v1": true
+  },
+  "statistical_independent_samples_added": 0,
+  "training_or_native_experiments_run": 0,
+  "git_ref_or_pr_mutations_by_preparer": 0,
+  "scope": "Old-only exclusions and reproducibility evidence; combine with root broader historical-selection and E2 older-task exclusions. Exact AST hashes do not exhaust semantic clones.",
+  "containers": [
+    {
+      "id": "old-e5-original",
+      "filename": "old_e5_material_payload.tar.gz",
+      "role": "UNCHANGED_FIXED7F790_ORIGINAL_PAYLOAD",
+      "bytes": 2995743,
+      "sha256": "73504304a1c6e220f085d91845f3b585b73bfb649dd829b38a06e62ee7e8c2f9",
+      "members": 1645,
+      "parts": 9,
+      "part_pattern": "payloads/old-e5-original/part-*.bin"
+    },
+    {
+      "id": "old-e5-exclusion-sidecar",
+      "filename": "old_e5_exclusion_and_recovery_sidecar.tar.gz",
+      "role": "NEW_SIDECAR_OF_OLD_ORIGINAL_TRANSPORT_AND_EXPLICIT_DERIVED_EXCLUSION",
+      "bytes": 5294483,
+      "sha256": "f4e719143a55638d167fe09761a5083568e4250ee682dc701ef368404836ada5",
+      "members": 131,
+      "parts": 16,
+      "part_pattern": "payloads/old-e5-exclusion-sidecar/part-*.bin"
+    }
+  ]
+}

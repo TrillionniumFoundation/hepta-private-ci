@@ -1,0 +1,29 @@
+{
+  "archive_bytes": 1035551,
+  "archive_name": "RUNTIME_C_CPU_ORIGINALS.tar.gz",
+  "archive_sha256": "8537e578da61f3511cb99a7bd0e5dbe8aa14dd53b7dbc396d6c4b3b5575ad6cc",
+  "members": 74,
+  "original_manifest_members": 72,
+  "parts": [
+    {
+      "bytes": 350000,
+      "offset": 0,
+      "path": "originals.part-000.bin",
+      "sha256": "f203edaa81d723eaa506ea34b1ae7700f36a19e25181dbaa314cb67f95c6bb87"
+    },
+    {
+      "bytes": 350000,
+      "offset": 350000,
+      "path": "originals.part-001.bin",
+      "sha256": "28d5d96e3a06d9d98abb0728e81e9e577b1ef6764f4f0146047447cc7845c39b"
+    },
+    {
+      "bytes": 335551,
+      "offset": 700000,
+      "path": "originals.part-002.bin",
+      "sha256": "0d19adff8d34a990fc00d32d79b3f05d49a5b3b9730bb7363e400ee908f80bbc"
+    }
+  ],
+  "reassemble": "Concatenate originals.part-*.bin in lexical order, verify archive SHA256, then extract the gzip tar. MEMBER_MANIFEST.json binds exact retained originals.",
+  "schema": "hepta.binary-evidence-container.v1"
+}

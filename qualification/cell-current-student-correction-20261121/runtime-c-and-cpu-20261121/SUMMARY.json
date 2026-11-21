@@ -1,0 +1,190 @@
+{
+  "actual_fresh_content_reads": 0,
+  "actual_generation_calls": 0,
+  "actual_native_task_executions": 0,
+  "actual_records_total": 4,
+  "actual_scientific_optimizer_updates": 0,
+  "all_actions_equals_final_only": true,
+  "archive_scope": "Complete recovered old Stage C container plus pip diagnostic, complete rebuilt candidate, successful C core terminal and per-phase result/post-fsync originals, complete CPU execution and transfer originals. Installed runtime trees, wheels, base/adapter bytes and successful C extra stdout/events/report files are not bundled. This is not a claim that every Stage C filesystem artifact has been collected.",
+  "candidate": "dc96ad0c29223dc0fbf0e6165854d8e7cf25331c3f77d57ad30c4f30fc6cf678",
+  "cpu_encoding_complete": true,
+  "cpu_encoding_job": "1a1fd71b651-ffbe-1f5d",
+  "created_utc": "2026-11-21T09:45:33.044020+00:00",
+  "encoding_bytes": 156789,
+  "encoding_review": {
+    "all_actions_equals_final_only": true,
+    "attempted_socket_bind_was_refused_not_a_zero_attempt_claim": true,
+    "cost_scopes_not_additive": true,
+    "cuda_initialized": false,
+    "distinct_inputs": 171,
+    "encoding_bytes": 156789,
+    "encoding_sha256": "c8c71abadb25a2454e713b86876363a765b76a8a0d125b072d68aa5cb3494875",
+    "ended_unix_ms": 1795253496500,
+    "fresh_content_reads": 0,
+    "full_physical_cost_unknown": true,
+    "generation_calls": 0,
+    "groups_digest": "5ffe4faceb97047dda84c7001dcec92bfd2a39a3caa1df76e940ca2248ffe9ff",
+    "job_id": "1a1fd71b651-ffbe-1f5d",
+    "native_adoption": false,
+    "native_task_executions": 0,
+    "optimizer_updates": 0,
+    "original_encoder_internal_reads_not_included": true,
+    "original_learner_sha256": "f391f073b906c4e02481e49d1195941e8ba66c0c4f9d50acd7c6b2433aa1947a",
+    "planned_compute_per_parent": {
+      "document_evidence": {
+        "optimizer_updates": 8,
+        "outer_model_backwards": 16,
+        "outer_model_forwards": 16,
+        "padded_positions": 57344,
+        "supervised_target_positions": 3516,
+        "unpadded_positions": 37180
+      },
+      "native_feedback": {
+        "optimizer_updates": 8,
+        "outer_model_backwards": 12,
+        "outer_model_forwards": 12,
+        "padded_positions": 43008,
+        "supervised_target_positions": 1844,
+        "unpadded_positions": 27564
+      }
+    },
+    "projects_total": 3,
+    "readout": {
+      "document_evidence": {
+        "maximum_full_sequence_tokens": 2780,
+        "original_records": 2,
+        "partition_rows": 4,
+        "prefix_masks_verified": true,
+        "row_fields": [
+          "dropped_terminal_duplicates",
+          "final_target",
+          "input_ids",
+          "labels",
+          "message_index",
+          "message_protocol",
+          "prefix_tokens",
+          "record_id",
+          "supervised_tokens",
+          "turn_index"
+        ]
+      },
+      "native_feedback": {
+        "maximum_full_sequence_tokens": 2956,
+        "original_records": 2,
+        "partition_rows": 3,
+        "prefix_masks_verified": true,
+        "row_fields": [
+          "dropped_terminal_duplicates",
+          "final_target",
+          "input_ids",
+          "labels",
+          "message_index",
+          "message_protocol",
+          "prefix_tokens",
+          "record_id",
+          "supervised_tokens",
+          "turn_index"
+        ]
+      }
+    },
+    "records_total": 4,
+    "refused_python_events": {
+      "socket.bind": 1
+    },
+    "schema": "hepta.original-cpu-encoding-independent-terminal-review.v1",
+    "scientific_confirmation_qualified": false,
+    "self_cpu_seconds": 47.589254519,
+    "status": "CPU_ENCODING_COMPLETE_PENDING_GIT_PUBLICATION_BEFORE_TRAINING",
+    "training_must_wait_for_actual_encoding_evidence_publication": true,
+    "unchanged_distributions": 45,
+    "wrapper_full_sha_read_bytes": 6226390500,
+    "wrapper_wall_seconds": 43.25738519895822
+  },
+  "evidence_parent_commit": "386155d9b807bc99c47668dd69a3afc5384bec5f",
+  "executed_learner_source_commit": "dc3397c9e09e29861a0a4fe2267e8ef19e55db01",
+  "groups_digest": "5ffe4faceb97047dda84c7001dcec92bfd2a39a3caa1df76e940ca2248ffe9ff",
+  "historical_parent_lineages_are_not_independent_seeds": true,
+  "native_adoption": false,
+  "next_step_gate": "Publish this exact ENCODING before any model construction or optimizer update. Then separately reviewed unique per-parent owners may call the unchanged learner, at most 8 updates each / 16 globally. No retrial of failed or UNKNOWN training, no fresh-content acquisition until both genuine complete children and their selection are published.",
+  "no_ignore_or_allowlist_added": true,
+  "no_old_source_or_result_overwritten": true,
+  "original_c_job": "1a1fd1261e7-ffbe-1ea2",
+  "original_c_status": "FAILED_EXIT_2",
+  "original_encoding_sha256": "c8c71abadb25a2454e713b86876363a765b76a8a0d125b072d68aa5cb3494875",
+  "partition_rows_are_not_independent_samples": true,
+  "projects_total": 3,
+  "rebuilt_c_is_a_new_separate_engineering_candidate": true,
+  "rebuilt_c_job": "1a1fd69af7c-ffbe-1f50",
+  "records_per_parent": 2,
+  "runtime_ready": true,
+  "runtime_review": {
+    "actual_child_phases": [
+      {
+        "exit_code": 0,
+        "phase": "bootstrap_pip",
+        "result_sha256": "523f83492eab8b8738db468e31e6ce8830ea5415b58854cd429cd493f6a34959"
+      },
+      {
+        "exit_code": 0,
+        "phase": "install_44",
+        "result_sha256": "d604e3e05d0fb36ff0a541a59f072d2e120ccab8c822d627c8e13abc313f47a3"
+      },
+      {
+        "exit_code": 0,
+        "phase": "pip_check",
+        "result_sha256": "673bfe33095729124a8e970c1f29a65a60e9fcfda23203dce1e3ae948408371a"
+      },
+      {
+        "exit_code": 0,
+        "phase": "runtime_qualification",
+        "result_sha256": "cff0c921974b7391d63a24aacf6d0d015710e07e127b8219fab8d5e4a1192395"
+      }
+    ],
+    "all_owned_children_closed": true,
+    "candidate": "7f7cd5f16c853bacbb8132c1cdbb00e5b2ffcb7d1feb95a4805793a3a39f90e1",
+    "core_versions": {
+      "peft": "0.18.0",
+      "safetensors": "0.7.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.9.1+cu128",
+      "transformers": "4.57.3"
+    },
+    "cost_scopes_not_additive": true,
+    "cpu_encodings": 0,
+    "fresh_content_reads": 0,
+    "full_physical_cost_unknown": true,
+    "input_post_sha_read_bytes": 4119492801,
+    "input_pre_sha_read_bytes": 4119492801,
+    "job_id": "1a1fd69af7c-ffbe-1f50",
+    "model_calls": 0,
+    "native_adoption": false,
+    "new_tree_sync": {
+      "entry_cap": 93652,
+      "regular_file_allocated_bytes_observed": 7159017472,
+      "regular_files_fsynced": 19950,
+      "symlinks_not_followed": 3,
+      "visited_entries": 21772
+    },
+    "old_c_status": "FAILED",
+    "optimizer_updates": 0,
+    "original_byte_sha256": {
+      "desktop_result": "c9d95ddd0c15ca53ba0325dc80edbad62c1c0d64b2a1ab9afbe22be655188473",
+      "outer_status": "2bf9cd6d6d035d3770df9f2b99052899caa45e704f7f0afb6e582a73dc4ad41c",
+      "outer_stdout": "ec4aa79a8064e96cff709dca12b8d0a7dde462fbb55ad5cbdc8ecb5eb13e63c4",
+      "rog_result": "9d2da384488bd06a8fd9d7b366b4263e69fb2871c3b028a81a2cd9f4158a25b1"
+    },
+    "original_validation_functions_used_for_readout_only_no_installation_reexecution": true,
+    "outer_h_ended_unix_ms": 1795253080348,
+    "plan_sha256": "ddae63d83e312ed0311add6390b9bf8b829bba6b650d12287c19631a5c9a8bdd",
+    "runtime_ready": true,
+    "schema": "hepta.c-rebuilt-terminal-independent-review.v1",
+    "scientific_confirmation_qualified": false,
+    "scope_to_outer_seconds": 155.009914514,
+    "status": "RUNTIME_QUALIFIED_FOR_SEPARATE_CPU_ENCODING_REVIEW",
+    "supervisor_elapsed_after_all_fsync_seconds": 154.9648259599926
+  },
+  "schema": "hepta.e2.runtime-and-original-cpu-encoding-publication.v1",
+  "scientific_confirmation_qualified": false,
+  "status": "CPU_ENCODING_COMPLETE_TRAINING_NOT_STARTED",
+  "workspace_reset_disclosed": true
+}

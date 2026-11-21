@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.e5.old-exclusion-publication-index-locations.v1",
+  "old_payload_member_index": {
+    "container": "old-e5-exclusion-sidecar",
+    "member": "anchors/BOUND_INPUT_ROOT.json",
+    "bytes": 280158,
+    "sha256": "5f9fb9747b20b4f2645a1eff0add7d30108df02d4b5cba5510594cd24c25374b",
+    "entries": 1645
+  },
+  "old_material_index": {
+    "container": "old-e5-original",
+    "member": "MATERIAL_INDEX.json",
+    "bytes": 2852,
+    "sha256": "6f7ae3e77cbd23a488622a982fc4718f8cbd4bd7049c5d1a9642ee76ea578767",
+    "entries": 16
+  },
+  "sidecar_member_index": {
+    "container": "old-e5-exclusion-sidecar",
+    "member": "SIDECAR_MANIFEST.json",
+    "bytes": 57193,
+    "sha256": "935d19305d25b30dcaa63cfc6ec1047e46ed161d68248a24a1e89a81537c569c",
+    "entries": 130
+  },
+  "exclusion": {
+    "container": "old-e5-exclusion-sidecar",
+    "member": "derived/local_py31214/EXCLUSION_E5.json",
+    "bytes": 1043568,
+    "sha256": "c10ab980a0bd30bca64da4d59ae72edfd855d8b154de71bfea5aea2f98b9103c"
+  },
+  "fingerprint_sets": {
+    "container": "old-e5-exclusion-sidecar",
+    "member": "derived/local_py31214/FINGERPRINT_SETS.json",
+    "bytes": 1017459,
+    "sha256": "b3d18a3208392f717cc729c6d6c88051c7ac558204351b6b430362e49923aca9"
+  },
+  "qualified_replay_plan": {
+    "container": "old-e5-exclusion-sidecar",
+    "member": "preparation_and_review/QUALIFIED_OFFLINE_REPLAY_PLAN_V2.json",
+    "sha256": "6ddd7498eb25df3108f98fdbb1312fb77a491ff461b943e38f32ac4ff8ea08ca",
+    "executed": false
+  },
+  "qualified_replay_extractor": {
+    "container": "old-e5-exclusion-sidecar",
+    "member": "preparation_and_review/extract_old_e5_exclusions_qualified_v2.py",
+    "bytes": 29886,
+    "sha256": "c10eaaa19d17b5ac88fb34ff6ace99495713b270b6135a0e59363e38968f88d3",
+    "executed": false
+  }
+}

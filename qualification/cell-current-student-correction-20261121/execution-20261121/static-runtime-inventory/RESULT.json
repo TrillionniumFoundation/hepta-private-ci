@@ -1,0 +1,211 @@
+{
+  "schema": "hepta.runtime-static-inventory-result.v1",
+  "status": "BLOCKED_NO_EXACT_RUNTIME_CANDIDATE_FOUND_IN_BOUNDED_SCOPE",
+  "candidate_digest": "dc96ad0c29223dc0fbf0e6165854d8e7cf25331c3f77d57ad30c4f30fc6cf678",
+  "training_source_commit": "dc3397c9e09e29861a0a4fe2267e8ef19e55db01",
+  "job_id": "1a1fc72d23e-ffbe-1da9",
+  "start_utc": "2026-11-21T04:52:26.542Z",
+  "deadline_utc": "2026-11-21T04:55:26.542Z",
+  "elapsed_seconds": 0.9325699806213379,
+  "expected": {
+    "python": "3.12",
+    "torch": "2.9.1+cu128",
+    "transformers": "4.57.3",
+    "tokenizers": "0.22.2",
+    "safetensors": "0.7.0",
+    "peft": "0.18.0"
+  },
+  "hosts": [
+    {
+      "host": "desktop",
+      "returncode": 0,
+      "wall_seconds": 0.4902608394622803,
+      "status": "STATIC_INVENTORY_COMPLETE_WITHIN_DECLARED_BOUNDS",
+      "visited_directories": 1125,
+      "directory_entries_seen": 12564,
+      "distribution_identities": [],
+      "site_candidates": [],
+      "wheels": [
+        {
+          "bytes": 167587840,
+          "complete_zip": false,
+          "path": "/home/qian-qi/work/hepta-current-student-correction-20261121-ac5459/runtime-recovery/tmp/pip-unpack-bs8goj0j/torch-2.9.1+cu128-cp312-cp312-manylinux_2_28_x86_64.whl"
+        }
+      ],
+      "python_configs": [
+        {
+          "fields": {
+            "executable": "/usr/bin/python3.12",
+            "home": "/usr/bin",
+            "include-system-site-packages": "false",
+            "version": "3.12.3"
+          },
+          "path": "/home/qian-qi/work/hepta-current-student-correction-20261121-ac5459/runtime-recovery/venv/pyvenv.cfg",
+          "sha256": "92a67a48ebe57205c4bf35d1d2405364d8d25f36da0ff5bbe350e475b3f7e009"
+        }
+      ],
+      "errors": [],
+      "bounds_hit": []
+    },
+    {
+      "host": "rog",
+      "returncode": 0,
+      "wall_seconds": 0.8135864734649658,
+      "status": "STATIC_INVENTORY_COMPLETE_WITHIN_DECLARED_BOUNDS",
+      "visited_directories": 2866,
+      "directory_entries_seen": 28862,
+      "distribution_identities": [
+        {
+          "name": "torch",
+          "version": "2.13.0+rocm10.0.0",
+          "metadata_path": "/home/qian-qi/.venvs/rocm10/lib/python3.14/site-packages/torch-2.13.0+rocm10.0.0.dist-info/METADATA",
+          "metadata_sha256": "e13ff5ee93dee358d80758cb085be36bc2fffd313829a3975566c4a226d4c938",
+          "record_sha256": "1571e82efc4484ab96b93ce5c3b82fd6cfb7d5d96ab1d287c5c3eb1509025aae",
+          "wheel_tags": [
+            "cp314-cp314-linux_x86_64"
+          ],
+          "version_matches": false,
+          "qualified_runtime_modules": [
+            {
+              "expected_sha256": "431b229da53972d79bed7e5dbfb6ace2922fff30192ea103208f484e59490f23",
+              "matches": false,
+              "path": "/home/qian-qi/.venvs/rocm10/lib/python3.14/site-packages/torch/utils/checkpoint.py",
+              "sha256": "eab49639231cc989d65c04212923eef0ade4aa059b68bcabfe2819007f34e69f"
+            }
+          ]
+        }
+      ],
+      "site_candidates": [
+        {
+          "all_core_records_present_without_observed_missing_files": false,
+          "all_five_core_versions_present": false,
+          "complete_transitive_dependency_closure_verified": false,
+          "critical_modules_match": false,
+          "exact_core_versions": {},
+          "site": "/home/qian-qi/.venvs/rocm10/lib/python3.14/site-packages"
+        }
+      ],
+      "wheels": [],
+      "python_configs": [
+        {
+          "fields": {
+            "executable": "/usr/bin/python3.12",
+            "home": "/usr/bin",
+            "include-system-site-packages": "false",
+            "version": "3.12.3"
+          },
+          "path": "/home/qian-qi/work/hepta-e2-wheel-transfer-20261121-ac5459/dependency-venv/pyvenv.cfg",
+          "sha256": "3ef66376b55bbb1788f11c7c394398d42fec017e87e3302a1e09ce9be556ba70"
+        },
+        {
+          "fields": {
+            "executable": "/usr/bin/python3.14",
+            "home": "/usr/bin",
+            "include-system-site-packages": "false",
+            "version": "3.14.4"
+          },
+          "path": "/home/qian-qi/.venvs/rocm10/pyvenv.cfg",
+          "sha256": "8649e4f4577a71ae69db19c308dd19b48818c3a4aaa8cdd6a34684ba6d5067c0"
+        }
+      ],
+      "errors": [],
+      "bounds_hit": []
+    },
+    {
+      "host": "ai395",
+      "returncode": 0,
+      "wall_seconds": 0.9307928085327148,
+      "status": "STATIC_INVENTORY_COMPLETE_WITHIN_DECLARED_BOUNDS",
+      "visited_directories": 746,
+      "directory_entries_seen": 7777,
+      "distribution_identities": [
+        {
+          "name": "torch",
+          "version": "2.13.0+rocm10.0.0",
+          "metadata_path": "/home/qq/.venvs/rocm10/lib/python3.14/site-packages/torch-2.13.0+rocm10.0.0.dist-info/METADATA",
+          "metadata_sha256": "e13ff5ee93dee358d80758cb085be36bc2fffd313829a3975566c4a226d4c938",
+          "record_sha256": "87d3677301de28c2c85d7678dffa40bdcee489377a2588ab3867e9eb98995ce5",
+          "wheel_tags": [
+            "cp314-cp314-linux_x86_64"
+          ],
+          "version_matches": false,
+          "qualified_runtime_modules": [
+            {
+              "expected_sha256": "431b229da53972d79bed7e5dbfb6ace2922fff30192ea103208f484e59490f23",
+              "matches": false,
+              "path": "/home/qq/.venvs/rocm10/lib/python3.14/site-packages/torch/utils/checkpoint.py",
+              "sha256": "eab49639231cc989d65c04212923eef0ade4aa059b68bcabfe2819007f34e69f"
+            }
+          ]
+        }
+      ],
+      "site_candidates": [
+        {
+          "all_core_records_present_without_observed_missing_files": false,
+          "all_five_core_versions_present": false,
+          "complete_transitive_dependency_closure_verified": false,
+          "critical_modules_match": false,
+          "exact_core_versions": {},
+          "site": "/home/qq/.venvs/rocm10/lib/python3.14/site-packages"
+        }
+      ],
+      "wheels": [],
+      "python_configs": [
+        {
+          "fields": {
+            "executable": "/usr/bin/python3.14",
+            "home": "/usr/bin",
+            "include-system-site-packages": "false",
+            "version": "3.14.4"
+          },
+          "path": "/home/qq/.venvs/rocm10/pyvenv.cfg",
+          "sha256": "d43d0c7c2e55c1ac2a1810a7de37610b8d1440c98fc90dd0808fde15aaa05d56"
+        },
+        {
+          "fields": {
+            "executable": "/usr/bin/python3.14",
+            "home": "/usr/bin",
+            "include-system-site-packages": "false",
+            "version": "3.14.4"
+          },
+          "path": "/home/qq/venvs/rocm10-pytorch/pyvenv.cfg",
+          "sha256": "4ab3977ce1482398e85856d9a622125f10870e727b7153047af7577ef412b276"
+        }
+      ],
+      "errors": [],
+      "bounds_hit": []
+    }
+  ],
+  "scope_limits": [
+    "Only explicitly recorded known install, venv and cache roots; max directory depth 7; no exhaustive whole-host claim.",
+    "Core package dist-info metadata and three frozen module hashes; full hashes of other RECORD entries and transitive dependency closure were not verified.",
+    "No framework imports or Python executable compatibility test; pyvenv.cfg is static metadata, not proof of runnable environment.",
+    "Incompatible ROCm package bytecode RECORD omissions are retained; no corruption or usability claim is made about these unrelated environments.",
+    "Retained original NVIDIA wheel qualification and incomplete Torch ranges remain in original recovery evidence; this inventory does not reclassify those materials as a complete runtime."
+  ],
+  "counters": {
+    "framework_imports": 0,
+    "cuda_calls": 0,
+    "installs": 0,
+    "downloads": 0,
+    "material_copies": 0,
+    "cpu_encodings": 0,
+    "model_calls": 0,
+    "native_calls": 0,
+    "optimizer_updates": 0
+  },
+  "automatic_followup_execution": false,
+  "original_recovery_immutable": {
+    "start_utc": "2026-11-21T03:24:26.254009Z",
+    "deadline_utc": "2026-11-21T04:24:26.254009Z",
+    "watchdog_budget_elapsed_seconds": 3600.350175142288,
+    "final_suffix_unit_cancel_utc": "2026-11-21T04:24:41.857Z",
+    "cleanup_overrun_seconds": 15.602991,
+    "cpu_encodings": 0,
+    "model_calls": 0,
+    "optimizer_updates": 0
+  },
+  "next_execution_scope_proposed": false,
+  "next_action": "Retain BLOCKED; no available compatible candidate supports an automatic installation/copy/encoding/training step."
+}
+

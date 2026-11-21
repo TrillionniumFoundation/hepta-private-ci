@@ -1,0 +1,213 @@
+{
+  "actual_child_weights_evidence_commit": "c1ce4de7c9bd6c48bae155aeedbfe04f7ccf3196",
+  "actual_qualified_E5": {
+    "actual_interpreter": {
+      "AsyncFunctionDef_fields": [
+        "name",
+        "args",
+        "body",
+        "decorator_list",
+        "returns",
+        "type_comment",
+        "type_params"
+      ],
+      "FunctionDef_fields": [
+        "name",
+        "args",
+        "body",
+        "decorator_list",
+        "returns",
+        "type_comment",
+        "type_params"
+      ],
+      "ast_module_file_sha256": "d16626aa5c054bcc45221e56f84e55051b046caf0f8be1fe4902ea71534fb735",
+      "cross_version_ast_byte_equivalence_asserted": false,
+      "full_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "implementation": "CPython",
+      "qualified_actual_interpreter_identity": {
+        "actual_proc_exe": "/usr/bin/python3.12",
+        "actual_proc_exe_and_named_file_identity_match": true,
+        "bytes": 8020928,
+        "full_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "identity": {
+          "ctime_ns": "1789164879262713172",
+          "device": 2050,
+          "inode": 36451609,
+          "mode": 33261,
+          "mtime_ns": "1788171506000000000",
+          "nlink": 1,
+          "size": 8020928
+        },
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+        "version": "3.12.3"
+      },
+      "qualified_fresh_binary_identity_verified_by_this_extractor": true,
+      "qualified_fresh_python_version": "3.12.3",
+      "version": "3.12.3"
+    },
+    "actual_transport": "H persistent PTY, merged terminal bytes",
+    "core_handoff": {
+      "bytes": 15043,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e5_old_material_exclusion_20261121/qualified_replay_evidence_20261121/QUALIFIED_PARSER_CORE_HANDOFF.json",
+      "sha256": "67cee3e4297c9d300bd2b04e0e7a02e09aa3055bea095dfc3979e821f40edd82"
+    },
+    "durability_boundary": "Frozen parser explicitly fsyncs each output and derived directory; parent of newly created derived directory is not explicitly fsynced. PTY output_complete and archive file SHA are observed; do not infer a separate stdout/stderr or additional power-loss durability guarantee.",
+    "original_exclusion": {
+      "bytes": 1044023,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e5_old_material_exclusion_20261121/qualified_replay_evidence_20261121/originals/EXCLUSION_E5.json",
+      "sha256": "3e584380318eb001dd85aa5c05cf4d473f9d079216ffe6c070a9859a476ca197"
+    },
+    "original_fingerprint_sets": {
+      "bytes": 1017459,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e5_old_material_exclusion_20261121/qualified_replay_evidence_20261121/originals/FINGERPRINT_SETS.json",
+      "sha256": "e1d29371c955e03b09e977f57cf7f429f4340c45955ba0663cab362a2b9852ab"
+    },
+    "session_id": "dpty-553271a846fb592790a052a53a8b8007e72a93ead81d38ee5683546d38a5ad62",
+    "terminal_status": {
+      "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+      "bytes_seen": 1419,
+      "bytes_stored": 1419,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1795259304227,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 2463720,
+      "pid": 2463721,
+      "state": "exited"
+    },
+    "version_diff": {
+      "bytes": 3123,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e5_old_material_exclusion_20261121/qualified_replay_evidence_20261121/FINGERPRINT_DIFF_LOCAL31214_VS_ACTUAL3123.json",
+      "sha256": "5e8ec7e8d01ba40a6364461070fb1442bd48457dce2b0e511aad55953d89bfb8"
+    }
+  },
+  "assembler": {
+    "bytes": 10893,
+    "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/fresh_deployment_preparation/assemble_exclusions_qualified_final.py",
+    "sha256": "3dd30d8e829e9372ce4db466fe0944365bd416e223fb7204bffbbb88d288c5f4"
+  },
+  "assembler_runs": 1,
+  "canonical_digests": {
+    "excluded": "92143d5f19cd8de8c57cb22c42938648d74a8dd2acd3df8777581827ff65af49",
+    "selection": "394ee2e8f4b5d00dac00b177ecbb83bd578f7c8473e5d7a90b03c8d6e2b5b1f7",
+    "weights": "d6c289bff885756a11b354aef53bfe2dc93394dfef17a8c84ea026d53658f498"
+  },
+  "changed_E5_sets": {
+    "function_ast_sha256": {
+      "actual_count": 7116,
+      "actual_only": [
+        "3a366aefefcca7a6c32eba01896e47a4ed137eac6f155febe076363ed6c97b39",
+        "dcc6ebcbc6fbd57f2d2b9ab6e92374055f1a4626aa22e98857e5c95f5cd8ae32"
+      ],
+      "old_count": 7116,
+      "old_only": [
+        "26a9230225efcf10cd3e736cc2c7a49daa7b10ef6542038e704d79d0b0e1d715",
+        "28bdd4c19e44d4f889b3128ffb63df80c1196e2076b2bb8f6a57a0165b5ed3ec"
+      ]
+    },
+    "source_module_ast_sha256": {
+      "actual_count": 487,
+      "actual_only": [
+        "237a451d5701db86d74e8e56dec591c5cb9b08fa6d3c07ea6185c276b5999824",
+        "7eeab4560bcda262c27d82bd913659c206bd0b76cbc856ad859e553925a1383a"
+      ],
+      "old_count": 487,
+      "old_only": [
+        "860f01772da81d326262ceceb34d3f1289128f31dfacab6979f33e9e44ec823b",
+        "f09f098746174afdf7ad5c54e61779ddde9bf462bceb200f13bc3c915389aa17"
+      ]
+    }
+  },
+  "counts": {
+    "eligible_fixed_sources": 6,
+    "owners": 40,
+    "repositories": 47,
+    "required_distinct_source_owners": 4,
+    "unique64hex_exclusion_values": 9905
+  },
+  "fixed_pool_admissions": [
+    {
+      "actual_content_read": false,
+      "repository": "tartley/colorama",
+      "status": "ELIGIBLE_FOR_ORDERED_SCAN"
+    },
+    {
+      "actual_content_read": false,
+      "repository": "python-poetry/tomlkit",
+      "status": "ELIGIBLE_FOR_ORDERED_SCAN"
+    },
+    {
+      "actual_content_read": false,
+      "repository": "andialbrecht/sqlparse",
+      "status": "ELIGIBLE_FOR_ORDERED_SCAN"
+    },
+    {
+      "actual_content_read": false,
+      "repository": "theskumar/python-dotenv",
+      "status": "ELIGIBLE_FOR_ORDERED_SCAN"
+    },
+    {
+      "actual_content_read": false,
+      "repository": "uiri/toml",
+      "status": "ELIGIBLE_FOR_ORDERED_SCAN"
+    },
+    {
+      "actual_content_read": false,
+      "repository": "jaraco/inflect",
+      "status": "BEFORE_SCAN_REFUSAL"
+    },
+    {
+      "actual_content_read": false,
+      "repository": "agronholm/exceptiongroup",
+      "status": "BEFORE_SCAN_REFUSAL"
+    },
+    {
+      "actual_content_read": false,
+      "repository": "jd/tenacity",
+      "status": "ELIGIBLE_FOR_ORDERED_SCAN"
+    }
+  ],
+  "independent_exact_set_diff_matches_retained_diff": true,
+  "limitations": [
+    "E5 derived ASTs use the actual recorded CPython 3.12.3 interpreter and unchanged default ast.dump algorithm. The earlier 3.12.14 draft remains retained separately; two function and two module hashes differ.",
+    "One retained loguru t_string.py source does not parse in the actual 3.12.3 interpreter. Its raw SHA and original SyntaxError are retained and coverage remains false.",
+    "Original published hashes retain their own provenance; conservative receipt-binding hashes are not relabelled as function AST hashes.",
+    "Owner and exact SHA/AST exclusions do not prove absence of pretraining contamination or semantic duplicates.",
+    "The fixed eight-source list and all original caps remain unchanged; at most six source owners are currently eligible."
+  ],
+  "native_cases": 0,
+  "new_candidate_content_reads": 0,
+  "new_candidate_metadata_reads": 0,
+  "old_draft_bytes_retained_unchanged": true,
+  "outputs": {
+    "EXCLUDED_INVENTORY.json": {
+      "bytes": 721451,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/fresh_selection_preparation/EXCLUDED_INVENTORY.json",
+      "sha256": "dac49a908669ef870d1efce1117699e13698cded0a3098df895a8749f0d90f2c"
+    },
+    "SELECTION.json": {
+      "bytes": 1413,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/fresh_selection_preparation/SELECTION.json",
+      "sha256": "6482ce86db176fc50d8e3be401df9a71da2410cc9babdc5b347a15a87b87a6b7"
+    },
+    "WEIGHTS_FROZEN.json": {
+      "bytes": 3068,
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/fresh_selection_preparation/WEIGHTS_FROZEN.json",
+      "sha256": "c7ac446407e45c81fc00f51748d7aaaa29e9a8f1f290a6eef146c1da9c41ee32"
+    }
+  },
+  "owner_and_repository_sets_equal_old_draft": true,
+  "publication_gate": {
+    "actual_publication_time": null,
+    "actual_selection_commit": null,
+    "no_fabricated_commit_or_publication_proof_used": true,
+    "not_satisfied_by_training_evidence_commit": true,
+    "original_validate_selection_only_available_after_actual_publication": true,
+    "required_before_candidate_access": true
+  },
+  "schema": "hepta.e2.fresh-selection-qualified-assembly-review.v1",
+  "source_bindings_all_fullSHA_verified": true,
+  "status": "FROZEN_READY_FOR_SEPARATE_ROOT_GIT_PUBLICATION_NOT_ACQUISITION",
+  "training_updates": 0
+}

@@ -1,0 +1,95 @@
+{
+  "actual_compute": {
+    "outer_model_backwards": 12,
+    "outer_model_forwards": 12,
+    "padded_positions": 43008,
+    "supervised_target_positions": 1844,
+    "unpadded_positions": 27564
+  },
+  "actual_cpu_encoding_evidence_commit": "9ac43214d5c5d27c33021dfa44d1920e54e22902",
+  "actual_envelope_evidence_commit": "5e1e1435d299651a7b4e19effdfe944011cb70d7",
+  "actual_job": "1a1fd99a672-ffbe-1fa3",
+  "actual_scope_launches_by_packaging_agent": 0,
+  "actual_training_result_status": "COMPLETE",
+  "adapter_model": {
+    "bytes": 2193720,
+    "sha256": "251874e77ba77b22f6873df3632ff09a4c7fd7d73634160d01658cc8f0d2808d"
+  },
+  "all_eleven_original_artifacts_read_back": true,
+  "automatic_retry": false,
+  "binary_transport_errors": 0,
+  "binary_transport_retries": 0,
+  "cost_scopes_are_nested_not_additive": true,
+  "cuda_peak_allocated_bytes": 4805570048,
+  "cuda_peak_reserved_bytes": 5135925248,
+  "energy_joules": null,
+  "engineering_limits": {
+    "outer_H_timeout_seconds": 1020,
+    "python_absolute_deadline_seconds": 960,
+    "python_alarm_is_not_native_OS_preemption": true,
+    "work_seconds": 900
+  },
+  "execution_sources_unchanged": true,
+  "first_H_log_read_INVALID_ARGUMENT_reason": "UNKNOWN; retained raw, subsequent bounded1024-byte read succeeded",
+  "fresh_content_reads": 0,
+  "full_physical_cost_unknown": true,
+  "global_update_bounds": {
+    "durably_completed_updates": 16,
+    "possible_actual_update_upper_bound": 16,
+    "reserved_global_cap": 16
+  },
+  "input_and_metadata_raw_bytes_equal_to_document_child": true,
+  "installed_metadata_unchanged": 45,
+  "mode": "native_feedback",
+  "model_digest": "98460ffa6ce32f0372b12100e7404b7b928f660c33e0bde0d7d4252b7ee05aaa",
+  "native_adoption": false,
+  "new_generation_calls": 0,
+  "new_native_task_executions": 0,
+  "original_artifact_bytes": 2282848,
+  "original_artifact_files": 11,
+  "original_learner_modified": false,
+  "outer_ended_unix_ms": 1795256209899,
+  "outer_exit_code": 0,
+  "outer_terminal": "succeeded",
+  "predecessor": {
+    "artifact_sha256": {
+      "claim": "2b4bc7a9539c48d3e2f72cf0c4b02773c8abd83397910543cef102fb2ee56292",
+      "manifest": "bae90a755d6bfc4b7935b4793c461979167dabef1ab4083be39e22713983c13a",
+      "outer_status": "6746df4cd7d4110896d5add600cf8fda04230bd34aaf9237e86e3945344fa849",
+      "outer_stderr": "20f4a3ac75d55d39910e3239440b32f4706d1d6736d87289629e63ad6e6b7e0a",
+      "outer_stdout": "ec1aabe886bf3cc9a7e1d7d8a68ba8c0f70dc03fedc3c3d90c8b36d648c96029",
+      "plan": "b1278b8c495bb856e001e8b7029e3c30613dd8317167bab344c1420dbc0a3b3a",
+      "post_fsync": "ff7271433ec65f7e3f090027ac20e59a4dc31a07840f43a00dab6456e39b53bd",
+      "result": "c277e9f885a059270ee62dbe92a7f3aa54b400ea63a04f29c57cad347c21b2bf",
+      "training": "e21dff4ff630679ab556e797d773ad7e6c49fc0e6896fc9de240695bcc6d1922",
+      "updates": "3eef3bc273b09dec51aca45efcc1a3b31ea681fc3f689e0cf8011b0cabf991c2"
+    },
+    "completed_updates": 8,
+    "job_id": "1a1fd898e0f-ffbe-1f80",
+    "plan_sha256": "b1278b8c495bb856e001e8b7029e3c30613dd8317167bab344c1420dbc0a3b3a",
+    "possible_actual_update_upper_bound": 8
+  },
+  "python_guard_is_not_OS_network_isolation": true,
+  "refused_python_events": {
+    "socket.bind": 1
+  },
+  "runtime_inputs_unchanged": 172,
+  "runtime_stderr_warning_bytes": 201,
+  "schema": "hepta.e2.native-success-evidence-summary.v1",
+  "scientific_candidate": "dc96ad0c29223dc0fbf0e6165854d8e7cf25331c3f77d57ad30c4f30fc6cf678",
+  "scientific_confirmation_qualified": false,
+  "scientific_source_commit": "dc3397c9e09e29861a0a4fe2267e8ef19e55db01",
+  "selection_publication_not_created": true,
+  "status": "NATIVE_COMPLETE_READY_FOR_ROOT_EVIDENCE_COMMIT",
+  "training_self_cpu_seconds": 115.65804712099998,
+  "training_wall_seconds": 113.92693685705308,
+  "update_bounds": {
+    "durably_completed_updates": 8,
+    "journal_complete": true,
+    "possible_actual_update_upper_bound": 8,
+    "update_completion_uncertain": false
+  },
+  "wrapper_result_status_preserved": "TRAINED_PENDING_OUTER_TERMINAL",
+  "wrapper_self_cpu_seconds": 146.204556517,
+  "wrapper_wall_seconds": 139.71652901300695
+}
