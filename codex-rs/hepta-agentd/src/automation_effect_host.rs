@@ -712,24 +712,36 @@ mod tests {
     }
 
     impl Fixture {
-        async fn new() -> Self {
-            let temp = tempfile::tempdir().expect("temp root");
-            let root = temp.path().canonicalize().expect("canonical temp root");
+        async fn new() -> Result<Self, String> {
+            let temp = tempfile::tempdir().map_err(|error| format!("temp root: {error}"))?;
+            let root = temp
+                .path()
+                .canonicalize()
+                .map_err(|error| format!("canonical temp root: {error}"))?;
             let fleet_path = root.join("fleet");
-            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet root");
-            let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())
+                .map_err(|error| format!("fleet root: {error}"))?;
+            let registry = FleetRegistry::initialize(fleet_root.clone())
+                .map_err(|error| format!("fleet registry: {error}"))?;
             let workspace = root.join("workspace");
-            fs::create_dir(&workspace).expect("workspace");
-            let workspace = workspace.canonicalize().expect("canonical workspace");
-            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).expect("agent id");
+            fs::create_dir(&workspace).map_err(|error| format!("workspace: {error}"))?;
+            let workspace = workspace
+                .canonicalize()
+                .map_err(|error| format!("canonical workspace: {error}"))?;
+            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)
+                .map_err(|error| format!("agent id: {error}"))?;
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root).expect("workspace binding"),
+                WorkspaceBinding::new(workspace.clone(), &fleet_root)
+                    .map_err(|error| format!("workspace binding: {error}"))?,
                 resources.clone(),
             )
-            .expect("manifest");
-            let layout = registry.register(manifest).expect("register agent").layout;
+            .map_err(|error| format!("manifest: {error}"))?;
+            let layout = registry
+                .register(manifest)
+                .map_err(|error| format!("register agent: {error}"))?
+                .layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
                 layout: layout.clone(),
@@ -744,16 +756,16 @@ mod tests {
             };
             let store = AutomationStore::open(&layout)
                 .await
-                .expect("automation store");
-            Self {
+                .map_err(|error| format!("automation store: {error}"))?;
+            Ok(Self {
                 _temp: temp,
                 identity,
                 store,
-            }
+            })
         }
     }
 
-    fn definition() -> TaskFlowDefinition {
+    fn definition() -> Result<TaskFlowDefinition, String> {
         TaskFlowDefinition::new(
             "agentd-product-effect",
             1,
@@ -770,7 +782,7 @@ mod tests {
             vec!["provider.deliver".to_string()],
             Sha256Digest::for_bytes(b"agentd-product-effect-policy"),
         )
-        .expect("definition")
+        .map_err(|error| format!("definition: {error}"))
     }
 
     fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
@@ -794,8 +806,8 @@ mod tests {
         fixture: &Fixture,
         now_ms: u64,
         intent: &AuthorizedEffectIntent,
-    ) -> TaskFlowFence {
-        let definition = definition();
+    ) -> Result<TaskFlowFence, String> {
+        let definition = definition()?;
         let fence = TaskFlowFence::new(
             fixture.identity.agent_id.clone(),
             "agentd-product-effect-owner",
@@ -803,12 +815,12 @@ mod tests {
             1,
             "agentd-product-effect-fence",
         )
-        .expect("fence");
+        .map_err(|error| format!("fence: {error}"))?;
         fixture
             .store
             .register_taskflow_definition(&definition, &fence, now_ms)
             .await
-            .expect("register definition");
+            .map_err(|error| format!("register definition: {error}"))?;
         fixture
             .store
             .create_taskflow_run(
@@ -820,12 +832,12 @@ mod tests {
                 now_ms,
             )
             .await
-            .expect("create run");
+            .map_err(|error| format!("create run: {error}"))?;
         let claimed = fixture
             .store
             .claim_taskflow_run(&intent.run_id, &fence, now_ms + 1, 60_000)
             .await
-            .expect("claim run");
+            .map_err(|error| format!("claim run: {error}"))?;
         fixture
             .store
             .apply_taskflow_command(
@@ -837,11 +849,13 @@ mod tests {
                     TaskFlowTransition::Start,
                     now_ms + 2,
                 )
-                .expect("start command"),
+                .map_err(|error| format!("start command: {error}"))?,
             )
             .await
-            .expect("start run");
-        let digest = intent.digest().expect("intent digest");
+            .map_err(|error| format!("start run: {error}"))?;
+        let digest = intent
+            .digest()
+            .map_err(|error| format!("intent digest: {error}"))?;
         fixture
             .store
             .prepare_taskflow_step(
@@ -855,7 +869,7 @@ mod tests {
                 now_ms + 3,
             )
             .await
-            .expect("prepare step");
+            .map_err(|error| format!("prepare step: {error}"))?;
         fixture
             .store
             .claim_taskflow_step(
@@ -869,35 +883,42 @@ mod tests {
                 now_ms + 4,
             )
             .await
-            .expect("claim step");
-        fence
+            .map_err(|error| format!("claim step: {error}"))?;
+        Ok(fence)
     }
 
     fn signed_final_use(
         intent: &AuthorizedEffectIntent,
         now_ms: u64,
         signing_key: &SigningKey,
-    ) -> SignedFinalUseGrant {
-        let binding = intent.final_use_binding().expect("final-use binding");
+    ) -> Result<SignedFinalUseGrant, String> {
+        let binding = intent
+            .final_use_binding()
+            .map_err(|error| format!("final-use binding: {error}"))?;
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "automation-security-owner".to_string(),
             authority_epoch: 9,
             grant_id: "agentd-product-effect-grant".to_string(),
-            nonce: digest_bytes_for_test(&Sha256Digest::for_bytes(b"agentd-product-effect-nonce")),
+            nonce: digest_bytes_for_test(&Sha256Digest::for_bytes(b"agentd-product-effect-nonce"))?,
             binding,
             not_before_unix_ms: now_ms.saturating_sub(1_000),
             expires_at_unix_ms: now_ms + 30_000,
         };
         let signature = signing_key
-            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .map_err(|error| format!("signing bytes: {error}"))?,
+            )
             .to_bytes()
             .to_vec();
-        SignedFinalUseGrant { grant, signature }
+        Ok(SignedFinalUseGrant { grant, signature })
     }
 
-    fn digest_bytes_for_test(digest: &Sha256Digest) -> [u8; 32] {
-        decode_hex_array::<32>(digest.as_str(), "digest").expect("digest bytes")
+    fn digest_bytes_for_test(digest: &Sha256Digest) -> Result<[u8; 32], String> {
+        decode_hex_array::<32>(digest.as_str(), "digest")
+            .map_err(|error| format!("digest bytes: {error}"))
     }
 
     fn hex(bytes: &[u8]) -> String {
@@ -912,7 +933,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn host_dispatches_exact_wire_payload_once() {
-        let fixture = Fixture::new().await;
+        let fixture = Fixture::new().await.expect("Fixture::new fixture");
         let now_ms = u64::try_from(
             SystemTime::now()
                 .duration_since(UNIX_EPOCH)
@@ -922,7 +943,9 @@ mod tests {
         .expect("millis");
         let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
         let intent = effect_intent(&scope);
-        prepare_effect(&fixture, now_ms, &intent).await;
+        prepare_effect(&fixture, now_ms, &intent)
+            .await
+            .expect("prepare effect fixture");
 
         let server = MockServer::start().await;
         let provider_key = ProviderEffectKey::for_operation(
@@ -1020,7 +1043,8 @@ mod tests {
 
         let host =
             AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
-        let grant = signed_final_use(&intent, now_ms, &final_use_signer);
+        let grant =
+            signed_final_use(&intent, now_ms, &final_use_signer).expect("signed final use fixture");
         let receipt = host
             .execute(
                 &fixture.store,
