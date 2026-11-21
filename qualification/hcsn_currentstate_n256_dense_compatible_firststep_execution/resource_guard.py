@@ -8,7 +8,7 @@ import resource
 import sys
 from pathlib import Path
 
-KEY = "hcsn-n256-dense-compatible-firststep-runtime-v2-20261121-c06d-001"
+KEY = "hcsn-n256-dense-compatible-firststep-runtime-v3-20261121-c06d-001"
 MIN_AVAILABLE_KIB = 8 * 1024 * 1024
 MIN_CGROUP_HEADROOM = 2 * 1024**3
 AS_BYTES = 4 * 1024**3
@@ -98,9 +98,9 @@ def admit():
         if os.environ.get("GITHUB_REF") != "refs/heads/research/hcsn-n256-dense-compatible-firststep-20261121-c06d":
             raise ValueError("single research ref identity")
     elif event == "pull_request":
-        if os.environ.get("GITHUB_HEAD_REF") != "research/hcsn-n256-dense-compatible-firststep-runtime-v2-20261121-c06d":
+        if os.environ.get("GITHUB_HEAD_REF") != "research/hcsn-n256-dense-compatible-firststep-runtime-v3-20261121-c06d":
             raise ValueError("single activation head identity")
-        if os.environ.get("GITHUB_BASE_REF") != "research/hcsn-n256-dense-compatible-runtime-probe-20261121-c06d":
+        if os.environ.get("GITHUB_BASE_REF") != "research/hcsn-n256-dense-compatible-firststep-runtime-v2-20261121-c06d":
             raise ValueError("single activation base identity")
     else:
         raise ValueError("single dispatch event identity")
