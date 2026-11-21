@@ -167,27 +167,42 @@ class FormatterScopeTests(unittest.TestCase):
 
     def test_exact_historical_rust_records_do_not_exempt_neighboring_source(self):
         records = list(FMT.ORIGINAL_EVIDENCE_FILES)
-        neighbor = self.write(
-            f"{FMT.ORIGINAL_EVIDENCE_PREFIX}/actual.rs", "fn original(){}\n"
+        neighbors = [
+            self.write(str(parent / "unregistered_neighbor.rs"), "fn original(){}\n")
+            for parent in sorted({Path(relative).parent for relative in records})
+        ]
+        neighbors.append(
+            self.write(f"{FMT.ORIGINAL_EVIDENCE_PREFIX}/actual.rs", "fn original(){}\n")
         )
-        groups = FMT.scoped_formatter_groups(
-            [*records, str(neighbor.relative_to(self.root))], check=True
-        )
-        self.assertEqual([group.name for group in groups], ["Rust"])
-        self.assertEqual(
-            [command.args[-1] for command in groups[0].commands], [str(neighbor)]
-        )
+        neighbors.append(self.write("codex-rs/example/src/lib.rs", "fn active(){}\n"))
+        paths = [*records, *(str(path.relative_to(self.root)) for path in neighbors)]
+        for check in (False, True):
+            with self.subTest(check=check):
+                groups = FMT.scoped_formatter_groups(paths, check=check)
+                self.assertEqual([group.name for group in groups], ["Rust"])
+                self.assertEqual(
+                    [command.args[-1] for command in groups[0].commands],
+                    sorted(str(path) for path in neighbors),
+                )
         self.assertEqual(FMT.verified_original_evidence_paths(), frozenset(records))
 
     def test_historical_rust_record_mutation_fails_before_format(self):
-        relative = next(iter(FMT.ORIGINAL_EVIDENCE_FILES))
-        source = self.root / relative
-        raw = source.read_bytes()
-        source.write_bytes(bytes([raw[0] ^ 1]) + raw[1:])
-        with self.assertRaisesRegex(ValueError, "original evidence bytes changed"):
-            FMT.scoped_formatter_groups([], check=True)
-        with self.assertRaisesRegex(ValueError, "original evidence bytes changed"):
-            FMT.formatter_groups(check=False)
+        for relative in FMT.ORIGINAL_EVIDENCE_FILES:
+            with self.subTest(path=relative):
+                source = self.root / relative
+                raw = source.read_bytes()
+                source.write_bytes(bytes([raw[0] ^ 1]) + raw[1:])
+                try:
+                    with self.assertRaisesRegex(
+                        ValueError, "original evidence bytes changed"
+                    ):
+                        FMT.scoped_formatter_groups([], check=True)
+                    with self.assertRaisesRegex(
+                        ValueError, "original evidence bytes changed"
+                    ):
+                        FMT.formatter_groups(check=False)
+                finally:
+                    source.write_bytes(raw)
 
     def test_historical_rust_inventory_cannot_register_production_source(self):
         digest = next(iter(FMT.ORIGINAL_EVIDENCE_FILES.values()))
