@@ -10,7 +10,7 @@ from pathlib import Path
 
 KEY = "hcsn-n256-runtime-matched-firststep-20261121-c6bc-001"
 HEAD = "research/hcsn-n256-runtime-matched-firststep-20261121-c6bc"
-EXPECTED_BEFORE = "e56c4bae4706cb2932b476f0747869a3173bf3ca"
+BASE = "evidence/hcsn-n256-runtime-matched-dispatch-base-20261121-c6bc"
 MIN_AVAILABLE_KIB = 8 * 1024 * 1024
 MIN_CGROUP_HEADROOM = 2 * 1024**3
 AS_BYTES = 4 * 1024**3
@@ -86,7 +86,7 @@ def capture():
         "github": {name: os.environ.get(name) for name in (
             "GITHUB_REPOSITORY", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_SHA",
             "GITHUB_REF", "GITHUB_EVENT_NAME", "GITHUB_HEAD_REF", "GITHUB_BASE_REF",
-            "ADMITTED_SOURCE_SHA", "PUSH_BEFORE_SHA", "RUNNER_NAME", "RUNNER_OS", "RUNNER_ARCH"
+            "ADMITTED_SOURCE_SHA", "RUNNER_NAME", "RUNNER_OS", "RUNNER_ARCH"
         )},
     }
 
@@ -96,17 +96,13 @@ def admit():
         raise ValueError("unique execution key")
     if os.environ.get("GITHUB_REPOSITORY") != "TrillionniumFoundation/hepta-private-ci":
         raise ValueError("repository identity")
-    if os.environ.get("GITHUB_EVENT_NAME") != "push":
+    if os.environ.get("GITHUB_EVENT_NAME") != "pull_request":
         raise ValueError("single dispatch event identity")
-    if os.environ.get("GITHUB_REF") != f"refs/heads/{HEAD}":
+    if (os.environ.get("GITHUB_HEAD_REF"), os.environ.get("GITHUB_BASE_REF")) != (HEAD, BASE):
         raise ValueError("single activation ref identity")
     source_sha = os.environ.get("ADMITTED_SOURCE_SHA", "")
     if len(source_sha) != 40 or any(character not in "0123456789abcdef" for character in source_sha):
         raise ValueError("admitted source commit identity")
-    if source_sha != os.environ.get("GITHUB_SHA"):
-        raise ValueError("checked out source commit identity")
-    if os.environ.get("PUSH_BEFORE_SHA") != EXPECTED_BEFORE:
-        raise ValueError("single predecessor identity")
     if (os.environ.get("RUNNER_OS"), os.environ.get("RUNNER_ARCH")) != ("Linux", "X64"):
         raise ValueError("runner identity")
     if sys.version_info[:3] != (3, 12, 3):
