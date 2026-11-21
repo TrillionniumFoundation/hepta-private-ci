@@ -26,6 +26,7 @@ import math
 import torch
 
 from qualification.hcsn_training.population_generator import finite_volume_generator
+from qualification.hcsn_adaptive.finite_control import continuation_value, solve_impulse_control
 
 
 @dataclass(frozen=True)
@@ -243,6 +244,51 @@ with an existing equity operator evaluated on the returned state's nodes.
         event = torch.cat((lower, drift.new_zeros(b, c.stages+1)), -1)
         return generator, event, spatial
 
+    @torch.no_grad()
+    def task_control_reference(self, running_reward, reset_payoff, *, drift):
+        """Frozen finite-task QVI with the encoder's actual Erlang/reset generator.
+
+        running_reward is an externally defined rate over ALL process states;
+        natural-event costs are subtracted here. reset_payoff is the NET reward
+        of a voluntary event for each active bin, including its immediate cost.
+        The solver includes full phase/release continuation. Its intervention
+        set need not be a threshold and does not change this live model/state.
+        Deterministic-delay states are not accepted as this encoder's phases.
+        """
+        c = self.config
+        if self.edges.dtype != torch.float64:
+            raise ValueError("task control reference requires the model's FP64 transport generator")
+        work = self.edges
+        drift = self._batch_value(drift, work, 1)
+        if bool((drift.abs() > c.drift_limit).any()):
+            raise ValueError("control exceeds the configured physical domain")
+        generator, event, _ = self._generator(drift)
+        reward = torch.as_tensor(running_reward, dtype=work.dtype, device=work.device)
+        payoff = torch.as_tensor(reset_payoff, dtype=work.dtype, device=work.device)
+        if reward.shape != event[0].shape:
+            raise ValueError("one explicit running reward per active, phase and escape state required")
+        return solve_impulse_control(generator[0], reward - c.spike_cost * event[0], payoff,
+                                     discount=c.discount, active_count=c.bins, reset_entry=c.bins)
+
+    def _transport(self, written, generator, event, spatial, duration):
+        """Dense frozen propagation; alternative backends override this exact contract.
+
+        Return complete transitioned density, event/occupation integrals, and
+        first-hit probabilities for initially active bins. The default keeps
+        the established matrix operations and their order unchanged.
+        """
+        c, work = self.config, written
+        batch, size = event.shape
+        active_indicator = torch.cat((work.new_ones(c.bins), work.new_zeros(c.stages+1)))
+        weights = torch.stack((event, active_indicator.expand_as(event)), -1)
+        augmented = torch.cat((torch.cat((generator, weights), -1), work.new_zeros(batch, 2, size+2)), -2)
+        action = torch.matrix_exp(augmented*duration)
+        transitioned = written @ action[:, :size, :size]
+        increments = written @ action[:, :size, size:]
+        first_hit = torch.matrix_exp(spatial*duration)[:, :c.bins, c.bins]
+        return transitioned, increments, first_hit
+
+
     def step(self, inputs, state=None, *, dt=None, drift_override=None, boundary_override=None, feature_mask=None):
         c = self.config
         if (inputs.ndim != 2 or inputs.shape[1] != c.input_size or not 1 <= len(inputs) <= c.max_batch
@@ -272,20 +318,13 @@ with an existing equity operator evaluated on the returned state's nodes.
         written = torch.cat((density[:, :1], torch.cat((active_content, density[:, 1:, c.bins:]), -1)), 1)
         content_write = (written[:, 1:]-density[:, 1:]).sum(-1)
         generator, event, spatial = self._generator(drift)
-        batch, size = event.shape
-        active_indicator = torch.cat((work.new_ones(c.bins), work.new_zeros(c.stages+1)))
-        weights = torch.stack((event, active_indicator.expand_as(event)), -1)
-        augmented = torch.cat((torch.cat((generator, weights), -1), work.new_zeros(batch, 2, size+2)), -2)
-        action = torch.matrix_exp(augmented*duration)
-        transitioned = written @ action[:, :size, :size]
-        increments = written @ action[:, :size, size:]
+        batch = event.shape[0]
+        transitioned, increments, first_hit = self._transport(written, generator, event, spatial, duration)
         hits = jump+increments[..., 0]
-        first_hit = torch.matrix_exp(spatial*duration)[:, :c.bins, c.bins]
         risk = jump[:, 0]+(alive_for_risk*first_hit).sum(-1)
         reward = torch.cat((c.gain*(boundary[:, None]+self.centers)-c.maintenance,
                             work.new_zeros(batch, c.stages+1)), -1)-c.spike_cost*event
-        value = torch.linalg.solve(c.discount*torch.eye(size, dtype=work.dtype, device=inputs.device)-generator,
-                                   reward[..., None]).squeeze(-1)
+        value = continuation_value(generator, reward, c.discount)
         p = transitioned[:, 0]
         margin = (p[:, :c.bins]*self.centers).sum(-1)/c.extent
         call = (p*value).sum(-1)
@@ -318,3 +357,4 @@ with an existing equity operator evaluated on the returned state's nodes.
             features, state, _ = self.step(inputs, state)
             outputs.append(features)
         return torch.stack(outputs), state
+
