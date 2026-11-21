@@ -7,17 +7,20 @@
     "README.md": "481c03929c6355650676905043008fee03604e836c592b7ad6069a7a5004c59b",
     "REQUEST.json": "8f61a46cd641c802284e87eacc2faf85b7959036d6a1590846069b4aa18177cc",
     "__init__.py": "e78f246091c9659c5f309b0cb7c841aa5251df4b8cd9021f1f720bfa55d5fd2d",
-    "resource_guard.py": "238b2864ff419cdec27255377c00775f8db4b094bfdd79d6f6c37987aafb62ed",
+    "resource_guard.py": "fe99fb1db805f8f9994a73a88e2154010bb684def3a128e9c3bc332ee9cd194a",
     "child.py": "c79068da9c52dc7e9976692a25594959995cf155132ee024392ac13987d1de64",
     "audit.py": "f620e9d613bd0a8e7779ccfbd7faf357c3bf534bb6050b1cab0a0d9032c9d83f",
     "launcher.py": "04a71a71f50337c44d0816ee0c7b8003771d74c0b60f4fb7efae9edd95c28af4",
     "test_source.py": "2ec49809ac5705ccad42df27b5c3d39f01cca1918540dacbc8cdd69877a964d4",
-    "verify_source.py": "f63407f20510de99115e26cb788682721ccf4eb0743bf55c7fcaebfd67876e7e",
+    "verify_source.py": "ef1d1c159f1fed1e01a7cc96dcd1a070f678cd5062a107217b7a5207ac7562ec",
     "DISPATCH_CHANNEL_RED.json": "5723fcbb1129f4b846593fc6e35d606bf1b48b0b4b55d756ace2037e2602c0d7",
     "REF_DISPATCH_NO_RUN.json": "26fad1c13d0e39a9af15a93dd8398a372a0a2d81c8fe6d1eda2e051f01b758c0",
+    "PR_ACTIVATION_NO_RUN.json": "ec48d79085a1d481fc2c615674193adc18ae994ec53cce9fe807e5ff77042147",
+    "EXECUTION_OPENED.json": "b4cfaabd741f23c757c4c3239401de897ca10896c7f43d22fc2da400f5d94f89",
     ".github/workflows/hcsn-currentstate-n256-dense-compatible-firststep-execution-source.yml": "0df75766ac2812c50611700638fe45e52d21de69b985ddae8680bd7589df4d6f",
     ".github/workflows/hcsn-currentstate-n256-dense-compatible-firststep-execution-run.yml": "85dfa46f291f6db3cf6c2f0cb7c4e36bd83c2b54c0da22cfedc4041a5067b1c3",
-    ".github/workflows/hcsn-currentstate-n256-dense-compatible-firststep-execution-activation.yml": "07b4235b37277e1046993661096faa0e318f3a835a0704698169495b0426ffae"
+    ".github/workflows/hcsn-currentstate-n256-dense-compatible-firststep-execution-activation.yml": "07b4235b37277e1046993661096faa0e318f3a835a0704698169495b0426ffae",
+    ".github/workflows/hcsn-currentstate-n256-dense-compatible-firststep-execution-opened.yml": "75923b4846ff24fdb4b9cdb2c44e7e86ddb2dcfd02c10fcb7962cc55eb5949e1"
   },
   "activation_sha256": "b5897dcb53776a348912ab044037a408ba3c668b95bfb73c4e731f8f729b26d2",
   "activation_contract": {
@@ -38,6 +41,18 @@
     "maximum_dispatches": 1,
     "dispatch_transport": "separate_stack_pull_request_opened",
     "prior_ref_update_actions_runs": 0,
+    "historical_negative_and_unknown_preserved": true,
+    "production_adoption": false,
+    "all_closed": false
+  },
+  "execution_opened_sha256": "b4cfaabd741f23c757c4c3239401de897ca10896c7f43d22fc2da400f5d94f89",
+  "execution_opened_contract": {
+    "schema": "hcsn-n256-dense-compatible-firststep-execution-opened-v1",
+    "identity": "hcsn-n256-dense-compatible-firststep-hosted-20261121-c06d-001",
+    "authorized": true,
+    "maximum_dispatches": 1,
+    "dispatch_transport": "new_workflow_in_initial_pull_request_diff",
+    "prior_actual_numerical_runs": 0,
     "historical_negative_and_unknown_preserved": true,
     "production_adoption": false,
     "all_closed": false

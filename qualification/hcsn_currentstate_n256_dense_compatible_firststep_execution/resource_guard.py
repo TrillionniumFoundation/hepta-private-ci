@@ -98,7 +98,7 @@ def admit():
         if os.environ.get("GITHUB_REF") != "refs/heads/research/hcsn-n256-dense-compatible-firststep-20261121-c06d":
             raise ValueError("single research ref identity")
     elif event == "pull_request":
-        if os.environ.get("GITHUB_HEAD_REF") != "research/hcsn-n256-dense-compatible-firststep-activation-20261121-c06d":
+        if os.environ.get("GITHUB_HEAD_REF") != "research/hcsn-n256-dense-compatible-firststep-opened-20261121-c06d":
             raise ValueError("single activation head identity")
         if os.environ.get("GITHUB_BASE_REF") != "intent/hcsn-n256-dense-compatible-firststep-execution-20261121-c06d":
             raise ValueError("single activation base identity")
