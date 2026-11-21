@@ -1,0 +1,83 @@
+name: Independent cargo-deny measurement 20261121
+
+on:
+  push:
+    branches: [diagnostic/cargo-deny-f0c7ccbf-once-002]
+    paths:
+      - .github/workflows/cargo-deny-repro-once.yml
+      - qualification/cargo_deny_repro_20261121/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cargo-deny-new-20261121-001
+  cancel-in-progress: false
+
+jobs:
+  new-measurement:
+    if: github.event.before == 'f0c7ccbf631558f67efee948c8612b29c517e0f6' && github.run_attempt == '1'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Record first-step clock
+        env:
+          DIAG_START: ${{ runner.temp }}/cargo-deny-start-${{ github.run_id }}.json
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os, time
+          from pathlib import Path
+          workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve(strict=True)
+          value = {"monotonic_seconds": time.monotonic(),
+                   "head": os.environ["GITHUB_SHA"], "run_id": os.environ["GITHUB_RUN_ID"],
+                   "workspace": str(workspace), "caller_uid": os.getuid(),
+                   "caller_gid": os.getgid(), "workspace_uid": workspace.stat().st_uid,
+                   "workspace_gid": workspace.stat().st_gid,
+                   "first_step_cpu_seconds": time.process_time(),
+                   "host_checkout_upload_teardown_cpu_seconds": None}
+          with open(os.environ["DIAG_START"], "x") as f:
+              json.dump(value, f, sort_keys=True)
+          PY
+      - name: Check out exact diagnostic commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          submodules: false
+      - name: Run one bounded new measurement
+        id: supervise
+        env:
+          DIAG_ROOT: ${{ runner.temp }}/cargo-deny-new-${{ github.run_id }}-001
+          DIAG_START: ${{ runner.temp }}/cargo-deny-start-${{ github.run_id }}.json
+        run: |
+          sudo -n /usr/bin/python3 -I -B qualification/cargo_deny_repro_20261121/supervise_once.py \
+            --repo "$GITHUB_WORKSPACE" \
+            --contract "$GITHUB_WORKSPACE/qualification/cargo_deny_repro_20261121/CONTRACT_FROZEN.json" \
+            --run-root "$DIAG_ROOT" --job-start "$DIAG_START" \
+            --head "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
+      - name: Preserve only this new measurement
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cargo-deny-new-${{ github.sha }}-${{ github.run_id }}-001
+          path: ${{ runner.temp }}/cargo-deny-new-${{ github.run_id }}-001/out/*
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+      - name: Reflect the measured policy outcome
+        if: always()
+        env:
+          DIAG_ROOT: ${{ runner.temp }}/cargo-deny-new-${{ github.run_id }}-001
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path(os.environ["DIAG_ROOT"]) / "out"
+          supervisor = json.loads((p / "SUPERVISOR.json").read_text())
+          result = json.loads((p / "RESULT.json").read_text())
+          ok = (supervisor["status"] == "NEW_MEASUREMENT_RECEIVED"
+                and result["status"] == "CHECK_PASSED_NEW_MEASUREMENT_ONLY")
+          raise SystemExit(0 if ok else 1)
+          PY
+
