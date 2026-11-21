@@ -1,12 +1,12 @@
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use time::format_description::well_known::Rfc3339;
 use codex_protocol::ThreadId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use futures::future::BoxFuture;
 use serde::Serialize;
 use serde::Serializer;
+use time::format_description::well_known::Rfc3339;
 
 pub type HookFn = Arc<dyn for<'a> Fn(&'a HookPayload) -> BoxFuture<'a, HookResult> + Send + Sync>;
 
@@ -106,6 +106,7 @@ mod tests {
     use std::time::Duration;
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
+
     use codex_protocol::ThreadId;
     use codex_utils_absolute_path::test_support::PathBufExt;
     use codex_utils_absolute_path::test_support::test_path_buf;
