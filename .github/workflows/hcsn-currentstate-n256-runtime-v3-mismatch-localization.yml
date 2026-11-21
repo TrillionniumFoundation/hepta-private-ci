@@ -14,7 +14,7 @@ jobs:
   readonly-localization:
     if: >-
       github.head_ref == 'research/hcsn-n256-runtime-v3-mismatch-localization-20261121-c6bc' &&
-      github.base_ref == 'evidence/hcsn-n256-runtime-v3-strict-red-89896f5-20261121-c06d'
+      github.base_ref == 'evidence/hcsn-n256-runtime-v3-localization-dispatch-base-20261121-c6bc'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
