@@ -1,0 +1,48 @@
+{
+  "all_closed": false,
+  "arithmetic_or_path_cause": "UNKNOWN",
+  "candidate_sha256": "33ee695bfc001ca9bb5555befe384e0dee60e49be32832170ceabfeebee9c6bc",
+  "coordinate_comparisons": 69728,
+  "c2_full_replay_completed_fits": 0,
+  "exact_runtime_attempt": {
+    "artifact_id": 14711290261,
+    "artifact_sha256": "f771fd19571843efed7e99583122f2f5ca4288b7f2f93d62d1d8318f14f00666",
+    "job": 136875692405,
+    "numpy": "2.3.5",
+    "numpy_record_sha256": "81412454021a86a9199d8c3ae4b5e1312e7498437ba9e3fdcc6f5919c0a6482c",
+    "pr": 6901,
+    "python": "3.12.3",
+    "python_executable_sha256": "2ce74da59bd24c1301a77e90b94abfe52bc14d54c0f79f565665b5a59d62734b",
+    "run": 44914033031,
+    "scipy": "1.17.0",
+    "scipy_record_sha256": "d98e3cc57253f7f8c6ca4f5b775a4747815edc9b1bcd5295c9dacc3c8d49c7b0",
+    "source": "43ab94a3797120b6a6c07963dd646b2db137270a"
+  },
+  "historical_negative_and_unknown_preserved": true,
+  "hpca_status": "NoUpdate",
+  "localization": {
+    "artifact_sha256": "958c7e4c5459e760e14ff3c363ea55f517a48a51add40279164040759b29ad10",
+    "job": 136863614180,
+    "mismatches_by_path": {
+      "state/active": 650,
+      "state/discounted_hit": 5,
+      "state/mass": 5,
+      "state/occupation": 5
+    },
+    "packet_mismatches": 0,
+    "pr": 6892,
+    "run": 44910007894,
+    "source": "fdf5b123afb108bbce21c3bfb574b989d02890f2",
+    "state_upper_mismatches": 0
+  },
+  "max_abs_error_hex": "0x1.e000000000000p-54",
+  "max_ulp_distance": 98,
+  "numerical_calls_by_review": 0,
+  "optimizer_steps_by_review": 0,
+  "production_adoption": false,
+  "qualification": false,
+  "runtime_version_confounder_eliminated": true,
+  "schema": "hcsn-n256-runtime-matched-cross-lineage-review-v1",
+  "strict_bitwise_mismatches": 665,
+  "torch_calls_by_review": 0
+}
