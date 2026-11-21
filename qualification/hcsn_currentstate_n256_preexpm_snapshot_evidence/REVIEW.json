@@ -1,0 +1,73 @@
+{
+  "schema": "hcsn-n256-preexpm-snapshot-duplicate-review-v1",
+  "identity": "hcsn-n256-preexpm-input-snapshot-20261121-c6bc-001",
+  "runs": [
+    {
+      "run": 44916753930,
+      "job": 136883924300,
+      "head": "589622451d292792c02d9d3aafea7bd7a45263e4",
+      "artifact": 14711463209,
+      "api_size_bytes": 176288,
+      "zip_sha256": "918e9c0f0a1e27ebe0ad4159ce8314771b7d08e78f6e484473ff18506b906c22",
+      "conclusion": "success"
+    },
+    {
+      "run": 44916786884,
+      "job": 136884030761,
+      "head": "87e7947d5d8b3279cf621847e01712a43b16ce43",
+      "artifact": 14711278907,
+      "api_size_bytes": 176281,
+      "zip_sha256": "56da770158265e85a81beeb32c9c53a188ffd3b35130cf6ff30e880996a567de",
+      "conclusion": "success"
+    }
+  ],
+  "protocol": {
+    "single_execution_required": true,
+    "observed_executions": 2,
+    "single_execution_gate": false,
+    "status": "RED_DUPLICATE_KEY",
+    "cause": "run branch creation triggered push run before one explicit activation fast-forward triggered a second push run",
+    "cancelled": 0,
+    "rerun": 0,
+    "replacement_key": false
+  },
+  "raw_review": {
+    "artifact_crc_ok": 2,
+    "raw_binary_files_per_run": 12,
+    "raw_binary_bytes_per_run": 3269520,
+    "result_json_byte_equal_across_runs": true,
+    "raw_binary_byte_equal_across_runs": true,
+    "oracle_candidate_rebuilt_equal_within_each_run": true,
+    "undiscounted_coordinates_per_source": 67854,
+    "discounted_coordinates_per_source": 68376,
+    "hashes": {
+      "undiscounted_augmented": "e68bd307585ef4e69a2a479bf9dd0d4cb5e5b272169d98b942c423701043b27f",
+      "undiscounted_seed": "6d884fc9d1eff2fa43abc23acfcacb0b9ee9bbe4548414b440edd52b945c9bd0",
+      "discounted_augmented": "efacd2869032877c2c7b7064d2fc24add8c5e3d8d584110414e9dbe34e91fcd7",
+      "discounted_seed": "4e9809e12eedeb7d1d7b9830b31c8d1979305451d60822ddfabb9d3c49da5a57"
+    }
+  },
+  "cumulative_work": {
+    "boundary_decodes": 6,
+    "preexpm_augmented_builds": 12,
+    "preexpm_seed_builds": 12,
+    "dynamic_steps": 0,
+    "dense_exponential_actions": 0,
+    "sparse_exponential_actions": 0,
+    "scipy_imports": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "scope": {
+    "current_source_preexpm_input_construction_exact": true,
+    "single_execution_contract_satisfied": false,
+    "original_oracle_run_preexpm_bytes_published": false,
+    "expm_arithmetic_path_qualified": false,
+    "n256_dynamic_qualified": false,
+    "cause_of_6901_red": "UNKNOWN",
+    "c2_full_replay_completed_fits": 0,
+    "hpca_status": "NoUpdate",
+    "production_adoption": false,
+    "all_closed": false
+  }
+}
