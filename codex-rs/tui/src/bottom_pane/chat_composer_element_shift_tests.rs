@@ -9,7 +9,9 @@ fn shell_draft_round_trip_preserves_unicode_element_ranges() {
     let visible_text = "🦀 echo [日本語]";
     let canonical_text = format!("!{visible_text}");
     let placeholder = "[日本語]";
-    let start = visible_text.find(placeholder).expect("placeholder in draft");
+    let start = visible_text
+        .find(placeholder)
+        .expect("placeholder in draft");
     let visible_element = TextElement::new(
         (start..visible_text.len()).into(),
         Some(placeholder.to_string()),

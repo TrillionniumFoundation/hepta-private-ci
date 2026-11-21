@@ -30,12 +30,18 @@ pub(crate) struct Tensor {
 
 impl Tensor {
     pub(crate) fn values(&self, shape: &[usize]) -> Result<Vec<f64>, HcsnRecoveryErrorV2> {
-        let count = shape.iter().try_fold(1_usize, |a, b| a.checked_mul(*b))
+        let count = shape
+            .iter()
+            .try_fold(1_usize, |a, b| a.checked_mul(*b))
             .ok_or(HcsnRecoveryErrorV2::Backend)?;
         if self.shape != shape || self.bits.len() != count || count > 4_000_000 {
             return Err(HcsnRecoveryErrorV2::Backend);
         }
-        let values: Vec<_> = self.bits.iter().map(|value| f64::from_bits(*value)).collect();
+        let values: Vec<_> = self
+            .bits
+            .iter()
+            .map(|value| f64::from_bits(*value))
+            .collect();
         if values.iter().any(|value| !value.is_finite()) {
             return Err(HcsnRecoveryErrorV2::Backend);
         }
@@ -76,13 +82,37 @@ impl Config {
             || !(2..=64).contains(&self.bins)
             || !(1..=128).contains(&self.stages)
             || !(1..=256).contains(&self.max_batch)
-            || [self.extent, self.dt, self.sigma, self.base_drift, self.drift_scale,
-                self.reset_margin, self.refractory, self.discount, self.gain,
-                self.maintenance, self.spike_cost, self.write_fraction,
-                self.boundary_limit, self.drift_limit].iter().any(|v| !v.is_finite())
-            || [self.extent, self.dt, self.sigma, self.refractory, self.discount,
-                self.boundary_limit, self.drift_limit].iter().any(|v| *v <= 0.0)
-            || self.drift_scale < 0.0 || self.base_drift.abs() + self.drift_scale > self.drift_limit
+            || [
+                self.extent,
+                self.dt,
+                self.sigma,
+                self.base_drift,
+                self.drift_scale,
+                self.reset_margin,
+                self.refractory,
+                self.discount,
+                self.gain,
+                self.maintenance,
+                self.spike_cost,
+                self.write_fraction,
+                self.boundary_limit,
+                self.drift_limit,
+            ]
+            .iter()
+            .any(|v| !v.is_finite())
+            || [
+                self.extent,
+                self.dt,
+                self.sigma,
+                self.refractory,
+                self.discount,
+                self.boundary_limit,
+                self.drift_limit,
+            ]
+            .iter()
+            .any(|v| *v <= 0.0)
+            || self.drift_scale < 0.0
+            || self.base_drift.abs() + self.drift_scale > self.drift_limit
             || !(0.0..=1.0).contains(&self.write_fraction)
             || self.reset_margin <= self.extent / (2 * self.bins) as f64
             || self.reset_margin >= self.extent * (1.0 - 1.0 / (2 * self.bins) as f64)
@@ -203,11 +233,18 @@ impl HcsnResearchStateCodecV2 for HcsnStreamingCodecV1 {
         profile: &HcsnTimeProfileV1,
     ) -> Result<Self::State, HcsnRecoveryErrorV2> {
         let invalid = HcsnRecoveryErrorV2::Backend;
-        let verified_clock = HcsnClockCheckpointV1::restore(profile, clock.identity(),
-            &clock.encode().map_err(|_| invalid)?, clock.digest()).map_err(|_| invalid)?;
-        let parameters: Parameters = serde_json::from_slice(&snapshot.parameters).map_err(|_| invalid)?;
+        let verified_clock = HcsnClockCheckpointV1::restore(
+            profile,
+            clock.identity(),
+            &clock.encode().map_err(|_| invalid)?,
+            clock.digest(),
+        )
+        .map_err(|_| invalid)?;
+        let parameters: Parameters =
+            serde_json::from_slice(&snapshot.parameters).map_err(|_| invalid)?;
         let backend: Backend = serde_json::from_slice(&snapshot.backend).map_err(|_| invalid)?;
-        let controller: Controller = serde_json::from_slice(&snapshot.controller).map_err(|_| invalid)?;
+        let controller: Controller =
+            serde_json::from_slice(&snapshot.controller).map_err(|_| invalid)?;
         let rng: Rng = serde_json::from_slice(&snapshot.rng).map_err(|_| invalid)?;
         let history: History = serde_json::from_slice(&snapshot.history).map_err(|_| invalid)?;
         if Digest32::of_bytes(&snapshot.encode()?) != clock.state_digest()
@@ -228,30 +265,52 @@ impl HcsnResearchStateCodecV2 for HcsnStreamingCodecV1 {
         // Grid admission remains the native owner's responsibility. This codec
         // verifies the recovered final clock, not a fabricated execution receipt.
         let on_grid = match profile.integration {
-            HcsnIntegrationV1::PopulationGrid { step_micros, .. } =>
-                step_micros != 0 && backend.time_micros.is_multiple_of(step_micros),
+            HcsnIntegrationV1::PopulationGrid { step_micros, .. } => {
+                step_micros != 0 && backend.time_micros.is_multiple_of(step_micros)
+            }
             HcsnIntegrationV1::ValueKernel | HcsnIntegrationV1::PopulationAge { .. } => false,
         };
-        if backend.schema != SCHEMA || snapshot.optimizer != HcsnOptimizerStateV2::NotUsed
-            || snapshot.binding.learning_rule_digest != Digest32::of_bytes(b"hepta.hcsn.learning-rule.closed-form-readout.v1")
+        if backend.schema != SCHEMA
+            || snapshot.optimizer != HcsnOptimizerStateV2::NotUsed
+            || snapshot.binding.learning_rule_digest
+                != Digest32::of_bytes(b"hepta.hcsn.learning-rule.closed-form-readout.v1")
             || snapshot.binding.parameter_mask_digest != Digest32::of_bytes(&mask)
-            || backend.time_micros != clock.last_micros() || backend.time_micros >= 1_u64 << 63
-            || !on_grid || !(1..=c.max_batch).contains(&backend.batch)
+            || backend.time_micros != clock.last_micros()
+            || backend.time_micros >= 1_u64 << 63
+            || !on_grid
+            || !(1..=c.max_batch).contains(&backend.batch)
             || !(1..=64).contains(&backend.output_size)
-            || controller.rule != "closed_form_readout" || !controller.ridge.is_finite() || controller.ridge <= 0.0
-            || rng.kind != "not_used" || rng.reason != "deterministic_frozen_encoder_and_ridge"
-            || history.kind != "ridge_sufficient_statistics" || history.past_autograd_retained
-            || [controller.observations, controller.examples, controller.solves,
-                controller.discarded_observations, controller.discarded_examples, controller.discarded_solves]
-                .iter().any(|n| *n >= 1_u64 << 53)
-            || controller.examples > controller.observations.checked_mul(backend.batch as u64).ok_or(invalid)?
+            || controller.rule != "closed_form_readout"
+            || !controller.ridge.is_finite()
+            || controller.ridge <= 0.0
+            || rng.kind != "not_used"
+            || rng.reason != "deterministic_frozen_encoder_and_ridge"
+            || history.kind != "ridge_sufficient_statistics"
+            || history.past_autograd_retained
+            || [
+                controller.observations,
+                controller.examples,
+                controller.solves,
+                controller.discarded_observations,
+                controller.discarded_examples,
+                controller.discarded_solves,
+            ]
+            .iter()
+            .any(|n| *n >= 1_u64 << 53)
+            || controller.examples
+                > controller
+                    .observations
+                    .checked_mul(backend.batch as u64)
+                    .ok_or(invalid)?
             || !controller.examples.is_multiple_of(backend.batch as u64)
         {
             return Err(invalid);
         }
         let expected_flow = [
-            ("drive.bias", vec![1]), ("drive.weight", vec![1, c.input_size]),
-            ("writer.bias", vec![c.content_size]), ("writer.weight", vec![c.content_size, c.input_size]),
+            ("drive.bias", vec![1]),
+            ("drive.weight", vec![1, c.input_size]),
+            ("writer.bias", vec![c.content_size]),
+            ("writer.weight", vec![c.content_size, c.input_size]),
         ];
         if parameters.flow.len() != expected_flow.len() || parameters.readout.len() != 2 {
             return Err(invalid);
@@ -259,11 +318,24 @@ impl HcsnResearchStateCodecV2 for HcsnStreamingCodecV1 {
         for (name, shape) in expected_flow {
             parameters.flow.get(name).ok_or(invalid)?.values(&shape)?;
         }
-        parameters.readout.get("weight").ok_or(invalid)?.values(&[backend.output_size, features])?;
-        parameters.readout.get("bias").ok_or(invalid)?.values(&[backend.output_size])?;
-        let density = backend.density.values(&[backend.batch, 1 + c.content_size, size])?;
+        parameters
+            .readout
+            .get("weight")
+            .ok_or(invalid)?
+            .values(&[backend.output_size, features])?;
+        parameters
+            .readout
+            .get("bias")
+            .ok_or(invalid)?
+            .values(&[backend.output_size])?;
+        let density = backend
+            .density
+            .values(&[backend.batch, 1 + c.content_size, size])?;
         let boundary = backend.boundary.values(&[backend.batch])?;
-        for (batch, values) in density.chunks_exact((1 + c.content_size) * size).enumerate() {
+        for (batch, values) in density
+            .chunks_exact((1 + c.content_size) * size)
+            .enumerate()
+        {
             let probability = &values[..size];
             if (probability.iter().sum::<f64>() - 1.0).abs() > 1e-10
                 || probability.iter().any(|value| *value < -1e-10)
@@ -272,11 +344,19 @@ impl HcsnResearchStateCodecV2 for HcsnStreamingCodecV1 {
                 return Err(invalid);
             }
             for content in values.chunks_exact(size).skip(1) {
-                if content.iter().zip(probability).any(|(value, p)| value.abs() > p + 1e-10) {
+                if content
+                    .iter()
+                    .zip(probability)
+                    .any(|(value, p)| value.abs() > p + 1e-10)
+                {
                     return Err(invalid);
                 }
             }
-            if c.upper_mode == "reflecting" && values.chunks_exact(size).any(|part| part[size - 1].abs() > 1e-10) {
+            if c.upper_mode == "reflecting"
+                && values
+                    .chunks_exact(size)
+                    .any(|part| part[size - 1].abs() > 1e-10)
+            {
                 return Err(invalid);
             }
         }
@@ -305,23 +385,42 @@ impl HcsnResearchStateCodecV2 for HcsnStreamingCodecV1 {
             for row in 0..width {
                 for col in 0..=row {
                     let mut value = gram[row * width + col]
-                        + if row == col && col != features { controller.ridge } else { 0.0 };
+                        + if row == col && col != features {
+                            controller.ridge
+                        } else {
+                            0.0
+                        };
                     for k in 0..col {
                         value -= lower[row * width + k] * lower[col * width + k];
                     }
                     if !value.is_finite() || (row == col && value <= 0.0) {
                         return Err(invalid);
                     }
-                    lower[row * width + col] = if row == col { value.sqrt() }
-                        else { value / lower[col * width + col] };
+                    lower[row * width + col] = if row == col {
+                        value.sqrt()
+                    } else {
+                        value / lower[col * width + col]
+                    };
                 }
             }
         }
-        let cost = validate_cost(&snapshot.cost_ledger, snapshot.binding.request_digest,
-                                 &controller, backend.batch as u64)?;
+        let cost = validate_cost(
+            &snapshot.cost_ledger,
+            snapshot.binding.request_digest,
+            &controller,
+            backend.batch as u64,
+        )?;
         Ok(HcsnStreamingStateV1 {
-            snapshot: snapshot.clone(), parameters, controller, gram, cross, features,
-            outputs: backend.output_size, cost, clock: verified_clock, profile: *profile,
+            snapshot: snapshot.clone(),
+            parameters,
+            controller,
+            gram,
+            cross,
+            features,
+            outputs: backend.output_size,
+            cost,
+            clock: verified_clock,
+            profile: *profile,
         })
     }
 }

@@ -42,13 +42,25 @@ pub fn hcsn_streaming_request_digest_v1(request: &CellUpdateRequestV1) -> Digest
     let mut bytes = b"hepta.hcsn.streaming-update-request.v1\0".to_vec();
     bytes.extend_from_slice(&(request.proposal_id.as_str().len() as u32).to_be_bytes());
     bytes.extend_from_slice(request.proposal_id.as_str().as_bytes());
-    for digest in [request.scope.digest(), request.base_bundle_digest, request.source_frontier,
-        request.dataset_digest, request.credit_profile_digest, request.trainable_mask_digest] {
+    for digest in [
+        request.scope.digest(),
+        request.base_bundle_digest,
+        request.source_frontier,
+        request.dataset_digest,
+        request.credit_profile_digest,
+        request.trainable_mask_digest,
+    ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    for value in [request.dataset_bytes, request.from_generation.get(), request.candidate_generation.get(),
-        request.budget.maximum_dataset_bytes, request.budget.maximum_steps,
-        request.budget.maximum_elapsed_micros, request.budget.maximum_working_bytes] {
+    for value in [
+        request.dataset_bytes,
+        request.from_generation.get(),
+        request.candidate_generation.get(),
+        request.budget.maximum_dataset_bytes,
+        request.budget.maximum_steps,
+        request.budget.maximum_elapsed_micros,
+        request.budget.maximum_working_bytes,
+    ] {
         bytes.extend_from_slice(&value.to_be_bytes());
     }
     bytes.extend_from_slice(&(request.trainable_parameters.len() as u64).to_be_bytes());
@@ -84,29 +96,41 @@ impl HcsnStreamingUpdatePortV1 {
             || state.clock_identity().generation != request.from_generation
             || Digest32::of_bytes(&state.snapshot.parameters) != admission.base_parameters_digest
             || state.snapshot.binding.dataset_digest != request.dataset_digest
-            || request.base_bundle_digest.is_zero() || request.source_frontier.is_zero()
-            || request.credit_profile_digest.is_zero() || request.dataset_bytes == 0
+            || request.base_bundle_digest.is_zero()
+            || request.source_frontier.is_zero()
+            || request.credit_profile_digest.is_zero()
+            || request.dataset_bytes == 0
             || request.dataset_bytes > request.budget.maximum_dataset_bytes
-            || request.from_generation.get().checked_add(1) != Some(request.candidate_generation.get())
-            || request.trainable_parameters != names || request.trainable_mask_digest != Digest32::of_bytes(&mask)
-            || state.controller.examples == 0 || state.controller.solves == 0
+            || request.from_generation.get().checked_add(1)
+                != Some(request.candidate_generation.get())
+            || request.trainable_parameters != names
+            || request.trainable_mask_digest != Digest32::of_bytes(&mask)
+            || state.controller.examples == 0
+            || state.controller.solves == 0
             || state.cost().charged_proposals > request.budget.maximum_steps
             || state.cost().elapsed_micros > request.budget.maximum_elapsed_micros
             || admission.observed_peak_working_bytes == 0
             || admission.observed_peak_working_bytes > request.budget.maximum_working_bytes
-            || candidate_readout.is_empty() || candidate_readout.len() > 1_048_576
+            || candidate_readout.is_empty()
+            || candidate_readout.len() > 1_048_576
         {
             return Err(invalid);
         }
-        let candidate: BTreeMap<String, Tensor> = serde_json::from_slice(candidate_readout)
-            .map_err(|_| invalid.clone())?;
+        let candidate: BTreeMap<String, Tensor> =
+            serde_json::from_slice(candidate_readout).map_err(|_| invalid.clone())?;
         if candidate.len() != 2 {
             return Err(invalid);
         }
-        let weight = candidate.get("weight").ok_or(invalid.clone())?
-            .values(&[state.outputs, state.features]).map_err(|_| invalid.clone())?;
-        let bias = candidate.get("bias").ok_or(invalid.clone())?
-            .values(&[state.outputs]).map_err(|_| invalid.clone())?;
+        let weight = candidate
+            .get("weight")
+            .ok_or(invalid.clone())?
+            .values(&[state.outputs, state.features])
+            .map_err(|_| invalid.clone())?;
+        let bias = candidate
+            .get("bias")
+            .ok_or(invalid.clone())?
+            .values(&[state.outputs])
+            .map_err(|_| invalid.clone())?;
         let width = state.features + 1;
         // Check the actual regularized normal equation in FP64. This bounded
         // residual check is not a proof of a global optimum or downstream gain.
@@ -115,14 +139,22 @@ impl HcsnStreamingUpdatePortV1 {
                 let mut result = 0.0;
                 let mut scale = state.cross[row * state.outputs + output].abs() + 1.0;
                 for col in 0..width {
-                    let parameter = if col == state.features { *bias_value }
-                        else { weight[output * state.features + col] };
+                    let parameter = if col == state.features {
+                        *bias_value
+                    } else {
+                        weight[output * state.features + col]
+                    };
                     let coefficient = state.gram[row * width + col]
-                        + if row == col && col != state.features { state.controller.ridge } else { 0.0 };
+                        + if row == col && col != state.features {
+                            state.controller.ridge
+                        } else {
+                            0.0
+                        };
                     result += coefficient * parameter;
                     scale += (coefficient * parameter).abs();
                 }
-                if !result.is_finite() || !scale.is_finite()
+                if !result.is_finite()
+                    || !scale.is_finite()
                     || (result - state.cross[row * state.outputs + output]).abs() > 1e-10 * scale
                 {
                     return Err(invalid);
@@ -133,7 +165,8 @@ impl HcsnStreamingUpdatePortV1 {
         let mut changed = Vec::new();
         for (name, parameter) in &candidate {
             if parameters.readout.get(name) != Some(parameter) {
-                changed.push(StableId::new(format!("readout.{name}")).map_err(|_| invalid.clone())?);
+                changed
+                    .push(StableId::new(format!("readout.{name}")).map_err(|_| invalid.clone())?);
             }
         }
         parameters.readout = candidate;
@@ -161,10 +194,16 @@ impl HcsnStreamingUpdatePortV1 {
             admitted: admission.request,
             outcome: Some(outcome),
             artifact,
-            lineage: [state.snapshot.binding.base_checkpoint_digest,
-                admission.base_parameters_digest, Digest32::of_bytes(&state.encode().map_err(|_| invalid)?),
-                state.cost().journal_tail, Digest32::of_bytes(candidate_readout),
-                state.snapshot.binding.request_digest, state.clock_digest(), artifact_digest],
+            lineage: [
+                state.snapshot.binding.base_checkpoint_digest,
+                admission.base_parameters_digest,
+                Digest32::of_bytes(&state.encode().map_err(|_| invalid)?),
+                state.cost().journal_tail,
+                Digest32::of_bytes(candidate_readout),
+                state.snapshot.binding.request_digest,
+                state.clock_digest(),
+                artifact_digest,
+            ],
         })
     }
 
@@ -178,11 +217,16 @@ impl HcsnStreamingUpdatePortV1 {
 }
 
 impl CellUpdatePortV1 for HcsnStreamingUpdatePortV1 {
-    fn propose(&mut self, request: &CellUpdateRequestV1) -> Result<CellUpdateOutcomeV1, CellExecutionError> {
+    fn propose(
+        &mut self,
+        request: &CellUpdateRequestV1,
+    ) -> Result<CellUpdateOutcomeV1, CellExecutionError> {
         if request != &self.admitted {
             return Err(CellExecutionError::OperationConflict);
         }
-        self.outcome.take().ok_or(CellExecutionError::OperationConflict)
+        self.outcome
+            .take()
+            .ok_or(CellExecutionError::OperationConflict)
     }
 }
 

@@ -143,48 +143,90 @@ pub(crate) fn validate_cost(
         }
         let record = Record::decode(&item.canonical).map_err(|_| invalid)?;
         let (request, limits, previous) = match &record {
-            Record::Reserve(ReserveRecord { identity, budget, previous, .. })
-            | Record::Settle(SettleRecord { identity, budget, previous, .. }) => (identity, budget, previous),
+            Record::Reserve(ReserveRecord {
+                identity,
+                budget,
+                previous,
+                ..
+            })
+            | Record::Settle(SettleRecord {
+                identity,
+                budget,
+                previous,
+                ..
+            }) => (identity, budget, previous),
         };
         if request != &journal.identity
             || previous != &tail.to_string()
             || !limits.wall_seconds.is_finite()
             || limits.wall_seconds <= 0.0
-            || [limits.training_examples, limits.encoder_events, limits.forward_examples,
-                limits.backward_examples, limits.development_queries, limits.proposals].contains(&0)
+            || [
+                limits.training_examples,
+                limits.encoder_events,
+                limits.forward_examples,
+                limits.backward_examples,
+                limits.development_queries,
+                limits.proposals,
+            ]
+            .contains(&0)
             || budget.as_ref().is_some_and(|value| value != limits)
         {
             return Err(invalid);
         }
         budget = Some(limits.clone());
         match record {
-            Record::Reserve(ReserveRecord { operation, name, charge, .. }) => {
+            Record::Reserve(ReserveRecord {
+                operation,
+                name,
+                charge,
+                ..
+            }) => {
                 let expected = match name.as_str() {
-                    "stream_observation" if [0, batch].contains(&charge.training_examples) => Charge {
-                        training_examples: charge.training_examples,
-                        encoder_events: batch,
-                        forward_examples: batch,
+                    "stream_observation" if [0, batch].contains(&charge.training_examples) => {
+                        Charge {
+                            training_examples: charge.training_examples,
+                            encoder_events: batch,
+                            forward_examples: batch,
+                            ..Charge::default()
+                        }
+                    }
+                    "closed_form_readout" => Charge {
+                        proposals: 1,
                         ..Charge::default()
                     },
-                    "closed_form_readout" => Charge { proposals: 1, ..Charge::default() },
                     "checkpoint" => Charge::default(),
                     _ => return Err(invalid),
                 };
                 if pending.is_some() || operation != index || charge != expected {
                     return Err(invalid);
                 }
-                cost.charged_training_examples = cost.charged_training_examples
-                    .checked_add(charge.training_examples).ok_or(invalid)?;
-                cost.charged_encoder_events = cost.charged_encoder_events
-                    .checked_add(charge.encoder_events).ok_or(invalid)?;
-                cost.charged_proposals = cost.charged_proposals
-                    .checked_add(charge.proposals).ok_or(invalid)?;
+                cost.charged_training_examples = cost
+                    .charged_training_examples
+                    .checked_add(charge.training_examples)
+                    .ok_or(invalid)?;
+                cost.charged_encoder_events = cost
+                    .charged_encoder_events
+                    .checked_add(charge.encoder_events)
+                    .ok_or(invalid)?;
+                cost.charged_proposals = cost
+                    .charged_proposals
+                    .checked_add(charge.proposals)
+                    .ok_or(invalid)?;
                 pending = Some((operation, name, charge));
             }
-            Record::Settle(SettleRecord { operation, name, status, error, cumulative_wall_seconds, .. }) => {
+            Record::Settle(SettleRecord {
+                operation,
+                name,
+                status,
+                error,
+                cumulative_wall_seconds,
+                ..
+            }) => {
                 let (expected_operation, expected_name, charge) = pending.take().ok_or(invalid)?;
-                if operation != expected_operation || name != expected_name
-                    || !cumulative_wall_seconds.is_finite() || cumulative_wall_seconds < wall
+                if operation != expected_operation
+                    || name != expected_name
+                    || !cumulative_wall_seconds.is_finite()
+                    || cumulative_wall_seconds < wall
                 {
                     return Err(invalid);
                 }
@@ -192,7 +234,9 @@ pub(crate) fn validate_cost(
                     "completed" if error.is_none() => match name.as_str() {
                         "stream_observation" => {
                             observations = observations.checked_add(1).ok_or(invalid)?;
-                            examples = examples.checked_add(charge.training_examples).ok_or(invalid)?;
+                            examples = examples
+                                .checked_add(charge.training_examples)
+                                .ok_or(invalid)?;
                         }
                         "closed_form_readout" => solves = solves.checked_add(1).ok_or(invalid)?,
                         "checkpoint" => (),
@@ -207,9 +251,21 @@ pub(crate) fn validate_cost(
         tail = item.hash.parse().map_err(|_| invalid)?;
     }
     if pending.is_some()
-        || observations != controller.observations.checked_add(controller.discarded_observations).ok_or(invalid)?
-        || examples != controller.examples.checked_add(controller.discarded_examples).ok_or(invalid)?
-        || solves != controller.solves.checked_add(controller.discarded_solves).ok_or(invalid)?
+        || observations
+            != controller
+                .observations
+                .checked_add(controller.discarded_observations)
+                .ok_or(invalid)?
+        || examples
+            != controller
+                .examples
+                .checked_add(controller.discarded_examples)
+                .ok_or(invalid)?
+        || solves
+            != controller
+                .solves
+                .checked_add(controller.discarded_solves)
+                .ok_or(invalid)?
         || wall * 1_000_000.0 >= u64::MAX as f64
     {
         return Err(invalid);

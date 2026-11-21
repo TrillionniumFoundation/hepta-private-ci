@@ -73,7 +73,7 @@ fn matched_compute_and_ablation_are_strict() {
     let mut changed = observed.clone();
     changed.retention_loss_ppm = 1;
     assert!(!passes(&plan, &changed));
-    let mut changed = observed.clone();
+    let mut changed = observed;
     changed.recovery_verified = false;
     assert!(!passes(&plan, &changed));
 }
@@ -89,7 +89,7 @@ fn frozen_plan_future_window_and_observations_are_signed() {
         structural_comparison_signing_payload_v1(&plan, &changed).unwrap(),
         exact
     );
-    let mut invalid = plan.clone();
+    let mut invalid = plan;
     invalid.future_start_unix_ms = invalid.frozen_at_unix_ms;
     assert_eq!(
         structural_comparison_signing_payload_v1(&invalid, &observed),

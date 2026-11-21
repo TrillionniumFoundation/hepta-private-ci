@@ -335,10 +335,7 @@ mod tests {
         );
         let expected_global_agents_path = global_agents_path.display().to_string();
         let mut paths = summary.split(", ");
-        assert_eq!(
-            paths.next(),
-            Some(expected_global_agents_path.as_str())
-        );
+        assert_eq!(paths.next(), Some(expected_global_agents_path.as_str()));
         let project_path = paths.next().expect("project agents path");
         assert!(project_path.ends_with("project.md"));
         assert_eq!(paths.next(), None);

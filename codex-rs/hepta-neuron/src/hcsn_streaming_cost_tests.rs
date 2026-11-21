@@ -23,12 +23,17 @@ fn original_cost_records_reject_duplicate_tags_and_cross_variant_fields() {
     let records = original_records();
     assert!(!records.is_empty());
     for item in records {
-        assert_eq!(Digest32::of_bytes(item.canonical.as_bytes()).to_string(), item.hash);
+        assert_eq!(
+            Digest32::of_bytes(item.canonical.as_bytes()).to_string(),
+            item.hash
+        );
         let original: Value = checked(serde_json::from_str(&item.canonical));
         let kind = checked(original["kind"].as_str().ok_or("kind"));
         let decoded = checked(Record::decode(&item.canonical));
-        assert!(matches!((kind, decoded),
-            ("reserve", Record::Reserve(_)) | ("settle", Record::Settle(_))));
+        assert!(matches!(
+            (kind, decoded),
+            ("reserve", Record::Reserve(_)) | ("settle", Record::Settle(_))
+        ));
 
         let prefix = checked(item.canonical.strip_suffix('}').ok_or("record object"));
         let duplicate_tag = format!("{prefix},\"kind\":\"{kind}\"}}");
@@ -37,7 +42,11 @@ fn original_cost_records_reject_duplicate_tags_and_cross_variant_fields() {
         assert!(Record::decode(&duplicate_budget).is_err());
 
         // Even null-valued fields from the other variant must be rejected.
-        let extra = if kind == "reserve" { "status" } else { "charge" };
+        let extra = if kind == "reserve" {
+            "status"
+        } else {
+            "charge"
+        };
         let cross_variant = format!("{prefix},\"{extra}\":null}}");
         assert!(Record::decode(&cross_variant).is_err());
         let unknown = format!("{prefix},\"unknown\":null}}");

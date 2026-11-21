@@ -71,18 +71,22 @@ async fn pq_retirement_requires_the_exact_pinned_revoked_key_and_profile() {
             .unwrap()
             .join("checkpoint.json");
         let authority = match verifying_key.algorithm() {
-            AuthBusAlgorithm::Ed25519V1 => AuthBusAuthorityOwner::bootstrap_new(
-                &database_path,
-                checkpoint_path,
-                "pq-retirement-profile",
-            )
-            .await,
-            AuthBusAlgorithm::MlDsa65V2 => AuthBusAuthorityOwner::bootstrap_new_pq(
-                &database_path,
-                checkpoint_path,
-                "pq-retirement-profile",
-            )
-            .await,
+            AuthBusAlgorithm::Ed25519V1 => {
+                AuthBusAuthorityOwner::bootstrap_new(
+                    &database_path,
+                    checkpoint_path,
+                    "pq-retirement-profile",
+                )
+                .await
+            }
+            AuthBusAlgorithm::MlDsa65V2 => {
+                AuthBusAuthorityOwner::bootstrap_new_pq(
+                    &database_path,
+                    checkpoint_path,
+                    "pq-retirement-profile",
+                )
+                .await
+            }
         };
         let authority = if cfg!(unix) {
             authority.unwrap()
@@ -100,7 +104,10 @@ async fn pq_retirement_requires_the_exact_pinned_revoked_key_and_profile() {
                 store.authbus_replay_frontier_digest().await.unwrap(),
                 external.digest
             );
-            assert_eq!(store.pending_authbus_restore_checkpoint().await.unwrap(), None);
+            assert_eq!(
+                store.pending_authbus_restore_checkpoint().await.unwrap(),
+                None
+            );
             continue;
         };
         authority

@@ -491,7 +491,9 @@ fn vertical_normalizes_half_weight_without_rewriting_the_admitted_objective() {
     rebind_objective(&mut unit_request);
 
     let mut abstain_request = request.clone();
-    abstain_request.ndu_contributions.retain(|contribution| contribution.candidate_id == id("abstain"));
+    abstain_request
+        .ndu_contributions
+        .retain(|contribution| contribution.candidate_id == id("abstain"));
     let abstain_receipt = must(run_read_only_vertical(abstain_request));
     let receipt = must(run_read_only_vertical(request));
     let unit_receipt = must(run_read_only_vertical(unit_request));
@@ -509,10 +511,14 @@ fn vertical_normalizes_half_weight_without_rewriting_the_admitted_objective() {
         unit_receipt.ndu.base.scalarization_profile_digest
     );
     assert_eq!(abstain_receipt.objective, receipt.objective);
-    assert_eq!(abstain_receipt.ndu.base.scalarization_profile_digest,
-        receipt.ndu.base.scalarization_profile_digest);
-    assert_eq!(abstain_receipt.plan.decision,
-        PlanDecision::Abstained(crate::AbstentionReason::NoEligibleCandidate));
+    assert_eq!(
+        abstain_receipt.ndu.base.scalarization_profile_digest,
+        receipt.ndu.base.scalarization_profile_digest
+    );
+    assert_eq!(
+        abstain_receipt.plan.decision,
+        PlanDecision::Abstained(crate::AbstentionReason::NoEligibleCandidate)
+    );
     assert_ne!(
         receipt.objective.objective.semantic_digest,
         unit_receipt.objective.objective.semantic_digest
@@ -759,7 +765,10 @@ fn incomplete_objective_weights_reject_unique_and_abstain_only_recommendations()
         for abstain_only in [false, true] {
             let mut request = vertical_request_with_profile(profile.clone());
             if missing_axis {
-                request.ndu_profile.dimensions.push((id("quality.unweighted"), AxisDirection::Maximize));
+                request
+                    .ndu_profile
+                    .dimensions
+                    .push((id("quality.unweighted"), AxisDirection::Maximize));
             }
             if abstain_only {
                 request
@@ -770,7 +779,10 @@ fn incomplete_objective_weights_reject_unique_and_abstain_only_recommendations()
             let error =
                 run_read_only_vertical(request).expect_err("incomplete weights must reject");
             if missing_axis {
-                assert!(matches!(error, ReadOnlyVerticalError::SoftDimensionMismatch));
+                assert!(matches!(
+                    error,
+                    ReadOnlyVerticalError::SoftDimensionMismatch
+                ));
             } else {
                 assert!(matches!(
                     error,
@@ -780,4 +792,3 @@ fn incomplete_objective_weights_reject_unique_and_abstain_only_recommendations()
         }
     }
 }
-

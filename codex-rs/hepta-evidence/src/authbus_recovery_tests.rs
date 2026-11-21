@@ -326,7 +326,10 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
             store.authbus_replay_frontier_digest().await.unwrap(),
             external.digest
         );
-        assert_eq!(store.pending_authbus_restore_checkpoint().await.unwrap(), None);
+        assert_eq!(
+            store.pending_authbus_restore_checkpoint().await.unwrap(),
+            None
+        );
         return;
     };
     authority

@@ -11,7 +11,9 @@ from hepta_workflow_history import FROZEN_WORKFLOW_HISTORY
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SPEC = importlib.util.spec_from_file_location("hepta_docs", ROOT / "scripts/hepta-docs.py")
+SPEC = importlib.util.spec_from_file_location(
+    "hepta_docs", ROOT / "scripts/hepta-docs.py"
+)
 DOCS = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(DOCS)
 
@@ -48,7 +50,9 @@ class HistoricalWorkflowReferencesTests(unittest.TestCase):
         for changed in (self.original + b"\n", self.original + b"\xff"):
             with self.subTest(changed=changed[-1:]):
                 self.write(self.relative, changed)
-                with self.assertRaisesRegex(SystemExit, "historical workflow observation changed"):
+                with self.assertRaisesRegex(
+                    SystemExit, "historical workflow observation changed"
+                ):
                     DOCS.verify_exact_workflow_references()
 
     def test_historical_record_cannot_be_rebound_even_to_existing_workflow(self):
@@ -56,7 +60,9 @@ class HistoricalWorkflowReferencesTests(unittest.TestCase):
         record["path"] = ".github/workflows/current.yml"
         self.write(record["path"], b"name: current\n")
         self.write(self.relative, json.dumps(record).encode())
-        with self.assertRaisesRegex(SystemExit, "historical workflow observation changed"):
+        with self.assertRaisesRegex(
+            SystemExit, "historical workflow observation changed"
+        ):
             DOCS.verify_exact_workflow_references()
 
     def test_neighbor_and_current_document_stale_references_still_fail(self):
@@ -67,7 +73,9 @@ class HistoricalWorkflowReferencesTests(unittest.TestCase):
         ):
             with self.subTest(relative=relative):
                 path = self.write(relative, b".github/workflows/retired.yml\n")
-                with self.assertRaisesRegex(SystemExit, "stale exact workflow references"):
+                with self.assertRaisesRegex(
+                    SystemExit, "stale exact workflow references"
+                ):
                     DOCS.verify_exact_workflow_references()
                 path.unlink()
 

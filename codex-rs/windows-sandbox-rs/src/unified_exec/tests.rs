@@ -269,10 +269,17 @@ fn elevated_non_tty_cmd_refuses_before_env_output_or_exit() {
         let permission_profile = PermissionProfile::workspace_write();
         let before = snapshot(codex_home.path()).expect("snapshot elevated home");
         let env_map = HashMap::from([
-            ("CODEX_ELEVATED_TEST".to_owned(), "ELEVATED-ENV-OK".to_owned()),
+            (
+                "CODEX_ELEVATED_TEST".to_owned(),
+                "ELEVATED-ENV-OK".to_owned(),
+            ),
             (
                 "SPAWN_MARKER".to_owned(),
-                codex_home.path().join("process-started").display().to_string(),
+                codex_home
+                    .path()
+                    .join("process-started")
+                    .display()
+                    .to_string(),
             ),
         ]);
         let refused = spawn_windows_sandbox_session_elevated_for_permission_profile(

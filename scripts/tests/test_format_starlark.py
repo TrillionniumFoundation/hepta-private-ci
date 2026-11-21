@@ -99,7 +99,10 @@ class StarlarkSelectionTests(unittest.TestCase):
         for relative, before in initial.items():
             self.assertNotEqual((self.root / relative).read_bytes(), before, relative)
         self.assertEqual(
-            {relative: (self.root / relative).read_bytes() for relative in self.metadata},
+            {
+                relative: (self.root / relative).read_bytes()
+                for relative in self.metadata
+            },
             self.metadata,
         )
         self.assertEqual(
@@ -119,7 +122,9 @@ class StarlarkSelectionTests(unittest.TestCase):
     def test_metadata_only_scope_does_not_dispatch_a_formatter(self):
         for check in (False, True):
             self.assertEqual(
-                self.formatter.scoped_formatter_groups(list(self.metadata), check=check),
+                self.formatter.scoped_formatter_groups(
+                    list(self.metadata), check=check
+                ),
                 (),
             )
 

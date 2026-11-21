@@ -8,7 +8,12 @@ use serde_json::Value;
 #[test]
 fn restores_real_python_population_statistics_and_complete_cost() {
     let (context, clock, bytes) = fixture();
-    let restored = checked(restore_hcsn_research_state_v2(&context, &clock, &bytes, &HcsnStreamingCodecV1));
+    let restored = checked(restore_hcsn_research_state_v2(
+        &context,
+        &clock,
+        &bytes,
+        &HcsnStreamingCodecV1,
+    ));
     assert_eq!(checked(restored.state.encode()), bytes);
     assert_eq!(restored.state.controller.observations, 2);
     assert_eq!(restored.state.controller.examples, 4);
@@ -23,8 +28,21 @@ fn restores_real_python_population_statistics_and_complete_cost() {
 #[test]
 fn rejects_rebound_invalid_density_controller_statistics_and_cost() {
     let (context, clock_bytes, bytes) = fixture();
-    let restored = checked(restore_hcsn_research_state_v2(&context, &clock_bytes, &bytes, &HcsnStreamingCodecV1));
-    for mutation in ["density", "time", "controller", "history", "indefinite", "cost", "optimizer"] {
+    let restored = checked(restore_hcsn_research_state_v2(
+        &context,
+        &clock_bytes,
+        &bytes,
+        &HcsnStreamingCodecV1,
+    ));
+    for mutation in [
+        "density",
+        "time",
+        "controller",
+        "history",
+        "indefinite",
+        "cost",
+        "optimizer",
+    ] {
         let mut snapshot = restored.state.snapshot.clone();
         match mutation {
             "density" | "time" => {
@@ -51,7 +69,9 @@ fn rejects_rebound_invalid_density_controller_statistics_and_cost() {
                 let mut value: Value = checked(serde_json::from_slice(&snapshot.history));
                 let width = restored.state.features + 1;
                 let mut bits = vec![0_u64; width * width];
-                for row in 0..width { bits[row * width + row] = 1_f64.to_bits(); }
+                for row in 0..width {
+                    bits[row * width + row] = 1_f64.to_bits();
+                }
                 bits[1] = 2_f64.to_bits();
                 bits[width] = 2_f64.to_bits();
                 bits[width * width - 1] = (restored.state.controller.examples as f64).to_bits();
@@ -62,18 +82,39 @@ fn rejects_rebound_invalid_density_controller_statistics_and_cost() {
             "optimizer" => snapshot.optimizer = HcsnOptimizerStateV2::Snapshot(vec![1]),
             _ => panic!("unknown mutation"),
         }
-        let clock = checked(HcsnClockCheckpointV1::initial(&context.profile, context.identity,
-            restored.clock.last_micros(), Digest32::of_bytes(&checked(snapshot.encode()))));
-        assert_eq!(HcsnStreamingCodecV1.restore_complete_state(&snapshot, &clock, &context.profile)
-            .err(), Some(HcsnRecoveryErrorV2::Backend), "{mutation}");
+        let clock = checked(HcsnClockCheckpointV1::initial(
+            &context.profile,
+            context.identity,
+            restored.clock.last_micros(),
+            Digest32::of_bytes(&checked(snapshot.encode())),
+        ));
+        assert_eq!(
+            HcsnStreamingCodecV1
+                .restore_complete_state(&snapshot, &clock, &context.profile)
+                .err(),
+            Some(HcsnRecoveryErrorV2::Backend),
+            "{mutation}"
+        );
     }
 }
 
 #[test]
 fn restoring_state_cannot_relabel_the_renewal_law_or_clock_profile() {
     let (mut context, clock_bytes, bytes) = fixture();
-    let restored = checked(restore_hcsn_research_state_v2(&context, &clock_bytes, &bytes, &HcsnStreamingCodecV1));
-    context.profile.integration = HcsnIntegrationV1::PopulationAge { max_step_micros: 25_000, max_substeps: 40 };
-    assert_eq!(HcsnStreamingCodecV1.restore_complete_state(
-        &restored.state.snapshot, &restored.clock, &context.profile).err(), Some(HcsnRecoveryErrorV2::Backend));
+    let restored = checked(restore_hcsn_research_state_v2(
+        &context,
+        &clock_bytes,
+        &bytes,
+        &HcsnStreamingCodecV1,
+    ));
+    context.profile.integration = HcsnIntegrationV1::PopulationAge {
+        max_step_micros: 25_000,
+        max_substeps: 40,
+    };
+    assert_eq!(
+        HcsnStreamingCodecV1
+            .restore_complete_state(&restored.state.snapshot, &restored.clock, &context.profile)
+            .err(),
+        Some(HcsnRecoveryErrorV2::Backend)
+    );
 }

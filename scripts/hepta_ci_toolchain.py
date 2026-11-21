@@ -56,7 +56,9 @@ def main():
     parser.add_argument("--github-env", type=Path, required=True)
     parser.add_argument("--component", action="append", default=[])
     args = parser.parse_args()
-    receipt = install(Path(__file__).resolve().parents[1], args.github_env, args.component)
+    receipt = install(
+        Path(__file__).resolve().parents[1], args.github_env, args.component
+    )
     print(json.dumps(receipt, indent=2), flush=True)
 
 

@@ -39,9 +39,20 @@ class WorkspaceToolchainTests(unittest.TestCase):
             )
         run.assert_called_once_with(
             [
-                "rustup", "toolchain", "install", "1.96.0", "--profile", "minimal",
-                "--no-self-update", "--component", "clippy", "--component",
-                "llvm-tools-preview", "--component", "rust-src", "--component",
+                "rustup",
+                "toolchain",
+                "install",
+                "1.96.0",
+                "--profile",
+                "minimal",
+                "--no-self-update",
+                "--component",
+                "clippy",
+                "--component",
+                "llvm-tools-preview",
+                "--component",
+                "rust-src",
+                "--component",
                 "rustfmt",
             ],
             cwd=self.root,
@@ -52,7 +63,9 @@ class WorkspaceToolchainTests(unittest.TestCase):
         self.assertEqual(
             self.github_env.read_text(), "EXISTING=retained\nRUSTUP_TOOLCHAIN=1.96.0\n"
         )
-        self.assertEqual(receipt["source_sha256"], hashlib.sha256(self.contents.encode()).hexdigest())
+        self.assertEqual(
+            receipt["source_sha256"], hashlib.sha256(self.contents.encode()).hexdigest()
+        )
         self.assertEqual(receipt["rustc_version"], version)
 
     def test_actual_compiler_mismatch_never_publishes_environment(self):
@@ -66,7 +79,11 @@ class WorkspaceToolchainTests(unittest.TestCase):
 
     def test_install_failure_never_probes_or_publishes(self):
         with (
-            patch.object(subprocess, "run", side_effect=subprocess.CalledProcessError(1, "rustup")),
+            patch.object(
+                subprocess,
+                "run",
+                side_effect=subprocess.CalledProcessError(1, "rustup"),
+            ),
             patch.object(subprocess, "check_output") as check,
             self.assertRaises(subprocess.CalledProcessError),
         ):
@@ -78,7 +95,10 @@ class WorkspaceToolchainTests(unittest.TestCase):
         for channel in ("stable", "1.96", "nightly", "1.96.0\\nINJECT=1"):
             with self.subTest(channel=channel):
                 self.source.write_text(self.contents.replace("1.96.0", channel))
-                with patch.object(subprocess, "run") as run, self.assertRaises(ValueError):
+                with (
+                    patch.object(subprocess, "run") as run,
+                    self.assertRaises(ValueError),
+                ):
                     hepta_ci_toolchain.install(self.root, self.github_env, [])
                 run.assert_not_called()
         self.assertEqual(self.github_env.read_text(), "EXISTING=retained\n")

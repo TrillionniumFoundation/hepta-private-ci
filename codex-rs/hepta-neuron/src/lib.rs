@@ -68,9 +68,9 @@ mod gated_sparse_v3;
 mod hcsn_recovery;
 mod hcsn_streaming;
 mod hcsn_streaming_cost;
-mod hcsn_streaming_update;
 #[cfg(test)]
 mod hcsn_streaming_test_support;
+mod hcsn_streaming_update;
 mod inference_control;
 mod journal;
 mod journal_lock;
