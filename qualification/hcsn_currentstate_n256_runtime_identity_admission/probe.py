@@ -38,15 +38,14 @@ def _numeric_modules() -> list[str]:
 def _distribution_identity(name: str) -> dict[str, str]:
     dist = importlib.metadata.distribution(name)
     files = list(dist.files or ())
-    record_matches = [item for item in files if str(item).endswith(".dist-info/RECORD")]
     init_matches = [item for item in files if str(item) == f"{name}/__init__.py"]
-    if len(record_matches) != 1 or len(init_matches) != 1:
+    record_text = dist.read_text("RECORD")
+    if not record_text or len(init_matches) != 1:
         raise RuntimeError(f"ambiguous installed {name} identity")
-    record = Path(dist.locate_file(record_matches[0]))
     init = Path(dist.locate_file(init_matches[0]))
     return {
         "version": dist.version,
-        "record_sha256": _sha256(record),
+        "record_sha256": hashlib.sha256(record_text.encode()).hexdigest(),
         "init_sha256": _sha256(init),
     }
 

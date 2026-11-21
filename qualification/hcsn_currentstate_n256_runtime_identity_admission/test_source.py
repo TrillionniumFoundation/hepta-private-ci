@@ -42,6 +42,8 @@ class SourceTests(unittest.TestCase):
             if isinstance(node, ast.Name) and node.id in {"false", "true", "null"}
         }
         self.assertEqual(forbidden_json_names, set())
+        self.assertIn('read_text("RECORD")', source)
+        self.assertIn("record_text.encode()", source)
 
     def test_historical_red_and_hold_are_explicit(self) -> None:
         request = json.loads((HERE / "REQUEST.json").read_text(encoding="utf-8"))
