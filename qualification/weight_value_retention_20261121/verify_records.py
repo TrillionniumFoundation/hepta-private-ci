@@ -434,3 +434,423 @@ def process_check(output, phase, protocol, protocol_pin):
     for pin in (process['protocol_pin'], process['entry_pin'], process['supervisor_pin']):
         verify_pin(pin)
     return result, result_pin, process, process_pin
+
+
+def load_train(protocol, fit):
+    spec = protocol['input_specs'][str(fit)]
+    for item in spec.values():
+        verify_pin(item)
+    base = read_pin(spec['model'])
+    require(base['schema'] == 'joint-policy-v1' and base['family'] == 'renewal' and
+            base['head_dimensions'] == [85, 48, 4], 'original checkpoint architecture')
+    reconstruction, family, publics = [read_pin(spec[name]) for name in ('reconstruction', 'family', 'publics')]
+    for actual, previous in ((spec['model'], family['source_C']), (spec['data'], reconstruction['dataset']),
+                             (spec['teacher'], family['teacher'])):
+        require(all(actual[key] == previous[key] for key in ('bytes', 'sha256')), 'original input provenance')
+    require(family['program']['own_law_labels_only'] is True, 'own-law teacher source')
+    with np.load(spec['data']['path'], allow_pickle=False) as archive:
+        X, masks, scores = [archive[key] for key in ('X', 'legal_masks', 'C_scores')]
+    with np.load(spec['teacher']['path'], allow_pickle=False) as archive:
+        teacher, posterior, weights = [archive[key] for key in ('own_optimal_targets', 'own_posterior', 'sample_weights')]
+    n = reconstruction['train_rows']
+    for array, shape, dtype in ((X, (n, 85), np.float64), (masks, (n, 6), np.bool_),
+                               (scores, (n, 6), np.float64), (teacher, (n, 4), np.float64),
+                               (posterior, (n,), np.float64), (weights, (n, 4), np.float64)):
+        require(array.shape == shape and array.dtype == dtype and np.isfinite(array).all(), 'original array contract')
+    require(len(publics) == len(reconstruction['reconstructed_worlds']) == len(family['program']['TRAIN']) == 64, 'complete 64-world source')
+    offset, sections = 0, []
+    for i, (public, world, label) in enumerate(zip(publics, reconstruction['reconstructed_worlds'], family['program']['TRAIN'], strict=True)):
+        require(world['rows'] == label['rows'] and public['id'] == world['world_id'] == label['world_id'] and
+                world['state_order_sha256'] == label['state_order_sha256'], 'TRAIN world/teacher order')
+        section = slice(offset, offset + world['rows'])
+        require(digest(teacher[section].tobytes()) == label['teacher_sha256'] and
+                digest(weights[section].tobytes()) == label['sample_weight_sha256'], 'per-world teacher hash')
+        sections.append((section.start, section.stop, world['state_order_sha256']))
+        offset = section.stop
+    require(offset == n, 'all TRAIN rows covered')
+    keys = [digest(canonical({key: public[key] for key in protocol['schedule_fields']}).encode()) for public in publics]
+    order = sorted(range(64), key=lambda i: (digest(canonical([
+        'hepta-value-retention-20261121/train-split/v1', fit, keys[i]]).encode()), i))
+    split = dict(GEN=order[:32], SELECT=order[32:48], TRAIN_AUDIT=order[48:], schedule_hashes=keys,
+                 rule='sha256(canonical([namespace,fit,schedule_hash])), original-index tie')
+    require(split == protocol['splits'][str(fit)] and set(keys) <= set(protocol['known_schedule_hashes']), 'exposed TRAIN deterministic split')
+    H = independent_hidden(base, X)
+    COUNTS['TRAIN_hidden_calls'] += 1
+    COUNTS['TRAIN_hidden_rows'] += n
+    require(independent_scores(head_rows(base), H).tobytes() == scores.tobytes(), 'original saved H49 scores exact')
+    return dict(base=base, X=X, H=H, masks=masks, scores=scores, teacher=teacher,
+                posterior=posterior, publics=publics, sections=sections, split=split)
+
+
+def graph_check(ctx, base, public, graph_pin, budget):
+    saved = read_pin(graph_pin)
+    actual = build_graph(ctx, public, base, 4096, budget)
+    COUNTS['own_graphs'] += 1
+    converted = {key: value.tolist() if isinstance(value, np.ndarray) else value for key, value in actual.items()}
+    require(canonical(saved) == canonical(converted), 'full original-own-law graph replay differs')
+    require(len(saved['states']) <= 4096, 'complete graph cap')
+    return saved
+
+
+def phase_check(record_pin, phase, fit, models, indices, items, protocol_sha, budget, domain=None):
+    record = read_pin(record_pin)
+    names = ['KEEP'] + ([name for name in HEADS if name in models] if domain is None else
+                        ['Q_SELECTED', 'B_SELECTED', 'G_SELECTED', 'T_SELECTED'])
+    names += [name for name in DIAGNOSTICS if name in models]
+    require(record['schema'] == 'hepta-own-law-phase-records-v1' and record['phase'] == phase and
+            record['fit'] == fit and record['domain'] == domain and record['protocol_sha256'] == protocol_sha, 'phase contract')
+    require(record['models'] == models and record['arm_order'] == names and record['world_indices'] == indices, 'phase identity/order')
+    require(iso(record['started_utc']) <= iso(record['completed_utc']), 'phase time order')
+    nonnegative(record['CPU_seconds'], 'phase complete CPU')
+    require(len(record['worlds']) == len(indices), 'phase complete worlds')
+    verify_pin(record['arrays_pin'])
+    metrics_by_index, keep_by_index, sums, expected_keys = {}, {}, {name: 0.0 for name in names}, set()
+    paid_DPs, paid_rows = 0, 0
+    parameters = {name: head_rows(read_pin(entry['model_pin'])) for name, entry in models.items()}
+    with np.load(record['arrays_pin']['path'], allow_pickle=False) as archive:
+        for index, world in zip(indices, record['worlds'], strict=True):
+            budget()
+            item, identity_to_name, all_arrays, all_metrics = items[index], {}, {}, {}
+            graph, H = item['graph'], item['H']
+            require(world['world_index'] == index and world['world_id'] == graph['public']['id'] and
+                    world['graph_pin'] == item['graph_pin'] and world['state_order_sha256'] == graph['state_order_sha256'] and
+                    world['rows'] == len(graph['states']) and set(world['arms']) == set(names), 'phase full-state identity')
+            if domain is not None:
+                require(world['features_pin'] == item['features_pin'], 'CONF complete feature source')
+            for name in names:
+                arm = world['arms'][name]
+                identity = models[name]['canonical_model_sha256']
+                previous = identity_to_name.get(identity)
+                expected_prefix = f'w{index:03d}__{previous or name}'
+                require(arm['array_prefix'] == expected_prefix and arm['alias_of'] == previous, 'exact-head alias contract')
+                nonnegative(arm['evaluation_CPU_seconds'], 'arm evaluation CPU')
+                if previous is not None:
+                    require(arm['evaluation_CPU_seconds'] == 0, 'alias records no second evaluation')
+                    expected, arrays = all_metrics[previous], all_arrays[previous]
+                    COUNTS['policy_record_aliases'] += 1
+                else:
+                    expected, arrays = scalar_policy(graph, independent_scores(parameters[name], H),
+                        None if name == 'KEEP' else all_arrays['KEEP']['occupancy'])
+                    identity_to_name[identity] = name
+                    expected_keys.update(expected_prefix + '__' + key for key in ARRAY_NAMES)
+                    if not (phase == 'GEN' and name == 'KEEP'):
+                        paid_DPs += 1
+                        paid_rows += len(H)
+                compare_metrics(arm['metrics'], expected)
+                require(arm['metrics']['belief_diagnostics']['same_weights_across_candidates'] == 'original occupancy only' and
+                        arm['metrics']['belief_diagnostics']['selection_criterion'] is False, 'posterior diagnostic role')
+                check_arrays(archive, expected_prefix, arrays, arm['metrics'])
+                all_arrays[name], all_metrics[name] = arrays, expected
+                sums[name] += arm['evaluation_CPU_seconds']
+                COUNTS['policy_records_checked'] += 1
+            metrics_by_index[index] = all_metrics
+            if phase == 'GEN':
+                keep_by_index[index] = all_arrays['KEEP']
+        require(set(archive.files) == expected_keys, 'no omitted or extra state-array keys')
+    for name in names:
+        close_number(record['evaluation_CPU_by_arm'][name], sums[name], 'arm CPU sum')
+    expected_work = dict(hidden_forward_calls=0, hidden_forward_rows=0, readout_forward_calls=paid_DPs,
+        readout_forward_rows=paid_rows, own_graphs=0, semantic_physical_calls=0,
+        semantic_complete_rows=0, complete_policy_DPs=paid_DPs, own_optimal_DPs=0)
+    require(record['work_delta'] == expected_work, 'phase actual work and incumbent reuse accounting')
+    summaries = aggregate([metrics_by_index[index] for index in indices], names)
+    require(set(record['means']) == set(models), 'complete phase summary inventory')
+    compare_metrics(record['means'], summaries)
+    return record, metrics_by_index, keep_by_index, summaries
+
+
+def screening_check(row, data, items, gen_record, gen_keep, protocol, fit):
+    report = read_pin(row['screening_pin'])
+    baseline = read_pin(row['incumbent_GEN_record_pin'])
+    indices = data['split']['GEN']
+    require(report['schema'] == 'hepta-value-gen-screening-v1' and report['fit'] == fit and
+            report['protocol_sha256'] == gen_record['protocol_sha256'] and report['GEN_world_indices'] == indices,
+            'GEN-only screening role')
+    require(report['incumbent_record_pin'] == row['incumbent_GEN_record_pin'] == gen_record['precomputed_KEEP_record_pin'] and
+            report['source_input_pins'] == protocol['input_specs'][str(fit)], 'GEN baseline source')
+    require(baseline['schema'] == 'hepta-own-law-phase-records-v1' and baseline['phase'] == 'GEN_INCUMBENT_ONLY' and
+            baseline['fit'] == fit and baseline['domain'] is None and baseline['world_indices'] == indices and
+            baseline['models'] == {'KEEP': row['models']['KEEP']} and baseline['arm_order'] == ['KEEP'] and
+            baseline['protocol_sha256'] == gen_record['protocol_sha256'], 'incumbent complete contract')
+    require(iso(baseline['started_utc']) <= iso(baseline['completed_utc']) <= iso(gen_record['started_utc']), 'baseline before generated evaluation')
+    verify_pin(baseline['arrays_pin'])
+    baseline_cpu = 0.0
+    expected_keys = set()
+    with np.load(baseline['arrays_pin']['path'], allow_pickle=False) as archive:
+        require(len(baseline['worlds']) == len(indices), 'baseline world count')
+        for index, old, new in zip(indices, baseline['worlds'], gen_record['worlds'], strict=True):
+            require(all(old[k] == new[k] for k in ('world_index', 'world_id', 'graph_pin', 'state_order_sha256', 'rows')) and
+                    set(old['arms']) == {'KEEP'}, 'baseline complete world identity')
+            previous, reused = old['arms']['KEEP'], new['arms']['KEEP']
+            require(previous['alias_of'] is None and previous['array_prefix'] == reused['array_prefix'] and
+                    previous['metrics'] == reused['metrics'] and reused['evaluation_CPU_seconds'] == 0, 'paid-once incumbent reuse')
+            check_arrays(archive, previous['array_prefix'], gen_keep[index], previous['metrics'])
+            expected_keys.update(previous['array_prefix'] + '__' + key for key in ARRAY_NAMES)
+            nonnegative(previous['evaluation_CPU_seconds'], 'incumbent CPU')
+            baseline_cpu += previous['evaluation_CPU_seconds']
+        require(set(archive.files) == expected_keys, 'baseline complete arrays')
+    close_number(baseline['evaluation_CPU_by_arm']['KEEP'], baseline_cpu, 'incumbent CPU total')
+    require(gen_record['evaluation_CPU_by_arm']['KEEP'] == 0, 'GEN no repeated incumbent execution charge')
+    nonnegative(baseline['CPU_seconds'], 'incumbent enclosing cost')
+    compare_metrics(baseline['means'], {'KEEP': gen_record['means']['KEEP']})
+    baseline_work = dict(hidden_forward_calls=0, hidden_forward_rows=0, readout_forward_calls=32,
+        readout_forward_rows=sum(len(gen_keep[index]['actions']) for index in indices), own_graphs=0,
+        semantic_physical_calls=0, semantic_complete_rows=0, complete_policy_DPs=32, own_optimal_DPs=0)
+    require(baseline['work_delta'] == baseline_work, 'single paid GEN incumbent work')
+    H, masks, qstar, scores, visit, global_ids, initial_rows = [], [], [], [], [], [], []
+    offset = 0
+    for index in indices:
+        item = items[index]
+        graph = item['graph']
+        lo, hi, _ = data['sections'][index]
+        H.append(item['H']); masks.append(np.asarray(graph['masks'], dtype=bool))
+        qstar.append(np.asarray(graph['qstar'], dtype=np.float64))
+        scores.append(gen_keep[index]['scores']); visit.append(gen_keep[index]['occupancy'])
+        global_ids.extend(range(lo, hi)); initial_rows.append(offset + graph['initial'])
+        offset += hi - lo
+    H, masks, qstar, scores, visit = [np.concatenate(a) for a in (H, masks, qstar, scores, visit)]
+    target = np.array([max(np.flatnonzero(mask), key=lambda a: (float(qstar[i, a]), -int(a)))
+                       for i, mask in enumerate(masks)], dtype=np.int64)
+    old_action = np.array([max(np.flatnonzero(mask), key=lambda a: (float(scores[i, a]), -int(a)))
+                           for i, mask in enumerate(masks)], dtype=np.int64)
+    gap = qstar[np.arange(len(H)), target] - qstar[np.arange(len(H)), old_action]
+    require(float(gap.min()) >= -2e-12, 'screen raw optimal gap')
+    mass = visit * np.maximum(gap, 0)
+    opportunity = sorted((i for i in range(len(H)) if mass[i] > 0), key=lambda i: (-float(mass[i]), global_ids[i]))[:128]
+    retained = sorted((i for i in range(len(H)) if visit[i] > 0 and gap[i] == 0), key=lambda i: (-float(visit[i]), global_ids[i]))[:64]
+    selected = sorted(set(opportunity + retained + initial_rows), key=lambda i: global_ids[i])
+    require(0 < len(selected) <= 224, 'fixed GEN selection bound')
+    targets = target[selected]
+    margins = np.maximum(0, qstar[selected, targets, None] - qstar[selected])
+    margins += 1e-6 * (np.arange(6)[None, :] < targets[:, None])
+    expected = dict(H=H[selected], masks=masks[selected], targets=targets, margins=margins)
+    verify_pin(report['problem_pin'])
+    with np.load(report['problem_pin']['path'], allow_pickle=False) as archive:
+        require(set(archive.files) == set(expected), 'GEN problem has only permitted inputs')
+        for name, array in expected.items():
+            require(archive[name].shape == array.shape and archive[name].dtype == array.dtype and
+                    archive[name].tobytes() == array.tobytes(), 'independent GEN problem: ' + name)
+    wanted = dict(selected_rows=len(selected), opportunity_rows=len(opportunity), retention_rows=len(retained),
+        initial_rows=len(initial_rows), GEN_rows=len(H), positive_original_occupancy_rows=int(np.count_nonzero(visit)),
+        zero_original_occupancy_rows=int(np.count_nonzero(visit == 0)), total_old_occupancy_gap=float(mass.sum()),
+        selected_old_occupancy_gap=float(mass[selected].sum()),
+        omitted_old_occupancy_gap=float(mass.sum()) - float(mass[selected].sum()))
+    compare_metrics(report, wanted)
+    require(report['global_row_ids'] == [global_ids[i] for i in selected] and
+            report['selected_H_sha256'] == digest(expected['H'].tobytes()) and
+            report['candidate_utility_bound'] is False and
+            report['loss_weighting'] == 'uniform selected states; old occupancy*gap only screens', 'GEN screening provenance')
+    for name, value in radius_check(head_rows(data['base']), head_rows(data['base'])).items():
+        require(report['exact_radius'][name] == value, 'GEN radius source')
+    return report, expected, baseline
+
+
+def nonlinear_loss(rows, anchor, problem):
+    scores = independent_scores(rows, problem['H'])
+    losses = []
+    for index, target in enumerate(problem['targets']):
+        alternatives = [float(scores[index, action]) - float(scores[index, target]) + float(problem['margins'][index, action])
+                        for action in range(6) if problem['masks'][index, action] and action != target]
+        losses.append(max(0.0, max(alternatives)))
+    exact_q = sum((Fraction.from_float(float(x)) ** 2 for x in anchor[:3].flat), Fraction(0))
+    radius = math.sqrt(float(exact_q / 4))
+    return float(np.mean(losses) + 0.001 / (2 * radius ** 2) * np.sum((rows - anchor) ** 2))
+
+
+def conic_payload_check(payload, name, checkpoint, candidate, anchor, center, problem, family):
+    active = list(range(147)) if family == 'Q' else (list(range(147, 196)) if family == 'B' else list(range(196)))
+    x, dual = payload[name + '__primal'], payload[name + '__dual']
+    count, n = len(problem['H']), len(active)
+    require(x.shape == (n + count,) and np.isfinite(x).all() and dual.ndim == 1 and np.isfinite(dual).all(), 'saved conic raw coordinates')
+    restored = anchor.copy().reshape(-1)
+    restored[active] = anchor.reshape(-1)[active] + x[:n]
+    require(restored.reshape(4, 49).tobytes() == candidate.tobytes(), 'candidate is saved raw conic proposal')
+    center_scores = independent_scores(center, problem['H'])
+    center_delta = (center - anchor).reshape(-1)
+    violation, largest_rhs, constraints = 0.0, 0.0, 0
+    def slope_row(action, h, slope):
+        row = np.zeros(196)
+        if action in (1, 2, 3):
+            row[(action - 1) * 49:action * 49] = h
+        elif action in (4, 5):
+            row[147:] = h * (-slope if action == 4 else slope)
+        return row
+    for i, h in enumerate(problem['H']):
+        target = int(problem['targets'][i])
+        logit = float(np.sum(center[3] * h))
+        p = 1 / (1 + np.exp(-np.clip(logit, -700, 700)))
+        slope = 2 * p * (1 - p) if -700 < logit < 700 else 0.0
+        for action in range(6):
+            if not problem['masks'][i, action] or action == target:
+                continue
+            difference = slope_row(action, h, slope) - slope_row(target, h, slope)
+            rhs = -(center_scores[i, action] - center_scores[i, target] + problem['margins'][i, action] -
+                    float(np.sum(difference * center_delta)))
+            observed = float(np.sum(difference[active] * x[:n]) - x[n + i] - rhs)
+            violation = max(violation, observed)
+            largest_rhs = max(largest_rhs, abs(float(rhs)))
+            constraints += 1
+        violation = max(violation, -float(x[n + i])); constraints += 1
+        if family != 'Q':
+            complete = slope_row(5, h, 1.0)
+            displacement = float(np.sum(complete * center_delta))
+            for sign in (1, -1):
+                rhs = 0.5 + sign * displacement
+                violation = max(violation, float(sign * np.sum(complete[active] * x[:n]) - rhs))
+                largest_rhs = max(largest_rhs, abs(rhs)); constraints += 1
+    require(violation <= 1e-7 * (1 + largest_rhs), 'independent selected affine constraints')
+    require(checkpoint['linear_constraints'] == constraints and checkpoint['active_coordinates'] == n and
+            checkpoint['selected_states'] == count and len(dual) == constraints + n + 1, 'conic raw problem dimensions')
+    close_number(checkpoint['independently_recomputed_linear_violation'], violation, 'selected linear residual')
+
+
+def generation_check(row, problem, screen, base, selection_time, fit, protocol_sha):
+    require(set(row['generation']) == set(FAMILIES) and set(row['candidate_slots']) == set(HEADS), 'all fixed generation slots retained')
+    anchor = head_rows(base)
+    seen = {'KEEP'}
+    for family, names in FAMILIES.items():
+        generation_pin = row['generation'][family]
+        record = read_pin(generation_pin)
+        require(record['schema'] == 'hepta-value-family-generation-v1' and record['fit'] == fit and
+                record['family'] == family and record['protocol_sha256'] == protocol_sha and
+                record['problem_pin'] == screen['problem_pin'] and record['screening_pin'] == row['screening_pin'] and
+                record['source_model_pin'] == screen['source_input_pins']['model'], 'generation fixed GEN source')
+        require(iso(record['started_utc']) <= iso(record['completed_utc']) <= selection_time, 'generation before selection seal')
+        cap = 1.5 if family == 'Q' else 3.0
+        require(record['nominal_CPU_cap'] == cap and set(record['checkpoints']) == set(names), 'generation frozen limits/checkpoints')
+        for key in ('CPU_seconds', 'wall_seconds'):
+            nonnegative(record[key], 'generation ' + key)
+        for key in ('lifecycle_CPU_through_record', 'lifecycle_wall_through_record', 'numerical_call_CPU_seconds',
+                    'artifact_and_revalidation_CPU_seconds', 'other_family_bookkeeping_CPU_seconds'):
+            nonnegative(record[key], 'full generation ' + key)
+        close_number(record['lifecycle_CPU_through_record'], record['numerical_call_CPU_seconds'] +
+            record['artifact_and_revalidation_CPU_seconds'] + record['other_family_bookkeeping_CPU_seconds'],
+            'full family lifecycle accounting', 1e-12)
+        require(record['CPU_seconds'] <= record['numerical_call_CPU_seconds'] <= record['lifecycle_CPU_through_record'],
+                'numerical family time nested in full generation cost')
+        payload = None
+        if record['raw_payloads_pin'] is not None:
+            verify_pin(record['raw_payloads_pin'])
+            payload = np.load(record['raw_payloads_pin']['path'], allow_pickle=False)
+        emitted = {}
+        center = anchor
+        try:
+            for name in names:
+                slot, checkpoint = row['candidate_slots'][name], record['checkpoints'][name]
+                require(slot['family'] == family and slot['generation_record_pin'] == generation_pin and
+                        slot['checkpoint_report'] == checkpoint and slot['status'] in ('VALID', 'UNKNOWN'), 'fixed slot record')
+                valid = slot['status'] == 'VALID'
+                require(valid == (name in row['models']), 'unknown candidates cannot enter selection')
+                if not valid:
+                    require(slot['model_pin'] is None, 'unknown candidate exported model')
+                    continue
+                entry = row['models'][name]
+                require(entry['generation_id'] == name and entry['family'] == family and entry['diagnostic_only'] is False and
+                        entry['generation_record_pin'] == generation_pin and slot['model_pin'] == entry['model_pin'], 'generated model identity')
+                elapsed = checkpoint['family_CPU_through_checkpoint']
+                nonnegative(elapsed, 'checkpoint actual CPU')
+                require(elapsed <= cap and elapsed <= record['CPU_seconds'], 'candidate accepted after CPU cap')
+                _, candidate = model_check(entry, base, family)
+                if family == 'T':
+                    require(checkpoint['status'] == 'COMPLETED' and checkpoint['step'] == int(name.split('_')[1]) and
+                            record['steps_completed'] >= checkpoint['step'] and record['training_is_196_only'] is True, 'fixed gradient checkpoint')
+                else:
+                    require(checkpoint['status'] in ('Solved', 'AlmostSolved') and checkpoint['accepted_numeric_proposal'] is True and
+                            checkpoint['primal_residual'] <= 1e-7 and checkpoint['dual_residual'] <= 1e-6 and payload is not None,
+                            'structured numerical qualification')
+                    nonnegative(checkpoint['primal_residual'], 'primal numerical residual')
+                    nonnegative(checkpoint['dual_residual'], 'dual numerical residual')
+                    conic_payload_check(payload, name, checkpoint, candidate, anchor, center, problem, family)
+                close_number(checkpoint['actual_nonlinear_loss'], nonlinear_loss(candidate, anchor, problem), 'matched nonlinear GEN loss')
+                emitted[name] = entry['model_pin']; seen.add(name)
+                center = candidate
+        finally:
+            if payload is not None:
+                payload.close()
+        require(record['emitted_model_pins'] == emitted, 'complete emitted model inventory')
+    require(set(row['models']) == seen, 'no undeclared generated models')
+
+
+def main_fit_check(protocol, fit, row, sealed, diagnostic, seal_time, diagnostic_time, ctx, budget, protocol_sha):
+    require(all(row[key] == value for key, value in sealed.items()), 'MAIN altered preselection seal')
+    require(row['diagnostic_models'] == diagnostic['models'] and set(diagnostic['models']) == set(DIAGNOSTICS), 'diagnostic inventory')
+    data = load_train(protocol, fit)
+    base, H, spec = data['base'], data['H'], protocol['input_specs'][str(fit)]
+    require(set(row['models']) <= {'KEEP', *HEADS} and 'KEEP' in row['models'], 'main model scope')
+    identities, parameters = {}, {}
+    for name, entry in dict(row['models'], **row['diagnostic_models']).items():
+        expected_family = 'DIAGNOSTIC' if name in DIAGNOSTICS else ('KEEP' if name == 'KEEP' else name.split('_')[0])
+        _, parameters[name] = model_check(entry, base, expected_family)
+        identities[name] = {key: entry[key] for key in ('model_pin', 'canonical_model_sha256', 'readout_sha256')}
+    require(all(row['models']['KEEP']['model_pin'][key] == spec['model'][key] for key in ('bytes', 'sha256')), 'KEEP exact original gzip bytes')
+    require(row['models']['KEEP']['diagnostic_only'] is False, 'KEEP ordinary original')
+    restore = row['restore_pin']
+    verify_pin(restore)
+    require(all(restore[key] == spec['model'][key] for key in ('bytes', 'sha256')), 'isolated restore exact original bytes')
+    selected_g = row['family_choice']['G']
+    require(diagnostic['G_SELECTED'] == selected_g, 'diagnostic causal source')
+    for name, changed_rows, mask in ((DIAGNOSTICS[0], range(3), 7), (DIAGNOSTICS[1], (3,), 8)):
+        restored = head_rows(base)
+        for index in changed_rows:
+            restored[index] = parameters[selected_g][index]
+        require(parameters[name].tobytes() == restored.tobytes() and
+                row['diagnostic_models'][name]['diagnostic_only'] is True and
+                row['diagnostic_models'][name]['row_mask'] == mask, 'exact G component restoration')
+    verify_pin(row['hidden_pin'])
+    with np.load(row['hidden_pin']['path'], allow_pickle=False) as archive:
+        require(archive.files == ['H'] and archive['H'].shape == H.shape and archive['H'].dtype == np.float64 and
+                archive['H'].tobytes() == H.tobytes(), 'independent TRAIN hidden bytes')
+    manifest = read_pin(row['graph_manifest_pin'])
+    require(manifest['schema'] == 'hepta-own-law-graph-manifest-v1' and manifest['fit'] == fit and
+            manifest['model_anchor_pin'] == spec['model'] and len(manifest['graphs']) == 64 and
+            manifest['semantic_source_manifest_sha256'] == digest(canonical(protocol['semantic_sources']).encode()), 'graph manifest sources')
+    items = {}
+    for index, saved in enumerate(manifest['graphs']):
+        budget()
+        lo, hi, state_sha = data['sections'][index]
+        require((saved['world_index'], saved['row_start'], saved['row_end'], saved['state_order_sha256']) ==
+                (index, lo, hi, state_sha), 'graph/input row boundary')
+        graph = graph_check(ctx, base, data['publics'][index], saved['graph_pin'], budget)
+        require(graph['state_order_sha256'] == state_sha and len(graph['states']) == hi - lo, 'complete TRAIN state order')
+        for actual, expected, name in ((np.asarray(graph['masks'], dtype=bool), data['masks'][lo:hi], 'masks'),
+            (np.asarray(graph['posterior'], dtype=np.float64), data['posterior'][lo:hi], 'posterior'),
+            (np.asarray(graph['qstar'], dtype=np.float64)[:, 1:4], data['teacher'][lo:hi, :3], 'own Q')):
+            require(actual.tobytes() == expected.tobytes(), 'original teacher exact ' + name)
+        authentication = saved['source_teacher_authentication']
+        require(all(authentication[key] is True for key in ('state_order_exact', 'masks_bits_exact',
+            'posterior_bits_exact', 'continuation_Q_bits_exact')) and authentication['continuation_Q_max_abs_error'] == 0,
+            'recorded exact teacher authentication')
+        items[index] = dict(graph=graph, graph_pin=saved['graph_pin'], H=H[lo:hi])
+    records, metrics, summaries, gen_keep = {}, {}, {}, None
+    require(set(row['phase_records']) == {'GEN', 'SELECT', 'TRAIN_AUDIT'}, 'all old phases present')
+    for phase in ('GEN', 'SELECT', 'TRAIN_AUDIT'):
+        phase_models = dict(row['models'])
+        if phase == 'TRAIN_AUDIT':
+            phase_models.update(row['diagnostic_models'])
+        record, world_metrics, keep, summary = phase_check(row['phase_records'][phase], phase, fit, phase_models,
+            data['split'][phase], items, protocol_sha, budget)
+        if phase == 'TRAIN_AUDIT':
+            require(iso(record['started_utc']) >= diagnostic_time, 'AUDIT after both immutable seals')
+        else:
+            require(iso(record['completed_utc']) <= seal_time, 'GEN/SELECT before immutable seal')
+            require(row[phase + '_record_pin'] == row['phase_records'][phase], 'phase source alias')
+        records[phase], metrics[phase], summaries[phase] = record, world_metrics, summary
+        if phase == 'GEN':
+            gen_keep = keep
+    compare_metrics(row['phase_summaries'], summaries)
+    all_metrics = {index: world for phase in metrics.values() for index, world in phase.items()}
+    require(set(all_metrics) == set(range(64)), 'old full-world partition')
+    compare_metrics(row['all_TRAIN_summaries'], aggregate([all_metrics[i] for i in range(64)],
+        ['KEEP'] + [name for name in HEADS if name in row['models']]))
+    values = {name: summary['utility'] for name, summary in summaries['SELECT'].items()}
+    compare_metrics(row['SELECT_means'], values)
+    choices = {family: winner(values, names) for family, names in FAMILIES.items()}
+    global_choice = winner(values, [name for name in HEADS if name in set(choices.values())])
+    require(row['family_choice'] == choices and row['global_choice'] == global_choice, 'independent full-task selection')
+    screen, problem, baseline = screening_check(row, data, items, records['GEN'], gen_keep, protocol, fit)
+    generation_check(row, problem, screen, base, seal_time, fit, protocol_sha)
+    for generation_pin in row['generation'].values():
+        record = read_pin(generation_pin)
+        require(iso(baseline['completed_utc']) <= iso(record['started_utc']) and
+                iso(record['completed_utc']) <= iso(records['GEN']['started_utc']), 'generation admission order')
+    return identities, {phase: summaries[phase] for phase in summaries}
