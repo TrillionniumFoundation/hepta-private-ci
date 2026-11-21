@@ -35,7 +35,7 @@ impl<S: FinalHoldoutCasStoreV1> OriginalHoldoutReadV1 for FencedFinalHoldoutOwne
         &mut self,
         plan: &CrossFoldPlanReceiptV1,
     ) -> Result<(Digest32, Option<FinalHoldoutJournalReceiptV1>), FencedHoldoutError> {
-        FencedFinalHoldoutOwnerV1::read_consumption(self, plan)
+        FencedFinalHoldoutOwnerV1::read_consumption_for_execution(self, plan)
     }
 }
 
@@ -111,7 +111,8 @@ pub(super) fn release_original_holdout<S: FinalHoldoutCasStoreV1, P: FinalHoldou
     receipt: &FinalHoldoutJournalReceiptV1,
     provider: &mut P,
 ) -> Result<TemporalComparisonInputsV1, ProductEvaluationError> {
-    let (namespace, recorded) = FencedFinalHoldoutOwnerV1::read_consumption(original, plan)?;
+    let (namespace, recorded) =
+        FencedFinalHoldoutOwnerV1::read_consumption_for_execution(original, plan)?;
     if receipt.disposition != HoldoutUseDispositionV1::Recorded
         || recorded.as_ref() != Some(receipt)
     {
@@ -141,7 +142,8 @@ pub(super) fn release_original_paired_holdout<
     pairing: &OnPolicyPairingContractV1,
     provider: &mut P,
 ) -> Result<OnPolicyTemporalComparisonInputsV1, ProductEvaluationError> {
-    let (namespace, recorded) = FencedFinalHoldoutOwnerV1::read_consumption(original, plan)?;
+    let (namespace, recorded) =
+        FencedFinalHoldoutOwnerV1::read_consumption_for_execution(original, plan)?;
     if receipt.disposition != HoldoutUseDispositionV1::Recorded
         || recorded.as_ref() != Some(receipt)
     {

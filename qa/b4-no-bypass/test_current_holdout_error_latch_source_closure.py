@@ -208,8 +208,8 @@ class CurrentHoldoutErrorLatchSourceClosureTests(unittest.TestCase):
             with self.subTest(replacement=changed):
                 self.rejects(OWNER, EXECUTION_MATCH, changed)
 
-    def test_raw_release_and_execution_have_distinct_exact_typed_caller_sets(self):
-        expected = {RAW_ID: (RELEASE,), EXECUTION_ID: (EXECUTION,)}
+    def test_diagnostics_stay_internal_while_release_and_execution_use_fenced_reads(self):
+        expected = {RAW_ID: (), EXECUTION_ID: (EXECUTION, RELEASE)}
         paths = (OWNER, RELEASE, EXECUTION, PREFIX + "product_runner.rs")
         sources = {
             path: PROOF._strip_cfg_test_items(
