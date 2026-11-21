@@ -67,3 +67,15 @@ fn original_model_cache_ttl_rejects_values_beyond_chrono_range() {
     assert!(entry.is_fresh(max_chrono_ttl));
     assert!(!entry.is_fresh(max_chrono_ttl + Duration::from_millis(1)));
 }
+
+#[test]
+fn original_model_cache_wire_preserves_leap_seconds_and_extended_years() {
+    for timestamp in ["2016-12-31T23:59:60Z", "+10000-01-01T00:00:00Z"] {
+        let original = entry_with_timestamp(timestamp);
+        let encoded = serde_json::to_value(&original).expect("cache serialization succeeds");
+        assert_eq!(encoded["fetched_at"], serde_json::json!(timestamp));
+        let restored: ModelsCacheEntry =
+            serde_json::from_value(encoded).expect("cache timestamp should round trip");
+        assert_eq!(restored, original);
+    }
+}
