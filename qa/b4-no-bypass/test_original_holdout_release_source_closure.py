@@ -19,7 +19,7 @@ PREFIX = "codex-rs/hepta-intelligence-eval/src/"
 RELEASE = PREFIX + "product_holdout_release.rs"
 RUNNER = PREFIX + "product_runner.rs"
 OWNER = PREFIX + "fenced_holdout.rs"
-BOUNDARIES = {"product_original_holdout_release", "product_original_holdout_consumption_read"}
+BOUNDARIES = {"product_original_holdout_release", "product_original_holdout_consumption_read", "product_original_holdout_execution_read"}
 
 
 class OriginalHoldoutReleaseSourceTests(unittest.TestCase):
@@ -68,7 +68,7 @@ class OriginalHoldoutReleaseSourceTests(unittest.TestCase):
     def test_actual_function_guards(self):
         PROOF._verify_protected_files(ROOT, {"protected_file": self.rows})
 
-    def test_actual_two_caller_sets_scan_every_rust_source(self):
+    def test_actual_caller_sets_scan_every_rust_source(self):
         for boundary in self.boundaries:
             with self.subTest(boundary=boundary.identifier):
                 PROOF._verify_boundary(ROOT, boundary, self.index(), tuple(self.manifest["ignored_path_fragments"]))
@@ -104,7 +104,7 @@ class OriginalHoldoutReleaseSourceTests(unittest.TestCase):
 
     def test_runner_checks_before_proof_and_after_provider_regardless_of_borrow_use(self):
         self.reject_removal(RELEASE, "fn release_original_holdout<S: FinalHoldoutCasStoreV1, P: FinalHoldoutProviderV1>(", (
-            "FencedFinalHoldoutOwnerV1::read_consumption(original, plan)?",
+            "FencedFinalHoldoutOwnerV1::read_consumption_for_execution(original, plan)?",
             "receipt.disposition != HoldoutUseDispositionV1::Recorded", "recorded.as_ref() != Some(receipt)",
             "provider.release_after_original_consumption(OriginalFinalHoldoutConsumptionV1",
             "require_recorded(original, namespace, plan, receipt)?"))

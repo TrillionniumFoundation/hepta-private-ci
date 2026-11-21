@@ -208,8 +208,8 @@ class CurrentHoldoutErrorLatchSourceClosureTests(unittest.TestCase):
             with self.subTest(replacement=changed):
                 self.rejects(OWNER, EXECUTION_MATCH, changed)
 
-    def test_raw_release_and_execution_have_distinct_exact_typed_caller_sets(self):
-        expected = {RAW_ID: (RELEASE,), EXECUTION_ID: (EXECUTION,)}
+    def test_diagnostics_stay_internal_while_release_and_execution_use_fenced_reads(self):
+        expected = {RAW_ID: (), EXECUTION_ID: (EXECUTION, RELEASE)}
         paths = (OWNER, RELEASE, EXECUTION, PREFIX + "product_runner.rs")
         sources = {
             path: PROOF._strip_cfg_test_items(
@@ -224,9 +224,14 @@ class CurrentHoldoutErrorLatchSourceClosureTests(unittest.TestCase):
                 self.assertEqual(boundary.receiver_type, "FencedFinalHoldoutOwnerV1")
                 self.assertEqual(boundary.definition_path, OWNER)
                 PROOF._verify_boundary(ROOT, boundary, sources, ())
-                with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                # An empty registered set must reject an invented permission;
+                # a nonempty set must reject removal of its actual callers.
+                invalid_callers = () if callers else (RELEASE,)
+                with self.assertRaisesRegex(
+                    PROOF.VerificationFailure, "unexpected" if callers else "missing"
+                ):
                     PROOF._verify_boundary(
-                        ROOT, replace(boundary, product_callers=()), sources, ()
+                        ROOT, replace(boundary, product_callers=invalid_callers), sources, ()
                     )
                 injected = dict(sources)
                 injected[PREFIX + "unregistered_holdout_read.rs"] = (

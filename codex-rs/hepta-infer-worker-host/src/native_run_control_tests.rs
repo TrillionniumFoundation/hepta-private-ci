@@ -559,7 +559,9 @@ async fn resume_rejects_unknown_reserved_stopped_and_digest_only_without_io() {
                 }
             }
         }
-        let bytes = control.qualification_file_bytes(64 * 1024 * 1024).unwrap();
+        let bytes = control
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .unwrap();
         let record = control.native_record("r1").cloned();
         let error = driver
             .resume(&mut control, admission(), &CancellationToken::new())
@@ -573,7 +575,9 @@ async fn resume_rejects_unknown_reserved_stopped_and_digest_only_without_io() {
         assert!(error.to_string().contains(expected), "{kind}: {error}");
         assert_eq!(control.native_record("r1"), record.as_ref());
         assert_eq!(
-            control.qualification_file_bytes(64 * 1024 * 1024).unwrap(),
+            control
+                .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+                .unwrap(),
             bytes
         );
         drop(control);
@@ -604,7 +608,9 @@ async fn resume_rejects_configuration_or_capacity_changes_before_reconciliation(
             .dispatch_native("r1", historical_dispatch())
             .unwrap();
         let record = control.native_record("r1").unwrap().clone();
-        let bytes = control.qualification_file_bytes(64 * 1024 * 1024).unwrap();
+        let bytes = control
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .unwrap();
         let mut selection = admission();
         match field {
             "agent" => {
@@ -627,7 +633,9 @@ async fn resume_rejects_configuration_or_capacity_changes_before_reconciliation(
         );
         assert_eq!(control.native_record("r1"), Some(&record));
         assert_eq!(
-            control.qualification_file_bytes(64 * 1024 * 1024).unwrap(),
+            control
+                .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+                .unwrap(),
             bytes
         );
         drop(control);
@@ -663,7 +671,9 @@ async fn resume_retains_uncertainty_and_never_dispatches_missing_terminal_eviden
         control.native_record("r1").unwrap().state,
         NativeReservationState::Indeterminate
     );
-    let bytes = control.qualification_file_bytes(64 * 1024 * 1024).unwrap();
+    let bytes = control
+        .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+        .unwrap();
     assert_eq!(
         driver
             .resume(&mut control, admission(), &CancellationToken::new())
@@ -672,7 +682,9 @@ async fn resume_retains_uncertainty_and_never_dispatches_missing_terminal_eviden
         output,
     );
     assert_eq!(
-        control.qualification_file_bytes(64 * 1024 * 1024).unwrap(),
+        control
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .unwrap(),
         bytes
     );
     assert!(

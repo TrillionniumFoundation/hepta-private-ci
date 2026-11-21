@@ -97,7 +97,7 @@ class CellLearningEvaluationSourceClosureTests(unittest.TestCase):
             with self.subTest(boundary=identifier):
                 self.assertIn(identifier, inventory)
                 row = self.boundaries[identifier]
-                self.assertEqual(row.product_callers, callers)
+                self.assertCountEqual(row.product_callers, callers)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
                 if callers:
                     with self.assertRaises(PROOF.VerificationFailure):

@@ -38,12 +38,18 @@ BAO_CLOCK = (
     "            .map_err(BaoFinalUseHostError::Trust)?;"
 )
 BAO_APPLY = (
-    "let receipt = self\n"
-    "            .revocation_verifier\n"
-    "            .apply(&self.authority, update, now_unix_ms)\n"
-    "            .map_err(BaoFinalUseHostError::Control)?;"
+    "let receipt = match self.authority.authentication_profile() {\n"
+    "            FinalUseAuthenticationProfile::ClassicalV1 => {\n"
+    "                self.revocation_verifier\n"
+    "                    .apply(&self.authority, update, now_unix_ms)\n"
+    "            }\n"
+    "            FinalUseAuthenticationProfile::MlDsa65V2 => self\n"
+    "                .revocation_verifier\n"
+    "                .apply_or_confirm_current(&self.authority, update, now_unix_ms),\n"
+    "        }\n"
+    "        .map_err(BaoFinalUseHostError::Control)?;"
 )
-BAO_RECEIPT = "*fresh_until = receipt.valid_until_unix_ms();"
+BAO_RECEIPT = "*lease = Some(receipt.clone());"
 BOOTSTRAP_VERIFY = (
     "feed_key\n"
     "        .verify_strict(\n"
@@ -206,11 +212,36 @@ class NativeMemoryAuthoritySourceClosureTests(unittest.TestCase):
             (
                 BAO,
                 BAO_RECEIPT,
-                "*fresh_until = u64::MAX;",
+                "*lease = Some(other_receipt.clone());",
             ),
         ):
             with self.subTest(path=relative, replacement=changed):
                 self.rejects(relative, receipt, changed)
+
+    def test_both_authentication_profiles_keep_the_original_authority_update_and_clock(self):
+        for call in (
+            ".apply(&self.authority, update, now_unix_ms)",
+            ".apply_or_confirm_current(&self.authority, update, now_unix_ms)",
+        ):
+            for changed in (
+                call.replace("&self.authority", "&other_authority"),
+                call.replace("update,", "other_update,"),
+                call.replace("now_unix_ms", "supplied_time"),
+            ):
+                with self.subTest(call=call, replacement=changed):
+                    self.rejects(BAO, call, changed)
+
+    def test_lease_retention_cannot_cross_heads_or_publish_unverified_bytes(self):
+        for guard in (
+            "current.authority_epoch() == receipt.authority_epoch()",
+            "current.revision() == receipt.revision()",
+            "current.valid_until_unix_ms() > receipt.valid_until_unix_ms()",
+            "if !retain_longer_same_head",
+        ):
+            with self.subTest(guard=guard):
+                self.rejects(BAO, guard, "true")
+        self.rejects(BAO, ".apply_or_confirm_current(&self.authority, update, now_unix_ms)",
+                     ".apply(&self.authority, update, now_unix_ms)")
 
 
 if __name__ == "__main__":

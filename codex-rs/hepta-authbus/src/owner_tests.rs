@@ -19,8 +19,14 @@ fn private_tempdir() -> TestResult<TempDir> {
 async fn fixture() -> TestResult<(TempDir, TempDir, PathBuf, PathBuf, AuthBusAuthorityOwner)> {
     let database_root = private_tempdir()?;
     let checkpoint_root = private_tempdir()?;
-    let database = database_root.path().join("authority.sqlite");
-    let checkpoint = checkpoint_root.path().join("authority-checkpoint.json");
+    let database = database_root
+        .path()
+        .canonicalize()?
+        .join("authority.sqlite");
+    let checkpoint = checkpoint_root
+        .path()
+        .canonicalize()?
+        .join("authority-checkpoint.json");
     let owner =
         AuthBusAuthorityOwner::bootstrap_new(&database, checkpoint.clone(), "authbus-owner-test")
             .await?;

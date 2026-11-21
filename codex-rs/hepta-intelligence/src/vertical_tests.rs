@@ -477,7 +477,10 @@ fn expected_scalarization_digest(weights: &[(&str, i64)]) -> Digest32 {
 
 #[test]
 fn vertical_normalizes_half_weight_without_rewriting_the_admitted_objective() {
-    let request = vertical_request();
+    let mut request = vertical_request();
+    request.objective_profile.soft_dimensions[0].baseline_weight =
+        FixedQ32::from_raw(FixedQ32::ONE.raw() / 2);
+    rebind_objective(&mut request);
     let expected = must(admit_and_compile_objective_v1(
         &request.objective_envelope,
         &request.objective_profile,
@@ -487,6 +490,11 @@ fn vertical_normalizes_half_weight_without_rewriting_the_admitted_objective() {
     unit_request.objective_profile.soft_dimensions[0].baseline_weight = FixedQ32::ONE;
     rebind_objective(&mut unit_request);
 
+    let mut abstain_request = request.clone();
+    abstain_request
+        .ndu_contributions
+        .retain(|contribution| contribution.candidate_id == id("abstain"));
+    let abstain_receipt = must(run_read_only_vertical(abstain_request));
     let receipt = must(run_read_only_vertical(request));
     let unit_receipt = must(run_read_only_vertical(unit_request));
     assert_eq!(receipt.objective, must(expected.compile_result));
@@ -501,6 +509,15 @@ fn vertical_normalizes_half_weight_without_rewriting_the_admitted_objective() {
     assert_eq!(
         receipt.ndu.base.scalarization_profile_digest,
         unit_receipt.ndu.base.scalarization_profile_digest
+    );
+    assert_eq!(abstain_receipt.objective, receipt.objective);
+    assert_eq!(
+        abstain_receipt.ndu.base.scalarization_profile_digest,
+        receipt.ndu.base.scalarization_profile_digest
+    );
+    assert_eq!(
+        abstain_receipt.plan.decision,
+        PlanDecision::Abstained(crate::AbstentionReason::NoEligibleCandidate)
     );
     assert_ne!(
         receipt.objective.objective.semantic_digest,
@@ -735,11 +752,24 @@ fn omitted_cognitive_read_evidence_fails_closed() {
 
 #[test]
 fn incomplete_objective_weights_reject_unique_and_abstain_only_recommendations() {
-    for weight in [FixedQ32::ZERO, FixedQ32::from_raw(1_i64 << 31)] {
+    // Objective baselines are independent weights, so one half-weight axis is
+    // complete after normalization. Incompleteness means zero total or an NDU
+    // axis with no corresponding admitted objective preference.
+    for missing_axis in [false, true] {
         let mut profile = objective_profile();
-        profile.soft_dimensions[0].baseline_weight = weight;
+        profile.soft_dimensions[0].baseline_weight = if missing_axis {
+            FixedQ32::from_raw(1_i64 << 31)
+        } else {
+            FixedQ32::ZERO
+        };
         for abstain_only in [false, true] {
             let mut request = vertical_request_with_profile(profile.clone());
+            if missing_axis {
+                request
+                    .ndu_profile
+                    .dimensions
+                    .push((id("quality.unweighted"), AxisDirection::Maximize));
+            }
             if abstain_only {
                 request
                     .ndu_contributions
@@ -748,10 +778,17 @@ fn incomplete_objective_weights_reject_unique_and_abstain_only_recommendations()
 
             let error =
                 run_read_only_vertical(request).expect_err("incomplete weights must reject");
-            assert!(matches!(
-                error,
-                ReadOnlyVerticalError::Ndu(codex_hepta_ndu::NduError::IncompleteScalarization)
-            ));
+            if missing_axis {
+                assert!(matches!(
+                    error,
+                    ReadOnlyVerticalError::SoftDimensionMismatch
+                ));
+            } else {
+                assert!(matches!(
+                    error,
+                    ReadOnlyVerticalError::Ndu(codex_hepta_ndu::NduError::IncompleteScalarization)
+                ));
+            }
         }
     }
 }

@@ -74,6 +74,10 @@
 //! running, `Tab` submits just like Enter so input is never dropped.
 //! `Tab` does not submit when entering a `!` shell command.
 //!
+//! Shell mode keeps the leading `!` in prompt state, outside the editable textarea. Imports subtract
+//! one byte from element ranges; exports add it back. Empty, reversed, or unrepresentable ranges are
+//! discarded.
+//!
 //! On submit/queue paths, the composer:
 //!
 //! - Expands pending paste placeholders so element ranges align with the final text.
@@ -1594,8 +1598,8 @@ impl ChatComposer {
     }
 
     fn shift_text_element(element: TextElement, shift: isize) -> Option<TextElement> {
-        let start = element.byte_range.start.checked_add(shift)?;
-        let end = element.byte_range.end.checked_add(shift)?;
+        let start = element.byte_range.start.checked_add_signed(shift)?;
+        let end = element.byte_range.end.checked_add_signed(shift)?;
         if start >= end {
             return None;
         }
@@ -4957,6 +4961,10 @@ impl ChatComposer {
 #[cfg(test)]
 #[path = "chat_composer_effort_tests.rs"]
 mod effort_tests;
+
+#[cfg(test)]
+#[path = "chat_composer_element_shift_tests.rs"]
+mod element_shift_tests;
 
 #[cfg(test)]
 mod tests {

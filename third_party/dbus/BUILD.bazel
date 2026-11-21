@@ -11,6 +11,9 @@ cc_test(
     name = "native_identity_test",
     size = "small",
     srcs = ["native_identity_test.c"],
+    # The musl toolchain links statically, including its C++ runtime inputs.
+    # cc_test defaults to dynamic runtime libraries even for this C-only test.
+    linkstatic = True,
     local_defines = ["DBUS_COMPILATION"],
     target_compatible_with = ["@platforms//os:linux"],
     deps = ["@dbus//:dbus-1"],

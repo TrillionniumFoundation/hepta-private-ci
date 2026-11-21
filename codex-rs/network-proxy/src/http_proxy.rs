@@ -1251,7 +1251,13 @@ mod tests {
             policy.set_allowed_domains(vec!["example.com".to_string()]);
             policy
         };
-        let state = Arc::new(network_proxy_state_for_policy(policy));
+        let mut state = network_proxy_state_for_policy(policy);
+        // Exercise the mode guard after the normal public-IP check.
+        state.set_dns_lookup_for_test(|host, port| {
+            assert_eq!((host, port), ("example.com", 443));
+            Ok(vec![([8, 8, 8, 8], port).into()])
+        });
+        let state = Arc::new(state);
         state.set_network_mode(NetworkMode::Limited).await.unwrap();
 
         let req = Request::builder()
@@ -1304,7 +1310,13 @@ mod tests {
 
     #[tokio::test]
     async fn http_connect_accept_passes_environment_id_to_decider() {
-        let state = Arc::new(network_proxy_state_for_policy(NetworkProxyConfig::default()));
+        let mut state = network_proxy_state_for_policy(NetworkProxyConfig::default());
+        // Reach the policy decider with a deterministic public DNS answer.
+        state.set_dns_lookup_for_test(|host, port| {
+            assert_eq!((host, port), ("example.com", 443));
+            Ok(vec![([8, 8, 8, 8], port).into()])
+        });
+        let state = Arc::new(state);
         let seen_environment_id = Arc::new(Mutex::new(None));
         let decider: Arc<dyn NetworkPolicyDecider> = Arc::new({
             let seen_environment_id = seen_environment_id.clone();
@@ -1347,7 +1359,14 @@ mod tests {
             ..NetworkProxyConfig::default()
         };
         policy.set_allowed_domains(vec!["github.com".to_string()]);
-        let state = Arc::new(network_proxy_state_for_policy(policy));
+        let mut state = network_proxy_state_for_policy(policy);
+        // Preserve the GitHub credential binding without depending on external DNS.
+        // Fixture answers still pass through the normal local/private IP guard.
+        state.set_dns_lookup_for_test(|host, port| {
+            assert_eq!((host, port), ("github.com", 22));
+            Ok(vec![([8, 8, 8, 8], port).into()])
+        });
+        let state = Arc::new(state);
         let mut env = HashMap::from([("GH_TOKEN".to_string(), "ghp-real".to_string())]);
         state.virtualize_child_credentials(&mut env);
 

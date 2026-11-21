@@ -202,15 +202,17 @@ fn observe_fixture_dacl(label: &str, path: &std::path::Path) {
 }
 
 #[test]
-fn elevated_token_includes_network_proxy_restricting_sid() -> Result<()> {
+fn diagnostic_token_includes_network_proxy_restricting_sid() -> Result<()> {
     let capability_sid = LocalSid::from_string("S-1-5-21-10-20-30-40")?;
     let network_proxy_sid = LocalSid::from_string("S-1-5-21-50-60-70-80")?;
     let everyone = LocalSid::from_string("S-1-1-0")?;
     let base_token = OwnedToken(unsafe { get_current_token_for_restriction()? });
     let mut user = unsafe { get_user_sid_bytes(base_token.0)? };
     let mut logon = unsafe { get_logon_sid_bytes(base_token.0)? };
+    // Inspect the private token mechanism without admitting a production launch.
+    // This owned token is queried below, never impersonated or used to spawn.
     let restricted_token = OwnedToken(unsafe {
-        create_readonly_token_with_caps_and_user_from(
+        create_token_with_caps_user_and_additional_restrictions_from(
             base_token.0,
             &[capability_sid.as_ptr()],
             &[network_proxy_sid.as_ptr()],

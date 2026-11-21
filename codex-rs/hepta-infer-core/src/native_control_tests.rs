@@ -1,4 +1,5 @@
 use super::*;
+use crate::durable_control::tests::held_journal_bytes;
 use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;

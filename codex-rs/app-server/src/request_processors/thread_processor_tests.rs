@@ -609,8 +609,8 @@ mod thread_processor_behavior_tests {
             model_provider: "openai".to_string(),
             model: None,
             reasoning_effort: None,
-            created_at: created_at,
-            updated_at: updated_at,
+            created_at,
+            updated_at,
             recency_at: updated_at,
             archived_at: None,
             section: None,
@@ -1087,7 +1087,7 @@ mod thread_processor_behavior_tests {
 
         fs::write(&path, format!("{}\n", serde_json::to_string(&line)?))?;
         let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(&timestamp)?;
-        let times = FileTimes::new().set_modified(parsed.into());
+        let times = FileTimes::new().set_modified(parsed.calendar().into());
         std::fs::OpenOptions::new()
             .append(true)
             .open(&path)?

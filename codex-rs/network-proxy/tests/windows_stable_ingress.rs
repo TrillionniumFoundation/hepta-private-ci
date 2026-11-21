@@ -13,6 +13,7 @@ use codex_network_proxy::NetworkProxyConfig;
 use codex_network_proxy::NetworkProxyState;
 use codex_network_proxy::build_config_state;
 use codex_windows_sandbox::ConsoleMode;
+use codex_windows_sandbox::ElevatedWindowsSandboxIsolationUnavailable;
 use codex_windows_sandbox::LocalSid;
 use codex_windows_sandbox::create_process_as_user;
 use codex_windows_sandbox::create_readonly_token_with_caps_and_user_from;
@@ -35,6 +36,16 @@ use std::sync::Mutex;
 use std::time::Duration;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
+use windows_sys::Win32::Foundation::HANDLE;
+use windows_sys::Win32::Security::CreateRestrictedToken;
+use windows_sys::Win32::Security::DISABLE_MAX_PRIVILEGE;
+use windows_sys::Win32::Security::GetTokenInformation;
+use windows_sys::Win32::Security::IsTokenRestricted;
+use windows_sys::Win32::Security::LUA_TOKEN;
+use windows_sys::Win32::Security::SID_AND_ATTRIBUTES;
+use windows_sys::Win32::Security::TOKEN_USER;
+use windows_sys::Win32::Security::TokenUser;
+use windows_sys::Win32::Security::WRITE_RESTRICTED;
 use windows_sys::Win32::System::Threading::GetExitCodeProcess;
 use windows_sys::Win32::System::Threading::TerminateProcess;
 use windows_sys::Win32::System::Threading::WaitForSingleObject;
@@ -403,15 +414,83 @@ fn run_restricted_child_blocking(
     let base_token = unsafe {
         OwnedHandle::from_raw_handle(get_current_token_for_restriction()? as *mut std::ffi::c_void)
     };
-    let restricted_token = unsafe {
+    let production_token = unsafe {
         create_readonly_token_with_caps_and_user_from(
             base_token.as_raw_handle() as isize,
             &[capability_sid.as_ptr()],
             &[route_sid.as_ptr()],
-        )?
+        )
+    }
+    .map(|raw| unsafe { OwnedHandle::from_raw_handle(raw as *mut std::ffi::c_void) });
+    let refusal = production_token.expect_err("filesystem token admission must remain closed");
+    assert_eq!(
+        refusal.downcast_ref::<ElevatedWindowsSandboxIsolationUnavailable>(),
+        Some(&ElevatedWindowsSandboxIsolationUnavailable)
+    );
+
+    // This private integration fixture tests route identity on our own child,
+    // not filesystem isolation. Keep the historical WRITE_RESTRICTED mode and
+    // the actual user and Everyone for loader/stdio access; never change host ACLs
+    // or expose this diagnostic constructor through the sandbox library.
+    let mut user_words = [0_usize; 64];
+    let mut returned = 0;
+    // SAFETY: the live base token and aligned bounded output remain owned.
+    let queried = unsafe {
+        GetTokenInformation(
+            base_token.as_raw_handle() as HANDLE,
+            TokenUser,
+            user_words.as_mut_ptr().cast(),
+            std::mem::size_of_val(&user_words) as u32,
+            &mut returned,
+        )
     };
+    anyhow::ensure!(
+        queried != 0,
+        "query diagnostic token user: {}",
+        std::io::Error::last_os_error()
+    );
+    anyhow::ensure!(
+        (std::mem::size_of::<TOKEN_USER>()..=std::mem::size_of_val(&user_words))
+            .contains(&(returned as usize)),
+        "invalid diagnostic token user length"
+    );
+    // SAFETY: the successful OS query initialized TOKEN_USER and its SID in
+    // this buffer, which stays live through CreateRestrictedToken below.
+    let user_sid = unsafe { (*user_words.as_ptr().cast::<TOKEN_USER>()).User.Sid };
+    let everyone = LocalSid::from_string("S-1-1-0")?;
+    let restricting = [
+        capability_sid.as_ptr(),
+        user_sid,
+        route_sid.as_ptr(),
+        everyone.as_ptr(),
+    ]
+    .map(|sid| SID_AND_ATTRIBUTES {
+        Sid: sid,
+        Attributes: 0,
+    });
+    let mut raw_token: HANDLE = 0;
+    // SAFETY: the owned primary token, all native SIDs and output stay live.
+    let created = unsafe {
+        CreateRestrictedToken(
+            base_token.as_raw_handle() as HANDLE,
+            DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED,
+            /*disablesidcount*/ 0,
+            std::ptr::null(),
+            /*deleteprivilegecount*/ 0,
+            std::ptr::null(),
+            restricting.len() as u32,
+            restricting.as_ptr(),
+            &mut raw_token,
+        )
+    };
+    anyhow::ensure!(
+        created != 0,
+        "create diagnostic route token: {}",
+        std::io::Error::last_os_error()
+    );
     let restricted_token =
-        unsafe { OwnedHandle::from_raw_handle(restricted_token as *mut std::ffi::c_void) };
+        unsafe { OwnedHandle::from_raw_handle(raw_token as *mut std::ffi::c_void) };
+    assert_ne!(unsafe { IsTokenRestricted(raw_token) }, 0);
 
     let mut env = std::env::vars().collect::<HashMap<_, _>>();
     env.insert(HTTP_ADDR_ENV.to_string(), http_addr.to_string());

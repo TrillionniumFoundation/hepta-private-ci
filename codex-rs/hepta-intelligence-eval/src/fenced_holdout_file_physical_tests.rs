@@ -125,7 +125,7 @@ fn original_holdout_consumption_refuses_corruption_then_restoration() {
     let (_temp, mut observation, mut original) = populated();
     let frozen = plan("physical-plan");
     let (binding, receipt) = original
-        .read_consumption(&frozen)
+        .read_consumption_for_execution(&frozen)
         .unwrap_or_else(|error| panic!("initial actual consumption: {error}"));
     assert_eq!(binding, digest("binding"));
     assert!(receipt.is_some());
@@ -136,13 +136,13 @@ fn original_holdout_consumption_refuses_corruption_then_restoration() {
     corrupt[last] ^= 1;
     overwrite(&mut observation, &corrupt);
     assert_eq!(
-        original.read_consumption(&frozen),
+        original.read_consumption_for_execution(&frozen),
         Err(crate::FencedHoldoutError::Indeterminate)
     );
     assert!(original.is_poisoned());
     overwrite(&mut observation, &saved);
     assert_eq!(
-        original.read_consumption(&frozen),
+        original.read_consumption_for_execution(&frozen),
         Err(crate::FencedHoldoutError::Poisoned)
     );
 }

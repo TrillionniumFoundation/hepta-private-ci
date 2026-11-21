@@ -183,6 +183,11 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Install exact workspace Rust toolchain
+        if: steps.execution.outputs.run_native == 'true'
+        run: |
+          python3 -B -m unittest discover -s scripts -p test_hepta_ci_toolchain.py -v
+          python3 scripts/hepta_ci_toolchain.py --github-env "$GITHUB_ENV"
       - name: Verify Cargo lock resolution and print exact resolver drift
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         working-directory: codex-rs

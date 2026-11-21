@@ -27,7 +27,7 @@ fn matrix_script(matrix: &DeleteMatrix) -> (String, HashMap<String, String>) {
 }
 
 #[test]
-fn legacy_refuses_before_elevated_four_cell_delete_boundary() {
+fn legacy_and_elevated_refuse_before_four_cell_delete_attempt() {
     let _guard = legacy_process_test_guard();
     current_thread_runtime().block_on(async {
         let fixture = TempDir::new_in(sandbox_cwd()).expect("create delete matrix fixture");
@@ -143,7 +143,7 @@ fn legacy_refuses_before_elevated_four_cell_delete_boundary() {
             snapshot(codex_home.path()).expect("read back legacy home"),
             home_before
         );
-        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
+        let refused = spawn_windows_sandbox_session_elevated_for_permission_profile(
             &permission_profile,
             workspace_roots_for(&workspace).as_slice(),
             codex_home.path(),
@@ -167,41 +167,26 @@ fn legacy_refuses_before_elevated_four_cell_delete_boundary() {
             /*stdin_open*/ false,
             /*use_private_desktop*/ true,
         )
-        .await
-        .expect("spawn explicit elevated four-cell path");
-        let (stdout, exit_code) = collect_elevated_stdout_and_exit(
-            spawned,
-            codex_home.path(),
-            Duration::from_secs(/*secs*/ 10),
-        )
         .await;
-        let stdout = String::from_utf8_lossy(&stdout);
+        assert_elevated_unavailable(refused);
+        assert_eq!(
+            snapshot(fixture.path()).expect("read back four-cell fixture after elevated refusal"),
+            before
+        );
+        assert_eq!(
+            snapshot(codex_home.path()).expect("read back elevated home"),
+            home_before
+        );
+        // Admission refusal is not filesystem qualification. Verify that no
+        // attempted child changed any of the original four cells or allowed roots.
         let outcomes = restricted
-            .finish("elevated-child-done")
-            .expect("restricted physical readback");
-        eprintln!("delete_matrix elevated_exit={exit_code} stdout={stdout:?}");
-        assert_eq!(exit_code, 0);
+            .finish("elevated-admission-refused")
+            .expect("unchanged matrix physical readback");
         assert_eq!(
-            stdout
-                .lines()
-                .filter(|line| line.starts_with("MATRIX_"))
-                .collect::<Vec<_>>(),
-            [
-                "MATRIX_ATTEMPT_0",
-                "MATRIX_ATTEMPT_1",
-                "MATRIX_ATTEMPT_2",
-                "MATRIX_ATTEMPT_3",
-                "MATRIX_DONE"
-            ]
+            fs::read_to_string(&allowed_file).expect("retained allowed file"),
+            "allowed"
         );
-        assert_eq!(
-            fs::symlink_metadata(&allowed_file).unwrap_err().kind(),
-            std::io::ErrorKind::NotFound
-        );
-        assert_eq!(
-            fs::symlink_metadata(&allowed_directory).unwrap_err().kind(),
-            std::io::ErrorKind::NotFound
-        );
+        assert!(allowed_directory.is_dir());
         assert_eq!(
             outcomes,
             [

@@ -2,8 +2,8 @@ use super::spawn_ipc_process;
 use anyhow::Result;
 use codex_protocol::models::PermissionProfile;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use codex_windows_sandbox::ElevatedWindowsSandboxIsolationUnavailable;
 use codex_windows_sandbox::SpawnRequest;
-use codex_windows_sandbox::WindowsFilesystemIsolationUnavailable;
 use pretty_assertions::assert_eq;
 use std::collections::HashMap;
 
@@ -44,8 +44,8 @@ fn standalone_runner_refuses_before_token_preparation_or_child_spawn() -> Result
             panic!("standalone managed child launch must refuse");
         };
         assert_eq!(
-            error.downcast_ref::<WindowsFilesystemIsolationUnavailable>(),
-            Some(&WindowsFilesystemIsolationUnavailable)
+            error.downcast_ref::<ElevatedWindowsSandboxIsolationUnavailable>(),
+            Some(&ElevatedWindowsSandboxIsolationUnavailable)
         );
         assert_eq!(request.env, original_env);
         assert_eq!((home.exists(), marker.exists()), (false, false));

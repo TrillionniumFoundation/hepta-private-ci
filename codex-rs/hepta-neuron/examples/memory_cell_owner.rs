@@ -9,6 +9,10 @@ mod model_manifest;
     dead_code,
     reason = "exercise the exact worker source without a second implementation"
 )]
+#[expect(
+    unused_imports,
+    reason = "the private source fixture does not consume every public worker API re-export"
+)]
 #[path = "../../hepta-infer-worker-host/src/model_worker.rs"]
 mod model_worker;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
@@ -124,13 +128,12 @@ impl CellInputEncoderV1 for QualificationEncoder {
         }
         let feature_vector_q24 = input
             .observation
-            .chunks_exact(8)
-            .map(|bytes| {
-                <[u8; 8]>::try_from(bytes)
-                    .map(i64::from_be_bytes)
-                    .map_err(|_| CellExecutionError::EncodingMismatch)
-            })
-            .collect::<Result<Vec<_>, _>>()?;
+            .as_chunks::<8>()
+            .0
+            .iter()
+            .copied()
+            .map(i64::from_be_bytes)
+            .collect();
         Ok(CellEncodedInputV1 {
             encoder_digest: self.encoder_digest,
             feature_vector_q24,

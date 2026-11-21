@@ -269,18 +269,24 @@ impl PairFleet {
             "paired-stage fixture_image_start pairs={count} current_exe_bytes={current_exe_bytes:?} elapsed={:?}",
             started.elapsed()
         );
-        // A system strip with GNU/Darwin -S -o support is required. Only this
-        // private child image loses debug data; the running test stays intact.
+        // Bazel supplies its pinned LLVM tool through runfiles; Cargo uses the
+        // host strip. Only this private child image loses debug data; the
+        // running test stays intact.
         // The catalog still copies, seals and fully hashes the actual image.
         let fixture_binary = temp.path().join("paired-child-image");
-        let stripped = std::process::Command::new("strip")
+        let strip = if codex_utils_cargo_bin::runfiles_available() {
+            codex_utils_cargo_bin::cargo_bin("llvm-strip")?
+        } else {
+            PathBuf::from("strip")
+        };
+        let stripped = std::process::Command::new(&strip)
             .env_remove("STRIP_NLISTS")
             .arg("-S")
             .arg("-o")
             .arg(&fixture_binary)
             .arg(&current_exe)
             .status()
-            .context("paired process fixtures require system strip with -S -o support")?;
+            .with_context(|| format!("paired process fixture strip failed: {}", strip.display()))?;
         anyhow::ensure!(
             stripped.success(),
             "paired process fixture debug strip failed: {stripped}"

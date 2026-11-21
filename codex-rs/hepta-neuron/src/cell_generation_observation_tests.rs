@@ -228,7 +228,7 @@ fn first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initiali
         checked(owner.admit(req.clone(), /*now_micros*/ 11));
         let mut proposed = proposal(&req);
         proposed.disposition = disposition;
-        proposed.successor_state = req.predecessor.state.clone();
+        proposed.successor_state = req.predecessor.state;
         proposed.output_delta.clear();
         checked(owner.commit(proposed, /*now_micros*/ 11));
         assert_eq!(

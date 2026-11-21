@@ -116,7 +116,6 @@ fn lineage(
     target: &str,
     base: &QualificationEvidenceEnvelopeV1,
     kind: EvidenceReceiptKindV1,
-    observed: u64,
 ) -> QualificationEvidenceEnvelopeV1 {
     QualificationEvidenceEnvelopeV1 {
         schema_version: 1,
@@ -128,7 +127,9 @@ fn lineage(
         payload: json!({"lineage": id}),
         predecessor_evidence_id: Some(EvidenceId::parse(predecessor).expect("predecessor")),
         target_evidence_id: Some(EvidenceId::parse(target).expect("target")),
-        observed_unix_ms: observed,
+        // Persisted sequence and predecessor references carry lineage order.
+        // Sample the observation time even when appends share a millisecond.
+        observed_unix_ms: now_ms(),
         expires_unix_ms: None,
         asset_digests: Vec::new(),
     }
@@ -670,7 +671,6 @@ async fn evid_03_broken_predecessor_fails_reopen() {
         base.evidence_id.as_str(),
         &base,
         EvidenceReceiptKindV1::Correction,
-        observed.saturating_add(1),
     );
     append(&store, &issuer, &key, &correction, 2)
         .await
@@ -1085,7 +1085,6 @@ async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
         base.evidence_id.as_str(),
         &base,
         EvidenceReceiptKindV1::Correction,
-        observed.saturating_add(1),
     );
     append(&store, &issuer, &key, &correction, 2)
         .await
@@ -1096,7 +1095,6 @@ async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
         correction.evidence_id.as_str(),
         &correction,
         EvidenceReceiptKindV1::Revocation,
-        observed.saturating_add(2),
     );
     append(&store, &issuer, &key, &revocation, 3)
         .await
@@ -1110,7 +1108,7 @@ async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
                     candidate: base.candidate.clone(),
                     claim_class: EvidenceClaimClassV1::Conformance,
                     required_roles: vec![EvidenceIssuerRoleV1::Reviewer],
-                    now_unix_ms: observed.saturating_add(3),
+                    now_unix_ms: now_ms(),
                 },
                 &[trust_binding(&issuer, EvidenceIssuerRoleV1::Reviewer)],
             )
@@ -1159,11 +1157,11 @@ async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception
         base.evidence_id.as_str(),
         &base,
         EvidenceReceiptKindV1::Correction,
-        observed.saturating_add(1),
     );
     assert!(matches!(
         append(&store, &other, &other_key, &forged_correction, 1).await,
-        Err(EvidenceError::InvalidRecord(_))
+        Err(EvidenceError::InvalidRecord(message))
+            if message == "qualification predecessor evidence cannot be corrected or revoked by another principal or role"
     ));
 
     let forged_revocation = lineage(
@@ -1172,11 +1170,11 @@ async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception
         base.evidence_id.as_str(),
         &base,
         EvidenceReceiptKindV1::Revocation,
-        observed.saturating_add(2),
     );
     assert!(matches!(
         append(&store, &other, &other_key, &forged_revocation, 1).await,
-        Err(EvidenceError::InvalidRecord(_))
+        Err(EvidenceError::InvalidRecord(message))
+            if message == "qualification predecessor evidence cannot be corrected or revoked by another principal or role"
     ));
 
     let (security, security_key) = issuer("principal:lineage-security", 24);
@@ -1186,7 +1184,6 @@ async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception
         base.evidence_id.as_str(),
         &base,
         EvidenceReceiptKindV1::Revocation,
-        observed.saturating_add(3),
     );
     security_revocation.issuer_role = EvidenceIssuerRoleV1::Security;
     append(&store, &security, &security_key, &security_revocation, 1)
@@ -1201,7 +1198,7 @@ async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception
                     candidate: base.candidate.clone(),
                     claim_class: EvidenceClaimClassV1::Conformance,
                     required_roles: vec![EvidenceIssuerRoleV1::Reviewer],
-                    now_unix_ms: observed.saturating_add(4),
+                    now_unix_ms: now_ms(),
                 },
                 &[
                     trust_binding(&owner, EvidenceIssuerRoleV1::Reviewer),
@@ -1332,7 +1329,6 @@ async fn predecessor_traversal_fails_closed_beyond_256_edges() {
             previous.evidence_id.as_str(),
             &previous,
             EvidenceReceiptKindV1::Correction,
-            observed.saturating_add(index),
         );
         append(&store, &issuer, &key, &next, index + 1)
             .await
@@ -1348,7 +1344,7 @@ async fn predecessor_traversal_fails_closed_beyond_256_edges() {
                     candidate: previous.candidate.clone(),
                     claim_class: EvidenceClaimClassV1::Conformance,
                     required_roles: vec![EvidenceIssuerRoleV1::Reviewer],
-                    now_unix_ms: observed.saturating_add(300),
+                    now_unix_ms: now_ms(),
                 },
                 &[trust_binding(&issuer, EvidenceIssuerRoleV1::Reviewer)],
             )

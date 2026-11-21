@@ -753,12 +753,9 @@ fn missing_symlink_and_fifo_live_images_poison_without_blocking() {
         match damage {
             0 => {}
             1 => symlink(root.0.join("missing-target"), &path).expect("symlink image"),
-            _ => rustix::fs::mknodat(
-                rustix::fs::CWD,
+            _ => nix::unistd::mkfifo(
                 &path,
-                rustix::fs::FileType::Fifo,
-                rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
-                0,
+                nix::sys::stat::Mode::S_IRUSR | nix::sys::stat::Mode::S_IWUSR,
             )
             .expect("fifo image"),
         }
