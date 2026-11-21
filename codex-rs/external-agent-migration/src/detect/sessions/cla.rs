@@ -73,6 +73,9 @@ mod tests {
     use std::time::SystemTime;
     use tempfile::TempDir;
 
+    // Session discovery uses file modification time; fixture records require only a valid timestamp.
+    const FIXTURE_TIMESTAMP: &str = "2020-01-01T00:00:00Z";
+
     #[test]
     fn detects_recent_sessions_with_existing_roots() {
         let root = TempDir::new().expect("tempdir");
@@ -245,7 +248,7 @@ mod tests {
         let root = TempDir::new().expect("tempdir");
         let external_agent_home = root.path().join(".external");
         let project_root = root.path().join("repo");
-        let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+        let timestamp = FIXTURE_TIMESTAMP;
         let modified_at = SystemTime::now();
         let mut expected = Vec::new();
         let default_limits = ExternalAgentSessionImportLimits::default();
@@ -256,7 +259,7 @@ mod tests {
                 &external_agent_home,
                 &project_root,
                 &file_name,
-                &[record_at("user", &title, &project_root, &timestamp)],
+                &[record_at("user", &title, &project_root, timestamp)],
             );
             set_modified_at(
                 &path,
@@ -408,8 +411,7 @@ mod tests {
     }
 
     fn record(role: &str, text: &str, cwd: &Path) -> JsonValue {
-        let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
-        record_at(role, text, cwd, &timestamp)
+        record_at(role, text, cwd, FIXTURE_TIMESTAMP)
     }
 
     fn record_at(role: &str, text: &str, cwd: &Path, timestamp: &str) -> JsonValue {
