@@ -105,9 +105,8 @@ fn preserves_leap_second_and_pre_epoch_ordering() {
 
 #[test]
 fn preserves_signed_epoch_and_duration_refusals() {
-    let epoch = std::time::SystemTime::UNIX_EPOCH;
-    let before = Timestamp::from_system_time(epoch - std::time::Duration::from_nanos(1))
-        .expect("pre-epoch timestamp");
+    let before = Timestamp::from_timestamp(/*seconds*/ -1, /*nanoseconds*/ 999_999_999)
+        .expect("pre-epoch nanosecond timestamp");
     assert_eq!(before.timestamp(), -1);
     assert_eq!(before.timestamp_millis(), -1);
     assert_eq!(before.timestamp_subsec_nanos(), 999_999_999);
@@ -131,6 +130,19 @@ fn preserves_signed_epoch_and_duration_refusals() {
     assert!(upper.checked_add(time::Duration::nanoseconds(1)).is_none());
     let lower: Timestamp = "-262143-01-01T00:00:00Z".parse().expect("lower boundary");
     assert!(lower.checked_sub(time::Duration::nanoseconds(1)).is_none());
+}
+
+#[test]
+fn preserves_native_pre_epoch_time_at_common_precision() {
+    // Windows SystemTime represents 100 ns intervals. Keep the 1 ns Timestamp
+    // contract above independent of the operating system clock representation.
+    let epoch = std::time::SystemTime::UNIX_EPOCH;
+    let before = Timestamp::from_system_time(epoch - std::time::Duration::from_nanos(100))
+        .expect("native pre-epoch timestamp");
+    assert_eq!(before.timestamp(), -1);
+    assert_eq!(before.timestamp_millis(), -1);
+    assert_eq!(before.timestamp_subsec_nanos(), 999_999_900);
+    assert_eq!(before.timestamp_nanos_opt(), Some(-100));
 }
 
 #[test]
