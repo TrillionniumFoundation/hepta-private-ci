@@ -1,0 +1,93 @@
+{
+  "finding": {
+    "host_peak_rss_bound_available": false,
+    "host_wall_time_bound_available": false,
+    "resource_gate_closed": false,
+    "scalar_api_reparses_operator_per_channel": true,
+    "ten_provider_calls_required_without_batch_api": true,
+    "valid_host_allocation_available": false
+  },
+  "historical_statuses": {
+    "cause_of_6901_red": "UNKNOWN",
+    "duplicate_key": "RED_DUPLICATE_KEY",
+    "parent_adapter": "RED_NONCANONICAL_INPUT"
+  },
+  "lanes": {
+    "discounted": {
+      "dimension": 259,
+      "duration_input_conversions": 5,
+      "first_possible_growth_tail_check_index": 537,
+      "maximum_bound_roundings_at_default_limit": 1261330,
+      "maximum_row_actions_at_default_limit": 5120,
+      "maximum_sparse_product_contributions": 5258240,
+      "maximum_tail_checks_at_default_limit": 487,
+      "minimum_bound_roundings_at_first_check": 2590,
+      "minimum_row_actions_to_first_tail_check": 2685,
+      "minimum_sparse_product_contributions": 2757495,
+      "operator_input_conversions": 5125,
+      "operator_sparse_coordinates_per_call": 1025,
+      "scalar_provider_calls_required": 5,
+      "seed_channels": 5,
+      "transition_nonzero_coordinates": 1027,
+      "vector_input_conversions": 1295
+    },
+    "undiscounted": {
+      "dimension": 258,
+      "duration_input_conversions": 5,
+      "first_possible_growth_tail_check_index": 537,
+      "maximum_bound_roundings_at_default_limit": 1256460,
+      "maximum_row_actions_at_default_limit": 5120,
+      "maximum_sparse_product_contributions": 3937280,
+      "maximum_tail_checks_at_default_limit": 487,
+      "minimum_bound_roundings_at_first_check": 2580,
+      "minimum_row_actions_to_first_tail_check": 2685,
+      "minimum_sparse_product_contributions": 2064765,
+      "operator_input_conversions": 3835,
+      "operator_sparse_coordinates_per_call": 767,
+      "scalar_provider_calls_required": 5,
+      "seed_channels": 5,
+      "transition_nonzero_coordinates": 769,
+      "vector_input_conversions": 1290
+    }
+  },
+  "parent_head": "ceea7e25893548820879a2e68c32be2244c2848d",
+  "provider_contract": {
+    "api_shape": "one_operator_one_vector_one_duration",
+    "default_max_terms": 1024,
+    "row_actions_per_loop_iteration": 1
+  },
+  "schema": "hcsn-n256-authentic-signed-resource-review-v1",
+  "scope": {
+    "all_closed": false,
+    "authentic_signed_interval_executed": false,
+    "c2_full_replay_completed_fits": 0,
+    "hpca_status": "NoUpdate",
+    "n256_qualified": false,
+    "production_adoption": false,
+    "provider_execution_admitted": false,
+    "unique_rounding_closed": false
+  },
+  "totals": {
+    "duration_input_conversions": 10,
+    "exact_input_conversions": 11555,
+    "maximum_bound_roundings_at_default_limit": 2517790,
+    "maximum_row_actions_at_default_limit": 10240,
+    "maximum_sparse_product_contributions": 9195520,
+    "minimum_bound_roundings_at_first_check": 5170,
+    "minimum_row_actions_to_first_tail_check": 5370,
+    "minimum_sparse_product_contributions": 4822260,
+    "operator_input_conversions": 8960,
+    "scalar_provider_calls_required": 10,
+    "vector_input_conversions": 2585
+  },
+  "work": {
+    "adapter_lane_calls": 2,
+    "artifact_reads": 1,
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "optimizer_steps": 0,
+    "provider_calls": 0,
+    "provider_source_ast_reads": 1,
+    "torch_calls": 0
+  }
+}
