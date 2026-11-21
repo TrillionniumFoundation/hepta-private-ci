@@ -1,0 +1,39 @@
+{
+  "authentic_projection_only": {
+    "batch_input_conversions": 4379,
+    "scalar_input_conversions": 11555,
+    "streaming_input_conversions": 6964,
+    "streaming_reduction_from_scalar": 4591,
+    "streaming_reduction_fraction": "4591/11555",
+    "maximum_interval_roundings_unchanged": 2517790,
+    "maximum_sparse_contributions_unchanged": 9195520
+  },
+  "historical_statuses": {
+    "6901_numerical_cause": "UNKNOWN",
+    "6908": "RED_DUPLICATE_KEY",
+    "6913": "RED_NONCANONICAL_INPUT",
+    "c2_full_replay": "0/6",
+    "hpca": "NoUpdate"
+  },
+  "internal_liveness": {
+    "all_vectors_prevalidated_before_recurrence": true,
+    "caller_mutation_after_admission_rejected_by_snapshot": true,
+    "maximum_live_parsed_vectors": 1,
+    "operator_parse_count": 1,
+    "result_retention_by_consumer_bounded": false,
+    "vector_execution_parse_count_per_vector": 1,
+    "vector_prevalidation_parse_count_per_vector": 1
+  },
+  "scope": {
+    "all_closed": false,
+    "authentic_provider_calls": 0,
+    "authentic_resource_profile": false,
+    "dynamic_kernel_calls": 0,
+    "exponential_actions": 0,
+    "n256_qualified": false,
+    "optimizer_calls": 0,
+    "resource_gate_closed": false,
+    "torch_calls": 0
+  },
+  "status": "SMALL_SYNTHETIC_ONLY"
+}
