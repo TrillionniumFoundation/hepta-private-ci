@@ -1,0 +1,1838 @@
+{
+  "actual_owned_children": 8,
+  "authenticated_user_count": 0,
+  "by_source": [
+    {
+      "after_passed": 5,
+      "authenticated_user_count": 0,
+      "before_failed": 1,
+      "lineage_count": 1,
+      "original_regression_demonstrated": true,
+      "project_id": "python-attrs/attrs",
+      "source_id": "github:python-attrs/attrs:pull:1593"
+    },
+    {
+      "after_passed": 24,
+      "authenticated_user_count": 0,
+      "before_failed": 10,
+      "lineage_count": 1,
+      "original_regression_demonstrated": true,
+      "project_id": "Textualize/rich",
+      "source_id": "github:Textualize/rich:pull:4006"
+    },
+    {
+      "after_passed": 29,
+      "authenticated_user_count": 0,
+      "before_failed": 1,
+      "lineage_count": 1,
+      "original_regression_demonstrated": true,
+      "project_id": "tox-dev/platformdirs",
+      "source_id": "github:tox-dev/platformdirs:pull:721"
+    },
+    {
+      "after_passed": 56,
+      "authenticated_user_count": 0,
+      "before_failed": 3,
+      "lineage_count": 1,
+      "original_regression_demonstrated": true,
+      "project_id": "python-humanize/humanize",
+      "source_id": "github:python-humanize/humanize:pull:479"
+    }
+  ],
+  "completed_child_cpu_seconds": 29.321943,
+  "full_repository_suite_executed": false,
+  "full_system_cost_known": false,
+  "native_adoption": false,
+  "new_model_calls": 0,
+  "new_test_human_trajectories": 0,
+  "new_training_updates": 0,
+  "owner_wall_seconds": 29.860169451974798,
+  "pretraining_overlap_known": false,
+  "schema": "hepta.upstream-native-regression-replay.v1",
+  "scope": "original selected upstream test functions and complete parameter sets; no synthetic test assertions",
+  "source_commit": "b8568658762bb3a54c94253811d563b0f39dac3e",
+  "sources_sha256": "686f1d77e274486034044ead9ec1b5db25c98c87b530264e1128766da785d0fa",
+  "stages": [
+    {
+      "cases": [
+        {
+          "class": "repositories.attrs.after.tests.test_annotations",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_is_class_var[ClassVar]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.attrs.after.tests.test_annotations",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_is_class_var[typing.ClassVar]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.attrs.after.tests.test_annotations",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_is_class_var['typing.ClassVar[dict]']",
+          "skipped": false
+        },
+        {
+          "class": "repositories.attrs.after.tests.test_annotations",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_is_class_var[t.ClassVar[int]]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.attrs.after.tests.test_annotations",
+          "error_type": null,
+          "failure_type": "AssertionError: assert False\n +  where False = _is_class_var(ForwardRef('ClassVar[str]'))",
+          "name": "test_is_class_var[annot4]",
+          "skipped": false
+        }
+      ],
+      "completed_child_system_cpu_seconds": 0.048096,
+      "completed_child_user_cpu_seconds": 0.47895699999999997,
+      "errors": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 1,
+      "junit_sha256": "257d123e2191af18087a7d1a63fa56e0370375ff90b7ff0942d7dfcd828fb1d6",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "passed": 4,
+      "project_id": "python-attrs/attrs",
+      "revision": "6851ab593cd25f3c14393e9355d57d22bec2a074",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "376438279e91d7d536f4210b288bf4d941f3f4b898f5dd0090e87b82be16277c",
+      "tests": 5,
+      "timed_out": false,
+      "variant": "before",
+      "wait_returncode": 1,
+      "wall_seconds": 0.5677998599712737
+    },
+    {
+      "cases": [
+        {
+          "class": "repositories.attrs.after.tests.test_annotations",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_is_class_var[ClassVar]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.attrs.after.tests.test_annotations",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_is_class_var[typing.ClassVar]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.attrs.after.tests.test_annotations",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_is_class_var['typing.ClassVar[dict]']",
+          "skipped": false
+        },
+        {
+          "class": "repositories.attrs.after.tests.test_annotations",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_is_class_var[t.ClassVar[int]]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.attrs.after.tests.test_annotations",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_is_class_var[annot4]",
+          "skipped": false
+        }
+      ],
+      "completed_child_system_cpu_seconds": 0.04915599999999999,
+      "completed_child_user_cpu_seconds": 0.45043,
+      "errors": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 0,
+      "junit_sha256": "0134cf78c4f6c7dad93cd1ae688544e982cfea84890ff82abd42a8b710659ab4",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "passed": 5,
+      "project_id": "python-attrs/attrs",
+      "revision": "97f8d175656bc03c373a1c9038048a4d312c307c",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "91e7809b3e27d7be1de9408076076bc6e6dd5b4dae4cd48d190cef0d8ffa906b",
+      "tests": 5,
+      "timed_out": false,
+      "variant": "after",
+      "wait_returncode": 0,
+      "wall_seconds": 0.5182762229815125
+    },
+    {
+      "cases": [
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[-expected_spans0-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[a-expected_spans1-1]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[ab-expected_spans2-2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\U0001f4a9-expected_spans3-2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u308f\\u3055\\u3073-expected_spans4-6]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\U0001f469\\u200d\\U0001f527-expected_spans5-2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[a\\U0001f469\\u200d\\U0001f527-expected_spans6-3]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[a\\U0001f469\\u200d\\U0001f527b-expected_spans7-4]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u2b07-expected_spans8-1]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u2b07\\ufe0f-expected_spans9-2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u267b-expected_spans10-1]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u267b\\ufe0f-expected_spans11-2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u267b\\u267b\\ufe0f-expected_spans12-3]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": "Failed: Timeout (>3.0s) from pytest-timeout.",
+          "name": "test_split_graphemes[\\x1b-expected_spans13-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": "Failed: Timeout (>3.0s) from pytest-timeout.",
+          "name": "test_split_graphemes[\\x1b\\x1b-expected_spans14-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": "Failed: Timeout (>3.0s) from pytest-timeout.",
+          "name": "test_split_graphemes[\\ufe0f-expected_spans15-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": "Failed: Timeout (>3.0s) from pytest-timeout.",
+          "name": "test_split_graphemes[\\ufe0f\\ufe0f-expected_spans16-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": "assert [] == [(0, 1, 0)]\n  \n  Right contains one more item: (0, 1, 0)\n  Use -v to get more diff",
+          "name": "test_split_graphemes[\\u200d-expected_spans17-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": "assert [] == [(0, 2, 0)]\n  \n  Right contains one more item: (0, 2, 0)\n  Use -v to get more diff",
+          "name": "test_split_graphemes[\\u200d\\u200d-expected_spans18-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_chop_cells_zero_width[-expected0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": "Failed: Timeout (>3.0s) from pytest-timeout.",
+          "name": "test_chop_cells_zero_width[\\x1b-expected1]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": "Failed: Timeout (>3.0s) from pytest-timeout.",
+          "name": "test_chop_cells_zero_width[\\x1b\\x1b-expected2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": "Failed: Timeout (>3.0s) from pytest-timeout.",
+          "name": "test_chop_cells_zero_width[\\x1b\\x1b\\x1b-expected3]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": "Failed: Timeout (>3.0s) from pytest-timeout.",
+          "name": "test_chop_cells_zero_width[\\x1b\\x1b\\x1b\\x1b-expected4]",
+          "skipped": false
+        }
+      ],
+      "completed_child_system_cpu_seconds": 0.050911,
+      "completed_child_user_cpu_seconds": 24.482444,
+      "errors": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 10,
+      "junit_sha256": "0e5a304b12be6afdf86c064b0c92fe0cf2272cef17ec85d1ff8e3623c287b589",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "passed": 14,
+      "project_id": "Textualize/rich",
+      "revision": "27701029082052c6541031b6f139097230253900",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "764f41bbef05189ff857b76eb974d892daf1c661fe019f41590faca15772de3c",
+      "tests": 24,
+      "timed_out": false,
+      "variant": "before",
+      "wait_returncode": 1,
+      "wall_seconds": 24.63447653700132
+    },
+    {
+      "cases": [
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[-expected_spans0-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[a-expected_spans1-1]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[ab-expected_spans2-2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\U0001f4a9-expected_spans3-2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u308f\\u3055\\u3073-expected_spans4-6]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\U0001f469\\u200d\\U0001f527-expected_spans5-2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[a\\U0001f469\\u200d\\U0001f527-expected_spans6-3]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[a\\U0001f469\\u200d\\U0001f527b-expected_spans7-4]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u2b07-expected_spans8-1]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u2b07\\ufe0f-expected_spans9-2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u267b-expected_spans10-1]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u267b\\ufe0f-expected_spans11-2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u267b\\u267b\\ufe0f-expected_spans12-3]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\x1b-expected_spans13-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\x1b\\x1b-expected_spans14-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\ufe0f-expected_spans15-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\ufe0f\\ufe0f-expected_spans16-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u200d-expected_spans17-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_split_graphemes[\\u200d\\u200d-expected_spans18-0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_chop_cells_zero_width[-expected0]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_chop_cells_zero_width[\\x1b-expected1]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_chop_cells_zero_width[\\x1b\\x1b-expected2]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_chop_cells_zero_width[\\x1b\\x1b\\x1b-expected3]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.rich.after.tests.test_cells",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_chop_cells_zero_width[\\x1b\\x1b\\x1b\\x1b-expected4]",
+          "skipped": false
+        }
+      ],
+      "completed_child_system_cpu_seconds": 0.03600500000000001,
+      "completed_child_user_cpu_seconds": 0.3690470000000019,
+      "errors": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 0,
+      "junit_sha256": "9ec9ffe4be616509ee1d64922bceefc6c1451e9a06d317f33b3a74be6704762b",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "passed": 24,
+      "project_id": "Textualize/rich",
+      "revision": "7338cb9dafd0d0e916585f191ae505b3e602bb51",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9dd34e2b7c4c08100f3ec70aa54093f46ee98666cb6cd7968bd3376f82912d41",
+      "tests": 24,
+      "timed_out": false,
+      "variant": "after",
+      "wait_returncode": 0,
+      "wall_seconds": 0.4697932769777253
+    },
+    {
+      "cases": [
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[last-assignment-wins]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[other-key-assigned-twice]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[stray-line]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[indented]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[trailing-comment]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[shell-escapes]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[home-only-as-prefix]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[home-prefix-needs-slash]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[home-itself]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[relative-ignored]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[relative-reassignment-ignored]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unterminated-ignored]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-trailing-comment]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-tab-comment]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-hash-inside-word]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-blanks-inside]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-escaped-blank]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-escaped-blank-before-hash]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-escaped-blank-then-comment]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-escapes]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-absolute-escaped-blank]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[quoted-keeps-backslash-blank]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-backslash-ends-file]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": "AssertionError: assert '/tmp/pytest-...dg_u24/Docs\\\\' == '/tmp/pytest-..._xdg_u24/Docs'\n  \n  Skipping 58 identical leading characters in diff, use -v to show\n  - dg_u24/Docs\n  + dg_u24/Docs\\\n  ?            +",
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-backslash-newline-ends-file]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_carriage_return[quoted-home]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_carriage_return[quoted-absolute]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_carriage_return[crlf-terminator]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_carriage_return[crlf-file-without-final-newline]",
+          "skipped": false
+        }
+      ],
+      "completed_child_system_cpu_seconds": 0.05609699999999998,
+      "completed_child_user_cpu_seconds": 0.8174099999999989,
+      "errors": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 1,
+      "junit_sha256": "26c0cd765b46541bb7c05172edfc95571a7bb0279adfc8eea54732485b83f8e1",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "passed": 28,
+      "project_id": "tox-dev/platformdirs",
+      "revision": "b888560ea8c0d6dff5bd45d9f9712feb9174229a",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "02c5ccd96c7ff09988868253d0f8649663a77ebc4552ec0a6db416c89859df69",
+      "tests": 29,
+      "timed_out": false,
+      "variant": "before",
+      "wait_returncode": 1,
+      "wall_seconds": 0.9194197520264424
+    },
+    {
+      "cases": [
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[last-assignment-wins]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[other-key-assigned-twice]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[stray-line]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[indented]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[trailing-comment]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[shell-escapes]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[home-only-as-prefix]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[home-prefix-needs-slash]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[home-itself]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[relative-ignored]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[relative-reassignment-ignored]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unterminated-ignored]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-trailing-comment]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-tab-comment]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-hash-inside-word]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-blanks-inside]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-escaped-blank]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-escaped-blank-before-hash]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-escaped-blank-then-comment]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-escapes]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-absolute-escaped-blank]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[quoted-keeps-backslash-blank]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-backslash-ends-file]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_read_like_xdg_user_dir[unquoted-backslash-newline-ends-file]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_carriage_return[quoted-home]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_carriage_return[quoted-absolute]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_carriage_return[crlf-terminator]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.platformdirs.after.tests.test_unix",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_user_dirs_carriage_return[crlf-file-without-final-newline]",
+          "skipped": false
+        }
+      ],
+      "completed_child_system_cpu_seconds": 0.080367,
+      "completed_child_user_cpu_seconds": 0.8498850000000004,
+      "errors": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 0,
+      "junit_sha256": "708ae76d4a1a4ddfa32598cfbe1c0104c2d4064cbbfdbc88d7944d1f4f363a1b",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "passed": 29,
+      "project_id": "tox-dev/platformdirs",
+      "revision": "786757ff6cd876094b985eb851c324d96f44fdbf",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "986474540e4969fafff196954625789e3f451324881f20cc2bc289f3f12beee7",
+      "tests": 29,
+      "timed_out": false,
+      "variant": "after",
+      "wait_returncode": 0,
+      "wall_seconds": 1.0193003719905391
+    },
+    {
+      "cases": [
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input0-now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input1-a second ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input2-30 seconds ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input3-a minute ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input4-2 minutes ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input5-2 minutes ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input6-an hour ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input7-2 hours ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input8-23 hours ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input9-a day ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input10-a day ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input11-1 year, 4 months ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input12-2 years ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input13-a second from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input14-30 seconds from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input15-a minute from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input16-2 minutes from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input17-2 minutes from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input18-an hour from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input19-2 hours from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input20-23 hours from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input21-a day from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input22-a day from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input23-1 year, 4 months from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input24-2 years from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input25-27 years from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input26-1 year, 1 month ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input27-27 years from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input28-1 year, 1 month ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": "OverflowError: date value out of range",
+          "name": "test_naturaltime[test_input29-7,995 years from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": "OverflowError: date value out of range",
+          "name": "test_naturaltime[test_input30-2,192 years from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[22.5-22 seconds ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[23.5-24 seconds ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[23.9-24 seconds ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[30-30 seconds ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input35-2 years ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input36-1 year, 4 days ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[NaN-NaN]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val0-microseconds-1 millisecond and 1 microsecond]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val1-microseconds-2 milliseconds and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val2-microseconds-1 second and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val3-microseconds-4 hours, 3 seconds and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val4-microseconds-5 days, 4 hours, 3 seconds and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val5-microseconds-1 year, 5 days, 4 hours, 3 seconds and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val6-microseconds-1 year, 5 days and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val7-microseconds-1 year, 5 days and 2 seconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val8-minutes-0 minutes]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val9-seconds-1 month]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val10-seconds-1 month and 1 day]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val11-seconds-2 months and 1 day]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val12-seconds-3 months]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": "OverflowError: date value out of range",
+          "name": "test_precisedelta_multiple_units[val13-seconds-2,191 years, 9 months and 10 days]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val14-days-1 month]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val15-days-1 month and 1 day]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val16-days-2 months and 1 day]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val17-days-3 months]",
+          "skipped": false
+        }
+      ],
+      "completed_child_system_cpu_seconds": 0.058057000000000025,
+      "completed_child_user_cpu_seconds": 0.7937860000000008,
+      "errors": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 3,
+      "junit_sha256": "257bfe71f306a9c2891f7efec8fff355ff41090441bbf09ab5758f34697464d7",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "passed": 53,
+      "project_id": "python-humanize/humanize",
+      "revision": "d16e6352c9785c5ab86de0133222bd22e89b0db2",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d98580d207f198ad5c1a0f0cdab2134bc5ef9412e91a419a1eedef922e3761dd",
+      "tests": 56,
+      "timed_out": false,
+      "variant": "before",
+      "wait_returncode": 1,
+      "wall_seconds": 0.9194078699802049
+    },
+    {
+      "cases": [
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input0-now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input1-a second ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input2-30 seconds ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input3-a minute ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input4-2 minutes ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input5-2 minutes ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input6-an hour ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input7-2 hours ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input8-23 hours ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input9-a day ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input10-a day ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input11-1 year, 4 months ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input12-2 years ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input13-a second from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input14-30 seconds from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input15-a minute from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input16-2 minutes from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input17-2 minutes from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input18-an hour from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input19-2 hours from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input20-23 hours from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input21-a day from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input22-a day from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input23-1 year, 4 months from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input24-2 years from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input25-27 years from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input26-1 year, 1 month ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input27-27 years from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input28-1 year, 1 month ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input29-7,995 years from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input30-2,192 years from now]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[22.5-22 seconds ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[23.5-24 seconds ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[23.9-24 seconds ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[30-30 seconds ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input35-2 years ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[test_input36-1 year, 4 days ago]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_naturaltime[NaN-NaN]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val0-microseconds-1 millisecond and 1 microsecond]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val1-microseconds-2 milliseconds and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val2-microseconds-1 second and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val3-microseconds-4 hours, 3 seconds and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val4-microseconds-5 days, 4 hours, 3 seconds and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val5-microseconds-1 year, 5 days, 4 hours, 3 seconds and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val6-microseconds-1 year, 5 days and 2 microseconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val7-microseconds-1 year, 5 days and 2 seconds]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val8-minutes-0 minutes]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val9-seconds-1 month]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val10-seconds-1 month and 1 day]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val11-seconds-2 months and 1 day]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val12-seconds-3 months]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val13-seconds-2,191 years, 9 months and 10 days]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val14-days-1 month]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val15-days-1 month and 1 day]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val16-days-2 months and 1 day]",
+          "skipped": false
+        },
+        {
+          "class": "repositories.humanize.after.tests.test_time",
+          "error_type": null,
+          "failure_type": null,
+          "name": "test_precisedelta_multiple_units[val17-days-3 months]",
+          "skipped": false
+        }
+      ],
+      "completed_child_system_cpu_seconds": 0.04489099999999996,
+      "completed_child_user_cpu_seconds": 0.6564039999999984,
+      "errors": 0,
+      "exit_source": "subprocess.Popen.wait",
+      "failures": 0,
+      "junit_sha256": "dad81e67dc1ac25052229639e684f3d52e9853e1ae41d75afde3821c7b561afe",
+      "new_model_calls": 0,
+      "new_training_updates": 0,
+      "passed": 56,
+      "project_id": "python-humanize/humanize",
+      "revision": "318888db38ac12e5aaf3144546a11b8ebe60555d",
+      "skipped": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "12b2e5f294be8006615490eb2bf824c7cc82b66d95d07d2ad310884b5479e294",
+      "tests": 56,
+      "timed_out": false,
+      "variant": "after",
+      "wait_returncode": 0,
+      "wall_seconds": 0.7184037350234576
+    }
+  ],
+  "status": "REPLAY_COMPLETE"
+}

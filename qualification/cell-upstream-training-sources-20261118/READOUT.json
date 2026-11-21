@@ -1,0 +1,262 @@
+{
+  "acquisition_source_commit": "5e78427a7e0bf2623177c10ab1ad9ab03932b80b",
+  "collector_source_commit": "db5770c811f210b357f836d27805922133c940b8",
+  "deduplication": {
+    "authenticated_human_users": 0,
+    "distinct_git_blobs": 83,
+    "downloaded_unique_blob_bytes": 1115549,
+    "frozen_new_pool_project_count": 4,
+    "github_organization_identity_count": 4,
+    "repair_lineage_count": 4,
+    "repeated_model_calls_are_new_sources": false,
+    "statistical_source_independence_established": false,
+    "test_parameters_are_new_sources": false,
+    "unique_observation_count": 4
+  },
+  "e5_continuation": {
+    "actual_training_updates": 0,
+    "budget_regimes": [
+      "fixed_total",
+      "fixed_per_source"
+    ],
+    "fixed_per_source_planned_updates_for_1_and_4": [
+      32,
+      128
+    ],
+    "fixed_total_planned_updates_for_1_and_4": [
+      32,
+      32
+    ],
+    "numeric_head_accuracy_is_coding_gain": false,
+    "one_source_selection": [
+      "github:Textualize/rich:pull:4006"
+    ],
+    "one_source_selection_reason": "same lexically sorted source_id prefix as existing composition.py; fixed before any new training or model call",
+    "remaining_requirements": [
+      "Freeze a coding task renderer and candidate interpreter/verifier before collecting new model trajectories; original code/tests remain authoritative.",
+      "Freeze initialization, tokenizer, optimizer, padded tokens, target-token masks and actual update counts across arms; caps alone are insufficient.",
+      "Freeze fresh source-separated future selection/confirmation tasks; old B and B2 are exposed diagnostics and cannot supply new source choices.",
+      "For numeric composition only, collect actual frozen preaction features, named class targets and model/verifier receipts; do not turn source identity into an outcome label.",
+      "Authenticated real-user sources remain zero; external custody and pretraining contamination remain unresolved."
+    ],
+    "sixteen_source_missing": 12,
+    "sixty_four_source_missing": 60,
+    "source_sizes": [
+      1,
+      4,
+      16,
+      64
+    ]
+  },
+  "evidence_boundaries": {
+    "actual_native_before_after_execution": true,
+    "coding_learning_gain_established": false,
+    "full_repository_test_suite": false,
+    "future_unexposed_evaluation": false,
+    "historical_maintainer_code_and_tests": true,
+    "native_adoption": false,
+    "new_model_calls": 0,
+    "new_student_trajectory_collected": false,
+    "new_training_updates": 0,
+    "original_historical_agent_trajectory": false,
+    "pretraining_overlap_known": false,
+    "user_growth_established": false
+  },
+  "historical_context": {
+    "evaluation_repositories_excluded": [
+      "psf/requests",
+      "pallets/werkzeug",
+      "pallets/click",
+      "django/django",
+      "pydantic/pydantic",
+      "more-itertools/more-itertools"
+    ],
+    "new_pool_does_not_relabel_old_B_or_B2": true,
+    "new_upstream_projects_selected_by_root_before_inspection": true,
+    "old_v3_six_file_groups_one_hepta_project_authenticated_users_zero": true
+  },
+  "intent_commit": "04eea36b2ffe52a9e5105d0701880a0dedca9717",
+  "material_entry_source_commit": "c80a4cfdb49a49ed72cbdae18c0e4de68883c1d0",
+  "material_jsonl_sha256": "fe3e4a5f4cc2505cf1e1dca4e47b14edad1df79bbd393d9cfe491a7a0821d578",
+  "native_replay_sha256": "41388e7d6a7afd5e9a9c7b288dd428bc393a09d2e208228253bd7ef61b398240",
+  "packaging_adaptations": [
+    "Exact upstream package and test bytes preserved; selected after-fix original tests executed on both revisions.",
+    "Only selected original function parameter sets run; repository-wide conftest/plugins disabled via isolated pytest configuration.",
+    "platformdirs.version and humanize._version generated packaging metadata supplied as explicitly logged ModuleType stubs; no behavior function replaced.",
+    "Rich original unbounded loops are observed case failures under the same 3-second timeout before and after.",
+    "A fresh isolated venv uses pinned, retained dependency wheels; no shared training environment or service changed."
+  ],
+  "replay_cost": {
+    "acquisition_includes_dependency_setup": true,
+    "actual_owned_test_children": 8,
+    "actual_test_case_executions": 228,
+    "after_passes": 114,
+    "before_case_timeouts": 8,
+    "before_failures": 15,
+    "cold_setup_acquisition_wall_seconds_separate": 83.3284717160277,
+    "collection_errors": 0,
+    "completed_child_cpu_seconds": 29.321943,
+    "energy_joules": null,
+    "full_system_cost_known": false,
+    "monetary_cost": null,
+    "outer_child_timeouts": 0,
+    "overlap_note": "Acquisition and native replay are disjoint; nested setup, test child and download timings must not be added again.",
+    "owner_wall_seconds": 29.860169451974798,
+    "per_case_timeout_seconds": 3,
+    "per_child_wall_and_cpu_receipts": "replay-1/RESULT.json"
+  },
+  "replay_source_commit": "b8568658762bb3a54c94253811d563b0f39dac3e",
+  "schema": "hepta.upstream-training-sources-readout.v1",
+  "source_growth_protocol_sha256": "943d6f63db772d638d8636dd599b424a35166114ab441bc648c00e6b059a91cc",
+  "source_inventory_sha256": "686f1d77e274486034044ead9ec1b5db25c98c87b530264e1128766da785d0fa",
+  "sources": [
+    {
+      "after_commit": "97f8d175656bc03c373a1c9038048a4d312c307c",
+      "after_exit": 0,
+      "after_failed": 0,
+      "after_passed": 5,
+      "before_commit": "6851ab593cd25f3c14393e9355d57d22bec2a074",
+      "before_exit": 1,
+      "before_failed": 1,
+      "before_passed": 4,
+      "case_timeouts_before": 0,
+      "cases_each_revision": 5,
+      "collection_errors": 0,
+      "license": {
+        "complete_notice_retained": true,
+        "git_blob_sha1": "2bd6453d255e19b973f19b128596a8b6dd65b2c3",
+        "path": "LICENSE",
+        "sha256": "882115c95dfc2af1eeb6714f8ec6d5cbcabf667caff8729f42420da63f714e9f",
+        "spdx_id": "MIT"
+      },
+      "original_merged_at": "2026-07-31T13:30:57Z",
+      "original_regression_demonstrated": true,
+      "original_test_functions": [
+        "test_is_class_var"
+      ],
+      "original_test_path": "tests/test_annotations.py",
+      "outer_child_timeouts": 0,
+      "owner": {
+        "id": 25880274,
+        "login": "python-attrs",
+        "type": "Organization"
+      },
+      "project_id": "python-attrs/attrs",
+      "repository_id": 29918975,
+      "request_url": "https://github.com/python-attrs/attrs/pull/1593",
+      "source_id": "github:python-attrs/attrs:pull:1593"
+    },
+    {
+      "after_commit": "7338cb9dafd0d0e916585f191ae505b3e602bb51",
+      "after_exit": 0,
+      "after_failed": 0,
+      "after_passed": 24,
+      "before_commit": "27701029082052c6541031b6f139097230253900",
+      "before_exit": 1,
+      "before_failed": 10,
+      "before_passed": 14,
+      "case_timeouts_before": 8,
+      "cases_each_revision": 24,
+      "collection_errors": 0,
+      "license": {
+        "complete_notice_retained": true,
+        "git_blob_sha1": "4415505566f261c802b671426be529a31f914137",
+        "path": "LICENSE",
+        "sha256": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15",
+        "spdx_id": "MIT"
+      },
+      "original_merged_at": "2026-02-19T17:04:17Z",
+      "original_regression_demonstrated": true,
+      "original_test_functions": [
+        "test_split_graphemes",
+        "test_chop_cells_zero_width"
+      ],
+      "original_test_path": "tests/test_cells.py",
+      "outer_child_timeouts": 0,
+      "owner": {
+        "id": 93378883,
+        "login": "Textualize",
+        "type": "Organization"
+      },
+      "project_id": "Textualize/rich",
+      "repository_id": 220809393,
+      "request_url": "https://github.com/Textualize/rich/pull/4006",
+      "source_id": "github:Textualize/rich:pull:4006"
+    },
+    {
+      "after_commit": "786757ff6cd876094b985eb851c324d96f44fdbf",
+      "after_exit": 0,
+      "after_failed": 0,
+      "after_passed": 29,
+      "before_commit": "b888560ea8c0d6dff5bd45d9f9712feb9174229a",
+      "before_exit": 1,
+      "before_failed": 1,
+      "before_passed": 28,
+      "case_timeouts_before": 0,
+      "cases_each_revision": 29,
+      "collection_errors": 0,
+      "license": {
+        "complete_notice_retained": true,
+        "git_blob_sha1": "f35fed9191b1142ddaada8a96de4a9461c5d796c",
+        "path": "LICENSE",
+        "sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+        "spdx_id": "MIT"
+      },
+      "original_merged_at": "2026-11-17T20:01:29Z",
+      "original_regression_demonstrated": true,
+      "original_test_functions": [
+        "test_user_dirs_read_like_xdg_user_dir",
+        "test_user_dirs_carriage_return"
+      ],
+      "original_test_path": "tests/test_unix.py",
+      "outer_child_timeouts": 0,
+      "owner": {
+        "id": 20345659,
+        "login": "tox-dev",
+        "type": "Organization"
+      },
+      "project_id": "tox-dev/platformdirs",
+      "repository_id": 367032142,
+      "request_url": "https://github.com/tox-dev/platformdirs/pull/721",
+      "source_id": "github:tox-dev/platformdirs:pull:721"
+    },
+    {
+      "after_commit": "318888db38ac12e5aaf3144546a11b8ebe60555d",
+      "after_exit": 0,
+      "after_failed": 0,
+      "after_passed": 56,
+      "before_commit": "d16e6352c9785c5ab86de0133222bd22e89b0db2",
+      "before_exit": 1,
+      "before_failed": 3,
+      "before_passed": 53,
+      "case_timeouts_before": 0,
+      "cases_each_revision": 56,
+      "collection_errors": 0,
+      "license": {
+        "complete_notice_retained": true,
+        "git_blob_sha1": "e0687959f9e19e8bee8783424885bca65477fa28",
+        "path": "LICENCE",
+        "sha256": "8ba6c18112a431400ad3c743f70670079b302545d98884fc2f28a91c383a0380",
+        "spdx_id": "MIT"
+      },
+      "original_merged_at": "2026-11-12T09:13:42Z",
+      "original_regression_demonstrated": true,
+      "original_test_functions": [
+        "test_naturaltime",
+        "test_precisedelta_multiple_units"
+      ],
+      "original_test_path": "tests/test_time.py",
+      "outer_child_timeouts": 0,
+      "owner": {
+        "id": 62149795,
+        "login": "python-humanize",
+        "type": "Organization"
+      },
+      "project_id": "python-humanize/humanize",
+      "repository_id": 466683324,
+      "request_url": "https://github.com/python-humanize/humanize/pull/479",
+      "source_id": "github:python-humanize/humanize:pull:479"
+    }
+  ],
+  "status": "FOUR_ORIGINAL_UPSTREAM_FIXES_REPLAYED"
+}

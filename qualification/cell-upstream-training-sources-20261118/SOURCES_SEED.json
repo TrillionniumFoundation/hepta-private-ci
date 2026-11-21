@@ -1,0 +1,1136 @@
+{
+  "schema": "hepta.upstream-fix-sources.v1",
+  "sources": [
+    {
+      "source_id": "github:python-attrs/attrs:pull:1593",
+      "project_id": "python-attrs/attrs",
+      "repository_id": 29918975,
+      "owner": {
+        "login": "python-attrs",
+        "id": 25880274,
+        "type": "Organization"
+      },
+      "original_author_account": {
+        "login": "wanxiankai",
+        "id": 20761408,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "lineage_id": "github:python-attrs/attrs:pull:1593",
+      "request_url": "https://github.com/python-attrs/attrs/pull/1593",
+      "created_at": "2026-07-19T07:10:31Z",
+      "merged_at": "2026-07-31T13:30:57Z",
+      "before_commit": "6851ab593cd25f3c14393e9355d57d22bec2a074",
+      "after_commit": "97f8d175656bc03c373a1c9038048a4d312c307c",
+      "commit_time": "2026-07-31T13:28:06Z",
+      "commit_signature_api_verified": true,
+      "license": {
+        "spdx_id": "MIT",
+        "path": "LICENSE",
+        "git_blob_sha1": "2bd6453d255e19b973f19b128596a8b6dd65b2c3",
+        "sha256": "882115c95dfc2af1eeb6714f8ec6d5cbcabf667caff8729f42420da63f714e9f",
+        "complete_notice_retained": true
+      },
+      "authorization": {
+        "training_allowed": true,
+        "evaluation_allowed": true,
+        "basis": "User authorized these named public upstream projects for internal E1/E2/E5 research; retained MIT software license permits copying and modification with notice. No claim of external private user-trajectory consent."
+      },
+      "source_kind": "upstream_merged_fix_and_regression",
+      "split": "train",
+      "exposure": "development",
+      "future_task": false,
+      "pretraining_overlap_known": false,
+      "original_model_trajectory_available": false,
+      "authenticated_user_count": 0,
+      "selected_tests": {
+        "path": "tests/test_annotations.py",
+        "names": [
+          "test_is_class_var"
+        ]
+      },
+      "package_import_root": "src",
+      "source_files": [
+        {
+          "path": "src/attr/__init__.py",
+          "before": {
+            "git_blob_sha1": "3f6197c8bc93fdb5be4e446bae9fe606f378341b",
+            "bytes": 2384
+          },
+          "after": {
+            "git_blob_sha1": "3f6197c8bc93fdb5be4e446bae9fe606f378341b",
+            "bytes": 2384
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/_cmp.py",
+          "before": {
+            "git_blob_sha1": "09bab491f83ef4d15129f34b5f5a9e69bb34d63c",
+            "bytes": 4117
+          },
+          "after": {
+            "git_blob_sha1": "09bab491f83ef4d15129f34b5f5a9e69bb34d63c",
+            "bytes": 4117
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/_compat.py",
+          "before": {
+            "git_blob_sha1": "37e7148573822cd89300fd13f63bf4c463ff25a4",
+            "bytes": 2865
+          },
+          "after": {
+            "git_blob_sha1": "37e7148573822cd89300fd13f63bf4c463ff25a4",
+            "bytes": 2865
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/_config.py",
+          "before": {
+            "git_blob_sha1": "4b257726fb1e8b95583ecc3eee8d153336dc4089",
+            "bytes": 843
+          },
+          "after": {
+            "git_blob_sha1": "4b257726fb1e8b95583ecc3eee8d153336dc4089",
+            "bytes": 843
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/_funcs.py",
+          "before": {
+            "git_blob_sha1": "a0869d5df22a3a7a1a3a8c3e3c563affe8311f48",
+            "bytes": 16483
+          },
+          "after": {
+            "git_blob_sha1": "a0869d5df22a3a7a1a3a8c3e3c563affe8311f48",
+            "bytes": 16483
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/_make.py",
+          "before": {
+            "git_blob_sha1": "04104d9560400d6b4e974b15ae21340b155d9d6d",
+            "bytes": 107159
+          },
+          "after": {
+            "git_blob_sha1": "c71e872809b8712a895d113869bd33a46ebc7168",
+            "bytes": 107212
+          },
+          "identical_before_after": false
+        },
+        {
+          "path": "src/attr/_next_gen.py",
+          "before": {
+            "git_blob_sha1": "db386acb7529cf98dfdaa38e72ca8a51cd8950c8",
+            "bytes": 25858
+          },
+          "after": {
+            "git_blob_sha1": "db386acb7529cf98dfdaa38e72ca8a51cd8950c8",
+            "bytes": 25858
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/_version_info.py",
+          "before": {
+            "git_blob_sha1": "27f18884ad4d7a42f338e31a8ea19bc5d19999cd",
+            "bytes": 2222
+          },
+          "after": {
+            "git_blob_sha1": "27f18884ad4d7a42f338e31a8ea19bc5d19999cd",
+            "bytes": 2222
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/converters.py",
+          "before": {
+            "git_blob_sha1": "0a79deef04282fb33a42f6aca59563d49e70d4cb",
+            "bytes": 3861
+          },
+          "after": {
+            "git_blob_sha1": "0a79deef04282fb33a42f6aca59563d49e70d4cb",
+            "bytes": 3861
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/exceptions.py",
+          "before": {
+            "git_blob_sha1": "a207df4028f7800f964c2917383ad26be61b665e",
+            "bytes": 1990
+          },
+          "after": {
+            "git_blob_sha1": "a207df4028f7800f964c2917383ad26be61b665e",
+            "bytes": 1990
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/filters.py",
+          "before": {
+            "git_blob_sha1": "689b1705a60ff110d6077bab996f8b4588e55b82",
+            "bytes": 1795
+          },
+          "after": {
+            "git_blob_sha1": "689b1705a60ff110d6077bab996f8b4588e55b82",
+            "bytes": 1795
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/setters.py",
+          "before": {
+            "git_blob_sha1": "78b08398a6713fc5fa827c2dc853e0d05de743c4",
+            "bytes": 1617
+          },
+          "after": {
+            "git_blob_sha1": "78b08398a6713fc5fa827c2dc853e0d05de743c4",
+            "bytes": 1617
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attr/validators.py",
+          "before": {
+            "git_blob_sha1": "0b1a294432d294c4f154be2d9439d825c3ec0781",
+            "bytes": 21553
+          },
+          "after": {
+            "git_blob_sha1": "0b1a294432d294c4f154be2d9439d825c3ec0781",
+            "bytes": 21553
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attrs/__init__.py",
+          "before": {
+            "git_blob_sha1": "db0e46383facd83a25326ba7ea9208633724af4b",
+            "bytes": 1238
+          },
+          "after": {
+            "git_blob_sha1": "db0e46383facd83a25326ba7ea9208633724af4b",
+            "bytes": 1238
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attrs/converters.py",
+          "before": {
+            "git_blob_sha1": "7821f6c02cca81277d1ecc87b6bdafad886d8b70",
+            "bytes": 76
+          },
+          "after": {
+            "git_blob_sha1": "7821f6c02cca81277d1ecc87b6bdafad886d8b70",
+            "bytes": 76
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attrs/exceptions.py",
+          "before": {
+            "git_blob_sha1": "3323f9d2112c54b203763d45b455bd5abbe020f6",
+            "bytes": 76
+          },
+          "after": {
+            "git_blob_sha1": "3323f9d2112c54b203763d45b455bd5abbe020f6",
+            "bytes": 76
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attrs/filters.py",
+          "before": {
+            "git_blob_sha1": "3080f48398e5ed8d3428ca3efeb7500633b0cb0f",
+            "bytes": 73
+          },
+          "after": {
+            "git_blob_sha1": "3080f48398e5ed8d3428ca3efeb7500633b0cb0f",
+            "bytes": 73
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attrs/setters.py",
+          "before": {
+            "git_blob_sha1": "f3d73bb793dd49c138950961f41943bb26c57fde",
+            "bytes": 73
+          },
+          "after": {
+            "git_blob_sha1": "f3d73bb793dd49c138950961f41943bb26c57fde",
+            "bytes": 73
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/attrs/validators.py",
+          "before": {
+            "git_blob_sha1": "037e124f29f32d37c1642d159bf828de44f7c349",
+            "bytes": 76
+          },
+          "after": {
+            "git_blob_sha1": "037e124f29f32d37c1642d159bf828de44f7c349",
+            "bytes": 76
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "tests/test_annotations.py",
+          "before": {
+            "git_blob_sha1": "e193d4ba1f4bcc2881f3a0e99e048dbf1b759c8a",
+            "bytes": 18206
+          },
+          "after": {
+            "git_blob_sha1": "de3d10589377395bfef5e86208d379902be1662f",
+            "bytes": 18752
+          },
+          "identical_before_after": false
+        },
+        {
+          "path": "LICENSE",
+          "before": {
+            "git_blob_sha1": "2bd6453d255e19b973f19b128596a8b6dd65b2c3",
+            "bytes": 1109
+          },
+          "after": {
+            "git_blob_sha1": "2bd6453d255e19b973f19b128596a8b6dd65b2c3",
+            "bytes": 1109
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "pyproject.toml",
+          "before": {
+            "git_blob_sha1": "dcfa7649266291a3f674685e2b2866c7d47250bd",
+            "bytes": 9170
+          },
+          "after": {
+            "git_blob_sha1": "dcfa7649266291a3f674685e2b2866c7d47250bd",
+            "bytes": 9170
+          },
+          "identical_before_after": true
+        }
+      ],
+      "files_not_claimed_as_full_repository": true
+    },
+    {
+      "source_id": "github:Textualize/rich:pull:4006",
+      "project_id": "Textualize/rich",
+      "repository_id": 220809393,
+      "owner": {
+        "login": "Textualize",
+        "id": 93378883,
+        "type": "Organization"
+      },
+      "original_author_account": {
+        "login": "willmcgugan",
+        "id": 554369,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "lineage_id": "github:Textualize/rich:pull:4006",
+      "request_url": "https://github.com/Textualize/rich/pull/4006",
+      "created_at": "2026-02-19T14:02:49Z",
+      "merged_at": "2026-02-19T17:04:17Z",
+      "before_commit": "27701029082052c6541031b6f139097230253900",
+      "after_commit": "7338cb9dafd0d0e916585f191ae505b3e602bb51",
+      "commit_time": "2026-02-19T17:04:17Z",
+      "commit_signature_api_verified": true,
+      "license": {
+        "spdx_id": "MIT",
+        "path": "LICENSE",
+        "git_blob_sha1": "4415505566f261c802b671426be529a31f914137",
+        "sha256": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15",
+        "complete_notice_retained": true
+      },
+      "authorization": {
+        "training_allowed": true,
+        "evaluation_allowed": true,
+        "basis": "User authorized these named public upstream projects for internal E1/E2/E5 research; retained MIT software license permits copying and modification with notice. No claim of external private user-trajectory consent."
+      },
+      "source_kind": "upstream_merged_fix_and_regression",
+      "split": "train",
+      "exposure": "development",
+      "future_task": false,
+      "pretraining_overlap_known": false,
+      "original_model_trajectory_available": false,
+      "authenticated_user_count": 0,
+      "selected_tests": {
+        "path": "tests/test_cells.py",
+        "names": [
+          "test_split_graphemes",
+          "test_chop_cells_zero_width"
+        ]
+      },
+      "package_import_root": ".",
+      "source_files": [
+        {
+          "path": "rich/__init__.py",
+          "before": {
+            "git_blob_sha1": "3edd12e0167e159890655f985299759792b71dd0",
+            "bytes": 6131
+          },
+          "after": {
+            "git_blob_sha1": "3edd12e0167e159890655f985299759792b71dd0",
+            "bytes": 6131
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_extension.py",
+          "before": {
+            "git_blob_sha1": "38658864eb1e9b9839e953e070af11c8bc0d1836",
+            "bytes": 241
+          },
+          "after": {
+            "git_blob_sha1": "38658864eb1e9b9839e953e070af11c8bc0d1836",
+            "bytes": 241
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/__init__.py",
+          "before": {
+            "git_blob_sha1": "ce54baef4e5124dd7c9e711604d00dcb001749c9",
+            "bytes": 2631
+          },
+          "after": {
+            "git_blob_sha1": "ce54baef4e5124dd7c9e711604d00dcb001749c9",
+            "bytes": 2631
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/_versions.py",
+          "before": {
+            "git_blob_sha1": "be98418d13d224ccd94f97f0ce8e31fe43f63540",
+            "bytes": 298
+          },
+          "after": {
+            "git_blob_sha1": "be98418d13d224ccd94f97f0ce8e31fe43f63540",
+            "bytes": 298
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode10-0-0.py",
+          "before": {
+            "git_blob_sha1": "f318087837c2cfb464c7bb9979f7ed067bc71bea",
+            "bytes": 14496
+          },
+          "after": {
+            "git_blob_sha1": "f318087837c2cfb464c7bb9979f7ed067bc71bea",
+            "bytes": 14496
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode11-0-0.py",
+          "before": {
+            "git_blob_sha1": "058bb342cac0eb3cae529a0a1933c89dabaa5fbd",
+            "bytes": 14874
+          },
+          "after": {
+            "git_blob_sha1": "058bb342cac0eb3cae529a0a1933c89dabaa5fbd",
+            "bytes": 14874
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode12-0-0.py",
+          "before": {
+            "git_blob_sha1": "7b0022513d4517f1704e3f54c3dcc7a4f8816773",
+            "bytes": 15216
+          },
+          "after": {
+            "git_blob_sha1": "7b0022513d4517f1704e3f54c3dcc7a4f8816773",
+            "bytes": 15216
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode12-1-0.py",
+          "before": {
+            "git_blob_sha1": "2dbcf3794e45d16f46ce68d81f5eea63e39aa42d",
+            "bytes": 15189
+          },
+          "after": {
+            "git_blob_sha1": "2dbcf3794e45d16f46ce68d81f5eea63e39aa42d",
+            "bytes": 15189
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode13-0-0.py",
+          "before": {
+            "git_blob_sha1": "13fbc74b0ac34d1c28f5ee77359a520512bf7e8a",
+            "bytes": 15519
+          },
+          "after": {
+            "git_blob_sha1": "13fbc74b0ac34d1c28f5ee77359a520512bf7e8a",
+            "bytes": 15519
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode14-0-0.py",
+          "before": {
+            "git_blob_sha1": "9fa9e29e7f3027b8aafbd59731fab0d70bd05c5d",
+            "bytes": 15884
+          },
+          "after": {
+            "git_blob_sha1": "9fa9e29e7f3027b8aafbd59731fab0d70bd05c5d",
+            "bytes": 15884
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode15-0-0.py",
+          "before": {
+            "git_blob_sha1": "84dd5be9365bb226620059b80353dd1ce26f8064",
+            "bytes": 16156
+          },
+          "after": {
+            "git_blob_sha1": "84dd5be9365bb226620059b80353dd1ce26f8064",
+            "bytes": 16156
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode15-1-0.py",
+          "before": {
+            "git_blob_sha1": "aa9f2c3e3170538c22fda8d0df91d488c232131f",
+            "bytes": 16129
+          },
+          "after": {
+            "git_blob_sha1": "aa9f2c3e3170538c22fda8d0df91d488c232131f",
+            "bytes": 16129
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode16-0-0.py",
+          "before": {
+            "git_blob_sha1": "b3fe2359dfc70e6c8e13be5c6e74887ba581338e",
+            "bytes": 16480
+          },
+          "after": {
+            "git_blob_sha1": "b3fe2359dfc70e6c8e13be5c6e74887ba581338e",
+            "bytes": 16480
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode17-0-0.py",
+          "before": {
+            "git_blob_sha1": "4108bb44de77d023d5b9dadf3601ad1141f7aeae",
+            "bytes": 16704
+          },
+          "after": {
+            "git_blob_sha1": "4108bb44de77d023d5b9dadf3601ad1141f7aeae",
+            "bytes": 16704
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode4-1-0.py",
+          "before": {
+            "git_blob_sha1": "23ff5cf1d0cccdc6fe6503c410e900c4d83eb49a",
+            "bytes": 9488
+          },
+          "after": {
+            "git_blob_sha1": "23ff5cf1d0cccdc6fe6503c410e900c4d83eb49a",
+            "bytes": 9488
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode5-0-0.py",
+          "before": {
+            "git_blob_sha1": "599fb785709d40ca23eee7e8e9cbededc8ad389b",
+            "bytes": 9613
+          },
+          "after": {
+            "git_blob_sha1": "599fb785709d40ca23eee7e8e9cbededc8ad389b",
+            "bytes": 9613
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode5-1-0.py",
+          "before": {
+            "git_blob_sha1": "016e7825eccd6b87410741db79948bb0b99ea921",
+            "bytes": 9650
+          },
+          "after": {
+            "git_blob_sha1": "016e7825eccd6b87410741db79948bb0b99ea921",
+            "bytes": 9650
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode5-2-0.py",
+          "before": {
+            "git_blob_sha1": "e984f12e95eed5eb67cedad1d3b92f5f23c718ed",
+            "bytes": 10390
+          },
+          "after": {
+            "git_blob_sha1": "e984f12e95eed5eb67cedad1d3b92f5f23c718ed",
+            "bytes": 10390
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode6-0-0.py",
+          "before": {
+            "git_blob_sha1": "8d5abb455c390f585f67ed844e3fa18510d92a28",
+            "bytes": 10604
+          },
+          "after": {
+            "git_blob_sha1": "8d5abb455c390f585f67ed844e3fa18510d92a28",
+            "bytes": 10604
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode6-1-0.py",
+          "before": {
+            "git_blob_sha1": "29d3e9298806c875b8969195a1cb6a39c9918cb9",
+            "bytes": 10899
+          },
+          "after": {
+            "git_blob_sha1": "29d3e9298806c875b8969195a1cb6a39c9918cb9",
+            "bytes": 10899
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode6-2-0.py",
+          "before": {
+            "git_blob_sha1": "d0cda351a493664500d0179ab6dac7b2f978c69d",
+            "bytes": 10899
+          },
+          "after": {
+            "git_blob_sha1": "d0cda351a493664500d0179ab6dac7b2f978c69d",
+            "bytes": 10899
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode6-3-0.py",
+          "before": {
+            "git_blob_sha1": "cffb7ee942eb8f175e182d0105c4e356ad8519fb",
+            "bytes": 10924
+          },
+          "after": {
+            "git_blob_sha1": "cffb7ee942eb8f175e182d0105c4e356ad8519fb",
+            "bytes": 10924
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode7-0-0.py",
+          "before": {
+            "git_blob_sha1": "996478ac24a54b844beb0d209fe43db9a7a2a014",
+            "bytes": 11630
+          },
+          "after": {
+            "git_blob_sha1": "996478ac24a54b844beb0d209fe43db9a7a2a014",
+            "bytes": 11630
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode8-0-0.py",
+          "before": {
+            "git_blob_sha1": "ae34a382a6a8b486c5fc2d4c6491cd6c3ab56d77",
+            "bytes": 11864
+          },
+          "after": {
+            "git_blob_sha1": "ae34a382a6a8b486c5fc2d4c6491cd6c3ab56d77",
+            "bytes": 11864
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/_unicode_data/unicode9-0-0.py",
+          "before": {
+            "git_blob_sha1": "b15f67d44eb15e2388aa52089922eaf77916d578",
+            "bytes": 14148
+          },
+          "after": {
+            "git_blob_sha1": "b15f67d44eb15e2388aa52089922eaf77916d578",
+            "bytes": 14148
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "rich/cells.py",
+          "before": {
+            "git_blob_sha1": "31165957b925db77a01b3859656d520e2bafdd98",
+            "bytes": 10850
+          },
+          "after": {
+            "git_blob_sha1": "9d590b04e89b81a592f82ddd64aa5ccd50e36e9c",
+            "bytes": 12335
+          },
+          "identical_before_after": false
+        },
+        {
+          "path": "tests/test_cells.py",
+          "before": {
+            "git_blob_sha1": "f101740a01816669cee9513e7e21f1e1ac85adf9",
+            "bytes": 6635
+          },
+          "after": {
+            "git_blob_sha1": "39ba346e7efe7f538602f072d38c875f2aaa5d28",
+            "bytes": 7760
+          },
+          "identical_before_after": false
+        },
+        {
+          "path": "LICENSE",
+          "before": {
+            "git_blob_sha1": "4415505566f261c802b671426be529a31f914137",
+            "bytes": 1056
+          },
+          "after": {
+            "git_blob_sha1": "4415505566f261c802b671426be529a31f914137",
+            "bytes": 1056
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "pyproject.toml",
+          "before": {
+            "git_blob_sha1": "23e86e4006b72ddab3b752e19ea2c781823aea70",
+            "bytes": 1821
+          },
+          "after": {
+            "git_blob_sha1": "23e86e4006b72ddab3b752e19ea2c781823aea70",
+            "bytes": 1821
+          },
+          "identical_before_after": true
+        }
+      ],
+      "files_not_claimed_as_full_repository": true
+    },
+    {
+      "source_id": "github:tox-dev/platformdirs:pull:721",
+      "project_id": "tox-dev/platformdirs",
+      "repository_id": 367032142,
+      "owner": {
+        "login": "tox-dev",
+        "id": 20345659,
+        "type": "Organization"
+      },
+      "original_author_account": {
+        "login": "gaborbernat",
+        "id": 690238,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "lineage_id": "github:tox-dev/platformdirs:pull:721",
+      "request_url": "https://github.com/tox-dev/platformdirs/pull/721",
+      "created_at": "2026-11-17T19:47:53Z",
+      "merged_at": "2026-11-17T20:01:29Z",
+      "before_commit": "b888560ea8c0d6dff5bd45d9f9712feb9174229a",
+      "after_commit": "786757ff6cd876094b985eb851c324d96f44fdbf",
+      "commit_time": "2026-11-17T20:01:28Z",
+      "commit_signature_api_verified": true,
+      "license": {
+        "spdx_id": "MIT",
+        "path": "LICENSE",
+        "git_blob_sha1": "f35fed9191b1142ddaada8a96de4a9461c5d796c",
+        "sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+        "complete_notice_retained": true
+      },
+      "authorization": {
+        "training_allowed": true,
+        "evaluation_allowed": true,
+        "basis": "User authorized these named public upstream projects for internal E1/E2/E5 research; retained MIT software license permits copying and modification with notice. No claim of external private user-trajectory consent."
+      },
+      "source_kind": "upstream_merged_fix_and_regression",
+      "split": "train",
+      "exposure": "development",
+      "future_task": false,
+      "pretraining_overlap_known": false,
+      "original_model_trajectory_available": false,
+      "authenticated_user_count": 0,
+      "selected_tests": {
+        "path": "tests/test_unix.py",
+        "names": [
+          "test_user_dirs_read_like_xdg_user_dir",
+          "test_user_dirs_carriage_return"
+        ]
+      },
+      "package_import_root": "src",
+      "source_files": [
+        {
+          "path": "src/platformdirs/__init__.py",
+          "before": {
+            "git_blob_sha1": "3be6001bf82d619522fe46471657322676dedcaf",
+            "bytes": 51809
+          },
+          "after": {
+            "git_blob_sha1": "3be6001bf82d619522fe46471657322676dedcaf",
+            "bytes": 51809
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/__main__.py",
+          "before": {
+            "git_blob_sha1": "1ab1ff880caac1ae732c39ba7b53143bf3352b4e",
+            "bytes": 2128
+          },
+          "after": {
+            "git_blob_sha1": "1ab1ff880caac1ae732c39ba7b53143bf3352b4e",
+            "bytes": 2128
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/_android.py",
+          "before": {
+            "git_blob_sha1": "78ae9dae46d4e708b9ed53bfd604a0b7283bb2f2",
+            "bytes": 2288
+          },
+          "after": {
+            "git_blob_sha1": "78ae9dae46d4e708b9ed53bfd604a0b7283bb2f2",
+            "bytes": 2288
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/_runtime.py",
+          "before": {
+            "git_blob_sha1": "2fc6f6b28a4932dfba9de148eb1d8f5b9964e885",
+            "bytes": 1906
+          },
+          "after": {
+            "git_blob_sha1": "2fc6f6b28a4932dfba9de148eb1d8f5b9964e885",
+            "bytes": 1906
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/_xdg.py",
+          "before": {
+            "git_blob_sha1": "d01701fe9fcc1211d6daa8fa982735bbd11817b9",
+            "bytes": 9047
+          },
+          "after": {
+            "git_blob_sha1": "d01701fe9fcc1211d6daa8fa982735bbd11817b9",
+            "bytes": 9047
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/android.py",
+          "before": {
+            "git_blob_sha1": "ae46da6cf98bccd16194245c9e358c0a6ee96758",
+            "bytes": 8134
+          },
+          "after": {
+            "git_blob_sha1": "ae46da6cf98bccd16194245c9e358c0a6ee96758",
+            "bytes": 8134
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/api.py",
+          "before": {
+            "git_blob_sha1": "cc7982fb54b3dca38fadf8300fac1cdf7a16fd1c",
+            "bytes": 31300
+          },
+          "after": {
+            "git_blob_sha1": "cc7982fb54b3dca38fadf8300fac1cdf7a16fd1c",
+            "bytes": 31300
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/ios.py",
+          "before": {
+            "git_blob_sha1": "27004e6d8701804730ed46f26b64e02091c96ae4",
+            "bytes": 6076
+          },
+          "after": {
+            "git_blob_sha1": "27004e6d8701804730ed46f26b64e02091c96ae4",
+            "bytes": 6076
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/macos.py",
+          "before": {
+            "git_blob_sha1": "8b4a235724705946e2a4e2f3904ebd8566a108a2",
+            "bytes": 10989
+          },
+          "after": {
+            "git_blob_sha1": "8b4a235724705946e2a4e2f3904ebd8566a108a2",
+            "bytes": 10989
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/pytest_plugin.py",
+          "before": {
+            "git_blob_sha1": "ea7e96b17bad3a453729ab3f5577143c22c8f04e",
+            "bytes": 938
+          },
+          "after": {
+            "git_blob_sha1": "ea7e96b17bad3a453729ab3f5577143c22c8f04e",
+            "bytes": 938
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/testing.py",
+          "before": {
+            "git_blob_sha1": "0711d8cefe6126cc0cf569712a61a86d97c02b7a",
+            "bytes": 2965
+          },
+          "after": {
+            "git_blob_sha1": "0711d8cefe6126cc0cf569712a61a86d97c02b7a",
+            "bytes": 2965
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/platformdirs/unix.py",
+          "before": {
+            "git_blob_sha1": "174619c677896ee73fa70b812462f045cf29e63c",
+            "bytes": 20486
+          },
+          "after": {
+            "git_blob_sha1": "4b36376122b656a508ef73e4d86d5ff1284b544e",
+            "bytes": 20658
+          },
+          "identical_before_after": false
+        },
+        {
+          "path": "src/platformdirs/windows.py",
+          "before": {
+            "git_blob_sha1": "ce08f56dc036782fec5aed0afd188a31ac6fd002",
+            "bytes": 18350
+          },
+          "after": {
+            "git_blob_sha1": "ce08f56dc036782fec5aed0afd188a31ac6fd002",
+            "bytes": 18350
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "tests/test_unix.py",
+          "before": {
+            "git_blob_sha1": "3c5b56859bda83d38cbb68856b80509825184413",
+            "bytes": 95850
+          },
+          "after": {
+            "git_blob_sha1": "3c5b56859bda83d38cbb68856b80509825184413",
+            "bytes": 95850
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "LICENSE",
+          "before": {
+            "git_blob_sha1": "f35fed9191b1142ddaada8a96de4a9461c5d796c",
+            "bytes": 1089
+          },
+          "after": {
+            "git_blob_sha1": "f35fed9191b1142ddaada8a96de4a9461c5d796c",
+            "bytes": 1089
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "pyproject.toml",
+          "before": {
+            "git_blob_sha1": "56ae2145d3bcae2732027b6b345fd3ef33f61f71",
+            "bytes": 8807
+          },
+          "after": {
+            "git_blob_sha1": "56ae2145d3bcae2732027b6b345fd3ef33f61f71",
+            "bytes": 8807
+          },
+          "identical_before_after": true
+        }
+      ],
+      "files_not_claimed_as_full_repository": true
+    },
+    {
+      "source_id": "github:python-humanize/humanize:pull:479",
+      "project_id": "python-humanize/humanize",
+      "repository_id": 466683324,
+      "owner": {
+        "login": "python-humanize",
+        "id": 62149795,
+        "type": "Organization"
+      },
+      "original_author_account": {
+        "login": "tamsk-91",
+        "id": 340929521,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "lineage_id": "github:python-humanize/humanize:pull:479",
+      "request_url": "https://github.com/python-humanize/humanize/pull/479",
+      "created_at": "2026-10-25T08:30:50Z",
+      "merged_at": "2026-11-12T09:13:42Z",
+      "before_commit": "d16e6352c9785c5ab86de0133222bd22e89b0db2",
+      "after_commit": "318888db38ac12e5aaf3144546a11b8ebe60555d",
+      "commit_time": "2026-11-12T09:13:41Z",
+      "commit_signature_api_verified": true,
+      "license": {
+        "spdx_id": "MIT",
+        "path": "LICENCE",
+        "git_blob_sha1": "e0687959f9e19e8bee8783424885bca65477fa28",
+        "sha256": "8ba6c18112a431400ad3c743f70670079b302545d98884fc2f28a91c383a0380",
+        "complete_notice_retained": true
+      },
+      "authorization": {
+        "training_allowed": true,
+        "evaluation_allowed": true,
+        "basis": "User authorized these named public upstream projects for internal E1/E2/E5 research; retained MIT software license permits copying and modification with notice. No claim of external private user-trajectory consent."
+      },
+      "source_kind": "upstream_merged_fix_and_regression",
+      "split": "train",
+      "exposure": "development",
+      "future_task": false,
+      "pretraining_overlap_known": false,
+      "original_model_trajectory_available": false,
+      "authenticated_user_count": 0,
+      "selected_tests": {
+        "path": "tests/test_time.py",
+        "names": [
+          "test_naturaltime",
+          "test_precisedelta_multiple_units"
+        ]
+      },
+      "package_import_root": "src",
+      "source_files": [
+        {
+          "path": "src/humanize/__init__.py",
+          "before": {
+            "git_blob_sha1": "4f54bc466a303acc40bab90c79f75a55fb74e0ab",
+            "bytes": 1072
+          },
+          "after": {
+            "git_blob_sha1": "4f54bc466a303acc40bab90c79f75a55fb74e0ab",
+            "bytes": 1072
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/humanize/filesize.py",
+          "before": {
+            "git_blob_sha1": "063affe05071511ff99f84ef9f2e785387471c7b",
+            "bytes": 2874
+          },
+          "after": {
+            "git_blob_sha1": "063affe05071511ff99f84ef9f2e785387471c7b",
+            "bytes": 2874
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/humanize/i18n.py",
+          "before": {
+            "git_blob_sha1": "672dddc549a8e21487d27a81d07727651a291f35",
+            "bytes": 5479
+          },
+          "after": {
+            "git_blob_sha1": "672dddc549a8e21487d27a81d07727651a291f35",
+            "bytes": 5479
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/humanize/lists.py",
+          "before": {
+            "git_blob_sha1": "36e8ab73a78f3028c668d9fe3da9d5de9d4aeb34",
+            "bytes": 1015
+          },
+          "after": {
+            "git_blob_sha1": "36e8ab73a78f3028c668d9fe3da9d5de9d4aeb34",
+            "bytes": 1015
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/humanize/number.py",
+          "before": {
+            "git_blob_sha1": "52a5356a9d9f3694a3ba0fef272abaa496e90de0",
+            "bytes": 17254
+          },
+          "after": {
+            "git_blob_sha1": "52a5356a9d9f3694a3ba0fef272abaa496e90de0",
+            "bytes": 17254
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "src/humanize/time.py",
+          "before": {
+            "git_blob_sha1": "7c4a28eb73a73764bef7563e05867285b046e8ea",
+            "bytes": 21758
+          },
+          "after": {
+            "git_blob_sha1": "f8e0a58a864a94791b4b828a7619670c39496004",
+            "bytes": 21684
+          },
+          "identical_before_after": false
+        },
+        {
+          "path": "tests/test_time.py",
+          "before": {
+            "git_blob_sha1": "887a3fc56dfd44171fc1a5d397e23b78c8e9b595",
+            "bytes": 35485
+          },
+          "after": {
+            "git_blob_sha1": "1882acd3d09072515edc13802096431b9616c6aa",
+            "bytes": 35743
+          },
+          "identical_before_after": false
+        },
+        {
+          "path": "LICENCE",
+          "before": {
+            "git_blob_sha1": "e0687959f9e19e8bee8783424885bca65477fa28",
+            "bytes": 1078
+          },
+          "after": {
+            "git_blob_sha1": "e0687959f9e19e8bee8783424885bca65477fa28",
+            "bytes": 1078
+          },
+          "identical_before_after": true
+        },
+        {
+          "path": "pyproject.toml",
+          "before": {
+            "git_blob_sha1": "63817fecd79d5d325013fef541f9074c7973342a",
+            "bytes": 3965
+          },
+          "after": {
+            "git_blob_sha1": "63817fecd79d5d325013fef541f9074c7973342a",
+            "bytes": 3965
+          },
+          "identical_before_after": true
+        }
+      ],
+      "files_not_claimed_as_full_repository": true
+    }
+  ],
+  "source_count": 4,
+  "authenticated_user_count": 0,
+  "new_model_calls": 0,
+  "new_training_updates": 0
+}

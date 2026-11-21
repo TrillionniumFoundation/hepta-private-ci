@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.upstream-fix-source-intake.v1",
+  "root_selection_request": "Four projects named by root before upstream source inspection; no prior B/B2 answers used for selection.",
+  "repositories": [
+    "python-attrs/attrs",
+    "Textualize/rich",
+    "tox-dev/platformdirs",
+    "python-humanize/humanize"
+  ],
+  "source_kind": "actual upstream merged fix plus maintainer regression tests; scoped internal research training inputs, not original agent trajectories",
+  "source_independence_scope": "four repository and GitHub organization identities; no claim of statistical independence or authenticated human users",
+  "authenticated_user_count": 0,
+  "excluded_evaluation_repositories": [
+    "psf/requests",
+    "pallets/werkzeug",
+    "pallets/click",
+    "django/django",
+    "pydantic/pydantic",
+    "more-itertools/more-itertools"
+  ],
+  "selection_rule": "Read up to 10 most recent merged PRs containing fix in title; select first runtime behavior correction with bounded stdlib Python dependencies and existing/additional upstream regression tests. Skip docs/type-only/tooling/translation-catalog edits. Record every observed skip.",
+  "chosen_pull_requests": {
+    "python-attrs/attrs": 1593,
+    "Textualize/rich": 4006,
+    "tox-dev/platformdirs": 721,
+    "python-humanize/humanize": 479
+  },
+  "skips": [
+    {
+      "repository": "python-attrs/attrs",
+      "pull_request": 1625,
+      "reason": "documentation/comment-only duplicate words"
+    },
+    {
+      "repository": "python-attrs/attrs",
+      "pull_request": 1615,
+      "reason": "API documentation comparison-operator wording"
+    },
+    {
+      "repository": "python-humanize/humanize",
+      "pull_request": 514,
+      "reason": "translation catalog extraction and compilation across 36 locales outside bounded stdlib behavior scope"
+    }
+  ],
+  "native_replay_budget": {
+    "models": 0,
+    "training_updates": 0,
+    "targeted_test_functions_only": true,
+    "max_seconds_per_test_child": 120,
+    "rich_expected_nontermination_seconds": 3,
+    "parallel_test_children": 1,
+    "external_effects": "only new isolated owned test directories",
+    "pytest_per_case_timeout_seconds": 3,
+    "full_test_function_parameter_sets_preserved": true
+  },
+  "acquisition_and_test_dependency_scope": "Fresh isolated Python environment and exact Git blobs; no modification to shared training/runtime/service configurations.",
+  "intended_training_role": "A-only prospective new candidate materials; never relabel old B/B2; no training run authorized in this intake stage.",
+  "evaluation_qualification": "source acquisition is not evaluation, future generalization, human usage or native adoption; pretraining overlap unknown",
+  "source_sizes": [
+    1,
+    4,
+    16,
+    64
+  ],
+  "budget_regimes": [
+    "fixed_total",
+    "fixed_per_source"
+  ],
+  "next_ready_sizes_limit": 4,
+  "source_selection_observed_before_native_replay": true
+}
