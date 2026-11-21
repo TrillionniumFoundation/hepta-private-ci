@@ -1,0 +1,32 @@
+{
+  "schema": "hcsn-n256-preexpm-input-snapshot-source-freeze-v1",
+  "parent_head": "676e05e95541e363a61485c8fe7821bd4cc42d6f",
+  "identity": "hcsn-n256-preexpm-input-snapshot-20261121-c6bc-001",
+  "source": {
+    ".github/workflows/hcsn-currentstate-n256-preexpm-snapshot.yml": "5131965ff9c6b2a1960dfb87469905454f0ce9b0b116e616bb88eafc9f184394",
+    "qualification/hcsn_currentstate_n256_preexpm_snapshot_intent/README.md": "303b6ac72051c03a3b9a4330c370173613f7cc9a0bcaab948cfb1ed763aa5c5a",
+    "qualification/hcsn_currentstate_n256_preexpm_snapshot_intent/REQUEST.json": "11c2763c1fcaae9f43ea4f1edc605eb4a38e1c1cf554cbe50e2415c0b2cb6724",
+    "qualification/hcsn_currentstate_n256_preexpm_snapshot_intent/run.py": "207faf9c67117e0d111352bdbb594a6fd12da03e5f2560abb103881f73e630f5",
+    "qualification/hcsn_currentstate_n256_preexpm_snapshot_intent/snapshot.py": "03748f5d2869164b74a086a39ebe7c94a199fca3d9952f066fffc989c75faf48",
+    "qualification/hcsn_currentstate_n256_preexpm_snapshot_intent/test_source.py": "c5690379e2114da84ce6ba7df6757d1a80866e7e547bbf0974f38e98ddb25be8"
+  },
+  "bound_dependencies": {
+    "qualification/hcsn_currentstate_n256_authentic_boundary_attempt002/evidence/originals/artifact.zip": "43d990c1a17e4e075681820caec327e368a0ae3144abdac21ad383d133f3f595",
+    "qualification/hcsn_currentstate_n256_boundary_container_contract/boundary_codec.py": "70ac907077417ca4164ad749b736f395b2deebdd1fd8af08c316eee042db6232",
+    "qualification/hcsn_currentstate_n256_dense_compatible_firststep_intent/candidate.py": "f71b3ede780a25676ecc4d582d740ad4659bf006af4cf2a35cd1ce43d987438c",
+    "qualification/hcsn_currentstate_n256_firststep_dense_oracle_source/dense_oracle.py": "a3aa6a95cd55d254d9fa911d10768d1ec827e2374265a5b0474e0d6243929bfa",
+    "qualification/hcsn_currentstate_n256_runtime_matched_red_evidence/artifact.zip": "f771fd19571843efed7e99583122f2f5ca4288b7f2f93d62d1d8318f14f00666"
+  },
+  "development_execution": {
+    "authoritative": false,
+    "result": "byte-equal on the local development runtime",
+    "dynamic_steps": 0,
+    "expm_actions": 0,
+    "scipy_imports": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "source_branch_execution_count": 0,
+  "cause_of_6901_red": "UNKNOWN",
+  "all_closed": false
+}

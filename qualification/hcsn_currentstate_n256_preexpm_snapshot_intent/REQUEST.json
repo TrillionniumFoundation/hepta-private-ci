@@ -1,0 +1,31 @@
+{
+  "schema": "hcsn-n256-preexpm-input-snapshot-request-v1",
+  "identity": "hcsn-n256-preexpm-input-snapshot-20261121-c6bc-001",
+  "unique_execution_key": "hcsn-n256-preexpm-input-snapshot-20261121-c6bc-001",
+  "parent_head": "676e05e95541e363a61485c8fe7821bd4cc42d6f",
+  "single_execution": true,
+  "inputs": {
+    "attempt002_boundary_artifact_zip": "qualification/hcsn_currentstate_n256_authentic_boundary_attempt002/evidence/originals/artifact.zip",
+    "runtime_red_artifact_zip": "qualification/hcsn_currentstate_n256_runtime_matched_red_evidence/artifact.zip",
+    "boundary_sha256": "e580e44a679ecf9e2588c989cd4d026e326e7364331c46d1927b00ccada78fd4"
+  },
+  "work": {
+    "boundary_decodes": 3,
+    "preexpm_augmented_builds": 6,
+    "preexpm_seed_builds": 6,
+    "dynamic_steps": 0,
+    "expm_actions": 0,
+    "scipy_imports": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "gate": "byte equality for current-source undiscounted/discounted augmented matrices and seeds",
+  "limits": {
+    "original_oracle_run_preexpm_bytes_published": false,
+    "expm_arithmetic_path_qualified": false,
+    "n256_dynamic_qualified": false,
+    "cause_of_6901_red": "UNKNOWN",
+    "production_adoption": false,
+    "all_closed": false
+  }
+}
