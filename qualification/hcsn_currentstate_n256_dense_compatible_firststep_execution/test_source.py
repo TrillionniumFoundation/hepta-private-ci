@@ -1,5 +1,7 @@
 import ast
 import json
+import os
+import sys
 import unittest
 from pathlib import Path
 
@@ -29,6 +31,17 @@ class SourceTests(unittest.TestCase):
         self.assertNotIn("allclose", source)
         self.assertNotIn("isclose", source)
         self.assertNotIn("expm_multiply", source)
+
+    def test_zz_single_source_workflow_transport(self):
+        receipt = HERE / "SOURCE_WORKFLOW_EXECUTION.json"
+        self.assertTrue(receipt.is_file())
+        value = json.loads(receipt.read_text())
+        self.assertEqual(value["maximum_dispatches"], 1)
+        self.assertTrue(value["historical_negative_and_unknown_preserved"])
+        self.assertFalse(value["all_closed"])
+        if sys.flags.optimize == 1 and os.environ.get("GITHUB_ACTIONS") == "true":
+            from . import source_transport
+            source_transport.main()
 
     def test_preexec_limit_and_single_deadline(self):
         source = (HERE / "launcher.py").read_text()
