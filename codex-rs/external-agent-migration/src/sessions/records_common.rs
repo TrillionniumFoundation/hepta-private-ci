@@ -113,11 +113,7 @@ pub(super) fn parse_timestamp(timestamp: &str) -> Option<i64> {
             return None;
         }
         let total = offset_hours * 60 + offset_mins;
-        if suffix[0] == b'+' {
-            total
-        } else {
-            -total
-        }
+        if suffix[0] == b'+' { total } else { -total }
     } else {
         return None;
     };
