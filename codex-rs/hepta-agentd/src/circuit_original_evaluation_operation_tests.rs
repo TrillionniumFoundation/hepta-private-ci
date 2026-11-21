@@ -164,7 +164,7 @@ async fn original_evaluation_staged_material_scenario(fault: &'static str) -> an
     let (material, peer) = fixture
         .host
         .as_ref()
-        .unwrap()
+        .context("original host")?
         .fixture_model_material_commands(Some(evaluation), "original", /*pause*/ None)?;
     let operation = material.fixture_begin_model_read_at(fixture.at).await?;
     let pages = operation.material().fixture_original_material_pages() as u64;
@@ -181,7 +181,9 @@ async fn original_evaluation_staged_material_scenario(fault: &'static str) -> an
         Err(CommandError::Unavailable)
     ));
     drop(material);
-    let served = peer.join().expect("original staged material peer");
+    let served = peer
+        .join()
+        .map_err(|_| anyhow::anyhow!("original staged material peer panicked"))?;
     assert!(pages > 0);
     assert!(
         served.is_err(),
@@ -198,7 +200,9 @@ async fn original_evaluation_staged_material_scenario(fault: &'static str) -> an
     assert_eq!(fixture.original_files()?, completed);
     assert_eq!(fixture.finish().await?, [2, 2]);
     assert_eq!(
-        trainer.join().expect("original staged Trainer")?,
+        trainer
+            .join()
+            .map_err(|_| anyhow::anyhow!("original staged Trainer panicked"))??,
         if fault == "changed-tail" { 4 } else { 3 }
     );
     Ok(())

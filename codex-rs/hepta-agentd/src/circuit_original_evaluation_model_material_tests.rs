@@ -1,6 +1,7 @@
 //! Actual Source/Ledger B, nonempty retention, Runner, execution, Qualification
 //! and Evaluator. All credentials, declared Product metadata and future B clock
 //! are explicit mechanism fixtures. Ineligible is preserved, never promoted.
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 use pretty_assertions::assert_ne;
 
@@ -263,17 +264,21 @@ async fn original_model_material_pending_cancel_scenario(
 ) -> anyhow::Result<()> {
     let mut fixture = HostFixture::new(pending_claim).await?;
     let original_files = fixture.original_files()?;
-    let dispatch_before = fixture.host.as_ref().unwrap().fixture_dispatch_consumed();
+    let dispatch_before = fixture
+        .host
+        .as_ref()
+        .context("original host")?
+        .fixture_dispatch_consumed();
     fixture
         .host
         .as_ref()
-        .unwrap()
+        .context("original host")?
         .fixture_model_material_cancel_queued()
         .await?;
     let (client, peer) = fixture
         .host
         .as_ref()
-        .unwrap()
+        .context("original host")?
         .fixture_model_material_commands(/*expected*/ None, "original", /*pause*/ None)?;
     let result = client.fixture_read_current_at(fixture.at).await;
     if pending_claim {
@@ -287,14 +292,18 @@ async fn original_model_material_pending_cancel_scenario(
     ));
     assert_eq!(close(client, peer)?, 1);
     assert_eq!(
-        fixture.host.as_ref().unwrap().fixture_dispatch_consumed(),
+        fixture
+            .host
+            .as_ref()
+            .context("original host")?
+            .fixture_dispatch_consumed(),
         dispatch_before
     );
     fixture.recover()?;
     let (client, peer) = fixture
         .host
         .as_ref()
-        .unwrap()
+        .context("original host")?
         .fixture_model_material_commands(/*expected*/ None, "original", /*pause*/ None)?;
     client.fixture_exhaust_original_material_session()?;
     assert!(matches!(
@@ -317,7 +326,7 @@ async fn original_model_material_withdrawal_scenario(change: &'static str) -> an
     let (client, peer) = fixture
         .host
         .as_ref()
-        .unwrap()
+        .context("original host")?
         .fixture_model_material_commands(Some(evaluation), "original", Some((ready, resume)))?;
     let at = fixture.at;
     let task = tokio::spawn(async move {
@@ -334,7 +343,7 @@ async fn original_model_material_withdrawal_scenario(change: &'static str) -> an
         fixture
             .host
             .as_ref()
-            .unwrap()
+            .context("original host")?
             .fixture_model_material_advance_original_cell()?;
         assert_ne!(fixture.upstream_files()?, upstream);
     }
@@ -353,7 +362,7 @@ async fn original_model_material_withdrawal_scenario(change: &'static str) -> an
     let (client, peer) = fixture
         .host
         .as_ref()
-        .unwrap()
+        .context("original host")?
         .fixture_model_material_commands(/*expected*/ None, "original", /*pause*/ None)?;
     assert!(matches!(
         client.fixture_read_current_at(fixture.at).await,
