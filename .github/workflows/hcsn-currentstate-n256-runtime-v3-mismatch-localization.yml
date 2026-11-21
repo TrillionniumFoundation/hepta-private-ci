@@ -1,0 +1,40 @@
+name: hcsn-currentstate-n256-runtime-v3-mismatch-localization
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - "qualification/hcsn_currentstate_n256_runtime_v3_mismatch_localization/**"
+      - ".github/workflows/hcsn-currentstate-n256-runtime-v3-mismatch-localization.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  readonly-localization:
+    if: >-
+      github.head_ref == 'research/hcsn-n256-runtime-v3-mismatch-localization-20261121-c6bc' &&
+      github.base_ref == 'evidence/hcsn-n256-runtime-v3-strict-red-89896f5-20261121-c06d'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONHASHSEED: "0"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify frozen source and inputs
+        run: python -m qualification.hcsn_currentstate_n256_runtime_v3_mismatch_localization.verify_source
+      - name: Run source controls
+        run: python -m unittest qualification.hcsn_currentstate_n256_runtime_v3_mismatch_localization.test_source
+      - name: Run optimized source controls
+        run: python -O -m unittest qualification.hcsn_currentstate_n256_runtime_v3_mismatch_localization.test_source
+      - name: Execute one read-only localization
+        run: python -m qualification.hcsn_currentstate_n256_runtime_v3_mismatch_localization.diagnose --output "$RUNNER_TEMP/hcsn-n256-runtime-v3-mismatch-localization"
+      - name: Upload complete diagnostic originals
+        uses: actions/upload-artifact@v4
+        with:
+          name: hcsn-n256-runtime-v3-mismatch-localization-originals
+          path: ${{ runner.temp }}/hcsn-n256-runtime-v3-mismatch-localization
+          if-no-files-found: error
+          retention-days: 90
