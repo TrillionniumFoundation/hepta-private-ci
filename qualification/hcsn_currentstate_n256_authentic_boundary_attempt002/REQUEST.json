@@ -1,0 +1,41 @@
+{
+  "schema": "hcsn-n256-authentic-boundary-attempt-v2",
+  "identity": "hcsn-n256-authentic-boundary-attempt002-20261121-c06d",
+  "parent_pr": 6869,
+  "parent_commit": "c32fb369b43701b74a40ad45b9f5f1e8a142602b",
+  "parent_tree": "f455e6e6be69c7500052d39a124cc36d85476b8c",
+  "branch": "research/hcsn-n256-authentic-boundary-attempt002-20261121-c06d",
+  "execution_allowed": true,
+  "numerical_execution_allowed": true,
+  "unique_execution_key": "hcsn-n256-authentic-boundary-hosted-20261121-c06d-002",
+  "runtime": {"runner": "ubuntu-24.04", "python": "3.12.3", "numpy": "2.3.5", "scipy": "1.17.0", "requirements_sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3", "numpy_record_sha256": "81412454021a86a9199d8c3ae4b5e1312e7498437ba9e3fdcc6f5919c0a6482c", "scipy_record_sha256": "d98e3cc57253f7f8c6ca4f5b775a4747815edc9b1bcd5295c9dacc3c8d49c7b0", "numpy_init_sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38", "scipy_init_sha256": "335bc6e0a9909dc7534f9569a3685a92dc8001cb8c63a6da4c239849ff02d4d0"},
+  "resource_admission": {"minimum_mem_available_kib": 8388608, "minimum_finite_cgroup_headroom_bytes": 2147483648, "minimum_effective_cpus": 2, "cpu_seconds": 300, "maximum_output_file_bytes": 8388608, "concurrency": 1, "timeout_minutes": 10},
+  "attempt_upper_bound": {
+    "attempts": 1,
+    "authentic_distinct_input_file_accesses": 8,
+    "npz_decodes": 2,
+    "boundary_builds": 2,
+    "container_encodes": 2,
+    "exact_comparator_calls": 1,
+    "independent_audit_comparisons": 68105,
+    "dynamic_steps": 0,
+    "dense_exponential_actions": 0,
+    "sparse_exponential_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "boundary": {"coordinates": 68105, "canonical_container_bytes_each": 545171, "mismatch_allowance": 0},
+  "attempt001_red_preserved": {"pr": 6868, "source_commit": "acff46363f2543e1b62250edffdc5fe1255682fc", "run_id": 44880497839, "job_id": 136774548054, "artifact_id": 14697363698, "artifact_zip_sha256": "7b4c9c57e3c14188bd90b132d0952cbd026987ae8e23f4417048dad12c5b39ed", "result": "RED", "run_result": "ERROR", "audit_status": "INCOMPLETE", "error": "oracle raw layout: initial", "output_containers": 0},
+  "source_repair_parent": {"pr": 6869, "identity": "hcsn-n256-authentic-boundary-builders-v2-20261121-c06d-001", "commit": "c32fb369b43701b74a40ad45b9f5f1e8a142602b", "tree": "f455e6e6be69c7500052d39a124cc36d85476b8c", "operation": "np.ascontiguousarray(initial, dtype='<f8')", "applied_symmetrically": true},
+  "historical_sparse_red_preserved": {
+    "pr": 6823,
+    "run_id": 44851931235,
+    "mismatches": 1291,
+    "coordinates": 69728,
+    "result": "RED"
+  },
+  "c2_full_replay_completed_fits": 0,
+  "hpca_update": "NoUpdate",
+  "production_adoption": false,
+  "all_closed": false
+}

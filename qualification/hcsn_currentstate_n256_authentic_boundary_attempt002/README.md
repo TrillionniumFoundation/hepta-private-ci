@@ -1,0 +1,9 @@
+# Authentic N256 pre-exponential boundary attempt 002
+**Status: PRECOMMITTED SINGLE ATTEMPT / HOLD / zero-mismatch gate.**
+Publication on an intent branch performs no numerical work; execution requires the separately created exact research branch after the parent gates reach terminal state.
+This stage is stacked on Draft #6869 exact head `c32fb369b43701b74a40ad45b9f5f1e8a142602b`. It admits one hosted execution of the independently frozen v2 builders, followed by the frozen exact comparator and a separately implemented stdlib-only full-denominator audit.
+The resource guard runs before either builder, NumPy, or SciPy is imported. It binds the exact Python and wheel identities, thread environment, current MemAvailable, effective CPUs, and every visible cgroup memory level. Rejection produces zero authentic reads and zero boundary builds. Concurrency is one under one immutable idempotency key.
+Both complete 545,171-byte containers are preserved whether their 68,105 coordinates agree or not. One byte-different coordinate is terminal RED. The audit reports every mismatch by section with no tolerance, ULP rescue, cancellation, signed-zero normalization, or omission.
+Attempt001 remains RED/INCOMPLETE: run 44880497839, job 136774548054, artifact 14697363698, ZIP SHA256 `7b4c9c57e3c14188bd90b132d0952cbd026987ae8e23f4417048dad12c5b39ed`, zero output containers. This new identity does not revise that result.
+
+This attempt stops before dynamic propagation and matrix exponentials. Exact boundary assembly can only localize the old #6823 RED; it cannot qualify the sparse kernel, final first step, N512, later cycles, arbitrary histories, finite-domain accuracy, full prior, migration, full-network training, task benefit, asynchronous cost, C2 full replay, HPCA external custody, production, or adoption. #6823, attempt001, and every earlier RED/OOM/cancelled/UNKNOWN record remain.
