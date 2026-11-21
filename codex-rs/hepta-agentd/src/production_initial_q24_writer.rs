@@ -73,7 +73,9 @@ pub(in crate::production_launcher) async fn attach(
     )
     .await
     .map_err(|_| super::refused("Initial Current acknowledgement deadline elapsed"))?
-    .map_err(|error| super::refused(format!("Initial original Current acknowledgement: {error}")))?;
+    .map_err(|error| {
+        super::refused(format!("Initial original Current acknowledgement: {error}"))
+    })?;
     require_current()?;
     tokio::time::timeout(
         super::initial_remaining(end)?,
