@@ -52,11 +52,12 @@ impl PanelMemberFixture {
         original_plan: ProviderPlanFixture,
         mut provider: ProviderAt,
         initial: &LearningIterationSnapshotV1,
-        training: LearningIterationSnapshotV1,
-        training_evidence: SignedLearningEvidenceV1,
-        scope: &FrozenLearningScopeV2,
-        generator: &TrustedLearningSignerV1,
-        evaluator: &TrustedLearningSignerV1,
+        (training, training_evidence): (LearningIterationSnapshotV1, SignedLearningEvidenceV1),
+        (scope, generator, evaluator): (
+            &FrozenLearningScopeV2,
+            &TrustedLearningSignerV1,
+            &TrustedLearningSignerV1,
+        ),
         verifier: LearningEvidenceVerifierV1,
         retention_receipt_digests: Vec<Digest32>,
     ) -> anyhow::Result<Self> {

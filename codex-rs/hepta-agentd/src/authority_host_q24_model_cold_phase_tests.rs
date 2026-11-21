@@ -99,7 +99,7 @@ fn root_q24_factory_v2_dedicated_root_phase() -> anyhow::Result<()> {
         Digest32::of_bytes(UPDATE_RULE),
     )?;
     let (offer, receive) = UnixDatagram::pair()?;
-    let mut child = support::ChildOwner::spawn(receive, &setup.config.state_dir)?;
+    let mut child = support::ChildOwner::spawn(receive, &setup.config.state_dir, CHILD_TEST)?;
     let child_pin = support::pidfd(child.pid()?)?;
     let credentials_end = Instant::now() + Duration::from_secs(2);
     while crate::authority_host_runtime::verify_process_credentials(

@@ -286,8 +286,7 @@ impl PositiveFixture {
         let training_cut = coordinator.snapshot().clone();
         let mut evaluation = EvaluationFixture::new(
             &initial,
-            training_cut.clone(),
-            completed.attestation.clone(),
+            (training_cut.clone(), completed.attestation.clone()),
             &source_config.scope,
             &credentials.generator,
             &credentials.evaluator,

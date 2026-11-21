@@ -32,7 +32,7 @@ fn identity(role: LearningEvidenceRoleV1) -> (&'static str, u8) {
     }
 }
 
-pub(super) fn trusted(role: LearningEvidenceRoleV1) -> TrustedLearningSignerV1 {
+pub(crate) fn trusted(role: LearningEvidenceRoleV1) -> TrustedLearningSignerV1 {
     let (name, seed) = identity(role);
     let key = SigningKey::from_bytes(&[seed; 32]);
     TrustedLearningSignerV1 {
@@ -52,7 +52,7 @@ pub(super) fn trusted(role: LearningEvidenceRoleV1) -> TrustedLearningSignerV1 {
     }
 }
 
-pub(super) fn sign(
+pub(crate) fn sign(
     writer: &LedgerWriter,
     role: LearningEvidenceRoleV1,
     payload: &[u8],
@@ -77,13 +77,13 @@ pub(super) fn sign(
     signed
 }
 
-pub(super) struct LedgerFixture {
-    pub(super) writer: LedgerWriter,
+pub(crate) struct LedgerFixture {
+    pub(crate) writer: LedgerWriter,
     _directory: tempfile::TempDir,
 }
 
 impl LedgerFixture {
-    pub(super) fn new(domain: &str) -> Self {
+    pub(crate) fn new(domain: &str) -> Self {
         let directory = checked(tempfile::tempdir());
         let file = |name| {
             checked(
@@ -160,13 +160,13 @@ impl LedgerFixture {
         }
     }
 
-    pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+    pub(crate) fn bytes(&mut self) -> [Vec<u8>; 2] {
         const MAXIMUM_FILE_BYTES: u64 = 8 * 1024 * 1024;
         checked(self.writer.qualification_file_bytes(MAXIMUM_FILE_BYTES))
     }
 }
 
-pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+pub(crate) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
     let candidates = vec![id("action"), id("abstain")];
     let request = ProductionDecisionV2 {
         record_id: run.clone(),
@@ -201,7 +201,7 @@ pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode
     checked(writer.append_decision(Digest32::ZERO, request, &evidence, /*now*/ 50));
 }
 
-pub(super) fn closure(
+pub(crate) fn closure(
     writer: &LedgerWriter,
     run: &StableId,
     episode: &StableId,

@@ -11,8 +11,7 @@ use codex_hepta_types::StableId;
 use super::*;
 use crate::circuit_credit::circuit_learning_run_id_v1;
 
-#[path = "circuit_credit_ledger_test_support.rs"]
-mod ledger_support;
+use super::super::ledger_support;
 use ledger_support::LedgerFixture;
 use ledger_support::append_decision;
 use ledger_support::closure;

@@ -277,12 +277,10 @@ impl OrdinaryAPlan {
         let initial = root.initial_data(
             &identity,
             &deployment,
-            &target,
-            [&target_journal, &target_witness],
+            (&target, [&target_journal, &target_witness]),
             &transfer,
             &artifact_inputs,
-            &data_directory,
-            &learning_trust,
+            (&data_directory, &learning_trust),
         )?;
         let launch = json!({
             "schema":"hepta.agentd.original_initial_q24_launch.v1",

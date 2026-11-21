@@ -60,11 +60,12 @@ async fn completed_member(
         runner,
         provider,
         &original.initial,
-        training,
-        original.config.training_evidence.clone(),
-        &original.config.scope,
-        &original.credentials.generator,
-        &original.credentials.evaluator,
+        (training, original.config.training_evidence.clone()),
+        (
+            &original.config.scope,
+            &original.credentials.generator,
+            &original.credentials.evaluator,
+        ),
         original.config.verifier.clone(),
         retention_receipt_digests,
     )

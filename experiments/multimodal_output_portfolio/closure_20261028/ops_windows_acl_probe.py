@@ -15,6 +15,11 @@ import sys
 import tempfile
 import tomllib
 
+if __package__:
+    from . import ops_windows_acl_probe_package as packaging
+else:
+    import ops_windows_acl_probe_package as packaging
+
 
 RELATIVE = Path("experiments/multimodal_output_portfolio/closure_20261028")
 PRODUCTION = tuple(
@@ -27,16 +32,11 @@ CONFIG = (
     "codex-rs/rust-toolchain.toml",
     "codex-rs/windows-sandbox-rs/Cargo.toml",
     ".github/workflows/ndu-windows-storage-probe.yml",
+    "codex-rs/.cargo/config.toml",
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_package.py",
 )
 HARNESS = ("ops_windows_acl_probe.rs", "ops_windows_acl_probe_support.rs")
-FEATURES = (
-    "Win32_Foundation",
-    "Win32_Security",
-    "Win32_Security_Authorization",
-    "Win32_System_Threading",
-    "Win32_System_Diagnostics_Debug",
-    "Win32_Storage_FileSystem",
-)
+
 
 
 REPAIRS = {"partial.repair.root", "partial.repeat.root", "partial.repair.file", "partial.repeat.file"}
@@ -75,101 +75,60 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def git(root, *args):
-    return subprocess.check_output(["git", "-C", str(root), *args])
+def git(root, *args, input=None):
+    return subprocess.check_output(["git", "-C", str(root), *args], input=input)
+
+
+def source_controls():
+    paths = (*PRODUCTION, *CONFIG, *((RELATIVE / p).as_posix() for p in HARNESS))
+    return (*paths, (RELATIVE / "ops_windows_acl_probe.py").as_posix())
+
+
+def source_paths(root):
+    return tuple(packaging.source_entries(root, git, source_controls()))
 
 
 def bind_sources(root, expected_head):
     head = git(root, "rev-parse", "HEAD").decode().strip()
     if head != expected_head or not re.fullmatch(r"[0-9a-f]{40}", head):
         raise ValueError("checkout is not the exact requested commit")
-    paths = (*PRODUCTION, *CONFIG, *((RELATIVE / p).as_posix() for p in HARNESS))
-    paths += ((RELATIVE / "ops_windows_acl_probe.py").as_posix(),)
-    records, blobs = {}, {}
-    for path in paths:
-        entry = git(root, "ls-tree", "HEAD", "--", path).decode().strip()
-        metadata, listed = entry.split("\t")
-        mode, kind, blob = metadata.split()
-        content = git(root, "cat-file", "blob", blob)
-        if listed != path or kind != "blob" or mode != "100644":
-            raise ValueError(f"unexpected committed source kind/mode: {path}")
-        if (root / path).is_symlink() or (root / path).read_bytes() != content:
+    entries = packaging.source_entries(root, git, source_controls())
+    request = b"".join(blob.encode("ascii") + b"\n" for _, blob in entries.values())
+    payload = git(root, "cat-file", "--batch", input=request)
+    records, blobs, position = {}, {}, 0
+    for path, (mode, blob) in entries.items():
+        boundary = payload.index(b"\n", position)
+        observed_blob, kind, size = payload[position:boundary].decode("ascii").split()
+        size = int(size)
+        begin, end = boundary + 1, boundary + 1 + size
+        content = payload[begin:end]
+        if (observed_blob != blob or kind != "blob" or size < 0
+                or len(content) != size or payload[end:end + 1] != b"\n"
+                or hashlib.sha1(f"blob {size}\0".encode() + content).hexdigest() != blob):
+            raise ValueError(f"invalid committed source payload: {path}")
+        position = end + 1
+        source = root / path
+        if (any(parent.is_symlink() for parent in (source, *source.parents)
+                if parent != root and parent.is_relative_to(root))
+                or not source.resolve().is_relative_to(root.resolve())
+                or source.read_bytes() != content):
             raise ValueError(f"working-tree bytes differ from commit: {path}")
-        if git(root, "diff", "--cached", "HEAD", "--", path):
-            raise ValueError(f"index differs from commit: {path}")
         records[path] = {"git_blob": blob, "mode": mode, "sha256": sha(content)}
         blobs[path] = content
+    if position != len(payload):
+        raise ValueError("unexpected trailing committed source payload")
+    if git(root, "diff", "--cached", "HEAD", "--", *packaging.PACKAGE_ROOTS, *source_controls()):
+        raise ValueError("index differs from commit for bound production or probe sources")
     return records, blobs
 
 
 def dependency_closure(lock_bytes):
-    packages = tomllib.loads(lock_bytes.decode())["package"]
-    by_key = {(p["name"], p["version"]): p for p in packages}
-    pending = [("anyhow", "1.0.104"), ("windows-sys", "0.52.0")]
-    selected = {}
-    while pending:
-        key = pending.pop()
-        if key in selected:
-            continue
-        package = by_key[key]
-        if package.get("source") != "registry+https://github.com/rust-lang/crates.io-index":
-            raise ValueError(f"non-registry dependency: {key}")
-        if not re.fullmatch(r"[0-9a-f]{64}", package.get("checksum", "")):
-            raise ValueError(f"missing registry checksum: {key}")
-        selected[key] = package
-        for dependency in package.get("dependencies", []):
-            fields = dependency.split()
-            candidates = [k for k in by_key if k[0] == fields[0]]
-            if len(fields) > 1:
-                candidates = [k for k in candidates if k[1] == fields[1]]
-            if len(candidates) != 1:
-                raise ValueError(f"ambiguous dependency: {dependency}")
-            pending.append(candidates[0])
-    if len({key[0] for key in selected}) != len(selected):
-        raise ValueError("unexpected duplicate-version dependency closure")
-    return [selected[key] for key in sorted(selected)]
-
-
-def isolated_lock(packages):
-    root = {
-        "name": "hepta-windows-acl-native-probe",
-        "version": "0.0.0",
-        "dependencies": ["anyhow", "windows-sys"],
-    }
-    lines = ["# This file is automatically @generated by Cargo.", "# It is not intended for manual editing.", "version = 4", ""]
-    for package in sorted([root, *packages], key=lambda p: (p["name"], p["version"])):
-        lines.append("[[package]]")
-        for key in ("name", "version", "source", "checksum"):
-            if key in package:
-                lines.append(f"{key} = {json.dumps(package[key])}")
-        if package.get("dependencies"):
-            dependencies = [p.split()[0] for p in package["dependencies"]]
-            lines.append("dependencies = [")
-            lines.extend(f" {json.dumps(dependency)}," for dependency in dependencies)
-            lines.append("]")
-        lines.append("")
-    return "\n".join(lines).encode()
+    return packaging.dependency_closure(lock_bytes)
 
 
 def prepare(crate, blobs):
-    (crate / "src").mkdir(parents=True)
-    for source in PRODUCTION:
-        (crate / "src" / Path(source).name).write_bytes(blobs[source])
-    for source, target in zip(HARNESS, ("main.rs", "support.rs")):
-        (crate / "src" / target).write_bytes(blobs[(RELATIVE / source).as_posix()])
-    edition = tomllib.loads(blobs[CONFIG[1]].decode())["workspace"]["package"]["edition"]
-    if edition not in ("2021", "2024"):
-        raise ValueError("unexpected production Rust edition")
-    manifest = (
-        '[package]\nname = "hepta-windows-acl-native-probe"\nversion = "0.0.0"\n'
-        f'edition = "{edition}"\n\n[workspace]\n\n[dependencies]\n'
-        'anyhow = "=1.0.104"\n[dependencies.windows-sys]\nversion = "=0.52.0"\n'
-        f"features = {json.dumps(FEATURES)}\n"
-    ).encode()
-    locked = isolated_lock(dependency_closure(blobs[CONFIG[0]]))
-    (crate / "Cargo.toml").write_bytes(manifest)
-    (crate / "Cargo.lock").write_bytes(locked)
-    return manifest, locked
+    return packaging.prepare(crate, blobs, RELATIVE)
+
 
 
 def observations(stdout):
@@ -280,10 +239,12 @@ def main():
             temporary = Path(temporary).resolve()
             crate, fixture = temporary / "crate", temporary / "fixture"
             fixture.mkdir()
-            manifest, locked = prepare(crate, blobs)
+            manifest, locked, copies = prepare(crate, blobs)
             (output / "isolated-Cargo.toml").write_bytes(manifest)
             (output / "isolated-Cargo.lock").write_bytes(locked)
-            command = ["cargo", f"+{toolchain}", "run", "--locked", "--manifest-path", str(crate / "Cargo.toml"), "--target-dir", str(crate / "target"), "--", str(fixture)]
+            command = ["cargo", f"+{toolchain}", "run", "--locked", "--manifest-path", str(crate / "Cargo.toml"),
+                       "--package", "codex-windows-sandbox", "--bin", packaging.BINARY_NAME,
+                       "--target-dir", str(crate / "target"), "--", str(fixture)]
             report["command"] = command
             with (output / "native-stdout.tsv").open("wb") as stdout, (output / "native-stderr.log").open("wb") as stderr:
                 completed = subprocess.run(command, cwd=crate, stdout=stdout, stderr=stderr, timeout=480)
@@ -295,9 +256,9 @@ def main():
                 raise ValueError("production or probe source binding changed during observation")
             if completed.returncode:
                 raise RuntimeError("native build or probe failed; inspect native-stderr.log")
-            for source in PRODUCTION:
-                if (crate / "src" / Path(source).name).read_bytes() != blobs[source]:
-                    raise ValueError("copied production source changed during observation")
+            for source, expected in copies.items():
+                if (crate / source).read_bytes() != expected:
+                    raise ValueError(f"copied production or generated package source changed during observation: {source}")
             rows = refusal_observations((output / "native-stdout.tsv").read_text(encoding="utf-8"))
             report["observations"] = rows
             report["completed_permission_cases"] = 0

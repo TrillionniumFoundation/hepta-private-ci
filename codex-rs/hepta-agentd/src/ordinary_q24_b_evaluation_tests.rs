@@ -108,11 +108,9 @@ impl OriginalIndependentBEvaluationInputs {
             resources.end,
         )?;
         let protocol = protocol::prepare(
-            objective,
-            unit_profile,
+            (objective, unit_profile),
             &source.source.observation,
-            &training,
-            &cohort,
+            (&training, &cohort),
             candidate_declaration,
             control,
             &directory,
