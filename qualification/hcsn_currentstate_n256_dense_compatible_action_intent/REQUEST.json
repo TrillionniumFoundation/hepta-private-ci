@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn-n256-dense-compatible-action-intent-v1",
+  "identity": "hcsn-n256-dense-compatible-action-intent-20261120-c06d-001",
+  "base_source_commit": "c0fb79ba896d3d4fb30a58ea40ce33d757ac9658",
+  "base_source_tree": "cd2487c63d31e7abce3ea4bfd13a4e8e312163bf",
+  "historical_sparse_red": {
+    "source_pr": 6823,
+    "evidence_pr": 6824,
+    "run_id": 44851931235,
+    "job_id": 136685046474,
+    "artifact_id": 14685796500,
+    "artifact_zip_sha256": "6323e8494359b42e11639afd3033d90c7fa86bbb057b824aefae49799ecb4ef5",
+    "coordinate_denominator": 69728,
+    "mismatch_count": 1291,
+    "maximum_absolute_error_hex": "0x1.0600000000000p-50",
+    "maximum_ulp_distance": 335,
+    "result": "RED"
+  },
+  "scope": "freeze a non-executable CSR-assembly plus dense-compatible action-boundary experiment design",
+  "execution_allowed": false,
+  "idempotency_key": null,
+  "numerical_calls": 0,
+  "model_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "qualification": false,
+  "largegrid_qualification": false,
+  "c2_full_replay_completed_fits": 0,
+  "hpca_update": "NoUpdate",
+  "all_closed": false
+}

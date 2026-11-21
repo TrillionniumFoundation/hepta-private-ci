@@ -1,0 +1,41 @@
+{
+  "schema": "hcsn-n256-dense-compatible-action-design-v1",
+  "candidate_lineage": "new-and-independent",
+  "preserved_assembly": [
+    "construct the physical generator and upper sink as CSR",
+    "construct the discounted selector augmentation as CSR",
+    "verify CSR shape, dtype, finite values, row sums, and structural identity before materialization"
+  ],
+  "action_boundary": [
+    "materialize the frozen augmented CSR matrix without changing FP64 entries",
+    "transpose before multiplying by the exact frozen duration",
+    "call scipy.linalg.expm on the dense FP64 array",
+    "multiply by the identically ordered dense seed matrix",
+    "transpose the result back using the dense oracle operation order"
+  ],
+  "required_bitwise_gate": {
+    "coordinates": 69728,
+    "comparison": "exact-FP64-bytes",
+    "allowed_mismatches": 0,
+    "tolerance": null,
+    "ulp_allowance": null,
+    "postprocessing_rescue": false
+  },
+  "required_future_freeze": {
+    "candidate_source_sha256": null,
+    "runtime_identity_sha256": null,
+    "input_capsule_sha256": "b2a6e204e613fead7c0735b12a335a88d2394c8f4da99cab798133443c55dc18",
+    "oracle_capsule_sha256": "b2a6e204e613fead7c0735b12a335a88d2394c8f4da99cab798133443c55dc18",
+    "independent_reviewer_sha256": null,
+    "counter_budget_sha256": null,
+    "single_use_idempotency_key": null
+  },
+  "forbidden_claims": [
+    "sparse expm_multiply qualification",
+    "performance or memory improvement",
+    "N512 or later-cycle qualification",
+    "finite-domain, full-prior, migration, or full-network qualification",
+    "C2 full replay or HPCA task-benefit closure",
+    "production or adoption"
+  ]
+}
