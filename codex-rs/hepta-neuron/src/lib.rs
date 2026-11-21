@@ -68,6 +68,7 @@ mod gated_sparse_v3;
 mod hcsn_recovery;
 mod hcsn_streaming;
 mod hcsn_streaming_cost;
+mod hcsn_streaming_update;
 #[cfg(test)]
 mod hcsn_streaming_test_support;
 mod inference_control;
@@ -291,6 +292,9 @@ pub use hcsn_recovery::restore_hcsn_research_state_v2;
 pub use hcsn_streaming::HcsnStreamingCodecV1;
 pub use hcsn_streaming::HcsnStreamingStateV1;
 pub use hcsn_streaming_cost::HcsnStreamingCostV1;
+pub use hcsn_streaming_update::HcsnStreamingUpdateAdmissionV1;
+pub use hcsn_streaming_update::HcsnStreamingUpdatePortV1;
+pub use hcsn_streaming_update::hcsn_streaming_request_digest_v1;
 pub use inference_control::InferenceControlModelPort;
 pub use inference_control::NeuronInferenceControlPort;
 pub use journal::JournalAnchor;
