@@ -42,10 +42,23 @@ codex_rust_crate(
     integration_compile_data_extra = [
         "//codex-rs/hepta-neuron:tests/fixtures/joint-synthetic-v1.json",
     ],
+    integration_test_dependency_replacements = {
+        test: {
+            "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-composition-qualification-lib",
+        }
+        for test in [
+            "tests/generation_neuron_calibration.rs",
+            "tests/generation_plasticity_rejection.rs",
+        ]
+    },
     integration_test_extra_srcs = {
         "tests/neuron_generation_process_e2e.rs": [
             "//codex-rs/hepta-neuron:tests/support/joint_synthetic.rs",
         ],
+    },
+    integration_test_features = {
+        "tests/generation_neuron_calibration.rs": ["composition-model-driver-qualification"],
+        "tests/generation_plasticity_rejection.rs": ["composition-model-driver-qualification"],
     },
     integration_test_timeout = "long",
     # Cargo unifies the qualification-only dev dependency for integration tests.
