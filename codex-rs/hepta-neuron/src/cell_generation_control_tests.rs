@@ -216,7 +216,10 @@ fn terminal(
             result = Some(proposal);
             true
         }
-        Ok(None) | Err(CellGenerationErrorV2::Capacity) => false,
+        // A lost read reply is not a terminal observation. Reconcile only this
+        // exact request within the existing wait; never issue another Execute.
+        Ok(None)
+        | Err(CellGenerationErrorV2::Capacity | CellGenerationErrorV2::CommitUncertain) => false,
         Err(error) => panic!("unexpected readback failure: {error:?}"),
     });
     checked(result.ok_or("terminal proposal"))
@@ -343,13 +346,15 @@ fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
     assert_eq!(worker.calls.load(Ordering::Acquire), 0);
     release.store(true, Ordering::Release);
     let proposal = terminal(&mut port, &fixture.request);
+    assert_eq!(worker.calls.load(Ordering::Acquire), 1);
     assert_eq!(
         port.execute_generation(&fixture.config.manifest, &fixture.request),
-        Ok(proposal)
+        Ok(proposal.clone())
     );
     checked(port.shutdown());
     let bytes = checked(fs::read(fixture.path()));
     let mut port = fixture.port(Arc::clone(&worker), Arc::new(|| 20));
+    assert_eq!(terminal(&mut port, &fixture.request), proposal);
     let mut changed = fixture.request.clone();
     changed.input.push(8);
     assert_eq!(
