@@ -1,19 +1,24 @@
 {
-  "schema": "hcsn-n256-firststep-dense-oracle-dispatch-bridge-source-freeze-v3",
-  "identity": "hcsn-n256-firststep-dense-oracle-push-bridge-20261120-c06d-003",
+  "schema": "hcsn-n256-firststep-dense-oracle-dispatch-bridge-source-freeze-v4",
+  "identity": "hcsn-n256-firststep-dense-oracle-push-yaml-repair-20261120-c06d-004",
   "unique_execution_key": "hcsn-n256-firststep-dense-oracle-hosted-20261118-c06d-001",
-  "request_sha256": "de250a73d82fb0b9e55000a9960d599e2df8a2ff4ce7a320f4f1d1cd97621697",
+  "request_sha256": "3dd5475e94ba1a99e964c3c6f3ad9c9cd4fe0a72b65fa9f025892396213079dc",
   "source_sha256": {
-    "README.md": "800fe3442c2ee94591d03a10f4748936cea7267c61137c7a64adf8c2a68d6ae8",
+    "README.md": "7036fc37cc86fd1b35ba37daf86e583ac1121da5b5527da76e3d8e0cfffb6e1f",
     "DISPATCH_001_REJECTION.json": "539ca7e7f6cf31246fd34cc87cdd9f1cfe1a226644a9093b8fcb5f8f26b93b0d",
     "DISPATCH_002_REJECTION.json": "4b1b1ddc24417dccb3948cecd2b2163a9ad5fb6000dce24d62b2f423c730e5de",
     "DISPATCH_003_REJECTION.json": "c5f888c2130a6748045f84c1cb996b81b0a0f455e5fe7c814cb3e1c65623d3cd",
+    "PUSH_CONTRACT_REJECTION.json": "4337a8b8b27b6e7dac8002efe40d1561232daa21a2382fc049da3a4621357d1b",
+    "PUSH_HOSTED_REJECTION.json": "983597b95a899dbc25dcdc5f88acefd95f4638a2da50c69f408244c951cc5acd",
+    "PUSH_FREEZE_REJECTION.json": "46bab40e6ceae26d66a3eaa7570410ad8fc1ccfc87d37a5a582934337fb9a950",
     "NO_RUN_CHAIN.json": "fb798363a7848856c3c1381e9bb4078836dd1f202590d06aebd1eda47123b7fa",
-    "REQUEST.json": "de250a73d82fb0b9e55000a9960d599e2df8a2ff4ce7a320f4f1d1cd97621697",
+    "REQUEST.json": "3dd5475e94ba1a99e964c3c6f3ad9c9cd4fe0a72b65fa9f025892396213079dc",
     "__init__.py": "c1e53ac705ea7cf1c02d33df885bab3f0644fb1f956bcf78f673648277f01b94",
-    "test_bridge.py": "d24e265be11d0799e3811da0e97a8058ce535e437df6139cf270a1218b75e6c1",
-    "verify_source.py": "b780acac4d2d3161fa33525e725603e90cae92a42b8cb10d9511c3007a27ffa4",
-    "registered_workflow": "00df89d6ced541a21c775cdd48d96cffc9f040908834ff131423d0c223fba37a"
+    "test_bridge.py": "f5935676cdf7591e427751146648a2a7a05a012ca5310f3440580b17a9133a2b",
+    "verify_source.py": "6404b5b3781920068646961903150a05e7ccaff7721c8aa1f0738fd5621c2bdc",
+    "registered_workflow": "7490c2a3a790c05fd9651dcfeae253a5d5d1e4cea580f17b2a52fa66fc1c64bc",
+    "hosted_workflow": "14ab675b52b172d4fc4046d76b9ad6ce26acfa0ffe79d885dfc383364525a6a1",
+    "freeze_protocol_workflow": "466f9433e938375dbeb45929f573b7f8256c4d222d79a37c987d6e5c3965d330"
   },
   "source_execution_counts": {
     "n256_input_reads": 0,
