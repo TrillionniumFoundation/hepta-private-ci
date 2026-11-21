@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.e6-local-byte-restoration-check.v1",
+  "command": [
+    "python3",
+    "-B",
+    "/tmp/hepta-e16-ac5459-20261121/e6_evidence_work/publication/qualification/e6-native-successor-evidence-20261121/verify_restore.py",
+    "--restore",
+    "/tmp/hepta-e16-ac5459-20261121/e6_evidence_work/restored-binary-final"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 1.2897744110086933,
+  "source_snapshot_files_compared_byte_for_byte": 450,
+  "all_compared_bytes_equal": true,
+  "stdout": "{\n  \"verified_logical_files\": 451,\n  \"verified_unique_objects\": 337,\n  \"new_container_sha256\": \"7532367c1381b1b877cae707dbbc716f8731c55b1136526d8e50e11125f1a471\",\n  \"restored\": true,\n  \"original_outer_gzip_bitstream_reconstructed\": false,\n  \"archived_programs_executed\": 0,\n  \"native_tests_started\": 0,\n  \"model_calls_started\": 0\n}\n",
+  "stderr": "",
+  "native_tests_started": 0,
+  "model_calls_started": 0,
+  "kind": "local_byte_packaging_verification_only"
+}

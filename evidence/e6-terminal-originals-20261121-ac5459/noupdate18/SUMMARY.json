@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.e6.noupdate18-failure-and-shell-probe-publication.v1",
+  "source_commit": "61503a7d3bc87a5584cd2f20b8b17ea3838fdcfd",
+  "source_tree": "a2ead7f0d3a88549cd885862ad07e434b6379f81",
+  "native18": {
+    "job_id": "1a1fd80ebdb-ffbe-1f71",
+    "state": "failed",
+    "exit_code": 1,
+    "terminal_unix_ms": 1795254476973,
+    "main_bytes": 48796,
+    "main_sha256": "be97438fe46797b986586f24c912d67163b9facc97a51a0f1aeef02699edf5f7",
+    "failure": "Four nextest --list target runners refused at environment guard before target ELF open; original nextest command exit104; no current canonical test case executed.",
+    "canonical_test_cases_passed": 0,
+    "canonical_test_cases_failed": 0,
+    "ordinary_parent_executed": false,
+    "mode_restored": false,
+    "mode_restore_skipped": "Original terminal sealing/cleanup prerequisites were not complete.",
+    "full_first_error_log_bytes": 42299,
+    "full_first_error_log_sha256": "93ce299218e67ecad9be9342c06f21dbc0ec9d50085d5bbb64a1f803a8c22a77"
+  },
+  "collection": {
+    "job_id": "1a1fd9f4090-ffbe-1fb6",
+    "state": "succeeded",
+    "exit_code": 0,
+    "terminal_unix_ms": 1795256436444,
+    "complete_durable_confirmed": true,
+    "original_count": 83,
+    "original_bytes": 13107210,
+    "output_inventory_count": 62,
+    "target_elf_reads": 0,
+    "native_executions": 0,
+    "all_three_new_transport_logs_fsync_complete": true
+  },
+  "readback": {
+    "fixed_version_chunks": 42,
+    "read_attempts": 43,
+    "retained_failed_responses": 1,
+    "failure": "Archive offset262144 read returned SSH helper exit255 with Connection closed by10.77.0.1 port22; same-version missing-range fetch succeeded; cause beyond returned message UNKNOWN.",
+    "all_container_and_member_sha_match": true,
+    "collector_rerun": false,
+    "native_rerun": false
+  },
+  "separate_shell_probe": {
+    "job_id": "1a1fd92a5fb-ffbe-1f90",
+    "state": "succeeded",
+    "exit_code": 0,
+    "terminal_unix_ms": 1795255640611,
+    "original_files": 13,
+    "original_bytes": 55292,
+    "actual_shell": "/usr/bin/dash",
+    "reported_keys": 14,
+    "missing_after_shell": [
+      "CARGO_BIN_EXE_codex-hepta-agentd",
+      "CARGO_BIN_EXE_hepta-authority-host",
+      "CARGO_BIN_EXE_hepta-joint-propose"
+    ],
+    "unchanged_keys": 11,
+    "test_elf_executions": 0,
+    "cargo_or_nextest_calls": 0,
+    "historical_native18_environment_reconstructed": false
+  },
+  "qualification": {
+    "source_qualification": false,
+    "complete_NoUpdate": false,
+    "cold_restart": false,
+    "Adopt": false,
+    "next_task_improvement": false,
+    "joint_scientific_claim": false,
+    "independent_scientific_samples": 0
+  },
+  "containers": [
+    {
+      "id": "native18-originals",
+      "filename": "74v3_noupdate18_rebuilt_originals.tar.gz",
+      "role": "ORIGINAL_COLLECTOR_CONTAINER",
+      "bytes": 2177942,
+      "sha256": "d6ae47ae7f380c247346e7e1a33dc90880d7df9940d53da870ff39e880d12c9e",
+      "member_count": 84,
+      "parts": 7,
+      "part_pattern": "payloads/native18-originals/part-*.bin"
+    },
+    {
+      "id": "native18-sidecar",
+      "filename": "noupdate18_failure_and_probe_sidecar.tar.gz",
+      "role": "NEW_SIDECAR_OF_RETAINED_ORIGINALS_AND_EXPLICIT_NEW_REVIEWS",
+      "bytes": 2672941,
+      "sha256": "8aacfab4d3ade152adf9c6bef2c53037561536468d89a53134360df99368aecf",
+      "member_count": 188,
+      "parts": 8,
+      "part_pattern": "payloads/native18-sidecar/part-*.bin"
+    }
+  ],
+  "preserved_previous_evidence_commit": "45cb05764454be5386488dc689d7dc65c182e629",
+  "new_noUpdate19_candidates_included": false,
+  "new_executable_verifier": false,
+  "allowlist_or_ignore_changes": false
+}
