@@ -1,0 +1,105 @@
+name: HCSN source mathematical fixtures
+
+"on":
+  pull_request:
+    paths:
+      - .github/workflows/hcsn-source-fixtures.yml
+      - qualification/__init__.py
+      - qualification/hcsn_adaptive/__init__.py
+      - qualification/hcsn_adaptive/batched_flow.py
+      - qualification/hcsn_adaptive/batched_flow_tests.py
+      - qualification/hcsn_adaptive/budget.py
+      - qualification/hcsn_adaptive/finite_control.py
+      - qualification/hcsn_adaptive/finite_control_tests.py
+      - qualification/hcsn_adaptive/impulse_execution.py
+      - qualification/hcsn_adaptive/impulse_execution_tests.py
+      - qualification/hcsn_adaptive/uniformized_flow.py
+      - qualification/hcsn_adaptive/uniformized_flow_tests.py
+      - qualification/hcsn_adaptive/fixed_delay_reference.py
+      - qualification/hcsn_adaptive/fixed_delay_reference_tests.py
+      - qualification/hcsn_training/__init__.py
+      - qualification/hcsn_training/population_generator.py
+      - qualification/hcsn_scale/__init__.py
+      - qualification/hcsn_scale/model.py
+      - qualification/hcsn_prepared/__init__.py
+      - qualification/hcsn_prepared/model.py
+      - qualification/hcsn_confirmatory_v1/*.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mathematical-fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+      CUDA_VISIBLE_DEVICES: ""
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.3"
+      - name: Install pinned CPU numerical dependencies
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.8.0+cpu
+          python -m pip install --index-url https://pypi.org/simple numpy==2.3.5 ncps==1.0.1 threadpoolctl==3.6.0
+          python -m pip check
+      - name: Run explicit mathematical and unit fixtures
+        run: |
+          python - <<'PY'
+          import importlib.metadata
+          import sys
+          import unittest
+
+          import numpy
+          import torch
+          from ncps.torch import CfC
+
+          assert sys.version_info[:2] == (3, 12)
+          assert torch.__version__ == "2.8.0+cpu" and torch.version.cuda is None
+          assert numpy.__version__ == "2.3.5"
+          assert importlib.metadata.version("ncps") == "1.0.1"
+          assert CfC.__module__.startswith("ncps.")
+          torch.set_num_threads(1)
+          torch.set_num_interop_threads(1)
+          torch.use_deterministic_algorithms(True)
+
+          # Explicit allowlist: unit fixtures only; no experiment CLI is invoked.
+          modules = (
+              "qualification.hcsn_adaptive.finite_control_tests",
+              "qualification.hcsn_adaptive.impulse_execution_tests",
+              "qualification.hcsn_adaptive.uniformized_flow_tests",
+              "qualification.hcsn_adaptive.fixed_delay_reference_tests",
+              "qualification.hcsn_adaptive.batched_flow_tests",
+              "qualification.hcsn_confirmatory_v1.tasks_tests",
+              "qualification.hcsn_confirmatory_v1.joint_tests",
+              "qualification.hcsn_confirmatory_v1.architecture_tests",
+              "qualification.hcsn_confirmatory_v1.ablation_tests",
+              "qualification.hcsn_confirmatory_v1.boundary_control_tests",
+          )
+          suite = unittest.TestSuite()
+          for module in modules:
+              tests = unittest.defaultTestLoader.loadTestsFromName(module)
+              if tests.countTestCases() == 0:
+                  raise RuntimeError(f"No tests found in required module: {module}")
+              suite.addTests(tests)
+          print(f"Running {suite.countTestCases()} tests from {len(modules)} explicit modules")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(0 if result.wasSuccessful() and not result.skipped else 1)
+          PY
+      - name: Require clean source tree
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
