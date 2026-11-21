@@ -699,6 +699,7 @@ fn ensure_exercisable(decision: PromptExerciseActionV1) -> Result<(), PromptPipe
     }
 }
 
-#[cfg(test)]
+// These integration fixtures require the Unix durable registry owner.
+#[cfg(all(test, unix))]
 #[path = "prompt_pipeline_tests.rs"]
 mod tests;

@@ -1479,6 +1479,10 @@ impl fmt::Display for DurableRegistryError {
 
 impl std::error::Error for DurableRegistryError {}
 
+#[cfg(all(test, not(unix)))]
+#[path = "durable_unsupported_tests.rs"]
+mod unsupported_platform_tests;
+
 #[cfg(all(test, unix))]
 mod tests {
     use crate::TestMust;
