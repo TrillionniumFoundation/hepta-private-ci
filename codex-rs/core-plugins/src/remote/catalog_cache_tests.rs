@@ -27,7 +27,10 @@ fn catalog_cache_reads_original_rfc3339_timestamp_wire() {
     let cache: RemotePluginCatalogDiskCache =
         serde_json::from_value(original.clone()).expect("read original RFC3339 cache");
     let fetched_at = cache.fetched_at.expect("timestamp is present");
-    assert!(is_fresh(Some(fetched_at), fetched_at + TimeDuration::hours(3)));
+    assert!(is_fresh(
+        Some(fetched_at),
+        fetched_at + TimeDuration::hours(3)
+    ));
     let after_ttl = fetched_at + TimeDuration::hours(3) + TimeDuration::milliseconds(1);
     assert!(!is_fresh(Some(fetched_at), after_ttl));
     let emitted = serde_json::to_value(&cache).expect("serialize RFC3339 cache");

@@ -4,8 +4,6 @@ use crate::http_client_selector::HttpClientSelector;
 use crate::loader::plugin_app_declarations_from_value;
 use crate::store::PLUGINS_CACHE_DIR;
 use crate::store::PluginStore;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::PluginAuthPolicy;
 use codex_app_server_protocol::PluginAvailability;
@@ -43,6 +41,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
+use time::OffsetDateTime;
 use tracing::instrument;
 use url::Url;
 
@@ -216,7 +215,7 @@ pub struct RemoteInstalledPlugin {
     pub id: String,
     pub version: Option<String>,
     pub name: String,
-    pub installed_at: Option<DateTime<Utc>>,
+    pub installed_at: Option<OffsetDateTime>,
     pub enabled: bool,
     pub install_policy: PluginInstallPolicy,
     pub install_policy_source: Option<PluginInstallPolicySource>,
@@ -238,7 +237,7 @@ pub struct RemotePluginSummary {
     pub name: String,
     pub share_context: Option<RemotePluginShareContext>,
     pub installed: bool,
-    pub installed_at: Option<DateTime<Utc>>,
+    pub installed_at: Option<OffsetDateTime>,
     pub enabled: bool,
     pub install_policy: PluginInstallPolicy,
     pub install_policy_source: Option<PluginInstallPolicySource>,
@@ -734,8 +733,8 @@ struct RemotePluginDirectorySharePrincipal {
 struct RemotePluginInstalledItem {
     #[serde(flatten)]
     plugin: RemotePluginDirectoryItem,
-    #[serde(default)]
-    installed_at: Option<DateTime<Utc>>,
+    #[serde(default, with = "time::serde::rfc3339::option")]
+    installed_at: Option<OffsetDateTime>,
     enabled: bool,
     #[serde(default)]
     disabled_skill_names: Vec<String>,

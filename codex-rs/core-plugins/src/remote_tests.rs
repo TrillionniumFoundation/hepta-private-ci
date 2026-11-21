@@ -84,6 +84,32 @@ async fn recommended_plugins_requests_codex_suggestions_endpoint() {
     );
 }
 
+#[test]
+fn remote_installed_plugins_preserve_rfc3339_installed_at_and_reject_malformed_timestamps() {
+    let mut wire = serde_json::to_value(directory_plugin("plugin-a", "alpha"))
+        .expect("serialize remote plugin");
+    wire["enabled"] = serde_json::json!(true);
+
+    for timestamp in ["2026-01-02T00:00:00Z", "2026-01-02T03:00:00+03:00"] {
+        wire["installed_at"] = serde_json::json!(timestamp);
+        let parsed: RemotePluginInstalledItem =
+            serde_json::from_value(wire.clone()).expect("parse original installed_at wire");
+        assert_eq!(
+            parsed.installed_at.map(|value| value.unix_timestamp()),
+            Some(1_767_312_000)
+        );
+        let cached = remote_installed_plugin_to_cache_entry(&parsed)
+            .expect("convert installed remote plugin");
+        assert_eq!(
+            cached.installed_at.map(|value| value.unix_timestamp()),
+            Some(1_767_312_000)
+        );
+    }
+
+    wire["installed_at"] = serde_json::json!("not-a-timestamp");
+    assert!(serde_json::from_value::<RemotePluginInstalledItem>(wire).is_err());
+}
+
 #[tokio::test]
 async fn remote_installed_plugins_paginate_across_all_scopes_without_download_urls() {
     let server = MockServer::start().await;
