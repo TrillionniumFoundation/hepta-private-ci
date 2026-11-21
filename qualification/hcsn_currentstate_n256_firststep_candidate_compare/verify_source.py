@@ -31,7 +31,7 @@ def _sha(path):
 def main():
     freeze = json.loads((HERE / "SOURCE_FREEZE.json").read_text())
     request = json.loads((HERE / "REQUEST.json").read_text())
-    if freeze.get("schema") != "hcsn-n256-warm1-candidate-oracle-compare-freeze-v1":
+    if freeze.get("schema") != "hcsn-n256-warm1-candidate-oracle-compare-scipy17-repair-freeze-v1":
         raise ValueError("source freeze schema")
     if freeze.get("parent_commit") != "42aa0ba6153b46c197775634a18db15589ddb199":
         raise ValueError("evidence parent identity")
@@ -42,9 +42,12 @@ def main():
     if observed != files:
         raise ValueError("source freeze byte mismatch")
     exact = {
-        "unique_execution_key": "hcsn-n256-firststep-candidate-compare-hosted-20261120-c06d-001",
+        "schema": "hcsn-n256-warm1-candidate-oracle-compare-scipy17-repair-request-v1",
+        "identity": "hcsn-n256-warm1-candidate-oracle-compare-scipy17-repair-20261120-c06d-001",
+        "unique_execution_key": "hcsn-n256-firststep-candidate-scipy17-repair-hosted-20261120-c06d-001",
+        "exact_head_branch": "research/hcsn-n256-firststep-candidate-scipy17-repair-20261120-c06d",
         "maximum_attempts": 1,
-        "prior_numerical_attempts": 0,
+        "prior_numerical_attempts": 1,
         "oracle_artifact_zip_sha256": "3ba4ef88608cbfc04d83fd82c1f05d7b439edf4f9338365625e79b0d52f02400",
         "oracle_capsule_sha256": "b2a6e204e613fead7c0735b12a335a88d2394c8f4da99cab798133443c55dc18",
         "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
@@ -52,6 +55,18 @@ def main():
     for name, value in exact.items():
         if request.get(name) != value:
             raise ValueError(f"request mismatch: {name}")
+    prior = request.get("prior_red")
+    if prior != {
+        "source_commit": "a3373921a0193336837d217c24d0d35dccd9a5ad",
+        "run_id": 44849987440,
+        "job_id": 136678793301,
+        "artifact_id": 14684118589,
+        "artifact_zip_sha256": "a922989c369eddf6685f273334fcad5d02b464a1cec21607f98d9f1f400ccf0a",
+        "evidence_commit": "e081b8bc9faf64b3ee22a292cd1787f3a48345dc",
+        "executed_dynamic_steps": None,
+        "executed_sparse_exponential_actions": None,
+    }:
+        raise ValueError("prior RED or UNKNOWN counters changed")
     if request.get("gate") != {
         "coordinate_identity_equal": True,
         "candidate_oracle_bitwise_equal": True,
@@ -59,6 +74,8 @@ def main():
         "threshold_relaxation_allowed": False,
     }:
         raise ValueError("exact comparison gate")
+    if freeze.get("prior_red") != request.get("prior_red"):
+        raise ValueError("prior RED binding")
     if any(request["precommit_counts"].values()):
         raise ValueError("precommit numerical work claimed")
     if request.get("historical_negative_and_unknown_preserved") is not True:

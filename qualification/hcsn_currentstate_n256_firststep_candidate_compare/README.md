@@ -1,6 +1,7 @@
 # N256 warm-1 sparse candidate versus archived dense oracle
 
-Status: **SOURCE FROZEN / ONE ATTEMPT / HOLD / `all_closed=false`**.
+Status: **SCIPY 1.17 REPAIR CANDIDATE / ONE NEW IDENTITY / HOLD /
+`all_closed=false`**.
 
 This isolated stage consumes the exact warm 0→0.001 dense-oracle capsule from
 Draft #6818 without re-executing that oracle.  It runs the already frozen
@@ -15,8 +16,14 @@ recorded but cannot rescue a mismatch.  The single hosted child is limited to
 actions.  The parent captures current host, ancestor-cgroup, allocation,
 calendar and complete cost originals before and after the child.
 
-Publishing the frozen branch is the only numerical trigger.  A failure remains
-RED and its artifact is uploaded; the run is never retried under a new key.
+The original #6819 identity remains terminal RED: SciPy 1.17 rejected its
+one-dimensional `csr_matrix` input before a result/counter record was written,
+so its executed dynamic/exponential counts remain UNKNOWN.  Draft #6820
+preserves those originals.  This separately frozen identity changes only that
+sink input to an explicit two-dimensional row before transpose.
+
+Publishing this repair branch is its only numerical trigger.  A failure remains
+RED and its artifact is uploaded; this identity is never retried under a new key.
 The archived dense oracle, source #6817, evidence #6818, prior YAML/runtime
 REDs, OOMs, cancellations and UNKNOWN records are not modified.
 
