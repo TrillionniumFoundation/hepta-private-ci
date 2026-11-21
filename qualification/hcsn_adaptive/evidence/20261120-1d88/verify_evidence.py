@@ -30,15 +30,22 @@ def verify_archive(record):
     return {'archive': record['file'], 'verified_members': len(rows), 'sha256': record['sha256']}
 
 
-runtime = MANIFEST['runtime']
-for part in runtime['parts']:
-    check(ROOT / part['name'], part)
-assembled = ROOT / runtime['file']
-if not assembled.exists():
-    temporary = assembled.with_suffix(assembled.suffix + '.assembling')
-    with temporary.open('xb') as output:
-        for part in runtime['parts']:
-            output.write((ROOT / part['name']).read_bytes())
-    check(temporary, runtime)
-    temporary.rename(assembled)
-print(json.dumps([verify_archive(runtime), verify_archive(MANIFEST['audit'])], indent=2))
+def assemble(record):
+    for part in record.get('parts', []):
+        check(ROOT / part['name'], part)
+    assembled = ROOT / record['file']
+    if not assembled.exists() and record.get('parts'):
+        temporary = assembled.with_suffix(assembled.suffix + '.assembling')
+        with temporary.open('xb') as output:
+            for part in record['parts']:
+                output.write((ROOT / part['name']).read_bytes())
+        check(temporary, record)
+        temporary.rename(assembled)
+
+
+archives = [MANIFEST['runtime'], MANIFEST['audit']]
+if 'ci_followup' in MANIFEST:
+    archives.append(MANIFEST['ci_followup'])
+for archive in archives:
+    assemble(archive)
+print(json.dumps([verify_archive(archive) for archive in archives], indent=2))

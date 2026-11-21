@@ -253,6 +253,11 @@ See [architecture source job](https://github.com/TrillionniumFoundation/hepta-pr
 and [learning source job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44861238681/job/136714871049).
 The full root-cause evidence is in the audit supplement. A skipped identical-tree lane is not a substitute
 for the failing source check. These unrelated baseline issues were not silently included in this research change.
+The later [fixed-head CI follow-up](CI_FOLLOWUP.md) records additional unchanged-source failures:
+Timestamp/SystemTime conversion, missing helper metadata and workflow triggers, daemon source closure,
+stale references, toolchain mismatches, and three substantive NDU holdout error-contract assertions.
+All five new receipt tests and all five new recovery tests passed in the inspected real CI jobs.
+The NDU assertions remain failures; source equality is not a new successful baseline rerun.
 
 ## Review entry points
 
@@ -271,7 +276,7 @@ baseline; merging the Python stack alone would not include them. This evidence P
 ## Reproduce the evidence, not the consumed holdouts
 
 Run `python verify_evidence.py` in this directory after obtaining every committed binary part.
-It assembles the runtime archive, checks each part and both archive hashes, and verifies every
+It assembles the split archives, checks each part and all archive hashes, and verifies every
 listed member. It does not train, select, or reopen test labels. Use a new experiment identity for
 any future scientific run; do not resume a consumed final holdout to obtain a new result.
 
@@ -282,6 +287,8 @@ aggregation/finalization scripts. Its SHA256 is
 `audit-supplement-v1.tar.gz` contains **28 hashed files** plus its manifest, including CI logs,
 independent result analysis, native-FP32 negative-control sources, registry and V1 preservation evidence.
 Its SHA256 is `7b0e548695bb2ad687ce6800ca4df3355f32a13d251ff271cd6b11718901bbec`.
+The additional `ci-followup-v1.tar.gz` preserves 35 hashed CI evidence files; its SHA256 is
+`ea5882e80e579351f21b2d1541f72efbbe30236d4209bbb8503fa763a5f9991a`.
 `ARTIFACTS.json` binds part bytes, hashes, Git blob identities and publication metadata.
 `RESULTS.json` provides compact machine-readable outcome tables; detailed per-seed aggregates are
 under `analysis/final-evidence-v1/` in the runtime archive. Source/runtime identity in the ROG-frozen
