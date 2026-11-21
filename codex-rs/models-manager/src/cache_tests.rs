@@ -58,3 +58,12 @@ fn original_model_cache_ttl_preserves_future_stale_and_overflow_semantics() {
     assert!(!entry.is_fresh(Duration::ZERO));
     assert!(!entry.is_fresh(Duration::MAX));
 }
+
+#[test]
+fn original_model_cache_ttl_rejects_values_beyond_chrono_range() {
+    let entry = entry_with_timestamp("1970-01-01T00:00:00Z");
+    // Chrono's TimeDelta stops at i64::MAX milliseconds, not i64::MAX seconds.
+    let max_chrono_ttl = Duration::from_millis(i64::MAX as u64);
+    assert!(entry.is_fresh(max_chrono_ttl));
+    assert!(!entry.is_fresh(max_chrono_ttl + Duration::from_millis(1)));
+}
