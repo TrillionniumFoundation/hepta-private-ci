@@ -1,0 +1,53 @@
+name: Weight value verification lifecycle controls
+
+on:
+  pull_request:
+    paths:
+      - "qualification/weight_value_verification_20261121/**"
+      - "qualification/weight_value_retention_20261121/**"
+      - ".github/workflows/weight-value-verification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic_lifecycle:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+      BLIS_NUM_THREADS: "1"
+      PYTHONHASHSEED: "0"
+      PYTHONNOUSERSITE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out exact pull request head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify checked out identity
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - name: Select Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned numerical dependencies
+        env:
+          WSP_VERIFY_VENV: ${{ runner.temp }}/hepta-verification-venv
+        run: |
+          python -m venv "$WSP_VERIFY_VENV"
+          "$WSP_VERIFY_VENV/bin/python" -m pip install --only-binary=:all: --disable-pip-version-check -r qualification/weight_value_retention_20261121/requirements.txt
+      - name: Run thirteen synthetic lifecycle and reader controls
+        env:
+          WSP_VERIFY_VENV: ${{ runner.temp }}/hepta-verification-venv
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/hepta-verification-unused-bytecode
+        run: |
+          "$WSP_VERIFY_VENV/bin/python" qualification/weight_value_verification_20261121/test_stage_controls.py --original-source qualification/weight_value_retention_20261121
