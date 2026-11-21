@@ -1,0 +1,131 @@
+{
+  "schema": "hepta.original-format-receipt.v1",
+  "host": "rog",
+  "job_id": "1a1fc6641d3-ffbe-1d80",
+  "base_commit": "84721f3da92ffaac3e7c7e2e39de2df985834370",
+  "base_tree": "ec318c4d77695a67f11a2a9ec174e3c8f19823df",
+  "source": "codex-rs/hepta-neuron/src/cell_generation_control_tests.rs",
+  "before_sha256": "71fd374e37bd29555f747ddcc281f5dce51740fc4b0177882b6971ede4fbfa4c",
+  "after_sha256": "5b6ad7f472e4a9e256c99fe7a998e842869103c0b1a5fe1d0e5f500dc98623f9",
+  "after_bytes": 20556,
+  "formatter_changed_reviewed_bytes": false,
+  "original_format_command": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-readback-test-successor/source/codex-rs",
+    "exit_code": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wall_seconds": 0.14461426599882543
+  },
+  "original_stdout": "",
+  "original_stderr": "",
+  "formatter_started_at_ns": 1795236324053669600,
+  "durable_job_terminal": {
+    "at_unix_ms": 1795236324417,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1fc6641d3-ffbe-1d80",
+    "launch_nonce": "7c8c780c5ebdd8334cf8e9cbe44f7acb",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1909,
+        "stored": 1909
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "critical_source_sha256": {
+    "AGENTS.md": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+    "codex-rs/hepta-infer-core/src/durable_control.rs": "3d37b1ceb0bdd22d7dbb463f65e65342da0c70bbe8569dcd56a1100ca2cc22e3",
+    "codex-rs/hepta-infer-core/src/generation_control.rs": "41426054ccfae1c25f6610bbe3d8c3f0c97fd7c361888d9419010e46f0ac9b74",
+    "codex-rs/hepta-neuron/src/cell_generation_control.rs": "59641d61dce6fd6bbfdda053ca762f6bfabab7f4728eef3ea74a7d14dc4b4825",
+    "codex-rs/hepta-neuron/src/cell_generation_control_codec.rs": "de66e707e406e0b1a37a37709f523111d776086ce64194f2dd47c0004f3e54e1",
+    "codex-rs/rust-toolchain.toml": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "scripts/format.py": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+    "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+  },
+  "donor_unchanged": true,
+  "rust_tests_started": 0,
+  "compile_started": false,
+  "shared_target_used": false,
+  "target_directory_exists": false,
+  "validation_plan": {
+    "scope": "e6-readback-test-successor-20261121",
+    "base_commit": "84721f3da92ffaac3e7c7e2e39de2df985834370",
+    "source_change": "codex-rs/hepta-neuron/src/cell_generation_control_tests.rs",
+    "max_official_ordinary_attempts": 1,
+    "automatic_retry": false,
+    "local_rust_test_attempts": 0,
+    "local_compilation_attempts": 0,
+    "official_successor_sha": null,
+    "dispatch_requires_exact_published_successor_sha": true,
+    "ordinary_command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-contracts",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-learning-ledger",
+      "--lib",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "target_policy": "official CI or independently owned target only; never shared with retained NoUpdate/cold source or ELF",
+    "original_failed_run": 44862741031,
+    "original_failed_job": 136719540259,
+    "rpc_timeout_milliseconds": 30,
+    "terminal_wait_seconds": 5,
+    "new_NoUpdate_or_cold_runs_dispatched_by_this_agent": 0,
+    "does_not_establish_historical_completed_acceptance_root_cause": true,
+    "max_official_workflow_attempts": 1,
+    "original_workflow_unchanged": true,
+    "existing_conditional_Root_stage": "Allow the original official workflow to execute its existing Root stage naturally after ordinary success; retain its actual outcome and cost.",
+    "manual_reruns": 0,
+    "fixture_reopen_is_not_learning_weight_adoption": true,
+    "candidate_file_sha256": "5b6ad7f472e4a9e256c99fe7a998e842869103c0b1a5fe1d0e5f500dc98623f9",
+    "format_completed": true
+  }
+}
