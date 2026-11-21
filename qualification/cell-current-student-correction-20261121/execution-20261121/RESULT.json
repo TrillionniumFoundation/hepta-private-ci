@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.current-student-correction.execution-readout.v1",
+  "status": "BLOCKED_RUNTIME_RECOVERY_BEFORE_ENCODING",
+  "candidate_binding": {
+    "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6833",
+    "published_commit": "dc3397c9e09e29861a0a4fe2267e8ef19e55db01",
+    "published_tree": "6f35710a9f1228a9d6b3a03f5be52d9ffb881431",
+    "candidate_digest": "dc96ad0c29223dc0fbf0e6165854d8e7cf25331c3f77d57ad30c4f30fc6cf678",
+    "protocol_sha256": "6a8405ee33dc26dd365de5ea17907a756ae4afaa7ec860338a10eb2c43d65efc",
+    "corrections_sha256": "4ca88a7f89d4a5270eeda325fe5dbb4922d34cde7555bb099675ed6a8c2792c4",
+    "runtime_started_utc": "2026-11-21T03:24:26.254009+00:00",
+    "runtime_deadline_utc": "2026-11-21T04:24:26.254009+00:00",
+    "scientific_optimizer_cap_per_parent": 8,
+    "scientific_optimizer_cap_total": 16,
+    "known_optimizer_updates_started": 0,
+    "cpu_encoding_runs": 0,
+    "model_generation_calls": 0,
+    "native_calls": 0,
+    "status": "BLOCKED_RUNTIME_RECOVERY_BEFORE_ENCODING",
+    "training_code_modified_after_publication": false
+  },
+  "failure_class": "official dependency network acquisition and recovery deadline; not an optimizer, supervision, or model-quality outcome",
+  "counts": {
+    "cpu_encoding_runs": 0,
+    "model_generation_calls": 0,
+    "native_calls": 0,
+    "optimizer_updates_started": 0,
+    "optimizer_updates_completed": 0,
+    "new_model_downloads": 0,
+    "scientific_update_cap_per_parent": 8,
+    "scientific_update_cap_total": 16
+  },
+  "scientific_updates_not_consumed": true,
+  "no_automatic_retry_or_scope_extension": true,
+  "runtime_budget": {
+    "planned_seconds": 3600,
+    "started_utc": "2026-11-21T03:24:26.254009+00:00",
+    "deadline_utc": "2026-11-21T04:24:26.254009+00:00",
+    "terminal_receipt_elapsed_seconds": 3600.350175142288,
+    "watchdog_stdout_elapsed_seconds": 3600.5521614551544,
+    "last_owned_download_job_terminal_elapsed_seconds": 3615.602991104126,
+    "shutdown_tail_beyond_deadline_seconds": 15.602991104125977,
+    "read_only_evidence_collection_wall_seconds": 19.573238849639893,
+    "scopes_overlap_do_not_sum": true
+  },
+  "artifacts": {
+    "base_files": 9,
+    "base_bytes": 3098972269,
+    "adapter_files_per_parent": 3,
+    "adapter_bytes_per_parent": 2200035,
+    "copy_and_verify_wall_seconds": 18.179432006087154,
+    "all_original_and_retained_base_files_unchanged": true,
+    "all_original_and_retained_parent_adapters_unchanged": true,
+    "published_source_files_unchanged": true,
+    "encoding_receipt_present": false,
+    "fit_claims": [],
+    "child_artifact_directory_present": false
+  },
+  "retained_runtime_materials": {
+    "verified_distinct_official_wheels": 10,
+    "complete_dependency_closure": false,
+    "torch_expected_bytes": 900881648,
+    "torch_expected_sha256": "7cb4018f4ce68b61fd3ef87dc1c4ca520731c7b5b200e360ad47b612d7844063",
+    "torch_original_rog_parts_bytes": 364923806,
+    "torch_rog_suffix_parts_bytes": 353127326,
+    "desktop_hardlinked_retained_wheels_or_partials": 13,
+    "partial_bytes_do_not_establish_whole_wheel_integrity": true,
+    "suffix_application_blocked_receipt_absent_due_to_supervisor_cancel": true,
+    "suffix_terminal_evidence": "remote/jobs/1a1fc4d4273-ffbe-1d50/exit.json"
+  },
+  "owned_process_shutdown": {
+    "original_desktop_pip_pid": 1679780,
+    "original_desktop_pip_signal": "SIGTERM",
+    "original_desktop_pip_still_running": false,
+    "final_desktop_owned_runtime_processes": [],
+    "durable_recovery_job_terminals_observed": 14,
+    "suffix_job_cancelled": true,
+    "suffix_job_exit_code": -15
+  },
+  "offline_validation": {
+    "tests": 7,
+    "exit_code": 0,
+    "wall_seconds": 1.068262737,
+    "unittest_elapsed_seconds": 0.97,
+    "source": "local/validation/COMMAND_AND_SOURCE.json",
+    "output": "local/validation/OUTPUT.txt",
+    "scope": "stdlib integration, pinned A archives and repository chat serializer; no CPU tokenizer encode or GPU fit"
+  },
+  "remote_evidence_archive": {
+    "bytes": 116231,
+    "sha256": "459f3f2a98c53f0a14df7d84b4ecd55fded11606899d834e247387c4d098c45d",
+    "members": 173,
+    "weight_or_wheel_bytes_included": false
+  }
+}
