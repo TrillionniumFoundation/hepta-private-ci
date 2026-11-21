@@ -165,12 +165,12 @@ impl HcsnResearchStateV2 {
         let mut digests = [Digest32::ZERO; 8];
         for digest in &mut digests {
             *digest = Digest32::from_array(
-                take(&mut remaining, 32)?
+                take(&mut remaining, /*count*/ 32)?
                     .try_into()
                     .map_err(|_| HcsnRecoveryErrorV2::Format)?,
             );
         }
-        let optimizer_tag = take(&mut remaining, 1)?[0];
+        let optimizer_tag = take(&mut remaining, /*count*/ 1)?[0];
         let parameters = read_section(&mut remaining)?;
         let backend = read_section(&mut remaining)?;
         let optimizer_bytes = read_section(&mut remaining)?;
@@ -213,7 +213,7 @@ fn take<'a>(bytes: &mut &'a [u8], count: usize) -> Result<&'a [u8], HcsnRecovery
 
 fn read_section(bytes: &mut &[u8]) -> Result<Vec<u8>, HcsnRecoveryErrorV2> {
     let length = u64::from_be_bytes(
-        take(bytes, 8)?
+        take(bytes, /*count*/ 8)?
             .try_into()
             .map_err(|_| HcsnRecoveryErrorV2::Format)?,
     );

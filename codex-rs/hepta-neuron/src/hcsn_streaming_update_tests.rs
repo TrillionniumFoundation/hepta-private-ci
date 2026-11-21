@@ -20,7 +20,7 @@ fn admission(state: &HcsnStreamingStateV1) -> HcsnStreamingUpdateAdmissionV1 {
             dataset_digest: state.snapshot.binding.dataset_digest, dataset_bytes: 128,
             credit_profile_digest: d("credit"), trainable_mask_digest: Digest32::of_bytes(&mask),
             trainable_parameters: parameters,
-            from_generation: checked(Generation::new(1)), candidate_generation: checked(Generation::new(2)),
+            from_generation: checked(Generation::new(/*value*/ 1)), candidate_generation: checked(Generation::new(/*value*/ 2)),
             budget: CellUpdateBudgetV1 {
                 maximum_dataset_bytes: 1_024, maximum_steps: 1,
                 maximum_elapsed_micros: 300_000_000, maximum_working_bytes: 2_000_000_000,
@@ -93,8 +93,8 @@ fn rejects_fake_solve_and_wrong_rule_budget_or_parameter_bindings() {
             "frontier" => admitted.request.source_frontier = d("other-frontier"),
             "bundle" => admitted.request.base_bundle_digest = d("other-bundle"),
             "generation" => {
-                admitted.request.from_generation = checked(Generation::new(3));
-                admitted.request.candidate_generation = checked(Generation::new(4));
+                admitted.request.from_generation = checked(Generation::new(/*value*/ 3));
+                admitted.request.candidate_generation = checked(Generation::new(/*value*/ 4));
             }
             _ => panic!("unknown mutation"),
         }

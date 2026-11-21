@@ -141,7 +141,7 @@ fn fixture() -> (
     let identity = HcsnClockIdentityV1 {
         clock_epoch: digest,
         scope_digest: digest,
-        generation: checked(Generation::new(1)),
+        generation: checked(Generation::new(/*value*/ 1)),
         writer_epoch: 1,
         model_digest: Digest32::of_bytes(&snapshot.parameters),
     };

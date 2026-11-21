@@ -31,7 +31,7 @@ pub(crate) fn fixture() -> (HcsnRecoveryContextV2, Vec<u8>, Vec<u8>) {
     let identity = HcsnClockIdentityV1 {
         clock_epoch: Digest32::of_bytes(b"streaming-unit-clock"),
         scope_digest: crate::cell_test_support::scope("run1").digest(),
-        generation: checked(Generation::new(1)),
+        generation: checked(Generation::new(/*value*/ 1)),
         writer_epoch: 1,
         model_digest: checked(checked(value["parameters_digest"].as_str().ok_or("parameters")).parse()),
     };
