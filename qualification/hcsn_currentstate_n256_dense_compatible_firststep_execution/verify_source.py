@@ -23,6 +23,13 @@ def main():
     parent_candidate = ROOT / "qualification/hcsn_currentstate_n256_dense_compatible_firststep_intent/candidate.py"
     if sha(parent_candidate) != freeze["parent_candidate_sha256"]:
         raise ValueError("parent candidate identity")
+    activation = HERE / "EXECUTE.json"
+    if activation.exists():
+        if sha(activation) != freeze["activation_sha256"]:
+            raise ValueError("activation identity")
+        value = json.loads(activation.read_text())
+        if value != freeze["activation_contract"]:
+            raise ValueError("activation contract")
     if any(name in sys.modules for name in ("numpy", "scipy", "torch")):
         raise ValueError("source verifier imported numerical module")
     print("PASS_FROZEN_N256_DENSE_COMPATIBLE_FIRSTSTEP_EXECUTION_SOURCE")

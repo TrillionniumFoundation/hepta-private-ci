@@ -82,7 +82,8 @@ def capture():
         "thread_environment": {name: os.environ.get(name) for name in THREADS},
         "github": {name: os.environ.get(name) for name in (
             "GITHUB_REPOSITORY", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_SHA",
-            "GITHUB_REF", "RUNNER_NAME", "RUNNER_OS", "RUNNER_ARCH"
+            "GITHUB_REF", "GITHUB_EVENT_NAME", "GITHUB_HEAD_REF", "GITHUB_BASE_REF",
+            "ADMITTED_SOURCE_SHA", "RUNNER_NAME", "RUNNER_OS", "RUNNER_ARCH"
         )},
     }
 
@@ -92,8 +93,20 @@ def admit():
         raise ValueError("unique execution key")
     if os.environ.get("GITHUB_REPOSITORY") != "TrillionniumFoundation/hepta-private-ci":
         raise ValueError("repository identity")
-    if os.environ.get("GITHUB_REF") != "refs/heads/research/hcsn-n256-dense-compatible-firststep-20261121-c06d":
-        raise ValueError("single research ref identity")
+    event = os.environ.get("GITHUB_EVENT_NAME")
+    if event == "push":
+        if os.environ.get("GITHUB_REF") != "refs/heads/research/hcsn-n256-dense-compatible-firststep-20261121-c06d":
+            raise ValueError("single research ref identity")
+    elif event == "pull_request":
+        if os.environ.get("GITHUB_HEAD_REF") != "intent/hcsn-n256-dense-compatible-firststep-execution-20261121-c06d":
+            raise ValueError("single activation head identity")
+        if os.environ.get("GITHUB_BASE_REF") != "intent/hcsn-n256-dense-compatible-firststep-20261121-c06d":
+            raise ValueError("single activation base identity")
+    else:
+        raise ValueError("single dispatch event identity")
+    source_sha = os.environ.get("ADMITTED_SOURCE_SHA", "")
+    if len(source_sha) != 40 or any(character not in "0123456789abcdef" for character in source_sha):
+        raise ValueError("admitted source commit identity")
     if (os.environ.get("RUNNER_OS"), os.environ.get("RUNNER_ARCH")) != ("Linux", "X64"):
         raise ValueError("runner identity")
     if sys.version_info[:3] != (3, 12, 3):

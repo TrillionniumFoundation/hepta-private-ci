@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - research/hcsn-n256-dense-compatible-firststep-20261121-c06d
+  pull_request:
+    types: [synchronize]
+    paths:
+      - "qualification/hcsn_currentstate_n256_dense_compatible_firststep_execution/EXECUTE.json"
 
 permissions:
   contents: read
@@ -18,6 +22,7 @@ jobs:
     timeout-minutes: 15
     env:
       UNIQUE_EXECUTION_KEY: hcsn-n256-dense-compatible-firststep-hosted-20261121-c06d-001
+      ADMITTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       RUN_OUTPUT: ${{ runner.temp }}/hcsn-n256-dense-compatible-firststep-001
       MKL_NUM_THREADS: "1"
       NUMEXPR_NUM_THREADS: "1"
