@@ -1830,7 +1830,6 @@ mod tests {
     use crate::transport::remote_control::auth::mark_recovery_auth_change_seen;
     use crate::transport::remote_control::protocol::StreamId;
     use crate::transport::remote_control::protocol::normalize_remote_control_url;
-    use chrono::Utc;
     use codex_app_server_protocol::ConfigWarningNotification;
     use codex_app_server_protocol::JSONRPCMessage;
     use codex_app_server_protocol::JSONRPCNotification;
@@ -1850,6 +1849,7 @@ mod tests {
     use futures::StreamExt;
     use pretty_assertions::assert_eq;
     use std::sync::Arc;
+    use std::time::SystemTime;
     use tempfile::TempDir;
     use tokio::io::AsyncBufReadExt;
     use tokio::io::AsyncWriteExt;
@@ -2057,7 +2057,7 @@ mod tests {
                 refresh_token: "refresh-token".to_string(),
                 account_id: Some("account_id".to_string()),
             }),
-            last_refresh: Some(Utc::now()),
+            last_refresh: Some(SystemTime::now().into()),
             agent_identity: None,
             personal_access_token: None,
             bedrock_api_key: None,
