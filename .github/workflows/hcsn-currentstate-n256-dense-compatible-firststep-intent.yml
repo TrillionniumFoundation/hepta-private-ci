@@ -1,0 +1,27 @@
+name: hcsn-currentstate-n256-dense-compatible-firststep-intent
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_dense_compatible_firststep_intent/**"
+      - ".github/workflows/hcsn-currentstate-n256-dense-compatible-firststep-intent.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Verify frozen source identities
+        run: python -m qualification.hcsn_currentstate_n256_dense_compatible_firststep_intent.verify_source
+      - name: Run source-only controls
+        run: python -m unittest qualification.hcsn_currentstate_n256_dense_compatible_firststep_intent.test_source -v
+      - name: Run optimized source-only controls
+        run: python -O -m unittest qualification.hcsn_currentstate_n256_dense_compatible_firststep_intent.test_source -v

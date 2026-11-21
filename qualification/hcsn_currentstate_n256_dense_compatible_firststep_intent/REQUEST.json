@@ -1,0 +1,92 @@
+{
+  "schema": "hcsn-n256-dense-compatible-firststep-intent-v1",
+  "identity": "hcsn-n256-dense-compatible-firststep-intent-20261121-c06d-001",
+  "status": "SOURCE_FROZEN_HOLD_EXECUTION",
+  "base_evidence": {
+    "draft": 6877,
+    "commit": "a4bbb981b36343e9fd017a03f619e98ab8b9f6f1",
+    "tree": "b127e59c7d79f58acfc83005a8b33644b3447a48"
+  },
+  "boundary_input": {
+    "source_commit": "a5cc1a919dc9cd56ca4d849ed949027ae987b1ce",
+    "source_tree": "ab288a4b5084875eaafa494e670f03eb22e071f0",
+    "artifact_git_blob": "d1f821f5e13286daa2754fc3b7e88626e29bd31a",
+    "artifact_zip_sha256": "43d990c1a17e4e075681820caec327e368a0ae3144abdac21ad383d133f3f595",
+    "container_bytes": 545171,
+    "container_sha256": "e580e44a679ecf9e2588c989cd4d026e326e7364331c46d1927b00ccada78fd4",
+    "coordinate_denominator": 68105,
+    "historical_mismatches": 0
+  },
+  "oracle_input": {
+    "source_draft": 6817,
+    "source_commit": "4ed09f519f5788d5a4bd9b10cf2902a11a9738cc",
+    "evidence_commit": "42aa0ba6153b46c197775634a18db15589ddb199",
+    "artifact_git_blob": "3a3e4fed5fa4d06ad2847add44b96f67ddf8284e",
+    "artifact_zip_sha256": "3ba4ef88608cbfc04d83fd82c1f05d7b439edf4f9338365625e79b0d52f02400",
+    "capsule_bytes": 560358,
+    "capsule_sha256": "b2a6e204e613fead7c0735b12a335a88d2394c8f4da99cab798133443c55dc18",
+    "coordinate_denominator": 69728,
+    "oracle_reexecutions": 0
+  },
+  "source_bindings": {
+    "authentic_input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "candidate_boundary_builder_sha256": "3310210cd9cd28e1199041fc6fe47702ac7f1fcf4fb7d661855a05cce77f4ece",
+    "boundary_codec_sha256": "70ac907077417ca4164ad749b736f395b2deebdd1fd8af08c316eee042db6232",
+    "dense_action_body_sha256": "941d0e7d2d17853208504aea9c649fdac4a59ee55a17cce64834f92288e2b08f",
+    "serializer_sha256": "dfa63cbfe7688e9c07cfff627cffd3d1e0352191e09f2be20ad53d1e310c1ab9"
+  },
+  "future_attempt": {
+    "execution_allowed": false,
+    "unique_execution_key": null,
+    "maximum_attempts": 1,
+    "runtime": {
+      "runner": "ubuntu-24.04",
+      "python": "3.12.3",
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "threads": 1,
+      "child_rlimit_as_bytes": 4294967296,
+      "child_deadline_seconds": 600
+    },
+    "counts": {
+      "authentic_distinct_input_file_accesses": 4,
+      "npz_decodes": 1,
+      "candidate_boundary_builds": 1,
+      "boundary_container_encodes": 1,
+      "boundary_exact_comparisons": 68105,
+      "dynamic_steps": 1,
+      "candidate_dense_expm_actions": 2,
+      "candidate_sparse_expm_actions": 0,
+      "oracle_reexecutions": 0,
+      "candidate_canonical_encodes": 1,
+      "canonical_decodes": 2,
+      "final_exact_comparisons": 69728,
+      "torch_calls": 0,
+      "optimizer_steps": 0
+    }
+  },
+  "source_stage_counts": {
+    "authentic_input_reads": 0,
+    "npz_decodes": 0,
+    "boundary_builds": 0,
+    "dynamic_steps": 0,
+    "dense_expm_actions": 0,
+    "sparse_expm_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "sparse_red_preserved": {
+    "draft": 6823,
+    "run": 44851931235,
+    "job": 136685046474,
+    "artifact": 14685796500,
+    "bitwise_mismatch_coordinates": 1291,
+    "coordinate_denominator": 69728,
+    "max_abs_error_hex": "0x1.0600000000000p-50",
+    "max_ulp_distance": 335
+  },
+  "historical_negative_and_unknown_preserved": true,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false
+}
