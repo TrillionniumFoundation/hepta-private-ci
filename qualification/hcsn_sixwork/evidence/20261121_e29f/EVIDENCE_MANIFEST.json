@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.hcsn.sixwork.evidence.v1",
+  "created_at_utc": "2026-11-21T16:48:31.651074+00:00",
+  "created_at_new_york": "2026-11-21T11:48:31.651074-05:00",
+  "source_commit": "a0b38d3d12c45a4fd254ca27fe1d4266b4c75c53",
+  "source_tree": "e1952190914918e84449df90b110dba305cb05f8",
+  "source_pr": 6911,
+  "scope": "Post-execution evidence only. No new learner, model selection, fit/final run or CI gate adoption.",
+  "formal_integrity": {
+    "fit_cells": 213,
+    "final_cells": 417,
+    "original_files_verified": 236,
+    "registered_source_files_verified": 44,
+    "planned_contrasts_independently_recomputed": 67
+  },
+  "conclusions": {
+    "h1": "No condition improves on all three seeds; 19 of 24 paired MSE differences are worse.",
+    "h2": "Limited positive evidence for known six-state control; decision-clock mismatch retained.",
+    "h3": "No general BP replacement or complete adaptation-cost claim; NoUpdate retained.",
+    "kernel": "All five action configurations slower; dense remains default.",
+    "architecture": "One tiny capacity band; substantial clock-shift failures and 58/72 NoUpdate.",
+    "overall_status": "THIS_CAMPAIGN_COMPLETE_OVERALL_HOLD"
+  },
+  "complete_fit_final_child_seconds": 77.27324711508118,
+  "unknown_design_api_costs_are_not_zero": true,
+  "ci_snapshot_utc": "2026-11-21 16:37:13 UTC",
+  "postformal_windows_followup": "Unapplied, no Cargo/Bazel/fmt/tests executed; original setup error and bounded populate timeout retained.",
+  "self_hash_omitted_to_avoid_self_reference": true,
+  "files": [
+    {
+      "path": "CI_REPAIR_ATTEMPT.json",
+      "bytes": 3017,
+      "sha256": "5d516286be90d27a11685f688d315eab14ec1e8031f545666a94ea8c20fdc6db",
+      "git_blob_sha": "358bbf6adebf10ea7e358040c4da2417ace7d386"
+    },
+    {
+      "path": "CI_REPAIR_ATTEMPT.md",
+      "bytes": 2977,
+      "sha256": "35164298eee59ecb036fba700c6cf4e6ce62d776a8f027e08a4094eb2877d8f0",
+      "git_blob_sha": "3eb6ab22c9f4d4b1111ea31d77eccc262fa88f94"
+    },
+    {
+      "path": "CI_STATUS.json",
+      "bytes": 327271,
+      "sha256": "19a7a045096cfb595c7c106ba222d5c1469e65b591bcae2dded764d15cdcaaa9",
+      "git_blob_sha": "45e04259ea513735a04136a28c1cd4160ae89ae1"
+    },
+    {
+      "path": "CI_STATUS.md",
+      "bytes": 6895,
+      "sha256": "1fe0a56631057329edd57dbee4170607ee354f3f4a56dee0221c426fc0a5fec4",
+      "git_blob_sha": "1cdd4cd2ece71378b76c8477ded959d37a9f0330"
+    },
+    {
+      "path": "FROZEN_REPORT.md",
+      "bytes": 31623,
+      "sha256": "39b6262031222846574b9d052f6b765af7b92f3886d498045a91b797771f6c51",
+      "git_blob_sha": "972348cd75de03f06158fd0301f1f50844c34f45"
+    },
+    {
+      "path": "INDEPENDENT_REVIEW.md",
+      "bytes": 14171,
+      "sha256": "40e6e62d489bfdec23cdff2fd8c6fb771ad996cb357ba8478cc8a363dd339281",
+      "git_blob_sha": "ce41734d98afee780bff0797587b029fabc66d91"
+    },
+    {
+      "path": "README.md",
+      "bytes": 31125,
+      "sha256": "b11844d3bb5ace42dc48396cc1fce4a9f6b002027929b0c2aba38cd7be8372e7",
+      "git_blob_sha": "6affaf03ae43084ce9ecc75d0f280e6a8f855c77"
+    },
+    {
+      "path": "ROOT_FINAL_BINDINGS.json",
+      "bytes": 2500,
+      "sha256": "5a8c43330c362d0746279d235239ea605b82098709208cf7a7fcd9c45ee60b46",
+      "git_blob_sha": "3b2e8caae25b4b73f0a371218fd2421f0a08ff34"
+    },
+    {
+      "path": "ROOT_PLAN.json",
+      "bytes": 1650,
+      "sha256": "eb41dab6881067191c0617c7b656b347e10bbca5e47aa3bfe7d9f741bf055d65",
+      "git_blob_sha": "e89f61bee8ffdc03c80bed4fed7c969c9bc6b03a"
+    },
+    {
+      "path": "ROOT_REVIEW.json",
+      "bytes": 27330,
+      "sha256": "eff7e511b9ba817fa09fcdf8e8f23ca8c197e504d4cab578120431603b3dba2b",
+      "git_blob_sha": "3947914311f86a251330211a734ace9bed8abfd8"
+    },
+    {
+      "path": "SOURCE_PUBLICATION.json",
+      "bytes": 8012,
+      "sha256": "f44fc4d2c72aa03efbdeb168c5833b565b5547be94b9b251f7c34ded284e7b72",
+      "git_blob_sha": "2e48d9f8f63cc1ceb4e56ce496bfebf09639f60c"
+    },
+    {
+      "path": "bellman_cfg_candidate.patch",
+      "bytes": 1306,
+      "sha256": "fbebf6a42178d5c9b29584075d6723303f7754476b10d71c0e05901c932401bc",
+      "git_blob_sha": "ba999d37ab0bf2e2baed1adbba4b13d526b84244"
+    },
+    {
+      "path": "development-ci-evidence.zip",
+      "bytes": 10598607,
+      "sha256": "e4a6d2618f948ecc1d5c0e264529ab8a77e44ead6013e787c02fbc6e6de78821",
+      "git_blob_sha": "0ea6fb8aa8de891cb1420a5a8705c52415aeeaaf"
+    },
+    {
+      "path": "formal-evidence.zip",
+      "bytes": 1631692,
+      "sha256": "3d0c033923c8ccc3d617bfa36531fd544b712b4ac516d133df5c3885e3967455",
+      "git_blob_sha": "830d723305ca7b0deed8355f2045867ae08f6354"
+    },
+    {
+      "path": "native_host_runfiles_candidate.patch",
+      "bytes": 1352,
+      "sha256": "9b1093b603b2b6dcd127b85323b27a89ab867ecfc24ab120643ec16c61204bc4",
+      "git_blob_sha": "a8530d3d37aaf6e4729b31dda242cd1702f7f6f9"
+    },
+    {
+      "path": "results_overview.png",
+      "bytes": 348705,
+      "sha256": "831cdad976b5abf25cdaaf1a8676ad0a56de9b2b81af9189d9385ca515f4ff42",
+      "git_blob_sha": "b76042ede0556d00453cfe70301dd00099759c43"
+    },
+    {
+      "path": "results_overview.svg",
+      "bytes": 37146,
+      "sha256": "b7cd2a1b14c34fb4e43a5fdb2856a6eff3c9b0d0f355d6aec8b96d59c030b7f1",
+      "git_blob_sha": "78f16854896a488b1ec983a2afcccd12b6a38d68"
+    }
+  ]
+}

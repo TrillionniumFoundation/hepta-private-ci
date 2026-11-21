@@ -1,0 +1,226 @@
+[
+  {
+    "key": "stage1",
+    "commit": "0ac7b88b2aca8a1a0b31d315ef6d419d922b6943",
+    "tree": "af9ff533ca264f422d67c3a40b96ef096bddebde",
+    "paths": [
+      "qualification/hcsn_adaptive/batched_flow.py",
+      "qualification/hcsn_adaptive/finite_control.py",
+      "qualification/hcsn_adaptive/finite_control_tests.py"
+    ]
+  },
+  {
+    "key": "stage2",
+    "commit": "48cba474fc550942ae010c4fe055ba5629d4d24f",
+    "tree": "5b6c216991ae15e0e49d78927a8d06ffbbdd6f2b",
+    "paths": [
+      "qualification/hcsn_adaptive/batched_flow.py",
+      "qualification/hcsn_adaptive/impulse_execution.py",
+      "qualification/hcsn_adaptive/impulse_execution_tests.py"
+    ]
+  },
+  {
+    "key": "stage3",
+    "commit": "bd91312a6ee8442f65ebb0f8115d6072cd9688cb",
+    "tree": "108768e14cfd2dbb25f3add5e805e5715c40d433",
+    "paths": [
+      "qualification/hcsn_adaptive/uniformized_flow.py",
+      "qualification/hcsn_adaptive/uniformized_flow_tests.py",
+      "qualification/hcsn_adaptive/uniformized_benchmark.py"
+    ]
+  },
+  {
+    "key": "ci1",
+    "commit": "a59d9c00bd1269cc525d51969d7bf3038bf260fb",
+    "tree": "7f751142056680ac1f6e6542aa3ff460c3a8fef4",
+    "paths": [
+      "codex-rs/hepta-cognitive-types/src/contract.rs",
+      ".github/scripts/windows-appcontainer-probe/cmd_entry_probe.py",
+      ".github/scripts/windows-appcontainer-probe/win32_api.py",
+      "scripts/memory_cell/procedural_bundle_trial.py",
+      "scripts/memory_cell/procedural_observations.py",
+      "scripts/memory_cell/test_procedural_bundle_trial.py",
+      "scripts/memory_cell/test_procedural_observations.py"
+    ]
+  },
+  {
+    "key": "ci2",
+    "commit": "d9ed5ace837ae27f049b0551aee9e19a4d6c3b64",
+    "tree": "65bfb4bdfef146536bd27080c1881578a66a37d9",
+    "paths": [
+      "defs.bzl",
+      "codex-rs/hepta-agentd/BUILD.bazel",
+      "codex-rs/hepta-infer-worker-host/BUILD.bazel"
+    ]
+  },
+  {
+    "key": "delay",
+    "commit": "8058d37b2b150f0d0b038f42bffc60b807ddf43c",
+    "tree": "0eeb4059830239572b5bf97ac34be2c0310dfbb6",
+    "paths": [
+      "qualification/hcsn_adaptive/fixed_delay_reference.py",
+      "qualification/hcsn_adaptive/fixed_delay_reference_tests.py"
+    ]
+  },
+  {
+    "key": "learn_a",
+    "commit": "76408108a1da7cb8ec747a2f4b3a19227054f868",
+    "tree": "93ee75781112b6a0e6d7a96d38ab91e602a93aa1",
+    "paths": [
+      "qualification/hcsn_confirmatory_v1/__init__.py",
+      "qualification/hcsn_confirmatory_v1/run.py",
+      "qualification/hcsn_confirmatory_v1/environment.py",
+      "qualification/hcsn_confirmatory_v1/semantic_program.py",
+      "qualification/hcsn_confirmatory_v1/tasks.py",
+      "qualification/hcsn_confirmatory_v1/tasks_tests.py",
+      "qualification/hcsn_confirmatory_v1/PROTOCOL.md"
+    ]
+  },
+  {
+    "key": "learn_b",
+    "commit": "3f99193ae70f25b611752e2be99c66f30b80f46a",
+    "tree": "2eea96568b7970d444fd45f3ec633720cdc866cd",
+    "paths": [
+      "qualification/hcsn_confirmatory_v1/joint.py",
+      "qualification/hcsn_confirmatory_v1/joint_program.py",
+      "qualification/hcsn_confirmatory_v1/joint_tests.py",
+      "qualification/hcsn_confirmatory_v1/JOINT_PROTOCOL.md"
+    ]
+  },
+  {
+    "key": "learn_c",
+    "commit": "1fe5f18593d32958840108c242de53061011b8f1",
+    "tree": "41f35ea16723148cb953cce7fa0d4ed1ba01d9b5",
+    "paths": [
+      "qualification/hcsn_confirmatory_v1/architectures.py",
+      "qualification/hcsn_confirmatory_v1/architecture_run.py",
+      "qualification/hcsn_confirmatory_v1/architecture_tests.py",
+      "qualification/hcsn_confirmatory_v1/ARCHITECTURE_PROTOCOL.md"
+    ]
+  },
+  {
+    "key": "ablation",
+    "commit": "76fa4ca37cf0cf5008df2ffd579a8610d47bb1d8",
+    "tree": "0f73c008ad6e5b309fe3474ffa730d79e641fc22",
+    "paths": [
+      "qualification/hcsn_confirmatory_v1/ablation.py",
+      "qualification/hcsn_confirmatory_v1/ablation_tests.py",
+      "qualification/hcsn_confirmatory_v1/ABLATION_PROTOCOL.md"
+    ]
+  },
+  {
+    "key": "boundary",
+    "commit": "ddad56d7c322df3c5aab8abcc90323cc935f302b",
+    "tree": "9d131ecefe5520ad1015ef0948dcbe6a060c0ce5",
+    "paths": [
+      "qualification/hcsn_confirmatory_v1/boundary_control.py",
+      "qualification/hcsn_confirmatory_v1/boundary_control_tests.py",
+      "qualification/hcsn_confirmatory_v1/BOUNDARY_CONTROL_PROTOCOL.md"
+    ]
+  },
+  {
+    "key": "large_kernel",
+    "commit": "41faec44e1c5d8baa1e37f9993193a96d0554dd0",
+    "tree": "290850092a9f22b0c3e7bb8cba0ec9ba47144a38",
+    "paths": [
+      "qualification/hcsn_adaptive/uniformized_benchmark.py"
+    ]
+  },
+  {
+    "key": "ci3",
+    "commit": "de52ddd7bf8f9d031d4c39140e6df27e3e195e4f",
+    "tree": "b833fbb252cacb0ff987c9bb5ab1f571f2bef8b8",
+    "paths": [
+      "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "codex-rs/hepta-agentd/src/memory_serving_process_tests.rs"
+    ]
+  },
+  {
+    "key": "workflow",
+    "commit": "29197571b0e9d26251d7b95c47f824ecdf423f6b",
+    "tree": "0ccfc090b976b3c4f545d4bd9a7eb54e234803e2",
+    "paths": [
+      ".github/workflows/hcsn-source-fixtures.yml",
+      "qualification/HCSN_SOURCE_TESTS.md"
+    ]
+  },
+  {
+    "key": "cost",
+    "commit": "bc491b6e43368bc6b131c7493fbd921adb5c64ac",
+    "tree": "4f595d3603e3a94ad07463a6ec13bf20a9eaa22c",
+    "paths": [
+      "qualification/hcsn_confirmatory_v1/run.py",
+      "qualification/hcsn_confirmatory_v1/joint.py",
+      "qualification/hcsn_confirmatory_v1/architecture_run.py",
+      "qualification/hcsn_confirmatory_v1/boundary_control.py",
+      "qualification/hcsn_confirmatory_v1/PROTOCOL.md",
+      "qualification/hcsn_confirmatory_v1/JOINT_PROTOCOL.md",
+      "qualification/hcsn_confirmatory_v1/ARCHITECTURE_PROTOCOL.md",
+      "qualification/hcsn_confirmatory_v1/BOUNDARY_CONTROL_PROTOCOL.md",
+      "codex-rs/hepta-agentd/src/memory_serving_process_tests.rs"
+    ]
+  },
+  {
+    "key": "integrity",
+    "commit": "0f5d7e5cfa5a5098f0edb5c8cb3bda403762b9b5",
+    "tree": "61187c5e4693df39aeaa762f674a8decbf32f59c",
+    "paths": [
+      "qualification/hcsn_sixwork/__init__.py",
+      "qualification/hcsn_sixwork/integrity.py",
+      "qualification/hcsn_sixwork/README.md",
+      "qualification/hcsn_sixwork/PLAN.example.json"
+    ]
+  },
+  {
+    "key": "campaign",
+    "commit": "81871be3ff7ed8ad761bc789743b45e894984c7f",
+    "tree": "174e4ce17c7389313ce3372a87f5c3689f8f9ea0",
+    "paths": [
+      "qualification/hcsn_sixwork/campaign.py",
+      "qualification/hcsn_sixwork/campaign_tests.py",
+      "qualification/hcsn_sixwork/CONFIRMATORY_PLAN.md",
+      ".github/workflows/hcsn-source-fixtures.yml",
+      "qualification/HCSN_SOURCE_TESTS.md"
+    ]
+  },
+  {
+    "key": "ci4",
+    "commit": "5083503cd726e7328498e1a1db915e29cb072607",
+    "tree": "4085803c48d0845b9b260e5f050e6b950ae9ef19",
+    "paths": [
+      "codex-rs/hepta-agentd/tests/support/memory_training_cases.rs",
+      "codex-rs/hepta-agentd/src/intelligence_canonical_runtime_test_support.rs"
+    ]
+  },
+  {
+    "key": "reporting_receipts",
+    "commit": "58acb4f2c6c0c119a09005dae1c779683470c57b",
+    "tree": "dcbeb9e0df4583981dfeec0a8b1756b0a933a0ff",
+    "paths": [
+      "qualification/hcsn_sixwork/reporting/receipts.py",
+      "qualification/hcsn_sixwork/reporting/README.md",
+      "qualification/hcsn_sixwork/reporting/__init__.py"
+    ]
+  },
+  {
+    "key": "reporting_summary",
+    "commit": "61e9c1e880ddb2dc52ed1a7aa918f0eae4a3cc48",
+    "tree": "b4635442759c33dc83971007740f5b2e71ebbf21",
+    "paths": [
+      "qualification/hcsn_sixwork/reporting/summarize.py",
+      "qualification/hcsn_sixwork/reporting/tests.py",
+      ".github/workflows/hcsn-source-fixtures.yml",
+      "qualification/HCSN_SOURCE_TESTS.md"
+    ]
+  },
+  {
+    "key": "ci5",
+    "commit": "a0b38d3d12c45a4fd254ca27fe1d4266b4c75c53",
+    "tree": "e1952190914918e84449df90b110dba305cb05f8",
+    "paths": [
+      "codex-rs/hepta-memory-retrieval/src/memory_cell.rs"
+    ]
+  }
+]

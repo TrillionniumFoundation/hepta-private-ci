@@ -1,0 +1,55 @@
+{
+  "all_five_fit_admitted": true,
+  "valid_cells": 213,
+  "source_git_sha": "a0b38d3d12c45a4fd254ca27fe1d4266b4c75c53",
+  "selections": {
+    "readout": "db64891db5b7636e861e80e3a598a961d463b4a3fadcae0f61ce3c0e1169ac8f",
+    "joint": "ddfb197685ccd0afd788f0c785a5a3dcf3c46e4608e0b3c980ca4a3d91ddad36",
+    "architecture": "32cf5d1cdeba356dcf0f499b68dd9335a88d9757236f1540bd44990651c9037e",
+    "feature": "9f4f04e627399081e9527026bfbc61ba7fedac0138db53f08149d8e9a0037eee",
+    "boundary": "cd5a726931be3f62cbf4cbcc72e57106f263cfa80c3e72cbfc0fc99b156411fa"
+  },
+  "stages": [
+    {
+      "stage": "readout",
+      "valid_cells": 48,
+      "selection_sha256": "db64891db5b7636e861e80e3a598a961d463b4a3fadcae0f61ce3c0e1169ac8f",
+      "fit_child_seconds": 5.5873545680660754,
+      "remaining_final_child_seconds": 174.41264543193392,
+      "receipt_sha256": "44b6e11138f696c99f2bbf10a64d6345e18867d37cdf7ac7eca1af24b93451fd"
+    },
+    {
+      "stage": "joint",
+      "valid_cells": 48,
+      "selection_sha256": "ddfb197685ccd0afd788f0c785a5a3dcf3c46e4608e0b3c980ca4a3d91ddad36",
+      "fit_child_seconds": 18.4133088439703,
+      "remaining_final_child_seconds": 161.5866911560297,
+      "receipt_sha256": "ef5ef45c2a85b7c30ae336e99e3b16f37a923f8164f6d84706dcc4eb283eeeed"
+    },
+    {
+      "stage": "architecture",
+      "valid_cells": 72,
+      "selection_sha256": "32cf5d1cdeba356dcf0f499b68dd9335a88d9757236f1540bd44990651c9037e",
+      "fit_child_seconds": 21.343721569981426,
+      "remaining_final_child_seconds": 158.65627843001857,
+      "receipt_sha256": "f2272b8bbd6087dbfc6cb50c6f64c32a34e1c3ccbbe0ec9c8e5e908a1ab6bd45"
+    },
+    {
+      "stage": "feature",
+      "valid_cells": 36,
+      "selection_sha256": "9f4f04e627399081e9527026bfbc61ba7fedac0138db53f08149d8e9a0037eee",
+      "fit_child_seconds": 3.0319928859826177,
+      "remaining_final_child_seconds": 176.96800711401738,
+      "receipt_sha256": "1f1a6b94418fef5383927383cd75b2da867b298f2eb5307d2efd0aa2e1b27fdd"
+    },
+    {
+      "stage": "boundary",
+      "valid_cells": 9,
+      "selection_sha256": "cd5a726931be3f62cbf4cbcc72e57106f263cfa80c3e72cbfc0fc99b156411fa",
+      "fit_child_seconds": 3.7358143579913303,
+      "remaining_final_child_seconds": 86.26418564200867,
+      "receipt_sha256": "f3f3cfa77d3c09bb6db221802c6c89c27d75416d2c47934ccb9b2336cb07f524"
+    }
+  ],
+  "basis": "root independently read exact remote fit.finished bytes; validated complete grids and hashes; original selections remain immutable"
+}
