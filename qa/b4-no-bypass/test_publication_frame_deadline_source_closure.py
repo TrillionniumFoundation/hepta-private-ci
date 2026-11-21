@@ -38,7 +38,7 @@ class PublicationFrameDeadlineSourceTests(unittest.TestCase):
         self.reject(PEER, "exchange", "self.exchange_with_original_deadline(|bytes, _deadline| handle(bytes))")
         self.check(PEER, "exchange_with_original_deadline", (
             "self.stream.take().ok_or(HostIssuerTransportError::Closed)?",
-            "self.exchange_inner(&mut stream, handle)",
+            "self.exchange_inner(&mut stream, handle, &mut failure_stage, &mut header_diagnostic,)",
             "self.stream = Some(stream)", "stream.shutdown(Shutdown::Both)"))
 
     def test_handler_cannot_receive_a_renewed_or_unrelated_deadline(self):
@@ -50,7 +50,7 @@ class PublicationFrameDeadlineSourceTests(unittest.TestCase):
         self.check(PEER, "exchange_inner", (
             "self.owner.read_until(stream, &mut length[1..], deadline)?",
             "self.owner.read_until(stream, &mut bytes, deadline)?",
-            "write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?",
+            "self.owner.write_until_with_diagnostic(stream, &(response.len() as u32).to_be_bytes(), deadline, Some(header_diagnostic),)?",
             "self.owner.write_until(stream, &response, deadline)?"))
         for occurrence in range(3):
             self.reject(PEER, "exchange_inner", "self.owner.check(deadline)?", occurrence)

@@ -1,0 +1,28 @@
+{
+  "deadline_or_error_propagation_changes": false,
+  "files": [
+    {
+      "after_blob_sha1": "93a5c8f11800e6f14b997210ab41bca1308dc703",
+      "after_sha256": "4ee08ae84edb6ab267bdf5ed7620e9f516d20024ebdad237bebefcf3f39726ee",
+      "before_blob_sha1": "e7697fe74e89a8719f2a8c65f58a10e99469dc7d",
+      "before_sha256": "fc24fc3823c69c9c3b68269ce51003789e5eb7960bcc0cc3782748cb46240258",
+      "exact_mechanical_rewrite": "one declaration line-wrap only",
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_source_keeper_tests.rs"
+    },
+    {
+      "after_blob_sha1": "b90ab0c9868b0a888433097ea88e1857d846bc07",
+      "after_sha256": "1f6ad530a0fa0eb9a5b1c1885fef1e40487e7e145768e6914887d87f117d6eb1",
+      "before_blob_sha1": "3a928f7a9966db0c448a1d5a2d780658853da90b",
+      "before_sha256": "6f901c1eebe8ef327045bf9d10dde6d178fc10aa60dd283537be7e0a3735b58c",
+      "exact_mechanical_rewrite": "rustfmt block wrapping of unchanged single-expression closure; original ? preserved",
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24_writer.rs"
+    }
+  ],
+  "initial_review_note": "A strict whitespace-only assertion correctly rejected the closure-block rewrite; exact expression-preserving rewrite was then inspected. No formatter/test/native execution occurred during that static check.",
+  "literal_behavior_expressions_unchanged": true,
+  "preimage_git_blob_identity_matches_published_72fb_payload": true,
+  "preimages_read_at": "84721f3da92ffaac3e7c7e2e39de2df985834370",
+  "schema": "hepta-mechanical-format-source-review-v1",
+  "source_base": "72fb96148a3d12db0d3482f46ab0653f7353d532",
+  "whole_ci_green_claimed": false
+}

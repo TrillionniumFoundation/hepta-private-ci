@@ -1,0 +1,137 @@
+{
+  "callers_executed": 0,
+  "commands": [
+    {
+      "args": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.005820145946927369,
+      "exit_code": 0,
+      "name": "head",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7f8b21a0c464a7256d7e8252164b94565c6e5e01fa967e851f45e98d1a43256e"
+    },
+    {
+      "args": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.11790538602508605,
+      "exit_code": 0,
+      "name": "status-before",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "fc534dea2c2af91f0bc70ed3e4c5a616d27c8573f74feeed6386dcbb537ecd2b"
+    },
+    {
+      "args": [
+        "python3",
+        "-c",
+        "import importlib.util,json,sys; from pathlib import Path; p=Path('../scripts/format.py'); s=importlib.util.spec_from_file_location('hepta_format',p); m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; s.loader.exec_module(m); paths=m.changed_paths(); groups=m.scoped_formatter_groups(paths,check=False); print(json.dumps({'changed_paths':paths,'groups':[{'name':g.name,'commands':[{'args':list(c.args),'cwd':str(c.cwd)} for c in g.commands]} for g in groups]},sort_keys=True,indent=2))"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs",
+      "elapsed_seconds": 0.08407788298791274,
+      "exit_code": 0,
+      "name": "selected-formatters",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f7e9df85e7430d43b270344513c520437f8f0cdb59b9ba380a91816dbd5890a7"
+    },
+    {
+      "args": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs",
+      "elapsed_seconds": 0.14548563305288553,
+      "exit_code": 0,
+      "name": "original-just-fmt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "args": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.007815563003532588,
+      "exit_code": 0,
+      "name": "final-dirty-paths",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1ab3d3ba92d57a8b67138fc28046a18e708af340724385cf245217a5770aec36"
+    },
+    {
+      "args": [
+        "git",
+        "diff"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source",
+      "elapsed_seconds": 0.00802279100753367,
+      "exit_code": 0,
+      "name": "final-diff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "b9fb4d131337ca450b05b02532613ae6ef0c78db5f2aa15e9391377db34dc766"
+    }
+  ],
+  "files": [
+    {
+      "after_blob_sha1": "e5a29de28968d899fd3cee598107792e93a91dc8",
+      "after_sha256": "f6cea7eb0b03742eaf2ffcbfc0d2260284bc2348ad50181c5f155e17187142ce",
+      "before_blob_sha1": "539bfb0da4b074956b299b23f615da262494a6ba",
+      "before_sha256": "c8a58b341af49774b5514f5e40c6c4f6f8c592ecea42efb7128f91970a395348",
+      "bytes": 2814,
+      "path": "qa/b4-no-bypass/test_publication_frame_deadline_source_closure.py"
+    },
+    {
+      "after_blob_sha1": "f5b1d04538387846bc61498f7896974520c1a65a",
+      "after_sha256": "13ac008e29942d0b92bf0244dc45ef099050947fc9331fb502038f85f3c241e4",
+      "before_blob_sha1": "d3c885a0b0e4c29a3d80fe510146368dcc1066c3",
+      "before_sha256": "301043d8b3d674be1ed8a7db179b68681e24af157c564571905c9e28b92bf958",
+      "bytes": 9091,
+      "path": "qa/b4-no-bypass/test_root_material_cli_source_closure.py"
+    }
+  ],
+  "native_tests_executed": 0,
+  "original_just_fmt_executed": true,
+  "owner_elapsed_seconds": 0.3810248370282352,
+  "qa_file_bytes_unchanged_by_fmt": true,
+  "qa_python_ast_parse_only": true,
+  "qa_tests_executed": 0,
+  "rust_builds_executed": 0,
+  "rust_sha256_unchanged": "4b0d98a11085203161646d177d0af079254e8d4fe5e2dbcb3adae41141202462",
+  "schema": "hepta-e6-three-file-format-v1",
+  "selected_formatters": {
+    "changed_paths": [
+      "codex-rs/hepta-agentd/src/ordinary_q24_post_a_progress_tests.rs",
+      "qa/b4-no-bypass/test_publication_frame_deadline_source_closure.py",
+      "qa/b4-no-bypass/test_root_material_cli_source_closure.py"
+    ],
+    "groups": [
+      {
+        "commands": [
+          {
+            "args": [
+              "rustfmt",
+              "--edition",
+              "2024",
+              "--config",
+              "imports_granularity=Item,skip_children=true",
+              "--",
+              "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd/src/ordinary_q24_post_a_progress_tests.rs"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-waiter-format-v2/source/codex-rs/hepta-agentd"
+          }
+        ],
+        "name": "Rust"
+      }
+    ]
+  },
+  "source_base": "84721f3da92ffaac3e7c7e2e39de2df985834370",
+  "successful": true,
+  "whole_repository_format_qualified": false
+}

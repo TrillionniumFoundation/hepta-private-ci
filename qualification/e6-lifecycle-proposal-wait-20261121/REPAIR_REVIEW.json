@@ -1,0 +1,27 @@
+{
+  "source": "84721f3da92ffaac3e7c7e2e39de2df985834370",
+  "file": {
+    "path": "codex-rs/hepta-agentd/src/ordinary_q24_post_a_progress_tests.rs",
+    "before_sha256": "e3c3c91dc99b0108eb6452a43db621855e41d3919e8449c55588b401ffd6a9c8",
+    "before_blob_sha1": "1a6ae1c8f258743b144a7c8b7229adc9a74143f7",
+    "after_sha256": "4b0d98a11085203161646d177d0af079254e8d4fe5e2dbcb3adae41141202462",
+    "after_blob_sha1": "febd25f2b0921b35c683a5d8b25ee08133be0d32",
+    "bytes": 8651
+  },
+  "changes": [
+    "one enum import",
+    "wait only on validated Proposal(UpdateCandidates) pending prefix at Selection",
+    "all Decision validation/error propagation and existing NoUpdate/malformed handling retained"
+  ],
+  "original_guards_retained": true,
+  "original_poll_milliseconds": 10,
+  "original_root_read_budget": 64,
+  "product_and_native_time_caps_changed": false,
+  "old_target_or_owner_mutated": false,
+  "no_admissible_update_not_converted_to_pending": true,
+  "existing_production_negative_control": "cell_q24_publication_driver::tests::bare_qualification_and_rehashed_cut_substitutions_do_not_authorize_publication",
+  "existing_retention_control": "cell_q24_publication_driver::tests::no_update_retention_and_defer_preserve_original_operation_and_policy",
+  "real_failure_result_sha256": "36e30576f6e36dfc2109e8a7de134e9f796314a0c263ab1b5c475799c32cd6ff",
+  "real_failure_canonical_junit_sha256": "6087c475ab4844be675fb39671aa97372fe80632807da8fd59575e64d7270421",
+  "actual_forensics_archive_sha256": "9685c2cf85e1bfe37550ef360aaf45e162b6bcc537e2fcd1d701453dc0869359"
+}

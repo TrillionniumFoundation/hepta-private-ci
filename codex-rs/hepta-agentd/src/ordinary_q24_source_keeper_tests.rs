@@ -195,8 +195,7 @@ fn seal_original_source_input(bytes: &[u8]) -> io::Result<File> {
     // SAFETY: take unique ownership of exactly the fresh descriptor above.
     let mut file = unsafe { File::from_raw_fd(raw) };
     file.write_all(bytes)?;
-    let seals =
-        libc::F_SEAL_WRITE | libc::F_SEAL_GROW | libc::F_SEAL_SHRINK | libc::F_SEAL_SEAL;
+    let seals = libc::F_SEAL_WRITE | libc::F_SEAL_GROW | libc::F_SEAL_SHRINK | libc::F_SEAL_SEAL;
     // SAFETY: both operations act only on this live owned descriptor.
     if unsafe { libc::fchmod(raw, 0o400) } != 0
         || unsafe { libc::fcntl(raw, libc::F_ADD_SEALS, seals) } != 0

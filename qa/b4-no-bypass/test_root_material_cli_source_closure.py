@@ -155,9 +155,14 @@ class RootMaterialCliSourceTests(unittest.TestCase):
     def test_original_writer_and_retained_image_precede_install_adopt_release(self):
         function = "fn recover_material_from_registered("
         for marker in (
-            "writer.registration.with_live(&writer.leases",
-            "retained_writer_authorization(&writer.registration)?",
-            "retain_original_writer_lock(&self.identity)?",
+            "writer\n            .registration\n            .with_live(&writer.leases",
+            "retained_writer_authorization(&writer.registration)\n"
+            "                    .inspect_err(|_| {\n"
+            '                        let _ = std::io::stderr().write_all(b"root_stage=recover.writer_proof\\n");\n'
+            "                    })?",
+            "retain_original_writer_lock(&self.identity).inspect_err(|_| {\n"
+            '                        let _ = std::io::stderr().write_all(b"root_stage=recover.writer_lock\\n");\n'
+            "                    })?",
             "PreparedMaterialRecovery::observe(",
             "seize_registered_cognitive_root(&self.identity, config.peer_uid)?",
             ".install()", ".adopt()",
@@ -165,8 +170,16 @@ class RootMaterialCliSourceTests(unittest.TestCase):
         ):
             with self.subTest(marker=marker):
                 self.rejects(RECOVERY, function, marker)
+        # The entry read has an error observer; the final recheck remains direct.
+        # Remove each actual read including its original error propagation.
+        for marker in (
+            "verify_original_starting_record(&self.identity).inspect_err(|_| {\n"
+            '                    let _ = std::io::stderr().write_all(b"root_stage=recover.starting_record\\n");\n'
+            "                })?",
+            "verify_original_starting_record(&self.identity)?",
+        ):
+            self.rejects(RECOVERY, function, marker)
         for occurrence in (0, 1):
-            self.rejects(RECOVERY, function, "verify_original_starting_record(&self.identity)?", occurrence)
             self.rejects(RECOVERY, function, "verify_pinned_process(", occurrence)
 
     def test_actual_retirement_and_original_expiry_are_not_replaced_by_cli_claims(self):
