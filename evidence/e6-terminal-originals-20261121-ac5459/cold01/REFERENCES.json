@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.e6.cold01.prior-evidence-references.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "draft_PR": 6859,
+  "existing_branch": "evidence/e6-noupdate16-20261121-ac5459",
+  "commits": [
+    {
+      "sha": "45cb05764454be5386488dc689d7dc65c182e629",
+      "scope": "Original seven containers and reconstructed historical terminal review;17 failed and own CI limitations retained."
+    },
+    {
+      "sha": "5ab32bd6bb884851fd5d5dc14e5e2087d56cf063",
+      "scope": "NoUpdate18 actual failed env guard and independent shell-only probe;no retroactive environment rewrite."
+    },
+    {
+      "sha": "fc30fa8df7b72a7723c7f26ce63bcae724324853",
+      "scope": "NoUpdate19 complete ordinary NoUpdate actual success and original77 full124 inventory;distinct from cold."
+    },
+    {
+      "sha": "e03c97a5c415e008ee6b5ff4b02fe7e1921fada6",
+      "scope": "Original frozen Cold01 candidate plus independent review;publication occurred while actual cold job still running."
+    }
+  ],
+  "candidate_publication_originals_in_this_container": "root_context/root/e6_cold01_publication/",
+  "prior19_publication_originals_in_this_container": "root_context/root/e6_noupdate19_publication/",
+  "candidate_archive_reference": {
+    "sha256": "5655cb162ee33ec549c91a8a3794af08aab414ecf0821eb9431cf4e7980b5ada",
+    "members": 110,
+    "manifest_sha256": "8fe2efb0cd1cfbb8256b42c74f9ebf1d1cb3871b7a100af53f27821eb111fbf7",
+    "prefix": "qualification/e6-lifecycle-proposal-wait-20261121/whole-cold-noupdate01-review001-20261121"
+  },
+  "retained_predecessor_archives": [
+    {
+      "scope": "NoUpdate18",
+      "sha256": "d6ae47ae7f380c247346e7e1a33dc90880d7df9940d53da870ff39e880d12c9e",
+      "prior_failure_preserved": true
+    },
+    {
+      "scope": "NoUpdate19",
+      "sha256": "38af0e2c925c218330bf0e683954dc49f7a54ab51695015d87a4b195e68482ae",
+      "independent_success_not_fixture": true
+    }
+  ],
+  "previous_full_containers_repacked": false,
+  "new_branch_publication_claimed_by_immutable_blob_handoff": false
+}
