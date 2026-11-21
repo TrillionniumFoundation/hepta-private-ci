@@ -1,0 +1,26 @@
+{
+  "base_commit": "261a7eaf6cef68601782652ce6a8fac5e457c292",
+  "base_pull_request": 6923,
+  "files": {
+    ".github/workflows/hcsn-currentstate-n256-signed-recurrence-cursor.yml": "60fcdcf1a059733a80db9eafff40a7362e0c251659225250a4be62b6011ed38d",
+    "qualification/hcsn_currentstate_n256_signed_recurrence_cursor/README.md": "1581498e04df196b1cb8817c8312dea1ea58ec39cb3750c5a9b2009f9dce8c82",
+    "qualification/hcsn_currentstate_n256_signed_recurrence_cursor/REQUEST.json": "a9105ca65143db0e867acc4de53f1bba5976e078c7b2b7efac7f91f5c9c74337",
+    "qualification/hcsn_currentstate_n256_signed_recurrence_cursor/REVIEW.json": "0e8716624869b081bce186813aeecdc5a977bf376ceeab476f57e71413c13b3e",
+    "qualification/hcsn_currentstate_n256_signed_recurrence_cursor/__init__.py": "b631ca50047f48fcd16d83c510b6172508a01b0db6d12e2cc4f1bf203bf3a13c",
+    "qualification/hcsn_currentstate_n256_signed_recurrence_cursor/cursor.py": "d3944f060c05dad9dc6cc4354aee510eb1c0bbfafd4a455bf2baf5bee17fa11d",
+    "qualification/hcsn_currentstate_n256_signed_recurrence_cursor/test_cursor.py": "6067f22e42e623f464749ad9c69f0c7aef3baad143cb2e675227a373576f3da8",
+    "qualification/hcsn_currentstate_n256_signed_recurrence_cursor/verify_source.py": "631178169a2782d07f1b18e35869c7d10bc3ad685a4e491fd6c6864c230796a7"
+  },
+  "historical_negative_and_unknown_preserved": true,
+  "identity": "hcsn-n256-signed-recurrence-cursor-small-fixture-20261121-c6bc-v1",
+  "inputs": {
+    "qualification/hcsn_currentstate_n256_non_substochastic_signed_interval/signed_interval.py": "0609297f789485f38970491fcc10d0855be823d2a3b4ad23bc0ddfa16a327fdd",
+    "qualification/hcsn_currentstate_n256_signed_streaming/SOURCE_FREEZE.json": "4d69646e2a40e0111fbcf9538ccdec3a6cea609341fc67f474935b4a3878cca8",
+    "qualification/hcsn_currentstate_n256_signed_streaming/streaming.py": "9e01c5bed68318bc6514d7a73f84f066baab990e0dcc604ef953fab4290a581a"
+  },
+  "n256_qualified": false,
+  "numerical_execution_allowed": true,
+  "production_adoption": false,
+  "resource_gate_closed": false,
+  "status": "SMALL_SYNTHETIC_ONLY"
+}
