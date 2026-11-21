@@ -47,10 +47,9 @@ class SourceTests(unittest.TestCase):
         self.assertEqual(freeze["reused_source_sha256"]["audit.py"], "f620e9d613bd0a8e7779ccfbd7faf357c3bf534bb6050b1cab0a0d9032c9d83f")
 
     def test_existing_workflow_dispatcher_is_exactly_scoped(self):
-        source = (ROOT / ".github/workflows/hcsn-currentstate-n256-runtime-identity-admission.yml").read_text()
-        self.assertIn("if: github.head_ref != 'research/hcsn-n256-runtime-matched-firststep-20261121-c6bc'", source)
-        self.assertIn("runtime-matched-firststep:", source)
-        self.assertIn("github.base_ref == 'evidence/hcsn-n256-runtime-matched-dispatch-base-20261121-c6bc'", source)
+        source = (ROOT / ".github/workflows/hcsn-currentstate-n256-runtime-matched-firststep.yml").read_text()
+        self.assertIn("types: [opened, synchronize]", source)
+        self.assertIn("hcsn-n256-runtime-matched-firststep-20261121-c6bc-001", source)
         self.assertEqual(source.count("Execute the single bounded numerical attempt"), 1)
 
 

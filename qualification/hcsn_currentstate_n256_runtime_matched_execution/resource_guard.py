@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 KEY = "hcsn-n256-runtime-matched-firststep-20261121-c6bc-001"
-HEAD = "research/hcsn-n256-runtime-matched-firststep-20261121-c6bc"
+HEAD = "research/hcsn-n256-runtime-matched-firststep-dispatch-20261121-c6bc"
 BASE = "evidence/hcsn-n256-runtime-matched-dispatch-base-20261121-c6bc"
 MIN_AVAILABLE_KIB = 8 * 1024 * 1024
 MIN_CGROUP_HEADROOM = 2 * 1024**3
