@@ -239,5 +239,4 @@ fn invalid(error: impl std::fmt::Display) -> AgentdError {
 }
 
 #[cfg(test)]
-#[path = "neuron_generation_learning_readback_test_support.rs"]
-pub(crate) mod test_support;
+pub(crate) use crate::learning_iteration_checkpoint::generation_readback_test_support as test_support;

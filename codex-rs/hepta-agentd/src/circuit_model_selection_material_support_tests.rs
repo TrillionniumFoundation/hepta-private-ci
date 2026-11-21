@@ -364,7 +364,7 @@ pub(super) fn unstarted_material_with_profile(
         initial,
         scope,
         rule,
-        freeze_plan: freeze_plan.clone(),
+        freeze_plan,
         freeze_evidence,
         experience_signer: credentials.experience.clone(),
         dataset_signer: credentials.dataset.clone(),

@@ -140,26 +140,6 @@ impl LearningIterationCheckpointOwnerV1 {
         self.initial.request.agent_id.as_str()
     }
 
-    /// An isolated research test's file owner, never a production Root grant.
-    #[cfg(test)]
-    pub(crate) fn from_research_store(
-        store: std::sync::Arc<dyn AuthorityFrontierStore<LearningIterationCheckpointRecordV1>>,
-        original_owner_id: String,
-        request: LearningIterationRequestV1,
-        owners: LearningIterationOwnersV1,
-    ) -> Result<Self, Error> {
-        let initial =
-            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
-        let owner = Self {
-            owner_id: original_owner_id,
-            store: Store::Test(store),
-            initial: initial.snapshot().clone(),
-            scope: None,
-        };
-        owner.load()?;
-        Ok(owner)
-    }
-
     /// Load the already registered original owner and verify its current data.
     /// Missing, foreign, corrupt or uncertain records never initialize genesis.
     /// The host supplies custody; Device/Notes owners are not interchangeable.
@@ -425,6 +405,10 @@ impl LearningIterationCheckpointRecordV1 {
         Ok(Some(snapshot))
     }
 }
+
+#[cfg(test)]
+#[path = "neuron_generation_learning_readback_test_support.rs"]
+pub(crate) mod generation_readback_test_support;
 
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_test_support.rs"]
