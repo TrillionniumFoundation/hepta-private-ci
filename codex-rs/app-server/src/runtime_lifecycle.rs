@@ -35,6 +35,13 @@ impl AppServerDrainHandle {
         self.request.cancel();
     }
 
+    /// Compare the backing drain owner, never matching counter values.
+    /// Keep the atomics private to the original App Server lifecycle module.
+    pub(super) fn same_owner_identity(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.running_turns, &other.running_turns)
+            && Arc::ptr_eq(&self.drained, &other.drained)
+    }
+
     pub fn running_turns(&self) -> usize {
         self.running_turns.load(Ordering::Acquire)
     }
