@@ -1,0 +1,97 @@
+{
+  "key": "ordered tuple (member_0, member_1) before pooling",
+  "not_claimed": [
+    "natural-source isolation",
+    "heldout input-support separation",
+    "unseen-combination generalization"
+  ],
+  "seeds": [
+    {
+      "seed": 17,
+      "split_counts": {
+        "train": {
+          "records": 512,
+          "unique_input_keys": 64,
+          "unique_keys_shared_with_train": 64,
+          "records_with_key_seen_in_train": 512
+        },
+        "development": {
+          "records": 128,
+          "unique_input_keys": 56,
+          "unique_keys_shared_with_train": 56,
+          "records_with_key_seen_in_train": 128
+        },
+        "calibration": {
+          "records": 128,
+          "unique_input_keys": 55,
+          "unique_keys_shared_with_train": 55,
+          "records_with_key_seen_in_train": 128
+        },
+        "holdout": {
+          "records": 256,
+          "unique_input_keys": 63,
+          "unique_keys_shared_with_train": 63,
+          "records_with_key_seen_in_train": 256
+        }
+      }
+    },
+    {
+      "seed": 29,
+      "split_counts": {
+        "train": {
+          "records": 512,
+          "unique_input_keys": 64,
+          "unique_keys_shared_with_train": 64,
+          "records_with_key_seen_in_train": 512
+        },
+        "development": {
+          "records": 128,
+          "unique_input_keys": 55,
+          "unique_keys_shared_with_train": 55,
+          "records_with_key_seen_in_train": 128
+        },
+        "calibration": {
+          "records": 128,
+          "unique_input_keys": 57,
+          "unique_keys_shared_with_train": 57,
+          "records_with_key_seen_in_train": 128
+        },
+        "holdout": {
+          "records": 256,
+          "unique_input_keys": 64,
+          "unique_keys_shared_with_train": 64,
+          "records_with_key_seen_in_train": 256
+        }
+      }
+    },
+    {
+      "seed": 43,
+      "split_counts": {
+        "train": {
+          "records": 512,
+          "unique_input_keys": 64,
+          "unique_keys_shared_with_train": 64,
+          "records_with_key_seen_in_train": 512
+        },
+        "development": {
+          "records": 128,
+          "unique_input_keys": 55,
+          "unique_keys_shared_with_train": 55,
+          "records_with_key_seen_in_train": 128
+        },
+        "calibration": {
+          "records": 128,
+          "unique_input_keys": 55,
+          "unique_keys_shared_with_train": 55,
+          "records_with_key_seen_in_train": 128
+        },
+        "holdout": {
+          "records": 256,
+          "unique_input_keys": 64,
+          "unique_keys_shared_with_train": 64,
+          "records_with_key_seen_in_train": 256
+        }
+      }
+    }
+  ]
+}

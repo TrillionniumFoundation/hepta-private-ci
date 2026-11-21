@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "classification": "posthoc engineering description, frozen before this aggregation, not preregistered new scientific evidence",
+  "input": "results_v2/trajectories.jsonl from unchanged evidence_v1_v2.tar.gz",
+  "new_model_runs": 0,
+  "groups": "every seed and pooled seeds; each existing budget and intervention; all five policies",
+  "quality": "correct/all roots, coverage, wrong/answered; unresolved roots count as failures",
+  "actual_work": "sum of executed retrieve+verify+backtrack/restart calls, candidate evaluations, dense inference FLOPs estimate",
+  "cpu": "sum measured per-trajectory CPU, not total training or setup cost; one measurement, no stability/ranking inference",
+  "frontier": "descriptive nondominance within same seed scope, budget/depth, and intervention, maximizing accuracy and minimizing actual calls and measured CPU; never compare different depths as the same task",
+  "comparability": "Only bounded vs fixed_relation shares the scorer and risk rule; other policies confound head/controller/information. No equal-work superiority ranking, no useless padding, no selected matched-success subset.",
+  "failures": "v1 totals remain unknown; retain its measured lower bounds and all failed trajectories; v2-only frontier excludes duplicate v1 evaluations but cumulative ledger keeps both",
+  "acceptance": "Reject scientific ranking: no fixed equal actual workload, CPU replication, natural data, pretrained Encoder, or 8-16 semantic depth. Output every observed point, not only frontier points.",
+  "historical_results": "unchanged"
+}

@@ -1,0 +1,132 @@
+{
+  "classification": "posthoc independent audit, synthetic diagnostic only; not new model evidence",
+  "new_model_runs": 0,
+  "run_accounting": {
+    "v1": {
+      "heads": 12288,
+      "trajectories": 13440,
+      "search_calls": 69513,
+      "unresolved": 8365,
+      "backtrack_restart_calls": 8971,
+      "head_normal": {
+        "cosine": [
+          3,
+          8,
+          3
+        ],
+        "linear": [
+          53,
+          46,
+          51
+        ],
+        "mlp": [
+          212,
+          172,
+          197
+        ],
+        "relation": [
+          256,
+          256,
+          256
+        ]
+      },
+      "bounded_correct": {
+        "normal": 294,
+        "member_order": 294,
+        "member_corrupt": 9,
+        "edge_shuffle": 13,
+        "masked": 21,
+        "zero_noise": 384,
+        "risk_neutral": 297
+      }
+    },
+    "v2": {
+      "heads": 12288,
+      "trajectories": 13440,
+      "search_calls": 69513,
+      "unresolved": 8365,
+      "backtrack_restart_calls": 8971,
+      "head_normal": {
+        "cosine": [
+          3,
+          8,
+          3
+        ],
+        "linear": [
+          53,
+          46,
+          51
+        ],
+        "mlp": [
+          212,
+          172,
+          197
+        ],
+        "relation": [
+          256,
+          256,
+          256
+        ]
+      },
+      "bounded_correct": {
+        "normal": 294,
+        "member_order": 294,
+        "member_corrupt": 9,
+        "edge_shuffle": 13,
+        "masked": 21,
+        "zero_noise": 384,
+        "risk_neutral": 297
+      }
+    },
+    "executed_search_calls_v1_plus_v2": 139026,
+    "split_input_overlap": {
+      "17": {
+        "unique_train_pairs": 64,
+        "unique_holdout_pairs": 63,
+        "shared_pairs": 63,
+        "holdout_pairs_seen_in_train": 1.0
+      },
+      "29": {
+        "unique_train_pairs": 64,
+        "unique_holdout_pairs": 64,
+        "shared_pairs": 64,
+        "holdout_pairs_seen_in_train": 1.0
+      },
+      "43": {
+        "unique_train_pairs": 64,
+        "unique_holdout_pairs": 64,
+        "shared_pairs": 64,
+        "holdout_pairs_seen_in_train": 1.0
+      }
+    }
+  },
+  "v2_whole_process": {
+    "exit_code": 0,
+    "wall_seconds": 7.454606647000048,
+    "user_cpu_seconds": 9.530523,
+    "system_cpu_seconds": 0.173371,
+    "peak_rss_KiB": 186272
+  },
+  "v1_failed_process": {
+    "status": "failed_after_all_evaluations_during_summary_serialization",
+    "error": "TypeError: Object of type int64 is not JSON serializable",
+    "retry_changes": "JSON scalar serialization only; protocol, models, seeds, and evaluation unchanged",
+    "search_calls": 69513,
+    "recorded_cpu_lower_bound_seconds": 7.102731016999957,
+    "recorded_wall_lower_bound_seconds": 5.724187590006181,
+    "peak_rss_lower_bound_KiB": 178064,
+    "full_process_cpu_wall": "unavailable for failed v1; explicit instrumentation gap, not zero cost"
+  },
+  "dense_inference_flops_estimate_v2": 11881456,
+  "total_flops": null,
+  "original_tests_passed": 4,
+  "patched_tests_passed": 7,
+  "frontier_reproduced_byte_for_byte": true,
+  "limitations": [
+    "All 256 holdout records per seed use input pairs already present in training. Episode identities are distinct; content support is not disjoint.",
+    "Split-array inequality test does not establish root, source-family or compositional isolation.",
+    "Source URLs are moving branch URLs with recorded digests, not independently refetched during review.",
+    "Full first-failed-process CPU/wall remain unknown; lower bounds are not totals.",
+    "Unit tests and replay do not establish whole-repository or natural-data acceptance."
+  ]
+}
