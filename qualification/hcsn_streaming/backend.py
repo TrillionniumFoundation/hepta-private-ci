@@ -35,6 +35,21 @@ def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
 
 
+def parse_json(data):
+    def object_pairs(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("duplicate JSON field")
+            value[key] = item
+        return value
+
+    def nonfinite(value):
+        raise ValueError("nonfinite JSON number: " + value)
+
+    return json.loads(data, object_pairs_hook=object_pairs, parse_constant=nonfinite)
+
+
 def tensor_record(tensor):
     tensor = tensor.detach().cpu().contiguous()
     if tensor.dtype != torch.float64 or not torch.isfinite(tensor).all():
@@ -43,7 +58,9 @@ def tensor_record(tensor):
 
 
 def tensor_restore(record, shape):
-    if (set(record) != {"shape", "bits"} or record["shape"] != list(shape)
+    if (set(record) != {"shape", "bits"} or type(record["shape"]) is not list
+            or any(type(x) is not int or x < 0 for x in record["shape"])
+            or record["shape"] != list(shape)
             or len(record["bits"]) != math.prod(shape)
             or any(type(x) is not int or not 0 <= x < 2**64 for x in record["bits"])):
         raise ValueError("invalid tensor dimensions or IEEE bits")
@@ -110,7 +127,7 @@ def decode_state(data, expected_binding):
         offset += size
     if offset != len(data) or sections.pop("optimizer") != b"" or encode_state(binding, sections) != data:
         raise ValueError("noncanonical state envelope")
-    return {name: json.loads(value) for name, value in sections.items()}
+    return {name: parse_json(value) for name, value in sections.items()}
 
 
 def check_cost(records, identity, controller, batch):
@@ -120,7 +137,7 @@ def check_cost(records, identity, controller, batch):
         if (set(item) != {"canonical", "hash"}
                 or hashlib.sha256(item["canonical"].encode()).hexdigest() != item["hash"]):
             raise ValueError("invalid cost journal hash")
-        record = json.loads(item["canonical"])
+        record = parse_json(item["canonical"])
         budget = record["budget"] if budget is None else budget
         if record["previous"] != tail or record["identity"] != identity or record["budget"] != budget:
             raise ValueError("cost chain, request or budget mismatch")
@@ -151,6 +168,25 @@ def check_cost(records, identity, controller, batch):
     if pending is not None or (observations, examples, solves) != tuple(
             controller[name] + controller["discarded_" + name] for name in ("observations", "examples", "solves")):
         raise ValueError("controller is not backed by settled physical work")
+
+
+def validate_statistics(gram, cross, examples, ridge):
+    if (gram.ndim != 2 or gram.shape[0] != gram.shape[1] or cross.ndim != 2
+            or cross.shape[0] != len(gram) or not torch.isfinite(gram).all()
+            or not torch.isfinite(cross).all() or not torch.equal(gram, gram.T)
+            or bool((gram.diag() < 0).any()) or gram[-1, -1] != examples):
+        raise ValueError("invalid ridge sufficient-statistic matrix")
+    if examples == 0:
+        if bool((gram != 0).any()) or bool((cross != 0).any()):
+            raise ValueError("unobserved statistics must be zero")
+    else:
+        penalty = torch.eye(len(gram), dtype=torch.float64) * ridge
+        penalty[-1, -1] = 0
+        # A positive ridge with observations requires a positive-definite normal
+        # matrix. No task tolerance or previous qualification threshold is changed.
+        normal = gram + penalty
+        if not torch.isfinite(normal).all() or bool(torch.linalg.cholesky_ex(normal).info != 0):
+            raise ValueError("ridge normal matrix is not positive definite")
 
 
 class StreamingRidge:
@@ -231,6 +267,7 @@ class StreamingRidge:
             raise ValueError("cannot snapshot an unsettled operation")
         validate_geometry(self.flow)
         self.flow.validate_state(self.state, len(self.state.boundary), torch.float64, torch.device("cpu"))
+        validate_statistics(self.gram, self.cross, self.examples, self.ridge)
         parameters = {"flow": {key: tensor_record(value) for key, value in self.flow.named_parameters()},
                       "readout": {key: tensor_record(value) for key, value in self.readout.named_parameters()}}
         cost = []
@@ -301,6 +338,7 @@ class StreamingRidge:
                 or not torch.equal(result.gram, result.gram.T)
                 or bool((result.gram.diag() < 0).any())):
             raise ValueError("ridge statistics and controller disagree")
+        validate_statistics(result.gram, result.cross, result.examples, result.ridge)
         saved_cost = sections["cost_ledger"]
         if set(saved_cost) != {"identity", "records"} or saved_cost["identity"] != ledger.identity:
             raise ValueError("cost identity mismatch")

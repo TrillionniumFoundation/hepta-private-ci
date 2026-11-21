@@ -11,7 +11,24 @@ import torch
 
 from qualification.hcsn_adaptive.batched_flow import BatchedFlow, FlowConfig
 from qualification.hcsn_adaptive.budget import Budget, CostLedger
-from .backend import BINDINGS, MASK, RULE, SCHEMA, StreamingRidge, canonical, decode_state, encode_state, tensor_record
+from .backend import (BINDINGS, MASK, RULE, SCHEMA, StreamingRidge, canonical, decode_state,
+                      encode_state, parse_json, tensor_record, tensor_restore)
+from .request import request_digest
+
+
+def update_request():
+    def digest(text):
+        return hashlib.sha256(text.encode()).hexdigest()
+    names = ["readout.bias", "readout.weight"]
+    mask = b"hepta.cell.trainable-mask.v1" + b"".join(len(name).to_bytes(4, "big") + name.encode() for name in names)
+    return {"proposal_id": "streaming-ridge-proposal",
+            "scope": {"agent_id": "agent", "cell_id": "cell", "run_id": "run1", "principal_digest": digest("principal")},
+            "base_bundle_digest": digest("bundle"), "source_frontier": digest("frontier"),
+            "dataset_digest": digest("streaming-state-unit-dataset_digest"), "dataset_bytes": 128,
+            "credit_profile_digest": digest("credit"), "trainable_mask_digest": hashlib.sha256(mask).hexdigest(),
+            "trainable_parameters": names, "from_generation": 1, "candidate_generation": 2,
+            "budget": {"maximum_dataset_bytes": 1024, "maximum_steps": 1,
+                       "maximum_elapsed_micros": 300_000_000, "maximum_working_bytes": 2_000_000_000}}
 
 
 def binding():
@@ -19,6 +36,7 @@ def binding():
     result["backend_state_schema_digest"] = hashlib.sha256(SCHEMA).hexdigest()
     result["learning_rule_digest"] = hashlib.sha256(RULE).hexdigest()
     result["parameter_mask_digest"] = hashlib.sha256(MASK).hexdigest()
+    result["request_digest"] = request_digest(update_request())
     return result
 
 
@@ -70,12 +88,43 @@ def export_native_fixture(path):
                    "parameters_digest": hashlib.sha256(canonical(decode_state(data, binding())["parameters"])).hexdigest(),
                    "time_micros": model.state.time_micros,
                    "candidate_readout": candidate_record(candidate),
+                   "update_request": update_request(),
                    "origin": "real BatchedFlow two observations and torch.linalg.solve; unit fixture, no task holdout"}
+        fixture["cost_overruns"] = []
+        with patch("qualification.hcsn_streaming.backend.copy.deepcopy", side_effect=RuntimeError("fixture copy failure")):
+            try:
+                model.propose()
+            except RuntimeError:
+                pass
+        failed = model.snapshot()
+        fixture["cost_overruns"].append({"kind": "failed", "state_hex": failed.hex(),
+            "state_digest": hashlib.sha256(failed).hexdigest()})
+        replay_root = Path(directory) / "discarded"
+        replay = session(replay_root)
+        observe(replay, 0)
+        observe(replay, 1)
+        checkpoint = replay.snapshot()
+        replay.propose()
+        replay = StreamingRidge.restore(checkpoint, expected_binding=binding(),
+            expected_digest=hashlib.sha256(checkpoint).hexdigest(), ledger=ledger(replay_root))
+        replay.propose()
+        discarded = replay.snapshot()
+        fixture["cost_overruns"].append({"kind": "discarded", "state_hex": discarded.hex(),
+            "state_digest": hashlib.sha256(discarded).hexdigest()})
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         Path(path).write_bytes(canonical(fixture) + b"\n")
 
 
 class BackendTests(unittest.TestCase):
+    def test_wire_rejects_ambiguous_shapes_duplicate_keys_and_nonfinite_json(self):
+        value = tensor_record(torch.ones(1, 2, dtype=torch.float64))
+        for first in (True, 1.0):
+            with self.subTest(shape=first), self.assertRaises(ValueError):
+                tensor_restore({**value, "shape": [first, 2]}, (1, 2))
+        for value in ('{"shape": [], "shape": [1]}', '{"value": NaN}', '{"value": Infinity}'):
+            with self.subTest(json=value), self.assertRaises(ValueError):
+                parse_json(value)
+
     def test_noncanonical_geometry_and_missing_bias_cannot_be_admitted(self):
         with tempfile.TemporaryDirectory() as directory:
             original = session(directory)
@@ -153,7 +202,7 @@ class BackendTests(unittest.TestCase):
             model = session(directory)
             observe(model, 0)
             original = model.snapshot()
-            for mutation in ("mass", "clock", "count", "stats", "rng"):
+            for mutation in ("mass", "clock", "count", "stats", "indefinite", "rng"):
                 sections = decode_state(original, binding())
                 if mutation == "mass":
                     sections["backend"]["density"]["bits"][0] = tensor_record(torch.tensor(20.0, dtype=torch.float64))["bits"][0]
@@ -163,6 +212,12 @@ class BackendTests(unittest.TestCase):
                     sections["controller"]["observations"] = 99
                 elif mutation == "stats":
                     sections["history"]["gram"]["bits"][-1] = 0
+                elif mutation == "indefinite":
+                    width = model.gram.shape[0]
+                    gram = torch.eye(width, dtype=torch.float64)
+                    gram[0, 1] = gram[1, 0] = 2
+                    gram[-1, -1] = model.examples
+                    sections["history"]["gram"] = tensor_record(gram)
                 else:
                     sections["rng"]["kind"] = "unknown"
                 data = encode_state(binding(), {key: canonical(value) for key, value in sections.items()})
