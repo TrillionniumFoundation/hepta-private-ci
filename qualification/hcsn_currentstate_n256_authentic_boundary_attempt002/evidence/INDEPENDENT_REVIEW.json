@@ -1,0 +1,57 @@
+{
+  "schema": "hcsn-n256-authentic-boundary-attempt002-independent-review-v1",
+  "review_method": "downloaded original GitHub artifact; ZIP CRC; file sizes; SHA-256; cmp; jq-only JSON readback",
+  "model_or_builder_calls": 0,
+  "numerical_imports": 0,
+  "optimizer_steps": 0,
+  "zip": {
+    "sha256": "43d990c1a17e4e075681820caec327e368a0ae3144abdac21ad383d133f3f595",
+    "crc_members_ok": 10,
+    "total_members": 10
+  },
+  "containers": {
+    "oracle": {
+      "bytes": 545171,
+      "sha256": "e580e44a679ecf9e2588c989cd4d026e326e7364331c46d1927b00ccada78fd4"
+    },
+    "candidate": {
+      "bytes": 545171,
+      "sha256": "e580e44a679ecf9e2588c989cd4d026e326e7364331c46d1927b00ccada78fd4"
+    },
+    "byte_equal": true
+  },
+  "audit": {
+    "status": "EXACT",
+    "coordinates_compared": 68105,
+    "mismatches": 0,
+    "mismatches_by_section": {
+      "extended_generator": 0,
+      "initial": 0,
+      "lower_selector": 0,
+      "discounted_selectors": 0
+    }
+  },
+  "run_counters": {
+    "authentic_distinct_input_file_accesses": 8,
+    "npz_decodes": 2,
+    "boundary_builds": 2,
+    "container_encodes": 2,
+    "exact_comparator_calls": 1,
+    "dynamic_steps": 0,
+    "dense_exponential_actions": 0,
+    "sparse_exponential_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "terminal": {
+    "execution_exit_status": 0,
+    "status": "PASS_BOUNDARY_ASSEMBLY_ONLY",
+    "boundary_assembly_qualified": true,
+    "dynamic_propagation_qualified": false,
+    "sparse_kernel_qualified": false,
+    "c2_full_replay_completed_fits": 0,
+    "hpca_update": "NoUpdate",
+    "production_adoption": false,
+    "all_closed": false
+  }
+}

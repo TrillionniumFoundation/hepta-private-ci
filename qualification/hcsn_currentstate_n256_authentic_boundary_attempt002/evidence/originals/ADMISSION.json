@@ -1,0 +1,121 @@
+{
+  "admitted": true,
+  "cgroups": [
+    {
+      "cpu.max": "max 100000",
+      "cpuset.cpus.effective": "0-3",
+      "memory.current": "1957515264",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+      "memory.max": "max",
+      "path": "/sys/fs/cgroup/system.slice/hosted-compute-agent.service"
+    },
+    {
+      "cpu.max": "max 100000",
+      "cpuset.cpus.effective": "0-3",
+      "memory.current": "2769580032",
+      "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+      "memory.max": "max",
+      "path": "/sys/fs/cgroup/system.slice"
+    },
+    {
+      "cpu.max": null,
+      "cpuset.cpus.effective": "0-3",
+      "memory.current": null,
+      "memory.events": null,
+      "memory.max": null,
+      "path": "/sys/fs/cgroup"
+    }
+  ],
+  "effective_cpus": 4,
+  "github": {
+    "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_RUN_ID": "44892752020",
+    "GITHUB_SHA": "a5cc1a919dc9cd56ca4d849ed949027ae987b1ce",
+    "RUNNER_ARCH": "X64",
+    "RUNNER_NAME": "GitHub Actions 1000223104",
+    "RUNNER_OS": "Linux"
+  },
+  "meminfo_kib": {
+    "Active": 750944,
+    "Active(anon)": 304604,
+    "Active(file)": 446340,
+    "AnonHugePages": 0,
+    "AnonPages": 296944,
+    "Balloon": 0,
+    "Bounce": 0,
+    "Buffers": 86260,
+    "Cached": 2235708,
+    "CmaFree": 1470464,
+    "CmaTotal": 0,
+    "CommitLimit": 11329484,
+    "Committed_AS": 2046880,
+    "DirectMap1G": 15728640,
+    "DirectMap2M": 3022848,
+    "DirectMap4k": 117888,
+    "Dirty": 1267796,
+    "FileHugePages": 4096,
+    "FilePmdMapped": 0,
+    "GPUActive": 0,
+    "GPUReclaim": 0,
+    "HardwareCorrupted": 0,
+    "HugePages_Free": 0,
+    "HugePages_Rsvd": 0,
+    "HugePages_Surp": 0,
+    "HugePages_Total": 0,
+    "Hugepagesize": 2048,
+    "Hugetlb": 0,
+    "Inactive": 1821000,
+    "Inactive(anon)": 0,
+    "Inactive(file)": 1821000,
+    "KReclaimable": 143720,
+    "KernelStack": 3968,
+    "Mapped": 332972,
+    "MemAvailable": 15145148,
+    "MemFree": 13067280,
+    "MemTotal": 16367524,
+    "Mlocked": 43656,
+    "NFS_Unstable": 0,
+    "PageTables": 6060,
+    "Percpu": 2352,
+    "SReclaimable": 143720,
+    "SUnreclaim": 85372,
+    "SecPageTables": 0,
+    "Shmem": 45892,
+    "ShmemHugePages": 0,
+    "ShmemPmdMapped": 0,
+    "Slab": 229092,
+    "SwapCached": 0,
+    "SwapFree": 3145724,
+    "SwapTotal": 3145724,
+    "Unaccepted": 0,
+    "Unevictable": 46728,
+    "VmallocChunk": 0,
+    "VmallocTotal": 34359738367,
+    "VmallocUsed": 38644,
+    "Writeback": 0,
+    "WritebackTmp": 0,
+    "Zswap": 0,
+    "Zswapped": 0
+  },
+  "python": "3.12.3 (main, Sep 26 2024, 18:18:55) [GCC 13.2.0]",
+  "python_executable_sha256": "2ce74da59bd24c1301a77e90b94abfe52bc14d54c0f79f565665b5a59d62734b",
+  "runtime": {
+    "numpy": {
+      "init_sha256": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+      "record_sha256": "81412454021a86a9199d8c3ae4b5e1312e7498437ba9e3fdcc6f5919c0a6482c",
+      "version": "2.3.5"
+    },
+    "scipy": {
+      "init_sha256": "335bc6e0a9909dc7534f9569a3685a92dc8001cb8c63a6da4c239849ff02d4d0",
+      "record_sha256": "d98e3cc57253f7f8c6ca4f5b775a4747815edc9b1bcd5295c9dacc3c8d49c7b0",
+      "version": "1.17.0"
+    }
+  },
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  }
+}

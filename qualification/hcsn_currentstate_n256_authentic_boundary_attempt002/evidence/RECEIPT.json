@@ -1,0 +1,50 @@
+{
+  "schema": "hcsn-n256-authentic-boundary-attempt002-evidence-v1",
+  "identity": "hcsn-n256-authentic-boundary-attempt002-20261121-c06d",
+  "source_commit": "a5cc1a919dc9cd56ca4d849ed949027ae987b1ce",
+  "source_tree": "ab288a4b5084875eaafa494e670f03eb22e071f0",
+  "research_branch": "research/hcsn-n256-authentic-boundary-attempt002-20261121-c06d",
+  "unique_execution_key": "hcsn-n256-authentic-boundary-hosted-20261121-c06d-002",
+  "run": {
+    "id": 44892752020,
+    "attempt": 1,
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "job": {
+    "id": 136811905820,
+    "name": "attempt",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "id": 14702701666,
+    "name": "hcsn-n256-authentic-boundary-attempt002",
+    "api_size_bytes": 42966,
+    "zip_sha256": "43d990c1a17e4e075681820caec327e368a0ae3144abdac21ad383d133f3f595",
+    "members": 10
+  },
+  "result": {
+    "status": "PASS_BOUNDARY_ASSEMBLY_ONLY",
+    "coordinates": 68105,
+    "mismatches": 0,
+    "container_bytes_each": 545171,
+    "container_sha256": "e580e44a679ecf9e2588c989cd4d026e326e7364331c46d1927b00ccada78fd4"
+  },
+  "scope": {
+    "boundary_assembly_qualified": true,
+    "dynamic_propagation_qualified": false,
+    "sparse_kernel_qualified": false,
+    "c2_full_replay_completed_fits": 0,
+    "hpca_update": "NoUpdate",
+    "production_adoption": false,
+    "all_closed": false
+  },
+  "prior_results_preserved": {
+    "attempt001": "RED/INCOMPLETE",
+    "historical_sparse_red": "RED",
+    "unknowns_preserved": true
+  },
+  "evidence_commit_executes_numeric_work": false
+}
