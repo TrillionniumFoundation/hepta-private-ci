@@ -1,0 +1,70 @@
+{
+  "schema": "hcsn-n256-dense-compatible-action-boundary-intent-v1",
+  "identity": "hcsn-n256-dense-compatible-action-boundary-intent-20261120-c06d-001",
+  "base_evidence_commit": "6b1bc27cc1c0b31830df2a489cb9e12e2f675d1b",
+  "base_evidence_tree": "f047f17a2d515de2ce01057b0ed979f207c51a6b",
+  "execution_allowed": false,
+  "numerical_execution_allowed": false,
+  "unique_execution_key": null,
+  "scope": "freeze the exact pre-exponential boundary and dense action source without executing it",
+  "boundary": {
+    "extended_generator_shape": [257, 257],
+    "initial_shape": [5, 257],
+    "selector_shapes": [[257, 1], [257, 2]],
+    "coordinate_denominator": 68105,
+    "duration_numerator": 1,
+    "duration_denominator": 1000,
+    "discount_hex": ["0x0.0p+0", "0x1.3333333333333p-3"],
+    "augmented_dimensions": [258, 259],
+    "action_order": ["undiscounted_hit", "discounted_hit_and_occupation"]
+  },
+  "historical_sparse_red": {
+    "source_pr": 6823,
+    "evidence_pr": 6824,
+    "source_commit": "c0fb79ba896d3d4fb30a58ea40ce33d757ac9658",
+    "evidence_commit": "6b1bc27cc1c0b31830df2a489cb9e12e2f675d1b",
+    "run_id": 44851931235,
+    "job_id": 136685046474,
+    "artifact_id": 14685796500,
+    "artifact_zip_sha256": "6323e8494359b42e11639afd3033d90c7fa86bbb057b824aefae49799ecb4ef5",
+    "candidate_capsule_sha256": "248cfc56d575b15d4a8340267e8b668fd0b6dc94be71b61e2b0cec8b913981b1",
+    "final_coordinate_denominator": 69728,
+    "mismatch_count": 1291,
+    "maximum_absolute_error_hex": "0x1.0600000000000p-50",
+    "maximum_ulp_distance": 335,
+    "result": "RED"
+  },
+  "prior_constructor_reds": [
+    {
+      "source_commit": "a3373921a0193336837d217c24d0d35dccd9a5ad",
+      "evidence_commit": "e081b8bc9faf64b3ee22a292cd1787f3a48345dc",
+      "run_id": 44849987440,
+      "dynamic_steps": null,
+      "sparse_exponential_actions": null
+    },
+    {
+      "source_commit": "8bf624203ad1266082ae52a2ae2ebdc96dc90036",
+      "evidence_commit": "69f642c5d9b41c0a1bc0214aea965af8ea988ff0",
+      "run_id": 44851090269,
+      "dynamic_steps": null,
+      "sparse_exponential_actions": null
+    }
+  ],
+  "source_only_counts": {
+    "authentic_input_reads": 0,
+    "boundary_builds": 0,
+    "boundary_comparisons": 0,
+    "dynamic_steps": 0,
+    "dense_exponential_actions": 0,
+    "sparse_exponential_actions": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "boundary_compared": false,
+  "qualification": false,
+  "largegrid_qualification": false,
+  "c2_full_replay_completed_fits": 0,
+  "hpca_update": "NoUpdate",
+  "all_closed": false
+}
