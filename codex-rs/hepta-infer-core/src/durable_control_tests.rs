@@ -2,6 +2,24 @@ use super::*;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+// Read through the descriptor that owns the exclusive lock. Windows correctly
+// rejects a separately opened handle, even from this process. Preserve the
+// append/replay cursor and keep the original lock held throughout inspection.
+pub(super) fn held_journal_bytes(mut file: &File) -> Vec<u8> {
+    use std::io::Read;
+    use std::io::Seek;
+    use std::io::SeekFrom;
+
+    let position = file.stream_position().unwrap();
+    file.rewind().unwrap();
+    let mut bytes = Vec::new();
+    let read = file.read_to_end(&mut bytes);
+    let restored = file.seek(SeekFrom::Start(position));
+    read.unwrap();
+    restored.unwrap();
+    bytes
+}
+
 fn path(label: &str) -> PathBuf {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)

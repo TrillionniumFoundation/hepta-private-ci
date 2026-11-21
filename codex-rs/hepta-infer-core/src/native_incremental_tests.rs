@@ -102,7 +102,7 @@ fn rejected_transition_and_failed_append_preserve_records_and_slot_count() {
     control.reserve_native(request("two"), 2).unwrap();
     assert_active(&control, 2);
     let before = control.native.records.clone();
-    let bytes = std::fs::read(&path).unwrap();
+    let bytes = held_journal_bytes(&control.file);
     let invalid = Event::Started {
         request_id: "one".to_string(),
         turn_id: "turn".to_string(),
@@ -113,7 +113,7 @@ fn rejected_transition_and_failed_append_preserve_records_and_slot_count() {
     );
     assert_eq!(control.native.records, before);
     assert_active(&control, 2);
-    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    assert_eq!(held_journal_bytes(&control.file), bytes);
     // Keep the original locked descriptor alive while forcing an actual I/O
     // failure on the append descriptor. No production fault hook is introduced.
     let locked = std::mem::replace(&mut control.file, std::fs::File::open(&path).unwrap());
@@ -125,7 +125,7 @@ fn rejected_transition_and_failed_append_preserve_records_and_slot_count() {
     assert!(control.poisoned);
     assert_active(&control, 2);
     assert_eq!(control.native.records, before);
-    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    assert_eq!(held_journal_bytes(&locked), bytes);
     drop(control);
     drop(locked);
     let control = DurableInferenceControl::open(&path, 8).unwrap();

@@ -1,22 +1,5 @@
 use super::*;
 
-// Inspect the owned descriptor so Windows byte-range locking does not require
-// a separately opened read handle. Restore the actual cursor before returning.
-fn held_journal_bytes(control: &DurableInferenceControl) -> Vec<u8> {
-    use std::io::Read;
-    use std::io::Seek;
-    use std::io::SeekFrom;
-    let mut file = &control.file;
-    let position = file.stream_position().unwrap();
-    file.rewind().unwrap();
-    let mut bytes = Vec::new();
-    let read = file.read_to_end(&mut bytes);
-    let restored = file.seek(SeekFrom::Start(position));
-    read.unwrap();
-    restored.unwrap();
-    bytes
-}
-
 #[test]
 fn checkpoint_retains_complete_v3_input_authority_loss_and_uncertain_dispatch() {
     let path = path("checkpoint-v3");
@@ -105,7 +88,7 @@ fn legacy_checkpoint_without_prepared_input_remains_digest_only() {
     std::fs::write(&path, &legacy).unwrap();
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&expected));
-    let bytes = held_journal_bytes(&control);
+    let bytes = held_journal_bytes(&control.file);
     assert_eq!(
         control
             .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
@@ -119,5 +102,5 @@ fn legacy_checkpoint_without_prepared_input_remains_digest_only() {
             .prepared_input_v2
             .is_none()
     );
-    assert_eq!(held_journal_bytes(&control), bytes);
+    assert_eq!(held_journal_bytes(&control.file), bytes);
 }
