@@ -68,7 +68,11 @@ def run_inline(api, variant, user, base):
     root = process = capture = None
     try:
         code = api.CreateAppContainerProfile(
-            profile, profile, "Owned LPAC cmd entry comparison", None, 0,
+            profile,
+            profile,
+            "Owned LPAC cmd entry comparison",
+            None,
+            0,
             C.byref(package_sid),
         )
         require(code == 0 and package_sid.value is not None, "fresh owned profile")
@@ -100,7 +104,8 @@ def run_inline(api, variant, user, base):
         facts = api.token_facts(token)
         record["child_token"] = facts
         require(
-            facts == {
+            facts
+            == {
                 "is_appcontainer": 1,
                 "package_sid": package,
                 "integrity_sid": "S-1-16-4096",
@@ -114,7 +119,8 @@ def run_inline(api, variant, user, base):
         access = api.lpac_access_check(token)
         record["lpac_native_access_check"] = access
         require(
-            access["access_status"] and access["granted_access"] == 2
+            access["access_status"]
+            and access["granted_access"] == 2
             and access["privilege_count"] == 0,
             "actual inline child is not LPAC",
         )
@@ -185,10 +191,14 @@ def run_inline(api, variant, user, base):
         if process is not None:
             try:
                 if api.WaitForSingleObject(process.hProcess, 0) == WAIT_TIMEOUT:
-                    api.checked(api.TerminateProcess(process.hProcess, 71),
-                                "stop only the owned inline child")
-                    require(api.WaitForSingleObject(process.hProcess, 5000) == 0,
-                            "owned inline child stopped")
+                    api.checked(
+                        api.TerminateProcess(process.hProcess, 71),
+                        "stop only the owned inline child",
+                    )
+                    require(
+                        api.WaitForSingleObject(process.hProcess, 5000) == 0,
+                        "owned inline child stopped",
+                    )
                 api.close(process.hThread)
                 api.close(process.hProcess)
                 cleanup["owned_child_closed"] = True
@@ -217,9 +227,10 @@ def run_inline(api, variant, user, base):
         if package_sid.value:
             api.FreeSid(package_sid)
         record["cleanup"] = cleanup
-        if any(name.endswith("error") for name in cleanup) or cleanup.get(
-            "profile_delete_hresult", 0
-        ) != 0:
+        if (
+            any(name.endswith("error") for name in cleanup)
+            or cleanup.get("profile_delete_hresult", 0) != 0
+        ):
             record["status"] = "failed"
     return record
 
@@ -232,8 +243,10 @@ def main():
     args = parser.parse_args()
     require(os.name == "nt", "native Windows is required; no substitute pass")
     require(not args.output.exists(), "output must be a new receipt")
-    require(re.fullmatch(r"[0-9a-f]{40}", args.source_head) is not None,
-            "exact source commit required")
+    require(
+        re.fullmatch(r"[0-9a-f]{40}", args.source_head) is not None,
+        "exact source commit required",
+    )
     actual_head = subprocess.check_output(
         ["git", "-C", str(args.repo), "rev-parse", "HEAD"], text=True
     ).strip()
@@ -284,7 +297,8 @@ def main():
                 report["cmd_image_after"] = cmd_image(api)
         except Exception as error:
             report["finalization_error"] = {
-                "type": type(error).__name__, "message": str(error)
+                "type": type(error).__name__,
+                "message": str(error),
             }
         report["source_sha256_after"] = {
             path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sources
@@ -292,9 +306,10 @@ def main():
         report["source_unchanged"] = (
             report["source_sha256_before"] == report["source_sha256_after"]
         )
-        report["cmd_image_unchanged"] = (
-            report.get("cmd_image_before") is not None
-            and report.get("cmd_image_before") == report.get("cmd_image_after")
+        report["cmd_image_unchanged"] = report.get(
+            "cmd_image_before"
+        ) is not None and report.get("cmd_image_before") == report.get(
+            "cmd_image_after"
         )
         report["finished_at"] = datetime.now(timezone.utc).isoformat()
     report["original_batch_passed"] = (
@@ -302,8 +317,10 @@ def main():
         == "passed_bounded_hypotheses"
     )
     report["all_expected_results_observed"] = (
-        "error" not in report and "finalization_error" not in report
-        and report["source_unchanged"] and report["cmd_image_unchanged"]
+        "error" not in report
+        and "finalization_error" not in report
+        and report["source_unchanged"]
+        and report["cmd_image_unchanged"]
         and len(report["inline_cases"]) == 2
         and all(
             case["status"] == "observed" and case.get("diagnostic_expected_result")
@@ -315,11 +332,17 @@ def main():
     with args.output.open("x", encoding="utf-8") as output:
         json.dump(report, output, indent=2)
         output.write("\n")
-    print(json.dumps({
-        "output": str(args.output),
-        "original_batch_passed": report["original_batch_passed"],
-        "all_expected_results_observed": report["all_expected_results_observed"],
-    }))
+    print(
+        json.dumps(
+            {
+                "output": str(args.output),
+                "original_batch_passed": report["original_batch_passed"],
+                "all_expected_results_observed": report[
+                    "all_expected_results_observed"
+                ],
+            }
+        )
+    )
     return 0 if report["all_expected_results_observed"] else 1
 
 
