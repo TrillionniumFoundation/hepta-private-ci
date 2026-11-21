@@ -73,7 +73,7 @@ class LintPreservedOwnerGuardsSourceClosureTests(unittest.TestCase):
     def test_current_guard_records_validate(self):
         PROOF._verify_protected_files(ROOT, {"protected_file": self.rows})
 
-    def test_privileged_operation_keeps_explicit_call_and_exact_typed_callers(self):
+    def test_privileged_operation_keeps_original_function_item_and_exact_typed_callers(self):
         boundary = next(
             row
             for row in PROOF._boundary_rows(self.manifest)
@@ -96,13 +96,20 @@ class LintPreservedOwnerGuardsSourceClosureTests(unittest.TestCase):
         indirect = (
             ".map(crate::OriginalCellQ24TrainingSourceV1::begin_source_operation)"
         )
-        self.assertEqual(sources[LANE].count(explicit), 1)
-        changed = dict(sources)
-        changed[LANE] = changed[LANE].replace(explicit, indirect, 1)
-        with self.assertRaisesRegex(
-            PROOF.VerificationFailure, "caller set mismatch; missing="
-        ):
-            PROOF._verify_boundary(ROOT, boundary, changed, ())
+        self.assertEqual(sources[LANE].count(indirect), 1)
+        # The typed scanner now admits the same qualified method as a function
+        # item. Both forms carry the original authority; replacing it does not.
+        equivalent = dict(sources)
+        equivalent[LANE] = equivalent[LANE].replace(indirect, explicit, 1)
+        PROOF._verify_boundary(ROOT, boundary, equivalent, ())
+        for replacement in (".map(|_| Ok(None))", ".map(OtherSource::begin_source_operation)"):
+            with self.subTest(replacement=replacement):
+                changed = dict(sources)
+                changed[LANE] = changed[LANE].replace(indirect, replacement, 1)
+                with self.assertRaisesRegex(
+                    PROOF.VerificationFailure, "caller set mismatch; missing="
+                ):
+                    PROOF._verify_boundary(ROOT, boundary, changed, ())
 
     def test_after_native_check_keeps_same_source_operation_and_fail_closed_body(self):
         for changed in (

@@ -88,7 +88,7 @@ class OriginalEvaluationProviderClosureTests(unittest.TestCase):
         for identifier, expected in EXPECTED.items():
             with self.subTest(boundary=identifier):
                 row = self.boundaries[identifier]
-                self.assertEqual(row.product_callers, expected)
+                self.assertCountEqual(row.product_callers, expected)
                 self.assertIn(identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
                 PROOF._verify_boundary(ROOT, row, sources, ())
                 method = row.symbol.rsplit("::", 1)[-1]

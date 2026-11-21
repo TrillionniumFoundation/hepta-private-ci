@@ -33,7 +33,8 @@ class OriginalMaterialOwnerClosureTests(unittest.TestCase):
         self.assertIsNotNone(end)
         offset = source.index(marker, start, end + 1)
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
-        self.assertEqual(len(rows), {OWNER: 2, BINDING: 2, CAPTURE: 4}.get(path, 1))
+        # Packaged manifests merge guards and reject duplicate protected paths.
+        self.assertEqual(len(rows), 1, path)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path

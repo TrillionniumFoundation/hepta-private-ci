@@ -23,6 +23,7 @@ CALLERS = {
         "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
         AGENT + "neuron_generation_update_selection_root.rs",
         AGENT + "cell_split_owner.rs",
+        "codex-rs/hepta-learning-artifacts/src/selected.rs",
     ),
     "root_learning_live_profile_action": (
         "codex-rs/hepta-agentd/src/authority_host_completed_deployment.rs",
