@@ -114,7 +114,7 @@ def _csr(operator, sparse):
 def _extended(operator, upper_flow, sparse):
     core = _csr(operator, sparse)
     prefix = (0.0,) * (operator.dimension - INTERIOR)
-    sink = sparse.csr_matrix((prefix + tuple(upper_flow),), dtype="float64").T
+    sink = sparse.csr_matrix([prefix + tuple(upper_flow)], dtype="float64").T
     return sparse.bmat(
         ((core, sink), (None, sparse.csr_matrix((1, 1), dtype="float64"))),
         format="csr",

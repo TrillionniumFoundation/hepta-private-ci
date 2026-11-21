@@ -1,33 +1,46 @@
 {
-  "schema": "hcsn-n256-warm1-candidate-oracle-compare-scipy17-repair-freeze-v1",
+  "schema": "hcsn-n256-warm1-candidate-oracle-compare-listrow-repair-freeze-v1",
   "parent_commit": "42aa0ba6153b46c197775634a18db15589ddb199",
   "parent_tree": "db4c2889341c273bfe3650f0c41677d525ddef1c",
   "parent_draft": 6818,
   "files": {
-    ".github/workflows/hepta-contract-gate.yml": "88a5a640ff708c3c42124adec20e729a74549427f5b1bd79826f0a4698dab79c",
-    "qualification/hcsn_currentstate_n256_firststep_candidate_compare/README.md": "14b4ae83d2b9b4961b1b331f525ff397f3b09ccec15c85bace9cb8bbaa2a9b9e",
-    "qualification/hcsn_currentstate_n256_firststep_candidate_compare/REQUEST.json": "b4f7805027ea0285b0ac7f727e69585c66de1cc202567ebf9c15354f17254d9d",
+    ".github/workflows/hepta-contract-gate.yml": "580c128b0f6b211280f0c9db496498b71af24a7eb6c3ab6e0a3c6e9462eb3a83",
+    "qualification/hcsn_currentstate_n256_firststep_candidate_compare/README.md": "97ada0acd1bdb91847a9c85bdab6bb27cc90e690809d2c383823eaf2b14af1ee",
+    "qualification/hcsn_currentstate_n256_firststep_candidate_compare/REQUEST.json": "178a1427357a654338e6259d3716684629fc9fd66677800252313a8b5f1bac1c",
     "qualification/hcsn_currentstate_n256_firststep_candidate_compare/__init__.py": "7aec17515a4e871c8053f99129d1c599e5f2e19ce824e11932a7c29240917053",
     "qualification/hcsn_currentstate_n256_firststep_candidate_compare/compare.py": "473f7e05269a6768885b539e2f8af83ed892a7b835b68772fe42e4f0912d7f2b",
+    "qualification/hcsn_currentstate_n256_firststep_candidate_compare/compatibility_probe.py": "001143c1dd9224ef666c894c172605ab24120ac72992fa433d7d1a6fcd800299",
     "qualification/hcsn_currentstate_n256_firststep_candidate_compare/run.py": "acf656740e22e1402cb516cea11c6343db8e8e8c0ad644941d1ce2c5b2c7acb5",
-    "qualification/hcsn_currentstate_n256_firststep_candidate_compare/test_source.py": "34331b208fcb1685c4263113149043aebcc24c9bd09a91267a01cbf715efa4b7",
-    "qualification/hcsn_currentstate_n256_firststep_candidate_compare/verify_source.py": "c92cddb6f055f1ae9a57521a25fbe23627a73456a34c8875b6d837622481be50",
-    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/sparse_dynamic.py": "ca45deeea7c8c9a1d42c3c4db295fd3614fe7b0744b8ed027f83448485e78a83",
+    "qualification/hcsn_currentstate_n256_firststep_candidate_compare/test_source.py": "a1ce0624495f23bd72ba347be644b340c24671d6a53247c54253886b9ee4779d",
+    "qualification/hcsn_currentstate_n256_firststep_candidate_compare/verify_source.py": "83594f0af47a2fa8d64f335bf92418d84e2b77e65449469f5eaf7c8033cc9b0b",
+    "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/sparse_dynamic.py": "6d3fea2b230bc7abc28df3d4d3c8f28ceaa163d9961ef2db8a7e369eee1f4816",
     "qualification/hcsn_currentstate_n256_engineering/candidate.py": "91c55d87fd993c9d01d1b1e98ba855bf171dfd74f2bdc12bd94fc23d9dc7a9d3",
     "qualification/hcsn_currentstate_n256_firststep_serializer_v2/serializer.py": "dfa63cbfe7688e9c07cfff627cffd3d1e0352191e09f2be20ad53d1e310c1ab9",
     "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/adapter.py": "311eeeb69ba5002171d3aa765610bc9caea1cb2942309ba6e67543297cb74084",
     "qualification/hcsn_currentstate_n256_firststep_dense_oracle_dispatch_bridge/evidence/run44848445922/ARTIFACT.zip": "3ba4ef88608cbfc04d83fd82c1f05d7b439edf4f9338365625e79b0d52f02400"
   },
-  "prior_red": {
-    "source_commit": "a3373921a0193336837d217c24d0d35dccd9a5ad",
-    "run_id": 44849987440,
-    "job_id": 136678793301,
-    "artifact_id": 14684118589,
-    "artifact_zip_sha256": "a922989c369eddf6685f273334fcad5d02b464a1cec21607f98d9f1f400ccf0a",
-    "evidence_commit": "e081b8bc9faf64b3ee22a292cd1787f3a48345dc",
-    "executed_dynamic_steps": null,
-    "executed_sparse_exponential_actions": null
-  },
+  "prior_red": [
+    {
+      "source_commit": "a3373921a0193336837d217c24d0d35dccd9a5ad",
+      "run_id": 44849987440,
+      "job_id": 136678793301,
+      "artifact_id": 14684118589,
+      "artifact_zip_sha256": "a922989c369eddf6685f273334fcad5d02b464a1cec21607f98d9f1f400ccf0a",
+      "evidence_commit": "e081b8bc9faf64b3ee22a292cd1787f3a48345dc",
+      "executed_dynamic_steps": null,
+      "executed_sparse_exponential_actions": null
+    },
+    {
+      "source_commit": "8bf624203ad1266082ae52a2ae2ebdc96dc90036",
+      "run_id": 44851090269,
+      "job_id": 136682353885,
+      "artifact_id": 14685257001,
+      "artifact_zip_sha256": "6866e32f050cdd5e1b7cef7e4b60d771d325de48bd21582d3e61f20ed9209eb1",
+      "evidence_commit": "69f642c5d9b41c0a1bc0214aea965af8ea988ff0",
+      "executed_dynamic_steps": null,
+      "executed_sparse_exponential_actions": null
+    }
+  ],
   "precommit_numerical_counts": {
     "authentic_input_reads": 0,
     "candidate_dynamic_steps": 0,

@@ -1,6 +1,6 @@
 # N256 warm-1 sparse candidate versus archived dense oracle
 
-Status: **SCIPY 1.17 REPAIR CANDIDATE / ONE NEW IDENTITY / HOLD /
+Status: **SCIPY 1.17 LIST-ROW REPAIR CANDIDATE / ONE NEW IDENTITY / HOLD /
 `all_closed=false`**.
 
 This isolated stage consumes the exact warm 0→0.001 dense-oracle capsule from
@@ -18,9 +18,16 @@ calendar and complete cost originals before and after the child.
 
 The original #6819 identity remains terminal RED: SciPy 1.17 rejected its
 one-dimensional `csr_matrix` input before a result/counter record was written,
-so its executed dynamic/exponential counts remain UNKNOWN.  Draft #6820
-preserves those originals.  This separately frozen identity changes only that
-sink input to an explicit two-dimensional row before transpose.
+so its executed dynamic/exponential counts remain UNKNOWN. Draft #6820
+preserves those originals. The first repair #6821 also remains RED because a
+single nested tuple is not a supported SciPy 1.17 constructor input; #6822
+preserves that evidence and its counters remain UNKNOWN.
+
+A post-failure, zero-model probe in the exact local NumPy/SciPy versions tested
+five constructor forms: the two tuple forms failed, while list-row, ndarray
+column and explicit coordinate forms passed. This separately frozen identity
+uses the list-row form and runs one three-element hosted compatibility
+constructor before starting the bounded candidate.
 
 Publishing this repair branch is its only numerical trigger.  A failure remains
 RED and its artifact is uploaded; this identity is never retried under a new key.

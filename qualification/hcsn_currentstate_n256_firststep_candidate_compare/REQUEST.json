@@ -1,23 +1,50 @@
 {
-  "schema": "hcsn-n256-warm1-candidate-oracle-compare-scipy17-repair-request-v1",
-  "identity": "hcsn-n256-warm1-candidate-oracle-compare-scipy17-repair-20261120-c06d-001",
-  "unique_execution_key": "hcsn-n256-firststep-candidate-scipy17-repair-hosted-20261120-c06d-001",
+  "schema": "hcsn-n256-warm1-candidate-oracle-compare-listrow-repair-request-v1",
+  "identity": "hcsn-n256-warm1-candidate-oracle-compare-listrow-repair-20261120-c06d-001",
+  "unique_execution_key": "hcsn-n256-firststep-candidate-listrow-repair-hosted-20261120-c06d-001",
   "parent_evidence_commit": "42aa0ba6153b46c197775634a18db15589ddb199",
   "parent_evidence_tree": "db4c2889341c273bfe3650f0c41677d525ddef1c",
   "parent_draft": 6818,
-  "exact_head_branch": "research/hcsn-n256-firststep-candidate-scipy17-repair-20261120-c06d",
+  "exact_head_branch": "research/hcsn-n256-firststep-candidate-listrow-repair-20261120-c06d",
   "trigger_event": "push",
   "maximum_attempts": 1,
-  "prior_numerical_attempts": 1,
-  "prior_red": {
-    "source_commit": "a3373921a0193336837d217c24d0d35dccd9a5ad",
-    "run_id": 44849987440,
-    "job_id": 136678793301,
-    "artifact_id": 14684118589,
-    "artifact_zip_sha256": "a922989c369eddf6685f273334fcad5d02b464a1cec21607f98d9f1f400ccf0a",
-    "evidence_commit": "e081b8bc9faf64b3ee22a292cd1787f3a48345dc",
-    "executed_dynamic_steps": null,
-    "executed_sparse_exponential_actions": null
+  "prior_numerical_attempts": 2,
+  "prior_red": [
+    {
+      "source_commit": "a3373921a0193336837d217c24d0d35dccd9a5ad",
+      "run_id": 44849987440,
+      "job_id": 136678793301,
+      "artifact_id": 14684118589,
+      "artifact_zip_sha256": "a922989c369eddf6685f273334fcad5d02b464a1cec21607f98d9f1f400ccf0a",
+      "evidence_commit": "e081b8bc9faf64b3ee22a292cd1787f3a48345dc",
+      "executed_dynamic_steps": null,
+      "executed_sparse_exponential_actions": null
+    },
+    {
+      "source_commit": "8bf624203ad1266082ae52a2ae2ebdc96dc90036",
+      "run_id": 44851090269,
+      "job_id": 136682353885,
+      "artifact_id": 14685257001,
+      "artifact_zip_sha256": "6866e32f050cdd5e1b7cef7e4b60d771d325de48bd21582d3e61f20ed9209eb1",
+      "evidence_commit": "69f642c5d9b41c0a1bc0214aea965af8ea988ff0",
+      "executed_dynamic_steps": null,
+      "executed_sparse_exponential_actions": null
+    }
+  ],
+  "post_failure_development_probe": {
+    "runtime": "Python 3.12.14 / NumPy 2.3.5 / SciPy 1.17.0",
+    "sparse_constructor_calls": 5,
+    "passes": 3,
+    "reds": 2,
+    "model_calls": 0,
+    "expm_actions": 0,
+    "optimizer_steps": 0
+  },
+  "hosted_compatibility_probe": {
+    "sparse_constructor_calls": 1,
+    "model_calls": 0,
+    "expm_actions": 0,
+    "optimizer_steps": 0
   },
   "runner_label": "ubuntu-24.04",
   "python_version": "3.12.3",
