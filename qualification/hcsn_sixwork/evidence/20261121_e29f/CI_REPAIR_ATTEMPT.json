@@ -1,0 +1,98 @@
+{
+  "source": "a0b38d3d12c45a4fd254ca27fe1d4266b4c75c53",
+  "outcome": "blocked_before_patch_or_dependency_generation",
+  "first_job": "1a1fef9e7e4-ffbe-21a2",
+  "repair_job": "1a1fefc6469-ffbe-21a5",
+  "first_supervisor_elapsed_seconds": 74.548,
+  "repair_supervisor_elapsed_seconds": 226.175,
+  "requested_supervisor_cap_seconds": 300,
+  "combined_configured_timeout_seconds": 299.548,
+  "patch_applied": false,
+  "cargo_metadata_executed": false,
+  "bazel_lock_update_executed": false,
+  "formatter_executed": false,
+  "tests_executed": false,
+  "generated_lock_files": false,
+  "no_numerical_or_formal_phase_rerun": true,
+  "remaining_root_cause": "Read-tree materialization did not complete before the bounded timeout; no narrower cause established.",
+  "scope_notes": "The original source checkout was clean at repair entry; exact HEAD and original sparse-file bytes were read back unchanged after terminal. No post-terminal git-status process was launched.",
+  "total_supervisor_elapsed_seconds": 300.723,
+  "first_original_receipt_sha256": "7d50230f7ca8b495c70b5b36c49dfdcc0dfc02940cd8a28dd031a02ed6f47910",
+  "repair_original_receipt_sha256": "c4e5837700fa4ac8a3cb15989eef80558aaa8a3a95359dc44d24c23de7bd819c",
+  "formal_head_original_bytes_match": true,
+  "formal_sparse_original_sha256": "8238e396afc42b4f76d4703b53decf78b8450b9477ae8ded22ce5cb1c5ee6f88",
+  "first_terminal": {
+    "at_unix_ms": 1795279227672,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": true,
+    "exit_code": -15,
+    "job_id": "1a1fef9e7e4-ffbe-21a2",
+    "launch_nonce": "acce9aa0db4a5e75b86b2dd63c04d7ab",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 700,
+        "stored": 700
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "cancelled",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "repair_terminal": {
+    "at_unix_ms": 1795279542248,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 124,
+    "job_id": "1a1fefc6469-ffbe-21a5",
+    "launch_nonce": "700458779252e976f3ff932c709fc666",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 447,
+        "stored": 447
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "timed_out",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": true
+  }
+}

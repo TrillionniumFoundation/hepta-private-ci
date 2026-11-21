@@ -1,0 +1,32 @@
+diff --git a/codex-rs/hepta-bellman-operator/src/learned.rs b/codex-rs/hepta-bellman-operator/src/learned.rs
+index 5ce1e44893623266dc9107ca437ca930b2052a31..b46e5e448e53abada8c72b54c9b7bab6eee00e4a 100644
+--- a/codex-rs/hepta-bellman-operator/src/learned.rs
++++ b/codex-rs/hepta-bellman-operator/src/learned.rs
+@@ -356,6 +356,7 @@
+     })
+ }
+ 
++#[cfg(any(test, feature = "compatibility-api"))]
+ pub fn predict_tabular_operator(
+     artifact: &TabularOperatorArtifactV1,
+     sensor_id: &StableId,
+diff --git a/codex-rs/hepta-bellman-operator/src/world_model.rs b/codex-rs/hepta-bellman-operator/src/world_model.rs
+index 7fad1454568ac7aa4d4dca02d437887695b44ffd..e75c084fcb807226078b6fd60b0038e7f4494545 100644
+--- a/codex-rs/hepta-bellman-operator/src/world_model.rs
++++ b/codex-rs/hepta-bellman-operator/src/world_model.rs
+@@ -19,6 +19,7 @@
+ use crate::WorkControlError;
+ use crate::WorkControlV1;
+ 
++#[cfg(any(test, feature = "compatibility-api"))]
+ const MAX_COMPATIBILITY_SAMPLES: usize = 16_384;
+ const MAX_QUALIFIED_SAMPLES: usize = 65_536;
+ const MAX_STATE_ACTIONS: usize = 16_384;
+@@ -119,6 +120,7 @@
+ }
+ 
+ /// Compatibility fit with a reduced default ceiling.
++#[cfg(any(test, feature = "compatibility-api"))]
+ pub fn fit_transition_model(
+     model_id: StableId,
+     dataset_digest: Digest32,
