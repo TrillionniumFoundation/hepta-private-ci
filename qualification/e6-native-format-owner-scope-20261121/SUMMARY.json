@@ -1,0 +1,121 @@
+{
+  "base_commit": "72fb96148a3d12db0d3482f46ab0653f7353d532",
+  "base_tree": "8e90cff71a6bc5ccdbe85c1d9f50c03fe546a8f0",
+  "changed_source_lines": 260,
+  "evidence": {
+    "baseline_index_records": 16559,
+    "container_bytes": 684487,
+    "container_sha256": "09e8768a11795378927d23b5eaab98d39908d6a211128fa8f9f24597a83b8912",
+    "members": 78,
+    "remote_formatted_source_files": 3,
+    "remote_original_receipts": 51,
+    "root_terminal_review_sha256": "4604b851a50aafafd399c270ed2cf21488fd62f01c06b2131433ac44c767b55c",
+    "static_review_sha256": "c005cf2695782992919a0a983b3499680e16db1ee0e8a2129c6297f3e8370942"
+  },
+  "format_worktree_identity": {
+    "head_is_base_commit": true,
+    "input_bundle_sha256": "e81ef52d53d5ae7c88f73f6ec5af80ada3dcc53e1892b1aef170db77f583e3e6",
+    "postformat_worktree": "base commit plus exactly the three source_files postimages",
+    "preformat_worktree": "base commit plus exactly the three reviewed input files",
+    "published_commit_at_execution": null
+  },
+  "limits": {
+    "new_model_runs": 0,
+    "new_native_runs": 0,
+    "new_rust_builds": 0,
+    "no_tests_after_fmt": true,
+    "original_ci_failure_evidence_unchanged": true,
+    "timings_are_nested_not_additive": true,
+    "total_network_bytes_measured": false
+  },
+  "offline_controls": {
+    "errors": 0,
+    "failures": 0,
+    "new_controls": 6,
+    "original_25_method_asts_unchanged": true,
+    "outer_elapsed_seconds": 1.344442229004926,
+    "ran_before_original_fmt": true,
+    "reruns_after_fmt": 0,
+    "test_elapsed_seconds": 1.143,
+    "tests": 31
+  },
+  "original_format": {
+    "all_23_command_logs_verified": true,
+    "attempts": 1,
+    "command": [
+      "/home/qian-qi/.cargo/bin/just",
+      "fmt"
+    ],
+    "cpu_affinity": [
+      0,
+      1
+    ],
+    "dependency_version_elapsed_seconds": 24.972300111025106,
+    "formatter_elapsed_seconds": 0.677171626011841,
+    "job_id": "1a1fcaeb9ac-ffbe-1df0",
+    "owner_elapsed_seconds": 32.274156465020496,
+    "python_asts_unchanged": true,
+    "result_sha256": "8528dbc071f312a693d9941bfa43aa94acfd5b1b2b6be28e4c8980ec945a2f26",
+    "returncode": 0,
+    "selected_python_scripts": [
+      "scripts/format.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "timed_out": false,
+    "tool_identities_before_after_equal": true,
+    "yaml_bytes_unchanged": true,
+    "yaml_formatter_selected": false
+  },
+  "proposal_scope": "Explicit owner-scoped Rust maintenance; default/global format dispatch retained. This proposal has not completed an end-to-end native qualification run.",
+  "schema": "hepta.native-format-owner-scope.summary.v1",
+  "source_files": [
+    {
+      "added_lines": 70,
+      "bytes": 18936,
+      "formatter_bytes_changed": false,
+      "git_blob_sha1": "83c416e451f8763a275c28ab94c86339c1a32e0d",
+      "path": "scripts/format.py",
+      "removed_lines": 5,
+      "sha256": "a2fa332a96cf0e45494b1c25f6da9fed50930023dad6c0b096e76ccb1383e08c"
+    },
+    {
+      "added_lines": 173,
+      "bytes": 24349,
+      "formatter_bytes_changed": true,
+      "git_blob_sha1": "68fc517e8ad8bd31c4aea208aa97edde32d011ae",
+      "path": "scripts/test_hepta_format_scope.py",
+      "removed_lines": 0,
+      "sha256": "e6110c5e753ca7df64a4b034f036764461a96a9275a8881cfde1f8972a0b9753"
+    },
+    {
+      "added_lines": 7,
+      "bytes": 25727,
+      "formatter_bytes_changed": false,
+      "git_blob_sha1": "88eb302dfb35f2ed0a3ad8dd9010f7267b501b58",
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "removed_lines": 5,
+      "sha256": "0848d0c77e3baaa9a4e84fa37557862a918d48f6a3eedd06b585c6cf9f3f4d80"
+    }
+  ],
+  "tools": {
+    "just_after": {
+      "bytes": 6215008,
+      "path": "/home/qian-qi/.cargo/bin/just",
+      "resolved": "/home/qian-qi/.cargo/bin/just",
+      "sha256": "5d485f1a76988050b71bcf9a3b285e41ad4fcecf7a0fb630892eb8135d1e1e04"
+    },
+    "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "ruff_after": {
+      "bytes": 27849024,
+      "path": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-formatter-owner-scope/tools/venv/bin/ruff",
+      "resolved": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e6-formatter-owner-scope/tools/venv/bin/ruff",
+      "sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97"
+    },
+    "uv_after": {
+      "bytes": 38409000,
+      "path": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e45-tools/bin/uv",
+      "resolved": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e45-tools/bin/uv",
+      "sha256": "b73acdf73b96c3ac9e56d2fa933427b3ee6a901e3cce6ba1e3ecb3f91ca0d86a"
+    }
+  }
+}

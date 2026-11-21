@@ -117,6 +117,9 @@ jobs:
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
                       "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts",
                       "-p", "codex-hepta-neuron", "-p", "codex-hepta-learning-ledger"]
+          RUST_OWNERS = ("codex-rs/hepta-agentd", "codex-rs/hepta-learning-artifacts",
+                         "codex-rs/hepta-intelligence-eval", "codex-rs/hepta-contracts",
+                         "codex-rs/hepta-neuron", "codex-rs/hepta-learning-ledger")
           helpers = ["python3", "scripts/hepta_cell_test_helpers.py", "--package",
                      "codex-hepta-infer-worker-host", "--output-dir", str(records / "helpers")]
           root_dir = Path("/run") / ("hepta-daemon-learning-" + os.environ["GITHUB_RUN_ID"]
@@ -220,10 +223,8 @@ jobs:
                   if not raw:
                       continue
                   path = os.fsdecode(raw)
-                  if not path.endswith(".rs") or not path.startswith(
-                      ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-artifacts/",
-                           "codex-rs/hepta-intelligence-eval/", "codex-rs/hepta-contracts/",
-                           "codex-rs/hepta-neuron/", "codex-rs/hepta-learning-ledger/")):
+                  if not path.endswith(".rs") or not any(
+                      Path(path).is_relative_to(owner) for owner in RUST_OWNERS):
                       raise RuntimeError("maintenance changed a path outside its Rust owners: " + path)
                   source = repo / path
                   if source.is_symlink() or not source.is_file():
@@ -282,7 +283,8 @@ jobs:
               assert before == after, "source changed during tests"
               maintenance_started = True
               stage("fix", ["just", "fix", "--locked", "--offline", *packages])
-              stage("fmt", ["just", "fmt", "--base", os.environ["FORMAT_BASE_SHA"]], 600)
+              stage("fmt", ["just", "fmt", "--base", os.environ["FORMAT_BASE_SHA"],
+                            *(arg for owner in RUST_OWNERS for arg in ("--rust-owner", owner))], 600)
               maintenance_complete = True
               maintained = snapshot("after-maintenance")
               # No behavior tests after fix/fmt; this is compile-only binary validation.

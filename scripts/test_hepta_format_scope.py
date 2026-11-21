@@ -344,6 +344,179 @@ class FormatterScopeTests(unittest.TestCase):
         command = FMT.rust_file_command("codex-rs/explicit/src/lib.rs", check=False)
         self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
 
+    def test_explicit_rust_owner_dispatch_preserves_historical_and_other_inputs(self):
+        owner = "codex-rs/hepta-agentd"
+        self.write(f"{owner}/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n')
+        source = self.write(f"{owner}/src/lib.rs", "pub fn original() {}\n")
+        snapshot = self.write("evidence/review/source/src/snapshot.rs", "original\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "owned and retained inputs")
+        base = self.git("rev-parse", "HEAD").strip()
+        source.write_text("pub fn changed() {}\n")
+        snapshot.write_text("if let Some(x) = value && x.ready() {}\n")
+        self.git("commit", "-qam", "committed Rust and snapshot changes")
+        new = self.write(f"{owner}/src/new.rs", "pub fn untracked() {}\n")
+        neighbor = self.write(f"{owner}-other/src/lib.rs", "untouched neighbor\n")
+        script = self.write("scripts/first.py", "value=2\n")
+        protected = {path: path.read_bytes() for path in (snapshot, neighbor, script)}
+        legacy = FMT.scoped_formatter_groups(FMT.changed_paths(base), check=False)
+        self.assertEqual([group.name for group in legacy], ["Rust", "Python scripts"])
+        old_snapshot = next(
+            command
+            for command in legacy[0].commands
+            if command.args[-1] == str(snapshot)
+        )
+        self.assertEqual(
+            old_snapshot.args[old_snapshot.args.index("--edition") + 1], "2021"
+        )
+        observed = []
+
+        def probe(group):
+            self.assertEqual(group.name, "Rust")
+            for command in group.commands:
+                observed.append(command)
+                subprocess.run(
+                    [
+                        sys.executable,
+                        "-c",
+                        "from pathlib import Path; import sys; Path(sys.argv[1]).write_text('// offline probe\\n')",
+                        command.args[-1],
+                    ],
+                    cwd=command.cwd,
+                    check=True,
+                )
+            return FMT.FormatterResult("Rust", "", 0)
+
+        with (
+            patch.object(
+                sys, "argv", ["format.py", "--base", base, "--rust-owner", owner]
+            ),
+            patch.object(FMT, "run_formatter_group", side_effect=probe),
+        ):
+            self.assertEqual(FMT.main(), 0)
+        self.assertEqual(
+            [command.args[-1] for command in observed], [str(source), str(new)]
+        )
+        self.assertTrue(all(command.cwd == self.root / owner for command in observed))
+        self.assertTrue(
+            all(
+                command.args[command.args.index("--edition") + 1] == "2024"
+                for command in observed
+            )
+        )
+        self.assertEqual(
+            [source.read_text(), new.read_text()], ["// offline probe\n"] * 2
+        )
+        self.assertEqual({path: path.read_bytes() for path in protected}, protected)
+
+    def test_rust_owner_intersection_follows_ancestor_configuration_expansion(self):
+        owners = ["codex-rs/hepta-agentd", "codex-rs/hepta-neuron"]
+        for owner in [*owners, "codex-rs/hepta-agentd-other"]:
+            self.write(
+                f"{owner}/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n'
+            )
+            self.write(f"{owner}/src/lib.rs", "pub fn unchanged() {}\n")
+        self.write("evidence/review/source/src/snapshot.rs", "retained Rust\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "unchanged owner sources")
+        config = self.write("rustfmt.toml", "max_width=88\n")
+        for removed in (False, True):
+            with self.subTest(removed=removed):
+                if removed:
+                    self.git("add", ".")
+                    self.git("commit", "-qm", "ancestor configuration")
+                    config.unlink()
+                paths = FMT.changed_paths()
+                self.assertEqual(paths, ["rustfmt.toml"])
+                groups = FMT.rust_owner_formatter_groups(paths, owners, check=True)
+                self.assertEqual([group.name for group in groups], ["Rust"])
+                self.assertEqual(
+                    [command.args[-1] for command in groups[0].commands],
+                    [str(self.root / owner / "src/lib.rs") for owner in owners],
+                )
+                self.assertTrue(
+                    all("--check" in command.args for command in groups[0].commands)
+                )
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink creation")
+    def test_rust_owner_rejects_symlink_owner_and_input_escape(self):
+        owner = "codex-rs/hepta-agentd"
+        self.write(f"{owner}/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n')
+        retained = self.write("evidence/review/source/snapshot.rs", "immutable\n")
+        link = self.root / owner / "src/link.rs"
+        link.parent.mkdir()
+        link.symlink_to(retained)
+        with self.assertRaisesRegex(ValueError, "declared owner"):
+            FMT.rust_owner_formatter_groups(
+                [str(link.relative_to(self.root))], [owner], check=False
+            )
+        link.unlink()
+        (link.parent / "alias").symlink_to(retained.parent, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "declared owner"):
+            FMT.rust_owner_formatter_groups(
+                [f"{owner}/src/alias/snapshot.rs"], [owner], check=False
+            )
+        (self.root / "codex-rs/alias").symlink_to(
+            self.root / owner, target_is_directory=True
+        )
+        with self.assertRaisesRegex(ValueError, "local manifest"):
+            FMT.rust_owner_formatter_groups([], ["codex-rs/alias"], check=False)
+        self.assertEqual(retained.read_text(), "immutable\n")
+
+    def test_rust_owner_cli_refuses_ambiguous_or_invalid_scope_before_dispatch(self):
+        import contextlib
+        import io
+
+        for args in [
+            ["--all", "--rust-owner", "codex-rs/hepta-agentd"],
+            ["--rust-owner", ""],
+            ["--rust-owner", "../outside"],
+            ["--rust-owner", "evidence"],
+        ]:
+            with self.subTest(args=args):
+                with (
+                    patch.object(sys, "argv", ["format.py", *args]),
+                    patch.object(FMT, "run_formatter_group") as runner,
+                    contextlib.redirect_stderr(io.StringIO()),
+                ):
+                    with self.assertRaises(SystemExit) as rejected:
+                        FMT.main()
+                    self.assertEqual(rejected.exception.code, 2)
+                    runner.assert_not_called()
+
+    def test_owned_formatter_error_remains_a_cli_failure(self):
+        import contextlib
+        import io
+
+        owner = "codex-rs/hepta-agentd"
+        self.write(f"{owner}/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n')
+        self.write(f"{owner}/src/lib.rs", "invalid owned Rust\n")
+        failure = FMT.Command(
+            (sys.executable, "-c", "raise SystemExit(7)"), self.root / owner
+        )
+        error = io.StringIO()
+        with (
+            patch.object(sys, "argv", ["format.py", "--rust-owner", owner]),
+            patch.object(FMT, "rust_file_command", return_value=failure),
+            contextlib.redirect_stderr(error),
+        ):
+            self.assertEqual(FMT.main(), 1)
+        self.assertIn("Formatting failed: Rust", error.getvalue())
+
+    def test_rust_owner_with_only_unowned_changes_dispatches_no_formatter(self):
+        owner = "codex-rs/hepta-agentd"
+        self.write(f"{owner}/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n')
+        self.git("add", ".")
+        self.git("commit", "-qm", "owner manifest")
+        self.write("evidence/review/source/snapshot.rs", "retained Rust\n")
+        self.write("scripts/first.py", "value=2\n")
+        with (
+            patch.object(sys, "argv", ["format.py", "--rust-owner", owner]),
+            patch.object(FMT, "run_formatter_group") as runner,
+        ):
+            self.assertEqual(FMT.main(), 0)
+            runner.assert_not_called()
+
     def test_rust_does_not_guess_an_inherited_edition_without_its_owner(self):
         self.write("codex-rs/Cargo.toml", "[workspace]\nmembers=[]\n")
         self.write(
