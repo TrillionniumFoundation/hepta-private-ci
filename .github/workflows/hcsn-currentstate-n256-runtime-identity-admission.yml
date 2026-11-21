@@ -11,11 +11,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: hcsn-n256-runtime-identity-admission-20261121-c6bc-001
+  group: hcsn-n256-runtime-matched-firststep-20261121-c6bc-001
   cancel-in-progress: false
 
 jobs:
   readonly-admission:
+    if: github.head_ref != 'research/hcsn-n256-runtime-matched-firststep-20261121-c6bc'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
@@ -46,6 +47,44 @@ jobs:
         with:
           name: hcsn-n256-runtime-identity-admission-20261121-c6bc-001
           path: ${{ runner.temp }}/hcsn-n256-runtime-identity-admission
+          if-no-files-found: error
+          retention-days: 90
+
+  runtime-matched-firststep:
+    if: github.head_ref == 'research/hcsn-n256-runtime-matched-firststep-20261121-c6bc' && github.base_ref == 'evidence/hcsn-n256-runtime-matched-dispatch-base-20261121-c6bc'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      UNIQUE_EXECUTION_KEY: hcsn-n256-runtime-matched-firststep-20261121-c6bc-001
+      MKL_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONHASHSEED: "0"
+      ADMITTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      RUN_OUTPUT: ${{ runner.temp }}/hcsn-n256-runtime-matched-firststep
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12.3"
+      - name: Verify frozen source before numerical setup
+        run: |
+          python -m qualification.hcsn_currentstate_n256_runtime_matched_execution.verify_source
+          python -m unittest qualification.hcsn_currentstate_n256_runtime_matched_execution.test_source -v
+          python -O -m unittest qualification.hcsn_currentstate_n256_runtime_matched_execution.test_source -v
+      - name: Install exact admitted runtime
+        run: python -m pip install --disable-pip-version-check -r qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/requirements.txt
+      - name: Execute the single bounded numerical attempt
+        run: python -m qualification.hcsn_currentstate_n256_runtime_matched_execution.launcher
+      - name: Publish complete PASS or RED originals
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-n256-runtime-matched-firststep-20261121-c6bc-001
+          path: ${{ runner.temp }}/hcsn-n256-runtime-matched-firststep
           if-no-files-found: error
           retention-days: 90
 
