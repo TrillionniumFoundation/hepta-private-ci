@@ -854,3 +854,286 @@ def main_fit_check(protocol, fit, row, sealed, diagnostic, seal_time, diagnostic
         require(iso(baseline['completed_utc']) <= iso(record['started_utc']) and
                 iso(record['completed_utc']) <= iso(records['GEN']['started_utc']), 'generation admission order')
     return identities, {phase: summaries[phase] for phase in summaries}
+
+
+def confirmation_queue(protocol, main, main_pin, main_process, main_process_pin, confirmation, protocol_sha):
+    require(confirmation['main_results_pin'] == main_pin and
+            confirmation['candidate_selection_seal_pin'] == main['candidate_selection_seal_pin'] and
+            confirmation['diagnostic_seal_pin'] == main['diagnostic_seal_pin'], 'CONF source chain')
+    entropy = read_pin(confirmation['entropy_pin'])
+    require(entropy['schema'] == 'hepta-value-confirmation-entropy-v1' and
+            entropy['namespace'] == 'hepta-value-retention-20261121/own-law-confirmation/v1' and
+            entropy['main_results_pin'] == main_pin and entropy['main_process_pin'] == main_process_pin and
+            entropy['candidate_selection_seal_pin'] == main['candidate_selection_seal_pin'] and
+            entropy['protocol_sha256'] == protocol_sha and entropy['external_custodian'] is False, 'entropy source contract')
+    require(iso(main_process['completed_utc']) <= iso(entropy['created_utc']) and
+            iso(confirmation['created_utc']) <= iso(entropy['created_utc']), 'entropy after entire MAIN process')
+    require(len(entropy['entropy_hex']) == 64 and set(entropy['entropy_hex']) <= set('0123456789abcdef'), 'one recorded 32-byte entropy')
+    seed_bytes = bytes.fromhex(entropy['entropy_hex'])
+    queue = read_pin(confirmation['worlds_seal_pin'])
+    require(queue['schema'] == 'hepta-value-confirmation-worlds-v1' and queue['entropy_pin'] == confirmation['entropy_pin'] and
+            queue['candidate_selection_seal_pin'] == main['candidate_selection_seal_pin'] and queue['protocol_sha256'] == protocol_sha and
+            queue['known_hash_count'] == 3636 and queue['world_count'] == 80 and set(queue['fits']) == set(map(str, FITS)), 'complete CONF queue seal')
+    require(iso(entropy['created_utc']) <= iso(queue['created_utc']), 'queue sealed after entropy')
+    used = set(protocol['known_schedule_hashes'])
+    for fit in FITS:
+        require(set(queue['fits'][str(fit)]) == {'iid', 'ood'}, 'both fixed CONF domains')
+        for domain in ('iid', 'ood'):
+            row = queue['fits'][str(fit)][domain]
+            seed = int.from_bytes(hashlib.sha256(seed_bytes + canonical([entropy['namespace'],
+                main['candidate_selection_seal_pin']['sha256'], fit, domain]).encode()).digest(), 'big')
+            require(row['seed_decimal'] == str(seed) and len(row['worlds']) == len(row['schedule_hashes']) == 8, 'CONF fixed seed/count')
+            rng = np.random.Generator(np.random.PCG64(seed))
+            d = protocol['public_domains'][domain]
+            for index, public in enumerate(row['worlds']):
+                expected = dict(schema='joint-current-at-due-fixed-deadline-v1', id=f'value_CONF_{domain}_{fit}_{index}',
+                    deadline=6, initial_budget=3, target_tick=6,
+                    duration=rng.choice(d['durations'], 6).tolist(), drive=rng.choice(d['drives'], 6).tolist(),
+                    reliability=rng.choice(d['reliabilities'], 6).tolist(), read_price=rng.choice(d['prices'], 6).tolist(),
+                    read_delay=rng.choice(d['delays'], 6).tolist(),
+                    prior_distance=float(rng.choice(protocol['public_domains']['prior_distances'])),
+                    latency_price=d['latency_price'], repair_price=d['repair_price'], failure_probability=d['failure_probability'],
+                    packets=[f'not_opened_{j}.json' for j in range(6)], packet_sha256=['0' * 64] * 6)
+                require(public == expected, 'independent postselection public draw replay')
+                key = digest(canonical({field: public[field] for field in protocol['schedule_fields']}).encode())
+                require(row['schedule_hashes'][index] == key and key not in used, 'CONF uniqueness/history exclusion')
+                used.add(key)
+    require(len(used) == 3716, 'exactly80 fresh schedules')
+    return queue
+
+
+def semantic_features(ctx, public, base, graph, feature_pin, budget):
+    model, physical, rows = ctx.NumpyPolicy(base), {}, []
+    for index, state in enumerate(graph['states']):
+        if index % 128 == 0:
+            budget()
+        history = tuple((item['observation_tick'], item['observation'], item['reliability']) for item in state['history'])
+        key = (state['tick'], history)
+        if key not in physical:
+            mass, bank, _ = model.represent(public, state)
+            physical[key] = (mass, bank)
+            COUNTS['CONF_physical_represent_calls'] += 1
+        mass, bank = physical[key]
+        complete_public = ctx.public_features(public, state)
+        rows.append(np.concatenate((complete_public, mass, bank)))
+    X = np.asarray(rows, dtype=np.float64)
+    H = independent_hidden(base, X)
+    COUNTS['CONF_complete_feature_rows'] += len(X)
+    COUNTS['CONF_hidden_calls'] += 1
+    COUNTS['CONF_hidden_rows'] += len(X)
+    verify_pin(feature_pin)
+    with np.load(feature_pin['path'], allow_pickle=False) as archive:
+        require(set(archive.files) == {'X', 'H'}, 'CONF complete feature columns')
+        for name, actual in (('X', X), ('H', H)):
+            require(archive[name].dtype == np.float64 and archive[name].shape == actual.shape and
+                    archive[name].tobytes() == actual.tobytes(), 'independent semantic CONF ' + name)
+    return H
+
+
+def original_recursive_check(ctx, public, base, theta, item, expected_value, budget):
+    model = ctx.NumpyPolicy(base)
+    oracle = ctx.Oracle(public, ctx.OwnTableLaw(model, ctx), model.confusion)
+    world = ctx.WorldPolicy(ctx, public, model, None)
+    indices = {key: index for index, key in enumerate(item['graph']['keys'])}
+    observed_calls = 0
+    def feature(original_public, state):
+        nonlocal observed_calls
+        observed_calls += 1
+        if observed_calls % 32 == 1:
+            budget()
+        require(original_public is public, 'original recursive public contract')
+        hidden = world.feature(state)[0]  # Recomputed from source represent; no DP X/H is consumed.
+        index = indices[canonical(state)]
+        require(hidden.shape == (49,) and hidden.tobytes() == item['H'][index].tobytes(), 'original full semantic hidden replay')
+        return hidden
+    value, visits = ctx.policy_value(public, theta, feature, oracle)
+    require(visits == observed_calls and len(world.features) <= len(item['graph']['states']), 'recursive feature work count')
+    close_number(value, expected_value, 'original recursive whole-task utility')
+    COUNTS['original_recursive_worlds'] += 1
+    COUNTS['original_recursive_visits'] += visits
+    COUNTS['original_recursive_unique_features'] += len(world.features)
+    return dict(utility=float(value), decision_visits=visits, unique_complete_features=len(world.features),
+                feature_CPU_seconds=world.feature_cpu_seconds, source_execution='original policy_value + WorldPolicy.feature, checkpoint OwnTableLaw')
+
+
+def confirmation_fit_check(protocol, fit, main_row, confirmation_row, queue, ctx, budget, protocol_sha):
+    base = read_pin(protocol['input_specs'][str(fit)]['model'])
+    models = {'KEEP': dict(main_row['models']['KEEP'], selected_candidate_id='KEEP')}
+    candidate_to_alias = {'KEEP': 'KEEP'}
+    for family in FAMILIES:
+        chosen = main_row['family_choice'][family]
+        models[family + '_SELECTED'] = dict(main_row['models'][chosen], selected_candidate_id=chosen)
+        candidate_to_alias.setdefault(chosen, family + '_SELECTED')
+    for name in DIAGNOSTICS:
+        models[name] = dict(main_row['diagnostic_models'][name], selected_candidate_id=name)
+    global_alias = candidate_to_alias[main_row['global_choice']]
+    result, recursive = {}, {}
+    require(set(confirmation_row) == {'iid', 'ood'}, 'CONF two complete domain records')
+    for domain in ('iid', 'ood'):
+        row = confirmation_row[domain]
+        require(row['global_alias'] == global_alias, 'global is a preselected family alias')
+        record = read_pin(row['phase_record_pin'])
+        require(iso(record['started_utc']) >= iso(queue['created_utc']) and len(record['worlds']) == 8, 'CONF evaluation after all80 schedules sealed')
+        items = {}
+        for index, public in enumerate(queue['fits'][str(fit)][domain]['worlds']):
+            budget()
+            saved = record['worlds'][index]
+            graph = graph_check(ctx, base, public, saved['graph_pin'], budget)
+            H = semantic_features(ctx, public, base, graph, saved['features_pin'], budget)
+            items[index] = dict(graph=graph, graph_pin=saved['graph_pin'], H=H, features_pin=saved['features_pin'])
+        _, metrics, _, summary = phase_check(row['phase_record_pin'], 'SEALED_OWN_LAW_CONFIRMATION', fit,
+            models, list(range(8)), items, protocol_sha, budget, domain=domain)
+        compare_metrics(row['summary'], summary)
+        result[domain] = summary
+        theta = head_rows(read_pin(main_row['models'][main_row['global_choice']]['model_pin']))
+        recursive[domain] = [original_recursive_check(ctx, public, base, theta, items[index],
+            metrics[index][global_alias]['utility'], budget)
+            for index, public in enumerate(queue['fits'][str(fit)][domain]['worlds'])]
+    return result, recursive
+
+
+def primary_check(records, summaries):
+    # Independent df=4 CDF: F(t)=1/2+(3u-u^3)/4, u=t/sqrt(t^2+4).
+    lower, upper = 0.0, 1.0
+    for _ in range(80):
+        middle = (lower + upper) / 2
+        if 0.5 + (3 * middle - middle ** 3) / 4 < 1 - 0.05 / 8:
+            lower = middle
+        else:
+            upper = middle
+    u = (lower + upper) / 2
+    critical = 2 * u / math.sqrt(1 - u * u)
+    require(len(records) == 4, 'four prespecified primary contrasts')
+    for record, (domain, reference) in zip(records, [(d, r) for d in ('iid', 'ood') for r in ('KEEP', 'T_SELECTED')], strict=True):
+        differences = [summaries[str(fit)][domain]['G_SELECTED']['utility'] - summaries[str(fit)][domain][reference]['utility'] for fit in FITS]
+        mean = float(np.mean(differences)); sd = float(np.std(differences, ddof=1)); se = sd / math.sqrt(5)
+        require(record['candidate'] == 'G_SELECTED' and record['reference'] == reference and record['domain'] == domain and
+                record['fits'] == list(FITS) and record['n_fits'] == 5 and record['df'] == 4 and record['family_comparisons'] == 4,
+                'prespecified contrast identity')
+        compare_metrics(record, dict(differences=differences, mean=mean, sample_SD=sd, SE=se,
+            minimum=min(differences), maximum=max(differences), critical=critical,
+            familywise95_interval=[mean - critical * se, mean + critical * se]))
+
+
+def resources(start_wall):
+    return dict(CPU_seconds=time.process_time(), wall_seconds_from_entry=time.perf_counter() - start_wall,
+        peak_RSS_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024,
+        affinity=sorted(os.sched_getaffinity(0)),
+        scope='Reader process includes import/source authentication/feature and DP checks. Final serialization tail and supervisor overhead are in the parent PROCESS receipt.')
+
+
+def main(args):
+    start_wall, created = time.perf_counter(), utc()
+    output = args.output.resolve()
+    output.mkdir(parents=True, exist_ok=False)
+    protocol_pin = pin_file(args.protocol)
+    save_new(output / 'STARTED.json', dict(schema='hepta-value-reader-started-v1', created_utc=created,
+        protocol_pin=protocol_pin, main=str(args.main.resolve()), confirmation=str(args.confirmation.resolve()),
+        retry_permitted=False))
+    try:
+        protocol = read_pin(protocol_pin)
+        budget = configure_budget(protocol, start_wall)
+        protocol_check(protocol, protocol_pin)
+        protocol_sha = protocol_pin['sha256']
+        main_result, main_pin, main_process, main_process_pin = process_check(args.main, 'main', protocol, protocol_pin)
+        conf, conf_pin, conf_process, conf_process_pin = process_check(args.confirmation, 'confirmation', protocol, protocol_pin)
+        require(main_result['schema'] == 'hepta-value-main-results-v1' and main_result['source_inputs_unchanged'] is True and
+                set(main_result['fits']) == set(map(str, FITS)), 'complete MAIN source/result')
+        require(conf['schema'] == 'hepta-value-confirmation-results-v1' and
+                conf['source_inputs_and_selected_models_unchanged'] is True and set(conf['fits']) == set(map(str, FITS)), 'complete CONF source/result')
+        require(iso(main_process['completed_utc']) <= iso(conf_process['created_utc']) and
+                iso(conf_process['completed_utc']) <= iso(created), 'whole successful processes precede reader')
+        selection = read_pin(main_result['candidate_selection_seal_pin'])
+        diagnostics = read_pin(main_result['diagnostic_seal_pin'])
+        require(selection['schema'] == 'hepta-value-candidate-selection-seal-v1' and selection['protocol_sha256'] == protocol_sha and
+                selection['source_pins_sha256'] == digest(canonical(protocol['source_pins']).encode()) and
+                set(selection['fits']) == set(map(str, FITS)), 'source-bound complete selection seal')
+        require(diagnostics['schema'] == 'hepta-value-component-restoration-seal-v1' and
+                diagnostics['candidate_selection_seal_pin'] == main_result['candidate_selection_seal_pin'] and
+                set(diagnostics['fits']) == set(map(str, FITS)), 'source-bound diagnostic seal')
+        seal_time, diagnostic_time = iso(selection['created_utc']), iso(diagnostics['created_utc'])
+        require(iso(main_result['created_utc']) <= seal_time <= diagnostic_time <= iso(main_result['completed_utc']), 'seal temporal order')
+        queue = confirmation_queue(protocol, main_result, main_pin, main_process, main_process_pin, conf, protocol_sha)
+        ctx = load_context(protocol['semantic_sources'])
+        identities, main_summaries, confirm_summaries, recursive = {}, {}, {}, {}
+        main_DPs = conf_DPs = 0
+        for fit in FITS:
+            budget()
+            row = main_result['fits'][str(fit)]
+            before = COUNTS['independent_policy_DPs']
+            identities[str(fit)], main_summaries[str(fit)] = main_fit_check(protocol, fit, row,
+                selection['fits'][str(fit)], diagnostics['fits'][str(fit)], seal_time, diagnostic_time, ctx, budget, protocol_sha)
+            main_DPs += COUNTS['independent_policy_DPs'] - before
+            for phase_pin in row['phase_records'].values():
+                phase = read_pin(phase_pin)
+                require(iso(main_result['created_utc']) <= iso(phase['started_utc']) <= iso(phase['completed_utc']) <=
+                        iso(main_result['completed_utc']), 'required old phase completion before MAIN completion')
+            before = COUNTS['independent_policy_DPs']
+            confirm_summaries[str(fit)], recursive[str(fit)] = confirmation_fit_check(protocol, fit, row,
+                conf['fits'][str(fit)], queue, ctx, budget, protocol_sha)
+            conf_DPs += COUNTS['independent_policy_DPs'] - before
+            for domain in ('iid', 'ood'):
+                phase = read_pin(conf['fits'][str(fit)][domain]['phase_record_pin'])
+                require(iso(phase['completed_utc']) <= iso(conf['completed_utc']), 'complete CONF phases before final result')
+        primary_check(conf['primary'], confirm_summaries)
+        require(COUNTS['own_graphs'] == 400 and COUNTS['original_recursive_worlds'] == 80 and
+                COUNTS['TRAIN_hidden_calls'] == 5 and COUNTS['CONF_hidden_calls'] == 80, 'mandatory complete validation queue')
+        require(main_DPs <= 2720 and conf_DPs <= 560 and COUNTS['policy_records_checked'] <= 3280 and
+                COUNTS['CONF_complete_feature_rows'] <= 327680 and
+                COUNTS['original_recursive_unique_features'] <= 327680, 'finite reader work ceiling')
+        actual_main, actual_conf = main_result['work']['value_graph'], conf['work']
+        require(actual_main['own_graphs'] == actual_main['own_optimal_DPs'] == 320 and
+                actual_conf['own_graphs'] == actual_conf['own_optimal_DPs'] == 80 and
+                actual_main['complete_policy_DPs'] == main_DPs and actual_conf['complete_policy_DPs'] == conf_DPs,
+                'actual finite own-law work count')
+        require(actual_main['hidden_forward_calls'] == 5 and actual_main['hidden_forward_rows'] == COUNTS['TRAIN_hidden_rows'] and
+                actual_conf['hidden_forward_calls'] == 80 and actual_conf['hidden_forward_rows'] == COUNTS['CONF_hidden_rows'] and
+                actual_conf['semantic_complete_rows'] == COUNTS['CONF_complete_feature_rows'], 'forward/complete-state counts')
+        generation_work = main_result['work']['head_candidates']
+        require(0 <= generation_work['conic_solve_calls'] <= generation_work['conic_attempts'] <= 25 and
+                generation_work['gradient_trajectories'] == 5 and 0 <= generation_work['gradient_updates'] <= 5120 and
+                0 <= generation_work['fixed_gradient_checkpoints_reached'] <= 10, 'fixed finite optimization queue')
+        for group in ('source_pins', 'semantic_sources', 'provenance_sources'):
+            for expected in protocol[group].values():
+                verify_pin(expected)
+        for spec in protocol['input_specs'].values():
+            for expected in spec.values():
+                verify_pin(expected)
+        for models in identities.values():
+            for identity in models.values():
+                verify_pin(identity['model_pin'])
+        for expected in (protocol_pin, main_pin, conf_pin, main_process_pin, conf_process_pin,
+                         main_result['candidate_selection_seal_pin'], main_result['diagnostic_seal_pin'],
+                         conf['entropy_pin'], conf['worlds_seal_pin']):
+            verify_pin(expected)
+        budget()
+        result = dict(schema='hepta-value-independent-reader-v1', status='PASS', created_utc=created, completed_utc=utc(),
+            protocol_sha256=protocol_sha, main_results_pin=main_pin, confirmation_results_pin=conf_pin,
+            main_process_pin=main_process_pin, confirmation_process_pin=conf_process_pin,
+            candidate_selection_seal_pin=main_result['candidate_selection_seal_pin'], diagnostic_seal_pin=main_result['diagnostic_seal_pin'],
+            source_pins_sha256=digest(canonical(protocol['source_pins']).encode()), verified_model_identities=identities,
+            counts=dict(COUNTS, main_independent_policy_DPs=main_DPs, confirmation_independent_policy_DPs=conf_DPs),
+            old_TRAIN_summaries=main_summaries, confirmation_summaries=confirm_summaries, original_recursive=recursive,
+            resources=resources(start_wall),
+            independence_scope=dict(shared='Frozen AST source loader and reviewed full-state own-law graph construction; same original numerical primitives.',
+                independent='Integer dyadic radius, protected fields, TRAIN/CONF hidden arithmetic, complete CONF semantic input reconstruction, scalar policy values and new occupancy/PDI, original task recursion, phase/selection/entropy/source checks and df4 contrast calculation.',
+                not_replayed='No conic solver call or gradient trajectory; raw emitted proposals and affine residuals are checked. No independent financial labels or deployment efficacy.',
+                sample_scope='TRAIN partitions remain exposed. Fresh public CONF schedules are conditional on the supplied checkpoint laws.',
+                resource_scope='This finite qualification is not future serving demand. General NDU remains KEEP_ORIGINAL_AND_STOP without an authoritative future queue/cost utility conversion.'),
+            acceptance_requires_parent_process_COMPLETED=True, original_sources_unchanged=True)
+        save_new(output / 'READER_RESULTS.json', result)
+        print(canonical(dict(status='PASS', result_pin=pin_file(output / 'READER_RESULTS.json'))), flush=True)
+    except BaseException as error:
+        save_new(output / 'FAILED.json', dict(schema='hepta-value-independent-reader-failure-v1', status='FAILED',
+            created_utc=utc(), error_type=type(error).__name__, error=str(error), traceback=traceback.format_exc(),
+            counts=COUNTS, resources=resources(start_wall), retry_permitted=False))
+        raise
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--protocol', type=Path, required=True)
+    parser.add_argument('--main', type=Path, required=True)
+    parser.add_argument('--confirmation', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    main(parser.parse_args())
