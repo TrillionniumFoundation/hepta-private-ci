@@ -101,6 +101,14 @@ v3 为 **32 份 AUDIT Rust 副本**逐份核对原 packaging manifest、大小�
 
 完整此前 PR 说明保存在 `qa/repository-consolidation/20261121/rust-c1a0-audit/earlier-pr6799-body.md`，保留原 handoff、owner 措辞、STOP 和失败记录作为历史事实。该归档只补一个 Markdown 文件末尾换行；不会用新的通过记录抹去旧的失败或未完成状态。当前执行授权按上文用户指令和具体边界处理。各项发布证据的来源、字节数、SHA-256 及公开副本处理见下方索引。
 
+## 发布材料的大小与术语修订
+
+首次发布到 `b9fb18785fb74e968b5e0bf304679515bfa93a2b` 后，原 CI 在两项审计材料规则中报告失败。Blob size policy 的 512,000 字节限制准确指出两个完整归档超限；现将相同原始字节保存为最多 491,520 字节的有序片段，不改检查器、阈值或 allowlist。原归档的完整大小、SHA-256、Git blob，以及每块的大小、偏移、顺序和摘要见 [ARCHIVE-PARTS.json](ARCHIVE-PARTS.json)。重组后全部原始记录及其摘要保持有效，使用方法见 [ARCHIVE-PARTS-README.md](ARCHIVE-PARTS-README.md)。
+
+Codespell 2.4.3 唯一命中来自 `lint-source-review.md` 的 Rust 术语表达；该解释性叙述现使用 `mutable static items`。此次只作一处术语展开，不修改任何原日志、测试结果、断言或源代码审查结论。原叙述仍可在 b9 的不可变 Git 对象中核对；对应 manifest 条目区分原来源摘要与修订后的发布摘要。原 `.codespellrc`、忽略词、custody 清单与规则保持。
+
+原失败来源：[Blob size policy](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44909716197/job/136862721519)、[Codespell](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44909716197/job/136862721594)。这一材料修订没有修复 Windows、AppContainer、musl 或其他仍未关闭的平台问题，也不代替最终 head 的完整 CI。
+
 ## 证据导航
 
 下列名称对应本审计目录中的发布文件；`EVIDENCE-MANIFEST.json` 记录来源与发布路径映射和摘要。native 公开副本的处理边界由单独 publication review 记录，原失败与执行身份不被覆盖。
@@ -109,9 +117,9 @@ v3 为 **32 份 AUDIT Rust 副本**逐份核对原 packaging manifest、大小�
 | --- | --- |
 | 最终源码、发布 head 与整体范围 | [STATUS.json](STATUS.json)、[final-source-77-review.json](final-source-77-review.json)、[EVIDENCE-MANIFEST.json](EVIDENCE-MANIFEST.json) |
 | 7,812 refs 的固定快照与逐项分型 | [branch-snapshot-7812.json](branch-snapshot-7812.json)、[current-refs.tsv.gz](current-refs.tsv.gz)、[all-current-ref-classifications.json.gz](all-current-ref-classifications.json.gz) |
-| 完整已知父图及 HIA 保护集 | [complete-known-parent-graph-7812.tsv.gz](complete-known-parent-graph-7812.tsv.gz)、[protected-current-refs.json](protected-current-refs.json) |
+| 完整已知父图及 HIA 保护集 | [完整父图的片段清单](ARCHIVE-PARTS.json)、[protected-current-refs.json](protected-current-refs.json) |
 | 34 份新增原文保留证据与 41 项实际测试 | [formatter-v3-provenance-34.json](formatter-v3-provenance-34.json)、[formatter-v3-tests.json](formatter-v3-tests.json)、[formatter-v3-tests.log](formatter-v3-tests.log) |
 | 44/4,203 静态规划及已执行的有限格式检查 | [formatter-v3-full-scope-summary.json](formatter-v3-full-scope-summary.json)、[formatter-v3-full-scope-plan.json.gz](formatter-v3-full-scope-plan.json.gz)、[formatter-v3-format.json](formatter-v3-format.json)、[formatter-v3-format-check.json](formatter-v3-format-check.json)、[formatter-v3-full-ruff.json](formatter-v3-full-ruff.json) |
-| 本轮 5a native 原命令、所有失败/恢复与格式后无重测边界 | [native-validation-index.json](native-validation-index.json)、[native-evidence-PUBLIC.zip](native-evidence-PUBLIC.zip)、[native-publication-review.json](native-publication-review.json) |
+| 本轮 5a native 原命令、所有失败/恢复与格式后无重测边界 | [native-validation-index.json](native-validation-index.json)、[native 归档的重组说明](ARCHIVE-PARTS-README.md)、[native-publication-review.json](native-publication-review.json) |
 | 原 6cb 的 102 checks 终态 | [ci-original-6cb-final-summary.json](ci-original-6cb-final-summary.json)、[ci-original-6cb-final-facts.md](ci-original-6cb-final-facts.md) |
 | 早前 PR 全文及历史约束记录 | [earlier-pr6799-body.md](earlier-pr6799-body.md) |

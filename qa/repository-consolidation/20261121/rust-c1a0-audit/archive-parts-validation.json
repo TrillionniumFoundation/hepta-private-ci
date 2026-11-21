@@ -1,0 +1,119 @@
+{
+  "status": "passed",
+  "validation_scope": "two real local command scenarios on final source after locked Ruff formatting; no repository or remote tests",
+  "source": {
+    "bytes": 6729,
+    "sha256": "b41a6ac79561fdcdee1bb9ec2c26a084a55c846e769d55c7143ec4e7c026eca4",
+    "git_blob": "ea48cf0cff60254d2e5651e3da36c5904bd8c860"
+  },
+  "ordered_part_counts": [
+    8,
+    4
+  ],
+  "max_part_bytes": 491520,
+  "cases": [
+    {
+      "case": "01-reconstruct",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/c1a0d7534606/publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/reconstruct_archives.py",
+        "--output-dir",
+        "/workspace/scratch/c1a0d7534606/publication-ci-repair/package/verification-final/reconstructed"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.12403509100113297,
+      "script": {
+        "bytes": 6729,
+        "sha256": "b41a6ac79561fdcdee1bb9ec2c26a084a55c846e769d55c7143ec4e7c026eca4",
+        "git_blob": "ea48cf0cff60254d2e5651e3da36c5904bd8c860"
+      },
+      "stdout": {
+        "bytes": 889,
+        "sha256": "0692746c0d2018e28022475e37ab6191cb74390c1d904f84791c7527bb558db1",
+        "git_blob": "ba48597659e113bc1aebd03c449a4e0b781caa39"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "status": "passed",
+      "archives": {
+        "complete-known-parent-graph-7812.tsv.gz": {
+          "byte_for_byte_equal_to_original_b9": true,
+          "bytes": 3796298,
+          "sha256": "4faa440281f85412a8d3c5463cac94842ec14dde8429eb6737d05201ec827bfb",
+          "git_blob": "72fcbf78c81216213f02426968ea22b753bdbf08",
+          "decompressed_bytes": 6679884,
+          "decompressed_sha256": "b12717f47aec4f756f90e0669b1c7b2b00462bc97a9ed32dfe6b835827a2e938"
+        },
+        "native-evidence-PUBLIC.zip": {
+          "byte_for_byte_equal_to_original_b9": true,
+          "bytes": 1605908,
+          "sha256": "1fe917ebc21b0e4e9ddae589623d6bdab2327c62897a07920e658336cd8141b0",
+          "git_blob": "d06c664be3e073f8b1c96029d0f97e5d233e9d5b",
+          "zip_entries": 122,
+          "all_member_contents_and_crc_read_successfully": true
+        }
+      }
+    },
+    {
+      "case": "02-corrupt-part-no-overwrite",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/c1a0d7534606/publication-ci-repair/package/verification-final/corrupt-input/reconstruct_archives.py",
+        "--output-dir",
+        "/workspace/scratch/c1a0d7534606/publication-ci-repair/package/verification-final/existing-different-output"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 0.09682429399981629,
+      "script": {
+        "bytes": 6729,
+        "sha256": "b41a6ac79561fdcdee1bb9ec2c26a084a55c846e769d55c7143ec4e7c026eca4",
+        "git_blob": "ea48cf0cff60254d2e5651e3da36c5904bd8c860"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stderr": {
+        "bytes": 104,
+        "sha256": "ca66a30962b111760a8b0cb51c0e8e9c02ddb538af626586f3fa7bd8f247ae83",
+        "git_blob": "86e7936f09a3ca30a528cd0cd3bd256649dc14e2"
+      },
+      "status": "passed_rejection",
+      "wrong_part": "archive-parts/native-evidence-PUBLIC.zip/part-002.bin",
+      "expected_part": {
+        "bytes": 491520,
+        "sha256": "4f2226fc405bd0248e382d047cc7da5271990043499f83aec793cba4d1bf54e3",
+        "git_blob": "036512f825fb7c19dda2d8c665374e88a2c49f45"
+      },
+      "observed_part": {
+        "bytes": 491520,
+        "sha256": "198a10f3ea667bf7a82c35facb9e8d0501bbe1ad4a84cd96db806a5a75211101",
+        "git_blob": "86f5e284c39ae13e18d41d3027fefffc0ac6a6e6"
+      },
+      "existing_different_outputs_unchanged": {
+        "complete-known-parent-graph-7812.tsv.gz": {
+          "bytes": 71,
+          "sha256": "02cc1dde80dc1d6cba0646095e0229f32dded91c85322cee561d232a4cf60ae6",
+          "git_blob": "c1831c74fb31f9fd51bfe62f67c1f612f3a92dec"
+        },
+        "native-evidence-PUBLIC.zip": {
+          "bytes": 58,
+          "sha256": "548b6a6a54b8af519db94ce21b3de4f25e633a7b771800b56339c62c98cc3cd5",
+          "git_blob": "6407841528cfa819ed89292d7c38884745e287a8"
+        }
+      },
+      "new_output_or_temporary_files_created": false
+    }
+  ],
+  "payload_source_and_all_parts_unchanged": true,
+  "original_b9_archives_unchanged": true,
+  "archive_members_never_executed": true,
+  "root_tracked_source_refs_and_index_not_modified_by_this_task": true,
+  "remote_operations": false,
+  "earlier_source_validation_preserved": "VALIDATION-RESULT-FIRST-SOURCE.json",
+  "narrow_race_fix_reviewed_statically_not_triggered_by_these_two_cases": true
+}

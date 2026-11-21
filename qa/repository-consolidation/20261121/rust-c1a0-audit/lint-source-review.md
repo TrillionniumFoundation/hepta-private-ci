@@ -42,7 +42,7 @@ The duplicate inclusion of `learning_iteration_checkpoint_codec.rs` and its `cli
 
 The `AgentdGenerationLearningUseReadbackV1` import now resolves through the existing Unix-only crate re-export. Its concrete type is unchanged.
 
-Both `verify_original_bytes` and `verify_completed_bytes`, including every statement and all 18 `assert_eq!` invocations, are byte-identical. Their source-output marker data, conditions, bounds, and `DENY_ALL`/historical-output checks are unchanged. The original codec and bundle-data modules contain no embedded test declarations, mutable statics, or module-path-dependent behavior; removing the duplicate module does not remove an embedded test suite or select a different encoder.
+Both `verify_original_bytes` and `verify_completed_bytes`, including every statement and all 18 `assert_eq!` invocations, are byte-identical. Their source-output marker data, conditions, bounds, and `DENY_ALL`/historical-output checks are unchanged. The original codec and bundle-data modules contain no embedded test declarations, mutable static items, or module-path-dependent behavior; removing the duplicate module does not remove an embedded test suite or select a different encoder.
 
 Direct verifier callers remain in:
 

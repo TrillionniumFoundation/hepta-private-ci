@@ -3,15 +3,21 @@
   "files": [
     {
       "path": "README.md",
-      "source": "publication/README-draft.md",
-      "bytes": 19654,
-      "sha256": "6014a0608a2b08cfda51aac1a4a474283fec73ae6e0f6cbdda8be42853f4a07a"
+      "source": "publication-ci-repair/README-final.md",
+      "bytes": 21077,
+      "sha256": "30ca0b08b948ed36fa89bfe82bb526b0340cea9d7b4e8c550d204777a1e1ed65",
+      "prior_published_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+      "prior_published_sha256": "6014a0608a2b08cfda51aac1a4a474283fec73ae6e0f6cbdda8be42853f4a07a",
+      "publication_change": "Update archive access instructions and record the publication packaging followup."
     },
     {
       "path": "STATUS.json",
-      "source": "publication/STATUS.json",
-      "bytes": 4216,
-      "sha256": "d531229c405ea0d9c79aa9df8f032aa0af2dbb0806d899cfd7dbe91d41c1433e"
+      "source": "publication-ci-repair/STATUS-final.json",
+      "bytes": 5094,
+      "sha256": "7d89ece2f95c1c0cd18aa442d3483b1390bebbe59087b79849aa2919f55176ea",
+      "prior_published_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+      "prior_published_sha256": "d531229c405ea0d9c79aa9df8f032aa0af2dbb0806d899cfd7dbe91d41c1433e",
+      "publication_change": "Update archive access instructions and record the publication packaging followup."
     },
     {
       "path": "branch-snapshot-7803.json",
@@ -76,8 +82,13 @@
     {
       "path": "lint-source-review.md",
       "source": "seven-fix-review/REVIEW.md",
-      "bytes": 8631,
-      "sha256": "7150e79f207df44c6bcd34f793ab0df05452075aac02a24f3db14595c143b1e4"
+      "bytes": 8636,
+      "sha256": "68e7cc63da9c0fffbdd239bc17597315f53d8426431a0409af0b9a05f8abb1e3",
+      "source_bytes": 8631,
+      "source_sha256": "7150e79f207df44c6bcd34f793ab0df05452075aac02a24f3db14595c143b1e4",
+      "original_published_commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+      "original_published_blob": "77581877d43f410ed18383eaabc2a4ec444b115c",
+      "editorial_revision": "One Rust term expanded to mutable static items; all other review text, source identities, findings, and qualification statements are unchanged."
     },
     {
       "path": "authbus-fixture-proof.json",
@@ -248,12 +259,6 @@
       "sha256": "6dcc598a477cf7ed09cd0ea137bffcc6c19597f8e75e6f73dcfde96e481f1435"
     },
     {
-      "path": "native-evidence-PUBLIC.zip",
-      "source": "native-validation/NATIVE-EVIDENCE-5A-20261121-PUBLIC.zip",
-      "bytes": 1605908,
-      "sha256": "1fe917ebc21b0e4e9ddae589623d6bdab2327c62897a07920e658336cd8141b0"
-    },
-    {
       "path": "b4-tests.json",
       "source": "b4-original-current-result.json",
       "bytes": 504,
@@ -366,18 +371,131 @@
       "decompressed_sha256": "7a298a7bccc06aca43b0e0d17624e9d94510826fac9d188cfc53f9f24fc71ebe"
     },
     {
+      "path": "graph-provenance.json",
+      "source": "generated provenance",
+      "bytes": 759,
+      "sha256": "77ff10e7be00916fd7487aff221d7ed3a629e75c049c5c2934c2139c0d24d4d4"
+    },
+    {
+      "path": "ARCHIVE-PARTS-README.md",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/ARCHIVE-PARTS-README.md",
+      "bytes": 2461,
+      "sha256": "cbdc3cb6a9d36c15018a2074cc1c0f622ad2e877df79a75277b4f4dd012449bb"
+    },
+    {
+      "path": "ARCHIVE-PARTS.json",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/ARCHIVE-PARTS.json",
+      "bytes": 5243,
+      "sha256": "687501a2b1cb864f7119e09c649d013ea8ee646f780b53cebd48da0ef069b24d"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-001.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-001.bin",
+      "bytes": 491520,
+      "sha256": "d8acb00f0e8a13fc22bc0dcde600f3ea1e48f995bfa13be96f47048b19b421ee"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-002.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-002.bin",
+      "bytes": 491520,
+      "sha256": "500a360b83c254bdc3e484c8e1981ebcb5cca71ecb68b7046209cb66dd4bc184"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-003.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-003.bin",
+      "bytes": 491520,
+      "sha256": "6032fb28e1cd0e1c0584a207769b00587aff05df9016855e8df76ce0404adc11"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-004.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-004.bin",
+      "bytes": 491520,
+      "sha256": "38a27aeb20065bf7bb6564eecc0c15d31067566bcd3f5709a15c1c60c508456c"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-005.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-005.bin",
+      "bytes": 491520,
+      "sha256": "897b4383a55b3556e3f1538dd634b34616899e61a77268fe2ad1b118d285e51c"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-006.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-006.bin",
+      "bytes": 491520,
+      "sha256": "5e9a98ef1d0f4ed6534adf93221f75d4d81ccd0478e4285077c646d78dff0a8d"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-007.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-007.bin",
+      "bytes": 491520,
+      "sha256": "b14e274488fefd23c93e197bfa4c6d30cea42d46975c1e7b52bc83832559dff5"
+    },
+    {
+      "path": "archive-parts/complete-known-parent-graph-7812.tsv.gz/part-008.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/complete-known-parent-graph-7812.tsv.gz/part-008.bin",
+      "bytes": 355658,
+      "sha256": "6b6e30e31b4d9eda7c52699e2408dd6dc6a74de72b244a9fbaa7997892a25254"
+    },
+    {
+      "path": "archive-parts/native-evidence-PUBLIC.zip/part-001.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/native-evidence-PUBLIC.zip/part-001.bin",
+      "bytes": 491520,
+      "sha256": "a9d9251e8be991b053191fa5d430af36824215665cf7fdb0a372e29a98241fda"
+    },
+    {
+      "path": "archive-parts/native-evidence-PUBLIC.zip/part-002.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/native-evidence-PUBLIC.zip/part-002.bin",
+      "bytes": 491520,
+      "sha256": "4f2226fc405bd0248e382d047cc7da5271990043499f83aec793cba4d1bf54e3"
+    },
+    {
+      "path": "archive-parts/native-evidence-PUBLIC.zip/part-003.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/native-evidence-PUBLIC.zip/part-003.bin",
+      "bytes": 491520,
+      "sha256": "6db22a514b67af4dd9ac739a8a8b1eb33cbbabc897284bc3f7d421667c22d17a"
+    },
+    {
+      "path": "archive-parts/native-evidence-PUBLIC.zip/part-004.bin",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/archive-parts/native-evidence-PUBLIC.zip/part-004.bin",
+      "bytes": 131348,
+      "sha256": "96220fc54d388740fa61998e56625c4990e4d4cff023a0661fc246fd8a21a233"
+    },
+    {
+      "path": "reconstruct_archives.py",
+      "source": "publication-ci-repair/package/repository-files/qa/repository-consolidation/20261121/rust-c1a0-audit/reconstruct_archives.py",
+      "bytes": 6729,
+      "sha256": "b41a6ac79561fdcdee1bb9ec2c26a084a55c846e769d55c7143ec4e7c026eca4"
+    },
+    {
+      "path": "archive-parts-validation.json",
+      "source": "publication-ci-repair/package/VALIDATION-RESULT.json",
+      "bytes": 5023,
+      "sha256": "d501f46fa027a71ef9a766d4229950f2df19b8ccaf0691280fef29ec36b41dc4"
+    }
+  ],
+  "logical_archives": [
+    {
       "path": "complete-known-parent-graph-7812.tsv.gz",
       "source": "branch-audit/final-lease-7812/SNAPSHOT-7812-COMPLETE-KNOWN-PARENTS.tsv",
       "bytes": 3796298,
       "sha256": "4faa440281f85412a8d3c5463cac94842ec14dde8429eb6737d05201ec827bfb",
       "decompressed_bytes": 6679884,
-      "decompressed_sha256": "b12717f47aec4f756f90e0669b1c7b2b00462bc97a9ed32dfe6b835827a2e938"
+      "decompressed_sha256": "b12717f47aec4f756f90e0669b1c7b2b00462bc97a9ed32dfe6b835827a2e938",
+      "storage": "ordered binary parts in ARCHIVE-PARTS.json",
+      "reconstruction_script": "reconstruct_archives.py"
     },
     {
-      "path": "graph-provenance.json",
-      "source": "generated provenance",
-      "bytes": 759,
-      "sha256": "77ff10e7be00916fd7487aff221d7ed3a629e75c049c5c2934c2139c0d24d4d4"
+      "path": "native-evidence-PUBLIC.zip",
+      "source": "native-validation/NATIVE-EVIDENCE-5A-20261121-PUBLIC.zip",
+      "bytes": 1605908,
+      "sha256": "1fe917ebc21b0e4e9ddae589623d6bdab2327c62897a07920e658336cd8141b0",
+      "storage": "ordered binary parts in ARCHIVE-PARTS.json",
+      "reconstruction_script": "reconstruct_archives.py"
     }
-  ]
+  ],
+  "prior_published_manifest": {
+    "commit": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+    "sha256": "469340c8b81c894eeb31f38245df4591250df71e580af1df0b41785030e27a1b",
+    "bytes": 14579
+  }
 }

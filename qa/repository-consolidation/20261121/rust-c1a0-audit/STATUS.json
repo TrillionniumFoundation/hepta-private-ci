@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "reviewed_repair_batch_ready_for_existing_pr; repository_consolidation_incomplete",
+  "status": "reviewed_repair_batch_published; evidence_packaging_followup_prepared; repository_consolidation_incomplete",
   "recorded_at_utc": "2026-11-21T13:27:43.915923+00:00",
   "source_commit": "77aae54a30eb37ef7930d01224e5ef312a5014a1",
   "source_tree": "ebf0778517def0426a43e7ae24c46927c82a870d",
@@ -93,5 +93,20 @@
   "stop_patch_read_applied_or_reimplemented": false,
   "prior_user_authorization_for_normal_consolidation_remains_in_effect": true,
   "concurrent_unknown_jobs_or_private_checkouts_modified": false,
-  "evidence_commit_policy": "A single-parent evidence-only child of the final reviewed source; current remote head must be freshly read and updated with expected_sha and force=false."
+  "evidence_commit_policy": "A single-parent evidence-only child of the final reviewed source; current remote head must be freshly read and updated with expected_sha and force=false.",
+  "initial_published_head": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+  "publication_packaging_followup": {
+    "original_ci_head": "b9fb18785fb74e968b5e0bf304679515bfa93a2b",
+    "blob_size_failed_job": 136862721519,
+    "codespell_failed_job": 136862721594,
+    "existing_blob_limit_bytes": 512000,
+    "maximum_part_bytes": 491520,
+    "original_archive_bytes_and_hashes_preserved": true,
+    "narrative_revision": "One Rust terminology expansion to mutable static items; original source preserved in the earlier commit.",
+    "rust_or_production_source_changed": false,
+    "ci_rules_allowlists_ignore_words_or_thresholds_changed": false,
+    "archive_parts_manifest": "ARCHIVE-PARTS.json",
+    "archive_usage": "ARCHIVE-PARTS-README.md",
+    "local_gate_results": "Recorded separately after final combination; not inherited from prior CI."
+  }
 }
