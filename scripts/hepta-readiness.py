@@ -507,6 +507,35 @@ def validate_markdown_document(
         need(gap_id in text, row["id"] + " gap not cited " + gap_id)
 
 
+def validate_discovery_links(root: Path) -> None:
+    """Keep internal discovery while allowing an intentionally blank homepage."""
+    for discovery_path in (
+        "README.md",
+        "docs/DEVELOPMENT.md",
+        "docs/modules/README.md",
+        "docs/learning/README.md",
+        "docs/cns/README.md",
+    ):
+        path = root / discovery_path
+        need(path.is_file(), discovery_path + " discovery document missing")
+        text = path.read_text(encoding="utf-8")
+        # Main deliberately cleared the public homepage. An internal guide or
+        # a populated homepage must still expose the canonical readiness index.
+        if discovery_path == "README.md" and not text.strip():
+            continue
+        need(
+            any(
+                link in text
+                for link in (
+                    "docs/readiness/README.md",
+                    "../readiness/README.md",
+                    "../../readiness/README.md",
+                )
+            ),
+            discovery_path + " readiness discovery link",
+        )
+
+
 def verify() -> int:
     readiness = load(READINESS_PATH)
     protocols = load(PROTOCOL_PATH)
@@ -983,22 +1012,7 @@ def verify() -> int:
         ),
         "readiness README discovery/commands",
     )
-    for discovery_path in [
-        "README.md",
-        "docs/DEVELOPMENT.md",
-        "docs/modules/README.md",
-        "docs/learning/README.md",
-        "docs/cns/README.md",
-    ]:
-        need(
-            "docs/readiness/README.md"
-            in (ROOT / discovery_path).read_text(encoding="utf-8")
-            or "../readiness/README.md"
-            in (ROOT / discovery_path).read_text(encoding="utf-8")
-            or "../../readiness/README.md"
-            in (ROOT / discovery_path).read_text(encoding="utf-8"),
-            discovery_path + " readiness discovery link",
-        )
+    validate_discovery_links(ROOT)
 
     workflow = (ROOT / WORKFLOW_PATH).read_text(encoding="utf-8")
     for token in [

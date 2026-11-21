@@ -192,7 +192,7 @@ mod tests {
         }
     }
 
-    fn ledger() -> LeaseLedger {
+    fn ledger() -> Result<LeaseLedger, String> {
         let mut ledger = LeaseLedger::new();
         ledger
             .admit_host(HostObservation {
@@ -207,8 +207,8 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .unwrap();
-        ledger
+            .map_err(|error| format!("admit fixture host: {error}"))?;
+        Ok(ledger)
     }
 
     #[test]
@@ -239,7 +239,7 @@ mod tests {
             )
             .unwrap();
         let port = FleetAuthorityPort::new(registry.verifier());
-        let mut ledger = ledger();
+        let mut ledger = ledger().expect("fixture host ledger");
         let (receipt, witness) = port
             .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
             .unwrap();

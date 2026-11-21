@@ -238,6 +238,10 @@ def bazel_args_with_remote_config(
     if config is None:
         configured_args = bazel_args_without_remote_execution(args, env)
     else:
+        if not uses_remote_execution(args):
+            # Authenticated cache/BES access still runs native build actions
+            # locally. Keep their C/C++ ABI coherent with an MSVC Rust target.
+            args = bazel_args_without_remote_execution(args, env)
         # `remote_config()` returns a configuration only when this key is present.
         api_key = env["BUILDBUDDY_API_KEY"]
         remote_args = [

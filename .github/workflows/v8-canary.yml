@@ -289,6 +289,8 @@ jobs:
 
       - name: Smoke test staged artifact with Cargo
         env:
+          # Keep dependency-local rust-toolchain files from changing rustc.
+          RUSTUP_TOOLCHAIN: "1.95.0"
           SANDBOX: ${{ matrix.sandbox }}
           TARGET: ${{ matrix.target }}
         shell: bash

@@ -102,6 +102,16 @@ jobs:
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
           )
+          if [[ "${RUNNER_OS}" == "macOS" ]]; then
+            # Bound client-side threads while remote build actions and local
+            # sandboxed tests overlap on the macOS runner.
+            bazel_test_args+=(
+              --jobs=128
+              --loading_phase_threads=8
+              --local_test_jobs=4
+            )
+          fi
+
           ./.github/scripts/run-bazel-ci.sh \
             "${bazel_wrapper_args[@]}" \
             -- \
@@ -390,7 +400,13 @@ jobs:
             # Keep host-loaded proc macros and native libraries on one Windows
             # ABI while preserving the complete Bazel clippy target set.
             bazel_wrapper_args+=(--windows-msvc-host-platform)
-            bazel_clippy_args+=(--platforms=//:windows_x86_64_msvc)
+            # The list includes cross helpers and product fixtures that the
+            # BUILD rules already declare incompatible with native MSVC.
+            # Let Bazel apply those platform contracts to explicit labels.
+            bazel_clippy_args+=(
+              --platforms=//:windows_x86_64_msvc
+              --skip_incompatible_explicit_targets
+            )
           fi
 
           bazel_target_lines="$(./scripts/list-bazel-clippy-targets.sh "${bazel_target_list_args[@]}")"
