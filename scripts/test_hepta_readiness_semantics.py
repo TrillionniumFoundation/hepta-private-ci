@@ -167,8 +167,13 @@ class ReadinessDiscoveryTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        for name in ("README.md", "docs/DEVELOPMENT.md", "docs/modules/README.md",
-                     "docs/learning/README.md", "docs/cns/README.md"):
+        for name in (
+            "README.md",
+            "docs/DEVELOPMENT.md",
+            "docs/modules/README.md",
+            "docs/learning/README.md",
+            "docs/cns/README.md",
+        ):
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("[Readiness](docs/readiness/README.md)\n", encoding="utf-8")
@@ -189,7 +194,9 @@ class ReadinessDiscoveryTests(unittest.TestCase):
     def test_blank_internal_guide_still_rejects_with_blank_homepage(self):
         (self.root / "README.md").write_text("", encoding="utf-8")
         (self.root / "docs/DEVELOPMENT.md").write_text("", encoding="utf-8")
-        with self.assertRaisesRegex(SystemExit, "DEVELOPMENT.md readiness discovery link"):
+        with self.assertRaisesRegex(
+            SystemExit, "DEVELOPMENT.md readiness discovery link"
+        ):
             VERIFIER.validate_discovery_links(self.root)
 
     def test_missing_internal_guide_still_rejects(self):

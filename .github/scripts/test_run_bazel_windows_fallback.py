@@ -274,6 +274,64 @@ class WindowsLocalFallbackTest(unittest.TestCase):
                     ["build", "--", "//..."],
                 )
 
+    def test_authenticated_native_msvc_keeps_local_compiler_and_remote_cache(
+        self,
+    ) -> None:
+        env = {"RUNNER_OS": "Windows", "BUILDBUDDY_API_KEY": "fixture-token"}
+        for command in ("build", "test", "cquery", "aquery"):
+            for platform in (
+                ["--platforms=//:windows_x86_64_msvc"],
+                ["--platforms", "//:windows_x86_64_msvc"],
+            ):
+                with self.subTest(command=command, platform=platform):
+                    args = [command, "--config=ci-windows", *platform, "--", "//..."]
+                    self.assertEqual(
+                        wrapper.bazel_args_with_remote_config(args, env),
+                        [
+                            command,
+                            "--config=buildbuddy-generic",
+                            "--remote_header=x-buildbuddy-api-key=fixture-token",
+                            "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+                            "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
+                            *args[1:],
+                        ],
+                    )
+
+    def test_authenticated_native_msvc_preserves_later_explicit_compiler(self) -> None:
+        options = [
+            "--extra_toolchains=//:custom-msvc-compiler",
+            "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1",
+        ]
+        args = ["build", "--platforms=//:windows_x86_64_msvc", *options, "--", "//..."]
+        self.assertEqual(
+            wrapper.bazel_args_with_remote_config(
+                args, {"RUNNER_OS": "Windows", "BUILDBUDDY_API_KEY": "fixture-token"}
+            ),
+            [
+                "build",
+                "--config=buildbuddy-generic",
+                "--remote_header=x-buildbuddy-api-key=fixture-token",
+                "--config=ci-windows",
+                "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+                "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
+                *args[1:],
+            ],
+        )
+
+    def test_authenticated_query_does_not_gain_native_build_options(self) -> None:
+        args = ["query", "--output=label", "//..."]
+        self.assertEqual(
+            wrapper.bazel_args_with_remote_config(
+                args, {"RUNNER_OS": "Windows", "BUILDBUDDY_API_KEY": "fixture-token"}
+            ),
+            [
+                "query",
+                "--config=buildbuddy-generic",
+                "--remote_header=x-buildbuddy-api-key=fixture-token",
+                *args[1:],
+            ],
+        )
+
     def test_authenticated_cross_request_remains_rbe(self) -> None:
         args = ["build", "--config=ci-windows-cross", "//codex-rs/cli:codex"]
         self.assertEqual(

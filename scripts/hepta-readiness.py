@@ -524,11 +524,14 @@ def validate_discovery_links(root: Path) -> None:
         if discovery_path == "README.md" and not text.strip():
             continue
         need(
-            any(link in text for link in (
-                "docs/readiness/README.md",
-                "../readiness/README.md",
-                "../../readiness/README.md",
-            )),
+            any(
+                link in text
+                for link in (
+                    "docs/readiness/README.md",
+                    "../readiness/README.md",
+                    "../../readiness/README.md",
+                )
+            ),
             discovery_path + " readiness discovery link",
         )
 
