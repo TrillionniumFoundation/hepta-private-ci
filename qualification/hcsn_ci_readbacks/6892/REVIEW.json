@@ -1,0 +1,72 @@
+{
+  "schema": "hcsn-n256-runtime-v3-mismatch-localization-independent-readback-v1",
+  "source_pr": 6892,
+  "source_commit": "fdf5b123afb108bbce21c3bfb574b989d02890f2",
+  "run": 44910007894,
+  "job": 136863614180,
+  "artifact_id": 14709805060,
+  "artifact_name": "hcsn-n256-runtime-v3-mismatch-localization-originals",
+  "artifact_zip_bytes": 31092,
+  "artifact_zip_sha256": "958c7e4c5459e760e14ff3c363ea55f517a48a51add40279164040759b29ad10",
+  "members": {
+    "SUMMARY.json": {
+      "bytes": 1071,
+      "sha256": "9905e13898469f52b30ad90799396e2f61d48d1cb61969de269d3ff624315fbc"
+    },
+    "MISMATCHES.jsonl": {
+      "bytes": 237904,
+      "sha256": "a01308e8ce1ee40cc2f1d99d187530567f3487c047b53dd50389bc05119bd810",
+      "lines": 665
+    },
+    "COST.json": {
+      "bytes": 266,
+      "sha256": "8787ffcfb7d668674ab7100a91d8071e892a5c84c64757c5d7240c8f32549d67"
+    }
+  },
+  "reviewed_counts": {
+    "coordinate_comparisons": 69728,
+    "bitwise_mismatches": 665,
+    "max_abs_error_hex": "0x1.e000000000000p-54",
+    "max_ulp_distance": 98,
+    "state_active": 650,
+    "state_discounted_hit": 5,
+    "state_mass": 5,
+    "state_occupation": 5,
+    "packet_mismatches": 0,
+    "state_upper_mismatches": 0
+  },
+  "runtime_lineage_readback": {
+    "oracle": {
+      "runner_requested": "ubuntu-24.04",
+      "python": "3.12.3",
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "runtime_sha256": "0625973f64197245273674586e60ce187571ef1f9d01bc52ea83a30beaa0ad06"
+    },
+    "red_execution": {
+      "observed_image": "ubuntu-26.04",
+      "python": "3.12.16",
+      "numpy_declared": "2.3.5",
+      "scipy_declared": "1.17.0"
+    },
+    "exact_runtime_identity_matched": false,
+    "causal_attribution": "UNKNOWN"
+  },
+  "review_execution": {
+    "candidate_model_calls": 0,
+    "dynamic_steps": 0,
+    "expm_actions": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "conclusions": {
+    "parent_red_preserved": true,
+    "mismatch_confined_to_propagated_state_outputs": true,
+    "serializer_or_metadata_mismatch": false,
+    "packet_mismatch": false,
+    "numerical_kernel_cause_proved": false,
+    "qualification": false,
+    "production_adoption": false,
+    "all_closed": false
+  }
+}
