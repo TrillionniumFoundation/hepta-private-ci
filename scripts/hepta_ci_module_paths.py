@@ -17,6 +17,7 @@ BLOCK_MARKER = re.compile(r"/\*|\*/")
 STRING = re.compile(r'"(?:\\.|[^"\\])*"', re.S)
 NUMBER = re.compile(r"[0-9]+")
 PUNCTUATION = set("()[]{}#!=:;,.<>+-*/%&|^?@$~")
+CLOSING = {")": "(", "]": "[", "}": "{"}
 MAX_BYTES = 1 << 20
 MAX_DEPTH = 128
 MAX_TOKENS = 131_072
@@ -29,14 +30,15 @@ def _tokens(text):
     position, size = 0, len(text)
     while position < size:
         start = position
-        if text[position].isspace():
+        first = text[position]
+        if first.isspace():
             position = SPACE.match(text, position).end()
             continue
-        if text.startswith("//", position):
+        if first == "/" and text.startswith("//", position):
             end = text.find("\n", position)
             position = size if end < 0 else end + 1
             continue
-        if text.startswith("/*", position):
+        if first == "/" and text.startswith("/*", position):
             depth = 1
             position += 2
             while position < size and depth:
@@ -53,8 +55,16 @@ def _tokens(text):
             if depth:
                 raise ValueError("unfinished module comment")
             continue
-        raw = RAW.match(text, position)
-        if raw:
+        # Most source tokens are identifiers or punctuation. Dispatch by the
+        # first character before trying literal parsers over entire crates.
+        raw = RAW.match(text, position) if first in "rbc" else None
+        if first in PUNCTUATION:
+            position += 1
+            kind = "punctuation"
+        elif first in "0123456789":
+            position = NUMBER.match(text, position).end()
+            kind = "number"
+        elif raw:
             if len(raw[2]) > 255:
                 raise ValueError("unsupported raw string delimiter")
             end = text.find('"' + raw[2], raw.end())
@@ -62,15 +72,15 @@ def _tokens(text):
                 raise ValueError("unfinished raw string")
             position = end + 1 + len(raw[2])
             kind = "string" if raw[1] == "r" else "literal"
-        elif text[position] == '"' or text.startswith(('b"', 'c"'), position):
-            prefix = text[position] != '"'
+        elif first == '"' or first in "bc" and text[position + 1 : position + 2] == '"':
+            prefix = first != '"'
             literal = STRING.match(text, position + int(prefix))
             if literal is None:
                 raise ValueError("unfinished string")
             position = literal.end()
             kind = "literal" if prefix else "string"
-        elif text[position] == "'" or text.startswith("b'", position):
-            offset = 1 if text[position] == "b" else 0
+        elif first == "'" or first == "b" and text[position + 1 : position + 2] == "'":
+            offset = 1 if first == "b" else 0
             character = CHAR.match(text, position + offset)
             lifetime = IDENT.match(text, position + 1) if not offset else None
             if character:
@@ -86,15 +96,13 @@ def _tokens(text):
             if identifier:
                 position = identifier.end()
                 kind = "identifier"
-            elif text[position] in "0123456789":
-                position = NUMBER.match(text, position).end()
-                kind = "number"
-            elif text[position] in PUNCTUATION:
-                position += 1
-                kind = "punctuation"
             else:
                 raise ValueError("unsupported module source token")
         value = text[start:position]
+        if kind == "identifier":
+            # Rust permits raw spellings for built-in attributes as well as
+            # module names. They retain their normal attribute semantics.
+            value = value.removeprefix("r#")
         index = len(tokens)
         tokens.append((kind, value, len(stack)))
         if len(tokens) > MAX_TOKENS:
@@ -104,7 +112,7 @@ def _tokens(text):
             if len(stack) > MAX_DEPTH:
                 raise ValueError("module delimiter depth bound")
         elif kind == "punctuation" and value in ")]}":
-            if not stack or stack[-1][0] != {")": "(", "]": "[", "}": "{"}[value]:
+            if not stack or stack[-1][0] != CLOSING[value]:
                 raise ValueError("mismatched module delimiter")
             _, opening = stack.pop()
             pairs[opening] = index

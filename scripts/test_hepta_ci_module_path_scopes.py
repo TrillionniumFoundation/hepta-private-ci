@@ -1,8 +1,6 @@
-"""Proposed conservative contract for literal module-path lexical scope.
+"""Conservative scope discovery for Rust module paths and embedded inputs.
 
-This test-only preparation intentionally has red cases on c6f90. It must not be
-presented as a passing implementation or as permission to drop opaque fallback.
-Git fixtures are real; no compiler, build script or external program is run.
+Git fixtures exercise exact old and new trees without executing candidate Rust.
 """
 
 from pathlib import Path
@@ -50,6 +48,19 @@ class LiteralModuleScopeContract(unittest.TestCase):
         for text in (INLINE + TOP_LEVEL, TOP_LEVEL + INLINE):
             with self.subTest(text=text):
                 self.assertEqual(self.parsed(text), ({TARGET}, False))
+
+    def test_raw_attribute_identifiers_preserve_module_input_semantics(self):
+        self.assertEqual(
+            self.parsed('#[r#cfg(test)]\n#[r#path = "fixture.rs"] mod r#fixture;'),
+            ({TARGET}, False),
+        )
+        for text in (
+            '#[r#cfg_attr(unix, r#path = "fixture.rs")] mod fixture;',
+            '#[cfg_attr(unix, r#path = "fixture.rs")] mod fixture;',
+            'mod nested { #[r#path = "fixture.rs"] mod fixture; }',
+        ):
+            with self.subTest(text=text):
+                self.assertTrue(self.parsed(text)[1])
 
     def test_balanced_lexical_noise_cannot_move_the_real_path_into_a_module(self):
         examples = [
@@ -238,6 +249,17 @@ class ExactTreeScopeContract(unittest.TestCase):
         self.assert_scoped_plan(base, head, [])
 
     def test_real_embedded_input_still_selects_owner_and_reverse_consumer(self):
+        base = self.commit()
+        head = self.change("docs/payload.md", "after\n")
+        self.assert_scoped_plan(base, head, ["hepta-a", "hepta-b"])
+
+    def test_raw_path_attribute_traverses_non_rust_named_module(self):
+        (self.root / TARGET).unlink()
+        self.write(SOURCE, '#[r#path = "fixture.md"] mod fixture;\n')
+        self.write(
+            "codex-rs/hepta-a/src/fixture.md",
+            'pub const INPUT: &str = include_str!("../../../docs/payload.md");\n',
+        )
         base = self.commit()
         head = self.change("docs/payload.md", "after\n")
         self.assert_scoped_plan(base, head, ["hepta-a", "hepta-b"])
