@@ -20,6 +20,10 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 50
     steps:
+      - name: Enable long paths for repository checkout
+        shell: pwsh
+        run: git config --global core.longpaths true
+
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
