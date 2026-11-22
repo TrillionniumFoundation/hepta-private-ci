@@ -2,11 +2,14 @@
 use std::os::unix::fs::PermissionsExt;
 
 use codex_hepta_authbus::AuthBusAlgorithm;
+#[cfg(unix)]
 use codex_hepta_authbus::AuthBusAuthorityOwner;
 use codex_hepta_authbus::AuthBusVerifyingKey;
 use codex_hepta_authbus::Error;
+#[cfg(unix)]
 use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerRegistration;
+#[cfg(unix)]
 use codex_hepta_authbus::IssuerSpec;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
@@ -268,6 +271,8 @@ async fn external_checkpoint_detects_real_old_database_restore() {
     ));
 }
 
+// Successful owner-backed retirement uses the documented Unix checkpoint hardening.
+#[cfg(unix)]
 #[tokio::test]
 async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resurrection() {
     let temp = TempDir::new().unwrap();

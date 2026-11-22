@@ -1,3 +1,6 @@
+// Successful owner-backed retirement uses the documented Unix checkpoint hardening.
+#![cfg(unix)]
+
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 

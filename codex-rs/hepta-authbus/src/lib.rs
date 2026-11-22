@@ -255,3 +255,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "owner_windows_tests.rs"]
+mod owner_windows_tests;
