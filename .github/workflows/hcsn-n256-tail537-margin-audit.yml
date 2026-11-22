@@ -1,0 +1,34 @@
+name: hcsn-n256-tail537-margin-readonly
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_ci_readbacks/6957/**"
+      - "qualification/hcsn_currentstate_n256_tail537_margin_audit/**"
+      - ".github/workflows/hcsn-n256-tail537-margin-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-readonly-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify immutable originals
+        run: python3 qualification/hcsn_ci_readbacks/6957/verify.py
+      - name: Verify committed audit in normal mode
+        run: >-
+          python3 qualification/hcsn_currentstate_n256_tail537_margin_audit/audit.py
+          --verify-expected
+          qualification/hcsn_currentstate_n256_tail537_margin_audit/AUDIT.json
+      - name: Verify committed audit in optimized mode
+        run: >-
+          python3 -O qualification/hcsn_currentstate_n256_tail537_margin_audit/audit.py
+          --verify-expected
+          qualification/hcsn_currentstate_n256_tail537_margin_audit/AUDIT.json
