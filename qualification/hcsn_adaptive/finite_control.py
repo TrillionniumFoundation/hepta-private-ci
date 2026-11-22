@@ -64,13 +64,58 @@ def continuation_value(generator, running_reward, discount):
     return torch.linalg.solve(discount * identity - generator, running_reward.unsqueeze(-1)).squeeze(-1)
 
 
+def first_passage_channels(generator, event_rate, *, discount, duration, event_destination):
+    """Finite-horizon first-event channels for EVERY starting process state.
+
+    Includes refractory states that release before their first event. A marked
+    off-diagonal edge is killed without changing its holding-time diagonal.
+    The two vectors are P(tau <= duration) and E[exp(-discount*tau); tau <=
+    duration], not repeated-event counts or infinite-horizon resolvents. Row
+    distributions multiply these vectors; survival_transition can propagate a
+    separate never-yet-fired population. Batch dimensions and autograd are kept.
+    Boundary-edge events must be accounted for by the caller at time zero.
+    """
+    if (generator.ndim < 2 or generator.shape[-2] != generator.shape[-1]
+            or not 2 <= generator.shape[-1] <= 256 or generator.numel() == 0
+            or generator.dtype not in (torch.float32, torch.float64)
+            or event_rate.shape != generator.shape[:-1]
+            or event_rate.dtype != generator.dtype or event_rate.device != generator.device
+            or not bool(torch.isfinite(generator).all()) or not bool(torch.isfinite(event_rate).all())
+            or type(event_destination) is not int or not 0 <= event_destination < generator.shape[-1]
+            or not math.isfinite(duration) or duration <= 0
+            or not math.isfinite(discount) or discount < 0):
+        raise ValueError("matching finite generator/rates, duration, discount and event destination required")
+    n = generator.shape[-1]
+    diagonal = generator.diagonal(dim1=-2, dim2=-1)
+    off_diagonal = generator - torch.diag_embed(diagonal)
+    tolerance = 8 * n * torch.finfo(generator.dtype).eps * generator.abs().amax(-1).clamp_min(1)
+    identity = torch.eye(n, dtype=generator.dtype, device=generator.device)
+    marked = event_rate[..., None] * identity[event_destination]
+    if (bool((off_diagonal < 0).any()) or bool((diagonal > 0).any())
+            or bool((generator.sum(-1).abs() > tolerance).any())
+            or bool((event_rate < 0).any()) or bool((event_rate[..., event_destination] != 0).any())
+            or bool((marked > off_diagonal).any())):
+        raise ValueError("marked rates must be off-diagonal generator edges in a conservative CTMC")
+    killed = generator - marked
+    zero = generator.new_zeros(*generator.shape[:-2], 1, n + 1)
+    first = torch.cat((torch.cat((killed, event_rate[..., None]), -1), zero), -2)
+    discounted = torch.cat((torch.cat((killed - discount * identity, event_rate[..., None]), -1), zero), -2)
+    first_action = torch.matrix_exp(duration * first)
+    discounted_action = torch.matrix_exp(duration * discounted)
+    return {"survival_transition": first_action[..., :n, :n],
+            "first_event_probability": first_action[..., :n, n],
+            "discounted_first_event": discounted_action[..., :n, n]}
+
+
 def frozen_channels(generator, event_rate, running_reward, *, discount, duration, event_destination):
     """Value, all-event count and first-event risk from one finite generator.
 
     First risk here includes initial phase mass that releases and later fires.
     BatchedFlow's narrower initial-active risk is obtained by weighting this
     vector only with its active starting mass, then adding boundary-jump hits.
-    Marked events must be off-diagonal jumps to event_destination.
+    Marked events must be off-diagonal jumps to event_destination. Legacy key
+    discounted_events means the INFINITE-horizon discounted repeated count;
+    discounted_first_event is the finite-horizon first-passage transform.
     """
     _validate_generator(generator)
     n = len(generator)
@@ -88,16 +133,19 @@ def frozen_channels(generator, event_rate, running_reward, *, discount, duration
         raise ValueError("marked event rate exceeds the corresponding generator edge")
     zero = generator.new_zeros(1, n + 1)
     counted = torch.cat((torch.cat((generator, event_rate[:, None]), -1), zero), 0)
-    killed = generator - marked  # Keep the original holding/exit diagonal.
-    first = torch.cat((torch.cat((killed, event_rate[:, None]), -1), zero), 0)
     counted_action = torch.matrix_exp(duration * counted)
-    first_action = torch.matrix_exp(duration * first)
+    first = first_passage_channels(generator, event_rate, discount=discount,
+                                   duration=duration, event_destination=event_destination)
+    discounted_count = continuation_value(generator, event_rate, discount)
     return {
         "transition": counted_action[:n, :n],
         "expected_events": counted_action[:n, n],
-        "first_event_probability": first_action[:n, n],
+        "first_event_probability": first["first_event_probability"],
+        "discounted_first_event": first["discounted_first_event"],
+        "expected_event_count": counted_action[:n, n],
         "value": continuation_value(generator, running_reward, discount),
-        "discounted_events": continuation_value(generator, event_rate, discount),
+        "discounted_events": discounted_count,
+        "discounted_repeated_event_count_infinite_horizon": discounted_count,
     }
 
 

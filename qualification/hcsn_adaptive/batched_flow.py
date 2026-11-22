@@ -16,8 +16,9 @@ state size is fixed; an unrolled autograd tape and saved outputs are separate.
 Default transport_precision='float64' keeps probability/content state, geometry,
 matrix actions and solves in FP64 even with FP32 trainable layers and outputs.
 This is mixed precision, NOT native-FP32 execution. Native mode is an explicit
-comparison and retains the same strict state checks. Writes occur once per
+comparison and retains the same strict state checks. Legacy step writes once per
 observation; subdividing time with additional writes changes the content law.
+step_physical requires an explicit event-mask or continuous-write law.
 """
 
 from dataclasses import asdict, dataclass
@@ -28,6 +29,7 @@ import torch
 from qualification.hcsn_training.population_generator import finite_volume_generator
 from qualification.hcsn_adaptive.finite_control import continuation_value, solve_impulse_control
 from qualification.hcsn_adaptive.impulse_execution import compile_impulse_policy
+from qualification.hcsn_adaptive.flow_semantics import physical_feature_names, physical_step
 
 
 @dataclass(frozen=True)
@@ -145,6 +147,7 @@ with an existing equity operator evaluated on the returned state's nodes.
         self.register_buffer("reset", reset/reset.sum())
         self.feature_names = ("event", *[f"content_{i}" for i in range(config.content_size)],
                               "risk", "margin", "occupation", "call")
+        self.physical_feature_names = physical_feature_names(config.content_size)
 
     def _apply(self, fn, recurse=True):
         super()._apply(fn, recurse=recurse)
@@ -323,7 +326,20 @@ with an existing equity operator evaluated on the returned state's nodes.
         self.validate_state(updated, 1, self.drive.weight.dtype, self.drive.weight.device)
         return updated, receipt
 
-    def step(self, inputs, state=None, *, dt=None, drift_override=None, boundary_override=None, feature_mask=None):
+    def step_physical(self, inputs, state=None, *, semantics, dt=None, write_mask=None,
+                      drift_override=None, boundary_override=None, reward_offset=None, feature_mask=None):
+        """Explicit held-interval law; full-population first risk and named receipts."""
+        return physical_step(self, inputs, state, semantics=semantics, dt=dt, write_mask=write_mask,
+                             drift_override=drift_override, boundary_override=boundary_override,
+                             reward_offset=reward_offset, feature_mask=feature_mask)
+
+    def step(self, inputs, state=None, *, dt=None, drift_override=None, boundary_override=None,
+             reward_offset=None, feature_mask=None):
+        """Legacy observation-write law with INITIAL-ACTIVE-only first-risk feature.
+
+        Default numerical operations are retained for historical reproducibility.
+        New physical-law callers must select step_physical explicitly.
+        """
         c = self.config
         if (inputs.ndim != 2 or inputs.shape[1] != c.input_size or not 1 <= len(inputs) <= c.max_batch
                 or inputs.dtype not in (torch.float32, torch.float64) or not bool(torch.isfinite(inputs).all())
@@ -358,6 +374,9 @@ with an existing equity operator evaluated on the returned state's nodes.
         risk = jump[:, 0]+(alive_for_risk*first_hit).sum(-1)
         reward = torch.cat((c.gain*(boundary[:, None]+self.centers)-c.maintenance,
                             work.new_zeros(batch, c.stages+1)), -1)-c.spike_cost*event
+        if reward_offset is not None:
+            active = torch.cat((work.new_ones(c.bins), work.new_zeros(c.stages+1)))
+            reward = reward+self._batch_value(reward_offset, work, batch)[:, None]*active
         value = continuation_value(generator, reward, c.discount)
         p = transitioned[:, 0]
         margin = (p[:, :c.bins]*self.centers).sum(-1)/c.extent
@@ -380,7 +399,8 @@ with an existing equity operator evaluated on the returned state's nodes.
                        "generator_row_error": generator.sum(-1).abs().amax(-1),
                        "transport_dtype": str(work.dtype), "output_dtype": str(inputs.dtype),
                        "refractory_variance": c.refractory**2/c.stages,
-                       "call_kind": "frozen_finite_policy_continuation"}
+                       "call_kind": "frozen_finite_policy_continuation",
+                       "write_law": "legacy_observation", "first_risk_population": "initial active only"}
         return features, updated, diagnostics
 
     def forward(self, sequence, state=None):

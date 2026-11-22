@@ -8,6 +8,13 @@ name: HCSN source mathematical fixtures
       - qualification/hcsn_adaptive/__init__.py
       - qualification/hcsn_adaptive/batched_flow.py
       - qualification/hcsn_adaptive/batched_flow_tests.py
+      - qualification/hcsn_adaptive/flow_semantics.py
+      - qualification/hcsn_adaptive/flow_semantics_tests.py
+      - qualification/hcsn_adaptive/regenerative_reference.py
+      - qualification/hcsn_adaptive/regenerative_reference_tests.py
+      - qualification/hcsn_adaptive/regenerative_flow_tests.py
+      - qualification/hcsn_adaptive/real_sensor_data.py
+      - qualification/hcsn_adaptive/real_sensor_data_tests.py
       - qualification/hcsn_adaptive/budget.py
       - qualification/hcsn_adaptive/finite_control.py
       - qualification/hcsn_adaptive/finite_control_tests.py
@@ -21,6 +28,7 @@ name: HCSN source mathematical fixtures
       - qualification/hcsn_training/population_generator.py
       - qualification/hcsn_scale/__init__.py
       - qualification/hcsn_scale/model.py
+      - qualification/hcsn_scale/*.py
       - qualification/hcsn_prepared/__init__.py
       - qualification/hcsn_prepared/model.py
       - qualification/hcsn_confirmatory_v1/*.py
@@ -55,7 +63,7 @@ jobs:
       - name: Install pinned CPU numerical dependencies
         run: |
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.8.0+cpu
-          python -m pip install --index-url https://pypi.org/simple numpy==2.3.5 ncps==1.0.1 threadpoolctl==3.6.0 ruff==0.15.13
+          python -m pip install --index-url https://pypi.org/simple numpy==2.3.5 scipy==1.16.3 ncps==1.0.1 threadpoolctl==3.6.0 ruff==0.15.13
           python -m pip check
       - name: Run explicit mathematical and unit fixtures
         run: |
@@ -65,12 +73,14 @@ jobs:
           import unittest
 
           import numpy
+          import scipy
           import torch
           from ncps.torch import CfC
 
           assert sys.version_info[:2] == (3, 12)
           assert torch.__version__ == "2.8.0+cpu" and torch.version.cuda is None
           assert numpy.__version__ == "2.3.5"
+          assert scipy.__version__ == "1.16.3"
           assert importlib.metadata.version("ncps") == "1.0.1"
           assert CfC.__module__.startswith("ncps.")
           torch.set_num_threads(1)
@@ -84,6 +94,16 @@ jobs:
               "qualification.hcsn_adaptive.uniformized_flow_tests",
               "qualification.hcsn_adaptive.fixed_delay_reference_tests",
               "qualification.hcsn_adaptive.batched_flow_tests",
+              "qualification.hcsn_adaptive.flow_semantics_tests",
+              "qualification.hcsn_adaptive.regenerative_reference_tests",
+              "qualification.hcsn_adaptive.regenerative_flow_tests",
+              "qualification.hcsn_adaptive.real_sensor_data_tests",
+              "qualification.hcsn_scale.scale_tests",
+              "qualification.hcsn_scale.feedback_tests",
+              "qualification.hcsn_scale.adaptation_tests",
+              "qualification.hcsn_scale.adaptation_study_tests",
+              "qualification.hcsn_scale.stream_baselines_tests",
+              "qualification.hcsn_scale.study_launcher_tests",
               "qualification.hcsn_confirmatory_v1.tasks_tests",
               "qualification.hcsn_confirmatory_v1.joint_tests",
               "qualification.hcsn_confirmatory_v1.architecture_tests",
@@ -113,7 +133,7 @@ jobs:
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: just@1.51.0
-      - name: Run canonical changed-source formatter and explicit mechanism Python check
+      - name: Run canonical formatter and explicit research Python checks
         run: |
           git fetch --no-tags --depth=1 origin b1a19b3b6b4ce24548a293a075ad9ed7088c6987
           cd codex-rs
@@ -121,6 +141,15 @@ jobs:
           cd ..
           # The canonical selector does not own qualification Python sources.
           ruff format --check qualification/hcsn_mechanism_v2
+          ruff format --check \
+            qualification/hcsn_adaptive/flow_semantics{,_tests}.py \
+            qualification/hcsn_adaptive/regenerative_reference{,_tests}.py \
+            qualification/hcsn_adaptive/regenerative_flow_tests.py \
+            qualification/hcsn_scale/feedback{,_tests}.py \
+            qualification/hcsn_scale/adaptation{,_tests,_study,_study_tests}.py \
+            qualification/hcsn_scale/stream_baselines{,_tests}.py \
+            qualification/hcsn_scale/stream_benchmark.py \
+            qualification/hcsn_scale/study_launcher{,_tests}.py
       - name: Require clean source tree
         run: |
           git diff --exit-code

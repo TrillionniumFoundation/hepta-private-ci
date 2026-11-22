@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "check_count": 3954,
+  "failures": [],
+  "launch_sha256": "59b56a382a3bd76e600b1ea38ca664f76f799de12989863a8ffe4ee2a9ee5ef9",
+  "source_manifest_sha256": "1953148571aa943cc20ad531c2268626acd523cf57cb6adb87e700399b7e3be1",
+  "validator_sources": {
+    "validate_flow_study.py": "10aba92902e00256c301e66dbd1b6184ad968e3b984367e75170e419a4ae0c9b",
+    "validate_flow_details.py": "6a015a76d3492d80c11a7d24a93bd8cb2e947298e9b1bd98e9f71b78cedefab4"
+  },
+  "verification_seconds": 0.8127231179969385,
+  "limits": [
+    "No network forward or training rerun; P4 gates replay recorded scores, not independent score predictions.",
+    "Stream initial tensors were not saved; common initial parameter hashes and persisted selected counts are cross-checked.",
+    "P4 parses the full source including test rows but performs zero test scoring; preservation covers only its declared sensor windows.",
+    "Three-seed sample SD is descriptive; no population superiority or global knowledge-preservation inference."
+  ],
+  "published_summary_check_count": 3954,
+  "full_record": {
+    "archive": "evidence.zip",
+    "path": "study/POSTHOC/verification.json",
+    "sha256": "cbd18a97c51fbfa5b248ecd0878ccef329d76f20a7ba92ea5945f7c5de0d0129"
+  }
+}
