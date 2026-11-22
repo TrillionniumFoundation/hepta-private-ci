@@ -89,7 +89,8 @@ async fn file_cache_load_distinguishes_absent_version_stale_and_zero_ttl() {
     let cache = FileModelsCache::new(path.clone(), Duration::from_secs(3600));
 
     assert_eq!(
-        cache.load("current-client")
+        cache
+            .load("current-client")
             .await
             .expect("missing cache is a normal miss"),
         None
@@ -111,19 +112,23 @@ async fn file_cache_load_distinguishes_absent_version_stale_and_zero_ttl() {
         .expect("write fresh cache");
     let fresh_bytes = tokio::fs::read(&path).await.expect("read fresh bytes");
     assert_eq!(
-        cache.load("other-client")
+        cache
+            .load("other-client")
             .await
             .expect("version mismatch is a normal miss"),
         None
     );
     assert_eq!(
-        cache.load("current-client")
+        cache
+            .load("current-client")
             .await
             .expect("matching fresh cache loads"),
         Some(entry.clone())
     );
     assert_eq!(
-        tokio::fs::read(&path).await.expect("read original fresh bytes"),
+        tokio::fs::read(&path)
+            .await
+            .expect("read original fresh bytes"),
         fresh_bytes
     );
 
@@ -133,13 +138,16 @@ async fn file_cache_load_distinguishes_absent_version_stale_and_zero_ttl() {
         .expect("write stale cache");
     let stale_bytes = tokio::fs::read(&path).await.expect("read stale bytes");
     assert_eq!(
-        cache.load("current-client")
+        cache
+            .load("current-client")
             .await
             .expect("stale entry is a normal miss"),
         None
     );
     assert_eq!(
-        tokio::fs::read(&path).await.expect("read unchanged stale bytes"),
+        tokio::fs::read(&path)
+            .await
+            .expect("read unchanged stale bytes"),
         stale_bytes
     );
 
@@ -157,7 +165,9 @@ async fn file_cache_load_distinguishes_absent_version_stale_and_zero_ttl() {
         None
     );
     assert_eq!(
-        tokio::fs::read(&path).await.expect("read unchanged zero-TTL bytes"),
+        tokio::fs::read(&path)
+            .await
+            .expect("read unchanged zero-TTL bytes"),
         zero_ttl_bytes
     );
 }
