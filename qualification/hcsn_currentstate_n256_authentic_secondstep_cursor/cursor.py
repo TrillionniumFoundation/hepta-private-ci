@@ -70,7 +70,9 @@ def _tail_is_unique(cursor):
     exp_negative_lower = 1 / exp_positive_upper
     exp_negative_upper = 1 / exp_positive_lower
     growth_tail = next_growth / (1 - tail_argument / ratio_denominator)
-    total_variation = sum((abs(value) for value in _original_vector(cursor)), Fraction(0))
+    total_variation = sum(
+        (abs(value) for value in _original_vector(cursor)), Fraction(0)
+    )
     remainder = total_variation * growth_tail
     for value in cursor.partial:
         lower, upper = _product_interval(
@@ -82,12 +84,16 @@ def _tail_is_unique(cursor):
         if _round_fraction(lower) != _round_fraction(upper):
             return False
     return True
+
+
 def build_authentic_secondstep_cursor(parent_payload):
     """Cold-decode one parent, perform one tail check and one row action."""
 
     parent = decode_authentic_firststep_cursor(parent_payload)
     if parent.included_index != 1:
-        raise NonSubstochasticSignedIntervalError("parent is not at first-step boundary")
+        raise NonSubstochasticSignedIntervalError(
+            "parent is not at first-step boundary"
+        )
     if _tail_is_unique(parent):
         raise NonSubstochasticSignedIntervalError(
             "first-step tail already has unique binary64 outputs"
@@ -170,7 +176,9 @@ def decode_authentic_secondstep_cursor(payload):
     try:
         envelope = json.loads(payload.decode("ascii"))
     except (UnicodeDecodeError, json.JSONDecodeError) as error:
-        raise NonSubstochasticSignedIntervalError("invalid second-step cursor JSON") from error
+        raise NonSubstochasticSignedIntervalError(
+            "invalid second-step cursor JSON"
+        ) from error
     canonical = json.dumps(
         envelope, sort_keys=True, separators=(",", ":"), ensure_ascii=True
     ).encode("ascii")
@@ -207,7 +215,9 @@ def decode_authentic_secondstep_cursor(payload):
     try:
         parent_payload = body["parent_payload_ascii"].encode("ascii")
     except (AttributeError, UnicodeEncodeError) as error:
-        raise NonSubstochasticSignedIntervalError("invalid embedded parent payload") from error
+        raise NonSubstochasticSignedIntervalError(
+            "invalid embedded parent payload"
+        ) from error
     if hashlib.sha256(parent_payload).hexdigest() != body["parent_payload_sha256"]:
         raise NonSubstochasticSignedIntervalError("embedded parent digest mismatch")
     parent = decode_authentic_firststep_cursor(parent_payload)

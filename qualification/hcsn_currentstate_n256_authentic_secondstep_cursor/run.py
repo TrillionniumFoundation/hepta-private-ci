@@ -106,7 +106,9 @@ def main():
             "hpca_status": "NoUpdate",
         },
     }
-    (OUTPUT / "RESULT.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    (OUTPUT / "RESULT.json").write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n"
+    )
     host = {
         "github_run_id": os.environ.get("GITHUB_RUN_ID"),
         "github_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),

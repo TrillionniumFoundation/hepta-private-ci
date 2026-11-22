@@ -83,7 +83,9 @@ class AuthenticSecondStepCursorTest(unittest.TestCase):
         tampered = json.dumps(
             envelope, sort_keys=True, separators=(",", ":")
         ).encode("ascii")
-        with self.assertRaisesRegex(NonSubstochasticSignedIntervalError, "parent digest"):
+        with self.assertRaisesRegex(
+            NonSubstochasticSignedIntervalError, "parent digest"
+        ):
             decode_authentic_secondstep_cursor(tampered)
 
 
