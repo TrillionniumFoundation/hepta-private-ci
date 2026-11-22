@@ -249,6 +249,17 @@ def _exec_server_test_projection(relative, expected, actual, listing):
 # dependency, feature, package or ordering change fails closed.
 _LOCK_ORIGINAL_BLOB = "e1fdaf3fde907d24fec7ea787d49c0e29b3eb4bd"
 _LOCK_REVIEWED_BLOB = "6959b9f7f279c50d12310778ddb98fa92e8b1ca8"
+_LOCK_URL_REVIEWED_BLOB = "cb73284b988659f70a023e06d0bc313ed65a0c34"
+# Full immutable Cargo.lock identity plus two exact, reversible registry updates.
+# No dependency outside these reviewed packages may change.
+_LOCK_URL_PACKAGES = (
+    ("form_urlencoded",
+     ("1.2.2", "cb4cb245038516f5f85277875cdaa4f7d2c9a0fa0468de06ed190163b1581fcf"),
+     ("1.2.3", "afa489199eaffb1211795df1c6236ce1ad0d41a6fa45250add73e3b02420f06e")),
+    ("url",
+     ("2.5.8", "ff67a8a4397373c3ef660812acab3268222035010ab8680ec4215f38ba3d0eed"),
+     ("2.5.9", "f00cd2407bb42c0ef17be88d4cf020f5cceffd121665bac9b8b9493a369b3b1a")),
+)
 _LOCK_CHANGES = (
     ("codex-network-proxy", (
         (b' "chrono",\n', b''),
@@ -303,6 +314,26 @@ def _lock_package_span(data, package):
     return start, end
 
 
+def _url_registry_header(package, version, checksum):
+    return (
+        f'[[package]]\nname = "{package}"\nversion = "{version}"\n'
+        f'source = "registry+https://github.com/rust-lang/crates.io-index"\n'
+        f'checksum = "{checksum}"\n'
+    ).encode("ascii")
+
+
+def _reviewed_url_patch(lock, *, inverse=False):
+    entries = reversed(_LOCK_URL_PACKAGES) if inverse else _LOCK_URL_PACKAGES
+    for package, before, after in entries:
+        old, new = (after, before) if inverse else (before, after)
+        original = _url_registry_header(package, *old)
+        replacement = _url_registry_header(package, *new)
+        if lock.count(original) != 1:
+            raise RuntimeError(f"unreviewed Cargo.lock registry entry: {package}")
+        lock = lock.replace(original, replacement, 1)
+    return lock
+
+
 def reviewed_lock_projection(current, original):
     def blob(data):
         return hashlib.sha1(f"blob {len(data)}\0".encode() + data).hexdigest()
@@ -315,7 +346,7 @@ def reviewed_lock_projection(current, original):
         return {"scope": "unchanged original Cargo.lock",
                 "original_blob": original_blob, "current_blob": current_blob,
                 "byte_exact": True}
-    if current_blob != _LOCK_REVIEWED_BLOB:
+    if current_blob not in (_LOCK_REVIEWED_BLOB, _LOCK_URL_REVIEWED_BLOB):
         raise RuntimeError("unreviewed Cargo.lock dependency change")
 
     projected = original
@@ -331,10 +362,13 @@ def reviewed_lock_projection(current, original):
         projected = projected[:start] + after + projected[end:]
         inverses.append((package, before, after))
 
+    url_upgrade = current_blob == _LOCK_URL_REVIEWED_BLOB
+    if url_upgrade:
+        projected = _reviewed_url_patch(projected)
     if projected != current:
         raise RuntimeError("unreviewed Cargo.lock dependency change")
 
-    restored = current
+    restored = _reviewed_url_patch(current, inverse=True) if url_upgrade else current
     for package, before, after in reversed(inverses):
         start, end = _lock_package_span(restored, package)
         if restored[start:end] != after:
@@ -343,7 +377,9 @@ def reviewed_lock_projection(current, original):
     if restored != original:
         raise RuntimeError("reviewed Cargo.lock inverse did not recover original")
 
-    return {"scope": "eleven exact first-party Chrono dependency-list changes",
+    return {"scope": ("eleven exact first-party Chrono dependency-list changes "
+                      "plus two exact registry advisory updates") if url_upgrade else
+                     "eleven exact first-party Chrono dependency-list changes",
             "reviewed_packages": [package for package, _ in _LOCK_CHANGES],
             "original_blob": original_blob, "current_blob": current_blob,
             "inverse_original_blob": blob(restored), "byte_exact": True}
