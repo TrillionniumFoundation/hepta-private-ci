@@ -303,7 +303,10 @@ async fn file_cache_future_timestamp_is_a_fresh_hit_without_rewriting() {
     let before = tokio::fs::read(&path).await.expect("read original bytes");
 
     assert_eq!(
-        cache.load("current-client").await.expect("future cache hit"),
+        cache
+            .load("current-client")
+            .await
+            .expect("future cache hit"),
         Some(entry)
     );
     cache
@@ -351,7 +354,10 @@ async fn file_cache_zero_ttl_refreshes_matching_version_but_never_loads() {
     entry.fetched_at = renewed.fetched_at;
     assert_eq!(renewed, entry);
     assert_eq!(
-        cache.load("current-client").await.expect("zero TTL still misses"),
+        cache
+            .load("current-client")
+            .await
+            .expect("zero TTL still misses"),
         None
     );
 }
@@ -367,13 +373,19 @@ async fn file_cache_store_creates_missing_parent_and_round_trips_entry() {
         client_version: Some("current-client".to_owned()),
         models: Vec::new(),
     };
-    cache.store(&entry).await.expect("create parents and save cache");
+    cache
+        .store(&entry)
+        .await
+        .expect("create parents and save cache");
     let bytes = tokio::fs::read(&path).await.expect("read saved cache");
     let restored: ModelsCacheEntry =
         serde_json::from_slice(&bytes).expect("original file cache JSON");
     assert_eq!(restored, entry);
     assert_eq!(
-        cache.load("current-client").await.expect("fresh saved entry"),
+        cache
+            .load("current-client")
+            .await
+            .expect("fresh saved entry"),
         Some(entry)
     );
 }
