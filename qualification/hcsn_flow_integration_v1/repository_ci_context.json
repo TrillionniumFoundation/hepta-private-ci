@@ -1,0 +1,1645 @@
+{
+  "schema": "hcsn-repository-ci-context-v1",
+  "checked_at_utc": "2026-11-22 10:05:39 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "pull_request": 6958,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6958",
+    "draft": true,
+    "state": "open",
+    "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+    "head_ref": "research/hcsn-flow-integration-20261122-0639",
+    "base_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+    "base_ref": "research/hcsn-mechanism-v2-sources-20261122-e29f",
+    "expected_head_matches": true,
+    "expected_base_matches": true,
+    "observed_at_utc": "2026-11-22 10:02:25 UTC"
+  },
+  "source_comparison": {
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/compare/b0b4b9a1dc424233621fff394d866b654963f8da...abb3e5012c5f48e3cb42759785429cb1d496acb3",
+    "base_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+    "merge_base_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+    "status": "ahead",
+    "ahead_by": 13,
+    "behind_by": 0,
+    "changed_file_count": 23,
+    "changed_paths": [
+      ".github/workflows/hcsn-source-fixtures.yml",
+      "qualification/hcsn_adaptive/REGENERATIVE_REFERENCE.md",
+      "qualification/hcsn_adaptive/batched_flow.py",
+      "qualification/hcsn_adaptive/finite_control.py",
+      "qualification/hcsn_adaptive/flow_semantics.py",
+      "qualification/hcsn_adaptive/flow_semantics_tests.py",
+      "qualification/hcsn_adaptive/regenerative_flow_tests.py",
+      "qualification/hcsn_adaptive/regenerative_reference.py",
+      "qualification/hcsn_adaptive/regenerative_reference_tests.py",
+      "qualification/hcsn_scale/ADAPTATION_STUDY.md",
+      "qualification/hcsn_scale/FLOW_INTEGRATION.md",
+      "qualification/hcsn_scale/adaptation.py",
+      "qualification/hcsn_scale/adaptation_study.py",
+      "qualification/hcsn_scale/adaptation_study_tests.py",
+      "qualification/hcsn_scale/adaptation_tests.py",
+      "qualification/hcsn_scale/feedback.py",
+      "qualification/hcsn_scale/feedback_tests.py",
+      "qualification/hcsn_scale/model.py",
+      "qualification/hcsn_scale/stream_baselines.py",
+      "qualification/hcsn_scale/stream_baselines_tests.py",
+      "qualification/hcsn_scale/stream_benchmark.py",
+      "qualification/hcsn_scale/study_launcher.py",
+      "qualification/hcsn_scale/study_launcher_tests.py"
+    ],
+    "scope": "All changed paths are qualification/hcsn_* sources or .github/workflows/hcsn-source-fixtures.yml; the referenced Rust failure paths are unchanged."
+  },
+  "baseline_blocking_run": {
+    "id": 44988137679,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679",
+    "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+    "status": "completed",
+    "conclusion": "failure",
+    "job_count": 46,
+    "job_conclusions": {
+      "success": 30,
+      "skipped": 6,
+      "failure": 10
+    }
+  },
+  "candidate_blocking_run": {
+    "id": 45007458780,
+    "name": "blocking-ci",
+    "status": "queued",
+    "conclusion": null,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780",
+    "associated_source_head": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+    "job_count": 46,
+    "job_conclusions": {
+      "success": 30,
+      "skipped": 6,
+      "failure": 9,
+      "queued": 1
+    },
+    "pending_jobs": [
+      {
+        "id": 137172150268,
+        "name": "CI required",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137172150268",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": [],
+        "active_steps": []
+      }
+    ],
+    "note": "Complete metadata for the 46 observed jobs (per_page=100). Upstream repo-checks has completed; CI required was still queued at the final metadata read. No aggregate conclusion is inferred before it is observed."
+  },
+  "observed_candidate_workflows": [
+    {
+      "id": 45007458990,
+      "name": "v8-canary",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458990",
+      "associated_source_head": "abb3e5012c5f48e3cb42759785429cb1d496acb3"
+    },
+    {
+      "id": 45007458768,
+      "name": "HCSN source mathematical fixtures",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458768",
+      "associated_source_head": "abb3e5012c5f48e3cb42759785429cb1d496acb3"
+    },
+    {
+      "id": 45007458780,
+      "name": "blocking-ci",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780",
+      "associated_source_head": "abb3e5012c5f48e3cb42759785429cb1d496acb3"
+    },
+    {
+      "id": 45007458727,
+      "name": "Hepta architecture convergence",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458727",
+      "associated_source_head": "abb3e5012c5f48e3cb42759785429cb1d496acb3"
+    },
+    {
+      "id": 45007458739,
+      "name": "Hepta VERIFY-1 engineering validation",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458739",
+      "associated_source_head": "abb3e5012c5f48e3cb42759785429cb1d496acb3"
+    },
+    {
+      "id": 45007458720,
+      "name": "Learning artifacts qualification",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458720",
+      "associated_source_head": "abb3e5012c5f48e3cb42759785429cb1d496acb3"
+    }
+  ],
+  "matched_failure_comparisons": [
+    {
+      "name": "Windows Clippy",
+      "baseline": {
+        "id": 137103653407,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653407",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel build --config=clippy lint targets"
+        ]
+      },
+      "candidate": {
+        "id": 137162679665,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679665",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel build --config=clippy lint targets"
+        ]
+      },
+      "classification": "preexisting_failure_signatures_reproduced",
+      "matched_error_signatures": [
+        "used expect_err() on a Result value; -D clippy::expect-used",
+        "network-proxy/tests/windows_stable_ingress.rs:425:19"
+      ],
+      "related_source_paths": [
+        "codex-rs/network-proxy/tests/windows_stable_ingress.rs"
+      ],
+      "related_paths_changed_in_pr": []
+    },
+    {
+      "name": "learning.operator exact source",
+      "baseline": {
+        "id": 137103653465,
+        "name": "learning.operator qualification / learning.operator exact source",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653465",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Exact-source compile, final-use, shadow, revocation and rollback tests"
+        ]
+      },
+      "candidate": {
+        "id": 137162679655,
+        "name": "learning.operator qualification / learning.operator exact source",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679655",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Exact-source compile, final-use, shadow, revocation and rollback tests"
+        ]
+      },
+      "classification": "preexisting_failure_signatures_reproduced",
+      "matched_error_signatures": [
+        "predict_tabular_operator is never used: hepta-bellman-operator/src/learned.rs:359:8",
+        "MAX_COMPATIBILITY_SAMPLES is never used: hepta-bellman-operator/src/world_model.rs:22:7",
+        "fit_transition_model is never used: hepta-bellman-operator/src/world_model.rs:122:8",
+        "could not compile codex-hepta-bellman-operator (lib) due to 3 previous errors; exit code 101"
+      ],
+      "related_source_paths": [
+        "codex-rs/hepta-bellman-operator/src/learned.rs",
+        "codex-rs/hepta-bellman-operator/src/world_model.rs"
+      ],
+      "related_paths_changed_in_pr": []
+    },
+    {
+      "name": "learning.operator deterministic merge",
+      "baseline": {
+        "id": 137103653482,
+        "name": "learning.operator qualification / learning.operator deterministic merge",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653482",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Compile and test deterministic merge candidate"
+        ]
+      },
+      "candidate": {
+        "id": 137162679658,
+        "name": "learning.operator qualification / learning.operator deterministic merge",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679658",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Compile and test deterministic merge candidate"
+        ]
+      },
+      "classification": "preexisting_failure_signatures_reproduced",
+      "matched_error_signatures": [
+        "predict_tabular_operator is never used: hepta-bellman-operator/src/learned.rs:359:8",
+        "MAX_COMPATIBILITY_SAMPLES is never used: hepta-bellman-operator/src/world_model.rs:22:7",
+        "fit_transition_model is never used: hepta-bellman-operator/src/world_model.rs:122:8",
+        "could not compile codex-hepta-bellman-operator (lib) due to 3 previous errors; exit code 101"
+      ],
+      "related_source_paths": [
+        "codex-rs/hepta-bellman-operator/src/learned.rs",
+        "codex-rs/hepta-bellman-operator/src/world_model.rs"
+      ],
+      "related_paths_changed_in_pr": []
+    },
+    {
+      "name": "Windows Bazel shard 1/4",
+      "baseline": {
+        "id": 137103653573,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653573",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      "candidate": {
+        "id": 137162679693,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679693",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      "classification": "preexisting_failure_signatures_reproduced",
+      "matched_error_signatures": [
+        "native_worker_help_executes_the_real_binary_without_state: native_host_process_e2e.rs:8:10; OS error code 3 / NotFound / system cannot find the path specified",
+        "native_worker_fails_closed_without_an_explicit_profile: native_host_process_e2e.rs:20:10; OS error code 3 / NotFound / system cannot find the path specified"
+      ],
+      "related_source_paths": [
+        "codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs"
+      ],
+      "related_paths_changed_in_pr": []
+    },
+    {
+      "name": "Windows Bazel shard 2/4",
+      "baseline": {
+        "id": 137103653659,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653659",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      "candidate": {
+        "id": 137162679628,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679628",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      "classification": "preexisting_failure_signatures_reproduced",
+      "matched_error_signatures": [
+        "doctor::sandbox::tests::reports_refresh_failure_after_setup_completed",
+        "cli/src/doctor/sandbox_tests.rs:61:5: assertion failed: codex_windows_sandbox::sandbox_setup_is_complete(home.path())",
+        "Both codex-bin-unit-tests and hepta-bin-unit-tests fail"
+      ],
+      "related_source_paths": [
+        "codex-rs/cli/src/doctor/sandbox_tests.rs"
+      ],
+      "related_paths_changed_in_pr": []
+    },
+    {
+      "name": "Windows Bazel shard 4/4",
+      "baseline": {
+        "id": 137103653523,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653523",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      "candidate": {
+        "id": 137162679678,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679678",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      "classification": "preexisting_failure_signatures_reproduced",
+      "matched_error_signatures": [
+        "restricted_tokens_select_stable_routes_and_cleanup: capability-only workspace tokens require a private desktop",
+        "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+        "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+        "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads",
+        "elevated Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; replacement preserving read, launch and IPC not qualified"
+      ],
+      "related_source_paths": [
+        "codex-rs/network-proxy/tests/windows_stable_ingress.rs",
+        "codex-rs/core/tests/suite/windows_sandbox.rs"
+      ],
+      "related_paths_changed_in_pr": []
+    },
+    {
+      "name": "repo-checks / Prettier",
+      "baseline": {
+        "id": 137103653138,
+        "name": "repo-checks / build-test",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653138",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Prettier (run `pnpm run format:fix` to fix)"
+        ]
+      },
+      "candidate": {
+        "id": 137162679348,
+        "name": "repo-checks / build-test",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679348",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Prettier (run `pnpm run format:fix` to fix)"
+        ]
+      },
+      "classification": "preexisting_failure_signatures_and_exact_path_set_reproduced",
+      "matched_error_signatures": [
+        "Code style issues found in 131 files. Run Prettier with --write to fix."
+      ],
+      "matching_path_set_ref": "prettier.baseline_warning_paths",
+      "new_warning_paths_vs_baseline": [],
+      "removed_warning_paths_vs_baseline": [],
+      "related_paths_changed_in_pr": []
+    }
+  ],
+  "additional_unattributed_observations": [
+    {
+      "job": {
+        "id": 137162679678,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679678",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      "classification": "newly_observed_attempt_signatures_not_causally_attributed",
+      "attempt": "core-all-test shard 14 of 16, test_attempts/attempt_1.log",
+      "signatures": [
+        {
+          "test": "suite::cli_stream::responses_api_stream_cli",
+          "location": "codex-rs/core/tests/suite/cli_stream.rs:455:44",
+          "error": "Result::unwrap() on Err Custom { kind: TimedOut, error: process timed out }"
+        },
+        {
+          "test": "suite::user_shell_cmd::user_shell_cmd_ls_and_cat_in_temp_dir",
+          "location": "codex-rs/core/tests/common/lib.rs:360:14",
+          "error": "timeout waiting for event: Elapsed(())"
+        }
+      ],
+      "seen_in_inspected_baseline_log": false,
+      "source_paths_changed_in_pr": false,
+      "attribution": "Not assigned to this PR or declared inherited. These are additional first-attempt timeout observations in unchanged Rust code. Raw retry artifacts were not inspected, so this snapshot does not certify the final outcome of this individual shard's retry."
+    }
+  ],
+  "prettier": {
+    "baseline": {
+      "id": 137103653138,
+      "name": "repo-checks / build-test",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653138",
+      "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Prettier (run `pnpm run format:fix` to fix)"
+      ]
+    },
+    "candidate": {
+      "id": 137162679348,
+      "name": "repo-checks / build-test",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679348",
+      "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Prettier (run `pnpm run format:fix` to fix)"
+      ]
+    },
+    "candidate_step_status": "completed",
+    "classification": "preexisting_failure_signature_and_identical_warning_path_set_reproduced",
+    "baseline_error_signature": "Code style issues found in 131 files. Run Prettier with --write to fix.",
+    "baseline_warning_file_count": 131,
+    "baseline_warning_paths": [
+      "HEPTA_RESEARCH_STATUS.md",
+      ".github/workflows/ctrl-content-identity-native.yml",
+      ".github/workflows/gha-stem-arm-portable.yml",
+      ".github/workflows/hcsn-continuous-adjoint-torch.yml",
+      ".github/workflows/hcsn-currentstate-retained.yml",
+      ".github/workflows/hcsn-graded-physical.yml",
+      ".github/workflows/hcsn-initial-amplitude-vjp.yml",
+      ".github/workflows/hcsn-joint-physical-torch.yml",
+      ".github/workflows/hcsn-joint-sensitivities.yml",
+      ".github/workflows/hcsn-reset-aligned.yml",
+      ".github/workflows/hcsn-source-tree-static-branchfix-successor.yml",
+      ".github/workflows/hcsn-source-tree-static-just-successor.yml",
+      ".github/workflows/hcsn-split-mesh.yml",
+      ".github/workflows/hcsn-visit897-n128-parentclear-vjp.yml",
+      ".github/workflows/hcsn-visit897-n128-stretch-field-static.yml",
+      ".github/workflows/hcsn-visit897-n128-stretch-vjp.yml",
+      ".github/workflows/hcsn-visit897-source-migration-vjp-n128-exact-migrate-successor.yml",
+      ".github/workflows/hcsn-visit897-source-migration-vjp-n128-numerical-successor.yml",
+      ".github/workflows/hepta-act2-observer.yml",
+      ".github/workflows/hepta-cell-fabric-p07-feature-necessity.yml",
+      ".github/workflows/hepta-cell-fabric-p08-huff-transfer.yml",
+      ".github/workflows/hepta-cell-fabric-p09-budget-shadow.yml",
+      ".github/workflows/hepta-cell-meta-frozen-old.yml",
+      ".github/workflows/hepta-cell-meta-granite-frozen-convergence.yml",
+      ".github/workflows/hepta-cell-meta-granite-real.yml",
+      ".github/workflows/hepta-cell-meta-physical-router.yml",
+      ".github/workflows/hepta-e11-stochastic-global-research.yml",
+      ".github/workflows/hepta-e12-action-gap.yml",
+      ".github/workflows/hepta-e12-cell-boundary.yml",
+      ".github/workflows/hepta-e12-exact-nonlinear-cert.yml",
+      ".github/workflows/hepta-e12-learned-continuation.yml",
+      ".github/workflows/hepta-e12-oracle-free-local-cells.yml",
+      ".github/workflows/hepta-e12-original-reader-voi.yml",
+      ".github/workflows/hepta-e13-real-task-fbsde-route.yml",
+      ".github/workflows/hepta-e14-original-human-multirc-fbsde.yml",
+      ".github/workflows/hepta-e15-original-human-reader-crossfit.yml",
+      ".github/workflows/hepta-e16-original-human-centered-reader.yml",
+      ".github/workflows/hepta-e17-frozen-reader-information.yml",
+      ".github/workflows/hepta-e18-real-reader-output-precision.yml",
+      ".github/workflows/hepta-e19-bf16-centered-reader.yml",
+      ".github/workflows/hepta-e20-original-reader-brier-and-decision.yml",
+      ".github/workflows/hepta-e21-original-human-question-complete.yml",
+      ".github/workflows/hepta-e22-original-human-eight-arm-question.yml",
+      ".github/workflows/hepta-e23-original-human-whole-question.yml",
+      ".github/workflows/hepta-e24-original-human-question-risk.yml",
+      ".github/workflows/hepta-e25-six-unused-original-multirc.yml",
+      ".github/workflows/hepta-e26-frozen-six-source-statistical-gate.yml",
+      ".github/workflows/hepta-e27-original-answer-token-cell.yml",
+      ".github/workflows/hepta-e6-e8-physical-real-route.yml",
+      ".github/workflows/hepta-e9-e10-physical-crossfit-review.yml",
+      ".github/workflows/hepta-future-ood-harness-contract.yml",
+      ".github/workflows/hepta-group-attention-curriculum.yml",
+      ".github/workflows/hepta-group-factorial-isolated.yml",
+      ".github/workflows/hepta-group-feedback-factorial.yml",
+      ".github/workflows/hepta-group-feedback-raw-replay.yml",
+      ".github/workflows/hepta-group-feedback-six-review.yml",
+      ".github/workflows/hepta-group-independent-utility-gate.yml",
+      ".github/workflows/hepta-group-proof-step-research.yml",
+      ".github/workflows/hepta-hdcf-class-withheld-v13.yml",
+      ".github/workflows/hepta-hdcf-modernbert-original.yml",
+      ".github/workflows/hepta-hdcf-multimodal-token-v8.yml",
+      ".github/workflows/hepta-hdcf-original-beans-v9.yml",
+      ".github/workflows/hepta-hdcf-original-crossdomain-v10.yml",
+      ".github/workflows/hepta-hdcf-original-organ-v11.yml",
+      ".github/workflows/hepta-hdcf-original-query-binding-v12.yml",
+      ".github/workflows/hepta-hdcf-reviewer-source-v7.yml",
+      ".github/workflows/hepta-hdcf-shadow-gates.yml",
+      ".github/workflows/hepta-hdcf-type-prior-v8.yml",
+      ".github/workflows/hepta-hpca-process-replay-audit.yml",
+      ".github/workflows/hepta-memory-composition-evidence.yml",
+      ".github/workflows/hepta-memory-necessity.yml",
+      ".github/workflows/hepta-memory-procedural-diagnostic.yml",
+      ".github/workflows/hepta-memory-read-path.yml",
+      ".github/workflows/hepta-native-ndu-allocation.yml",
+      ".github/workflows/hepta-native-ndu-asymmetric.yml",
+      ".github/workflows/hepta-native-ndu-centered-interval.yml",
+      ".github/workflows/hepta-native-ndu-conditional-r24.yml",
+      ".github/workflows/hepta-native-ndu-direct-interval.yml",
+      ".github/workflows/hepta-native-ndu-exact-two-step.yml",
+      ".github/workflows/hepta-native-ndu-localized-r23.yml",
+      ".github/workflows/hepta-native-ndu-nonconvex-risk.yml",
+      ".github/workflows/hepta-native-ndu-nonproduct-symmetry.yml",
+      ".github/workflows/hepta-native-ndu-nonquotient.yml",
+      ".github/workflows/hepta-native-ndu-positive-risk-nonconvex.yml",
+      ".github/workflows/hepta-native-ndu-r25-witness-anchors.yml",
+      ".github/workflows/hepta-native-ndu-refinement.yml",
+      ".github/workflows/hepta-native-ndu-scaling.yml",
+      ".github/workflows/hepta-native-ndu-two-weight-certificate.yml",
+      ".github/workflows/hepta-native-ndu-width4-interval.yml",
+      ".github/workflows/hepta-ndu-ambiguity-guard.yml",
+      ".github/workflows/hepta-ndu-e25-investment.yml",
+      ".github/workflows/hepta-ndu-e25-original-review.yml",
+      ".github/workflows/hepta-ndu-merton-news.yml",
+      ".github/workflows/hepta-ndu-merton-p2-original-online.yml",
+      ".github/workflows/hepta-ndu-merton-real-head.yml",
+      ".github/workflows/hepta-ndu-merton-science-gate.yml",
+      ".github/workflows/hepta-ndu-merton-science-hold.yml",
+      ".github/workflows/hepta-ndu-merton.yml",
+      ".github/workflows/hepta-ndu-p5-certified-action-stop.yml",
+      ".github/workflows/hepta-ndu-p5-coupled-controls.yml",
+      ".github/workflows/hepta-ndu-predictive-guard.yml",
+      ".github/workflows/hepta-ndu-token-portfolio-p1.yml",
+      ".github/workflows/hepta-ndu-tree-fbsde-gates.yml",
+      ".github/workflows/hepta-neuron-five-model-physical-shadow.yml",
+      ".github/workflows/hepta-neuron-shared-encoder-shadow.yml",
+      ".github/workflows/hepta-original-real-bsde-replay.yml",
+      ".github/workflows/hepta-p0-compact-physical.yml",
+      ".github/workflows/hepta-p0-compact-pr-trigger.yml",
+      ".github/workflows/hepta-p0-independent-four-stem-replay.yml",
+      ".github/workflows/hepta-p5-fast-outward.yml",
+      ".github/workflows/hepta-p5-outward-roundoff.yml",
+      ".github/workflows/hepta-shared-stem-system2-research.yml",
+      ".github/workflows/hepta-stem-multimodal-source-v1.yml",
+      ".github/workflows/hepta-stem-v2-original-physical-bridge.yml",
+      ".github/workflows/hepta-stem-v4-public-learning-audit.yml",
+      ".github/workflows/hepta-stem-v5-scienceqa-original-rejudge.yml",
+      ".github/workflows/hepta-stem-v6-original-margin.yml",
+      ".github/workflows/hepta-stem-v7-real-image-intervention.yml",
+      ".github/workflows/hepta-v12-granite-sealed-recovery.yml",
+      ".github/workflows/hepta-v13-real-granite-frozen-links.yml",
+      ".github/workflows/hepta-v14-all-evidence.yml",
+      ".github/workflows/hepta-v15-natural-hotpot.yml",
+      ".github/workflows/hepta-v16-hotpot-group-stop.yml",
+      ".github/workflows/hepta-v17-original-reader-sourcefirst.yml",
+      ".github/workflows/hepta-v18-original-reader-prompt.yml",
+      ".github/workflows/hepta-v19-original-qwen-reference.yml",
+      ".github/workflows/hpca-native624-readback.yml",
+      ".github/workflows/hpca-prospective-devel-preflight.yml",
+      ".github/workflows/inference-worker-bootstrap.yml",
+      ".github/workflows/memory-cell-format-import.yml",
+      ".github/workflows/ndu-mgp-local-source-bundle.yml"
+    ],
+    "candidate_warning_file_count": 131,
+    "new_warning_paths_vs_baseline": [],
+    "changed_paths_with_new_prettier_warnings": [],
+    "baseline_warning_paths_changed_in_pr": [],
+    "command": "prettier --check *.json *.md docs/*.md .github/workflows/*.yml **/*.js",
+    "command_source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/abb3e5012c5f48e3cb42759785429cb1d496acb3/package.json",
+    "changed_paths_selected_by_command": [
+      ".github/workflows/hcsn-source-fixtures.yml"
+    ],
+    "scope_note": "The existing Prettier command did not select new Markdown/JSON under qualification. Its warning path set exactly matches the baseline; no changed path, including hcsn-source-fixtures.yml, appears in that set.",
+    "candidate_step_conclusion": "failure",
+    "candidate_step_completed_at": "2026-11-22T10:05:19Z",
+    "candidate_error_signature": "Code style issues found in 131 files. Run Prettier with --write to fix.",
+    "candidate_warning_paths": [
+      "HEPTA_RESEARCH_STATUS.md",
+      ".github/workflows/ctrl-content-identity-native.yml",
+      ".github/workflows/gha-stem-arm-portable.yml",
+      ".github/workflows/hcsn-continuous-adjoint-torch.yml",
+      ".github/workflows/hcsn-currentstate-retained.yml",
+      ".github/workflows/hcsn-graded-physical.yml",
+      ".github/workflows/hcsn-initial-amplitude-vjp.yml",
+      ".github/workflows/hcsn-joint-physical-torch.yml",
+      ".github/workflows/hcsn-joint-sensitivities.yml",
+      ".github/workflows/hcsn-reset-aligned.yml",
+      ".github/workflows/hcsn-source-tree-static-branchfix-successor.yml",
+      ".github/workflows/hcsn-source-tree-static-just-successor.yml",
+      ".github/workflows/hcsn-split-mesh.yml",
+      ".github/workflows/hcsn-visit897-n128-parentclear-vjp.yml",
+      ".github/workflows/hcsn-visit897-n128-stretch-field-static.yml",
+      ".github/workflows/hcsn-visit897-n128-stretch-vjp.yml",
+      ".github/workflows/hcsn-visit897-source-migration-vjp-n128-exact-migrate-successor.yml",
+      ".github/workflows/hcsn-visit897-source-migration-vjp-n128-numerical-successor.yml",
+      ".github/workflows/hepta-act2-observer.yml",
+      ".github/workflows/hepta-cell-fabric-p07-feature-necessity.yml",
+      ".github/workflows/hepta-cell-fabric-p08-huff-transfer.yml",
+      ".github/workflows/hepta-cell-fabric-p09-budget-shadow.yml",
+      ".github/workflows/hepta-cell-meta-frozen-old.yml",
+      ".github/workflows/hepta-cell-meta-granite-frozen-convergence.yml",
+      ".github/workflows/hepta-cell-meta-granite-real.yml",
+      ".github/workflows/hepta-cell-meta-physical-router.yml",
+      ".github/workflows/hepta-e11-stochastic-global-research.yml",
+      ".github/workflows/hepta-e12-action-gap.yml",
+      ".github/workflows/hepta-e12-cell-boundary.yml",
+      ".github/workflows/hepta-e12-exact-nonlinear-cert.yml",
+      ".github/workflows/hepta-e12-learned-continuation.yml",
+      ".github/workflows/hepta-e12-oracle-free-local-cells.yml",
+      ".github/workflows/hepta-e12-original-reader-voi.yml",
+      ".github/workflows/hepta-e13-real-task-fbsde-route.yml",
+      ".github/workflows/hepta-e14-original-human-multirc-fbsde.yml",
+      ".github/workflows/hepta-e15-original-human-reader-crossfit.yml",
+      ".github/workflows/hepta-e16-original-human-centered-reader.yml",
+      ".github/workflows/hepta-e17-frozen-reader-information.yml",
+      ".github/workflows/hepta-e18-real-reader-output-precision.yml",
+      ".github/workflows/hepta-e19-bf16-centered-reader.yml",
+      ".github/workflows/hepta-e20-original-reader-brier-and-decision.yml",
+      ".github/workflows/hepta-e21-original-human-question-complete.yml",
+      ".github/workflows/hepta-e22-original-human-eight-arm-question.yml",
+      ".github/workflows/hepta-e23-original-human-whole-question.yml",
+      ".github/workflows/hepta-e24-original-human-question-risk.yml",
+      ".github/workflows/hepta-e25-six-unused-original-multirc.yml",
+      ".github/workflows/hepta-e26-frozen-six-source-statistical-gate.yml",
+      ".github/workflows/hepta-e27-original-answer-token-cell.yml",
+      ".github/workflows/hepta-e6-e8-physical-real-route.yml",
+      ".github/workflows/hepta-e9-e10-physical-crossfit-review.yml",
+      ".github/workflows/hepta-future-ood-harness-contract.yml",
+      ".github/workflows/hepta-group-attention-curriculum.yml",
+      ".github/workflows/hepta-group-factorial-isolated.yml",
+      ".github/workflows/hepta-group-feedback-factorial.yml",
+      ".github/workflows/hepta-group-feedback-raw-replay.yml",
+      ".github/workflows/hepta-group-feedback-six-review.yml",
+      ".github/workflows/hepta-group-independent-utility-gate.yml",
+      ".github/workflows/hepta-group-proof-step-research.yml",
+      ".github/workflows/hepta-hdcf-class-withheld-v13.yml",
+      ".github/workflows/hepta-hdcf-modernbert-original.yml",
+      ".github/workflows/hepta-hdcf-multimodal-token-v8.yml",
+      ".github/workflows/hepta-hdcf-original-beans-v9.yml",
+      ".github/workflows/hepta-hdcf-original-crossdomain-v10.yml",
+      ".github/workflows/hepta-hdcf-original-organ-v11.yml",
+      ".github/workflows/hepta-hdcf-original-query-binding-v12.yml",
+      ".github/workflows/hepta-hdcf-reviewer-source-v7.yml",
+      ".github/workflows/hepta-hdcf-shadow-gates.yml",
+      ".github/workflows/hepta-hdcf-type-prior-v8.yml",
+      ".github/workflows/hepta-hpca-process-replay-audit.yml",
+      ".github/workflows/hepta-memory-composition-evidence.yml",
+      ".github/workflows/hepta-memory-necessity.yml",
+      ".github/workflows/hepta-memory-procedural-diagnostic.yml",
+      ".github/workflows/hepta-memory-read-path.yml",
+      ".github/workflows/hepta-native-ndu-allocation.yml",
+      ".github/workflows/hepta-native-ndu-asymmetric.yml",
+      ".github/workflows/hepta-native-ndu-centered-interval.yml",
+      ".github/workflows/hepta-native-ndu-conditional-r24.yml",
+      ".github/workflows/hepta-native-ndu-direct-interval.yml",
+      ".github/workflows/hepta-native-ndu-exact-two-step.yml",
+      ".github/workflows/hepta-native-ndu-localized-r23.yml",
+      ".github/workflows/hepta-native-ndu-nonconvex-risk.yml",
+      ".github/workflows/hepta-native-ndu-nonproduct-symmetry.yml",
+      ".github/workflows/hepta-native-ndu-nonquotient.yml",
+      ".github/workflows/hepta-native-ndu-positive-risk-nonconvex.yml",
+      ".github/workflows/hepta-native-ndu-r25-witness-anchors.yml",
+      ".github/workflows/hepta-native-ndu-refinement.yml",
+      ".github/workflows/hepta-native-ndu-scaling.yml",
+      ".github/workflows/hepta-native-ndu-two-weight-certificate.yml",
+      ".github/workflows/hepta-native-ndu-width4-interval.yml",
+      ".github/workflows/hepta-ndu-ambiguity-guard.yml",
+      ".github/workflows/hepta-ndu-e25-investment.yml",
+      ".github/workflows/hepta-ndu-e25-original-review.yml",
+      ".github/workflows/hepta-ndu-merton-news.yml",
+      ".github/workflows/hepta-ndu-merton-p2-original-online.yml",
+      ".github/workflows/hepta-ndu-merton-real-head.yml",
+      ".github/workflows/hepta-ndu-merton-science-gate.yml",
+      ".github/workflows/hepta-ndu-merton-science-hold.yml",
+      ".github/workflows/hepta-ndu-merton.yml",
+      ".github/workflows/hepta-ndu-p5-certified-action-stop.yml",
+      ".github/workflows/hepta-ndu-p5-coupled-controls.yml",
+      ".github/workflows/hepta-ndu-predictive-guard.yml",
+      ".github/workflows/hepta-ndu-token-portfolio-p1.yml",
+      ".github/workflows/hepta-ndu-tree-fbsde-gates.yml",
+      ".github/workflows/hepta-neuron-five-model-physical-shadow.yml",
+      ".github/workflows/hepta-neuron-shared-encoder-shadow.yml",
+      ".github/workflows/hepta-original-real-bsde-replay.yml",
+      ".github/workflows/hepta-p0-compact-physical.yml",
+      ".github/workflows/hepta-p0-compact-pr-trigger.yml",
+      ".github/workflows/hepta-p0-independent-four-stem-replay.yml",
+      ".github/workflows/hepta-p5-fast-outward.yml",
+      ".github/workflows/hepta-p5-outward-roundoff.yml",
+      ".github/workflows/hepta-shared-stem-system2-research.yml",
+      ".github/workflows/hepta-stem-multimodal-source-v1.yml",
+      ".github/workflows/hepta-stem-v2-original-physical-bridge.yml",
+      ".github/workflows/hepta-stem-v4-public-learning-audit.yml",
+      ".github/workflows/hepta-stem-v5-scienceqa-original-rejudge.yml",
+      ".github/workflows/hepta-stem-v6-original-margin.yml",
+      ".github/workflows/hepta-stem-v7-real-image-intervention.yml",
+      ".github/workflows/hepta-v12-granite-sealed-recovery.yml",
+      ".github/workflows/hepta-v13-real-granite-frozen-links.yml",
+      ".github/workflows/hepta-v14-all-evidence.yml",
+      ".github/workflows/hepta-v15-natural-hotpot.yml",
+      ".github/workflows/hepta-v16-hotpot-group-stop.yml",
+      ".github/workflows/hepta-v17-original-reader-sourcefirst.yml",
+      ".github/workflows/hepta-v18-original-reader-prompt.yml",
+      ".github/workflows/hepta-v19-original-qwen-reference.yml",
+      ".github/workflows/hpca-native624-readback.yml",
+      ".github/workflows/hpca-prospective-devel-preflight.yml",
+      ".github/workflows/inference-worker-bootstrap.yml",
+      ".github/workflows/memory-cell-format-import.yml",
+      ".github/workflows/ndu-mgp-local-source-bundle.yml"
+    ],
+    "removed_warning_paths_vs_baseline": [],
+    "warning_path_sets_identical": true
+  },
+  "checked_log_job_ids": {
+    "baseline": [
+      137103653138,
+      137103653407,
+      137103653465,
+      137103653482,
+      137103653523,
+      137103653573,
+      137103653659
+    ],
+    "candidate": [
+      137162679628,
+      137162679665,
+      137162679693,
+      137162679655,
+      137162679658,
+      137162679678,
+      137162679348
+    ]
+  },
+  "checked_job_metadata": {
+    "baseline": [
+      {
+        "id": 137103121663,
+        "name": "Select blocking CI scope",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103121663",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103121911,
+        "name": "Current TaskFlow v1 migration prospective-merge replay",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103121911",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103121929,
+        "name": "Current TaskFlow v1 migration source-head replay",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103121929",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103121967,
+        "name": "Blob size policy / Blob size policy",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103121967",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103121987,
+        "name": "Codespell / Check for spelling errors",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103121987",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103122704,
+        "name": "Historical TaskFlow v1 migration ${{ matrix.lane }} replay",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103122704",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137103122960,
+        "name": "LedgerWriter Bazel ${{ matrix.lane }} replay",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103122960",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653067,
+        "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653067",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653138,
+        "name": "repo-checks / build-test",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653138",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Prettier (run `pnpm run format:fix` to fix)"
+        ]
+      },
+      {
+        "id": 137103653143,
+        "name": "cargo-deny / cargo-deny",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653143",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653147,
+        "name": "rust-ci / Detect changed areas",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653147",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653154,
+        "name": "repo-checks / Native Hepta paths on macos-15",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653154",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653186,
+        "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653186",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653196,
+        "name": "repo-checks / Native Hepta paths on windows-latest",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653196",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653245,
+        "name": "sdk / sdks",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653245",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653250,
+        "name": "sdk / python-sdk",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653250",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653337,
+        "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653337",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653401,
+        "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653401",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653407,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653407",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel build --config=clippy lint targets"
+        ]
+      },
+      {
+        "id": 137103653421,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653421",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653422,
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653422",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653442,
+        "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653442",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653465,
+        "name": "learning.operator qualification / learning.operator exact source",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653465",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Exact-source compile, final-use, shadow, revocation and rollback tests"
+        ]
+      },
+      {
+        "id": 137103653473,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653473",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653482,
+        "name": "learning.operator qualification / learning.operator deterministic merge",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653482",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Compile and test deterministic merge candidate"
+        ]
+      },
+      {
+        "id": 137103653523,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653523",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 137103653573,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653573",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 137103653582,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653582",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653585,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653585",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653590,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653590",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653596,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653596",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653623,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653623",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103653659,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653659",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 137103653778,
+        "name": "NDU v6 neural rollout smoke / Unified profile and executed-policy regressions / Objective, continuation, and selected-policy invariants",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103653778",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103654301,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103654301",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137103654388,
+        "name": "Lightweight prose and derived checks",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103654388",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137103654433,
+        "name": "Hepta scoped native checks / shard ${{ matrix.shard }}",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103654433",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137103943912,
+        "name": "rust-ci / Cargo manifest preflight",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103943912",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103943924,
+        "name": "rust-ci / cargo shear",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103943924",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103943935,
+        "name": "rust-ci / Rust format",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103943935",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137103945056,
+        "name": "rust-ci / Argument comment lint package",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137103945056",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137104186883,
+        "name": "rust-ci / Rust benchmark smoke",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137104186883",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137104798675,
+        "name": "rust-ci / CI results (required)",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137104798675",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137108612901,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137108612901",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Confirm Windows Bazel test shards passed"
+        ]
+      },
+      {
+        "id": 137108890348,
+        "name": "learning.operator qualification / learning.operator qualification required",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137108890348",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Reject failed, cancelled or skipped qualification lanes"
+        ]
+      },
+      {
+        "id": 137111242459,
+        "name": "CI required",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44988137679/job/137111242459",
+        "head_sha": "b0b4b9a1dc424233621fff394d866b654963f8da",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Require successful applicable dependencies"
+        ]
+      }
+    ],
+    "candidate": [
+      {
+        "id": 137162107109,
+        "name": "Select blocking CI scope",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162107109",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162107349,
+        "name": "Current TaskFlow v1 migration prospective-merge replay",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162107349",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162107382,
+        "name": "Current TaskFlow v1 migration source-head replay",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162107382",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162107388,
+        "name": "Blob size policy / Blob size policy",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162107388",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162107393,
+        "name": "Codespell / Check for spelling errors",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162107393",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162108330,
+        "name": "Historical TaskFlow v1 migration ${{ matrix.lane }} replay",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162108330",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137162147617,
+        "name": "LedgerWriter Bazel ${{ matrix.lane }} replay",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162147617",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679348,
+        "name": "repo-checks / build-test",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679348",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Prettier (run `pnpm run format:fix` to fix)"
+        ]
+      },
+      {
+        "id": 137162679365,
+        "name": "cargo-deny / cargo-deny",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679365",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679384,
+        "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679384",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679395,
+        "name": "repo-checks / Native Hepta paths on windows-latest",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679395",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679404,
+        "name": "repo-checks / Native Hepta paths on macos-15",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679404",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679413,
+        "name": "rust-ci / Detect changed areas",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679413",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679433,
+        "name": "sdk / sdks",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679433",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679437,
+        "name": "sdk / python-sdk",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679437",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679451,
+        "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679451",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679556,
+        "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679556",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679599,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679599",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679628,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679628",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 137162679654,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679654",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679655,
+        "name": "learning.operator qualification / learning.operator exact source",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679655",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Exact-source compile, final-use, shadow, revocation and rollback tests"
+        ]
+      },
+      {
+        "id": 137162679656,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679656",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679658,
+        "name": "learning.operator qualification / learning.operator deterministic merge",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679658",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Compile and test deterministic merge candidate"
+        ]
+      },
+      {
+        "id": 137162679659,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679659",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679665,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679665",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel build --config=clippy lint targets"
+        ]
+      },
+      {
+        "id": 137162679678,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679678",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 137162679693,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679693",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 137162679695,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679695",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679703,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679703",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679708,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679708",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679738,
+        "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679738",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679776,
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679776",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679923,
+        "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679923",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162679935,
+        "name": "NDU v6 neural rollout smoke / Unified profile and executed-policy regressions / Objective, continuation, and selected-policy invariants",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162679935",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137162680366,
+        "name": "Hepta scoped native checks / shard ${{ matrix.shard }}",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162680366",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137162680805,
+        "name": "Lightweight prose and derived checks",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162680805",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137162681005,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137162681005",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137163021046,
+        "name": "rust-ci / Rust format",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137163021046",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137163021087,
+        "name": "rust-ci / cargo shear",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137163021087",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137163021182,
+        "name": "rust-ci / Cargo manifest preflight",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137163021182",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137163022110,
+        "name": "rust-ci / Argument comment lint package",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137163022110",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "skipped",
+        "failed_steps": []
+      },
+      {
+        "id": 137163318803,
+        "name": "rust-ci / Rust benchmark smoke",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137163318803",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137163943861,
+        "name": "rust-ci / CI results (required)",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137163943861",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "success",
+        "failed_steps": []
+      },
+      {
+        "id": 137167552095,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137167552095",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Confirm Windows Bazel test shards passed"
+        ]
+      },
+      {
+        "id": 137168649616,
+        "name": "learning.operator qualification / learning.operator qualification required",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137168649616",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "completed",
+        "conclusion": "failure",
+        "failed_steps": [
+          "Reject failed, cancelled or skipped qualification lanes"
+        ]
+      },
+      {
+        "id": 137172150268,
+        "name": "CI required",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458780/job/137172150268",
+        "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+        "status": "queued",
+        "conclusion": null,
+        "failed_steps": []
+      }
+    ]
+  },
+  "conclusions": {
+    "repository_wide_green": false,
+    "source_mathematical_fixture_workflow_green": true,
+    "all_failure_logs_identical_to_baseline": false,
+    "preexisting_blockers_reproduced": true,
+    "new_failure_in_changed_source_paths_observed": false,
+    "changed_workflow_prettier_check_complete": true,
+    "global_failure_attribution_complete": false,
+    "statement": "HCSN source mathematical fixtures passed. Repository-wide CI is not green: all seven inspected upstream failing jobs reproduce baseline blocker signatures; Prettier has the identical 131-file warning set with zero changed paths. Additional Windows first-attempt timeout observations remain unattributed. CI required was queued, architecture convergence was in progress, and Learning artifacts qualification was queued at the final metadata read."
+  },
+  "read_only_scope": {
+    "workflow_or_gate_changes": false,
+    "reruns_requested": false,
+    "environments_installed": false,
+    "raw_retry_artifacts_downloaded": false,
+    "note": "Only necessary GitHub job metadata and failure logs were inspected. No historical formatting files, gates or code were changed during this check."
+  },
+  "snapshot_limit": "Point-in-time evidence. Workflow statuses may change after the stated per-snapshot metadata read; no further polling or failure-masking changes were requested."
+}

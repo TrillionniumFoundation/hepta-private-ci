@@ -1,0 +1,113 @@
+{
+  "schema": "hcsn-flow-integration-deliverable-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6958,
+  "base_commit": "b0b4b9a1dc424233621fff394d866b654963f8da",
+  "executed_source_commit": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+  "executed_source_tree": "c8c0d747b8224824d083cd884f095f3e125cbd78",
+  "source_manifest_sha256": "1953148571aa943cc20ad531c2268626acd523cf57cb6adb87e700399b7e3be1",
+  "source_files_verified_against_published_tree": 119,
+  "formal_trials": {
+    "declared": 45,
+    "completed": 45,
+    "failed": 0,
+    "automatic_retries": 0,
+    "cold_outer_seconds": 2043.999629884027
+  },
+  "posthoc": {
+    "checks": 3954,
+    "failures": 0,
+    "replay_trials": 15,
+    "forward_calls": 30,
+    "cache_hits": 30,
+    "cold_driver_seconds": 37.494535202975385
+  },
+  "source_ci": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "pull_request": 6958,
+    "head_sha": "abb3e5012c5f48e3cb42759785429cb1d496acb3",
+    "workflow_run_id": 45007458768,
+    "job_id": 137162106738,
+    "conclusion": "success",
+    "tests": 124,
+    "test_seconds": 6.192,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "canonical_formatter": "just fmt --base b1a19b3b6b4ce24548a293a075ad9ed7088c6987",
+    "canonical_formatter_conclusion": "success; no changed files need formatting",
+    "explicit_ruff_conclusion": "success",
+    "clean_tree_conclusion": "success",
+    "scope": "Exact published research source fixtures and formatting; not a claim that every repository workflow passes."
+  },
+  "repository_ci_context_as_of_utc": "2026-11-22 10:05:39 UTC",
+  "archive": {
+    "file": "evidence.zip",
+    "bytes": 3055428,
+    "entries": 512,
+    "sha256": "e27ae1925f3524f978d278fec64ac5961a131c513c3bcc7cea64021ab5bba992"
+  },
+  "scope": "Research draft; no model adoption or merge. Executed source is frozen; later commits add evidence and verification only.",
+  "files": [
+    {
+      "path": "REPRODUCE.md",
+      "bytes": 4790,
+      "sha256": "64ab5da93cff6869701f294b447f1c4f9d7570d69887523b47fb73e73f74f85b"
+    },
+    {
+      "path": "RESULTS.md",
+      "bytes": 18119,
+      "sha256": "b0795120972991c9cb03956b56a3bac07272104dc7df8442a416476560928ca0"
+    },
+    {
+      "path": "evidence.zip",
+      "bytes": 3055428,
+      "sha256": "e27ae1925f3524f978d278fec64ac5961a131c513c3bcc7cea64021ab5bba992"
+    },
+    {
+      "path": "replay_selected_flow.py",
+      "bytes": 11363,
+      "sha256": "5f36b48408ab9e842b648c2d658dab68a3c6fceaffc481f51c5f9530340d3145"
+    },
+    {
+      "path": "repository_ci_context.json",
+      "bytes": 76459,
+      "sha256": "63224359198def254a054af2102ba28dbac847898e487a7b8b4d5c717587076f"
+    },
+    {
+      "path": "selected_replay.json",
+      "bytes": 9145,
+      "sha256": "7af589cadd352c95c5461e47816b4f6f8caaf22f65cedcff7d266cc0b1983a21"
+    },
+    {
+      "path": "stream_quality_cost.png",
+      "bytes": 155063,
+      "sha256": "9d26ee3803da3695dfd2962ab686dc218748d1993a00c62b02b51c8efcf24316"
+    },
+    {
+      "path": "stream_quality_cost.svg",
+      "bytes": 113623,
+      "sha256": "c2966100c40e80fde4fd397f48a15c7409a62a0ad259e7c2c8fdda306e909376"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 105812,
+      "sha256": "0e49b38ff5f3e308c39fb84404ca2e66080cb30797ec1f7a0fe3c7120a7172f6"
+    },
+    {
+      "path": "validate_flow_details.py",
+      "bytes": 17512,
+      "sha256": "6a015a76d3492d80c11a7d24a93bd8cb2e947298e9b1bd98e9f71b78cedefab4"
+    },
+    {
+      "path": "validate_flow_study.py",
+      "bytes": 18941,
+      "sha256": "10aba92902e00256c301e66dbd1b6184ad968e3b984367e75170e419a4ae0c9b"
+    },
+    {
+      "path": "verification.json",
+      "bytes": 1253,
+      "sha256": "1bc3c36e4c70961d8fdd0b64db7211664fdbfc4053049c2f01444e9c096c8308"
+    }
+  ]
+}
