@@ -1,0 +1,24 @@
+{
+  "all_closed": false,
+  "historical_negative_and_unknown_preserved": true,
+  "n256_qualification": false,
+  "predecessor_6950": "RED_DECIMAL_INTEGER_DIGIT_LIMIT",
+  "production_adoption": false,
+  "review": "source-only pre-execution review",
+  "rounding_fix_checks": {
+    "decimal_certificate_created": false,
+    "global_digit_limit_mutated": false,
+    "integer_round_ties_to_even_preserved": true,
+    "large_exact_control_digits": 5000
+  },
+  "scope_checks": {
+    "first_tail_check_only": true,
+    "full_index537_state_persisted": true,
+    "negative_result_is_publishable": true,
+    "one_attempt_per_lane": true,
+    "provider_calls_allowed": false,
+    "resource_caps_fail_closed": true,
+    "same_key_rerun_allowed": false
+  },
+  "status": "HOLD_INTENT"
+}
