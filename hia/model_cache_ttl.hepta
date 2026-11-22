@@ -45,16 +45,16 @@ block sign_shape(g_output:mutbuf,g_age_seconds:u64,g_age_nanos:u64,g_ttl_seconds
   signed_consistent:bool = bool.or(signed_same,signed_zero)
   branch signed_consistent ttl_zero(g_output,g_age_seconds,g_age_nanos,g_ttl_seconds,g_ttl_nanos) invalid()
 block ttl_zero(z_output:mutbuf,z_age_seconds:u64,z_age_nanos:u64,z_ttl_seconds:u64,z_ttl_nanos:u64)
-  zero_word:u64 = const() {"value":0}
-  ttl_seconds_zero:bool = compare.eq(z_ttl_seconds,zero_word)
-  ttl_nanos_zero:bool = compare.eq(z_ttl_nanos,zero_word)
+  zero_ttl_word:u64 = const() {"value":0}
+  ttl_seconds_zero:bool = compare.eq(z_ttl_seconds,zero_ttl_word)
+  ttl_nanos_zero:bool = compare.eq(z_ttl_nanos,zero_ttl_word)
   zero_ttl:bool = bool.and(ttl_seconds_zero,ttl_nanos_zero)
   branch zero_ttl stale(z_output) signed_check(z_output,z_age_seconds,z_age_nanos,z_ttl_seconds,z_ttl_nanos)
 block signed_check(c_output:mutbuf,c_age_seconds:u64,c_age_nanos:u64,c_ttl_seconds:u64,c_ttl_nanos:u64)
   signed_negative_threshold:u64 = const() {"value":9223372036854775808}
   age_seconds_negative:bool = compare.ge(c_age_seconds,signed_negative_threshold)
-  age_fraction_negative:bool = compare.ge(c_age_nanos,signed_negative_threshold)
-  age_negative:bool = bool.or(age_seconds_negative,age_fraction_negative)
+  signed_age_fraction_negative:bool = compare.ge(c_age_nanos,signed_negative_threshold)
+  age_negative:bool = bool.or(age_seconds_negative,signed_age_fraction_negative)
   branch age_negative fresh(c_output) elapsed(c_output,c_age_seconds,c_age_nanos,c_ttl_seconds,c_ttl_nanos)
 block elapsed(e_output:mutbuf,e_age_seconds:u64,e_age_nanos:u64,e_ttl_seconds:u64,e_ttl_nanos:u64)
   seconds_less:bool = compare.lt(e_age_seconds,e_ttl_seconds)

@@ -136,6 +136,13 @@ class ModelCacheTtlTextualIrTests(unittest.TestCase):
         else:
             self.assertEqual(written, b"\xa5" * output_length)
 
+    def test_global_ssa_assignment_names_are_unique(self):
+        # Static preflight only; the real HIA compiler remains authoritative.
+        source = SOURCE.read_text(encoding="utf-8")
+        names = re.findall(r"^  ([a-z_][a-z_0-9]*):[a-z0-9]+ = ", source, re.M)
+        duplicated = sorted({name for name in names if names.count(name) != 1})
+        self.assertEqual(duplicated, [])
+
     def test_literal_decisions_and_error_precedence(self):
         for case in self.fixtures["cases"]:
             with self.subTest(case=case["label"]):
