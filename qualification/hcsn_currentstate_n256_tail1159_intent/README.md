@@ -2,8 +2,8 @@
 
 Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
 
-This separately frozen v3 candidate strengthens the source-only admission on
-top of #6970. It consumes the ten byte-exact index537 full-state
+This separately frozen v4 candidate strengthens the source-only admission on
+top of #6975. It consumes the ten byte-exact index537 full-state
 originals from #6957/#6959 and defines the unchanged exact continuation to
 index1159. Each lane would apply exactly 622 row actions and one signed
 ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
@@ -25,8 +25,12 @@ original must be a byte-verified JSON file under `runtime_originals/` and must
 cross-bind the candidate identity, same execution key, intent source head,
 exact source-manifest digest, authentic input digest and desktop host.
 The request and all four originals must be single-link regular files no larger
-than 64 KiB. Parsing rejects duplicate keys, nonfinite constants, numeric
-overflow, non-object roots and invalid UTF-8 before any authentic input read.
+than 64 KiB. The reader binds the pre-open path identity to the opened file
+descriptor, performs two bounded reads from that descriptor, and rechecks the
+descriptor and path identity after reading. Symbolic links, hard links, path
+replacement and concurrent content changes are rejected. Parsing rejects
+duplicate keys, nonfinite constants, numeric overflow, non-object roots and
+invalid UTF-8 before any authentic input read.
 Allocation concurrency and memory,
 the currently valid calendar, observation expiry and ancestor-cgroup headroom,
 plus the Python executable and dependency-manifest digests are checked before
