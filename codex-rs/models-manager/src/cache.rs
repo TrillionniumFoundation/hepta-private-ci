@@ -88,7 +88,14 @@ impl ModelsCacheEntry {
             return false;
         };
         let age = Utc::now().signed_duration_since(self.fetched_at);
-        age <= ttl_duration
+        #[cfg(feature = "hia-native")]
+        {
+            crate::hia_native_model_cache_ttl::is_fresh(age, ttl_duration)
+        }
+        #[cfg(not(feature = "hia-native"))]
+        {
+            age <= ttl_duration
+        }
     }
 }
 
