@@ -14,7 +14,7 @@ from qualification.hcsn_currentstate_n256_authentic_tailcheck537_hexfix.tail537 
     advance_to_index537,
 )
 
-from .admission import REQUEST, SOURCE_FREEZE, admit_runtime
+from .admission import MAX_JSON_BYTES, REQUEST, SOURCE_FREEZE, admit_runtime
 from .continuation import (
     SOURCE_INDEX,
     TARGET_INDEX,
@@ -22,6 +22,86 @@ from .continuation import (
     encode_raw_index1159,
     final_tail_check,
 )
+
+
+def _environment(request, request_path):
+    return {
+        "HCSN_REQUEST_SHA256": __import__("hashlib").sha256(
+            request_path.read_bytes()
+        ).hexdigest(),
+        "UNIQUE_EXECUTION_KEY": request["execution_key"],
+        "HCSN_ATTEMPT_ID": "001",
+    }
+
+
+def _authorized_fixture(root):
+    request = json.loads(REQUEST.read_text())
+    request["actual_execution_authorized"] = True
+    common = {
+        "identity": request["identity"],
+        "execution_key": request["execution_key"],
+        "intent_source_head": request["intent_source_head"],
+        "source_manifest_sha256": __import__("hashlib").sha256(
+            SOURCE_FREEZE.read_bytes()
+        ).hexdigest(),
+        "input_sha256": request["input"]["index537_collector_sha256"],
+        "host": "desktop",
+    }
+    originals = {
+        "host_observation": {
+            **common,
+            "schema": "hcsn-tail1159-host-observation-v1",
+            "observed_at_utc": "2020-01-01T00:00:00Z",
+            "expires_at_utc": "2100-01-01T00:00:00Z",
+            "ancestor_cgroup_headroom_bytes": 268435456,
+        },
+        "allocation": {
+            **common,
+            "schema": "hcsn-tail1159-allocation-v1",
+            "allocation_id": "synthetic-test-allocation",
+            "authority": "synthetic-test-only",
+            "concurrency": 1,
+            "memory_bytes": 268435456,
+        },
+        "calendar": {
+            **common,
+            "schema": "hcsn-tail1159-calendar-v1",
+            "calendar_id": "synthetic-test-calendar",
+            "allocation_id": "synthetic-test-allocation",
+            "valid_from_utc": "2020-01-01T00:00:00Z",
+            "valid_until_utc": "2100-01-01T00:00:00Z",
+        },
+        "runtime": {
+            **common,
+            "schema": "hcsn-tail1159-runtime-v1",
+            "runtime_id": "synthetic-test-runtime",
+            "python_executable_sha256": "e" * 64,
+            "dependency_manifest_sha256": "f" * 64,
+        },
+    }
+    originals_dir = root / "runtime_originals"
+    originals_dir.mkdir()
+    admission = {"concurrency": 1}
+    paths = {}
+    for kind, original in originals.items():
+        relative = f"runtime_originals/{kind}.json"
+        raw = (json.dumps(original, sort_keys=True) + "\n").encode()
+        paths[kind] = root / relative
+        paths[kind].write_bytes(raw)
+        admission[f"{kind}_path"] = relative
+        admission[f"{kind}_sha256"] = __import__("hashlib").sha256(raw).hexdigest()
+    request["runtime_admission"] = admission
+    request_path = root / "REQUEST.json"
+    request_path.write_text(json.dumps(request, sort_keys=True))
+    return request, request_path, paths
+
+
+def _replace_original(request, request_path, paths, kind, raw):
+    paths[kind].write_bytes(raw)
+    request["runtime_admission"][f"{kind}_sha256"] = __import__("hashlib").sha256(
+        raw
+    ).hexdigest()
+    request_path.write_text(json.dumps(request, sort_keys=True))
 
 
 class Tail1159IntentTests(unittest.TestCase):
@@ -68,7 +148,10 @@ class Tail1159IntentTests(unittest.TestCase):
                 "UNIQUE_EXECUTION_KEY": request["execution_key"],
                 "HCSN_ATTEMPT_ID": "001",
             }
-            with patch("qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST", request_path):
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                request_path,
+            ):
                 with patch.dict(os.environ, environment, clear=True):
                     with self.assertRaisesRegex(SystemExit, "not authorized"):
                         admit_runtime()
@@ -106,77 +189,76 @@ class Tail1159IntentTests(unittest.TestCase):
                         admit_runtime()
 
     def test_synthetic_originals_exercise_complete_admission_contract(self):
-        request = json.loads(REQUEST.read_text())
-        request["actual_execution_authorized"] = True
-        common = {
-            "identity": request["identity"],
-            "execution_key": request["execution_key"],
-            "intent_source_head": request["intent_source_head"],
-            "source_manifest_sha256": __import__("hashlib").sha256(
-                SOURCE_FREEZE.read_bytes()
-            ).hexdigest(),
-            "input_sha256": request["input"]["index537_collector_sha256"],
-            "host": "desktop",
-        }
-        originals = {
-            "host_observation": {
-                **common,
-                "schema": "hcsn-tail1159-host-observation-v1",
-                "observed_at_utc": "2020-01-01T00:00:00Z",
-                "expires_at_utc": "2100-01-01T00:00:00Z",
-                "ancestor_cgroup_headroom_bytes": 268435456,
-            },
-            "allocation": {
-                **common,
-                "schema": "hcsn-tail1159-allocation-v1",
-                "allocation_id": "synthetic-test-allocation",
-                "authority": "synthetic-test-only",
-                "concurrency": 1,
-                "memory_bytes": 268435456,
-            },
-            "calendar": {
-                **common,
-                "schema": "hcsn-tail1159-calendar-v1",
-                "calendar_id": "synthetic-test-calendar",
-                "allocation_id": "synthetic-test-allocation",
-                "valid_from_utc": "2020-01-01T00:00:00Z",
-                "valid_until_utc": "2100-01-01T00:00:00Z",
-            },
-            "runtime": {
-                **common,
-                "schema": "hcsn-tail1159-runtime-v1",
-                "runtime_id": "synthetic-test-runtime",
-                "python_executable_sha256": "e" * 64,
-                "dependency_manifest_sha256": "f" * 64,
-            },
-        }
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            originals_dir = root / "runtime_originals"
-            originals_dir.mkdir()
-            admission = {"concurrency": 1}
-            for kind, original in originals.items():
-                relative = f"runtime_originals/{kind}.json"
-                raw = (json.dumps(original, sort_keys=True) + "\n").encode()
-                (root / relative).write_bytes(raw)
-                admission[f"{kind}_path"] = relative
-                admission[f"{kind}_sha256"] = __import__("hashlib").sha256(raw).hexdigest()
-            request["runtime_admission"] = admission
-            request_path = root / "REQUEST.json"
-            request_path.write_text(json.dumps(request, sort_keys=True))
-            environment = {
-                "HCSN_REQUEST_SHA256": __import__("hashlib").sha256(
-                    request_path.read_bytes()
-                ).hexdigest(),
-                "UNIQUE_EXECUTION_KEY": request["execution_key"],
-                "HCSN_ATTEMPT_ID": "001",
-            }
+            request, request_path, _ = _authorized_fixture(root)
             with patch(
                 "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
                 request_path,
             ):
-                with patch.dict(os.environ, environment, clear=True):
+                with patch.dict(os.environ, _environment(request, request_path), clear=True):
                     self.assertEqual(admit_runtime(), request)
+
+    def test_duplicate_original_key_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, request_path, paths = _authorized_fixture(Path(directory))
+            raw = paths["allocation"].read_bytes().replace(
+                b'"authority": "synthetic-test-only",',
+                b'"authority": "synthetic-test-only", "authority": "forged",',
+                1,
+            )
+            _replace_original(request, request_path, paths, "allocation", raw)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(os.environ, _environment(request, request_path), clear=True):
+                    with self.assertRaisesRegex(SystemExit, "unambiguous JSON"):
+                        admit_runtime()
+
+    def test_nonfinite_original_number_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, request_path, paths = _authorized_fixture(Path(directory))
+            raw = paths["runtime"].read_bytes().rstrip()
+            raw = raw[:-1] + b', "unreviewed": 1e999}\n'
+            _replace_original(request, request_path, paths, "runtime", raw)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(os.environ, _environment(request, request_path), clear=True):
+                    with self.assertRaisesRegex(SystemExit, "unambiguous JSON"):
+                        admit_runtime()
+
+    def test_oversized_original_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, request_path, paths = _authorized_fixture(Path(directory))
+            raw = b"{" + b" " * MAX_JSON_BYTES
+            _replace_original(request, request_path, paths, "calendar", raw)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(os.environ, _environment(request, request_path), clear=True):
+                    with self.assertRaisesRegex(SystemExit, "byte cap"):
+                        admit_runtime()
+
+    def test_duplicate_request_key_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, request_path, _ = _authorized_fixture(Path(directory))
+            raw = request_path.read_bytes().replace(
+                b'"actual_execution_authorized": true',
+                b'"actual_execution_authorized": true, "actual_execution_authorized": false',
+                1,
+            )
+            request_path.write_bytes(raw)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(os.environ, _environment(request, request_path), clear=True):
+                    with self.assertRaisesRegex(SystemExit, "unambiguous JSON"):
+                        admit_runtime()
 
     def test_package_contains_no_runtime_outputs(self):
         names = {path.name for path in Path(__file__).resolve().parent.iterdir()}
