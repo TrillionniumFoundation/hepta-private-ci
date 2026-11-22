@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import threading
 
 from .admission import admit_runtime
 from .lane import IDENTITY
@@ -17,20 +18,69 @@ def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
-def _run_lane(ordinal, root):
+def _drain_bounded(stream, path, byte_cap, overflow):
+    if not isinstance(byte_cap, int) or isinstance(byte_cap, bool) or byte_cap < 1:
+        raise SystemExit("lane log byte cap is invalid")
+    total = 0
+    written = 0
+    with path.open("xb") as sink:
+        while True:
+            chunk = stream.read(65536)
+            if not chunk:
+                break
+            total += len(chunk)
+            room = byte_cap - written
+            if room > 0:
+                accepted = chunk[:room]
+                sink.write(accepted)
+                written += len(accepted)
+            if total > byte_cap:
+                overflow.set()
+    return total
+
+
+def _run_lane(ordinal, root, log_caps):
     environment = dict(os.environ)
     environment["HCSN_LANE_ORDINAL"] = str(ordinal)
     environment["HCSN_OUTPUT_ROOT"] = str(root)
-    completed = subprocess.run(
-        [sys.executable, "-m", "qualification.hcsn_currentstate_n256_tail1159_intent.lane"],
+    process = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "qualification.hcsn_currentstate_n256_tail1159_intent.lane",
+        ],
         env=environment,
-        check=False,
-        capture_output=True,
-        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
-    (root / f"lane-{ordinal:02d}.stdout.log").write_text(completed.stdout)
-    (root / f"lane-{ordinal:02d}.stderr.log").write_text(completed.stderr)
-    return ordinal, completed.returncode
+    overflow = threading.Event()
+    with ThreadPoolExecutor(max_workers=2) as drains:
+        stdout = drains.submit(
+            _drain_bounded,
+            process.stdout,
+            root / f"lane-{ordinal:02d}.stdout.log",
+            log_caps["stdout_bytes"],
+            overflow,
+        )
+        stderr = drains.submit(
+            _drain_bounded,
+            process.stderr,
+            root / f"lane-{ordinal:02d}.stderr.log",
+            log_caps["stderr_bytes"],
+            overflow,
+        )
+        while process.poll() is None:
+            if overflow.wait(0.05):
+                process.terminate()
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                break
+        returncode = process.wait()
+        stdout_bytes = stdout.result()
+        stderr_bytes = stderr.result()
+    return ordinal, returncode, overflow.is_set(), stdout_bytes, stderr_bytes
 
 
 def main():
@@ -40,9 +90,18 @@ def main():
         raise SystemExit("output root already exists")
     output.mkdir(parents=True)
     concurrency = request["runtime_admission"]["concurrency"]
+    log_caps = request["lane_log_caps"]
     with ThreadPoolExecutor(max_workers=concurrency) as executor:
-        statuses = list(executor.map(lambda ordinal: _run_lane(ordinal, output), range(10)))
-    failures = [ordinal for ordinal, returncode in statuses if returncode != 0]
+        statuses = list(
+            executor.map(
+                lambda ordinal: _run_lane(ordinal, output, log_caps), range(10)
+            )
+        )
+    failures = [
+        ordinal
+        for ordinal, returncode, overflow, _, _ in statuses
+        if returncode != 0 or overflow
+    ]
     results = []
     for ordinal in range(10):
         path = output / f"lane-{ordinal:02d}" / "RESULT.json"
@@ -75,6 +134,12 @@ def main():
         "completed_lanes": len(results),
         "failures": failures,
         "compact_checkpoint_bytes": compact_total,
+        "logs": {
+            "stdout_bytes": sum(item[3] for item in statuses),
+            "stderr_bytes": sum(item[4] for item in statuses),
+            "per_stream_caps": log_caps,
+            "overflow_lanes": [item[0] for item in statuses if item[2]],
+        },
         "all_coordinates_unique_lanes": sum(
             item["tail"]["all_coordinates_unique"] for item in results
         ),

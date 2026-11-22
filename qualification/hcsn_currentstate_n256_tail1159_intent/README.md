@@ -2,8 +2,8 @@
 
 Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
 
-This separately frozen v6 candidate strengthens the source-only admission on
-top of #6978. It consumes the ten byte-exact index537 full-state
+This separately frozen v7 candidate strengthens the source-only admission on
+top of #6980. It consumes the ten byte-exact index537 full-state
 originals from #6957/#6959 and defines the unchanged exact continuation to
 index1159. Each lane would apply exactly 622 row actions and one signed
 ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
@@ -54,6 +54,14 @@ verify the raw digest and raw cap; reconstructs the tail denominator,
 uniqueness, rounding digest and work ledger; and requires ten safe lane stems.
 These ten collector decodes raise the complete planned decode denominator from
 20 to 30 without changing recurrence, tail, rounding or model work.
+
+Each future lane stdout and stderr stream is now drained concurrently with
+constant memory and retained under a separately frozen 1 MiB per-stream cap.
+The collector no longer uses `capture_output=True`, which could accumulate ten
+unbounded pairs of logs in memory. A stream that exceeds its cap terminates and
+fails that lane, while both pipes continue to be drained so a child cannot
+deadlock on a full pipe. The final ledger records produced byte counts, caps and
+overflowing lane ordinals; the aggregate retained log bound is 20 MiB.
 
 The next execution commit must bind all four runtime originals to this exact
 source and the same execution key, preserve attempt `001`, set an explicit
