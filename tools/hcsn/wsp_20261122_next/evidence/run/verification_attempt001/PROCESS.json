@@ -1,0 +1,45 @@
+{
+  "schema": "hepta-value-sensitive-process-v1",
+  "phase": "verification",
+  "status": "COMPLETED",
+  "returncode": 0,
+  "wall_timeout": false,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/verify_run.py",
+    "--protocol",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+    "--inputs",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/input_bundle",
+    "--run-root",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/run",
+    "--output",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/run/verification_attempt001/output"
+  ],
+  "protocol_pin": {
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+    "bytes": 412929,
+    "sha256": "adca7eed0c7dc63a5d884fc44f8e8431d7dae56eb44d0566d522eb8dae405d10"
+  },
+  "protocol_unchanged": true,
+  "entry_pin": {
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/verify_run.py",
+    "bytes": 11837,
+    "sha256": "e6fda217e27fd814fe2646bb5a59e2358d881b1dcffe68edb0175d4280ef9eee"
+  },
+  "result_pin": {
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run/verification_attempt001/output/RESULTS.json",
+    "bytes": 7332,
+    "sha256": "c91a0aeb0762a35b29910f8639b3f502e6e904358972d8c9d0a0f4e27acd7e1b"
+  },
+  "child_CPU_seconds": 43.975763,
+  "supervisor_CPU_seconds": 0.045501169999999994,
+  "wall_seconds": 44.009463952010265,
+  "peak_child_RSS_KiB": 82384,
+  "limits": {
+    "cpu_hard_seconds": 190,
+    "cpu_soft_seconds": 180,
+    "wall_seconds": 380
+  }
+}

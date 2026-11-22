@@ -1,0 +1,57 @@
+{
+  "child_CPU_seconds": 2.245021,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "-B",
+    "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_verify_v2.py",
+    "--spec",
+    "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/SUPPLEMENTAL_SPEC_V2_FROZEN.json",
+    "--output",
+    "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_attempt002/output"
+  ],
+  "limits": {
+    "address_space_bytes": 2147483648,
+    "cpu_affinity": [
+      7
+    ],
+    "cpu_hard_seconds": 9,
+    "cpu_soft_seconds": 8.0,
+    "wall_seconds": 29
+  },
+  "peak_child_RSS_KiB": 65864,
+  "quality_work": {
+    "model_forwards": 0,
+    "new_candidates": 0,
+    "new_entropy_draws": 0,
+    "new_worlds": 0,
+    "optimizer_steps": 0,
+    "policy_DPs": 0
+  },
+  "result_pin": {
+    "bytes": 162223,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_attempt002/output/RESULTS.json",
+    "sha256": "9ce9c9c8a5ed25a5bdc5e153c9fb34762502f620277d1bd51c98dbf285417d4a"
+  },
+  "returncode": 0,
+  "schema": "hepta-value-supplemental-process-v1",
+  "spec_pin": {
+    "bytes": 6981,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/SUPPLEMENTAL_SPEC_V2_FROZEN.json",
+    "sha256": "78c607ec532a9a129e793686c9420f90d1ebf1bad980e8c3af2e5c6b16e3933c"
+  },
+  "spec_unchanged": true,
+  "status": "COMPLETED",
+  "supervisor_CPU_seconds": 0.0039353059999999995,
+  "supervisor_pin": {
+    "bytes": 3073,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supervise_supplemental_v2.py",
+    "sha256": "88d2d8389ae2e26ce72d32ef28339679bc4f480341cadff99a2bf15206f4189f"
+  },
+  "verifier_pin": {
+    "bytes": 24325,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_verify_v2.py",
+    "sha256": "427d6e943186029b1070c617211dba530b51328bc204b94aebdacd870e1caff5"
+  },
+  "wall_seconds": 2.3217699859960703,
+  "wall_timeout": false
+}

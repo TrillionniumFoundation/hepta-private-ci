@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_verify.py", line 406, in <module>
+    main()
+  File "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_verify.py", line 208, in main
+    check(row['fits'][fit]['models'] == original_models, 'cross-phase sealed models: ' + fit)
+  File "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_verify.py", line 25, in check
+    raise ValueError(message)
+ValueError: cross-phase sealed models: 11

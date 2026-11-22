@@ -1,0 +1,83 @@
+--- supplemental_verify.py
++++ supplemental_verify_v2.py
+@@ -26,8 +26,8 @@
+ 
+ 
+ def budget():
+-    check(time.process_time() - START_CPU < 9.0, 'supplemental CPU soft cap')
+-    check(time.monotonic() - START_WALL < 28.0, 'supplemental wall soft cap')
++    check(time.process_time() - START_CPU < 8.0, 'supplemental CPU soft cap')
++    check(time.monotonic() - START_WALL < 27.0, 'supplemental wall soft cap')
+ 
+ 
+ def canonical(value):
+@@ -189,6 +189,31 @@
+         check(actual['bytes'] == entry['bytes'], 'external artifact byte count')
+         return Path(actual['path'])
+ 
++    canonical_models = {}
++    def model_identity(entry):
++        path = resolve(entry['model_pin'])
++        identity = entry['model_pin']['sha256']
++        if identity not in canonical_models:
++            canonical_models[identity] = digest(canonical(read(path, entry['model_pin'])).encode())
++        check(canonical_models[identity] == entry['canonical_model_sha256'],
++              'actual canonical model identity')
++        return canonical_models[identity]
++
++    def same_models(actual, frozen, fit):
++        check(set(actual) == set(frozen), 'sealed model name set')
++        original = protocol['fits'][fit]['model']
++        for name in frozen:
++            a, b = actual[name], frozen[name]
++            check({k: v for k, v in a.items() if k != 'model_pin'} ==
++                  {k: v for k, v in b.items() if k != 'model_pin'}, 'sealed model metadata: ' + name)
++            check(model_identity(a) == model_identity(b), 'sealed actual model: ' + name)
++            if any(a['model_pin'][k] != b['model_pin'][k] for k in ('bytes', 'sha256')):
++                # Frozen runner remaps canonically identical KEEP aliases to the
++                # authenticated original file; gzip serialization bytes may differ.
++                check(a['canonical_model_sha256'] == frozen['KEEP']['canonical_model_sha256'] and
++                      all(a['model_pin'][k] == original[k] for k in ('bytes', 'sha256')),
++                      'only source-specified original KEEP alias remapping is allowed')
++
+     generation, selection, confirmation = (results[x] for x in phases[:3])
+     candidate_path = directories['generation'] / 'CANDIDATES_FROZEN.json'
+     selected_path = directories['selection'] / 'SELECTION_FROZEN.json'
+@@ -205,7 +230,7 @@
+     for fit in fit_keys:
+         original_models = candidate['fits'][fit]['models']
+         for row in (generation, selection, selected, confirmation):
+-            check(row['fits'][fit]['models'] == original_models, 'cross-phase sealed models: ' + fit)
++            same_models(row['fits'][fit]['models'], original_models, fit)
+         check(selected['fits'][fit] == selection['fits'][fit], 'selection full-row seal: ' + fit)
+         check(confirmation['fits'][fit]['choices'] == selected['fits'][fit]['choices'],
+               'confirmation choices bind selection seal: ' + fit)
+@@ -271,7 +296,7 @@
+                 check(record['phase'] == ('GEN' if phase == 'generation' else phase.upper()) and
+                       record['fit'] == int(fit) and record['domain'] == (None if phase == 'generation' else domain) and
+                       record['protocol_sha256'] == protocol_sha, 'raw record task identity')
+-                check(record['models'] == candidate['fits'][fit]['models'], 'raw record sealed candidate identities')
++                same_models(record['models'], candidate['fits'][fit]['models'], fit)
+                 arms = record['arm_order']
+                 check(len(arms) == len(set(arms)) and set(arms) == set(record['models']) and arms[0] == 'KEEP',
+                       'exact arm identity/order set')
+--- supervise_supplemental.py
++++ supervise_supplemental_v2.py
+@@ -32,7 +32,7 @@
+     def restrict():
+         os.setsid()
+         os.sched_setaffinity(0, {7})
+-        resource.setrlimit(resource.RLIMIT_CPU, (9, 10))
++        resource.setrlimit(resource.RLIMIT_CPU, (8, 9))
+         resource.setrlimit(resource.RLIMIT_AS, (2147483648,) * 2)
+     started, cpu = time.monotonic(), time.process_time()
+     before = resource.getrusage(resource.RUSAGE_CHILDREN)
+@@ -40,7 +40,7 @@
+         process = subprocess.Popen(command, env=environment, stdout=out, stderr=err, preexec_fn=restrict)
+         timed_out = False
+         try:
+-            process.wait(timeout=30)
++            process.wait(timeout=29)
+         except subprocess.TimeoutExpired:
+             timed_out = True
+             os.killpg(process.pid, signal.SIGKILL)

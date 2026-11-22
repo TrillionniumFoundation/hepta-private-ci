@@ -1,0 +1,53 @@
+{
+  "child_CPU_seconds": 0.38934399999999997,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "-B",
+    "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_verify.py",
+    "--spec",
+    "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/SUPPLEMENTAL_SPEC_FROZEN.json",
+    "--output",
+    "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_attempt001/output"
+  ],
+  "limits": {
+    "address_space_bytes": 2147483648,
+    "cpu_affinity": [
+      7
+    ],
+    "cpu_hard_seconds": 10,
+    "cpu_soft_seconds": 9.0,
+    "wall_seconds": 30
+  },
+  "peak_child_RSS_KiB": 42984,
+  "quality_work": {
+    "model_forwards": 0,
+    "new_candidates": 0,
+    "new_entropy_draws": 0,
+    "new_worlds": 0,
+    "optimizer_steps": 0,
+    "policy_DPs": 0
+  },
+  "result_pin": null,
+  "returncode": 1,
+  "schema": "hepta-value-supplemental-process-v1",
+  "spec_pin": {
+    "bytes": 5101,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/SUPPLEMENTAL_SPEC_FROZEN.json",
+    "sha256": "c4a5e09b0536ba11a17b16ec768cb607e58ad53f7ef2d37b664b337de5ce5a98"
+  },
+  "spec_unchanged": true,
+  "status": "FAILED",
+  "supervisor_CPU_seconds": 0.0018830950000000013,
+  "supervisor_pin": {
+    "bytes": 3074,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supervise_supplemental.py",
+    "sha256": "4b59efd9995e0fde127d01e2e0c2ee95cef3c46a7cd5e9296cb98a731f90bbdc"
+  },
+  "verifier_pin": {
+    "bytes": 22898,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_verify.py",
+    "sha256": "1be197eac059f2868d5ae2826ead46498309abc0ad41cbce6b9b7f1e68719c0e"
+  },
+  "wall_seconds": 0.4264032730134204,
+  "wall_timeout": false
+}

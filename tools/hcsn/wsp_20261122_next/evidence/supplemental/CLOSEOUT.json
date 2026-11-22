@@ -1,0 +1,111 @@
+{
+  "amendment_diff_pin": {
+    "bytes": 4500,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/VERIFICATION_ONLY_AMENDMENT.diff",
+    "sha256": "12735c1ecde066b47988f55748da32c9b9a430177bfcd022a8719b45f0c090dc"
+  },
+  "authenticated_artifact_count": 623,
+  "budget_metadata_pin": {
+    "bytes": 5839,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/GEN_BUDGET_METADATA.json",
+    "sha256": "6e0437ddc300c9cdad17e12cf5534bfa945bff06331396930e14da634b18482c"
+  },
+  "confirmation_choices": {
+    "11": {
+      "BP": "KEEP",
+      "DIRECT": "KEEP"
+    },
+    "23": {
+      "BP": "KEEP",
+      "DIRECT": "KEEP"
+    },
+    "37": {
+      "BP": "KEEP",
+      "DIRECT": "KEEP"
+    },
+    "53": {
+      "BP": "KEEP",
+      "DIRECT": "KEEP"
+    },
+    "71": {
+      "BP": "KEEP",
+      "DIRECT": "KEEP"
+    }
+  },
+  "counts": {
+    "bound_confirmation_choices": 10,
+    "bound_new_graphs": 160,
+    "bound_phase_records": 20,
+    "historical_schedules": 3796,
+    "raw_policy_records": 3520,
+    "recomputed_contrasts": 6,
+    "replayed_existing_schedules": 160
+  },
+  "created_utc": "2026-11-22T08:46:40.923525+00:00",
+  "cumulative_resources": {
+    "CPU_budget_seconds": 10,
+    "attempt_count": 2,
+    "child_CPU_seconds": 2.634365,
+    "peak_child_RSS_KiB": 65864,
+    "supervisor_CPU_seconds": 0.005818401000000001,
+    "wall_budget_seconds": 30,
+    "wall_seconds": 2.7481732590094907
+  },
+  "improvement_claim": {
+    "BP": false,
+    "DIRECT": false
+  },
+  "limitations": [
+    "Supplemental verification of retained bytes, schedules, selections and arithmetic. No new confirmation or model-quality evidence; existing frozen hard reader supplies policy-DP verification.",
+    "One retained entropy record per frozen phase is source-bound and deterministically replayed. There is no independent external entropy custodian or proof about unrecorded entropy draws.",
+    "Prespecified paired-t intervals use five checkpoint clusters and their parametric assumptions; arithmetic verification does not establish those assumptions or market transfer.",
+    "Audit source creation, static reading and packaging CPU were not separately metered; the process figures cover both verifier children and their supervisors."
+  ],
+  "original_protocol_pin": {
+    "bytes": 412929,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+    "sha256": "adca7eed0c7dc63a5d884fc44f8e8431d7dae56eb44d0566d522eb8dae405d10"
+  },
+  "quality_work": {
+    "model_forwards": 0,
+    "new_candidates": 0,
+    "new_entropy_draws": 0,
+    "new_worlds": 0,
+    "optimizer_steps": 0,
+    "policy_DPs": 0
+  },
+  "retained_original_four_phase_child_CPU_seconds": 109.40266700000001,
+  "schema": "hepta-value-supplemental-closeout-v1",
+  "static_review_pin": {
+    "bytes": 8934,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/INDEPENDENT_STATIC_REVIEW.json",
+    "sha256": "0b32e415ddbd9be564bda336c02d37af78efdada59cc42ea77a01aa59c5c1580"
+  },
+  "status": "SUPPLEMENTAL_PASS_WITH_RETAINED_V1_FAILURE",
+  "supplemental_receipt_pin": {
+    "bytes": 162223,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_attempt002/output/RESULTS.json",
+    "sha256": "9ce9c9c8a5ed25a5bdc5e153c9fb34762502f620277d1bd51c98dbf285417d4a"
+  },
+  "v1_failure": "Verifier compared raw artifact pin dictionaries across canonical KEEP alias remapping; narrow verification-only correction authenticated actual canonical models and retained all non-model_pin metadata checks. Scientific artifacts unchanged.",
+  "v1_process_pin": {
+    "bytes": 1867,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_attempt001/PROCESS.json",
+    "sha256": "24dde2fd80c2c5fb6de3e95689e8b599e4c2a731683c45cd4b793987fe039d92"
+  },
+  "v1_spec_pin": {
+    "bytes": 5101,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/SUPPLEMENTAL_SPEC_FROZEN.json",
+    "sha256": "c4a5e09b0536ba11a17b16ec768cb607e58ad53f7ef2d37b664b337de5ce5a98"
+  },
+  "v2_process_pin": {
+    "bytes": 2109,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_attempt002/PROCESS.json",
+    "sha256": "3c49645103e70797c6d8757ec0077a8825883f1fc8865e2646f641dbbeaac4a1"
+  },
+  "v2_spec_pin": {
+    "bytes": 6981,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/SUPPLEMENTAL_SPEC_V2_FROZEN.json",
+    "sha256": "78c607ec532a9a129e793686c9420f90d1ebf1bad980e8c3af2e5c6b16e3933c"
+  }
+}
