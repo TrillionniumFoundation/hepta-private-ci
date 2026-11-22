@@ -37,7 +37,7 @@ from .continuation import (
 )
 
 
-IDENTITY = "hcsn-n256-authentic-tail1159-log-bound-originals-20261122-c6bc-v7"
+IDENTITY = "hcsn-n256-authentic-tail1159-process-cost-ledger-20261122-c6bc-v8"
 
 
 def _sha256(raw):

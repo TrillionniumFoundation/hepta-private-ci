@@ -36,7 +36,7 @@ from .continuation import (
 )
 from .lane import IDENTITY
 from .output_validation import validate_lane_result
-from .run import _drain_bounded
+from .run import _cost_ledger, _drain_bounded
 
 
 def _environment(request, request_path):
@@ -243,6 +243,71 @@ class Tail1159IntentTests(unittest.TestCase):
             self.assertEqual(total, 10)
             self.assertEqual(path.read_bytes(), b"0123")
             self.assertTrue(overflow.is_set())
+
+    def test_cost_ledger_keeps_concurrent_process_costs_separate(self):
+        results = [
+            {
+                "lane_ordinal": 1,
+                "cost": {
+                    "wall_seconds": 2.0,
+                    "cpu_seconds": 1.25,
+                    "max_rss_kib": 2048,
+                },
+            },
+            {
+                "lane_ordinal": 0,
+                "cost": {
+                    "wall_seconds": 3.0,
+                    "cpu_seconds": 1.5,
+                    "max_rss_kib": 4096,
+                },
+            },
+        ]
+        statuses = [(1, -15, True, 20, 2), (0, 0, False, 3, 5)]
+        ledger = _cost_ledger(
+            results,
+            statuses,
+            {"stdout_bytes": 4, "stderr_bytes": 4},
+            {"wall_seconds": 4.0, "cpu_seconds": 0.25, "max_rss_kib": 1024},
+        )
+        self.assertEqual(
+            [item["lane_ordinal"] for item in ledger["validated_lane_costs"]],
+            [0, 1],
+        )
+        self.assertEqual(ledger["validated_lane_wall_seconds_sum"], 5.0)
+        self.assertEqual(ledger["validated_lane_cpu_seconds_sum"], 2.75)
+        self.assertEqual(ledger["validated_lane_max_rss_kib_max"], 4096)
+        self.assertEqual(
+            ledger["process_statuses"][1],
+            {
+                "lane_ordinal": 1,
+                "returncode": -15,
+                "log_overflow": True,
+                "stdout_produced_bytes": 20,
+                "stdout_retained_bytes": 4,
+                "stderr_produced_bytes": 2,
+                "stderr_retained_bytes": 2,
+            },
+        )
+
+    def test_cost_ledger_rejects_nonfinite_claim(self):
+        results = [
+            {
+                "lane_ordinal": 0,
+                "cost": {
+                    "wall_seconds": float("nan"),
+                    "cpu_seconds": 1.0,
+                    "max_rss_kib": 1024,
+                },
+            }
+        ]
+        with self.assertRaisesRegex(SystemExit, "lane wall seconds"):
+            _cost_ledger(
+                results,
+                [(0, 0, False, 0, 0)],
+                {"stdout_bytes": 4, "stderr_bytes": 4},
+                {"wall_seconds": 1.0, "cpu_seconds": 1.0, "max_rss_kib": 1024},
+            )
 
     def test_missing_allocation_refuses_before_input_read(self):
         digest = __import__("hashlib").sha256(REQUEST.read_bytes()).hexdigest()
