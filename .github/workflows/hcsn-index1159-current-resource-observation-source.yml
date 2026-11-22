@@ -25,3 +25,13 @@ jobs:
         run: python3 -O qualification/hcsn_currentstate_n256_index1159_resource_observation/verify_source.py
       - name: Parse shell source without executing it
         run: sh -n qualification/hcsn_currentstate_n256_index1159_resource_observation/snapshot_source.sh
+      - name: Verify immutable observation originals
+        run: >-
+          python3 qualification/hcsn_currentstate_n256_index1159_resource_observation/audit_observation.py
+          --verify-expected
+          qualification/hcsn_currentstate_n256_index1159_resource_observation/RESULT.json
+      - name: Verify immutable observation originals under optimized Python
+        run: >-
+          python3 -O qualification/hcsn_currentstate_n256_index1159_resource_observation/audit_observation.py
+          --verify-expected
+          qualification/hcsn_currentstate_n256_index1159_resource_observation/RESULT.json

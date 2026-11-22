@@ -1,0 +1,58 @@
+{
+  "boot_id": "8c55b477-233a-4771-995a-6f666f6299b3",
+  "historical_state": {
+    "c2_full_replay_completed_fits": 0,
+    "global": "HOLD_NOUPDATE",
+    "hpca": "NoUpdate_EXTERNAL_CUSTODY_OPEN",
+    "pr6901": "UNKNOWN",
+    "pr6939": "RED",
+    "pr6942": "RED_TIMEOUT_COMPLETED_ACTIONS_UNKNOWN",
+    "pr6950": "RED"
+  },
+  "identity": "hcsn-index1159-current-resource-observation-20261122-c6bc-v1",
+  "job_id": "1a203764c26-ffbe-2724",
+  "observation": {
+    "ancestor_levels": 6,
+    "app_slice_memory_current_bytes": 61287870464,
+    "app_slice_memory_max_events": 314193,
+    "app_slice_memory_peak_bytes": 99185459200,
+    "app_slice_oom_events": 0,
+    "app_slice_oom_kills": 0,
+    "effective_cpus": "0-47",
+    "finite_memory_max_levels": 0,
+    "mem_available_kib": 100029892,
+    "mem_total_kib": 131760784,
+    "nproc": 48,
+    "swap_free_kib": 5572256,
+    "swap_total_kib": 8388604
+  },
+  "runtime_request_digest": "4d39d97a638ee55caa50013f763cce23e4e783ca1d1c1eb3dd84e67cf2e1888b",
+  "sample_utc": "2026-11-22T13:33:35Z",
+  "scope": {
+    "all_closed": false,
+    "allocation_frozen": false,
+    "calendar_frozen": false,
+    "controlled_concurrency_frozen": false,
+    "current_host_ancestor_observation_complete": true,
+    "index1159_checkpoint_profile_complete": false,
+    "index1159_execution_authorized": false,
+    "index1159_runtime_bound_complete": false,
+    "n256_qualified": false,
+    "tail_termination_closed": false
+  },
+  "source_head": "7dbc2da7ba0a951d0dce90b986e512e0f9e6c85d",
+  "status": "PASS_CURRENT_OBSERVATION_HOLD_ADMISSION",
+  "work": {
+    "candidate_tail_checks": 0,
+    "checkpoint_decodes": 0,
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "model_calls": 0,
+    "optimizer_steps": 0,
+    "provider_calls": 0,
+    "recurrence_row_actions": 0,
+    "remote_jobs": 1,
+    "torch_calls": 0,
+    "training_calls": 0
+  }
+}
