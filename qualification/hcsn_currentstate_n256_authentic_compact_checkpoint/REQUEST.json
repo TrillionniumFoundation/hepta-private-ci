@@ -1,0 +1,28 @@
+{
+  "aggregate_cap_bytes": 67108864,
+  "all_closed": false,
+  "attempts": 1,
+  "base_pull_request": 6945,
+  "compact_cursor_cap_bytes": 8388608,
+  "execution_key": "hcsn-n256-authentic-compact-checkpoint-20261122-c6bc-001",
+  "historical_negative_and_unknown_preserved": true,
+  "identity": "hcsn-n256-authentic-compact-checkpoint-20261122-c6bc-v1",
+  "input_artifact_sha256": "452060c65949e9c1d8ffe74e4303d707e6fe4fe7c2e75e29caacfa3137c37a91",
+  "input_checkpoints": 10,
+  "max_raw_checkpoint_bytes": 33554432,
+  "n256_qualification": false,
+  "production_adoption": false,
+  "scope": "lossless bounded transform of ten immutable authentic index256 full-state originals",
+  "tail_rounding_qualification": false,
+  "work_upper_bounds": {
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "optimizer_steps": 0,
+    "provider_outputs": 0,
+    "recurrence_row_actions": 0,
+    "serializer_decodes": 10,
+    "serializer_encodes": 20,
+    "tail_checks": 0,
+    "torch_calls": 0
+  }
+}
