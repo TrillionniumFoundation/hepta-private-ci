@@ -131,3 +131,82 @@ fn invalid_shell_syntax_and_non_string_list_tokens_are_rejected() {
         );
     }
 }
+
+#[test]
+fn empty_positive_and_negative_collections_are_valid() {
+    parse_success(r#"prefix_rule(pattern = ["git", "status"], match = [], not_match = [])"#);
+}
+
+#[test]
+fn interleaved_positive_hits_preserve_all_unmatched_examples_in_order() {
+    let error = parse_failure(
+        r#"prefix_rule(pattern = ["git", "status"], match = [["git", "push"], ["git", "status"], ["git", "diff"], ["git", "status"], ["git", "push"]])"#,
+    );
+    match error {
+        Error::ExampleDidNotMatch { examples, .. } => {
+            assert_eq!(
+                examples,
+                vec![
+                    "git push".to_string(),
+                    "git diff".to_string(),
+                    "git push".to_string(),
+                ]
+            );
+        }
+        other => panic!("expected ExampleDidNotMatch, got {other:?}"),
+    }
+}
+
+#[test]
+fn an_earlier_rule_positive_error_precedes_a_later_rule_negative_error() {
+    let error = parse_failure(
+        r#"prefix_rule(pattern = ["git", "status"], match = ["git push"])
+prefix_rule(pattern = ["hg", "status"], not_match = ["hg status"])"#,
+    );
+    match error {
+        Error::ExampleDidNotMatch { examples, .. } => {
+            assert_eq!(examples, vec!["git push".to_string()]);
+        }
+        other => panic!("expected the earlier rule's positive error, got {other:?}"),
+    }
+}
+
+#[test]
+fn empty_positive_examples_do_not_hide_a_matching_negative_example() {
+    let error = parse_failure(
+        r#"prefix_rule(pattern = ["git", "status"], match = [], not_match = ["git status"])"#,
+    );
+    match error {
+        Error::ExampleDidMatch { example, .. } => assert_eq!(example, "git status"),
+        other => panic!("expected ExampleDidMatch, got {other:?}"),
+    }
+}
+
+#[test]
+fn separate_parse_calls_keep_the_new_example_source_location() {
+    let mut parser = PolicyParser::new();
+    parser
+        .parse(
+            "first-policy.rules",
+            r#"prefix_rule(pattern = ["git", "status"], match = ["git status"])"#,
+        )
+        .expect("the first policy's examples must validate");
+    let error = parser
+        .parse(
+            "second-policy.rules",
+            r#"prefix_rule(pattern = ["hg", "status"], match = ["hg log"])"#,
+        )
+        .expect_err("the second policy's examples must fail");
+    match error {
+        Error::ExampleDidNotMatch {
+            examples, location, ..
+        } => {
+            assert_eq!(examples, vec!["hg log".to_string()]);
+            assert_eq!(
+                location.expect("second policy source location").path,
+                "second-policy.rules"
+            );
+        }
+        other => panic!("expected ExampleDidNotMatch, got {other:?}"),
+    }
+}
