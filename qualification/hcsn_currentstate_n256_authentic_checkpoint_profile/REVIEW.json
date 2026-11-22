@@ -1,0 +1,39 @@
+{
+  "historical_statuses": {
+    "6901_numerical_cause": "UNKNOWN",
+    "6908": "RED_DUPLICATE_KEY",
+    "6913": "RED_NONCANONICAL_INPUT",
+    "c2_full_replay": "0/6",
+    "hpca": "NoUpdate"
+  },
+  "identity": "hcsn-n256-authentic-checkpoint-profile-20261121-c6bc-v1",
+  "inputs": {
+    "detached_artifact_git_blob": "1b4335e7c4eef4ce074b9b8fdcb82a4148b0fff7",
+    "detached_artifact_sha256": "5d745460761940b86add99436bcbf953a8c0111d4d97c49ba9d18db7c2b52444",
+    "detached_source_head": "7937875d6fcb38ac97c74a9ca5feef882c16c10f",
+    "parent_artifact_sha256": "41f938e49dbebd6cdd4580285bed1cff9752b17633eb55a154f01ec34372e8ae"
+  },
+  "planned_work": {
+    "cold_validation_row_actions": 520,
+    "cursor_outputs": 40,
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "index_two_relation_recomputations": 50,
+    "optimizer_steps": 0,
+    "provider_outputs": 0,
+    "tail_checks": 0,
+    "torch_calls": 0,
+    "total_row_actions": 870,
+    "warm_row_actions": 300
+  },
+  "scope": {
+    "all_closed": false,
+    "arbitrary_history_resume": false,
+    "n256_qualified": false,
+    "production_adoption": false,
+    "provider_completion": false,
+    "resource_gate_closed": false,
+    "unique_rounding_closed": false
+  },
+  "status": "PRECOMMITTED_AUTHENTIC_INDEX32_RESOURCE_PROFILE_ONLY"
+}
