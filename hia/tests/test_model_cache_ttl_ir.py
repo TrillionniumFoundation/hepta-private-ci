@@ -29,7 +29,7 @@ def args_list(value):
 class TextualHiaTtl:
     def __init__(self, text):
         lines = text.splitlines()
-        assert lines[0] == "hia-asm.v1 hepta.hia.program.v8 codex_model_cache_ttl"
+        assert lines[0] == "hia-asm.v1 hepta.hia.program.v9 codex_model_cache_ttl"
         assert lines[1].startswith("fn f0(source:readbuf,output:mutbuf,workspace:mutbuf)")
         assert lines[-1] == "end"
         self.blocks = {}

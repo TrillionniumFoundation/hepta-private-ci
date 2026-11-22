@@ -1,4 +1,4 @@
-hia-asm.v1 hepta.hia.program.v8 codex_model_cache_ttl
+hia-asm.v1 hepta.hia.program.v9 codex_model_cache_ttl
 fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
 block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
   output_length:usize = buffer.len(output)

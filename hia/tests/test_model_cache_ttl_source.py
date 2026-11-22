@@ -42,7 +42,7 @@ class ModelCacheTtlSourceTests(unittest.TestCase):
 
     def test_source_is_separate_unregistered_candidate(self):
         source = SOURCE.read_text(encoding="utf-8")
-        self.assertTrue(source.startswith("hia-asm.v1 hepta.hia.program.v8 codex_model_cache_ttl\n"))
+        self.assertTrue(source.startswith("hia-asm.v1 hepta.hia.program.v9 codex_model_cache_ttl\n"))
         self.assertIn("fn f0(source:readbuf,output:mutbuf,workspace:mutbuf)", source)
         self.assertIn("branch zero_ttl stale(z_output)", source)
         self.assertIn("branch signed_consistent ttl_zero(", source)
