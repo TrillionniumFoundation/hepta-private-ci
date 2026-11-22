@@ -1,0 +1,49 @@
+test_actual_resources_can_differ_but_must_be_present_and_within_budget (test_factorial.FactorialPreflightTests.test_actual_resources_can_differ_but_must_be_present_and_within_budget) ... ok
+test_d_minus_a_alone_cannot_mask_negative_interaction (test_factorial.FactorialPreflightTests.test_d_minus_a_alone_cannot_mask_negative_interaction) ... ok
+test_duplicate_json_fields_and_nonfinite_constants_fail_closed (test_factorial.FactorialPreflightTests.test_duplicate_json_fields_and_nonfinite_constants_fail_closed) ... ok
+test_duplicate_reused_receipt_and_invalid_hash_rejected (test_factorial.FactorialPreflightTests.test_duplicate_reused_receipt_and_invalid_hash_rejected) ... ok
+test_equal_cell_weight_ignores_duplicate_episode_counts (test_factorial.FactorialPreflightTests.test_equal_cell_weight_ignores_duplicate_episode_counts) ... ok
+test_four_required_contrasts_include_the_interaction (test_factorial.FactorialPreflightTests.test_four_required_contrasts_include_the_interaction) ... ok
+test_frozen_cell_evaluator_cannot_change_between_training_seeds (test_factorial.FactorialPreflightTests.test_frozen_cell_evaluator_cannot_change_between_training_seeds) ... FAIL
+test_frozen_cell_opportunity_cannot_change_between_episodes (test_factorial.FactorialPreflightTests.test_frozen_cell_opportunity_cannot_change_between_episodes) ... FAIL
+test_frozen_contract_may_differ_across_registered_cells (test_factorial.FactorialPreflightTests.test_frozen_contract_may_differ_across_registered_cells) ... ok
+test_independent_and_old_ood_labels_are_not_inferred (test_factorial.FactorialPreflightTests.test_independent_and_old_ood_labels_are_not_inferred) ... ok
+test_missing_arm_or_cell_fails_not_as_zero (test_factorial.FactorialPreflightTests.test_missing_arm_or_cell_fails_not_as_zero) ... ok
+test_same_task_or_seed_cannot_be_called_future_holdout (test_factorial.FactorialPreflightTests.test_same_task_or_seed_cannot_be_called_future_holdout) ... ok
+test_seed_cluster_p_and_holm_adjustment_do_not_create_a_gate (test_factorial.FactorialPreflightTests.test_seed_cluster_p_and_holm_adjustment_do_not_create_a_gate) ... ok
+test_unequal_per_seed_episode_cohort_rejected (test_factorial.FactorialPreflightTests.test_unequal_per_seed_episode_cohort_rejected) ... FAIL
+test_wrong_capacity_task_evaluator_or_opportunity_rejected (test_factorial.FactorialPreflightTests.test_wrong_capacity_task_evaluator_or_opportunity_rejected) ... ok
+
+======================================================================
+FAIL: test_frozen_cell_evaluator_cannot_change_between_training_seeds (test_factorial.FactorialPreflightTests.test_frozen_cell_evaluator_cannot_change_between_training_seeds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-factorial-roster-20261111-r5/qualification/neuroscience-20261110/test_factorial.py", line 188, in test_frozen_cell_evaluator_cannot_change_between_training_seeds
+    with self.assertRaisesRegex(ContractError, "frozen cell"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+======================================================================
+FAIL: test_frozen_cell_opportunity_cannot_change_between_episodes (test_factorial.FactorialPreflightTests.test_frozen_cell_opportunity_cannot_change_between_episodes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-factorial-roster-20261111-r5/qualification/neuroscience-20261110/test_factorial.py", line 195, in test_frozen_cell_opportunity_cannot_change_between_episodes
+    with self.assertRaisesRegex(ContractError, "frozen cell"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+======================================================================
+FAIL: test_unequal_per_seed_episode_cohort_rejected (test_factorial.FactorialPreflightTests.test_unequal_per_seed_episode_cohort_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-factorial-roster-20261111-r5/qualification/neuroscience-20261110/test_factorial.py", line 202, in test_unequal_per_seed_episode_cohort_rejected
+    with self.assertRaisesRegex(ContractError, "unequal seed episode"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.146s
+
+FAILED (failures=3)
+Command exited with non-zero status 1
+RED_RESOURCE wall=0.18 user=0.17 system=0.00 rss_kib=23804 exit=1

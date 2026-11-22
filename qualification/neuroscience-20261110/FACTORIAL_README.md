@@ -45,14 +45,46 @@ This module is named `hpca_factorial.py` in the consolidated tree so that the
 separate `factorial.py` family/cohort preflight remains available. The schemas
 and required inputs differ; do not substitute one parser for the other.
 
-| Module | Interface | Scope |
-| --- | --- | --- |
-| `factorial.py` | `FactorialRow`, `factorial_evidence(rows)` | Balanced registered family/episode roster, frozen per-seed core/controller cohort, nullable outcomes/resources |
-| `hpca_factorial.py` | `audit(manifest, rows)` | Complete six-family, dense/sparse and four-arm manifest, resource totals and temporal A/B/C declarations |
+| Module | Interface | Schema | Scope |
+| --- | --- | --- | --- |
+| `factorial.py` | `FactorialRow`, `factorial_evidence(rows)` | `hepta.neuroscience.factorial-shadow.v1` | Balanced registered family/episode roster, frozen per-seed core/controller cohort, nullable outcomes/resources |
+| `hpca_factorial.py` | `audit(manifest, rows)` | `hepta.hpca.factorial.shadow.v1` | Complete six-family, dense/sparse and four-arm manifest, resource totals and temporal A/B/C declarations |
+| `factorial_trial_preflight.py` | `FactorialTrialRow`, `evaluate_core_ndu(rows, required_cells=...)` | `hepta.neuroscience.core-ndu-preflight.v1` | Explicit registered family/density cells, measured resource fields, equal cell weighting, declared seed/task partition and episode-roster checks |
 
-Both preserve four primary seed-cluster contrasts and unconditional HOLD_NO_GO /
-DENY_ALL outputs. The HPCA parser pins architectures and records trained-model
-identities; it does not prove common trained weights across its arms or families.
-Neither parser grants causal attribution, physical execution or owner authority.
-The HPCA tests are `test_hpca_factorial.py`; both suites run in the discovery
-command above.
+All three preserve four primary seed-cluster contrasts and unconditional
+HOLD_NO_GO / DENY_ALL outputs. The HPCA parser pins architectures and records
+trained-model identities; it does not prove common trained weights across its
+arms or families. None of these parsers grants causal attribution, physical
+execution or owner authority.
+
+The original family/cohort command remains:
+
+```sh
+python3 qualification/neuroscience-20261110/factorial.py --trials legacy_rows.jsonl
+```
+
+The separate trial preflight consumes `FactorialTrialRow` JSONL and a JSON array
+of registered `[family, feedback_density]` pairs, for example
+`[["ACT", "sparse"], ["ACT", "dense"]`:
+
+```sh
+python3 qualification/neuroscience-20261110/factorial_trial_preflight.py \
+  --trials trial_rows.jsonl --required-cells registered_cells.json
+```
+
+The trial contract requires declared actual CPU, wall time and peak RSS, freezes
+cell evaluator/opportunity fields across seeds and episodes, and rejects declared
+training/evaluation task or seed overlap and unequal per-cell episode-ID rosters.
+It averages episodes within cells, then weights registered cells equally within
+each seed. These inputs and weights differ from the family/cohort contract;
+there is no implicit row conversion. The original nullable-outcome/resource
+rules and missing-primary inference masking in `factorial.py` are unchanged.
+Self-declared resource values and digests do not authenticate actual execution.
+
+The original tests remain in `test_factorial.py` and `test_hpca_factorial.py`.
+The trial suite is `test_factorial_trial_preflight.py`, with
+`test_seed_identity.py`, `test_episode_roster.py` and `test_partition_overlap.py`.
+All run through the original discovery command above and the existing
+`hepta-neuroscience-shadow.yml` path trigger. The retained cell, seed, roster and
+partition RED/GREEN logs describe their original historical source snapshots;
+they are not current-source test results or authority to run owner/model tasks.
