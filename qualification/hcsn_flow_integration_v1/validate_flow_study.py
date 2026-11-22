@@ -478,3 +478,29 @@ def validate(root, source_root, output):
     return verification
 
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("studyroot", type=Path)
+    parser.add_argument("--source-root", type=Path, default=Path.cwd())
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    result = validate(
+        args.studyroot.resolve(),
+        args.source_root.resolve(),
+        (args.output or args.studyroot / "POSTHOC").resolve(),
+    )
+    print(
+        json.dumps(
+            {
+                "passed": result["passed"],
+                "checks": result["check_count"],
+                "failures": len(result["failures"]),
+            },
+            allow_nan=False,
+        )
+    )
+    raise SystemExit(0 if result["passed"] else 1)
+
+
+if __name__ == "__main__":
+    main()
