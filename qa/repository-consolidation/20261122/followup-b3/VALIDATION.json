@@ -1,0 +1,210 @@
+{
+  "status": "REVIEWED_SOURCE_READY_FOR_PR_CI_NOT_MAIN_QUALIFIED",
+  "source_commit": "2aadf0f1ebebebdb8772e8b6a5f429754e8ada93",
+  "source_tree": "e4f470c7a0f9e0b4fced446b548943c13da5bf83",
+  "prior_pr_head": "b3fedab06239b97045fb6b4ffec90c3cc9a20db6",
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "source_path_count": 11,
+  "real_history_merges": [
+    {
+      "commit": "309c1f8916998c1b768127c6519dfb953fffde9b",
+      "tree": "2a2678158638fdc9697622b81b4e8210979ba184",
+      "parents": [
+        "b3fedab06239b97045fb6b4ffec90c3cc9a20db6",
+        "233e77ececa9f144bf5d538a24ff060f92f34fd3"
+      ]
+    },
+    {
+      "commit": "2aadf0f1ebebebdb8772e8b6a5f429754e8ada93",
+      "tree": "e4f470c7a0f9e0b4fced446b548943c13da5bf83",
+      "parents": [
+        "0aec1013d65ec5ce45d1aa0cf973cc9f971023a5",
+        "6fb3e33043b3b3220c035943caa0da115be83d36"
+      ]
+    }
+  ],
+  "maintenance_commit": {
+    "commit": "0aec1013d65ec5ce45d1aa0cf973cc9f971023a5",
+    "tree": "12166b1155a91a02c40553034234f2cfcf632d31",
+    "parents": [
+      "309c1f8916998c1b768127c6519dfb953fffde9b"
+    ]
+  },
+  "local_validation": {
+    "v8_original_tests": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "tested_head": "b3fedab06239b97045fb6b4ffec90c3cc9a20db6",
+      "tested_worktree_tree": "2a2678158638fdc9697622b81b4e8210979ba184"
+    },
+    "v8_same_original_binary_six_threads": {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "binary_sha256": "6d2cde25183d04edb7a8d20f9bb582a4d7b95dd6ccb8f68374b3b9c8820452a6"
+    },
+    "v8_recorded_inputs": {
+      "rustc_depinfo": 137,
+      "input_files": 1435,
+      "missing": 0,
+      "final_repository_input_matches": 15
+    },
+    "bazel_original_analysis": {
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0,
+      "tested_base": "b3fedab06239b97045fb6b4ffec90c3cc9a20db6",
+      "tested_worktree_tree": "ccb36669ca5b3c8b49b8e23f0a4cfbf35978b01c"
+    },
+    "bazel_wrapper_loading": {
+      "packages": 11,
+      "unique_targets": 216,
+      "configured_analysis_or_native_rust_execution_claim": false
+    },
+    "bazel_final_explicit_inputs": {
+      "repository_matches": 33,
+      "total_original_bindings": 40,
+      "complete_dynamic_action_trace_claim": false
+    },
+    "path_utils": {
+      "linux_original_tests_passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "windows_target_compile_exit": 0,
+      "new_native_windows_junction_success": "PENDING_NEW_HEAD_CI"
+    },
+    "operator_real_git_regressions": {
+      "fixed_passed": 7,
+      "fixed_failed": 0,
+      "baseline_failed": 4,
+      "baseline_total": 7
+    },
+    "original_scoped_fix_and_formatter": "PASS; original preparation failures retained; no tests after the final formatter for these source waves",
+    "changed_source_blob_spelling_whitespace": "PASS"
+  },
+  "prior_native_b3_results": {
+    "run": 45037161936,
+    "windows_clippy": "SUCCESS",
+    "windows_release": "SUCCESS",
+    "cargo_deny_and_contract_gate": "SUCCESS",
+    "operator_exact_source": "SUCCESS; DENY_ALL; independentAcceptance=false; productionActivation=false",
+    "operator_deterministic_merge": "FAILURE; remote raw diagnostic unavailable, local full-diff whitespace fails",
+    "windows_shards": "ALL_FOUR_FAILURE; 12 unique hard cases plus separately recorded natural retry flakes",
+    "private_artifacts_nine": {
+      "passed": 8,
+      "failed": 1,
+      "failure": "junction fixture command syntax"
+    },
+    "cmd_location_original_six_cases": "FAILURE retained; long spelling did not fix behavior",
+    "linux_musl": "FAILURE; next-use evidence readback approximately 501615 microseconds, OwnerUnavailable/DeadlineElapsed",
+    "linux_gnu": "FAILURE; read-only cold orphan inspection WriterUnavailable",
+    "macos_arm": "FAILURE; specific cause unconfirmed because original logs unavailable",
+    "macos_intel_at_snapshot": "IN_PROGRESS",
+    "linux_actual_checkout": "20a13b578ff7ade9bab63d38a8d4454251f42c59",
+    "inherited_success_on_new_head": false
+  },
+  "protection": {
+    "snapshot_source": "integration-main-retirement/remote-heads-20261122T161617Z.tsv",
+    "snapshot_captured_utc": "2026-11-22T16:16:17Z",
+    "snapshot_refs": 7914,
+    "snapshot_sha256": "12976c50da058d8e3bf13e9846699ea215dd0855cb466c2944f412cca002a8c8",
+    "graph_nodes": 79277,
+    "current_reachable_nodes": 79269,
+    "missing_parents": [],
+    "previous_protected_refs": 556,
+    "protected_refs": 558,
+    "previous_protected_nodes": 1494,
+    "protected_nodes": 1496,
+    "named_hia_refs": 144,
+    "protected_names_without_hia": 414,
+    "old_protected_ref_drift": {},
+    "new_protected_refs": {
+      "codex/hia-model-cache-ttl-fmt-repair-20261122-auto11": "94fafced4b63e373887fdb4aa06838f5f6786fca",
+      "codex/hia-model-cache-ttl-optin-dispatch-20261122-auto11": "304a2e159e97c94aeabdf98d115a32f8ea24a5e4"
+    },
+    "new_protected_nodes": [
+      "304a2e159e97c94aeabdf98d115a32f8ea24a5e4",
+      "94fafced4b63e373887fdb4aa06838f5f6786fca"
+    ],
+    "new_unlabelled_hia_aliases": {},
+    "new_refs_not_in_known_hia_closure": {
+      "research/hcsn-n256-tail1159-resource-originals-20261122-c6bc": "2bc052ff7193b41199733a00303ffe8c321db153"
+    },
+    "known_protection_monotonic": true,
+    "historical_551st_pin_identity_unrecovered": true,
+    "complete_unknown_historical_pin_identity_claim": false,
+    "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "main_ancestor_count": 33794,
+    "ordinary_refs_whose_current_tips_are_in_main": {},
+    "candidate": "2aadf0f1ebebebdb8772e8b6a5f429754e8ada93",
+    "candidate_tree": "e4f470c7a0f9e0b4fced446b548943c13da5bf83",
+    "candidate_parents": [
+      "0aec1013d65ec5ce45d1aa0cf973cc9f971023a5",
+      "6fb3e33043b3b3220c035943caa0da115be83d36"
+    ],
+    "parent_checks": [
+      {
+        "label": "remote_candidate",
+        "ordered_inputs": [
+          "2aadf0f1ebebebdb8772e8b6a5f429754e8ada93"
+        ],
+        "ancestor_union_nodes": 45084,
+        "known_hia_intersection": [],
+        "STOP_reachable": false,
+        "missing_parents": []
+      },
+      {
+        "label": "candidate_plus_151",
+        "ordered_inputs": [
+          "2aadf0f1ebebebdb8772e8b6a5f429754e8ada93",
+          "151a2c80f8fa549e5b7162eef3c846bf2fd90b5d"
+        ],
+        "ancestor_union_nodes": 45109,
+        "known_hia_intersection": [],
+        "STOP_reachable": false,
+        "missing_parents": []
+      },
+      {
+        "label": "b3_151_validation_parents",
+        "ordered_inputs": [
+          "b3fedab06239b97045fb6b4ffec90c3cc9a20db6",
+          "151a2c80f8fa549e5b7162eef3c846bf2fd90b5d"
+        ],
+        "ancestor_union_nodes": 45075,
+        "known_hia_intersection": [],
+        "STOP_reachable": false,
+        "missing_parents": []
+      }
+    ],
+    "graph_sha256": "9b050eb7e40e48e3fa200be9efa335f62de44fb3bff05b33ebcf2362f678f770",
+    "scope": "New commits inspected only through parent/tree metadata. No HIA tree/blob payload read, applied, compiled or tested. No refs changed. Unprotected-by-known-graph is not a payload classification or branch deletion lease."
+  },
+  "retirement": {
+    "snapshot": "remote-heads-20261122T161617Z.tsv",
+    "snapshot_sha256": "12976c50da058d8e3bf13e9846699ea215dd0855cb466c2944f412cca002a8c8",
+    "refs": 7914,
+    "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "main_ancestor_count": 33794,
+    "main_ancestor_metadata_sha256": "8da44313b0aad9b27f591cc5b90feb99623a2eb25bb7a1b5e68e77097bf5467f",
+    "all_current_heads_in_main_ancestry": {
+      "refs/heads/main": "732e934ba496d90fbe042b8d41d479ef901643e5"
+    },
+    "ordinary_retirement_candidates": [],
+    "deleted_refs": 0,
+    "candidate_ancestry_does_not_authorize_retirement": true
+  },
+  "automatic_approval_rejection": {
+    "commit": "d783273c25b3164f5f632482cb7b017fdcb9d756",
+    "reason": "cybersecurity risk",
+    "known_scope": "C2D production persistence / signed File::lock stale-history failure",
+    "status": "STOP; payload, descendants and equivalent workaround not read, applied, tested or retried"
+  },
+  "not_in_this_source_batch": [
+    "151 Neuron merge remains in validation",
+    "AuthBus platform-contract changes remain in validation",
+    "Unreviewed ordinary histories",
+    "Complete ec6 history"
+  ],
+  "archive_manifest": "ARCHIVE-MANIFEST.json"
+}

@@ -1,0 +1,102 @@
+{
+  "prior_head": "b3fedab06239b97045fb6b4ffec90c3cc9a20db6",
+  "source_commit": "2aadf0f1ebebebdb8772e8b6a5f429754e8ada93",
+  "source_tree": "e4f470c7a0f9e0b4fced446b548943c13da5bf83",
+  "chain": [
+    {
+      "commit": "309c1f8916998c1b768127c6519dfb953fffde9b",
+      "tree": "2a2678158638fdc9697622b81b4e8210979ba184",
+      "parents": [
+        "b3fedab06239b97045fb6b4ffec90c3cc9a20db6",
+        "233e77ececa9f144bf5d538a24ff060f92f34fd3"
+      ]
+    },
+    {
+      "commit": "0aec1013d65ec5ce45d1aa0cf973cc9f971023a5",
+      "tree": "12166b1155a91a02c40553034234f2cfcf632d31",
+      "parents": [
+        "309c1f8916998c1b768127c6519dfb953fffde9b"
+      ]
+    },
+    {
+      "commit": "2aadf0f1ebebebdb8772e8b6a5f429754e8ada93",
+      "tree": "e4f470c7a0f9e0b4fced446b548943c13da5bf83",
+      "parents": [
+        "0aec1013d65ec5ce45d1aa0cf973cc9f971023a5",
+        "6fb3e33043b3b3220c035943caa0da115be83d36"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": ".github/workflows/hepta-temporary-bazel-lock.yml",
+      "sha256": "e993f7c42eb55f23aa9e483cc5bd09797404644b4782d1b31637d7956fdb3c07",
+      "blob": "6ddaff74d179fa78d8710b1bf082366a26b79e1f",
+      "bytes": 7492
+    },
+    {
+      "path": ".github/workflows/learning-operator-required.yml",
+      "sha256": "4c256ff71c217aa37650d9477b3c60beb97244899db5afb4071112f5b324c31a",
+      "blob": "fdd26cc03f20ca352f5c347dc7ab191f88851d3d",
+      "bytes": 17019
+    },
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "sha256": "ad01d1ed7b654c9c00f97bc7f2d164594ddb173806132aa0f48dd10e69d62e04",
+      "blob": "dca4c0cad3f38200dc1b342761c6dadd2981baad",
+      "bytes": 64168
+    },
+    {
+      "path": "bazel/rules/BUILD.bazel",
+      "sha256": "4070a8f4383755b484176f15e7c7432ae6ce7845e549bb545e3dd5778b2fbb9d",
+      "blob": "7f21b584bf94e9e84c5d6edfddfc8d329e9b68d3",
+      "bytes": 272
+    },
+    {
+      "path": "bazel/rules/cargo_crate_aliases.bzl",
+      "sha256": "e8fe235f4491de94175af877ad8e54225318babc21e2dfb4fa057e4324287ef1",
+      "blob": "50732bdd3f52b7671b40e97b83de72b23939dbc6",
+      "bytes": 687
+    },
+    {
+      "path": "bazel/rules/crate_aliases.bzl",
+      "sha256": "3cce18ff93a248d35f0eacea7689645ae5e28cbcb9835dda334ed200618f5e6d",
+      "blob": "99f9d8619aab81de027daf4c139eff95294bfbcd",
+      "bytes": 3835
+    },
+    {
+      "path": "bazel/rules/crate_aliases_test.bzl",
+      "sha256": "05a42a5b02f6a7e5e34281e9f7eff464ab97498e89ca5d5eb1a95f0948add739",
+      "blob": "643dc80b8fd3a1b534fd83cb6d3433fa05dda4e5",
+      "bytes": 11959
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_artifacts_windows_tests.rs",
+      "sha256": "b3e2c55d0663a2160466faa357db815f77ab8ba9418b5418fea7ec05560c5fbf",
+      "blob": "757323d31d2b4f0f19b1e7df77426b790280d405",
+      "bytes": 10962
+    },
+    {
+      "path": "codex-rs/v8-poc/src/lib.rs",
+      "sha256": "baef171b87e3dae3631dd1f94bf25a1660f4096617894d897d673a2cbd84294a",
+      "blob": "a609d68a23a222c7f401ae08bed9573f8383b2ce",
+      "bytes": 4256
+    },
+    {
+      "path": "scripts/hepta-learning-operator-receipt.py",
+      "sha256": "b400b3d26f10726962d6cfba5cc2eef5a9ab3163203f9afbf8a1c6fd88d89680",
+      "blob": "cc34b9677fa5ee36fa642e8768fc58ec02132e5a",
+      "bytes": 16715
+    },
+    {
+      "path": "scripts/test_hepta_learning_operator_merge.py",
+      "sha256": "1a51e98a0e7a2f13d69aa2155fbbaf44d21c14e848412c2adb412aa7877d8492",
+      "blob": "29aac1ffb54b7550ad68fa7e72e3d5677fdb2435",
+      "bytes": 7273
+    }
+  ],
+  "source_path_count": 11,
+  "clean_index_and_tracked_worktree": true,
+  "remote_ref_updated": false,
+  "tests_after_formatter": false
+}
