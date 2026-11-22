@@ -14,7 +14,14 @@ from qualification.hcsn_currentstate_n256_authentic_tailcheck537_hexfix.tail537 
     advance_to_index537,
 )
 
-from .admission import MAX_JSON_BYTES, REQUEST, SOURCE_FREEZE, admit_runtime
+from .admission import (
+    DEPENDENCY_MANIFEST_FORMAT,
+    MAX_JSON_BYTES,
+    REQUEST,
+    SOURCE_FREEZE,
+    _runtime_digests,
+    admit_runtime,
+)
 from .continuation import (
     SOURCE_INDEX,
     TARGET_INDEX,
@@ -47,6 +54,7 @@ def _authorized_fixture(root):
         "input_sha256": request["input"]["index537_collector_sha256"],
         "host": "desktop",
     }
+    runtime_digests = _runtime_digests()
     originals = {
         "host_observation": {
             **common,
@@ -75,8 +83,8 @@ def _authorized_fixture(root):
             **common,
             "schema": "hcsn-tail1159-runtime-v1",
             "runtime_id": "synthetic-test-runtime",
-            "python_executable_sha256": "e" * 64,
-            "dependency_manifest_sha256": "f" * 64,
+            "dependency_manifest_format": DEPENDENCY_MANIFEST_FORMAT,
+            **runtime_digests,
         },
     }
     originals_dir = root / "runtime_originals"
@@ -198,6 +206,79 @@ class Tail1159IntentTests(unittest.TestCase):
             ):
                 with patch.dict(os.environ, _environment(request, request_path), clear=True):
                     self.assertEqual(admit_runtime(), request)
+
+    def test_modified_frozen_source_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request, request_path, paths = _authorized_fixture(root)
+            manifest = json.loads(SOURCE_FREEZE.read_text())
+            manifest["files"] = {"drifted.py": "0" * 64}
+            manifest_path = root / "SOURCE_FREEZE.json"
+            manifest_path.write_text(json.dumps(manifest, sort_keys=True))
+            (root / "drifted.py").write_text("print('changed')\n")
+            manifest_digest = __import__("hashlib").sha256(
+                manifest_path.read_bytes()
+            ).hexdigest()
+            for kind, path in paths.items():
+                original = json.loads(path.read_text())
+                original["source_manifest_sha256"] = manifest_digest
+                raw = (json.dumps(original, sort_keys=True) + "\n").encode()
+                _replace_original(request, request_path, paths, kind, raw)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                request_path,
+            ):
+                with patch(
+                    "qualification.hcsn_currentstate_n256_tail1159_intent."
+                    "admission.SOURCE_FREEZE",
+                    manifest_path,
+                ):
+                    with patch(
+                        "qualification.hcsn_currentstate_n256_tail1159_intent."
+                        "admission.REPO",
+                        root,
+                    ):
+                        with patch.dict(
+                            os.environ, _environment(request, request_path), clear=True
+                        ):
+                            with self.assertRaisesRegex(
+                                SystemExit, "frozen source differs"
+                            ):
+                                admit_runtime()
+
+    def test_python_executable_digest_mismatch_refuses(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, request_path, paths = _authorized_fixture(Path(directory))
+            runtime = json.loads(paths["runtime"].read_text())
+            runtime["python_executable_sha256"] = "0" * 64
+            raw = (json.dumps(runtime, sort_keys=True) + "\n").encode()
+            _replace_original(request, request_path, paths, "runtime", raw)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(
+                    os.environ, _environment(request, request_path), clear=True
+                ):
+                    with self.assertRaisesRegex(SystemExit, "executing environment"):
+                        admit_runtime()
+
+    def test_dependency_manifest_digest_mismatch_refuses(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, request_path, paths = _authorized_fixture(Path(directory))
+            runtime = json.loads(paths["runtime"].read_text())
+            runtime["dependency_manifest_sha256"] = "0" * 64
+            raw = (json.dumps(runtime, sort_keys=True) + "\n").encode()
+            _replace_original(request, request_path, paths, "runtime", raw)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(
+                    os.environ, _environment(request, request_path), clear=True
+                ):
+                    with self.assertRaisesRegex(SystemExit, "executing environment"):
+                        admit_runtime()
 
     def test_duplicate_original_key_refuses_before_input_read(self):
         with tempfile.TemporaryDirectory() as directory:
