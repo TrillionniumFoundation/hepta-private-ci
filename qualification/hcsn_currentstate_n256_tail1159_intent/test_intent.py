@@ -1,5 +1,6 @@
 """Source-only controls; no authentic checkpoint is decoded."""
 
+import io
 import json
 import os
 from pathlib import Path
@@ -35,6 +36,7 @@ from .continuation import (
 )
 from .lane import IDENTITY
 from .output_validation import validate_lane_result
+from .run import _drain_bounded
 
 
 def _environment(request, request_path):
@@ -220,7 +222,27 @@ class Tail1159IntentTests(unittest.TestCase):
         self.assertEqual(request["budget"]["rounding_calls_cap"], 5180)
         self.assertEqual(request["budget"]["provider_calls"], 0)
         self.assertEqual(request["checkpoint_caps"]["aggregate_compact_bytes"], 134217728)
+        self.assertEqual(request["lane_log_caps"]["stdout_bytes"], 1048576)
+        self.assertEqual(request["lane_log_caps"]["stderr_bytes"], 1048576)
         self.assertFalse(request["actual_execution_authorized"])
+
+    def test_log_drain_retains_exact_bytes_within_cap(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "stdout.log"
+            overflow = __import__("threading").Event()
+            total = _drain_bounded(io.BytesIO(b"exact-log"), path, 9, overflow)
+            self.assertEqual(total, 9)
+            self.assertEqual(path.read_bytes(), b"exact-log")
+            self.assertFalse(overflow.is_set())
+
+    def test_log_drain_caps_retained_bytes_and_marks_overflow(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "stderr.log"
+            overflow = __import__("threading").Event()
+            total = _drain_bounded(io.BytesIO(b"0123456789"), path, 4, overflow)
+            self.assertEqual(total, 10)
+            self.assertEqual(path.read_bytes(), b"0123")
+            self.assertTrue(overflow.is_set())
 
     def test_missing_allocation_refuses_before_input_read(self):
         digest = __import__("hashlib").sha256(REQUEST.read_bytes()).hexdigest()

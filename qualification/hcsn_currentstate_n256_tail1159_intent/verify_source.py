@@ -19,7 +19,7 @@ def verify():
     freeze = json.loads(FREEZE.read_text())
     if freeze["status"] != "SOURCE_ONLY_RESOURCE_HOLD":
         raise SystemExit("source freeze status differs")
-    if freeze["base_head"] != "a622f4fee163654e5b5dc959bdc4d275a0ab25b5":
+    if freeze["base_head"] != "9f90c87304d0be7f75379a38067ba01174775b8b":
         raise SystemExit("base head differs")
     for relative, expected in freeze["files"].items():
         raw = (REPO / relative).read_bytes()
@@ -45,6 +45,13 @@ def verify():
         raise SystemExit("runtime originals were changed")
     if request["budget"]["recurrence_row_actions"] != 6220:
         raise SystemExit("recurrence denominator differs")
+    if request["lane_log_caps"] != {
+        "stderr_bytes": 1048576,
+        "stdout_bytes": 1048576,
+    }:
+        raise SystemExit("lane log caps differ")
+    if request["identity"] != freeze["identity"]:
+        raise SystemExit("request and source-freeze identities differ")
     return freeze
 
 

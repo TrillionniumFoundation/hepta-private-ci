@@ -1,6 +1,6 @@
 {
   "actual_execution_authorized": false,
-  "base_pr": 6978,
+  "base_pr": 6980,
   "budget": {
     "checkpoint_decodes": 30,
     "checkpoint_encodes_cap": 20,
@@ -21,7 +21,7 @@
     "per_cursor_raw_bytes": 50331648
   },
   "execution_key": "hcsn-n256-authentic-tail1159-20261122-c6bc-001",
-  "identity": "hcsn-n256-authentic-tail1159-output-bound-originals-20261122-c6bc-v6",
+  "identity": "hcsn-n256-authentic-tail1159-log-bound-originals-20261122-c6bc-v7",
   "intent_source_head": "e441e2df7bf2ae8f820e154132827ad0d08c9e23",
   "input": {
     "index537_collector_sha256": "452e22f354928f88742d840d3287c160153b8e86d4ed5346b0d0628d0ddacbf4",
@@ -30,6 +30,10 @@
     "index537_tail_result": "NON_UNIQUE_0_OF_2585"
   },
   "lane_count": 10,
+  "lane_log_caps": {
+    "stderr_bytes": 1048576,
+    "stdout_bytes": 1048576
+  },
   "runtime_admission": {
     "allocation_path": null,
     "allocation_sha256": null,
