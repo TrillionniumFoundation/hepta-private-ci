@@ -79,7 +79,7 @@ use windows_sys::Win32::System::Threading::OpenProcessToken;
 
 #[path = "private_state_windows_security.rs"]
 mod creation_security;
-use creation_security::with_private_security;
+pub(crate) use creation_security::with_private_security;
 
 #[path = "private_state_windows_directory.rs"]
 mod directory;
