@@ -1,8 +1,8 @@
 pub mod cache;
-#[cfg(feature = "hia-native")]
-mod hia_native_model_cache_ttl;
 pub mod collaboration_mode_presets;
 pub(crate) mod config;
+#[cfg(feature = "hia-native")]
+mod hia_native_model_cache_ttl;
 pub mod manager;
 pub mod model_info;
 pub mod model_presets;

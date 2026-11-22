@@ -60,7 +60,10 @@ pub(crate) fn is_fresh(age: Duration, ttl: Duration) -> bool {
     let original_source = source;
     let mut output = [0xa5_u8; 8];
     let code = invoke(&source, &mut output);
-    assert_eq!(source, original_source, "HIA model-cache TTL changed borrowed input");
+    assert_eq!(
+        source, original_source,
+        "HIA model-cache TTL changed borrowed input"
+    );
     assert_eq!(code, 8, "HIA model-cache TTL returned a non-success status");
     match u64::from_le_bytes(output) {
         0 => false,
