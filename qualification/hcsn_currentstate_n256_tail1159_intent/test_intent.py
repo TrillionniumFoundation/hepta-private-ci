@@ -31,6 +31,7 @@ class Tail1159IntentTests(unittest.TestCase):
         self.assertEqual(request["budget"]["tail_checks"], 10)
         self.assertEqual(request["budget"]["rounding_calls_cap"], 5180)
         self.assertEqual(request["budget"]["provider_calls"], 0)
+        self.assertEqual(request["checkpoint_caps"]["aggregate_compact_bytes"], 134217728)
         self.assertFalse(request["actual_execution_authorized"])
 
     def test_missing_allocation_refuses_before_input_read(self):
