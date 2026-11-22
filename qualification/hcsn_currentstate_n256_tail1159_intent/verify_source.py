@@ -19,7 +19,7 @@ def verify():
     freeze = json.loads(FREEZE.read_text())
     if freeze["status"] != "SOURCE_ONLY_RESOURCE_HOLD":
         raise SystemExit("source freeze status differs")
-    if freeze["base_head"] != "92c63d7e22dcb68b2275d79131fb4c0b81a9166a":
+    if freeze["base_head"] != "e441e2df7bf2ae8f820e154132827ad0d08c9e23":
         raise SystemExit("base head differs")
     for relative, expected in freeze["files"].items():
         raw = (REPO / relative).read_bytes()
@@ -32,10 +32,14 @@ def verify():
     if request["actual_execution_authorized"]:
         raise SystemExit("source-only intent claims execution authorization")
     if admission != {
+        "allocation_path": None,
         "allocation_sha256": None,
+        "calendar_path": None,
         "calendar_sha256": None,
         "concurrency": None,
+        "host_observation_path": None,
         "host_observation_sha256": None,
+        "runtime_path": None,
         "runtime_sha256": None,
     }:
         raise SystemExit("runtime originals were changed")

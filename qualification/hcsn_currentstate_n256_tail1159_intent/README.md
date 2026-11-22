@@ -1,8 +1,9 @@
-# Authentic N256 index1159 continuation intent
+# Authentic N256 index1159 resource-original admission
 
 Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
 
-This separately frozen candidate consumes the ten byte-exact index537 full-state
+This separately frozen v2 candidate strengthens the source-only admission on
+top of #6967. It consumes the ten byte-exact index537 full-state
 originals from #6957/#6959 and defines the unchanged exact continuation to
 index1159. Each lane would apply exactly 622 row actions and one signed
 ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
@@ -19,7 +20,14 @@ No authentic checkpoint is decoded by this stage. `REQUEST.json` deliberately
 leaves the host observation, allocation, calendar, runtime and concurrency
 originals null, and `admit_runtime()` refuses before any authentic input read.
 Admission also requires the explicit authorization bit to be exactly `true`, so
-filling runtime digests alone cannot authorize an execution.
+filling runtime digests alone cannot authorize an execution. Each future
+original must be a byte-verified JSON file under `runtime_originals/` and must
+cross-bind the candidate identity, same execution key, intent source head,
+exact source-manifest digest, authentic input digest and desktop host.
+Allocation concurrency and memory,
+the currently valid calendar, observation expiry and ancestor-cgroup headroom,
+plus the Python executable and dependency-manifest digests are checked before
+any authentic checkpoint read.
 The current #6966 observation is only a time-point observation, not an
 allocation. The earlier static #6964 byte projection is not a bound.
 
