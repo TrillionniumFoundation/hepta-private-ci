@@ -1,0 +1,37 @@
+{
+  "historical_statuses": {
+    "6901_numerical_cause": "UNKNOWN",
+    "6908": "RED_DUPLICATE_KEY",
+    "6913": "RED_NONCANONICAL_INPUT",
+    "c2_full_replay_completed_fits": 0,
+    "hpca": "NoUpdate"
+  },
+  "identity": "hcsn-n256-authentic-detached-cursor-20261121-c6bc-v1",
+  "input": {
+    "artifact_id": 14733074498,
+    "pull_request": 6931,
+    "readback_pull_request": 6932,
+    "zip_bytes": 591261,
+    "zip_sha256": "41f938e49dbebd6cdd4580285bed1cff9752b17633eb55a154f01ec34372e8ae"
+  },
+  "planned_work": {
+    "optimizer_steps": 0,
+    "original_zip_part_reads": 3,
+    "parent_cold_decodes": 30,
+    "provider_outputs": 0,
+    "recurrence_advancement_row_actions": 0,
+    "row_action_relation_recomputations": 20,
+    "secondstep_cold_decodes": 10,
+    "secondstep_cursors": 10,
+    "tail_checks": 0,
+    "torch_calls": 0
+  },
+  "scope": {
+    "all_closed": false,
+    "arbitrary_history_resume": false,
+    "n256_qualified": false,
+    "production_adoption": false,
+    "resource_gate_closed": false
+  },
+  "status": "PRECOMMITTED_AUTHENTIC_INDEX_TWO_RELATION_VALIDATION_ONLY"
+}
