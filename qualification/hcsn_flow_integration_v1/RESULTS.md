@@ -18,7 +18,7 @@
 - 119 个运行源码文件的 manifest：`1953148571aa943cc20ad531c2268626acd523cf57cb6adb87e700399b7e3be1`。独立 GitHub Git-tree 回读全部匹配。
 - 修改按 13 个逻辑提交组织，每个少于 500 变更行；默认 legacy 行为和历史实验保持可复现。
 - 精确源码 [CI run 45007458768](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45007458768)：124 tests，0 failure/error/skip；canonical formatter、显式 Ruff 和 clean-tree 检查全部成功。这是指定源码检查的结果，不代表全部仓库工作流均通过。
-- 原始预测、候选状态、未入选结果、所有成本与运行日志在 [evidence.zip](evidence.zip)，SHA256 为 `e27ae1925f3524f978d278fec64ac5961a131c513c3bcc7cea64021ab5bba992`，共 3,055,428 bytes、512 项。机器汇总为 [summary.json](summary.json)，核验摘要为 [verification.json](verification.json)，保存模型的独立重放摘要为 [selected_replay.json](selected_replay.json)；逐项检查记录完整保留在压缩包内。复核步骤见 [REPRODUCE.md](REPRODUCE.md)。
+- 原始预测、候选状态、未入选结果、所有成本与运行日志在 [evidence.zip](evidence.zip)，SHA256 为 `e27ae1925f3524f978d278fec64ac5961a131c513c3bcc7cea64021ab5bba992`，共 3,055,428 bytes。归档含 512 个逐项列出哈希的文件，以及清单 `MANIFEST.json` 本身，合计 513 项。机器汇总为 [summary.json](summary.json)，核验摘要为 [verification.json](verification.json)，保存模型的独立重放摘要为 [selected_replay.json](selected_replay.json)；逐项检查记录完整保留在压缩包内。复核步骤见 [REPRODUCE.md](REPRODUCE.md)。
 - 全仓 CI 的独立状态快照见 [repository_ci_context.json](repository_ci_context.json)。指定 HCSN 源码检查通过，不等于全仓 CI 通过；格式检查与既有 Windows/learning 失败按基准逐项比较，额外首次 attempt timeout 保留为未归因。
 
 ## 五项实现

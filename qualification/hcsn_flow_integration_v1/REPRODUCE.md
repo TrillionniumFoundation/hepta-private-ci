@@ -6,7 +6,8 @@ verification scripts and evidence, not changes to the executed model.
 
 ## Verify and extract
 
-`evidence.zip` contains 512 entries and 3,055,428 bytes. Its SHA256 is:
+`evidence.zip` contains 513 entries and 3,055,428 bytes: 512 individually hashed
+files plus `MANIFEST.json` itself. Its SHA256 is:
 
 ```text
 e27ae1925f3524f978d278fec64ac5961a131c513c3bcc7cea64021ab5bba992
