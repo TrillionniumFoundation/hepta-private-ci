@@ -1,0 +1,24 @@
+{
+  "collector_sha256": "452e22f354928f88742d840d3287c160153b8e86d4ed5346b0d0628d0ddacbf4",
+  "execution": "read_only_post_negative_audit",
+  "identity": "hcsn-n256-tail537-margin-readonly-audit-20261122-c6bc-v1",
+  "input_evidence_head": "89cbe1ad8a93228e505e1e0de600693913c17473",
+  "input_pr": 6957,
+  "input_run": 45005537845,
+  "input_source_sha": "23980910e03fc62da839b11271a80241eaa21d9b",
+  "prohibited_work": [
+    "candidate_recurrence",
+    "candidate_tail_check",
+    "provider",
+    "dynamic",
+    "exponential",
+    "torch",
+    "optimizer",
+    "model",
+    "training"
+  ],
+  "search_limit": 2048,
+  "target": "first scalar tail bound below one quarter of the current index537 minimum absolute partial",
+  "target_divisor": 4,
+  "threshold_is_qualification": false
+}
