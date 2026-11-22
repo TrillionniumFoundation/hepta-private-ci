@@ -18,7 +18,7 @@ from qualification.hcsn_currentstate_n256_non_substochastic_signed_interval.sign
 )
 
 
-SCHEMA = "hcsn-n256-authentic-index128-checkpoint-profile-v1"
+SCHEMA = "hcsn-n256-authentic-index128-checkpoint-profile-hex-v2"
 BOUNDARIES = (64, 128)
 MAX_CURSOR_BYTES = 8_388_608
 
@@ -27,8 +27,34 @@ def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
+def _integer_hex(value):
+    sign = "-" if value < 0 else ""
+    return sign + format(abs(value), "x")
+
+
+def _integer_from_hex(text, name):
+    if not isinstance(text, str) or not text:
+        raise NonSubstochasticSignedIntervalError(f"invalid {name} integer")
+    digits = text[1:] if text.startswith("-") else text
+    if (
+        not digits
+        or any(character not in "0123456789abcdef" for character in digits)
+        or (len(digits) > 1 and digits.startswith("0"))
+        or text == "-0"
+    ):
+        raise NonSubstochasticSignedIntervalError(
+            f"noncanonical {name} integer"
+        )
+    value = int(text, 16)
+    if _integer_hex(value) != text:
+        raise NonSubstochasticSignedIntervalError(
+            f"noncanonical {name} integer"
+        )
+    return value
+
+
 def _fraction_pair(value):
-    return [str(value.numerator), str(value.denominator)]
+    return [_integer_hex(value.numerator), _integer_hex(value.denominator)]
 
 
 def _fraction_from_pair(pair, name):
@@ -39,7 +65,10 @@ def _fraction_from_pair(pair, name):
     ):
         raise NonSubstochasticSignedIntervalError(f"invalid {name} fraction")
     try:
-        value = Fraction(int(pair[0]), int(pair[1]))
+        value = Fraction(
+            _integer_from_hex(pair[0], f"{name} numerator"),
+            _integer_from_hex(pair[1], f"{name} denominator"),
+        )
     except (ValueError, ZeroDivisionError) as error:
         raise NonSubstochasticSignedIntervalError(f"invalid {name} fraction") from error
     if _fraction_pair(value) != pair:

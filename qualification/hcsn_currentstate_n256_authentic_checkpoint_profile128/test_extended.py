@@ -30,6 +30,8 @@ from qualification.hcsn_currentstate_n256_non_substochastic_signed_interval.sign
 )
 
 from .extended import (
+    _fraction_from_pair,
+    _fraction_pair,
     advance_extended_checkpoint,
     decode_extended_checkpoint,
     encode_extended_checkpoint,
@@ -66,6 +68,18 @@ def canonical(value):
 
 
 class AuthenticExtendedCheckpointTest(unittest.TestCase):
+    def test_large_fraction_uses_hex_without_disabling_decimal_safety(self):
+        value = Fraction((1 << 18_000) + 17, (1 << 7_000) + 3)
+        pair = _fraction_pair(value)
+        self.assertEqual(_fraction_from_pair(pair, "large"), value)
+        self.assertGreater(len(pair[0]), 4_300)
+
+    def test_noncanonical_hex_is_rejected(self):
+        for pair in (["00", "1"], ["A", "1"], ["-0", "1"], ["+1", "1"]):
+            with self.subTest(pair=pair):
+                with self.assertRaises(NonSubstochasticSignedIntervalError):
+                    _fraction_from_pair(pair, "synthetic")
+
     def test_warm_and_cold_extended_boundaries_are_byte_exact(self):
         parent, source, index32 = inputs()
         current = start_from_index32(index32, source, parent)
@@ -95,11 +109,8 @@ class AuthenticExtendedCheckpointTest(unittest.TestCase):
         )
         envelope = json.loads(encode_extended_checkpoint(current))
         old = envelope["body"]["iterate"][0]
-        shifted = Fraction(int(old[0]), int(old[1])) + 1
-        envelope["body"]["iterate"][0] = [
-            str(shifted.numerator),
-            str(shifted.denominator),
-        ]
+        shifted = Fraction(int(old[0], 16), int(old[1], 16)) + 1
+        envelope["body"]["iterate"][0] = _fraction_pair(shifted)
         envelope["body_sha256"] = hashlib.sha256(
             canonical(envelope["body"])
         ).hexdigest()

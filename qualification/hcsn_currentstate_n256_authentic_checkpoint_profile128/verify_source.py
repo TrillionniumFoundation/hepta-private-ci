@@ -34,7 +34,7 @@ def main():
     request = json.loads((PACKAGE / "REQUEST.json").read_text())
     if (
         request["execution_key"]
-        != "hcsn-n256-authentic-checkpoint-profile128-20261122-c6bc-001"
+        != "hcsn-n256-authentic-checkpoint-hex-20261122-c6bc-001"
         or request["boundaries"] != [64, 128]
         or request["index32_source_replay_row_actions"] != 900
         or request["warm_extension_row_actions"] != 960
@@ -50,7 +50,10 @@ def main():
         raise SystemExit("request is not the fixed fail-closed profile")
     row_action_callsites = 0
     for name in ("extended.py", "run.py", "test_extended.py"):
-        tree = ast.parse((PACKAGE / name).read_text())
+        source = (PACKAGE / name).read_text()
+        if "set_int_max_str_digits" in source:
+            raise SystemExit(f"decimal integer safety override in {name}")
+        tree = ast.parse(source)
         calls = {
             node.func.id
             for node in ast.walk(tree)

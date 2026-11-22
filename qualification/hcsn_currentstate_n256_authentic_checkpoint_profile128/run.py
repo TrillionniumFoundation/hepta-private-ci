@@ -25,7 +25,7 @@ PROFILE_PARTS = ROOT / "qualification/hcsn_ci_readbacks/6936"
 DETACHED_ZIP = ROOT / "qualification/hcsn_ci_readbacks/6934/ORIGINAL.zip"
 PARENT_PARTS = ROOT / "qualification/hcsn_ci_readbacks/6931"
 OUTPUT = HERE / "RUN_OUTPUT"
-EXECUTION_KEY = "hcsn-n256-authentic-checkpoint-profile128-20261122-c6bc-001"
+EXECUTION_KEY = "hcsn-n256-authentic-checkpoint-hex-20261122-c6bc-001"
 PROFILE_SHA256 = "e1775ee832acc431282bcca9b7b5f0e21b38ac5a0f3ac46c2228f787c0e8a0a8"
 DETACHED_SHA256 = "5d745460761940b86add99436bcbf953a8c0111d4d97c49ba9d18db7c2b52444"
 PARENT_SHA256 = "41f938e49dbebd6cdd4580285bed1cff9752b17633eb55a154f01ec34372e8ae"
@@ -135,7 +135,7 @@ def main():
 
     usage = resource.getrusage(resource.RUSAGE_SELF)
     result = {
-        "identity": "hcsn-n256-authentic-checkpoint-profile128-20261122-c6bc-v1",
+        "identity": "hcsn-n256-authentic-checkpoint-hex-20261122-c6bc-v2",
         "execution_key": EXECUTION_KEY,
         "status": "AUTHENTIC_INDEX128_RESOURCE_PROFILE_ONLY_HOLD",
         "inputs": {

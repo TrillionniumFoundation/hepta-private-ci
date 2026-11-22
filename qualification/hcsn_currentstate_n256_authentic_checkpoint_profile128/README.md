@@ -1,9 +1,17 @@
-# Authentic N256 checkpoint profile through index 128
+# Authentic N256 hexadecimal checkpoint profile through index 128
 
 Status: **PRECOMMITTED RESOURCE PROFILE / HOLD / all_closed=false**.
 
-This separately frozen successor consumes the exact index-32 originals from
-#6936/#6937. For each of the ten authentic N256 lanes it first cold-replays the
+The predecessor #6939 attempt is permanently RED at Actions 44988560497/job
+137104400359. After one authentic lane reached checkpoint serialization,
+Python 3.12 refused a decimal integer string longer than its 4,300-digit
+safety limit. That run produced no successful checkpoint artifact; it was not
+a cursor or aggregate byte-cap failure and is not rerun under its consumed key.
+
+This separately frozen successor changes only exact integer serialization to
+canonical signed lowercase hexadecimal. It does not disable Python's decimal
+integer safety limit. It consumes the exact index-32 originals from #6936/#6937.
+For each of the ten authentic N256 lanes it first cold-replays the
 archived index-32 checkpoint from the exact detached index-two input and parent,
 then advances to fixed boundaries 64 and 128. Every new checkpoint is
 cold-decoded by replay from the archived index-32 source and must reproduce the
@@ -24,5 +32,6 @@ only supplies two further measured authentic checkpoint sizes and costs; a cap
 failure remains a real negative result and is not rerun under another key.
 
 #6901 remains `UNKNOWN`; #6908 remains `RED_DUPLICATE_KEY`; #6913 remains
-`RED_NONCANONICAL_INPUT`; C2 full replay remains 0/6; HPCA remains NoUpdate;
-global status remains HOLD / `all_closed=false`.
+`RED_NONCANONICAL_INPUT`; #6939 remains `RED_DECIMAL_INTEGER_DIGIT_LIMIT`;
+C2 full replay remains 0/6; HPCA remains NoUpdate; global status remains HOLD /
+`all_closed=false`.
