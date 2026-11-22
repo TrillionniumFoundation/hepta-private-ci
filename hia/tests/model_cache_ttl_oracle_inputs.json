@@ -1,0 +1,226 @@
+{
+  "schema": "codex.hia.model-cache-ttl-literals.v1",
+  "source_format": "five little-endian u64 words: version, signed age seconds, signed age fractional nanoseconds, TTL seconds, TTL fractional nanoseconds",
+  "note": "These literal comparisons are a source-only arithmetic fixture, not evidence that the HIA compiler or native product was executed. The HIA comparator rejects zero TTL; the caller must reject std-to-Chrono overflow before dispatch.",
+  "cases": [
+    {
+      "label": "same-instant-zero-ttl",
+      "age_seconds": 0,
+      "age_nanos": 0,
+      "ttl_seconds": 0,
+      "ttl_nanos": 0,
+      "expected_fresh": false
+    },
+    {
+      "label": "equal-nanosecond",
+      "age_seconds": 0,
+      "age_nanos": 1,
+      "ttl_seconds": 0,
+      "ttl_nanos": 1,
+      "expected_fresh": true
+    },
+    {
+      "label": "one-nanosecond-expired",
+      "age_seconds": 0,
+      "age_nanos": 2,
+      "ttl_seconds": 0,
+      "ttl_nanos": 1,
+      "expected_fresh": false
+    },
+    {
+      "label": "one-nanosecond-before",
+      "age_seconds": 0,
+      "age_nanos": 0,
+      "ttl_seconds": 0,
+      "ttl_nanos": 1,
+      "expected_fresh": true
+    },
+    {
+      "label": "almost-one-second",
+      "age_seconds": 0,
+      "age_nanos": 999999999,
+      "ttl_seconds": 1,
+      "ttl_nanos": 0,
+      "expected_fresh": true
+    },
+    {
+      "label": "subsecond-over",
+      "age_seconds": 0,
+      "age_nanos": 999999999,
+      "ttl_seconds": 0,
+      "ttl_nanos": 999999998,
+      "expected_fresh": false
+    },
+    {
+      "label": "exact-full-second",
+      "age_seconds": 1,
+      "age_nanos": 0,
+      "ttl_seconds": 1,
+      "ttl_nanos": 0,
+      "expected_fresh": true
+    },
+    {
+      "label": "one-second-over",
+      "age_seconds": 2,
+      "age_nanos": 0,
+      "ttl_seconds": 1,
+      "ttl_nanos": 999999999,
+      "expected_fresh": false
+    },
+    {
+      "label": "fraction-over-in-same-second",
+      "age_seconds": 1,
+      "age_nanos": 3,
+      "ttl_seconds": 1,
+      "ttl_nanos": 2,
+      "expected_fresh": false
+    },
+    {
+      "label": "fraction-under-in-same-second",
+      "age_seconds": 1,
+      "age_nanos": 2,
+      "ttl_seconds": 1,
+      "ttl_nanos": 3,
+      "expected_fresh": true
+    },
+    {
+      "label": "future-zero-ttl",
+      "age_seconds": 0,
+      "age_nanos": -1,
+      "ttl_seconds": 0,
+      "ttl_nanos": 0,
+      "expected_fresh": false
+    },
+    {
+      "label": "future-fraction",
+      "age_seconds": 0,
+      "age_nanos": -999999999,
+      "ttl_seconds": 1,
+      "ttl_nanos": 0,
+      "expected_fresh": true
+    },
+    {
+      "label": "future-whole-second",
+      "age_seconds": -1,
+      "age_nanos": 0,
+      "ttl_seconds": 1,
+      "ttl_nanos": 0,
+      "expected_fresh": true
+    },
+    {
+      "label": "future-seconds-and-fraction",
+      "age_seconds": -2,
+      "age_nanos": -999999999,
+      "ttl_seconds": 0,
+      "ttl_nanos": 0,
+      "expected_fresh": false
+    },
+    {
+      "label": "expired-many-days",
+      "age_seconds": 172800,
+      "age_nanos": 1,
+      "ttl_seconds": 3600,
+      "ttl_nanos": 0,
+      "expected_fresh": false
+    },
+    {
+      "label": "fresh-many-days",
+      "age_seconds": 3600,
+      "age_nanos": 0,
+      "ttl_seconds": 172800,
+      "ttl_nanos": 0,
+      "expected_fresh": true
+    },
+    {
+      "label": "large-age-stale",
+      "age_seconds": 9223372036854,
+      "age_nanos": 999999999,
+      "ttl_seconds": 9223372036854,
+      "ttl_nanos": 999999998,
+      "expected_fresh": false
+    },
+    {
+      "label": "large-age-equal",
+      "age_seconds": 9223372036854,
+      "age_nanos": 999999999,
+      "ttl_seconds": 9223372036854,
+      "ttl_nanos": 999999999,
+      "expected_fresh": true
+    }
+  ],
+  "error_cases": [
+    {
+      "label": "bad-version",
+      "version": 2,
+      "source_bytes": 40,
+      "output_bytes": 8,
+      "age_nanos": 0,
+      "ttl_nanos": 0,
+      "expected_status": 4294967295
+    },
+    {
+      "label": "truncated-source",
+      "version": 1,
+      "source_bytes": 32,
+      "output_bytes": 8,
+      "age_nanos": 0,
+      "ttl_nanos": 0,
+      "expected_status": 4294967295
+    },
+    {
+      "label": "oversized-source",
+      "version": 1,
+      "source_bytes": 48,
+      "output_bytes": 8,
+      "age_nanos": 0,
+      "ttl_nanos": 0,
+      "expected_status": 4294967295
+    },
+    {
+      "label": "short-output",
+      "version": 1,
+      "source_bytes": 40,
+      "output_bytes": 7,
+      "age_nanos": 0,
+      "ttl_nanos": 0,
+      "expected_status": 4294967294
+    },
+    {
+      "label": "invalid-age-fraction",
+      "version": 1,
+      "source_bytes": 40,
+      "output_bytes": 8,
+      "age_nanos": 1000000000,
+      "ttl_nanos": 0,
+      "expected_status": 4294967295
+    },
+    {
+      "label": "invalid-negative-age-fraction",
+      "version": 1,
+      "source_bytes": 40,
+      "output_bytes": 8,
+      "age_nanos": -1000000000,
+      "ttl_nanos": 0,
+      "expected_status": 4294967295
+    },
+    {
+      "label": "invalid-ttl-fraction",
+      "version": 1,
+      "source_bytes": 40,
+      "output_bytes": 8,
+      "age_nanos": 0,
+      "ttl_nanos": 1000000000,
+      "expected_status": 4294967295
+    },
+    {
+      "label": "invalid-sign-pair",
+      "version": 1,
+      "source_bytes": 40,
+      "output_bytes": 8,
+      "age_seconds": 1,
+      "age_nanos": -1,
+      "ttl_nanos": 0,
+      "expected_status": 4294967295
+    }
+  ]
+}
