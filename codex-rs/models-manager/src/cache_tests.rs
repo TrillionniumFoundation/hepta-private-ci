@@ -287,3 +287,105 @@ async fn file_cache_corrupt_json_fails_closed_without_replacing_disk_bytes() {
         corrupted.to_vec()
     );
 }
+
+#[tokio::test]
+async fn file_cache_future_timestamp_is_a_fresh_hit_without_rewriting() {
+    let temp = tempfile::tempdir().expect("temporary model cache directory");
+    let path = temp.path().join("models.json");
+    let cache = FileModelsCache::new(path.clone(), Duration::from_secs(3600));
+    let entry = ModelsCacheEntry {
+        fetched_at: Utc::now() + ChronoDuration::hours(2),
+        etag: Some("future-etag".to_owned()),
+        client_version: Some("current-client".to_owned()),
+        models: Vec::new(),
+    };
+    cache.store(&entry).await.expect("write future-dated cache");
+    let before = tokio::fs::read(&path).await.expect("read original bytes");
+
+    assert_eq!(
+        cache
+            .load("current-client")
+            .await
+            .expect("future cache hit"),
+        Some(entry)
+    );
+    cache
+        .refresh_ttl("current-client")
+        .await
+        .expect("future-dated cache should not be renewed");
+    assert_eq!(
+        tokio::fs::read(&path).await.expect("read preserved bytes"),
+        before
+    );
+}
+
+#[tokio::test]
+async fn file_cache_zero_ttl_refreshes_matching_version_but_never_loads() {
+    let temp = tempfile::tempdir().expect("temporary model cache directory");
+    let path = temp.path().join("models.json");
+    let cache = FileModelsCache::new(path.clone(), Duration::ZERO);
+    let mut entry = ModelsCacheEntry {
+        fetched_at: Utc::now() - ChronoDuration::hours(2),
+        etag: Some("unchanged-etag".to_owned()),
+        client_version: Some("current-client".to_owned()),
+        models: Vec::new(),
+    };
+    cache.store(&entry).await.expect("store expired entry");
+    let before = tokio::fs::read(&path).await.expect("read expired bytes");
+    assert_eq!(
+        cache.load("current-client").await.expect("zero TTL miss"),
+        None
+    );
+
+    let earliest = Utc::now();
+    cache
+        .refresh_ttl("current-client")
+        .await
+        .expect("matching version can revalidate at zero TTL");
+    let latest = Utc::now();
+    let after = tokio::fs::read(&path).await.expect("read renewed bytes");
+    assert_ne!(after, before);
+    let renewed = super::load_file(&path)
+        .await
+        .expect("read renewed entry")
+        .expect("renewed entry exists");
+    assert!(renewed.fetched_at >= earliest);
+    assert!(renewed.fetched_at <= latest);
+    entry.fetched_at = renewed.fetched_at;
+    assert_eq!(renewed, entry);
+    assert_eq!(
+        cache
+            .load("current-client")
+            .await
+            .expect("zero TTL still misses"),
+        None
+    );
+}
+
+#[tokio::test]
+async fn file_cache_store_creates_missing_parent_and_round_trips_entry() {
+    let temp = tempfile::tempdir().expect("temporary model cache directory");
+    let path = temp.path().join("new").join("nested").join("models.json");
+    let cache = FileModelsCache::new(path.clone(), Duration::from_secs(3600));
+    let entry = ModelsCacheEntry {
+        fetched_at: Utc::now(),
+        etag: Some("current-etag".to_owned()),
+        client_version: Some("current-client".to_owned()),
+        models: Vec::new(),
+    };
+    cache
+        .store(&entry)
+        .await
+        .expect("create parents and save cache");
+    let bytes = tokio::fs::read(&path).await.expect("read saved cache");
+    let restored: ModelsCacheEntry =
+        serde_json::from_slice(&bytes).expect("original file cache JSON");
+    assert_eq!(restored, entry);
+    assert_eq!(
+        cache
+            .load("current-client")
+            .await
+            .expect("fresh saved entry"),
+        Some(entry)
+    );
+}
