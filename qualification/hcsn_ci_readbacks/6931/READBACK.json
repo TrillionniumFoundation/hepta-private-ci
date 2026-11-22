@@ -1,0 +1,63 @@
+{
+  "audit": {
+    "body_digest_matches": 10,
+    "canonical_child_payloads": 10,
+    "canonical_embedded_parents": 10,
+    "child_parent_digest_matches": 10,
+    "included_index_one_parents": 10,
+    "included_index_two_children": 10,
+    "numerical_calls": 0,
+    "row_actions": 0,
+    "tail_checks": 0,
+    "zip_crc_clean": true
+  },
+  "child_max_bytes": 179910,
+  "child_min_bytes": 169336,
+  "child_payloads": 10,
+  "executed_work": {
+    "archived_zip_reads": 1,
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "optimizer_steps": 0,
+    "parent_cold_decodes": 20,
+    "parent_cursor_reads": 10,
+    "provider_outputs": 0,
+    "recurrence_row_actions": 10,
+    "secondstep_cold_decodes": 10,
+    "tail_checks": 10,
+    "torch_calls": 0
+  },
+  "historical_statuses": {
+    "6901_numerical_cause": "UNKNOWN",
+    "6908": "RED_DUPLICATE_KEY",
+    "6913": "RED_NONCANONICAL_INPUT",
+    "c2_full_replay": "0/6",
+    "hpca": "NoUpdate",
+    "source_generic_blocking": "FAILURE_OR_IN_PROGRESS_NOT_COUNTED_AS_PASS"
+  },
+  "host_github_sha": "37d8ee40383f7b835e74996a802847f3698c28ad",
+  "host_sha_semantics": "pull-request merge SHA; workflow API head_sha binds source_head",
+  "identity": "hcsn-n256-authentic-secondstep-cursor-readback-20261121-c6bc-v1",
+  "members": 12,
+  "original_zip_bytes": 591261,
+  "original_zip_git_blob": "d5c8f9cc3681800b525b18362c66d8a14618e4b7",
+  "original_zip_sha256": "41f938e49dbebd6cdd4580285bed1cff9752b17633eb55a154f01ec34372e8ae",
+  "scope": {
+    "all_closed": false,
+    "arbitrary_mid_recurrence_resume": false,
+    "n256_qualified": false,
+    "production_adoption": false,
+    "provider_completion": false,
+    "resource_gate_closed": false
+  },
+  "source_head": "7ea84d07b761b0a4b1281afae9fc496a4bffede7",
+  "source_parent": "1470af4c26f55bd36bf373fc4ac6893c4caf91e2",
+  "source_pull_request": 6931,
+  "source_tree": "dd210a1db9174689241ab60bafae7eb33cfd9b42",
+  "uncompressed_bytes": 1757404,
+  "workflow_artifact_id": 14733074498,
+  "workflow_conclusion": "success",
+  "workflow_job_id": 137048976645,
+  "workflow_run_attempt": 1,
+  "workflow_run_id": 44970488761
+}
