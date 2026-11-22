@@ -3,6 +3,7 @@
 import json
 import os
 from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -42,8 +43,31 @@ class Tail1159IntentTests(unittest.TestCase):
             "HCSN_ATTEMPT_ID": "001",
         }
         with patch.dict(os.environ, environment, clear=True):
-            with self.assertRaisesRegex(SystemExit, "not frozen"):
+            with self.assertRaisesRegex(SystemExit, "not authorized"):
                 admit_runtime()
+
+    def test_false_authorization_refuses_even_with_filled_runtime_fields(self):
+        request = json.loads(REQUEST.read_text())
+        request["runtime_admission"] = {
+            "allocation_sha256": "a" * 64,
+            "calendar_sha256": "b" * 64,
+            "concurrency": 1,
+            "host_observation_sha256": "c" * 64,
+            "runtime_sha256": "d" * 64,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            request_path = Path(directory) / "REQUEST.json"
+            request_path.write_text(json.dumps(request, sort_keys=True))
+            digest = __import__("hashlib").sha256(request_path.read_bytes()).hexdigest()
+            environment = {
+                "HCSN_REQUEST_SHA256": digest,
+                "UNIQUE_EXECUTION_KEY": request["execution_key"],
+                "HCSN_ATTEMPT_ID": "001",
+            }
+            with patch("qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST", request_path):
+                with patch.dict(os.environ, environment, clear=True):
+                    with self.assertRaisesRegex(SystemExit, "not authorized"):
+                        admit_runtime()
 
     def test_package_contains_no_runtime_outputs(self):
         names = {path.name for path in Path(__file__).resolve().parent.iterdir()}

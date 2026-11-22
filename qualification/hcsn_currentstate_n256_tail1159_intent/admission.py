@@ -25,6 +25,8 @@ def admit_runtime():
 
     request_raw = REQUEST.read_bytes()
     request = json.loads(request_raw)
+    if request.get("actual_execution_authorized") is not True:
+        raise SystemExit("authentic execution is not authorized before input read")
     if os.environ.get("HCSN_REQUEST_SHA256") != _sha256(request_raw):
         raise SystemExit("request digest mismatch before authentic input read")
     if os.environ.get("UNIQUE_EXECUTION_KEY") != request["execution_key"]:

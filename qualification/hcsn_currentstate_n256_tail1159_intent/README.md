@@ -18,6 +18,8 @@ completed negative #6957 run.
 No authentic checkpoint is decoded by this stage. `REQUEST.json` deliberately
 leaves the host observation, allocation, calendar, runtime and concurrency
 originals null, and `admit_runtime()` refuses before any authentic input read.
+Admission also requires the explicit authorization bit to be exactly `true`, so
+filling runtime digests alone cannot authorize an execution.
 The current #6966 observation is only a time-point observation, not an
 allocation. The earlier static #6964 byte projection is not a bound.
 
