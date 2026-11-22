@@ -1,0 +1,43 @@
+name: hcsn-currentstate-n256-authentic-checkpoint-profile128
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_authentic_checkpoint_profile128/**"
+      - ".github/workflows/hcsn-currentstate-n256-authentic-checkpoint-profile128.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  authentic-checkpoint-profile128-once:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      UNIQUE_EXECUTION_KEY: hcsn-n256-authentic-checkpoint-profile128-20261122-c6bc-001
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Verify precommitted source, exact inputs, and fail-closed scope
+        run: python3 -m qualification.hcsn_currentstate_n256_authentic_checkpoint_profile128.verify_source
+      - name: Synthetic extended-checkpoint controls
+        run: |
+          python3 -m unittest \
+            qualification.hcsn_currentstate_n256_authentic_checkpoint_profile128.test_extended
+          python3 -O -m unittest \
+            qualification.hcsn_currentstate_n256_authentic_checkpoint_profile128.test_extended
+      - name: Compile source
+        run: |
+          python3 -m py_compile \
+            qualification/hcsn_currentstate_n256_authentic_checkpoint_profile128/*.py
+      - name: Profile authentic recurrence through index 128 once
+        run: python3 -m qualification.hcsn_currentstate_n256_authentic_checkpoint_profile128.run
+      - name: Upload immutable checkpoint-profile originals
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-n256-authentic-checkpoint-profile128-001
+          path: qualification/hcsn_currentstate_n256_authentic_checkpoint_profile128/RUN_OUTPUT
+          if-no-files-found: error
+          retention-days: 90
