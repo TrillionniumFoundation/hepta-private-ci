@@ -3,12 +3,12 @@ name: WSP value-sensitive mathematical admission
 on:
   pull_request:
     paths:
-      - 'tools/hcsn/wsp_20261122_next/**'
-      - '.github/workflows/wsp-value-sensitive-20261122.yml'
+      - "tools/hcsn/wsp_20261122_next/**"
+      - ".github/workflows/wsp-value-sensitive-20261122.yml"
   push:
     paths:
-      - 'tools/hcsn/wsp_20261122_next/**'
-      - '.github/workflows/wsp-value-sensitive-20261122.yml'
+      - "tools/hcsn/wsp_20261122_next/**"
+      - ".github/workflows/wsp-value-sensitive-20261122.yml"
 
 permissions:
   contents: read
@@ -18,15 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
-      OPENBLAS_NUM_THREADS: '1'
-      OMP_NUM_THREADS: '1'
-      MKL_NUM_THREADS: '1'
-      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - run: python -m pip install --disable-pip-version-check numpy==2.3.5
       - name: Check source syntax
         run: |
