@@ -11,6 +11,7 @@ on:
       - ".github/scripts/windows-appcontainer-probe/child_trace.c"
       - ".github/scripts/windows-appcontainer-probe/child_trace.py"
       - ".github/scripts/windows-appcontainer-probe/cmd_entry_probe.py"
+      - ".github/scripts/windows-appcontainer-probe/cmd_path_probe.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe*"
       - "codex-rs/windows-sandbox-rs/src/token.rs"
@@ -1018,3 +1019,48 @@ jobs:
           name: ndu-appcontainer-mechanism-${{ github.event.pull_request.head.sha }}
           path: ${{ runner.temp }}/hepta-appcontainer-mechanism
           if-no-files-found: error
+
+  cmd-path-observation:
+    needs: appcontainer-mechanism
+    if: always()
+    runs-on: windows-latest
+    timeout-minutes: 10
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUTF8: "1"
+    steps:
+      - name: Preserve exact committed source and enable long paths
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: |
+          git config --global core.autocrlf false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git config --global core.longpaths true
+          exit $LASTEXITCODE
+      - name: Checkout exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up original Python version
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Observe original and long cwd with unchanged command predicates
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP 'hepta-cmd-path-observation'
+          New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
+          python -B .github/scripts/windows-appcontainer-probe/cmd_path_probe.py --repo "$env:GITHUB_WORKSPACE" --source-head "$env:EXPECTED_HEAD" --output (Join-Path $out 'observation.json') 1> (Join-Path $out 'probe.stdout') 2> (Join-Path $out 'probe.stderr')
+          $code = $LASTEXITCODE
+          @{ expected_head = $env:EXPECTED_HEAD; exit_code = $code; observation_present = (Test-Path (Join-Path $out 'observation.json')); diagnostic_only = $true; production_qualification = $false } | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $out 'invocation-result.json')
+          exit $code
+      - name: Retain exact failures and path observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-cmd-path-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-cmd-path-observation
+          if-no-files-found: error
+          retention-days: 14

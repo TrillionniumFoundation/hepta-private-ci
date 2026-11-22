@@ -296,12 +296,13 @@ fn native_reparse_directory_is_refused_before_child_effect() {
     let output = std::process::Command::new(Path::new(&system).join("System32/cmd.exe"))
         .current_dir(dunce::simplified(outer.path()))
         .args(["/d", "/s", "/v:off", "/c"])
-        .raw_arg(r#""mklink /J "junction" "owner"""#)
+        .raw_arg("mklink /J junction owner")
         .output()
         .expect("create own fixture junction");
     assert!(
         output.status.success(),
-        "{}",
+        "mklink failed: stdout={}, stderr={}",
+        String::from_utf8_lossy(&output.stdout),
         String::from_utf8_lossy(&output.stderr)
     );
     let metadata = std::fs::symlink_metadata(&junction).expect("inspect own fixture junction");

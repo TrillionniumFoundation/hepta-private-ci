@@ -385,15 +385,15 @@ def glob_path_matches(pattern, exact):
     )
 
 
-def canonical_exact_path(value, label):
+def canonical_repository_path(value, label):
+    """Validate a literal repository path without interpreting filename characters."""
     need(isinstance(value, str) and value, label + " missing")
     need(value == value.strip(), label + " surrounding whitespace")
     need(
         not value.startswith(("/", "~"))
         and not value.endswith("/")
         and "\\" not in value
-        and "//" not in value
-        and not any(char in value for char in "*?[]{}!%"),
+        and "//" not in value,
         label + " must be a canonical exact POSIX path",
     )
     parts = value.split("/")
@@ -410,6 +410,15 @@ def canonical_exact_path(value, label):
     )
     normalized = "/".join(parts)
     need(normalized == value, label + " normalization mismatch")
+    return normalized
+
+
+def canonical_exact_path(value, label):
+    normalized = canonical_repository_path(value, label)
+    need(
+        not any(char in normalized for char in "*?[]{}!%"),
+        label + " must be a canonical exact POSIX path",
+    )
     return normalized
 
 
@@ -616,7 +625,9 @@ def validate_path_leases(
 
     touched_leases = 0
     if changed_paths is not None:
-        changed = {canonical_exact_path(path, "changed path") for path in changed_paths}
+        changed = {
+            canonical_repository_path(path, "changed path") for path in changed_paths
+        }
         for pair, paths in declared.items():
             path_set = set(paths)
             if changed & path_set:
@@ -626,7 +637,10 @@ def validate_path_leases(
             prefix_aliases = {
                 path
                 for path in changed
-                if any(overlaps(path, leased) and path != leased for leased in path_set)
+                if any(
+                    path.startswith(leased + "/") or leased.startswith(path + "/")
+                    for leased in path_set
+                )
             }
             need(not prefix_aliases, "changed path prefix aliases a lease")
             touched = changed & path_set
@@ -695,7 +709,7 @@ def pull_request_changed_paths():
     except UnicodeDecodeError as exc:
         die("pull-request changed path is not UTF-8: " + str(exc))
     return {
-        canonical_exact_path(path, "pull-request changed path")
+        canonical_repository_path(path, "pull-request changed path")
         for path in raw.split("\0")
         if path
     }
@@ -1955,6 +1969,25 @@ def self_test():
         "ordinary development does not activate a historical external lease",
     )
     cases.append("ordinary_development_reports_touch_without_lease_activation")
+    for profile in ("development", "qualification"):
+        literal_paths = validate_path_leases(
+            fixture_registry,
+            fixture_packages,
+            fixture_reach,
+            fixture_reach,
+            {
+                ".github/workflows/[s]hared.yml",
+                ".github/workflows/shared*.yml",
+                "third_party/Symbol List%3A {}!.snippet",
+            },
+            profile=profile,
+        )
+        need(
+            literal_paths["touchedLeaseCount"] == 0
+            and literal_paths["externallyAttestedLeaseCount"] == 0,
+            "literal Git filenames must not expand into leased paths",
+        )
+        cases.append("literal_git_paths_do_not_expand_" + profile)
 
     def cloned(value):
         return json.loads(json.dumps(value))
