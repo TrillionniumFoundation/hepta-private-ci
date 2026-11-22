@@ -1,0 +1,78 @@
+{
+  "source_commit": "c9d6cb3bdf89fa9065c25b761686fddc9a616609",
+  "source_tree": "5d45f6370129372cc77294088bdfe7e0b0efc28e",
+  "history_commit": "d29f3669ece6696f086c75624dbb44cbaabee134",
+  "source_paths": 154,
+  "combined_source_paths": 168,
+  "combined_source_tree": "f842c752114f0170a55d5d01789e2da3171ff3d2",
+  "windows_component_local_source": "7b39d8dac919c517f7defe5443de3ff4c2d52669",
+  "windows_component_remote_commit": "a0814f1905c580d136d97c97b371ec5af687e4f0",
+  "windows_component_remote_parent": "d29f3669ece6696f086c75624dbb44cbaabee134",
+  "windows_component_native_tests": "Required on the published head; not yet run.",
+  "intelligence_tests": {
+    "passed": 271,
+    "skipped": 2,
+    "exit_code": 0,
+    "new_skips": 0
+  },
+  "intelligence_fix": {
+    "exit_code": 0,
+    "source_changed": false,
+    "remaining_warning": "clippy::drop_non_drop at product_holdout_release_tests.rs:197"
+  },
+  "github_script_tests": {
+    "execution_records": 314,
+    "exit_code": 0
+  },
+  "operator_default_tests": {
+    "passed": 47,
+    "skipped": 0
+  },
+  "operator_compatibility_tests": {
+    "passed": 49,
+    "skipped": 0
+  },
+  "operator_coverage": {
+    "covered": 2637,
+    "total": 2902,
+    "percent": 90.868366643694,
+    "original_required_percent": 85,
+    "exit_code": 0
+  },
+  "operator_strict_clippy_default_and_compatibility": {
+    "exit_code": 0
+  },
+  "format": {
+    "just_fmt_exit_code": 0,
+    "just_fmt_check_exit_code": 0,
+    "combined_154_source_hashes_unchanged": true,
+    "original_custody_entries_verified": 44
+  },
+  "format_with_windows_component": {
+    "just_fmt_exit_code": 0,
+    "just_fmt_check_exit_code": 0,
+    "combined_168_source_hashes_unchanged": true
+  },
+  "prettier": {
+    "version": "3.5.3",
+    "pnpm_version": "10.34.5",
+    "frozen_install_exit_code": 0,
+    "original_command_exit_code": 0,
+    "workflow_documents": 131,
+    "run_steps": 637,
+    "workflow_values_identical": true
+  },
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "nextest": "0.9.103",
+  "llvm_cov": "0.9.1",
+  "node": "24.22.3; hosted CI uses its original Node 22 pin",
+  "earlier_local_attempts": [
+    "The partial tool-only npm install broadened the unquoted JavaScript glob and failed; the original frozen workspace install and original command subsequently passed.",
+    "The first scoped formatter rejected missing sparse custody files; all 44 original records were then restored and verified without changing the formatter."
+  ],
+  "main_updated_by_this_source_publication": false,
+  "branches_deleted": 0,
+  "hia_refs_mutated": 0,
+  "final_head_ci": "Required on the published head; earlier head results are not inherited.",
+  "all_branches_consolidated": false
+}

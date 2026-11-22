@@ -1,0 +1,450 @@
+[
+  {
+    "path": ".github/fixtures/windows-directory-probe/actual-singleton-nextest.json",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": ".github/fixtures/windows-directory-probe/actual-singleton-nextest.txt",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": ".github/scripts/test_windows_directory_probe.py",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": ".github/scripts/test_windows_final_safety.py",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Historical 91-case collector is not the current original 19 groups / 175 cases; retain current original collector unchanged."
+  },
+  {
+    "path": ".github/scripts/test_windows_private_artifacts.py",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": ".github/scripts/windows_directory_probe.py",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": ".github/scripts/windows_final_safety.py",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Historical 91-case collector is not the current original 19 groups / 175 cases; retain current original collector unchanged."
+  },
+  {
+    "path": ".github/scripts/windows_private_artifacts.py",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": ".github/workflows/hepta-windows-current-ci.yml",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": ".github/workflows/hepta-windows-directory-probe.yml",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/Cargo.lock",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Consumer dependencies omitted; retain exact current Cargo.lock and regenerate/check Bazel lock with original recipes."
+  },
+  {
+    "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Memory canonical writer-lock consumer behavior is separate from the backend component."
+  },
+  {
+    "path": "codex-rs/hepta-memory/src/production_writer.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Memory canonical writer-lock consumer behavior is separate from the backend component."
+  },
+  {
+    "path": "codex-rs/hepta-operator-acceptance/Cargo.toml",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Operator durable consumer and trust-fixture integration has default conflicts and independent original SSHSIG failures; not qualified by backend tests."
+  },
+  {
+    "path": "codex-rs/hepta-operator-acceptance/WINDOWS_DURABILITY.md",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Operator durable consumer and trust-fixture integration has default conflicts and independent original SSHSIG failures; not qualified by backend tests."
+  },
+  {
+    "path": "codex-rs/hepta-operator-acceptance/src/durable.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Operator durable consumer and trust-fixture integration has default conflicts and independent original SSHSIG failures; not qualified by backend tests."
+  },
+  {
+    "path": "codex-rs/hepta-operator-acceptance/src/durable_windows.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Operator durable consumer and trust-fixture integration has default conflicts and independent original SSHSIG failures; not qualified by backend tests."
+  },
+  {
+    "path": "codex-rs/hepta-operator-acceptance/src/durable_windows_artifacts.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Operator durable consumer and trust-fixture integration has default conflicts and independent original SSHSIG failures; not qualified by backend tests."
+  },
+  {
+    "path": "codex-rs/hepta-operator-acceptance/src/durable_windows_tests.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "no_delta",
+    "default_merge_conflict": false,
+    "disposition": "already_present_no_default_delta",
+    "reason": "Default merge produced no path delta; excluded from component because current 0ac already contains the resulting path."
+  },
+  {
+    "path": "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Operator durable consumer and trust-fixture integration has default conflicts and independent original SSHSIG failures; not qualified by backend tests."
+  },
+  {
+    "path": "codex-rs/hepta-operator-acceptance/src/manifest_inventory_tests.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "no_delta",
+    "default_merge_conflict": false,
+    "disposition": "already_present_no_default_delta",
+    "reason": "Default merge produced no path delta; excluded from component because current 0ac already contains the resulting path."
+  },
+  {
+    "path": "codex-rs/hepta-operator-acceptance/src/test_support.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Operator durable consumer and trust-fixture integration has default conflicts and independent original SSHSIG failures; not qualified by backend tests."
+  },
+  {
+    "path": "codex-rs/hepta-operator-acceptance/src/trust_tests.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Operator durable consumer and trust-fixture integration has default conflicts and independent original SSHSIG failures; not qualified by backend tests."
+  },
+  {
+    "path": "codex-rs/hepta-shadow-qualification/Cargo.toml",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Shadow durable adapter and product-database behavior require separate consumer integration."
+  },
+  {
+    "path": "codex-rs/hepta-shadow-qualification/WINDOWS_DURABILITY.md",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Shadow durable adapter and product-database behavior require separate consumer integration."
+  },
+  {
+    "path": "codex-rs/hepta-shadow-qualification/src/durable.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Shadow durable adapter and product-database behavior require separate consumer integration."
+  },
+  {
+    "path": "codex-rs/hepta-shadow-qualification/src/durable_windows.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "AA",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Shadow durable adapter and product-database behavior require separate consumer integration."
+  },
+  {
+    "path": "codex-rs/hepta-shadow-qualification/src/product_database.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Shadow durable adapter and product-database behavior require separate consumer integration."
+  },
+  {
+    "path": "codex-rs/state/Cargo.toml",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/state/SQLITE_RECOVERY_WINDOWS.md",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/state/WINDOWS_DIRECTORY_PROBE.md",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/state/src/sqlite_recovery_io.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/state/src/sqlite_recovery_windows.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/state/src/sqlite_recovery_windows_directory_probe_tests.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/state/src/sqlite_recovery_windows_identity.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/state/src/sqlite_recovery_windows_namespace_tests.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/state/src/sqlite_recovery_windows_security.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "State SQLite adapter and directory diagnostics require separate stateful/native qualification; not backend-only."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/CALLERS.md",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Candidate consumer wiring described in this document is excluded; additive component documentation states actual unchanged callers."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/Cargo.toml",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/PRIVATE_ARTIFACTS_WINDOWS.md",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/src/lib.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/src/private_artifact_directory_windows.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/src/private_artifacts_windows.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/src/private_artifacts_windows_tests.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/src/private_child_name_windows.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/src/private_file_identity_windows.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/src/private_file_security_windows.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "M ",
+    "default_merge_conflict": false,
+    "disposition": "included_additive_component",
+    "reason": "Preserve exact candidate component code and original refusal checks; retain current APIs; only fixture/workflow/docs integration edits."
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/LEGACY_WORKSPACE_UNAVAILABLE.md",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Legacy sandbox admission/refusal policy is independent; retain current stronger guard and original test expectations."
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/legacy_readonly_unavailable_tests.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Legacy sandbox admission/refusal policy is independent; retain current stronger guard and original test expectations."
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/legacy_workspace_unavailable_tests.rs",
+    "candidate_net_status": "A",
+    "default_merge_status": "A ",
+    "default_merge_conflict": false,
+    "disposition": "excluded_retain_current",
+    "reason": "Legacy sandbox admission/refusal policy is independent; retain current stronger guard and original test expectations."
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Legacy sandbox admission/refusal policy is independent; retain current stronger guard and original test expectations."
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Legacy sandbox admission/refusal policy is independent; retain current stronger guard and original test expectations."
+  },
+  {
+    "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+    "candidate_net_status": "M",
+    "default_merge_status": "UU",
+    "default_merge_conflict": true,
+    "disposition": "excluded_retain_current",
+    "reason": "Legacy sandbox admission/refusal policy is independent; retain current stronger guard and original test expectations."
+  }
+]

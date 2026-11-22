@@ -1,0 +1,72 @@
+{
+  "reviewed_at": "2026-11-22T13:52:06.086212+00:00",
+  "baseline_snapshot_refs": 7907,
+  "fresh_snapshot_refs": 7908,
+  "fresh_snapshot_sha256": "bb46539d260fdf7c35e470431eb74c800228f4acc8d1d98101f934a6081ff7db",
+  "baseline_snapshot_sha256": "48b41ab9eee9ea09305d449783df0817e33f3b8ada0356ca3ffac8711760d3ba",
+  "added_refs": {
+    "evidence/hcsn-index1159-current-resource-observation-20261122-c6bc": "92c63d7e22dcb68b2275d79131fb4c0b81a9166a"
+  },
+  "moved_refs": {
+    "fix/ci-module-path-scope-20261004": {
+      "before": "372e473d52e69f21e85e1ea6cfa9c3c1aff3e928",
+      "after": "055476ebb46451164f16cd00ae0d171f87e551cd"
+    }
+  },
+  "removed_refs": {},
+  "all_prior_554_protected_refs_unchanged": true,
+  "new_named_hia_refs": {},
+  "new_unnamed_hia_alias_refs": {},
+  "new_protected_nodes": [],
+  "current_known_protected_refs": 554,
+  "current_known_protected_nodes": 1492,
+  "new_commit_parent_records": [
+    {
+      "sha": "92c63d7e22dcb68b2275d79131fb4c0b81a9166a",
+      "tree": "b9a83e098584e9f78c2b60fd2d60660e7c87a2a0",
+      "parents": [
+        "7dbc2da7ba0a951d0dce90b986e512e0f9e6c85d"
+      ]
+    },
+    {
+      "sha": "055476ebb46451164f16cd00ae0d171f87e551cd",
+      "tree": "1e52f3ac236f1e52717c5164c3516a43ee84d210",
+      "parents": [
+        "1f88a4c71597e59b9a7c80ba96636471038e149d"
+      ]
+    },
+    {
+      "sha": "7dbc2da7ba0a951d0dce90b986e512e0f9e6c85d",
+      "tree": "09a2bfb122585e4539da15539fa8c937622b0240",
+      "parents": [
+        "c443191531b18d40942c8fdefad4fc5ad37c673d"
+      ]
+    },
+    {
+      "sha": "1f88a4c71597e59b9a7c80ba96636471038e149d",
+      "tree": "57440b7a76866ac478c963e8b206de1bb465f967",
+      "parents": [
+        "732e934ba496d90fbe042b8d41d479ef901643e5",
+        "372e473d52e69f21e85e1ea6cfa9c3c1aff3e928"
+      ]
+    }
+  ],
+  "changed_tip_ancestry_reviews": {
+    "evidence/hcsn-index1159-current-resource-observation-20261122-c6bc": {
+      "tip": "92c63d7e22dcb68b2275d79131fb4c0b81a9166a",
+      "ancestors": 34570,
+      "known_hia_intersection": [],
+      "stop_intersection": []
+    },
+    "fix/ci-module-path-scope-20261004": {
+      "tip": "055476ebb46451164f16cd00ae0d171f87e551cd",
+      "ancestors": 33797,
+      "known_hia_intersection": [],
+      "stop_intersection": []
+    }
+  },
+  "historical_551st_pin_identity_unrecovered": true,
+  "lease_note": "The moved fix/ci-module-path-scope-20261004 tip is a later root-authorized publication for PR1365, not the original 372 tip. D29 contains the reviewed 372 object, and no current-ref deletion eligibility is claimed.",
+  "metadata_only": true,
+  "remote_mutations_by_reviewer": false
+}

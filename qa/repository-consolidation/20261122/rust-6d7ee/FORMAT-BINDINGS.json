@@ -1,0 +1,798 @@
+{
+  "tool": "prettier 3.5.3",
+  "integrity": "sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==",
+  "source": "0ac61de676f7076bead25f86078a6c4839f1a132",
+  "paths": {
+    "HEPTA_RESEARCH_STATUS.md": {
+      "before_sha256": "e98df3a6de98394d96eefd5eebceaf46486965b5cb50b55d413063964b524b44",
+      "after_sha256": "36c014fa5216c5df03b3bbfb86271670d97d4a653c972c77b3320dd04ddf2490",
+      "changed": true
+    },
+    ".github/workflows/ctrl-content-identity-native.yml": {
+      "before_sha256": "48955f79878be689c0a34cda9ae35284ce5536d7cb050e155d8c378b793a6585",
+      "yaml_semantics_identical": true,
+      "after_sha256": "9273e24529237c489b45547a36e46c25e70382f280838fe91f29f4c2cd0df820",
+      "changed": true
+    },
+    ".github/workflows/gha-stem-arm-portable.yml": {
+      "before_sha256": "34951d48ed6fb2b1c7a8886e3b3a1d34f1cac4d27c301cc45433866e27e2ee20",
+      "yaml_semantics_identical": true,
+      "after_sha256": "9d8a7b755ea9f1214a6c26e83dd3ad2342ec452c380e3eb917743a69ab5f31f9",
+      "changed": true
+    },
+    ".github/workflows/hcsn-continuous-adjoint-torch.yml": {
+      "before_sha256": "d5539759708d42d227a4dc5ad084c738180465d745267224d2ec6e1512e1969a",
+      "yaml_semantics_identical": true,
+      "after_sha256": "378e7a2488215f3959c8e4c513432dc8ce364751665b92b3347b9d3711f286b2",
+      "changed": true
+    },
+    ".github/workflows/hcsn-currentstate-retained.yml": {
+      "before_sha256": "206f3879536802fcde9eca82ca9d6029d933e9e63aaf1907afae995f4dd98cc3",
+      "yaml_semantics_identical": true,
+      "after_sha256": "e2005f1646dfa56a79bb28dd82fc44b278802bca3e2644245b8d3501517df534",
+      "changed": true
+    },
+    ".github/workflows/hcsn-graded-physical.yml": {
+      "before_sha256": "4062010c0ba50ecca47ed20a77af18fb2800012d42a9177cd9d57e4b9e2fee00",
+      "yaml_semantics_identical": true,
+      "after_sha256": "cb792a003cb95050d0d52da481b1e5025641316e57d3e63559b8877d111ffcf6",
+      "changed": true
+    },
+    ".github/workflows/hcsn-initial-amplitude-vjp.yml": {
+      "before_sha256": "8c308e3207f24258f8baec34654ed9e67d56a40d9a23a581e156695f49128723",
+      "yaml_semantics_identical": true,
+      "after_sha256": "e90850d87c47896457e9df5249432881d54a959d4461e8a0a246d401158db507",
+      "changed": true
+    },
+    ".github/workflows/hcsn-joint-physical-torch.yml": {
+      "before_sha256": "07e97b1cf4d7a0a8692a9e406b1d88eabc9295e5bf3ac7b2f14cb224a5ce5a08",
+      "yaml_semantics_identical": true,
+      "after_sha256": "b9c71fa74627c1f1ef76fb262d2d6c566ea29698a2678eeba838a68d81fd25c6",
+      "changed": true
+    },
+    ".github/workflows/hcsn-joint-sensitivities.yml": {
+      "before_sha256": "2038ae016e917f1b59b4528fad2204f12123ae18f4c8d8ed4e02a6da79aea141",
+      "yaml_semantics_identical": true,
+      "after_sha256": "3067ccbf7bcf92372a67042483c5471487882ffd82c5df3ee1e958c1f1151a91",
+      "changed": true
+    },
+    ".github/workflows/hcsn-reset-aligned.yml": {
+      "before_sha256": "cf3e3941f46b877a370650d091054cfb27fcd8d70a57bb3342eead78ed78275d",
+      "yaml_semantics_identical": true,
+      "after_sha256": "21cd22ddc2170d74271b3b48bfd59828bdcf5239da16a40a3a7ef0d98dc063d2",
+      "changed": true
+    },
+    ".github/workflows/hcsn-source-tree-static-branchfix-successor.yml": {
+      "before_sha256": "a604633b4e83cc9a37bb09235ac10d3c2e04ac9d69662723c02542c65f208aef",
+      "yaml_semantics_identical": true,
+      "after_sha256": "7963a19bd24d3e73640e9c93788e32f9de0c096df16e6217b8f61b6adf08d414",
+      "changed": true
+    },
+    ".github/workflows/hcsn-source-tree-static-just-successor.yml": {
+      "before_sha256": "aebac21f36592c9236415ee32371decc8431dc934d71a8520d51658eb71f1957",
+      "yaml_semantics_identical": true,
+      "after_sha256": "64e286e07e236fa070f9bc2b65a2c156d63cd0c62fbcf2542345dee94ce478ae",
+      "changed": true
+    },
+    ".github/workflows/hcsn-split-mesh.yml": {
+      "before_sha256": "f0eb255804d408e44918cc07c26b87c8625b58d2b7ec083b6c2f8b31145c60c5",
+      "yaml_semantics_identical": true,
+      "after_sha256": "5261c7496520235969a2bce7f3b65e2d1e1a13f7c994b1922e5e111c49c93f95",
+      "changed": true
+    },
+    ".github/workflows/hcsn-visit897-n128-parentclear-vjp.yml": {
+      "before_sha256": "0dec3d506aa00897f9b1ff7b6471fb97f18a026122bce6e2bdfd059cef6dc106",
+      "yaml_semantics_identical": true,
+      "after_sha256": "837e1674b7626ea3d82bb64a604f82353437b1e10371ef7e6ca17376e8871b07",
+      "changed": true
+    },
+    ".github/workflows/hcsn-visit897-n128-stretch-field-static.yml": {
+      "before_sha256": "50ebc64d1c6e3dbdc16577c1d1d911cbdebf65a36d8fb36946ff1319c689cdc4",
+      "yaml_semantics_identical": true,
+      "after_sha256": "53f2c10b20ca86cd24528dfbda2349286db50eda799c40ced6b150c1242e05d3",
+      "changed": true
+    },
+    ".github/workflows/hcsn-visit897-n128-stretch-vjp.yml": {
+      "before_sha256": "5972a46247ecf98c554ac93edb45841b8aeaac21fafe4ddc78ea50f622120f40",
+      "yaml_semantics_identical": true,
+      "after_sha256": "1c789e10bc98168303ad9a3bd531fdfae6387d29de9fa1eb503a384e41c4163a",
+      "changed": true
+    },
+    ".github/workflows/hcsn-visit897-source-migration-vjp-n128-exact-migrate-successor.yml": {
+      "before_sha256": "e011219de7f4b9aec23f01e4d78ab60407f7219964b73d45ff0f969bae9fe99a",
+      "yaml_semantics_identical": true,
+      "after_sha256": "e73f253b8d9b4e254d43a6d5f61630e728a3db6ea41e3a9821ed72b6522641ff",
+      "changed": true
+    },
+    ".github/workflows/hcsn-visit897-source-migration-vjp-n128-numerical-successor.yml": {
+      "before_sha256": "b5a03c570973fbdfa28baf11597014357ce4e0275602e193b9f641d1a16fa938",
+      "yaml_semantics_identical": true,
+      "after_sha256": "a697130ebdf0d0497c22717c41d18556d2b41c0d1a17bfa7a778e57bc7fe9cbc",
+      "changed": true
+    },
+    ".github/workflows/hepta-act2-observer.yml": {
+      "before_sha256": "3ef6b243bf83da6787b6770e7e264b02fbb7718e4c358f448508533df9a2ed98",
+      "yaml_semantics_identical": true,
+      "after_sha256": "7c1ef8be752f16687f0ce868b5e3aa10a71fe3b3eeca75360966a2410ca14aa2",
+      "changed": true
+    },
+    ".github/workflows/hepta-cell-fabric-p07-feature-necessity.yml": {
+      "before_sha256": "ac7ff438e83bb677d3ec3bd7f5f8ec543763e8198b383ec622eedce304a4cbfe",
+      "yaml_semantics_identical": true,
+      "after_sha256": "ca18818796dd0a48e9cf9591f7d62a32f78eabdfb0b18d6f0b876c0eb26cf350",
+      "changed": true
+    },
+    ".github/workflows/hepta-cell-fabric-p08-huff-transfer.yml": {
+      "before_sha256": "9ccf8bc7d10f4428c5ff27cd8046c1ccbe40347556ef5edf4bbf1f1256611db7",
+      "yaml_semantics_identical": true,
+      "after_sha256": "199bd4c8596ea05b13f175de8cbcca9ce2508c4db69eef6ba54aae8efa01ac5e",
+      "changed": true
+    },
+    ".github/workflows/hepta-cell-fabric-p09-budget-shadow.yml": {
+      "before_sha256": "ea3ec31fb5968952f66ac89f2b9923c41624b3e10bcb44326f496e7e04ef1c6c",
+      "yaml_semantics_identical": true,
+      "after_sha256": "e9b08e384b612bdc5473466e089981fe2f4d27c3c273755498cb34e2860cbb6f",
+      "changed": true
+    },
+    ".github/workflows/hepta-cell-meta-frozen-old.yml": {
+      "before_sha256": "a8d4d0d732fef56e340c34203b7edea7f8ef1fb039f1f8f86eb00359190263a2",
+      "yaml_semantics_identical": true,
+      "after_sha256": "3b77f77f7f3f4b739fa3dd61c9b5d8360b6bd37fa26b622c2194345bee2d33ee",
+      "changed": true
+    },
+    ".github/workflows/hepta-cell-meta-granite-frozen-convergence.yml": {
+      "before_sha256": "9b4a5ed8312af60876647780387785613328df41ca134f780564f9b6c65bea75",
+      "yaml_semantics_identical": true,
+      "after_sha256": "30bf3097b28acac647d5de2014b2f3253a0933ef156b67f11bd4286bb08d8636",
+      "changed": true
+    },
+    ".github/workflows/hepta-cell-meta-granite-real.yml": {
+      "before_sha256": "529d73f8a170b657f4023f886d431e8815110621d74d27de7a23c7fd2d00afd5",
+      "yaml_semantics_identical": true,
+      "after_sha256": "33958fea308c829d5998882a139976eb8e3f2fd04121224d3a698328273f0455",
+      "changed": true
+    },
+    ".github/workflows/hepta-cell-meta-physical-router.yml": {
+      "before_sha256": "54c25a13693bc21cddeffec0c83b90271b148241acf37d5329e8bfae6a17f7d6",
+      "yaml_semantics_identical": true,
+      "after_sha256": "680007e6c3f4ea6d6f1c3d1450789ce57ccb63affe7156b0df1c06cd63492dc9",
+      "changed": true
+    },
+    ".github/workflows/hepta-e11-stochastic-global-research.yml": {
+      "before_sha256": "823b391b84e7e92523de970def6e9b8917cc5769d1db84162446de98f9971c95",
+      "yaml_semantics_identical": true,
+      "after_sha256": "272332449d5d3c2e43ccbcd294ca2ea29c66b9010ffb8834fd6153082660f0a9",
+      "changed": true
+    },
+    ".github/workflows/hepta-e12-action-gap.yml": {
+      "before_sha256": "840e07e92d81faf6c56286c37ef3ff6b100993c9bb30cf79193ba9bb8bbc046d",
+      "yaml_semantics_identical": true,
+      "after_sha256": "f12ee5392694cdfc98645b6e7468e03acdedffb6c0e89eb8a61e9fe32ca97b9c",
+      "changed": true
+    },
+    ".github/workflows/hepta-e12-cell-boundary.yml": {
+      "before_sha256": "8b27434581464291c25c31d7069ae5df2433601bb2748a4b75a9d32c9778d238",
+      "yaml_semantics_identical": true,
+      "after_sha256": "2a93038d4fc4790a40c43da3ed4d523c59dbfddcade9bfb2f93c24fc8b30bc36",
+      "changed": true
+    },
+    ".github/workflows/hepta-e12-exact-nonlinear-cert.yml": {
+      "before_sha256": "c921f6231022dc7a03ce1dbd7d169f77425256162b2ec933fd90a8377b12234a",
+      "yaml_semantics_identical": true,
+      "after_sha256": "9b100b4efea25427b75aa7b1df9d7523837535464efdd1ae075e52ad744363ff",
+      "changed": true
+    },
+    ".github/workflows/hepta-e12-learned-continuation.yml": {
+      "before_sha256": "d2150985219e5858a307a98c9d96043a07c351f47732d48b146623c8fadbfd43",
+      "yaml_semantics_identical": true,
+      "after_sha256": "b9df62ad8687717e179c506dbf01a9f84ec7c7e2caa0593d27f12c76bf273635",
+      "changed": true
+    },
+    ".github/workflows/hepta-e12-oracle-free-local-cells.yml": {
+      "before_sha256": "fd59653b65fa8ccc63a689707302aa07200b0ae45d3fd3cb31422c07568d52ad",
+      "yaml_semantics_identical": true,
+      "after_sha256": "1c9814fa68c531e1b8128119b135a46569819e1d0159ae0e00a4c403801f700b",
+      "changed": true
+    },
+    ".github/workflows/hepta-e12-original-reader-voi.yml": {
+      "before_sha256": "d5d5e7034251aa3d17e84e13d5f71c808da2d1c0ccc03b6c32af836bfa1f1417",
+      "yaml_semantics_identical": true,
+      "after_sha256": "a723881e9bfc4d73083c09877099cf32af500fdabbe1f99b62d7e59bb42e5cfd",
+      "changed": true
+    },
+    ".github/workflows/hepta-e13-real-task-fbsde-route.yml": {
+      "before_sha256": "26afb5e156cef85e3bc214a599be4ddf244e8e1a8845e2e906177faf5868a3bd",
+      "yaml_semantics_identical": true,
+      "after_sha256": "6447471efb068551e23b2f3a4c92d2a91b82246830b682b813d2c35a80d5a074",
+      "changed": true
+    },
+    ".github/workflows/hepta-e14-original-human-multirc-fbsde.yml": {
+      "before_sha256": "16736646079814dac0449c2828c6177d792979c4bed0eac32a8f39ec8eb7d278",
+      "yaml_semantics_identical": true,
+      "after_sha256": "e7b5a9492ccfac2b6611518abdb35304888eaa6759f2bfa43cce6e71be51b682",
+      "changed": true
+    },
+    ".github/workflows/hepta-e15-original-human-reader-crossfit.yml": {
+      "before_sha256": "9d93f194e1b52e58acaaf027f0ddff4b12644476170ed6f7ac7a833fb2092f8a",
+      "yaml_semantics_identical": true,
+      "after_sha256": "8782be698fad0159a81562f9bec6aa91da080ed9077efd86bf369bf3c43d1837",
+      "changed": true
+    },
+    ".github/workflows/hepta-e16-original-human-centered-reader.yml": {
+      "before_sha256": "eab4487bcc431b950f66731052c5836b96ff12e3e27c8a5aa6d46ffa1dc8a874",
+      "yaml_semantics_identical": true,
+      "after_sha256": "6f9838fbc7c89422a59845f47afc743e1fe30dc50830ab4fd47daadf577678ca",
+      "changed": true
+    },
+    ".github/workflows/hepta-e17-frozen-reader-information.yml": {
+      "before_sha256": "8bf7d7e99fb00e24070951177a4654c7754774fe2f989f61fbb56ac79f4d49ec",
+      "yaml_semantics_identical": true,
+      "after_sha256": "a82c9ce90682514470e8da91eaa13943ccbe1edd296a73ae196842f1fdf58946",
+      "changed": true
+    },
+    ".github/workflows/hepta-e18-real-reader-output-precision.yml": {
+      "before_sha256": "8bbb3801e0f3d362c05ab64c5a449304e018d5a3c804745b78f7e18a6a328da2",
+      "yaml_semantics_identical": true,
+      "after_sha256": "81769723b83d6ed710a1e6285dd9877ee95721112b2f3db9b762385b92e3e288",
+      "changed": true
+    },
+    ".github/workflows/hepta-e19-bf16-centered-reader.yml": {
+      "before_sha256": "57e84a263699d3ac19678e7ef8dfdfa7add2bab58765ac41cf6312a1fc70b58a",
+      "yaml_semantics_identical": true,
+      "after_sha256": "8e0a12501c85c901ac68b7b2d82c8d026c8a7d78ab328cabd10a4dc6178bf90a",
+      "changed": true
+    },
+    ".github/workflows/hepta-e20-original-reader-brier-and-decision.yml": {
+      "before_sha256": "ed49f438b5b543375288562ddd4053f8868d906ac84076d782bf1ac0c4afe366",
+      "yaml_semantics_identical": true,
+      "after_sha256": "082b2d59079a977ea1ec71b73144a4adf3db691dcbc01991f9adbe727d7474a7",
+      "changed": true
+    },
+    ".github/workflows/hepta-e21-original-human-question-complete.yml": {
+      "before_sha256": "f814766b6d2381144c4ee02f864abbd65ed1e5522d1faab37d858acdd8d8b690",
+      "yaml_semantics_identical": true,
+      "after_sha256": "537850352f7841ab192249a88f061a4af48970c1506bffed9a8a452660369b5d",
+      "changed": true
+    },
+    ".github/workflows/hepta-e22-original-human-eight-arm-question.yml": {
+      "before_sha256": "048dfb06a561780703a41fdc3c844e674b5e11e6ac7a3e73bc0f629552ec20e1",
+      "yaml_semantics_identical": true,
+      "after_sha256": "c67fcc3dba652dc114ed16ff47c046b4f7eed0602228eea6feaeb2fc497faaf4",
+      "changed": true
+    },
+    ".github/workflows/hepta-e23-original-human-whole-question.yml": {
+      "before_sha256": "0b9ab71618eee013ff662ca2453f8a802ffbd8dd714eff92b37cb4bdd9a32f65",
+      "yaml_semantics_identical": true,
+      "after_sha256": "01a5e73ca1570e896448e23312c2b4224745b26aebde968e33d96602fd5de777",
+      "changed": true
+    },
+    ".github/workflows/hepta-e24-original-human-question-risk.yml": {
+      "before_sha256": "430597e2fe61850e0b5d6707b356e6f5440b89e2f7a172fa64b6bcb78574f651",
+      "yaml_semantics_identical": true,
+      "after_sha256": "2c9d1e5fac8161bf79a3d534f3002a0a3f1239d8f52326f9b3c5ccb4108a53e7",
+      "changed": true
+    },
+    ".github/workflows/hepta-e25-six-unused-original-multirc.yml": {
+      "before_sha256": "f10d6c2ec19f6621b816b2dba04fd795dd05c18e07250d747056eecffd31de70",
+      "yaml_semantics_identical": true,
+      "after_sha256": "b14ad142f054f15e86f992e283fc15df17343c4bf0f0da57a831f2c4ad45c48c",
+      "changed": true
+    },
+    ".github/workflows/hepta-e26-frozen-six-source-statistical-gate.yml": {
+      "before_sha256": "c039a6fbed7510335bd0880eb5e4f7f305325bce5b8bbaeb53152476757fec82",
+      "yaml_semantics_identical": true,
+      "after_sha256": "fcd00ae816bd62a44fe23f4dc64e692f7d23100edf004d8c05355193d7e8def5",
+      "changed": true
+    },
+    ".github/workflows/hepta-e27-original-answer-token-cell.yml": {
+      "before_sha256": "20393aa3bc76653ab02874336dab84ea51b9028c7e26c65730651970cc386d51",
+      "yaml_semantics_identical": true,
+      "after_sha256": "3973c13ae630e8a5762c11a20a60f3fcf0d0450f9e2f967f11ed79949d2ce4a5",
+      "changed": true
+    },
+    ".github/workflows/hepta-e6-e8-physical-real-route.yml": {
+      "before_sha256": "5f42720a196e45ccaac804d39ce94508db6db54119177f47a4dfbb99eb5a2cda",
+      "yaml_semantics_identical": true,
+      "after_sha256": "7ad270f3603258f1675b46a4ad42f1b93d3eed4265c36c9a108d3034b7832fee",
+      "changed": true
+    },
+    ".github/workflows/hepta-e9-e10-physical-crossfit-review.yml": {
+      "before_sha256": "51316556f5118f005747ca3f04da539f3480125a56e1f36b3f2d30b0ff8e0628",
+      "yaml_semantics_identical": true,
+      "after_sha256": "b942a85b87f0dc89c1f090298cfabf4105b9d08e808bc97726339f776213c962",
+      "changed": true
+    },
+    ".github/workflows/hepta-future-ood-harness-contract.yml": {
+      "before_sha256": "c05f3d3db3952ad1c447e1859150a429e1c90f750ad44ae5e3ca59707c38b0c2",
+      "yaml_semantics_identical": true,
+      "after_sha256": "af672c6438070693771221b2b0adeba2842077a344973a0142c9f727de97f65c",
+      "changed": true
+    },
+    ".github/workflows/hepta-group-attention-curriculum.yml": {
+      "before_sha256": "dfec89b97e32ffe652959f9a36937ae5f74889b8e05faf138e94b085a2d8e1ac",
+      "yaml_semantics_identical": true,
+      "after_sha256": "ecdd5cf7a3d386f2bb372d5aef39dea29113570ea82862887b7422c661c534a0",
+      "changed": true
+    },
+    ".github/workflows/hepta-group-factorial-isolated.yml": {
+      "before_sha256": "f0a20e87bf717356baf4ab4f77f422da62ccf47625fd5f964364ed4204f982f1",
+      "yaml_semantics_identical": true,
+      "after_sha256": "085c012ef3d9cabdf19c6e88c7ea16f0248f624b7cef6b78cd1a45b3d6fca856",
+      "changed": true
+    },
+    ".github/workflows/hepta-group-feedback-factorial.yml": {
+      "before_sha256": "41506282f8dbabfd9e76338a218b85c75b9e90f870021f2e781d85034ac98858",
+      "yaml_semantics_identical": true,
+      "after_sha256": "46c4345434a76d5d7bea3a2a949911e1158acbe67a193c26e41e8532608e8bb9",
+      "changed": true
+    },
+    ".github/workflows/hepta-group-feedback-raw-replay.yml": {
+      "before_sha256": "26fa56e2fdb87cafe9da0132159e88dc07d95460d897c2ae313128f8cc7c5681",
+      "yaml_semantics_identical": true,
+      "after_sha256": "99a388d6ff24bdf25719f3e1596524fe88ca399910896737a3b35e6a0e0f05d0",
+      "changed": true
+    },
+    ".github/workflows/hepta-group-feedback-six-review.yml": {
+      "before_sha256": "85118ecef3380825008702bdded98f707bccbdd707bc7b3a6961863b82dcf91d",
+      "yaml_semantics_identical": true,
+      "after_sha256": "e267e0f59cb2771a3ada0ad3b1dd34ceb24c80c6cda54e4b7966753c5612a782",
+      "changed": true
+    },
+    ".github/workflows/hepta-group-independent-utility-gate.yml": {
+      "before_sha256": "ea4888eeee60b45787f33bc25abd1adc43b310a9ac68da06af04338c5bf43293",
+      "yaml_semantics_identical": true,
+      "after_sha256": "304ff3cb4023f3eb21d092243a91761565043f4fe5909b873a0bac5d14350e21",
+      "changed": true
+    },
+    ".github/workflows/hepta-group-proof-step-research.yml": {
+      "before_sha256": "ad8a4c068301b7108ed39f00080c2c9bc86e14681dc8639593c65411117407e4",
+      "yaml_semantics_identical": true,
+      "after_sha256": "95f0108f789f21c8115481bcc0cb082b16c51f70425f00ff379a1c58b6d91d52",
+      "changed": true
+    },
+    ".github/workflows/hepta-hdcf-class-withheld-v13.yml": {
+      "before_sha256": "1d25b1eec3886c234dc9de64e49711cf56a885025750692edfc3a2614cd266a7",
+      "yaml_semantics_identical": true,
+      "after_sha256": "c0705b539d25ff76c7b2f37561eb41ad42449d022c2ede36d02da5fec01746a4",
+      "changed": true
+    },
+    ".github/workflows/hepta-hdcf-modernbert-original.yml": {
+      "before_sha256": "293039146eed0c2b2c504ce85109a75e3210d5dcbb4fd3203ffdd30e4e0fb949",
+      "yaml_semantics_identical": true,
+      "after_sha256": "adf1415c169595099742e4a510205a906fe88c8eac5f0425dc41148da0b70984",
+      "changed": true
+    },
+    ".github/workflows/hepta-hdcf-multimodal-token-v8.yml": {
+      "before_sha256": "f32d1874c3d46a7238eff812a61c137e8a1b1f01db04c479e7a0b1706b2bfced",
+      "yaml_semantics_identical": true,
+      "after_sha256": "0da0b50573db1dd4055fbbcba2994bb335eb13e583d87f768b1f051b1c114718",
+      "changed": true
+    },
+    ".github/workflows/hepta-hdcf-original-beans-v9.yml": {
+      "before_sha256": "c701c67c5ccef394692df4f409966edd2a78f8d27865aa64d9eec28bc11a72a6",
+      "yaml_semantics_identical": true,
+      "after_sha256": "7a5f26d78d98f9481a358391c0a14fd65811c6662118eff0bb0697465ea31660",
+      "changed": true
+    },
+    ".github/workflows/hepta-hdcf-original-crossdomain-v10.yml": {
+      "before_sha256": "52c19e050c7948f2fdc14f0ca3552489aaeb451ca7664df450f3d70977b0a25e",
+      "yaml_semantics_identical": true,
+      "after_sha256": "d69d704c86c0af3f22c36a11db7b710542412765894196cbe592ede262be7666",
+      "changed": true
+    },
+    ".github/workflows/hepta-hdcf-original-organ-v11.yml": {
+      "before_sha256": "d756aaf540d610bd606cd72961380b8a43c8fbb54a728577b91eb2e261482675",
+      "yaml_semantics_identical": true,
+      "after_sha256": "63ae4050384fe83fa5056429efe534f5dbfb6b807c51e0520c3b0a58c3ea1a8f",
+      "changed": true
+    },
+    ".github/workflows/hepta-hdcf-original-query-binding-v12.yml": {
+      "before_sha256": "b40101a7a108854138013df866dd1a7944b00ce4d163602fd257d8beba17a8a9",
+      "yaml_semantics_identical": true,
+      "after_sha256": "00d42bf2df02fbcc6e2586276a884dcb4c4f07220b7ded8c54597c64b62f30d0",
+      "changed": true
+    },
+    ".github/workflows/hepta-hdcf-reviewer-source-v7.yml": {
+      "before_sha256": "a68e0783b188f0d33e56ce6e4eedc67fb9b9d215848218f0d49bd9cf9b5497f7",
+      "yaml_semantics_identical": true,
+      "after_sha256": "2f231c99deeba5848ceda63ead67e6f2f0d6446fbe1ffd9a585c48a83a6ecc51",
+      "changed": true
+    },
+    ".github/workflows/hepta-hdcf-shadow-gates.yml": {
+      "before_sha256": "51fd174d8fd51fc0eb18b9d88be46ebcd40e700bb8020ce8e3f75f2207fe3643",
+      "yaml_semantics_identical": true,
+      "after_sha256": "33b780f0d1f9c63584581e56e7782f32b22a7e146d3fea9b82d2ac38006cc76e",
+      "changed": true
+    },
+    ".github/workflows/hepta-hdcf-type-prior-v8.yml": {
+      "before_sha256": "e6abbadc9aeec986125a1f859ea1ad5b2fdeb28a6ecd683c54a63d91bbf0814f",
+      "yaml_semantics_identical": true,
+      "after_sha256": "cbaa693ed36271cd47451087d07e5ee2a5342002fd670cbbd2b7debe68d82774",
+      "changed": true
+    },
+    ".github/workflows/hepta-hpca-process-replay-audit.yml": {
+      "before_sha256": "782d903e8b4093317e711a266a3faed3f1e30b6f4a7bba6b31dc7b9ab7bc8efa",
+      "yaml_semantics_identical": true,
+      "after_sha256": "c12f529f1a3149a564f5b9a0d8b28d53dc170c377cb4fc47f2892192df727c43",
+      "changed": true
+    },
+    ".github/workflows/hepta-memory-composition-evidence.yml": {
+      "before_sha256": "af7d0f79266170454f3e3b215524b3e57b67b0fe613833191b8340e355b47f0d",
+      "yaml_semantics_identical": true,
+      "after_sha256": "caf6709bd8d7b5b90f6c9fc3c8194b745df1a71ff15bdf166db247b6907c1476",
+      "changed": true
+    },
+    ".github/workflows/hepta-memory-necessity.yml": {
+      "before_sha256": "532f8b65363e9c8b0e537cdbcf2dcf07f3d0834ad85845c1b67c1d89d157d25f",
+      "yaml_semantics_identical": true,
+      "after_sha256": "9d80247472ccd382bcc38da2d71f29fdf5adb6f38c418a32187e7f2b410a32f6",
+      "changed": true
+    },
+    ".github/workflows/hepta-memory-procedural-diagnostic.yml": {
+      "before_sha256": "76136a94a00dce13f4f6089df57680300946e7f40d08a610849255ee883e2bd5",
+      "yaml_semantics_identical": true,
+      "after_sha256": "66020f5cbe0f217a4a5c4e6580adc7d9570289931b122a3f72b675839480caba",
+      "changed": true
+    },
+    ".github/workflows/hepta-memory-read-path.yml": {
+      "before_sha256": "ccdc12321a11b884ced24f849a145c0a78dfb77cbd07130c700f4fad4700cf45",
+      "yaml_semantics_identical": true,
+      "after_sha256": "75c40b9b3a878b63bcdebafa06e3b687f1065cec83a2a8cbaae252fa65a68956",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-allocation.yml": {
+      "before_sha256": "35dded54f14b989e240693b9ca1b3ff4bf517f65ed7834a4d10191f619c8c560",
+      "yaml_semantics_identical": true,
+      "after_sha256": "af883837bfe3b604a8aa697b0e2381083134b8148c1b2baf2aa838f461d846c2",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-asymmetric.yml": {
+      "before_sha256": "dbbe204c51f4b7753a3d93c9cfc31d9dd61fc81c1514ea72f782051594eba9b9",
+      "yaml_semantics_identical": true,
+      "after_sha256": "396dced1264737246ddf9cfdd98c35cd369c8408c418382eeaed3ffd5c2b277c",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-centered-interval.yml": {
+      "before_sha256": "29e19609f29408f0b55f0d2f8c0dba9880072b9cf0845491bf2ede6c316fac2e",
+      "yaml_semantics_identical": true,
+      "after_sha256": "105931ed8c983d5865db7baf611e04fedcfb3a1695f8b3bc09f5c3d561546d0e",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-conditional-r24.yml": {
+      "before_sha256": "039b3c9bf76bfc9635cfd94a9c27a05ecbc896344f24edd7c629e4a7ae9a8f21",
+      "yaml_semantics_identical": true,
+      "after_sha256": "de7045adf6c4783aa235c6f13fb4c1bf4b32b2babd4b4adf6e74a2b41690ce98",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-direct-interval.yml": {
+      "before_sha256": "4bea078864b6509d72edf03240e0b0b83efdc72e2e3ad800860978098e9adfe3",
+      "yaml_semantics_identical": true,
+      "after_sha256": "a9a5d3c11516417351b8e3a8fc615d7f1751aa6563b3d688f8c5e9e6a8521f4a",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-exact-two-step.yml": {
+      "before_sha256": "8c5d6b1e77a6efba156b0c2ebf8bc3442235a042ff3fcd340785dd88b7b44233",
+      "yaml_semantics_identical": true,
+      "after_sha256": "995e20aab90c31b8b82f4c9d7d59bf8ad1ca346add97d6d185f88659c39eb0cf",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-localized-r23.yml": {
+      "before_sha256": "9217bfb965205977c679f4fa483006635ed0dff3203c19cf12cac2c8390c0711",
+      "yaml_semantics_identical": true,
+      "after_sha256": "8cc3f945242061401dc3750134701baf4ca9b2382be4df1d7795ecf647829b19",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-nonconvex-risk.yml": {
+      "before_sha256": "e41802ee0550b9e0a1dc20ab58572273b3ed4113f16f6c03032e9db2cd37a47c",
+      "yaml_semantics_identical": true,
+      "after_sha256": "53e53adb9b39ecf075d1f758fdba63ed08f3dbbcce09eb4f57ef9afa0c394a71",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-nonproduct-symmetry.yml": {
+      "before_sha256": "6a09804472280d6ab6fb6db222036bcd93fdc4ce2fcc53472f214662520b7cd7",
+      "yaml_semantics_identical": true,
+      "after_sha256": "6de5d069cca262de29e77b6d22b02e53a72473fff94459e26b2e25cc7e95a0e3",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-nonquotient.yml": {
+      "before_sha256": "0860d5b701fc04a3e07e80ec6469edaeb80da058048974e7d5df26577af2669b",
+      "yaml_semantics_identical": true,
+      "after_sha256": "c908c75b9039379922da4583ae7f66200cfea004a458278a9c7eff9ec76db65a",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-positive-risk-nonconvex.yml": {
+      "before_sha256": "cad6e408aa9cd45bbce4e0990136a5c45574ed18b5c0ecb65dcda531de4796a0",
+      "yaml_semantics_identical": true,
+      "after_sha256": "0e33d8f2fb8ea515e593c1c56bb1fbfe007467c4a288843cc0cc5c0a509fc635",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-r25-witness-anchors.yml": {
+      "before_sha256": "02571ab46f93df53c3de0534f8661caddd5b77a6a57a1ba6110292a5bf9e8e76",
+      "yaml_semantics_identical": true,
+      "after_sha256": "a41d53219b2e6ca3eb6a4ac9825ad01a2925fa190f9c274548e625f5d7421471",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-refinement.yml": {
+      "before_sha256": "dcbd32aef736603dd32f2f66b5c76eea32f7a5b169e1ed69c000280f5fd27a8f",
+      "yaml_semantics_identical": true,
+      "after_sha256": "6a0b1df6fc35084c1cc2262a7b2d25978bea0c82d98842776474cbed482f2aa1",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-scaling.yml": {
+      "before_sha256": "1bbbdfd66ae4865b09aff148e6e29631d84d43fad77a1c2b45f713b378b8293c",
+      "yaml_semantics_identical": true,
+      "after_sha256": "b09f3da38ff731d58ef22c9487ab5eeb00bc567bb266043d965481987295dd16",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-two-weight-certificate.yml": {
+      "before_sha256": "8264a91df82f1a8e89b61b8f6f93f940681747cc6b67017eec2b4aeae75030d4",
+      "yaml_semantics_identical": true,
+      "after_sha256": "df076a5ea3deab23c9af1e59fd8d736b1a0eaca8ff2e3c55e0890093cdfb674c",
+      "changed": true
+    },
+    ".github/workflows/hepta-native-ndu-width4-interval.yml": {
+      "before_sha256": "8f9f434f21b0e54ffd3bd359867dd756e3a8d9a819c78f7caa2cdb3483119806",
+      "yaml_semantics_identical": true,
+      "after_sha256": "cc2ccdf5fcdf016b6f43dc13da4fc6c1b827be0853dce5f3fa719b4c0b4dee9a",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-ambiguity-guard.yml": {
+      "before_sha256": "0b2d06fb3766d080ca7dfb809e5419a4af6a207a961730303ab9dea94e0d38c3",
+      "yaml_semantics_identical": true,
+      "after_sha256": "9c593ad3292c02c97804bff6483123e291bc176c3714ed35de078cdce2ae81fb",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-e25-investment.yml": {
+      "before_sha256": "315e6b5738e1e5b68dc452f4e3a746d14ee159602854abfc7c340e6cd15c45ef",
+      "yaml_semantics_identical": true,
+      "after_sha256": "83f2228629a383a7967b7708126abcf90f1ae61711a058b1c1e9b0eec65e77ef",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-e25-original-review.yml": {
+      "before_sha256": "cd984599cba81dfe88abbc5fbe530a70b6378eaedf3ed3727b4c6cecfff5be5b",
+      "yaml_semantics_identical": true,
+      "after_sha256": "6c60df530c60dfd379a09c6e6f828f7a11843438b2b193a099c2e6288bc96576",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-merton-news.yml": {
+      "before_sha256": "710896d42e18bd5ddca1dc13f478d05a35b6988c1d7beb40eb33b6c13f82f749",
+      "yaml_semantics_identical": true,
+      "after_sha256": "a70575031b8c615060ddd51bd5db44247d610978ee43804ae10d47c2075edb86",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-merton-p2-original-online.yml": {
+      "before_sha256": "45f697cbf50f5055ce4a46d6b1ee6707584be0f0559fa4a16024302d41d4b7c9",
+      "yaml_semantics_identical": true,
+      "after_sha256": "97d48d1bbe96ae5314837c469976cd99a241a2d49f2dd4c8ef29560fd158790e",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-merton-real-head.yml": {
+      "before_sha256": "7c509ffceeee14d4c234535a22d0c6f4fd57a5713b7da273372716d41f542fee",
+      "yaml_semantics_identical": true,
+      "after_sha256": "fb11f15eb3f31329161a3afcd76b0fa248679d8a319922957e859a8031f09e78",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-merton-science-gate.yml": {
+      "before_sha256": "1dfbfe5743923e3f979caa994da5f2cd812ff69d87a11718f65b4be713f8ab53",
+      "yaml_semantics_identical": true,
+      "after_sha256": "cdd8ed0008ca96ea064ed038fc2c7bf1fd7751a826462aec25426c68cc2ec370",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-merton-science-hold.yml": {
+      "before_sha256": "a8b47aca75ba870b363e42dfd2ada71c237cd340c3830227ec216e684bc8b54d",
+      "yaml_semantics_identical": true,
+      "after_sha256": "2f8f5cf816525a30a4474f8a012d75b1d4df347a0cc9f182e80e6c8c9cba79b8",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-merton.yml": {
+      "before_sha256": "8f375c448cee70e915582e02cecd10513c5789a26f07ed309b5cfdf787c5c11a",
+      "yaml_semantics_identical": true,
+      "after_sha256": "86cb4c2fda8e4815ce5bbddc696556596e29896ac394ff073829c3cb9564e136",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-p5-certified-action-stop.yml": {
+      "before_sha256": "871a5094434b48addd0d9481c2dbd78ee271276977b933e0fc9c35eed4f6fa27",
+      "yaml_semantics_identical": true,
+      "after_sha256": "dbf3c6167624a775a94dfafeac89b01653aaff66161c578d7e56bd8502a1e6c3",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-p5-coupled-controls.yml": {
+      "before_sha256": "1bd01943d8f55de78c174d87ce55c15b96b902cbd07c23b0586136a0528bafc6",
+      "yaml_semantics_identical": true,
+      "after_sha256": "9649672be5e728ac7b0bc8878bb203da90182fbfbdefa9016673a3c34d887eac",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-predictive-guard.yml": {
+      "before_sha256": "f8d9d0490ce36af06ab72f09d8f4039aa40e0891cf5ccab4618e99d17041e0ce",
+      "yaml_semantics_identical": true,
+      "after_sha256": "9591691bc3c79d4fb322ed3d417bb33586be1f638024bee328bd57a50d7d9bfb",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-token-portfolio-p1.yml": {
+      "before_sha256": "5e22db47e3dc57c6ea3cc38135be49ba8e05911ec182ca967d5533a8ccad7779",
+      "yaml_semantics_identical": true,
+      "after_sha256": "041924fff79b652be59d5d4c33d85dedc42156a93d5a5af530de306eec8f0d03",
+      "changed": true
+    },
+    ".github/workflows/hepta-ndu-tree-fbsde-gates.yml": {
+      "before_sha256": "088cf9a1b0039b9c9f30ef991428b16baf7f956d9102deacd600c170c3e370cb",
+      "yaml_semantics_identical": true,
+      "after_sha256": "fb06c8404c85c07ce9374be9da61dbd3390367546d854b985afb837e4fa61e7f",
+      "changed": true
+    },
+    ".github/workflows/hepta-neuron-five-model-physical-shadow.yml": {
+      "before_sha256": "560ba04d5e88225a54b353c9e865e1d5a321c6343606ccbff6baafe7cadcb3a1",
+      "yaml_semantics_identical": true,
+      "after_sha256": "454c92ac0794ae36f08319eb17511a3f1f2aefba0397c820db4225f2eaf9bfc4",
+      "changed": true
+    },
+    ".github/workflows/hepta-neuron-shared-encoder-shadow.yml": {
+      "before_sha256": "ca2f373cfd280b1bdcbfb956c573f8f2853429e62194862e1b64bf31431db612",
+      "yaml_semantics_identical": true,
+      "after_sha256": "5405c9ed8d8e8874dd87aecdbcb951aad06376c8277df4700cbfa9d9c77f1da0",
+      "changed": true
+    },
+    ".github/workflows/hepta-original-real-bsde-replay.yml": {
+      "before_sha256": "081750e76db9d63a8ebfd68a54c4fbbd0f8e1753c23243a4eb5b8956b0222999",
+      "yaml_semantics_identical": true,
+      "after_sha256": "d4fc8cd7f4a5dc3d247d30fbb7f5511fd07a093d8c4ccde986f87d0e848a3cb3",
+      "changed": true
+    },
+    ".github/workflows/hepta-p0-compact-physical.yml": {
+      "before_sha256": "cdd274cb6255cbf056871c4b08d41c8d1a0706c36ac63eed85e5adc72aa66475",
+      "yaml_semantics_identical": true,
+      "after_sha256": "faaeb860b7cb6d1df2b944f99a42dd5b820ea5b7c7c50986b31c9afa860cdf79",
+      "changed": true
+    },
+    ".github/workflows/hepta-p0-compact-pr-trigger.yml": {
+      "before_sha256": "21d1f109b6dab730879d79d5bc9ad09359008998d20523a80725ef255d264203",
+      "yaml_semantics_identical": true,
+      "after_sha256": "558857a3bd68b90dfcccb8e3b74ed936a25a75aa1050872036623c0003b7e854",
+      "changed": true
+    },
+    ".github/workflows/hepta-p0-independent-four-stem-replay.yml": {
+      "before_sha256": "5b8c715838a9293b8e660203beb419f7455971a16599f4d7f316ab8437dad69f",
+      "yaml_semantics_identical": true,
+      "after_sha256": "b9dca8ca7191e09420008fcf6f05abe471b21ad16c9ead885e8a9eb8901c5d75",
+      "changed": true
+    },
+    ".github/workflows/hepta-p5-fast-outward.yml": {
+      "before_sha256": "febabae6c9c1da067309870a302e5e280174a2ac9cc14affbbdf05fc3ab00039",
+      "yaml_semantics_identical": true,
+      "after_sha256": "33e64297f570ab5e7c7bb046d470b3ac458b930f5472d4add5013761efcc556e",
+      "changed": true
+    },
+    ".github/workflows/hepta-p5-outward-roundoff.yml": {
+      "before_sha256": "a97f598a3e726d4dcc01dcf07710dfc306562f727ba9fe190fbf1e4e938bcbe8",
+      "yaml_semantics_identical": true,
+      "after_sha256": "1ecd16190a6d0e5b4cf04f7255df7bae772ab342a81a992bcadfadb871f0a109",
+      "changed": true
+    },
+    ".github/workflows/hepta-shared-stem-system2-research.yml": {
+      "before_sha256": "d806ee2b41d6fcc1e3e6a29a20c2a575d0d5e6507048fc3343bf85f8fd5c16fc",
+      "yaml_semantics_identical": true,
+      "after_sha256": "9147b5252a28164754a8dbd3a95ddbf70ad9fc5cd174a48b5344c6e84ab41847",
+      "changed": true
+    },
+    ".github/workflows/hepta-stem-multimodal-source-v1.yml": {
+      "before_sha256": "ab3b7b194425b586bd21363699ebfc0d526d63bb560cbf74331c24424438435b",
+      "yaml_semantics_identical": true,
+      "after_sha256": "cf4c1f9ed9c183d6973f446fbabb8605a0a7f4b36c2323668aa6e48042dc000e",
+      "changed": true
+    },
+    ".github/workflows/hepta-stem-v2-original-physical-bridge.yml": {
+      "before_sha256": "d5666f63488aefbf9d2f61c161af28f002fc361eb8960de14f6bcdd224f6d6df",
+      "yaml_semantics_identical": true,
+      "after_sha256": "3ec4e118ff3c47ca4f0fe0f4772a3495f908356caabc91e9fadfce8a76451329",
+      "changed": true
+    },
+    ".github/workflows/hepta-stem-v4-public-learning-audit.yml": {
+      "before_sha256": "3229fc7a9e57c3bd7b9493e4b2ad2b9f1bd2fd0034fa1f42569fc7c64301607f",
+      "yaml_semantics_identical": true,
+      "after_sha256": "78068634f65830476aaf4a2b909627a3d3e273f05c87a61bed5b9df85348d407",
+      "changed": true
+    },
+    ".github/workflows/hepta-stem-v5-scienceqa-original-rejudge.yml": {
+      "before_sha256": "fa7288989245cb3da5ffd69ae4d31b4d9e4f169580874d1829c1d04a4da06d42",
+      "yaml_semantics_identical": true,
+      "after_sha256": "2747223f29571eedcd2d4eaa7ecb684493bdd017cd85704a6085bf5db86edec1",
+      "changed": true
+    },
+    ".github/workflows/hepta-stem-v6-original-margin.yml": {
+      "before_sha256": "043319b5b49f9a5edeba724744a22c3b280ea14422c53e0f5141833f2f45ebd6",
+      "yaml_semantics_identical": true,
+      "after_sha256": "5ae2edd559b286f29aecc161a215695a723d1cea89689bbc474d2b220c7681d1",
+      "changed": true
+    },
+    ".github/workflows/hepta-stem-v7-real-image-intervention.yml": {
+      "before_sha256": "4c393294dba6cceeddcf4b074b9e65b754ba75678fb203dd6e2917e85b5246cb",
+      "yaml_semantics_identical": true,
+      "after_sha256": "9c19845831afe1114a93f8efdac6eace726231d23521e9e9dd9718fc3041a236",
+      "changed": true
+    },
+    ".github/workflows/hepta-v12-granite-sealed-recovery.yml": {
+      "before_sha256": "698a89134a27bfaa64f94098a564173944d949e56c31b5e021312e676bc33d1d",
+      "yaml_semantics_identical": true,
+      "after_sha256": "b6f730b3e70731b437b6e26b46167ab7a5f06fcf87d757eabf3bacb9a6af17e3",
+      "changed": true
+    },
+    ".github/workflows/hepta-v13-real-granite-frozen-links.yml": {
+      "before_sha256": "809d0e3ec5743780859aa45ec7a8bc41c9ee4ff90e12a287edfc771e053fd063",
+      "yaml_semantics_identical": true,
+      "after_sha256": "fe19e88a2c6081e794a880698a76f273de192bc573a273ec1175c4b4cfb59e49",
+      "changed": true
+    },
+    ".github/workflows/hepta-v14-all-evidence.yml": {
+      "before_sha256": "1971330fea9a5d6fe46edee0d13123046d107628a61ca6ab90e854ac220764f9",
+      "yaml_semantics_identical": true,
+      "after_sha256": "8ccec3abcaefd84768391ec854b3b2abec79dfb079005f21e20937766d731356",
+      "changed": true
+    },
+    ".github/workflows/hepta-v15-natural-hotpot.yml": {
+      "before_sha256": "bd363fe8cd59973ba7ec27d18a55c0899bef7fc3b94e92d53bd62b5d913ae954",
+      "yaml_semantics_identical": true,
+      "after_sha256": "38ff1b13440ade58b3bd348dffbf095214dcc6e78b57a9274fe26cddd676e631",
+      "changed": true
+    },
+    ".github/workflows/hepta-v16-hotpot-group-stop.yml": {
+      "before_sha256": "ca23ca74c56843e5f1eb9e959a898d8019632461bd1cafc7729e58819e523f6f",
+      "yaml_semantics_identical": true,
+      "after_sha256": "9df0ce1f2fd4e728240d9978685a997cbf8a54755b340d30c893eb631dee14b0",
+      "changed": true
+    },
+    ".github/workflows/hepta-v17-original-reader-sourcefirst.yml": {
+      "before_sha256": "e6677f359264cdbc97af398a44fbf35b011d662981c1ece5fcc24619db93acb6",
+      "yaml_semantics_identical": true,
+      "after_sha256": "6df7280dd89ee99d6842ddd625999f2b6863270c92feb408bd2975576dc0dc2b",
+      "changed": true
+    },
+    ".github/workflows/hepta-v18-original-reader-prompt.yml": {
+      "before_sha256": "0b6503be45b8bdb86bc514faabec311d24c2e664b93932ce8c846fc3bd24c34a",
+      "yaml_semantics_identical": true,
+      "after_sha256": "2170bf0cfdde7f542124d8f44248a8e74fa37031202a5ad88c14339aef9a814f",
+      "changed": true
+    },
+    ".github/workflows/hepta-v19-original-qwen-reference.yml": {
+      "before_sha256": "652046b034929c9e300fe02d02260f771dd86174db25ad7a3997c322f2a43fec",
+      "yaml_semantics_identical": true,
+      "after_sha256": "08855613df68041cfa32ee47d064523e20db78dc222acfbecc21a3af8c0620d6",
+      "changed": true
+    },
+    ".github/workflows/hpca-native624-readback.yml": {
+      "before_sha256": "fdf8eb733e320c0fe49d78790d1b63b9b9f2d0239bc6d6d129f8616cedb5fcea",
+      "yaml_semantics_identical": true,
+      "after_sha256": "7df9ece42d868249e14b7d6dc0abf12b2f8c4c1b5c7aa5bd3449d7ecf26e6f75",
+      "changed": true
+    },
+    ".github/workflows/hpca-prospective-devel-preflight.yml": {
+      "before_sha256": "58e9dce2d41b4d377670008eb73dc0d8f5c0f4393b57953ae7f7080cc3f647f0",
+      "yaml_semantics_identical": true,
+      "after_sha256": "580f9a6ec7a09b856f6753684aea94b116f95b71f168c82e52a58a3273acd746",
+      "changed": true
+    },
+    ".github/workflows/inference-worker-bootstrap.yml": {
+      "before_sha256": "e3a3ab72b46f60aa9af5fc800e0682b0478b7de196054a8d2eafa648aa101e63",
+      "yaml_semantics_identical": true,
+      "after_sha256": "a2e0b07238a8760155d7f56444a1206b25802d5ad6e5489de3849ff5de3f7ee2",
+      "changed": true
+    },
+    ".github/workflows/memory-cell-format-import.yml": {
+      "before_sha256": "53299440d3847e66063bf5a1ffbb74cf94a44d655ff5f00c4d2cdd53d6c97cd7",
+      "yaml_semantics_identical": true,
+      "after_sha256": "5f960f7953650b86a1a50def49eddca5c707df41017240fbd5790e67e13b45a8",
+      "changed": true
+    },
+    ".github/workflows/ndu-mgp-local-source-bundle.yml": {
+      "before_sha256": "d7a8b865aff1d3bdebab108c34a0b2f0608dbcb8110de31fed79e720aa21cffd",
+      "yaml_semantics_identical": true,
+      "after_sha256": "3d976565a628972e3b62329de7add73fd9e3a363f3b43395b979a7afb4181df2",
+      "changed": true
+    },
+    ".github/workflows/windows-git-2751-exact.yml": {
+      "before_sha256": "87e718a250fe99bd3d2ea118b959bbb206da1467dd366ba4badc3ec28fed8edc",
+      "yaml_semantics_identical": true,
+      "after_sha256": "121d64ea5ca1415918d479b3d4a9fc5e6a8cd4e625738ea4929e8ca17b65fd00",
+      "changed": true
+    }
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "created_at": "2026-11-22T13:25:18.230438+00:00",
+  "base_commit": "0ac61de676f7076bead25f86078a6c4839f1a132",
+  "base_tree": "87512f1328c4278fde1c52c0f999d89608e3faf9",
+  "local_commit": "147362670b20fa53b9f2fdc958a67785dc184250",
+  "local_tree": "a83e4ddacf2a0390733be22e058995120833065e",
+  "working_tree_clean": true,
+  "scope": "Ten behavior-focused integration tests plus Bazel source registration; no production Rust, dependency, gate, or exclusion changes.",
+  "final_file_sha256": {
+    "codex-rs/hepta-bellman-operator/BUILD.bazel": "c40ed5301223470086f90a4c605195b57c21ab0fe5c3329a37c13f98ada2255f",
+    "codex-rs/hepta-bellman-operator/tests/cases/owner_training.rs": "53534bddb2bc1a4f5eeb36724eea5a898406b9c012c66a0a5b6187eaaabaddb7",
+    "codex-rs/hepta-bellman-operator/tests/final_use_v3.rs": "951add9bc845fe4329ca790b4b3e49605542e6d74673177fbc6acb875b1100a1",
+    "codex-rs/hepta-bellman-operator/tests/sensor_core_v2.rs": "6e0c0285eb0ee483a8fd934146b09baa1718cd26d878d0ecbb247baa8e99cdf5"
+  },
+  "line_coverage": {
+    "baseline": {
+      "count": 2902,
+      "covered": 2122,
+      "percent": 73.12198483804274
+    },
+    "updated": {
+      "count": 2902,
+      "covered": 2637,
+      "percent": 90.868366643694
+    },
+    "required_percent": 85,
+    "baseline_exit_code": 1,
+    "updated_exit_code": 0
+  },
+  "targeted_file_coverage": {
+    "memory_training.rs": {
+      "count": 164,
+      "covered": 158,
+      "percent": 96.34146341463415
+    },
+    "owner_terminal.rs": {
+      "count": 200,
+      "covered": 190,
+      "percent": 95.0
+    },
+    "sensor_core_controlled.rs": {
+      "count": 293,
+      "covered": 273,
+      "percent": 93.1740614334471
+    }
+  },
+  "validations": [
+    {
+      "command": "just test --locked -p codex-hepta-bellman-operator",
+      "exit_code": 0,
+      "passed": 47,
+      "skipped": 0,
+      "log": "updated-nextest.log"
+    },
+    {
+      "command": "just test --locked -p codex-hepta-bellman-operator --features compatibility-api",
+      "exit_code": 0,
+      "passed": 49,
+      "skipped": 0,
+      "log": "updated-nextest-compat.log"
+    },
+    {
+      "command": "cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator --all-targets --fail-under-lines 85 --json --output-path <evidence>/updated-coverage.json",
+      "exit_code": 0,
+      "log": "updated-coverage.log"
+    },
+    {
+      "command": "just fix -p codex-hepta-bellman-operator --all-targets --features compatibility-api -- -D warnings",
+      "exit_code": 0,
+      "source_changed": false,
+      "log": "updated-clippy-fix.log"
+    },
+    {
+      "command": "just fmt",
+      "exit_code": 0,
+      "log": "updated-format.log"
+    },
+    {
+      "command": "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log": "updated-clippy-default.log"
+    },
+    {
+      "command": "just fmt --check",
+      "exit_code": 0,
+      "log": "updated-format-check.log"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exit_code": 0
+    }
+  ],
+  "qualification_limit": "Local original-workspace validation. Tests and coverage ran before the prescribed final fix/format; Clippy fix made no edits and formatting was the only subsequent source edit. Coverage source file hashes are retained in updated-coverage-start.json. This is not a full exact-source GitHub CI receipt for the formatted commit or its later integration.",
+  "evidence_files": {
+    "baseline-coverage.json": {
+      "sha256": "44ad43ee0d7f7621b5f9f656093613598af11be3baf06473d90f7d3e756d8d3e",
+      "bytes": 1519815
+    },
+    "baseline-coverage.log": {
+      "sha256": "34972f9c7fcaef0e14a96116bba1924eea9c861efbba18a9b686768a3c9d24dc",
+      "bytes": 7216
+    },
+    "baseline-result.json": {
+      "sha256": "cc98339207c45f463278ebc8532d884bc820e11f20400401dd5c059cc5385600",
+      "bytes": 115
+    },
+    "baseline-start.json": {
+      "sha256": "9de4378ca356c3e25bd51d8bbe7a1a23681845ef752f1cac3c2c7047d4662f1f",
+      "bytes": 782
+    },
+    "learning-operator-coverage.patch": {
+      "sha256": "33f470267740538fce1955ab073ed55a78ba63309dc0d2bd9cb727f95a52dbb0",
+      "bytes": 18656
+    },
+    "updated-clippy-default.log": {
+      "sha256": "e56b2bcc45eddea9a6440f788ca359722eea420fddaa338b273debd36bc42d87",
+      "bytes": 831
+    },
+    "updated-clippy-fix.log": {
+      "sha256": "0911307ef0e615861b309456c3af52ac77ebf5f098be6e5306452ed9abc94725",
+      "bytes": 1681
+    },
+    "updated-coverage-result.json": {
+      "sha256": "bf3c0138f25a44e6e3642dc56ae361f3e49caa2cb3d2b5a8cb9aa5fb16ef3a0f",
+      "bytes": 1188
+    },
+    "updated-coverage-start.json": {
+      "sha256": "7be866ab12122905f67e2d38d19fa85562c282a9bd7880cd3d0be20ebb3199b4",
+      "bytes": 1120
+    },
+    "updated-coverage.json": {
+      "sha256": "f19bbc077c0e99bdb5278e3393a2955b010befe58cdab20cf269bed2ccba10a5",
+      "bytes": 1540642
+    },
+    "updated-coverage.log": {
+      "sha256": "2c59312a15227af35b071eede55690ebbbd6a5368b8dacdc8115a0178433e709",
+      "bytes": 5308
+    },
+    "updated-format-check.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "updated-format.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "updated-nextest-compat-result.json": {
+      "sha256": "1cf60a167839157cb4f0598a4474e61c2089076a460564c63579fc828fdb7a03",
+      "bytes": 1005
+    },
+    "updated-nextest-compat-start.json": {
+      "sha256": "e387986c2b90e7b1ea1920e3111efe4607057f1cbb3116486c1ad402a32eb940",
+      "bytes": 937
+    },
+    "updated-nextest-compat.log": {
+      "sha256": "8e0b4cef05334cc599b1ade1b6dfa7057937a675137e36f77d3fc75b3afe5814",
+      "bytes": 8128
+    },
+    "updated-nextest.log": {
+      "sha256": "46d65c24615a0424954145d7e27db2030deeb9e9b591dc7b5844ff575295778b",
+      "bytes": 9611
+    }
+  }
+}
