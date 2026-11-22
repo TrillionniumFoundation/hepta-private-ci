@@ -243,6 +243,75 @@ class Tail1159IntentTests(unittest.TestCase):
                     with self.assertRaisesRegex(SystemExit, "byte cap"):
                         admit_runtime()
 
+    def test_oversized_request_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, request_path, _ = _authorized_fixture(Path(directory))
+            request_path.write_bytes(b"{" + b" " * MAX_JSON_BYTES)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(os.environ, _environment(request, request_path), clear=True):
+                    with self.assertRaisesRegex(SystemExit, "byte cap"):
+                        admit_runtime()
+
+    def test_request_symlink_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request, request_path, _ = _authorized_fixture(root)
+            link = root / "REQUEST.link.json"
+            link.symlink_to(request_path.name)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                link,
+            ):
+                with patch.dict(os.environ, _environment(request, link), clear=True):
+                    with self.assertRaisesRegex(SystemExit, "single-link regular file"):
+                        admit_runtime()
+
+    def test_request_hardlink_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request, request_path, _ = _authorized_fixture(root)
+            link = root / "REQUEST.hardlink.json"
+            os.link(request_path, link)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                link,
+            ):
+                with patch.dict(os.environ, _environment(request, link), clear=True):
+                    with self.assertRaisesRegex(SystemExit, "single-link regular file"):
+                        admit_runtime()
+
+    def test_request_path_swap_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request, request_path, _ = _authorized_fixture(root)
+            replacement = root / "replacement.json"
+            replacement.write_bytes(request_path.read_bytes())
+            real_open = os.open
+
+            def swap_before_open(path, flags):
+                request_path.unlink()
+                replacement.rename(request_path)
+                return real_open(path, flags)
+
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent.admission.REQUEST",
+                request_path,
+            ):
+                with patch(
+                    "qualification.hcsn_currentstate_n256_tail1159_intent.admission.os.open",
+                    side_effect=swap_before_open,
+                ):
+                    with patch.dict(
+                        os.environ, _environment(request, request_path), clear=True
+                    ):
+                        with self.assertRaisesRegex(
+                            SystemExit, "changed while being opened"
+                        ):
+                            admit_runtime()
+
     def test_duplicate_request_key_refuses_before_input_read(self):
         with tempfile.TemporaryDirectory() as directory:
             request, request_path, _ = _authorized_fixture(Path(directory))

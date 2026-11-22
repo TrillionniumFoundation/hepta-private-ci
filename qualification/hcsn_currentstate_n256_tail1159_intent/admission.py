@@ -62,20 +62,67 @@ def _strict_json(raw, label):
 
 def _bounded_regular_bytes(path, label):
     try:
-        metadata = path.lstat()
+        before = path.lstat()
     except OSError as error:
         raise SystemExit(f"{label} cannot be read before authentic input") from error
-    if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+    if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
         raise SystemExit(f"{label} is not a single-link regular file")
-    if metadata.st_size > MAX_JSON_BYTES:
+    if before.st_size > MAX_JSON_BYTES:
         raise SystemExit(f"{label} exceeds the frozen JSON byte cap")
+
+    flags = os.O_RDONLY
+    for name in ("O_BINARY", "O_CLOEXEC", "O_NOFOLLOW"):
+        flags |= getattr(os, name, 0)
     try:
-        raw = path.read_bytes()
+        descriptor = os.open(path, flags)
     except OSError as error:
         raise SystemExit(f"{label} cannot be read before authentic input") from error
-    if len(raw) != metadata.st_size:
+    try:
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1:
+            raise SystemExit(f"{label} is not a single-link regular file")
+        if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino):
+            raise SystemExit(f"{label} changed while being opened")
+        if opened.st_size > MAX_JSON_BYTES:
+            raise SystemExit(f"{label} exceeds the frozen JSON byte cap")
+
+        reads = []
+        for _ in range(2):
+            os.lseek(descriptor, 0, os.SEEK_SET)
+            chunks = []
+            remaining = MAX_JSON_BYTES + 1
+            while remaining:
+                chunk = os.read(descriptor, remaining)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            reads.append(b"".join(chunks))
+        after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+
+    try:
+        current = path.lstat()
+    except OSError as error:
+        raise SystemExit(f"{label} changed while being read") from error
+    stable_fields = (
+        "st_dev",
+        "st_ino",
+        "st_mode",
+        "st_nlink",
+        "st_size",
+        "st_mtime_ns",
+    )
+    if any(getattr(opened, field) != getattr(after, field) for field in stable_fields):
         raise SystemExit(f"{label} changed while being read")
-    return raw
+    if (current.st_dev, current.st_ino) != (after.st_dev, after.st_ino):
+        raise SystemExit(f"{label} path changed while being read")
+    if len(reads[0]) > MAX_JSON_BYTES:
+        raise SystemExit(f"{label} exceeds the frozen JSON byte cap")
+    if reads[0] != reads[1] or len(reads[0]) != after.st_size:
+        raise SystemExit(f"{label} changed while being read")
+    return reads[0]
 
 
 def _parse_utc(value, field):
