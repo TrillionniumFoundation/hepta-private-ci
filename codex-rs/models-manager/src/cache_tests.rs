@@ -83,6 +83,105 @@ fn original_model_cache_wire_preserves_leap_seconds_and_extended_years() {
 }
 
 #[tokio::test]
+async fn file_cache_load_distinguishes_absent_version_stale_and_zero_ttl() {
+    let temp = tempfile::tempdir().expect("temporary model cache directory");
+    let path = temp.path().join("models.json");
+    let cache = FileModelsCache::new(path.clone(), Duration::from_secs(3600));
+
+    assert_eq!(
+        cache.load("current-client")
+            .await
+            .expect("missing cache is a normal miss"),
+        None
+    );
+    assert!(
+        cache.refresh_ttl("current-client").await.is_err(),
+        "refreshing a missing file must fail"
+    );
+    assert!(!path.exists(), "a cache miss must not create the file");
+
+    let mut entry = ModelsCacheEntry {
+        fetched_at: Utc::now(),
+        etag: Some("current-etag".to_owned()),
+        client_version: Some("current-client".to_owned()),
+        models: Vec::new(),
+    };
+    super::save_file(&path, &entry)
+        .await
+        .expect("write fresh cache");
+    let fresh_bytes = tokio::fs::read(&path).await.expect("read fresh bytes");
+    assert_eq!(
+        cache.load("other-client")
+            .await
+            .expect("version mismatch is a normal miss"),
+        None
+    );
+    assert_eq!(
+        cache.load("current-client")
+            .await
+            .expect("matching fresh cache loads"),
+        Some(entry.clone())
+    );
+    assert_eq!(
+        tokio::fs::read(&path).await.expect("read original fresh bytes"),
+        fresh_bytes
+    );
+
+    entry.fetched_at = Utc::now() - ChronoDuration::hours(2);
+    super::save_file(&path, &entry)
+        .await
+        .expect("write stale cache");
+    let stale_bytes = tokio::fs::read(&path).await.expect("read stale bytes");
+    assert_eq!(
+        cache.load("current-client")
+            .await
+            .expect("stale entry is a normal miss"),
+        None
+    );
+    assert_eq!(
+        tokio::fs::read(&path).await.expect("read unchanged stale bytes"),
+        stale_bytes
+    );
+
+    entry.fetched_at = Utc::now();
+    super::save_file(&path, &entry)
+        .await
+        .expect("write fresh entry for zero TTL");
+    let zero_ttl_bytes = tokio::fs::read(&path).await.expect("read zero-TTL bytes");
+    let zero_ttl_cache = FileModelsCache::new(path.clone(), Duration::ZERO);
+    assert_eq!(
+        zero_ttl_cache
+            .load("current-client")
+            .await
+            .expect("zero TTL is a normal miss"),
+        None
+    );
+    assert_eq!(
+        tokio::fs::read(&path).await.expect("read unchanged zero-TTL bytes"),
+        zero_ttl_bytes
+    );
+}
+
+#[tokio::test]
+async fn file_cache_directory_read_errors_without_modifying_the_directory() {
+    let temp = tempfile::tempdir().expect("temporary model cache directory");
+    let path = temp.path().join("models-as-directory");
+    tokio::fs::create_dir(&path)
+        .await
+        .expect("create directory at cache path");
+    let cache = FileModelsCache::new(path.clone(), Duration::from_secs(3600));
+
+    assert!(cache.load("current-client").await.is_err());
+    assert!(cache.refresh_ttl("current-client").await.is_err());
+    assert!(
+        tokio::fs::metadata(&path)
+            .await
+            .expect("directory remains present")
+            .is_dir()
+    );
+}
+
+#[tokio::test]
 async fn file_cache_ttl_refresh_rejects_missing_or_mismatched_client_version_without_writing() {
     let temp = tempfile::tempdir().expect("temporary model cache directory");
     let path = temp.path().join("models.json");
