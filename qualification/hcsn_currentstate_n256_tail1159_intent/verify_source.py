@@ -19,7 +19,7 @@ def verify():
     freeze = json.loads(FREEZE.read_text())
     if freeze["status"] != "SOURCE_ONLY_RESOURCE_HOLD":
         raise SystemExit("source freeze status differs")
-    if freeze["base_head"] != "e441e2df7bf2ae8f820e154132827ad0d08c9e23":
+    if freeze["base_head"] != "2bc052ff7193b41199733a00303ffe8c321db153":
         raise SystemExit("base head differs")
     for relative, expected in freeze["files"].items():
         raw = (REPO / relative).read_bytes()

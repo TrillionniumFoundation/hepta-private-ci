@@ -2,7 +2,9 @@
 
 import hashlib
 import json
+import math
 import os
+import stat
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,10 +18,64 @@ ORIGINAL_SCHEMAS = {
     "calendar": "hcsn-tail1159-calendar-v1",
     "runtime": "hcsn-tail1159-runtime-v1",
 }
+MAX_JSON_BYTES = 65536
 
 
 def _sha256(raw):
     return hashlib.sha256(raw).hexdigest()
+
+
+def _strict_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def _finite_float(value):
+    result = float(value)
+    if not math.isfinite(result):
+        raise ValueError("nonfinite JSON number")
+    return result
+
+
+def _reject_constant(value):
+    raise ValueError(f"nonfinite JSON constant: {value}")
+
+
+def _strict_json(raw, label):
+    try:
+        result = json.loads(
+            raw,
+            object_pairs_hook=_strict_object,
+            parse_constant=_reject_constant,
+            parse_float=_finite_float,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+        raise SystemExit(f"{label} is not strict unambiguous JSON") from error
+    if not isinstance(result, dict):
+        raise SystemExit(f"{label} is not a JSON object")
+    return result
+
+
+def _bounded_regular_bytes(path, label):
+    try:
+        metadata = path.lstat()
+    except OSError as error:
+        raise SystemExit(f"{label} cannot be read before authentic input") from error
+    if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+        raise SystemExit(f"{label} is not a single-link regular file")
+    if metadata.st_size > MAX_JSON_BYTES:
+        raise SystemExit(f"{label} exceeds the frozen JSON byte cap")
+    try:
+        raw = path.read_bytes()
+    except OSError as error:
+        raise SystemExit(f"{label} cannot be read before authentic input") from error
+    if len(raw) != metadata.st_size:
+        raise SystemExit(f"{label} changed while being read")
+    return raw
 
 
 def _parse_utc(value, field):
@@ -47,16 +103,10 @@ def _read_original(request, kind):
         raise SystemExit(f"{kind}_path is outside the frozen originals directory")
     if not isinstance(expected, str) or len(expected) != 64:
         raise SystemExit(f"{kind}_sha256 is not frozen; numerical admission refused")
-    try:
-        raw = (REQUEST.parent / relative_path).read_bytes()
-    except OSError as error:
-        raise SystemExit(f"{kind} original cannot be read before authentic input") from error
+    raw = _bounded_regular_bytes(REQUEST.parent / relative_path, f"{kind} original")
     if _sha256(raw) != expected:
         raise SystemExit(f"{kind} original digest mismatch before authentic input read")
-    try:
-        original = json.loads(raw)
-    except (UnicodeDecodeError, json.JSONDecodeError) as error:
-        raise SystemExit(f"{kind} original is not strict JSON") from error
+    original = _strict_json(raw, f"{kind} original")
     if original.get("schema") != ORIGINAL_SCHEMAS[kind]:
         raise SystemExit(f"{kind} original schema mismatch")
     for field, expected_value in {
@@ -125,8 +175,8 @@ def _validate_originals(request, originals):
 def admit_runtime():
     """Return the request only after all external originals are bound."""
 
-    request_raw = REQUEST.read_bytes()
-    request = json.loads(request_raw)
+    request_raw = _bounded_regular_bytes(REQUEST, "request")
+    request = _strict_json(request_raw, "request")
     if request.get("actual_execution_authorized") is not True:
         raise SystemExit("authentic execution is not authorized before input read")
     if os.environ.get("HCSN_REQUEST_SHA256") != _sha256(request_raw):
