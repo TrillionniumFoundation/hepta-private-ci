@@ -2,8 +2,8 @@
 
 Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
 
-This separately frozen v7 candidate strengthens the source-only admission on
-top of #6980. It consumes the ten byte-exact index537 full-state
+This separately frozen v8 candidate strengthens the source-only admission on
+top of #6981. It consumes the ten byte-exact index537 full-state
 originals from #6957/#6959 and defines the unchanged exact continuation to
 index1159. Each lane would apply exactly 622 row actions and one signed
 ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
@@ -62,6 +62,15 @@ unbounded pairs of logs in memory. A stream that exceeds its cap terminates and
 fails that lane, while both pipes continue to be drained so a child cannot
 deadlock on a full pipe. The final ledger records produced byte counts, caps and
 overflowing lane ordinals; the aggregate retained log bound is 20 MiB.
+
+The final collector ledger now preserves every validated lane's wall time, CPU
+time and process peak RSS alongside the collector's own wall time, CPU time and
+peak RSS. It also records every child return code and, separately for stdout
+and stderr, both produced and retained bytes. Concurrent process peak RSS is
+reported as a maximum rather than summed into a fictitious simultaneous peak;
+lane wall and CPU sums remain explicit derived quantities. A failed or missing
+lane remains absent from `validated_lane_costs` and present in the process and
+failure ledgers, so incomplete work cannot be reported as a complete cost.
 
 The next execution commit must bind all four runtime originals to this exact
 source and the same execution key, preserve attempt `001`, set an explicit

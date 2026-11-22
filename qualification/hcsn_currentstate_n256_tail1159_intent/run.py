@@ -3,11 +3,14 @@
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
+import resource
 import subprocess
 import sys
 import threading
+import time
 
 from .admission import admit_runtime
 from .lane import IDENTITY
@@ -83,7 +86,74 @@ def _run_lane(ordinal, root, log_caps):
     return ordinal, returncode, overflow.is_set(), stdout_bytes, stderr_bytes
 
 
+def _finite_nonnegative(value, label):
+    if (
+        not isinstance(value, (int, float))
+        or isinstance(value, bool)
+        or not math.isfinite(value)
+        or value < 0
+    ):
+        raise SystemExit(f"{label} is not finite and nonnegative")
+    return value
+
+
+def _cost_ledger(results, statuses, log_caps, collector_cost):
+    """Preserve per-process costs without treating concurrent peaks as additive."""
+
+    lane_costs = []
+    for result in sorted(results, key=lambda item: item["lane_ordinal"]):
+        cost = result["cost"]
+        lane_costs.append(
+            {
+                "lane_ordinal": result["lane_ordinal"],
+                "wall_seconds": _finite_nonnegative(
+                    cost["wall_seconds"], "lane wall seconds"
+                ),
+                "cpu_seconds": _finite_nonnegative(
+                    cost["cpu_seconds"], "lane CPU seconds"
+                ),
+                "max_rss_kib": cost["max_rss_kib"],
+            }
+        )
+    process_statuses = [
+        {
+            "lane_ordinal": ordinal,
+            "returncode": returncode,
+            "log_overflow": overflow,
+            "stdout_produced_bytes": stdout_bytes,
+            "stdout_retained_bytes": min(stdout_bytes, log_caps["stdout_bytes"]),
+            "stderr_produced_bytes": stderr_bytes,
+            "stderr_retained_bytes": min(stderr_bytes, log_caps["stderr_bytes"]),
+        }
+        for ordinal, returncode, overflow, stdout_bytes, stderr_bytes in sorted(statuses)
+    ]
+    for field in ("wall_seconds", "cpu_seconds"):
+        _finite_nonnegative(collector_cost[field], f"collector {field}")
+    if (
+        not isinstance(collector_cost["max_rss_kib"], int)
+        or isinstance(collector_cost["max_rss_kib"], bool)
+        or collector_cost["max_rss_kib"] < 1
+    ):
+        raise SystemExit("collector max RSS is not a positive integer")
+    return {
+        "collector": collector_cost,
+        "validated_lane_costs": lane_costs,
+        "validated_lane_wall_seconds_sum": sum(
+            item["wall_seconds"] for item in lane_costs
+        ),
+        "validated_lane_cpu_seconds_sum": sum(
+            item["cpu_seconds"] for item in lane_costs
+        ),
+        "validated_lane_max_rss_kib_max": max(
+            (item["max_rss_kib"] for item in lane_costs), default=0
+        ),
+        "process_statuses": process_statuses,
+    }
+
+
 def main():
+    started_wall = time.perf_counter()
+    started_cpu = time.process_time()
     request = admit_runtime()
     output = Path(os.environ["HCSN_OUTPUT_ROOT"])
     if output.exists():
@@ -127,6 +197,17 @@ def main():
         failures.append("aggregate_compact_cap")
     failures = sorted(set(failures), key=str)
     complete = not failures and len(results) == 10
+    collector_usage = resource.getrusage(resource.RUSAGE_SELF)
+    cost = _cost_ledger(
+        results,
+        statuses,
+        log_caps,
+        {
+            "wall_seconds": time.perf_counter() - started_wall,
+            "cpu_seconds": time.process_time() - started_cpu,
+            "max_rss_kib": collector_usage.ru_maxrss,
+        },
+    )
     final = {
         "identity": IDENTITY,
         "execution_key": request["execution_key"],
@@ -135,11 +216,18 @@ def main():
         "failures": failures,
         "compact_checkpoint_bytes": compact_total,
         "logs": {
-            "stdout_bytes": sum(item[3] for item in statuses),
-            "stderr_bytes": sum(item[4] for item in statuses),
+            "stdout_produced_bytes": sum(item[3] for item in statuses),
+            "stdout_retained_bytes": sum(
+                min(item[3], log_caps["stdout_bytes"]) for item in statuses
+            ),
+            "stderr_produced_bytes": sum(item[4] for item in statuses),
+            "stderr_retained_bytes": sum(
+                min(item[4], log_caps["stderr_bytes"]) for item in statuses
+            ),
             "per_stream_caps": log_caps,
             "overflow_lanes": [item[0] for item in statuses if item[2]],
         },
+        "cost": cost,
         "all_coordinates_unique_lanes": sum(
             item["tail"]["all_coordinates_unique"] for item in results
         ),
