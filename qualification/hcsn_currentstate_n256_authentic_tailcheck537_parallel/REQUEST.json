@@ -1,0 +1,33 @@
+{
+  "aggregate_compact_cap_bytes": 67108864,
+  "all_closed": false,
+  "attempts": 1,
+  "base_pull_request": 6949,
+  "compact_cursor_cap_bytes": 8388608,
+  "execution_key": "hcsn-n256-authentic-tailcheck537-parallel-20261122-c6bc-001",
+  "historical_negative_and_unknown_preserved": true,
+  "identity": "hcsn-n256-authentic-tailcheck537-parallel-20261122-c6bc-v1",
+  "input_artifact_sha256": "fe98992972a1779e6ffe1baf2142a2010bd71eb92e633dc69e459578caa9e8f6",
+  "lane_command_timeout_seconds": 6900,
+  "lane_timeout_minutes": 120,
+  "lanes": 10,
+  "max_parallel": 10,
+  "max_raw_checkpoint_bytes": 33554432,
+  "n256_qualification": false,
+  "production_adoption": false,
+  "result_policy": "publish unique or nonunique first-tail observation without rerun",
+  "target_included_index": 537,
+  "work_upper_bounds": {
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "index256_compact_decodes": 10,
+    "index537_compact_decodes": 10,
+    "index537_compact_encodes": 20,
+    "optimizer_steps": 0,
+    "provider_outputs": 0,
+    "recurrence_row_actions": 2810,
+    "rounding_calls": 5180,
+    "tail_checks": 10,
+    "torch_calls": 0
+  }
+}
