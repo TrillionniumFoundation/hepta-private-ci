@@ -1,0 +1,34 @@
+# Authentic N256 index1159 continuation intent
+
+Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
+
+This separately frozen candidate consumes the ten byte-exact index537 full-state
+originals from #6957/#6959 and defines the unchanged exact continuation to
+index1159. Each lane would apply exactly 622 row actions and one signed
+ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
+and at most 5,180 exact binary64 rounding calls. It permits zero provider,
+dynamic, exponential, Torch, optimizer, model, or training calls.
+
+The source preserves the complete exact iterate, coefficient, growth
+coefficient, exponential sum, partial vector, parent identity, and signed
+content. It does not infer index537 state from M/H/R/A or reconstruct a missing
+trajectory. The tail test and roundTiesToEven primitive are unchanged from the
+completed negative #6957 run.
+
+No authentic checkpoint is decoded by this stage. `REQUEST.json` deliberately
+leaves the host observation, allocation, calendar, runtime and concurrency
+originals null, and `admit_runtime()` refuses before any authentic input read.
+The current #6966 observation is only a time-point observation, not an
+allocation. The earlier static #6964 byte projection is not a bound.
+
+The next execution commit must bind all five runtime originals to this exact
+source and the same execution key, preserve attempt `001`, set an explicit
+bounded concurrency, and independently review the actual memory/cgroup and
+calendar envelope. A new key must not be used to evade a timeout or unknown
+outcome.
+
+#6939/#6950 remain RED; #6942 remains RED_TIMEOUT with completed actions
+UNKNOWN; #6901 remains UNKNOWN. #6957 remains the authoritative 0/2,585
+non-unique result. Tail termination, N256 qualification, C2 full replay (0/6),
+HPCA external custody/equal-budget benefit, asynchronous cost, and production
+adoption remain open. Global state remains **HOLD / NoUpdate / all_closed=false**.

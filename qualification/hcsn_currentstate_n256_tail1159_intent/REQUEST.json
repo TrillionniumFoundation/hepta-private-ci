@@ -1,0 +1,36 @@
+{
+  "actual_execution_authorized": false,
+  "base_pr": 6966,
+  "budget": {
+    "checkpoint_decodes": 10,
+    "checkpoint_encodes_cap": 20,
+    "dynamic_steps": 0,
+    "exponential_actions": 0,
+    "model_calls": 0,
+    "optimizer_steps": 0,
+    "provider_calls": 0,
+    "recurrence_row_actions": 6220,
+    "rounding_calls_cap": 5180,
+    "tail_checks": 10,
+    "torch_calls": 0,
+    "training_calls": 0
+  },
+  "execution_key": "hcsn-n256-authentic-tail1159-20261122-c6bc-001",
+  "identity": "hcsn-n256-authentic-tail1159-intent-20261122-c6bc-v1",
+  "input": {
+    "index537_collector_sha256": "452e22f354928f88742d840d3287c160153b8e86d4ed5346b0d0628d0ddacbf4",
+    "index537_pr": 6957,
+    "index537_source_sha": "23980910e03fc62da839b11271a80241eaa21d9b",
+    "index537_tail_result": "NON_UNIQUE_0_OF_2585"
+  },
+  "lane_count": 10,
+  "runtime_admission": {
+    "allocation_sha256": null,
+    "calendar_sha256": null,
+    "concurrency": null,
+    "host_observation_sha256": null,
+    "runtime_sha256": null
+  },
+  "source_index": 537,
+  "target_index": 1159
+}
