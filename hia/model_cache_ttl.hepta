@@ -1,0 +1,85 @@
+hia-asm.v1 hepta.hia.program.v8 codex_model_cache_ttl
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  output_length:usize = buffer.len(output)
+  minimum_output:usize = const() {"value":8}
+  output_available:bool = compare.ge(output_length,minimum_output)
+  branch output_available source_shape(source,output) short_output()
+block source_shape(s_source:readbuf,s_output:mutbuf)
+  source_length:usize = buffer.len(s_source)
+  expected_length:usize = const() {"value":40}
+  exact_length:bool = compare.eq(source_length,expected_length)
+  branch exact_length header(s_source,s_output) invalid()
+block header(h_source:readbuf,h_output:mutbuf)
+  offset0:usize = const() {"value":0}
+  version:u64 = buffer.load.u64.le(h_source,offset0)
+  expected_version:u64 = const() {"value":1}
+  valid_version:bool = compare.eq(version,expected_version)
+  branch valid_version words(h_source,h_output) invalid()
+block words(w_source:readbuf,w_output:mutbuf)
+  offset8:usize = const() {"value":8}
+  offset16:usize = const() {"value":16}
+  offset24:usize = const() {"value":24}
+  offset32:usize = const() {"value":32}
+  age_seconds:u64 = buffer.load.u64.le(w_source,offset8)
+  age_nanoseconds:u64 = buffer.load.u64.le(w_source,offset16)
+  ttl_seconds:u64 = buffer.load.u64.le(w_source,offset24)
+  ttl_nanoseconds:u64 = buffer.load.u64.le(w_source,offset32)
+  maximum_nanoseconds:u64 = const() {"value":999999999}
+  minimum_negative_nanoseconds:u64 = const() {"value":18446744072709551617}
+  age_fraction_positive:bool = compare.le(age_nanoseconds,maximum_nanoseconds)
+  age_fraction_negative:bool = compare.ge(age_nanoseconds,minimum_negative_nanoseconds)
+  age_fraction_valid:bool = bool.or(age_fraction_positive,age_fraction_negative)
+  ttl_fraction_valid:bool = compare.le(ttl_nanoseconds,maximum_nanoseconds)
+  fractions_valid:bool = bool.and(age_fraction_valid,ttl_fraction_valid)
+  branch fractions_valid sign_shape(w_output,age_seconds,age_nanoseconds,ttl_seconds,ttl_nanoseconds) invalid()
+block sign_shape(g_output:mutbuf,g_age_seconds:u64,g_age_nanos:u64,g_ttl_seconds:u64,g_ttl_nanos:u64)
+  sign_boundary:u64 = const() {"value":9223372036854775808}
+  zero_word:u64 = const() {"value":0}
+  seconds_negative:bool = compare.ge(g_age_seconds,sign_boundary)
+  nanos_negative:bool = compare.ge(g_age_nanos,sign_boundary)
+  signed_same:bool = compare.eq(seconds_negative,nanos_negative)
+  seconds_zero:bool = compare.eq(g_age_seconds,zero_word)
+  nanos_zero:bool = compare.eq(g_age_nanos,zero_word)
+  signed_zero:bool = bool.or(seconds_zero,nanos_zero)
+  signed_consistent:bool = bool.or(signed_same,signed_zero)
+  branch signed_consistent ttl_zero(g_output,g_age_seconds,g_age_nanos,g_ttl_seconds,g_ttl_nanos) invalid()
+block ttl_zero(z_output:mutbuf,z_age_seconds:u64,z_age_nanos:u64,z_ttl_seconds:u64,z_ttl_nanos:u64)
+  zero_word:u64 = const() {"value":0}
+  ttl_seconds_zero:bool = compare.eq(z_ttl_seconds,zero_word)
+  ttl_nanos_zero:bool = compare.eq(z_ttl_nanos,zero_word)
+  zero_ttl:bool = bool.and(ttl_seconds_zero,ttl_nanos_zero)
+  branch zero_ttl stale(z_output) signed_check(z_output,z_age_seconds,z_age_nanos,z_ttl_seconds,z_ttl_nanos)
+block signed_check(c_output:mutbuf,c_age_seconds:u64,c_age_nanos:u64,c_ttl_seconds:u64,c_ttl_nanos:u64)
+  signed_negative_threshold:u64 = const() {"value":9223372036854775808}
+  age_seconds_negative:bool = compare.ge(c_age_seconds,signed_negative_threshold)
+  age_fraction_negative:bool = compare.ge(c_age_nanos,signed_negative_threshold)
+  age_negative:bool = bool.or(age_seconds_negative,age_fraction_negative)
+  branch age_negative fresh(c_output) elapsed(c_output,c_age_seconds,c_age_nanos,c_ttl_seconds,c_ttl_nanos)
+block elapsed(e_output:mutbuf,e_age_seconds:u64,e_age_nanos:u64,e_ttl_seconds:u64,e_ttl_nanos:u64)
+  seconds_less:bool = compare.lt(e_age_seconds,e_ttl_seconds)
+  seconds_same:bool = compare.eq(e_age_seconds,e_ttl_seconds)
+  branch seconds_less fresh(e_output) equal_or_stale(e_output,seconds_same,e_age_nanos,e_ttl_nanos)
+block equal_or_stale(q_output:mutbuf,q_equal:bool,q_age_nanos:u64,q_ttl_nanos:u64)
+  branch q_equal fractional(q_output,q_age_nanos,q_ttl_nanos) stale(q_output)
+block fractional(f_output:mutbuf,f_age_nanos:u64,f_ttl_nanos:u64)
+  nanos_within:bool = compare.le(f_age_nanos,f_ttl_nanos)
+  branch nanos_within fresh(f_output) stale(f_output)
+block fresh(t_output:mutbuf)
+  true_value:u64 = const() {"value":1}
+  jump emit(t_output,true_value)
+block stale(n_output:mutbuf)
+  false_value:u64 = const() {"value":0}
+  jump emit(n_output,false_value)
+block emit(p_output:mutbuf,p_value:u64)
+  result_offset:usize = const() {"value":0}
+  _ = buffer.store.u64.le(p_output,result_offset,p_value)
+  successful_bytes:u32 = const() {"value":8}
+  ret(successful_bytes)
+block invalid()
+  invalid_status:u32 = const() {"value":4294967295}
+  ret(invalid_status)
+block short_output()
+  short_status:u32 = const() {"value":4294967294}
+  ret(short_status)
+end
