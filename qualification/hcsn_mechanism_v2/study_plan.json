@@ -1,0 +1,173 @@
+{
+  "schema": "hepta.hcsn-mechanism.v2",
+  "namespace": "hcsn-mechanism-v2/20261122-e29f-independent-mechanisms-01",
+  "source_base": "b1a19b3b6b4ce24548a293a075ad9ed7088c6987",
+  "stages": [
+    "representation",
+    "control",
+    "clock",
+    "readout",
+    "profiled"
+  ],
+  "seeds": [
+    2540917,
+    3978061,
+    5264437,
+    7130923,
+    9416809
+  ],
+  "tasks": [
+    "first_passage",
+    "burst",
+    "asynchronous",
+    "association"
+  ],
+  "phase_wall_seconds": 3600,
+  "representation": {
+    "tasks": [
+      "first_passage",
+      "burst",
+      "asynchronous",
+      "association"
+    ],
+    "train": 128,
+    "dev": 64,
+    "final": 256,
+    "length": 12,
+    "pools": [
+      "legacy",
+      "exposure"
+    ],
+    "scalers": [
+      "empirical",
+      "bounded_floor"
+    ],
+    "scale_floor": 0.05,
+    "ridge": 0.001
+  },
+  "control": {
+    "intervals": [
+      0.125,
+      0.5,
+      2.0
+    ],
+    "logit_limits": [
+      6.0,
+      10.0
+    ],
+    "train_count": 128,
+    "dev_count": 64,
+    "final_count": 512,
+    "max_steps": 8192,
+    "learning_rate": 0.1,
+    "value_tolerance": 1e-08,
+    "checkpoints": [
+      0,
+      32,
+      128,
+      512,
+      2048,
+      4096,
+      8192
+    ],
+    "arm_wall_seconds": 120.0
+  },
+  "clock": {
+    "tasks": [
+      "held_hazard",
+      "held_filter",
+      "event_memory"
+    ],
+    "final": 128,
+    "segments": 8,
+    "refinement": 4,
+    "semigroup_tolerance": 1e-09
+  },
+  "readout": {
+    "tasks": [
+      "first_passage",
+      "burst",
+      "asynchronous",
+      "association"
+    ],
+    "train": 128,
+    "dev": 64,
+    "final": 256,
+    "length": 12,
+    "scalers": [
+      "empirical",
+      "bounded_floor"
+    ],
+    "scale_floor": 0.05,
+    "ridge": 0.001,
+    "max_iterations": 2048,
+    "max_evaluations": 4096,
+    "gradient_tolerance": 1e-10,
+    "change_tolerance": 1e-15,
+    "objective_tolerance": 1e-08,
+    "checkpoints": [
+      16,
+      64,
+      256,
+      1024,
+      2048,
+      4096
+    ],
+    "quality_margin_fraction_of_zero_dev_mse": 0.01,
+    "absolute_quality_margin": 1e-06
+  },
+  "profiled": {
+    "tasks": [
+      "first_passage",
+      "association"
+    ],
+    "train": 64,
+    "dev": 64,
+    "final": 128,
+    "length": 8,
+    "scale_floor": 0.05,
+    "ridge": 0.001,
+    "max_steps": 512,
+    "learning_rate": 0.005,
+    "gradient_tolerance": 1e-06,
+    "checkpoints": [
+      0,
+      16,
+      64,
+      128,
+      256,
+      512
+    ],
+    "arm_wall_seconds": 90.0,
+    "quality_margin_fraction_of_incumbent_dev_mse": 0.01,
+    "absolute_quality_margin": 1e-06
+  },
+  "cost_policy": {
+    "semantic_historical_authoring_seconds": null,
+    "semantic_historical_tokens": null,
+    "semantic_historical_api_cost": null,
+    "new_authoring": "record observable wall windows separately; parallel windows are not additive latency",
+    "final_policy": "one-use namespace; no selection or hyperparameter changes after frozen fit",
+    "warmup": "shared cold optimizer/SVD initialization retained in total process wall",
+    "standalone": "common feature preparation added back to each arm as a lower bound, without double counting in actual campaign total"
+  },
+  "primary_contrasts": [
+    "representation: same_generator minus ordinary_tanh and drop_value_risk, candidate and dev-selected MSE; legacy/empirical and exposure/bounded_floor; paired over all five seeds by task and split",
+    "representation: bounded_floor minus empirical at same pool/bank/link; exposure minus legacy at same bank/scaler/link; clip_unit minus identity for first_passage only; candidate clip effect holds weights fixed, selected representation effects may include different dev fallback decisions",
+    "control: hard review minus bounded-class optimum plus bounded optimum minus BP on training reward; independent final comparison at identical interval and L; decomposition uses non-fallback candidate, never selected pi=0 outside the bounded class",
+    "clock: same-trajectory coarse versus 4-way refinement; exact terminal/cumulative quantities, expected tolerance 1e-9 for event_mask and continuous_write",
+    "readout: direct versus actual local BP at identical ridge/normalization and objective gap <=1e-8; report all nonconverged cases and all costs; same-quality cost screen uses per-case max(1e-6,.01*zero_dev_MSE), separately from training optimality",
+    "profiled: joint BP versus variable-projection BP versus semantic-initialized variable-projection BP; common 51-parameter union, same fixed checkpoint grid, two named task families; same-quality screen max(1e-6,.01*incumbent_dev_MSE)"
+  ],
+  "claim_limits": [
+    "No multimodal foundation-model or Transformer replacement claim",
+    "No hardware energy, GPU, biological-spiking or full-network no-BP claim",
+    "Fixed review MDP is not continuous-observation QVI",
+    "Continuous write is a new finite held process, not unchanged event writing",
+    "Normalization floor changes raw-coordinate regularization; output projection is post-fit processing",
+    "Any exhausted training budget remains unproven convergence",
+    "Five paired seeds are descriptive evidence, not population-scale certainty",
+    "N256, C2 and HPCA qualification remains separately owned and unchanged"
+  ],
+  "summary_rule": "All five paired seed effects, arithmetic mean, observed min/max; no significance or confidence interpretation of the range"
+}
