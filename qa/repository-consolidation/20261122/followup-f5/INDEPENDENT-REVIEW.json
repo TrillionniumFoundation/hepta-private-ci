@@ -1,0 +1,259 @@
+{
+  "reviewed_utc": "2026-11-22T17:36:44.820489+00:00",
+  "review_scope": "Independent read-only frozen followup-f5 archive/source/claim binding. No source edits, index writes, native execution, code tests, CI retries or remote changes.",
+  "verdict": "NO_BLOCKER_IN_REVIEWED_QA_PACKAGE",
+  "qa_path": "/workspace/scratch/6d7ee0821539/rust-integration/qa/repository-consolidation/20261122/followup-f5",
+  "files": {
+    "EVIDENCE-MANIFEST.json": {
+      "bytes": 63847,
+      "sha256": "684b6519142842d2d296fa41328cc5d51155fed2948295ec085e32fcb48ca5ce"
+    },
+    "evidence.tar.gz.part002.gz": {
+      "bytes": 491380,
+      "sha256": "4a2adbc6bbaf20228d87e6df45fc50390302649258f0e66c62d0dd34e1789d7e"
+    },
+    "evidence.tar.gz.part012.gz": {
+      "bytes": 490724,
+      "sha256": "1690bc86adce5a537318152669adc26fb9a6a1d5f47e751f89342e56e6eadaed"
+    },
+    "evidence.tar.gz.part005.gz": {
+      "bytes": 491688,
+      "sha256": "808f4142c6a56c62dea1e50c471df823b286acb0d2425cabdee7291871e000cd"
+    },
+    "evidence.tar.gz.part011.gz": {
+      "bytes": 491688,
+      "sha256": "7bc7978e41b8d15e9822a956a312627c7e020690fbdeab4471d488664b42e828"
+    },
+    "README.md": {
+      "bytes": 3796,
+      "sha256": "d8cc7d9e6849fd4ef986b6c025c101861eb34d28c72a0e9580f0d50d254edeb8"
+    },
+    "evidence.tar.gz.part009.gz": {
+      "bytes": 491688,
+      "sha256": "a52359a7d251f82221409c5314a133379734a7812e06394b7cc442e2ac3571ec"
+    },
+    "evidence.tar.gz.part014.gz": {
+      "bytes": 77085,
+      "sha256": "e35ada43774ea5f42b4cd6dd56d552da46f54382f48fcd48cdcb8aca0533ac4d"
+    },
+    "evidence.tar.gz.part003.gz": {
+      "bytes": 491688,
+      "sha256": "5bcda3ef4e1bd9aed5ec2eff72738683094c047e95185d4dbe9e35a228a689bf"
+    },
+    "evidence.tar.gz.part004.gz": {
+      "bytes": 490721,
+      "sha256": "e895bd609de298eb4d44d8b6d7cb4ff4117bc49bb58d4f0bd661ee9e44f03afc"
+    },
+    "evidence.tar.gz.part013.gz": {
+      "bytes": 491688,
+      "sha256": "027e8b0dc712e76ab50cf85ffe797f672b7c130f0bd6bf4b4af1bb5bd2910e7b"
+    },
+    "evidence.tar.gz.part010.gz": {
+      "bytes": 491688,
+      "sha256": "474f3b5b21f107585ddd14283367a6ef542b6b9f2eb64dc375706abeaeb1a266"
+    },
+    "evidence.tar.gz.part001.gz": {
+      "bytes": 488720,
+      "sha256": "844bb4fd6c828ccdd42186ba05bc471f79a9f2177b4bde49dd85563a42e0e1fe"
+    },
+    "evidence.tar.gz.part006.gz": {
+      "bytes": 491688,
+      "sha256": "969a6022dd6e7f651187299eb00a55d99178d5ec60c7b4d0c108784f1a29e315"
+    },
+    "evidence.tar.gz.part007.gz": {
+      "bytes": 491688,
+      "sha256": "27e6213be680455ffe96d4f370fde7ab838849594e41be516475145e244d9c9f"
+    },
+    "VALIDATION.json": {
+      "bytes": 4167,
+      "sha256": "9c259a9564a43c61793576ef1882377f9159540a50ad6a4cc22a29259e9942dc"
+    },
+    "evidence.tar.gz.part008.gz": {
+      "bytes": 491688,
+      "sha256": "e76ecda92f3226599e2057dbc6a64f9383da4201138acfaaaee7de870cfaec58"
+    }
+  },
+  "archive": {
+    "parts": 14,
+    "standard_gzip_wrappers_individually_decoded": true,
+    "inner_gzip_tar_bytes": 6466802,
+    "inner_gzip_tar_sha256": "9fe5e83b787ea9ec20bee8450dfa1857147e20b599031d92d15d4199d0b5fb28",
+    "members": 273,
+    "member_bytes": 15983224,
+    "exact_unique_member_set": true,
+    "all_member_sizes_hashes_and_local_frozen_originals_equal": true,
+    "all_members_regular_relative_paths": true,
+    "outputs": 17,
+    "all_outputs_below_512000_bytes": true
+  },
+  "omissions": {
+    "count": 9,
+    "all_original_files_present_and_rehashed": true,
+    "third_party_installers": 8,
+    "original_native_process_zip": 1,
+    "native_helper_binary_entries": [
+      {
+        "artifact_id": 14764279434,
+        "path": "sandbox-helper-binaries/codex-command-runner.exe",
+        "bytes": 25793024,
+        "sha256": "eea137a3e914028cd27cb9d700c935dfe5e9720444606bdfe3e28b82d1e392ab",
+        "extracted": false,
+        "reason": "Compiled native helper binary retained in verified original artifact ZIP; not executed or copied into source QA archive."
+      },
+      {
+        "artifact_id": 14764279434,
+        "path": "sandbox-helper-binaries/codex-windows-sandbox-setup.exe",
+        "bytes": 36831232,
+        "sha256": "7b24b87d5c264b90ac06ea2cae7747cfa580cc1d20fa494622efcd875168d330",
+        "extracted": false,
+        "reason": "Compiled native helper binary retained in verified original artifact ZIP; not executed or copied into source QA archive."
+      }
+    ],
+    "all_native_artifact_text_members_archived": 35,
+    "process_artifact_text_members_archived": 20,
+    "executed_binary_entries": 0,
+    "omitted_files": [
+      {
+        "path": "ci-audit/native-f5-full-scope/f5-14764279434.zip",
+        "bytes": 19410010,
+        "sha256": "a6c158a7821ba58e7c693d120ffc193d88c4062fc9b2dd85bebde4e1e60bfad8",
+        "reason": "Original process artifact includes two compiled native helper executables. Preserve its verified ZIP identity and every text member; individual executable hashes are in EXTRACTED-MANIFEST.json. Local original ZIP is retained and was not executed."
+      },
+      {
+        "path": "ci-audit/windows-platform-contract/mingw-packages/binutils-mingw-w64-x86-64_2.44-3+12+b1_amd64.deb",
+        "bytes": 3473344,
+        "sha256": "b53f4a091b16a0d0952b8e3bd6027931641386258f96b37db1f0c62c787221d3",
+        "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+      },
+      {
+        "path": "ci-audit/windows-platform-contract/mingw-packages/g++-mingw-w64-x86-64-posix_14.2.0-19+27+b1_amd64.deb",
+        "bytes": 15261820,
+        "sha256": "cfa1773c2d0184819050138e587a81606d04a5f92e278b521b72b776d2c256c1",
+        "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+      },
+      {
+        "path": "ci-audit/windows-platform-contract/mingw-packages/gcc-mingw-w64-base_14.2.0-19+27+b1_amd64.deb",
+        "bytes": 194268,
+        "sha256": "8d2c64b886ab4a435a78ddc4cd3b510f149b65fbd6be8472e8f460627562718a",
+        "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+      },
+      {
+        "path": "ci-audit/windows-platform-contract/mingw-packages/gcc-mingw-w64-x86-64-posix-runtime_14.2.0-19+27+b1_amd64.deb",
+        "bytes": 13037152,
+        "sha256": "c898d96177574a8a7238564a1e799d8ddfed5a3d2ea005510305f9ad466a6f59",
+        "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+      },
+      {
+        "path": "ci-audit/windows-platform-contract/mingw-packages/gcc-mingw-w64-x86-64-posix_14.2.0-19+27+b1_amd64.deb",
+        "bytes": 37567656,
+        "sha256": "e32d24cfd1482394f16d9a84c1d0a9f5aa08ee826a79acc383c70cc8c23c4fe5",
+        "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+      },
+      {
+        "path": "ci-audit/windows-platform-contract/mingw-packages/mingw-w64-common_12.0.0-5_all.deb",
+        "bytes": 5792084,
+        "sha256": "97dce5d0d8aff1cade4786ad4ef5078345477a598829afcac2e7f2fbc5399990",
+        "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+      },
+      {
+        "path": "ci-audit/windows-platform-contract/mingw-packages/mingw-w64-x86-64-dev_12.0.0-5_all.deb",
+        "bytes": 4871860,
+        "sha256": "0bf89cf7454cccb49cd2a46a6f7b33896f6ae3a1a2fe33e02c40be6155bbb385",
+        "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+      },
+      {
+        "path": "ci-audit/windows-platform-contract/mingw-packages/nasm_2.16.03-1_amd64.deb",
+        "bytes": 418028,
+        "sha256": "e5096e91356d643f54d46f3ede1d8d44e45c81a3995fb057c28ec51e3791818f",
+        "reason": "Downloaded third-party compiler installer; retain digest and local original, not an installer copy in the source review."
+      }
+    ]
+  },
+  "source": {
+    "canonical_commit": {
+      "sha": "64ddc830635a8ced20e42db3d1767a3467c68ac6",
+      "raw_bytes": 985,
+      "raw_sha256": "e322cfac443cba04dcbae13b04a005cfd4cea5135442ea9bb2b5d3e330cba395",
+      "tree": "f3df6f7e2083061d4db674bb446d726fd037c75d",
+      "parents": [
+        "37fa48715f4eb2b886d2b737155505052b909b85",
+        "77c4b04d90392e90ac02eae1f22b2730417195ee"
+      ]
+    },
+    "canonical_authbus_parent": {
+      "sha": "37fa48715f4eb2b886d2b737155505052b909b85",
+      "raw_bytes": 708,
+      "raw_sha256": "345109a3386ac433975c1b9c1c7fdf308910ffacc88d7180b7d42f514c1992d5",
+      "tree": "4feb990594b1b8beea75734449ac7b124d784ace",
+      "parents": ["8701b6dec833693c37489e633f10e9b66af2bef9"]
+    },
+    "recorded_GitHub_objects_match_local_canonical_objects": true,
+    "true_ordered_merge_parents": [
+      "37fa48715f4eb2b886d2b737155505052b909b85",
+      "77c4b04d90392e90ac02eae1f22b2730417195ee"
+    ],
+    "77_net_paths": 22,
+    "all77_mode_blob_bytes_hashes_match_reviewed_component": true,
+    "authbus_net_paths": 4,
+    "all_authbus_mode_blob_bytes_hashes_match_reviewed_component": true,
+    "no_other_paths_changed_in_either_component_commit": true,
+    "factorial_final_input_bindings": 43,
+    "authbus_direct_linux_input_bindings": 101
+  },
+  "claims_review": {
+    "tested_vs_stacked_source_distinguished": true,
+    "factorial_44_subset_of_201_not_added_twice": true,
+    "factorial_two_CLI_checks_separate_from_tests": true,
+    "two_EOF_edits_and_no_postformat_tests_disclosed": true,
+    "authbus_Linux190_and_original_ignored1_distinguished_from_Windows_cross_checks": true,
+    "Windows_runtime_for_new_four_cases_pending": true,
+    "earlier_f5_native_result_not_claimed_as_later_candidate_result": true,
+    "native_groups": 19,
+    "native_cases": 175,
+    "native_pass": 171,
+    "native_fail": 4,
+    "native_shards": [
+      {
+        "shard": "owners",
+        "groups": 8,
+        "cases": 98,
+        "passed": 98,
+        "failed": 0
+      },
+      {
+        "shard": "process",
+        "groups": 11,
+        "cases": 77,
+        "passed": 73,
+        "failed": 4
+      }
+    ],
+    "native_retries": 0,
+    "native_missing": 0,
+    "nine_private_artifact_controls_are_separate": true,
+    "native_aggregate_correctly_FAILED": true,
+    "original_lockfile_CRLF_binding_independently_recomputed": true,
+    "e081_all45_paths_absent_from_source_and_whitespace24_blocker_retained": true,
+    "e081_same_key_duplicate_history_not_hidden": true,
+    "151_in_progress_and_14_earlier_failures_not_claimed_closed": true
+  },
+  "protection": {
+    "snapshot_refs": 7915,
+    "protected_refs": 559,
+    "protected_nodes": 1497,
+    "actual_source_ancestors": 45096,
+    "known_intersection": [],
+    "STOP_reachable": false,
+    "all_protected_ref_exact_tips_match_recorded_snapshot": true,
+    "main_in_snapshot": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "historical_551st_pin_identity_unrecovered": true,
+    "fresh_remote_lease_not_obtained_by_this_review": true
+  },
+  "frozen_QA_unchanged_before_after": true,
+  "limits": [
+    "This approves the reviewed evidence packaging and claim precision only; it is not a whole-stack or native qualification, main merge or repository completion.",
+    "The nine private-artifact controls and earlier Bazel/12-location evidence are explicitly referenced to the preceding native-f5 package; they are not counted in175 cases or represented as new tests here.",
+    "Component runtime validity relies on the archived original receipts plus exact source/input binding; no test was rerun by this review.",
+    "HIA verification is metadata-only and retains the unknown historical pin identity gap. Publication still needs the parent agent current ref lease and normal gates."
+  ]
+}
