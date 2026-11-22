@@ -1,0 +1,103 @@
+{
+  "acceptance": "all checks pass; any mismatch or budget breach fails this supplemental audit, without modifying or rerunning scientific phases",
+  "checks": [
+    "authenticate all frozen source and 172 input pins plus four successful process/result bindings",
+    "bind candidate model identity across GEN candidate seal, SELECT result/seal, CONF result and all raw records",
+    "bind all ten CONF family choices to the SELECT seal and selection-derived raw utility gates",
+    "replay both recorded 32-byte entropies with authenticated previous seals and exact PCG64 draw order; no entropy call",
+    "bind all 160 recorded SELECT/CONF graph public schedules, ids, indices and fingerprints one-to-one to frozen schedules",
+    "exclude all 3796 frozen historical hashes and every within-stage/across-stage duplicate schedule",
+    "reaggregate retained policy-record utilities with math.fsum and compare to original frozen independent hard-reader output",
+    "independently invert the df=4 Student-t cubic CDF using Decimal and recompute six paired contrasts plus two improvement claims",
+    "rehash every read artifact after all checks to reject concurrent mutation"
+  ],
+  "created_utc": "2026-11-22T08:43:14.803915+00:00",
+  "entropy_limit": "source-bound one retained entropy record per phase and deterministic replay; no external entropy custodian",
+  "input_root": "/workspace/scratch/267e347691df/advance_20261122_next/value/input_bundle",
+  "limits": {
+    "address_space_bytes": 2147483648,
+    "cpu_affinity": [
+      7
+    ],
+    "cpu_hard_seconds": 10,
+    "cpu_soft_seconds": 9.0,
+    "wall_seconds": 30
+  },
+  "no_quality_claim": "Only supplement retained-evidence verification. This creates no new confirmation or efficacy evidence.",
+  "numeric_comparison_absolute_tolerance": 2e-12,
+  "protocol_pin": {
+    "bytes": 412929,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+    "sha256": "adca7eed0c7dc63a5d884fc44f8e8431d7dae56eb44d0566d522eb8dae405d10"
+  },
+  "python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+  "quality_work": {
+    "model_forwards": 0,
+    "new_candidates": 0,
+    "new_entropy_draws": 0,
+    "new_worlds": 0,
+    "optimizer_steps": 0,
+    "policy_DPs": 0
+  },
+  "run_root": "/workspace/scratch/267e347691df/advance_20261122_next/value/run",
+  "schema": "hepta-value-supplemental-readonly-v1",
+  "source_root": "/workspace/scratch/267e347691df/advance_20261122_next/value",
+  "source_scope": [
+    {
+      "bytes": 10767,
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/soft_value.py",
+      "sha256": "ebd4926948de26f515b7bda54f59b00db17282df5cea5efa68f58b1a10e465ca"
+    },
+    {
+      "bytes": 17430,
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run_value_study.py",
+      "sha256": "731fdaf982cf2a91c94e63b3a58f2159bec185787ffa279f0aee0d9247b1208b"
+    },
+    {
+      "bytes": 11837,
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/verify_run.py",
+      "sha256": "e6fda217e27fd814fe2646bb5a59e2358d881b1dcffe68edb0175d4280ef9eee"
+    },
+    {
+      "bytes": 6448,
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/study_io.py",
+      "sha256": "eaa27770f550a2e967563c8159289fb6daebd7053a7301230145c3309c66df56"
+    },
+    {
+      "bytes": 412929,
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+      "sha256": "adca7eed0c7dc63a5d884fc44f8e8431d7dae56eb44d0566d522eb8dae405d10"
+    },
+    {
+      "bytes": 1301,
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/vendor/public_sampling.py",
+      "sha256": "ba9a39e0581bbbbae41c4bf4b30b4acd14553c932752afb385851905b4fc2de7"
+    },
+    {
+      "bytes": 6542,
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/vendor/data_contract.py",
+      "sha256": "d88e9439ca93eb2aa0c222ea8ecbb33b4599d548c9e4bffa5076614ba06994a5"
+    },
+    {
+      "bytes": 7740,
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/vendor/evaluation_io.py",
+      "sha256": "ff24d7000372e92ed7fa7ec86b6dbeb2f6c42101067292ed0ad20e9b797607c6"
+    },
+    {
+      "bytes": 3919,
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/supervise.py",
+      "sha256": "164787ce650d39378aee4e95b937a0cd38be3a9e8d84ff4822cf16e2b83c661f"
+    }
+  ],
+  "statistical_method": "six prespecified Bonferroni-adjusted paired-t contrasts over n=5 checkpoint clusters; this audit verifies arithmetic, not parametric assumptions",
+  "supervisor_pin": {
+    "bytes": 3074,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supervise_supplemental.py",
+    "sha256": "4b59efd9995e0fde127d01e2e0c2ee95cef3c46a7cd5e9296cb98a731f90bbdc"
+  },
+  "verifier_pin": {
+    "bytes": 22898,
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/pocket/value_review/supplemental_verify.py",
+    "sha256": "1be197eac059f2868d5ae2826ead46498309abc0ad41cbce6b9b7f1e68719c0e"
+  }
+}

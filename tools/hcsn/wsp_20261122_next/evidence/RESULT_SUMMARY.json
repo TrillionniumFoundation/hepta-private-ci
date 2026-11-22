@@ -1,0 +1,3440 @@
+{
+  "schema": "hepta-value-sensitive-result-summary-v1",
+  "status": "COMPLETED_NO_UPDATE",
+  "protocol_pin": {
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+    "bytes": 412929,
+    "sha256": "adca7eed0c7dc63a5d884fc44f8e8431d7dae56eb44d0566d522eb8dae405d10"
+  },
+  "fits": {
+    "11": {
+      "original_model_pin": {
+        "bytes": 172526,
+        "original_source_pin": {
+          "bytes": 172526,
+          "path": "/workspace/scratch/4b91365ace88/wsp_value_20261121/value/main_attempt001/output/models/fit_11_KEEP.json.gz",
+          "sha256": "fd4e8104066879320811d8276eb96ff524fcb224f80aab4dd20dacb4a9d628e9"
+        },
+        "path": "models/fit_11.json.gz",
+        "sha256": "fd4e8104066879320811d8276eb96ff524fcb224f80aab4dd20dacb4a9d628e9"
+      },
+      "GEN": {
+        "KEEP": {
+          "absolute_retention": 0.6710801090330875,
+          "absolute_retention_denominator": 0.3428146294673037,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0003267122118129584,
+            "own_posterior_MSE_original_occupancy": 0.0003267122118129584,
+            "terminal_rank_own_gap_candidate_occupancy": 0.002654078509194885,
+            "terminal_rank_own_gap_original_occupancy": 0.002654078509194885
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.11275855054624806,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.11275855054624806,
+          "optimal_utility": 0.3428146294673037,
+          "original_utility": 0.23005607892105562,
+          "per_world_utilities": [
+            0.5463611681803252,
+            0.1860508612028669,
+            0.11511835225123708,
+            0.12894660685436468,
+            0.2618966842821851,
+            0.02950864082028377,
+            0.09168331070290779,
+            0.3617545183052173,
+            0.2630569168560292,
+            0.39809988039728145,
+            0.19683042572050058,
+            0.4658311613954704,
+            0.1644872400092925,
+            0.03445034050930586,
+            0.1487472213735957,
+            0.09407790869033683,
+            0.02048443988040829,
+            0.37993619490587544,
+            0.07942607433568642,
+            0.10817216661792979,
+            0.11379461683924877,
+            0.4571738152103396,
+            0.0777356146187137,
+            0.3897897396916706,
+            0.40659804348787165,
+            0.13937008331504702,
+            0.31956883487836646,
+            0.2502286570878023,
+            0.39631171938856263,
+            0.4461812649008354,
+            0.39071310284415567,
+            -0.10059108007993503
+          ],
+          "utility": 0.23005607892105562,
+          "worlds": 32
+        },
+        "DIRECT": {
+          "absolute_retention": 0.6710801090330875,
+          "absolute_retention_denominator": 0.3428146294673037,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0003267122118129584,
+            "own_posterior_MSE_original_occupancy": 0.0003267122118129584,
+            "terminal_rank_own_gap_candidate_occupancy": 0.002654078509194885,
+            "terminal_rank_own_gap_original_occupancy": 0.002654078509194885
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.11275855054624806,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.11275855054624806,
+          "optimal_utility": 0.3428146294673037,
+          "original_utility": 0.23005607892105562,
+          "per_world_utilities": [
+            0.5463611681803252,
+            0.1860508612028669,
+            0.11511835225123708,
+            0.12894660685436468,
+            0.2618966842821851,
+            0.02950864082028377,
+            0.09168331070290779,
+            0.3617545183052173,
+            0.2630569168560292,
+            0.39809988039728145,
+            0.19683042572050058,
+            0.4658311613954704,
+            0.1644872400092925,
+            0.03445034050930586,
+            0.1487472213735957,
+            0.09407790869033683,
+            0.02048443988040829,
+            0.37993619490587544,
+            0.07942607433568642,
+            0.10817216661792979,
+            0.11379461683924877,
+            0.4571738152103396,
+            0.0777356146187137,
+            0.3897897396916706,
+            0.40659804348787165,
+            0.13937008331504702,
+            0.31956883487836646,
+            0.2502286570878023,
+            0.39631171938856263,
+            0.4461812649008354,
+            0.39071310284415567,
+            -0.10059108007993503
+          ],
+          "utility": 0.23005607892105562,
+          "worlds": 32
+        },
+        "BP": {
+          "absolute_retention": 0.7689425502926688,
+          "absolute_retention_denominator": 0.3428146294673037,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.00035991720390126953,
+            "own_posterior_MSE_original_occupancy": 0.00042436507044055845,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0011230992758112573,
+            "terminal_rank_own_gap_original_occupancy": 0.0018783182604129786
+          },
+          "delta_original": 0.03354867653916915,
+          "delta_original_max": 0.22856951946340248,
+          "delta_original_min": -0.26229679902297226,
+          "opportunity_denominator": 0.11275855054624806,
+          "opportunity_recovery": 0.297526674266792,
+          "optimal_regret": 0.0792098740070789,
+          "optimal_utility": 0.3428146294673037,
+          "original_utility": 0.23005607892105562,
+          "per_world_utilities": [
+            0.5463611681803252,
+            0.1860508612028669,
+            0.19664937732638543,
+            0.34232540207754997,
+            0.35189668428218385,
+            0.02950864082028377,
+            0.0666833107029078,
+            0.35900254148034133,
+            0.34922749356667093,
+            0.5500180879594664,
+            0.17303883453980062,
+            0.4658311613954692,
+            0.1441369615204009,
+            0.06205203365899636,
+            0.04131153835170345,
+            0.09407790869033078,
+            0.06658851193247026,
+            0.4450957470699356,
+            0.08023181240142288,
+            0.10520041764442477,
+            0.11379461683924877,
+            0.4571738152103396,
+            0.09893157842487915,
+            0.5404743951929497,
+            0.466189006235812,
+            0.33171942271237864,
+            0.5481383543417689,
+            -0.012068141935169953,
+            0.5460919624340935,
+            0.40869043004682126,
+            0.302909376063554,
+            -0.021981135643419785
+          ],
+          "utility": 0.26360475546022477,
+          "worlds": 32
+        }
+      },
+      "SELECT": {
+        "KEEP": {
+          "absolute_retention": 0.6415073235625413,
+          "absolute_retention_denominator": 0.3078588531829479,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0004687227375480938,
+            "own_posterior_MSE_original_occupancy": 0.0004687227375480938,
+            "terminal_rank_own_gap_candidate_occupancy": 0.004001599555173211,
+            "terminal_rank_own_gap_original_occupancy": 0.004001599555173211
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.11036514424252167,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.11036514424252167,
+          "optimal_utility": 0.3078588531829479,
+          "original_utility": 0.19749370894042625,
+          "per_world_utilities": [
+            0.16411003635100255,
+            0.2797615805586936,
+            0.3704496943054621,
+            0.10182969455440903,
+            0.3540191819546154,
+            -0.07486546589463304,
+            0.18661205282083462,
+            0.45571107524062016,
+            0.10648430306123156,
+            0.3804535698482912,
+            0.2717315946884226,
+            0.2955469748676466,
+            0.11505319572413518,
+            -0.017345213001639007,
+            0.09779264029293225,
+            0.07255442767479534
+          ],
+          "utility": 0.19749370894042625,
+          "worlds": 16
+        },
+        "DIRECT": {
+          "absolute_retention": 0.6415073235625413,
+          "absolute_retention_denominator": 0.3078588531829479,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0004687227375480938,
+            "own_posterior_MSE_original_occupancy": 0.0004687227375480938,
+            "terminal_rank_own_gap_candidate_occupancy": 0.004001599555173211,
+            "terminal_rank_own_gap_original_occupancy": 0.004001599555173211
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.11036514424252167,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.11036514424252167,
+          "optimal_utility": 0.3078588531829479,
+          "original_utility": 0.19749370894042625,
+          "per_world_utilities": [
+            0.16411003635100255,
+            0.2797615805586936,
+            0.3704496943054621,
+            0.10182969455440903,
+            0.3540191819546154,
+            -0.07486546589463304,
+            0.18661205282083462,
+            0.45571107524062016,
+            0.10648430306123156,
+            0.3804535698482912,
+            0.2717315946884226,
+            0.2955469748676466,
+            0.11505319572413518,
+            -0.017345213001639007,
+            0.09779264029293225,
+            0.07255442767479534
+          ],
+          "utility": 0.19749370894042625,
+          "worlds": 16
+        },
+        "BP": {
+          "absolute_retention": 0.7669450125624666,
+          "absolute_retention_denominator": 0.3078588531829479,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.000554125749521946,
+            "own_posterior_MSE_original_occupancy": 0.000631309714819469,
+            "terminal_rank_own_gap_candidate_occupancy": 0.005263175354715117,
+            "terminal_rank_own_gap_original_occupancy": 0.004145779524910178
+          },
+          "delta_original": 0.038617103081436316,
+          "delta_original_max": 0.2742444301606376,
+          "delta_original_min": -0.08519893440452606,
+          "opportunity_denominator": 0.11036514424252167,
+          "opportunity_recovery": 0.34990307262750675,
+          "optimal_regret": 0.07174804116108535,
+          "optimal_utility": 0.3078588531829479,
+          "original_utility": 0.19749370894042625,
+          "per_world_utilities": [
+            0.09996653964406102,
+            0.19456264615416755,
+            0.4894083060083089,
+            0.10182969455440351,
+            0.34882070956005035,
+            0.08965640474594973,
+            0.18661205282083462,
+            0.45571107524062016,
+            0.1064843030612304,
+            0.531215450807053,
+            0.26626424163957296,
+            0.42104009622469485,
+            0.07684939789197642,
+            0.2568992171589986,
+            0.09570345820693502,
+            0.056749398630944164
+          ],
+          "utility": 0.23611081202186257,
+          "worlds": 16
+        }
+      },
+      "confirmation": {
+        "iid": {
+          "KEEP": {
+            "absolute_retention": 0.7935816230037905,
+            "absolute_retention_denominator": 0.30146755927387836,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0007550287878416935,
+              "own_posterior_MSE_original_occupancy": 0.0007550287878416935,
+              "terminal_rank_own_gap_candidate_occupancy": 0.003784690959266797,
+              "terminal_rank_own_gap_original_occupancy": 0.003784690959266797
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.06222844430232255,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.06222844430232255,
+            "optimal_utility": 0.30146755927387836,
+            "original_utility": 0.2392391149715558,
+            "per_world_utilities": [
+              0.20010624937058896,
+              0.3178305089436439,
+              0.36749878439366435,
+              0.11295910449128387,
+              0.42823351274804133,
+              0.06977049021234562,
+              0.2064979875719219,
+              0.21101628204095638
+            ],
+            "utility": 0.2392391149715558,
+            "worlds": 8
+          },
+          "DIRECT": {
+            "absolute_retention": 0.7935816230037905,
+            "absolute_retention_denominator": 0.30146755927387836,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0007550287878416935,
+              "own_posterior_MSE_original_occupancy": 0.0007550287878416935,
+              "terminal_rank_own_gap_candidate_occupancy": 0.003784690959266797,
+              "terminal_rank_own_gap_original_occupancy": 0.003784690959266797
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.06222844430232255,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.06222844430232255,
+            "optimal_utility": 0.30146755927387836,
+            "original_utility": 0.2392391149715558,
+            "per_world_utilities": [
+              0.20010624937058896,
+              0.3178305089436439,
+              0.36749878439366435,
+              0.11295910449128387,
+              0.42823351274804133,
+              0.06977049021234562,
+              0.2064979875719219,
+              0.21101628204095638
+            ],
+            "utility": 0.2392391149715558,
+            "worlds": 8
+          },
+          "BP": {
+            "absolute_retention": 0.6875788805445366,
+            "absolute_retention_denominator": 0.30146755927387836,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0009220455408670732,
+              "own_posterior_MSE_original_occupancy": 0.0009277530548333268,
+              "terminal_rank_own_gap_candidate_occupancy": 0.00015284158180523658,
+              "terminal_rank_own_gap_original_occupancy": 0.001744778391798141
+            },
+            "delta_original": -0.03195638804552878,
+            "delta_original_max": 0.17113834969472275,
+            "delta_original_min": -0.17563826160614676,
+            "opportunity_denominator": 0.06222844430232255,
+            "opportunity_recovery": -0.5135334557019622,
+            "optimal_regret": 0.09418483234785133,
+            "optimal_utility": 0.30146755927387836,
+            "original_utility": 0.2392391149715558,
+            "per_world_utilities": [
+              0.02446798776444221,
+              0.41669932935199294,
+              0.5386371340883871,
+              0.09420910449128386,
+              0.418186624139997,
+              -0.024965463352059118,
+              0.05536417320068779,
+              0.13566292572348446
+            ],
+            "utility": 0.20728272692602703,
+            "worlds": 8
+          }
+        },
+        "ood": {
+          "KEEP": {
+            "absolute_retention": 0.4896406721362288,
+            "absolute_retention_denominator": 0.34377158682723186,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0035545780162256043,
+              "own_posterior_MSE_original_occupancy": 0.0035545780162256043,
+              "terminal_rank_own_gap_candidate_occupancy": 0.015381984569860327,
+              "terminal_rank_own_gap_original_occupancy": 0.015381984569860327
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.1754470359918081,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.1754470359918081,
+            "optimal_utility": 0.34377158682723186,
+            "original_utility": 0.16832455083542375,
+            "per_world_utilities": [
+              0.32579381461951573,
+              0.2297868882455958,
+              0.21738562350735247,
+              -0.0747578241037558,
+              0.3348652994854646,
+              0.3515846945447362,
+              -0.12452343030527402,
+              0.0864613406897552
+            ],
+            "utility": 0.16832455083542375,
+            "worlds": 8
+          },
+          "DIRECT": {
+            "absolute_retention": 0.4896406721362288,
+            "absolute_retention_denominator": 0.34377158682723186,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0035545780162256043,
+              "own_posterior_MSE_original_occupancy": 0.0035545780162256043,
+              "terminal_rank_own_gap_candidate_occupancy": 0.015381984569860327,
+              "terminal_rank_own_gap_original_occupancy": 0.015381984569860327
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.1754470359918081,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.1754470359918081,
+            "optimal_utility": 0.34377158682723186,
+            "original_utility": 0.16832455083542375,
+            "per_world_utilities": [
+              0.32579381461951573,
+              0.2297868882455958,
+              0.21738562350735247,
+              -0.0747578241037558,
+              0.3348652994854646,
+              0.3515846945447362,
+              -0.12452343030527402,
+              0.0864613406897552
+            ],
+            "utility": 0.16832455083542375,
+            "worlds": 8
+          },
+          "BP": {
+            "absolute_retention": 0.5219504654775684,
+            "absolute_retention_denominator": 0.34377158682723186,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0034635782885118153,
+              "own_posterior_MSE_original_occupancy": 0.0038719295745338394,
+              "terminal_rank_own_gap_candidate_occupancy": 0.015864813193660586,
+              "terminal_rank_own_gap_original_occupancy": 0.013781259460555279
+            },
+            "delta_original": 0.011107188927012235,
+            "delta_original_max": 0.3350562938207151,
+            "delta_original_min": -0.38492665324910447,
+            "opportunity_denominator": 0.1754470359918081,
+            "opportunity_recovery": 0.06330793144622202,
+            "optimal_regret": 0.16433984706479587,
+            "optimal_utility": 0.34377158682723186,
+            "original_utility": 0.16832455083542375,
+            "per_world_utilities": [
+              -0.059132838629588735,
+              0.049786888245595795,
+              0.15738562350735244,
+              0.2602984697169593,
+              0.17486529948546461,
+              0.4844976106716062,
+              0.020577836500713875,
+              0.3471750286013843
+            ],
+            "utility": 0.17943173976243598,
+            "worlds": 8
+          }
+        }
+      },
+      "choices": {
+        "BP": "KEEP",
+        "DIRECT": "KEEP"
+      },
+      "gates": {
+        "BP": {
+          "mean_delta": 0.038617103081436316,
+          "minimum_world_delta": -0.08519893440452606,
+          "passed": false
+        },
+        "DIRECT": {
+          "mean_delta": 0.0,
+          "minimum_world_delta": 0.0,
+          "passed": false
+        }
+      },
+      "direct_actual_norm": 0.0,
+      "gradient_actual_norm": 0.6195232240003004,
+      "direct_primary_alias": true,
+      "direct_largest_proposal_minus_retained": -0.010650978225308846,
+      "raw_soft_objective": {
+        "BP": 0.1886188203527061,
+        "DIRECT": 0.10174752672801587
+      },
+      "GEN_oracle_values": {
+        "BOTH_ORACLE": 0.3428146294673037,
+        "B_ORACLE": 0.2311833652255798,
+        "KEEP": 0.23005607892105562,
+        "Q_ORACLE": 0.33957392437697953
+      },
+      "representation_control": {
+        "action_differences": 0,
+        "broken_upstream_only_maximum_difference": 1.1853340641052417,
+        "maximum_score_error": 6.661338147750939e-16,
+        "permutation": [
+          47,
+          46,
+          45,
+          44,
+          43,
+          42,
+          41,
+          40,
+          39,
+          38,
+          37,
+          36,
+          35,
+          34,
+          33,
+          32,
+          31,
+          30,
+          29,
+          28,
+          27,
+          26,
+          25,
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "rows": 7606
+      }
+    },
+    "23": {
+      "original_model_pin": {
+        "bytes": 172558,
+        "original_source_pin": {
+          "bytes": 172558,
+          "path": "/workspace/scratch/4b91365ace88/wsp_value_20261121/value/main_attempt001/output/models/fit_23_KEEP.json.gz",
+          "sha256": "2037bf93f45bf19cd27f73201e57bedc41ddea08243728eaa466d8f7e3555693"
+        },
+        "path": "models/fit_23.json.gz",
+        "sha256": "2037bf93f45bf19cd27f73201e57bedc41ddea08243728eaa466d8f7e3555693"
+      },
+      "GEN": {
+        "KEEP": {
+          "absolute_retention": 0.7231015740912385,
+          "absolute_retention_denominator": 0.334349025022522,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0004991208062012393,
+            "own_posterior_MSE_original_occupancy": 0.0004991208062012393,
+            "terminal_rank_own_gap_candidate_occupancy": 0.000421130345050818,
+            "terminal_rank_own_gap_original_occupancy": 0.000421130345050818
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.09258071873286544,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.09258071873286544,
+          "optimal_utility": 0.334349025022522,
+          "original_utility": 0.24176830628965656,
+          "per_world_utilities": [
+            0.2910835705261422,
+            0.40538154821739747,
+            0.05573220234552895,
+            0.2411559102774992,
+            0.4075892401863673,
+            0.4804810304474146,
+            0.1681744332295212,
+            0.33472719974631815,
+            0.13815068502317826,
+            0.01912646596352854,
+            0.3903275806152104,
+            0.44683507263329825,
+            0.3622021922631196,
+            0.13756476429679748,
+            0.10894361286442439,
+            0.19286897342184034,
+            0.45613516730891984,
+            0.19509755250157604,
+            0.16257547862247657,
+            0.14482604710070032,
+            0.116775697204,
+            0.08183959758117468,
+            0.202396204372823,
+            0.14243385489156654,
+            0.2981195678319852,
+            0.21807015799628904,
+            0.06280279201675487,
+            0.1666389522047373,
+            0.4504299857408134,
+            0.3639579774950752,
+            0.08971804427216508,
+            0.4044242420703669
+          ],
+          "utility": 0.24176830628965656,
+          "worlds": 32
+        },
+        "DIRECT": {
+          "absolute_retention": 0.7231015740912385,
+          "absolute_retention_denominator": 0.334349025022522,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0004991208062012393,
+            "own_posterior_MSE_original_occupancy": 0.0004991208062012393,
+            "terminal_rank_own_gap_candidate_occupancy": 0.000421130345050818,
+            "terminal_rank_own_gap_original_occupancy": 0.000421130345050818
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.09258071873286544,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.09258071873286544,
+          "optimal_utility": 0.334349025022522,
+          "original_utility": 0.24176830628965656,
+          "per_world_utilities": [
+            0.2910835705261422,
+            0.40538154821739747,
+            0.05573220234552895,
+            0.2411559102774992,
+            0.4075892401863673,
+            0.4804810304474146,
+            0.1681744332295212,
+            0.33472719974631815,
+            0.13815068502317826,
+            0.01912646596352854,
+            0.3903275806152104,
+            0.44683507263329825,
+            0.3622021922631196,
+            0.13756476429679748,
+            0.10894361286442439,
+            0.19286897342184034,
+            0.45613516730891984,
+            0.19509755250157604,
+            0.16257547862247657,
+            0.14482604710070032,
+            0.116775697204,
+            0.08183959758117468,
+            0.202396204372823,
+            0.14243385489156654,
+            0.2981195678319852,
+            0.21807015799628904,
+            0.06280279201675487,
+            0.1666389522047373,
+            0.4504299857408134,
+            0.3639579774950752,
+            0.08971804427216508,
+            0.4044242420703669
+          ],
+          "utility": 0.24176830628965656,
+          "worlds": 32
+        },
+        "BP": {
+          "absolute_retention": 0.8406155067759492,
+          "absolute_retention_denominator": 0.334349025022522,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0007660813796497753,
+            "own_posterior_MSE_original_occupancy": 0.0008638727884393243,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0034969120109334837,
+            "terminal_rank_own_gap_original_occupancy": 0.0031621471931535805
+          },
+          "delta_original": 0.039290668819695285,
+          "delta_original_max": 0.2955472339871822,
+          "delta_original_min": -0.15881462618305978,
+          "opportunity_denominator": 0.09258071873286544,
+          "opportunity_recovery": 0.42439364651148903,
+          "optimal_regret": 0.05329004991317016,
+          "optimal_utility": 0.334349025022522,
+          "original_utility": 0.24176830628965656,
+          "per_world_utilities": [
+            0.3597068705780334,
+            0.5598810443313186,
+            0.17866675455055608,
+            0.5367031442646814,
+            0.45351362861385924,
+            0.455477773236427,
+            0.20506470186050796,
+            0.41923675440703584,
+            0.13815068502317826,
+            0.1124923781595564,
+            0.5531648337575593,
+            0.46532730413886536,
+            0.35645219226311914,
+            -0.0212498618862623,
+            0.1059998182362551,
+            0.11782984124086633,
+            0.45613516730891984,
+            0.15599755250156697,
+            0.1888614781822463,
+            0.09367604710065425,
+            0.187300176352358,
+            0.1113219474753612,
+            0.24794986952399237,
+            0.18111770527398363,
+            0.2923695678319842,
+            0.4701804611245769,
+            0.0537221584315519,
+            0.08728782747247041,
+            0.5611322484509526,
+            0.35580797749507487,
+            0.08971804427216508,
+            0.46489111192584354
+          ],
+          "utility": 0.28105897510935185,
+          "worlds": 32
+        }
+      },
+      "SELECT": {
+        "KEEP": {
+          "absolute_retention": 0.7495860712817674,
+          "absolute_retention_denominator": 0.36787782765224564,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.000630950072791528,
+            "own_posterior_MSE_original_occupancy": 0.000630950072791528,
+            "terminal_rank_own_gap_candidate_occupancy": 0.00024327833086606375,
+            "terminal_rank_own_gap_original_occupancy": 0.00024327833086606375
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.09212173211072772,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.09212173211072772,
+          "optimal_utility": 0.36787782765224564,
+          "original_utility": 0.2757560955415179,
+          "per_world_utilities": [
+            0.10529619476561486,
+            0.5559208714194911,
+            0.4607381020309712,
+            0.2935642211978125,
+            0.1289408479932185,
+            0.10629367957993593,
+            0.2585206646928768,
+            0.2659610518072074,
+            0.27154556981216926,
+            0.16457162258368177,
+            0.43281713281223283,
+            0.2435397329213267,
+            0.46037496837664893,
+            0.3364297745537885,
+            -0.02529463728620976,
+            0.3528777314035209
+          ],
+          "utility": 0.2757560955415179,
+          "worlds": 16
+        },
+        "DIRECT": {
+          "absolute_retention": 0.7495860712817674,
+          "absolute_retention_denominator": 0.36787782765224564,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.000630950072791528,
+            "own_posterior_MSE_original_occupancy": 0.000630950072791528,
+            "terminal_rank_own_gap_candidate_occupancy": 0.00024327833086606375,
+            "terminal_rank_own_gap_original_occupancy": 0.00024327833086606375
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.09212173211072772,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.09212173211072772,
+          "optimal_utility": 0.36787782765224564,
+          "original_utility": 0.2757560955415179,
+          "per_world_utilities": [
+            0.10529619476561486,
+            0.5559208714194911,
+            0.4607381020309712,
+            0.2935642211978125,
+            0.1289408479932185,
+            0.10629367957993593,
+            0.2585206646928768,
+            0.2659610518072074,
+            0.27154556981216926,
+            0.16457162258368177,
+            0.43281713281223283,
+            0.2435397329213267,
+            0.46037496837664893,
+            0.3364297745537885,
+            -0.02529463728620976,
+            0.3528777314035209
+          ],
+          "utility": 0.2757560955415179,
+          "worlds": 16
+        },
+        "BP": {
+          "absolute_retention": 0.8390538500133565,
+          "absolute_retention_denominator": 0.36787782765224564,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0007683892729675457,
+            "own_posterior_MSE_original_occupancy": 0.00082084740825485,
+            "terminal_rank_own_gap_candidate_occupancy": 0.00046962545014979113,
+            "terminal_rank_own_gap_original_occupancy": 3.9626213421510936e-05
+          },
+          "delta_original": 0.03291321208464881,
+          "delta_original_max": 0.2636194465087828,
+          "delta_original_min": -0.21065317856952273,
+          "opportunity_denominator": 0.09212173211072772,
+          "opportunity_recovery": 0.35727956184202075,
+          "optimal_regret": 0.059208520026078904,
+          "optimal_utility": 0.36787782765224564,
+          "original_utility": 0.2757560955415179,
+          "per_world_utilities": [
+            0.10529619476561486,
+            0.5559208714194911,
+            0.37073810203096297,
+            0.08291104262828977,
+            0.1983277272948967,
+            0.10303096630940889,
+            0.17294613535357492,
+            0.5295804983159902,
+            0.34187845339543144,
+            0.09772453288011977,
+            0.5607261937216003,
+            0.20513044562899296,
+            0.46037496837664893,
+            0.5467280998164559,
+            0.06470536271378804,
+            0.5426893273674007
+          ],
+          "utility": 0.30866930762616673,
+          "worlds": 16
+        }
+      },
+      "confirmation": {
+        "iid": {
+          "KEEP": {
+            "absolute_retention": 0.6780563707971029,
+            "absolute_retention_denominator": 0.3712690952799768,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0007278809265574043,
+              "own_posterior_MSE_original_occupancy": 0.0007278809265574043,
+              "terminal_rank_own_gap_candidate_occupancy": 0.004811361049164525,
+              "terminal_rank_own_gap_original_occupancy": 0.004811361049164525
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.11952771994531192,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.11952771994531192,
+            "optimal_utility": 0.3712690952799768,
+            "original_utility": 0.2517413753346649,
+            "per_world_utilities": [
+              0.1909483093241425,
+              0.29558294647592986,
+              0.16620752871331196,
+              0.3675865903260783,
+              0.2122487027464409,
+              0.10978857029407955,
+              0.4007651317104607,
+              0.2708032230868754
+            ],
+            "utility": 0.2517413753346649,
+            "worlds": 8
+          },
+          "DIRECT": {
+            "absolute_retention": 0.6780563707971029,
+            "absolute_retention_denominator": 0.3712690952799768,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0007278809265574043,
+              "own_posterior_MSE_original_occupancy": 0.0007278809265574043,
+              "terminal_rank_own_gap_candidate_occupancy": 0.004811361049164525,
+              "terminal_rank_own_gap_original_occupancy": 0.004811361049164525
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.11952771994531192,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.11952771994531192,
+            "optimal_utility": 0.3712690952799768,
+            "original_utility": 0.2517413753346649,
+            "per_world_utilities": [
+              0.1909483093241425,
+              0.29558294647592986,
+              0.16620752871331196,
+              0.3675865903260783,
+              0.2122487027464409,
+              0.10978857029407955,
+              0.4007651317104607,
+              0.2708032230868754
+            ],
+            "utility": 0.2517413753346649,
+            "worlds": 8
+          },
+          "BP": {
+            "absolute_retention": 0.7924148704628016,
+            "absolute_retention_denominator": 0.3712690952799768,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0008799871771179025,
+              "own_posterior_MSE_original_occupancy": 0.0011151668673943216,
+              "terminal_rank_own_gap_candidate_occupancy": 0.0031036449763195513,
+              "terminal_rank_own_gap_original_occupancy": 0.002453896074984273
+            },
+            "delta_original": 0.04245777670845946,
+            "delta_original_max": 0.3296505102485783,
+            "delta_original_min": -0.08576397245197545,
+            "opportunity_denominator": 0.11952771994531192,
+            "opportunity_recovery": 0.35521280526295795,
+            "optimal_regret": 0.07706994323685246,
+            "optimal_utility": 0.3712690952799768,
+            "original_utility": 0.2517413753346649,
+            "per_world_utilities": [
+              0.1909483093241425,
+              0.31716163090307337,
+              0.2500529256102943,
+              0.3675865903260783,
+              0.5418992129950192,
+              0.06648192550926195,
+              0.4344233710422251,
+              0.18503925063489993
+            ],
+            "utility": 0.29419915204312436,
+            "worlds": 8
+          }
+        },
+        "ood": {
+          "KEEP": {
+            "absolute_retention": 0.48251978052571326,
+            "absolute_retention_denominator": 0.31465990123705473,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0014478627602049952,
+              "own_posterior_MSE_original_occupancy": 0.0014478627602049952,
+              "terminal_rank_own_gap_candidate_occupancy": 0.005836544232616637,
+              "terminal_rank_own_gap_original_occupancy": 0.005836544232616637
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.16283027475190848,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.16283027475190848,
+            "optimal_utility": 0.31465990123705473,
+            "original_utility": 0.15182962648514625,
+            "per_world_utilities": [
+              0.17158181930733607,
+              -0.3807603582535601,
+              0.3721017142167535,
+              0.3579617430368693,
+              0.1963477598843173,
+              0.12687140013163556,
+              0.14171370786085494,
+              0.22881922569696367
+            ],
+            "utility": 0.15182962648514625,
+            "worlds": 8
+          },
+          "DIRECT": {
+            "absolute_retention": 0.48251978052571326,
+            "absolute_retention_denominator": 0.31465990123705473,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0014478627602049952,
+              "own_posterior_MSE_original_occupancy": 0.0014478627602049952,
+              "terminal_rank_own_gap_candidate_occupancy": 0.005836544232616637,
+              "terminal_rank_own_gap_original_occupancy": 0.005836544232616637
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.16283027475190848,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.16283027475190848,
+            "optimal_utility": 0.31465990123705473,
+            "original_utility": 0.15182962648514625,
+            "per_world_utilities": [
+              0.17158181930733607,
+              -0.3807603582535601,
+              0.3721017142167535,
+              0.3579617430368693,
+              0.1963477598843173,
+              0.12687140013163556,
+              0.14171370786085494,
+              0.22881922569696367
+            ],
+            "utility": 0.15182962648514625,
+            "worlds": 8
+          },
+          "BP": {
+            "absolute_retention": 0.6712809368807805,
+            "absolute_retention_denominator": 0.31465990123705473,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0013649945864891246,
+              "own_posterior_MSE_original_occupancy": 0.001367206398992331,
+              "terminal_rank_own_gap_candidate_occupancy": 0.004009992418837293,
+              "terminal_rank_own_gap_original_occupancy": 0.0054027654439129935
+            },
+            "delta_original": 0.059395566816077716,
+            "delta_original_max": 0.258325507054551,
+            "delta_original_min": -0.34639999999996673,
+            "opportunity_denominator": 0.16283027475190848,
+            "opportunity_recovery": 0.3647698003738802,
+            "optimal_regret": 0.10343470793583076,
+            "optimal_utility": 0.31465990123705473,
+            "original_utility": 0.15182962648514625,
+            "per_world_utilities": [
+              0.33003864050208315,
+              -0.2818671118660229,
+              0.542101714216753,
+              0.3579617430368693,
+              0.17958062539456685,
+              0.38519690718618654,
+              0.29436980224235887,
+              -0.1175807743030031
+            ],
+            "utility": 0.21122519330122397,
+            "worlds": 8
+          }
+        }
+      },
+      "choices": {
+        "BP": "KEEP",
+        "DIRECT": "KEEP"
+      },
+      "gates": {
+        "BP": {
+          "mean_delta": 0.03291321208464881,
+          "minimum_world_delta": -0.21065317856952273,
+          "passed": false
+        },
+        "DIRECT": {
+          "mean_delta": 0.0,
+          "minimum_world_delta": 0.0,
+          "passed": false
+        }
+      },
+      "direct_actual_norm": 0.0,
+      "gradient_actual_norm": 0.5943902357159822,
+      "direct_primary_alias": true,
+      "direct_largest_proposal_minus_retained": -0.013624327974574232,
+      "raw_soft_objective": {
+        "BP": 0.20083529335167005,
+        "DIRECT": 0.11250823828442727
+      },
+      "GEN_oracle_values": {
+        "BOTH_ORACLE": 0.334349025022522,
+        "B_ORACLE": 0.24068885688865105,
+        "KEEP": 0.24176830628965656,
+        "Q_ORACLE": 0.3319174781014359
+      },
+      "representation_control": {
+        "action_differences": 0,
+        "broken_upstream_only_maximum_difference": 0.9151543594484277,
+        "maximum_score_error": 6.661338147750939e-16,
+        "permutation": [
+          47,
+          46,
+          45,
+          44,
+          43,
+          42,
+          41,
+          40,
+          39,
+          38,
+          37,
+          36,
+          35,
+          34,
+          33,
+          32,
+          31,
+          30,
+          29,
+          28,
+          27,
+          26,
+          25,
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "rows": 6283
+      }
+    },
+    "37": {
+      "original_model_pin": {
+        "bytes": 172564,
+        "original_source_pin": {
+          "bytes": 172564,
+          "path": "/workspace/scratch/4b91365ace88/wsp_value_20261121/value/main_attempt001/output/models/fit_37_KEEP.json.gz",
+          "sha256": "1f4a3be85213f3fc221187dcb16308d033d033cccf48c86da7fec703e7bfb774"
+        },
+        "path": "models/fit_37.json.gz",
+        "sha256": "1f4a3be85213f3fc221187dcb16308d033d033cccf48c86da7fec703e7bfb774"
+      },
+      "GEN": {
+        "KEEP": {
+          "absolute_retention": 0.7639955981011012,
+          "absolute_retention_denominator": 0.3351525929386371,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0005673547217679283,
+            "own_posterior_MSE_original_occupancy": 0.0005673547217679283,
+            "terminal_rank_own_gap_candidate_occupancy": 0.004512651702695164,
+            "terminal_rank_own_gap_original_occupancy": 0.004512651702695164
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.07909748724134813,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.07909748724134813,
+          "optimal_utility": 0.3351525929386371,
+          "original_utility": 0.25605510569728895,
+          "per_world_utilities": [
+            0.11467620931084307,
+            0.18318435483581022,
+            0.48234288295311395,
+            0.32282667630556217,
+            -0.014061009396946812,
+            0.3964120083515919,
+            0.09591912701234045,
+            0.5360375869219536,
+            0.25403758958798,
+            0.16055952014722555,
+            0.5457994174100147,
+            0.07112752271222052,
+            0.28503860734136344,
+            0.0837120654557336,
+            0.3991042817275535,
+            0.3059048954212254,
+            0.25641752644925514,
+            0.2917966863363622,
+            0.07657869092768825,
+            0.13981212549958405,
+            0.13981372908165937,
+            0.38030326794986624,
+            0.28658159445387144,
+            0.43955810143061913,
+            0.49029825560804463,
+            0.35347301350745886,
+            0.12469814454912775,
+            0.08253473987332088,
+            0.3773298707334135,
+            0.21486458211316814,
+            0.20746180783715096,
+            0.10961950986507166
+          ],
+          "utility": 0.25605510569728895,
+          "worlds": 32
+        },
+        "DIRECT": {
+          "absolute_retention": 0.7639955981011012,
+          "absolute_retention_denominator": 0.3351525929386371,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0005673547217679283,
+            "own_posterior_MSE_original_occupancy": 0.0005673547217679283,
+            "terminal_rank_own_gap_candidate_occupancy": 0.004512651702695164,
+            "terminal_rank_own_gap_original_occupancy": 0.004512651702695164
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.07909748724134813,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.07909748724134813,
+          "optimal_utility": 0.3351525929386371,
+          "original_utility": 0.25605510569728895,
+          "per_world_utilities": [
+            0.11467620931084307,
+            0.18318435483581022,
+            0.48234288295311395,
+            0.32282667630556217,
+            -0.014061009396946812,
+            0.3964120083515919,
+            0.09591912701234045,
+            0.5360375869219536,
+            0.25403758958798,
+            0.16055952014722555,
+            0.5457994174100147,
+            0.07112752271222052,
+            0.28503860734136344,
+            0.0837120654557336,
+            0.3991042817275535,
+            0.3059048954212254,
+            0.25641752644925514,
+            0.2917966863363622,
+            0.07657869092768825,
+            0.13981212549958405,
+            0.13981372908165937,
+            0.38030326794986624,
+            0.28658159445387144,
+            0.43955810143061913,
+            0.49029825560804463,
+            0.35347301350745886,
+            0.12469814454912775,
+            0.08253473987332088,
+            0.3773298707334135,
+            0.21486458211316814,
+            0.20746180783715096,
+            0.10961950986507166
+          ],
+          "utility": 0.25605510569728895,
+          "worlds": 32
+        },
+        "BP": {
+          "absolute_retention": 0.7273349764066444,
+          "absolute_retention_denominator": 0.3351525929386371,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0011469620630859482,
+            "own_posterior_MSE_original_occupancy": 0.0013090903775439264,
+            "terminal_rank_own_gap_candidate_occupancy": 0.005414729733296913,
+            "terminal_rank_own_gap_original_occupancy": 0.005810295628078093
+          },
+          "delta_original": -0.012286902419639673,
+          "delta_original_max": 0.3169684092845866,
+          "delta_original_min": -0.27845541170174704,
+          "opportunity_denominator": 0.07909748724134813,
+          "opportunity_recovery": -0.1553387199538838,
+          "optimal_regret": 0.0913843896609878,
+          "optimal_utility": 0.3351525929386371,
+          "original_utility": 0.25605510569728895,
+          "per_world_utilities": [
+            0.27322217299239354,
+            0.15248705865306877,
+            0.4823428829531156,
+            0.11403976401681062,
+            -0.019891391015374918,
+            0.4561441962689586,
+            0.06658716198612917,
+            0.5360375869219536,
+            0.3134813858960539,
+            0.0711477883589279,
+            0.5457994174100147,
+            -0.009620347139672726,
+            0.28503860734136344,
+            0.08711148691239615,
+            0.3091042817275551,
+            0.4560937775028531,
+            0.2518978985235251,
+            0.09118809348680287,
+            0.07065934046151734,
+            0.1749675377692586,
+            0.4567821383662459,
+            0.37790326794986623,
+            0.008126182752124372,
+            0.43955810143061913,
+            0.4002982556080543,
+            0.5551750045167156,
+            -0.054419236054215295,
+            0.053990447670960756,
+            0.46239303472348464,
+            0.20561049481521324,
+            0.10895660221298618,
+            0.07836950986507164
+          ],
+          "utility": 0.24376820327764928,
+          "worlds": 32
+        }
+      },
+      "SELECT": {
+        "KEEP": {
+          "absolute_retention": 0.6747841798105656,
+          "absolute_retention_denominator": 0.3315742890537987,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0008223140137605426,
+            "own_posterior_MSE_original_occupancy": 0.0008223140137605426,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0027707819866295644,
+            "terminal_rank_own_gap_original_occupancy": 0.0027707819866295644
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.10783320436835975,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.10783320436835975,
+          "optimal_utility": 0.3315742890537987,
+          "original_utility": 0.22374108468543896,
+          "per_world_utilities": [
+            0.011610437305899937,
+            0.36993981410505644,
+            0.28350481939033967,
+            0.09264549310143827,
+            0.45057615164521364,
+            0.15503376689211973,
+            0.14602761036977177,
+            -0.013105753795211757,
+            0.226426803232148,
+            0.09078159448356089,
+            0.23559501254983298,
+            0.36441349232621817,
+            0.11085050064495612,
+            0.4107708244841779,
+            0.3910258635604018,
+            0.2537609246710995
+          ],
+          "utility": 0.22374108468543896,
+          "worlds": 16
+        },
+        "DIRECT": {
+          "absolute_retention": 0.6747841798105656,
+          "absolute_retention_denominator": 0.3315742890537987,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0008223140137605426,
+            "own_posterior_MSE_original_occupancy": 0.0008223140137605426,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0027707819866295644,
+            "terminal_rank_own_gap_original_occupancy": 0.0027707819866295644
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.10783320436835975,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.10783320436835975,
+          "optimal_utility": 0.3315742890537987,
+          "original_utility": 0.22374108468543896,
+          "per_world_utilities": [
+            0.011610437305899937,
+            0.36993981410505644,
+            0.28350481939033967,
+            0.09264549310143827,
+            0.45057615164521364,
+            0.15503376689211973,
+            0.14602761036977177,
+            -0.013105753795211757,
+            0.226426803232148,
+            0.09078159448356089,
+            0.23559501254983298,
+            0.36441349232621817,
+            0.11085050064495612,
+            0.4107708244841779,
+            0.3910258635604018,
+            0.2537609246710995
+          ],
+          "utility": 0.22374108468543896,
+          "worlds": 16
+        },
+        "BP": {
+          "absolute_retention": 0.6413612804417432,
+          "absolute_retention_denominator": 0.3315742890537987,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.001877519665440785,
+            "own_posterior_MSE_original_occupancy": 0.0019273920484721926,
+            "terminal_rank_own_gap_candidate_occupancy": 0.004084233883283326,
+            "terminal_rank_own_gap_original_occupancy": 0.00397293486545553
+          },
+          "delta_original": -0.011082174096333941,
+          "delta_original_max": 0.17353108094821984,
+          "delta_original_min": -0.14755812098507615,
+          "opportunity_denominator": 0.10783320436835975,
+          "opportunity_recovery": -0.10277144374266277,
+          "optimal_regret": 0.11891537846469369,
+          "optimal_utility": 0.3315742890537987,
+          "original_utility": 0.22374108468543896,
+          "per_world_utilities": [
+            -0.013782644731560042,
+            0.4592593804305255,
+            0.4570359003385595,
+            -0.03901019210205012,
+            0.45057615164521364,
+            0.1005967988209166,
+            0.1424057929121105,
+            -0.03134915938828776,
+            0.17767680323214688,
+            0.09078159448356089,
+            0.17669990653747322,
+            0.40053280447920275,
+            0.017955822148589942,
+            0.45362189440970996,
+            0.45333891252354575,
+            0.10620280368602335
+          ],
+          "utility": 0.21265891058910502,
+          "worlds": 16
+        }
+      },
+      "confirmation": {
+        "iid": {
+          "KEEP": {
+            "absolute_retention": 0.8123428238348123,
+            "absolute_retention_denominator": 0.3458771706843925,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0005276925349031475,
+              "own_posterior_MSE_original_occupancy": 0.0005276925349031475,
+              "terminal_rank_own_gap_candidate_occupancy": 0.003405949322878425,
+              "terminal_rank_own_gap_original_occupancy": 0.003405949322878425
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.06490633315063776,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.06490633315063776,
+            "optimal_utility": 0.3458771706843925,
+            "original_utility": 0.28097083753375474,
+            "per_world_utilities": [
+              0.4676056365215569,
+              0.3250730375239286,
+              0.2364085617082944,
+              0.442556283997824,
+              0.19132093548858714,
+              0.17515249456892312,
+              0.19463009111507504,
+              0.21501965934584857
+            ],
+            "utility": 0.28097083753375474,
+            "worlds": 8
+          },
+          "DIRECT": {
+            "absolute_retention": 0.8123428238348123,
+            "absolute_retention_denominator": 0.3458771706843925,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0005276925349031475,
+              "own_posterior_MSE_original_occupancy": 0.0005276925349031475,
+              "terminal_rank_own_gap_candidate_occupancy": 0.003405949322878425,
+              "terminal_rank_own_gap_original_occupancy": 0.003405949322878425
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.06490633315063776,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.06490633315063776,
+            "optimal_utility": 0.3458771706843925,
+            "original_utility": 0.28097083753375474,
+            "per_world_utilities": [
+              0.4676056365215569,
+              0.3250730375239286,
+              0.2364085617082944,
+              0.442556283997824,
+              0.19132093548858714,
+              0.17515249456892312,
+              0.19463009111507504,
+              0.21501965934584857
+            ],
+            "utility": 0.28097083753375474,
+            "worlds": 8
+          },
+          "BP": {
+            "absolute_retention": 0.840886323681637,
+            "absolute_retention_denominator": 0.3458771706843925,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.001045589230250044,
+              "own_posterior_MSE_original_occupancy": 0.0013063484416249525,
+              "terminal_rank_own_gap_candidate_occupancy": 0.004114810026309714,
+              "terminal_rank_own_gap_original_occupancy": 0.0035203225388919113
+            },
+            "delta_original": 0.009872544968450137,
+            "delta_original_max": 0.10517841138479256,
+            "delta_original_min": -0.05803151154750502,
+            "opportunity_denominator": 0.06490633315063776,
+            "opportunity_recovery": 0.152104494110574,
+            "optimal_regret": 0.055033788182187626,
+            "optimal_utility": 0.3458771706843925,
+            "original_utility": 0.28097083753375474,
+            "per_world_utilities": [
+              0.46760563652155895,
+              0.3555765743472716,
+              0.1783770501607894,
+              0.442556283997824,
+              0.2964993468733797,
+              0.15126935661355267,
+              0.261343152157415,
+              0.1735196593458476
+            ],
+            "utility": 0.2908433825022049,
+            "worlds": 8
+          }
+        },
+        "ood": {
+          "KEEP": {
+            "absolute_retention": 0.7471803359094562,
+            "absolute_retention_denominator": 0.29378693105909703,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.00167966838741225,
+              "own_posterior_MSE_original_occupancy": 0.00167966838741225,
+              "terminal_rank_own_gap_candidate_occupancy": 0.01579903457353265,
+              "terminal_rank_own_gap_original_occupancy": 0.01579903457353265
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.07427511322455266,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.07427511322455266,
+            "optimal_utility": 0.29378693105909703,
+            "original_utility": 0.21951181783454438,
+            "per_world_utilities": [
+              0.09724008796470318,
+              0.026274744922416424,
+              0.5937878736445026,
+              0.19709010268652127,
+              0.09576335829324685,
+              0.3966841340540151,
+              0.33780744744502045,
+              0.01144679366592922
+            ],
+            "utility": 0.21951181783454438,
+            "worlds": 8
+          },
+          "DIRECT": {
+            "absolute_retention": 0.7471803359094562,
+            "absolute_retention_denominator": 0.29378693105909703,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.00167966838741225,
+              "own_posterior_MSE_original_occupancy": 0.00167966838741225,
+              "terminal_rank_own_gap_candidate_occupancy": 0.01579903457353265,
+              "terminal_rank_own_gap_original_occupancy": 0.01579903457353265
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.07427511322455266,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.07427511322455266,
+            "optimal_utility": 0.29378693105909703,
+            "original_utility": 0.21951181783454438,
+            "per_world_utilities": [
+              0.09724008796470318,
+              0.026274744922416424,
+              0.5937878736445026,
+              0.19709010268652127,
+              0.09576335829324685,
+              0.3966841340540151,
+              0.33780744744502045,
+              0.01144679366592922
+            ],
+            "utility": 0.21951181783454438,
+            "worlds": 8
+          },
+          "BP": {
+            "absolute_retention": 0.6434027660902354,
+            "absolute_retention_denominator": 0.29378693105909703,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0018835376212063984,
+              "own_posterior_MSE_original_occupancy": 0.002249606476638019,
+              "terminal_rank_own_gap_candidate_occupancy": 0.021065379431376867,
+              "terminal_rank_own_gap_original_occupancy": 0.021065379431376867
+            },
+            "delta_original": -0.03048849374996007,
+            "delta_original_max": 0.24027115320728465,
+            "delta_original_min": -0.34481580401734,
+            "opportunity_denominator": 0.07427511322455266,
+            "opportunity_recovery": -0.41048060953856186,
+            "optimal_regret": 0.10476360697451273,
+            "optimal_utility": 0.29378693105909703,
+            "original_utility": 0.21951181783454438,
+            "per_world_utilities": [
+              -0.24757571605263684,
+              -0.005265775007782747,
+              0.5901634055804059,
+              0.08409798533819496,
+              0.11628155757775115,
+              0.39668413405402275,
+              0.3260830543135055,
+              0.25171794687321386
+            ],
+            "utility": 0.1890233240845843,
+            "worlds": 8
+          }
+        }
+      },
+      "choices": {
+        "BP": "KEEP",
+        "DIRECT": "KEEP"
+      },
+      "gates": {
+        "BP": {
+          "mean_delta": -0.011082174096333941,
+          "minimum_world_delta": -0.14755812098507615,
+          "passed": false
+        },
+        "DIRECT": {
+          "mean_delta": 0.0,
+          "minimum_world_delta": 0.0,
+          "passed": false
+        }
+      },
+      "direct_actual_norm": 0.0,
+      "gradient_actual_norm": 0.648472674161116,
+      "direct_primary_alias": true,
+      "direct_largest_proposal_minus_retained": -0.008215020527701358,
+      "raw_soft_objective": {
+        "BP": 0.1795947256218328,
+        "DIRECT": 0.10087870773151586
+      },
+      "GEN_oracle_values": {
+        "BOTH_ORACLE": 0.3351525929386371,
+        "B_ORACLE": 0.2511607255761835,
+        "KEEP": 0.25605510569728895,
+        "Q_ORACLE": 0.3309145284756497
+      },
+      "representation_control": {
+        "action_differences": 0,
+        "broken_upstream_only_maximum_difference": 1.0114121253086283,
+        "maximum_score_error": 4.440892098500626e-16,
+        "permutation": [
+          47,
+          46,
+          45,
+          44,
+          43,
+          42,
+          41,
+          40,
+          39,
+          38,
+          37,
+          36,
+          35,
+          34,
+          33,
+          32,
+          31,
+          30,
+          29,
+          28,
+          27,
+          26,
+          25,
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "rows": 6738
+      }
+    },
+    "53": {
+      "original_model_pin": {
+        "bytes": 172562,
+        "original_source_pin": {
+          "bytes": 172562,
+          "path": "/workspace/scratch/4b91365ace88/wsp_value_20261121/value/main_attempt001/output/models/fit_53_KEEP.json.gz",
+          "sha256": "b412cd6743563caaa57d66399c46afdd7394bfd4fe4c964a84e221b3c23ffd24"
+        },
+        "path": "models/fit_53.json.gz",
+        "sha256": "b412cd6743563caaa57d66399c46afdd7394bfd4fe4c964a84e221b3c23ffd24"
+      },
+      "GEN": {
+        "KEEP": {
+          "absolute_retention": 0.7428313727132724,
+          "absolute_retention_denominator": 0.3020910087045922,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.00022488484050581613,
+            "own_posterior_MSE_original_occupancy": 0.00022488484050581613,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0004175407766633738,
+            "terminal_rank_own_gap_original_occupancy": 0.0004175407766633738
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.07768833002422287,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.07768833002422287,
+          "optimal_utility": 0.3020910087045922,
+          "original_utility": 0.22440267868036934,
+          "per_world_utilities": [
+            0.170872786671639,
+            0.12403709343050094,
+            0.4263918841608519,
+            0.11977217937179843,
+            0.32286328854502067,
+            0.20770643403109723,
+            0.12713769981772938,
+            0.11106394130533015,
+            0.055232685091122904,
+            0.20559905630863687,
+            0.45647090863696466,
+            0.2993113403732087,
+            0.4537328341638583,
+            0.3531207473902273,
+            0.18795666830642144,
+            0.30524820410827785,
+            0.1675564415974962,
+            0.1293522867903615,
+            0.09524631989409102,
+            0.22319705484305288,
+            0.21165426932724146,
+            0.3602156049876238,
+            0.11931180872253407,
+            0.24134019505476612,
+            0.19056419649741543,
+            0.19843801845275258,
+            0.11173413837518785,
+            0.5591288612765234,
+            0.12792438941993828,
+            0.05845786726669824,
+            0.3521217420336734,
+            0.10812477151977783
+          ],
+          "utility": 0.22440267868036934,
+          "worlds": 32
+        },
+        "DIRECT": {
+          "absolute_retention": 0.7428313727132724,
+          "absolute_retention_denominator": 0.3020910087045922,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.00022488484050581613,
+            "own_posterior_MSE_original_occupancy": 0.00022488484050581613,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0004175407766633738,
+            "terminal_rank_own_gap_original_occupancy": 0.0004175407766633738
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.07768833002422287,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.07768833002422287,
+          "optimal_utility": 0.3020910087045922,
+          "original_utility": 0.22440267868036934,
+          "per_world_utilities": [
+            0.170872786671639,
+            0.12403709343050094,
+            0.4263918841608519,
+            0.11977217937179843,
+            0.32286328854502067,
+            0.20770643403109723,
+            0.12713769981772938,
+            0.11106394130533015,
+            0.055232685091122904,
+            0.20559905630863687,
+            0.45647090863696466,
+            0.2993113403732087,
+            0.4537328341638583,
+            0.3531207473902273,
+            0.18795666830642144,
+            0.30524820410827785,
+            0.1675564415974962,
+            0.1293522867903615,
+            0.09524631989409102,
+            0.22319705484305288,
+            0.21165426932724146,
+            0.3602156049876238,
+            0.11931180872253407,
+            0.24134019505476612,
+            0.19056419649741543,
+            0.19843801845275258,
+            0.11173413837518785,
+            0.5591288612765234,
+            0.12792438941993828,
+            0.05845786726669824,
+            0.3521217420336734,
+            0.10812477151977783
+          ],
+          "utility": 0.22440267868036934,
+          "worlds": 32
+        },
+        "BP": {
+          "absolute_retention": 0.7614796020725685,
+          "absolute_retention_denominator": 0.3020910087045922,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0031581415387401186,
+            "own_posterior_MSE_original_occupancy": 0.0033991528067012964,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0038900844983673646,
+            "terminal_rank_own_gap_original_occupancy": 0.0031338712702336053
+          },
+          "delta_original": 0.005633462417704349,
+          "delta_original_max": 0.2659075048312828,
+          "delta_original_min": -0.4260787013810391,
+          "opportunity_denominator": 0.07768833002422287,
+          "opportunity_recovery": 0.07251362483847781,
+          "optimal_regret": 0.07205486760651852,
+          "optimal_utility": 0.3020910087045922,
+          "original_utility": 0.22440267868036934,
+          "per_world_utilities": [
+            0.26683560691876335,
+            0.16778709343050097,
+            0.543653879183907,
+            0.2037353257849677,
+            0.46064630581085414,
+            0.10800287835885213,
+            0.30200205662518975,
+            0.15920628521483732,
+            0.18357858545220646,
+            0.1949407438126982,
+            0.45647090863695944,
+            0.5652188452044915,
+            0.4537328341638583,
+            0.09336090814483612,
+            0.2617066683064715,
+            0.4630810096568708,
+            0.1893538228965733,
+            0.1867522867903922,
+            0.09950606922788442,
+            0.18498200269163112,
+            0.1559746701384094,
+            0.3602156049876225,
+            0.08073226340760425,
+            0.045308294152178186,
+            0.10034791076293864,
+            0.1084380184527529,
+            0.12622218423523093,
+            0.1330501598954843,
+            0.2541743894200275,
+            0.09025397828020677,
+            0.2621217420336723,
+            0.09976318305948467
+          ],
+          "utility": 0.2300361410980737,
+          "worlds": 32
+        }
+      },
+      "SELECT": {
+        "KEEP": {
+          "absolute_retention": 0.6626486611647907,
+          "absolute_retention_denominator": 0.3144690348799765,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0003944432691101716,
+            "own_posterior_MSE_original_occupancy": 0.0003944432691101716,
+            "terminal_rank_own_gap_candidate_occupancy": 0.004322861663104706,
+            "terminal_rank_own_gap_original_occupancy": 0.004322861663104706
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.1060865499389762,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.1060865499389762,
+          "optimal_utility": 0.3144690348799765,
+          "original_utility": 0.2083824849410003,
+          "per_world_utilities": [
+            0.4151022982439391,
+            0.3039235581717041,
+            0.06605592007066555,
+            -0.06899800222183204,
+            0.3657979295994639,
+            0.38278234339823836,
+            0.394153677568709,
+            0.20251807694853838,
+            0.06001690554132752,
+            0.19208031663461322,
+            0.08232592162177545,
+            0.17844169211401348,
+            0.08290061935107733,
+            0.1604979605454906,
+            0.13425201207748172,
+            0.3822685293907991
+          ],
+          "utility": 0.2083824849410003,
+          "worlds": 16
+        },
+        "DIRECT": {
+          "absolute_retention": 0.6626486611647907,
+          "absolute_retention_denominator": 0.3144690348799765,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0003944432691101716,
+            "own_posterior_MSE_original_occupancy": 0.0003944432691101716,
+            "terminal_rank_own_gap_candidate_occupancy": 0.004322861663104706,
+            "terminal_rank_own_gap_original_occupancy": 0.004322861663104706
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.1060865499389762,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.1060865499389762,
+          "optimal_utility": 0.3144690348799765,
+          "original_utility": 0.2083824849410003,
+          "per_world_utilities": [
+            0.4151022982439391,
+            0.3039235581717041,
+            0.06605592007066555,
+            -0.06899800222183204,
+            0.3657979295994639,
+            0.38278234339823836,
+            0.394153677568709,
+            0.20251807694853838,
+            0.06001690554132752,
+            0.19208031663461322,
+            0.08232592162177545,
+            0.17844169211401348,
+            0.08290061935107733,
+            0.1604979605454906,
+            0.13425201207748172,
+            0.3822685293907991
+          ],
+          "utility": 0.2083824849410003,
+          "worlds": 16
+        },
+        "BP": {
+          "absolute_retention": 0.7031154994258323,
+          "absolute_retention_denominator": 0.3144690348799765,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0018576736877561496,
+            "own_posterior_MSE_original_occupancy": 0.0021046016472461467,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0006941830162216858,
+            "terminal_rank_own_gap_original_occupancy": 0.0009336320576139143
+          },
+          "delta_original": 0.012725567572593854,
+          "delta_original_max": 0.38333136466523077,
+          "delta_original_min": -0.2134508271495409,
+          "opportunity_denominator": 0.1060865499389762,
+          "opportunity_recovery": 0.11995458029235505,
+          "optimal_regret": 0.09336098236638235,
+          "optimal_utility": 0.3144690348799765,
+          "original_utility": 0.2083824849410003,
+          "per_world_utilities": [
+            0.3534242314742809,
+            0.42581503456741226,
+            0.0012460124475203796,
+            -0.04350199777816797,
+            0.4622599018783816,
+            0.16933151624869747,
+            0.46778322759206054,
+            0.19301746668310613,
+            0.014923918322457465,
+            0.1545803166346132,
+            0.08232592162177545,
+            0.17828524616949254,
+            0.1141205401723298,
+            0.12924796054549056,
+            0.5175833767427125,
+            0.3172861668953437
+          ],
+          "utility": 0.22110805251359417,
+          "worlds": 16
+        }
+      },
+      "confirmation": {
+        "iid": {
+          "KEEP": {
+            "absolute_retention": 0.6682853986303615,
+            "absolute_retention_denominator": 0.3065235852144482,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.00040275665076150457,
+              "own_posterior_MSE_original_occupancy": 0.00040275665076150457,
+              "terminal_rank_own_gap_candidate_occupancy": 0.0024318176108623006,
+              "terminal_rank_own_gap_original_occupancy": 0.0024318176108623006
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.1016783488798031,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.1016783488798031,
+            "optimal_utility": 0.3065235852144482,
+            "original_utility": 0.20484523633464513,
+            "per_world_utilities": [
+              0.34995857694790544,
+              0.15503462316649316,
+              0.10768959798926278,
+              0.19760508764356105,
+              0.22712955064523635,
+              0.28972734633511776,
+              0.10802623828706985,
+              0.20359086966251472
+            ],
+            "utility": 0.20484523633464513,
+            "worlds": 8
+          },
+          "DIRECT": {
+            "absolute_retention": 0.6682853986303615,
+            "absolute_retention_denominator": 0.3065235852144482,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.00040275665076150457,
+              "own_posterior_MSE_original_occupancy": 0.00040275665076150457,
+              "terminal_rank_own_gap_candidate_occupancy": 0.0024318176108623006,
+              "terminal_rank_own_gap_original_occupancy": 0.0024318176108623006
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.1016783488798031,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.1016783488798031,
+            "optimal_utility": 0.3065235852144482,
+            "original_utility": 0.20484523633464513,
+            "per_world_utilities": [
+              0.34995857694790544,
+              0.15503462316649316,
+              0.10768959798926278,
+              0.19760508764356105,
+              0.22712955064523635,
+              0.28972734633511776,
+              0.10802623828706985,
+              0.20359086966251472
+            ],
+            "utility": 0.20484523633464513,
+            "worlds": 8
+          },
+          "BP": {
+            "absolute_retention": 0.8423816907328636,
+            "absolute_retention_denominator": 0.3065235852144482,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0015429465004782622,
+              "own_posterior_MSE_original_occupancy": 0.0019514338758925235,
+              "terminal_rank_own_gap_candidate_occupancy": 0.0035425916720746315,
+              "terminal_rank_own_gap_original_occupancy": 0.004093221209619828
+            },
+            "delta_original": 0.05336461962780076,
+            "delta_original_max": 0.23678577353123229,
+            "delta_original_min": -0.12603454433569178,
+            "opportunity_denominator": 0.1016783488798031,
+            "opportunity_recovery": 0.524837590457774,
+            "optimal_regret": 0.048313729252002335,
+            "optimal_utility": 0.3065235852144482,
+            "original_utility": 0.20484523633464513,
+            "per_world_utilities": [
+              0.5400647874579263,
+              0.1897095444601902,
+              0.10768959798926322,
+              0.18447467464365042,
+              0.46391532417646864,
+              0.3942423553581756,
+              0.10802623828706985,
+              0.07755632532682294
+            ],
+            "utility": 0.2582098559624459,
+            "worlds": 8
+          }
+        },
+        "ood": {
+          "KEEP": {
+            "absolute_retention": 0.5566821406081293,
+            "absolute_retention_denominator": 0.24017879295580669,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.00839176226455513,
+              "own_posterior_MSE_original_occupancy": 0.00839176226455513,
+              "terminal_rank_own_gap_candidate_occupancy": 0.01352007976027586,
+              "terminal_rank_own_gap_original_occupancy": 0.01352007976027586
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.10647554836449155,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.10647554836449155,
+            "optimal_utility": 0.24017879295580669,
+            "original_utility": 0.13370324459131513,
+            "per_world_utilities": [
+              0.2338191579597524,
+              0.11969794869203454,
+              0.15460849436180335,
+              0.26212675859108225,
+              0.029844806867147966,
+              0.03354175385842628,
+              0.2900673554413778,
+              -0.05408031904110344
+            ],
+            "utility": 0.13370324459131513,
+            "worlds": 8
+          },
+          "DIRECT": {
+            "absolute_retention": 0.5566821406081293,
+            "absolute_retention_denominator": 0.24017879295580669,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.00839176226455513,
+              "own_posterior_MSE_original_occupancy": 0.00839176226455513,
+              "terminal_rank_own_gap_candidate_occupancy": 0.01352007976027586,
+              "terminal_rank_own_gap_original_occupancy": 0.01352007976027586
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.10647554836449155,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.10647554836449155,
+            "optimal_utility": 0.24017879295580669,
+            "original_utility": 0.13370324459131513,
+            "per_world_utilities": [
+              0.2338191579597524,
+              0.11969794869203454,
+              0.15460849436180335,
+              0.26212675859108225,
+              0.029844806867147966,
+              0.03354175385842628,
+              0.2900673554413778,
+              -0.05408031904110344
+            ],
+            "utility": 0.13370324459131513,
+            "worlds": 8
+          },
+          "BP": {
+            "absolute_retention": 0.44440401405418845,
+            "absolute_retention_denominator": 0.24017879295580669,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.013084636101895666,
+              "own_posterior_MSE_original_occupancy": 0.012840142583897578,
+              "terminal_rank_own_gap_candidate_occupancy": 0.015942547850141767,
+              "terminal_rank_own_gap_original_occupancy": 0.01352007976027586
+            },
+            "delta_original": -0.026966824911064807,
+            "delta_original_max": 0.0,
+            "delta_original_min": -0.12,
+            "opportunity_denominator": 0.10647554836449155,
+            "opportunity_recovery": -0.25326777204049555,
+            "optimal_regret": 0.13344237327555636,
+            "optimal_utility": 0.24017879295580669,
+            "original_utility": 0.13370324459131513,
+            "per_world_utilities": [
+              0.11381915795975239,
+              0.05969794869203454,
+              0.15460849436180335,
+              0.26212675859108225,
+              -0.004615114302764595,
+              0.03354175385842628,
+              0.28879267732277186,
+              -0.05408031904110344
+            ],
+            "utility": 0.10673641968025033,
+            "worlds": 8
+          }
+        }
+      },
+      "choices": {
+        "BP": "KEEP",
+        "DIRECT": "KEEP"
+      },
+      "gates": {
+        "BP": {
+          "mean_delta": 0.012725567572593854,
+          "minimum_world_delta": -0.2134508271495409,
+          "passed": false
+        },
+        "DIRECT": {
+          "mean_delta": 0.0,
+          "minimum_world_delta": 0.0,
+          "passed": false
+        }
+      },
+      "direct_actual_norm": 0.0,
+      "gradient_actual_norm": 0.6715563592399293,
+      "direct_primary_alias": true,
+      "direct_largest_proposal_minus_retained": -0.0003775598355830051,
+      "raw_soft_objective": {
+        "BP": 0.1781634761545861,
+        "DIRECT": 0.11287841217764963
+      },
+      "GEN_oracle_values": {
+        "BOTH_ORACLE": 0.3020910087045922,
+        "B_ORACLE": 0.22643299616978982,
+        "KEEP": 0.22440267868036934,
+        "Q_ORACLE": 0.2993111010147465
+      },
+      "representation_control": {
+        "action_differences": 0,
+        "broken_upstream_only_maximum_difference": 1.1425242172421193,
+        "maximum_score_error": 5.551115123125783e-16,
+        "permutation": [
+          47,
+          46,
+          45,
+          44,
+          43,
+          42,
+          41,
+          40,
+          39,
+          38,
+          37,
+          36,
+          35,
+          34,
+          33,
+          32,
+          31,
+          30,
+          29,
+          28,
+          27,
+          26,
+          25,
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "rows": 6880
+      }
+    },
+    "71": {
+      "original_model_pin": {
+        "bytes": 172492,
+        "original_source_pin": {
+          "bytes": 172492,
+          "path": "/workspace/scratch/4b91365ace88/wsp_value_20261121/value/main_attempt001/output/models/fit_71_KEEP.json.gz",
+          "sha256": "8420c224f35255dfba2e30dbbd59947fe3e64281473877d9d47869bef995df6f"
+        },
+        "path": "models/fit_71.json.gz",
+        "sha256": "8420c224f35255dfba2e30dbbd59947fe3e64281473877d9d47869bef995df6f"
+      },
+      "GEN": {
+        "KEEP": {
+          "absolute_retention": 0.6804286477528543,
+          "absolute_retention_denominator": 0.34750314355134987,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0003952824744933927,
+            "own_posterior_MSE_original_occupancy": 0.0003952824744933927,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0016531115048772239,
+            "terminal_rank_own_gap_original_occupancy": 0.0016531115048772239
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.11105204949483888,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.11105204949483888,
+          "optimal_utility": 0.34750314355134987,
+          "original_utility": 0.236451094056511,
+          "per_world_utilities": [
+            0.3015914654139757,
+            0.049898027107613506,
+            0.29520154503312984,
+            0.3674709227656158,
+            0.19313730248302394,
+            0.07599212702157665,
+            0.25464105788360686,
+            0.5433493516917985,
+            0.36201695548360235,
+            0.1730528554064802,
+            0.25454838441576066,
+            -0.016026763707695253,
+            0.3110874453886026,
+            0.2246695127109477,
+            0.5600370590207484,
+            0.18923701920689154,
+            0.0013863620259071396,
+            0.13199186081413514,
+            0.2578061466051486,
+            0.21651290740532306,
+            0.46630457415916815,
+            0.2684590932828786,
+            0.1099480603584199,
+            0.10013366656954399,
+            0.5449634547153451,
+            0.11607572814143774,
+            0.203170253948736,
+            0.0154866684797558,
+            0.3829610684225048,
+            0.28079572254626517,
+            0.0902431061429474,
+            0.24029206886515564
+          ],
+          "utility": 0.236451094056511,
+          "worlds": 32
+        },
+        "DIRECT": {
+          "absolute_retention": 0.6804286477528543,
+          "absolute_retention_denominator": 0.34750314355134987,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0003952824744933927,
+            "own_posterior_MSE_original_occupancy": 0.0003952824744933927,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0016531115048772239,
+            "terminal_rank_own_gap_original_occupancy": 0.0016531115048772239
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.11105204949483888,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.11105204949483888,
+          "optimal_utility": 0.34750314355134987,
+          "original_utility": 0.236451094056511,
+          "per_world_utilities": [
+            0.3015914654139757,
+            0.049898027107613506,
+            0.29520154503312984,
+            0.3674709227656158,
+            0.19313730248302394,
+            0.07599212702157665,
+            0.25464105788360686,
+            0.5433493516917985,
+            0.36201695548360235,
+            0.1730528554064802,
+            0.25454838441576066,
+            -0.016026763707695253,
+            0.3110874453886026,
+            0.2246695127109477,
+            0.5600370590207484,
+            0.18923701920689154,
+            0.0013863620259071396,
+            0.13199186081413514,
+            0.2578061466051486,
+            0.21651290740532306,
+            0.46630457415916815,
+            0.2684590932828786,
+            0.1099480603584199,
+            0.10013366656954399,
+            0.5449634547153451,
+            0.11607572814143774,
+            0.203170253948736,
+            0.0154866684797558,
+            0.3829610684225048,
+            0.28079572254626517,
+            0.0902431061429474,
+            0.24029206886515564
+          ],
+          "utility": 0.236451094056511,
+          "worlds": 32
+        },
+        "BP": {
+          "absolute_retention": 0.7880850575234025,
+          "absolute_retention_denominator": 0.34750314355134987,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0010653858586755452,
+            "own_posterior_MSE_original_occupancy": 0.0012214776422038117,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0008300624278034718,
+            "terminal_rank_own_gap_original_occupancy": 0.0011748894080910502
+          },
+          "delta_original": 0.037410940818717764,
+          "delta_original_max": 0.44060000491536755,
+          "delta_original_min": -0.19157425120120586,
+          "opportunity_denominator": 0.11105204949483888,
+          "opportunity_recovery": 0.33687753615439964,
+          "optimal_regret": 0.07364110867612111,
+          "optimal_utility": 0.34750314355134987,
+          "original_utility": 0.236451094056511,
+          "per_world_utilities": [
+            0.20183242997295098,
+            0.17721332754075866,
+            0.17992555891375706,
+            0.40367079538622314,
+            0.4460263377375356,
+            0.07599212702157626,
+            0.09775515059195677,
+            0.5433493516917987,
+            0.3594819029759838,
+            0.11006956500209593,
+            0.310717202568086,
+            -0.010490017196652567,
+            0.39234690823596613,
+            0.39705257693640683,
+            0.5600370590207484,
+            -0.0023372319943143205,
+            0.0674988773178358,
+            0.11177246457131104,
+            0.44842978248102594,
+            0.1869345714492671,
+            0.551004269456714,
+            0.5389765018270558,
+            0.10337170239102199,
+            0.10512895605227328,
+            0.5449634547153451,
+            0.08817242188766847,
+            0.09203970483389554,
+            0.4560866733951233,
+            0.5416384983892459,
+            0.31308069926451626,
+            0.13947114103253505,
+            0.2323723525376085
+          ],
+          "utility": 0.27386203487522875,
+          "worlds": 32
+        }
+      },
+      "SELECT": {
+        "KEEP": {
+          "absolute_retention": 0.607056386503926,
+          "absolute_retention_denominator": 0.32927183992402376,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0005558997085411341,
+            "own_posterior_MSE_original_occupancy": 0.0005558997085411341,
+            "terminal_rank_own_gap_candidate_occupancy": 0.000727632317729906,
+            "terminal_rank_own_gap_original_occupancy": 0.000727632317729906
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.12938526660224675,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.12938526660224675,
+          "optimal_utility": 0.32927183992402376,
+          "original_utility": 0.199886573321777,
+          "per_world_utilities": [
+            0.5440097870858854,
+            0.13069372111729158,
+            0.13736408215278378,
+            0.19086867743822047,
+            0.13081977114722024,
+            0.37654492027232245,
+            0.31354610791799054,
+            0.23957147687947022,
+            0.13095836202829458,
+            0.2104827861764191,
+            0.14773533703909414,
+            0.19047072895984796,
+            0.10400495271576582,
+            -0.028682545476573007,
+            0.32210477911969543,
+            0.05769222857470335
+          ],
+          "utility": 0.199886573321777,
+          "worlds": 16
+        },
+        "DIRECT": {
+          "absolute_retention": 0.607056386503926,
+          "absolute_retention_denominator": 0.32927183992402376,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0005558997085411341,
+            "own_posterior_MSE_original_occupancy": 0.0005558997085411341,
+            "terminal_rank_own_gap_candidate_occupancy": 0.000727632317729906,
+            "terminal_rank_own_gap_original_occupancy": 0.000727632317729906
+          },
+          "delta_original": 0.0,
+          "delta_original_max": 0.0,
+          "delta_original_min": 0.0,
+          "opportunity_denominator": 0.12938526660224675,
+          "opportunity_recovery": 0.0,
+          "optimal_regret": 0.12938526660224675,
+          "optimal_utility": 0.32927183992402376,
+          "original_utility": 0.199886573321777,
+          "per_world_utilities": [
+            0.5440097870858854,
+            0.13069372111729158,
+            0.13736408215278378,
+            0.19086867743822047,
+            0.13081977114722024,
+            0.37654492027232245,
+            0.31354610791799054,
+            0.23957147687947022,
+            0.13095836202829458,
+            0.2104827861764191,
+            0.14773533703909414,
+            0.19047072895984796,
+            0.10400495271576582,
+            -0.028682545476573007,
+            0.32210477911969543,
+            0.05769222857470335
+          ],
+          "utility": 0.199886573321777,
+          "worlds": 16
+        },
+        "BP": {
+          "absolute_retention": 0.6887363042880659,
+          "absolute_retention_denominator": 0.32927183992402376,
+          "belief_diagnostics": {
+            "own_posterior_MSE_candidate_occupancy": 0.0012007427367285405,
+            "own_posterior_MSE_original_occupancy": 0.0014090372685953106,
+            "terminal_rank_own_gap_candidate_occupancy": 0.0008095330515067868,
+            "terminal_rank_own_gap_original_occupancy": 0.000727632317729906
+          },
+          "delta_original": 0.026894896813626723,
+          "delta_original_max": 0.4096497260930697,
+          "delta_original_min": -0.599948054573116,
+          "opportunity_denominator": 0.12938526660224675,
+          "opportunity_recovery": 0.20786676504911802,
+          "optimal_regret": 0.10249036978862003,
+          "optimal_utility": 0.32927183992402376,
+          "original_utility": 0.199886573321777,
+          "per_world_utilities": [
+            -0.055938267487230575,
+            0.12414953030689344,
+            0.19863520556070852,
+            0.1965097964346102,
+            0.5404694972402899,
+            0.4638339794352021,
+            0.36172191765962525,
+            0.4430764546035847,
+            0.11320334155572757,
+            0.03766663725911684,
+            0.180705190599487,
+            0.2825495052508129,
+            0.09265931944392525,
+            0.041788857408723845,
+            0.43586786014126666,
+            0.17160469675371604
+          ],
+          "utility": 0.22678147013540373,
+          "worlds": 16
+        }
+      },
+      "confirmation": {
+        "iid": {
+          "KEEP": {
+            "absolute_retention": 0.6877007242498795,
+            "absolute_retention_denominator": 0.23973507843956843,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0004034562196387667,
+              "own_posterior_MSE_original_occupancy": 0.0004034562196387667,
+              "terminal_rank_own_gap_candidate_occupancy": 0.0029563300007124714,
+              "terminal_rank_own_gap_original_occupancy": 0.0029563300007124714
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.07486909136857556,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.07486909136857556,
+            "optimal_utility": 0.23973507843956843,
+            "original_utility": 0.16486598707099287,
+            "per_world_utilities": [
+              0.31693052257670895,
+              0.09830269890825087,
+              0.23569568486042614,
+              0.19471251288872113,
+              0.09881248527034255,
+              0.16600233438154222,
+              0.13101800850719567,
+              0.0774536491747554
+            ],
+            "utility": 0.16486598707099287,
+            "worlds": 8
+          },
+          "DIRECT": {
+            "absolute_retention": 0.6877007242498795,
+            "absolute_retention_denominator": 0.23973507843956843,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0004034562196387667,
+              "own_posterior_MSE_original_occupancy": 0.0004034562196387667,
+              "terminal_rank_own_gap_candidate_occupancy": 0.0029563300007124714,
+              "terminal_rank_own_gap_original_occupancy": 0.0029563300007124714
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.07486909136857556,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.07486909136857556,
+            "optimal_utility": 0.23973507843956843,
+            "original_utility": 0.16486598707099287,
+            "per_world_utilities": [
+              0.31693052257670895,
+              0.09830269890825087,
+              0.23569568486042614,
+              0.19471251288872113,
+              0.09881248527034255,
+              0.16600233438154222,
+              0.13101800850719567,
+              0.0774536491747554
+            ],
+            "utility": 0.16486598707099287,
+            "worlds": 8
+          },
+          "BP": {
+            "absolute_retention": 0.5477547179770451,
+            "absolute_retention_denominator": 0.23973507843956843,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.0009742751148317775,
+              "own_posterior_MSE_original_occupancy": 0.0012450378507335815,
+              "terminal_rank_own_gap_candidate_occupancy": 0.00403562508033766,
+              "terminal_rank_own_gap_original_occupancy": 0.0029563300007124714
+            },
+            "delta_original": -0.033549966791122265,
+            "delta_original_max": 0.2299229966309907,
+            "delta_original_min": -0.2061009255487714,
+            "opportunity_denominator": 0.07486909136857556,
+            "opportunity_recovery": -0.44811505225778697,
+            "optimal_regret": 0.10841905815969782,
+            "optimal_utility": 0.23973507843956843,
+            "original_utility": 0.16486598707099287,
+            "per_world_utilities": [
+              0.5468535192076996,
+              0.1789388667440821,
+              0.21429596024944098,
+              0.033530401939865034,
+              -0.03529847957529837,
+              0.20091655038687986,
+              -0.07508291704157574,
+              -0.013625739672128517
+            ],
+            "utility": 0.1313160202798706,
+            "worlds": 8
+          }
+        },
+        "ood": {
+          "KEEP": {
+            "absolute_retention": 0.20389470589373243,
+            "absolute_retention_denominator": 0.31615068140631164,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.004525450161898427,
+              "own_posterior_MSE_original_occupancy": 0.004525450161898427,
+              "terminal_rank_own_gap_candidate_occupancy": 0.06374049904233606,
+              "terminal_rank_own_gap_original_occupancy": 0.06374049904233606
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.2516892312028686,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.2516892312028686,
+            "optimal_utility": 0.31615068140631164,
+            "original_utility": 0.06446145020344302,
+            "per_world_utilities": [
+              0.011158426830981005,
+              0.20261908484765112,
+              -0.15141646891482763,
+              0.030187659796646046,
+              -0.07723667273786106,
+              0.26260658711319074,
+              0.05991264226966572,
+              0.17786034242209814
+            ],
+            "utility": 0.06446145020344302,
+            "worlds": 8
+          },
+          "DIRECT": {
+            "absolute_retention": 0.20389470589373243,
+            "absolute_retention_denominator": 0.31615068140631164,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.004525450161898427,
+              "own_posterior_MSE_original_occupancy": 0.004525450161898427,
+              "terminal_rank_own_gap_candidate_occupancy": 0.06374049904233606,
+              "terminal_rank_own_gap_original_occupancy": 0.06374049904233606
+            },
+            "delta_original": 0.0,
+            "delta_original_max": 0.0,
+            "delta_original_min": 0.0,
+            "opportunity_denominator": 0.2516892312028686,
+            "opportunity_recovery": 0.0,
+            "optimal_regret": 0.2516892312028686,
+            "optimal_utility": 0.31615068140631164,
+            "original_utility": 0.06446145020344302,
+            "per_world_utilities": [
+              0.011158426830981005,
+              0.20261908484765112,
+              -0.15141646891482763,
+              0.030187659796646046,
+              -0.07723667273786106,
+              0.26260658711319074,
+              0.05991264226966572,
+              0.17786034242209814
+            ],
+            "utility": 0.06446145020344302,
+            "worlds": 8
+          },
+          "BP": {
+            "absolute_retention": 0.30478156965523234,
+            "absolute_retention_denominator": 0.31615068140631164,
+            "belief_diagnostics": {
+              "own_posterior_MSE_candidate_occupancy": 0.005982222650913991,
+              "own_posterior_MSE_original_occupancy": 0.007055083050558985,
+              "terminal_rank_own_gap_candidate_occupancy": 0.031170267732395215,
+              "terminal_rank_own_gap_original_occupancy": 0.06474386053490631
+            },
+            "delta_original": 0.031895450723143925,
+            "delta_original_max": 0.44624555741151106,
+            "delta_original_min": -0.336941356928639,
+            "opportunity_denominator": 0.2516892312028686,
+            "opportunity_recovery": 0.12672552802799614,
+            "optimal_regret": 0.2197937804797247,
+            "optimal_utility": 0.31615068140631164,
+            "original_utility": 0.06446145020344302,
+            "per_world_utilities": [
+              -0.15676010625249695,
+              0.12261908484765112,
+              -0.14858353108517242,
+              0.36003842924336793,
+              -0.06043348446388286,
+              -0.07433476981544826,
+              0.5061581996811768,
+              0.22215138525750006
+            ],
+            "utility": 0.09635690092658694,
+            "worlds": 8
+          }
+        }
+      },
+      "choices": {
+        "BP": "KEEP",
+        "DIRECT": "KEEP"
+      },
+      "gates": {
+        "BP": {
+          "mean_delta": 0.026894896813626723,
+          "minimum_world_delta": -0.599948054573116,
+          "passed": false
+        },
+        "DIRECT": {
+          "mean_delta": 0.0,
+          "minimum_world_delta": 0.0,
+          "passed": false
+        }
+      },
+      "direct_actual_norm": 0.0,
+      "gradient_actual_norm": 0.6295725551899916,
+      "direct_primary_alias": true,
+      "direct_largest_proposal_minus_retained": -0.0035164951653945814,
+      "raw_soft_objective": {
+        "BP": 0.2084964718483935,
+        "DIRECT": 0.12151418026904795
+      },
+      "GEN_oracle_values": {
+        "BOTH_ORACLE": 0.34750314355134987,
+        "B_ORACLE": 0.2421055462421236,
+        "KEEP": 0.236451094056511,
+        "Q_ORACLE": 0.3430721633321162
+      },
+      "representation_control": {
+        "action_differences": 0,
+        "broken_upstream_only_maximum_difference": 1.4105310007044338,
+        "maximum_score_error": 4.440892098500626e-16,
+        "permutation": [
+          47,
+          46,
+          45,
+          44,
+          43,
+          42,
+          41,
+          40,
+          39,
+          38,
+          37,
+          36,
+          35,
+          34,
+          33,
+          32,
+          31,
+          30,
+          29,
+          28,
+          27,
+          26,
+          25,
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "rows": 7724
+      }
+    }
+  },
+  "aggregate_raw_arms": {
+    "GEN": {
+      "KEEP": {
+        "utility": 0.2377466527289763,
+        "mean_delta": 0.0,
+        "minimum_world_delta": 0.0
+      },
+      "DIRECT": {
+        "utility": 0.2377466527289763,
+        "mean_delta": 0.0,
+        "minimum_world_delta": 0.0
+      },
+      "BP": {
+        "utility": 0.2584660219641057,
+        "mean_delta": 0.020719369235129376,
+        "minimum_world_delta": -0.4260787013810391
+      }
+    },
+    "SELECT": {
+      "KEEP": {
+        "utility": 0.22105198948603208,
+        "mean_delta": 0.0,
+        "minimum_world_delta": 0.0
+      },
+      "DIRECT": {
+        "utility": 0.22105198948603208,
+        "mean_delta": 0.0,
+        "minimum_world_delta": 0.0
+      },
+      "BP": {
+        "utility": 0.24106571057722645,
+        "mean_delta": 0.020013721091194352,
+        "minimum_world_delta": -0.599948054573116
+      }
+    },
+    "confirmation_iid": {
+      "KEEP": {
+        "utility": 0.22833251024912268,
+        "mean_delta": 0.0,
+        "minimum_world_delta": 0.0
+      },
+      "DIRECT": {
+        "utility": 0.22833251024912268,
+        "mean_delta": 0.0,
+        "minimum_world_delta": 0.0
+      },
+      "BP": {
+        "utility": 0.23637022754273454,
+        "mean_delta": 0.008037717293611862,
+        "minimum_world_delta": -0.2061009255487714
+      }
+    },
+    "confirmation_ood": {
+      "KEEP": {
+        "utility": 0.1475661379899745,
+        "mean_delta": 0.0,
+        "minimum_world_delta": 0.0
+      },
+      "DIRECT": {
+        "utility": 0.1475661379899745,
+        "mean_delta": 0.0,
+        "minimum_world_delta": 0.0
+      },
+      "BP": {
+        "utility": 0.1565547155510163,
+        "mean_delta": 0.0089885775610418,
+        "minimum_world_delta": -0.38492665324910447
+      }
+    }
+  },
+  "optimizer_costs": {
+    "DIRECT": {
+      "CPU_seconds": 8.187906756999999,
+      "objective_calls": 645,
+      "gradient_calls": 0,
+      "readout_forward_rows": 9336246,
+      "complete_policy_DPs": 20640,
+      "proposal_slots": 640
+    },
+    "BP": {
+      "CPU_seconds": 8.827902961,
+      "objective_calls": 645,
+      "gradient_calls": 645,
+      "readout_forward_rows": 9336246,
+      "complete_policy_DPs": 20640,
+      "proposal_slots": 640
+    }
+  },
+  "GEN_oracle_equal_checkpoint_means": {
+    "KEEP": 0.2377466527289763,
+    "Q_ORACLE": 0.32895783906018555,
+    "B_ORACLE": 0.23831429802046555,
+    "BOTH_ORACLE": 0.33238207993688096
+  },
+  "GEN_oracle_opportunity_recovery": {
+    "Q_ORACLE": 0.9638165010955919,
+    "B_ORACLE": 0.0059982324615304415,
+    "BOTH_ORACLE": 1.0
+  },
+  "selected_contrasts": {
+    "iid": {
+      "BP_MINUS_KEEP": {
+        "checkpoint_deltas": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "comparisons": 6,
+        "familywise_target": 0.95,
+        "lower": 0.0,
+        "mean": 0.0,
+        "n": 5,
+        "upper": 0.0
+      },
+      "DIRECT_MINUS_BP": {
+        "checkpoint_deltas": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "comparisons": 6,
+        "familywise_target": 0.95,
+        "lower": 0.0,
+        "mean": 0.0,
+        "n": 5,
+        "upper": 0.0
+      },
+      "DIRECT_MINUS_KEEP": {
+        "checkpoint_deltas": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "comparisons": 6,
+        "familywise_target": 0.95,
+        "lower": 0.0,
+        "mean": 0.0,
+        "n": 5,
+        "upper": 0.0
+      }
+    },
+    "ood": {
+      "BP_MINUS_KEEP": {
+        "checkpoint_deltas": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "comparisons": 6,
+        "familywise_target": 0.95,
+        "lower": 0.0,
+        "mean": 0.0,
+        "n": 5,
+        "upper": 0.0
+      },
+      "DIRECT_MINUS_BP": {
+        "checkpoint_deltas": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "comparisons": 6,
+        "familywise_target": 0.95,
+        "lower": 0.0,
+        "mean": 0.0,
+        "n": 5,
+        "upper": 0.0
+      },
+      "DIRECT_MINUS_KEEP": {
+        "checkpoint_deltas": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "comparisons": 6,
+        "familywise_target": 0.95,
+        "lower": 0.0,
+        "mean": 0.0,
+        "n": 5,
+        "upper": 0.0
+      }
+    }
+  },
+  "improvement_claim": {
+    "BP": false,
+    "DIRECT": false
+  },
+  "schedule_counts": {
+    "selection": 80,
+    "confirmation": 80
+  },
+  "historical_unique_schedules": 3796,
+  "final_unique_schedules": 3956,
+  "independent_verification": {
+    "alias_records": 2880,
+    "independent_policy_DPs": 640,
+    "independently_rebuilt_new_worlds": 160,
+    "maximum_PDI_residual": 2.498001805406602e-16,
+    "maximum_array_error": 3.3306690738754696e-16,
+    "oracle_policy_DPs": 640,
+    "policy_records": 3520,
+    "source_hashes_checked": 172,
+    "world_records": 320
+  },
+  "process_costs": {
+    "generation": {
+      "schema": "hepta-value-sensitive-process-v1",
+      "phase": "generation",
+      "status": "COMPLETED",
+      "returncode": 0,
+      "wall_timeout": false,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run_value_study.py",
+        "generation",
+        "--protocol",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+        "--inputs",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/input_bundle",
+        "--run-root",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run",
+        "--output",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run/generation_attempt001/output"
+      ],
+      "protocol_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+        "bytes": 412929,
+        "sha256": "adca7eed0c7dc63a5d884fc44f8e8431d7dae56eb44d0566d522eb8dae405d10"
+      },
+      "protocol_unchanged": true,
+      "entry_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run_value_study.py",
+        "bytes": 17430,
+        "sha256": "731fdaf982cf2a91c94e63b3a58f2159bec185787ffa279f0aee0d9247b1208b"
+      },
+      "result_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run/generation_attempt001/output/RESULTS.json",
+        "bytes": 154398,
+        "sha256": "79ff393a6a71aabf56e9a1a3fafae34d9c1c92eaccbda2c3c66636450ce787a1"
+      },
+      "child_CPU_seconds": 31.943307,
+      "supervisor_CPU_seconds": 0.031418389000000005,
+      "wall_seconds": 32.00543649100291,
+      "peak_child_RSS_KiB": 203408,
+      "limits": {
+        "cpu_hard_seconds": 250,
+        "cpu_soft_seconds": 240,
+        "wall_seconds": 500
+      }
+    },
+    "selection": {
+      "schema": "hepta-value-sensitive-process-v1",
+      "phase": "selection",
+      "status": "COMPLETED",
+      "returncode": 0,
+      "wall_timeout": false,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run_value_study.py",
+        "selection",
+        "--protocol",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+        "--inputs",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/input_bundle",
+        "--run-root",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run",
+        "--output",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run/selection_attempt001/output",
+        "--previous",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run/generation_attempt001/output"
+      ],
+      "protocol_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+        "bytes": 412929,
+        "sha256": "adca7eed0c7dc63a5d884fc44f8e8431d7dae56eb44d0566d522eb8dae405d10"
+      },
+      "protocol_unchanged": true,
+      "entry_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run_value_study.py",
+        "bytes": 17430,
+        "sha256": "731fdaf982cf2a91c94e63b3a58f2159bec185787ffa279f0aee0d9247b1208b"
+      },
+      "result_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run/selection_attempt001/output/RESULTS.json",
+        "bytes": 148461,
+        "sha256": "7ce1183aa3970a0be78c62d556b2e69d8a504abace4a623aec829d0f330a0b90"
+      },
+      "child_CPU_seconds": 16.26924,
+      "supervisor_CPU_seconds": 0.018376838999999992,
+      "wall_seconds": 16.40480315500463,
+      "peak_child_RSS_KiB": 81040,
+      "limits": {
+        "cpu_hard_seconds": 130,
+        "cpu_soft_seconds": 120,
+        "wall_seconds": 260
+      }
+    },
+    "confirmation": {
+      "schema": "hepta-value-sensitive-process-v1",
+      "phase": "confirmation",
+      "status": "COMPLETED",
+      "returncode": 0,
+      "wall_timeout": false,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run_value_study.py",
+        "confirmation",
+        "--protocol",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+        "--inputs",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/input_bundle",
+        "--run-root",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run",
+        "--output",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run/confirmation_attempt001/output",
+        "--previous",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run/selection_attempt001/output"
+      ],
+      "protocol_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+        "bytes": 412929,
+        "sha256": "adca7eed0c7dc63a5d884fc44f8e8431d7dae56eb44d0566d522eb8dae405d10"
+      },
+      "protocol_unchanged": true,
+      "entry_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run_value_study.py",
+        "bytes": 17430,
+        "sha256": "731fdaf982cf2a91c94e63b3a58f2159bec185787ffa279f0aee0d9247b1208b"
+      },
+      "result_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run/confirmation_attempt001/output/RESULTS.json",
+        "bytes": 187040,
+        "sha256": "c361097206b369322da360ed9ae36a3a875195fb13952e8c2048a181f668150f"
+      },
+      "child_CPU_seconds": 17.214357,
+      "supervisor_CPU_seconds": 0.021973105999999992,
+      "wall_seconds": 17.264292042003945,
+      "peak_child_RSS_KiB": 93524,
+      "limits": {
+        "cpu_hard_seconds": 130,
+        "cpu_soft_seconds": 120,
+        "wall_seconds": 260
+      }
+    },
+    "verification": {
+      "schema": "hepta-value-sensitive-process-v1",
+      "phase": "verification",
+      "status": "COMPLETED",
+      "returncode": 0,
+      "wall_timeout": false,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/verify_run.py",
+        "--protocol",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+        "--inputs",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/input_bundle",
+        "--run-root",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run",
+        "--output",
+        "/workspace/scratch/267e347691df/advance_20261122_next/value/run/verification_attempt001/output"
+      ],
+      "protocol_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+        "bytes": 412929,
+        "sha256": "adca7eed0c7dc63a5d884fc44f8e8431d7dae56eb44d0566d522eb8dae405d10"
+      },
+      "protocol_unchanged": true,
+      "entry_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/verify_run.py",
+        "bytes": 11837,
+        "sha256": "e6fda217e27fd814fe2646bb5a59e2358d881b1dcffe68edb0175d4280ef9eee"
+      },
+      "result_pin": {
+        "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run/verification_attempt001/output/RESULTS.json",
+        "bytes": 7332,
+        "sha256": "c91a0aeb0762a35b29910f8639b3f502e6e904358972d8c9d0a0f4e27acd7e1b"
+      },
+      "child_CPU_seconds": 43.975763,
+      "supervisor_CPU_seconds": 0.045501169999999994,
+      "wall_seconds": 44.009463952010265,
+      "peak_child_RSS_KiB": 82384,
+      "limits": {
+        "cpu_hard_seconds": 190,
+        "cpu_soft_seconds": 180,
+        "wall_seconds": 380
+      }
+    }
+  },
+  "total_child_CPU_seconds": 109.40266700000001,
+  "total_supervisor_CPU_seconds": 0.11726950399999998,
+  "total_wall_seconds": 109.68399564002175,
+  "historical_reused_preparation_CPU_seconds": 60.02652893799999,
+  "mathematics_admission": {
+    "CPU_seconds": 0.09513625399999999,
+    "budget_refusal": {
+      "CPU_seconds": 2.0423999999991116e-05,
+      "counters": {
+        "complete_policy_DPs": 0,
+        "gradient_calls": 0,
+        "objective_calls": 0,
+        "readout_forward_rows": 0
+      },
+      "error": "TimeoutError('family CPU cap')",
+      "family": "DIRECT",
+      "proposals": [],
+      "returned_best_objective": null,
+      "returned_soft_utility": null,
+      "slots_completed": 0,
+      "status": "FAILED_KEEP",
+      "trace": [],
+      "wall_seconds": 1.9897008314728737e-05
+    },
+    "cases": [
+      {
+        "absolute_value_error": 2.0816681711721685e-17,
+        "enumerated_terminal_paths": 42,
+        "maximum_gradient_error": 2.2541263300368541e-10,
+        "temperature": 0.1
+      },
+      {
+        "absolute_value_error": 2.7755575615628914e-17,
+        "enumerated_terminal_paths": 42,
+        "maximum_gradient_error": 6.340793168302383e-11,
+        "temperature": 0.3
+      }
+    ],
+    "maximum_absolute_gradient_error": 2.2541263300368541e-10,
+    "maximum_absolute_value_error": 2.7755575615628914e-17,
+    "optimizer_controls": {
+      "BP": {
+        "CPU_seconds": 0.006426978,
+        "counters": {
+          "complete_policy_DPs": 10,
+          "gradient_calls": 5,
+          "objective_calls": 5,
+          "readout_forward_rows": 40
+        },
+        "error": null,
+        "family": "BP",
+        "proposals": [
+          {
+            "candidate_norm": 0.09582164546891966,
+            "gradient_norm": 1.952744950778715,
+            "objective": 0.1689426249655854,
+            "slot": 1,
+            "step": 1,
+            "step_size": 0.09582164546891968,
+            "utility": 0.1689738749655854
+          },
+          {
+            "candidate_norm": 0.18475683403627763,
+            "gradient_norm": 1.947913168357558,
+            "objective": 0.33061764829959456,
+            "slot": 2,
+            "step": 2,
+            "step_size": 0.09296065070325735,
+            "utility": 0.3307338262729381
+          },
+          {
+            "candidate_norm": 0.2714887110427916,
+            "gradient_norm": 1.464495956264925,
+            "objective": 0.4362875956248182,
+            "slot": 3,
+            "step": 3,
+            "step_size": 0.09034151372736843,
+            "utility": 0.4365384526825198
+          },
+          {
+            "candidate_norm": 0.3563197386097911,
+            "gradient_norm": 0.9007490263754229,
+            "objective": 0.4974259276750035,
+            "slot": 4,
+            "step": 4,
+            "step_size": 0.08793197246374798,
+            "utility": 0.49785804585188065
+          }
+        ],
+        "returned_best_objective": 0.4974259276750035,
+        "returned_soft_utility": 0.49785804585188065,
+        "slots_completed": 4,
+        "status": "COMPLETED",
+        "trace": [
+          {
+            "CPU_seconds": 0.0025578519999999993,
+            "objective": 0.1689426249655854,
+            "step": 1,
+            "utility": 0.1689738749655854
+          }
+        ],
+        "wall_seconds": 0.006426890002330765
+      },
+      "DIRECT": {
+        "CPU_seconds": 0.007732040999999995,
+        "counters": {
+          "complete_policy_DPs": 10,
+          "gradient_calls": 0,
+          "objective_calls": 5,
+          "readout_forward_rows": 40
+        },
+        "error": null,
+        "family": "DIRECT",
+        "proposals": [
+          {
+            "candidate_norm": 0.3236073061426999,
+            "cycle": 0,
+            "dose": 0.5,
+            "local_priority": 0.2427225534929188,
+            "objective": 0.3691410281759659,
+            "slot": 1,
+            "state": 5,
+            "utility": 0.3694974459957784,
+            "world": 1
+          },
+          {
+            "candidate_norm": 0.38328658187529546,
+            "cycle": 0,
+            "dose": 1.0,
+            "local_priority": 0.2427225534929188,
+            "objective": 0.3903672414514682,
+            "slot": 2,
+            "state": 5,
+            "utility": 0.39086724145146723,
+            "world": 1
+          },
+          {
+            "candidate_norm": 0.3832865818752954,
+            "cycle": 0,
+            "dose": 0.5,
+            "local_priority": 0.19981474998192392,
+            "objective": 0.38159884689991186,
+            "slot": 3,
+            "state": 1,
+            "utility": 0.38209884689991086,
+            "world": 0
+          },
+          {
+            "candidate_norm": 0.3832865818752954,
+            "cycle": 0,
+            "dose": 1.0,
+            "local_priority": 0.19981474998192392,
+            "objective": 0.3815988468999119,
+            "slot": 4,
+            "state": 1,
+            "utility": 0.3820988468999109,
+            "world": 0
+          }
+        ],
+        "returned_best_objective": 0.3903672414514682,
+        "returned_soft_utility": 0.39086724145146723,
+        "slots_completed": 4,
+        "status": "COMPLETED",
+        "trace": [
+          {
+            "CPU_seconds": 0.00772909699999999,
+            "objective": 0.3903672414514682,
+            "round": 1,
+            "utility": 0.39086724145146723
+          }
+        ],
+        "wall_seconds": 0.007731147998129018
+      }
+    },
+    "scope": "synthetic-only independent enumeration and derivative/ledger controls",
+    "source_sha256": "2704bc1d8c99353007c507b044f2e88210e4849c04632ca4277e8b64cf05b248",
+    "status": "PASS",
+    "wall_seconds": 0.09576520700647961
+  },
+  "metadata_CPU_seconds": 0.48311188699999996,
+  "source_results": {
+    "generation": {
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run/generation_attempt001/output/RESULTS.json",
+      "bytes": 154398,
+      "sha256": "79ff393a6a71aabf56e9a1a3fafae34d9c1c92eaccbda2c3c66636450ce787a1"
+    },
+    "selection": {
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run/selection_attempt001/output/RESULTS.json",
+      "bytes": 148461,
+      "sha256": "7ce1183aa3970a0be78c62d556b2e69d8a504abace4a623aec829d0f330a0b90"
+    },
+    "confirmation": {
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run/confirmation_attempt001/output/RESULTS.json",
+      "bytes": 187040,
+      "sha256": "c361097206b369322da360ed9ae36a3a875195fb13952e8c2048a181f668150f"
+    },
+    "verification": {
+      "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run/verification_attempt001/output/RESULTS.json",
+      "bytes": 7332,
+      "sha256": "c91a0aeb0762a35b29910f8639b3f502e6e904358972d8c9d0a0f4e27acd7e1b"
+    }
+  },
+  "scope": "Post-run aggregate; all scientific candidates and choices remained fixed. Zero direct delta makes its dose/direction controls KEEP aliases, not positive causal evidence.",
+  "arithmetic_CPU_seconds": 0.020318362
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "hepta-value-sensitive-process-v1",
+  "phase": "selection",
+  "status": "COMPLETED",
+  "returncode": 0,
+  "wall_timeout": false,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/run_value_study.py",
+    "selection",
+    "--protocol",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+    "--inputs",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/input_bundle",
+    "--run-root",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/run",
+    "--output",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/run/selection_attempt001/output",
+    "--previous",
+    "/workspace/scratch/267e347691df/advance_20261122_next/value/run/generation_attempt001/output"
+  ],
+  "protocol_pin": {
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/PROTOCOL_FROZEN.json",
+    "bytes": 412929,
+    "sha256": "adca7eed0c7dc63a5d884fc44f8e8431d7dae56eb44d0566d522eb8dae405d10"
+  },
+  "protocol_unchanged": true,
+  "entry_pin": {
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run_value_study.py",
+    "bytes": 17430,
+    "sha256": "731fdaf982cf2a91c94e63b3a58f2159bec185787ffa279f0aee0d9247b1208b"
+  },
+  "result_pin": {
+    "path": "/workspace/scratch/267e347691df/advance_20261122_next/value/run/selection_attempt001/output/RESULTS.json",
+    "bytes": 148461,
+    "sha256": "7ce1183aa3970a0be78c62d556b2e69d8a504abace4a623aec829d0f330a0b90"
+  },
+  "child_CPU_seconds": 16.26924,
+  "supervisor_CPU_seconds": 0.018376838999999992,
+  "wall_seconds": 16.40480315500463,
+  "peak_child_RSS_KiB": 81040,
+  "limits": {
+    "cpu_hard_seconds": 130,
+    "cpu_soft_seconds": 120,
+    "wall_seconds": 260
+  }
+}
