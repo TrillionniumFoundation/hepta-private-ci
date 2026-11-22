@@ -55,6 +55,9 @@ use ed25519_dalek::SigningKey;
 
 type TestResult<T> = Result<T, Box<dyn std::error::Error>>;
 
+#[path = "cases/owner_training.rs"]
+mod owner_training;
+
 static NEXT_FIXTURE: AtomicU64 = AtomicU64::new(1);
 static NEXT_EVIDENCE: AtomicU64 = AtomicU64::new(1);
 

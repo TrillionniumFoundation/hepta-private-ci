@@ -2,12 +2,12 @@ name: Hepta E21 original-human complete-question Reader audit (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e21_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e21_*.py'
-      - 'qualification/shared-stem-system2-architecture/e22_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e22_*.py'
-      - 'qualification/shared-stem-system2-architecture/E21_*.md'
-      - '.github/workflows/hepta-e21-original-human-question-complete.yml'
+      - "qualification/shared-stem-system2-architecture/e21_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e21_*.py"
+      - "qualification/shared-stem-system2-architecture/e22_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e22_*.py"
+      - "qualification/shared-stem-system2-architecture/E21_*.md"
+      - ".github/workflows/hepta-e21-original-human-question-complete.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -29,14 +29,14 @@ jobs:
       HEPTA_E21_FOLD_2: /tmp/hepta-e21-e15-held-fold-2.zip
       HEPTA_E21_FOLD_3: /tmp/hepta-e21-e15-held-fold-3.zip
       OUT: /tmp/hepta-e21-blind-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze the exact source and predecessor identities before model reuse
         shell: bash
         run: |
@@ -138,14 +138,14 @@ jobs:
       HEPTA_E21_SCORE_MERGE: /tmp/hepta-e21-merge-human-score.zip
       VAL: /tmp/hepta-e21-original-validation.parquet
       OUT: /tmp/hepta-e21-human-score-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: hepta-e21-blind-${{ matrix.profile }}

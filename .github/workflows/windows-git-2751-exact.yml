@@ -4,8 +4,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - 'codex-rs/git-utils/src/git_process_tests.rs'
-      - '.github/workflows/windows-git-2751-exact.yml'
+      - "codex-rs/git-utils/src/git_process_tests.rs"
+      - ".github/workflows/windows-git-2751-exact.yml"
 
 permissions:
   contents: read
@@ -21,10 +21,10 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 120
     env:
-      CARGO_INCREMENTAL: '0'
-      CARGO_BUILD_JOBS: '2'
-      CARGO_PROFILE_TEST_DEBUG: '0'
-      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_TERM_COLOR: never
       EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: 5fd8ee8b6a333b6385733b9ff8ebe1d076177766

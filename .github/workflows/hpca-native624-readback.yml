@@ -6,8 +6,8 @@ on:
       - research/hpca-native624-evidence-20261112-c06d
   pull_request:
     paths:
-      - '.github/workflows/hpca-native624-readback.yml'
-      - 'qualification/hpca-neuroscience-20261110/evidence/prospective-native624-20261112/**'
+      - ".github/workflows/hpca-native624-readback.yml"
+      - "qualification/hpca-neuroscience-20261110/evidence/prospective-native624-20261112/**"
 
 permissions:
   contents: read
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Checkout exact evidence source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd

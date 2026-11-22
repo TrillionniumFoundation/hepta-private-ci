@@ -2,8 +2,8 @@ name: Hepta NDU E25 original-source human review (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/ndu-e25-real/**'
-      - '.github/workflows/hepta-ndu-e25-original-review.yml'
+      - "qualification/ndu-e25-real/**"
+      - ".github/workflows/hepta-ndu-e25-original-review.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Verify original source-head workflow actually succeeded
         env:
           GH_TOKEN: ${{ github.token }}
@@ -50,28 +50,28 @@ jobs:
           name: hepta-e25-original-public-source_head
           path: ${{ runner.temp }}/e25-original/public
           repository: TrillionniumFoundation/hepta-private-ci
-          run-id: '38727583089'
+          run-id: "38727583089"
           github-token: ${{ github.token }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: hepta-e25-original-owner-only-source_head
           path: ${{ runner.temp }}/e25-original/owner
           repository: TrillionniumFoundation/hepta-private-ci
-          run-id: '38727583089'
+          run-id: "38727583089"
           github-token: ${{ github.token }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: hepta-e25-original-pretrained-blind-source_head
           path: ${{ runner.temp }}/e25-original/model
           repository: TrillionniumFoundation/hepta-private-ci
-          run-id: '38727583089'
+          run-id: "38727583089"
           github-token: ${{ github.token }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: hepta-e25-independent-original-human-source_head
           path: ${{ runner.temp }}/e25-original/score
           repository: TrillionniumFoundation/hepta-private-ci
-          run-id: '38727583089'
+          run-id: "38727583089"
           github-token: ${{ github.token }}
       - name: Verify member-byte locks, original answers and research-only interpretation
         env:

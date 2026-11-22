@@ -2,8 +2,8 @@ name: Hepta P5 nonlinear coupled discrete FBSDE controls (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/ndu-p5-coupled-study/**'
-      - '.github/workflows/hepta-ndu-p5-coupled-controls.yml'
+      - "qualification/ndu-p5-coupled-study/**"
+      - ".github/workflows/hepta-ndu-p5-coupled-controls.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Source and runtime identity
         run: |
           git rev-parse HEAD

@@ -2,10 +2,10 @@ name: Hepta E18 original frozen Reader post-logit precision (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e18_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e18_*.py'
-      - 'qualification/shared-stem-system2-architecture/E18_POST_LOGIT_PRECISION_20261015.md'
-      - '.github/workflows/hepta-e18-real-reader-output-precision.yml'
+      - "qualification/shared-stem-system2-architecture/e18_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e18_*.py"
+      - "qualification/shared-stem-system2-architecture/E18_POST_LOGIT_PRECISION_20261015.md"
+      - ".github/workflows/hepta-e18-real-reader-output-precision.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,14 +24,14 @@ jobs:
       HEPTA_E17_REAL_ARCHIVE: /tmp/hepta-e18-original-pretrained.zip
       HEPTA_E18_ORIGINAL_ARCHIVE: /tmp/hepta-e18-original-pretrained.zip
       OUTPUT: /tmp/hepta-e18-original-precision-${{ matrix.source_profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze exact source head, tested code and workflow identity
         shell: bash
         run: |

@@ -7,8 +7,8 @@ on:
       - research/group-evidence-step-latency-p0-20261015
   pull_request:
     paths:
-      - 'qualification/group-proof-step-v1/**'
-      - '.github/workflows/hepta-group-proof-step-research.yml'
+      - "qualification/group-proof-step-v1/**"
+      - ".github/workflows/hepta-group-proof-step-research.yml"
 
 permissions:
   contents: read
@@ -28,7 +28,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Public evidence and frozen policy regression
         run: |
           PYTHONPATH=qualification/group-proof-step-v1 python -m unittest discover -s qualification/group-proof-step-v1 -p 'test_*.py' -v

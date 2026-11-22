@@ -1,24 +1,46 @@
 //! Bounded research RR feature broker. Official runtime/journal/witness remain unchanged.
 //! The 8 exported features are not the 81 task actions; all publication authority is denied.
-use codex_hepta_infer_core::{
-    NeuronFeatureObservationV1, NeuronFeatureReceiptV1, NeuronFeatureRequestV1,
-    NeuronFeatureTerminalStatusV1, NeuronModelRuntimeTupleV1, build_neuron_feature_receipt_v1,
-    neuron_feature_request_digest_v1,
-};
-use codex_hepta_neuron::{
-    AnchorWitnessStore, FileAnchorWitnessStore, InferenceControlModelPort, JournalAnchor,
-    JournalScope, NeuronCalibrationProfileV1, NeuronInferenceControlPort, NeuronModelError,
-    NeuronResourceEnvelopeV1, NeuronRuntime, NeuronRuntimeConfigV1, NeuronTickInputV1,
-    SparseCheckpoint, SparseConfig, SparseTick, WitnessStoreError,
-    canonical_feature_vector_digest_v1, sparse_tick,
-};
-use codex_hepta_types::{Digest32, Generation, StableId};
-use serde_json::{Value, json};
+use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
+use codex_hepta_infer_core::neuron_feature_request_digest_v1;
+use codex_hepta_infer_core::NeuronFeatureObservationV1;
+use codex_hepta_infer_core::NeuronFeatureReceiptV1;
+use codex_hepta_infer_core::NeuronFeatureRequestV1;
+use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
+use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
+use codex_hepta_neuron::canonical_feature_vector_digest_v1;
+use codex_hepta_neuron::sparse_tick;
+use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::FileAnchorWitnessStore;
+use codex_hepta_neuron::InferenceControlModelPort;
+use codex_hepta_neuron::JournalAnchor;
+use codex_hepta_neuron::JournalScope;
+use codex_hepta_neuron::NeuronCalibrationProfileV1;
+use codex_hepta_neuron::NeuronInferenceControlPort;
+use codex_hepta_neuron::NeuronModelError;
+use codex_hepta_neuron::NeuronResourceEnvelopeV1;
+use codex_hepta_neuron::NeuronRuntime;
+use codex_hepta_neuron::NeuronRuntimeConfigV1;
+use codex_hepta_neuron::NeuronTickInputV1;
+use codex_hepta_neuron::SparseCheckpoint;
+use codex_hepta_neuron::SparseConfig;
+use codex_hepta_neuron::SparseTick;
+use codex_hepta_neuron::WitnessStoreError;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use serde_json::json;
+use serde_json::Value;
 use std::error::Error;
-use std::fs::{self, File, OpenOptions};
-use std::io::{self, Read, Write};
-use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::{self};
+use std::io::Read;
+use std::io::Write;
+use std::io::{self};
+use std::path::Path;
+use std::path::PathBuf;
+use std::process::Command;
+use std::process::Stdio;
 
 type Outcome<T> = Result<T, Box<dyn Error>>;
 const Q: i64 = 1 << 24;

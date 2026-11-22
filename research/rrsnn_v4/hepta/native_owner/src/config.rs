@@ -1,9 +1,18 @@
-use crate::model::{INPUTS, Projection, Q, WIDTH, digest, id};
-use codex_hepta_neuron::{
-    JournalScope, NeuronCalibrationProfileV1, NeuronResourceEnvelopeV1, NeuronRuntimeConfigV1,
-    NeuronTickInputV1, SparseConfig, canonical_feature_vector_digest_v1,
-};
-use codex_hepta_types::{Digest32, Generation};
+use crate::model::digest;
+use crate::model::id;
+use crate::model::Projection;
+use crate::model::INPUTS;
+use crate::model::Q;
+use crate::model::WIDTH;
+use codex_hepta_neuron::canonical_feature_vector_digest_v1;
+use codex_hepta_neuron::JournalScope;
+use codex_hepta_neuron::NeuronCalibrationProfileV1;
+use codex_hepta_neuron::NeuronResourceEnvelopeV1;
+use codex_hepta_neuron::NeuronRuntimeConfigV1;
+use codex_hepta_neuron::NeuronTickInputV1;
+use codex_hepta_neuron::SparseConfig;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 
 pub fn native() -> SparseConfig {
     SparseConfig {

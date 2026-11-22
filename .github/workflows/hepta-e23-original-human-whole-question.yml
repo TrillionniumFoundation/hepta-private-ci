@@ -2,11 +2,11 @@ name: Hepta E23 independent original human whole-question corroboration (DENY_AL
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e23_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e23_*.py'
-      - 'qualification/shared-stem-system2-architecture/E23_*.md'
-      - '.github/workflows/hepta-e23-original-human-whole-question.yml'
-      - '.github/workflows/hepta-e6-e8-physical-real-route.yml'
+      - "qualification/shared-stem-system2-architecture/e23_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e23_*.py"
+      - "qualification/shared-stem-system2-architecture/E23_*.md"
+      - ".github/workflows/hepta-e23-original-human-whole-question.yml"
+      - ".github/workflows/hepta-e6-e8-physical-real-route.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,14 +23,14 @@ jobs:
       ROOT: qualification/shared-stem-system2-architecture
       PYTHONPATH: qualification/shared-stem-system2-architecture
       OUTPUT: /tmp/hepta-e23-original-blind-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze actual source HEAD and research-only types
         shell: bash
         run: |
@@ -95,14 +95,14 @@ jobs:
       ROOT: qualification/shared-stem-system2-architecture
       PYTHONPATH: qualification/shared-stem-system2-architecture
       OUTPUT: /tmp/hepta-e23-original-owner-score-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: hepta-e23-original-blind-${{ matrix.profile }}

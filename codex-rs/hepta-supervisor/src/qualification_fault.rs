@@ -9,10 +9,7 @@ pub(crate) fn maybe_fail(stage: &str, target: &Path) -> io::Result<()> {
     let Some(root) = std::env::var_os(FAULT_ROOT_ENV) else {
         return Ok(());
     };
-    let marker = Path::new(&root).join(format!(
-        "{}.{stage}.fail-once",
-        target_name(target)
-    ));
+    let marker = Path::new(&root).join(format!("{}.{stage}.fail-once", target_name(target)));
     let claimed = Path::new(&root).join(format!(
         "{}.{stage}.claimed.{}",
         target_name(target),
@@ -38,10 +35,7 @@ pub(crate) fn maybe_delay(stage: &str, target: &Path) -> io::Result<()> {
     let Some(root) = std::env::var_os(FAULT_ROOT_ENV) else {
         return Ok(());
     };
-    let marker = Path::new(&root).join(format!(
-        "{}.{stage}.delay-ms",
-        target_name(target)
-    ));
+    let marker = Path::new(&root).join(format!("{}.{stage}.delay-ms", target_name(target)));
     let bytes = match std::fs::read(&marker) {
         Ok(bytes) => bytes,
         Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(()),
@@ -57,7 +51,9 @@ pub(crate) fn maybe_delay(stage: &str, target: &Path) -> io::Result<()> {
         .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "delay marker is not UTF-8"))?
         .trim()
         .parse::<u64>()
-        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "delay marker is not an integer"))?;
+        .map_err(|_| {
+            io::Error::new(io::ErrorKind::InvalidData, "delay marker is not an integer")
+        })?;
     if millis == 0 || millis > MAX_DELAY_MILLIS {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,

@@ -2,10 +2,10 @@ name: Hepta E24 independent whole-question training loss vs Brier (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e24_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e24_*.py'
-      - 'qualification/shared-stem-system2-architecture/E24_*.md'
-      - '.github/workflows/hepta-e24-original-human-question-risk.yml'
+      - "qualification/shared-stem-system2-architecture/e24_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e24_*.py"
+      - "qualification/shared-stem-system2-architecture/E24_*.md"
+      - ".github/workflows/hepta-e24-original-human-question-risk.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,14 +23,14 @@ jobs:
       PYTHONPATH: qualification/shared-stem-system2-architecture
       HEPTA_E24_ORIGINAL: /tmp/hepta-e24-original-unlabelled-trained-readers.zip
       OUTPUT: /tmp/hepta-e24-original-blind-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze actual checkout identity, source hashes and policy
         shell: bash
         run: |
@@ -97,14 +97,14 @@ jobs:
       PYTHONPATH: qualification/shared-stem-system2-architecture
       HEPTA_E24_ORIGINAL: /tmp/hepta-e24-original-unlabelled-trained-readers.zip
       OUTPUT: /tmp/hepta-e24-trained-${{ matrix.profile }}-${{ matrix.fold }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: hepta-e24-original-blind-${{ matrix.profile }}
@@ -173,14 +173,14 @@ jobs:
       PYTHONPATH: qualification/shared-stem-system2-architecture
       HEPTA_E24_ORIGINAL: /tmp/hepta-e24-original-unlabelled-trained-readers.zip
       OUTPUT: /tmp/hepta-e24-independent-human-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: hepta-e24-original-blind-${{ matrix.profile }}

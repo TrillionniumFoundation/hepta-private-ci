@@ -138,10 +138,7 @@ pub struct PromptExecutionProfileV3 {
 }
 
 impl PromptExecutionProfileV3 {
-    pub fn validate_for(
-        &self,
-        tuple: &PromptModelTupleV2,
-    ) -> Result<(), PromptProductV3Error> {
+    pub fn validate_for(&self, tuple: &PromptModelTupleV2) -> Result<(), PromptProductV3Error> {
         tuple
             .validate()
             .map_err(|error| PromptProductV3Error::Registry(error.to_string()))?;
@@ -282,14 +279,17 @@ impl PromptRegistryCompiledContextV3 {
             .validate_for(&self.compiled, &self.model_profile)
             .map_err(PromptProductV3Error::Context)?;
         self.attachment
-            .validate_for(&self.compiled, &self.serialized_context, &self.model_profile)
+            .validate_for(
+                &self.compiled,
+                &self.serialized_context,
+                &self.model_profile,
+            )
             .map_err(PromptProductV3Error::Context)?;
         self.authority_snapshot
             .validate()
             .map_err(|error| PromptProductV3Error::Registry(error.to_string()))?;
         if self.selected_deliveries.is_empty()
-            || self.selected_deliveries.len()
-                != self.compiled.receipt().selected_item_ids().len()
+            || self.selected_deliveries.len() != self.compiled.receipt().selected_item_ids().len()
             || self.authority.grants_any()
             || self.exercise_receipt_digest.is_zero()
             || self.portfolio_receipt_digest.is_zero()
@@ -317,10 +317,7 @@ impl fmt::Debug for PromptRegistryCompiledContextV3 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("PromptRegistryCompiledContextV3")
-            .field(
-                "compilation_id",
-                self.compiled.receipt().compilation_id(),
-            )
+            .field("compilation_id", self.compiled.receipt().compilation_id())
             .field("selected_count", &self.selected_deliveries.len())
             .field(
                 "payload_digest",
@@ -335,10 +332,7 @@ impl fmt::Debug for PromptRegistryCompiledContextV3 {
                 &self.serialized_context.receipt().serialized_token_count(),
             )
             .field("source_binding_digest", &self.source_binding_digest)
-            .field(
-                "tokenization_proof_digest",
-                &self.tokenization_proof_digest,
-            )
+            .field("tokenization_proof_digest", &self.tokenization_proof_digest)
             .finish()
     }
 }
@@ -368,10 +362,7 @@ impl fmt::Debug for PreparedPromptDeliveryV3 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("PreparedPromptDeliveryV3")
-            .field(
-                "preparation_digest",
-                &self.preparation.preparation_digest(),
-            )
+            .field("preparation_digest", &self.preparation.preparation_digest())
             .field(
                 "current_authority_snapshot",
                 &self.authority_successor.current().snapshot_digest(),
@@ -463,7 +454,10 @@ impl ContextAdmissionVerifierV2 for RegistryAuthorityVerifier<'_> {
         self.authority.admissions().iter().any(|admission| {
             record.admission_id == *admission.admission_id()
                 && record.item_id == *admission.realization_id()
-                && record.role == context_role(admission.role()).ok().unwrap_or(ContextRoleV2::Schema)
+                && record.role
+                    == context_role(admission.role())
+                        .ok()
+                        .unwrap_or(ContextRoleV2::Schema)
                 && record.content_digest == admission.content_digest()
                 && record.source_digest == admission.source_digest()
                 && record.generation_vector_digest == admission.generation_vector_digest()
@@ -599,10 +593,8 @@ pub fn compile_prompt_registry_v3<T: PromptExactTokenizerV3>(
     }
 
     let scope_digest = product_scope_digest(portfolio, exercise.receipt_digest);
-    let authority_domain_digest = product_authority_domain_digest(
-        &request.execution_profile,
-        &request.registry_model_tuple,
-    );
+    let authority_domain_digest =
+        product_authority_domain_digest(&request.execution_profile, &request.registry_model_tuple);
     let realization_ids = portfolio
         .selected
         .iter()
@@ -677,12 +669,9 @@ pub fn compile_prompt_registry_v3<T: PromptExactTokenizerV3>(
             admission.expires_unix_ms(),
         )
         .map_err(PromptProductV3Error::Context)?;
-        let verified_admission = verify_admission_v2(
-            admission_record,
-            &verified_snapshot,
-            &verifier,
-        )
-        .map_err(PromptProductV3Error::Context)?;
+        let verified_admission =
+            verify_admission_v2(admission_record, &verified_snapshot, &verifier)
+                .map_err(PromptProductV3Error::Context)?;
         candidates.push(ContextCandidateV2 {
             item_id: delivery.binding.realization_id.clone(),
             role,
@@ -931,7 +920,13 @@ fn compute_source_binding_digest(output: &PromptRegistryCompiledContextV3) -> Di
     bytes.extend_from_slice(output.authority_snapshot.snapshot_digest().as_array());
     bytes.extend_from_slice(output.execution_profile.digest().as_array());
     bytes.extend_from_slice(output.compiled.receipt().receipt_digest().as_array());
-    bytes.extend_from_slice(output.serialized_context.receipt().receipt_digest().as_array());
+    bytes.extend_from_slice(
+        output
+            .serialized_context
+            .receipt()
+            .receipt_digest()
+            .as_array(),
+    );
     bytes.extend_from_slice(output.attachment.attachment_digest().as_array());
     bytes.extend_from_slice(&output.portfolio_valid_until_unix_ms.to_be_bytes());
     for delivery in &output.selected_deliveries {
@@ -942,9 +937,21 @@ fn compute_source_binding_digest(output: &PromptRegistryCompiledContextV3) -> Di
 
 fn compute_tokenization_proof_digest(output: &PromptRegistryCompiledContextV3) -> Digest32 {
     let mut bytes = TOKENIZATION_PROOF_DOMAIN.to_vec();
-    bytes.extend_from_slice(output.execution_profile.tokenizer.identity_digest().as_array());
+    bytes.extend_from_slice(
+        output
+            .execution_profile
+            .tokenizer
+            .identity_digest()
+            .as_array(),
+    );
     bytes.extend_from_slice(output.execution_profile.digest().as_array());
-    bytes.extend_from_slice(output.serialized_context.receipt().payload_digest().as_array());
+    bytes.extend_from_slice(
+        output
+            .serialized_context
+            .receipt()
+            .payload_digest()
+            .as_array(),
+    );
     bytes.extend_from_slice(
         &output
             .serialized_context
@@ -1139,13 +1146,9 @@ mod tests {
         .expect("canonical V3 compilation");
         revoke_registry(&mut registry, &authority, &key, grant_now);
 
-        let error = prepare_prompt_delivery_v3(
-            &registry,
-            &output,
-            200,
-            id("preparation:prompt:v3"),
-        )
-        .expect_err("revoked selection must not prepare");
+        let error =
+            prepare_prompt_delivery_v3(&registry, &output, 200, id("preparation:prompt:v3"))
+                .expect_err("revoked selection must not prepare");
         assert!(matches!(error, PromptProductV3Error::Registry(_)));
     }
 

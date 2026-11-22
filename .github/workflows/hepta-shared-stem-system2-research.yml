@@ -2,8 +2,8 @@ name: Hepta Shared Stem System2 research contracts (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/**'
-      - '.github/workflows/hepta-shared-stem-system2-research.yml'
+      - "qualification/shared-stem-system2-architecture/**"
+      - ".github/workflows/hepta-shared-stem-system2-research.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Install pinned NumPy required by inherited E6 physical contract tests
         shell: bash
         run: python -m pip install --disable-pip-version-check numpy==2.3.5

@@ -2,8 +2,8 @@ name: Hepta P5 nominal certified early-stop vs Picard and cheap controls (DENY_A
 on:
   pull_request:
     paths:
-      - 'qualification/ndu-p5-decision-cert/**'
-      - '.github/workflows/hepta-ndu-p5-certified-action-stop.yml'
+      - "qualification/ndu-p5-decision-cert/**"
+      - ".github/workflows/hepta-ndu-p5-certified-action-stop.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      PYTHONHASHSEED: '0'
+      PYTHONHASHSEED: "0"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Record exact P5 source and runtime
         run: |
           git rev-parse HEAD

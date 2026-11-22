@@ -2,8 +2,8 @@ name: Hepta NDU Merton finite research (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'experiments/ndu_tree_fbsde_gates/merton/**'
-      - '.github/workflows/hepta-ndu-merton.yml'
+      - "experiments/ndu_tree_fbsde_gates/merton/**"
+      - ".github/workflows/hepta-ndu-merton.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Pin inherited exact oracle and record candidate
         shell: bash
         run: |

@@ -166,11 +166,7 @@ impl FederationAttemptRegistryV1 {
         })
     }
 
-    pub fn is_cancelled(
-        &self,
-        query_id: &StableId,
-        query_binding_digest: Digest32,
-    ) -> bool {
+    pub fn is_cancelled(&self, query_id: &StableId, query_binding_digest: Digest32) -> bool {
         let identity = AttemptIdentity::new(query_id, query_binding_digest);
         self.attempts
             .get(&identity)

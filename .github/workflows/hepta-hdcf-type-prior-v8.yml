@@ -5,16 +5,16 @@ on:
     branches:
       - research/hdcf-type-prior-negative-v8-20261017
     paths:
-      - 'qualification/hdcf-research/type_prior_negative_v8.py'
-      - 'qualification/hdcf-research/test_type_prior_negative_v8.py'
-      - 'qualification/hdcf-research/HEPTA_V8_TYPE_PRIOR_NEGATIVE.md'
-      - '.github/workflows/hepta-hdcf-type-prior-v8.yml'
+      - "qualification/hdcf-research/type_prior_negative_v8.py"
+      - "qualification/hdcf-research/test_type_prior_negative_v8.py"
+      - "qualification/hdcf-research/HEPTA_V8_TYPE_PRIOR_NEGATIVE.md"
+      - ".github/workflows/hepta-hdcf-type-prior-v8.yml"
   pull_request:
     paths:
-      - 'qualification/hdcf-research/type_prior_negative_v8.py'
-      - 'qualification/hdcf-research/test_type_prior_negative_v8.py'
-      - 'qualification/hdcf-research/HEPTA_V8_TYPE_PRIOR_NEGATIVE.md'
-      - '.github/workflows/hepta-hdcf-type-prior-v8.yml'
+      - "qualification/hdcf-research/type_prior_negative_v8.py"
+      - "qualification/hdcf-research/test_type_prior_negative_v8.py"
+      - "qualification/hdcf-research/HEPTA_V8_TYPE_PRIOR_NEGATIVE.md"
+      - ".github/workflows/hepta-hdcf-type-prior-v8.yml"
   workflow_dispatch:
 
 permissions:
@@ -35,7 +35,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Source-only adversarial checks
         working-directory: qualification/hdcf-research
         run: |

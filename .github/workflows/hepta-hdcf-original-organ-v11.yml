@@ -5,10 +5,10 @@ on:
     branches:
       - research/hdcf-original-organ-v11-20261017
     paths:
-      - 'qualification/hdcf-research/organ_vision_text_v11.py'
-      - 'qualification/hdcf-research/test_organ_vision_text_v11.py'
-      - 'qualification/hdcf-research/ORIGINAL_ORGAN_ALIGNMENT_V11.md'
-      - '.github/workflows/hepta-hdcf-original-organ-v11.yml'
+      - "qualification/hdcf-research/organ_vision_text_v11.py"
+      - "qualification/hdcf-research/test_organ_vision_text_v11.py"
+      - "qualification/hdcf-research/ORIGINAL_ORGAN_ALIGNMENT_V11.md"
+      - ".github/workflows/hepta-hdcf-original-organ-v11.yml"
   workflow_dispatch:
 
 permissions:
@@ -31,7 +31,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Verify exact source and pinned bounded numerical runtime
         env:
           EXPECTED_SOURCE: ${{ github.sha }}
@@ -56,8 +56,8 @@ jobs:
       - name: Physically fit rank-8 Organ and equal-touch Heads on original TRAIN labels ONLY
         working-directory: qualification/hdcf-research
         env:
-          OPENBLAS_NUM_THREADS: '1'
-          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: "1"
+          OMP_NUM_THREADS: "1"
         run: |
           set -euo pipefail
           umask 077
@@ -109,8 +109,8 @@ jobs:
           HDCF_ORIGINAL_SOURCE_ZIP: ${{ runner.temp }}/organ-v11-source.zip
           HDCF_ORIGINAL_FEATURE_ZIP: ${{ runner.temp }}/organ-v11-features.zip
           HDCF_ORIGINAL_TARGET_ZIP: ${{ runner.temp }}/organ-v11-targets.zip
-          OPENBLAS_NUM_THREADS: '1'
-          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: "1"
+          OMP_NUM_THREADS: "1"
         run: |
           set -euo pipefail
           python3 - <<'PY'

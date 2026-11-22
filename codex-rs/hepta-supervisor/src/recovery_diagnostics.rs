@@ -200,9 +200,7 @@ fn classify(
     RecoveryBlockerClass::ReleaseCasAmbiguity
 }
 
-fn blocker_action(
-    blocker: RecoveryBlockerClass,
-) -> (RecoveryOperatorAction, &'static str) {
+fn blocker_action(blocker: RecoveryBlockerClass) -> (RecoveryOperatorAction, &'static str) {
     match blocker {
         RecoveryBlockerClass::NoBlocker => (
             RecoveryOperatorAction::None,

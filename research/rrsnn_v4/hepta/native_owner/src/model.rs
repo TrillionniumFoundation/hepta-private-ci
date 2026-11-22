@@ -1,10 +1,14 @@
 //! Executed, deterministic research projection; not a trained RR-SNN backend.
-use codex_hepta_infer_core::{
-    NeuronFeatureObservationV1, NeuronFeatureReceiptV1, NeuronFeatureRequestV1,
-    NeuronFeatureTerminalStatusV1, NeuronModelRuntimeTupleV1, build_neuron_feature_receipt_v1,
-};
-use codex_hepta_neuron::{NeuronInferenceControlPort, NeuronModelError};
-use codex_hepta_types::{Digest32, StableId};
+use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
+use codex_hepta_infer_core::NeuronFeatureObservationV1;
+use codex_hepta_infer_core::NeuronFeatureReceiptV1;
+use codex_hepta_infer_core::NeuronFeatureRequestV1;
+use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
+use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
+use codex_hepta_neuron::NeuronInferenceControlPort;
+use codex_hepta_neuron::NeuronModelError;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use std::fs;
 use std::time::Instant;
 

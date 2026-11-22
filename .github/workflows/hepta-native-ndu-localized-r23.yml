@@ -2,8 +2,8 @@ name: Native NDU R23 localized rational bounds
 on:
   pull_request:
     paths:
-      - 'codex-rs/hepta-ndu/research/native_stem_abcd/localized_bounds/**'
-      - '.github/workflows/hepta-native-ndu-localized-r23.yml'
+      - "codex-rs/hepta-ndu/research/native_stem_abcd/localized_bounds/**"
+      - ".github/workflows/hepta-native-ndu-localized-r23.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,7 +17,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Exact rational tests and three complete proof trees
         shell: bash
         run: |

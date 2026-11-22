@@ -2,10 +2,10 @@ name: Hepta E12 original pretrained Reader VOI negative gate (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e12_original_reader_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e12_original_reader_*.py'
-      - 'qualification/shared-stem-system2-architecture/E12_ORIGINAL_READER_VOI_20261016.md'
-      - '.github/workflows/hepta-e12-original-reader-voi.yml'
+      - "qualification/shared-stem-system2-architecture/e12_original_reader_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e12_original_reader_*.py"
+      - "qualification/shared-stem-system2-architecture/E12_ORIGINAL_READER_VOI_20261016.md"
+      - ".github/workflows/hepta-e12-original-reader-voi.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -84,14 +84,14 @@ jobs:
     env:
       ROOT: qualification/shared-stem-system2-architecture
       OUT: /tmp/hepta-voi
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: hepta-voi-source-${{ matrix.profile }}
@@ -129,14 +129,14 @@ jobs:
     env:
       ROOT: qualification/shared-stem-system2-architecture
       OUT: /tmp/hepta-voi
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: hepta-voi-blind-${{ matrix.profile }}

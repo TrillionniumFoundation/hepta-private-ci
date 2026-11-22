@@ -4,35 +4,35 @@ on:
     branches:
       - research/stem-multimodal-source-bound-v1-20261016
     paths:
-      - 'qualification/stem-cell-v1/granite97_feature_bridge_v2.py'
-      - 'qualification/stem-cell-v1/test_granite97_feature_bridge_v2.py'
-      - 'qualification/stem-cell-v1/granite97_two_cell_shadow_v2.py'
-      - 'qualification/stem-cell-v1/stem_cell_fleet_v3.py'
-      - 'qualification/stem-cell-v1/stem_cell_fleet_v3_review.py'
-      - 'qualification/stem-cell-v1/test_stem_cell_fleet_v3.py'
-      - 'qualification/stem-cell-v1/test_granite97_two_cell_shadow_v2.py'
-      - 'qualification/stem-cell-v1/multimodal_stem_v1.py'
-      - 'qualification/stem-cell-v1/GRANITE97_BRIDGE_V2_HANDOFF.md'
-      - '.github/workflows/hepta-stem-v2-original-physical-bridge.yml'
+      - "qualification/stem-cell-v1/granite97_feature_bridge_v2.py"
+      - "qualification/stem-cell-v1/test_granite97_feature_bridge_v2.py"
+      - "qualification/stem-cell-v1/granite97_two_cell_shadow_v2.py"
+      - "qualification/stem-cell-v1/stem_cell_fleet_v3.py"
+      - "qualification/stem-cell-v1/stem_cell_fleet_v3_review.py"
+      - "qualification/stem-cell-v1/test_stem_cell_fleet_v3.py"
+      - "qualification/stem-cell-v1/test_granite97_two_cell_shadow_v2.py"
+      - "qualification/stem-cell-v1/multimodal_stem_v1.py"
+      - "qualification/stem-cell-v1/GRANITE97_BRIDGE_V2_HANDOFF.md"
+      - ".github/workflows/hepta-stem-v2-original-physical-bridge.yml"
   pull_request:
     paths:
-      - 'qualification/stem-cell-v1/granite97_feature_bridge_v2.py'
-      - 'qualification/stem-cell-v1/test_granite97_feature_bridge_v2.py'
-      - 'qualification/stem-cell-v1/granite97_two_cell_shadow_v2.py'
-      - 'qualification/stem-cell-v1/stem_cell_fleet_v3.py'
-      - 'qualification/stem-cell-v1/stem_cell_fleet_v3_review.py'
-      - 'qualification/stem-cell-v1/test_stem_cell_fleet_v3.py'
-      - 'qualification/stem-cell-v1/test_granite97_two_cell_shadow_v2.py'
-      - 'qualification/stem-cell-v1/multimodal_stem_v1.py'
-      - 'qualification/stem-cell-v1/GRANITE97_BRIDGE_V2_HANDOFF.md'
-      - '.github/workflows/hepta-stem-v2-original-physical-bridge.yml'
+      - "qualification/stem-cell-v1/granite97_feature_bridge_v2.py"
+      - "qualification/stem-cell-v1/test_granite97_feature_bridge_v2.py"
+      - "qualification/stem-cell-v1/granite97_two_cell_shadow_v2.py"
+      - "qualification/stem-cell-v1/stem_cell_fleet_v3.py"
+      - "qualification/stem-cell-v1/stem_cell_fleet_v3_review.py"
+      - "qualification/stem-cell-v1/test_stem_cell_fleet_v3.py"
+      - "qualification/stem-cell-v1/test_granite97_two_cell_shadow_v2.py"
+      - "qualification/stem-cell-v1/multimodal_stem_v1.py"
+      - "qualification/stem-cell-v1/GRANITE97_BRIDGE_V2_HANDOFF.md"
+      - ".github/workflows/hepta-stem-v2-original-physical-bridge.yml"
 permissions:
   contents: read
 env:
-  HF_HUB_DISABLE_TELEMETRY: '1'
-  OMP_NUM_THREADS: '1'
-  MKL_NUM_THREADS: '1'
-  PYTHONDONTWRITEBYTECODE: '1'
+  HF_HUB_DISABLE_TELEMETRY: "1"
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
 jobs:
   offline-adversarial:
     # Real optimized/unoptimized source tests passed on hosted ARM64
@@ -45,7 +45,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Exact-source byte-bound V1 and V2 tests
         working-directory: qualification/stem-cell-v1
         shell: bash
@@ -72,7 +72,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Fetch exact existing V9 producer, independent reviewer and public constructed source
         shell: bash
         run: |

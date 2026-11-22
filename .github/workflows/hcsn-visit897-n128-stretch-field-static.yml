@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
       CANDIDATE_COMMIT: ${{ github.sha }}
       GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
       EXPECTED_BRANCH: research/hcsn-visit897-n128-stretch-field-static-20261112-c06d
@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - uses: ./.github/actions/setup-ci-tools
       - name: Bind exact static repair source
         run: |

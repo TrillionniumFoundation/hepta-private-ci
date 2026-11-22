@@ -2,8 +2,8 @@ name: Hepta E6-E8 shared Stem physical and real archive route (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/**'
-      - '.github/workflows/hepta-e6-e8-physical-real-route.yml'
+      - "qualification/shared-stem-system2-architecture/**"
+      - ".github/workflows/hepta-e6-e8-physical-real-route.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 18
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: qualification/shared-stem-system2-architecture
       HEPTA_E14_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
       HEPTA_E15_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
@@ -21,8 +21,8 @@ jobs:
       HEPTA_E17_REAL_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
       HEPTA_E18_ORIGINAL_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
       HEPTA_E19_ORIGINAL_ARCHIVE: /tmp/hepta-e6-e8-original-pretrained-multirc.zip
-      OPENBLAS_NUM_THREADS: '1'
-      MKL_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
       OUTPUT: /tmp/hepta-e6-e8
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Pin NumPy and CPU Torch required by the full inherited research tests
         shell: bash
         run: |
@@ -150,7 +150,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 16
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: qualification/shared-stem-system2-architecture
       OUTPUT: /tmp/hepta-e7-original-real
       PHYSICAL: /tmp/hepta-e7-original-physical-11908591037.zip
@@ -161,7 +161,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Freeze source and preregistered fixed-threshold arm set
         shell: bash
         run: |

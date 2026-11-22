@@ -2,11 +2,11 @@ name: Hepta E26 frozen six passage statistical qualification (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e26_*'
-      - 'qualification/shared-stem-system2-architecture/test_e26_*.py'
-      - 'qualification/shared-stem-system2-architecture/E26_*.md'
-      - 'qualification/shared-stem-system2-architecture/E26_*.json'
-      - '.github/workflows/hepta-e26-frozen-six-source-statistical-gate.yml'
+      - "qualification/shared-stem-system2-architecture/e26_*"
+      - "qualification/shared-stem-system2-architecture/test_e26_*.py"
+      - "qualification/shared-stem-system2-architecture/E26_*.md"
+      - "qualification/shared-stem-system2-architecture/E26_*.json"
+      - ".github/workflows/hepta-e26-frozen-six-source-statistical-gate.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -21,7 +21,7 @@ jobs:
     env:
       ROOT: qualification/shared-stem-system2-architecture
       PYTHONPATH: qualification/shared-stem-system2-architecture
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
       OUT: /tmp/hepta-e26-statistical
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Seal exact source and original E24 human-summary bytes
         shell: bash
         run: |

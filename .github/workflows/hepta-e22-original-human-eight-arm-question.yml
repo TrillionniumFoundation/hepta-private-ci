@@ -2,15 +2,15 @@ name: Hepta E22 eight-arm original-human complete-question score (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e22_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e22_*.py'
-      - 'qualification/shared-stem-system2-architecture/E22_*.md'
-      - 'qualification/shared-stem-system2-architecture/e24_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e24_*.py'
-      - 'qualification/shared-stem-system2-architecture/E24_*.md'
-      - 'qualification/shared-stem-system2-architecture/E24_*.json'
-      - '.github/workflows/hepta-e22-original-human-eight-arm-question.yml'
-      - '.github/workflows/hepta-e6-e8-physical-real-route.yml'
+      - "qualification/shared-stem-system2-architecture/e22_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e22_*.py"
+      - "qualification/shared-stem-system2-architecture/E22_*.md"
+      - "qualification/shared-stem-system2-architecture/e24_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e24_*.py"
+      - "qualification/shared-stem-system2-architecture/E24_*.md"
+      - "qualification/shared-stem-system2-architecture/E24_*.json"
+      - ".github/workflows/hepta-e22-original-human-eight-arm-question.yml"
+      - ".github/workflows/hepta-e6-e8-physical-real-route.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -27,14 +27,14 @@ jobs:
       ROOT: qualification/shared-stem-system2-architecture
       PYTHONPATH: qualification/shared-stem-system2-architecture
       OUTPUT: /tmp/hepta-e22-blind-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze exact source profile before original evidence
         shell: bash
         run: |
@@ -149,14 +149,14 @@ jobs:
       ROOT: qualification/shared-stem-system2-architecture
       PYTHONPATH: qualification/shared-stem-system2-architecture
       OUTPUT: /tmp/hepta-e22-human-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: hepta-e22-original-blind-${{ matrix.profile }}

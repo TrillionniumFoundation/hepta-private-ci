@@ -3,17 +3,27 @@ mod config;
 mod model;
 
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
-use codex_hepta_neuron::{
-    AnchorWitnessStore, FileAnchorWitnessStore, InferenceControlModelPort, JournalAnchor,
-    NeuronInferenceControlPort, NeuronRuntime, SparseTick, WitnessStoreError, sparse_tick,
-};
+use codex_hepta_neuron::sparse_tick;
+use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::FileAnchorWitnessStore;
+use codex_hepta_neuron::InferenceControlModelPort;
+use codex_hepta_neuron::JournalAnchor;
+use codex_hepta_neuron::NeuronInferenceControlPort;
+use codex_hepta_neuron::NeuronRuntime;
+use codex_hepta_neuron::SparseTick;
+use codex_hepta_neuron::WitnessStoreError;
 use codex_hepta_types::Digest32;
 use model::Projection;
-use serde_json::{Value, json};
+use serde_json::json;
+use serde_json::Value;
 use std::error::Error;
-use std::fs::{self, File, OpenOptions};
-use std::io::{self, Write};
-use std::path::{Path, PathBuf};
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::{self};
+use std::io::Write;
+use std::io::{self};
+use std::path::Path;
+use std::path::PathBuf;
 
 type Outcome<T> = Result<T, Box<dyn Error>>;
 const CAP: usize = 256;

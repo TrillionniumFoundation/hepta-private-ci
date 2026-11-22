@@ -5,12 +5,12 @@ on:
     branches:
       - research/hdcf-stem-graph-gates-20261016
     paths:
-      - 'qualification/hdcf-research/**'
-      - '.github/workflows/hepta-hdcf-shadow-gates.yml'
+      - "qualification/hdcf-research/**"
+      - ".github/workflows/hepta-hdcf-shadow-gates.yml"
   pull_request:
     paths:
-      - 'qualification/hdcf-research/**'
-      - '.github/workflows/hepta-hdcf-shadow-gates.yml'
+      - "qualification/hdcf-research/**"
+      - ".github/workflows/hepta-hdcf-shadow-gates.yml"
   workflow_dispatch:
 
 permissions:

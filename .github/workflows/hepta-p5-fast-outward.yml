@@ -2,8 +2,8 @@ name: Hepta P5 reduced-exp outward interval audit (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/ndu-p5-fast-outward/**'
-      - '.github/workflows/hepta-p5-fast-outward.yml'
+      - "qualification/ndu-p5-fast-outward/**"
+      - ".github/workflows/hepta-p5-fast-outward.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,14 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      PYTHONHASHSEED: '0'
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
       LANG: C.UTF-8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Record exact version and complete source hashes
         shell: bash
         run: |

@@ -160,7 +160,6 @@ jobs:
           raise SystemExit(0 if passed else 1)
           PY
 
-
       - name: Run identity and historical audit unit suites with strict non-skip minima
         run: |
           set -euo pipefail
