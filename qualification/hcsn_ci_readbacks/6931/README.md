@@ -9,6 +9,9 @@ the one admitted source execution on Draft PR #6931.
 - artifact: `14733074498`
 - original ZIP: 591,261 bytes, SHA-256
   `41f938e49dbebd6cdd4580285bed1cff9752b17633eb55a154f01ec34372e8ae`
+- lossless publication: three ordered raw parts of 256,000, 256,000, and
+  79,261 bytes; the verifier checks every part before concatenation and opens
+  the reconstructed original bytes in memory
 - 12 members, 1,757,404 uncompressed bytes, CRC clean
 - 10 canonical second-step cursor payloads, each embedding the exact canonical
   parent payload and each at `included_index=2`
@@ -27,3 +30,8 @@ the exact #6925/#6928 lineage; those failures remain failures. This readback
 does not qualify provider completion, arbitrary histories, N256 production use,
 C2 full replay, HPCA adoption, or global closure. Status remains HOLD /
 `all_closed=false`.
+
+The first evidence commit retained the 591,261-byte ZIP as one Git blob and its
+blob-size gate failed against the unchanged 512,000-byte limit. That RED is
+preserved. The repair neither allowlists the blob nor changes the limit; it
+replaces only the publication representation with the ordered parts above.

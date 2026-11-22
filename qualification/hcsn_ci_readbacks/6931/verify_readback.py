@@ -1,13 +1,13 @@
 """Zero-numerical readback for the immutable #6931 Actions artifact."""
 
 import hashlib
+import io
 import json
 from pathlib import Path
 import zipfile
 
 
 HERE = Path(__file__).resolve().parent
-ARCHIVE = HERE / "ORIGINAL.zip"
 READBACK = HERE / "READBACK.json"
 
 
@@ -19,12 +19,21 @@ def _canonical(value):
 
 def main():
     expected = json.loads(READBACK.read_text())
-    raw = ARCHIVE.read_bytes()
+    chunks = []
+    for item in expected["original_zip_parts"]:
+        path = HERE / item["file"]
+        chunk = path.read_bytes()
+        if len(chunk) != item["bytes"]:
+            raise SystemExit("original ZIP part byte count mismatch")
+        if hashlib.sha256(chunk).hexdigest() != item["sha256"]:
+            raise SystemExit("original ZIP part digest mismatch")
+        chunks.append(chunk)
+    raw = b"".join(chunks)
     if len(raw) != expected["original_zip_bytes"]:
         raise SystemExit("original ZIP byte count mismatch")
     if hashlib.sha256(raw).hexdigest() != expected["original_zip_sha256"]:
         raise SystemExit("original ZIP digest mismatch")
-    with zipfile.ZipFile(ARCHIVE) as archive:
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
         if archive.testzip() is not None:
             raise SystemExit("original ZIP CRC failure")
         if len(archive.namelist()) != expected["members"]:
