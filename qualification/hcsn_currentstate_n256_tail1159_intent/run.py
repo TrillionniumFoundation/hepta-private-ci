@@ -10,6 +10,7 @@ import sys
 
 from .admission import admit_runtime
 from .lane import IDENTITY
+from .output_validation import validate_lane_result
 
 
 def _sha256(raw):
@@ -45,10 +46,16 @@ def main():
     results = []
     for ordinal in range(10):
         path = output / f"lane-{ordinal:02d}" / "RESULT.json"
-        if path.is_file():
-            results.append(json.loads(path.read_text()))
-        elif ordinal not in failures:
+        try:
+            results.append(validate_lane_result(path, ordinal, request, IDENTITY))
+        except SystemExit as error:
+            print(f"lane {ordinal:02d} output rejected: {error}", file=sys.stderr)
             failures.append(ordinal)
+        if not path.exists() and ordinal not in failures:
+            failures.append(ordinal)
+    stems = [item["stem"] for item in results]
+    if len(stems) != len(set(stems)):
+        failures.append("duplicate_lane_stem")
     compact_total = sum(item["checkpoint_compact_bytes"] for item in results)
     caps = request["checkpoint_caps"]
     for item in results:
@@ -81,6 +88,7 @@ def main():
             ),
             "tail_checks": sum(item["work"]["tail_checks"] for item in results),
             "rounding_calls": sum(item["work"]["rounding_calls"] for item in results),
+            "collector_checkpoint_decodes": len(results),
             "provider_calls": 0,
             "torch_calls": 0,
             "optimizer_steps": 0,
