@@ -32,6 +32,7 @@ INPUT_PATHS = (
     "scripts/hepta-learning-operator-receipt.py",
     "scripts/hepta-learning-operator-map.py",
     "scripts/hepta-learning-operator-mutation.py",
+    "scripts/test_hepta_learning_operator_merge.py",
     "codex-rs/Cargo.lock",
 )
 DIGEST_FILES = {

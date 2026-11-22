@@ -293,7 +293,7 @@ fn native_reparse_directory_is_refused_before_child_effect() {
     let system = std::env::var_os("SystemRoot").expect("Windows system root");
     // cmd parses its /c tail itself. Keep paths out of that grammar: both
     // fixture names are fixed children of this exclusively owned directory.
-    let output = std::process::Command::new(Path::new(&system).join("System32/cmd.exe"))
+    let output = std::process::Command::new(Path::new(&system).join("System32").join("cmd.exe"))
         .current_dir(dunce::simplified(outer.path()))
         .args(["/d", "/s", "/v:off", "/c"])
         .raw_arg("mklink /J junction owner")

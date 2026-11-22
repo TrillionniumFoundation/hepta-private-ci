@@ -1056,6 +1056,37 @@ jobs:
           $code = $LASTEXITCODE
           @{ expected_head = $env:EXPECTED_HEAD; exit_code = $code; observation_present = (Test-Path (Join-Path $out 'observation.json')); diagnostic_only = $true; production_qualification = $false } | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $out 'invocation-result.json')
           exit $code
+      - name: Repeat the same predicates in a fresh runner-temp fixture location
+        if: always()
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP 'hepta-cmd-path-observation/runner-temp'
+          New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
+          $originalTemp = $env:TEMP
+          $originalTmp = $env:TMP
+          $caseRoot = Join-Path $env:RUNNER_TEMP ('hepta-cmd-fixtures-' + [Guid]::NewGuid().ToString('N'))
+          New-Item -ItemType Directory -Path $caseRoot -ErrorAction Stop | Out-Null
+          $env:TEMP = $caseRoot
+          $env:TMP = $caseRoot
+          python -B .github/scripts/windows-appcontainer-probe/cmd_path_probe.py --repo "$env:GITHUB_WORKSPACE" --source-head "$env:EXPECTED_HEAD" --output (Join-Path $out 'observation.json') 1> (Join-Path $out 'probe.stdout') 2> (Join-Path $out 'probe.stderr')
+          $code = $LASTEXITCODE
+          $env:TEMP = $originalTemp
+          $env:TMP = $originalTmp
+          $roots = @()
+          if (Test-Path (Join-Path $out 'observation.json')) {
+            $observation = Get-Content -Raw (Join-Path $out 'observation.json') | ConvertFrom-Json
+            $roots = @($observation.cases | ForEach-Object { $_.result.owned_fixture })
+          }
+          $prefix = [IO.Path]::GetFullPath($caseRoot).TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+          $insideOwned = $roots.Count -eq 6
+          foreach ($fixture in $roots) {
+            if ([string]::IsNullOrWhiteSpace($fixture) -or -not ([IO.Path]::GetFullPath([string]$fixture).StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase))) {
+              $insideOwned = $false
+            }
+          }
+          @{ expected_head = $env:EXPECTED_HEAD; exit_code = $code; original_temp = $originalTemp; original_tmp = $originalTmp; requested_fixture_root = $caseRoot; actual_fixture_roots = $roots; all_fixtures_inside_owned_root = $insideOwned; comparison = 'same runner and probe; fresh fixture location changes path and ancestor chain'; diagnostic_only = $true; production_qualification = $false } | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 (Join-Path $out 'invocation-result.json')
+          if (-not $insideOwned) { exit 1 }
+          exit $code
       - name: Retain exact failures and path observations
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
