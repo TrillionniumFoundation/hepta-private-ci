@@ -1,0 +1,429 @@
+{
+  "source_commit": "fead1e01624c9c85ae2207b10c6e267235d2db51",
+  "source_tree": "2a83406c0deec9e219954182cc4e705b770042e0",
+  "parent": "22aec99e975b2f2e7c3abcfbc32a9ee5bf6a25eb",
+  "head_at_native_prior_failure": "22aec99e975b2f2e7c3abcfbc32a9ee5bf6a25eb",
+  "sources": {
+    ".github/scripts/windows-appcontainer-probe/cmd_path_probe.py": {
+      "sha256": "a1ff26544cbe7b7cce0fef27d27a95d53b4b554f90d92995ab227082ee76d373",
+      "bytes": 11120,
+      "ast_sha256": "c9387281f01d47770bed3e04882de07f2807c89f2dd61ec0f6ab426d13eda1b0"
+    },
+    ".github/workflows/hepta-windows-current-ci.yml": {
+      "sha256": "6bfb22c8ceaed8a8b12486bbdc40bd883bbfb07e207d071731356ea78f34067b",
+      "bytes": 7863
+    },
+    ".github/workflows/ndu-windows-storage-probe.yml": {
+      "sha256": "2a4012021ccffc2967ab7e41a07281667be61f7af22a4230dcae99878203b423",
+      "bytes": 61886
+    },
+    "MODULE.bazel.lock": {
+      "sha256": "5eb7bf13444fc67ae9bef48bfcd6127bf18a7d6d84cd7a23b6eaf922541e1a06",
+      "bytes": 1802275
+    },
+    "codex-rs/Cargo.lock": {
+      "sha256": "20c06630567bbea553645509121d5056c18bcfdb85e80bc7cd1b4e742ed161c8",
+      "bytes": 424505
+    },
+    "codex-rs/utils/path-utils/src/private_artifacts_windows_tests.rs": {
+      "sha256": "4cfba3a83f7fb63d7e0b139eee7988e9f807f1314a33ea1837ca049c198dafeb",
+      "bytes": 10954
+    },
+    "scripts/hepta-docs.py": {
+      "sha256": "b9b7c2d3270c57e67962721190fccae9b06ebb0dc3c85ca8e75bd713b16be122",
+      "bytes": 80928,
+      "ast_sha256": "7ef0ce92898f0d3ba0a080e84ea1daaa400de851e45419814aa490a67a0f7c7b"
+    },
+    "scripts/test_hepta_docs_git_paths.py": {
+      "sha256": "180d29abb6627496f0fb7e8bacdab77512f2dabf03a40afeb6d6b7f4a8714a90",
+      "bytes": 3593,
+      "ast_sha256": "8aa046b89e64e0cee0b1f87b0c6ed7d7fd1559896d68296eda484ceadf340582"
+    },
+    "qualification/gap-closure/PLAN_AUDIT.json": {
+      "sha256": "508a410ec0504ec25c0cf2d4c0da8514910ab35ff83db920218035847ecdf969",
+      "bytes": 11436
+    }
+  },
+  "local_validation": {
+    "Windows_GNU_cargo_check": "pass; compilation only",
+    "Linux_path_utils": "9 passed, 0 skipped; fixture source and consumed path crate were unchanged by the later URL lock update",
+    "receipt_collector": "5 passed",
+    "Git_filename_regression": "reproduced failure on parent, 3 new cases passed with the correction",
+    "docs_self_test": "29 passed, including all 27 prior controls",
+    "verification_profiles": "7 passed after complete input materialization and derived-audit refresh",
+    "main_pr_path_replay": "PASS with actual main732e-to-parent diff containing 52109 paths; edited validator in local worktree",
+    "url_consumers": "66 path-uri cases and 9 filtered RMCP cases passed; 165 RMCP cases outside selection",
+    "cargo_deny": "original pinned 0.19.0 command, all four strategies passed; advisory DB d1fe6ac3eba823a3515e849045f36dc34543885d",
+    "Bazel_lock": "original just bazel-lock-update and just bazel-lock-check passed",
+    "AppContainer_probe": "Python syntax and callback failure/success harness passed; native pending",
+    "finalization": "scoped just fix followed by original just fmt passed; all three Python ASTs unchanged; no tests rerun after finalization"
+  },
+  "native_prior_result": {
+    "run": 45031582283,
+    "job": 137237252675,
+    "artifact": 14757684550,
+    "artifact_sha256": "cd85f0cd76b0fdb1055535f94781646bf34f4c7912a18c1267c0229d8b9cdcb6",
+    "selected_cases": 9,
+    "passed": 8,
+    "failed": 1,
+    "failure": "mklink fixture command syntax, before reparse-refusal assertions",
+    "new_source_native": "pending"
+  },
+  "remaining_blocks": {
+    "Windows_AuthBus": "two evidence retirement tests reach intentional non-Unix UnsafeCheckpoint before retirement assertions; existing published checkpoint contract is Unix only; no production admission widened",
+    "Windows_sandbox": "elevated sandbox tests explicitly refuse an unqualified FILE_DELETE_CHILD boundary",
+    "operator_merge": "remote materialization step failed; local original main-to-parent git diff --check exits2 on 294828 whitespace diagnostics in 1057 historical source/data/evidence paths; raw remote log unavailable through connector, so exact remote error text is unconfirmed",
+    "branch_integration": "remaining ordinary histories continue separately; HIA refs and main unchanged",
+    "main_retirement": "Fresh 2026-11-22 15:01:21 UTC inventory has 7910 refs. Only main itself is a main732e ancestor tip; zero ordinary branches are eligible for early retirement. Newly named HIA ref is excluded, supplemental parent metadata and historical 551 identity gap remain explicit."
+  },
+  "archive": {
+    "format": "concatenate parts in listed order to obtain one gzip-compressed tar",
+    "bytes": 1468919,
+    "sha256": "5371f33cbafe9f28e1fdcf100dc60114398ca21c90b1757289be4be15e75cc14",
+    "parts": [
+      {
+        "path": "validation.tar.gz.part000",
+        "bytes": 491520,
+        "sha256": "50c75267485c6dcea9b48879f073f71e74093edf6125dbbd46b7675f6bd8470f"
+      },
+      {
+        "path": "validation.tar.gz.part001",
+        "bytes": 491520,
+        "sha256": "bdf831e276fd9338cc788d4bcad791c35ac627b0e469f1ca65f029195a798a36"
+      },
+      {
+        "path": "validation.tar.gz.part002",
+        "bytes": 485879,
+        "sha256": "2d2e5e7a951349ff637af182a35de0c46b8cfd534f2d85660297d2d6125943e8"
+      }
+    ],
+    "members": [
+      {
+        "path": "ci-audit/appcontainer-followup/delivery.json",
+        "bytes": 1149,
+        "sha256": "865657f201eae374a6ffedd0db4bc0cfb982317cf6751d1bd229c262af0a18b8"
+      },
+      {
+        "path": "ci-audit/appcontainer-followup/local-harness-receipt.json",
+        "bytes": 972,
+        "sha256": "75a2aaab23ebdb475b7b3e6e891c6a030fac40d663f651d3aaaf38292e2111e7"
+      },
+      {
+        "path": "ci-audit/appcontainer-followup/original-evidence.json",
+        "bytes": 67874,
+        "sha256": "2cb5b14176ea426f0c0e71fca3a09d7dbd49a69dfcd0d6203bf3c7bde6ada639"
+      },
+      {
+        "path": "ci-audit/appcontainer-followup/source-receipts.json",
+        "bytes": 1193,
+        "sha256": "d481f1a1f405d951abe4de9ce4eaf64c20233d876db42bca3165eacff65cf7bd"
+      },
+      {
+        "path": "ci-audit/docs-literal-path-review/receipt.json",
+        "bytes": 2680,
+        "sha256": "7704c1600f788ef3d811f53c5e9ac03112c491ba9815ddde6f21973e69508108"
+      },
+      {
+        "path": "ci-audit/docs-literal-path-review/review.json",
+        "bytes": 1686,
+        "sha256": "70478b86fff069909e3603664966b05ae073412f01cf30de533b126af0dbf10e"
+      },
+      {
+        "path": "ci-audit/followup22-publication/format-receipt.json",
+        "bytes": 4044,
+        "sha256": "dd56cd460053759e8f0f80de4599ceddf37931b80cf4e2a1f7ee9e3909ef9281"
+      },
+      {
+        "path": "ci-audit/followup22-publication/format.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "ci-audit/followup22-publication/scoped-fix.log",
+        "bytes": 348,
+        "sha256": "76851d0e51b5a82bb5e9634afaaf565cd7a1d89a68332267d60e10e3a9383e95"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/derived-plan-audit-delta.json",
+        "bytes": 1102,
+        "sha256": "ca8c385d7d042e6e9c4347b895f509aa504c5caea1ebf54063259133a8be4c31"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/derived-plan-audit-expected.json",
+        "bytes": 15166,
+        "sha256": "7bc0f8892c03441ce6fa8637078146b9d8f54877f0efca19f5b9655dabca0d97"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/docs-self-test.log",
+        "bytes": 927,
+        "sha256": "4634d70e3257e335374c3b6cf90987dae0be3119827a75d68dd4a7f3f18814f1"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/literal-git-after.log",
+        "bytes": 101,
+        "sha256": "42b1882b6b4635fd5b5b2386fc10e7a364b898717ffd671f753de6cb9ef4d113"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/literal-git-before.log",
+        "bytes": 1593,
+        "sha256": "8aee4bd31667457bbd31660a22ccf149a6f4d6a983d0e7c18c3c80b4c2f97e04"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/main-path-development-verify.log",
+        "bytes": 683,
+        "sha256": "a10ef1dd9918d3df56eb6ac6e603bd2663c7253ca64197ec4501e65dfa470fe6"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/replayed-main-pr-event.json",
+        "bytes": 323,
+        "sha256": "cd85099683da4766806f6cde4d6bd796e7877a56968effc04ae2e8f107565f94"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/test-receipts.json",
+        "bytes": 627,
+        "sha256": "ede5ceeae5e16e1dee00edce8e3e0607952ad9f31a1e4be36c7b7b7c7545ccec"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/verification-profiles-complete-inputs.log",
+        "bytes": 6909,
+        "sha256": "1a6e3735727719798c828eaa9fca911a9fad4524fe60a72fb89a479df50f12fb"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/verification-profiles-derived-refresh.log",
+        "bytes": 106,
+        "sha256": "5d6c783726e612b789afe56053d66573723d2437e825e39c36d49a45d48a39f9"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/verification-profiles-full-checkout.log",
+        "bytes": 2535,
+        "sha256": "e619890dc5605d5a1b1ed91634f043108a0bfa607e03d2458959852dc4231b2a"
+      },
+      {
+        "path": "ci-audit/main-docs-path-followup/verification-profiles.log",
+        "bytes": 8347,
+        "sha256": "7030b35f9d2d881efda6e5bfa019a40a9b0d4406a84ae966df83b8224438306b"
+      },
+      {
+        "path": "ci-audit/operator-main-merge/whitespace-classification.json",
+        "bytes": 112176,
+        "sha256": "20a9b469167ecddf1fedaf22d2076c7caf36e560df68dc882e896b95298e9c10"
+      },
+      {
+        "path": "ci-audit/private-artifacts-22aec/14757684550.zip",
+        "bytes": 4991,
+        "sha256": "cd85f0cd76b0fdb1055535f94781646bf34f4c7912a18c1267c0229d8b9cdcb6"
+      },
+      {
+        "path": "ci-audit/url259-fix/advisory-gates.json",
+        "bytes": 6178,
+        "sha256": "732840c56349d4c3285fd0e49618e0a6574582ab0de0042e89fbef5ea33caf20"
+      },
+      {
+        "path": "ci-audit/url259-fix/bazel-gates-retry.json",
+        "bytes": 606,
+        "sha256": "069437398136866a57baa4182bfbded38705565ea6c6ea67c0d37d0576d7b684"
+      },
+      {
+        "path": "ci-audit/url259-fix/bazel-gates.json",
+        "bytes": 302,
+        "sha256": "b2fcd25ae9447a0a0d116d208a7445061609b107fed2f194a49d60cd869990cf"
+      },
+      {
+        "path": "ci-audit/url259-fix/bazel-json-delta.json",
+        "bytes": 265,
+        "sha256": "803071f4b244608120660235154da7317a73f28474ba21795d42c4b8fadec1a5"
+      },
+      {
+        "path": "ci-audit/url259-fix/bazel-lock-check-retry.log",
+        "bytes": 945,
+        "sha256": "474d5d29897a1592e88e6db123ee95cccb2b82e08438d74788bdc99ce226fe62"
+      },
+      {
+        "path": "ci-audit/url259-fix/bazel-lock-update-retry.log",
+        "bytes": 2282,
+        "sha256": "3fc23fa44047f733a60bc943890ad684c627a259c1de898e3f7172f6e978d738"
+      },
+      {
+        "path": "ci-audit/url259-fix/bazel-lock-update.log",
+        "bytes": 1308,
+        "sha256": "d4e11acc6caea36687b2b70292d2160e840b90c2395e5589d8e44e562519523f"
+      },
+      {
+        "path": "ci-audit/url259-fix/build-tool-install-0.log",
+        "bytes": 169,
+        "sha256": "7f38ca1185733386198de9f74b89e88f3df4483a8f3c904ad0616c544e7d8f8a"
+      },
+      {
+        "path": "ci-audit/url259-fix/build-tool-install-1.log",
+        "bytes": 536,
+        "sha256": "a972b6d473181d03acc43138405441d9877ed444c56a3f404797090d2c6b1a70"
+      },
+      {
+        "path": "ci-audit/url259-fix/build-tool-install.json",
+        "bytes": 1380,
+        "sha256": "99ed886f7ce77906fcaf6c8a19eef25d1383d69742b9569dba51e22eda1bfbab"
+      },
+      {
+        "path": "ci-audit/url259-fix/cargo-deny.log",
+        "bytes": 13875925,
+        "sha256": "a61b613f1b3afce741d206ebe74d9ae8c08fcea9f196a410575873ff4ba725ce"
+      },
+      {
+        "path": "ci-audit/url259-fix/cargo-update.log",
+        "bytes": 180,
+        "sha256": "ab31b6c7a8c88f0e34828734f5f392cfe64ffa646acf417f94906096bab5ec9a"
+      },
+      {
+        "path": "ci-audit/url259-fix/clang-headers-install.json",
+        "bytes": 818,
+        "sha256": "81d346a51c69a106cc9e9d62719fd8c177b530f2aab9df4c89873b319f60e7d9"
+      },
+      {
+        "path": "ci-audit/url259-fix/consumer-tests.json",
+        "bytes": 6186,
+        "sha256": "721b5471bfffadc637932c27b2f20b88856f372ea3864b1322fe3407bc4406e0"
+      },
+      {
+        "path": "ci-audit/url259-fix/delivery-final.json",
+        "bytes": 24138,
+        "sha256": "94466b8f1b7ce4683397534de6b30d6304db8af937c7f7cf1781461baa5c4e31"
+      },
+      {
+        "path": "ci-audit/url259-fix/delivery.json",
+        "bytes": 24132,
+        "sha256": "b473abc42882561be31a90ae021c9ca62aac758b834695db7e91e939b4eb5d06"
+      },
+      {
+        "path": "ci-audit/url259-fix/format-receipt.json",
+        "bytes": 728,
+        "sha256": "94e702e94a29804f088c5641b5f1957a00a0585df55e91805538b870b23153af"
+      },
+      {
+        "path": "ci-audit/url259-fix/format.log",
+        "bytes": 73,
+        "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+      },
+      {
+        "path": "ci-audit/url259-fix/lock-delta.json",
+        "bytes": 4262,
+        "sha256": "b5ddb92ccc11cb3d78a6d798b0a03f252262c16438684db6eb30ed2f25c130ab"
+      },
+      {
+        "path": "ci-audit/url259-fix/path-uri-tests.log",
+        "bytes": 10342,
+        "sha256": "70228d0d004a735ccd52b3b713e3929788e0e844a539c30ef5ee3baa672dcfb8"
+      },
+      {
+        "path": "ci-audit/url259-fix/rmcp-consumer-tests-retry.json",
+        "bytes": 4473,
+        "sha256": "e927da646cca4c001c9793f9bcc0c9777929d44a4bb72755eb5c118ead113dd2"
+      },
+      {
+        "path": "ci-audit/url259-fix/rmcp-consumer-tests-sdk.json",
+        "bytes": 6410,
+        "sha256": "c1d5d306baf40c5948fecfbceca40429f5967dd04b0f2ea8c9f3f8d658040a2b"
+      },
+      {
+        "path": "ci-audit/url259-fix/rmcp-url-origin-tests-retry.log",
+        "bytes": 21136,
+        "sha256": "2d13ab32cafba943108b60477727d2a1f1f1a423a8d18bd21768e9b8ed3877e0"
+      },
+      {
+        "path": "ci-audit/url259-fix/rmcp-url-origin-tests-sdk.log",
+        "bytes": 50673,
+        "sha256": "b62fc619fc29146d8e161b4fd0099efd7d6d2c54e69878a56173ee0d729706d3"
+      },
+      {
+        "path": "ci-audit/url259-fix/rmcp-url-origin-tests.log",
+        "bytes": 15213,
+        "sha256": "d792a774c790275f965ff1230a506af15d534ac782ac502dc92cd2eec06e672f"
+      },
+      {
+        "path": "ci-audit/url259-fix/rustsec-guard-tests.log",
+        "bytes": 1796,
+        "sha256": "041eb4cf08d95e5de91cdda96d9d84d3c4e92f4ac9c1a36534989ad7c7216f7a"
+      },
+      {
+        "path": "ci-audit/url259-fix/rustsec-guard.log",
+        "bytes": 55,
+        "sha256": "39f5697dfcd129e3c20c87c5fc203a77198b37126d50eab99f30ba83cf764df2"
+      },
+      {
+        "path": "ci-audit/url259-fix/test-consumer-22-source-comparison.json",
+        "bytes": 430,
+        "sha256": "48881a11943487a707fd84dce4076bb6f40f8f288c21153ab4e28bcd4918e359"
+      },
+      {
+        "path": "ci-audit/url259-fix/update-receipt.json",
+        "bytes": 124,
+        "sha256": "0b7dc6d4d553d8be65305ff459e47411fee620a69af2187594517df8af49bfea"
+      },
+      {
+        "path": "ci-audit/windows-evidence-retirement/diagnosis.json",
+        "bytes": 5809,
+        "sha256": "ac49e2753f4f5daf5e926b0b9788b23a1846942906ceca8604fda6971ccc4169"
+      },
+      {
+        "path": "ci-audit/windows-evidence-retirement/main-jobs-snapshot.json",
+        "bytes": 20034,
+        "sha256": "3cc3776a2911efd284624be9d5566fc937a15b62ff6f16bc72bda1c870e2a9f2"
+      },
+      {
+        "path": "ci-audit/windows-fixture-followup/collector-tests.log",
+        "bytes": 103,
+        "sha256": "6273232de4d3ef7acd4ecafa5c86beeeb974f56586b21089a2990b3f72facbe6"
+      },
+      {
+        "path": "ci-audit/windows-fixture-followup/linux-tests.log",
+        "bytes": 3896,
+        "sha256": "864a6c24bf66e7b7715104dc76ccdd0c88697bb6719353ce237a74fdf48d6648"
+      },
+      {
+        "path": "ci-audit/windows-fixture-followup/validation-in-progress.json",
+        "bytes": 995,
+        "sha256": "e7f653946742490beabbdaa4b058dbb25e6a17a2b4a6300000e37a24e5dfb4b7"
+      },
+      {
+        "path": "ci-audit/windows-fixture-followup/windows-check.log",
+        "bytes": 1512,
+        "sha256": "53c244df705f28d563b72bd4e3af967056a6de7ad5ac34ab4b5285a466f606a4"
+      },
+      {
+        "path": "ci-audit/windows-main-shard3-excerpt.log",
+        "bytes": 10912,
+        "sha256": "bad2d3a5066959ea01fb5ecc4619ce67feb3ef9618e567b112d0bbdb23de93eb"
+      },
+      {
+        "path": "integration-main-retirement/MAIN-RETIREMENT-CANDIDATES.json",
+        "bytes": 4855914,
+        "sha256": "07633dd76da16f641cb5ed4acb1f9731756174b96bc5991c444d698eb32cfb46"
+      },
+      {
+        "path": "integration-main-retirement/RECEIPT.json",
+        "bytes": 636,
+        "sha256": "e7195a4153d14abe31618c72b7450afa9d46ce597bba2fad47df3199df998adf"
+      },
+      {
+        "path": "integration-main-retirement/fresh-delta-and-main-coverage.json",
+        "bytes": 834,
+        "sha256": "6664f113e917f182b2b29549b20819279781caca73a7ee407df24ce9c3c11917"
+      },
+      {
+        "path": "integration-main-retirement/fresh-remote-heads-receipt.json",
+        "bytes": 354,
+        "sha256": "865881a4a8c1a8f7ade84bf9abf3d041c73d02cc482131c61c5d9e41a3f6d5d0"
+      },
+      {
+        "path": "integration-main-retirement/fresh-remote-heads.tsv",
+        "bytes": 782480,
+        "sha256": "9902354e11ae67e95c93500f09f21244e8487f58c01df34da82ea74f63387e0f"
+      },
+      {
+        "path": "integration-main-retirement/main-ancestor-proof.json",
+        "bytes": 471,
+        "sha256": "3f93558b9d16c05c88b38ae4e6f6a03955c1786ad99d941d0f70e372ce0b49b8"
+      }
+    ]
+  },
+  "historical_record_policy": "Previous rust-6d7ee records remain byte-for-byte unchanged. Initial sparse-input/test-tool failures and original native failure are retained in this archive."
+}
