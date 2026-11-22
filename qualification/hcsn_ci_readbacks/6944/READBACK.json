@@ -1,0 +1,74 @@
+{
+  "audit": {
+    "body_digest_matches": 10,
+    "canonical_checkpoint_payloads": 10,
+    "extension_progress_records": 320,
+    "lane_progress_records": 380,
+    "numerical_calls": 0,
+    "row_actions": 0,
+    "zip_crc_clean": true
+  },
+  "combined_artifact": {
+    "bytes": 20395989,
+    "id": 14743205374,
+    "sha256": "452060c65949e9c1d8ffe74e4303d707e6fe4fe7c2e75e29caacfa3137c37a91"
+  },
+  "cost": {
+    "cpu_seconds_max": 232.207217122,
+    "cpu_seconds_min": 168.147005745,
+    "cpu_seconds_sum": 1923.892242355,
+    "max_rss_kib": 73392,
+    "wall_seconds_max": 232.308381289,
+    "wall_seconds_min": 168.281360264,
+    "wall_seconds_sum": 1926.32371919
+  },
+  "execution_key": "hcsn-n256-authentic-checkpoint-profile256-parallel-20261122-c6bc-001",
+  "historical_statuses": {
+    "6901_numerical_cause": "UNKNOWN",
+    "6939": "RED_DECIMAL_INTEGER_DIGIT_LIMIT",
+    "6942": "RED_TIMEOUT",
+    "6942_completed_row_actions": "UNKNOWN",
+    "c2_full_replay": "0/6",
+    "hpca": "NoUpdate"
+  },
+  "identity": "hcsn-n256-authentic-checkpoint-profile256-parallel-readback-20261122-c6bc-v1",
+  "members": 31,
+  "original_zip_bytes": 20395989,
+  "original_zip_sha256": "452060c65949e9c1d8ffe74e4303d707e6fe4fe7c2e75e29caacfa3137c37a91",
+  "part_count": 41,
+  "scope": {
+    "all_closed": false,
+    "arbitrary_history_resume": false,
+    "n256_qualified": false,
+    "production_adoption": false,
+    "provider_completion": false,
+    "resource_gate_closed": false,
+    "tail_termination_closed": false,
+    "unique_rounding_closed": false
+  },
+  "source_head": "2ce228cc1ae7719f4d8253e3f40a340e5f7807b5",
+  "source_pull_request": 6944,
+  "source_tree": "62049b4d8ece72addb3960b4599d485984335af6",
+  "uncompressed_bytes": 62931009,
+  "work": {
+    "cold_extension_row_actions": 1280,
+    "index128_source_replay_row_actions": 1920,
+    "index32_source_replay_row_actions": 600,
+    "index_two_relation_recomputations": 20,
+    "total_row_actions": 5080,
+    "warm_extension_row_actions": 1280,
+    "zero_dynamic_steps": 0,
+    "zero_exponential_actions": 0,
+    "zero_optimizer_steps": 0,
+    "zero_provider_outputs": 0,
+    "zero_tail_checks": 0,
+    "zero_torch_calls": 0
+  },
+  "workflow": {
+    "collector_job_id": 137119005804,
+    "conclusion": "success",
+    "host_merge_sha": "da413c0549eb416677190c9028df9542fc520957",
+    "run_attempt": 1,
+    "run_id": 44993006709
+  }
+}
