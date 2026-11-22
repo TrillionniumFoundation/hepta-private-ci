@@ -1,15 +1,18 @@
 """Fail-closed runtime admission for the frozen index1159 continuation."""
 
 import hashlib
+from importlib import metadata
 import json
 import math
 import os
 import stat
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 
 HERE = Path(__file__).resolve().parent
+REPO = HERE.parents[1]
 REQUEST = HERE / "REQUEST.json"
 SOURCE_FREEZE = HERE / "SOURCE_FREEZE.json"
 ORIGINAL_SCHEMAS = {
@@ -19,6 +22,8 @@ ORIGINAL_SCHEMAS = {
     "runtime": "hcsn-tail1159-runtime-v1",
 }
 MAX_JSON_BYTES = 65536
+MAX_EXECUTABLE_BYTES = 67108864
+DEPENDENCY_MANIFEST_FORMAT = "importlib-name-version-json-v1"
 
 
 def _sha256(raw):
@@ -60,15 +65,16 @@ def _strict_json(raw, label):
     return result
 
 
-def _bounded_regular_bytes(path, label):
+def _bounded_regular_bytes(path, label, *, max_bytes=MAX_JSON_BYTES, single_link=True):
     try:
         before = path.lstat()
     except OSError as error:
         raise SystemExit(f"{label} cannot be read before authentic input") from error
-    if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
-        raise SystemExit(f"{label} is not a single-link regular file")
-    if before.st_size > MAX_JSON_BYTES:
-        raise SystemExit(f"{label} exceeds the frozen JSON byte cap")
+    if not stat.S_ISREG(before.st_mode) or (single_link and before.st_nlink != 1):
+        qualifier = "single-link " if single_link else ""
+        raise SystemExit(f"{label} is not a {qualifier}regular file")
+    if before.st_size > max_bytes:
+        raise SystemExit(f"{label} exceeds the frozen byte cap")
 
     flags = os.O_RDONLY
     for name in ("O_BINARY", "O_CLOEXEC", "O_NOFOLLOW"):
@@ -79,18 +85,19 @@ def _bounded_regular_bytes(path, label):
         raise SystemExit(f"{label} cannot be read before authentic input") from error
     try:
         opened = os.fstat(descriptor)
-        if not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1:
-            raise SystemExit(f"{label} is not a single-link regular file")
+        if not stat.S_ISREG(opened.st_mode) or (single_link and opened.st_nlink != 1):
+            qualifier = "single-link " if single_link else ""
+            raise SystemExit(f"{label} is not a {qualifier}regular file")
         if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino):
             raise SystemExit(f"{label} changed while being opened")
-        if opened.st_size > MAX_JSON_BYTES:
-            raise SystemExit(f"{label} exceeds the frozen JSON byte cap")
+        if opened.st_size > max_bytes:
+            raise SystemExit(f"{label} exceeds the frozen byte cap")
 
         reads = []
         for _ in range(2):
             os.lseek(descriptor, 0, os.SEEK_SET)
             chunks = []
-            remaining = MAX_JSON_BYTES + 1
+            remaining = max_bytes + 1
             while remaining:
                 chunk = os.read(descriptor, remaining)
                 if not chunk:
@@ -118,8 +125,8 @@ def _bounded_regular_bytes(path, label):
         raise SystemExit(f"{label} changed while being read")
     if (current.st_dev, current.st_ino) != (after.st_dev, after.st_ino):
         raise SystemExit(f"{label} path changed while being read")
-    if len(reads[0]) > MAX_JSON_BYTES:
-        raise SystemExit(f"{label} exceeds the frozen JSON byte cap")
+    if len(reads[0]) > max_bytes:
+        raise SystemExit(f"{label} exceeds the frozen byte cap")
     if reads[0] != reads[1] or len(reads[0]) != after.st_size:
         raise SystemExit(f"{label} changed while being read")
     return reads[0]
@@ -134,7 +141,74 @@ def _parse_utc(value, field):
         raise SystemExit(f"{field} is not a valid UTC timestamp") from error
 
 
-def _read_original(request, kind):
+def _dependency_manifest_bytes():
+    entries = []
+    for distribution in metadata.distributions():
+        name = distribution.metadata["Name"]
+        version = distribution.version
+        if (
+            not isinstance(name, str)
+            or not isinstance(version, str)
+            or not name
+            or not version
+        ):
+            raise SystemExit("installed dependency metadata is incomplete")
+        entries.append((name, version))
+    entries.sort()
+    encoded = json.dumps(entries, ensure_ascii=True, separators=(",", ":")) + "\n"
+    return encoded.encode()
+
+
+def _runtime_digests():
+    try:
+        executable = Path(sys.executable).resolve(strict=True)
+    except OSError as error:
+        raise SystemExit("runtime Python executable cannot be resolved") from error
+    executable_raw = _bounded_regular_bytes(
+        executable,
+        "runtime Python executable",
+        max_bytes=MAX_EXECUTABLE_BYTES,
+        single_link=False,
+    )
+    return {
+        "python_executable_sha256": _sha256(executable_raw),
+        "dependency_manifest_sha256": _sha256(_dependency_manifest_bytes()),
+    }
+
+
+def _frozen_source_manifest(request):
+    raw = _bounded_regular_bytes(SOURCE_FREEZE, "source manifest")
+    manifest = _strict_json(raw, "source manifest")
+    if manifest.get("identity") != request["identity"]:
+        raise SystemExit("source manifest identity mismatch")
+    if manifest.get("execution_key") != request["execution_key"]:
+        raise SystemExit("source manifest execution key mismatch")
+    if manifest.get("status") != "SOURCE_ONLY_RESOURCE_HOLD":
+        raise SystemExit("source manifest status mismatch")
+    files = manifest.get("files")
+    if not isinstance(files, dict) or not files:
+        raise SystemExit("source manifest file inventory is not frozen")
+    for relative, expected in files.items():
+        relative_path = Path(relative)
+        if (
+            not isinstance(relative, str)
+            or relative_path.is_absolute()
+            or ".." in relative_path.parts
+            or not isinstance(expected, str)
+            or len(expected) != 64
+        ):
+            raise SystemExit("source manifest file entry is invalid")
+        source_raw = _bounded_regular_bytes(
+            REPO / relative_path, f"source file {relative}"
+        )
+        if _sha256(source_raw) != expected:
+            raise SystemExit(
+                f"frozen source differs before authentic input: {relative}"
+            )
+    return _sha256(raw)
+
+
+def _read_original(request, kind, source_manifest_sha256):
     admission = request["runtime_admission"]
     relative = admission[f"{kind}_path"]
     expected = admission[f"{kind}_sha256"]
@@ -160,7 +234,7 @@ def _read_original(request, kind):
         "identity": request["identity"],
         "execution_key": request["execution_key"],
         "intent_source_head": request["intent_source_head"],
-        "source_manifest_sha256": _sha256(SOURCE_FREEZE.read_bytes()),
+        "source_manifest_sha256": source_manifest_sha256,
         "input_sha256": request["input"]["index537_collector_sha256"],
         "host": "desktop",
     }.items():
@@ -213,10 +287,17 @@ def _validate_originals(request, originals):
     runtime = originals["runtime"]
     if not isinstance(runtime.get("runtime_id"), str) or not runtime["runtime_id"]:
         raise SystemExit("runtime identity is not frozen")
+    if runtime.get("dependency_manifest_format") != DEPENDENCY_MANIFEST_FORMAT:
+        raise SystemExit("runtime dependency manifest format is not frozen")
+    current_runtime = _runtime_digests()
     for field in ("python_executable_sha256", "dependency_manifest_sha256"):
         value = runtime.get(field)
         if not isinstance(value, str) or len(value) != 64:
             raise SystemExit(f"runtime {field} is not frozen")
+        if value != current_runtime[field]:
+            raise SystemExit(
+                f"runtime {field} does not match the executing environment"
+            )
 
 
 def admit_runtime():
@@ -232,6 +313,10 @@ def admit_runtime():
         raise SystemExit("execution key mismatch before authentic input read")
     if os.environ.get("HCSN_ATTEMPT_ID") != "001":
         raise SystemExit("attempt mismatch before authentic input read")
-    originals = {kind: _read_original(request, kind) for kind in ORIGINAL_SCHEMAS}
+    source_manifest_sha256 = _frozen_source_manifest(request)
+    originals = {
+        kind: _read_original(request, kind, source_manifest_sha256)
+        for kind in ORIGINAL_SCHEMAS
+    }
     _validate_originals(request, originals)
     return request

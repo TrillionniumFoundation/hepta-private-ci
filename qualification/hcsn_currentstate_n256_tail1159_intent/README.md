@@ -2,8 +2,8 @@
 
 Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
 
-This separately frozen v4 candidate strengthens the source-only admission on
-top of #6975. It consumes the ten byte-exact index537 full-state
+This separately frozen v5 candidate strengthens the source-only admission on
+top of #6976. It consumes the ten byte-exact index537 full-state
 originals from #6957/#6959 and defines the unchanged exact continuation to
 index1159. Each lane would apply exactly 622 row actions and one signed
 ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
@@ -31,10 +31,18 @@ descriptor and path identity after reading. Symbolic links, hard links, path
 replacement and concurrent content changes are rejected. Parsing rejects
 duplicate keys, nonfinite constants, numeric overflow, non-object roots and
 invalid UTF-8 before any authentic input read.
+Admission also restores the exact `SOURCE_FREEZE.json` bytes through the same
+descriptor-bound reader and byte-verifies every listed source/workflow file
+before any authentic checkpoint read. Binding an original to the manifest
+digest is therefore insufficient if the executing source tree has drifted.
 Allocation concurrency and memory,
 the currently valid calendar, observation expiry and ancestor-cgroup headroom,
 plus the Python executable and dependency-manifest digests are checked before
 any authentic checkpoint read.
+The runtime digest fields are compared against the resolved executing Python
+binary and a canonical sorted JSON list of every installed distribution name
+and version (`importlib-name-version-json-v1`); they are not accepted as
+unverified claims from the runtime original.
 The current #6966 observation is only a time-point observation, not an
 allocation. The earlier static #6964 byte projection is not a bound.
 
