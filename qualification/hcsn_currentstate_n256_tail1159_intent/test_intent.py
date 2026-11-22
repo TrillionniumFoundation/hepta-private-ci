@@ -13,6 +13,9 @@ from qualification.hcsn_currentstate_n256_authentic_tailcheck537_hexfix.test_tai
 from qualification.hcsn_currentstate_n256_authentic_tailcheck537_hexfix.tail537 import (
     advance_to_index537,
 )
+from qualification.hcsn_currentstate_n256_authentic_compact_checkpoint.compact import (
+    encode_compact_checkpoint,
+)
 
 from .admission import (
     DEPENDENCY_MANIFEST_FORMAT,
@@ -25,10 +28,13 @@ from .admission import (
 from .continuation import (
     SOURCE_INDEX,
     TARGET_INDEX,
+    TARGET_SCHEMA,
     advance_to_index1159,
     encode_raw_index1159,
     final_tail_check,
 )
+from .lane import IDENTITY
+from .output_validation import validate_lane_result
 
 
 def _environment(request, request_path):
@@ -112,10 +118,103 @@ def _replace_original(request, request_path, paths, kind, raw):
     request_path.write_text(json.dumps(request, sort_keys=True))
 
 
+def _synthetic_lane_output(root, ordinal=0):
+    request = json.loads(REQUEST.read_text())
+    output = root / f"lane-{ordinal:02d}"
+    output.mkdir()
+    stem = f"synthetic-lane-{ordinal:02d}"
+    body = {
+        "coefficient": ["0", "1"],
+        "exponential_sum": ["0", "1"],
+        "growth_coefficient": ["0", "1"],
+        "included_index": TARGET_INDEX,
+        "iterate": [["0", "1"]],
+        "lane": stem,
+        "parent_payload_sha256": "1" * 64,
+        "partial": [["0", "1"]],
+        "schema": TARGET_SCHEMA,
+        "source_payload_sha256": "2" * 64,
+    }
+    body_raw = json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
+    raw = json.dumps(
+        {
+            "body": body,
+            "body_sha256": __import__("hashlib").sha256(body_raw).hexdigest(),
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+    compact = encode_compact_checkpoint(raw, TARGET_SCHEMA, TARGET_INDEX)
+    checkpoint_name = f"{stem}.index1159.checkpoint.hcsncp"
+    (output / checkpoint_name).write_bytes(compact)
+    rounding = [
+        {
+            "ordinal": 0,
+            "lower_hex": "0x0.0p+0",
+            "upper_hex": "0x0.0p+0",
+            "unique": True,
+        }
+    ]
+    rounding_raw = json.dumps(rounding, sort_keys=True, separators=(",", ":")).encode()
+    tail = {
+        "included_index": TARGET_INDEX,
+        "ratio_denominator": 2,
+        "argument": ["0", "1"],
+        "tail_argument": ["0", "1"],
+        "growth_tail": ["0", "1"],
+        "remainder_bound": ["0", "1"],
+        "maximum_interval_width": ["0", "1"],
+        "coordinate_count": 1,
+        "unique_coordinate_count": 1,
+        "all_coordinates_unique": True,
+        "rounding": rounding,
+        "rounding_sha256": __import__("hashlib").sha256(rounding_raw).hexdigest(),
+        "tail_vector_fp64_conversions": 1,
+        "rounding_calls": 2,
+    }
+    tail_raw = (json.dumps(tail, indent=2, sort_keys=True) + "\n").encode()
+    (output / "TAIL.json").write_bytes(tail_raw)
+    result = {
+        "identity": IDENTITY,
+        "execution_key": request["execution_key"],
+        "lane_ordinal": ordinal,
+        "stem": stem,
+        "checkpoint_file": checkpoint_name,
+        "checkpoint_raw_bytes": len(raw),
+        "checkpoint_raw_sha256": __import__("hashlib").sha256(raw).hexdigest(),
+        "checkpoint_compact_bytes": len(compact),
+        "checkpoint_compact_sha256": __import__("hashlib").sha256(compact).hexdigest(),
+        "tail_file": "TAIL.json",
+        "tail_sha256": __import__("hashlib").sha256(tail_raw).hexdigest(),
+        "tail": {
+            field: tail[field]
+            for field in (
+                "coordinate_count",
+                "unique_coordinate_count",
+                "all_coordinates_unique",
+                "rounding_sha256",
+            )
+        },
+        "work": {
+            "index537_compact_decodes": 1,
+            "recurrence_row_actions": 622,
+            "tail_checks": 1,
+            "rounding_calls": 2,
+            "index1159_compact_encodes": 1,
+            "index1159_compact_decodes": 1,
+        },
+        "cost": {"wall_seconds": 1.0, "cpu_seconds": 0.5, "max_rss_kib": 1024},
+    }
+    result_path = output / "RESULT.json"
+    result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    return request, result, result_path
+
+
 class Tail1159IntentTests(unittest.TestCase):
     def test_frozen_work_denominator(self):
         request = json.loads(REQUEST.read_text())
         self.assertEqual(TARGET_INDEX - SOURCE_INDEX, 622)
+        self.assertEqual(request["budget"]["checkpoint_decodes"], 30)
         self.assertEqual(request["budget"]["recurrence_row_actions"], 6220)
         self.assertEqual(request["budget"]["tail_checks"], 10)
         self.assertEqual(request["budget"]["rounding_calls_cap"], 5180)
@@ -413,6 +512,55 @@ class Tail1159IntentTests(unittest.TestCase):
     def test_package_contains_no_runtime_outputs(self):
         names = {path.name for path in Path(__file__).resolve().parent.iterdir()}
         self.assertFalse({"RUN_OUTPUT", "FINAL_OUTPUT", "COLLECTED_LANES"} & names)
+
+    def test_synthetic_lane_outputs_are_recomputed_from_original_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, result, result_path = _synthetic_lane_output(Path(directory))
+            self.assertEqual(
+                validate_lane_result(result_path, 0, request, IDENTITY), result
+            )
+
+    def test_result_symlink_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, _, result_path = _synthetic_lane_output(Path(directory))
+            link = result_path.with_name("RESULT.link.json")
+            link.symlink_to(result_path.name)
+            with self.assertRaisesRegex(SystemExit, "single-link regular file"):
+                validate_lane_result(link, 0, request, IDENTITY)
+
+    def test_duplicate_result_key_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, _, result_path = _synthetic_lane_output(Path(directory))
+            raw = result_path.read_bytes().replace(
+                b'"lane_ordinal": 0,', b'"lane_ordinal": 0, "lane_ordinal": 1,', 1
+            )
+            result_path.write_bytes(raw)
+            with self.assertRaisesRegex(SystemExit, "strict unambiguous JSON"):
+                validate_lane_result(result_path, 0, request, IDENTITY)
+
+    def test_checkpoint_digest_claim_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, result, result_path = _synthetic_lane_output(Path(directory))
+            result["checkpoint_compact_sha256"] = "0" * 64
+            result_path.write_text(json.dumps(result, sort_keys=True))
+            with self.assertRaisesRegex(SystemExit, "compact checkpoint bytes differ"):
+                validate_lane_result(result_path, 0, request, IDENTITY)
+
+    def test_tail_summary_claim_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, result, result_path = _synthetic_lane_output(Path(directory))
+            result["tail"]["unique_coordinate_count"] = 0
+            result_path.write_text(json.dumps(result, sort_keys=True))
+            with self.assertRaisesRegex(SystemExit, "tail summary differs"):
+                validate_lane_result(result_path, 0, request, IDENTITY)
+
+    def test_work_ledger_claim_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, result, result_path = _synthetic_lane_output(Path(directory))
+            result["work"]["recurrence_row_actions"] = 621
+            result_path.write_text(json.dumps(result, sort_keys=True))
+            with self.assertRaisesRegex(SystemExit, "work ledger differs"):
+                validate_lane_result(result_path, 0, request, IDENTITY)
 
     def test_small_exact_continuation_and_tail(self):
         state256, parent = _index256_fixture()

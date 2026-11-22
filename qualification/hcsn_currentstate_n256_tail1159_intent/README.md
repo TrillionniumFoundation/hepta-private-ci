@@ -1,9 +1,9 @@
-# Authentic N256 index1159 resource-original admission
+# Authentic N256 index1159 output-bound admission
 
 Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
 
-This separately frozen v5 candidate strengthens the source-only admission on
-top of #6976. It consumes the ten byte-exact index537 full-state
+This separately frozen v6 candidate strengthens the source-only admission on
+top of #6978. It consumes the ten byte-exact index537 full-state
 originals from #6957/#6959 and defines the unchanged exact continuation to
 index1159. Each lane would apply exactly 622 row actions and one signed
 ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
@@ -45,6 +45,15 @@ and version (`importlib-name-version-json-v1`); they are not accepted as
 unverified claims from the runtime original.
 The current #6966 observation is only a time-point observation, not an
 allocation. The earlier static #6964 byte projection is not a bound.
+
+The collector no longer accepts lane-authored metadata as proof of output. It
+reads each result, tail and compact checkpoint through a descriptor-bound,
+single-link regular-file reader; rejects ambiguous JSON and schema drift;
+recomputes every byte count and digest; decodes each compact checkpoint once to
+verify the raw digest and raw cap; reconstructs the tail denominator,
+uniqueness, rounding digest and work ledger; and requires ten safe lane stems.
+These ten collector decodes raise the complete planned decode denominator from
+20 to 30 without changing recurrence, tail, rounding or model work.
 
 The next execution commit must bind all four runtime originals to this exact
 source and the same execution key, preserve attempt `001`, set an explicit
