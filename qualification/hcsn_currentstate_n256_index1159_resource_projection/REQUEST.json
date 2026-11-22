@@ -1,0 +1,24 @@
+{
+  "actual_index1159_execution_authorized": false,
+  "base_head": "e77845b79485d79f07bdad82f9e6c0a2bf39c316",
+  "execution": "read_only_exact_originals_byte_projection",
+  "identity": "hcsn-n256-index1159-resource-projection-20261122-c6bc-v1",
+  "input_index256_pr": 6948,
+  "input_index537_collector_sha256": "452e22f354928f88742d840d3287c160153b8e86d4ed5346b0d0628d0ddacbf4",
+  "input_index537_pr": 6957,
+  "projection_is_resource_admission": false,
+  "prohibited_work": [
+    "checkpoint_decode",
+    "recurrence",
+    "candidate_tail_check",
+    "provider",
+    "dynamic",
+    "exponential",
+    "torch",
+    "optimizer",
+    "model",
+    "training"
+  ],
+  "question": "What does the exact per-lane index256-to-index537 byte secant project at index1159 under the existing caps?",
+  "target_index": 1159
+}
