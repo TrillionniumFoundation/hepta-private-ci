@@ -1,0 +1,20 @@
+--- original/soft_value.py
++++ soft_value_stop.py
+@@ -111,0 +112 @@
++    fixed_point = False
+@@ -153,0 +155 @@
++                fixed_point = round_best is current
+@@ -158,0 +161,4 @@
++                # The DIRECT proposal set depends only on the current point and fixed inputs.
++                # A full sweep with no accepted candidate would exactly repeat.
++                if fixed_point:
++                    break
+@@ -178 +184,4 @@
+-        if slots != settings['proposal_slots']:
++        expected_slots = settings['proposal_slots']
++        if family == 'DIRECT' and fixed_point:
++            expected_slots = len(trace) * min(len(forest.H), settings['states_per_round']) * len(settings['proposal_doses'])
++        if slots != expected_slots:
+@@ -184 +193 @@
+-    report = dict(status=status, error=error, family=family, slots_completed=slots,
++    report = dict(status=status, error=error, family=family, slots_completed=slots, fixed_point_stop=fixed_point,
