@@ -112,15 +112,22 @@ pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Er
 }
 
 pub(super) fn decision(context: &Context) -> Result<LearningIterationCoordinatorV1, Error> {
+    Ok(decision_and_mode(context)?.0)
+}
+
+pub(super) fn decision_and_mode(
+    context: &Context,
+) -> Result<(LearningIterationCoordinatorV1, Mode), Error> {
     let mut prefix = context.prefix.clone();
-    if mode(context)? == Mode::NextUse {
+    let mode = mode(context)?;
+    if mode == Mode::NextUse {
         let selection = prefix
             .receipts
             .pop()
             .ok_or(Error::Binding("original Selection"))?;
         prefix.head_digest = selection.predecessor;
     }
-    Ok(LearningIterationCoordinatorV1::from_snapshot(prefix)?)
+    Ok((LearningIterationCoordinatorV1::from_snapshot(prefix)?, mode))
 }
 
 #[derive(Deserialize, Serialize)]

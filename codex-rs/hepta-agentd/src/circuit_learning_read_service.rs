@@ -188,9 +188,15 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         observed: &codex_hepta_learning_artifacts::LearningIterationObservationV1,
     ) -> Result<(), Error> {
         self.context.scope.validate_observation(observed)?;
-        if wire::mode(&self.context)? == wire::Mode::NextUse
-            && self.context.prefix.receipts[3].observation != *observed
-        {
+        self.require_selection_receipt(wire::mode(&self.context)?, observed)
+    }
+
+    fn require_selection_receipt(
+        &self,
+        mode: wire::Mode,
+        observed: &codex_hepta_learning_artifacts::LearningIterationObservationV1,
+    ) -> Result<(), Error> {
+        if mode == wire::Mode::NextUse && self.context.prefix.receipts[3].observation != *observed {
             return Err(Error::Binding("original Selector receipt and publication"));
         }
         Ok(())
@@ -198,17 +204,18 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
 
     fn read_original(&self) -> Result<Readback, Error> {
         self.require_task_input_current()?;
-        let coordinator = wire::decision(&self.context)?;
+        let (coordinator, mode) = wire::decision_and_mode(&self.context)?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
         let selection = cell.read_learning_selection(&coordinator)?;
-        self.require_original_selection(&selection)?;
+        self.context.scope.validate_observation(&selection)?;
+        self.require_selection_receipt(mode, &selection)?;
         let Publication::Update { original, .. } = &self.cell.task.0.publication else {
             return Err(Error::Binding("original successor publication"));
         };
         let publication = original.publication_digest()?;
         let source_input =
             circuit_feature_task_digest_v1(self.cell.task.definition(), self.cell.task.source())?;
-        let (observation, source_publication) = match wire::mode(&self.context)? {
+        let (observation, source_publication) = match mode {
             wire::Mode::Selection => (selection.clone(), None),
             wire::Mode::NextUse => {
                 let before = self

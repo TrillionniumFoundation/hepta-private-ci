@@ -186,7 +186,10 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             self.rejects(SERVICE, "fn require_task_input_current(", marker)
         for marker in (
             "cell.read_learning_selection(&coordinator)?",
-            "self.require_original_selection(&selection)?",
+            "wire::decision_and_mode(&self.context)?",
+            "self.context.scope.validate_observation(&selection)?",
+            "self.require_selection_receipt(mode, &selection)?",
+            "match mode",
             "wire::Mode::Selection => (selection.clone(), None)",
             "wire::Mode::NextUse",
             "cell.read_learning_next_use(",
@@ -194,6 +197,19 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "cell.read_learning_selection(&coordinator)? != selection",
         ):
             self.rejects(SERVICE, "fn read_original(", marker)
+        for marker in (
+            "let mode = mode(context)?",
+            "if mode == Mode::NextUse",
+            "prefix.head_digest = selection.predecessor",
+        ):
+            self.rejects(WIRE, "fn decision_and_mode(", marker)
+        self.rejects(WIRE, "fn decision(", "decision_and_mode(context)?")
+        self.rejects(SERVICE, "fn require_original_selection(", "wire::mode(&self.context)?")
+        for marker in (
+            "mode == wire::Mode::NextUse",
+            "self.context.prefix.receipts[3].observation != *observed",
+        ):
+            self.rejects(SERVICE, "fn require_selection_receipt(", marker)
         for marker in (
             "request.require_context(&self.context, self.binding, request_id)?",
             "let read = self.read_original()?;",
