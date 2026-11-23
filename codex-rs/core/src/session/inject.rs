@@ -2,6 +2,9 @@ use super::TurnInput as PendingTurnInput;
 use super::session::Session;
 use super::turn_context::TurnContext;
 use crate::codex_thread::InjectIfRunningError;
+use crate::context::ContextualUserFragment;
+use crate::context::SubagentNotification;
+use crate::state::ActiveTurn;
 use codex_features::Feature;
 use codex_history::CodexHarnessMetadata;
 use codex_history::ResponseItemEnvelope;
@@ -97,7 +100,15 @@ impl Session {
         input: Vec<ResponseItem>,
     ) -> Result<(), InjectIfRunningError> {
         let mut active = self.active_turn.lock().await;
-        match active.as_mut() {
+        self.inject_into_running_turn(active.as_mut(), input).await
+    }
+
+    async fn inject_into_running_turn(
+        &self,
+        active: Option<&mut ActiveTurn>,
+        input: Vec<ResponseItem>,
+    ) -> Result<(), InjectIfRunningError> {
+        match active {
             Some(active_turn) => {
                 if active_turn.task_terminalization.is_some() || active_turn.task.is_none() {
                     return Err(InjectIfRunningError::NoActiveTurn(input));
@@ -278,6 +289,54 @@ impl Session {
             );
             return;
         }
+        self.record_idle_injection(items, current_turn_context)
+            .await;
+        drop(active);
+    }
+
+    /// The legacy child watcher delivers a finished child's context to its parent.
+    /// Observe any in-flight lifecycle owner, then route under the normal active-turn
+    /// guard. The watcher never retires a fence or starts another parent turn.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "notification routing uses the normal active-turn ownership fence across history or queue writes"
+    )]
+    pub(crate) async fn inject_subagent_notification(&self, notification: SubagentNotification) {
+        loop {
+            let mut active = self.active_turn.lock().await;
+            if self.shutdown_started() {
+                return;
+            }
+            if let Some(completion) = self.pending_admission_fence_completion() {
+                drop(active);
+                completion.await;
+                continue;
+            }
+            let items = vec![ContextualUserFragment::into(notification)];
+            if active.is_none() {
+                self.record_idle_injection(items, /*current_turn_context*/ None)
+                    .await;
+            } else if let Err(error) = self.inject_into_running_turn(active.as_mut(), items).await {
+                match error {
+                    InjectIfRunningError::NoActiveTurn(_) => {
+                        tracing::error!(
+                            "subagent notification encountered an unowned turn transition"
+                        );
+                    }
+                    InjectIfRunningError::RecoveryRevocation(error) => {
+                        tracing::error!(%error, "failed to revoke turn recovery before injecting subagent notification");
+                    }
+                }
+            }
+            return;
+        }
+    }
+
+    async fn record_idle_injection(
+        &self,
+        items: Vec<ResponseItem>,
+        current_turn_context: Option<&TurnContext>,
+    ) {
         let consumed_recovery = match self.consume_recovery_candidate_for_mutation().await {
             Ok(consumed_recovery) => consumed_recovery,
             Err(err) => {
@@ -297,7 +356,6 @@ impl Session {
         if consumed_recovery {
             self.settle_consumed_recovery_status();
         }
-        drop(active);
     }
 }
 
@@ -322,6 +380,112 @@ mod tests {
     use std::sync::Arc;
     use std::sync::atomic::Ordering;
     use tokio_util::sync::CancellationToken;
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn terminal_child_notification_waits_for_normal_finish_and_stays_single() {
+        use crate::session::tests::make_session_and_context;
+        use codex_protocol::protocol::AgentStatus;
+        use std::time::Duration;
+        use tokio::sync::Notify;
+        use tokio::time::timeout;
+
+        struct ImmediateFinish;
+        impl SessionTask for ImmediateFinish {
+            fn kind(&self) -> TaskKind {
+                TaskKind::Regular
+            }
+
+            fn span_name(&self) -> &'static str {
+                "session_task.child_notification_finish_probe"
+            }
+
+            async fn run(
+                self: Arc<Self>,
+                _session: Arc<Session>,
+                _context: Arc<TurnContext>,
+                _input: Vec<PendingTurnInput>,
+                _cancellation_token: CancellationToken,
+            ) -> SessionTaskResult {
+                Ok(None)
+            }
+        }
+
+        struct IdleGate {
+            entered: Arc<Notify>,
+            release: Arc<Notify>,
+        }
+        impl codex_extension_api::ThreadLifecycleContributor<crate::config::Config> for IdleGate {
+            fn on_thread_idle<'a>(
+                &'a self,
+                _input: codex_extension_api::ThreadIdleInput<'a>,
+            ) -> codex_extension_api::ExtensionFuture<'a, ()> {
+                Box::pin(async move {
+                    self.entered.notify_one();
+                    self.release.notified().await;
+                })
+            }
+        }
+
+        async fn count_notifications(session: &Session) -> usize {
+            session.clone_history().await.raw_items().filter(|item| {
+                let ResponseItem::Message { role, content, .. } = item else {
+                    return false;
+                };
+                role == "user" && content.iter().any(|part| {
+                    matches!(part, ContentItem::InputText { text } if SubagentNotification::matches_text(text))
+                })
+            }).count()
+        }
+
+        let (mut session, context) = make_session_and_context().await;
+        let entered = Arc::new(Notify::new());
+        let release = Arc::new(Notify::new());
+        let mut extensions =
+            codex_extension_api::ExtensionRegistryBuilder::<crate::config::Config>::new();
+        extensions.thread_lifecycle_contributor(Arc::new(IdleGate {
+            entered: Arc::clone(&entered),
+            release: Arc::clone(&release),
+        }));
+        session.services.extensions = Arc::new(extensions.build());
+        let session = Arc::new(session);
+        session
+            .spawn_task(Arc::new(context), Vec::new(), ImmediateFinish)
+            .await
+            .expect("start the original finish owner");
+        timeout(Duration::from_secs(2), entered.notified())
+            .await
+            .expect("normal finish reached its idle callback");
+        assert!(session.has_pending_task_terminalization());
+
+        let send = session.inject_subagent_notification(SubagentNotification::new(
+            "observed-child",
+            AgentStatus::Completed(Some("child finished".into())),
+        ));
+        tokio::pin!(send);
+        let returned_before_finish = timeout(Duration::from_millis(100), &mut send).await.is_ok();
+        assert!(session.has_pending_task_terminalization());
+        assert_eq!(count_notifications(&session).await, 0);
+        release.notify_one();
+        if !returned_before_finish {
+            timeout(Duration::from_secs(2), send)
+                .await
+                .expect("deliver after genuine owner retirement");
+        }
+        assert!(
+            !returned_before_finish,
+            "child notification was discarded before the normal finish owner retired"
+        );
+        assert_eq!(count_notifications(&session).await, 1);
+
+        session.begin_shutdown();
+        session
+            .inject_subagent_notification(SubagentNotification::new(
+                "after-shutdown",
+                AgentStatus::Completed(None),
+            ))
+            .await;
+        assert_eq!(count_notifications(&session).await, 1);
+    }
 
     #[derive(Clone, Copy, Debug)]
     enum InjectionPath {
