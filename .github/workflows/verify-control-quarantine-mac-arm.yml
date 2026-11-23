@@ -1,0 +1,126 @@
+name: Compare the original Control suite on macOS ARM
+
+on:
+  push:
+    branches:
+      - verify/control-quarantine-mac-arm-20261123
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: macos-15
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ae2ad4941e0734c311d74904c9bbacc6c5136b6c
+          persist-credentials: false
+      - name: Prepare the original ARM toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: aarch64-apple-darwin
+          cache-scope: bazel-test
+      - name: Compare full original test processes
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = arm64
+          test "$(git rev-parse HEAD)" = ae2ad4941e0734c311d74904c9bbacc6c5136b6c
+          test "$(git hash-object codex-rs/hepta-control-plane/src/ndu_publication.rs)" = 1a8e08abc27fa0bd6375f207662a83a4cc168527
+          test "$(git hash-object codex-rs/hepta-control-plane/src/ndu_publication_tests.rs)" = 98fa9d18339b69379d8dbeef6e065adda6f35eca
+          test "$(git hash-object codex-rs/hepta-control-plane/BUILD.bazel)" = c3299ee2e739178ef0ea87f843be41b000520375
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import shutil
+          import subprocess
+          from pathlib import Path
+
+          case = "ndu_publication::tests::original_pending_begin_inspector_repeated_cold_reopen_retains_quarantine"
+          target = "//codex-rs/hepta-control-plane:hepta-control-plane-unit-tests"
+          original_digest = "8dc2d94683f5b9be869913fa90171d86f1eb4942dddf7d16c6d1fa8f53618772"
+          root = Path("bazel-testlogs/codex-rs/hepta-control-plane/hepta-control-plane-unit-tests")
+          output = Path(os.environ["RUNNER_TEMP"]) / "control-qualification"
+          output.mkdir()
+          full_names = None
+          records = []
+
+          def digest(names):
+              data = "".join(n + "\n" for n in sorted(names)).encode()
+              return hashlib.sha256(data).hexdigest()
+
+          def run(index, mode, args):
+              global full_names
+              dest = output / f"{index:02d}-{mode}"
+              dest.mkdir()
+              bep = output.parent / f"control-bep-{index:02d}.jsonl"
+              cmd = ["./.github/scripts/run-bazel-ci.sh", "--print-failed-test-logs", "--",
+                     "test", "--strategy=TestRunner=local", "--test_sharding_strategy=disabled",
+                     "--flaky_test_attempts=1", "--nocache_test_results",
+                     "--remote_upload_local_results=false", f"--build_event_json_file={bep}", *args, "--", target]
+              rc = subprocess.run(cmd).returncode
+              assert rc in (0, 3), (rc, cmd)
+              with bep.open() as stream:
+                  events = []
+                  for line in stream:
+                      event = json.loads(line)
+                      if event.get("id", {}).get("testResult", {}).get("label") == target:
+                          events.append(event)
+              assert len(events) == 1, len(events)
+              action = events[0]["testResult"]
+              assert not action.get("cachedLocally") and action["status"] == ("PASSED" if rc == 0 else "FAILED")
+              (dest / "bazel-result.json").write_text(json.dumps(events[0], indent=2) + "\n")
+              for name in ("test.log", "test.xml"):
+                  path = root / name
+                  shutil.copyfile(path, dest / name)
+              log = (dest / "test.log").read_text()
+              rows = re.findall(r"^test (\S+) \.\.\. (ok|FAILED)$", log, re.MULTILINE)
+              names = {n for n, _ in rows}
+              assert len(names) == len(rows)
+              if mode in ("parallel", "serial"):
+                  assert len(names) == 185 and digest(names) == original_digest
+                  full_names = names
+              elif mode == "fixture":
+                  assert names == {case}
+              else:
+                  assert names == full_names - {case}
+              errors = [n for n, status in rows if status == "FAILED"]
+              summary = re.search(r"^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; 0 ignored; 0 measured; (\d+) filtered out;", log, re.MULTILINE)
+              assert summary and tuple(map(int, summary.groups()[1:])) == (len(names) - len(errors), len(errors), 185 - len(names))
+              assert (rc == 0) == (not errors)
+              row = dict(index=index, mode=mode, argv=cmd, exit_code=rc, names_sha256=digest(names),
+                         original_cases=len(names), failed=errors, writer_unavailable="read-only cold orphan inspection: WriterUnavailable" in log)
+              (dest / "receipt.json").write_text(json.dumps(row, indent=2) + "\n")
+              records.append(row)
+              print(row, flush=True)
+              return row
+
+          for index, mode in enumerate(("parallel", "serial", "serial", "parallel", "parallel", "serial"), 1):
+              run(index, mode, [] if mode == "parallel" else ["--test_arg=--test-threads=1"])
+          parallel = [row for row in records if row["mode"] == "parallel"]
+          serial = [row for row in records if row["mode"] == "serial"]
+          contrast = (all(not r["failed"] for r in serial)
+                      and all(not r["failed"] or r["failed"] == [case] for r in parallel)
+                      and any(r["failed"] == [case] and r["writer_unavailable"] for r in parallel))
+          if contrast:
+              for k in range(3):
+                  run(7 + 2*k, "fixture", ["--test_arg=--exact", "--test_arg=" + case])
+                  run(8 + 2*k, "other184", ["--test_arg=--skip", "--test_arg=" + case])
+          (output / "summary.json").write_text(json.dumps(dict(source="ae2ad4941e0734c311d74904c9bbacc6c5136b6c", platform="macos-15 arm64", original_job=137481302908, roster_sha256=original_digest, observed_contrast=contrast, runs=records), indent=2) + "\n")
+          PY
+      - name: Publish every native log, XML, and observation
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: original-control-macos-arm-ae2ad494
+          path: ${{ runner.temp }}/control-qualification
+          if-no-files-found: error
