@@ -203,7 +203,10 @@ pub struct AgentdPromptProductOwnerV3 {
 
 impl std::fmt::Debug for AgentdPromptProductOwnerV3 {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let live = self.live.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let live = self
+            .live
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let durable = self
             .durable
             .lock()
@@ -486,8 +489,9 @@ impl AgentdPromptProductOwnerV3 {
         if now >= stage.context.deadline_ms {
             return Err(AgentdPromptProductErrorV3::InvalidContext);
         }
-        let preparation_id = StableId::new(format!("context-preparation:v3:{}", request.attempt_id))
-            .map_err(|_| AgentdPromptProductErrorV3::InvalidScope)?;
+        let preparation_id =
+            StableId::new(format!("context-preparation:v3:{}", request.attempt_id))
+                .map_err(|_| AgentdPromptProductErrorV3::InvalidScope)?;
         let prepared = {
             let registry = self
                 .registry
@@ -625,8 +629,7 @@ impl AgentdPromptProductOwnerV3 {
             .get(&key)
             .cloned()
             .ok_or(AgentdPromptProductErrorV3::RecompileRequired)?;
-        if stage.context.context_payload_digest.to_string()
-            != dispatch.proof.context_payload_digest
+        if stage.context.context_payload_digest.to_string() != dispatch.proof.context_payload_digest
             || stage.context.source_binding_digest.to_string()
                 != dispatch.proof.source_binding_digest
             || stage.context.execution_profile_digest.to_string()
@@ -715,10 +718,7 @@ impl AgentdPromptProductOwnerV3 {
             .ok_or(AgentdPromptProductErrorV3::RecompileRequired)
     }
 
-    fn has_unresolved_dispatch(
-        &self,
-        key: &TurnKey,
-    ) -> Result<bool, AgentdPromptProductErrorV3> {
+    fn has_unresolved_dispatch(&self, key: &TurnKey) -> Result<bool, AgentdPromptProductErrorV3> {
         let state = self
             .durable
             .lock()
@@ -766,8 +766,7 @@ impl AgentdPromptProductOwnerV3 {
 
 impl DurableStore {
     fn open(directory: &Path) -> Result<(Self, DurableState), AgentdPromptProductErrorV3> {
-        std::fs::create_dir_all(directory)
-            .map_err(|_| AgentdPromptProductErrorV3::Unavailable)?;
+        std::fs::create_dir_all(directory).map_err(|_| AgentdPromptProductErrorV3::Unavailable)?;
         set_private_directory_permissions(directory)?;
         let lock_path = directory.join(LOCK_FILE);
         let lock = OpenOptions::new()
@@ -797,14 +796,14 @@ impl DurableStore {
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
             return Err(AgentdPromptProductErrorV3::CorruptState);
         }
-        let state = serde_json::from_slice(&bytes)
-            .map_err(|_| AgentdPromptProductErrorV3::CorruptState)?;
+        let state =
+            serde_json::from_slice(&bytes).map_err(|_| AgentdPromptProductErrorV3::CorruptState)?;
         Ok((store, state))
     }
 
     fn persist(&self, state: &DurableState) -> Result<(), AgentdPromptProductErrorV3> {
-        let bytes = serde_json::to_vec(state)
-            .map_err(|_| AgentdPromptProductErrorV3::Unavailable)?;
+        let bytes =
+            serde_json::to_vec(state).map_err(|_| AgentdPromptProductErrorV3::Unavailable)?;
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
             return Err(AgentdPromptProductErrorV3::CapacityExceeded);
         }
@@ -855,7 +854,9 @@ impl ContextProviderDeliveryVerifierV2 for AgentdProviderDeliveryVerifierV3 {
             .ok_or_else(|| "context witness digest missing".to_owned())?;
         let expected = context_witness_digest(receipt, self.authority_digest)?;
         if witness.as_str() != expected {
-            return Err("context witness does not authenticate the preparation authority".to_owned());
+            return Err(
+                "context witness does not authenticate the preparation authority".to_owned(),
+            );
         }
         if input.as_str() != preparation.payload_digest().to_string() {
             return Err("context input digest does not bind the prepared payload".to_owned());
@@ -896,7 +897,11 @@ fn context_witness_digest(
         binding.wire_semantic_sha256.as_str(),
         previous_presence,
         previous_sha256,
-        if binding.generate { "generate" } else { "no_generate" },
+        if binding.generate {
+            "generate"
+        } else {
+            "no_generate"
+        },
         &authority_digest.to_string(),
         input.as_str(),
     ]))
@@ -915,7 +920,10 @@ fn validate_intent_binding(
         || binding.turn_id != proof.turn_id
         || binding.provider_id != proof.provider_id
         || binding.model != proof.model
-        || binding.ephemeral_input_sha256.as_ref().map(|value| value.as_str())
+        || binding
+            .ephemeral_input_sha256
+            .as_ref()
+            .map(|value| value.as_str())
             != Some(context.context_payload_digest.to_string().as_str())
         || binding.ephemeral_input_witness_sha256.is_none()
     {
@@ -983,7 +991,10 @@ fn validate_durable_state(state: &DurableState) -> Result<(), AgentdPromptProduc
     let mut unresolved = BTreeMap::<StoredTurnKey, String>::new();
     for (attempt_id, dispatch) in &state.dispatches {
         let is_unresolved = state.terminals.get(attempt_id).is_none_or(|terminal| {
-            matches!(terminal.receipt.terminal, ProviderTerminal::Indeterminate { .. })
+            matches!(
+                terminal.receipt.terminal,
+                ProviderTerminal::Indeterminate { .. }
+            )
         });
         if is_unresolved
             && unresolved
@@ -1000,7 +1011,10 @@ fn unresolved_for_key(state: &DurableState, key: &StoredTurnKey) -> bool {
     state.dispatches.iter().any(|(attempt_id, dispatch)| {
         &dispatch.key == key
             && state.terminals.get(attempt_id).is_none_or(|terminal| {
-                matches!(terminal.receipt.terminal, ProviderTerminal::Indeterminate { .. })
+                matches!(
+                    terminal.receipt.terminal,
+                    ProviderTerminal::Indeterminate { .. }
+                )
             })
     })
 }
@@ -1060,8 +1074,7 @@ fn stage_id(key: &TurnKey) -> String {
 }
 
 fn parse_digest(value: &str) -> Result<Digest32, AgentdPromptProductErrorV3> {
-    let digest = Digest32::from_str(value)
-        .map_err(|_| AgentdPromptProductErrorV3::CorruptState)?;
+    let digest = Digest32::from_str(value).map_err(|_| AgentdPromptProductErrorV3::CorruptState)?;
     if digest.is_zero() {
         return Err(AgentdPromptProductErrorV3::CorruptState);
     }
@@ -1080,8 +1093,7 @@ fn current_unix_ms() -> Result<u64, AgentdPromptProductErrorV3> {
         .duration_since(std::time::UNIX_EPOCH)
         .map_err(|_| AgentdPromptProductErrorV3::Unavailable)
         .and_then(|duration| {
-            u64::try_from(duration.as_millis())
-                .map_err(|_| AgentdPromptProductErrorV3::Unavailable)
+            u64::try_from(duration.as_millis()).map_err(|_| AgentdPromptProductErrorV3::Unavailable)
         })
 }
 

@@ -44,13 +44,7 @@ impl ReplayCacheV1 {
             return Err(ReplayError::Expired);
         }
         self.entries.retain(|_, expiry| *expiry > now_unix_ms);
-        let key = replay_key(
-            sender_peer_id,
-            receiver_peer_id,
-            key_id,
-            generation,
-            nonce,
-        );
+        let key = replay_key(sender_peer_id, receiver_peer_id, key_id, generation, nonce);
         if self.entries.contains_key(&key) {
             return Err(ReplayError::Replay);
         }

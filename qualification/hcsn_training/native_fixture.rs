@@ -8,8 +8,8 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
-use serde_json::json;
 use serde_json::Value;
+use serde_json::json;
 use std::error::Error;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -309,12 +309,14 @@ fn reopen(root: &Path) -> Result<()> {
     let mut tampered = payload.clone();
     tampered[0] ^= 1;
     write(root, "tampered-copy.pt", &tampered)?;
-    assert!(read_candidate_payload(
-        File::open(root.join("tampered-copy.pt"))?,
-        owner.registry(),
-        &id("hcsn-fixture-candidate")
-    )
-    .is_err());
+    assert!(
+        read_candidate_payload(
+            File::open(root.join("tampered-copy.pt"))?,
+            owner.registry(),
+            &id("hcsn-fixture-candidate")
+        )
+        .is_err()
+    );
     let input = read(root, "clock-input.json")?;
     let training = read(root, "training-plan.json")?;
     let state = read(root, "candidate-state.json")?;

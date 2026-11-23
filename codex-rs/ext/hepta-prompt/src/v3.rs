@@ -319,22 +319,14 @@ pub type PromptRuntimeDispatchFutureV3 =
 pub type PromptRuntimeRecordFutureV3 =
     Pin<Box<dyn Future<Output = Result<(), PromptRuntimeHostErrorV3>> + Send + 'static>>;
 
-type PrepareFnV3 = dyn Fn(PromptRuntimePrepareRequestV3) -> PromptRuntimePrepareFutureV3
-    + Send
-    + Sync
-    + 'static;
-type FinalUseFnV3 = dyn Fn(PromptRuntimeFinalUseRequestV3) -> PromptRuntimeFinalUseFutureV3
-    + Send
-    + Sync
-    + 'static;
-type DispatchFnV3 = dyn Fn(PromptRuntimeDispatchRecordV3) -> PromptRuntimeDispatchFutureV3
-    + Send
-    + Sync
-    + 'static;
-type RecordFnV3 = dyn Fn(PromptRuntimeTerminalRecordV3) -> PromptRuntimeRecordFutureV3
-    + Send
-    + Sync
-    + 'static;
+type PrepareFnV3 =
+    dyn Fn(PromptRuntimePrepareRequestV3) -> PromptRuntimePrepareFutureV3 + Send + Sync + 'static;
+type FinalUseFnV3 =
+    dyn Fn(PromptRuntimeFinalUseRequestV3) -> PromptRuntimeFinalUseFutureV3 + Send + Sync + 'static;
+type DispatchFnV3 =
+    dyn Fn(PromptRuntimeDispatchRecordV3) -> PromptRuntimeDispatchFutureV3 + Send + Sync + 'static;
+type RecordFnV3 =
+    dyn Fn(PromptRuntimeTerminalRecordV3) -> PromptRuntimeRecordFutureV3 + Send + Sync + 'static;
 
 #[derive(Clone)]
 pub struct PromptRuntimeHostV3 {
@@ -365,10 +357,7 @@ impl PromptRuntimeHostV3 {
             + Send
             + Sync
             + 'static,
-        R: Fn(PromptRuntimeTerminalRecordV3) -> PromptRuntimeRecordFutureV3
-            + Send
-            + Sync
-            + 'static,
+        R: Fn(PromptRuntimeTerminalRecordV3) -> PromptRuntimeRecordFutureV3 + Send + Sync + 'static,
     {
         StableId::new(CAPABILITY_ID).map_err(|_| PromptRuntimeV3Error::InvalidHost)?;
         Ok(Self {
@@ -588,7 +577,11 @@ impl ModelProviderContextFinalUseContributor for PromptRuntimeExtensionV3 {
                 model: input.model.to_owned(),
                 transport: input.transport,
             };
-            let proof = self.host.final_use(request.clone()).await.map_err(policy_error)?;
+            let proof = self
+                .host
+                .final_use(request.clone())
+                .await
+                .map_err(policy_error)?;
             proof.validate_for(&request).map_err(runtime_policy_error)?;
             state
                 .proofs

@@ -31,7 +31,13 @@ class FormatterScopeTests(unittest.TestCase):
         self.git("config", "user.name", "Scope Test")
         self.git("config", "user.email", "scope@localhost")
         # Reproduce the immutable test-input inventory in this real Git fixture.
-        for relative in (*FMT.VERBATIM_FIXTURES, *FMT.ORIGINAL_EVIDENCE_FILES):
+        for relative in (
+            *FMT.VERBATIM_FIXTURES,
+            *FMT.ORIGINAL_EVIDENCE_FILES,
+            *FMT.retained_rust.INVENTORY["archived"],
+            *FMT.retained_rust.INVENTORY["companions"],
+            *set(FMT.retained_rust.INVENTORY["maintained_builders"].values()),
+        ):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(SOURCE_ROOT / relative, destination)
@@ -474,6 +480,98 @@ class FormatterScopeTests(unittest.TestCase):
         self.write("scripts/pyproject.toml", '[project]\nrequires-python=">=3.12"\n')
         groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
         self.assertEqual(groups[0].commands[0].args[-1], "scripts")
+
+    def test_retained_rust_accounts_for_every_source_without_writing_it(self):
+        inventory = FMT.retained_rust.INVENTORY
+        names = sorted(inventory["archived"])
+        self.assertEqual(len(names), 37)
+        for check in (False, True):
+            commands = FMT.scoped_formatter_groups(names, check=check)[0].commands
+            self.assertEqual(
+                [Path(c.args[-1]).relative_to(self.root).as_posix() for c in commands],
+                names,
+            )
+            for c in commands:
+                self.assertEqual(
+                    c.args[:2], (sys.executable, FMT.retained_rust.__file__)
+                )
+        # Exercise each kind of recorded qualification through its normal process entry.
+        for role in ("checked_original", "preformat", "identity_only"):
+            name = next(n for n in names if inventory["archived"][n]["role"] == role)
+            command = FMT.rust_file_command(name, check=False)
+            result = subprocess.run(
+                command.args, cwd=command.cwd, capture_output=True, text=True
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn(role, result.stdout)
+        neighbor = str(Path(names[0]).with_name("new.rs")).replace("\\", "/")
+        self.write(neighbor, "fn sample() {}")
+        with self.assertRaisesRegex(ValueError, "owning Rust workspace missing"):
+            FMT.scoped_formatter_groups([neighbor], check=False)
+
+    def test_changed_or_missing_archived_source_and_companion_stops_planning(self):
+        inventory = FMT.retained_rust.INVENTORY
+        for name in [*inventory["archived"], *inventory["companions"]]:
+            path = self.root / name
+            original = path.read_bytes()
+            with self.subTest(name=name):
+                path.write_bytes(original + b" ")
+                with self.assertRaisesRegex(ValueError, "retained Rust source changed"):
+                    FMT.formatter_groups(check=True)
+                path.unlink()
+                with self.assertRaisesRegex(ValueError, "cannot read retained Rust"):
+                    FMT.scoped_formatter_groups([], check=False)
+                path.write_bytes(original)
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink creation")
+    def test_retained_rust_rejects_same_bytes_behind_a_symlink(self):
+        name = next(iter(FMT.retained_rust.INVENTORY["archived"]))
+        source = self.root / name
+        with tempfile.TemporaryDirectory() as outside:
+            target = Path(outside) / "same.rs"
+            target.write_bytes(source.read_bytes())
+            source.unlink()
+            source.symlink_to(target)
+            with self.assertRaisesRegex(ValueError, "escapes or aliases"):
+                FMT.scoped_formatter_groups([name], check=False)
+
+    def test_generated_rust_inputs_remain_writable_and_use_the_builder_edition(self):
+        owners = FMT.retained_rust.INVENTORY["maintained_builders"]
+        self.assertEqual(len(owners), 7)
+        for name in owners:
+            write = FMT.rust_file_command(name, check=False)
+            read = FMT.rust_file_command(name, check=True)
+            self.assertEqual(write.args[:3], ("rustfmt", "--edition", "2024"))
+            self.assertIn("skip_children=true", write.args)
+            self.assertNotIn("--check", write.args)
+            self.assertIn("--check", read.args)
+        name = next(iter(owners))
+        owner = self.root / owners[name]
+        owner.write_text("options=['--edition=2021']")
+        self.assertEqual(FMT.rust_file_command(name, check=False).args[2], "2021")
+        owner.write_text("options=[]")
+        with self.assertRaisesRegex(ValueError, "single Rust edition"):
+            FMT.rust_file_command(name, check=True)
+
+    def test_preformat_and_successor_roles_cannot_be_rebound(self):
+        records = FMT.retained_rust
+        import json
+
+        receipt = json.loads((self.root / records.SUPERSESSION).read_bytes())
+        source = (self.root / records.PREFORMAT).read_bytes()
+        records.verify_preformat(source, receipt)
+        forged = dict(receipt, final_source_sha256=receipt["preformat_source_sha256"])
+        with self.assertRaisesRegex(ValueError, "identities differ"):
+            records.verify_preformat(source, forged)
+
+    def test_retained_policy_metadata_rejects_drift(self):
+        records = FMT.retained_rust
+        self.write("tampered-policy.json", records.POLICY.read_text() + " ")
+        with (
+            patch.object(records, "POLICY", self.root / "tampered-policy.json"),
+            self.assertRaisesRegex(ValueError, "inventory changed"),
+        ):
+            records.read_policy()
 
     def test_rust_edition_comes_from_nearest_or_explicit_workspace(self):
         self.write("codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n')
