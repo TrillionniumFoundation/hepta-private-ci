@@ -141,3 +141,27 @@ fn unwritten_empty_response_cannot_masquerade_as_done() {
 fn negative_unmatched_event_cannot_finish_early() {
     let _ = validate_response(NEGATIVE, 2, 0, 0, false, &frame([DONE, 1, 0, 0]));
 }
+
+#[test]
+#[should_panic(expected = "input mode is invalid")]
+fn rejects_unrecognized_mode_even_on_empty_examples() {
+    let _ = validate_response(2, 0, 0, 0, false, &frame([DONE, 0, 0, 0]));
+}
+
+#[test]
+#[should_panic(expected = "empty-example input state is invalid")]
+fn rejects_noncanonical_empty_example_input() {
+    let _ = validate_response(POSITIVE, 0, 1, 0, false, &frame([DONE, 0, 0, 0]));
+}
+
+#[test]
+#[should_panic(expected = "input state is invalid")]
+fn rejects_positive_misses_exceeding_completed_examples() {
+    let _ = validate_response(POSITIVE, 2, 0, 1, true, &frame([NEXT, 1, 1, 0]));
+}
+
+#[test]
+#[should_panic(expected = "input state is invalid")]
+fn rejects_negative_mode_with_prior_misses() {
+    let _ = validate_response(NEGATIVE, 2, 0, 1, false, &frame([NEXT, 1, 0, 0]));
+}
