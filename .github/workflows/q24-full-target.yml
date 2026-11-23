@@ -1,0 +1,71 @@
+name: Paired Q24 complete native Agentd target
+on:
+  push:
+    branches: ["diagnostic/q24-full-target-20261123"]
+permissions:
+  contents: read
+jobs:
+  full:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      BASE: 6a5a02835206697d154fc4a1977b4627aad372d9
+      CANDIDATE: 53a2877f11a550ec4fca694bacc5b449f20addc2
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Bind both sources and the unchanged target, test harness and infrastructure
+        shell: bash
+        run: |
+          set -euo pipefail
+          dst="$RUNNER_TEMP/q24-full"
+          mkdir -p "$dst"/{base,candidate}
+          cp .github/scripts/q24-full-target-record.py "$RUNNER_TEMP/q24-full-target-record.py"
+          test "$(git rev-parse HEAD^)" = "$CANDIDATE"
+          test "$(git rev-parse "$CANDIDATE^")" = "$BASE"
+          for arm in base candidate; do
+            if [ "$arm" = base ]; then ref="$BASE"; else ref="$CANDIDATE"; fi
+            echo "$ref" > "$dst/$arm/ref.txt"
+            git ls-tree "$ref" -- codex-rs/hepta-agentd/BUILD.bazel defs.bzl .bazelrc .github/scripts/run-bazel-ci.sh .github/workflows/bazel.yml codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs > "$dst/$arm/source-blobs.txt"
+          done
+          cmp "$dst/base/source-blobs.txt" "$dst/candidate/source-blobs.txt"
+      - name: Run each complete original musl target with its default four shards, concurrency and attempts
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          errors=0
+          for arm in base candidate; do
+            dst="$RUNNER_TEMP/q24-full/$arm"
+            ref=$(cat "$dst/ref.txt")
+            git checkout --detach "$ref"
+            test "$(git rev-parse HEAD)" = "$ref"
+            set +e
+            ./.github/scripts/run-bazel-ci.sh --print-failed-test-logs --print-failed-action-summary --remote-download-toplevel -- test --test_tag_filters=-argument-comment-lint --test_verbose_timeout_warnings --nocache_test_results --build_metadata=COMMIT_SHA="$ref" --build_event_json_file="$dst/bep.json" -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests |& tee "$dst/console.log"
+            status=${PIPESTATUS[0]}
+            set -e
+            echo "$status" > "$dst/exit.txt"
+            if ! python3 "$RUNNER_TEMP/q24-full-target-record.py" "$arm"; then errors=1; fi
+            if [ "$status" != 0 ]; then errors=1; fi
+          done
+          exit "$errors"
+      - name: Preserve raw unfiltered libtest output and every reported Bazel attempt
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: q24-original-full-target-${{ env.CANDIDATE }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/q24-full
+            !${{ runner.temp }}/q24-full/**/bep.json
+          if-no-files-found: error
