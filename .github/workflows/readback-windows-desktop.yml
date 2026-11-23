@@ -1,0 +1,46 @@
+name: Read back six native Windows desktop role and refusal cases
+
+on:
+  push:
+    branches: ["diagnostic/windows-desktop-role-readback-20261123"]
+
+permissions:
+  contents: read
+
+jobs:
+  desktop-role:
+    runs-on: windows-latest
+    timeout-minutes: 100
+    steps:
+      - name: Enable long paths for Git checkout
+        working-directory: ${{ runner.temp }}
+        shell: bash
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Run the original Windows sandbox unit target once
+        shell: bash
+        run: |
+          set -eu
+          root="$RUNNER_TEMP/desktop-owner"
+          mkdir -p "$root"
+          source=c12ee03f3185d5a13949faca54f066dfd634e509
+          test "$(git rev-parse HEAD^)" = "$source"
+          test "$(git rev-parse HEAD:codex-rs)" = "$(git rev-parse "$source:codex-rs")"
+          git ls-tree "$source" -- codex-rs/windows-sandbox-rs codex-rs/network-proxy/tests/windows_stable_ingress.rs > "$root/sources.txt"
+          rc=0
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs --windows-msvc-host-platform --remote-download-toplevel -- test --platforms=//:windows_x86_64_msvc --nocache_test_results --flaky_test_attempts=1 --build_metadata=COMMIT_SHA="$source" -- //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests || rc=$?
+          python .github/scripts/readback-windows-desktop.py "$rc"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always() && !cancelled()
+        with:
+          name: original-windows-desktop-role
+          path: ${{ runner.temp }}/desktop-owner
+          if-no-files-found: error
