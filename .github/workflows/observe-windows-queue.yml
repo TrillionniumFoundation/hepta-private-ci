@@ -1,4 +1,4 @@
-name: Windows queue cold and warm observation
+name: Windows queue fixture JSON comparison
 
 on:
   push:
@@ -15,9 +15,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lane: [original, fixture-observation]
+        lane: [codec-baseline-environment, codec-seven-directories]
     env:
-      SOURCE_SHA: ${{ matrix.lane == 'original' && '889802d81fb37f1b5e2355c4913574be2b6a6ea0' || github.sha }}
+      SOURCE_SHA: ${{ matrix.lane == 'codec-baseline-environment' && '53275fc9d8952d5845a735b23eac90232f8c7404' || github.sha }}
     steps:
       - name: Enable long paths for Git checkout
         shell: bash
@@ -83,6 +83,6 @@ jobs:
         if: always() && !cancelled()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
-          name: queue-observation-${{ matrix.lane }}-${{ github.sha }}-${{ github.run_attempt }}
+          name: queue-codec-${{ matrix.lane }}-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/queue-observation
           if-no-files-found: error
