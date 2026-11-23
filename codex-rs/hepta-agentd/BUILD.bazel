@@ -14,8 +14,6 @@ _UNIT_TEST_DEPENDENCIES = {
 codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
-    integration_test_timeout = "long",
-    unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
     # The historical raw-event writer is qualification-only. Do not expose it
     # through the ordinary Agentd/learning-ledger production dependency graph.
     integration_test_dependency_replacements_by_test = {
@@ -23,6 +21,8 @@ codex_rust_crate(
             "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
         },
     },
+    integration_test_timeout = "long",
+    unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
 
 # Compile the local writer qualification separately from the default product
