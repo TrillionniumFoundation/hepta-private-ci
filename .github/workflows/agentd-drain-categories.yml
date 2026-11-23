@@ -1,0 +1,125 @@
+name: Qualify redacted Agentd drain response categories
+
+on:
+  push:
+    branches:
+      - diagnostic/agentd-drain-category-20261123
+
+permissions:
+  contents: read
+
+jobs:
+  musl:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+      CANDIDATE: 8e930e91156a8c5aecdf20cef43970a6e90b24ac
+      CASE: "unix::drain_tests::"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 8e930e91156a8c5aecdf20cef43970a6e90b24ac
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Run the full drain module three times without retries
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          ./.github/scripts/run-bazel-ci.sh --print-failed-test-logs -- \
+            test --strategy=TestRunner=local --test_sharding_strategy=disabled \
+            --test_arg="$CASE" --runs_per_test=3 \
+            --flaky_test_attempts=1 --nocache_test_results \
+            --remote_upload_local_results=false \
+            --build_metadata=COMMIT_SHA="$CANDIDATE" \
+            -- //codex-rs/hepta-supervisor:hepta-supervisor-unit-tests
+      - name: Require all six original and redaction cases in each musl process
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+          import re
+
+          root = Path("bazel-testlogs/codex-rs/hepta-supervisor/hepta-supervisor-unit-tests")
+          logs = sorted(root.glob("**/test.log"))
+          assert len(logs) == 3, logs
+          for path in logs:
+              data = path.read_bytes()
+              report = data.decode()
+              assert "test unix::drain_tests::non_drain_response_names_only_its_protocol_category ... ok" in report, path
+              assert len(re.findall(r"^test unix::drain_tests::\S+ \.\.\. ok$", report, re.M)) == 6, path
+              assert re.search(r"test result: ok\. 6 passed; 0 failed; 0 ignored;", report), path
+              print(path, hashlib.sha256(data).hexdigest())
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: agentd-drain-type-three-musl
+          path: |
+            bazel-testlogs/codex-rs/hepta-supervisor/hepta-supervisor-unit-tests/**/test.log
+            bazel-testlogs/codex-rs/hepta-supervisor/hepta-supervisor-unit-tests/**/test.xml
+          if-no-files-found: warn
+
+  clippy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 8e930e91156a8c5aecdf20cef43970a6e90b24ac
+          persist-credentials: false
+      - name: Prepare original GNU Clippy toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-clippy
+      - name: Check the Supervisor unit target with the original GNU lint aspect
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 8e930e91156a8c5aecdf20cef43970a6e90b24ac
+          test "$(git hash-object codex-rs/hepta-supervisor/src/unix.rs)" = eccce5de9fa230822bd7d364d37878e316ba23ae
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary -- \
+            build --config=clippy --build_metadata=TAG_job=clippy \
+            --build_metadata=COMMIT_SHA="$(git rev-parse HEAD)" \
+            --remote_upload_local_results=false \
+            --build_event_json_file="$RUNNER_TEMP/drain-type-clippy.jsonl" \
+            -- //codex-rs/hepta-supervisor:hepta-supervisor-unit-tests-bin
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          directory = Path(os.environ["RUNNER_TEMP"])
+          events = []
+          with (directory / "drain-type-clippy.jsonl").open() as file:
+              for line in file:
+                  event = json.loads(line)
+                  target = event.get("id", {}).get("targetCompleted", {})
+                  if target.get("label") == "//codex-rs/hepta-supervisor:hepta-supervisor-unit-tests-bin":
+                      events.append(event)
+          assert any(e.get("completed", {}).get("success") for e in events)
+          assert any("clippy" in json.dumps(e).lower() for e in events)
+          (directory / "drain-type-clippy-result.json").write_text(json.dumps(events, indent=2) + "\n")
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: original-drain-type-gnu-clippy
+          path: ${{ runner.temp }}/drain-type-clippy-result.json
+          if-no-files-found: warn
