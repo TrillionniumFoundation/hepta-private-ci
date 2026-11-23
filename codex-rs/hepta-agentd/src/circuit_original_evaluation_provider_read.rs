@@ -79,11 +79,10 @@ impl OriginalCircuitEvaluationCohortV1 {
         let sources = self.read_sources()?;
         let inputs = records::assemble(
             &self.config,
-            &self.owners.ledger,
+            &self.owners,
             &receipt,
             &records,
             &sources,
-            &self.owners.sources,
             &training,
             started_at,
         )?;

@@ -162,7 +162,7 @@ enum Publication {
     Initial(PublishedNeuronGenerationInitialV1),
     Update {
         original: PublishedNeuronGenerationUpdateV1,
-        previous: PublishedCircuitFeatureCompletionV1,
+        previous: Box<PublishedCircuitFeatureCompletionV1>,
     },
 }
 
@@ -294,7 +294,10 @@ impl PublishedCircuitFeatureTaskV1 {
         }
         Self::from_parts(
             journal,
-            Publication::Update { original, previous },
+            Publication::Update {
+                original,
+                previous: Box::new(previous),
+            },
             current,
             definition,
             source,
