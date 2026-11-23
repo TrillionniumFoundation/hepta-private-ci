@@ -164,7 +164,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             let custody = {
                 let mut state = self.state.try_lock().map_err(|_| Error::Busy)?;
                 match std::mem::replace(&mut *state, State::Starting) {
-                    State::Awaiting(custody) => custody,
+                    State::Awaiting(custody) => *custody,
                     other => {
                         *state = other;
                         return Err(Error::Uncertain);
