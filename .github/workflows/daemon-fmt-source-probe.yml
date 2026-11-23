@@ -1,0 +1,33 @@
+name: Reproduce the daemon fixed-base formatter scope on the exact reviewed source
+on:
+  push:
+    branches: ["diagnostic/daemon-fmt-source-2909-20261123"]
+permissions:
+  contents: read
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+jobs:
+  source_probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - name: Resolve the original full change list, verify the historical workspace and reproduce the original error
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .github/scripts/daemon-fmt-source-probe.py "$RUNNER_TEMP/probe.py"
+          git checkout --quiet --detach c12ee03f3185d5a13949faca54f066dfd634e509
+          python3 "$RUNNER_TEMP/probe.py"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: daemon-format-fixed-original-source-probe
+          path: ${{ runner.temp }}/daemon-fmt-probe
+          if-no-files-found: error
