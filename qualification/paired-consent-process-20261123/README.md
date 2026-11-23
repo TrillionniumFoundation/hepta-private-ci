@@ -2,7 +2,7 @@
 
 A development launcher handed the released Linux `hepta-paired-consent` command an actual connected Unix socket on fd 3 and a pidfd for that launcher on fd 4. The launcher's original `DeploymentFinalUseIssuer` signed the two development consent statements. Its temporary key is generated anew for each run. The evidence store verified each Ed25519 envelope at enqueue, leased each message to a development consumer, recorded the acknowledgement, closed SQLite, and recovered the original signature and acknowledgement on a read-only reopen.
 
-For each permitted use, the new command read its one retained delivery and sent the expected `runtime.authbus.human_text.verify.v1` request through the inherited socket. The launcher inspected the original frame with a non-consuming peek and computed its SHA-256 from the received bytes. The production `HostAuthorityService` then consumed that very frame. The launcher had no registered physical user session. The service returned `Unavailable`, the command exited 1, and its stdout was empty in both cases. `RESULT.ndjson` preserves both observations. This run admits zero users and supplies zero future tasks.
+For each permitted use, the new command read its one retained delivery and sent the expected `runtime.authbus.human_text.verify.v1` request through the inherited socket. The launcher inspected the original frame with a non-consuming peek and computed its SHA-256 from the received bytes. The production `HostAuthorityService` then consumed that very frame. The launcher had no registered physical user session. The service returned `Unavailable`, the command exited 1, and its stdout was empty in both cases. `RESULT.ndjson` preserves both observations. `INDEPENDENT_REPEAT.ndjson` repeats both processes from fresh issuer state, with new signature, delivery and received-frame hashes. This run admits zero users and supplies zero future tasks.
 
 | Case | Cold SQLite check | Exact consent request reached Root | Product result | CLI stdout |
 | --- | --- | --- | --- | ---: |
@@ -20,6 +20,8 @@ sh qualification/paired-consent-process-20261123/run-isolated.sh \
     codex-rs/target/debug/examples/paired_consent_process \
     codex-rs/target/debug/hepta-paired-consent
 ```
+
+The original product target passed the standard Cargo build in #7019. On the constrained research host, the full Cargo example build stopped while recompiling `codex-core` after rustc received SIGKILL. The example source was instead compiled against the Rust 1.96.0 product graph already built by Cargo for #7019. The resulting example ELF SHA-256 is `9cbd81a6b5ac5a9193913c0cb57fa180717859c0cc9478380ae1a3ecaf0af438`. That exact executable ran both fresh trials.
 
 Published CLI SHA-256 is `a506026a28ed0a8be8c113bca473009e21c18ad08acc976b3cbaf4ec306381e5`. New keys, signatures, delivery IDs and frame hashes are expected on independent runs. The two scope labels, acknowledgement and wire checks, service response, process exit codes and output counts can be compared directly.
 
