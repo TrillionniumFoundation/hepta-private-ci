@@ -1,0 +1,85 @@
+name: HCSN 7032 final two-lock security qualification
+on:
+  push:
+    branches:
+      - diagnostic/hcsn-7032-cookie-two-locks-20261123
+permissions:
+  contents: read
+jobs:
+  original-deny:
+    uses: ./.github/workflows/cargo-deny.yml
+
+  locked-cargo:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: b1af67a38f8cf9cee700cc067da1e6001ce220a8
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+      - name: Rebuild lock from its exact parent
+        shell: bash
+        run: |
+          set -euxo pipefail
+          test "$(git rev-parse HEAD)" = b1af67a38f8cf9cee700cc067da1e6001ce220a8
+          test "$(git rev-parse HEAD^^)" = 610f91087b598656f7f3913e600c705b95bf071f
+          mkdir -p "$RUNNER_TEMP/receipt"
+          git rev-parse HEAD HEAD^^ > "$RUNNER_TEMP/receipt/source.txt"
+          git show HEAD^^:codex-rs/Cargo.lock > codex-rs/Cargo.lock
+          cd codex-rs
+          cargo update -p cookie@0.18.2 --precise 0.18.3 2>&1 | tee "$RUNNER_TEMP/receipt/generator.log"
+          git diff --exit-code -- Cargo.lock
+          git hash-object Cargo.lock | tee "$RUNNER_TEMP/receipt/generated-git-blob.txt"
+          test "$(git hash-object Cargo.lock)" = e5d61c8f7478700f481a35b1902160089ee80b64
+      - name: Build selected package and record original feature selection
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cargo metadata --no-deps --locked --format-version=1 > "$RUNNER_TEMP/workspace-metadata.json"
+          cargo tree --locked -i cookie@0.18.3 -e features > "$RUNNER_TEMP/receipt/workspace-cookie-features.txt"
+          cargo check --locked -p cookie@0.18.3 2>&1 | tee "$RUNNER_TEMP/receipt/check.log"
+          git diff --exit-code
+      - if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: locked-cookie-cargo
+          path: ${{ runner.temp }}/receipt
+          if-no-files-found: error
+
+  bazel-generator:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: b1af67a38f8cf9cee700cc067da1e6001ce220a8
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-build
+      - name: Regenerate and compare Bazel lock
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p "$RUNNER_TEMP/receipt"
+          git rev-parse HEAD > "$RUNNER_TEMP/receipt/source.txt"
+          test "$(git rev-parse HEAD)" = b1af67a38f8cf9cee700cc067da1e6001ce220a8
+          git show HEAD^^:MODULE.bazel.lock > MODULE.bazel.lock
+          just bazel-lock-update 2>&1 | tee "$RUNNER_TEMP/receipt/generator.log"
+          cp MODULE.bazel.lock "$RUNNER_TEMP/receipt/"
+          git hash-object MODULE.bazel.lock | tee "$RUNNER_TEMP/receipt/lock-blob.txt"
+          test "$(git hash-object MODULE.bazel.lock)" = b6bdf22e077f44b019089f827033b02fda38a449
+          git diff --stat | tee "$RUNNER_TEMP/receipt/diff-stat.txt"
+          git diff --exit-code
+          ./scripts/check-module-bazel-lock.sh
+      - if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: generated-bazel-cookie
+          path: ${{ runner.temp }}/receipt
+          if-no-files-found: error
