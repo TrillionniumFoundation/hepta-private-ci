@@ -1,0 +1,5 @@
+# Secondary native-answer elicitation
+
+The original frozen letter experiment remains intact. Before observing any holdout or composition scores, its first completed teacher returned No on all 264 development and fit items. A secondary comparison on the same preassigned items uses the teachers' native answer tokens. All thresholds, student procedures, six domains, budgets and cold scoring rules from PROTOCOL.md are unchanged. This is a separately declared, development-informed follow-up on the same task families and receives its own receipts and student bundle.
+
+For FLAN use the raw question followed by “Answer yes or no.” and compare vocabulary scores of the lowercase yes/no tokens. For SmolLM2 use the original chat template, question followed by “Answer Yes or No.” and the scores of the capitalized Yes/No tokens. Use one forward per item with no calibration or label-dependent normalization. No model selection on holdout. Report collapsed arms and all family scores. Discovery and full corpus are controlled engineering tasks. Compose 24 disjoint two-component requests with the same decomposition for every arm. Both studies examine paired binary judgments.
