@@ -1,0 +1,205 @@
+{
+  "diagnostics": 115,
+  "donor": "24abd04c825cb0d5d0ce27b52ac5008eda13dde4",
+  "guard_and_fixture_source_lines": {
+    "codex-rs/hepta-agentd/src/memory_serving_qualification.rs": {
+      ".revalidate_current(verifier, withdrawn_audit_roots, now)": [
+        122
+      ],
+      "citations.candidate_digest() != selection.receipt().candidate_artifact_digest": [
+        34
+      ],
+      "citations.dataset_digest() != selection.receipt().dataset_digest": [
+        36
+      ],
+      "citations.decision_digest() != selection.selection_digest()": [
+        33
+      ],
+      "citations.objective_digest() != selection.receipt().objective_digest": [
+        35
+      ],
+      "predecessor_citations.candidate_digest() != receipt.predecessor_artifact_digest": [
+        53
+      ],
+      "predecessor_citations.objective_digest() != receipt.objective_digest": [
+        54
+      ],
+      "self.citations.dataset_digest() != manifest.support_digest": [
+        84
+      ],
+      "value.rollback_generation() > receipt.candidate_generation": [
+        106
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/memory_citation_gate.rs": {
+      ".check_observer(&gate.observer, verifier, now)": [
+        199
+      ],
+      "Ok(VerifiedMemoryCitationGateV1 {": [
+        373
+      ],
+      "if census.selection_digest != selected.selection_digest()": [
+        182
+      ],
+      "selected: &VerifiedSelfEvolutionSelectionV1": [
+        171
+      ]
+    },
+    "codex-rs/hepta-intelligence-eval/src/memory_citation_gate_tests.rs": {
+      "Synthetic role credentials and virtual time": [
+        1
+      ],
+      "fn check(&self) -> Result<VerifiedMemoryCitationGateV1": [
+        270
+      ],
+      "selection: SelfEvolutionSelectionReceiptV1": [
+        31
+      ],
+      "verify_census(": [
+        272,
+        381
+      ]
+    }
+  },
+  "literal_qualified_serving_constructor_calls": [],
+  "ordered_rust_path_and_blob_digest": "b074612eb497bb5c9b03490e998b15f89796d2416399a859369e7dfe07599262",
+  "original_blob": "d54c1cb1872bfb098bb970fd593388a3f0fae3f3",
+  "private_enum_rows": [
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 26,
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs",
+      "protected_file": true,
+      "source_line": "enum HistoryState {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 7,
+      "path": "codex-rs/hepta-agentd/src/authority_host_run_start_historical.rs",
+      "protected_file": true,
+      "source_line": "enum ReadState {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 17,
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs",
+      "protected_file": true,
+      "source_line": "enum VersionedBootstrap {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 56,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "protected_file": true,
+      "source_line": "enum ResidentStagesV3 {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 72,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "protected_file": true,
+      "source_line": "enum ClientOriginV3 {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 77,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "protected_file": true,
+      "source_line": "enum ResidentExchangeV3 {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 76,
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "protected_file": true,
+      "source_line": "enum AutomationEffectHostFile {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 161,
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "protected_file": true,
+      "source_line": "enum Publication {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 23,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+      "protected_file": true,
+      "source_line": "enum OriginalCohort {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 81,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs",
+      "protected_file": true,
+      "source_line": "enum OriginalLearningReceiptSourceV1 {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 61,
+      "path": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+      "protected_file": true,
+      "source_line": "enum PreparedCTask {"
+    },
+    {
+      "column": 1,
+      "diagnostic": "large size difference between variants",
+      "line": 17,
+      "path": "codex-rs/hepta-agentd/src/memory_serving_qualification.rs",
+      "protected_file": false,
+      "source_line": "enum Decision {"
+    }
+  ],
+  "protected_file_entries": 826,
+  "public_census_function_mentions": {
+    "codex-rs/hepta-intelligence-eval/src/lib.rs": [
+      495
+    ],
+    "codex-rs/hepta-intelligence-eval/src/memory_citation_gate.rs": [
+      170
+    ]
+  },
+  "regular_rust_sources": 9312,
+  "serving_type_mentions": {
+    "codex-rs/hepta-agentd/src/lib.rs": [
+      2085
+    ],
+    "codex-rs/hepta-agentd/src/memory_serving_qualification.rs": [
+      24,
+      28
+    ],
+    "codex-rs/hepta-agentd/src/selected_memory_service.rs": [
+      8,
+      108,
+      117
+    ],
+    "codex-rs/hepta-agentd/src/selected_memory_serving.rs": [
+      8,
+      20,
+      65,
+      81,
+      121
+    ],
+    "codex-rs/hepta-agentd/src/shared_memory_training.rs": [
+      296
+    ]
+  },
+  "source": "43e5da1bb81369e4e999adfa8558f5ccb5460eb6",
+  "strict_sha256": "da02bc0a91f6e9e33913e8c914a697926276f820c9387eb4248e7249225a8922",
+  "unprotected_in_private_enum_rows": [
+    "codex-rs/hepta-agentd/src/memory_serving_qualification.rs"
+  ],
+  "verified_donor_blob": "814ca0a11bd200572a0be348189584af807f95e1"
+}
