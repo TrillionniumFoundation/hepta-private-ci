@@ -4,11 +4,10 @@ use crate::runtime::HostBlockDecision;
 use crate::runtime::HostBlockReason;
 use crate::state::NetworkProxyState;
 use anyhow::Result;
-use chrono::SecondsFormat;
-use chrono::Utc;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
+use time::OffsetDateTime;
 
 const AUDIT_TARGET: &str = "codex_otel.network_proxy";
 const POLICY_DECISION_EVENT_NAME: &str = "codex.network_proxy.policy_decision";
@@ -306,7 +305,20 @@ fn emit_policy_audit_event(state: &NetworkProxyState, args: PolicyAuditEventArgs
 }
 
 fn audit_timestamp() -> String {
-    Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)
+    format_audit_timestamp(OffsetDateTime::now_utc())
+}
+
+fn format_audit_timestamp(timestamp: OffsetDateTime) -> String {
+    format!(
+        "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}Z",
+        timestamp.year(),
+        timestamp.month() as u8,
+        timestamp.day(),
+        timestamp.hour(),
+        timestamp.minute(),
+        timestamp.second(),
+        timestamp.millisecond()
+    )
 }
 
 /// Decide whether a network request should be allowed.
@@ -1047,6 +1059,22 @@ mod tests {
                 decision: NetworkPolicyDecision::Deny,
             }
         );
+    }
+
+    #[test]
+    fn audit_timestamp_preserves_fixed_utc_millisecond_precision() {
+        for (nanos, expected) in [
+            (0, "2026-11-19T09:07:06.000Z"),
+            (9_000_000, "2026-11-19T09:07:06.009Z"),
+            (123_987_654, "2026-11-19T09:07:06.123Z"),
+        ] {
+            let timestamp = time::Date::from_calendar_date(2026, time::Month::November, 19)
+                .unwrap()
+                .with_hms_nano(9, 7, 6, nanos)
+                .unwrap()
+                .assume_utc();
+            assert_eq!(format_audit_timestamp(timestamp), expected);
+        }
     }
 
     #[test]
