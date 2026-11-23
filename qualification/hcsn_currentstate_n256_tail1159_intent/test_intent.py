@@ -4,6 +4,7 @@ import io
 import json
 import os
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -38,7 +39,12 @@ from .continuation import (
 )
 from .lane import IDENTITY
 from .output_validation import validate_lane_result
-from .run import _cost_ledger, _drain_bounded
+from .run import (
+    _cost_ledger,
+    _drain_bounded,
+    _lane_completed_cleanly,
+    _run_command,
+)
 
 
 def _environment(request, request_path):
@@ -49,6 +55,23 @@ def _environment(request, request_path):
         "UNIQUE_EXECUTION_KEY": request["execution_key"],
         "HCSN_ATTEMPT_ID": "001",
     }
+
+
+def _synthetic_status(ordinal, returncode=0, **changes):
+    status = {
+        "lane_ordinal": ordinal,
+        "returncode": returncode,
+        "log_overflow": False,
+        "timed_out": False,
+        "residual_descendants_detected": False,
+        "sigterm_sent": False,
+        "sigkill_sent": False,
+        "process_group_alive_after_cleanup": False,
+        "stdout_produced_bytes": 0,
+        "stderr_produced_bytes": 0,
+    }
+    status.update(changes)
+    return status
 
 
 def _authorized_fixture(root):
@@ -257,6 +280,8 @@ class Tail1159IntentTests(unittest.TestCase):
         self.assertEqual(request["checkpoint_caps"]["aggregate_compact_bytes"], 134217728)
         self.assertEqual(request["lane_log_caps"]["stdout_bytes"], 1048576)
         self.assertEqual(request["lane_log_caps"]["stderr_bytes"], 1048576)
+        self.assertEqual(request["lane_command_timeout_seconds"], 6900)
+        self.assertEqual(request["termination_grace_seconds"], 5)
         self.assertFalse(request["actual_execution_authorized"])
 
     def test_log_drain_retains_exact_bytes_within_cap(self):
@@ -296,7 +321,19 @@ class Tail1159IntentTests(unittest.TestCase):
                 },
             },
         ]
-        statuses = [(1, -15, True, 20, 2), (0, 0, False, 3, 5)]
+        statuses = [
+            _synthetic_status(
+                1,
+                -15,
+                log_overflow=True,
+                sigterm_sent=True,
+                stdout_produced_bytes=20,
+                stderr_produced_bytes=2,
+            ),
+            _synthetic_status(
+                0, stdout_produced_bytes=3, stderr_produced_bytes=5
+            ),
+        ]
         ledger = _cost_ledger(
             results,
             statuses,
@@ -316,6 +353,11 @@ class Tail1159IntentTests(unittest.TestCase):
                 "lane_ordinal": 1,
                 "returncode": -15,
                 "log_overflow": True,
+                "timed_out": False,
+                "residual_descendants_detected": False,
+                "sigterm_sent": True,
+                "sigkill_sent": False,
+                "process_group_alive_after_cleanup": False,
                 "stdout_produced_bytes": 20,
                 "stdout_retained_bytes": 4,
                 "stderr_produced_bytes": 2,
@@ -337,10 +379,45 @@ class Tail1159IntentTests(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, "lane wall seconds"):
             _cost_ledger(
                 results,
-                [(0, 0, False, 0, 0)],
+                [_synthetic_status(0)],
                 {"stdout_bytes": 4, "stderr_bytes": 4},
                 {"wall_seconds": 1.0, "cpu_seconds": 1.0, "max_rss_kib": 1024},
             )
+
+    def test_status_result_join_rejects_every_unclean_process_state(self):
+        self.assertTrue(_lane_completed_cleanly(_synthetic_status(0)))
+        for field in (
+            "log_overflow",
+            "timed_out",
+            "residual_descendants_detected",
+            "process_group_alive_after_cleanup",
+        ):
+            self.assertFalse(
+                _lane_completed_cleanly(_synthetic_status(0, **{field: True}))
+            )
+        self.assertFalse(_lane_completed_cleanly(_synthetic_status(0, -9)))
+
+    def test_deadline_terminates_owned_process_group(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            script = (
+                "import subprocess,sys,time;"
+                "subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)']);"
+                "time.sleep(60)"
+            )
+            status = _run_command(
+                7,
+                [sys.executable, "-c", script],
+                dict(os.environ),
+                root,
+                {"stdout_bytes": 1024, "stderr_bytes": 1024},
+                0.2,
+                0.2,
+            )
+            self.assertTrue(status["timed_out"])
+            self.assertTrue(status["sigterm_sent"])
+            self.assertFalse(status["process_group_alive_after_cleanup"])
+            self.assertFalse(_lane_completed_cleanly(status))
 
     def test_missing_allocation_refuses_before_input_read(self):
         digest = __import__("hashlib").sha256(REQUEST.read_bytes()).hexdigest()

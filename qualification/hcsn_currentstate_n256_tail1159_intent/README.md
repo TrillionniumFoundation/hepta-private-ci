@@ -2,8 +2,8 @@
 
 Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
 
-This separately frozen v9 candidate strengthens the source-only admission on
-top of #6982. It consumes the ten byte-exact index537 full-state
+This separately frozen v10 candidate strengthens the source-only admission on
+top of #6983. It consumes the ten byte-exact index537 full-state
 originals from #6957/#6959 and defines the unchanged exact continuation to
 index1159. Each lane would apply exactly 622 row actions and one signed
 ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
@@ -78,6 +78,16 @@ fails that lane, while both pipes continue to be drained so a child cannot
 deadlock on a full pipe. The final ledger records produced byte counts, caps and
 overflowing lane ordinals; the aggregate retained log bound is 20 MiB.
 
+Every future lane now starts in its own POSIX session. The owner freezes the
+same 6,900-second per-lane command bound used by the authoritative index537
+lineage and a five-second termination grace. A deadline or log overflow sends
+SIGTERM to the owned process group, escalates to SIGKILL when needed, reaps the
+direct child, and records whether the process group remains alive. A direct
+child that exits while descendants remain is also detected, cleaned, and
+rejected. Result validation is joined to this process status: a result can
+enter the aggregate only after exit zero, no overflow, no timeout, no residual
+descendant, and no live group after cleanup.
+
 The final collector ledger now preserves every validated lane's wall time, CPU
 time and process peak RSS alongside the collector's own wall time, CPU time and
 peak RSS. It also records every child return code and, separately for stdout
@@ -86,6 +96,11 @@ reported as a maximum rather than summed into a fictitious simultaneous peak;
 lane wall and CPU sums remain explicit derived quantities. A failed or missing
 lane remains absent from `validated_lane_costs` and present in the process and
 failure ledgers, so incomplete work cannot be reported as a complete cost.
+The process ledger separately preserves timeout, descendant, TERM/KILL, and
+post-cleanup group observations. This is process-group containment, not a
+cgroup: a child that deliberately creates a new session, kernel-level
+uninterruptible work, host power loss, and machine-wide simultaneous RSS or
+energy remain outside this source-only stage.
 
 The next execution commit must bind all four runtime originals to this exact
 source and the same execution key, preserve attempt `001`, set an explicit
