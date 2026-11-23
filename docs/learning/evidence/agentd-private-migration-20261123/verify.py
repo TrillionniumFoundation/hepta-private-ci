@@ -1,5 +1,6 @@
 """Verify the archived immutable Agentd qualification evidence using Python 3.10+."""
 from collections import Counter
+import gzip
 import hashlib
 import json
 from pathlib import Path
@@ -74,6 +75,15 @@ def main():
     if lexical.get("status") == "qualified":
         assert lexical["boundaries"] == 1652 and lexical["protected_files"] == 826 and lexical["rust_files"] == 9141
         assert not lexical["authority_granted"]
+        raw = gzip.decompress(data[lexical["raw_receipt"]])
+        assert len(raw) == lexical["raw_bytes"]
+        assert hashlib.sha256(raw).hexdigest() == lexical["raw_sha256"]
+        receipt = json.loads(raw)
+        assert receipt["schema"] == "hepta.caller-proof-receipt.v2"
+        assert receipt["status"] == lexical["status_code"] == "PASS_HEPTA_CALLER_CLOSED_SET"
+        assert len(receipt["boundaries"]) == len({b["id"] for b in receipt["boundaries"]}) == 1652
+        assert len(receipt["protectedFiles"]) == len(set(receipt["protectedFiles"])) == 826
+        assert receipt["rustFilesScanned"] == 9141 and receipt["authorityGranted"] is False
     print(json.dumps({"ordinary_cases_per_arm":9,"uid0_cases_per_arm":1,"total_per_arm":10,
                       "strict":[138,128],"donor_paths_with_diagnostics":98,"lexical":lexical},indent=2))
 

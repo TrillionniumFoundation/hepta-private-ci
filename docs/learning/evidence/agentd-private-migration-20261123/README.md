@@ -21,6 +21,8 @@ The six protected-file edits replace eight exact implementation fragments with t
 
 [First hosted pair](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45120914804) · [Ordinary pair and exact strict candidate](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45122213922) · [Actual UID0 pair](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45123630715)
 
-The full 1,652-boundary verifier on integrated commit `c6a3ed9c36f88707d2f29630efe1e3ea4ee0e902` was still running when this archive was sealed. The earlier fully verified baseline and the candidate’s 826 direct protected-file results are recorded separately. [Integrated caller check](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45125165932/job/137528574920)
+The archived `public-v1/reproduce.py` accepts two pinned, unmodified checkouts and recompiles the external witness in separate fresh target directories. This optional cold-build helper was syntax-checked. The archived observations come from the original actual compiler invocations.
+
+The complete integrated caller verifier passed 1652 boundaries and 826 protected records while scanning 9141 Rust files. The authority field remained false. [Integrated caller check](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45125165932/job/137528574920)
 
 The local compiler excerpts replace the research machine’s workspace path with `<research-workspace>`. Their original byte hashes are preserved. The successful metadata file is identified by its content hash.
