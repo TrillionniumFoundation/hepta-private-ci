@@ -1,5 +1,29 @@
 # Hepta 去中心化训练与有用工作实验审计
 
+## 首次跨用户里程碑的后续实测
+
+**同一份 Hepta 自有候选已经从一段公开授权的真实历史会话学习，在冷进程复现成功动作、保住一项旧能力，并在原生开发账本完成一次可重算的历史评测结算。经核验的两位独立用户间，前瞻迁移案例仍为 0。** 已知来源和后续真实到达分别计数。未来首次评测以已发布的冻结版本和独立到达记录为准。
+
+| 对象 | 原始观察 | 能够支持的结论 |
+| --- | --- | --- |
+| 历史用户任务 A | OpenHands 公开反馈第 52 行。用户三次提交相同的编程任务。前两次出现代理运行错误，后来 Qwen2 写出的脚本成功执行，原始输出中的 14 个整数与独立算术校验一致。整个会话获得好评。 | 数据集主动公开、删除个人标识，使用许可为 MIT。该记录支持研究历史任务失败和成功动作；逐项用户验收与入组人的独立身份仍需另外核实。 |
+| 自有候选 | 本地初始化的两层 GPT-2 先学习一项旧能力。随后在固定的 240 步中，180 步监督成功动作产生的 59 字节脚本，60 步复习旧能力。冻结父模型在 A 上返回 `0`，候选逐字生成脚本。两者都在旧能力的另一种措辞上答对。 | 一次样本内学习和一道旧题保持。远端发布的 27 份文件经逐项回读，两个新进程用相同解码上限复现结果。监督集中在成功动作，整条失败恢复策略及未见任务迁移仍待检验。 |
+| 同候选结算 | Chain 先为上述候选预留 2,000 个隔离开发账本单位，再启动两个新进程。两臂各实际调用两次，合计 16.205516 CPU 秒。托管借记与收款贷记均为 2,000，余款为 0。保留了签名交易、原始模型输出与两份已关闭的 SQLite 库。 | 重开节点后复算的付款回执与原件逐字段一致。付费标的是重评历史 A 与旧题。独立客户出资、后续新任务消费、学习提升奖励和共识链重尚无实测。 |
+| 双 Cell Circuit | 在另一个人工构造共享特征的任务中，路由和两个实际持有权重的 Cell 从磁盘恢复，最终评分在全图输出后发生。模拟后到题父错子对，旧题均对。保持两次调用并移除两 Cell 之间的答案传递边，后到题变为失败。 | 同一边在这个案例中传输了有效信息。传递边还增加输入 token。学得的路由与固定连通图同分，拓扑自组织、同算力路由优势、跨域组合仍待验证。这份 Circuit 的独立开发链评测已另行结算。 |
+| 直接编辑与反传 | 固定上述历史父模型的全部 28 个原始张量，给两臂同一组 8,288 个输出层可编辑坐标、62 个监督位置、同一损失。在一台 CPU 上交错运行六次，直接岭回归求解中位 0.401 毫秒，固定上限 240 步的梯度法中位 122.365 毫秒。 | 两种输出层编辑冷启动后在 A 和旧题都回答 `0`。仅旧题正确。该计时覆盖局部拟合；同等任务质量的训练总耗时尚无估计。 |
+
+历史候选的规范化冻结摘要为 `447ace5cc8bc031cc772e63ccb90380f16fc81404003bc04057ec4f8b7470ef6`。Git 记录其在 2026-11-23 08:35:03 UTC 发布。候选 `6a094252772cd5bf440ecf9b8ef0009adf6b17ec8b3f7ac44fed11d3c67ab7ba` 同时出现在冻结清单与结算的模型承诺中。付款操作为 `a4b3af6ad86a510207b38067dd1846c7c92097adb1d9c0f0d478a27b1fd0c18d`。[数据集原始说明](https://huggingface.co/datasets/OpenHands/openhands-feedback/blob/facf45600d625510b98222ec584a8c9ac59272a2/README.md) · [冻结模型与历史复评](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7022) · [同候选原生结算原件](https://github.com/TrillionniumFoundation/Trillionnium-Chain/tree/bbf31291231f59c517c52273465643a8cc3913d9/evidence/cell-historical-funded-evaluation-20261123)
+
+Circuit 的独立付款对应另一份候选 `32ee053d020918d0a694c8b9a3a3bcaec3dfd93eed5bb7f98e0b33e46352dac4`，其固定图、学习路由及断边对照均可复查。HIA 在已有实验中把有类型的路由决定编译为原生代码，并与解释器重放结果对齐；跨任务路由收益需要上述固定图基线及新任务验证。[Circuit 权重、图和冷启动](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7020) · [Circuit 原生结算](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/985) · [历史 A 同参数编辑对照](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7024) · [HIA 双后端验证](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7011)
+
+同期的 StableEdit 研究把梯度的运行统计、白化和岭回归结合，用于在语言模型里连续更新事实。这给 Hepta 提供了一个可比较的编辑方法；能否加快代理技能训练，仍取决于在同等未见任务质量和旧能力保持下测得的端到端时间。[ICML 2026 原论文](https://proceedings.mlr.press/v306/ma26f.html)
+
+四台登记主机在冻结后再次检查了约定的登记目录。ai395、ROG、Mac 和 desktop 的采样截止时间分别为 08:46:19、08:47:04、08:47:50 和 08:48:57 UTC，新增登记引用均为 0。检查范围是这些入口的文件名和时间；任务正文保留在各自私有通道。严格双用户判定仍需能够独立核实的 A、B 人际关系。公开 A 去除了身份信息。如来源方无法提供独立关系证明，须在另一个获授权的真实 A 失败上重新训练、冻结，并等待随后的独立 B。此前登记的两条规模曲线均有 0 个合格实测点。[双用户验收协议及两条规模曲线](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1df26bf88c32a7c61340f1c1a93ae88d7841509b/qualification/cell-cross-user-milestone-20261123/PROTOCOL.md) · [私有宿主入组验权入口](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7019)
+
+普通权重模型现有两阶段入口已补上这份冻结候选的已见输入检查。它核对公开原题、旧练习和保持题的文本及实际分词结果，同时核对已知原件与有命名空间的原始记录标识。重新编号的旧题在原实现中曾进入请求，修正后被拒。答案相同或使用同一家模型提供方，本身不排除新任务。另一人身份、到达时间与语义新颖性仍由私有入场方提供证据。[未见任务入场检查与回归](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7025)
+
+## 同日较早的两仓目录与 E1–E6 审计
+
 2026 年 11 月 23 日。对两个仓库固定的 main 提交，逐目录重新计算了全部 Git tree，包括每条路径、模式和对象标识。hepta-private-ci 有 8,665 条文件路径，Trillionnium-Chain 有 41,834 条，共 50,499 条。完整性范围是这两个目录树。对训练源码和原始输出的内容审计聚焦 E1–E6 的研究分支，另核查了 11 月 20 日以来更新的 243 个 Hepta PR 和 13 个链仓 PR。研究分支中的结果有各自的提交身份。[主干树清单与固定提交](MAIN_TREES.json)
 
 **现有实现足以让一个 Cell 接收任务反馈、提出可回放的权重修改、核验结果并恢复原状态。完整的在线学习收益仍缺一条连续记录。** 同一固定预算下，自有学生须在按来源和时间隔离的任务上提高，保留旧能力，冷重启后实际采用同一候选，并改善随后到来的真实任务。当前证据分别落在这条链的不同位置。[联合原验收](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6703) · [真实 HIA/Cell 执行](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6613)
