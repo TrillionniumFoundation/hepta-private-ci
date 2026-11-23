@@ -8,6 +8,7 @@ from . import experiment as ex
 from .verify_selector import verify
 from qualification.hcsn_intervention_value.replay import unpack
 from .incumbents import evaluate
+from . import readout_edit, verify_edit
 
 
 def equal(reference, actual, omit=()):
@@ -32,6 +33,21 @@ def check(root, old, policies, scratch):
     equal(original/'test.json',restored/'test.json',['wall_seconds'])
     equal(original/'test_traces.json',restored/'test_traces.json')
     stats=verify(restored)
+    raw=root/'media'
+    refit=SimpleNamespace(root=raw,old=old,output=new)
+    readout_edit.fit(refit)
+    exact=ex.read(original/'edit_seal.json'); rebuilt=ex.read(new/'edit_seal.json')
+    # Fresh wall-clock fields and the new fit's timing hash differ between processes.
+    for name in exact['rows']:
+        for radius in exact['rows'][name]:
+            exact['rows'][name][radius].pop('elapsed')
+            rebuilt['rows'][name][radius].pop('elapsed')
+    if exact['rows']!=rebuilt['rows'] or exact['selected']!=rebuilt['selected']:
+        raise ValueError('refitted bounded edits or development selection differ')
+    shutil.copyfile(original/'edit_seal.json',restored/'edit_seal.json')
+    readout_edit.confirm(SimpleNamespace(root=raw,old=old,output=restored,expected_seal=ex.digest(original/'edit_seal.json')))
+    equal(original/'edit_test.json',restored/'edit_test.json')
+    edit_checks=verify_edit.verify(raw,old,restored)
     panel, _ = ex.panel(root/'media',old,'test')
     incumbents=evaluate(panel,old,policies)
     previous=ex.read(original/'incumbents.json')
@@ -39,6 +55,7 @@ def check(root, old, policies, scratch):
     if incumbents!=previous:
         raise ValueError('legacy head replay differs')
     return {'passed':True,'deterministic_fit_outputs':3,'deterministic_confirmation_outputs':2,
+            'bounded_edit_rows':edit_checks['split_decisions'],'edit_fit_and_test_checked':True,
             'independent_decisions':stats['row_decisions'],'independent_calibration_bins':stats['calibration_bins'],
             'legacy_heads':len(incumbents['old_heads']),'legacy_table_and_opportunity':True}
 

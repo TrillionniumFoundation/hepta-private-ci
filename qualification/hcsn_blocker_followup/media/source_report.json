@@ -1,0 +1,375 @@
+{
+  "schema": "new-music-cohort-v1",
+  "data_seal_sha256": "26d04b4fae73e40d36c7a5ba5c606e264a92e258ddf81b6832458314092d8de1",
+  "data_seal_utc": "2026-11-23T02:37:24.316951+00:00",
+  "preregistration": {
+    "plan_sha256": "90313e0a0eaae2838c9277a86d02d13f6e733aee4ff629f7052627c3d6b1ccef",
+    "plan_file_write_utc": "2026-11-23T02:33:18.498165+00:00",
+    "source_manifest_sha256": "5372c2b4d3c170f72aa2bbc3dd9cf561fae96fc95312b15571a58a7e8fc6847c"
+  },
+  "roster": {
+    "train": {
+      "piano": 4,
+      "guitar": 4
+    },
+    "dev": {
+      "piano": 3,
+      "guitar": 3
+    },
+    "test": {
+      "piano": 4,
+      "guitar": 4
+    }
+  },
+  "episodes": {
+    "train": 32,
+    "dev": 24,
+    "test": 32
+  },
+  "new_recordings": 22,
+  "new_producers": 22,
+  "new_uploaders": 22,
+  "old_roster_sha256": "2fd79799337aba87f98b5b177ca6304ae1a0dd569bc142f303621a089983198b",
+  "source_qualifications": {
+    "identity": "Distinct known credited performer, master or production and uploader. One historical dance film has an anonymous camera credit; the named performer and published master identify that production. Undocumented reuse cannot be excluded. Prior frozen gallery and audio heads retain their historical training by design.",
+    "labels": "Two publisher-documented primary instruments. This includes electric and steel guitar, prepared piano, guitar-pick demonstrations, vocals/accompaniment, audience/wide-shot, concert and edited/music-video material. It does not establish framewise acoustic or object labels, event synchrony at the level of sound production, or whole-media rights beyond the recorded publisher licence.",
+    "pretrained": "ImageNet ResNet-18 pretraining exposure to public images is not auditable from these source manifests."
+  },
+  "source_qc": {
+    "selected": {
+      "train": {
+        "works": 8,
+        "human_source_QC": 7
+      },
+      "dev": {
+        "works": 6,
+        "human_source_QC": 6
+      },
+      "test": {
+        "works": 8,
+        "human_source_QC": 7
+      }
+    },
+    "visual_provenance_utc": "2026-11-23T02:36:35.068773+00:00",
+    "visual_provenance_candidate_ids": [
+      112877831,
+      115344562,
+      121725321,
+      142796455,
+      147121838,
+      157539108,
+      163037840,
+      184704912,
+      198374754,
+      22010132,
+      28102065,
+      34218111,
+      40222673,
+      41489852,
+      43697361,
+      46205579,
+      46917193,
+      63566948,
+      67284494,
+      68801795,
+      90400953,
+      91863130,
+      9917138,
+      99719538
+    ],
+    "fractions": [
+      0.24,
+      0.66
+    ],
+    "purpose": "pre-scoring real recording and editorial-format provenance verification; reviewed only title/filming context. No score, classification, signal-energy measurement or replacement. Includes future TEST sources; fold assignments are deterministic and unaffected.",
+    "strict_windows": 88,
+    "max_positive_seeked_pcm_offset_samples": 1,
+    "max_negative_seeked_pcm_offset_samples": -1,
+    "all_windows_disjoint": true,
+    "technical_exclusions_and_reserves": [
+      {
+        "pageid": 121725321,
+        "reason": "ordered backup not required"
+      },
+      {
+        "pageid": 9917138,
+        "reason": "ordered backup not required"
+      },
+      {
+        "pageid": 22010132,
+        "reason": "quarter_without_valid_window",
+        "audit_sha256": "3a61248d8c499b9cf5400440d3b33306c7d800cc639cf33656408cf00c003156"
+      },
+      {
+        "pageid": 34218111,
+        "reason": "quarter_without_valid_window",
+        "audit_sha256": "a78f916052df5923581d1f832472baaab49b6d0de2f81ea2312fdfbdfbb70dd7"
+      }
+    ],
+    "techniques": "Native FFmpeg full-recording PCM frame PTS compared against stream time base, exact two-channel clock/sample coverage and window-local seek clock probe, last-observed frame checks, no energy or recognition-based curation."
+  },
+  "acquisition": {
+    "all_downloaded_originals": 26,
+    "all_downloaded_bytes": 1096318312,
+    "selected_bytes": 970671150,
+    "download_hash_wall_seconds_sum": 321.1299522579975,
+    "first_logged_completed_origin": "2026-11-23T02:29:34.850902+00:00",
+    "last_logged_completed_origin": "2026-11-23T02:37:19.766162+00:00",
+    "raw_media_in_release": false
+  },
+  "frontend": {
+    "frozen_decoder_sha256": "ebc217b0c6df641311030c591fb11ac942fefea1ea927d76a5140845f895c7e3",
+    "weights_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+    "fixed_vision_implementation_sha256": "bd67e4191fea0d628f0830d15fffee8e24d3339afeb7538e1317d00722e9cd88",
+    "recording_qc_implementation_sha256": "ebf2c136c99260a238286e3c24c745b70868a010cce3f7b7ebfdc2b5a91830cb",
+    "materializer_sha256": "4147e598a16de7ca9d1dc92667ac657b86dc26acb0c0331bd4e5f9b423c1c007",
+    "type": "Original 52-D free acoustic prefix descriptors / 76-D simple visually observed descriptors and separately paid ImageNet ResNet-18 pure-camera 2-way posterior. Six 0.48-second steps; prices and frozen downstream original frontend fit are tracked by policy runner. Source/class IDs are audit columns, not model features."
+  },
+  "raw": {
+    "train": {
+      "sha256": "0348be0f0f768ce7aef0083f40fd8439a317a8e21dd8c1743b998ff24dd70ccf",
+      "episodes": 32,
+      "records": 8,
+      "began_unix": 1795401444.9561296,
+      "elapsed_seconds": 18.286038770998857,
+      "cpu_user": 31.2302,
+      "cpu_system": 4.450133,
+      "start_utc": "2026-11-23T02:37:24.956130+00:00"
+    },
+    "dev": {
+      "sha256": "0d9e0768b672bd3f50eb9a06acfaad3343a5ee0a87e46e265dcf639ba8cadee7",
+      "episodes": 24,
+      "records": 6,
+      "began_unix": 1795401463.366153,
+      "elapsed_seconds": 11.24569006800084,
+      "cpu_user": 19.243653,
+      "cpu_system": 2.710537,
+      "start_utc": "2026-11-23T02:37:43.366153+00:00"
+    },
+    "test": {
+      "sha256": "b29b87d68199fe8318dd4b9635f9e8645da457f6025cc3cc1ff304c44cd4a8cf",
+      "episodes": 32,
+      "records": 8,
+      "began_unix": 1795402028.4158347,
+      "elapsed_seconds": 14.701929930000915,
+      "cpu_user": 21.345981,
+      "cpu_system": 4.357557,
+      "start_utc": "2026-11-23T02:47:08.415835+00:00"
+    }
+  },
+  "semantic": {
+    "train": {
+      "status": "ok",
+      "split": "train",
+      "queries": 32,
+      "roster_sha256": "895d9f345cfdadb6556d2721060a84ea6e731fa87cf6553805dd5e4b6fc84720",
+      "output_sha256": "943bbea74ce19fc6de95ba15d9d29a9bbe9547518161bc6a39d38e5f94b33bcc",
+      "parts": [
+        {
+          "file": "train_112877831_1.receipt.json",
+          "sha256": "a863e5768fbade9014c3b5d9035db32333d0410691b26c2c48d00a270da28c46",
+          "process_wall_seconds": 2.769255125998825,
+          "process_cpu_seconds": 0.912122187,
+          "child_cpu_seconds": 1.6839359999999999,
+          "queries": 1,
+          "weight_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+          "torchvision": "0.29.2+cpu",
+          "script_sha256": "bd67e4191fea0d628f0830d15fffee8e24d3339afeb7538e1317d00722e9cd88",
+          "rgb_staging_sha256": null
+        },
+        {
+          "file": "train_184704912.receipt.json",
+          "sha256": "5848aba7dc465b03da3ae8d657f4d4225dc700dd44022d41806f5cb6b854c044",
+          "process_wall_seconds": 13.67307913699915,
+          "process_cpu_seconds": 2.562669812,
+          "child_cpu_seconds": 12.199963,
+          "queries": 4,
+          "weight_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+          "torchvision": "0.29.2+cpu",
+          "script_sha256": "bd67e4191fea0d628f0830d15fffee8e24d3339afeb7538e1317d00722e9cd88",
+          "rgb_staging_sha256": null
+        },
+        {
+          "file": "train_43697361.receipt.json",
+          "sha256": "f550561926b6de86d63ff6a4d4231e838b98184a4ca7b26d5ad3450e59496666",
+          "process_wall_seconds": 5.396184420998907,
+          "process_cpu_seconds": 2.19346248,
+          "child_cpu_seconds": 3.676638,
+          "queries": 4,
+          "weight_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+          "torchvision": "0.29.2+cpu",
+          "script_sha256": "bd67e4191fea0d628f0830d15fffee8e24d3339afeb7538e1317d00722e9cd88",
+          "rgb_staging_sha256": null
+        },
+        {
+          "file": "train_46205579.receipt.json",
+          "sha256": "0a167f9ff49d25b7e18d3b82d841ae72aee1b61d2f7af1a7689db61270d95b46",
+          "process_wall_seconds": 3.7283827470000688,
+          "process_cpu_seconds": 1.8342323150000004,
+          "child_cpu_seconds": 2.107472,
+          "queries": 4,
+          "weight_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+          "torchvision": "0.29.2+cpu",
+          "script_sha256": "bd67e4191fea0d628f0830d15fffee8e24d3339afeb7538e1317d00722e9cd88",
+          "rgb_staging_sha256": null
+        },
+        {
+          "file": "train_67284494.receipt.json",
+          "sha256": "76b802122e8a3f499810429f561e0245768475bbe68a0c4d5df050007d58c49c",
+          "process_wall_seconds": 17.190303803999996,
+          "process_cpu_seconds": 2.556386948,
+          "child_cpu_seconds": 15.976898,
+          "queries": 4,
+          "weight_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+          "torchvision": "0.29.2+cpu",
+          "script_sha256": "bd67e4191fea0d628f0830d15fffee8e24d3339afeb7538e1317d00722e9cd88",
+          "rgb_staging_sha256": null
+        },
+        {
+          "file": "train_disk.receipt.json",
+          "sha256": "8d32c237926944bb97575d16641cf4470462e3cd618e71158568114bd255e065",
+          "process_wall_seconds": 10.543390535000071,
+          "process_cpu_seconds": 9.504259646,
+          "child_cpu_seconds": 0.0,
+          "queries": 15,
+          "weight_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+          "torchvision": "0.29.2+cpu",
+          "script_sha256": "706ca6adba4d2f210271993fd71f36a3d9c2fb0ca4abc6c19b5a10b5c472de63",
+          "rgb_staging_sha256": "701c0adfbefb11903e91b85643ad53696324b1c0c265426471224eddb60bc55e"
+        }
+      ],
+      "assembly_wall_seconds": 0.07382841400067264,
+      "process_sum_wall_seconds": 53.30059576999702,
+      "rgb_staging_sum_wall_seconds": 78.6007234419958,
+      "energy_joules": null,
+      "assembly_implementation_sha256": "de71e7e0993c07f752dc9fabda4ee1a18ede3132a61e214517ca6c234d7f10fc",
+      "original_vision_sha256": "bd67e4191fea0d628f0830d15fffee8e24d3339afeb7538e1317d00722e9cd88",
+      "equivalence_sha256": "59df43072a9757cd34a60c9e3c3f218b5ebcc8a00b7b8f2af50f2a362dd6f8ef",
+      "clock_note": "CPU/elapsed from individual successful parts exclude failed jobs. Disk staging sum and inference process wall may overlap and must not be summed as elapsed clock.",
+      "receipt_sha256": "4fa2f869b209c55f986f67caec7501fb2e58acf2250c8147b70581f118a3a24f"
+    },
+    "dev": {
+      "status": "ok",
+      "split": "dev",
+      "queries": 24,
+      "roster_sha256": "6b74b25bd5f424277f07a9d05c2d0da89daaf373a98e97741762502f0fb73a3a",
+      "output_sha256": "6ad09598f5fc555a08f48f6d1275c342db34339fb50ff13de8284c4a3d00be5e",
+      "parts": [
+        {
+          "file": "dev_40222673.receipt.json",
+          "sha256": "14567a8549929930db977e2c15a59fdd9ac5bbb8cedf0d22a5d67c35846a2996",
+          "process_wall_seconds": 13.176670341999852,
+          "process_cpu_seconds": 2.2876912770000004,
+          "child_cpu_seconds": 3.996263,
+          "queries": 4,
+          "weight_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+          "torchvision": "0.29.2+cpu",
+          "script_sha256": "bd67e4191fea0d628f0830d15fffee8e24d3339afeb7538e1317d00722e9cd88",
+          "rgb_staging_sha256": null
+        },
+        {
+          "file": "dev_disk.receipt.json",
+          "sha256": "6a6623f443551cd8d79b3e83afd923cde2b1565d7eea2c59d00b50a295bc5b62",
+          "process_wall_seconds": 10.829699824000272,
+          "process_cpu_seconds": 10.505777092,
+          "child_cpu_seconds": 0.0,
+          "queries": 20,
+          "weight_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+          "torchvision": "0.29.2+cpu",
+          "script_sha256": "706ca6adba4d2f210271993fd71f36a3d9c2fb0ca4abc6c19b5a10b5c472de63",
+          "rgb_staging_sha256": "701c0adfbefb11903e91b85643ad53696324b1c0c265426471224eddb60bc55e"
+        }
+      ],
+      "assembly_wall_seconds": 0.05062545900000259,
+      "process_sum_wall_seconds": 24.006370166000124,
+      "rgb_staging_sum_wall_seconds": 51.50562416699904,
+      "energy_joules": null,
+      "assembly_implementation_sha256": "de71e7e0993c07f752dc9fabda4ee1a18ede3132a61e214517ca6c234d7f10fc",
+      "original_vision_sha256": "bd67e4191fea0d628f0830d15fffee8e24d3339afeb7538e1317d00722e9cd88",
+      "equivalence_sha256": "59df43072a9757cd34a60c9e3c3f218b5ebcc8a00b7b8f2af50f2a362dd6f8ef",
+      "clock_note": "CPU/elapsed from individual successful parts exclude failed jobs. Disk staging sum and inference process wall may overlap and must not be summed as elapsed clock.",
+      "receipt_sha256": "06d98b467f73247e1d9c4974a4c0a0a3616cf99ff514828655125384b9185e45"
+    },
+    "test": {
+      "status": "ok",
+      "split": "test",
+      "queries": 32,
+      "roster_sha256": "ba285c079e2c6b01f5d8254b65508d40fb776d6f22d696506903c46bebd34505",
+      "output_sha256": "0ddca4fff414559ff99b9cb9ed7c595f0beca41cd63f102dd9ec20a49749f019",
+      "parts": [
+        {
+          "file": "test_disk.receipt.json",
+          "sha256": "d41d8545a923fca5fa3fa23bd20cc6fe108a3d14be0adee4ed3378e5028c6742",
+          "process_wall_seconds": 18.552384587999768,
+          "process_cpu_seconds": 14.901392995999998,
+          "child_cpu_seconds": 0.0,
+          "queries": 32,
+          "weight_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+          "torchvision": "0.29.2+cpu",
+          "script_sha256": "706ca6adba4d2f210271993fd71f36a3d9c2fb0ca4abc6c19b5a10b5c472de63",
+          "rgb_staging_sha256": "701c0adfbefb11903e91b85643ad53696324b1c0c265426471224eddb60bc55e"
+        }
+      ],
+      "assembly_wall_seconds": 0.056975269000759,
+      "process_sum_wall_seconds": 18.552384587999768,
+      "rgb_staging_sum_wall_seconds": 41.326296743003695,
+      "energy_joules": null,
+      "assembly_implementation_sha256": "de71e7e0993c07f752dc9fabda4ee1a18ede3132a61e214517ca6c234d7f10fc",
+      "original_vision_sha256": "bd67e4191fea0d628f0830d15fffee8e24d3339afeb7538e1317d00722e9cd88",
+      "equivalence_sha256": "59df43072a9757cd34a60c9e3c3f218b5ebcc8a00b7b8f2af50f2a362dd6f8ef",
+      "clock_note": "CPU/elapsed from individual successful parts exclude failed jobs. Disk staging sum and inference process wall may overlap and must not be summed as elapsed clock.",
+      "receipt_sha256": "17e63bead8ff3121510e18c319e6cf30182bdae07c9adda6fa8355851115ba46"
+    }
+  },
+  "operational_retries": [
+    {
+      "split": "train",
+      "phase": "initial whole-split semantic process",
+      "reason": "First launch missing torchvision search path; second whole-split attempt exited by signal 9 (shell 137) before any output shard. Neither altered inputs. Per-recording jobs then called exactly the prior frozen vision.py. Runtime of failed process not recorded; per-recording receipts exclude failed cold attempts."
+    },
+    {
+      "job": "train_112877831",
+      "attempted_queries": 4,
+      "exitcode": -9,
+      "wall_seconds": 6.8681291100001545,
+      "log": "semantic_parts.log"
+    },
+    {
+      "job": "train_112877831_2",
+      "attempted_queries": 1,
+      "exitcode": -9,
+      "wall_seconds": 5.446499038000184,
+      "log": "semantic_parts.log"
+    },
+    {
+      "job": "dev_90400953",
+      "attempted_queries": 4,
+      "exitcode": -9,
+      "wall_seconds": 7.385839431000932,
+      "log": "semantic_dev_progress.log"
+    },
+    {
+      "job": "dev_90400953_1",
+      "attempted_queries": 1,
+      "exitcode": -9,
+      "wall_seconds": 10.81320835400038,
+      "log": "semantic_dev_progress.log"
+    }
+  ],
+  "test_authorization": {
+    "authorization_utc": "2026-11-23T02:47:08.125350+00:00",
+    "published_selection_commit": "02d92eed5904d70d27876ad38c015d5a9f392970",
+    "selection_sha256": "e0be804a3310eb6917c36865ead0fe43b3f981f00bc46b439e7b176b6be8bba0",
+    "editing_sha256": "088ec5c0420324394d7b895d96618b919adcd12c1bc238c6088af45c597eac1b",
+    "data_seal_sha256": "26d04b4fae73e40d36c7a5ba5c606e264a92e258ddf81b6832458314092d8de1"
+  },
+  "test_completion": {
+    "ended_utc": "2026-11-23T02:47:31.172459+00:00",
+    "elapsed_seconds": 22.98780918121338,
+    "scope": "parallel raw decoding, RGB staging, frozen inference, and strict shard assembly after authorization. Disk staging and inference timings overlap."
+  },
+  "semantic_equivalence": {
+    "receipt_sha256": "59df43072a9757cd34a60c9e3c3f218b5ebcc8a00b7b8f2af50f2a362dd6f8ef",
+    "comparison": "Independent original-vs-disk 720p and 1080p production controls matched selected PTS, float32 input tensors, all 1000 logits and all class probabilities bitwise."
+  }
+}
