@@ -103,8 +103,7 @@ fn notes_fence_proof_binds_original_cancel_and_committed_event() {
         &original,
         "cancel",
         &cancellation,
-        "event-4",
-        &terminal_sha,
+        ("event-4", &terminal_sha),
         &receipt,
     )
     .unwrap();
@@ -118,8 +117,7 @@ fn notes_fence_proof_binds_original_cancel_and_committed_event() {
             &original,
             "cancel",
             &cancellation,
-            "event-4",
-            &terminal_sha,
+            ("event-4", &terminal_sha),
             &receipt,
         )
         .is_err()

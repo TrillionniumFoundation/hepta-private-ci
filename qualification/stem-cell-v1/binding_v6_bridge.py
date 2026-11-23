@@ -87,10 +87,12 @@ def equal_parameter_arms(input_dim=384, hidden_dim=32, *, seed=41, **kwargs):
             model = FactBridgeReader(input_dim, hidden_dim, bridge_arm=arm, **kwargs)
             model.load_state_dict(frozen_initial, strict=True)
             result[arm] = model.eval().requires_grad_(False)
+        base_reader = TokenReader(input_dim, hidden_dim, **kwargs)
+        base_parameters = sum(p.numel() for p in base_reader.parameters())
     counts = {arm: sum(p.numel() for p in model.parameters()) for arm, model in result.items()}
     if len(set(counts.values())) != 1 or counts[ARMS[0]] != sum(
         p.numel() for p in origin.parameters()):
         raise RuntimeError("bridge control has an unequal parameter budget")
-    if counts[ARMS[0]] - sum(p.numel() for p in TokenReader(input_dim, hidden_dim, **kwargs).parameters()) != 4 * hidden_dim**2:
+    if counts[ARMS[0]] - base_parameters != 4 * hidden_dim**2:
         raise RuntimeError("bridge parameter budget must match the registered four matrices")
     return result
