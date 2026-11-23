@@ -1,0 +1,23 @@
+name: E3 check retained encoder weights and predictions
+on:
+  push:
+    branches: [research/e3-encoder-transfer-20261123]
+    paths: ['qualification/cell-e3-encoder-transfer-20261123/verification/*', 'qualification/cell-e3-encoder-transfer-20261123/evidence/*.zip', '.github/workflows/cell-e3-recheck-encoder.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/cell-e3-encoder-transfer-20261123
+      - name: Recompute every archived prediction outcome and teacher qualification
+        working-directory: qualification/cell-e3-encoder-transfer-20261123
+        run: |
+          PYTHONPATH=. python3 verification/check.py evidence/encoder-run.zip 84b379a59d454e22009b434c254628e56e023467366ca9bde237df469154ffe0 > /tmp/encoder-ridge.json
+          PYTHONPATH=. python3 verification/check.py evidence/encoder-adapters.zip ba1ddf94a36933e79bf8615acb62390c0798d72901094107ba82e51c108fd7c0 > /tmp/encoder-adapter.json
+          cmp verification/ridge.json /tmp/encoder-ridge.json
+          cmp verification/adapter.json /tmp/encoder-adapter.json
