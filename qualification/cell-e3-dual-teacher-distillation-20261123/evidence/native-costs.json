@@ -1,0 +1,139 @@
+{
+  "cold-best_single.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.001737824999992199,
+    "wall_seconds": 0.00927228499999444,
+    "cpu_seconds": 0.009270493000000001
+  },
+  "cold-fixed.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0017428219999970906,
+    "wall_seconds": 0.009425085000003719,
+    "cpu_seconds": 0.009423479999999998
+  },
+  "cold-mix.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0017160419999981968,
+    "wall_seconds": 0.009232424999993327,
+    "cpu_seconds": 0.009230505
+  },
+  "cold-parent.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0017523660000051677,
+    "wall_seconds": 0.009458186000003366,
+    "cpu_seconds": 0.009457320000000002
+  },
+  "cold-smol.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.001747178999991661,
+    "wall_seconds": 0.009303451999997492,
+    "cpu_seconds": 0.009302009999999996
+  },
+  "cold-sparse.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.001810504000005153,
+    "wall_seconds": 0.010233045999996193,
+    "cpu_seconds": 0.010231436000000003
+  },
+  "cold-t5.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0017433530000090514,
+    "wall_seconds": 0.009017450000001759,
+    "cpu_seconds": 0.009009036000000002
+  },
+  "freeze.json": {
+    "features": 1501,
+    "fixed_route": {
+      "review": "smol",
+      "order": "t5",
+      "arithmetic": "t5",
+      "python": "t5",
+      "spelling": "t5",
+      "category": "t5"
+    },
+    "best_single": "smol",
+    "cpu_seconds": 0.037376361999999996,
+    "wall_seconds": 0.05815398800000082
+  },
+  "teacher-confirmation-smol.json": {
+    "teacher": "smol",
+    "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+    "choice_token_ids": [
+      10539,
+      5230
+    ],
+    "input_tokens": 8616,
+    "forwards_examples": 168,
+    "wall_inference_s": 12.562595830000006,
+    "cpu_inference_s": 24.800609278,
+    "wall_load_prompt_and_inference_s": 13.010772744000008,
+    "cpu_load_prompt_and_inference_s": 25.407002454,
+    "phase": "confirmation"
+  },
+  "teacher-confirmation-t5.json": {
+    "teacher": "t5",
+    "tokenizer_sha256": "fe2ebbbbde2985be723e0ce18217853e4020c5e9d35bd07be2c27ab9d3ead57a",
+    "choice_token_ids": [
+      4273,
+      150
+    ],
+    "input_tokens": 3593,
+    "forwards_examples": 168,
+    "wall_inference_s": 1.5182053759999974,
+    "cpu_inference_s": 3.029803649,
+    "wall_load_prompt_and_inference_s": 1.8921490879999965,
+    "cpu_load_prompt_and_inference_s": 3.433856533,
+    "phase": "confirmation"
+  },
+  "teacher-fit-smol.json": {
+    "teacher": "smol",
+    "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c",
+    "choice_token_ids": [
+      10539,
+      5230
+    ],
+    "input_tokens": 13531,
+    "forwards_examples": 264,
+    "wall_inference_s": 19.949960941,
+    "cpu_inference_s": 39.391779554,
+    "wall_load_prompt_and_inference_s": 20.416560427999997,
+    "cpu_load_prompt_and_inference_s": 40.011607572,
+    "phase": "fit"
+  },
+  "teacher-fit-t5.json": {
+    "teacher": "t5",
+    "tokenizer_sha256": "fe2ebbbbde2985be723e0ce18217853e4020c5e9d35bd07be2c27ab9d3ead57a",
+    "choice_token_ids": [
+      4273,
+      150
+    ],
+    "input_tokens": 5712,
+    "forwards_examples": 264,
+    "wall_inference_s": 2.3763064040000046,
+    "cpu_inference_s": 4.750391836,
+    "wall_load_prompt_and_inference_s": 2.744657411999995,
+    "cpu_load_prompt_and_inference_s": 5.1489776460000005,
+    "phase": "fit"
+  }
+}
