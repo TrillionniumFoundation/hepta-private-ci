@@ -109,6 +109,10 @@ pub(in crate::authority_host_service::resident) fn queued_admit_cancellation(
             "cancelled queued Admit wrote a frame"
         );
         assert!(client.channel.try_lock().expect("client slot").is_none());
+        // EOF can precede the cancelled blocking exchange returning its lane permit.
+        // Wait for that permit before testing the consumed channel.
+        let permit = tokio::time::timeout(Duration::from_secs(2), client.lane.acquire()).await??;
+        drop(permit);
         assert!(matches!(client.readback().await, Err(Error::Unavailable)));
         Ok::<_, anyhow::Error>(())
     })
