@@ -4,8 +4,25 @@ import os
 import time
 from pathlib import Path
 
+from . import chat_protocol
 
-def validate_d(request, api):
+
+def _task_content(record, protocol, api):
+    """Bind the effective pre-tokenization input and the scoring definition."""
+    task = record["task"]
+    verifier = task["verifier"]
+    messages = task.get("messages")
+    if protocol == chat_protocol.NATIVE:
+        visible = chat_protocol.inference_wire_messages(task["input"], messages)
+    else:
+        api.require(messages is None, "unsupported legacy chat history")
+        visible = task["input"]
+    return api.digest(
+        [visible, verifier["name"], verifier["version"], verifier["parameters"]]
+    )
+
+
+def validate_d(request, api, runtime):
     plan = request["plan"]
     if "d_tasks" not in plan and "d_tasks" not in request:
         return
@@ -26,6 +43,10 @@ def validate_d(request, api):
         {t["task_id"] for t in previous},
         {t["task_digest"] for t in previous},
     )
+    protocol = chat_protocol.protocol_name(runtime)
+    seen_content = {
+        _task_content(t["record"], protocol, api) for t in request["c_tasks"]
+    }
     for frozen, task in zip(declared, supplied):
         api.need(frozen, "task_id task_digest source_id")
         api.need(task, "task_id task_digest source_id record")
@@ -44,6 +65,13 @@ def validate_d(request, api):
             task["task_id"] not in ids and task["task_digest"] not in digests,
             "D repeats an existing task",
         )
+        content = _task_content(task["record"], protocol, api)
+        api.require(
+            content not in seen_content,
+            "D repeats the prompt and verifier of a C or D task",
+            "BLOCKED",
+        )
+        seen_content.add(content)
         ids.add(task["task_id"])
         digests.add(task["task_digest"])
 
@@ -61,7 +89,7 @@ def admit_d(spec, api):
     # fields cannot downgrade an operation into the legacy replay-only path.
     if "d_tasks" not in request:
         return
-    validate_d(request, api)
+    validate_d(request, api, spec["manifest"]["runtime"])
     api.require(
         spec["d_tasks"] == request["d_tasks"]
         and spec["record"] == request["c_tasks"][-1]["record"]

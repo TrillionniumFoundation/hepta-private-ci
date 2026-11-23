@@ -18,7 +18,7 @@ try:
 except ImportError:
     resource = None
 
-from .data import build_sft_examples, canonical, digest, load_records
+from .data import canonical, digest, load_records
 from . import chat_protocol
 
 FAMILY = "hepta-smollm2-coding-sft-v1"
@@ -389,11 +389,7 @@ def _train(records, parent, artifact_root, plan, mode, output):
     if not (type(steps) is int and 1 <= steps <= 4096 and 16 <= length <= 4096):
         raise ValueError("unbounded training plan")
     protocol = chat_protocol.protocol_name(parent["runtime"])
-    examples = (
-        chat_protocol.native_examples(records, mode)
-        if protocol == chat_protocol.NATIVE
-        else build_sft_examples(records, mode)
-    )
+    examples = chat_protocol.training_examples(records, mode, protocol)
     if not examples:
         raise ValueError("no authorized successful training records")
     started_at_ns, started_cpu, started = (

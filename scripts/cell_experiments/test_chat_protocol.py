@@ -213,7 +213,7 @@ class NativeChatTests(unittest.TestCase):
         self.assertEqual((result["dropped_terminal_duplicates"], example), (1, before))
         self.assertIn(b"[user]\nTool observation:\ntest failed", bytes(prompt))
 
-    def test_explicit_event_supervision_is_native_only_and_dedup_is_exact(self):
+    def test_explicit_event_supervision_and_exact_native_deduplication(self):
         item = record()
         item["trajectory"][1].update(
             actor="student", content=item["final_answer"], trainable=False
@@ -239,6 +239,32 @@ class NativeChatTests(unittest.TestCase):
         item["trajectory"][1]["trainable"] = "false"
         with self.assertRaisesRegex(ValueError, "explicit boolean"):
             chat.native_examples([item], "trajectory")
+
+    def test_legacy_trajectory_honors_the_explicit_failed_action_mask(self):
+        item = record()
+        event = item["trajectory"][1]
+        event.update(actor="student", content="FAILED-ACTION", trainable=False)
+        tokenizer = ChatTokenizer()
+
+        def encode():
+            example = chat.training_examples([item], "trajectory", chat.LEGACY)[0]
+            return encode_example(tokenizer, example, 1024)
+
+        masked = encode()
+        start = bytes(masked["input_ids"]).index(b"FAILED-ACTION")
+        end = start + len(event["content"])
+        self.assertEqual(masked["labels"][start:end], [-100] * (end - start))
+        self.assertEqual(
+            [token for token in masked["labels"] if token != -100],
+            tokenizer.encode(item["final_answer"]) + [tokenizer.eos_token_id],
+        )
+        del event["trainable"]
+        legacy = encode()
+        self.assertEqual(legacy["input_ids"], masked["input_ids"])
+        self.assertEqual(legacy["labels"][start:end], tokenizer.encode(event["content"]))
+        event["trainable"] = "false"
+        with self.assertRaisesRegex(ValueError, "explicit boolean"):
+            encode()
 
     def test_final_answer_sft_preserves_the_same_initial_recovery_messages(self):
         tokenizer, item = ChatTokenizer(), record()
