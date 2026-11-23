@@ -4,6 +4,14 @@
 
 The complete pre-inference parameter archive is [locked_heads.zip](evidence/locked_heads.zip). [The selection commit](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/02d92eed5904d70d27876ad38c015d5a9f392970) precedes final camera inference. [The recording plan](recording_plan.json) binds candidate order and eligibility, [the physical roster](evidence/data_freeze.json) binds the source, and [the release manifest](evidence/archive_manifest.json) binds all derived arrays, split labels, acquisition receipts, parameter fits and evaluation traces.
 
+## Portable evidence check
+
+The GitHub job uses Python’s standard library to check archive hashes, 1,936 selector decisions, 704 bounded-edit decisions and exact convex combinations of the saved binary64 inputs. It separately reconstructs and checks the HAPT archive. The full offline workflow below also refits the models and compares the recomputed features and decisions.
+
+```sh
+python3 -m qualification.hcsn_blocker_followup.ci_evidence qualification/hcsn_blocker_followup/evidence
+```
+
 ## Offline scientific replay
 
 From the repository root, install the numerical dependencies used by #6988 (NumPy, SciPy, CPU PyTorch) and pin numerical threads. The model-only replay uses the two repository evidence directories and a newly created temporary directory. It recomputes all training and selection decisions for the new selector and bounded edits, confirms them on the sealed test observations, and checks each of the preceding study's 66 trained heads on those observations. Approximate maximum resident memory measured when generating the results is recorded with each cold process in the archive. This replay does not access the network.

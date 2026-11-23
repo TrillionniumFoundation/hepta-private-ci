@@ -41,6 +41,19 @@ def rational_solution(matrix, approx):
     return weights
 
 
+def frozen_rows(raw, old, out):
+    base=ex.read(out/'fit.json')['full-svd-.1']
+    rows={}
+    for split in ('train','dev','test'):
+        data,_=ex.panel(raw,old,split)
+        x=edit.matrix(data,base)
+        for i,q in enumerate(data['query_id']):
+            rows[str(q)]={'state_hex':[float(v).hex() for v in x[i,:-1]],'split':split,
+                          'source':str(data['group'][i]),'target':int(data['target'][i]),
+                          'free':int(data['scores'][i,0].argmax()),'paid':int(data['read_scores'][i,0].argmax())}
+    return rows
+
+
 def audit(raw, old, out):
     base=ex.read(out/'fit.json')['full-svd-.1']
     panels={}
@@ -88,4 +101,6 @@ def audit(raw, old, out):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('root','old','out','report'):p.add_argument(k,type=Path)
-    a=p.parse_args();ex.write(a.report,audit(a.root,a.old,a.out))
+    p.add_argument('--save-inputs',type=Path);a=p.parse_args()
+    ex.write(a.report,audit(a.root,a.old,a.out))
+    if a.save_inputs:ex.write(a.save_inputs,frozen_rows(a.root,a.old,a.out))
