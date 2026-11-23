@@ -1,0 +1,89 @@
+{
+  "old_graph_control_parent_candidate": [
+    [
+      false,
+      true
+    ],
+    [
+      true,
+      true
+    ]
+  ],
+  "original_archive_sha256": "08640f268030dbb74b97cc63f1631e510848c99b8522231314b1f2a9b5c83099",
+  "original_correction": "1",
+  "original_failure": "0",
+  "payments": 0,
+  "prospective_b": 0,
+  "registered_users": 0,
+  "repeat_same_original": true,
+  "result": {
+    "cell_manifests": {
+      "reader": "c831e8cc1f000605d66de5af84fc34895bfee3e395f99b5a34e30bca5e701aa0",
+      "source": "f070491a231528af6892bb925d6295f0ad077bbbe40c28bbf8fb915fcaec53e3"
+    },
+    "cell_parameters_updated": 0,
+    "correction_sha256": "77506dc0d93a2032429b1d3b8797f3b5cc4d42aab26ee2be796f8eb4b6874f48",
+    "decision": "no_update_no_distinct_graph_success",
+    "derived_record_sha256": "8c7265634cbd22c7e1f27c7352c1203cc1a4dc50a74e102b79e6b85bf77745f9",
+    "failure_sha256": "a7e5d55b674d728752a302f1f40b2eb7af02f284f50ff641123cc049368b48c2",
+    "future_records_consumed": 0,
+    "owner_receipt_sha256": "d7197aa20820fb71f636d3e84ddce1328d908df06737cb3029818c78713b3847",
+    "parent_sha256": "cbd4d49e8950fbc9b237210d176b9cfe8c8ff0967ba8cdd345f22a7143abbcb0",
+    "payment_authorized": false,
+    "schema": "hepta.paired-learning.router-only.v1",
+    "scope": "engineering_fixture",
+    "scores": [
+      {
+        "graph": "connected",
+        "raw_result_sha256": "5b010cd54bc333fd0b1fc4e82d19789e101e60d5a45451033ffb509d543f1703",
+        "success": false
+      },
+      {
+        "graph": "disconnected",
+        "raw_result_sha256": "4dc2762ea9465975c1f52fe4dafcf6478398061de3ea6357f8fcca137162a223",
+        "success": false
+      }
+    ],
+    "search_sha256": "9bbc19e8b27cbad080c5bc652fc349b010002a9505dc14023aab4375d76bc18a",
+    "source_plan_sha256": "692cca1f5ce5e49abb7690d0288248b113584f9fc73820d3a43cadf68ba7c4a1",
+    "study_sha256": "409bd4347bee40c03f9660f54e2d584410b811d578ee85253fb467f4212b0fc7",
+    "topology_source": "original_parent_router"
+  },
+  "router_only": {
+    "cell_manifests": {
+      "reader": "c831e8cc1f000605d66de5af84fc34895bfee3e395f99b5a34e30bca5e701aa0",
+      "source": "f070491a231528af6892bb925d6295f0ad077bbbe40c28bbf8fb915fcaec53e3"
+    },
+    "cell_parameters_updated": 0,
+    "correction_sha256": "77506dc0d93a2032429b1d3b8797f3b5cc4d42aab26ee2be796f8eb4b6874f48",
+    "derived_record_sha256": "8c7265634cbd22c7e1f27c7352c1203cc1a4dc50a74e102b79e6b85bf77745f9",
+    "failure_sha256": "a7e5d55b674d728752a302f1f40b2eb7af02f284f50ff641123cc049368b48c2",
+    "future_records_consumed": 0,
+    "owner_receipt_sha256": "d7197aa20820fb71f636d3e84ddce1328d908df06737cb3029818c78713b3847",
+    "parent_sha256": "cbd4d49e8950fbc9b237210d176b9cfe8c8ff0967ba8cdd345f22a7143abbcb0",
+    "payment_authorized": false,
+    "schema": "hepta.paired-learning.router-only.v1",
+    "scope": "engineering_fixture",
+    "scores": [
+      {
+        "graph": "connected",
+        "raw_result_sha256": "5b010cd54bc333fd0b1fc4e82d19789e101e60d5a45451033ffb509d543f1703",
+        "success": false
+      },
+      {
+        "graph": "disconnected",
+        "raw_result_sha256": "4dc2762ea9465975c1f52fe4dafcf6478398061de3ea6357f8fcca137162a223",
+        "success": false
+      }
+    ],
+    "search_sha256": "9bbc19e8b27cbad080c5bc652fc349b010002a9505dc14023aab4375d76bc18a",
+    "source_plan_sha256": "692cca1f5ce5e49abb7690d0288248b113584f9fc73820d3a43cadf68ba7c4a1",
+    "study_sha256": "409bd4347bee40c03f9660f54e2d584410b811d578ee85253fb467f4212b0fc7",
+    "topology_source": "original_parent_router"
+  },
+  "scope": "engineering_fixture",
+  "study": "692cca1f5ce5e49abb7690d0288248b113584f9fc73820d3a43cadf68ba7c4a1",
+  "tampered_cold_hops_refused": 2,
+  "training_input": "Return the JSON integer one for this amber receipt.",
+  "unregistered_owner_refused": true
+}
