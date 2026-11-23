@@ -19,7 +19,7 @@ def verify():
     freeze = json.loads(FREEZE.read_text())
     if freeze["status"] != "SOURCE_ONLY_RESOURCE_HOLD":
         raise SystemExit("source freeze status differs")
-    if freeze["base_head"] != "c93875c2f5a10c95deec30de0cb17da15da16f27":
+    if freeze["base_head"] != "d2c3db2850b19422d5a2792c756793b3e94a1838":
         raise SystemExit("base head differs")
     for relative, expected in freeze["files"].items():
         raw = (REPO / relative).read_bytes()
@@ -50,6 +50,8 @@ def verify():
         raise SystemExit("semantic checkpoint parse denominator differs")
     if request["budget"]["canonical_raw_reencodes"] != 10:
         raise SystemExit("canonical raw reencode denominator differs")
+    if request["budget"]["live_cgroup_reads"] != 11:
+        raise SystemExit("live cgroup read denominator differs")
     if request["lane_log_caps"] != {
         "stderr_bytes": 1048576,
         "stdout_bytes": 1048576,

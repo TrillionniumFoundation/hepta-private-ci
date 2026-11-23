@@ -13,7 +13,7 @@ import sys
 import threading
 import time
 
-from .admission import admit_runtime
+from .admission import admit_runtime, revalidate_runtime_cgroup
 from .lane import IDENTITY
 from .output_validation import validate_lane_result
 
@@ -165,6 +165,7 @@ def _run_command(
     return {
         "lane_ordinal": ordinal,
         "returncode": returncode,
+        "pre_spawn_refused": None,
         "log_overflow": overflow.is_set(),
         "timed_out": timed_out,
         "residual_descendants_detected": residual_descendants,
@@ -174,7 +175,30 @@ def _run_command(
     }
 
 
-def _run_lane(ordinal, root, log_caps, timeout_seconds, termination_grace_seconds):
+def _run_lane(
+    ordinal,
+    root,
+    log_caps,
+    timeout_seconds,
+    termination_grace_seconds,
+    admitted_request,
+):
+    try:
+        revalidate_runtime_cgroup(admitted_request)
+    except SystemExit as error:
+        return {
+            "lane_ordinal": ordinal,
+            "returncode": None,
+            "pre_spawn_refused": str(error),
+            "log_overflow": False,
+            "timed_out": False,
+            "residual_descendants_detected": False,
+            "sigterm_sent": False,
+            "sigkill_sent": False,
+            "process_group_alive_after_cleanup": False,
+            "stdout_produced_bytes": 0,
+            "stderr_produced_bytes": 0,
+        }
     environment = dict(os.environ)
     environment["HCSN_LANE_ORDINAL"] = str(ordinal)
     environment["HCSN_OUTPUT_ROOT"] = str(root)
@@ -196,6 +220,7 @@ def _run_lane(ordinal, root, log_caps, timeout_seconds, termination_grace_second
 def _lane_completed_cleanly(status):
     return (
         status["returncode"] == 0
+        and status["pre_spawn_refused"] is None
         and not status["log_overflow"]
         and not status["timed_out"]
         and not status["residual_descendants_detected"]
@@ -287,6 +312,7 @@ def main():
                     log_caps,
                     timeout_seconds,
                     termination_grace_seconds,
+                    request,
                 ),
                 range(10),
             )

@@ -2,8 +2,8 @@
 
 Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
 
-This separately frozen v11 candidate strengthens the source-only admission on
-top of #6986. It consumes the ten byte-exact index537 full-state
+This separately frozen v12 candidate strengthens the source-only admission on
+top of #6989. It consumes the ten byte-exact index537 full-state
 originals from #6957/#6959 and defines the unchanged exact continuation to
 index1159. Each lane would apply exactly 622 row actions and one signed
 ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
@@ -51,6 +51,14 @@ different hierarchy identity, an unbounded hierarchy, malformed counters, or
 live tightest-ancestor headroom below the frozen allocation. The observation's
 earlier headroom claim remains required but can no longer substitute for this
 live recomputation.
+After that admission succeeds, the validated cgroup identity and allocation
+memory are retained only in process memory. Every one of the ten future lane
+launches then independently repeats the live hierarchy and tightest-ancestor
+headroom read immediately before `Popen`. A changed leaf/path identity or
+headroom that has fallen below the frozen allocation refuses that lane before
+it can read an authentic checkpoint and leaves an explicit pre-spawn refusal
+in the process ledger instead of losing already-started sibling statuses. The frozen denominator is therefore
+eleven live cgroup reads: one admission read and ten pre-spawn reads.
 
 The first local v11 test invocation is preserved as RED: the source verifiers
 passed, but the normal 36-test pass reported four failures and one error because
@@ -128,4 +136,8 @@ UNKNOWN; #6901 remains UNKNOWN. #6957 remains the authoritative 0/2,585
 non-unique result. Tail termination, N256 qualification, C2 full replay (0/6),
 HPCA external custody/equal-budget benefit, cgroup process containment,
 cgroup-wide simultaneous RSS/energy, and production adoption remain open.
+The pre-spawn recheck narrows, but cannot eliminate, the interval between the
+last headroom observation and kernel process creation. It is not a reservation,
+does not place lanes in dedicated cgroups, and does not close deliberate
+new-session or cgroup-migration escape.
 Global state remains **HOLD / NoUpdate / all_closed=false**.

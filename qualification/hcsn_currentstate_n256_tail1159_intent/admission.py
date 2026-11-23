@@ -448,6 +448,39 @@ def _validate_originals(request, originals):
             raise SystemExit(
                 f"runtime {field} does not match the executing environment"
             )
+    return {
+        "allocation_memory_bytes": memory_bytes,
+        "cgroup_v2_relative_path": expected_cgroup["relative_path"],
+        "cgroup_v2_leaf_device": expected_cgroup["leaf_device"],
+        "cgroup_v2_leaf_inode": expected_cgroup["leaf_inode"],
+    }
+
+
+def revalidate_runtime_cgroup(request):
+    """Recheck the admitted cgroup immediately before a lane process starts."""
+
+    expected = request.get("_validated_live_cgroup")
+    if not isinstance(expected, dict):
+        raise SystemExit("validated live cgroup binding is absent")
+    required = {
+        "allocation_memory_bytes",
+        "cgroup_v2_relative_path",
+        "cgroup_v2_leaf_device",
+        "cgroup_v2_leaf_inode",
+    }
+    if set(expected) != required:
+        raise SystemExit("validated live cgroup binding is malformed")
+    live = _live_cgroup_v2()
+    identity = {
+        "cgroup_v2_relative_path": live["relative_path"],
+        "cgroup_v2_leaf_device": live["leaf_device"],
+        "cgroup_v2_leaf_inode": live["leaf_inode"],
+    }
+    if identity != {field: expected[field] for field in identity}:
+        raise SystemExit("live cgroup v2 identity changed before lane spawn")
+    if live["ancestor_headroom_bytes"] < expected["allocation_memory_bytes"]:
+        raise SystemExit("live ancestor cgroup headroom fell before lane spawn")
+    return live
 
 
 def admit_runtime():
@@ -468,5 +501,5 @@ def admit_runtime():
         kind: _read_original(request, kind, source_manifest_sha256)
         for kind in ORIGINAL_SCHEMAS
     }
-    _validate_originals(request, originals)
+    request["_validated_live_cgroup"] = _validate_originals(request, originals)
     return request

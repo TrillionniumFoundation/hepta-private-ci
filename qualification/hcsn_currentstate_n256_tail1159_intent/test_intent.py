@@ -28,6 +28,7 @@ from .admission import (
     _live_cgroup_v2,
     _runtime_digests,
     admit_runtime,
+    revalidate_runtime_cgroup,
 )
 from .continuation import (
     SOURCE_INDEX,
@@ -44,6 +45,7 @@ from .run import (
     _cost_ledger,
     _drain_bounded,
     _lane_completed_cleanly,
+    _run_lane,
     _run_command,
 )
 
@@ -62,6 +64,7 @@ def _synthetic_status(ordinal, returncode=0, **changes):
     status = {
         "lane_ordinal": ordinal,
         "returncode": returncode,
+        "pre_spawn_refused": None,
         "log_overflow": False,
         "timed_out": False,
         "residual_descendants_detected": False,
@@ -319,6 +322,7 @@ class Tail1159IntentTests(unittest.TestCase):
         self.assertEqual(request["lane_log_caps"]["stderr_bytes"], 1048576)
         self.assertEqual(request["lane_command_timeout_seconds"], 6900)
         self.assertEqual(request["termination_grace_seconds"], 5)
+        self.assertEqual(request["budget"]["live_cgroup_reads"], 11)
         self.assertTrue(request["runtime_admission"]["require_live_cgroup_v2"])
         self.assertFalse(request["actual_execution_authorized"])
 
@@ -366,6 +370,68 @@ class Tail1159IntentTests(unittest.TestCase):
                         SystemExit, "live ancestor cgroup headroom is below"
                     ):
                         admit_runtime()
+
+    def test_live_cgroup_headroom_drop_refuses_before_lane_spawn(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request, request_path, _ = _authorized_fixture(root)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent."
+                "admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(
+                    os.environ, _environment(request, request_path), clear=True
+                ):
+                    admitted = admit_runtime()
+            (self._cgroup_leaf / "memory.current").write_text("500000000\n")
+            with self.assertRaisesRegex(SystemExit, "fell before lane spawn"):
+                revalidate_runtime_cgroup(admitted)
+
+    def test_live_cgroup_identity_change_refuses_before_lane_spawn(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request, request_path, _ = _authorized_fixture(root)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent."
+                "admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(
+                    os.environ, _environment(request, request_path), clear=True
+                ):
+                    admitted = admit_runtime()
+            moved = self._cgroup_root / "moved"
+            moved.mkdir()
+            (moved / "memory.current").write_text("524288\n")
+            (moved / "memory.max").write_text("536870912\n")
+            self._proc_cgroup.write_text("0::/moved\n")
+            with self.assertRaisesRegex(SystemExit, "changed before lane spawn"):
+                revalidate_runtime_cgroup(admitted)
+
+    def test_lane_records_prespan_refusal_without_starting_child(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent."
+                "run.revalidate_runtime_cgroup",
+                side_effect=SystemExit("synthetic headroom refusal"),
+            ):
+                with patch(
+                    "qualification.hcsn_currentstate_n256_tail1159_intent."
+                    "run._run_command"
+                ) as run_command:
+                    status = _run_lane(
+                        3,
+                        root,
+                        {"stdout_bytes": 4, "stderr_bytes": 4},
+                        1,
+                        1,
+                        {},
+                    )
+            run_command.assert_not_called()
+            self.assertEqual(status["pre_spawn_refused"], "synthetic headroom refusal")
+            self.assertFalse(_lane_completed_cleanly(status))
 
     def test_log_drain_retains_exact_bytes_within_cap(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -435,6 +501,7 @@ class Tail1159IntentTests(unittest.TestCase):
             {
                 "lane_ordinal": 1,
                 "returncode": -15,
+                "pre_spawn_refused": None,
                 "log_overflow": True,
                 "timed_out": False,
                 "residual_descendants_detected": False,
@@ -470,13 +537,19 @@ class Tail1159IntentTests(unittest.TestCase):
     def test_status_result_join_rejects_every_unclean_process_state(self):
         self.assertTrue(_lane_completed_cleanly(_synthetic_status(0)))
         for field in (
+            "pre_spawn_refused",
             "log_overflow",
             "timed_out",
             "residual_descendants_detected",
             "process_group_alive_after_cleanup",
         ):
             self.assertFalse(
-                _lane_completed_cleanly(_synthetic_status(0, **{field: True}))
+                _lane_completed_cleanly(
+                    _synthetic_status(
+                        0,
+                        **{field: "refused" if field == "pre_spawn_refused" else True},
+                    )
+                )
             )
         self.assertFalse(_lane_completed_cleanly(_synthetic_status(0, -9)))
 
@@ -584,7 +657,15 @@ class Tail1159IntentTests(unittest.TestCase):
                 request_path,
             ):
                 with patch.dict(os.environ, _environment(request, request_path), clear=True):
-                    self.assertEqual(admit_runtime(), request)
+                    admitted = admit_runtime()
+                    binding = admitted.pop("_validated_live_cgroup")
+                    self.assertEqual(admitted, request)
+                    self.assertEqual(binding["allocation_memory_bytes"], 268435456)
+                    self.assertEqual(binding["cgroup_v2_relative_path"], "/lane")
+                    self.assertEqual(
+                        binding["cgroup_v2_leaf_inode"],
+                        self._cgroup_leaf.stat().st_ino,
+                    )
 
     def test_modified_frozen_source_refuses_before_input_read(self):
         with tempfile.TemporaryDirectory() as directory:
