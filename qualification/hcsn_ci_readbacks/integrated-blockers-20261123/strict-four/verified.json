@@ -1,0 +1,60 @@
+{
+  "sources": {
+    "base": "59e2fdbe06161833a7883ccf166b2fcb3d197e72",
+    "candidate": "813d3d32ced3147ec012fd363d6d7cec1db21bf8"
+  },
+  "archives": {
+    "native": {
+      "file_bytes": 24011,
+      "sha256": "58d564320bcf9f8a19455d2f5919d8292195a97483270b560012b250cc10a7dc",
+      "fixture_roster_sha256": "8ce5a4b6a07d33d54508e69f9aaf5f572a9c78b47b2f09889680d949032af2fb",
+      "fixture_files": 10
+    },
+    "strict": {
+      "file_bytes": 47624,
+      "sha256": "5b2dd35b6b69002bf572f8cad1a2be5c5e6470135c52c66eb9037ba9addba526",
+      "fixture_roster_sha256": "8ce5a4b6a07d33d54508e69f9aaf5f572a9c78b47b2f09889680d949032af2fb",
+      "fixture_files": 10
+    }
+  },
+  "strict": {
+    "base": {
+      "status": 101,
+      "diagnostics": 128
+    },
+    "candidate": {
+      "status": 101,
+      "diagnostics": 124
+    },
+    "removed": [
+      [
+        "hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+        "this `if` has identical blocks"
+      ],
+      [
+        "hepta-agentd/src/cell_split_owner.rs",
+        "doc list item without indentation"
+      ],
+      [
+        "hepta-agentd/src/circuit_task_source_codec.rs",
+        "this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)"
+      ],
+      [
+        "hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+        "call to `std::mem::drop` with a value that does not implement `Drop`. Dropping such a type only extends its contained lifetimes"
+      ]
+    ]
+  },
+  "native": {
+    "base": {
+      "ok": 51,
+      "elf_sha256": "fc5838947364db9051e30736a79a79b1eb7bc4a90c3cc481a3179c0580b8cbd1",
+      "log_sha256": "7f628438f9745483b9e92fce030a45f1a4ed0e98b50951c9b227d51f36825855"
+    },
+    "candidate": {
+      "ok": 51,
+      "elf_sha256": "e22096190fb955ee70491be789b22e245de06add07b46128503213e828c9aa04",
+      "log_sha256": "3a43507d019b829784e3bc74bc2a61eea24fab90deb2fffaece5c887199ed097"
+    }
+  }
+}
