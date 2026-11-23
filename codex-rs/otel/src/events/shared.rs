@@ -1,7 +1,6 @@
-use chrono::SecondsFormat;
-use chrono::Utc;
 use codex_protocol::DEFAULT_FUNCTION_NAMESPACE;
 use codex_protocol::ToolName;
+use time::OffsetDateTime;
 
 pub(crate) fn tool_namespace(tool_name: &ToolName) -> &str {
     tool_name
@@ -66,5 +65,22 @@ pub(crate) use log_event;
 pub(crate) use trace_event;
 
 pub(crate) fn timestamp() -> String {
-    Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)
+    format_timestamp(OffsetDateTime::now_utc())
 }
+
+fn format_timestamp(timestamp: OffsetDateTime) -> String {
+    format!(
+        "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}Z",
+        timestamp.year(),
+        timestamp.month() as u8,
+        timestamp.day(),
+        timestamp.hour(),
+        timestamp.minute(),
+        timestamp.second(),
+        timestamp.millisecond()
+    )
+}
+
+#[cfg(test)]
+#[path = "shared_tests.rs"]
+mod tests;
