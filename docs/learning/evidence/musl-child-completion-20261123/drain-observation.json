@@ -1,0 +1,107 @@
+{
+  "source": "8e930e91156a8c5aecdf20cef43970a6e90b24ac",
+  "base": "e3277e9677688be5c4c235a7a127f0b51e373399",
+  "run": 45139535591,
+  "diagnostic_only": true,
+  "musl": {
+    "job": 137573832688,
+    "artifact": 14801766639,
+    "zip_sha256": "8525cd2f547b67ed1665d48e290fe78087c0e99f019c53d1e0df45ff12176b14",
+    "logs": {
+      "run_1_of_3/test.log": {
+        "sha256": "af542cd231971c568176910905833d2085ae0f90d0c69b31394c377130f0b4fd",
+        "cases": [
+          "unix::drain_tests::disconnected_drain_transport_does_not_abort_polling_or_acknowledge_drain",
+          "unix::drain_tests::drain_permission_failure_still_propagates",
+          "unix::drain_tests::missing_or_closed_socket_never_becomes_a_drain_acknowledgement",
+          "unix::drain_tests::malformed_or_wrong_generation_drain_frames_still_reject",
+          "unix::drain_tests::non_drain_response_names_only_its_protocol_category",
+          "unix::drain_tests::only_exact_closed_admission_with_no_running_turns_is_drained"
+        ]
+      },
+      "run_2_of_3/test.log": {
+        "sha256": "96443ca6685a25a2ca3a90a372e22a8befbaf3ca294a4968cbcf442b2364ef6d",
+        "cases": [
+          "unix::drain_tests::disconnected_drain_transport_does_not_abort_polling_or_acknowledge_drain",
+          "unix::drain_tests::drain_permission_failure_still_propagates",
+          "unix::drain_tests::missing_or_closed_socket_never_becomes_a_drain_acknowledgement",
+          "unix::drain_tests::non_drain_response_names_only_its_protocol_category",
+          "unix::drain_tests::malformed_or_wrong_generation_drain_frames_still_reject",
+          "unix::drain_tests::only_exact_closed_admission_with_no_running_turns_is_drained"
+        ]
+      },
+      "run_3_of_3/test.log": {
+        "sha256": "64d8a40745fca6f133f954a9f51604fecb9b3bbb527c9d546f279a64e60b5e0e",
+        "cases": [
+          "unix::drain_tests::disconnected_drain_transport_does_not_abort_polling_or_acknowledge_drain",
+          "unix::drain_tests::drain_permission_failure_still_propagates",
+          "unix::drain_tests::non_drain_response_names_only_its_protocol_category",
+          "unix::drain_tests::missing_or_closed_socket_never_becomes_a_drain_acknowledgement",
+          "unix::drain_tests::malformed_or_wrong_generation_drain_frames_still_reject",
+          "unix::drain_tests::only_exact_closed_admission_with_no_running_turns_is_drained"
+        ]
+      }
+    }
+  },
+  "gnu_clippy": {
+    "job": 137573833061,
+    "artifact": 14801292531,
+    "zip_sha256": "9b99d216f9c175e50bb8095111ef479c36f7862fd0909b41af1b4830b758079e",
+    "events": [
+      {
+        "id": {
+          "targetCompleted": {
+            "label": "//codex-rs/hepta-supervisor:hepta-supervisor-unit-tests-bin",
+            "aspect": "@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect",
+            "configuration": {
+              "id": "45a9f187654556e103ec666584c7b9b1714ca05e74aeb43bed077fb4451bc895"
+            }
+          }
+        },
+        "completed": {
+          "success": true,
+          "outputGroup": [
+            {
+              "name": "clippy_checks",
+              "fileSets": [
+                {
+                  "id": "0"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": {
+          "targetCompleted": {
+            "label": "//codex-rs/hepta-supervisor:hepta-supervisor-unit-tests-bin",
+            "configuration": {
+              "id": "45a9f187654556e103ec666584c7b9b1714ca05e74aeb43bed077fb4451bc895"
+            }
+          }
+        },
+        "completed": {
+          "success": true,
+          "outputGroup": [
+            {
+              "name": "default",
+              "fileSets": [
+                {
+                  "id": "1"
+                }
+              ]
+            }
+          ],
+          "tag": [
+            "manual",
+            "medium",
+            "moderate",
+            "noflaky",
+            "nolocal"
+          ]
+        }
+      }
+    ]
+  }
+}
