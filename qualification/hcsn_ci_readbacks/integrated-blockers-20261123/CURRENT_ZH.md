@@ -64,3 +64,5 @@ e196 的专项提交标题含跳过 CI 的标记；重开同一草案未产生�
 e327 的 daemon 原生工作流也已终结。普通 2,849/2,849，Root 68/68，两份 JUnit 逐例无跳过，原名册中的 202 个学习用例覆盖完毕。后续固定基址 fmt 遇到历史证据快照缺可解析的所属工作区，退出 2，工作流最终失败。[原生两份 XML、格式化错误及独立复算](daemon-e327/)
 
 对 musl 子通知的修复已放入 #7021 独立草案，基于当前 #7016，只改两个 core 源文件。在真实父回合结束所有者被保持的同一交错，旧源码真实丢失 0/1，候选正常结束后恰收一次 1/1。没有强制竞争时，两侧原六秒端到端用例各通过 3/3。原 GNU Clippy 通过。未确定类别的 fleet 回复属于另一条失败。[修复草案](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7021) · [原运行与受控对照](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/f2d9a96fbff616596ef2c4c42addd1a0431a66c7/docs/learning/evidence/musl-child-completion-20261123)
+
+更细的现有连续输入有一个可复验的正例。仍从原 SVD 出发，在 19 个读出坐标里改动 8 个，L1=0.9833757。用共同参与构造的 TRAIN 与 DEV 标签，分别买 11/4 题、救回 9/4 题、改错 0 题。两分区最差来源均与免费持平；DEV 相对免费／一律买增益 +0.11667／+0.04167。逐题阈值分差均大于 0.10，两批原符号检验都未通过。该编辑是现有 18 维表示能实现平均效用和保持约束的证书，尚无新来源泛化结论。[向量、搜索和原评分器复核](../purchase-attainability-20261123/README.md)
