@@ -20,6 +20,10 @@
 
 按原分类器已固定的 8 个分组，逐一核算所有训练和开发窗口。音频头偏向吉他、置信边际不超过 0.65、音频图库偏向钢琴的一组有最多跨来源的同向证据。训练 6 个来源的 10 题中救回 7 题、改错 1 题，每次购买平均净增 0.30。开发 5 个来源的 11 题中救回 7 题、改错 2 题，每次购买平均净增约 0.155。如果这一组一律购买，训练有 3 个来源、开发有 2 个来源跌破原保持下限。相同图库分歧但高置信的组，训练每购净损 0.80，开发每购净增 0.075。后验和图库分歧是可在购买前看到的研究线索；按这几项直接触发购买仍有明确的来源风险。完整 8 组、样本数和各来源收益在 observable_result.json。该分析仅重算训练、开发两个分区，没有在已打开的测试来源上另选规则。
 
+## 哪类查询再等 0.48 秒有净收益
+
+在独立的 HAPT 动作任务上，固定多等一个原生的 24 样本块，按既有的 4 个首时点置信度区间和真实起始姿态列出全部 12 组。每次等待的分数包含原折现和持续成本。训练 166 次、开发 72 次转换均参与。只有“从坐姿起身或躺下、起点预测置信度在 [0.60,0.75)”这一组，在两个分区按有该类事件的参与者等权后，都有正的平均净收益。训练 9 人 15 次，救回 6 次、改错 0 次；开发 4 人 5 次，救回 2 次、改错 0 次。组内人均净增约 0.044 和 0.225。若只在该组等、其余立即答，摊到整批参与者的效用仅增 0.01187 和 0.00871，均低于原主任务 0.015 的改善标准。这是探索性观察，样本较小，且使用基准提供的动作起点和初始姿态。该分组没有另行在测试者上评分。[完整十二组](wait_cell_result.json)
+
 从仓库根目录运行
 
 ```sh
@@ -27,6 +31,7 @@ python qualification/hcsn_ci_readbacks/purchase-attainability-20261123/verify.py
 python -m qualification.hcsn_ci_readbacks.purchase-attainability-20261123.replay_frontends qualification
 python qualification/hcsn_ci_readbacks/purchase-attainability-20261123/pilot.py qualification/hcsn_blocker_followup
 python -m qualification.hcsn_ci_readbacks.purchase-attainability-20261123.observable_cells qualification
+python qualification/hcsn_ci_readbacks/purchase-attainability-20261123/wait_cells.py qualification/hcsn_blocker_followup/wait/evidence
 ```
 
 [冻结实验](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7b0af00123582ab16f55cb3f0c4314d0d3099909/qualification/hcsn_blocker_followup/RESULTS.md) · [原先登记的双对照采用条件](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7b0af00123582ab16f55cb3f0c4314d0d3099909/qualification/hcsn_blocker_followup/protocol.json)
