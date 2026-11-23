@@ -1,0 +1,249 @@
+{
+  "dev_selected_radii": {
+    "gradient": "0.25",
+    "lp": "1.0"
+  },
+  "distinct_parameter_updates_including_origin": {
+    "gradient": 3,
+    "lp": 3
+  },
+  "independent_recording_sources": 8,
+  "new_confirmations": 0,
+  "new_training_runs": 0,
+  "price": 0.3,
+  "recorded_windows": 32,
+  "same_radius": {
+    "0.0": {
+      "differing_purchase_decisions": [],
+      "gradient": {
+        "actual_l1_displacement": 0.0,
+        "correct_windows": 25,
+        "observed_solver_ms": 0.02374399991822429,
+        "purchase_count": 7,
+        "registered_adopt": false,
+        "source_macro_utility": 0.715625,
+        "training_objective": 0.015185243722082133
+      },
+      "gradient_minus_lp_source_macro": 0.0,
+      "gradient_win_tie_loss_sources": [
+        0,
+        8,
+        0
+      ],
+      "lp": {
+        "actual_l1_displacement": 0.0,
+        "correct_windows": 25,
+        "observed_solver_ms": 0.03667800046969205,
+        "purchase_count": 7,
+        "registered_adopt": false,
+        "source_macro_utility": 0.715625,
+        "training_objective": 0.015185243722082133
+      },
+      "paired_source_delta": {
+        "new-prod-beag-music": 0.0,
+        "new-prod-canadapiano1998": 0.0,
+        "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel": 0.0,
+        "new-prod-golf-bravo-yaroslavsky-station": 0.0,
+        "new-prod-la-argentinita-manolo-de-huelva-film": 0.0,
+        "new-prod-paramount-chico-marx-the-cocoanuts": 0.0,
+        "new-prod-sir-amugi": 0.0,
+        "new-prod-viktor-o-ledenyov-summer-guitar-festival": 0.0
+      }
+    },
+    "0.25": {
+      "differing_purchase_decisions": [],
+      "gradient": {
+        "actual_l1_displacement": 0.25,
+        "correct_windows": 26,
+        "observed_solver_ms": 2.661356000317028,
+        "purchase_count": 5,
+        "registered_adopt": false,
+        "source_macro_utility": 0.765625,
+        "training_objective": 0.0052320608756452796
+      },
+      "gradient_minus_lp_source_macro": 0.0,
+      "gradient_win_tie_loss_sources": [
+        0,
+        8,
+        0
+      ],
+      "lp": {
+        "actual_l1_displacement": 0.25000000000000017,
+        "correct_windows": 26,
+        "observed_solver_ms": 7.2314200006076135,
+        "purchase_count": 5,
+        "registered_adopt": false,
+        "source_macro_utility": 0.765625,
+        "training_objective": 0.00474735865888165
+      },
+      "paired_source_delta": {
+        "new-prod-beag-music": 0.0,
+        "new-prod-canadapiano1998": 0.0,
+        "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel": 0.0,
+        "new-prod-golf-bravo-yaroslavsky-station": 0.0,
+        "new-prod-la-argentinita-manolo-de-huelva-film": 0.0,
+        "new-prod-paramount-chico-marx-the-cocoanuts": 0.0,
+        "new-prod-sir-amugi": 0.0,
+        "new-prod-viktor-o-ledenyov-summer-guitar-festival": 0.0
+      }
+    },
+    "1.0": {
+      "differing_purchase_decisions": [
+        {
+          "free_correct": false,
+          "gradient_buys": false,
+          "lp_buys": true,
+          "paid_correct": false,
+          "query": "newcommons-147121838-w04",
+          "source": "new-prod-beag-music"
+        },
+        {
+          "free_correct": true,
+          "gradient_buys": false,
+          "lp_buys": true,
+          "paid_correct": true,
+          "query": "newcommons-157539108-w01",
+          "source": "new-prod-paramount-chico-marx-the-cocoanuts"
+        },
+        {
+          "free_correct": true,
+          "gradient_buys": false,
+          "lp_buys": true,
+          "paid_correct": true,
+          "query": "newcommons-157539108-w02",
+          "source": "new-prod-paramount-chico-marx-the-cocoanuts"
+        },
+        {
+          "free_correct": true,
+          "gradient_buys": false,
+          "lp_buys": true,
+          "paid_correct": true,
+          "query": "newcommons-157539108-w04",
+          "source": "new-prod-paramount-chico-marx-the-cocoanuts"
+        },
+        {
+          "free_correct": false,
+          "gradient_buys": true,
+          "lp_buys": false,
+          "paid_correct": true,
+          "query": "newcommons-28102065-w04",
+          "source": "new-prod-golf-bravo-yaroslavsky-station"
+        }
+      ],
+      "gradient": {
+        "actual_l1_displacement": 0.5110854974650151,
+        "correct_windows": 26,
+        "observed_solver_ms": 1.540044000648777,
+        "purchase_count": 6,
+        "registered_adopt": false,
+        "source_macro_utility": 0.75625,
+        "training_objective": 0.0027906498812376355
+      },
+      "gradient_minus_lp_source_macro": 0.059375,
+      "gradient_win_tie_loss_sources": [
+        3,
+        5,
+        0
+      ],
+      "lp": {
+        "actual_l1_displacement": 0.7863719516378217,
+        "correct_windows": 25,
+        "observed_solver_ms": 2.5467919986112975,
+        "purchase_count": 9,
+        "registered_adopt": false,
+        "source_macro_utility": 0.696875,
+        "training_objective": 7.863719516391228e-06
+      },
+      "paired_source_delta": {
+        "new-prod-beag-music": 0.075,
+        "new-prod-canadapiano1998": 0.0,
+        "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel": 0.0,
+        "new-prod-golf-bravo-yaroslavsky-station": 0.175,
+        "new-prod-la-argentinita-manolo-de-huelva-film": 0.0,
+        "new-prod-paramount-chico-marx-the-cocoanuts": 0.225,
+        "new-prod-sir-amugi": 0.0,
+        "new-prod-viktor-o-ledenyov-summer-guitar-festival": 0.0
+      }
+    },
+    "4.0": {
+      "differing_purchase_decisions": [
+        {
+          "free_correct": false,
+          "gradient_buys": false,
+          "lp_buys": true,
+          "paid_correct": false,
+          "query": "newcommons-147121838-w04",
+          "source": "new-prod-beag-music"
+        },
+        {
+          "free_correct": true,
+          "gradient_buys": false,
+          "lp_buys": true,
+          "paid_correct": true,
+          "query": "newcommons-157539108-w01",
+          "source": "new-prod-paramount-chico-marx-the-cocoanuts"
+        },
+        {
+          "free_correct": true,
+          "gradient_buys": false,
+          "lp_buys": true,
+          "paid_correct": true,
+          "query": "newcommons-157539108-w02",
+          "source": "new-prod-paramount-chico-marx-the-cocoanuts"
+        },
+        {
+          "free_correct": true,
+          "gradient_buys": false,
+          "lp_buys": true,
+          "paid_correct": true,
+          "query": "newcommons-157539108-w04",
+          "source": "new-prod-paramount-chico-marx-the-cocoanuts"
+        },
+        {
+          "free_correct": false,
+          "gradient_buys": true,
+          "lp_buys": false,
+          "paid_correct": true,
+          "query": "newcommons-28102065-w04",
+          "source": "new-prod-golf-bravo-yaroslavsky-station"
+        }
+      ],
+      "gradient": {
+        "actual_l1_displacement": 0.5110854974650151,
+        "correct_windows": 26,
+        "observed_solver_ms": 2.2686629999952856,
+        "purchase_count": 6,
+        "registered_adopt": false,
+        "source_macro_utility": 0.75625,
+        "training_objective": 0.0027906498812376355
+      },
+      "gradient_minus_lp_source_macro": 0.059375,
+      "gradient_win_tie_loss_sources": [
+        3,
+        5,
+        0
+      ],
+      "lp": {
+        "actual_l1_displacement": 0.7863719516378217,
+        "correct_windows": 25,
+        "observed_solver_ms": 3.0014809999556746,
+        "purchase_count": 9,
+        "registered_adopt": false,
+        "source_macro_utility": 0.696875,
+        "training_objective": 7.863719516391228e-06
+      },
+      "paired_source_delta": {
+        "new-prod-beag-music": 0.075,
+        "new-prod-canadapiano1998": 0.0,
+        "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel": 0.0,
+        "new-prod-golf-bravo-yaroslavsky-station": 0.175,
+        "new-prod-la-argentinita-manolo-de-huelva-film": 0.0,
+        "new-prod-paramount-chico-marx-the-cocoanuts": 0.225,
+        "new-prod-sir-amugi": 0.0,
+        "new-prod-viktor-o-ledenyov-summer-guitar-festival": 0.0
+      }
+    }
+  },
+  "scope": "Descriptive replay of the published cohort at the original price and all registered radii.",
+  "source_commit": "7b0af00123582ab16f55cb3f0c4314d0d3099909"
+}
