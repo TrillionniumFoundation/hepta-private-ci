@@ -1,0 +1,89 @@
+name: Qualify private Feature publication predecessor on exact c12
+on:
+  push:
+    branches: ["diagnostic/agentd-feature-publication-c12-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: c12ee03f3185d5a13949faca54f066dfd634e509
+  CANDIDATE: 6d65e2ee95f37d1f4983e3ba7393ed8ac2163c80
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+jobs:
+  strict:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 130
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - run: python3 scripts/hepta_ci_toolchain.py --github-env "$GITHUB_ENV"
+      - name: Run stock strict target and compare its complete error census
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$CANDIDATE"
+          test "$(git rev-parse HEAD^^)" = "$BASE"
+          evidence="$RUNNER_TEMP/feature-proof"
+          mkdir "$evidence"
+          src="$RUNNER_TEMP/feature-strict"
+          git worktree add --quiet --detach "$src" "$CANDIDATE"
+          cd "$src"
+          git rev-parse HEAD > "$evidence/source.txt"
+          test "$(git diff --name-only "$BASE" "$CANDIDATE")" = codex-rs/hepta-agentd/src/circuit_feature_current.rs
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/feature-target"
+          set +e
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings > "$evidence/strict.log" 2>&1
+          status=$?
+          set -e
+          echo "$status" > "$evidence/strict.exit"
+          python3 "$GITHUB_WORKSPACE/qualification/feature-publication-check/strict.py" "$evidence" "$GITHUB_WORKSPACE/qualification/feature-publication-check/strict-base.json"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: feature-publication-strict
+          path: ${{ runner.temp }}/feature-proof
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Build clean candidate and run exact original positive and refusal cases
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$CANDIDATE"
+          test "$(git rev-parse HEAD^^)" = "$BASE"
+          evidence="$RUNNER_TEMP/feature-proof"
+          tools="$GITHUB_WORKSPACE/qualification/feature-publication-check"
+          mkdir "$evidence"
+          src="$RUNNER_TEMP/feature-native"
+          git worktree add --quiet --detach "$src" "$CANDIDATE"
+          cd "$src"
+          git rev-parse HEAD > "$evidence/source.txt"
+          test "$(git diff --name-only "$BASE" "$CANDIDATE")" = codex-rs/hepta-agentd/src/circuit_feature_current.rs
+          test "$(git rev-parse HEAD:codex-rs/hepta-agentd/src/circuit_feature_current.rs)" = 2bff88a5537cfd8776ef96c4d340f698041c8a66
+          python3 -B "$tools/guards.py" . > "$evidence/guards.json"
+          ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$evidence/build.log"
+          binary=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$evidence/build.log" | tail -1)
+          test -x "$binary"
+          RUST_MIN_STACK=8388608 python3 "$tools/native.py" "$binary" "$tools/original-tests.json" "$evidence"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: feature-publication-native
+          path: ${{ runner.temp }}/feature-proof
