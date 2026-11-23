@@ -1,0 +1,45 @@
+{
+  "common_input_blobs": {
+    "codex-rs/windows-sandbox-rs/src/legacy_boundary.rs": "37f7b5797f590e8a3f9b0dd1ba1661fb36fb9a73",
+    "codex-rs/windows-sandbox-rs/src/desktop.rs": "23bd442b35070b9ae910bcdcda5a007969d8d636",
+    "codex-rs/network-proxy/tests/windows_stable_ingress.rs": "401d968593d46510739938dd85582f8546ff4a0b",
+    "codex-rs/core/tests/suite/windows_sandbox.rs": "a4971534be4a41244b6740a12b9c5539724a3bc1",
+    "codex-rs/windows-sandbox-rs/src/elevated_admission.rs": "dab5c85fff38ca88517e555ba2afc9fcbf43d2f3",
+    "codex-rs/windows-sandbox-rs/src/prepared_process_context.rs": "cd32943200593897593f9d385d16690708715da5",
+    "codex-rs/exec-server/tests/process.rs": "7414417781eff69bf9cfdb84767ec8c29d101068",
+    "codex-rs/exec-server/tests/common/exec_server.rs": "a5a43efe92877c6ab9868256fa947f314f3599d1",
+    "codex-rs/rust-toolchain.toml": "917d2492264a35bc9c0feaef41878d8825870866"
+  },
+  "decoded_job_log_failed_names": {
+    "7005": [
+      "restricted_tokens_select_stable_routes_and_cleanup",
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ],
+    "7009": [
+      "restricted_tokens_select_stable_routes_and_cleanup",
+      "suite::cli_stream::responses_mode_stream_cli_supports_openai_base_url_config_override",
+      "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context",
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ],
+    "7013": [
+      "restricted_tokens_select_stable_routes_and_cleanup",
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ],
+    "c6a": [
+      "exec_server_resumes_detached_session_without_killing_processes",
+      "restricted_tokens_select_stable_routes_and_cleanup",
+      "suite::cli_stream::integration_creates_and_checks_session_file",
+      "suite::remote_env::deferred_executor_spawn_agent_inherits_ready_step_environments::test_case_1_v1",
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ]
+  },
+  "scope": "All named FAILED observations in original job logs, including replay and Bazel retry attempts. Use final-archives.json to determine canonical final test.log statuses."
+}
