@@ -200,6 +200,7 @@ def codex_rust_crate(
         integration_test_args = [],
         unit_test_args = [],
         unit_test_dependency_replacements = {},
+        integration_test_dependency_replacements_by_test = {},
         unit_test_features = [],
         binary_test_target_compatible_with = [],
         integration_test_timeout = None,
@@ -230,6 +231,9 @@ def codex_rust_crate(
         unit_test_dependency_replacements: Test-only workspace dependency variants.
             Replace the complete transitive closure when public types cross crates.
         unit_test_features: Additional features for the test-only library and harness.
+        integration_test_dependency_replacements_by_test: Mapping from integration
+            test filename stem to test-only workspace dependency variants. Preserve
+            default production dependencies for every other integration test.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
         crate_edition: Rust edition override, if not default.
             You probably don't want this, it's only here for a single caller.
@@ -524,6 +528,7 @@ def codex_rust_crate(
 
     for test in native.glob(["tests/*.rs"], allow_empty = True):
         test_file_stem = test.removeprefix("tests/").removesuffix(".rs")
+        integration_test_replacements = integration_test_dependency_replacements_by_test.get(test_file_stem, {})
         test_crate_name = test_file_stem.replace("-", "_")
         test_name = name + "-" + test_file_stem.replace("/", "-")
         if not test_name.endswith("-test"):
@@ -572,7 +577,7 @@ def codex_rust_crate(
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+                deps = rust_test_dependencies(integration_test_replacements, normal_dev = True) + maybe_deps + deps_extra,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -612,7 +617,7 @@ def codex_rust_crate(
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+                deps = rust_test_dependencies(integration_test_replacements, normal_dev = True) + maybe_deps + deps_extra,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -687,7 +692,7 @@ def codex_rust_crate(
             srcs = [test],
             data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
             compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-            deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+            deps = rust_test_dependencies(integration_test_replacements, normal_dev = True) + maybe_deps + deps_extra,
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
                 "--remap-path-prefix=codex-rs=",
