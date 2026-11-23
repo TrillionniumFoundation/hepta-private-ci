@@ -1,0 +1,58 @@
+{
+  "archives_sha256": {
+    "base.zip": "ddeeb0aeccd5fbdb3a023aa53e8722ddf128cdda1871489dc933472e22023ea7",
+    "candidate.zip": "5f149af39a878a0b42f50da68de27386ef4cfc68b6d62bec75b148d746ba0128",
+    "strict.zip": "68197ba3eae7f34460a99f9c650d2318a0431831c9f154718a2ef0c0ece94175"
+  },
+  "native": {
+    "base": {
+      "ELF_SHA256_host_receipt": "e5f6badff9ba798f393d95f6b8d4b144bfec699c6adf4bd66e35d9fcb0b74201",
+      "fixed_source": "43e5da1bb81369e4e999adfa8558f5ccb5460eb6",
+      "observer": [
+        "59b5d27020357cdcc470a90c416873b938190695b032c36245672f3edc6f540c authority_host_publication_deployment_tests.rs",
+        "51c4efe5cd395b58cb8bf7d3992f5ef30cc286bfb684520cf7d67d1a5b962822 authority_host_generation_publication_root_fixture_tests.rs",
+        "25059b256e4caa4cc0fe810cf6f324127b260319ef968459a390780119871284 authority_host_successor_deployment_files_tests.rs"
+      ],
+      "ordinary": [
+        "authority_host_runtime::session::generation_publication::deployment::post_a::successor::tests::successor_deployment_requires_every_original_pin_and_bounded_context",
+        "authority_host_service::generation_publication::versions::tests::versioned_record_rejects_hybrid_unknown_fields_and_invalid_live_binding"
+      ],
+      "uid0": [
+        "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current"
+      ],
+      "wire_observations": 10
+    },
+    "candidate": {
+      "ELF_SHA256_host_receipt": "2d189a1d9820b90238559083f1c2a9e4c949a4753c0d1ac6ac77afe4f66dd1a3",
+      "fixed_source": "2b75c8df6b804b87dd8c3cbca8d8a4b37d1d97d4",
+      "observer": [
+        "59b5d27020357cdcc470a90c416873b938190695b032c36245672f3edc6f540c authority_host_publication_deployment_tests.rs",
+        "51c4efe5cd395b58cb8bf7d3992f5ef30cc286bfb684520cf7d67d1a5b962822 authority_host_generation_publication_root_fixture_tests.rs",
+        "25059b256e4caa4cc0fe810cf6f324127b260319ef968459a390780119871284 authority_host_successor_deployment_files_tests.rs"
+      ],
+      "ordinary": [
+        "authority_host_runtime::session::generation_publication::deployment::post_a::successor::tests::successor_deployment_requires_every_original_pin_and_bounded_context",
+        "authority_host_service::generation_publication::versions::tests::versioned_record_rejects_hybrid_unknown_fields_and_invalid_live_binding"
+      ],
+      "uid0": [
+        "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current"
+      ],
+      "wire_observations": 10
+    }
+  },
+  "run": 45140670897,
+  "strict": {
+    "added": [],
+    "after": 114,
+    "base_and_candidate_compiler_exit": 101,
+    "before": 115,
+    "removed": [
+      [
+        "codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs",
+        17,
+        1,
+        "large size difference between variants"
+      ]
+    ]
+  }
+}

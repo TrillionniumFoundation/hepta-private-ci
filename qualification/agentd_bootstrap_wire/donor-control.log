@@ -1,0 +1,190 @@
+test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) ... 
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='PublicationVersion::from_purpose(&route.purpose)?') ... ERROR
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='(PublicationVersion::LegacyV1, None) => serde_json::to_vec(route)') ... ERROR
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='(PublicationVersion::DurableV2, Some(prepared))') ... ERROR
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='schema: 2,') ... ERROR
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='return Err(') ... ERROR
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='== PublicationVersion::LegacyV1') ... ERROR
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='Ok((route, None))') ... ERROR
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='value.schema == 2') ... ERROR
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='== PublicationVersion::DurableV2') ... ERROR
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='Ok((value.route, Some(value.prepared)))') ... ERROR
+  test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='_ => Err(') ... ERROR
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='PublicationVersion::from_purpose(&route.purpose)?')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 41, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs:fn decode_original_publication_bootstrap(: required code order missing: ['serde_json::from_slice(bytes)', 'VersionedBootstrap::Legacy(route)', 'PublicationVersion::from_purpose(&route.purpose)?', '== PublicationVersion::LegacyV1', 'Ok((route, None))', 'VersionedBootstrap::Durable(value)', 'value.schema == 2', 'PublicationVersion::from_purpose(&value.route.purpose)?', '== PublicationVersion::DurableV2', 'Ok((value.route, Some(value.prepared)))', '_ => Err(']
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='(PublicationVersion::LegacyV1, None) => serde_json::to_vec(route)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 41, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs:fn decode_original_publication_bootstrap(: required code order missing: ['serde_json::from_slice(bytes)', 'VersionedBootstrap::Legacy(route)', 'PublicationVersion::from_purpose(&route.purpose)?', '== PublicationVersion::LegacyV1', 'Ok((route, None))', 'VersionedBootstrap::Durable(value)', 'value.schema == 2', 'PublicationVersion::from_purpose(&value.route.purpose)?', '== PublicationVersion::DurableV2', 'Ok((value.route, Some(value.prepared)))', '_ => Err(']
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='(PublicationVersion::DurableV2, Some(prepared))')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 41, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs:fn decode_original_publication_bootstrap(: required code order missing: ['serde_json::from_slice(bytes)', 'VersionedBootstrap::Legacy(route)', 'PublicationVersion::from_purpose(&route.purpose)?', '== PublicationVersion::LegacyV1', 'Ok((route, None))', 'VersionedBootstrap::Durable(value)', 'value.schema == 2', 'PublicationVersion::from_purpose(&value.route.purpose)?', '== PublicationVersion::DurableV2', 'Ok((value.route, Some(value.prepared)))', '_ => Err(']
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='schema: 2,')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 41, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs:fn decode_original_publication_bootstrap(: required code order missing: ['serde_json::from_slice(bytes)', 'VersionedBootstrap::Legacy(route)', 'PublicationVersion::from_purpose(&route.purpose)?', '== PublicationVersion::LegacyV1', 'Ok((route, None))', 'VersionedBootstrap::Durable(value)', 'value.schema == 2', 'PublicationVersion::from_purpose(&value.route.purpose)?', '== PublicationVersion::DurableV2', 'Ok((value.route, Some(value.prepared)))', '_ => Err(']
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='return Err(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 41, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs:fn decode_original_publication_bootstrap(: required code order missing: ['serde_json::from_slice(bytes)', 'VersionedBootstrap::Legacy(route)', 'PublicationVersion::from_purpose(&route.purpose)?', '== PublicationVersion::LegacyV1', 'Ok((route, None))', 'VersionedBootstrap::Durable(value)', 'value.schema == 2', 'PublicationVersion::from_purpose(&value.route.purpose)?', '== PublicationVersion::DurableV2', 'Ok((value.route, Some(value.prepared)))', '_ => Err(']
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='== PublicationVersion::LegacyV1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 41, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs:fn decode_original_publication_bootstrap(: required code order missing: ['serde_json::from_slice(bytes)', 'VersionedBootstrap::Legacy(route)', 'PublicationVersion::from_purpose(&route.purpose)?', '== PublicationVersion::LegacyV1', 'Ok((route, None))', 'VersionedBootstrap::Durable(value)', 'value.schema == 2', 'PublicationVersion::from_purpose(&value.route.purpose)?', '== PublicationVersion::DurableV2', 'Ok((value.route, Some(value.prepared)))', '_ => Err(']
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='Ok((route, None))')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 33, in reject_removal
+    first, last = source_marker_span(source, marker, cursor, end + 1)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/rust_source_marker_support.py", line 35, in source_marker_span
+    raise ValueError(f"Rust mutation marker not found: {marker!r}")
+ValueError: Rust mutation marker not found: 'Ok((route, None))'
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='value.schema == 2')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 41, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs:fn decode_original_publication_bootstrap(: required code order missing: ['serde_json::from_slice(bytes)', 'VersionedBootstrap::Legacy(route)', 'PublicationVersion::from_purpose(&route.purpose)?', '== PublicationVersion::LegacyV1', 'Ok((route, None))', 'VersionedBootstrap::Durable(value)', 'value.schema == 2', 'PublicationVersion::from_purpose(&value.route.purpose)?', '== PublicationVersion::DurableV2', 'Ok((value.route, Some(value.prepared)))', '_ => Err(']
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='== PublicationVersion::DurableV2')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 41, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs:fn decode_original_publication_bootstrap(: required code order missing: ['serde_json::from_slice(bytes)', 'VersionedBootstrap::Legacy(route)', 'PublicationVersion::from_purpose(&route.purpose)?', '== PublicationVersion::LegacyV1', 'Ok((route, None))', 'VersionedBootstrap::Durable(value)', 'value.schema == 2', 'PublicationVersion::from_purpose(&value.route.purpose)?', '== PublicationVersion::DurableV2', 'Ok((value.route, Some(value.prepared)))', '_ => Err(']
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='Ok((value.route, Some(value.prepared)))')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 41, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs:fn decode_original_publication_bootstrap(: required code order missing: ['serde_json::from_slice(bytes)', 'VersionedBootstrap::Legacy(route)', 'PublicationVersion::from_purpose(&route.purpose)?', '== PublicationVersion::LegacyV1', 'Ok((route, None))', 'VersionedBootstrap::Durable(value)', 'value.schema == 2', 'PublicationVersion::from_purpose(&value.route.purpose)?', '== PublicationVersion::DurableV2', 'Ok((value.route, Some(value.prepared)))', '_ => Err(']
+
+======================================================================
+ERROR: test_explicit_versions_reject_downgrade_and_missing_preparation (test_post_a_physical_preparation_source_closure.PostAPhysicalPreparationSourceTests.test_explicit_versions_reject_downgrade_and_missing_preparation) (marker='_ => Err(')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 49, in check_markers
+    self.reject_removal(path, function, marker)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/qa/b4-no-bypass/test_historical_ledger_readonly_source_closure.py", line 41, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 732, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 704, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/0214baad95a1/lab3/bootstrap-qualification/donor-guard/scripts/verify_hepta_callers.py", line 612, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs:fn decode_original_publication_bootstrap(: required code order missing: ['serde_json::from_slice(bytes)', 'VersionedBootstrap::Legacy(route)', 'PublicationVersion::from_purpose(&route.purpose)?', '== PublicationVersion::LegacyV1', 'Ok((route, None))', 'VersionedBootstrap::Durable(value)', 'value.schema == 2', 'PublicationVersion::from_purpose(&value.route.purpose)?', '== PublicationVersion::DurableV2', 'Ok((value.route, Some(value.prepared)))', '_ => Err(']
+
+----------------------------------------------------------------------
+Ran 1 test in 1.145s
+
+FAILED (errors=11)
