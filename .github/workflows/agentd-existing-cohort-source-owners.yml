@@ -1,0 +1,81 @@
+name: Verify existing evaluation owners at the original private assembly boundary
+on:
+  push:
+    branches: ["diagnostic/agentd-existing-cohort-source-owners-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: c12ee03f3185d5a13949faca54f066dfd634e509
+  CANDIDATE: c21e7d47d05772e21562460f53baf9f8746737b7
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+jobs:
+  strict:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 130
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+      - run: bash .github/scripts/agentd-owners-prepare.sh
+      - run: python3 scripts/hepta_ci_toolchain.py --github-env "$GITHUB_ENV"
+      - name: Original all-targets three-crate strict gate on both fixed sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/owners-strict-target"
+          for arm in base candidate; do
+            cd "$RUNNER_TEMP/owners-$arm"
+            set +e
+            cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings > "$RUNNER_TEMP/owners-lint-evidence/strict-$arm.log" 2>&1
+            code=$?
+            set -e
+            echo "$code" > "$RUNNER_TEMP/owners-lint-evidence/strict-$arm.exit"
+            tail -3 "$RUNNER_TEMP/owners-lint-evidence/strict-$arm.log"
+          done
+          python3 "$RUNNER_TEMP/owners-driver.py" strict
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: strict-owners-pair-${{ env.CANDIDATE }}
+          path: ${{ runner.temp }}/owners-lint-evidence
+  owner_tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - run: bash .github/scripts/agentd-owners-prepare.sh
+      - name: Build both original Agentd libtests and run exact owner cases
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          for arm in base candidate; do
+            cd "$RUNNER_TEMP/owners-$arm"
+            ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$RUNNER_TEMP/owners-lint-evidence/build-$arm.log"
+            binary=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$RUNNER_TEMP/owners-lint-evidence/build-$arm.log" | tail -1)
+            test -x "$binary"
+            cp -L "$binary" "$RUNNER_TEMP/agentd-owners-$arm"
+            sha256sum "$RUNNER_TEMP/agentd-owners-$arm" > "$RUNNER_TEMP/owners-lint-evidence/binary-$arm.txt"
+            python3 "$RUNNER_TEMP/owners-driver.py" native "$arm"
+          done
+          sha256sum "$RUNNER_TEMP/agentd-owners-base" "$RUNNER_TEMP/agentd-owners-candidate" > "$RUNNER_TEMP/owners-lint-evidence/both-elf.sha256"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: native-owners-pair-${{ env.CANDIDATE }}
+          path: ${{ runner.temp }}/owners-lint-evidence
