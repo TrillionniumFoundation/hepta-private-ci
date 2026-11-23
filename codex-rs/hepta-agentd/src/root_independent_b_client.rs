@@ -143,7 +143,7 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                         .map_err(unavailable)?,
                     plan_attestation: learning_owner_evidence::encode(plan.as_array(), statement)
                         .map_err(unavailable)?,
-                    source_admission: Box::new(source),
+                    source_admission: source,
                 },
                 TrainingMode::Readback => Command::Readback {
                     training_head: snapshot.head_digest.to_string(),
@@ -225,7 +225,7 @@ enum TrainingMode<'a> {
     Complete {
         plan: Digest32,
         statement: &'a SignedLearningEvidenceV1,
-        source: SourceReadyData,
+        source: Box<SourceReadyData>,
     },
     Readback,
 }

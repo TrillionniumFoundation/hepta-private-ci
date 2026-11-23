@@ -130,11 +130,10 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         if let Some(original) = self.ready()? {
             return Ok(original.command_response(bytes, request_id)?);
         }
-        let result = if matches!(self.origin, Origin::Recovered)
-            && request.action == wire::Action::Execute
+        let result = if (matches!(self.origin, Origin::Recovered)
+            && request.action == wire::Action::Execute)
+            || (matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback)
         {
-            wire::CommandResult::ReadbackRequired
-        } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
             wire::CommandResult::ReadbackRequired
         } else {
             let _permit = self.bootstrap_lane.try_acquire().map_err(|_| Error::Busy)?;

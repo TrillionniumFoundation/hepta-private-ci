@@ -26,7 +26,7 @@ impl OriginalRootIndependentBEvaluationClientV1 {
                 TrainingMode::Complete {
                     plan,
                     statement: &statement,
-                    source,
+                    source: Box::new(source),
                 },
             )
         })();
