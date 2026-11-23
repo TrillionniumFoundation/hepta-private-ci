@@ -493,13 +493,15 @@ fn invalid_project_cursor(cursor: &str) -> anyhow::Error {
 fn unix_millis(timestamp: SystemTime) -> Option<i64> {
     match timestamp.duration_since(UNIX_EPOCH) {
         Ok(elapsed) => i64::try_from(elapsed.as_millis()).ok(),
-        Err(before_epoch) => {
-            let elapsed = before_epoch.duration();
-            let whole_millis = i64::try_from(elapsed.as_millis()).ok()?;
-            let fractional = i64::from(elapsed.subsec_nanos() % 1_000_000 != 0);
-            whole_millis.checked_add(fractional)?.checked_neg()
-        }
+        Err(before_epoch) => negative_unix_millis(before_epoch.duration()),
     }
+}
+
+// Use a wider intermediate so the exact i64::MIN millisecond is representable.
+fn negative_unix_millis(elapsed: std::time::Duration) -> Option<i64> {
+    let whole_millis = i128::try_from(elapsed.as_millis()).ok()?;
+    let fractional = i128::from(elapsed.subsec_nanos() % 1_000_000 != 0);
+    i64::try_from(whole_millis.checked_add(fractional)?.checked_neg()?).ok()
 }
 
 fn current_unix_millis() -> anyhow::Result<i64> {

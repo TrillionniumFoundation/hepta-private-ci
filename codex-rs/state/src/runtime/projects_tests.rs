@@ -479,3 +479,26 @@ fn project_unix_millis_matches_chrono_at_epoch_boundaries() {
     assert_eq!(unix_millis(UNIX_EPOCH - Duration::from_micros(1)), Some(-1));
     assert_eq!(unix_millis(UNIX_EPOCH - Duration::from_micros(1_001)), Some(-2));
 }
+
+#[test]
+fn project_unix_millis_retains_signed_lower_bound() {
+    use std::time::Duration;
+
+    let maximum = i64::MAX.unsigned_abs();
+    assert_eq!(
+        negative_unix_millis(Duration::from_millis(maximum)),
+        Some(-i64::MAX)
+    );
+    assert_eq!(
+        negative_unix_millis(Duration::from_millis(maximum) + Duration::from_nanos(1)),
+        Some(i64::MIN)
+    );
+    assert_eq!(
+        negative_unix_millis(Duration::from_millis(maximum + 1)),
+        Some(i64::MIN)
+    );
+    assert_eq!(
+        negative_unix_millis(Duration::from_millis(maximum + 1) + Duration::from_nanos(1)),
+        None
+    );
+}
