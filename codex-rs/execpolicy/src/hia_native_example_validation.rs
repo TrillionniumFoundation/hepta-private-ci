@@ -62,7 +62,10 @@ fn step(mode: u64, total: usize, index: usize, misses: usize, hit: bool) -> Tran
         source[i * 8..(i + 1) * 8].copy_from_slice(&word.to_le_bytes());
     }
     let original_source = source;
-    let mut output = [0u8; OUTPUT_BYTES];
+    // Zero is the valid DONE frame for an empty example list. Poison the output
+    // so a callee that falsely reports success without writing a response
+    // cannot be mistaken for that legitimate empty result.
+    let mut output = [0xA5u8; OUTPUT_BYTES];
     let mut workspace: [u8; 0] = [];
     // Borrowed regions are disjoint and carry exact lengths. HIA never sees
     // policy objects, arbitrary callback pointers, or error strings.
