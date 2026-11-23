@@ -23,14 +23,16 @@ At matched seeds the fixed and internal regenerative-QVI encoders produced ident
 
 ## Reproduction
 
-The public source archive has SHA256 `4ac4ae064227c07045a99551876b54d204837e995e298b6488559e209b3deb09`. The roster commit is `331e2baa8093e68743e3c7a5fb9176984ac32465`. The externally recorded fit seal is `b0279ec0aee767cc89e6a377145b5fd267047b7a` on `research/hcsn-native-wait-hapt-0214`. Its file SHA256 is `ed56be462cbe730e6d6272033c123df51738bfb53220ae380f49b6e7038fc957`. The evidence archive contains the model weights, small derived splits, per-episode decisions, verifier result and exact original seal.
+The public source archive has SHA256 `4ac4ae064227c07045a99551876b54d204837e995e298b6488559e209b3deb09`. The roster commit is `331e2baa8093e68743e3c7a5fb9176984ac32465`. The externally recorded fit seal is `b0279ec0aee767cc89e6a377145b5fd267047b7a` on `research/hcsn-native-wait-hapt-0214`. Its file SHA256 is `ed56be462cbe730e6d6272033c123df51738bfb53220ae380f49b6e7038fc957`. The two 276,260-byte parts have SHA256 digests listed in [archive_parts.json](evidence/archive_parts.json). Concatenation restores the original 552,520-byte ZIP without changing any scientific file. The evidence archive contains the model weights, small derived splits, per-episode decisions, verifier result and exact original seal.
 
 Run the independent verifier against the extracted archive from the repository root with the study's FP64 PyTorch, NumPy and one CPU thread. The 358 raw events rebuild all sensor scores to within 8.0e−15. Fourteen refitted linear heads agree within 2.3e−13. Verifier output includes the shared physical feature kernel and independent numerical stages. `verify.py` creates a fresh `verification.json`; remove the copy from the extracted evidence directory before running or run in a separate directory.
 
 ```bash
 curl -L 'https://archive.ics.uci.edu/static/public/341/smartphone+based+recognition+of+human+activities+and+postural+transitions.zip' -o hapt.zip
+cat qualification/hcsn_blocker_followup/wait/evidence/native_wait.zip.part01 qualification/hcsn_blocker_followup/wait/evidence/native_wait.zip.part02 > native_wait.zip
+printf '%s  %s\n' '0026aa2b2d7cc4c3e7960009d553e3a2ebd1ce07925c79d980eb0b813f14d29e' native_wait.zip | sha256sum -c -
 mkdir hapt-recheck
-unzip qualification/hcsn_blocker_followup/wait/evidence/native_wait.zip -d hapt-recheck -x verification.json
+unzip native_wait.zip -d hapt-recheck -x verification.json
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m qualification.hcsn_blocker_followup.wait.verify hapt.zip hapt-recheck
 ```
 
