@@ -1,0 +1,57 @@
+name: Pair the signed native HCSN bridge on unchanged and formatted fixture bytes
+on:
+  push:
+    branches: ["diagnostic/hcsn-bridge-native-format-pair-20261123"]
+permissions:
+  contents: read
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+jobs:
+  paired:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - name: Bind original and formatted source and install the original CPU fixture runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .github/scripts/hcsn-native-format-pair.py "$RUNNER_TEMP/pair.py"
+          git checkout --quiet --detach c12ee03f3185d5a13949faca54f066dfd634e509
+          out="$RUNNER_TEMP/fixture-pair-evidence"
+          mkdir "$out"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/bridge-pair-target" >> "$GITHUB_ENV"
+          python3 -m venv "$RUNNER_TEMP/bridge-pair-venv"
+          py="$RUNNER_TEMP/bridge-pair-venv/bin/python"
+          echo "$RUNNER_TEMP/bridge-pair-venv/bin" >> "$GITHUB_PATH"
+          "$py" -m pip install numpy==2.3.5 scipy==1.17.0 > "$out/python-install.log" 2>&1
+          "$py" -m pip install torch==2.10.0+cpu --index-url https://download.pytorch.org/whl/cpu >> "$out/python-install.log" 2>&1
+          "$py" -m pip freeze > "$out/packages.txt"
+          "$py" -c 'import torch,numpy,scipy;assert (str(torch.__version__),numpy.__version__,scipy.__version__,torch.version.cuda)==("2.10.0+cpu","2.3.5","1.17.0",None)'
+      - name: Build original signed TaskFlow test and all locked bridge dependencies
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/fixture-pair-evidence"
+          rustc -Vv > "$out/rustc.txt"
+          cargo build --locked -p codex-hepta-automation --test hcsn_signed_worker --message-format=json > "$out/signed-artifacts.jsonl" 2> "$out/signed-build.log"
+          cargo build --locked --message-format=json -p codex-hepta-neuron -p codex-hepta-learning-artifacts -p codex-hepta-contracts -p codex-hepta-automation -p codex-hepta-types -p serde_json -p ed25519-dalek > "$out/bridge-cargo-artifacts.jsonl" 2> "$out/bridge-build.log"
+      - name: Run both actual fixture sources on each original signed backend
+        shell: bash
+        run: python "$RUNNER_TEMP/pair.py"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: signed-hcsn-native-bridge-format-pair
+          path: ${{ runner.temp }}/fixture-pair-evidence
+          if-no-files-found: error
