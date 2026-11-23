@@ -73,6 +73,22 @@ fn fixture() -> (AgentdTextSessionConfig, ThreadItem, AuthBusRetainedDelivery) {
 }
 
 #[test]
+fn acked_consent_lookup_binds_reference_route_and_retained_bytes() {
+    let (route, original, retained) = fixture();
+    let reference = original_client_id(&original).unwrap();
+    let envelope = retained_text_ingress(&route, reference, retained).unwrap();
+    assert_eq!(envelope.body.thread_id, route.thread_id);
+    let (route, _, retained) = fixture();
+    assert!(retained_text_ingress(&route, "hepta.authbus:missing", retained).is_err());
+    let (mut route, _, retained) = fixture();
+    route.thread_id.push('x');
+    assert!(retained_text_ingress(&route, reference, retained).is_err());
+    let (route, _, mut retained) = fixture();
+    retained.status.acknowledgement = None;
+    assert!(retained_text_ingress(&route, reference, retained).is_err());
+}
+
+#[test]
 fn original_human_ingress_requires_exact_admitted_input_and_cannot_use_direct_turn_start() {
     let (route, original, retained) = fixture();
     let actual = original_ingress(&route, &original, retained).unwrap();

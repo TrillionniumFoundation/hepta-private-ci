@@ -154,3 +154,74 @@ Run the scoped suites with
 scoped fix/format workflow. This
 profile supplies no production key hosting, provider quota ledger, cross-backup
 rollback protection, or exactly-once external-effect guarantee.
+
+## Private consent for paired learning
+
+The attached Linux host can look up one consent message using the private
+AuthBus delivery ID from its original Core user item (`hepta.authbus:<hex>`).
+Pass its existing evidence store, registered UI route and protected Root client.
+The call reads only that delivery and verifies the exact signed statement on
+the live Root lane. It returns the private `TextOwnerReceipt` to the caller.
+
+```rust
+let scope = PairedLearningDataUse::EvaluateOnlyAfterFreeze { freeze, task };
+let owner = issuer
+    .verify_retained_paired_learning_consent(&evidence, &route, delivery_id, study, scope)
+    .await?;
+```
+
+`issuer` is an `Arc<AgentdUnixFinalUseGrantProvider>` already installed by
+the trusted host. The existing bootstrap takes a connected UID-0 issuer
+stream and the launcher's held pidfd for that Root. A host that lacks the
+registered live human UI and original protected issuer cannot verify this
+consent from a copied public key or saved owner JSON.
+
+| Digest | Exact input |
+| --- | --- |
+| `study` | SHA-256 of the study protocol bytes named by both participants and independently pinned by intake. |
+| `failure` | `cell_experiments.data.record_digest` of A's complete original v1 failure record, including the verifier evidence retained there. |
+| `correction` | `record_digest` of A's separately retained complete corrected v1 record for the same task. Training intake checks the failure, the correction, their task relationship and training rights. |
+| `freeze` | The separately retained canonical digest returned by `paired_freeze.freeze` before B's arrival. |
+| `task` | `record_digest` of B's entire evaluation-only v1 confirmation record, including its verifier parameters and record metadata. |
+
+For the original #7018 study, the raw `PROTOCOL.md` at commit
+`1df26bf88c32a7c61340f1c1a93ae88d7841509b` has SHA-256
+`00e43fc72bb1cc2545d6f1d13fa67c448f413343c5e0c3ce1fdd9de91086f5fa`.
+[Original study protocol](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1df26bf88c32a7c61340f1c1a93ae88d7841509b/qualification/cell-cross-user-milestone-20261123/PROTOCOL.md)
+
+`record_digest` hashes the UTF-8 canonical record JSON produced by the
+existing Python data module. The training scope is
+`TrainOnFailureAndCorrection { failure, correction }`. Each original UI
+statement is produced by `scope.consent_text(study)`. Keep the original
+signed statement and owner association private. The enrollment authority must
+check distinct people. The intake log must independently witness freeze and
+arrival order, and settlement must verify the payer's order separately.
+
+### Separate host process
+
+Build the Linux executable with `cargo build -p codex-hepta-agentd --bin
+hepta-paired-consent` from `codex-rs`. The trusted launcher transfers an
+exclusive, already connected original Root issuer socket on fd 3 and its
+pre-held Root pidfd on fd 4. The request comes on stdin. The launcher must
+supply the same independently established Root PID, registered route and
+existing SQLite home it uses for this host. Keep the route and descriptor
+handoff under the registered host owner's control. A regular shell with only
+a delivery hash lacks the live Root channel required to verify it.
+
+After that handoff the launcher invokes
+`hepta-paired-consent ROOT_PID SQLITE_HOME ROUTE_JSON < private-refs.json`.
+`ROUTE_JSON` is the registered host's existing `AgentdTextSessionConfig`.
+The participant's private input contains only `delivery_id`, `study_sha256`
+and `scope`. For A the scope fields are `{"use":"train","failure":"…","correction":"…"}`.
+For B use `{"use":"evaluate_only","freeze":"…","task":"…"}`. Each digest
+field takes its actual 64 lowercase hexadecimal characters. Supply B's
+consent-message delivery ID only after the separately witnessed freeze.
+
+The executable opens the existing evidence database read-only, verifies
+one delivered consent statement and exits. Its JSON stdout contains the
+study, delivery, verified use, SHA-256 of the exact verified UTF-8 consent
+statement and a study-specific principal reference.
+The latter hashes the compact JSON tuple
+`["hepta.paired-learning.principal.v1",study_sha256,registered_principal_id]`.
+Keep that result in the private intake. The site's existing enrollment records
+must still relate the registered principal to the person.

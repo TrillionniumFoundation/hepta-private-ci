@@ -320,6 +320,8 @@ mod final_use_issuer;
 mod grant_provider_worker;
 #[cfg(target_os = "linux")]
 mod hos2_device;
+#[cfg(target_os = "linux")]
+mod human_learning_consent;
 mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
@@ -671,6 +673,8 @@ pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
 pub use hos2_device::AgentdHos2Device;
 #[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Usage;
+#[cfg(target_os = "linux")]
+pub use human_learning_consent::PairedLearningDataUse;
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 pub use intelligence_product::AgentdEvaluationBindingV1;
