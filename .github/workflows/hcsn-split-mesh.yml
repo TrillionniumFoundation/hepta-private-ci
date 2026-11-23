@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - "qualification/hcsn_split_mesh/**"
+      - "qualification/hcsn_boundary_audit/refractory_transport.py"
+      - "qualification/hcsn_boundary_audit/spatial_generator.py"
+      - "qualification/hcsn_joint_dde/*.py"
+      - "qualification/hcsn_reset_aligned/*.py"
+      - "qualification/hcsn_reset_aligned/COMMON_MANIFEST.json"
       - ".github/workflows/hcsn-split-mesh.yml"
   workflow_dispatch:
 
@@ -12,24 +17,36 @@ permissions:
 
 jobs:
   split-mesh:
+    name: Split mesh / ${{ matrix.edition }}
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [archived, current]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       OPENBLAS_NUM_THREADS: "1"
       OMP_NUM_THREADS: "1"
       MKL_NUM_THREADS: "1"
+      EDITION: ${{ matrix.edition }}
+      SOURCE_COMMIT: ${{ matrix.edition == 'archived' && '6b646d61017b84f87b5b105e55111474f2c2234c' || github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ env.SOURCE_COMMIT }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python -m pip install numpy==2.3.5 scipy==1.17.0
       - name: Verify dedicated source and four discrete controls
-        run: python -B -m qualification.hcsn_split_mesh.qualify --output split-mesh-evidence
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"
+          options=()
+          if [[ "$EDITION" == "current" ]]; then options+=(--current-source); fi
+          python -B -m qualification.hcsn_split_mesh.qualify --output split-mesh-evidence "${options[@]}"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: hcsn-split-mesh-exploratory-${{ github.event.pull_request.head.sha || github.sha }}
+          name: hcsn-split-mesh-${{ matrix.edition }}-${{ env.SOURCE_COMMIT }}
           path: split-mesh-evidence/

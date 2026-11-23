@@ -11,6 +11,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+import stat
 import struct
 
 MAX_ARCHIVE_BYTES = 16_000_000
@@ -76,7 +77,7 @@ def strict_json_file(path, *, max_bytes=64_000_000):
 def verify_checkpoint_file(path):
     """Return independently recomputed digests and a bounded shape inventory."""
     path = Path(path)
-    if path.is_symlink() or not path.is_file():
+    if not stat.S_ISREG(path.lstat().st_mode):
         raise ValueError("checkpoint must be a non-symlink regular file")
     raw = path.read_bytes()
     if not 16 <= len(raw) <= MAX_ARCHIVE_BYTES:

@@ -121,7 +121,7 @@ def fixture(directory):
         source_sha256=source_hashes,
         frozen_candidate_arms=list(ARMS), evaluation_cohorts=list(COHORTS),
         train_source_groups=[train["source_group"]], public_cases=cases,
-        steps=3, seed=17,
+        steps=3, seed=17, max_depth=4,
         training_profile="sgd_v1",
         optimizer_policy={"core_optimizer_kind": "sgd", "core_learning_rate": 0.05},
         optimizer_comparison_scope="registered_training_regime_not_isolated_optimizer_effect",

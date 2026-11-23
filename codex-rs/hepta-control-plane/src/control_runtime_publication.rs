@@ -70,6 +70,19 @@ impl Default for ControlRuntimePublicationHeadV1 {
     }
 }
 
+/// Inputs for a control-runtime publication before its sequence and digest are assigned.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ControlRuntimePublicationRequestV1 {
+    pub owner_id: StableId,
+    pub expected: ControlRuntimePublicationHeadV1,
+    pub policy_epoch: u64,
+    pub kind: ControlRuntimePublicationKindV1,
+    pub subject_digest: Digest32,
+    pub payload: Vec<u8>,
+    pub journal_head: PlannerJournalHeadV1,
+    pub occurred_at_micros: u64,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ControlRuntimePublicationV1 {
     pub owner_id: StableId,
@@ -85,6 +98,11 @@ pub struct ControlRuntimePublicationV1 {
 }
 
 impl ControlRuntimePublicationV1 {
+    /// Constructs a publication with the original V1 positional argument order.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "The public V1 constructor must retain its original positional signature"
+    )]
     pub fn new(
         owner_id: StableId,
         expected: ControlRuntimePublicationHeadV1,
@@ -95,6 +113,32 @@ impl ControlRuntimePublicationV1 {
         journal_head: PlannerJournalHeadV1,
         occurred_at_micros: u64,
     ) -> Result<Self, ControlRuntimePublicationErrorV1> {
+        Self::from_request(ControlRuntimePublicationRequestV1 {
+            owner_id,
+            expected,
+            policy_epoch,
+            kind,
+            subject_digest,
+            payload,
+            journal_head,
+            occurred_at_micros,
+        })
+    }
+
+    /// Validates the inputs and binds the new record to its predecessor and journal head.
+    pub fn from_request(
+        request: ControlRuntimePublicationRequestV1,
+    ) -> Result<Self, ControlRuntimePublicationErrorV1> {
+        let ControlRuntimePublicationRequestV1 {
+            owner_id,
+            expected,
+            policy_epoch,
+            kind,
+            subject_digest,
+            payload,
+            journal_head,
+            occurred_at_micros,
+        } = request;
         if policy_epoch == 0 {
             return Err(ControlRuntimePublicationErrorV1::InvalidPolicyEpoch);
         }
@@ -731,19 +775,19 @@ mod tests {
         expected: ControlRuntimePublicationHeadV1,
         payload: &[u8],
     ) -> ControlRuntimePublicationV1 {
-        ControlRuntimePublicationV1::new(
-            id("control.runtime"),
+        ControlRuntimePublicationV1::from_request(ControlRuntimePublicationRequestV1 {
+            owner_id: id("control.runtime"),
             expected,
-            1,
-            ControlRuntimePublicationKindV1::DecisionCommitted,
-            Digest32::of_bytes(payload),
-            payload.to_vec(),
-            PlannerJournalHeadV1 {
+            policy_epoch: 1,
+            kind: ControlRuntimePublicationKindV1::DecisionCommitted,
+            subject_digest: Digest32::of_bytes(payload),
+            payload: payload.to_vec(),
+            journal_head: PlannerJournalHeadV1 {
                 sequence: 1,
                 entry_digest: digest("journal"),
             },
-            10,
-        )
+            occurred_at_micros: 10,
+        })
         .expect("record")
     }
 

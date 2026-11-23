@@ -62,6 +62,11 @@ def main():
     parser.add_argument("--source-manifest", type=Path, required=True)
     parser.add_argument("--baseline-archive", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--current-source",
+        action="store_true",
+        help="Use the registered current solver source with the original numeric controls.",
+    )
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     source = json.loads(args.source_manifest.read_text())
@@ -70,7 +75,8 @@ def main():
         for name in source["source_sha256"]
     }
     before = hashes()
-    frozen_path = Path("qualification/hcsn_adjoint_torch/TORCH-SOURCE.json")
+    inventory = "CURRENT-SOURCE.json" if args.current_source else "TORCH-SOURCE.json"
+    frozen_path = Path("qualification/hcsn_adjoint_torch") / inventory
     frozen = json.loads(frozen_path.read_text())
     if (
         hashlib.sha256(frozen_path.read_bytes()).hexdigest()
