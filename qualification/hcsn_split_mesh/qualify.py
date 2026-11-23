@@ -17,10 +17,12 @@ import scipy
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--current-source", action="store_true")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     root = Path(__file__).resolve().parents[2]
-    manifest = json.loads((Path(__file__).parent / "MANIFEST.json").read_text())
+    inventory = "CURRENT-MANIFEST.json" if args.current_source else "MANIFEST.json"
+    manifest = json.loads((Path(__file__).parent / inventory).read_text())
     def identities():
         return {name: hashlib.sha256((root/name).read_bytes()).hexdigest() for name in manifest["sources"]}
     before = identities()
