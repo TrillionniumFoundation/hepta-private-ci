@@ -1,5 +1,9 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 #7052 CNS 摘要重复实现修补候选（待原生验证）
+
+- 从原 source 严格日志确认两个残余诊断。两份 CNS route digest 原函数仅 helper 名不同；helper 归一化也完全相同。已在 Draft #7052 提交 [`78c1012d`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/78c1012d1b6d63a2cd3d67e2534ba8b8d62e34b6)，公开入口委托给原等价实现，父子 Git compare 仅一文件（1 增 15 删），保留公开 V1、摘要和安全语义。未修改八参数构造器、未增 lint 豁免。新 commit 初读无工作流，原生资格仍 HOLD；不重复派发、不合并。[精确源与原日志](7052-route-digest-single-implementation-20261123.md)。
+
 ## 2026-11-23 20:56 UTC #7052 限定范围 CI 正式终局及 Laya 权重身份
 
 - c923 [blocking-ci 45240607977](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240607977) 已 completed/failure；原名册全部 24 项终结，独立计数 **12 成功、8 条件跳过、4 失败**。四个 Hepta scoped native shard 全绿；严格 source/merge、learning.operator required、CI required 四红。此为限定范围，不是原 46 项全仓资格。精确源码五条工作流均终结。
