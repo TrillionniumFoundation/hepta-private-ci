@@ -1,0 +1,71 @@
+name: Original fixed-base maintenance on preformatted source owners
+on:
+  push:
+    branches: ["diagnostic/daemon-fmt-finish-registered-20261123"]
+permissions:
+  contents: read
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  BASE: b8e8c6e82abc1479c573f61a5e17d28d581e6cad
+jobs:
+  fixed_base:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Run source-bound current owner diagnostics and original formatter tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .github/scripts/daemon-fmt-finish-owners.py "$RUNNER_TEMP/wal-candidate-probe.py"
+          git checkout --quiet --detach 97a379c5a347f0e66c5ed9a0cbd38303d1f92cb5
+          mkdir -p "$RUNNER_TEMP/final-format"
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt
+          python3 scripts/test_hepta_format_scope.py |& tee "$RUNNER_TEMP/final-format/formatter-tests.log"
+          python3 scripts/tests/test_format_starlark.py |& tee "$RUNNER_TEMP/final-format/starlark-tests.log"
+          python3 "$RUNNER_TEMP/wal-candidate-probe.py"
+      - name: Check the complete original fixed-base formatter scope before running the write-mode entry point
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --quiet --detach 97a379c5a347f0e66c5ed9a0cbd38303d1f92cb5
+          test -z "$(git status --porcelain --untracked-files=all)"
+          out="$RUNNER_TEMP/final-format"
+          mkdir -p "$out"
+          set +e
+          timeout --kill-after=10s 1100s just fmt --base "$BASE" --check > "$out/full-check.log" 2>&1
+          code=$?
+          set -e
+          echo "$code" > "$out/full-check.exit"
+          git status --porcelain --untracked-files=all > "$out/after-check.status"
+          test ! -s "$out/after-check.status"
+          if [ "$code" != 0 ]; then
+            tail -c 5000 "$out/full-check.log"
+            exit "$code"
+          fi
+          set +e
+          timeout --kill-after=10s 1100s just fmt --base "$BASE" > "$out/full-original.log" 2>&1
+          code=$?
+          set -e
+          echo "$code" > "$out/full-original.exit"
+          git status --porcelain --untracked-files=all > "$out/after-original.status"
+          git diff --exit-code -- AUDIT/2026-10-20-agent-continuation/cell_p0 "$GITHUB_WORKSPACE/scripts/format_provenance"
+          test ! -s "$out/after-original.status"
+          exit "$code"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: daemon-fixed-base-final-check-and-write
+          path: ${{ runner.temp }}/final-format
+          if-no-files-found: error
