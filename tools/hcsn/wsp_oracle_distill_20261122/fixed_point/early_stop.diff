@@ -1,0 +1,46 @@
+--- original/soft_value.py
++++ soft_value_stop.py
+@@ -109,6 +109,7 @@
+     tau, penalty = settings['temperature'], settings['penalty']
+     trace, proposals, best_rows = [], [], anchor.copy()
+     slots = 0
++    fixed_point = False
+ 
+     def budget():
+         phase_budget()
+@@ -151,11 +152,16 @@
+                             utility=result['utility'], candidate_norm=float(np.linalg.norm(candidate - anchor))))
+                         if result['objective'] > round_best['objective'] + 1e-12:
+                             round_best, round_rows = result, candidate
++                fixed_point = round_best is current
+                 current, current_rows = round_best, round_rows
+                 if current['objective'] > best['objective'] + 1e-12:
+                     best, best_rows = current, current_rows.copy()
+                 trace.append(dict(round=cycle + 1, objective=best['objective'], utility=best['utility'],
+                                   CPU_seconds=time.process_time() - started))
++                # The DIRECT proposal set depends only on the current point and fixed inputs.
++                # A full sweep with no accepted candidate would exactly repeat.
++                if fixed_point:
++                    break
+         elif family == 'BP':
+             for step in range(settings['bp_steps']):
+                 gradient = current['gradient']
+@@ -175,13 +181,16 @@
+                                       CPU_seconds=time.process_time() - started))
+         else:
+             raise ValueError('unknown optimizer')
+-        if slots != settings['proposal_slots']:
++        expected_slots = settings['proposal_slots']
++        if family == 'DIRECT' and fixed_point:
++            expected_slots = len(trace) * min(len(forest.H), settings['states_per_round']) * len(settings['proposal_doses'])
++        if slots != expected_slots:
+             raise ArithmeticError('fixed proposal count mismatch')
+     except Exception as exc:
+         status, error = 'FAILED_KEEP', repr(exc)
+         best_rows = None
+     after = forest.counters()
+-    report = dict(status=status, error=error, family=family, slots_completed=slots,
++    report = dict(status=status, error=error, family=family, slots_completed=slots, fixed_point_stop=fixed_point,
+         CPU_seconds=time.process_time() - started, wall_seconds=time.monotonic() - wall,
+         counters={k: after[k] - before[k] for k in before}, trace=trace, proposals=proposals,
+         returned_best_objective=None if best_rows is None else best['objective'],
