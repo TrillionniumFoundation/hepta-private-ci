@@ -4,7 +4,7 @@ on:
     branches: [research/selected-session-mcp-20261123]
     paths:
       - scripts/cell_experiments/selected_session_mcp.py
-      - qualification/selected-session-mcp-20261123/**
+      - qualification/selected-session-mcp-20261123/qualify.py
       - .github/workflows/selected-session-mcp.yml
 permissions:
   contents: read
@@ -29,6 +29,9 @@ jobs:
       - name: Reopen the actual selected artifact and run handoff and denial controls
         run: |
           "$RUNNER_TEMP/selected-env/bin/python" qualification/selected-session-mcp-20261123/qualify.py --archive "$RUNNER_TEMP/SELECTED_SESSION_ORIGINALS.zip"
+      - name: Expose the generated public fixture for hash-verified repository archival
+        run: |
+          echo "ENGINEERING_ARCHIVE_B64=$(base64 -w0 "$RUNNER_TEMP/SELECTED_SESSION_ORIGINALS.zip")"
       - name: Retain exact engineering observations
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

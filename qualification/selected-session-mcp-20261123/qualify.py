@@ -102,6 +102,8 @@ async def run(root):
                              *(["unavailable"]*8)], close_fds=True, capture_output=True, timeout=30)
     check(denial.returncode != 0 and b"Bad file descriptor" in denial.stderr, "missing owner handles accepted")
     readout = {"scope": "engineering_fixture", "actor": "authored offline SDK client",
+               "issuer_validation": "Ed25519 signature under operator-selected key only",
+               "external_enrollments_verified_by_adapter": 0, "vendor_model_or_identity_verified": False,
                "adapter_sha256": adapter.sha(Path(adapter.__file__).read_bytes()),
                "paired_source_sha256": adapter.sha(Path(paired_source.__file__).read_bytes()),
                "tool_calls": calls, "proposal": proposal, "native_training_without_owner_handles": "denied",
