@@ -1,0 +1,65 @@
+{
+  "version": "av-qvi-ndu-20261122-0214-v1",
+  "base_commit": "0307d62f4d4226a979692cb4420746e8c84af0d4",
+  "qvi_reference_commit": "0ca096781651508250c950829c347a38edcfede4",
+  "corpus": "RAVDESS AV speech; Zenodo 1188976; 24 actors; 2 statements, 2 repetitions, neutral/happy at normal intensity",
+  "groups": "actor-disjoint train/dev/retain/test with 10/4/4/6 actors. A query and both references stay within their actor and split. Candidate order fixed without inspecting accuracy.",
+  "horizon": "6 prefixes spaced 0.48 s. Time origin is first observed prefix. Query audio and a fixed reference gallery are free; READ acquires current query video once, then retrieves and terminates.",
+  "seed": [
+    181391,
+    284729,
+    395201
+  ],
+  "modes": [
+    "fixed",
+    "learned",
+    "qvi"
+  ],
+  "methods": [
+    "keep",
+    "bp",
+    "wsp"
+  ],
+  "cost": {
+    "wait_rate": 0.4,
+    "read_price": 0.3,
+    "discount": 0.2,
+    "correct_reward": 1.0
+  },
+  "objective": "STOP uses free retrieval; READ uses paid retrieval with a 0.30 charge. WAIT incurs discounted 0.40 cost per elapsed second then returns to the next decision. Mask WAIT at the last prefix. All arms evaluate identical real actions. Train Q targets use realized future backward induction as a privileged teacher; deployment can see only the causal free prefix. Fit scaler and ridge on TRAIN.",
+  "finite_task_reference": "Same-clock tabular Bellman intervention baseline estimated on TRAIN with four rank bins of free top-two score margin, one pooled pseudocount per cell for probabilities/transitions, separate values by physical time. Causal on deployment. Also report immediate STOP/READ and perfect-future upper bound.",
+  "microphysics": "Shared prices and discount from the NDU task. QVI solves the specified affine regenerative internal-state problem; its reset and running affine benefit differ from the finite retrieval environment. The train-calibrated finite Bellman comparison estimates the latter directly.",
+  "training": {
+    "ridge": 0.001,
+    "steps": 4,
+    "lr": 0.075,
+    "radius": 0.35,
+    "measure": "shared direct SVD readout. All non-linear edits start at zero displacement. STOP READ WAIT value loss. Dev utility selection. Accept only candidates with worst retain actor delta >= -0.05 vs same boundary and seed's post-SVD incumbent. Ties prefer incumbent."
+  },
+  "editor": "Use TRAIN-only feedback to author a semantic program. Freeze program before reading DEV/RETAIN comparisons and TEST, with provenance and any unobserved editor cost. Include failures, probes, authoring and validation. Do not treat fixed directions as autonomous discovery.",
+  "success": {
+    "utility_at_least": 0.6,
+    "retrieval_R1_at_least": 0.7,
+    "worst_actor_utility_delta_at_least": -0.05,
+    "comparison": "all three thresholds on final actors vs boundary-matched post-SVD KEEP delta; also report worst delta vs common free first-prefix STOP. All three seeds must pass for a family declaration. No individual winner selection on TEST."
+  },
+  "cost_accounting": "Measure acquisition, decode/frontend, shared preparation, cold process imports/model init, direct fit, diagnostics and program construction, all candidate attempts incl failures, development/retention and held-out evaluation. Use complete time of preselected terminal candidate for attained time; failure is censored. Include external agent or API time when known; give bounds/unknown where unavailable. Do not infer energy from CPU time.",
+  "reporting": "Keep original per-actor counts, policy choices, attempts and parameters. Report independent actor units, arm- and paired-seed metrics, timing scope, all negatives. Never update production from this experiment.",
+  "pre_score_data_erratum": {
+    "original_media_names": 192,
+    "original_unique_hashes": 191,
+    "duplicate_content_sha256": "5dd27eab5b1eaa8d7f8523b113231e426881f316d275a02a358bf1001c876969",
+    "excluded": {
+      "actor": 7,
+      "emotion": "happy",
+      "queries": 4,
+      "reason": "the two statement-02 repetitions are identical in the official archive; remove the complete paired stratum before any scientific score"
+    },
+    "eligible_queries": {
+      "train": 80,
+      "dev": 32,
+      "retain": 28,
+      "test": 48
+    }
+  }
+}

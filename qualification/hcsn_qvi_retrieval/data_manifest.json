@@ -1,0 +1,83 @@
+{
+  "schema": "hcsn-ravdess-query-v1",
+  "source": "Livingstone and Russo (2018), The Ryerson Audio-Visual Database of Emotional Speech and Song (RAVDESS)",
+  "source_url": "https://zenodo.org/records/1188976",
+  "doi": "10.5281/zenodo.1188976",
+  "license": "CC BY-NC-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "recordings": "full AV speech (01-01), normal intensity 01, neutral 01 or happy 03, both statements 01/02, both repetitions 01/02",
+  "splits": {
+    "train": [
+      1,
+      2,
+      9,
+      10,
+      13,
+      14,
+      17,
+      18,
+      23,
+      24
+    ],
+    "dev": [
+      3,
+      4,
+      15,
+      16
+    ],
+    "retain": [
+      7,
+      8,
+      19,
+      20
+    ],
+    "test": [
+      5,
+      6,
+      11,
+      12,
+      21,
+      22
+    ]
+  },
+  "emotion_ids": [
+    1,
+    3
+  ],
+  "statement_ids": [
+    1,
+    2
+  ],
+  "repetition_ids": [
+    1,
+    2
+  ],
+  "trial_definition": "Each query selects the same statement in the opposite repetition from the same actor and same emotion. The negative is the other statement in that opposite repetition. Two independent recordings define the positive. File names, emotion, speaker, text, and gallery labels are absent from model features. Gallery permutation is deterministic per actor/emotion/repetition and shared for both queries, so target slots balance within each group.",
+  "clock": {
+    "steps": 6,
+    "seconds_per_step": 0.48,
+    "subframes_per_step": 12
+  },
+  "search_design": "Eight recordings per actor are all preselected without consulting scores. There is no outcome-dependent replacement. Groups are actors in one source corpus. Reciprocal retrieval queries are dependent within actors. Listed media are public under the original research license. Only source, metadata and non-invertible features are distributed.",
+  "source_integrity_erratum": {
+    "stage": "Before any fit or performance metric. Original acquisition rejected duplicate SHA.",
+    "duplicate_sha256": "5dd27eab5b1eaa8d7f8523b113231e426881f316d275a02a358bf1001c876969",
+    "duplicate_files": [
+      "01-01-03-01-02-01-07.mp4",
+      "01-01-03-01-02-02-07.mp4"
+    ],
+    "excluded_actor_emotion": [
+      [
+        7,
+        3
+      ]
+    ],
+    "rule": "Retain all original 192 names in acquisition receipts. Exclude both repeats of both statements in the affected actor and emotion stratum to protect independent-take retrieval and position balance. No replacements. Quarantine four retention queries. No source overlap across actors.",
+    "expected_queries": {
+      "train": 80,
+      "dev": 32,
+      "retain": 28,
+      "test": 48
+    }
+  }
+}

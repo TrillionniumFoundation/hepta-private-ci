@@ -1,0 +1,11 @@
+{
+  "version": "supplemental-train-bellman-task-surface-v1",
+  "registration": "Defined after the primary protocol and its TRAIN diagnostics, before access to any primary or supplemental TEST scores. Supplementary external-task intervention comparator; never replace or pool the primary families.",
+  "data": "Identical actor-disjoint RAVDESS shards and pre-score source-integrity exclusion, 80/32/28/48. Identical query features, observable margin and clock, free vs paid gallery scoring, costs, discount and horizon.",
+  "seeds": [181391,284729,395201],
+  "methods": ["keep","bp","wsp"],
+  "surface": "Fit the existing four-bin finite external-task Bellman on TRAIN only. At an observed prefix lookup its frozen three action values using its physical prefix index and raw free top-two margin. For t<horizon, A=max(Q_STOP,Q_READ)-Q_WAIT. b=b_nom+0.9*min(reset_gap-first_center,last_center-reset_gap)*tanh(A/1.0). At the final prefix WAIT is inadmissible and the boundary uses the full positive deflection. The bounded monotone map is a declared engineering choice. It is piecewise constant in margin, and execution is the original #6958 finite population. Its action values approximate the retrieval law, not a continuous Brownian QVI optimum.",
+  "adaptation": "Shared two actual nonlinear coordinates and identical initial encoder/base physical weights by seed, same exact frozen editor program and its TRAIN-only probe budget, profiled BP, shared centered SVD ridge 0.001, same DEV/RETAIN selection, four update proposals, L2 radius 0.35. No retuning or new editor.",
+  "fit_seal": "All nine selected fits and source SHA256 sealed before opening any TEST shard. Confirm each saved arm once. No adaptation or model selection on TEST.",
+  "success": "Every seed per method must reach mean utility >= 0.60, retrieval R1 >= 0.70 and worst-actor utility delta vs same seed and surface post-SVD KEEP >= -0.05. Compare real actions, R1, mean utility, retention and cold time with each original family on identical episodes. Include negative evidence."
+}
