@@ -477,7 +477,10 @@ fn project_unix_millis_matches_chrono_at_epoch_boundaries() {
         assert_eq!(unix_millis(instant), Some(reference.timestamp_millis()));
     }
     assert_eq!(unix_millis(UNIX_EPOCH - Duration::from_micros(1)), Some(-1));
-    assert_eq!(unix_millis(UNIX_EPOCH - Duration::from_micros(1_001)), Some(-2));
+    assert_eq!(
+        unix_millis(UNIX_EPOCH - Duration::from_micros(1_001)),
+        Some(-2)
+    );
 }
 
 #[test]
