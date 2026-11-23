@@ -1,0 +1,76 @@
+{
+  "base": {
+    "test_original_b_acceptance_source_closure.py": {
+      "count": 3,
+      "sha256": "25f847fc47123e42f389e5fe79af8dba670b167cd9e128233e5abc861ddec5c1",
+      "tests": [
+        "test_every_acceptance_gate_rejects_removal_or_comment (test_original_b_acceptance_source_closure.OriginalBCompletionAcceptanceSourceTests.test_every_acceptance_gate_rejects_removal_or_comment)",
+        "test_new_guards_match_actual_functions (test_original_b_acceptance_source_closure.OriginalBCompletionAcceptanceSourceTests.test_new_guards_match_actual_functions)",
+        "test_only_actual_completion_and_root_record_are_callers (test_original_b_acceptance_source_closure.OriginalBCompletionAcceptanceSourceTests.test_only_actual_completion_and_root_record_are_callers)"
+      ]
+    },
+    "test_original_b_custody_source_closure.py": {
+      "count": 2,
+      "sha256": "0e1a9dcf4bf44dc219ebca1593c6c846323b7ca415c4e6e367db3ef6dfc07701",
+      "tests": [
+        "test_each_custody_check_cannot_be_removed_or_commented_out (test_original_b_custody_source_closure.OriginalBCustodySourceClosureTests.test_each_custody_check_cannot_be_removed_or_commented_out)",
+        "test_original_guards_are_valid (test_original_b_custody_source_closure.OriginalBCustodySourceClosureTests.test_original_guards_are_valid)"
+      ]
+    },
+    "test_original_b_publication_data_source_closure.py": {
+      "count": 3,
+      "sha256": "cc82473d9592ed83b1c1f51177ba72f78f6cd22a96a24654d9e7e9428769e192",
+      "tests": [
+        "test_actual_manifest_caller_and_original_readback_are_guarded (test_original_b_publication_data_source_closure.OriginalBPublicationDataSourceClosureTests.test_actual_manifest_caller_and_original_readback_are_guarded)",
+        "test_missing_or_unregistered_projection_caller_is_rejected (test_original_b_publication_data_source_closure.OriginalBPublicationDataSourceClosureTests.test_missing_or_unregistered_projection_caller_is_rejected)",
+        "test_removing_manifest_binding_or_exact_readback_is_rejected (test_original_b_publication_data_source_closure.OriginalBPublicationDataSourceClosureTests.test_removing_manifest_binding_or_exact_readback_is_rejected)"
+      ]
+    },
+    "test_original_b_routes_source_closure.py": {
+      "count": 3,
+      "sha256": "f9d9bb4d95dda7afbf36aee7456ca50f3da24ae78a191ece390d9a2839a5b501",
+      "tests": [
+        "test_actual_closed_sets_and_privileged_inventory (test_original_b_routes_source_closure.OriginalBRouteSourceClosureTests.test_actual_closed_sets_and_privileged_inventory)",
+        "test_removing_a_real_caller_cannot_pass (test_original_b_routes_source_closure.OriginalBRouteSourceClosureTests.test_removing_a_real_caller_cannot_pass)",
+        "test_unregistered_product_cannot_invoke_b_entrypoints (test_original_b_routes_source_closure.OriginalBRouteSourceClosureTests.test_unregistered_product_cannot_invoke_b_entrypoints)"
+      ]
+    }
+  },
+  "candidate": {
+    "test_original_b_acceptance_source_closure.py": {
+      "count": 3,
+      "sha256": "69de7b4789ee296a987f998e59a4d5629c6d215550c5f9dfd50611899afc824f",
+      "tests": [
+        "test_every_acceptance_gate_rejects_removal_or_comment (test_original_b_acceptance_source_closure.OriginalBCompletionAcceptanceSourceTests.test_every_acceptance_gate_rejects_removal_or_comment)",
+        "test_new_guards_match_actual_functions (test_original_b_acceptance_source_closure.OriginalBCompletionAcceptanceSourceTests.test_new_guards_match_actual_functions)",
+        "test_only_actual_completion_and_root_record_are_callers (test_original_b_acceptance_source_closure.OriginalBCompletionAcceptanceSourceTests.test_only_actual_completion_and_root_record_are_callers)"
+      ]
+    },
+    "test_original_b_custody_source_closure.py": {
+      "count": 2,
+      "sha256": "46028d2e278dfcc232c9e703157bbab54448b7cc73b35df0084e13c1073eed24",
+      "tests": [
+        "test_each_custody_check_cannot_be_removed_or_commented_out (test_original_b_custody_source_closure.OriginalBCustodySourceClosureTests.test_each_custody_check_cannot_be_removed_or_commented_out)",
+        "test_original_guards_are_valid (test_original_b_custody_source_closure.OriginalBCustodySourceClosureTests.test_original_guards_are_valid)"
+      ]
+    },
+    "test_original_b_publication_data_source_closure.py": {
+      "count": 3,
+      "sha256": "67429fc69933975d93293f9046e6b68f21cf3c2568812fffbfea5b5357b27b80",
+      "tests": [
+        "test_actual_manifest_caller_and_original_readback_are_guarded (test_original_b_publication_data_source_closure.OriginalBPublicationDataSourceClosureTests.test_actual_manifest_caller_and_original_readback_are_guarded)",
+        "test_missing_or_unregistered_projection_caller_is_rejected (test_original_b_publication_data_source_closure.OriginalBPublicationDataSourceClosureTests.test_missing_or_unregistered_projection_caller_is_rejected)",
+        "test_removing_manifest_binding_or_exact_readback_is_rejected (test_original_b_publication_data_source_closure.OriginalBPublicationDataSourceClosureTests.test_removing_manifest_binding_or_exact_readback_is_rejected)"
+      ]
+    },
+    "test_original_b_routes_source_closure.py": {
+      "count": 3,
+      "sha256": "528535ae15b056c5e5fa6dc835ae8a039f34c1d832f16b069b1da1e450a566e8",
+      "tests": [
+        "test_actual_closed_sets_and_privileged_inventory (test_original_b_routes_source_closure.OriginalBRouteSourceClosureTests.test_actual_closed_sets_and_privileged_inventory)",
+        "test_removing_a_real_caller_cannot_pass (test_original_b_routes_source_closure.OriginalBRouteSourceClosureTests.test_removing_a_real_caller_cannot_pass)",
+        "test_unregistered_product_cannot_invoke_b_entrypoints (test_original_b_routes_source_closure.OriginalBRouteSourceClosureTests.test_unregistered_product_cannot_invoke_b_entrypoints)"
+      ]
+    }
+  }
+}
