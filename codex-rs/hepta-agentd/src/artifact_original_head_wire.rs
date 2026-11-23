@@ -122,13 +122,20 @@ impl Request {
         if bytes.len() != HEADER + 5 + length {
             return Err(Error::Unavailable);
         }
-        match bytes[50] {
-            1 if length > 0 => Ok(&bytes[55..]),
-            2 if length == 0 => Err(Error::Missing),
-            3 if length == 0 => Err(Error::Pending),
-            4 if length == 0 => Err(Error::Unavailable),
-            5 if length == 0 => Err(Error::ReadbackRequired),
-            _ => Err(Error::Binding("canonical original Artifact state")),
+        let status = match bytes[50] {
+            1 if length > 0 => Status::Completed,
+            2 if length == 0 => Status::Missing,
+            3 if length == 0 => Status::Pending,
+            4 if length == 0 => Status::Unavailable,
+            5 if length == 0 => Status::ReadbackRequired,
+            _ => return Err(Error::Binding("canonical original Artifact state")),
+        };
+        match status {
+            Status::Completed => Ok(&bytes[55..]),
+            Status::Missing => Err(Error::Missing),
+            Status::Pending => Err(Error::Pending),
+            Status::Unavailable => Err(Error::Unavailable),
+            Status::ReadbackRequired => Err(Error::ReadbackRequired),
         }
     }
 }
