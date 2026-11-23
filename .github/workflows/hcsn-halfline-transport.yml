@@ -48,6 +48,11 @@ jobs:
           set -euo pipefail
           python -B qualification/hcsn_halfline_transport/finite_marked_reference/reference.py --output "$RUNNER_TEMP/halfline/finite-marked-reference.json" --timing "$RUNNER_TEMP/halfline/finite-marked-reference-time.json"
           python -B -m qualification.hcsn_halfline_transport.verify_finite_marked --reference "$RUNNER_TEMP/halfline/finite-marked-reference.json" --output "$RUNNER_TEMP/halfline/finite-marked.json"
+      - name: Verify two endogenous boundaries and the continuous mixed source law
+        run: |
+          set -euo pipefail
+          python -B -m qualification.hcsn_halfline_transport.verify_qvi_finite_bridge --qvi-root . --renewal-root . --output "$RUNNER_TEMP/halfline/qvi-finite-bridge.json"
+          python -B -m qualification.hcsn_halfline_transport.verify_mixed_continuum --output "$RUNNER_TEMP/halfline/mixed-continuum.json"
       - name: Run the original discrete, interval and log-risk tests
         run: |
           set -euo pipefail
