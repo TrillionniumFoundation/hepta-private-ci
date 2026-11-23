@@ -2,6 +2,7 @@
 //! guards CURRENT throughout physical observation, then the original writer
 //! context must return successfully before durable Finalized is written.
 
+use super::inputs::RunStartOwnerIds;
 use super::*;
 
 impl HostAuthorityService {
@@ -127,8 +128,10 @@ impl HostAuthorityService {
                         &self.identity,
                         &slot.profile.deployment.target,
                         publication,
-                        config.peer_uid,
-                        config.peer_gid,
+                        RunStartOwnerIds {
+                            uid: config.peer_uid,
+                            gid: config.peer_gid,
+                        },
                         now,
                     )?;
                     let confirmed_at = self
@@ -142,8 +145,10 @@ impl HostAuthorityService {
                         &self.identity,
                         &slot.profile.deployment.target,
                         publication,
-                        config.peer_uid,
-                        config.peer_gid,
+                        RunStartOwnerIds {
+                            uid: config.peer_uid,
+                            gid: config.peer_gid,
+                        },
                         confirmed_at,
                     )?;
                     if confirmed != observed

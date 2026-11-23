@@ -147,7 +147,7 @@ fn read_original_material(
 
 enum OriginalMaterialSource {
     Local(Box<dyn OriginalMaterialReadback>),
-    Remote(OriginalCellQ24RemoteMaterialClientV1),
+    Remote(Box<OriginalCellQ24RemoteMaterialClientV1>),
 }
 
 impl OriginalMaterialSource {
@@ -225,7 +225,7 @@ pub async fn capture_original_remote_cell_q24_training_source_v1(
     )
     .map_err(|_| Error::Binding("same original remote Material capture"))?;
     let live = LiveOwners {
-        original: OriginalMaterialSource::Remote(owners.material),
+        original: OriginalMaterialSource::Remote(Box::new(owners.material)),
         baseline: owners.baseline,
         experience: owners.experience,
         dataset: owners.dataset,

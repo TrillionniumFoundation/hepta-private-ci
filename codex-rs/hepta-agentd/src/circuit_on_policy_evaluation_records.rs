@@ -6,6 +6,7 @@ use super::Error;
 use super::OriginalCircuitOnPolicyCohortConfigV1;
 use super::Publications;
 use super::episode::Episode;
+use super::episode::EpisodeRecords;
 use crate::OriginalCircuitEvaluationSourceV1;
 use crate::circuit_task::CircuitTaskPolicyProjectionV1;
 use codex_hepta_intelligence_eval::ClusterAssignment;
@@ -105,9 +106,11 @@ pub(super) fn assemble(
             config,
             ledger,
             &requested.episode,
-            &decisions,
-            &outcomes,
-            publications,
+            EpisodeRecords {
+                decisions: &decisions,
+                outcomes: &outcomes,
+                publications,
+            },
             sources,
             training_binding,
             current,
@@ -154,9 +157,11 @@ pub(super) fn assemble(
             config,
             ledger,
             &requested.candidate,
-            &decisions,
-            &outcomes,
-            publications,
+            EpisodeRecords {
+                decisions: &decisions,
+                outcomes: &outcomes,
+                publications,
+            },
             sources,
             training_binding,
             current,
@@ -165,9 +170,11 @@ pub(super) fn assemble(
             config,
             ledger,
             &requested.baseline,
-            &decisions,
-            &outcomes,
-            publications,
+            EpisodeRecords {
+                decisions: &decisions,
+                outcomes: &outcomes,
+                publications,
+            },
             sources,
             training_binding,
             current,
