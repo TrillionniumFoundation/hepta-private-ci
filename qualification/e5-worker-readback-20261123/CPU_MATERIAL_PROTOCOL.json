@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.e5.cpu-material-and-fixed-identity.v1",
+  "pre_fit": true,
+  "carried_forward": "Use independent hosted run 45179956043, archived SHA-256 f5430bacba92c23278a8c3b7514751352f21494d67eb8547cf530313dfedb284. All eight native jobs executed; four Circuit requests differed only through seven learned LoRA B float32 scalars and derived material identities. Historical acceptance remains four/eight. No speedup estimate for that scheduled run.",
+  "question": "Which documented CPU dispatch is sufficient to regenerate the historical source, and does one independently offered 8-job schedule fully rebind its registered model-pair roster? Single hosted Linux CPU machine. Preregister both candidate request digests before collecting new clock data.",
+  "unmeasured_calibration": {
+    "fixture": "Use unmodified seeded Circuit setup in isolated CPU processes; call setup_fixture only, independent of the later registered sweep. Score by exact material hash, no benchmark clock or answer selection. Resolve profiles before offering any timed job. Source stored weights never overwrite new fit values.",
+    "ordered_profiles": [
+      {
+        "id": "native",
+        "env": {}
+      },
+      {
+        "id": "baseline",
+        "env": {
+          "ATEN_CPU_CAPABILITY": "default"
+        }
+      },
+      {
+        "id": "avx2",
+        "env": {
+          "ATEN_CPU_CAPABILITY": "avx2"
+        }
+      },
+      {
+        "id": "avx512",
+        "env": {
+          "ATEN_CPU_CAPABILITY": "avx512"
+        }
+      },
+      {
+        "id": "compatible",
+        "env": {
+          "ATEN_CPU_CAPABILITY": "default",
+          "MKL_CBWR": "COMPATIBLE"
+        }
+      }
+    ],
+    "selection": "Use the FIRST profile that produces the original historical exact Circuit request. Skip avx2/avx512 if flags unsupported. If no profile reproduces historical bytes, allow only the native profile's already fixed hosted identity if it is reproduced. No other profile or model admitted."
+  },
+  "registered": {
+    "plain": "e0cd3479b1fa58d00896432c908433434cce9a5a1e3dad0df9e79adf8e35f93f",
+    "historical_circuit": "7d60577d12d49a10a6896cdef6c9762f7dd40e8d831cdeaf0597c3d626d50276",
+    "hosted_native_circuit": "0f46f3ffa4b65437e47e4bb16453b96b95a532e3aaeaa34799d43e9b6e7b467b"
+  },
+  "timed_run": {
+    "blocks": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        1
+      ]
+    ],
+    "fits": 8,
+    "attempts_per_distinct_batch_job": 1,
+    "max_timing_schedules": 1,
+    "method": "Each original training function starts from its seed. Use original trainer-release path, original E5 evaluate/batch/inspection checks, 1 CPU thread per model, no external network. Calibration and setup excluded. Plain and Circuit use one authored future prompt; all jobs plus queue/verification/drain enter elapsed clock.",
+    "old_exact": "Historical admission and host-local admission are disjoint reporting labels. Confirm each complete run against the specific roster fixed here. Report no training concurrency rate unless all eight paired jobs verify identical answers, tokens and calls per family, each regenerated manifest exactly matches its selected precommitted digest, and declared job overlaps were realized."
+  },
+  "human_curves": [],
+  "observed_user_adoptions": 0,
+  "real_rate": null
+}
