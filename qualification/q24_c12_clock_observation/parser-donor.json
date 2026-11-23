@@ -1,0 +1,25 @@
+{
+  "donor": "a91102d3639a5a1f02394bfc0331611e9ab101a1",
+  "tested_files": {
+    "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs": "9371c924c603e0cc239c53cf50cd8ede3f2a79174334d54469e903f7de7ea0f8",
+    "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs": "560a5011df35e0ee685f8786c406ebda9ad059641d90bc8b636f4434f9826b6e",
+    "codex-rs/hepta-intelligence-eval/src/product_execution_file_tests.rs": "b7b4d5cd93adbc09bd137c0798f764134380b708bee3a26feae45f782b98d4cc",
+    "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache.rs": "f8e9d0de8327350f2c61168ee14119bceeb8c522d8d61470c508952aacacbd4d",
+    "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache_tests.rs": "478ae6828753c1766cc161c8293f09789c5c23630013b35bbbc0fb6cc2e3570d"
+  },
+  "measured_base": "6c6cf2f0aa296fb27d2e120a648dd961b79f9d9b",
+  "measured_patch": "89a4464fb1156e48de1badec331c3021c889781427f4635cb6314e67cc3f8958",
+  "evaluation_summary": [
+    "     Summary [   0.330s] 226 tests run: 226 passed, 0 skipped"
+  ],
+  "original_scope": [
+    "     Summary [   1.706s] 1 test run: 1 passed, 1699 skipped"
+  ],
+  "timings": [
+    "LEARN_FDE_C_TIMING command_readback_elapsed_us=248483 result=Ok(())",
+    "LEARN_FDE_C_TIMING evidence_readback_elapsed_us=245866 result=Ok(())",
+    "LEARN_FDE_C_TIMING evidence_peer_terminal=Ok(1)",
+    "LEARN_FDE_C_TIMING command_peer_terminal=Ok(2)",
+    "LEARN_FDE_C_TIMING underlying_peer_terminal=Ok(6)"
+  ]
+}
