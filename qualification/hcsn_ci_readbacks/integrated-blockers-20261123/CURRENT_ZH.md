@@ -1,5 +1,11 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 16:43 UTC #7052 Bellman 原严格门可逆单文件候选，等待原生 CI
+
+- 对 [#7032 b1af67a 原 learning.operator 失败作业 137727965016](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184439037/job/137727965016) 作具名日志核验，发现 `codex-rs/hepta-bellman-operator/examples/qualification_performance.rs` 里 **15 处 `expect` 和 2 处 `unwrap`** 被原 `-D clippy::expect_used/-D clippy::unwrap_used` 拦截；另有 `hepta-control-plane` 的不同严格诊断，未混作已闭合。
+- 基于确切 `b1af67a38f8cf9cee700cc067da1e6001ce220a8` 创建可逆隔离子源 [`169e67bb3d2c0c4d4d2f3c9979a4b59ead9b9858`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/169e67bb3d2c0c4d4d2f3c9979a4b59ead9b9858)，[Draft #7052](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7052)。原 Git compare `ahead=1, behind=0`，**仅一份示例源文件**变更：把原 fixture 转换和受控操作结果显式传到原失败退出，不用 `allow`、跳过或降验收；四个 sensor、三个 tabular 固定规模、计时上限、6 GiB RSS 门、公开 V1、研究封存及价格均未改。新文件 `expect()/unwrap()` 计数为 0；这仅是静态单文件改动，**不是 Rust 编译/数值/产品资格成功声明**。
+- 原 pull_request 已自动触发 [`blocking-ci 45219637675`](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45219637675) 及其他资格工作流，目前尚在执行。等精确源码原 Rust format、Clippy、原 perf 和全仓真日志/工件分项核验，发现失败同源修复，不要因为该候选或此前 #7032 局部安全成功而合并红草案。#7032 原 46 项终局、Windows 四隔离、musl、Q24 500ms、主分支 59 告警、残余严格门仍保持既定 HOLD。
+
 ## 2026-11-23 15:35 UTC #7032 b1af67a 正式 46 job 全仓终局：28 绿／6 跳／5 取消／7 红
 
 - 原 [blocking-ci 45184439037](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184439037) 已最终 `completed/failure`，固定 source `b1af67a38f8cf9cee700cc067da1e6001ce220a8`；独立逐项从全部 46 个 job 复算 **28 success、6 skipped、5 cancelled、7 failure**。原 `CI required` job 137804276199 亦红，不能用先前 45 job 在途快照断言总门。
