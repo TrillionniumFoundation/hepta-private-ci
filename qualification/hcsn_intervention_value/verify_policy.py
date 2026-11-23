@@ -141,7 +141,7 @@ def verify(data_dir,root,fit_only):
     mu=w@z['train'].mean(1); sd=np.sqrt(w@((z['train']-mu)**2).mean(1)).clip(min=1e-6); same(mu,meta['mu']);same(sd,meta['scale'])
     counts=dict(arm_selections=0,conditional_linear_refits=0,development_and_retention_decisions=0,
                 test_policies_with_controls=0,test_episode_actions=0,teacher_targets=0)
-    seedscores={}; summary={} if fit_only else {(r['seed'],r['mode'],r['method']):r for r in read(root/'summary.json')['rows']}; derived={} 
+    seedscores={}; summary={} if fit_only else {(r['seed'],r['mode'],r['method']):r for r in read(root/'summary.json')['rows']}; derived={}
     max_q=0.; max_head=0.
     for avail in ('read','noread'):
         paid=avail=='read'; registered=read(root/'prepare'/(avail+'.json')); fold=np.asarray(registered['fold_ids'])
