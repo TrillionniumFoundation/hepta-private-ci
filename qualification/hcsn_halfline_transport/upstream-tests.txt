@@ -1,0 +1,11 @@
+test_rare_left_bin_matches_eighty_digit_reference (qualification.hcsn_differentiable.tests.test_probability_intervals.ProbabilityIntervalTests.test_rare_left_bin_matches_eighty_digit_reference) ... ok
+test_normal_intervals_cover_cdf_sf_and_extreme_tails (qualification.hcsn_differentiable.tests.test_probability_intervals.ProbabilityIntervalTests.test_normal_intervals_cover_cdf_sf_and_extreme_tails) ... /workspace/scratch/0214baad95a1/lab3/ci_formatter/full-tree/qualification/hcsn_differentiable/tests/test_probability_intervals.py:48: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  self.assertAlmostEqual(float(result) / expected, 1, delta=3e-13)
+ok
+test_killed_intervals_and_first_order_gradients (qualification.hcsn_differentiable.tests.test_probability_intervals.ProbabilityIntervalTests.test_killed_intervals_and_first_order_gradients) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.036s
+
+OK

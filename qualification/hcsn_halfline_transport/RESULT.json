@@ -1,0 +1,494 @@
+{
+  "source_sha256": {
+    "protocol.json": "e9f4cb5177c1ed2bcbc2d84b798dafa2b46c2207064c084be319b2c26aa8fb3b",
+    "repair_protocol.json": "77f64c869a6edf8fedcc333c41adbfcf8edd45a3891fa6a16df28f8da7b312ad",
+    "transport.py": "f3f317128808f5265aeac9f4f54175d7674007379c6e8c902364151338dd9443",
+    "verify.py": "f59495337e23aecac835b02533cdc1b09e41e3c37d863257edb0bcd4b55b0469",
+    "reset_gradient.py": "7d19184d64076d3de24d4cd5740c89f5f9c75fb4c65726d04120ca0a56e84769"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "torch": "2.15.0+cpu",
+    "scipy": "1.17.0",
+    "mpmath": "1.3.0"
+  },
+  "upstream": "4a3a61f1d68a9adbc738f4f5374b01467699c184",
+  "scope": "Constant generator on a half-line, fixed lower boundary, point start, signed state-independent marks, deterministic refractory and reset. One extra event, no finite-bin semigroup claim.",
+  "sources": {
+    "previous": {
+      "extra_bound_blobs": 12,
+      "split_inventory_files": 35
+    },
+    "additional_git_blobs": 5
+  },
+  "first": [
+    {
+      "geometry": {
+        "left_intervals": 32,
+        "right_intervals": 32,
+        "endpoint": 2.0,
+        "grading": 1.0,
+        "right_grading": 0.0,
+        "delay": 0.2
+      },
+      "rows": [
+        {
+          "horizon": 0.01,
+          "normal_bins": 64,
+          "normal_bin_max_relative_error": 1.2800871473928055e-13,
+          "legacy_lost_normal_bins": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "original_tail_difference_first_bin": 0.0,
+          "stable_first_bin": 4.3473982859968445e-23,
+          "positive_integral_first_bin": 4.347398285996765e-23,
+          "first_bin_gradient": [
+            -8.540263307209725e-21,
+            2.0855179926730566e-19,
+            -8.56163218207856e-23,
+            8.300976136218252e-21
+          ],
+          "first_bin_fd_max_relative_error": 1.4488075850138671e-08,
+          "survivor_upper_tail": 2.3857619332224e-198,
+          "survivor_upper_tail_relative_error": 6.838973831690964e-14,
+          "phase_bin_probabilities": [
+            0.0,
+            2.6546095060067558e-45,
+            1.9367990970040437e-23
+          ],
+          "max_phase_bin_relative_error": 2.0435401395364237e-14,
+          "phase_probability": 1.9367990970040437e-23,
+          "rare_phase_signed_mass": [
+            -7.747196388016176e-24,
+            1.4525993227530327e-23
+          ],
+          "rare_mark_relative_error": 2.6645352591003757e-15,
+          "rare_mark_gradient_relative_error": 2.6645352591003757e-15,
+          "absolute_mass_error": 0.0,
+          "signed_mark_max_absolute_error": 0.0,
+          "semigroup": {
+            "hit_relative_error": 2.7755575615628914e-15,
+            "first_subinterval_hit": 3.300811450193161e-56,
+            "second_subinterval_hit_unconditional": 1.9367990970040335e-23,
+            "interval_relative_errors": {
+              "0": 9.43689570931383e-15,
+              "31": 9.992007221626409e-16,
+              "32": 8.881784197001252e-16
+            }
+          }
+        },
+        {
+          "horizon": 0.1,
+          "normal_bins": 64,
+          "normal_bin_max_relative_error": 1.199040866595169e-14,
+          "legacy_lost_normal_bins": [],
+          "original_tail_difference_first_bin": 3.673802827164341e-05,
+          "stable_first_bin": 3.673802827182748e-05,
+          "positive_integral_first_bin": 3.6738028271827675e-05,
+          "first_bin_gradient": [
+            -0.0006432329190023123,
+            0.0012829997293096207,
+            -7.080767840441553e-05,
+            0.00047921220608972885
+          ],
+          "first_bin_fd_max_relative_error": 7.17274128980705e-10,
+          "survivor_upper_tail": 5.734663323942058e-22,
+          "survivor_upper_tail_relative_error": 7.216449660063518e-15,
+          "phase_bin_probabilities": [
+            0.0,
+            0.0014925515184370242,
+            0.0004925404029396505
+          ],
+          "max_phase_bin_relative_error": 1.6848510567650816e-15,
+          "phase_probability": 0.0019850919213766746,
+          "rare_phase_signed_mass": [
+            -0.0007940367685506699,
+            0.001488818941032506
+          ],
+          "rare_mark_relative_error": 2.220446049250313e-16,
+          "rare_mark_gradient_relative_error": 2.220446049250313e-16,
+          "absolute_mass_error": 0.0,
+          "signed_mark_max_absolute_error": 2.220446049250313e-16,
+          "semigroup": {
+            "hit_relative_error": 0.0,
+            "first_subinterval_hit": 7.280286217711158e-07,
+            "second_subinterval_hit_unconditional": 0.001984363892754904,
+            "interval_relative_errors": {
+              "0": 4.884981308350689e-15,
+              "31": 3.3306690738754696e-16,
+              "32": 3.3306690738754696e-16
+            }
+          }
+        }
+      ]
+    },
+    {
+      "geometry": {
+        "left_intervals": 32,
+        "right_intervals": 32,
+        "endpoint": 2.0,
+        "grading": 0.0,
+        "right_grading": 0.0,
+        "delay": 0.2
+      },
+      "rows": [
+        {
+          "horizon": 0.01,
+          "normal_bins": 64,
+          "normal_bin_max_relative_error": 1.2800871473928055e-13,
+          "legacy_lost_normal_bins": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "original_tail_difference_first_bin": 0.0,
+          "stable_first_bin": 1.9646418939722702e-22,
+          "positive_integral_first_bin": 1.9646418939722565e-22,
+          "first_bin_gradient": [
+            -3.8254007241402314e-20,
+            9.258393170707986e-19,
+            -3.8285481578473267e-22,
+            3.6849802371255274e-20
+          ],
+          "first_bin_fd_max_relative_error": 1.3031222545478727e-08,
+          "survivor_upper_tail": 2.3857619332224e-198,
+          "survivor_upper_tail_relative_error": 6.838973831690964e-14,
+          "phase_bin_probabilities": [
+            0.0,
+            2.6546095060067558e-45,
+            1.9367990970040437e-23
+          ],
+          "max_phase_bin_relative_error": 2.0435401395364237e-14,
+          "phase_probability": 1.9367990970040437e-23,
+          "rare_phase_signed_mass": [
+            -7.747196388016176e-24,
+            1.4525993227530327e-23
+          ],
+          "rare_mark_relative_error": 2.6645352591003757e-15,
+          "rare_mark_gradient_relative_error": 2.6645352591003757e-15,
+          "absolute_mass_error": 1.1102230246251565e-16,
+          "signed_mark_max_absolute_error": 1.1102230246251565e-16,
+          "semigroup": {
+            "hit_relative_error": 2.7755575615628914e-15,
+            "first_subinterval_hit": 3.300811450193161e-56,
+            "second_subinterval_hit_unconditional": 1.9367990970040335e-23,
+            "interval_relative_errors": {
+              "0": 4.6629367034256575e-15,
+              "31": 8.881784197001252e-16,
+              "32": 8.881784197001252e-16
+            }
+          }
+        },
+        {
+          "horizon": 0.1,
+          "normal_bins": 64,
+          "normal_bin_max_relative_error": 8.548717289613705e-15,
+          "legacy_lost_normal_bins": [],
+          "original_tail_difference_first_bin": 0.00010529628561128934,
+          "stable_first_bin": 0.0001052962856113782,
+          "positive_integral_first_bin": 0.00010529628561137788,
+          "first_bin_gradient": [
+            -0.0018413750533621681,
+            0.003667831109464785,
+            -0.0002011487693998385,
+            0.0013705810344739919
+          ],
+          "first_bin_fd_max_relative_error": 1.702925578328518e-09,
+          "survivor_upper_tail": 5.734663323942058e-22,
+          "survivor_upper_tail_relative_error": 7.216449660063518e-15,
+          "phase_bin_probabilities": [
+            0.0,
+            0.0014925515184370242,
+            0.0004925404029396505
+          ],
+          "max_phase_bin_relative_error": 1.6848510567650816e-15,
+          "phase_probability": 0.0019850919213766746,
+          "rare_phase_signed_mass": [
+            -0.0007940367685506699,
+            0.001488818941032506
+          ],
+          "rare_mark_relative_error": 2.220446049250313e-16,
+          "rare_mark_gradient_relative_error": 2.220446049250313e-16,
+          "absolute_mass_error": 0.0,
+          "signed_mark_max_absolute_error": 2.220446049250313e-16,
+          "semigroup": {
+            "hit_relative_error": 0.0,
+            "first_subinterval_hit": 7.280286217711158e-07,
+            "second_subinterval_hit_unconditional": 0.001984363892754904,
+            "interval_relative_errors": {
+              "0": 3.3306690738754696e-15,
+              "31": 4.440892098500626e-16,
+              "32": 3.3306690738754696e-16
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "renewal": [
+    {
+      "horizon": 0.21,
+      "second_event": 8.897572691594463e-89,
+      "positive_convolution": "8.89757269159452227777426016505357755783456e-89",
+      "second_relative_error": 6.6365926130981025e-15,
+      "second_gradient": [
+        -3.5636118976246055e-86,
+        -3.5636118976246055e-86,
+        1.7839388164126138e-84,
+        -3.5547793338461827e-88,
+        7.11869232484798e-86
+      ],
+      "independent_fd_gradient_max_relative_error": 2.8667637660406697e-06,
+      "aggregate_expected_minus_first": 0.0,
+      "original_reset_active": 0.963183385355451,
+      "original_reset_refractory": 0.03681661464454904,
+      "original_expected_hits": 0.03681661464454904,
+      "original_mass_residual": -4.163336342344337e-17,
+      "full_successor_mass_error": 2.220446049250313e-16,
+      "full_successor_mark_error": 1.1102230246251565e-16,
+      "first_phase_bin_relative_error": 1.2836119350393624e-15,
+      "second_phase_bin_relative_error": 3.619971690311761e-14,
+      "first_phase_bins": [
+        0.0032568394570079307,
+        0.031163872208866565,
+        0.0023959029786745425
+      ],
+      "second_phase_bins": [
+        0.0,
+        8.718867805013598e-176,
+        8.897572691594463e-89
+      ],
+      "second_event_mark": [
+        -3.559029076637785e-89,
+        6.673179518695847e-89
+      ],
+      "second_mark_gradient_relative_error": 6.6365926130981025e-15,
+      "isolated_released_surviving_bin": 9.661196677810119e-24,
+      "positive_released_bin_integral": 9.66119706084555e-24,
+      "original_released_bin_relative_error": 3.964678785273179e-08,
+      "original_released_bin_relative_gate_pass": false,
+      "original_release_budget_relative_error": 5.120348589571222e-13,
+      "original_renewal_terms": 2,
+      "corrected_released_bin": 9.661197060845495e-24,
+      "corrected_released_bin_relative_error": 5.662137425588298e-15,
+      "corrected_release_budget_relative_error": 4.884981308350689e-15,
+      "corrected_order_relative_difference": 2.6645352591003757e-15,
+      "corrected_release_bin_gradients": [
+        -1.946512296287071e-21,
+        4.877732891390923e-20,
+        -1.908691778872719e-23,
+        1.9419314360177764e-21
+      ],
+      "corrected_release_bin_fd_relative_error": 1.6563315208273366e-07
+    },
+    {
+      "horizon": 0.3,
+      "second_event": 4.0929523742974957e-10,
+      "positive_convolution": "0.000000000409295237429751778684191006037442421586423",
+      "second_relative_error": 5.3920053266552154e-15,
+      "second_gradient": [
+        -1.656644605738447e-08,
+        -1.656644605738447e-08,
+        8.380327801044572e-08,
+        -1.6184128725389173e-09,
+        3.27444730253596e-08
+      ],
+      "independent_fd_gradient_max_relative_error": 5.710640849088122e-10,
+      "aggregate_expected_minus_first": 4.0929523659194444e-10,
+      "original_reset_active": 0.9162157690483733,
+      "original_reset_refractory": 0.0837842309516269,
+      "original_expected_hits": 0.08576932287300357,
+      "original_mass_residual": -2.220446049250313e-16,
+      "full_successor_mass_error": 0.0,
+      "full_successor_mark_error": 0.0,
+      "first_phase_bin_relative_error": 1.3551571440807073e-14,
+      "second_phase_bin_relative_error": 5.748067368869565e-15,
+      "first_phase_bins": [
+        0.0300936533942354,
+        0.05080493016590269,
+        0.002885646982193568
+      ],
+      "second_phase_bins": [
+        0.0,
+        1.3940880768910222e-10,
+        2.6988642974064735e-10
+      ],
+      "second_event_mark": [
+        -1.6371809497189984e-10,
+        3.069714280723122e-10
+      ],
+      "second_mark_gradient_relative_error": 5.3920053266552154e-15,
+      "isolated_released_surviving_bin": 0.0009708895578684981,
+      "positive_released_bin_integral": 0.0009708895711891,
+      "original_released_bin_relative_error": 1.3719996916350397e-08,
+      "original_released_bin_relative_gate_pass": false,
+      "original_release_budget_relative_error": 4.75175454539567e-14,
+      "original_renewal_terms": 2,
+      "corrected_released_bin": 0.0009708895711890942,
+      "corrected_released_bin_relative_error": 5.88418203051333e-15,
+      "corrected_release_budget_relative_error": 6.106226635438361e-15,
+      "corrected_order_relative_difference": 7.771561172376096e-15,
+      "corrected_release_bin_gradients": [
+        -0.020581063099071817,
+        0.0524458843738812,
+        -0.0017322465760150423,
+        0.02014687539306526
+      ],
+      "corrected_release_bin_fd_relative_error": 6.183231704426362e-11
+    }
+  ],
+  "marked_interface": {
+    "grid_active_cells": 8,
+    "phase_cells": 4,
+    "initial_mark": [
+      -0.4,
+      0.75
+    ],
+    "projected_next_duration": 0.005,
+    "max_entrywise_content_mass_error": 5.551115123125783e-17,
+    "unit_mark_gradient_error": 1.1102230246251565e-16,
+    "advanced_mass_residual": 0.0
+  },
+  "reset_margin_gradient": {
+    "0.21": {
+      "upstream_tensor_reset_requires_fixed_float": true,
+      "default_float_forward_bitwise_identical": true,
+      "fixed_initial_distance": 0.5,
+      "reset_distance": 0.5,
+      "frozen_surviving_bin": [
+        0.5,
+        0.75
+      ],
+      "release_bin_centered_differences": [
+        {
+          "step": 4e-08,
+          "gradient": 1.9557793367408808e-21,
+          "relative_error": 3.941494872816698e-06
+        },
+        {
+          "step": 2e-08,
+          "gradient": 1.955783218057923e-21,
+          "relative_error": 1.9569653959550237e-06
+        }
+      ],
+      "second_event_fd_step": 2e-07,
+      "checks": {
+        "isolated_release_bin": {
+          "autograd": 1.9557870454655574e-21,
+          "independent": 1.9557870454654927e-21,
+          "relative_error": 3.3084646133829665e-14
+        },
+        "full_successor_bin": {
+          "autograd": 1.9557870454655574e-21,
+          "independent": 1.9557870454654927e-21,
+          "relative_error": 3.3084646133829665e-14
+        },
+        "full_signed_content_bin": {
+          "autograd": -7.8231481818622315e-22,
+          "independent": -7.823148181861971e-22,
+          "relative_error": 3.3306690738754696e-14
+        },
+        "full_bin_log_boundary_at_fixed_initial_distance": {
+          "autograd": -1.9557870454655574e-21,
+          "independent": -1.9557870454654927e-21,
+          "relative_error": 3.3084646133829665e-14
+        },
+        "full_bin_absolute_reset_at_fixed_initial_distance": {
+          "autograd": 1.1744414739003714e-21,
+          "independent": 1.1744414739003325e-21,
+          "relative_error": 3.3084646133829665e-14
+        },
+        "second_event": {
+          "autograd": -3.5636118976246055e-86,
+          "independent": -3.563611901461632e-86,
+          "relative_error": 1.0767240432585368e-09
+        },
+        "second_phase_sum": {
+          "autograd": -3.5636118976246055e-86,
+          "independent": -3.563611901461632e-86,
+          "relative_error": 1.0767240432585368e-09
+        },
+        "signed_second_event": {
+          "autograd": 1.4254447590498423e-86,
+          "independent": 1.4254447605846529e-86,
+          "relative_error": 1.0767240432585368e-09
+        }
+      }
+    },
+    "0.3": {
+      "upstream_tensor_reset_requires_fixed_float": true,
+      "default_float_forward_bitwise_identical": true,
+      "fixed_initial_distance": 0.5,
+      "reset_distance": 0.5,
+      "frozen_surviving_bin": [
+        0.5,
+        0.75
+      ],
+      "release_bin_centered_differences": [
+        {
+          "step": 4e-08,
+          "gradient": 0.021513108673231352,
+          "relative_error": 3.91118688214398e-07
+        },
+        {
+          "step": 2e-08,
+          "gradient": 0.02151311288942255,
+          "relative_error": 1.9513634030854377e-07
+        }
+      ],
+      "second_event_fd_step": 2e-07,
+      "checks": {
+        "isolated_release_bin": {
+          "autograd": 0.021513117087413623,
+          "independent": 0.021513117087413488,
+          "relative_error": 6.217248937900877e-15
+        },
+        "full_successor_bin": {
+          "autograd": 0.021513117087413623,
+          "independent": 0.021513117087413488,
+          "relative_error": 6.217248937900877e-15
+        },
+        "full_signed_content_bin": {
+          "autograd": -0.008605246834965448,
+          "independent": -0.008605246834965396,
+          "relative_error": 5.995204332975845e-15
+        },
+        "full_bin_log_boundary_at_fixed_initial_distance": {
+          "autograd": -0.021513117087413623,
+          "independent": -0.021513117087413488,
+          "relative_error": 6.217248937900877e-15
+        },
+        "full_bin_absolute_reset_at_fixed_initial_distance": {
+          "autograd": 0.012918531697462491,
+          "independent": 0.012918531697462411,
+          "relative_error": 6.217248937900877e-15
+        },
+        "second_event": {
+          "autograd": -1.656644605738447e-08,
+          "independent": -1.6566446058113373e-08,
+          "relative_error": 4.3998693577407266e-11
+        },
+        "second_phase_sum": {
+          "autograd": -1.656644605738447e-08,
+          "independent": -1.6566446058113373e-08,
+          "relative_error": 4.3998693577407266e-11
+        },
+        "signed_second_event": {
+          "autograd": 6.626578422953789e-09,
+          "independent": 6.626578423245349e-09,
+          "relative_error": 4.3998693577407266e-11
+        }
+      }
+    }
+  }
+}
