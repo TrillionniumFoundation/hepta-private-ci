@@ -158,10 +158,11 @@ pub(crate) fn verify_fence_settlement(
     original_payload: &str,
     cancellation_operation_id: &str,
     cancellation_payload: &str,
-    cancellation_terminal_event_id: &str,
-    cancellation_terminal_event_sha256: &Sha256Digest,
+    cancellation_terminal_event: (&str, &Sha256Digest),
     cancellation_receipt: &str,
 ) -> Result<(), String> {
+    let (cancellation_terminal_event_id, cancellation_terminal_event_sha256) =
+        cancellation_terminal_event;
     let settlement: NotesFenceSettlement =
         serde_json::from_str(settlement_json).map_err(|_| "invalid Notes fence settlement")?;
     if settlement.schema_version != 1
