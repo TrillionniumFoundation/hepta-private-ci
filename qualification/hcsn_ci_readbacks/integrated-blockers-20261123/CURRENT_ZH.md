@@ -1,5 +1,12 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 12:23 UTC 双锁原安全资格更新（保留原 #7032 失败与 main HOLD）
+
+- #7032 源 `610f9108` 的原 cargo-deny 仍 FAIL。两文件锁修复候选 `b1af67a38f8cf9cee700cc067da1e6001ce220a8` 在完全独立的原生作业 [45165787601](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45165787601) 中，原 cargo-deny、正式 Cargo 重建与 locked check、Bazel 生成器与原锁核验 **3/3 全部成功**。其成功只归属精确候选，不意味着科学原 source / 全仓资格绿。[原件身份与双依赖图](cookie-7032-paired-security-20261123.md)
+- main `732e934` 的两锁修补候选 `86d13925` 在原 [45165845066](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45165845066) 里通过提交锁核验，但原 `cargo-deny` **FAIL**。原生逐条告警：**59 个 RUSTSEC 编号，26 个不同 crate，51 条漏洞类、8 条停止维护类**；另三项 yanked 警告。这个结果是不同依赖图，不能照搬 #7032 锁文件或压制安全门。[完整逐 ID/版本索引](default-cargo-deny-residual-20261123.md)
+- Windows 四项正式隔离、Agentd 严格构建、Q24 长尾与所有联合产品门保持 HOLD；未擅自合并、未改冻结研究或重跑已完成实验。
+
+
 ## 当前可复核的结论
 
 - **两细胞实验的原托管科学作业已通过。** 最终 #7032 源 `610f9108` 在 CPU Torch 2.10 冷检出，独立重算参照、全部新数值检验及原 12 项测试均通过。与 Torch 2.15 的四份输出共对照 1,011 个数值，最大绝对差 $1.49\times10^{-11}$，出现在独立有限差分。两源初态在释放前后拆分、概率与内容守恒、两条内生边界及 16 个参数的反传均按原误差线通过。[托管作业](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45162302799/job/137650500461) · [原 ZIP 与跨环境复核](../finite-marked-610f910/)
