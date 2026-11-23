@@ -1,4 +1,5 @@
-use chrono::Utc;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 use codex_cloud_tasks_client::ApplyOutcome;
 use codex_cloud_tasks_client::ApplyStatus;
 use codex_cloud_tasks_client::AttemptStatus;
@@ -54,7 +55,7 @@ impl MockClient {
                 id,
                 title: title.to_string(),
                 status,
-                updated_at: Utc::now(),
+                updated_at: SystemTime::now().into(),
                 environment_id: environment_id.clone(),
                 environment_label: environment_label.clone(),
                 summary: DiffSummary {
@@ -137,7 +138,7 @@ impl MockClient {
             return Ok(vec![TurnAttempt {
                 turn_id: "T-1000-attempt-2".to_string(),
                 attempt_placement: Some(1),
-                created_at: Some(Utc::now()),
+                created_at: Some(SystemTime::now().into()),
                 status: AttemptStatus::Completed,
                 diff: Some(mock_diff_for(&task)),
                 messages: vec!["Mock alternate attempt".to_string()],
@@ -155,7 +156,7 @@ impl MockClient {
         best_of_n: usize,
     ) -> Result<CreatedTask> {
         let _ = (env_id, prompt, git_ref, qa_mode, best_of_n);
-        let id = format!("task_local_{}", chrono::Utc::now().timestamp_millis());
+        let id = format!("task_local_{}", unix_timestamp_millis(SystemTime::now()));
         Ok(CreatedTask { id: TaskId(id) })
     }
 }
@@ -221,6 +222,22 @@ impl CloudBackend for MockClient {
         Box::pin(MockClient::create_task(
             self, env_id, prompt, git_ref, qa_mode, best_of_n,
         ))
+    }
+}
+
+/// Match Chrono's signed millisecond timestamp (flooring sub-millisecond
+/// instants before the Unix epoch), without importing Chrono in this crate.
+fn unix_timestamp_millis(now: SystemTime) -> i64 {
+    match now.duration_since(UNIX_EPOCH) {
+        Ok(elapsed) => i64::try_from(elapsed.as_millis()).expect("system time fits i64 millis"),
+        Err(error) => {
+            let elapsed = error.duration();
+            let mut millis = elapsed.as_millis();
+            if elapsed.subsec_nanos() % 1_000_000 != 0 {
+                millis += 1;
+            }
+            -i64::try_from(millis).expect("system time fits i64 millis")
+        }
     }
 }
 
