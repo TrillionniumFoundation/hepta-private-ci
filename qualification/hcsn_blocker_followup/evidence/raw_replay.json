@@ -1,0 +1,719 @@
+{
+  "passed": true,
+  "source_kit_sha256": "4358f818d748ce69fc180ebcc8b228e55d0024ba8eb6432d224a2a52a3d428ce",
+  "unpacked_members": 92,
+  "revalidated_originals_per_fresh_workspace": 22,
+  "separate_replay_workspaces": 2,
+  "reused_inputs": "Only published source code, the fixed release kit, the exact official ResNet-18 checkpoint and already downloaded original media. No derived features or camera outputs supplied.",
+  "subsets": {
+    "train": {
+      "windows": 32,
+      "recordings": 8,
+      "packet": {
+        "features": {
+          "release_sha256": "0348be0f0f768ce7aef0083f40fd8439a317a8e21dd8c1743b998ff24dd70ccf",
+          "fresh_sha256": "0348be0f0f768ce7aef0083f40fd8439a317a8e21dd8c1743b998ff24dd70ccf",
+          "npz_byte_identical": true,
+          "arrays": {
+            "audio": {
+              "shape": [
+                32,
+                6,
+                52
+              ],
+              "dtype": "float64",
+              "elements": 9984,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "visual": {
+              "shape": [
+                32,
+                6,
+                76
+              ],
+              "dtype": "float64",
+              "elements": 14592,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "audio_block": {
+              "shape": [
+                32,
+                6,
+                52
+              ],
+              "dtype": "float64",
+              "elements": 9984,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "visual_block": {
+              "shape": [
+                32,
+                6,
+                76
+              ],
+              "dtype": "float64",
+              "elements": 14592,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "label": {
+              "shape": [
+                32
+              ],
+              "dtype": "int64",
+              "elements": 32,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "group": {
+              "shape": [
+                32
+              ],
+              "dtype": "<U48",
+              "elements": 32,
+              "bitwise_equal": true
+            },
+            "recording": {
+              "shape": [
+                32
+              ],
+              "dtype": "<U9",
+              "elements": 32,
+              "bitwise_equal": true
+            },
+            "query_id": {
+              "shape": [
+                32
+              ],
+              "dtype": "<U24",
+              "elements": 32,
+              "bitwise_equal": true
+            },
+            "dt": {
+              "shape": [
+                32,
+                6
+              ],
+              "dtype": "float64",
+              "elements": 192,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "start_seconds": {
+              "shape": [
+                32
+              ],
+              "dtype": "float64",
+              "elements": 32,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "split": {
+              "shape": [
+                32
+              ],
+              "dtype": "<U5",
+              "elements": 32,
+              "bitwise_equal": true
+            }
+          }
+        },
+        "semantic": {
+          "release_sha256": "943bbea74ce19fc6de95ba15d9d29a9bbe9547518161bc6a39d38e5f94b33bcc",
+          "fresh_sha256": "943bbea74ce19fc6de95ba15d9d29a9bbe9547518161bc6a39d38e5f94b33bcc",
+          "npz_byte_identical": true,
+          "arrays": {
+            "query_id": {
+              "shape": [
+                32
+              ],
+              "dtype": "<U24",
+              "elements": 32,
+              "bitwise_equal": true
+            },
+            "probability": {
+              "shape": [
+                32,
+                6,
+                2
+              ],
+              "dtype": "float64",
+              "elements": 384,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            }
+          }
+        }
+      },
+      "video_timestamp_rows_identical": 32,
+      "probability_rows_identical": 32,
+      "historical_preprocessed_and_logit_hashes_compared": 17,
+      "source_roster_fields_identical_except_expected_relocated_media_path": true
+    },
+    "dev": {
+      "windows": 24,
+      "recordings": 6,
+      "packet": {
+        "features": {
+          "release_sha256": "0d9e0768b672bd3f50eb9a06acfaad3343a5ee0a87e46e265dcf639ba8cadee7",
+          "fresh_sha256": "0d9e0768b672bd3f50eb9a06acfaad3343a5ee0a87e46e265dcf639ba8cadee7",
+          "npz_byte_identical": true,
+          "arrays": {
+            "audio": {
+              "shape": [
+                24,
+                6,
+                52
+              ],
+              "dtype": "float64",
+              "elements": 7488,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "visual": {
+              "shape": [
+                24,
+                6,
+                76
+              ],
+              "dtype": "float64",
+              "elements": 10944,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "audio_block": {
+              "shape": [
+                24,
+                6,
+                52
+              ],
+              "dtype": "float64",
+              "elements": 7488,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "visual_block": {
+              "shape": [
+                24,
+                6,
+                76
+              ],
+              "dtype": "float64",
+              "elements": 10944,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "label": {
+              "shape": [
+                24
+              ],
+              "dtype": "int64",
+              "elements": 24,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "group": {
+              "shape": [
+                24
+              ],
+              "dtype": "<U47",
+              "elements": 24,
+              "bitwise_equal": true
+            },
+            "recording": {
+              "shape": [
+                24
+              ],
+              "dtype": "<U9",
+              "elements": 24,
+              "bitwise_equal": true
+            },
+            "query_id": {
+              "shape": [
+                24
+              ],
+              "dtype": "<U24",
+              "elements": 24,
+              "bitwise_equal": true
+            },
+            "dt": {
+              "shape": [
+                24,
+                6
+              ],
+              "dtype": "float64",
+              "elements": 144,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "start_seconds": {
+              "shape": [
+                24
+              ],
+              "dtype": "float64",
+              "elements": 24,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "split": {
+              "shape": [
+                24
+              ],
+              "dtype": "<U3",
+              "elements": 24,
+              "bitwise_equal": true
+            }
+          }
+        },
+        "semantic": {
+          "release_sha256": "6ad09598f5fc555a08f48f6d1275c342db34339fb50ff13de8284c4a3d00be5e",
+          "fresh_sha256": "6ad09598f5fc555a08f48f6d1275c342db34339fb50ff13de8284c4a3d00be5e",
+          "npz_byte_identical": true,
+          "arrays": {
+            "query_id": {
+              "shape": [
+                24
+              ],
+              "dtype": "<U24",
+              "elements": 24,
+              "bitwise_equal": true
+            },
+            "probability": {
+              "shape": [
+                24,
+                6,
+                2
+              ],
+              "dtype": "float64",
+              "elements": 288,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            }
+          }
+        }
+      },
+      "video_timestamp_rows_identical": 24,
+      "probability_rows_identical": 24,
+      "historical_preprocessed_and_logit_hashes_compared": 20,
+      "source_roster_fields_identical_except_expected_relocated_media_path": true
+    },
+    "test": {
+      "windows": 32,
+      "recordings": 8,
+      "packet": {
+        "features": {
+          "release_sha256": "b29b87d68199fe8318dd4b9635f9e8645da457f6025cc3cc1ff304c44cd4a8cf",
+          "fresh_sha256": "b29b87d68199fe8318dd4b9635f9e8645da457f6025cc3cc1ff304c44cd4a8cf",
+          "npz_byte_identical": true,
+          "arrays": {
+            "audio": {
+              "shape": [
+                32,
+                6,
+                52
+              ],
+              "dtype": "float64",
+              "elements": 9984,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "visual": {
+              "shape": [
+                32,
+                6,
+                76
+              ],
+              "dtype": "float64",
+              "elements": 14592,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "audio_block": {
+              "shape": [
+                32,
+                6,
+                52
+              ],
+              "dtype": "float64",
+              "elements": 9984,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "visual_block": {
+              "shape": [
+                32,
+                6,
+                76
+              ],
+              "dtype": "float64",
+              "elements": 14592,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "label": {
+              "shape": [
+                32
+              ],
+              "dtype": "int64",
+              "elements": 32,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "group": {
+              "shape": [
+                32
+              ],
+              "dtype": "<U59",
+              "elements": 32,
+              "bitwise_equal": true
+            },
+            "recording": {
+              "shape": [
+                32
+              ],
+              "dtype": "<U9",
+              "elements": 32,
+              "bitwise_equal": true
+            },
+            "query_id": {
+              "shape": [
+                32
+              ],
+              "dtype": "<U24",
+              "elements": 32,
+              "bitwise_equal": true
+            },
+            "dt": {
+              "shape": [
+                32,
+                6
+              ],
+              "dtype": "float64",
+              "elements": 192,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "start_seconds": {
+              "shape": [
+                32
+              ],
+              "dtype": "float64",
+              "elements": 32,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            },
+            "split": {
+              "shape": [
+                32
+              ],
+              "dtype": "<U4",
+              "elements": 32,
+              "bitwise_equal": true
+            }
+          }
+        },
+        "semantic": {
+          "release_sha256": "0ddca4fff414559ff99b9cb9ed7c595f0beca41cd63f102dd9ec20a49749f019",
+          "fresh_sha256": "0ddca4fff414559ff99b9cb9ed7c595f0beca41cd63f102dd9ec20a49749f019",
+          "npz_byte_identical": true,
+          "arrays": {
+            "query_id": {
+              "shape": [
+                32
+              ],
+              "dtype": "<U24",
+              "elements": 32,
+              "bitwise_equal": true
+            },
+            "probability": {
+              "shape": [
+                32,
+                6,
+                2
+              ],
+              "dtype": "float64",
+              "elements": 384,
+              "bitwise_equal": true,
+              "maximum_absolute_error": 0.0
+            }
+          }
+        }
+      },
+      "video_timestamp_rows_identical": 32,
+      "probability_rows_identical": 32,
+      "historical_preprocessed_and_logit_hashes_compared": 32,
+      "source_roster_fields_identical_except_expected_relocated_media_path": true
+    }
+  },
+  "stage_costs": {
+    "train": {
+      "raw_descriptor_elapsed_seconds": 21.00251817299977,
+      "rgb_staging_serial_seconds": 66.34174867999354,
+      "inference_elapsed_seconds": 16.79448077000052
+    },
+    "dev": {
+      "raw_descriptor_elapsed_seconds": 11.155768323998927,
+      "rgb_staging_serial_seconds": 41.0014295530018,
+      "inference_elapsed_seconds": 12.218134584001746
+    },
+    "test": {
+      "raw_descriptor_elapsed_seconds": 13.453006341998844,
+      "rgb_staging_serial_seconds": 42.625432688999354,
+      "inference_elapsed_seconds": 73.94362750800065
+    }
+  },
+  "train_test_invocation": {
+    "began_utc": "2026-11-23T02:50:13.841747+00:00",
+    "ended_utc": "2026-11-23T02:53:03.467044+00:00",
+    "wall_seconds": 169.6253170580003,
+    "returncode": 1,
+    "system_cpu_seconds": 26.62339,
+    "user_cpu_seconds": 179.378623,
+    "call": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/0214baad95a1/lab3/kit_test_extracted/pinned/portable_replay.py",
+      "/workspace/scratch/0214baad95a1/lab3/kit_train_test_portable",
+      "--previous-code",
+      "/workspace/scratch/0214baad95a1/trial",
+      "--weights",
+      "/workspace/scratch/0214baad95a1/lab2/weights/resnet18.pth",
+      "--media-cache",
+      "/workspace/scratch/0214baad95a1/lab3/recordings/media-cache",
+      "--split",
+      "train",
+      "--split",
+      "test"
+    ],
+    "source_kit_sha256": "4358f818d748ce69fc180ebcc8b228e55d0024ba8eb6432d224a2a52a3d428ce",
+    "max_rss_reported_by_wait4_kib": 448920,
+    "rss_scope": "Kernel wait4 ru_maxrss; maximum individual process high-water mark, not simultaneous summed tree memory."
+  },
+  "test_inference_resume": {
+    "began_utc": "2026-11-23T02:53:26.983876+00:00",
+    "ended_utc": "2026-11-23T02:53:41.718356+00:00",
+    "wall_seconds": 14.734504784999444,
+    "user_cpu_seconds": 12.505557,
+    "system_cpu_seconds": 1.928159,
+    "max_rss_reported_by_wait4_kib": 453464,
+    "returncode": -9,
+    "scope": "Resumes exactly the SIGKILLed final vision_disk.py command of portable_replay.py using RGB from that same fresh invocation. Original released frontend and original source media only. No reuse of release-derived arrays."
+  },
+  "bounded_memory_recovery": {
+    "code_sha256": "e5267a1c0e2929dbfa03a159701497f6e5647161e536eb657ecc655819358c7c",
+    "implementation_sha256_from_receipt": "e5267a1c0e2929dbfa03a159701497f6e5647161e536eb657ecc655819358c7c",
+    "receipt_sha256": "4d52d5c54f879e1d4e5fa033a77e53e1d50a76e898f4cb6e983623cdd3255a3d",
+    "start_utc": "2026-11-23T02:55:18.785158+00:00",
+    "end_utc": "2026-11-23T02:56:32.728769+00:00",
+    "wall_seconds": 73.94362750800065,
+    "attempts": [
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-198374754-w01",
+          "newcommons-198374754-w02",
+          "newcommons-198374754-w03",
+          "newcommons-198374754-w04",
+          "newcommons-157539108-w01",
+          "newcommons-157539108-w02",
+          "newcommons-157539108-w03",
+          "newcommons-157539108-w04",
+          "newcommons-28102065-w01",
+          "newcommons-28102065-w02",
+          "newcommons-28102065-w03",
+          "newcommons-28102065-w04",
+          "newcommons-163037840-w01",
+          "newcommons-163037840-w02",
+          "newcommons-163037840-w03",
+          "newcommons-163037840-w04",
+          "newcommons-63566948-w01",
+          "newcommons-63566948-w02",
+          "newcommons-63566948-w03",
+          "newcommons-63566948-w04",
+          "newcommons-99719538-w01",
+          "newcommons-99719538-w02",
+          "newcommons-99719538-w03",
+          "newcommons-99719538-w04",
+          "newcommons-147121838-w01",
+          "newcommons-147121838-w02",
+          "newcommons-147121838-w03",
+          "newcommons-147121838-w04",
+          "newcommons-85721948-w01",
+          "newcommons-85721948-w02",
+          "newcommons-85721948-w03",
+          "newcommons-85721948-w04"
+        ],
+        "returncode": -9,
+        "wall_seconds": 11.461666470999262,
+        "user_cpu_seconds": 9.966307,
+        "system_cpu_seconds": 1.195671,
+        "max_rss_kib": 324456
+      },
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-99719538-w03"
+        ],
+        "returncode": 0,
+        "wall_seconds": 3.7770713989993965,
+        "user_cpu_seconds": 3.332405,
+        "system_cpu_seconds": 0.39202299999999995,
+        "max_rss_kib": 324352
+      },
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-99719538-w04"
+        ],
+        "returncode": 0,
+        "wall_seconds": 3.966371643000457,
+        "user_cpu_seconds": 3.449412,
+        "system_cpu_seconds": 0.46937199999999996,
+        "max_rss_kib": 323960
+      },
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-147121838-w01"
+        ],
+        "returncode": 0,
+        "wall_seconds": 4.488678321000407,
+        "user_cpu_seconds": 3.890978,
+        "system_cpu_seconds": 0.519242,
+        "max_rss_kib": 340728
+      },
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-147121838-w02"
+        ],
+        "returncode": 0,
+        "wall_seconds": 3.9875781169994298,
+        "user_cpu_seconds": 3.499576,
+        "system_cpu_seconds": 0.405753,
+        "max_rss_kib": 340440
+      },
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-147121838-w03"
+        ],
+        "returncode": 0,
+        "wall_seconds": 3.561109411999496,
+        "user_cpu_seconds": 3.229974,
+        "system_cpu_seconds": 0.32131499999999996,
+        "max_rss_kib": 340672
+      },
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-147121838-w04"
+        ],
+        "returncode": 0,
+        "wall_seconds": 3.357611732000805,
+        "user_cpu_seconds": 2.950395,
+        "system_cpu_seconds": 0.390821,
+        "max_rss_kib": 340484
+      },
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-85721948-w01"
+        ],
+        "returncode": 0,
+        "wall_seconds": 3.8332675640012894,
+        "user_cpu_seconds": 3.22479,
+        "system_cpu_seconds": 0.593478,
+        "max_rss_kib": 320676
+      },
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-85721948-w02"
+        ],
+        "returncode": 0,
+        "wall_seconds": 5.076796563000244,
+        "user_cpu_seconds": 4.46562,
+        "system_cpu_seconds": 0.56965,
+        "max_rss_kib": 319216
+      },
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-85721948-w03"
+        ],
+        "returncode": 0,
+        "wall_seconds": 4.436503664999691,
+        "user_cpu_seconds": 3.620926,
+        "system_cpu_seconds": 0.768436,
+        "max_rss_kib": 320828
+      },
+      {
+        "stage": "transform",
+        "queries": [
+          "newcommons-85721948-w04"
+        ],
+        "returncode": 0,
+        "wall_seconds": 4.415146904999347,
+        "user_cpu_seconds": 3.771765,
+        "system_cpu_seconds": 0.596494,
+        "max_rss_kib": 320884
+      },
+      {
+        "stage": "predict",
+        "queries": [
+          "newcommons-198374754-w01",
+          "newcommons-198374754-w02",
+          "newcommons-198374754-w03",
+          "newcommons-198374754-w04",
+          "newcommons-157539108-w01",
+          "newcommons-157539108-w02",
+          "newcommons-157539108-w03",
+          "newcommons-157539108-w04",
+          "newcommons-28102065-w01",
+          "newcommons-28102065-w02",
+          "newcommons-28102065-w03",
+          "newcommons-28102065-w04",
+          "newcommons-163037840-w01",
+          "newcommons-163037840-w02",
+          "newcommons-163037840-w03",
+          "newcommons-163037840-w04",
+          "newcommons-63566948-w01",
+          "newcommons-63566948-w02",
+          "newcommons-63566948-w03",
+          "newcommons-63566948-w04",
+          "newcommons-99719538-w01",
+          "newcommons-99719538-w02",
+          "newcommons-99719538-w03",
+          "newcommons-99719538-w04",
+          "newcommons-147121838-w01",
+          "newcommons-147121838-w02",
+          "newcommons-147121838-w03",
+          "newcommons-147121838-w04",
+          "newcommons-85721948-w01",
+          "newcommons-85721948-w02",
+          "newcommons-85721948-w03",
+          "newcommons-85721948-w04"
+        ],
+        "returncode": 0,
+        "wall_seconds": 20.322851008000725,
+        "user_cpu_seconds": 18.188311,
+        "system_cpu_seconds": 1.98494,
+        "max_rss_kib": 433808
+      }
+    ]
+  },
+  "dev_invocation": {
+    "begin_utc": "2026-11-23T02:49:44.890408+00:00",
+    "end_utc": "2026-11-23T02:50:55.466464+00:00",
+    "wall_seconds": 70.5760555267334,
+    "timing_basis": "new command log creation until final portable runner output; elapsed OS file clocks, no separate whole-command CPU counter"
+  },
+  "total_original_queries": 88,
+  "identical_npz": 6,
+  "camera_prefix_posteriors_reproduced": 528,
+  "max_numeric_error": 0.0,
+  "original_tensor_and_logits_digest_matches_available_for_rows": 69
+}

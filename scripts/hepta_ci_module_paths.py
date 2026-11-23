@@ -165,7 +165,12 @@ def literal_module_paths(text: str) -> tuple[list[str], bool]:
                 declaration = pairs[declaration] + 1
         module = declaration < len(tokens) and tokens[declaration][1] == "mod"
         if module and any(
-            body and not inner and body[0][1] not in {"cfg", "path", "allow"}
+            body
+            and not inner
+            and body[0][1] not in {"cfg", "path", "allow"}
+            # A built-in lint expectation cannot rewrite a module's path.
+            # A namespaced attribute starting with "expect" is different.
+            and not (len(body) >= 3 and body[0][1] == "expect" and body[1][1] == "(")
             for body, inner in group
         ):
             opaque = True

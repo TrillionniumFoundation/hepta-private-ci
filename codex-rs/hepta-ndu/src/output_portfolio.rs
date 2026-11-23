@@ -148,8 +148,7 @@ pub fn select_output_portfolio_v1(
             &weights,
             &scores,
             &covariance,
-            budget.risk_aversion,
-            budget.switch_penalty,
+            budget,
             candidates[index].protocol.requires_whole_candidate(),
         )?;
         weights[index] = weight;
@@ -415,8 +414,7 @@ fn covariance_positive_gain_weight(
     weights: &[FixedQ32],
     scores: &[FixedQ32],
     covariance: &[FixedQ32],
-    risk_aversion: FixedQ32,
-    switch_penalty: FixedQ32,
+    budget: &OutputPortfolioBudgetV1,
     atomic: bool,
 ) -> Result<FixedQ32, NduError> {
     let count = weights.len();
@@ -436,10 +434,10 @@ fn covariance_positive_gain_weight(
     // Ranking conservatively subtracts the switch cost, but optimization
     // must price that cost once per admitted direction, not per Q32 weight.
     let gross_score = scores[index]
-        .checked_add(switch_penalty)
+        .checked_add(budget.switch_penalty)
         .map_err(|_| NduError::Arithmetic)?;
     let slope = gross_score
-        .checked_sub(mul_q32_ties_even(twice_cross, risk_aversion)?)
+        .checked_sub(mul_q32_ties_even(twice_cross, budget.risk_aversion)?)
         .map_err(|_| NduError::Arithmetic)?;
     if slope <= FixedQ32::ZERO {
         return Ok(FixedQ32::ZERO);
@@ -447,7 +445,7 @@ fn covariance_positive_gain_weight(
     let twice_diagonal = diagonal
         .checked_add(diagonal)
         .map_err(|_| NduError::Arithmetic)?;
-    let curvature = mul_q32_ties_even(twice_diagonal, risk_aversion)?;
+    let curvature = mul_q32_ties_even(twice_diagonal, budget.risk_aversion)?;
     let mut proposed = maximum;
     if !atomic && curvature > FixedQ32::ZERO && slope < mul_q32_ties_even(curvature, maximum)? {
         proposed = min_q32(
@@ -469,11 +467,11 @@ fn covariance_positive_gain_weight(
     let covariance_delta = quadratic_diagonal
         .checked_add(quadratic_cross)
         .map_err(|_| NduError::Arithmetic)?;
-    let priced_covariance = mul_q32_ties_even(covariance_delta, risk_aversion)?;
+    let priced_covariance = mul_q32_ties_even(covariance_delta, budget.risk_aversion)?;
     let gain = linear
         .checked_sub(priced_covariance)
         .map_err(|_| NduError::Arithmetic)?
-        .checked_sub(switch_penalty)
+        .checked_sub(budget.switch_penalty)
         .map_err(|_| NduError::Arithmetic)?;
     if gain <= FixedQ32::ZERO {
         Ok(FixedQ32::ZERO)

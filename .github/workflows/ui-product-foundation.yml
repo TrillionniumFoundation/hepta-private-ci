@@ -4,9 +4,11 @@ on:
     paths:
       - apps/hepta-control-ui/**
       # Conservative gateway Cargo closure; drift-checked against the shared graph.
+      - codex-rs/execution-core/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-control-plane/**
       - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-infer-worker-host/src/**
       - codex-rs/hepta-native-gateway/**
       - codex-rs/hepta-ndu/**
       - codex-rs/hepta-neuron/**

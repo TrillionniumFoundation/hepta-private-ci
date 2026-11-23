@@ -1,0 +1,27 @@
+name: HCSN intervention evidence
+
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_blocker_followup/**
+      - qualification/hcsn_intervention_value/replay.py
+      - .github/workflows/hcsn-intervention-evidence.yml
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the research head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/hcsn_blocker_followup
+            qualification/hcsn_intervention_value
+      - name: Verify archived decisions and exact affine-head evidence
+        run: python3 -m qualification.hcsn_blocker_followup.ci_evidence qualification/hcsn_blocker_followup/evidence

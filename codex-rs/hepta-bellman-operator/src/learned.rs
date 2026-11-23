@@ -356,6 +356,7 @@ fn fit_tabular_operator_inner(
     })
 }
 
+#[cfg(any(test, feature = "compatibility-api"))]
 pub fn predict_tabular_operator(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
