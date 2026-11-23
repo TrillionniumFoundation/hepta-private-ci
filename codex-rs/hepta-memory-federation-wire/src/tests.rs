@@ -49,7 +49,13 @@ fn seal_query(
     nonce: [u8; FEDERATION_NONCE_BYTES],
 ) -> AuthenticatedFederationFrameV1 {
     let credential = registry
-        .require_current(&id("peer-a"), &id("peer-b"), &id("key-a-b"), generation, NOW)
+        .require_current(
+            &id("peer-a"),
+            &id("peer-b"),
+            &id("key-a-b"),
+            generation,
+            NOW,
+        )
         .expect("current credential");
     AuthenticatedFederationFrameV1::seal(
         credential,
@@ -121,7 +127,9 @@ fn rotation_and_revocation_fence_old_generation() {
     let mut replay = ReplayCacheV1::new(8).expect("replay cache");
     assert!(matches!(
         old.verify(&id("peer-b"), NOW + 1, &registry, &mut replay),
-        Err(FederationProtocolError::Credential(CredentialError::Revoked))
+        Err(FederationProtocolError::Credential(
+            CredentialError::Revoked
+        ))
     ));
     let current = seal_query(&registry, 2, [6; FEDERATION_NONCE_BYTES]);
     current
@@ -133,7 +141,9 @@ fn rotation_and_revocation_fence_old_generation() {
     let later = seal_query_for_revoked_test();
     assert!(matches!(
         later.verify(&id("peer-b"), NOW + 1, &registry, &mut replay),
-        Err(FederationProtocolError::Credential(CredentialError::Revoked))
+        Err(FederationProtocolError::Credential(
+            CredentialError::Revoked
+        ))
     ));
 }
 
@@ -277,6 +287,8 @@ fn two_logical_hosts_cover_partition_timeout_and_revoke_during_io() {
     let mut replay = ReplayCacheV1::new(8).expect("replay cache");
     assert!(matches!(
         outbound.verify(&id("peer-b"), NOW + 1, &host_b_trust, &mut replay),
-        Err(FederationProtocolError::Credential(CredentialError::Revoked))
+        Err(FederationProtocolError::Credential(
+            CredentialError::Revoked
+        ))
     ));
 }
