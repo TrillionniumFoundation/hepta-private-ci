@@ -66,3 +66,5 @@ e327 的 daemon 原生工作流也已终结。普通 2,849/2,849，Root 68/68，
 对 musl 子通知的修复已放入 #7021 独立草案，基于当前 #7016，只改两个 core 源文件。在真实父回合结束所有者被保持的同一交错，旧源码真实丢失 0/1，候选正常结束后恰收一次 1/1。没有强制竞争时，两侧原六秒端到端用例各通过 3/3。原 GNU Clippy 通过。未确定类别的 fleet 回复属于另一条失败。[修复草案](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7021) · [原运行与受控对照](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/f2d9a96fbff616596ef2c4c42addd1a0431a66c7/docs/learning/evidence/musl-child-completion-20261123)
 
 更细的现有连续输入有一个可复验的正例。仍从原 SVD 出发，在 19 个读出坐标里改动 8 个，L1=0.9833757。用共同参与构造的 TRAIN 与 DEV 标签，分别买 11/4 题、救回 9/4 题、改错 0 题。两分区最差来源均与免费持平；DEV 相对免费／一律买增益 +0.11667／+0.04167。逐题阈值分差均大于 0.10，两批原符号检验都未通过。该编辑是现有 18 维表示能实现平均效用和保持约束的证书，尚无新来源泛化结论。[向量、搜索和原评分器复核](../purchase-attainability-20261123/README.md)
+
+在相同原特征、价格和半径上，仅用 TRAIN 标签另外拟合一次，再封存权重后重放 DEV。六个编辑坐标、L1=0.9601562。TRAIN 两购两救、最差来源持平；DEV 三购两救一改错，效用仅高于免费 0.00417、低于一律购买 0.07083，最差来源损失 0.325。两批共同参与求解的容量正例不能作为此方法可迁移的证据。[训练封存及开发结果](../purchase-attainability-20261123/README.md)
