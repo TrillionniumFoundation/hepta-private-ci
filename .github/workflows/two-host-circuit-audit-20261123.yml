@@ -22,7 +22,8 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with: {python-version: '3.12'}
       - name: Install numeric readback dependency
-        run: python -m pip install --only-binary=:all: numpy==2.3.5
+        run: |
+          python -m pip install --only-binary=:all: numpy==2.3.5
       - name: Retain original compressed artifacts and platform timeline
         env:
           GH_TOKEN: ${{ github.token }}
