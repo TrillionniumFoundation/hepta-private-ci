@@ -1,0 +1,164 @@
+{
+  "assembly_sha256": "77b7ce78baf8ea976c3a244f8d020ecca01a5b65d5c5b3fe08799473f2c67f86",
+  "core_sha256": "fb29792e3df0b23371ef9a16a03dde1a12f8569131544a089a18eab6c56e954e",
+  "e4_input_commit": "e5072455d6fca43a447feae03a1f102d0b0ca402",
+  "hepta_commit": "8ba46fc7a112fc220cdcbbd48dc5d24fda76a738",
+  "hepta_version": "0.3.0",
+  "host_non_string_reason_rejected": true,
+  "native_build": {
+    "artifact_bytes": 13792,
+    "artifact_sha256": "6f7153ed08e33b99bcbae21fb84f9b6d46856ab9fc46fb78f14c15017c824265",
+    "exports": [
+      "route",
+      "select_result"
+    ],
+    "flags": [
+      "-m",
+      "elf_x86_64",
+      "-shared",
+      "-z",
+      "defs",
+      "-z",
+      "noexecstack",
+      "-z",
+      "relro",
+      "-z",
+      "now",
+      "--build-id=none",
+      "--hash-style=both"
+    ],
+    "function_frames": {
+      "route": 96,
+      "select_result": 128
+    },
+    "implementation_sha256": "ce622f4e903a9ec410c30d0dd49ff2c32dfc12226b6327c049afe4db60a41a80",
+    "machine_text_bytes": 529,
+    "machine_text_sha256": "9af5a36468dcc86f1237758047d2a0e9d30c00f534a63b704d1b18ca5f42b30d",
+    "object_sha256": "8cb4e0c8a2e16fec43edd432c0c3f3168aea6fdb4b68b56b84b00be5ff738e20",
+    "profile": "hepta.hia.program.direct-linux-x86_64.v1",
+    "schema": "hepta.hia.program.direct-native.v1",
+    "target": "x86_64-unknown-linux-gnu",
+    "toolchain": {
+      "default_target": "elf_x86_64 (explicit emulation)",
+      "mode": "gnu-ld",
+      "path": "/usr/bin/x86_64-linux-gnu-ld.bfd",
+      "role": "link_generated_object_only",
+      "sha256": "d2766988b6a1b1d1518cdc09242e726d1f24e151e16410ada3092b11ffd9081b",
+      "version": "GNU ld (GNU Binutils for Debian) 2.44"
+    }
+  },
+  "new_independent_tasks": 0,
+  "new_model_calls": 0,
+  "new_task_verifier_calls": 0,
+  "new_training_runs": 0,
+  "panels": {
+    "b2": [
+      {
+        "reason_code": 1,
+        "second_origin": "CC/0",
+        "selection_code": 1,
+        "task": "blind-b2-django-escape-leading-slashes"
+      },
+      {
+        "reason_code": 2,
+        "second_origin": "PP/1",
+        "selection_code": 1,
+        "task": "blind-b2-django-is-same-domain"
+      },
+      {
+        "reason_code": 3,
+        "second_origin": "PP/1",
+        "selection_code": 2,
+        "task": "blind-b2-more-itertools-first-true"
+      },
+      {
+        "reason_code": 3,
+        "second_origin": "PP/1",
+        "selection_code": 2,
+        "task": "blind-b2-more-itertools-quantify"
+      },
+      {
+        "reason_code": 3,
+        "second_origin": "PP/1",
+        "selection_code": 2,
+        "task": "blind-b2-pydantic-to-pascal"
+      },
+      {
+        "reason_code": 3,
+        "second_origin": "PP/1",
+        "selection_code": 2,
+        "task": "blind-b2-pydantic-to-snake"
+      }
+    ],
+    "upstream": [
+      {
+        "reason_code": 2,
+        "second_origin": "TT/1",
+        "selection_code": 0,
+        "task": "upstream-click-split-opt"
+      },
+      {
+        "reason_code": 1,
+        "second_origin": "FF/0",
+        "selection_code": 0,
+        "task": "upstream-requests-parse-header-links"
+      },
+      {
+        "reason_code": 2,
+        "second_origin": "TT/1",
+        "selection_code": 0,
+        "task": "upstream-requests-unquote-header-value"
+      },
+      {
+        "reason_code": 1,
+        "second_origin": "FF/0",
+        "selection_code": 0,
+        "task": "upstream-requests-unquote-unreserved"
+      },
+      {
+        "reason_code": 2,
+        "second_origin": "TT/1",
+        "selection_code": 0,
+        "task": "upstream-werkzeug-is-byte-range-valid"
+      },
+      {
+        "reason_code": 2,
+        "second_origin": "TT/1",
+        "selection_code": 0,
+        "task": "upstream-werkzeug-is-entity-header"
+      }
+    ]
+  },
+  "policy_sha256": "de582bab5a35eff9dffb3953a5e97fe141542fda4c255e048c9659eca4190f54",
+  "positive_evaluations_per_backend": {
+    "route": 268,
+    "select_result": 16
+  },
+  "python_version": "3.12.14",
+  "reason_encoding": {
+    "business_tests_failed": 2,
+    "business_tests_passed": 3,
+    "invalid_test_patch": 1
+  },
+  "replay_sha256": "b39249e13f58fa05f2455f551c31c7354b2d2bf893204ec3a753798ce9f37bf9",
+  "selection_encoding": {
+    "0": "second_failed",
+    "1": "second_passed",
+    "2": "first_passed"
+  },
+  "unknown_reason_code": 0,
+  "vm_limits": {
+    "max_call_depth": 1,
+    "max_heap_bytes": 0,
+    "max_steps": 16
+  },
+  "vm_steps_per_entry": {
+    "route": [
+      4
+    ],
+    "select_result": [
+      7
+    ]
+  },
+  "vm_wrong_inputs_rejected": 7
+}
