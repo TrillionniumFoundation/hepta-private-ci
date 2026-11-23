@@ -323,6 +323,126 @@ mod tests {
     use std::sync::atomic::Ordering;
     use tokio_util::sync::CancellationToken;
 
+    use crate::context::ContextualUserFragment;
+    use crate::context::SubagentNotification;
+
+    // The frozen baseline only: call the same original method used by the V1 watcher.
+    impl Session {
+        async fn inject_subagent_notification(&self, event: SubagentNotification) {
+            self.inject_no_new_turn(
+                vec![ContextualUserFragment::into(event)],
+                /*current_turn_context*/ None,
+            )
+            .await;
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn terminal_child_notification_waits_for_normal_finish_and_stays_single() {
+        use crate::session::tests::make_session_and_context;
+        use codex_protocol::protocol::AgentStatus;
+        use std::time::Duration;
+        use tokio::sync::Notify;
+        use tokio::time::timeout;
+
+        struct ImmediateFinish;
+        impl SessionTask for ImmediateFinish {
+            fn kind(&self) -> TaskKind {
+                TaskKind::Regular
+            }
+
+            fn span_name(&self) -> &'static str {
+                "session_task.child_notification_finish_probe"
+            }
+
+            async fn run(
+                self: Arc<Self>,
+                _session: Arc<Session>,
+                _context: Arc<TurnContext>,
+                _input: Vec<PendingTurnInput>,
+                _cancellation_token: CancellationToken,
+            ) -> SessionTaskResult {
+                Ok(None)
+            }
+        }
+
+        struct IdleGate {
+            entered: Arc<Notify>,
+            release: Arc<Notify>,
+        }
+        impl codex_extension_api::ThreadLifecycleContributor<crate::config::Config> for IdleGate {
+            fn on_thread_idle<'a>(
+                &'a self,
+                _input: codex_extension_api::ThreadIdleInput<'a>,
+            ) -> codex_extension_api::ExtensionFuture<'a, ()> {
+                Box::pin(async move {
+                    self.entered.notify_one();
+                    self.release.notified().await;
+                })
+            }
+        }
+
+        async fn count_notifications(session: &Session) -> usize {
+            session.clone_history().await.raw_items().filter(|item| {
+                let ResponseItem::Message { role, content, .. } = item else {
+                    return false;
+                };
+                role == "user" && content.iter().any(|part| {
+                    matches!(part, ContentItem::InputText { text } if SubagentNotification::matches_text(text))
+                })
+            }).count()
+        }
+
+        let (mut session, context) = make_session_and_context().await;
+        let entered = Arc::new(Notify::new());
+        let release = Arc::new(Notify::new());
+        let mut extensions =
+            codex_extension_api::ExtensionRegistryBuilder::<crate::config::Config>::new();
+        extensions.thread_lifecycle_contributor(Arc::new(IdleGate {
+            entered: Arc::clone(&entered),
+            release: Arc::clone(&release),
+        }));
+        session.services.extensions = Arc::new(extensions.build());
+        let session = Arc::new(session);
+        session
+            .spawn_task(Arc::new(context), Vec::new(), ImmediateFinish)
+            .await
+            .expect("start the original finish owner");
+        timeout(Duration::from_secs(2), entered.notified())
+            .await
+            .expect("normal finish reached its idle callback");
+        assert!(session.has_pending_task_terminalization());
+
+        let send = session.inject_subagent_notification(SubagentNotification::new(
+            "observed-child",
+            AgentStatus::Completed(Some("child finished".into())),
+        ));
+        tokio::pin!(send);
+        let returned_before_finish = timeout(Duration::from_millis(100), &mut send).await.is_ok();
+        assert!(session.has_pending_task_terminalization());
+        assert_eq!(count_notifications(&session).await, 0);
+        release.notify_one();
+        if !returned_before_finish {
+            timeout(Duration::from_secs(2), send)
+                .await
+                .expect("deliver after genuine owner retirement");
+        }
+        assert!(
+            !returned_before_finish,
+            "child notification was discarded before the normal finish owner retired"
+        );
+        assert_eq!(count_notifications(&session).await, 1);
+
+        session.begin_shutdown();
+        session
+            .inject_subagent_notification(SubagentNotification::new(
+                "after-shutdown",
+                AgentStatus::Completed(None),
+            ))
+            .await;
+        assert_eq!(count_notifications(&session).await, 1);
+    }
+
     #[derive(Clone, Copy, Debug)]
     enum InjectionPath {
         Raw,
