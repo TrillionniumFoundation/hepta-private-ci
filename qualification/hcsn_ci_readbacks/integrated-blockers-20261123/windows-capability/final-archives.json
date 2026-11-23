@@ -1,0 +1,455 @@
+{
+  "7005": {
+    "all_final_failed": [
+      "restricted_tokens_select_stable_routes_and_cleanup",
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ],
+    "archive_entries": 139,
+    "artifact": 14790212814,
+    "job": 137481302886,
+    "members": {
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log": {
+        "bytes": 9129,
+        "diagnostic_categories": [
+          "elevated filesystem unavailable"
+        ],
+        "sha256": "171b6ca3562d932805a8d6a2d5993c011144ee872d18d4a2f74579e2e0afc8f3"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log": {
+        "bytes": 7608,
+        "diagnostic_categories": [],
+        "sha256": "790113496fcb48911f6839b51fd6710d476a891f33b053138394fe9b3a54c3b8"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test.log": {
+        "bytes": 6701,
+        "diagnostic_categories": [],
+        "sha256": "ddc36f72cef8a7b1b3c431c785964f7201d33cbfd3a5d0b06f5af35fcaa7f671"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log": {
+        "bytes": 10651,
+        "diagnostic_categories": [
+          "elevated filesystem unavailable"
+        ],
+        "sha256": "b5f36a3c5368a7943d035bfd27c89f2f80aa5ee8b7d7a3254f99f5efc60ec9af"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-process-test/test.log": {
+        "bytes": 672,
+        "diagnostic_categories": [],
+        "sha256": "6a302bc17e7871daaa03c3cacd230bd9e77db22909deea7029ecefa4ab0f5341"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log": {
+        "bytes": 617,
+        "diagnostic_categories": [
+          "private desktop required"
+        ],
+        "sha256": "b480469457f870490981d1653f44f4bd233713c3bdde8e4da9dcd8734b5c0c6d"
+      }
+    },
+    "run": 45110023804,
+    "selected": {
+      "exec_server_resumes_detached_session_without_killing_processes": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-process-test/test.log",
+        "status": "ok"
+      },
+      "restricted_tokens_select_stable_routes_and_cleanup": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log",
+        "status": "FAILED"
+      },
+      "suite::cli_stream::integration_creates_and_checks_session_file": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::cli_stream::responses_mode_stream_cli_supports_openai_base_url_config_override": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::remote_env::deferred_executor_spawn_agent_inherits_ready_step_environments::test_case_1_v1": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log",
+        "status": "FAILED"
+      },
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "FAILED"
+      },
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "FAILED"
+      }
+    },
+    "sha256": "7dfe9d1bca9dc8d57fcd2d2b4d00c4ebfb1265e7cd2e190e05e2d0e2fc043aaa",
+    "source": "de4ef594bfefec05a64fc2ae3b717a640a57b263"
+  },
+  "7009": {
+    "all_final_failed": [
+      "restricted_tokens_select_stable_routes_and_cleanup",
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ],
+    "archive_entries": 139,
+    "artifact": 14792963395,
+    "job": 137503935193,
+    "members": {
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log": {
+        "bytes": 9129,
+        "diagnostic_categories": [
+          "elevated filesystem unavailable"
+        ],
+        "sha256": "6de398a4acd522b1695578869393b3fc7332dfbafad777453732801b401a8a61"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log": {
+        "bytes": 7713,
+        "diagnostic_categories": [],
+        "sha256": "84e5c67a38aeeb036b96fbd33a84b3b1aa0353fe7045edceae8573f1f662d4fe"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test.log": {
+        "bytes": 6701,
+        "diagnostic_categories": [],
+        "sha256": "0d2e1cf5e7c9437563dfeab286a0e991d6260c768ae24e71edd2ffd554c512de"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log": {
+        "bytes": 10651,
+        "diagnostic_categories": [
+          "elevated filesystem unavailable"
+        ],
+        "sha256": "0712eed7ad98b99f0371b724d1e43ea37077e4986552818a4d56374c56e35ed5"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-process-test/test.log": {
+        "bytes": 672,
+        "diagnostic_categories": [],
+        "sha256": "e312adf3d338fb5ef58b7f3c2b187f6302522984f25233d08cf28b3c8ff380ed"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log": {
+        "bytes": 617,
+        "diagnostic_categories": [
+          "private desktop required"
+        ],
+        "sha256": "c335b60b338ac8f0b95fdbfff8492c34aceec381b2cc5ebc10f17302643b37df"
+      }
+    },
+    "run": 45115542852,
+    "selected": {
+      "exec_server_resumes_detached_session_without_killing_processes": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-process-test/test.log",
+        "status": "ok"
+      },
+      "restricted_tokens_select_stable_routes_and_cleanup": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log",
+        "status": "FAILED"
+      },
+      "suite::cli_stream::integration_creates_and_checks_session_file": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::cli_stream::responses_mode_stream_cli_supports_openai_base_url_config_override": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::remote_env::deferred_executor_spawn_agent_inherits_ready_step_environments::test_case_1_v1": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log",
+        "status": "FAILED"
+      },
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "FAILED"
+      },
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "FAILED"
+      }
+    },
+    "sha256": "d41ee9736c1ab51afe5c0a642d7465962f6a7c11a626b187024fead3d88fec31",
+    "source": "de944cb80e0104c28383aee6ec55b9a43f23606b"
+  },
+  "7013": {
+    "all_final_failed": [
+      "restricted_tokens_select_stable_routes_and_cleanup",
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ],
+    "archive_entries": 139,
+    "artifact": 14794386164,
+    "job": 137513221713,
+    "members": {
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log": {
+        "bytes": 9129,
+        "diagnostic_categories": [
+          "elevated filesystem unavailable"
+        ],
+        "sha256": "16f7fddd5063add1e51768189db5379a5a741afcfb0de4829d927a6801dc908e"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log": {
+        "bytes": 7608,
+        "diagnostic_categories": [],
+        "sha256": "701fbfffd4ae91af87205b81a1f30117d137e2d6408590a45de60ed26ae23f00"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test.log": {
+        "bytes": 6701,
+        "diagnostic_categories": [],
+        "sha256": "4ce9de1dc8179d44fe6446b03482206b3c630ee85027245f3303dcc21ccaa3ec"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log": {
+        "bytes": 10651,
+        "diagnostic_categories": [
+          "elevated filesystem unavailable"
+        ],
+        "sha256": "4a11b5d2b05a2eaa4db412294c19d96918f970a5e973cc8e8053b32ecdd5a128"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-process-test/test.log": {
+        "bytes": 672,
+        "diagnostic_categories": [],
+        "sha256": "0d26731454f31376d0235b0e89516fe54fea5b9b210c5156f788c84cfad1086a"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log": {
+        "bytes": 617,
+        "diagnostic_categories": [
+          "private desktop required"
+        ],
+        "sha256": "f59b8f5918f8f388aa2447dda6107636a2e034e8f54f289edea81b39c9c03e76"
+      }
+    },
+    "run": 45120356546,
+    "selected": {
+      "exec_server_resumes_detached_session_without_killing_processes": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-process-test/test.log",
+        "status": "ok"
+      },
+      "restricted_tokens_select_stable_routes_and_cleanup": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log",
+        "status": "FAILED"
+      },
+      "suite::cli_stream::integration_creates_and_checks_session_file": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::cli_stream::responses_mode_stream_cli_supports_openai_base_url_config_override": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::remote_env::deferred_executor_spawn_agent_inherits_ready_step_environments::test_case_1_v1": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log",
+        "status": "FAILED"
+      },
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "FAILED"
+      },
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "FAILED"
+      }
+    },
+    "sha256": "c92968abcd151078e1f996d128aa736d0b694376a557d5716690c9f02fe3f508",
+    "source": "a4ff555f72833160e24217ecb57612d3943db2cd"
+  },
+  "c6a": {
+    "all_final_failed": [
+      "exec_server_resumes_detached_session_without_killing_processes",
+      "restricted_tokens_select_stable_routes_and_cleanup",
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ],
+    "archive_entries": 139,
+    "artifact": 14796846759,
+    "job": 137528575116,
+    "members": {
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log": {
+        "bytes": 9129,
+        "diagnostic_categories": [
+          "elevated filesystem unavailable"
+        ],
+        "sha256": "c8be6da0f2add0da6f5a937e607a1bcc888d9b08fa557b51dcfad177a1404bac"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log": {
+        "bytes": 7713,
+        "diagnostic_categories": [],
+        "sha256": "6b35e0dd4a8cfb235c8626dfcd556f06863c87fcd375afb9d7861254d72bda8c"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test.log": {
+        "bytes": 6701,
+        "diagnostic_categories": [],
+        "sha256": "eddc6917acafa613e9764c74d1edbf5e5b15b98d57ced825fac92f40922309b0"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log": {
+        "bytes": 10652,
+        "diagnostic_categories": [
+          "elevated filesystem unavailable"
+        ],
+        "sha256": "1478fd4e60caf448196ed74e751c7f29fe70a7aa747136685a95d56e25bdeb06"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-process-test/test.log": {
+        "bytes": 908,
+        "diagnostic_categories": [
+          "websocket event deadline"
+        ],
+        "sha256": "e5d8030375cbc54f814a5af7cd8dac6d634cc17dfb76389d22aae8841e22caf3"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log": {
+        "bytes": 617,
+        "diagnostic_categories": [
+          "private desktop required"
+        ],
+        "sha256": "3117a52c5d94c4bd76b8e2240e7dca4cda201495577699b793ce26229f2ccbb1"
+      }
+    },
+    "run": 45125165932,
+    "selected": {
+      "exec_server_resumes_detached_session_without_killing_processes": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-process-test/test.log",
+        "status": "FAILED"
+      },
+      "restricted_tokens_select_stable_routes_and_cleanup": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log",
+        "status": "FAILED"
+      },
+      "suite::cli_stream::integration_creates_and_checks_session_file": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::cli_stream::responses_mode_stream_cli_supports_openai_base_url_config_override": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::remote_env::deferred_executor_spawn_agent_inherits_ready_step_environments::test_case_1_v1": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log",
+        "status": "FAILED"
+      },
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "FAILED"
+      },
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "FAILED"
+      }
+    },
+    "sha256": "ec9c6110c906f4ad69d5698b0b3ea47ab4890413e9420d9144a5f18f4c24ea15",
+    "source": "c6a3ed9c36f88707d2f29630efe1e3ea4ee0e902"
+  },
+  "e327": {
+    "all_final_failed": [
+      "restricted_tokens_select_stable_routes_and_cleanup",
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ],
+    "archive_entries": 139,
+    "artifact": 14799018890,
+    "job": 137546561430,
+    "members": {
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log": {
+        "bytes": 9129,
+        "diagnostic_categories": [
+          "elevated filesystem unavailable"
+        ],
+        "sha256": "37db2823a07150ca14dc3e9cbce520d4d0109815e8ef963f94c7c943598d0efb"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log": {
+        "bytes": 7608,
+        "diagnostic_categories": [],
+        "sha256": "a7cf7f93ab51565b5071da695ee2b6811d270698e69e55dd538896a679b89359"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test.log": {
+        "bytes": 6701,
+        "diagnostic_categories": [],
+        "sha256": "747d9aac401fb82e1ecfba5502bcf96ee410b9fbaa5a4a000249e709684c3070"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log": {
+        "bytes": 10651,
+        "diagnostic_categories": [
+          "elevated filesystem unavailable"
+        ],
+        "sha256": "5f492d40304e5c027231f9316e95c46536e8752d63655cc448e692d9a4fc3054"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-process-test/test.log": {
+        "bytes": 672,
+        "diagnostic_categories": [],
+        "sha256": "638d5c36854363c5d92416ba97ee6a1a0b6c03793c837834ac9c498cd6f7bbcb"
+      },
+      "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log": {
+        "bytes": 617,
+        "diagnostic_categories": [
+          "private desktop required"
+        ],
+        "sha256": "0b99f40abc1c3c6919e573c9004917a11838c22e59016749663cc4d32d766288"
+      }
+    },
+    "run": 45130787598,
+    "selected": {
+      "exec_server_resumes_detached_session_without_killing_processes": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-process-test/test.log",
+        "status": "ok"
+      },
+      "restricted_tokens_select_stable_routes_and_cleanup": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log",
+        "status": "FAILED"
+      },
+      "suite::cli_stream::integration_creates_and_checks_session_file": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::cli_stream::responses_mode_stream_cli_supports_openai_base_url_config_override": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_5_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::remote_env::deferred_executor_spawn_agent_inherits_ready_step_environments::test_case_1_v1": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_1_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "ok"
+      },
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log",
+        "status": "FAILED"
+      },
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "FAILED"
+      },
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads": {
+        "member": "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log",
+        "status": "FAILED"
+      }
+    },
+    "sha256": "2f16bb0ab2f7a2826040335a356c4f5f760e6c985fa5144dda3038280fa0eb90",
+    "source": "e3277e9677688be5c4c235a7a127f0b51e373399"
+  }
+}
