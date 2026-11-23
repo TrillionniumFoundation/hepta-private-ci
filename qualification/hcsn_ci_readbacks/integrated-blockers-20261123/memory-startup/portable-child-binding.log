@@ -1,0 +1,38 @@
+
+running 6 tests
+test neuron_generation_process_bootstrap::tests::actual_joint_reopens_the_same_clock_journal_prefix_and_original_result ... ok
+test neuron_generation_process_bootstrap::tests::actual_opened_files_reject_raced_aliases_and_non_regular_assets ... ok
+test neuron_generation_process_bootstrap::tests::identity_assets_clock_and_descriptor_are_checked_before_any_owner_creation ... ok
+test neuron_generation_process_bootstrap::tests::paths_reject_aliases_and_reopen_never_falls_back_to_creation ... ok
+test neuron_generation_runtime::tests::joint::synthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen ... ok
+test production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement ... FAILED
+
+failures:
+
+---- production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement stdout ----
+
+thread 'production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement' (117) panicked at hepta-agentd/src/production_episodic_drain_tests.rs:90:17:
+commit: stdout=
+running 1 test
+test production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement ... FAILED
+
+failures:
+
+failures:
+    production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1722 filtered out; finished in 0.88s
+
+ stderr=
+thread 'production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement' (123) panicked at hepta-agentd/src/production_episodic_drain_tests.rs:179:13:
+App Server exited before readiness: Ok(Err(Custom { kind: PermissionDenied, error: AgentdIoContext { operation: "run Codex App Server unix socket transport", path: "/tmp/.tmplQDoJj/fleet/run/aaaaaaaaaabaabaaaaaaaaagami.app", source: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" } } }))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 1717 filtered out; finished in 10.04s
+

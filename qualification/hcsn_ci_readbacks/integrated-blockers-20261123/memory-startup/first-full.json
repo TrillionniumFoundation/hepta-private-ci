@@ -1,0 +1,24 @@
+{
+  "archive_sha256": "2ada6aedbdd2621cccd78fa1cfaca8593c260d9c61d093fa6a920a4a639d5f9a",
+  "artifact": 14796744824,
+  "codex_case_passed": "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+  "controls": {
+    "bootstrap": 6,
+    "fleet": 2,
+    "process": 6,
+    "readiness": 3
+  },
+  "failed": {
+    "neuron_generation_process_bootstrap::tests::actual_joint_reopens_the_same_clock_journal_prefix_and_original_result": "hepta-joint-propose",
+    "neuron_generation_process_bootstrap::tests::actual_opened_files_reject_raced_aliases_and_non_regular_assets": "hepta-joint-propose",
+    "neuron_generation_process_bootstrap::tests::identity_assets_clock_and_descriptor_are_checked_before_any_owner_creation": "hepta-joint-propose",
+    "neuron_generation_process_bootstrap::tests::paths_reject_aliases_and_reopen_never_falls_back_to_creation": "hepta-joint-propose",
+    "neuron_generation_runtime::tests::joint::synthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen": "hepta-joint-propose"
+  },
+  "listed": 1723,
+  "passed": 1547,
+  "raw_summary": "1552 tests run: 1547 passed (1 slow), 5 failed, 171 skipped",
+  "selected": 1552,
+  "skipped": 171,
+  "source": "c6a3ed9c36f88707d2f29630efe1e3ea4ee0e902"
+}
