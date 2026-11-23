@@ -1,0 +1,64 @@
+name: Windows detached-session original target observation
+
+on:
+  push:
+    branches: ["diagnostic/windows-exec-resume-20261123"]
+
+permissions:
+  contents: read
+
+jobs:
+  detached-session:
+    runs-on: windows-latest
+    timeout-minutes: 100
+    steps:
+      - name: Enable long paths for Git checkout
+        working-directory: ${{ runner.temp }}
+        shell: bash
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Observe three original and three context-only target invocations
+        shell: bash
+        run: |
+          set -eu
+          original=c6a3ed9c36f88707d2f29630efe1e3ea4ee0e902
+          root="$RUNNER_TEMP/resume-observation"
+          script=.github/scripts/observe-windows-exec-resume.py
+          mkdir -p "$root"
+          test "$(git rev-parse HEAD:codex-rs/exec-server/tests/process.rs)" = 7414417781eff69bf9cfdb84767ec8c29d101068
+          test "$(git rev-parse HEAD:codex-rs/exec-server/tests/common/exec_server.rs)" = a5a43efe92877c6ab9868256fa947f314f3599d1
+          test "$(git cat-file -p HEAD | sed -n 's/^parent //p')" = "$original"
+          git ls-tree HEAD -- .bazelrc codex-rs/exec-server codex-rs/rust-toolchain.toml > "$root/sources.txt"
+          failed=0
+          for lane in original contextual; do
+            if test "$lane" = contextual; then
+              python "$script" instrument
+              git diff -- codex-rs/exec-server/tests/process.rs > "$root/contextual.diff"
+            fi
+            for repeat in 1 2 3; do
+              code=0
+              ./.github/scripts/run-bazel-ci.sh \
+                --print-failed-action-summary --print-failed-test-logs \
+                --windows-msvc-host-platform --remote-download-toplevel \
+                -- test --platforms=//:windows_x86_64_msvc --nocache_test_results \
+                --flaky_test_attempts=1 --build_metadata=COMMIT_SHA="$GITHUB_SHA" \
+                -- //codex-rs/exec-server:exec-server-process-test || code=$?
+              if ! python "$script" collect "$lane" "$repeat" "$code"; then failed=1; fi
+              if test "$code" -ne 0; then failed=1; fi
+            done
+          done
+          exit "$failed"
+      - name: Preserve six target logs and original return codes
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: windows-exec-resume-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/resume-observation
+          if-no-files-found: error
