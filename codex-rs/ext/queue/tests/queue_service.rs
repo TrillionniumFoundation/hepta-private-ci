@@ -279,7 +279,7 @@ fn write_blocking_prompt_hook(home: &Path) {
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
     let script = format!(
-            r#"import json
+        r#"import json
 from pathlib import Path
 import sys
 import time
@@ -295,9 +295,9 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
     if payload["prompt"] == "delay exact rejection":
         print(json.dumps({{"decision": "block", "reason": "delayed queue rejection"}}))
 "#,
-            entered_path = entered_path.display(),
-            release_path = release_path.display(),
-        );
+        entered_path = entered_path.display(),
+        release_path = release_path.display(),
+    );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
     let hooks = serde_json::json!({
