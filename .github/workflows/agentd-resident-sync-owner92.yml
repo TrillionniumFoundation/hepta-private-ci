@@ -1,0 +1,54 @@
+name: Run the original 92-case owner roster against both synchronized resident test binaries
+on:
+  push:
+    branches: ["diagnostic/agentd-resident-sync-owner92-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: 3002afb8e319abd7909e57ac816b0fedc8f0233c
+  CANDIDATE: e1969bcf8dbb9e9e42cd718401a9df6d13f79d98
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+jobs:
+  owner_tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - run: bash .github/scripts/agentd-composition-prepare.sh
+      - name: Build both original Agentd libtests and run exact normal and UID0 owner cases
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          for arm in base candidate; do
+            cd "$RUNNER_TEMP/composition-$arm"
+            ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$RUNNER_TEMP/composition-evidence/build-$arm.log"
+            binary=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$RUNNER_TEMP/composition-evidence/build-$arm.log" | tail -1)
+            test -x "$binary"
+            cp -L "$binary" "$RUNNER_TEMP/agentd-composition-$arm"
+            sha256sum "$RUNNER_TEMP/agentd-composition-$arm" > "$RUNNER_TEMP/composition-evidence/binary-$arm.txt"
+            if [ "$arm" = base ]; then expected=9c6013bb5c1f7cff5a85464afdf694e0bbce2371b71c2095ea2eda2873605cd8; else expected=abb79f99f59754cde2cec06e36b4c026f8ff042abcdb674abe0aad79e010e0c6; fi
+            echo "$expected  $RUNNER_TEMP/agentd-composition-$arm" | sha256sum --check -
+            bash "$GITHUB_WORKSPACE/.github/scripts/agentd-composition-uid0.sh" "$arm"
+          done
+          if cmp -s "$RUNNER_TEMP/agentd-composition-base" "$RUNNER_TEMP/agentd-composition-candidate"; then exit 1; fi
+          python3 "$RUNNER_TEMP/composition-driver.py" native
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: native-composition-pair-${{ env.CANDIDATE }}
+          path: ${{ runner.temp }}/composition-evidence
