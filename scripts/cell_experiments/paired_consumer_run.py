@@ -56,7 +56,7 @@ def selection(folder, pair, req, materials, *, create=False):
             require(
                 data.digest(raw) == end["row_hashes"][n]
                 and raw["task_sha256"] == data.digest(record) and raw["panel"] == panel
-                and raw["outcome"] == score and pred["pid"] == end["pid"]
+                and data.digest(raw["outcome"]) == data.digest(score) and pred["pid"] == end["pid"]
                 and pred["loaded_model_digest"] == native,
                 "original cold row, model, or score differs",
             )

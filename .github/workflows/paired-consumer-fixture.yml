@@ -3,6 +3,7 @@ on:
   push:
     branches: [research/paired-consumer-cold-use-20261123]
     paths:
+      - scripts/cell_experiments/paired_consumer*.py
       - qualification/paired-consumer-use-20261123/qualify.py
       - .github/workflows/paired-consumer-fixture.yml
 permissions:
