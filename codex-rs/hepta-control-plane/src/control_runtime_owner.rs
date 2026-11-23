@@ -11,6 +11,7 @@ use crate::ControlRuntimePublicationErrorV1;
 use crate::ControlRuntimePublicationHeadV1;
 use crate::ControlRuntimePublicationKindV1;
 use crate::ControlRuntimePublicationReceiptV1;
+use crate::ControlRuntimePublicationRequestV1;
 use crate::ControlRuntimePublicationV1;
 use crate::DurablePlannerJournalError;
 use crate::DurablePlannerJournalV1;
@@ -704,16 +705,17 @@ where
         attempt: Option<ExecutionAttemptV1>,
     ) -> Result<ControlRuntimePublicationReceiptV1, ControlRuntimeOwnerErrorV1> {
         let expected = self.publication_head;
-        let record = ControlRuntimePublicationV1::new(
-            self.owner_id.clone(),
-            expected,
-            self.policy_epoch,
-            kind,
-            Digest32::of_bytes(&payload),
-            payload,
-            self.journal.head(),
-            occurred_at_micros,
-        )?;
+        let record =
+            ControlRuntimePublicationV1::from_request(ControlRuntimePublicationRequestV1 {
+                owner_id: self.owner_id.clone(),
+                expected,
+                policy_epoch: self.policy_epoch,
+                kind,
+                subject_digest: Digest32::of_bytes(&payload),
+                payload,
+                journal_head: self.journal.head(),
+                occurred_at_micros,
+            })?;
         match self.publisher.compare_and_publish(expected, &record) {
             Ok(receipt) => {
                 self.accept_publication_receipt(&record, &receipt)?;
