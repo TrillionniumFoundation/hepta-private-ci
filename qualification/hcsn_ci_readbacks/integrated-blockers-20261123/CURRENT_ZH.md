@@ -1,5 +1,10 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 20:56 UTC #7052 限定范围 CI 正式终局及 Laya 权重身份
+
+- c923 [blocking-ci 45240607977](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240607977) 已 completed/failure；原名册全部 24 项终结，独立计数 **12 成功、8 条件跳过、4 失败**。四个 Hepta scoped native shard 全绿；严格 source/merge、learning.operator required、CI required 四红。此为限定范围，不是原 46 项全仓资格。精确源码五条工作流均终结。
+- Laya 原固定 revision 的上游 Git LFS 指针确认 **842,609,210 字节**，SHA-256 `891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c`；同版本页面一致。当前执行环境 HEAD 因 DNS 失败，未取得实际权重字节；原作业明确关闭 Xet，不擅自改传输策略。此项仅确认可验证对象身份，训练与交付仍 HOLD。下次取得原对象须在使用前核对完整长度和 SHA-256。不重复派发、不变更产品源或冻结条件。[全 24 项原名册、上游指针与限制](7052-c9236b4-final-and-laya-pointer-20261123-2056Z.md)。
+
 ## 2026-11-23 19:21 UTC #7052 MemoryCell 正式取消：外部 Laya 权重交付阻塞，不可签收训练
 
 - 精确 c923 原 [MemoryCell 45240608027](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240608027) 已 `completed/cancelled`。原 Laya job 137934297752 在固定 `convaiinnovations/laya@7b928d8...` 的 `model.safetensors` 下载中，19:03/19:08 UTC 两次后端 HTTP 读取超时、19:21:13 最终取消；真正训练步骤 skipped，上传明示无工件。其他六个 job 各自成功，原 source-format 的局部绿门依旧保留。不能说 Laya 训练已通过，也不能未经证据断言是谁触发整个运行取消。
