@@ -1,0 +1,64 @@
+name: Q24 paired native frozen-mode readback
+on:
+  push:
+    branches: ["diagnostic/q24-mode-native-20261123"]
+permissions:
+  contents: read
+jobs:
+  paired:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      BASE: 6a5a02835206697d154fc4a1977b4627aad372d9
+      CANDIDATE: 53a2877f11a550ec4fca694bacc5b449f20addc2
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Pin provenance and the unchanged owner tests
+        run: |
+          set -eu
+          mkdir "$RUNNER_TEMP/q24-evidence"
+          cp .github/scripts/q24-native-pairs.py "$RUNNER_TEMP/q24-native-pairs.py"
+          test "$(git rev-parse HEAD^)" = "$CANDIDATE"
+          test "$(git rev-parse "$CANDIDATE^")" = "$BASE"
+          for ref in "$BASE" "$CANDIDATE"; do
+            git ls-tree "$ref" -- codex-rs/hepta-agentd/src/circuit_learning_read_owner_tests.rs codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs | tee "$RUNNER_TEMP/q24-evidence/tests-$ref.txt"
+          done
+          cmp "$RUNNER_TEMP/q24-evidence/tests-$BASE.txt" "$RUNNER_TEMP/q24-evidence/tests-$CANDIDATE.txt"
+      - name: Build only the original Agentd libtest binary at each immutable source
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          for arm in base candidate; do
+            if [ "$arm" = base ]; then ref="$BASE"; else ref="$CANDIDATE"; fi
+            git checkout --detach "$ref"
+            test "$(git rev-parse HEAD)" = "$ref"
+            ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$RUNNER_TEMP/q24-evidence/build-$arm.log"
+            binary=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$RUNNER_TEMP/q24-evidence/build-$arm.log" | tail -1)
+            test -n "$binary"
+            test -x "$binary"
+            cp -L "$binary" "$RUNNER_TEMP/q24-$arm"
+            file "$RUNNER_TEMP/q24-$arm" | tee "$RUNNER_TEMP/q24-evidence/binary-$arm.txt"
+            sha256sum "$RUNNER_TEMP/q24-$arm" >> "$RUNNER_TEMP/q24-evidence/binary-$arm.txt"
+          done
+      - name: Run every scheduled baseline and candidate test on the same native Linux machine
+        run: python3 "$RUNNER_TEMP/q24-native-pairs.py"
+      - name: Upload native timings and all attempted dispositions
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: q24-native-${{ env.CANDIDATE }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/q24-evidence
+          if-no-files-found: error
