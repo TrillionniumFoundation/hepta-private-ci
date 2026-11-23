@@ -1,0 +1,141 @@
+{
+  "source": "610f91087b598656f7f3913e600c705b95bf071f",
+  "torch": "2.15.0+cpu",
+  "thread_count": 1,
+  "arms": {
+    "unchanged": {
+      "cost_delta": 0.0,
+      "offset_delta": 0.0,
+      "target": 0.536649206678534,
+      "boundary": 0.546649206678534,
+      "boundary_error": 0.010000000000000009,
+      "checks": [
+        {
+          "initial": 0.72,
+          "receiver_start_delta": 0.0,
+          "receiver_feature_count": 49,
+          "max_feature_change": 0.0
+        },
+        {
+          "initial": 0.65,
+          "receiver_start_delta": 0.0,
+          "receiver_feature_count": 49,
+          "max_feature_change": 0.0
+        },
+        {
+          "initial": 0.79,
+          "receiver_start_delta": 0.0,
+          "receiver_feature_count": 49,
+          "max_feature_change": 0.0
+        },
+        {
+          "initial": 1.05,
+          "receiver_start_delta": 0.0,
+          "receiver_feature_count": 49,
+          "max_feature_change": 0.0
+        }
+      ],
+      "passed": false,
+      "optimizer_closures": 0
+    },
+    "structural": {
+      "cost_delta": 0.019345554018888933,
+      "offset_delta": 0.009195251723316866,
+      "target": 0.536649206678534,
+      "boundary": 0.5366492066785338,
+      "boundary_error": 2.220446049250313e-16,
+      "checks": [
+        {
+          "initial": 0.72,
+          "receiver_start_delta": -2.220446049250313e-16,
+          "receiver_feature_count": 49,
+          "max_feature_change": 2.7755575615628914e-16
+        },
+        {
+          "initial": 0.65,
+          "receiver_start_delta": 0.00037531291806158773,
+          "receiver_feature_count": 49,
+          "max_feature_change": 0.00045080652998513715
+        },
+        {
+          "initial": 0.79,
+          "receiver_start_delta": 0.00021268555001241474,
+          "receiver_feature_count": 49,
+          "max_feature_change": 0.0002766045368499115
+        },
+        {
+          "initial": 1.05,
+          "receiver_start_delta": 0.0033993781961195735,
+          "receiver_feature_count": 49,
+          "max_feature_change": 0.004372413354548632
+        }
+      ],
+      "passed": true,
+      "optimizer_closures": 0
+    },
+    "BP": {
+      "cost_delta": 0.01934555411875727,
+      "offset_delta": 0.009195251902758939,
+      "target": 0.536649206678534,
+      "boundary": 0.5366492066272985,
+      "boundary_error": 5.1235460318821424e-11,
+      "checks": [
+        {
+          "initial": 0.72,
+          "receiver_start_delta": 1.3223200312495464e-10,
+          "receiver_feature_count": 49,
+          "max_feature_change": 1.6670481661762437e-10
+        },
+        {
+          "initial": 0.65,
+          "receiver_start_delta": 0.00037531305191451647,
+          "receiver_feature_count": 49,
+          "max_feature_change": 0.0004508066907228381
+        },
+        {
+          "initial": 0.79,
+          "receiver_start_delta": 0.00021268568356391793,
+          "receiver_feature_count": 49,
+          "max_feature_change": 0.00027660471052826097
+        },
+        {
+          "initial": 1.05,
+          "receiver_start_delta": 0.0033993783461920835,
+          "receiver_feature_count": 49,
+          "max_feature_change": 0.004372413547828358
+        }
+      ],
+      "passed": true,
+      "optimizer_closures": 6
+    }
+  },
+  "times": {
+    "unchanged": [
+      0.10289828000531998,
+      0.10455616400577128,
+      0.10862567299773218,
+      0.11056905099394498,
+      0.1036248259988497
+    ],
+    "structural": [
+      0.10747972199897049,
+      0.11212181000155397,
+      0.11062858199875336,
+      0.10949776999768801,
+      0.10845456300012302
+    ],
+    "BP": [
+      0.19863058000191813,
+      0.20648006499686744,
+      0.20086817500123288,
+      0.19995196699892404,
+      0.20753775000048336
+    ]
+  },
+  "median_inclusive_seconds": {
+    "unchanged": 0.10455616400577128,
+    "structural": 0.10949776999768801,
+    "BP": 0.20086817500123288
+  },
+  "protocol_sha256": "6df773f53cf63158598a3b307352234eafad5dcfdb694eb797c01326eafceb68"
+}
