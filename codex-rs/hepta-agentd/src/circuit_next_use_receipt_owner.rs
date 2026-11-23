@@ -385,21 +385,33 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         &mut self,
         source: impl NextUseSources,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        #[cfg(test)]
+        let mut q24_trace = crate::learning_iteration_evidence_client::q24_stage_probe::Span::new("observer_owner", 0);
         let started_at = now()?;
         if self.completion_fenced {
             return Err(OwnerError::CommitUncertain.into());
         }
         let observed = self.prepare(&source).await?;
+        #[cfg(test)]
+        q24_trace.mark("prepare1_done");
         if matches!(source.location(), ObservationLocation::RemoteOwner) {
             let before = self.predecessors(&source).await?;
+            #[cfg(test)]
+            q24_trace.mark("predecessors1_done");
             authenticate_predecessors(&self.config, &before, now()?)?;
         }
+        #[cfg(test)]
+        q24_trace.mark("predecessors1_verified");
         let bytes = self.journal.read(&self.saved)?;
+        #[cfg(test)]
+        q24_trace.mark("journal_read");
         let result = self
             .finish_original_readback(
                 &source, &observed, &bytes, started_at, /*new_attestation*/ false,
             )
             .await;
+        #[cfg(test)]
+        q24_trace.mark("finish_returned");
         if result.is_err() {
             self.completion_fenced = true;
         }
@@ -456,10 +468,14 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         started_at: u64,
         new_attestation: bool,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        #[cfg(test)]
+        let mut q24_trace = crate::learning_iteration_evidence_client::q24_stage_probe::Span::new("observer_finish", 0);
         let completed = self.decode_completed(source, observed, bytes)?;
         // Both original owners are reread after the post-C observation and
         // before the final physical journal read. No nested prepare or role
         // authentication sends another predecessor request.
+        #[cfg(test)]
+        q24_trace.mark("decoded");
         let evidence = match source.location() {
             ObservationLocation::LocalOwner => {
                 let evidence = self.predecessors(source).await?;
@@ -472,12 +488,18 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
                 if self.prepare(source).await? != *observed {
                     return Err(OwnerError::CommitUncertain.into());
                 }
+                #[cfg(test)]
+                q24_trace.mark("prepare2_done");
                 self.predecessors(source).await?
             }
         };
+        #[cfg(test)]
+        q24_trace.mark("predecessors2_done");
         if self.journal.read(&self.saved)? != bytes {
             return Err(OwnerError::CommitUncertain.into());
         }
+        #[cfg(test)]
+        q24_trace.mark("journal_reread");
         let current = now()?;
         self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)
     }

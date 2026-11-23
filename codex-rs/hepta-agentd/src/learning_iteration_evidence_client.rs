@@ -25,6 +25,10 @@ use crate::AgentdRootAuthorityPeer;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::root_observation_stream::RootObservationStream;
 
+#[cfg(test)]
+#[path = "q24_stage_probe.rs"]
+pub(crate) mod q24_stage_probe;
+
 #[path = "learning_iteration_evidence_wire.rs"]
 mod wire;
 
@@ -216,6 +220,8 @@ impl LearningIterationEvidenceClientV1 {
         snapshot: &LearningIterationSnapshotV1,
         receipt: &LearningIterationReceiptV1,
     ) -> Result<SignedLearningEvidenceV1, Error> {
+        #[cfg(test)]
+        let mut q24_trace = crate::learning_iteration_evidence_client::q24_stage_probe::Span::new("evidence_client", u64::from(matches!(receipt.observation.stage(), LearningIterationStageV1::NextUse)));
         let stage = receipt.observation.stage();
         let role = evidence_role(stage)?;
         if snapshot.request != self.initial.request
@@ -235,6 +241,8 @@ impl LearningIterationEvidenceClientV1 {
                 .read_original_command(command, receipt, &payload, role)
                 .await;
         }
+        #[cfg(test)]
+        q24_trace.mark("validated");
         let mut channel = self
             .channel
             .try_lock()
@@ -254,11 +262,15 @@ impl LearningIterationEvidenceClientV1 {
             predecessor: receipt.predecessor.to_string(),
             receipt_digest: Digest32::of_bytes(&payload).to_string(),
         };
+        #[cfg(test)]
+        q24_trace.mark("before_transport");
         let response: wire::Response = channel
             .transport
             .read(&request)
             .await
             .map_err(|_| unavailable())?;
+        #[cfg(test)]
+        q24_trace.mark("after_transport");
         if response.schema != 1
             || response.operation != request.operation
             || response.request_id != request_id
@@ -284,6 +296,8 @@ impl LearningIterationEvidenceClientV1 {
         crate::root_observation_stream::check_lifetime(channel.transport.root_lifetime().get_ref())
             .map_err(|_| unavailable())?;
         *self.channel.try_lock().map_err(|_| unavailable())? = Some(channel);
+        #[cfg(test)]
+        q24_trace.mark("authenticated");
         Ok(signature)
     }
 }

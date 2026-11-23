@@ -98,7 +98,7 @@ pub(crate) fn serve<
     owner: Arc<OriginalCircuitLearningReadOwnerV1<C, S>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
-    std::thread::spawn(move || {
+    std::thread::spawn(crate::learning_iteration_evidence_client::q24_stage_probe::inherit(move || {
         let started = std::time::Instant::now();
         let result = owner.serve_channel(&mut channel);
         eprintln!(
@@ -107,7 +107,7 @@ pub(crate) fn serve<
             result.as_ref().copied().map_err(ToString::to_string),
         );
         result
-    })
+    }))
 }
 
 pub(crate) fn changed_nonce<

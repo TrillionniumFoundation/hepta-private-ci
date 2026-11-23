@@ -205,13 +205,13 @@ pub(crate) fn serve<W: AnchorWitnessStore + Send + 'static>(
     owner: Arc<OriginalCircuitSelectionCommandOwnerV1<W>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
-    std::thread::spawn(move || owner.serve_command_channel(&mut channel))
+    std::thread::spawn(crate::learning_iteration_evidence_client::q24_stage_probe::inherit(move || owner.serve_command_channel(&mut channel)))
 }
 pub(crate) fn serve_evidence<W: AnchorWitnessStore + Send + 'static>(
     owner: Arc<OriginalCircuitSelectionCommandOwnerV1<W>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
-    std::thread::spawn(move || owner.serve_evidence_channel(&mut channel))
+    std::thread::spawn(crate::learning_iteration_evidence_client::q24_stage_probe::inherit(move || owner.serve_evidence_channel(&mut channel)))
 }
 
 pub(crate) fn lose_ack<W: AnchorWitnessStore + Send + 'static>(

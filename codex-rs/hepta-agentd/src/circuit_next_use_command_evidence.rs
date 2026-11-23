@@ -32,6 +32,8 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
     }
 
     fn evidence_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
+        #[cfg(test)]
+        let mut q24_trace = crate::learning_iteration_evidence_client::q24_stage_probe::Span::new("observer_server", request_id);
         let started_at = now()?;
         let request: evidence_wire::Request = serde_json::from_slice(bytes)?;
         let snapshot_head: Digest32 = request
@@ -51,10 +53,16 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
         {
             return Err(Error::Binding("original C Observer evidence request"));
         }
+        #[cfg(test)]
+        q24_trace.mark("request_checked");
         self.context.authenticate(started_at)?;
+        #[cfg(test)]
+        q24_trace.mark("authenticated");
         let (receipt, signed) = {
             let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
             let original: &mut OriginalCircuitNextUseReceiptOwnerV1<W> = &mut owner;
+            #[cfg(test)]
+            q24_trace.mark("owner_locked");
             self.runtime
                 .block_on(OriginalCircuitNextUseReceiptOwnerV1::readback_remote(
                     original,
@@ -66,6 +74,8 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
                     },
                 ))?
         };
+        #[cfg(test)]
+        q24_trace.mark("owner_returned");
         let current = now()?;
         require_clock(started_at, current)?;
         let original = wire::authenticate_receipt(&self.context, receipt, signed, current)?;
@@ -83,6 +93,8 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
             receipt_digest: request.receipt_digest,
             evidence: evidence_wire::Evidence::from_original(&original.attestation),
         };
+        #[cfg(test)]
+        q24_trace.mark("response_ready");
         Ok(serde_json::to_vec(&response)?)
     }
 }

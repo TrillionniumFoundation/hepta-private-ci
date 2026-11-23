@@ -166,6 +166,8 @@ impl RootObservationStream {
         &self,
         request: &impl serde::Serialize,
     ) -> Result<R, AgentdRootAuthorityError> {
+        #[cfg(test)]
+        let mut q24_trace = crate::learning_iteration_evidence_client::q24_stage_probe::Span::new("transport", 0);
         let request = serde_json::to_vec(request).map_err(|_| AgentdRootAuthorityError::Refused)?;
         if request.is_empty() || request.len() > 16_384 {
             return Err(AgentdRootAuthorityError::Refused);
@@ -186,18 +188,26 @@ impl RootObservationStream {
         // Cancellation, malformed replies and every uncertain I/O error leave
         // the original slot empty. No reconnect or automatic retry exists.
         check_lifetime(self.root.get_ref())?;
+        #[cfg(test)]
+        q24_trace.mark("deadline_setup");
         let deadline = (Instant::now() + self.timeout).min(self.end);
         if deadline <= Instant::now() {
             return Err(AgentdRootAuthorityError::Unavailable);
         }
+        #[cfg(test)]
+        q24_trace.mark("select");
         let response = tokio::select! {
             biased;
             _ = self.root.readable() => return Err(AgentdRootAuthorityError::Unavailable),
             _ = tokio::time::sleep_until(tokio::time::Instant::from_std(deadline)) => {
+                #[cfg(test)]
+                q24_trace.mark("deadline_fired");
                 return Err(AgentdRootAuthorityError::Unavailable);
             }
             response = framed_exchange(&mut stream, &request) => response?,
         };
+        #[cfg(test)]
+        q24_trace.mark("exchange_done");
         check_lifetime(self.root.get_ref())?;
         let parsed =
             serde_json::from_slice(&response).map_err(|_| AgentdRootAuthorityError::Unavailable)?;
@@ -212,6 +222,8 @@ impl RootObservationStream {
             .stream
             .try_lock()
             .map_err(|_| AgentdRootAuthorityError::Unavailable)? = Some(stream);
+        #[cfg(test)]
+        q24_trace.mark("reply_validated");
         Ok(parsed)
     }
 }
@@ -220,13 +232,19 @@ async fn framed_exchange(
     stream: &mut tokio::net::UnixStream,
     request: &[u8],
 ) -> Result<Vec<u8>, AgentdRootAuthorityError> {
+    #[cfg(test)]
+    let mut q24_trace = crate::learning_iteration_evidence_client::q24_stage_probe::Span::new("frame", 0);
     stream
         .write_all(&(request.len() as u32).to_be_bytes())
         .await
         .map_err(unavailable)?;
     stream.write_all(request).await.map_err(unavailable)?;
+    #[cfg(test)]
+    q24_trace.mark("request_written");
     let mut prefix = [0; 4];
     stream.read_exact(&mut prefix).await.map_err(unavailable)?;
+    #[cfg(test)]
+    q24_trace.mark("reply_header_read");
     let length = u32::from_be_bytes(prefix) as usize;
     if length == 0 || length > 16_384 {
         return Err(AgentdRootAuthorityError::Unavailable);
@@ -236,6 +254,8 @@ async fn framed_exchange(
         .read_exact(&mut response)
         .await
         .map_err(unavailable)?;
+    #[cfg(test)]
+    q24_trace.mark("reply_payload_read");
     Ok(response)
 }
 
