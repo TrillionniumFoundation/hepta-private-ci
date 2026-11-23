@@ -1,0 +1,207 @@
+{
+  "source": "11e1660799a97fe3a52def730d36f98cb070f8ad",
+  "branch": "integration/hcsn-source-qualification-20261123",
+  "tree": "b87f5d7b5ef7e3666f563b9ed7877f6adc174944",
+  "c12": "c12ee03f3185d5a13949faca54f066dfd634e509",
+  "parents": [
+    "4de33d145135dc2018b013f39b9ad8903e3a4208",
+    "fe38676fae170002fcdce90b36dc949fac3ff671"
+  ],
+  "bootstrap": "2b75c8df6b804b87dd8c3cbca8d8a4b37d1d97d4",
+  "route_equal": [
+    "21 changes on c12",
+    "3 changes on its format successor",
+    "19 changes on its notification successor"
+  ],
+  "entries": [
+    {
+      "path": "codex-rs/ext/hepta-prompt/src/v3.rs",
+      "sha": "a0ca55af248912a41aa7217c7c684b55b9cfffd5",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "83daf5c611250f9fa6f2237ca90b4afc80fb3019",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_product_v3.rs",
+      "sha": "27ed8724141e37d43865aa494e7c8686fff468ee",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "2cfd3f866894ec136fdcd3c1926d40957e4fe9fd",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2/preparation_archive.rs",
+      "sha": "960f21d26a7bc92f4055cc80803026bd8aa4162c",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "c25b52dd810d693052f3dea50a6796cc5d73363a",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
+      "sha": "9e12f133350b827b9f81d7985c0a25a8353363fa",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "1b2ddc26b16a2a704dfce3155fa67ea7e8e1392b",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
+      "sha": "5e33098dc4b5fb05b30f1ee88a8d35e69b55cb4a",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "b35feaf829cc706c26a5cd7511cd204151cd57b7",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/codec.rs",
+      "sha": "c8b0a0636606708193308f4c11df898902915b7f",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "f4add705602a421787ba5686cb0a2617cdddbae2",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
+      "sha": "69b629b4dac2007f1f023dd1556a76f816523521",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "cc927cef2fb355262f06b5d36a2dd8436acb959c",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/replay.rs",
+      "sha": "c0b7199269b4fedc796886e9b2e7e3ff9678f20c",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "cb8d85859a6b49649dea03e717ddcab03296e6df",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation-wire/src/tests.rs",
+      "sha": "3209a05495b71d6c58bb897a42ecaa07fcee6089",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "2600b49008bbfcfb4c9128beba93c8157b56a887",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/lock_metrics.rs",
+      "sha": "f5e183421affba9959850164d004ddf443fd69a2",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "836a84cd6a198afa8edf985a5c09567da803612d",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/qualification_fault.rs",
+      "sha": "d8f07464ea8a91d3cdb4a4c79508d4df5b94165e",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "4be765a9d1843aa70078a473090b8e5bdc073f17",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/recovery_diagnostics.rs",
+      "sha": "42d95569ce62bc10f05dc482f4af3769187449d8",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "88a4bf201ce97932e3eaa9303a85ed00f9bd5c60",
+      "source": "format"
+    },
+    {
+      "path": "qualification/hcsn_training/native_fixture.rs",
+      "sha": "5821e344b78c9e71468ba155e0855da4aa5b3ca4",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "69190e27f1b6e36df4965ebde921c4dfac8978da",
+      "source": "format"
+    },
+    {
+      "path": "scripts/format.py",
+      "sha": "f4da7d24eecdb1a95797d8b748ac4bd0e2d9c6aa",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "5ec5819cd6441798f406a77514736baa7294ef4a",
+      "source": "format"
+    },
+    {
+      "path": "scripts/format_provenance/retained_rust.json",
+      "sha": "e603fdb594d60123fd61384c9dc7e8563be83bc7",
+      "status": "added",
+      "mode": "100644",
+      "type": "blob",
+      "before": null,
+      "source": "format"
+    },
+    {
+      "path": "scripts/hepta_retained_rust.py",
+      "sha": "be72f6d52841c41b845d0423aa04a4318b96ff09",
+      "status": "added",
+      "mode": "100644",
+      "type": "blob",
+      "before": null,
+      "source": "format"
+    },
+    {
+      "path": "scripts/test_hepta_format_scope.py",
+      "sha": "c28c8e94a6ff6952132fa4c3c6ade1f2751c3605",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "859c862b4fa0a527b97c0f9466289fffc34c8084",
+      "source": "format"
+    },
+    {
+      "path": "scripts/tests/test_format_starlark.py",
+      "sha": "d5c40760d9213f08563d87dc0db41ff62273d2b2",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "bf594679886fe1d9ab48507a8347eecc35b4b64d",
+      "source": "format"
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "sha": "32158da394054fe3f5ca1e734c3f461680a9106b",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "92d3cd8a1ce64c5cd2ba840a81eeda10bbcdb7b3",
+      "source": "core"
+    },
+    {
+      "path": "codex-rs/core/src/session/inject.rs",
+      "sha": "bca8355a459d59eba55bcb8f5249196217b24315",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "4f6cdaf8c9d56ea775a54c135e0d2de375a4a0d0",
+      "source": "core"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs",
+      "sha": "054075188a68c0b6673c5779108be6556358d6c6",
+      "status": "modified",
+      "mode": "100644",
+      "type": "blob",
+      "before": "270d025b44c5d3f5aed8d3438b7fc6f34ff9dab8",
+      "source": "bootstrap"
+    }
+  ]
+}

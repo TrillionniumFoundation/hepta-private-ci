@@ -14,3 +14,9 @@ python ../memory-startup/compare_full_rosters.py ../memory-startup/e327-tests.zi
 ```
 
 c12 的 daemon 原生工作流也已终结。独立解析两份 JUnit，普通 2,849/2,849、真实 Root 68/68，零跳过；202 项学习所有者原用例覆盖齐全。随后固定基址 fmt 对历史 2909 快照找不到所属 Rust 工作区，退出 2。该工作流最终失败。仓库级取消作业已单独按原 40 分钟作业配额、同一提交与同一检查命令重试一次。[两份原 XML 与事件记录](daemon-original-members.zip) · [独立结果](daemon-result.json) · [daemon 终态](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928116) · [仓库原作业第二次执行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928408/job/137602127556)
+
+## 同源重跑的终局
+
+仅重跑首轮取消的 repo-checks 作业，原 c12 的 40 分钟配置和命令保持不变。第二轮用时 36 分 45 秒，原权限全集检查从 09:34:47 至 10:08:07，随后仓库维护、格式、Prettier 和干净工作树均通过。整个 blocking-ci 因其他失败仍为红，最后为 33 成功、6 条件跳过、7 失败。首轮原始取消与二轮恢复分别存档。[重跑全部步骤](repo-checks-retry.json) · [二轮最终 46 项](attempt2-final.json)
+
+单独建了产品集成源码 11e16607，包含固定基址格式、子通知和私有 bootstrap wire，净 21 项修改。对 c12 加 21 个修改、格式后继加 3 个、子通知后继加 19 个，均构造出相同完整 Git 树 b87f5d7b。各路径原 mode、修改前后 blob 可分别核验。这个等式是源码证明，原生资格仍以相同提交的真实运行作准。[精确完整树和文件清单](combined-tree.json)
