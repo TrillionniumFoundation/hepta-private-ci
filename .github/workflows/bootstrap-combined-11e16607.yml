@@ -1,0 +1,146 @@
+name: Verify integrated Agentd bootstrap wire and original strict gate
+on:
+  push:
+    branches: ["diagnostic/bootstrap-combined-11e16607-20261123"]
+permissions:
+  contents: read
+env:
+  SUBJECT: 11e1660799a97fe3a52def730d36f98cb070f8ad
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 11e1660799a97fe3a52def730d36f98cb070f8ad
+          persist-credentials: false
+      - name: Verify original caller census and publication source guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SUBJECT"
+          dir="$RUNNER_TEMP/source-evidence"
+          mkdir "$dir"
+          git rev-parse HEAD > "$dir/commit.txt"
+          python3 -B scripts/verify_hepta_callers.py verify > "$dir/callers.json"
+          for source_guard in test_first_publication_acceptance_source_closure.py test_original_publication_route_source_closure.py test_post_a_original_files_source_closure.py test_post_a_physical_preparation_source_closure.py test_post_a_publication_source_closure.py test_publication_v2_source_closure.py; do
+            test -s "qa/b4-no-bypass/$source_guard"
+            python3 -B -m unittest discover -s qa/b4-no-bypass -p "$source_guard" -v |& tee "$dir/$source_guard.log"
+            grep -Eq '^Ran [1-9][0-9]* tests?' "$dir/$source_guard.log"
+          done
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: integrated-bootstrap-source
+          path: ${{ runner.temp }}/source-evidence
+
+  strict:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 130
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 11e1660799a97fe3a52def730d36f98cb070f8ad
+          persist-credentials: false
+      - run: python3 scripts/hepta_ci_toolchain.py --github-env "$GITHUB_ENV"
+      - name: Execute original all-target strict compiler command
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SUBJECT"
+          dir="$RUNNER_TEMP/strict-evidence"
+          mkdir "$dir"
+          git rev-parse HEAD > "$dir/commit.txt"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/strict-target"
+          rustc -Vv > "$dir/rustc.txt"
+          cargo clippy --version > "$dir/clippy.txt"
+          set +e
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings > "$dir/strict.log" 2>&1
+          status=$?
+          set -e
+          echo "$status" > "$dir/strict.exit"
+          tail -15 "$dir/strict.log"
+          exit "$status"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: integrated-bootstrap-strict
+          path: ${{ runner.temp }}/strict-evidence
+
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      ARM: candidate
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 11e1660799a97fe3a52def730d36f98cb070f8ad
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Create isolated clean product worktree
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SUBJECT"
+          git worktree add --quiet --detach "$RUNNER_TEMP/wire-src" "$SUBJECT"
+      - name: Read previously qualified test-only observer by immutable commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 01fe13991bd95175a9f548574721c50fb2eda733
+          path: diagnostic-reader
+          persist-credentials: false
+          sparse-checkout: qualification/bootstrap-wire-proof
+      - name: Validate observer identities and original guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C diagnostic-reader rev-parse HEAD)" = 01fe13991bd95175a9f548574721c50fb2eda733
+          test ! -e qualification/bootstrap-wire-proof
+          ln -s "$GITHUB_WORKSPACE/diagnostic-reader/qualification/bootstrap-wire-proof" qualification/bootstrap-wire-proof
+          evidence="$RUNNER_TEMP/wire-evidence"
+          mkdir "$evidence"
+          cd "$RUNNER_TEMP/wire-src"
+          test "$(git rev-parse HEAD)" = "$SUBJECT"
+          git rev-parse HEAD > "$evidence/source.txt"
+          git ls-tree HEAD -- CALLERS.toml codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs qa/b4-no-bypass/test_post_a_physical_preparation_source_closure.py > "$evidence/originals.txt"
+          test "$(git rev-parse HEAD:codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs)" = 054075188a68c0b6673c5779108be6556358d6c6
+          python3 -B -m unittest discover -s qa/b4-no-bypass -p test_post_a_physical_preparation_source_closure.py -v |& tee "$evidence/source-tests.log"
+          python3 "$GITHUB_WORKSPACE/qualification/bootstrap-wire-proof/observe.py" . | tee "$evidence/observer-hashes.txt"
+          test "$(git diff --name-only | wc -l)" -eq 3
+          cat > "$evidence/expected-sha256" <<'DIGEST'
+          59b5d27020357cdcc470a90c416873b938190695b032c36245672f3edc6f540c  authority_host_publication_deployment_tests.rs
+          51c4efe5cd395b58cb8bf7d3992f5ef30cc286bfb684520cf7d67d1a5b962822  authority_host_generation_publication_root_fixture_tests.rs
+          25059b256e4caa4cc0fe810cf6f324127b260319ef968459a390780119871284  authority_host_successor_deployment_files_tests.rs
+          DIGEST
+          (cd codex-rs/hepta-agentd/src && sha256sum -c "$evidence/expected-sha256")
+          git diff --stat > "$evidence/observer-stat.txt"
+      - name: Original musl wire checks and genuine UID-zero parent with non-root children
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/wire-src"
+          evidence="$RUNNER_TEMP/wire-evidence"
+          ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$evidence/build.log"
+          binary=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$evidence/build.log" | tail -1)
+          test -x "$binary"
+          cp -L "$binary" "$RUNNER_TEMP/wire-bin-$ARM"
+          bash "$GITHUB_WORKSPACE/qualification/bootstrap-wire-proof/uid0.sh" "$ARM"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: integrated-bootstrap-native
+          path: ${{ runner.temp }}/wire-evidence
