@@ -1,32 +1,23 @@
-# Current integration: prospective Adam restoration
+# Four-amplitude Adam restart on the integrated CPU runtime
 
-This request has the separate identity hcsn-adjoint-four-amplitudes-adam-resume-20261115-current-integration-v1.
-It is an unexecuted prospective protocol, not a continuation of the historical
-stage-one run. Source consistency and synthetic checkpoint controls do not grant
-numerical or hosted admission. The current scientific status remains HOLD.
+The candidate starts from de4ef594bfefec05a64fc2ae3b717a640a57b263.
+The preceding integration inventory expects the workflow that installs Torch
+2.8.0. On the parent, all other 17 inventory members match. The current job
+installs Torch CPU 2.10.0, NumPy 2.3.5 and SciPy 1.17.0 with Python 3.12.
+The previous inventory, request and intent are preserved byte for byte under
+`history/20261115-current-integration-v1/`.
 
-SOURCE.json, REQUEST.json, and SPEC.md retain their original bytes and
-historical identity. Their original source pins, result claims, and run identifiers
-are not updated or inherited as current qualification. CURRENT_REQUEST.json
-retains the original geometry, optimizer, 13-forward/13-adjoint/9-update limits,
-crash/reject exits, complete-state comparisons, and no-reuse requirement. Its
-base_source is explicitly only the historical physics/input reference.
+The new identity binds the actual workflow, package inputs and preceding
+metadata before execution. It uses the existing controller and actor. The
+only executable change from the parent is the protocol constant used for
+checkpoint source binding and admission identity. The original loss, fixed
+N7/N12 geometries, four initial-amplitude tensors, Adam settings, CPU RNG
+streams, restart checks and cost limits apply. The original SPEC and request
+remain available in this directory.
 
-CURRENT_SOURCE.json freezes the 11 actual local Python modules, the workflow,
-all three historical metadata files, the fixed original baseline archive, this
-intent, and CURRENT_REQUEST.json. Those 18 inputs form a finite acyclic hash
-census: CURRENT_SOURCE.json is excluded from its own map. The workflow captures
-that inventory once, checks the request census and actual HEAD, and records the
-inventory's hash in the execution source descriptor. Both original execution
-entry points verify that descriptor against the same captured inventory bytes
-and the new protocol identity before numerical work. --source-check-only
-returns at that gate, before fixtures, model calls, optimizer construction, or
-child admission; it does not execute the bounded numerical protocol.
-
-The new protocol identity is used in admission-nonce prefixes and checkpoint
-validation. An old stage-one checkpoint fails the existing protocol/source/runtime
-binding check. Old run keys and results cannot be presented as results of this
-identity. Actual numerical execution, if separately admitted after review, must
-start fresh under the existing workflow limits and retain its own original
-outputs. No full-network, full-prior, large-grid, cross-runtime, or production
-qualification is claimed here.
+An independent source review precedes the hosted numerical admission. The
+job retains each fresh process, its exit and cost, its complete checkpoint,
+and the next stochastic loss and gradient on the continuous and resumed paths.
+Expected total work is 13 forwards, 13 adjoints and 9 updates, including the
+unpublished crash update. Completion and failed launches are accounted separately.
+The result covers this bounded synthetic recovery experiment.

@@ -21,7 +21,7 @@ from qualification.hcsn_initial_adjoint.solver import freeze_problem
 from qualification.hcsn_joint_dde.model import JointModel
 
 NAMES = ("active", "content", "phase_mass", "phase_content")
-PROTOCOL = "hcsn-adjoint-four-amplitudes-adam-resume-20261115-current-integration-v1"
+PROTOCOL = "hcsn-adjoint-four-amplitudes-adam-resume-20261123-torch210-v1"
 
 
 def sha(path):

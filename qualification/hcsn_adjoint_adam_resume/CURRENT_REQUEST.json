@@ -1,10 +1,13 @@
 {
-  "actual_geometries": ["uniform_n7", "graded_n12"],
+  "actual_geometries": [
+    "uniform_n7",
+    "graded_n12"
+  ],
   "base_source": "975a169df5f3a1dd51b81ddd51b0a338592a0e0f",
   "base_source_role": "Historical physics/input reference only; current executable bytes are bound by CURRENT_SOURCE and actual checked-out commit.",
   "complete_checkpoint_semantic_equality_required": true,
   "crash_before_replace_expected_exit": 73,
-  "current_prospective_execution": false,
+  "current_prospective_execution": true,
   "fresh_process_resume_required": true,
   "full_network_full_prior_large_grid_claim": false,
   "historical_reference": {
@@ -14,7 +17,13 @@
     "source_sha256": "c860ca3d5c6de723894d697f36f4ad268eae374f430bcc005312930fb76fa02d",
     "spec_sha256": "e0f007353ea84dd6af31006a29ba4e402766d97949176a10698441c629a3dce9"
   },
-  "identity": "hcsn-adjoint-four-amplitudes-adam-resume-20261115-current-integration-v1",
+  "hosted_runtime": {
+    "numpy": "2.3.5",
+    "python": "3.12",
+    "scipy": "1.17.0",
+    "torch_cpu": "2.10.0"
+  },
+  "identity": "hcsn-adjoint-four-amplitudes-adam-resume-20261123-torch210-v1",
   "invocation_and_completed_updates_separately_reported": true,
   "maximum_total_adam_updates": 9,
   "maximum_total_adjoints": 13,
@@ -24,8 +33,11 @@
   "omit_adam_forwards": 0,
   "omit_adam_updates": 0,
   "optimizer": {
-    "betas": [0.9, 0.999],
-    "eps": 1e-8,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
     "foreach": false,
     "fused": false,
     "lr": 0.0001,
@@ -35,11 +47,22 @@
   "original_published_bytes_must_survive_crash": true,
   "persist_every_admission_nonce_pid_terminal": true,
   "positive_path_adam_updates": 8,
+  "preceding_integration": {
+    "archived_request_sha256": "8701ed6cff404dfb7b648b1d257d2dc1a9331b5580672d7c6d2955c52b515bc3",
+    "archived_source_sha256": "9ca886aa5ce53a9158aab00ead287737d0b2bced35c409f4a6458b80dcada790",
+    "identity": "hcsn-adjoint-four-amplitudes-adam-resume-20261115-current-integration-v1",
+    "parent_commit": "de4ef594bfefec05a64fc2ae3b717a640a57b263",
+    "workflow_drift": "torch CPU 2.8.0 to 2.10.0"
+  },
   "precommit_source_and_independent_static_review_required": true,
   "prelaunch_starting_effect_unknown_required": true,
   "previous_run_reuse": false,
   "process_crash_only_not_powerloss": true,
-  "rng_streams": ["torch_cpu", "python", "numpy"],
+  "rng_streams": [
+    "torch_cpu",
+    "python",
+    "numpy"
+  ],
   "source_check_only_is_numerical_admission": false,
   "source_paths": [
     "qualification/hcsn_adjoint_adam_resume/state.py",
@@ -59,10 +82,18 @@
     "qualification/hcsn_joint_dde/state_io.py",
     "qualification/hcsn_initial_vjp/evidence/NUMPY001-ORIGINALS.tar.gz",
     "qualification/hcsn_adjoint_adam_resume/CURRENT_REQUEST.json",
-    "qualification/hcsn_adjoint_adam_resume/CURRENT_INTENT.md"
+    "qualification/hcsn_adjoint_adam_resume/CURRENT_INTENT.md",
+    "qualification/hcsn_adjoint_adam_resume/history/20261115-current-integration-v1/CURRENT_SOURCE.json",
+    "qualification/hcsn_adjoint_adam_resume/history/20261115-current-integration-v1/CURRENT_REQUEST.json",
+    "qualification/hcsn_adjoint_adam_resume/history/20261115-current-integration-v1/CURRENT_INTENT.md"
   ],
-  "status": "INTENT_NOT_EXECUTED",
-  "trainable_tensors": ["active", "content", "phase_mass", "phase_content"],
+  "status": "SEALED_BEFORE_EXECUTION",
+  "trainable_tensors": [
+    "active",
+    "content",
+    "phase_mass",
+    "phase_content"
+  ],
   "unknown_actor_cost_must_null_exact_total": true,
   "unpublished_crash_adam_updates": 1
 }
