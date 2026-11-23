@@ -1,0 +1,1366 @@
+{
+  "bazel_exit": 3,
+  "cases": {
+    "healthy": {
+      "bound_rows": 18,
+      "calls": [
+        {
+          "caller_us": 501155,
+          "client_points": {
+            "before_transport": 58567330,
+            "end": 59068308,
+            "start": 58567153,
+            "validated": 58567293
+          },
+          "direct_order": "outer selection before service shutdown began",
+          "index": 1,
+          "matched_outer_server": {
+            "bound": "per_request",
+            "cut": 0,
+            "deadline": 59067438,
+            "depth": 1,
+            "events": [
+              [
+                "enter",
+                58567199
+              ],
+              [
+                "handler_enter",
+                58567458
+              ],
+              [
+                "original_handler_error",
+                59077243
+              ],
+              [
+                "err_invalid_request",
+                59077245
+              ],
+              [
+                "shutdown_enter",
+                59077245
+              ],
+              [
+                "shutdown_return",
+                59077249
+              ],
+              [
+                "exit",
+                59077255
+              ]
+            ],
+            "id": 1,
+            "io": "exchange",
+            "pid": 13,
+            "role": "nextuse_service",
+            "thread": 1922
+          },
+          "meaning": "initial healthy read",
+          "nested_operations": [
+            {
+              "bound": "per_request",
+              "cut": 4,
+              "deadline": 59069268,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58569268
+                ],
+                [
+                  "request_sent",
+                  58569287
+                ],
+                [
+                  "exit",
+                  58730188
+                ]
+              ],
+              "id": 4,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 1872
+            },
+            {
+              "bound": "per_request",
+              "cut": 4,
+              "deadline": 59069306,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58445753
+                ],
+                [
+                  "handler_enter",
+                  58569316
+                ],
+                [
+                  "handler_ok",
+                  58730104
+                ],
+                [
+                  "reply_written",
+                  58730131
+                ],
+                [
+                  "exit",
+                  58730133
+                ]
+              ],
+              "id": 4,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 1901
+            },
+            {
+              "bound": "per_request",
+              "cut": 0,
+              "deadline": 59232774,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58559516
+                ],
+                [
+                  "handler_enter",
+                  58732793
+                ],
+                [
+                  "handler_ok",
+                  58879679
+                ],
+                [
+                  "reply_written",
+                  58879697
+                ],
+                [
+                  "exit",
+                  58879698
+                ]
+              ],
+              "id": 3,
+              "io": "exchange",
+              "pid": 13,
+              "role": "selector_service",
+              "thread": 1903
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 59233426,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58733425
+                ],
+                [
+                  "request_sent",
+                  58733442
+                ],
+                [
+                  "exit",
+                  58809185
+                ]
+              ],
+              "id": 8,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 1797
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 59233591,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58555133
+                ],
+                [
+                  "handler_enter",
+                  58733603
+                ],
+                [
+                  "handler_ok",
+                  58809107
+                ],
+                [
+                  "reply_written",
+                  58809137
+                ],
+                [
+                  "exit",
+                  58809139
+                ]
+              ],
+              "id": 8,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 1869
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 59312560,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58812559
+                ],
+                [
+                  "request_sent",
+                  58812578
+                ],
+                [
+                  "exit",
+                  58877587
+                ]
+              ],
+              "id": 9,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 1872
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 59312628,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58809164
+                ],
+                [
+                  "handler_enter",
+                  58812638
+                ],
+                [
+                  "handler_ok",
+                  58877489
+                ],
+                [
+                  "reply_written",
+                  58877520
+                ],
+                [
+                  "exit",
+                  58877522
+                ]
+              ],
+              "id": 9,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 1869
+            },
+            {
+              "bound": "per_request",
+              "cut": 4,
+              "deadline": 59381342,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58881342
+                ],
+                [
+                  "request_sent",
+                  58881360
+                ],
+                [
+                  "exit",
+                  58980648
+                ]
+              ],
+              "id": 5,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 1797
+            },
+            {
+              "bound": "per_request",
+              "cut": 4,
+              "deadline": 59381409,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58730153
+                ],
+                [
+                  "handler_enter",
+                  58881432
+                ],
+                [
+                  "handler_ok",
+                  58980596
+                ],
+                [
+                  "reply_written",
+                  58980621
+                ],
+                [
+                  "exit",
+                  58980623
+                ]
+              ],
+              "id": 5,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 1901
+            },
+            {
+              "bound": "per_request",
+              "cut": 0,
+              "deadline": 59482452,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58879716
+                ],
+                [
+                  "handler_enter",
+                  58982474
+                ],
+                [
+                  "original_handler_error",
+                  59069590
+                ],
+                [
+                  "err_invalid_request",
+                  59069592
+                ],
+                [
+                  "shutdown_enter",
+                  59069592
+                ],
+                [
+                  "shutdown_return",
+                  59069597
+                ],
+                [
+                  "exit",
+                  59069606
+                ]
+              ],
+              "id": 4,
+              "io": "exchange",
+              "pid": 13,
+              "role": "selector_service",
+              "thread": 1903
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 59483873,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58983873
+                ],
+                [
+                  "request_sent",
+                  58983893
+                ],
+                [
+                  "exit",
+                  59046113
+                ]
+              ],
+              "id": 10,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 1872
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 59486222,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  58877540
+                ],
+                [
+                  "handler_enter",
+                  58986239
+                ],
+                [
+                  "handler_ok",
+                  59046053
+                ],
+                [
+                  "reply_written",
+                  59046087
+                ],
+                [
+                  "exit",
+                  59046088
+                ]
+              ],
+              "id": 10,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 1869
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 59549966,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  59049965
+                ],
+                [
+                  "request_sent",
+                  59049986
+                ],
+                [
+                  "err_closed",
+                  59069383
+                ],
+                [
+                  "shutdown_enter",
+                  59069383
+                ],
+                [
+                  "shutdown_return",
+                  59069385
+                ],
+                [
+                  "exit",
+                  59069397
+                ]
+              ],
+              "id": 11,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 1797
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 59550004,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  59046106
+                ],
+                [
+                  "handler_enter",
+                  59050015
+                ],
+                [
+                  "original_handler_error",
+                  59069346
+                ],
+                [
+                  "err_invalid_request",
+                  59069347
+                ],
+                [
+                  "shutdown_enter",
+                  59069347
+                ],
+                [
+                  "shutdown_return",
+                  59069355
+                ],
+                [
+                  "exit",
+                  59069365
+                ]
+              ],
+              "id": 11,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 1869
+            }
+          ],
+          "outer_points": {
+            "deadline_fired": 59068098,
+            "deadline_setup": 58567368,
+            "end": 59068131,
+            "select": 58567370,
+            "start": 58567331
+          },
+          "outer_selection": "deadline_fired",
+          "outer_service_shutdown_after_selection_us": 9147,
+          "outer_timer_lateness_us": 730,
+          "owner_us_inside_caller_until_selection": 472347,
+          "post_decode_expired": false,
+          "published_owner_spans": [
+            {
+              "cut": 4,
+              "full_span_us": 159693,
+              "id": 4,
+              "inside_caller_until_selection_us": 159693,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 58607227,
+                "decision": 58585988,
+                "end": 58729548,
+                "input1": 58585245,
+                "input2": 58703328,
+                "input3": 58729537,
+                "selection1": 58606873,
+                "selection2": 58718833,
+                "stage_observation": 58683929,
+                "start": 58569855
+              },
+              "service_replied": true
+            },
+            {
+              "cut": 3,
+              "full_span_us": 73163,
+              "id": 8,
+              "inside_caller_until_selection_us": 73163,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 58766720,
+                "decision": 58755757,
+                "end": 58808160,
+                "input1": 58755687,
+                "input2": 58776186,
+                "input3": 58808151,
+                "selection1": 58766369,
+                "selection2": 58787909,
+                "stage_observation": 58766787,
+                "start": 58734997
+              },
+              "service_replied": true
+            },
+            {
+              "cut": 3,
+              "full_span_us": 64303,
+              "id": 9,
+              "inside_caller_until_selection_us": 64303,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 58846382,
+                "decision": 58829879,
+                "end": 58877233,
+                "input1": 58829331,
+                "input2": 58856323,
+                "input3": 58877224,
+                "selection1": 58846147,
+                "selection2": 58867945,
+                "stage_observation": 58846432,
+                "start": 58812930
+              },
+              "service_replied": true
+            },
+            {
+              "cut": 4,
+              "full_span_us": 98051,
+              "id": 5,
+              "inside_caller_until_selection_us": 98051,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 58907480,
+                "decision": 58897114,
+                "end": 58980137,
+                "input1": 58897035,
+                "input2": 58958542,
+                "input3": 58980126,
+                "selection1": 58907225,
+                "selection2": 58970009,
+                "stage_observation": 58948049,
+                "start": 58882086
+              },
+              "service_replied": true
+            },
+            {
+              "cut": 3,
+              "full_span_us": 59271,
+              "id": 10,
+              "inside_caller_until_selection_us": 59271,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 59016556,
+                "decision": 59005081,
+                "end": 59045776,
+                "input1": 59004956,
+                "input2": 59028057,
+                "input3": 59045769,
+                "selection1": 59016222,
+                "selection2": 59037089,
+                "stage_observation": 59016598,
+                "start": 58986505
+              },
+              "service_replied": true
+            },
+            {
+              "cut": 3,
+              "full_span_us": 19079,
+              "id": 11,
+              "inside_caller_until_selection_us": 17866,
+              "last_completed_marker": "decision",
+              "points": {
+                "decision": 59058931,
+                "end": 59069311,
+                "input1": 59058842,
+                "start": 59050232
+              },
+              "service_replied": false
+            }
+          ],
+          "published_service_pairs": [
+            [
+              4,
+              4
+            ],
+            [
+              3,
+              8
+            ],
+            [
+              3,
+              9
+            ],
+            [
+              4,
+              5
+            ],
+            [
+              3,
+              10
+            ],
+            [
+              3,
+              11
+            ]
+          ],
+          "six_original_owner_us": 473560,
+          "transport_bound": {
+            "deadline": 59067368,
+            "kind": "per_request",
+            "layer": "transport",
+            "pid": 13,
+            "start": 58567331,
+            "tag": 0,
+            "thread": 1700
+          }
+        }
+      ],
+      "pid": 13,
+      "scope_rows": 76,
+      "stage_rows": 122
+    },
+    "timing": {
+      "bound_rows": 27,
+      "calls": [
+        {
+          "caller_us": 502260,
+          "client_points": {
+            "before_transport": 96786471,
+            "end": 97288415,
+            "start": 96786155,
+            "validated": 96786406
+          },
+          "direct_order": "outer selection before service shutdown began",
+          "index": 1,
+          "matched_outer_server": {
+            "bound": "per_request",
+            "cut": 0,
+            "deadline": 97286534,
+            "depth": 1,
+            "events": [
+              [
+                "enter",
+                96786222
+              ],
+              [
+                "handler_enter",
+                96786546
+              ],
+              [
+                "handler_ok",
+                97304112
+              ],
+              [
+                "clock_expired",
+                97304112
+              ],
+              [
+                "err_deadline_elapsed",
+                97304113
+              ],
+              [
+                "shutdown_enter",
+                97304115
+              ],
+              [
+                "shutdown_return",
+                97304118
+              ],
+              [
+                "exit",
+                97304128
+              ]
+            ],
+            "id": 1,
+            "io": "exchange",
+            "pid": 13,
+            "role": "nextuse_service",
+            "thread": 2388
+          },
+          "meaning": "initial healthy read",
+          "nested_operations": [
+            {
+              "bound": "per_request",
+              "cut": 4,
+              "deadline": 97287767,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  96787767
+                ],
+                [
+                  "request_sent",
+                  96787779
+                ],
+                [
+                  "exit",
+                  96880230
+                ]
+              ],
+              "id": 6,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 2258
+            },
+            {
+              "bound": "per_request",
+              "cut": 4,
+              "deadline": 97287791,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  96668953
+                ],
+                [
+                  "handler_enter",
+                  96787799
+                ],
+                [
+                  "handler_ok",
+                  96880185
+                ],
+                [
+                  "reply_written",
+                  96880208
+                ],
+                [
+                  "exit",
+                  96880209
+                ]
+              ],
+              "id": 6,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 2364
+            },
+            {
+              "bound": "per_request",
+              "cut": 0,
+              "deadline": 97382981,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  96779847
+                ],
+                [
+                  "handler_enter",
+                  96882992
+                ],
+                [
+                  "handler_ok",
+                  97072845
+                ],
+                [
+                  "reply_written",
+                  97072855
+                ],
+                [
+                  "exit",
+                  97072856
+                ]
+              ],
+              "id": 5,
+              "io": "exchange",
+              "pid": 13,
+              "role": "selector_service",
+              "thread": 2366
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 97384390,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  96884390
+                ],
+                [
+                  "request_sent",
+                  96884402
+                ],
+                [
+                  "exit",
+                  96972629
+                ]
+              ],
+              "id": 12,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 2347
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 97384420,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  96775035
+                ],
+                [
+                  "handler_enter",
+                  96884428
+                ],
+                [
+                  "handler_ok",
+                  96972570
+                ],
+                [
+                  "reply_written",
+                  96972584
+                ],
+                [
+                  "exit",
+                  96972585
+                ]
+              ],
+              "id": 12,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 2344
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 97477122,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  96977121
+                ],
+                [
+                  "request_sent",
+                  96977135
+                ],
+                [
+                  "exit",
+                  97070307
+                ]
+              ],
+              "id": 13,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 2258
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 97477148,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  96972692
+                ],
+                [
+                  "handler_enter",
+                  96977152
+                ],
+                [
+                  "handler_ok",
+                  97070264
+                ],
+                [
+                  "reply_written",
+                  97070273
+                ],
+                [
+                  "exit",
+                  97070274
+                ]
+              ],
+              "id": 13,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 2344
+            },
+            {
+              "bound": "per_request",
+              "cut": 4,
+              "deadline": 97574428,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  97074428
+                ],
+                [
+                  "request_sent",
+                  97074437
+                ],
+                [
+                  "exit",
+                  97171036
+                ]
+              ],
+              "id": 7,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 2347
+            },
+            {
+              "bound": "per_request",
+              "cut": 4,
+              "deadline": 97574454,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  96880232
+                ],
+                [
+                  "handler_enter",
+                  97074474
+                ],
+                [
+                  "handler_ok",
+                  97170931
+                ],
+                [
+                  "reply_written",
+                  97170948
+                ],
+                [
+                  "exit",
+                  97170949
+                ]
+              ],
+              "id": 7,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 2364
+            },
+            {
+              "bound": "per_request",
+              "cut": 0,
+              "deadline": 97676433,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  97072877
+                ],
+                [
+                  "handler_enter",
+                  97176444
+                ],
+                [
+                  "handler_ok",
+                  97299920
+                ],
+                [
+                  "reply_written",
+                  97299933
+                ],
+                [
+                  "exit",
+                  97299935
+                ]
+              ],
+              "id": 6,
+              "io": "exchange",
+              "pid": 13,
+              "role": "selector_service",
+              "thread": 2366
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 97678072,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  97178072
+                ],
+                [
+                  "request_sent",
+                  97178087
+                ],
+                [
+                  "exit",
+                  97219767
+                ]
+              ],
+              "id": 14,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 2258
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 97678391,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  97070292
+                ],
+                [
+                  "handler_enter",
+                  97178399
+                ],
+                [
+                  "handler_ok",
+                  97219724
+                ],
+                [
+                  "reply_written",
+                  97219734
+                ],
+                [
+                  "exit",
+                  97219735
+                ]
+              ],
+              "id": 14,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 2344
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 97724112,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  97224112
+                ],
+                [
+                  "request_sent",
+                  97224132
+                ],
+                [
+                  "exit",
+                  97296731
+                ]
+              ],
+              "id": 15,
+              "io": "request",
+              "pid": 13,
+              "role": "published_client",
+              "thread": 2347
+            },
+            {
+              "bound": "per_request",
+              "cut": 3,
+              "deadline": 97724142,
+              "depth": 1,
+              "events": [
+                [
+                  "enter",
+                  97219763
+                ],
+                [
+                  "handler_enter",
+                  97224150
+                ],
+                [
+                  "handler_ok",
+                  97296685
+                ],
+                [
+                  "reply_written",
+                  97296699
+                ],
+                [
+                  "exit",
+                  97296701
+                ]
+              ],
+              "id": 15,
+              "io": "exchange",
+              "pid": 13,
+              "role": "published_service",
+              "thread": 2344
+            }
+          ],
+          "outer_points": {
+            "deadline_fired": 97288327,
+            "deadline_setup": 96786487,
+            "end": 97288361,
+            "select": 96786488,
+            "start": 96786471
+          },
+          "outer_selection": "deadline_fired",
+          "outer_service_shutdown_after_selection_us": 15788,
+          "outer_timer_lateness_us": 1840,
+          "owner_us_inside_caller_until_selection": 469390,
+          "post_decode_expired": false,
+          "published_owner_spans": [
+            {
+              "cut": 4,
+              "full_span_us": 91012,
+              "id": 6,
+              "inside_caller_until_selection_us": 91012,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 96813747,
+                "decision": 96800750,
+                "end": 96879515,
+                "input1": 96800341,
+                "input2": 96860291,
+                "input3": 96879509,
+                "selection1": 96813391,
+                "selection2": 96870945,
+                "stage_observation": 96850244,
+                "start": 96788503
+              },
+              "service_replied": true
+            },
+            {
+              "cut": 3,
+              "full_span_us": 86810,
+              "id": 12,
+              "inside_caller_until_selection_us": 86810,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 96916178,
+                "decision": 96899732,
+                "end": 96971802,
+                "input1": 96899415,
+                "input2": 96933171,
+                "input3": 96971788,
+                "selection1": 96915777,
+                "selection2": 96956045,
+                "stage_observation": 96916349,
+                "start": 96884992
+              },
+              "service_replied": true
+            },
+            {
+              "cut": 3,
+              "full_span_us": 91870,
+              "id": 13,
+              "inside_caller_until_selection_us": 91870,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 97018204,
+                "decision": 96993801,
+                "end": 97069882,
+                "input1": 96993033,
+                "input2": 97039933,
+                "input3": 97069874,
+                "selection1": 97017557,
+                "selection2": 97060919,
+                "stage_observation": 97018387,
+                "start": 96978012
+              },
+              "service_replied": true
+            },
+            {
+              "cut": 4,
+              "full_span_us": 95239,
+              "id": 7,
+              "inside_caller_until_selection_us": 95239,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 97096418,
+                "decision": 97085412,
+                "end": 97170449,
+                "input1": 97085167,
+                "input2": 97148887,
+                "input3": 97170444,
+                "selection1": 97095978,
+                "selection2": 97160997,
+                "stage_observation": 97136596,
+                "start": 97075210
+              },
+              "service_replied": true
+            },
+            {
+              "cut": 3,
+              "full_span_us": 40579,
+              "id": 14,
+              "inside_caller_until_selection_us": 40579,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 97194443,
+                "decision": 97187263,
+                "end": 97219411,
+                "input1": 97187155,
+                "input2": 97199841,
+                "input3": 97219407,
+                "selection1": 97194181,
+                "selection2": 97210422,
+                "stage_observation": 97194518,
+                "start": 97178832
+              },
+              "service_replied": true
+            },
+            {
+              "cut": 3,
+              "full_span_us": 70824,
+              "id": 15,
+              "inside_caller_until_selection_us": 63880,
+              "last_completed_marker": "input3",
+              "points": {
+                "binding": 97241761,
+                "decision": 97231213,
+                "end": 97295271,
+                "input1": 97231102,
+                "input2": 97252436,
+                "input3": 97295238,
+                "selection1": 97241509,
+                "selection2": 97277099,
+                "stage_observation": 97241857,
+                "start": 97224447
+              },
+              "service_replied": true
+            }
+          ],
+          "published_service_pairs": [
+            [
+              4,
+              6
+            ],
+            [
+              3,
+              12
+            ],
+            [
+              3,
+              13
+            ],
+            [
+              4,
+              7
+            ],
+            [
+              3,
+              14
+            ],
+            [
+              3,
+              15
+            ]
+          ],
+          "six_original_owner_us": 476334,
+          "transport_bound": {
+            "deadline": 97286487,
+            "kind": "per_request",
+            "layer": "transport",
+            "pid": 13,
+            "start": 96786471,
+            "tag": 0,
+            "thread": 2190
+          }
+        }
+      ],
+      "pid": 13,
+      "scope_rows": 108,
+      "stage_rows": 175
+    }
+  },
+  "focus_outcomes": {
+    "original_next_use_evidence_timing_diagnostic": {
+      "outcome": "FAILED",
+      "shard": 4
+    },
+    "q24_next_use_command_healthy_evidence_readback_then_publication_withdrawal": {
+      "outcome": "FAILED",
+      "shard": 2
+    }
+  },
+  "head": "910fee9b64cafdf1da406b815d64e51f7c32fc20",
+  "shard_counts_pass_fail_ignore_measured_filtered": {
+    "1": [
+      379,
+      0,
+      40,
+      0,
+      1304
+    ],
+    "2": [
+      392,
+      1,
+      36,
+      0,
+      1294
+    ],
+    "3": [
+      384,
+      0,
+      51,
+      0,
+      1288
+    ],
+    "4": [
+      395,
+      1,
+      44,
+      0,
+      1283
+    ]
+  }
+}
