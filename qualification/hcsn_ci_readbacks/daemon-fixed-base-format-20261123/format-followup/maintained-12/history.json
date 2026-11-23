@@ -1,0 +1,114 @@
+[
+  [
+    "codex-rs/ext/hepta-prompt/src/v3.rs",
+    [
+      [
+        "f813847c7ae7c02634c358d2512ac372080a050e",
+        "feat(runtime.codex): add canonical V3 prompt provider bridge"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-agentd/src/prompt_product_v3.rs",
+    [
+      [
+        "0fec6ab5fa09de34e9f7778991ccbdd3df9c4ba3",
+        "feat(agentd): own durable V3 context delivery lifecycle"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-context-compiler/src/v2/preparation_archive.rs",
+    [
+      [
+        "9174f84eb2a735b32235ee0f72d83e22383232ea",
+        "feat(context.compiler): add validated preparation archive for crash reconciliation"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
+    [
+      [
+        "6da30d6d806f32120afb3b4364dfaf0fdf3f03a9",
+        "feat(context.compiler): add canonical V3 product compiler"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-memory-federation-wire/src/attempt.rs",
+    [
+      [
+        "5eee5627e01c31e3223a64b7ae8fb012c727760c",
+        "memory.federation: make cancellation registry borrow-safe"
+      ],
+      [
+        "c87c2e7746c5d5a0b761087e79604d54be439c8e",
+        "memory.federation: add cancellation attempt registry"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-memory-federation-wire/src/codec.rs",
+    [
+      [
+        "61d0ec0263a018ee1fe81442602e14a099d23f03",
+        "memory.federation: register deterministic wire codec"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-memory-federation-wire/src/protocol.rs",
+    [
+      [
+        "1fcd258c4238b3989ae1ef3b141960acb06e2967",
+        "memory.federation: implement authenticated federation frames"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-memory-federation-wire/src/replay.rs",
+    [
+      [
+        "94f430d1ddd02e9a63994a222c89a5a4ff610668",
+        "memory.federation: add bounded replay protection"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-memory-federation-wire/src/tests.rs",
+    [
+      [
+        "e32292d3dd2f48ec336cebb4f710022796a0f3e2",
+        "memory.federation: cover authenticated wire faults"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-supervisor/src/lock_metrics.rs",
+    [
+      [
+        "2de3cabf642faf1c6510c389ba3772d22de06150",
+        "feat(supervisor): add bounded lock wait and hold instrumentation"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-supervisor/src/qualification_fault.rs",
+    [
+      [
+        "23543618921c50b87466b7bfd39d916d4b79334b",
+        "test(supervisor): add qualification-only persistence failpoints"
+      ]
+    ]
+  ],
+  [
+    "codex-rs/hepta-supervisor/src/recovery_diagnostics.rs",
+    [
+      [
+        "69e77fe0f8d83607501badd96e2f18babf319f82",
+        "feat(supervisor): classify recovery blockers into operator actions"
+      ]
+    ]
+  ]
+]

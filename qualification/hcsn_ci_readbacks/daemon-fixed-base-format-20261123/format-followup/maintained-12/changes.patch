@@ -1,0 +1,735 @@
+--- a/codex-rs/ext/hepta-prompt/src/v3.rs
++++ b/codex-rs/ext/hepta-prompt/src/v3.rs
+@@ -319,22 +319,14 @@
+ pub type PromptRuntimeRecordFutureV3 =
+     Pin<Box<dyn Future<Output = Result<(), PromptRuntimeHostErrorV3>> + Send + 'static>>;
+ 
+-type PrepareFnV3 = dyn Fn(PromptRuntimePrepareRequestV3) -> PromptRuntimePrepareFutureV3
+-    + Send
+-    + Sync
+-    + 'static;
+-type FinalUseFnV3 = dyn Fn(PromptRuntimeFinalUseRequestV3) -> PromptRuntimeFinalUseFutureV3
+-    + Send
+-    + Sync
+-    + 'static;
+-type DispatchFnV3 = dyn Fn(PromptRuntimeDispatchRecordV3) -> PromptRuntimeDispatchFutureV3
+-    + Send
+-    + Sync
+-    + 'static;
+-type RecordFnV3 = dyn Fn(PromptRuntimeTerminalRecordV3) -> PromptRuntimeRecordFutureV3
+-    + Send
+-    + Sync
+-    + 'static;
++type PrepareFnV3 =
++    dyn Fn(PromptRuntimePrepareRequestV3) -> PromptRuntimePrepareFutureV3 + Send + Sync + 'static;
++type FinalUseFnV3 =
++    dyn Fn(PromptRuntimeFinalUseRequestV3) -> PromptRuntimeFinalUseFutureV3 + Send + Sync + 'static;
++type DispatchFnV3 =
++    dyn Fn(PromptRuntimeDispatchRecordV3) -> PromptRuntimeDispatchFutureV3 + Send + Sync + 'static;
++type RecordFnV3 =
++    dyn Fn(PromptRuntimeTerminalRecordV3) -> PromptRuntimeRecordFutureV3 + Send + Sync + 'static;
+ 
+ #[derive(Clone)]
+ pub struct PromptRuntimeHostV3 {
+@@ -365,10 +357,7 @@
+             + Send
+             + Sync
+             + 'static,
+-        R: Fn(PromptRuntimeTerminalRecordV3) -> PromptRuntimeRecordFutureV3
+-            + Send
+-            + Sync
+-            + 'static,
++        R: Fn(PromptRuntimeTerminalRecordV3) -> PromptRuntimeRecordFutureV3 + Send + Sync + 'static,
+     {
+         StableId::new(CAPABILITY_ID).map_err(|_| PromptRuntimeV3Error::InvalidHost)?;
+         Ok(Self {
+@@ -588,7 +577,11 @@
+                 model: input.model.to_owned(),
+                 transport: input.transport,
+             };
+-            let proof = self.host.final_use(request.clone()).await.map_err(policy_error)?;
++            let proof = self
++                .host
++                .final_use(request.clone())
++                .await
++                .map_err(policy_error)?;
+             proof.validate_for(&request).map_err(runtime_policy_error)?;
+             state
+                 .proofs
+--- a/codex-rs/hepta-agentd/src/prompt_product_v3.rs
++++ b/codex-rs/hepta-agentd/src/prompt_product_v3.rs
+@@ -203,7 +203,10 @@
+ 
+ impl std::fmt::Debug for AgentdPromptProductOwnerV3 {
+     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+-        let live = self.live.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++        let live = self
++            .live
++            .lock()
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         let durable = self
+             .durable
+             .lock()
+@@ -486,8 +489,9 @@
+         if now >= stage.context.deadline_ms {
+             return Err(AgentdPromptProductErrorV3::InvalidContext);
+         }
+-        let preparation_id = StableId::new(format!("context-preparation:v3:{}", request.attempt_id))
+-            .map_err(|_| AgentdPromptProductErrorV3::InvalidScope)?;
++        let preparation_id =
++            StableId::new(format!("context-preparation:v3:{}", request.attempt_id))
++                .map_err(|_| AgentdPromptProductErrorV3::InvalidScope)?;
+         let prepared = {
+             let registry = self
+                 .registry
+@@ -625,8 +629,7 @@
+             .get(&key)
+             .cloned()
+             .ok_or(AgentdPromptProductErrorV3::RecompileRequired)?;
+-        if stage.context.context_payload_digest.to_string()
+-            != dispatch.proof.context_payload_digest
++        if stage.context.context_payload_digest.to_string() != dispatch.proof.context_payload_digest
+             || stage.context.source_binding_digest.to_string()
+                 != dispatch.proof.source_binding_digest
+             || stage.context.execution_profile_digest.to_string()
+@@ -715,10 +718,7 @@
+             .ok_or(AgentdPromptProductErrorV3::RecompileRequired)
+     }
+ 
+-    fn has_unresolved_dispatch(
+-        &self,
+-        key: &TurnKey,
+-    ) -> Result<bool, AgentdPromptProductErrorV3> {
++    fn has_unresolved_dispatch(&self, key: &TurnKey) -> Result<bool, AgentdPromptProductErrorV3> {
+         let state = self
+             .durable
+             .lock()
+@@ -766,8 +766,7 @@
+ 
+ impl DurableStore {
+     fn open(directory: &Path) -> Result<(Self, DurableState), AgentdPromptProductErrorV3> {
+-        std::fs::create_dir_all(directory)
+-            .map_err(|_| AgentdPromptProductErrorV3::Unavailable)?;
++        std::fs::create_dir_all(directory).map_err(|_| AgentdPromptProductErrorV3::Unavailable)?;
+         set_private_directory_permissions(directory)?;
+         let lock_path = directory.join(LOCK_FILE);
+         let lock = OpenOptions::new()
+@@ -797,14 +796,14 @@
+         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
+             return Err(AgentdPromptProductErrorV3::CorruptState);
+         }
+-        let state = serde_json::from_slice(&bytes)
+-            .map_err(|_| AgentdPromptProductErrorV3::CorruptState)?;
++        let state =
++            serde_json::from_slice(&bytes).map_err(|_| AgentdPromptProductErrorV3::CorruptState)?;
+         Ok((store, state))
+     }
+ 
+     fn persist(&self, state: &DurableState) -> Result<(), AgentdPromptProductErrorV3> {
+-        let bytes = serde_json::to_vec(state)
+-            .map_err(|_| AgentdPromptProductErrorV3::Unavailable)?;
++        let bytes =
++            serde_json::to_vec(state).map_err(|_| AgentdPromptProductErrorV3::Unavailable)?;
+         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
+             return Err(AgentdPromptProductErrorV3::CapacityExceeded);
+         }
+@@ -855,7 +854,9 @@
+             .ok_or_else(|| "context witness digest missing".to_owned())?;
+         let expected = context_witness_digest(receipt, self.authority_digest)?;
+         if witness.as_str() != expected {
+-            return Err("context witness does not authenticate the preparation authority".to_owned());
++            return Err(
++                "context witness does not authenticate the preparation authority".to_owned(),
++            );
+         }
+         if input.as_str() != preparation.payload_digest().to_string() {
+             return Err("context input digest does not bind the prepared payload".to_owned());
+@@ -896,7 +897,11 @@
+         binding.wire_semantic_sha256.as_str(),
+         previous_presence,
+         previous_sha256,
+-        if binding.generate { "generate" } else { "no_generate" },
++        if binding.generate {
++            "generate"
++        } else {
++            "no_generate"
++        },
+         &authority_digest.to_string(),
+         input.as_str(),
+     ]))
+@@ -915,7 +920,10 @@
+         || binding.turn_id != proof.turn_id
+         || binding.provider_id != proof.provider_id
+         || binding.model != proof.model
+-        || binding.ephemeral_input_sha256.as_ref().map(|value| value.as_str())
++        || binding
++            .ephemeral_input_sha256
++            .as_ref()
++            .map(|value| value.as_str())
+             != Some(context.context_payload_digest.to_string().as_str())
+         || binding.ephemeral_input_witness_sha256.is_none()
+     {
+@@ -983,7 +991,10 @@
+     let mut unresolved = BTreeMap::<StoredTurnKey, String>::new();
+     for (attempt_id, dispatch) in &state.dispatches {
+         let is_unresolved = state.terminals.get(attempt_id).is_none_or(|terminal| {
+-            matches!(terminal.receipt.terminal, ProviderTerminal::Indeterminate { .. })
++            matches!(
++                terminal.receipt.terminal,
++                ProviderTerminal::Indeterminate { .. }
++            )
+         });
+         if is_unresolved
+             && unresolved
+@@ -1000,7 +1011,10 @@
+     state.dispatches.iter().any(|(attempt_id, dispatch)| {
+         &dispatch.key == key
+             && state.terminals.get(attempt_id).is_none_or(|terminal| {
+-                matches!(terminal.receipt.terminal, ProviderTerminal::Indeterminate { .. })
++                matches!(
++                    terminal.receipt.terminal,
++                    ProviderTerminal::Indeterminate { .. }
++                )
+             })
+     })
+ }
+@@ -1060,8 +1074,7 @@
+ }
+ 
+ fn parse_digest(value: &str) -> Result<Digest32, AgentdPromptProductErrorV3> {
+-    let digest = Digest32::from_str(value)
+-        .map_err(|_| AgentdPromptProductErrorV3::CorruptState)?;
++    let digest = Digest32::from_str(value).map_err(|_| AgentdPromptProductErrorV3::CorruptState)?;
+     if digest.is_zero() {
+         return Err(AgentdPromptProductErrorV3::CorruptState);
+     }
+@@ -1080,8 +1093,7 @@
+         .duration_since(std::time::UNIX_EPOCH)
+         .map_err(|_| AgentdPromptProductErrorV3::Unavailable)
+         .and_then(|duration| {
+-            u64::try_from(duration.as_millis())
+-                .map_err(|_| AgentdPromptProductErrorV3::Unavailable)
++            u64::try_from(duration.as_millis()).map_err(|_| AgentdPromptProductErrorV3::Unavailable)
+         })
+ }
+ 
+--- a/codex-rs/hepta-context-compiler/src/v2/preparation_archive.rs
++++ b/codex-rs/hepta-context-compiler/src/v2/preparation_archive.rs
+@@ -97,8 +97,7 @@
+ }
+ 
+ fn parse_digest(value: &str) -> Result<Digest32, ContextCompilerV2Error> {
+-    let digest = Digest32::from_str(value)
+-        .map_err(|_| ContextCompilerV2Error::DeliveryMismatch)?;
++    let digest = Digest32::from_str(value).map_err(|_| ContextCompilerV2Error::DeliveryMismatch)?;
+     if digest.is_zero() {
+         return Err(ContextCompilerV2Error::DeliveryMismatch);
+     }
+--- a/codex-rs/hepta-intelligence/src/prompt_product_v3.rs
++++ b/codex-rs/hepta-intelligence/src/prompt_product_v3.rs
+@@ -138,10 +138,7 @@
+ }
+ 
+ impl PromptExecutionProfileV3 {
+-    pub fn validate_for(
+-        &self,
+-        tuple: &PromptModelTupleV2,
+-    ) -> Result<(), PromptProductV3Error> {
++    pub fn validate_for(&self, tuple: &PromptModelTupleV2) -> Result<(), PromptProductV3Error> {
+         tuple
+             .validate()
+             .map_err(|error| PromptProductV3Error::Registry(error.to_string()))?;
+@@ -282,14 +279,17 @@
+             .validate_for(&self.compiled, &self.model_profile)
+             .map_err(PromptProductV3Error::Context)?;
+         self.attachment
+-            .validate_for(&self.compiled, &self.serialized_context, &self.model_profile)
++            .validate_for(
++                &self.compiled,
++                &self.serialized_context,
++                &self.model_profile,
++            )
+             .map_err(PromptProductV3Error::Context)?;
+         self.authority_snapshot
+             .validate()
+             .map_err(|error| PromptProductV3Error::Registry(error.to_string()))?;
+         if self.selected_deliveries.is_empty()
+-            || self.selected_deliveries.len()
+-                != self.compiled.receipt().selected_item_ids().len()
++            || self.selected_deliveries.len() != self.compiled.receipt().selected_item_ids().len()
+             || self.authority.grants_any()
+             || self.exercise_receipt_digest.is_zero()
+             || self.portfolio_receipt_digest.is_zero()
+@@ -317,10 +317,7 @@
+     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+         formatter
+             .debug_struct("PromptRegistryCompiledContextV3")
+-            .field(
+-                "compilation_id",
+-                self.compiled.receipt().compilation_id(),
+-            )
++            .field("compilation_id", self.compiled.receipt().compilation_id())
+             .field("selected_count", &self.selected_deliveries.len())
+             .field(
+                 "payload_digest",
+@@ -335,10 +332,7 @@
+                 &self.serialized_context.receipt().serialized_token_count(),
+             )
+             .field("source_binding_digest", &self.source_binding_digest)
+-            .field(
+-                "tokenization_proof_digest",
+-                &self.tokenization_proof_digest,
+-            )
++            .field("tokenization_proof_digest", &self.tokenization_proof_digest)
+             .finish()
+     }
+ }
+@@ -368,10 +362,7 @@
+     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+         formatter
+             .debug_struct("PreparedPromptDeliveryV3")
+-            .field(
+-                "preparation_digest",
+-                &self.preparation.preparation_digest(),
+-            )
++            .field("preparation_digest", &self.preparation.preparation_digest())
+             .field(
+                 "current_authority_snapshot",
+                 &self.authority_successor.current().snapshot_digest(),
+@@ -463,7 +454,10 @@
+         self.authority.admissions().iter().any(|admission| {
+             record.admission_id == *admission.admission_id()
+                 && record.item_id == *admission.realization_id()
+-                && record.role == context_role(admission.role()).ok().unwrap_or(ContextRoleV2::Schema)
++                && record.role
++                    == context_role(admission.role())
++                        .ok()
++                        .unwrap_or(ContextRoleV2::Schema)
+                 && record.content_digest == admission.content_digest()
+                 && record.source_digest == admission.source_digest()
+                 && record.generation_vector_digest == admission.generation_vector_digest()
+@@ -599,10 +593,8 @@
+     }
+ 
+     let scope_digest = product_scope_digest(portfolio, exercise.receipt_digest);
+-    let authority_domain_digest = product_authority_domain_digest(
+-        &request.execution_profile,
+-        &request.registry_model_tuple,
+-    );
++    let authority_domain_digest =
++        product_authority_domain_digest(&request.execution_profile, &request.registry_model_tuple);
+     let realization_ids = portfolio
+         .selected
+         .iter()
+@@ -677,12 +669,9 @@
+             admission.expires_unix_ms(),
+         )
+         .map_err(PromptProductV3Error::Context)?;
+-        let verified_admission = verify_admission_v2(
+-            admission_record,
+-            &verified_snapshot,
+-            &verifier,
+-        )
+-        .map_err(PromptProductV3Error::Context)?;
++        let verified_admission =
++            verify_admission_v2(admission_record, &verified_snapshot, &verifier)
++                .map_err(PromptProductV3Error::Context)?;
+         candidates.push(ContextCandidateV2 {
+             item_id: delivery.binding.realization_id.clone(),
+             role,
+@@ -931,7 +920,13 @@
+     bytes.extend_from_slice(output.authority_snapshot.snapshot_digest().as_array());
+     bytes.extend_from_slice(output.execution_profile.digest().as_array());
+     bytes.extend_from_slice(output.compiled.receipt().receipt_digest().as_array());
+-    bytes.extend_from_slice(output.serialized_context.receipt().receipt_digest().as_array());
++    bytes.extend_from_slice(
++        output
++            .serialized_context
++            .receipt()
++            .receipt_digest()
++            .as_array(),
++    );
+     bytes.extend_from_slice(output.attachment.attachment_digest().as_array());
+     bytes.extend_from_slice(&output.portfolio_valid_until_unix_ms.to_be_bytes());
+     for delivery in &output.selected_deliveries {
+@@ -942,9 +937,21 @@
+ 
+ fn compute_tokenization_proof_digest(output: &PromptRegistryCompiledContextV3) -> Digest32 {
+     let mut bytes = TOKENIZATION_PROOF_DOMAIN.to_vec();
+-    bytes.extend_from_slice(output.execution_profile.tokenizer.identity_digest().as_array());
++    bytes.extend_from_slice(
++        output
++            .execution_profile
++            .tokenizer
++            .identity_digest()
++            .as_array(),
++    );
+     bytes.extend_from_slice(output.execution_profile.digest().as_array());
+-    bytes.extend_from_slice(output.serialized_context.receipt().payload_digest().as_array());
++    bytes.extend_from_slice(
++        output
++            .serialized_context
++            .receipt()
++            .payload_digest()
++            .as_array(),
++    );
+     bytes.extend_from_slice(
+         &output
+             .serialized_context
+@@ -1139,13 +1146,9 @@
+         .expect("canonical V3 compilation");
+         revoke_registry(&mut registry, &authority, &key, grant_now);
+ 
+-        let error = prepare_prompt_delivery_v3(
+-            &registry,
+-            &output,
+-            200,
+-            id("preparation:prompt:v3"),
+-        )
+-        .expect_err("revoked selection must not prepare");
++        let error =
++            prepare_prompt_delivery_v3(&registry, &output, 200, id("preparation:prompt:v3"))
++                .expect_err("revoked selection must not prepare");
+         assert!(matches!(error, PromptProductV3Error::Registry(_)));
+     }
+ 
+--- a/codex-rs/hepta-memory-federation-wire/src/attempt.rs
++++ b/codex-rs/hepta-memory-federation-wire/src/attempt.rs
+@@ -166,11 +166,7 @@
+         })
+     }
+ 
+-    pub fn is_cancelled(
+-        &self,
+-        query_id: &StableId,
+-        query_binding_digest: Digest32,
+-    ) -> bool {
++    pub fn is_cancelled(&self, query_id: &StableId, query_binding_digest: Digest32) -> bool {
+         let identity = AttemptIdentity::new(query_id, query_binding_digest);
+         self.attempts
+             .get(&identity)
+--- a/codex-rs/hepta-memory-federation-wire/src/codec.rs
++++ b/codex-rs/hepta-memory-federation-wire/src/codec.rs
+@@ -24,8 +24,7 @@
+ use crate::protocol::FederationResponseMessageV1;
+ use crate::protocol::FederationWireMessageV1;
+ 
+-pub const AUTHENTICATED_FRAME_SCHEMA_V1: &str =
+-    "hepta-memory-federation-authenticated-frame-v1";
++pub const AUTHENTICATED_FRAME_SCHEMA_V1: &str = "hepta-memory-federation-authenticated-frame-v1";
+ pub const AUTHENTICATED_FRAME_FORMAT_VERSION_V1: u16 = 1;
+ pub const MAX_AUTHENTICATED_FRAME_BYTES: usize = 256 * 1024;
+ 
+@@ -68,8 +67,8 @@
+     }
+ }
+ 
+-pub fn registered_codec_v1(
+-) -> Result<(SchemaRegistry, AuthenticatedFrameCodecV1), FederationCodecError> {
++pub fn registered_codec_v1()
++-> Result<(SchemaRegistry, AuthenticatedFrameCodecV1), FederationCodecError> {
+     let codec = AuthenticatedFrameCodecV1::new()?;
+     let mut registry = SchemaRegistry::new();
+     registry
+@@ -100,9 +99,7 @@
+     )
+ }
+ 
+-fn encode_frame(
+-    frame: &AuthenticatedFederationFrameV1,
+-) -> Result<Vec<u8>, FederationCodecError> {
++fn encode_frame(frame: &AuthenticatedFederationFrameV1) -> Result<Vec<u8>, FederationCodecError> {
+     let mut bytes = Vec::new();
+     bytes.extend_from_slice(&MAGIC);
+     bytes.extend_from_slice(&AUTHENTICATED_FRAME_FORMAT_VERSION_V1.to_be_bytes());
+@@ -202,7 +199,9 @@
+     }
+ }
+ 
+-fn decode_message(reader: &mut Reader<'_>) -> Result<FederationWireMessageV1, FederationCodecError> {
++fn decode_message(
++    reader: &mut Reader<'_>,
++) -> Result<FederationWireMessageV1, FederationCodecError> {
+     match reader.read_u8()? {
+         1 => Ok(FederationWireMessageV1::Query(FederationQueryMessageV1 {
+             query_id: reader.read_id()?,
+@@ -232,14 +231,12 @@
+                 3 => FederationCancellationReasonV1::AuthorityRevoked,
+                 _ => return Err(FederationCodecError::Enum),
+             };
+-            Ok(FederationWireMessageV1::Cancel(
+-                FederationCancelMessageV1 {
+-                    query_id,
+-                    query_binding_digest,
+-                    cancellation_id,
+-                    reason,
+-                },
+-            ))
++            Ok(FederationWireMessageV1::Cancel(FederationCancelMessageV1 {
++                query_id,
++                query_binding_digest,
++                cancellation_id,
++                reason,
++            }))
+         }
+         4 => {
+             let query_id = reader.read_id()?;
+@@ -274,7 +271,9 @@
+     bytes.extend_from_slice(&frontier.observed_unix_ms.to_be_bytes());
+ }
+ 
+-fn decode_frontier(reader: &mut Reader<'_>) -> Result<AuthenticatedFrontierV1, FederationCodecError> {
++fn decode_frontier(
++    reader: &mut Reader<'_>,
++) -> Result<AuthenticatedFrontierV1, FederationCodecError> {
+     Ok(AuthenticatedFrontierV1 {
+         owner_peer_id: reader.read_id()?,
+         generation: reader.read_u64()?,
+@@ -348,8 +347,8 @@
+         if length == 0 || length > MAX_ID_BYTES {
+             return Err(FederationCodecError::Identity);
+         }
+-        let value = std::str::from_utf8(self.take(length)?)
+-            .map_err(|_| FederationCodecError::Utf8)?;
++        let value =
++            std::str::from_utf8(self.take(length)?).map_err(|_| FederationCodecError::Utf8)?;
+         StableId::new(value.to_string()).map_err(|_| FederationCodecError::Identity)
+     }
+ 
+@@ -405,7 +404,9 @@
+         match self {
+             Self::Descriptor => formatter.write_str("federation schema descriptor is invalid"),
+             Self::Magic => formatter.write_str("federation wire magic is invalid"),
+-            Self::Version(version) => write!(formatter, "unsupported federation wire version {version}"),
++            Self::Version(version) => {
++                write!(formatter, "unsupported federation wire version {version}")
++            }
+             Self::Identity => formatter.write_str("federation wire identity is invalid"),
+             Self::Oversize => formatter.write_str("federation frame is empty or oversized"),
+             Self::Truncated => formatter.write_str("federation frame is truncated"),
+--- a/codex-rs/hepta-memory-federation-wire/src/protocol.rs
++++ b/codex-rs/hepta-memory-federation-wire/src/protocol.rs
+@@ -86,10 +86,7 @@
+         Digest32::of_bytes(&bytes)
+     }
+ 
+-    pub fn require_successor_of(
+-        &self,
+-        previous: &Self,
+-    ) -> Result<(), FederationProtocolError> {
++    pub fn require_successor_of(&self, previous: &Self) -> Result<(), FederationProtocolError> {
+         self.validate()?;
+         previous.validate()?;
+         if self.owner_peer_id != previous.owner_peer_id {
+@@ -348,9 +345,7 @@
+         if self.issued_unix_ms == 0 || self.issued_unix_ms >= self.expires_unix_ms {
+             return Err(FederationProtocolError::InvalidLifetime);
+         }
+-        if self
+-            .expires_unix_ms
+-            .saturating_sub(self.issued_unix_ms)
++        if self.expires_unix_ms.saturating_sub(self.issued_unix_ms)
+             > MAX_AUTHENTICATED_FRAME_LIFETIME_MS
+         {
+             return Err(FederationProtocolError::LifetimeExceeded);
+@@ -397,8 +392,8 @@
+     secret: &[u8],
+     input: &[u8],
+ ) -> Result<[u8; FEDERATION_MAC_BYTES], FederationProtocolError> {
+-    let mut mac = HmacSha256::new_from_slice(secret)
+-        .map_err(|_| FederationProtocolError::InvalidMacKey)?;
++    let mut mac =
++        HmacSha256::new_from_slice(secret).map_err(|_| FederationProtocolError::InvalidMacKey)?;
+     mac.update(input);
+     let bytes = mac.finalize().into_bytes();
+     let mut result = [0_u8; FEDERATION_MAC_BYTES];
+@@ -453,22 +448,32 @@
+ impl fmt::Display for FederationProtocolError {
+     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+         match self {
+-            Self::EntropyUnavailable => formatter.write_str("operating-system entropy is unavailable"),
++            Self::EntropyUnavailable => {
++                formatter.write_str("operating-system entropy is unavailable")
++            }
+             Self::ZeroNonce => formatter.write_str("federation nonce cannot be all zero"),
+             Self::ZeroValue(name) => write!(formatter, "{name} must be non-zero"),
+             Self::EmptyDigest(name) => write!(formatter, "{name} digest cannot be zero"),
+             Self::SamePeer => formatter.write_str("sender and receiver peers must differ"),
+             Self::InvalidLifetime => formatter.write_str("authenticated frame lifetime is invalid"),
+-            Self::LifetimeExceeded => formatter.write_str("authenticated frame lifetime exceeds the protocol bound"),
++            Self::LifetimeExceeded => {
++                formatter.write_str("authenticated frame lifetime exceeds the protocol bound")
++            }
+             Self::NotYetValid => formatter.write_str("authenticated frame is not yet valid"),
+             Self::Expired => formatter.write_str("authenticated frame is expired"),
+-            Self::MissingTerminalObservation => formatter.write_str("response is missing a terminal observation"),
+-            Self::ReceiverMismatch => formatter.write_str("authenticated frame receiver does not match this host"),
++            Self::MissingTerminalObservation => {
++                formatter.write_str("response is missing a terminal observation")
++            }
++            Self::ReceiverMismatch => {
++                formatter.write_str("authenticated frame receiver does not match this host")
++            }
+             Self::InvalidMacKey => formatter.write_str("federation MAC key is invalid"),
+             Self::MacMismatch => formatter.write_str("federation frame MAC did not verify"),
+             Self::FrontierOwnerMismatch => formatter.write_str("frontier witness owner changed"),
+             Self::FrontierRollback => formatter.write_str("frontier witness regressed"),
+-            Self::FrontierParentMismatch => formatter.write_str("frontier witness parent binding is invalid"),
++            Self::FrontierParentMismatch => {
++                formatter.write_str("frontier witness parent binding is invalid")
++            }
+             Self::ClockRegression => formatter.write_str("frontier observation clock regressed"),
+             Self::Credential(error) => error.fmt(formatter),
+             Self::Replay(error) => error.fmt(formatter),
+--- a/codex-rs/hepta-memory-federation-wire/src/replay.rs
++++ b/codex-rs/hepta-memory-federation-wire/src/replay.rs
+@@ -44,13 +44,7 @@
+             return Err(ReplayError::Expired);
+         }
+         self.entries.retain(|_, expiry| *expiry > now_unix_ms);
+-        let key = replay_key(
+-            sender_peer_id,
+-            receiver_peer_id,
+-            key_id,
+-            generation,
+-            nonce,
+-        );
++        let key = replay_key(sender_peer_id, receiver_peer_id, key_id, generation, nonce);
+         if self.entries.contains_key(&key) {
+             return Err(ReplayError::Replay);
+         }
+--- a/codex-rs/hepta-memory-federation-wire/src/tests.rs
++++ b/codex-rs/hepta-memory-federation-wire/src/tests.rs
+@@ -49,7 +49,13 @@
+     nonce: [u8; FEDERATION_NONCE_BYTES],
+ ) -> AuthenticatedFederationFrameV1 {
+     let credential = registry
+-        .require_current(&id("peer-a"), &id("peer-b"), &id("key-a-b"), generation, NOW)
++        .require_current(
++            &id("peer-a"),
++            &id("peer-b"),
++            &id("key-a-b"),
++            generation,
++            NOW,
++        )
+         .expect("current credential");
+     AuthenticatedFederationFrameV1::seal(
+         credential,
+@@ -121,7 +127,9 @@
+     let mut replay = ReplayCacheV1::new(8).expect("replay cache");
+     assert!(matches!(
+         old.verify(&id("peer-b"), NOW + 1, &registry, &mut replay),
+-        Err(FederationProtocolError::Credential(CredentialError::Revoked))
++        Err(FederationProtocolError::Credential(
++            CredentialError::Revoked
++        ))
+     ));
+     let current = seal_query(&registry, 2, [6; FEDERATION_NONCE_BYTES]);
+     current
+@@ -133,7 +141,9 @@
+     let later = seal_query_for_revoked_test();
+     assert!(matches!(
+         later.verify(&id("peer-b"), NOW + 1, &registry, &mut replay),
+-        Err(FederationProtocolError::Credential(CredentialError::Revoked))
++        Err(FederationProtocolError::Credential(
++            CredentialError::Revoked
++        ))
+     ));
+ }
+ 
+@@ -277,6 +287,8 @@
+     let mut replay = ReplayCacheV1::new(8).expect("replay cache");
+     assert!(matches!(
+         outbound.verify(&id("peer-b"), NOW + 1, &host_b_trust, &mut replay),
+-        Err(FederationProtocolError::Credential(CredentialError::Revoked))
+-    ));
+-}
++        Err(FederationProtocolError::Credential(
++            CredentialError::Revoked
++        ))
++    ));
++}
+--- a/codex-rs/hepta-supervisor/src/lock_metrics.rs
++++ b/codex-rs/hepta-supervisor/src/lock_metrics.rs
+@@ -167,13 +167,13 @@
+         }
+     }
+ 
+-    pub(crate) async fn lock(
+-        &self,
+-        class: SupervisorLockClass,
+-    ) -> InstrumentedMutexGuard<'_, T> {
++    pub(crate) async fn lock(&self, class: SupervisorLockClass) -> InstrumentedMutexGuard<'_, T> {
+         let waiting_since = Instant::now();
+         let guard = self.inner.lock().await;
+-        self.metrics.class(class).wait.record(waiting_since.elapsed());
++        self.metrics
++            .class(class)
++            .wait
++            .record(waiting_since.elapsed());
+         InstrumentedMutexGuard {
+             guard,
+             metrics: Arc::clone(&self.metrics),
+@@ -271,11 +271,7 @@
+     }
+ }
+ 
+-fn quantile_upper_bound(
+-    buckets: &[u64; HISTOGRAM_BUCKETS],
+-    count: u64,
+-    percentile: u64,
+-) -> u64 {
++fn quantile_upper_bound(buckets: &[u64; HISTOGRAM_BUCKETS], count: u64, percentile: u64) -> u64 {
+     if count == 0 {
+         return 0;
+     }
+--- a/codex-rs/hepta-supervisor/src/qualification_fault.rs
++++ b/codex-rs/hepta-supervisor/src/qualification_fault.rs
+@@ -9,10 +9,7 @@
+     let Some(root) = std::env::var_os(FAULT_ROOT_ENV) else {
+         return Ok(());
+     };
+-    let marker = Path::new(&root).join(format!(
+-        "{}.{stage}.fail-once",
+-        target_name(target)
+-    ));
++    let marker = Path::new(&root).join(format!("{}.{stage}.fail-once", target_name(target)));
+     let claimed = Path::new(&root).join(format!(
+         "{}.{stage}.claimed.{}",
+         target_name(target),
+@@ -38,10 +35,7 @@
+     let Some(root) = std::env::var_os(FAULT_ROOT_ENV) else {
+         return Ok(());
+     };
+-    let marker = Path::new(&root).join(format!(
+-        "{}.{stage}.delay-ms",
+-        target_name(target)
+-    ));
++    let marker = Path::new(&root).join(format!("{}.{stage}.delay-ms", target_name(target)));
+     let bytes = match std::fs::read(&marker) {
+         Ok(bytes) => bytes,
+         Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(()),
+@@ -57,7 +51,9 @@
+         .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "delay marker is not UTF-8"))?
+         .trim()
+         .parse::<u64>()
+-        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "delay marker is not an integer"))?;
++        .map_err(|_| {
++            io::Error::new(io::ErrorKind::InvalidData, "delay marker is not an integer")
++        })?;
+     if millis == 0 || millis > MAX_DELAY_MILLIS {
+         return Err(io::Error::new(
+             io::ErrorKind::InvalidData,
+--- a/codex-rs/hepta-supervisor/src/recovery_diagnostics.rs
++++ b/codex-rs/hepta-supervisor/src/recovery_diagnostics.rs
+@@ -200,9 +200,7 @@
+     RecoveryBlockerClass::ReleaseCasAmbiguity
+ }
+ 
+-fn blocker_action(
+-    blocker: RecoveryBlockerClass,
+-) -> (RecoveryOperatorAction, &'static str) {
++fn blocker_action(blocker: RecoveryBlockerClass) -> (RecoveryOperatorAction, &'static str) {
+     match blocker {
+         RecoveryBlockerClass::NoBlocker => (
+             RecoveryOperatorAction::None,

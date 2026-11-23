@@ -1,0 +1,64 @@
+{
+  "arms": [
+    "e4be1e972707f5c376033fd59e18fb4f260da891",
+    "97a379c5a347f0e66c5ed9a0cbd38303d1f92cb5"
+  ],
+  "scope": "literal module declarations and explicitly named source paths in Rust, Cargo and Bazel source files under the six package roots",
+  "result": {
+    "ext/hepta-prompt": {
+      "sources_manifests_and_build_files": 7,
+      "literal_references": []
+    },
+    "hepta-agentd": {
+      "sources_manifests_and_build_files": 1666,
+      "literal_references": []
+    },
+    "hepta-context-compiler": {
+      "sources_manifests_and_build_files": 25,
+      "literal_references": []
+    },
+    "hepta-intelligence": {
+      "sources_manifests_and_build_files": 54,
+      "literal_references": []
+    },
+    "hepta-memory-federation-wire": {
+      "sources_manifests_and_build_files": 9,
+      "literal_references": [
+        [
+          "codex-rs/hepta-memory-federation-wire/src/lib.rs",
+          "attempt",
+          "mod attempt;"
+        ],
+        [
+          "codex-rs/hepta-memory-federation-wire/src/lib.rs",
+          "codec",
+          "mod codec;"
+        ],
+        [
+          "codex-rs/hepta-memory-federation-wire/src/lib.rs",
+          "protocol",
+          "mod protocol;"
+        ],
+        [
+          "codex-rs/hepta-memory-federation-wire/src/lib.rs",
+          "replay",
+          "mod replay;"
+        ],
+        [
+          "codex-rs/hepta-memory-federation-wire/src/lib.rs",
+          "tests",
+          "mod tests;"
+        ]
+      ]
+    },
+    "hepta-supervisor": {
+      "sources_manifests_and_build_files": 81,
+      "literal_references": []
+    },
+    "workspace": {
+      "cargo_tree_blob": "38944025536086b5bde79792bd59e4c7eecbac62",
+      "wire_explicit_member": false,
+      "member_globs": []
+    }
+  }
+}

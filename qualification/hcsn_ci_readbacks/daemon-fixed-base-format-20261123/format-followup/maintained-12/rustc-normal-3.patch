@@ -1,0 +1,82 @@
+--- prior-rustc-normal/codec.rs
++++ formatted-rustc-normal/codec.rs
+@@ -389,9 +389,10 @@
+                 formatter.write_str("federation schema descriptor is invalid"),
+             Self::Magic =>
+                 formatter.write_str("federation wire magic is invalid"),
+-            Self::Version(version) =>
++            Self::Version(version) => {
+                 write!(formatter,
+-                    "unsupported federation wire version {version}"),
++                    "unsupported federation wire version {version}")
++            }
+             Self::Identity =>
+                 formatter.write_str("federation wire identity is invalid"),
+             Self::Oversize =>
+--- prior-rustc-normal/protocol.rs
++++ formatted-rustc-normal/protocol.rs
+@@ -418,8 +418,9 @@
+ impl fmt::Display for FederationProtocolError {
+     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+         match self {
+-            Self::EntropyUnavailable =>
+-                formatter.write_str("operating-system entropy is unavailable"),
++            Self::EntropyUnavailable => {
++                formatter.write_str("operating-system entropy is unavailable")
++            }
+             Self::ZeroNonce =>
+                 formatter.write_str("federation nonce cannot be all zero"),
+             Self::ZeroValue(name) =>
+@@ -430,16 +431,19 @@
+                 formatter.write_str("sender and receiver peers must differ"),
+             Self::InvalidLifetime =>
+                 formatter.write_str("authenticated frame lifetime is invalid"),
+-            Self::LifetimeExceeded =>
+-                formatter.write_str("authenticated frame lifetime exceeds the protocol bound"),
++            Self::LifetimeExceeded => {
++                formatter.write_str("authenticated frame lifetime exceeds the protocol bound")
++            }
+             Self::NotYetValid =>
+                 formatter.write_str("authenticated frame is not yet valid"),
+             Self::Expired =>
+                 formatter.write_str("authenticated frame is expired"),
+-            Self::MissingTerminalObservation =>
+-                formatter.write_str("response is missing a terminal observation"),
+-            Self::ReceiverMismatch =>
+-                formatter.write_str("authenticated frame receiver does not match this host"),
++            Self::MissingTerminalObservation => {
++                formatter.write_str("response is missing a terminal observation")
++            }
++            Self::ReceiverMismatch => {
++                formatter.write_str("authenticated frame receiver does not match this host")
++            }
+             Self::InvalidMacKey =>
+                 formatter.write_str("federation MAC key is invalid"),
+             Self::MacMismatch =>
+@@ -448,8 +452,9 @@
+                 formatter.write_str("frontier witness owner changed"),
+             Self::FrontierRollback =>
+                 formatter.write_str("frontier witness regressed"),
+-            Self::FrontierParentMismatch =>
+-                formatter.write_str("frontier witness parent binding is invalid"),
++            Self::FrontierParentMismatch => {
++                formatter.write_str("frontier witness parent binding is invalid")
++            }
+             Self::ClockRegression =>
+                 formatter.write_str("frontier observation clock regressed"),
+             Self::Credential(error) => error.fmt(formatter),
+--- prior-rustc-normal/qualification_fault.rs
++++ formatted-rustc-normal/qualification_fault.rs
+@@ -46,8 +46,10 @@
+         std::str::from_utf8(&bytes).map_err(|_|
+                                     io::Error::new(io::ErrorKind::InvalidData,
+                                         "delay marker is not UTF-8"))?.trim().parse::<u64>().map_err(|_|
+-                    io::Error::new(io::ErrorKind::InvalidData,
+-                        "delay marker is not an integer"))?;
++                    {
++                        io::Error::new(io::ErrorKind::InvalidData,
++                            "delay marker is not an integer")
++                    })?;
+     if millis == 0 || millis > MAX_DELAY_MILLIS {
+         return Err(io::Error::new(io::ErrorKind::InvalidData,
+                     "qualification delay is outside its bound"));
