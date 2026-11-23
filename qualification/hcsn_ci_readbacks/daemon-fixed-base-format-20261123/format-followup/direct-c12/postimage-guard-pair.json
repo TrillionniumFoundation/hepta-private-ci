@@ -1,0 +1,46 @@
+{
+  "guard_blobs": {
+    ".github/workflows/hepta-daemon-learning-native.yml": "f50a7cf7b0464dbe1803da6b95ad04162843d6cc",
+    "scripts/test_hepta_c_observer_coverage.py": "74acd33f2df98293a67c6444850dc65709b11a9b",
+    "scripts/hepta_c_observer_coverage.py": "7076345e68856e68719ca96dc2b035029ba09ec1",
+    "scripts/hepta_ci_junit.py": "683626df091bdfe160a8965fdc92bf40f5783cf8"
+  },
+  "results": {
+    "c12ee03f3185d5a13949faca54f066dfd634e509": {
+      "original_owner_cases": 2,
+      "path_controls": {
+        "codex-rs/ext/hepta-prompt/src/v3.rs": "rejected",
+        "codex-rs/hepta-agentd/src/prompt_product_v3.rs": "accepted",
+        "codex-rs/hepta-context-compiler/src/v2/preparation_archive.rs": "rejected",
+        "codex-rs/hepta-intelligence/src/prompt_product_v3.rs": "rejected",
+        "codex-rs/hepta-memory-federation-wire/src/attempt.rs": "rejected",
+        "codex-rs/hepta-memory-federation-wire/src/codec.rs": "rejected",
+        "codex-rs/hepta-memory-federation-wire/src/protocol.rs": "rejected",
+        "codex-rs/hepta-memory-federation-wire/src/replay.rs": "rejected",
+        "codex-rs/hepta-memory-federation-wire/src/tests.rs": "rejected",
+        "codex-rs/hepta-supervisor/src/lock_metrics.rs": "rejected",
+        "codex-rs/hepta-supervisor/src/qualification_fault.rs": "rejected",
+        "codex-rs/hepta-supervisor/src/recovery_diagnostics.rs": "rejected",
+        "all_twelve_at_once": "rejected"
+      }
+    },
+    "fe38676fae170002fcdce90b36dc949fac3ff671": {
+      "original_owner_cases": 2,
+      "path_controls": {
+        "codex-rs/ext/hepta-prompt/src/v3.rs": "rejected",
+        "codex-rs/hepta-agentd/src/prompt_product_v3.rs": "accepted",
+        "codex-rs/hepta-context-compiler/src/v2/preparation_archive.rs": "rejected",
+        "codex-rs/hepta-intelligence/src/prompt_product_v3.rs": "rejected",
+        "codex-rs/hepta-memory-federation-wire/src/attempt.rs": "rejected",
+        "codex-rs/hepta-memory-federation-wire/src/codec.rs": "rejected",
+        "codex-rs/hepta-memory-federation-wire/src/protocol.rs": "rejected",
+        "codex-rs/hepta-memory-federation-wire/src/replay.rs": "rejected",
+        "codex-rs/hepta-memory-federation-wire/src/tests.rs": "rejected",
+        "codex-rs/hepta-supervisor/src/lock_metrics.rs": "rejected",
+        "codex-rs/hepta-supervisor/src/qualification_fault.rs": "rejected",
+        "codex-rs/hepta-supervisor/src/recovery_diagnostics.rs": "rejected",
+        "all_twelve_at_once": "rejected"
+      }
+    }
+  }
+}
