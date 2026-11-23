@@ -15,6 +15,7 @@ from qualification.hcsn_currentstate_n256_authentic_tailcheck537_hexfix.tail537 
     advance_to_index537,
 )
 from qualification.hcsn_currentstate_n256_authentic_compact_checkpoint.compact import (
+    decode_compact_checkpoint,
     encode_compact_checkpoint,
 )
 
@@ -33,6 +34,7 @@ from .continuation import (
     advance_to_index1159,
     encode_raw_index1159,
     final_tail_check,
+    parse_index1159,
 )
 from .lane import IDENTITY
 from .output_validation import validate_lane_result
@@ -212,11 +214,42 @@ def _synthetic_lane_output(root, ordinal=0):
     return request, result, result_path
 
 
+def _replace_synthetic_checkpoint_body(result, result_path, transform):
+    """Replace a synthetic checkpoint with a newly bound canonical payload."""
+
+    checkpoint_path = result_path.parent / result["checkpoint_file"]
+    raw = decode_compact_checkpoint(
+        checkpoint_path.read_bytes(), TARGET_SCHEMA, TARGET_INDEX
+    )
+    envelope = json.loads(raw)
+    transform(envelope["body"])
+    body_raw = json.dumps(
+        envelope["body"], sort_keys=True, separators=(",", ":")
+    ).encode()
+    envelope["body_sha256"] = __import__("hashlib").sha256(body_raw).hexdigest()
+    replaced_raw = json.dumps(
+        envelope, sort_keys=True, separators=(",", ":")
+    ).encode()
+    compact = encode_compact_checkpoint(replaced_raw, TARGET_SCHEMA, TARGET_INDEX)
+    checkpoint_path.write_bytes(compact)
+    result["checkpoint_raw_bytes"] = len(replaced_raw)
+    result["checkpoint_raw_sha256"] = __import__("hashlib").sha256(
+        replaced_raw
+    ).hexdigest()
+    result["checkpoint_compact_bytes"] = len(compact)
+    result["checkpoint_compact_sha256"] = __import__("hashlib").sha256(
+        compact
+    ).hexdigest()
+    result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+
+
 class Tail1159IntentTests(unittest.TestCase):
     def test_frozen_work_denominator(self):
         request = json.loads(REQUEST.read_text())
         self.assertEqual(TARGET_INDEX - SOURCE_INDEX, 622)
         self.assertEqual(request["budget"]["checkpoint_decodes"], 30)
+        self.assertEqual(request["budget"]["semantic_checkpoint_parses"], 10)
+        self.assertEqual(request["budget"]["canonical_raw_reencodes"], 10)
         self.assertEqual(request["budget"]["recurrence_row_actions"], 6220)
         self.assertEqual(request["budget"]["tail_checks"], 10)
         self.assertEqual(request["budget"]["rounding_calls_cap"], 5180)
@@ -606,6 +639,28 @@ class Tail1159IntentTests(unittest.TestCase):
             self.assertEqual(
                 validate_lane_result(result_path, 0, request, IDENTITY), result
             )
+
+    def test_target_checkpoint_is_parsed_as_complete_exact_state(self):
+        with tempfile.TemporaryDirectory() as directory:
+            _, result, result_path = _synthetic_lane_output(Path(directory))
+            compact = (result_path.parent / result["checkpoint_file"]).read_bytes()
+            raw = decode_compact_checkpoint(compact, TARGET_SCHEMA, TARGET_INDEX)
+            state = parse_index1159(raw)
+            self.assertEqual(state.lane, result["stem"])
+            self.assertEqual(state.included_index, TARGET_INDEX)
+            self.assertEqual(len(state.iterate), 1)
+            self.assertEqual(encode_raw_index1159(state), raw)
+
+    def test_target_checkpoint_lane_mismatch_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            request, result, result_path = _synthetic_lane_output(Path(directory))
+            _replace_synthetic_checkpoint_body(
+                result, result_path, lambda body: body.update(lane="different-lane")
+            )
+            with self.assertRaisesRegex(
+                SystemExit, "checkpoint lane differs from result stem"
+            ):
+                validate_lane_result(result_path, 0, request, IDENTITY)
 
     def test_result_symlink_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:

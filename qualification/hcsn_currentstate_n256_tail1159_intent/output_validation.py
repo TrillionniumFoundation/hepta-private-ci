@@ -8,9 +8,17 @@ from qualification.hcsn_currentstate_n256_authentic_compact_checkpoint.compact i
     CompactCheckpointError,
     decode_compact_checkpoint,
 )
+from qualification.hcsn_currentstate_n256_non_substochastic_signed_interval.signed_interval import (
+    NonSubstochasticSignedIntervalError,
+)
 
 from .admission import MAX_JSON_BYTES, _bounded_regular_bytes, _sha256, _strict_json
-from .continuation import TARGET_INDEX, TARGET_SCHEMA
+from .continuation import (
+    TARGET_INDEX,
+    TARGET_SCHEMA,
+    encode_raw_index1159,
+    parse_index1159,
+)
 
 
 MAX_TAIL_BYTES = 4 * 1024 * 1024
@@ -157,6 +165,14 @@ def validate_lane_result(result_path, ordinal, request, identity):
         raise SystemExit(f"{label} raw checkpoint bytes differ")
     if len(raw) > request["checkpoint_caps"]["per_cursor_raw_bytes"]:
         raise SystemExit(f"{label} raw checkpoint exceeds the frozen cap")
+    try:
+        checkpoint = parse_index1159(raw)
+    except (CompactCheckpointError, NonSubstochasticSignedIntervalError) as error:
+        raise SystemExit(f"{label} semantic checkpoint is invalid") from error
+    if checkpoint.lane != stem:
+        raise SystemExit(f"{label} checkpoint lane differs from result stem")
+    if encode_raw_index1159(checkpoint) != raw:
+        raise SystemExit(f"{label} semantic checkpoint is not byte canonical")
 
     if result["tail_file"] != "TAIL.json":
         raise SystemExit(f"{label} tail filename differs")

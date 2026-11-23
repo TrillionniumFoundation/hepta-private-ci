@@ -242,13 +242,16 @@ def main():
             "tail_checks": sum(item["work"]["tail_checks"] for item in results),
             "rounding_calls": sum(item["work"]["rounding_calls"] for item in results),
             "collector_checkpoint_decodes": len(results),
+            "semantic_checkpoint_parses": len(results),
+            "canonical_raw_reencodes": len(results),
             "provider_calls": 0,
             "torch_calls": 0,
             "optimizer_steps": 0,
         },
         "scope": {
-            "tail_termination_closed": complete
+            "candidate_tail_output_all_unique": complete
             and all(item["tail"]["all_coordinates_unique"] for item in results),
+            "tail_termination_closed": False,
             "n256_qualified": False,
             "production_adoption": False,
             "all_closed": False,
