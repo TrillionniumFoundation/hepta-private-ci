@@ -159,12 +159,27 @@ fn write_index_from_head(root: &Path) -> anyhow::Result<()> {
         .context("write git baseline index from HEAD")
 }
 
+/// Convert a system clock instant to Git's signed Unix-second representation.
+/// As with chrono's timestamp(), subsecond times before the epoch round down.
+fn git_commit_unix_seconds(now: std::time::SystemTime) -> i64 {
+    use std::time::UNIX_EPOCH;
+
+    match now.duration_since(UNIX_EPOCH) {
+        Ok(duration) => i64::try_from(duration.as_secs()).unwrap_or(i64::MAX),
+        Err(error) => {
+            let duration = error.duration();
+            let seconds = i64::try_from(duration.as_secs()).unwrap_or(i64::MAX);
+            -seconds - i64::from(duration.subsec_nanos() != 0)
+        }
+    }
+}
+
 fn codex_signature() -> gix::actor::Signature {
     gix::actor::Signature {
         name: "Codex".into(),
         email: "noreply@openai.com".into(),
         time: gix::date::Time {
-            seconds: chrono::Utc::now().timestamp(),
+            seconds: git_commit_unix_seconds(std::time::SystemTime::now()),
             offset: 0,
         },
     }
@@ -546,6 +561,26 @@ mod tests {
             String::from_utf8_lossy(&output.stderr)
         );
         String::from_utf8_lossy(&output.stdout).to_string()
+    }
+
+    #[test]
+    fn git_baseline_unix_seconds_preserve_pre_epoch_flooring() {
+        use std::time::Duration;
+        use std::time::UNIX_EPOCH;
+
+        assert_eq!(git_commit_unix_seconds(UNIX_EPOCH), 0);
+        assert_eq!(git_commit_unix_seconds(UNIX_EPOCH + Duration::from_secs(5)), 5);
+        assert_eq!(git_commit_unix_seconds(UNIX_EPOCH - Duration::from_millis(1)), -1);
+        assert_eq!(git_commit_unix_seconds(UNIX_EPOCH - Duration::from_millis(1001)), -2);
+    }
+
+    #[test]
+    fn git_baseline_signature_uses_current_utc_second() {
+        let before = git_commit_unix_seconds(std::time::SystemTime::now());
+        let signature = codex_signature();
+        let after = git_commit_unix_seconds(std::time::SystemTime::now());
+        assert_eq!(signature.time.offset, 0);
+        assert!((before..=after).contains(&signature.time.seconds));
     }
 
     #[tokio::test]
