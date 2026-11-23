@@ -16,15 +16,14 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         material: &OriginalCellEvaluationModelMaterialV1,
     ) -> Result<Self, Error> {
         let started = current_time()?;
-        let (scope, binding) = admission::owner_binding(trainer, &dataset)?;
+        let original_binding = admission::owner_binding(trainer, &dataset)?;
         if witness.current()?.is_some() {
             return Err(Error::Binding("proposal witness already initialized"));
         }
         admission::validate_current_material(
             trainer,
             &dataset,
-            scope,
-            binding,
+            original_binding,
             training_cut,
             training_attestation,
             material,
@@ -37,6 +36,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         }
         // No writer exists before all actual Native/witness I/O and fresh full
         // material authentication. The host has already consumed shared once.
+        let (scope, binding) = original_binding;
         Self::create_empty_original(file, witness, dataset, scope, binding)
     }
 
@@ -52,21 +52,21 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         material: &OriginalCellEvaluationModelMaterialV1,
     ) -> Result<Self, Error> {
         let started = current_time()?;
-        let (scope, binding) = admission::owner_binding(trainer, &dataset)?;
+        let original_binding = admission::owner_binding(trainer, &dataset)?;
         let minimum = witness
             .current()?
             .ok_or(Error::Binding("original proposal witness"))?;
         admission::validate_current_material(
             trainer,
             &dataset,
-            scope,
-            binding,
+            original_binding,
             training_cut,
             training_attestation,
             material,
             started,
         )?;
         require_material(material, started, current_time()?)?;
+        let (scope, binding) = original_binding;
         Self::recover_existing_original(file, witness, dataset, scope, binding, minimum)
     }
 
@@ -147,8 +147,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         let admission = admission::validate_current_material(
             trainer,
             &self.dataset_cut,
-            self.scope,
-            self.binding,
+            (self.scope, self.binding),
             training_cut,
             training_attestation,
             material,
