@@ -48,3 +48,5 @@ PYTHONPATH=scripts python qualification/selected-session-mcp-20261123/qualify.py
 ```
 
 The original local Python SDK client executes an authored policy, makes two real MCP calls and receives the genuine sink response before correcting its output. The test records eleven control conditions, passes the resulting pair through the original `paired_source.derive`, and checks the original training entry refuses absent owner handles. The generated archive contains only this engineering case's source evidence, public verification key, signed statements, readbacks and proposed scope. It omits the capability and the private signing key. This qualification contributes zero human participants, weight updates, financial outcomes and observations of third-party effects.
+
+The retained run at commit 7ac9ab1b41b120d17dfe52d3530705504df3bd97 produced [the 11,319-byte original archive](SELECTED_SESSION_ORIGINALS.zip) with SHA-256 `5c4a591affe245e3bcc5f1bdc1bffab32fba8503eb48633bdebe385b6b8ec016`. The public [machine-readable result](READOUT.json) records the original failed and corrected writes and the precise limits of issuer validation.
