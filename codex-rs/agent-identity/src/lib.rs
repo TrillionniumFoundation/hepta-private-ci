@@ -8,8 +8,6 @@ use anyhow::Result;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
-use chrono::SecondsFormat;
-use chrono::Utc;
 use codex_http_client::HttpClient;
 use codex_http_client::HttpError;
 use codex_protocol::auth::PlanType as AuthPlanType;
@@ -34,6 +32,8 @@ use serde::Serialize;
 use serde::de::DeserializeOwned;
 use sha2::Digest as _;
 use sha2::Sha512;
+use time::OffsetDateTime;
+use time::format_description::well_known::Rfc3339;
 
 const AGENT_TASK_REGISTRATION_TIMEOUT: Duration = Duration::from_secs(30);
 const AGENT_IDENTITY_JWKS_TIMEOUT: Duration = Duration::from_secs(10);
@@ -229,11 +229,15 @@ fn is_retryable_registration_status(status: StatusCode) -> bool {
     status == StatusCode::TOO_MANY_REQUESTS || status.is_server_error()
 }
 
+fn format_agent_identity_timestamp(now: OffsetDateTime) -> Result<String> {
+    Ok(now.replace_nanosecond(0)?.format(&Rfc3339)?)
+}
+
 pub fn authorization_header_for_agent_task(
     key: AgentIdentityKey<'_>,
     task_id: &str,
 ) -> Result<String> {
-    let timestamp = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+    let timestamp = format_agent_identity_timestamp(OffsetDateTime::now_utc())?;
     let envelope = AgentAssertionEnvelope {
         agent_runtime_id: key.agent_runtime_id.to_string(),
         task_id: task_id.to_string(),
@@ -317,7 +321,7 @@ pub async fn register_agent_task(
     agent_identity_authapi_base_url: &str,
     key: AgentIdentityKey<'_>,
 ) -> Result<String> {
-    let timestamp = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+    let timestamp = format_agent_identity_timestamp(OffsetDateTime::now_utc())?;
     let request = RegisterTaskRequest {
         signature: sign_task_registration_payload(key, &timestamp)?,
         timestamp,
@@ -574,6 +578,17 @@ mod tests {
     use codex_protocol::auth::KnownPlan;
 
     use super::*;
+
+    #[test]
+    fn agent_identity_timestamp_preserves_rfc3339_utc_seconds() -> anyhow::Result<()> {
+        let timestamp =
+            OffsetDateTime::from_unix_timestamp(1_776_947_696)?.replace_nanosecond(123_456_789)?;
+        assert_eq!(
+            format_agent_identity_timestamp(timestamp)?,
+            "2026-04-23T12:34:56Z"
+        );
+        Ok(())
+    }
 
     #[test]
     fn register_task_request_uses_single_run_task_shape() {
