@@ -1,0 +1,234 @@
+{
+  "live_router_executions": 0,
+  "new_independent_tasks": 0,
+  "new_model_calls": 0,
+  "new_task_verifier_calls": 0,
+  "new_training_repeats": 0,
+  "panels": {
+    "b2": {
+      "archive_sha256": "0cda7c982d5fc1e19526bf755d92bedc8fa07ec1bf6a7c51a4bf097234034d41",
+      "logical_slots_in_reconstructed_policy": 12,
+      "matched_nodes_verified": 48,
+      "observed_fixed_arms_selected": {
+        "CC": 5,
+        "CP": 5,
+        "PC": 5,
+        "PP": 5
+      },
+      "replayed": {
+        "always_clean_other_selected": 5,
+        "clean_fallback_uses": 1,
+        "reason_reset_input_tokens": 5118,
+        "reason_reset_last": 3,
+        "reason_reset_output_tokens": 529,
+        "reason_reset_selected": 6,
+        "second_router_with_full_history_oracle_selected": 5
+      },
+      "rows": [
+        {
+          "clean_other_ok": true,
+          "first_ok": false,
+          "first_reason": "invalid_test_patch",
+          "first_verification": "ade74dc9135a485b0afd692226042a4b21aad97cd34672bd3089cb6acc74d0f9",
+          "other_relay_ok": false,
+          "retained": true,
+          "same_repair_ok": false,
+          "second_ok": true,
+          "second_origin": "CC/0",
+          "second_verification": "fc41da49ecf3649531c2c28cff5d6a3772ad96a62ef91df14378c32e41df9327",
+          "source": "django/django",
+          "task": "blind-b2-django-escape-leading-slashes"
+        },
+        {
+          "clean_other_ok": false,
+          "first_ok": false,
+          "first_reason": "business_tests_failed",
+          "first_verification": "ca05f09ba75837c4b4bd5486db4e142504218afb49508d4e4e642c2dc453329e",
+          "other_relay_ok": true,
+          "retained": true,
+          "same_repair_ok": true,
+          "second_ok": true,
+          "second_origin": "PP/1",
+          "second_verification": "45120383c71afebb622076df56e1c1e4f74895122ec91ae904946715b3548bb9",
+          "source": "django/django",
+          "task": "blind-b2-django-is-same-domain"
+        },
+        {
+          "clean_other_ok": false,
+          "first_ok": true,
+          "first_reason": "business_tests_passed",
+          "first_verification": "9d592895d00ab1a89a1a4b0592b5e20fb3d7685feaf3df8db7ddda1c3d785c74",
+          "other_relay_ok": false,
+          "retained": true,
+          "same_repair_ok": false,
+          "second_ok": false,
+          "second_origin": "PP/1",
+          "second_verification": "2f12aebf1be53a687624966bd7c5e7ae122f754099503081a8f9df65fe015736",
+          "source": "more-itertools/more-itertools",
+          "task": "blind-b2-more-itertools-first-true"
+        },
+        {
+          "clean_other_ok": true,
+          "first_ok": true,
+          "first_reason": "business_tests_passed",
+          "first_verification": "ef6b79c80d59c2f621a7e2e09ac3f7b897b79f2762252eaa3c9eb8e9cd104258",
+          "other_relay_ok": false,
+          "retained": true,
+          "same_repair_ok": false,
+          "second_ok": false,
+          "second_origin": "PP/1",
+          "second_verification": "5fa92df31d22770c548cb66471f46eab3f61f29fa14ad83eabe59e834a6ea5c9",
+          "source": "more-itertools/more-itertools",
+          "task": "blind-b2-more-itertools-quantify"
+        },
+        {
+          "clean_other_ok": true,
+          "first_ok": true,
+          "first_reason": "business_tests_passed",
+          "first_verification": "40e8b13d8d1b6b67f6a1d68b69530f85dc9af1cb3d20c2f5dfe6d97a22355f89",
+          "other_relay_ok": true,
+          "retained": true,
+          "same_repair_ok": false,
+          "second_ok": false,
+          "second_origin": "PP/1",
+          "second_verification": "13861ddca4814da45edb64adeeafd53cdbcefa59221bb9546b11db2b0ed60da8",
+          "source": "pydantic/pydantic",
+          "task": "blind-b2-pydantic-to-pascal"
+        },
+        {
+          "clean_other_ok": true,
+          "first_ok": true,
+          "first_reason": "business_tests_passed",
+          "first_verification": "367b59c216caaa5f9e7e0ebd3a3270c3af58dc772d845da1649010be9f6370b0",
+          "other_relay_ok": true,
+          "retained": true,
+          "same_repair_ok": true,
+          "second_ok": true,
+          "second_origin": "PP/1",
+          "second_verification": "dbac3f08794a20479bf7282835e87dfcbafe2660d723ca9bdfefe2f3b63b4817",
+          "source": "pydantic/pydantic",
+          "task": "blind-b2-pydantic-to-snake"
+        }
+      ],
+      "source_repositories": [
+        "django/django",
+        "more-itertools/more-itertools",
+        "pydantic/pydantic"
+      ],
+      "tasks": 6
+    },
+    "upstream": {
+      "archive_sha256": "cdd49201d8c62217ad2777cece0c33e3ec7043edb3a50718edf7527ad150d042",
+      "logical_slots_in_reconstructed_policy": 12,
+      "matched_nodes_verified": 36,
+      "observed_fixed_arms_selected": {
+        "FF": 0,
+        "TF": 0,
+        "TT": 0
+      },
+      "replayed": {
+        "always_clean_other_selected": 0,
+        "clean_fallback_uses": 2,
+        "reason_reset_input_tokens": 5529,
+        "reason_reset_last": 0,
+        "reason_reset_output_tokens": 983,
+        "reason_reset_selected": 0,
+        "second_router_with_full_history_oracle_selected": 0
+      },
+      "rows": [
+        {
+          "clean_other_ok": false,
+          "first_ok": false,
+          "first_reason": "business_tests_failed",
+          "first_verification": "fb4ea8e427b048ae0817e2c5388f928de57d15dda73d3a5568697ce2a9deebd2",
+          "other_relay_ok": false,
+          "retained": false,
+          "same_repair_ok": false,
+          "second_ok": false,
+          "second_origin": "TT/1",
+          "second_verification": "b89e1a70dacdb196c2100035522a3d464ca20e21a149cd1017eb7fd73efa4f2c",
+          "source": "pallets/click",
+          "task": "upstream-click-split-opt"
+        },
+        {
+          "clean_other_ok": false,
+          "first_ok": false,
+          "first_reason": "invalid_test_patch",
+          "first_verification": "03bf2e1314b43f718b5bf3cd912cc1ca21f3cc0b66fcd8052e7dce32e8a57a5b",
+          "other_relay_ok": false,
+          "retained": false,
+          "same_repair_ok": false,
+          "second_ok": false,
+          "second_origin": "FF/0",
+          "second_verification": "0a02769f9b67c0bad10387072eb4a480c3ff0668793137b3390aa5c0b86ed2c7",
+          "source": "psf/requests",
+          "task": "upstream-requests-parse-header-links"
+        },
+        {
+          "clean_other_ok": false,
+          "first_ok": false,
+          "first_reason": "business_tests_failed",
+          "first_verification": "b2b8ab6ea39ab83125e0956f1475e13a5601aa718a172fe1aeb5f5294985b7d7",
+          "other_relay_ok": false,
+          "retained": false,
+          "same_repair_ok": false,
+          "second_ok": false,
+          "second_origin": "TT/1",
+          "second_verification": "704b933b1ea32607ce383da93010ba2b0194666839bdfc85a72113a4ad5a0dfe",
+          "source": "psf/requests",
+          "task": "upstream-requests-unquote-header-value"
+        },
+        {
+          "clean_other_ok": false,
+          "first_ok": false,
+          "first_reason": "invalid_test_patch",
+          "first_verification": "efef4ce728cbddd3a9500b3a0e17b72014e8bb430b01eb0ae3e45f1732994a91",
+          "other_relay_ok": false,
+          "retained": false,
+          "same_repair_ok": false,
+          "second_ok": false,
+          "second_origin": "FF/0",
+          "second_verification": "f5193e714dd4f46b55b194e131cfb8086a49677b4ff66192274a586d1c131686",
+          "source": "psf/requests",
+          "task": "upstream-requests-unquote-unreserved"
+        },
+        {
+          "clean_other_ok": false,
+          "first_ok": false,
+          "first_reason": "business_tests_failed",
+          "first_verification": "950aba936184fd75c0ad90e1ee64507cb0ef765f5b9166a5de432e2918c19218",
+          "other_relay_ok": false,
+          "retained": false,
+          "same_repair_ok": false,
+          "second_ok": false,
+          "second_origin": "TT/1",
+          "second_verification": "2351a17507047f858f42fed202f24d0ea5635e37f6b4352a6770772437a113f3",
+          "source": "pallets/werkzeug",
+          "task": "upstream-werkzeug-is-byte-range-valid"
+        },
+        {
+          "clean_other_ok": false,
+          "first_ok": false,
+          "first_reason": "business_tests_failed",
+          "first_verification": "2ab4db0333add1b5467df76a83546c8eb2155d2312467cea1504f60d8f3ae3cf",
+          "other_relay_ok": false,
+          "retained": false,
+          "same_repair_ok": false,
+          "second_ok": false,
+          "second_origin": "TT/1",
+          "second_verification": "ef1bc1602a429c5b1bdac7cae33abbe9c313a56b46242a9bfdb8b29e1123b9e2",
+          "source": "pallets/werkzeug",
+          "task": "upstream-werkzeug-is-entity-header"
+        }
+      ],
+      "source_repositories": [
+        "pallets/click",
+        "pallets/werkzeug",
+        "psf/requests"
+      ],
+      "tasks": 6
+    }
+  },
+  "policy_sha256": "de582bab5a35eff9dffb3953a5e97fe141542fda4c255e048c9659eca4190f54",
+  "schema": "hepta.e4.replayed-route.v1"
+}
