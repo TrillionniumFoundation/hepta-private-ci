@@ -20,6 +20,10 @@ def authorize(snapshot, anchor, path):
         and report["prospective_records_read"] == 0,
         "source retention receipt does not identify this pre-arrival pair",
     )
+    if snapshot["candidate"].get("schema") == "hepta.frozen-circuit-bundle.v1":
+        source = report["comparisons"][0]
+        adoption.require(source["panel"] == "known_A" and source["parent"] is False and source["candidate"] is True,
+                         "router failed to correct the cold original A")
     rows = [r for r in report["comparisons"] if r["panel"] == "retention"]
     adoption.require(
         [r["record_sha256"] for r in rows]
@@ -62,6 +66,17 @@ def verify_originals(path, study, freeze):
         and report["scope"] == completed["scope"],
         "original source completion, owner or freeze differs",
     )
+    if snapshot["candidate"].get("schema") == "hepta.frozen-circuit-bundle.v1":
+        from . import paired_router_source
+        adoption.require(completed.get("update_scope") == paired_router_source.POLICY, "original router completion required")
+        paired_router_source.verify_originals(folder, snapshot, completed)
+        root = folder.parent.parent
+        _, _, records = paired_source_gate.inputs(root, folder)
+        for arm in ("parent", "candidate"):
+            paired_source_gate.read_arm(folder / "cold-retention" / (arm + ".json"), arm, snapshot, records, root)
+        source = report["comparisons"][0]
+        adoption.require(source["panel"] == "known_A" and source["parent"] is False and source["candidate"] is True,
+                         "router failed to correct the cold original A")
     panels = [("known_A", completed["failure_sha256"])]
     panels.extend(("retention", data.record_digest(r)) for r in snapshot["retention"])
     observed = [{"panel": panel, "record_sha256": digest} for panel, digest in panels]
