@@ -122,7 +122,8 @@ def _fit(root, plan, owner, *, engineering=False):
     require(engineering == (owner.get("schema") == "engineering_fixture"), "owner or fixture scope differs")
     if not engineering:
         from . import paired_people
-        require(owner["use"] == "train" and owner["study_sha256"] == plan["study"]
+        require(owner["schema"] == "hepta.paired-learning.consent-readback.v1"
+                and owner["use"] == "train" and owner["study_sha256"] == plan["study"]
                 and owner["delivery_id"] == plan["delivery"], "source grant differs")
         paired_people.check_training_statement(owner, dict(failure_sha256=plan["failure"], correction_sha256=plan["correction"], study_sha256=plan["study"]))
     root = Path(root)

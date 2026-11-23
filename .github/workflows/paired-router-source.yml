@@ -4,7 +4,7 @@ on:
     branches: [research/paired-consumer-router-source-20261123]
     paths:
       - '.github/workflows/paired-router-source.yml'
-      - 'qualification/paired-router-source-20261123/qualify.py'
+      - 'qualification/paired-router-source-20261123/*.py'
       - 'scripts/cell_experiments/paired_router_source.py'
       - 'scripts/cell_experiments/paired_source_gate.py'
       - 'scripts/cell_experiments/paired_source_dispatch.py'
@@ -42,10 +42,17 @@ jobs:
       - name: Replay router-only fit and original cold readback
         run: |
           "$RUNNER_TEMP/consumer-env/bin/python" qualification/paired-router-source-20261123/qualify.py fixture-inputs/qualification/paired-consumer-circuit-20261123/CONSUMER_CIRCUIT_ORIGINALS.zip "$RUNNER_TEMP/router-originals"
+          old=fixture-inputs/qualification/paired-consumer-circuit-20261123
+          here=qualification/paired-router-source-20261123
+          "$RUNNER_TEMP/consumer-env/bin/python" "$here/verify_fixed.py" "$old/CONSUMER_CIRCUIT_ORIGINALS.zip" "$old/verify.py" "$here/ROUTER_SOURCE_ORIGINALS.zip"
+          "$RUNNER_TEMP/consumer-env/bin/python" "$here/control.py" "$old/CONSUMER_CIRCUIT_ORIGINALS.zip" "$RUNNER_TEMP/router-originals" "$RUNNER_TEMP/old-control"
           "$RUNNER_TEMP/consumer-env/bin/python" -m unittest cell_experiments.test_paired_source_dispatch cell_experiments.test_paired_source_dispatch_intake
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: router-source-originals
-          path: ${{ runner.temp }}/ROUTER_SOURCE_ORIGINALS.zip
+          path: |
+            ${{ runner.temp }}/ROUTER_SOURCE_ORIGINALS.zip
+            ${{ runner.temp }}/ROUTER_CONTROL.zip
+            ${{ runner.temp }}/old-control/CONTROL.json
           if-no-files-found: error
           retention-days: 30
