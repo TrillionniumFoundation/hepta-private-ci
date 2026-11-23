@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.e4.verifier_reason_routing.v1",
+  "scope": "post_hoc_diagnostic_on_exposed_development_panels",
+  "first": "all_actions_parent_clean_request",
+  "observed_field": "first.verification.result.reason",
+  "if_equals": "invalid_test_patch",
+  "then": "other_adapter_clean_original_request",
+  "otherwise": "same_adapter_original_answer_and_verifier_feedback",
+  "selection": "earliest_verified_success_else_last",
+  "logical_calls_per_task": 2,
+  "verifier_opportunities_per_task": 2,
+  "first_panel": {"first": "P", "other": "C", "source_pr": 6714},
+  "transfer_panel": {"first": "T", "other": "F", "source_pr": 6704},
+  "policy_chosen_after_inspecting_first_panel": true,
+  "transfer_panel_aggregate_results_previously_known": true,
+  "runtime_activation": false
+}

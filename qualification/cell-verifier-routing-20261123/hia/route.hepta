@@ -1,0 +1,16 @@
+hia-asm.v1 hepta.hia.program.v6 verifier_routing
+fn route(reason:u8) -> (bool) effects() entry(entry)
+block entry(reason:u8)
+  invalid_patch:u8 = const() {"value":1}
+  clean_other:bool = compare.eq(reason, invalid_patch)
+  ret(clean_other)
+end
+fn select_result(first_ok:bool, second_ok:bool) -> (u8) effects() entry(entry)
+block entry(first_ok:bool, second_ok:bool)
+  last_failed:u8 = const() {"value":0}
+  last_passed:u8 = const() {"value":1}
+  first_passed:u8 = const() {"value":2}
+  last_outcome:u8 = select(second_ok, last_passed, last_failed)
+  selected:u8 = select(first_ok, first_passed, last_outcome)
+  ret(selected)
+end

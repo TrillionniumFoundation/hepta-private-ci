@@ -1,0 +1,74 @@
+{
+  "schema": "hepta-scoped-format-receipt-v1",
+  "base_commit": "e5072455d6fca43a447feae03a1f102d0b0ca402",
+  "base_tree": "241d03988148ff2648917537e9ea7be31e7668d8",
+  "entry_git_blobs": {
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/just-shell.py": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+    "scripts/format.py": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+  },
+  "checkout": "detached sparse Git checkout of the named commit",
+  "target_directory": "qualification/cell-verifier-routing-20261123/hia",
+  "repository_working_directory": "codex-rs",
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "executable_version": "just 1.58.0",
+  "executable_sha256": "5d485f1a76988050b71bcf9a3b285e41ad4fcecf7a0fb630892eb8135d1e1e04",
+  "started_utc": "2026-11-23T05:42:12.166003+00:00",
+  "elapsed_seconds": 0.211933,
+  "exit_code": 0,
+  "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+  "stderr": "",
+  "before": {
+    "README.md": {
+      "sha256": "e271ddff6b550035cf1091e36ad4cb7dae1159d9438d988ca55d04d3a2302df9",
+      "bytes": 4900
+    },
+    "RESULT.json": {
+      "sha256": "8b0e8c7930632249da5be442a53a5911bce25f831ee38f324d2cc9cf5fef2c42",
+      "bytes": 4522
+    },
+    "compare.py": {
+      "sha256": "db5bc184133339e917d47f87e9f9a619ae506df024e1033f811c06878c6879ee",
+      "bytes": 7823
+    },
+    "route.hepta": {
+      "sha256": "77b7ce78baf8ea976c3a244f8d020ecca01a5b65d5c5b3fe08799473f2c67f86",
+      "bytes": 629
+    }
+  },
+  "after": {
+    "README.md": {
+      "sha256": "e271ddff6b550035cf1091e36ad4cb7dae1159d9438d988ca55d04d3a2302df9",
+      "bytes": 4900
+    },
+    "RESULT.json": {
+      "sha256": "8b0e8c7930632249da5be442a53a5911bce25f831ee38f324d2cc9cf5fef2c42",
+      "bytes": 4522
+    },
+    "compare.py": {
+      "sha256": "db5bc184133339e917d47f87e9f9a619ae506df024e1033f811c06878c6879ee",
+      "bytes": 7823
+    },
+    "route.hepta": {
+      "sha256": "77b7ce78baf8ea976c3a244f8d020ecca01a5b65d5c5b3fe08799473f2c67f86",
+      "bytes": 629
+    }
+  },
+  "identical_bytes": true,
+  "status_porcelain_all_before": [
+    "?? qualification/cell-verifier-routing-20261123/hia/README.md",
+    "?? qualification/cell-verifier-routing-20261123/hia/RESULT.json",
+    "?? qualification/cell-verifier-routing-20261123/hia/compare.py",
+    "?? qualification/cell-verifier-routing-20261123/hia/route.hepta"
+  ],
+  "status_porcelain_all_after": [
+    "?? qualification/cell-verifier-routing-20261123/hia/README.md",
+    "?? qualification/cell-verifier-routing-20261123/hia/RESULT.json",
+    "?? qualification/cell-verifier-routing-20261123/hia/compare.py",
+    "?? qualification/cell-verifier-routing-20261123/hia/route.hepta"
+  ],
+  "scope": "Changed-path registry. No language formatter is registered for these qualification files."
+}
