@@ -16,7 +16,14 @@ import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from . import adoption, coding_sft, data, paired_cold, prospective_exposure
+from . import (
+    adoption,
+    coding_sft,
+    data,
+    paired_cold,
+    paired_source,
+    prospective_exposure,
+)
 
 FREEZE_SCHEMA = "hepta.paired-cold.freeze.v1"
 REQUEST_SCHEMA = "hepta.paired-cold.request.v1"
@@ -82,7 +89,8 @@ def assemble(snapshot_path, expected_freeze, future_path, output, *, materials=N
         )
     request = {**snapshot, "schema": REQUEST_SCHEMA, "future": future}
     catalog = prospective_exposure.catalog_for(snapshot["candidate"])
-    if catalog is not None:
+    if catalog is not None or "paired_source_exposure" in snapshot["candidate"]:
+        paired_source.check_future(request)
         prospective_exposure.check_request(request, catalog)
         # Both preflights use the exact frozen local inference material. No predictor is loaded.
         model_root = materials if materials is not None else Path(snapshot_path).parent

@@ -76,6 +76,11 @@ def check_request(request, catalog):
         data.digest(frozen) == catalog["freeze_sha256"],
         "registered pre-arrival freeze differs",
     )
+    check_records(request, catalog)
+
+
+def check_records(request, catalog):
+    """Apply original source exclusions, including when used by a descendant."""
     known_prompts = {row["prompt_sha256"] for row in catalog["known_inputs"]}
     known_sources = set(catalog["known_artifact_sources"])
     archived = catalog["public_origin"]
