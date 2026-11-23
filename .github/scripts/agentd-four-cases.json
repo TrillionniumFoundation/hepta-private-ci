@@ -1,0 +1,73 @@
+{
+  "cell_split_owner_tests.rs": [
+    "cell_split_owner::tests::split_requires_independent_selection_and_final_use_before_fence",
+    "cell_split_owner::tests::lost_ack_recovers_from_authoritative_readback_without_repeating_effect",
+    "cell_split_owner::tests::externally_acknowledged_history_cannot_be_rolled_back",
+    "cell_split_owner::tests::complete_invalid_frame_is_never_silently_repaired",
+    "cell_split_owner::tests::incomplete_tail_is_repaired_only_beyond_authenticated_anchor",
+    "cell_split_owner::tests::stale_observation_blocks_further_mutations",
+    "cell_split_owner::tests::owner_locks_are_exclusive_and_scope_bound",
+    "cell_split_owner::tests::route_cas_failure_keeps_predecessor_fenced_and_cutover_pending",
+    "cell_split_owner::tests::observer_ack_is_required_before_first_external_mutation",
+    "cell_split_owner::tests::canonical_plan_binding_separates_identity_boundaries",
+    "cell_split_owner::tests::bootstrap_repositions_nonzero_cursor_on_an_empty_file",
+    "cell_split_owner::tests::public_recovery_requires_independently_authenticated_observer_anchor",
+    "cell_split_owner::tests::terminal_receipt_without_independent_ack_is_not_completed",
+    "cell_split_owner::tests::selection_candidate_mapping_changes_operation_keys",
+    "cell_split_owner::tests::split_binding_rejects_rebound_baseline_and_future_window",
+    "cell_split_owner::tests::artifact_identity_is_independent_from_cell_and_candidate_ids",
+    "cell_split_owner::tests::live_owner_rejects_a_truncated_ledger_before_any_side_effect",
+    "cell_split_owner::tests::live_owner_rejects_same_length_header_tampering_before_any_external_effect",
+    "cell_split_owner::tests::live_owner_rejects_same_length_accepted_frame_tampering_before_resume",
+    "cell_split_owner::tests::recovery_rejects_oversized_journal_without_mutating_it"
+  ],
+  "circuit_task_source_tests.rs": [
+    "circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs",
+    "circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history",
+    "circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen",
+    "circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only",
+    "circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference"
+  ],
+  "circuit_task_source_history_tests.rs": [
+    "circuit_task::source::tests::history::history_reopens_original_publication_without_a_writer_or_runtime",
+    "circuit_task::source::tests::history::history_never_acknowledges_suffixes_or_completes_pending_stages",
+    "circuit_task::source::tests::history::history_refuses_original_withdrawal"
+  ],
+  "circuit_task_source_data_tests.rs": [
+    "circuit_task::source::tests::data::original_task_data_preserves_complete_actual_publication_and_cell",
+    "circuit_task::source::tests::data::original_task_data_rejects_spliced_canonical_request_result_and_cell_cut",
+    "circuit_task::source::tests::data::original_task_data_refuses_authority_fields_missing_bytes_and_noncanonical_base64"
+  ],
+  "circuit_task_source_current_tests.rs": [
+    "circuit_task::source::tests::physical_current::original_source_current_fences_same_length_mutation_after_restore",
+    "circuit_task::source::tests::physical_current::original_source_current_fences_truncation_and_extra_tail_without_repair",
+    "circuit_task::source::tests::physical_current::original_source_input_read_is_readonly_and_requires_live_original_configuration"
+  ],
+  "cell_q24_training_bootstrap_tests.rs": [
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation",
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature",
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements",
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody",
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms",
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_attenuation_and_prebound_transport_preserve_original_custody"
+  ],
+  "cell_q24_training_command_connection_tests.rs": [
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_rejects_experience_and_valid_other_freeze_context",
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature"
+  ],
+  "cell_q24_training_bootstrap_readback_tests.rs": [
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_unready_and_wrong_purpose_never_initialize",
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline",
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel"
+  ],
+  "circuit_original_evaluation_panel_tests.rs": [
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_fixture_future_layout_diagnostic"
+  ],
+  "neuron_cell_evaluation_panel_tests.rs": [
+    "neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_commits_full_nonempty_membership_before_any_result",
+    "neuron_cell_evaluation_qualification_owner::panel::tests::original_panel_registration_refuses_empty_duplicate_and_shared_b_tasks"
+  ]
+}
