@@ -326,7 +326,8 @@ def validate(request):
         )
     from .adoption_future import validate_d
 
-    validate_d(request, sys.modules[__name__])
+    selected_manifest = request["candidate" if adopted else "parent"]
+    validate_d(request, sys.modules[__name__], selected_manifest["runtime"])
     return (
         ("ADOPTED" if adopted else "NO_UPDATE"),
         (candidate if adopted else parent),

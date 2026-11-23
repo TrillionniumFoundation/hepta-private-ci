@@ -95,6 +95,95 @@ class AdoptionFutureTests(unittest.TestCase):
             loader.assert_not_called()
             self.assertIn(result["status"], ("FAILED", "BLOCKED"), result)
 
+    def test_renaming_a_c_or_d_task_cannot_make_another_cold_task(self):
+        for origin in ("c_tasks", "d_tasks"):
+            with self.subTest(origin=origin):
+                self.add_d()
+                task = record(5, "confirmation")
+                task["task"] = copy.deepcopy(self.request[origin][0]["record"]["task"])
+                frozen = dict(
+                    task_id=task["task_id"],
+                    source_id=task["source_id"],
+                    task_digest=a.digest(task),
+                )
+                self.request["plan"]["d_tasks"].append(frozen)
+                self.request["d_tasks"].append(dict(**frozen, record=task))
+                for name in ("training", "evaluation"):
+                    self.request[name]["plan_digest"] = a.digest(self.request["plan"])
+                with (
+                    patch.object(
+                        a,
+                        "load_predictor",
+                        side_effect=lambda m, r: fixtures.Predictor(m),
+                    ) as loader,
+                    patch.object(a.subprocess, "run", side_effect=self.child),
+                ):
+                    result = a.execute(self.request, self.root / origin)
+                self.assertEqual(result["status"], "BLOCKED", result)
+                loader.assert_not_called()
+
+    def test_distinct_d_score_with_the_same_prompt_remains_admissible(self):
+        self.add_d()
+        task = self.request["d_tasks"][0]
+        c_input = self.request["c_tasks"][0]["record"]["task"]["input"]
+        task["record"]["task"]["input"] = c_input
+        self.rebind_c_and_d()
+        a.validate(self.request)
+
+    def rebind_c_and_d(self):
+        for panel in ("c_tasks", "d_tasks"):
+            task = self.request[panel][0]
+            task["task_digest"] = a.digest(task["record"])
+            self.request["plan"][panel][0]["task_digest"] = task["task_digest"]
+        for name in ("training", "evaluation"):
+            self.request[name]["plan_digest"] = a.digest(self.request["plan"])
+
+    def test_chat_identity_follows_the_selected_generation_protocol(self):
+        self.add_d()
+        candidate = self.request["candidate"]
+        candidate["runtime"] = {
+            **candidate["runtime"],
+            "message_protocol": "native_chat_v2",
+        }
+        candidate_digest = a.digest(candidate)
+        self.request["training"]["candidate_model_digest"] = candidate_digest
+        candidate_row = self.request["evaluation"]["rows"][1]
+        candidate_row["loaded_model_digest"] = candidate_digest
+        c = self.request["c_tasks"][0]["record"]["task"]
+        d = self.request["d_tasks"][0]["record"]["task"]
+        d["input"], d["verifier"] = c["input"], copy.deepcopy(c["verifier"])
+        original = {"role": "user", "content": c["input"]}
+        d["messages"] = [original]
+        self.rebind_c_and_d()
+        with self.assertRaisesRegex(a.EvidenceError, "D repeats"):
+            a.validate(self.request)
+
+        assistant = {"role": "assistant", "content": "attempt one"}
+        c["messages"] = [original, assistant, {"role": "tool", "content": "failed"}]
+        d["messages"] = [
+            original,
+            assistant,
+            {"role": "user", "content": "Tool observation:\nfailed"},
+        ]
+        self.rebind_c_and_d()
+        with self.assertRaisesRegex(a.EvidenceError, "D repeats"):
+            a.validate(self.request)
+
+        d["messages"][-1]["content"] = "Tool observation:\npassed"
+        self.rebind_c_and_d()
+        a.validate(self.request)
+        candidate_row["success"] = False
+        with self.assertRaisesRegex(a.EvidenceError, "unsupported legacy chat history"):
+            a.validate(self.request)
+
+        candidate_row["success"] = True
+        d["messages"] = [{"role": "user", "content": "unbound task"}]
+        self.rebind_c_and_d()
+        with patch.object(a, "load_predictor") as loader:
+            report = a.execute(self.request, self.root / "malformed-native")
+        self.assertEqual(report["status"], "FAILED", report)
+        loader.assert_not_called()
+
     def test_changed_replay_never_dispatches_d(self):
         self.add_d()
         calls = []

@@ -63,27 +63,43 @@ def _wire(messages):
     ]
 
 
+def inference_wire_messages(prompt, messages=None):
+    """Return the validated message sequence passed to the native chat template."""
+    return _wire(inference_messages(prompt, messages))
+
+
 def render_prompt(tokenizer, prompt, messages=None):
     return tokenizer.apply_chat_template(
-        _wire(inference_messages(prompt, messages)),
+        inference_wire_messages(prompt, messages),
         tokenize=False,
         add_generation_prompt=True,
     )
 
 
 def native_examples(records, mode):
-    """Carry explicit per-event supervision flags without changing v1 builders."""
+    return training_examples(records, mode, NATIVE)
+
+
+def training_examples(records, mode, protocol):
+    """Carry per-event loss masks into the encoder for the selected protocol."""
+    if protocol not in (LEGACY, NATIVE):
+        raise ValueError("unsupported training protocol")
     examples = build_sft_examples(records, mode)
     for record, example in zip(records, examples):
-        example["initial_messages"] = inference_messages(
-            record["task"]["input"], record["task"].get("messages")
-        )
+        if protocol == NATIVE:
+            example["initial_messages"] = inference_messages(
+                record["task"]["input"], record["task"].get("messages")
+            )
         if mode == "trajectory":
             for event, segment in zip(record["trajectory"], example["segments"]):
-                flag = event.get("trainable", event["actor"] != "student")
+                default = protocol == LEGACY or event["actor"] != "student"
+                flag = event.get("trainable", default)
                 if type(flag) is not bool:
                     raise ValueError("event.trainable must be an explicit boolean")
-                segment["trainable"] = flag
+                if protocol == NATIVE:
+                    segment["trainable"] = flag
+                else:
+                    segment["train"] = segment["train"] and flag
     return examples
 
 
