@@ -1,0 +1,258 @@
+{
+  "source_head": "de4ef594bfefec05a64fc2ae3b717a640a57b263",
+  "hosted": {
+    "current": {
+      "job": 137481302823,
+      "checkout": "ae2ad4941e0734c311d74904c9bbacc6c5136b6c",
+      "hosted_run": 45110023804,
+      "matching_head_path_blobs_of_ten": 10,
+      "command_elapsed_us": 275271,
+      "command_fixture_timeout_ms": 30000,
+      "evidence_caller_us": 501170,
+      "evidence_timeout_ms": 500,
+      "sequential_published_calls": [
+        {
+          "cut": 4,
+          "request_id": 6,
+          "read_original_us": 103696,
+          "handler_us": 104727,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 3,
+          "request_id": 12,
+          "read_original_us": 80891,
+          "handler_us": 81962,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 3,
+          "request_id": 13,
+          "read_original_us": 39269,
+          "handler_us": 39843,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 4,
+          "request_id": 7,
+          "read_original_us": 168903,
+          "handler_us": 170491,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 3,
+          "request_id": 14,
+          "read_original_us": 69709,
+          "handler_us": 70996,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 3,
+          "request_id": 15,
+          "read_original_us": 77327,
+          "handler_us": 79058,
+          "logged_before_caller_return": false
+        }
+      ],
+      "published_read_original_total_us_by_cut": {
+        "4": 272599,
+        "3": 267196
+      },
+      "published_read_original_total_us": 539795,
+      "published_read_original_logged_before_caller_return_us": 462468,
+      "published_handler_total_us": 547077,
+      "outer_c_handlers_plus_whole_selector_us": 561666,
+      "within_selector_trainer_us": [
+        964,
+        758,
+        1008,
+        586
+      ],
+      "peer_terminals": {
+        "evidence": "Transport(DeadlineElapsed)",
+        "command": "Ok(2)",
+        "underlying": "Ok(6)"
+      }
+    },
+    "e29f": {
+      "job": 136902076765,
+      "checkout": "b38c3cb721d930fd153839bfe6d43cf9fe575173",
+      "hosted_run": 44922509419,
+      "matching_head_path_blobs_of_ten": 10,
+      "command_elapsed_us": 569501,
+      "command_fixture_timeout_ms": 30000,
+      "evidence_caller_us": 501536,
+      "evidence_timeout_ms": 500,
+      "sequential_published_calls": [
+        {
+          "cut": 4,
+          "request_id": 6,
+          "read_original_us": 156972,
+          "handler_us": 158505,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 3,
+          "request_id": 12,
+          "read_original_us": 54884,
+          "handler_us": 55856,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 3,
+          "request_id": 13,
+          "read_original_us": 63520,
+          "handler_us": 64771,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 4,
+          "request_id": 7,
+          "read_original_us": 112833,
+          "handler_us": 114170,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 3,
+          "request_id": 14,
+          "read_original_us": 108453,
+          "handler_us": 110638,
+          "logged_before_caller_return": false
+        },
+        {
+          "cut": 3,
+          "request_id": 15,
+          "read_original_us": 102315,
+          "handler_us": 104950,
+          "logged_before_caller_return": false
+        }
+      ],
+      "published_read_original_total_us_by_cut": {
+        "4": 269805,
+        "3": 329172
+      },
+      "published_read_original_total_us": 598977,
+      "published_read_original_logged_before_caller_return_us": 388209,
+      "published_handler_total_us": 608890,
+      "outer_c_handlers_plus_whole_selector_us": 632155,
+      "within_selector_trainer_us": [
+        846,
+        1222,
+        1678,
+        852
+      ],
+      "peer_terminals": {
+        "evidence": "Transport(DeadlineElapsed)",
+        "command": "Ok(2)",
+        "underlying": "Ok(6)"
+      }
+    },
+    "round05": {
+      "job": 135632103498,
+      "checkout": "978a9c623914e732290a5b60a3375a6b564b5b6b",
+      "hosted_run": 44544560858,
+      "matching_head_path_blobs_of_ten": 8,
+      "command_elapsed_us": 805117,
+      "command_fixture_timeout_ms": 30000,
+      "evidence_caller_us": 502510,
+      "evidence_timeout_ms": 500,
+      "sequential_published_calls": [
+        {
+          "cut": 4,
+          "request_id": 6,
+          "read_original_us": 161010,
+          "handler_us": 162234,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 3,
+          "request_id": 12,
+          "read_original_us": 69669,
+          "handler_us": 70694,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 3,
+          "request_id": 13,
+          "read_original_us": 66147,
+          "handler_us": 67284,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 4,
+          "request_id": 7,
+          "read_original_us": 132178,
+          "handler_us": 133511,
+          "logged_before_caller_return": true
+        },
+        {
+          "cut": 3,
+          "request_id": 14,
+          "read_original_us": 68750,
+          "handler_us": 69970,
+          "logged_before_caller_return": false
+        },
+        {
+          "cut": 3,
+          "request_id": 15,
+          "read_original_us": 70421,
+          "handler_us": 71488,
+          "logged_before_caller_return": false
+        }
+      ],
+      "published_read_original_total_us_by_cut": {
+        "4": 293188,
+        "3": 274987
+      },
+      "published_read_original_total_us": 568175,
+      "published_read_original_logged_before_caller_return_us": 429004,
+      "published_handler_total_us": 575181,
+      "outer_c_handlers_plus_whole_selector_us": 602239,
+      "within_selector_trainer_us": [
+        2047,
+        1344,
+        969,
+        1401
+      ],
+      "peer_terminals": {
+        "evidence": "Transport(DeadlineElapsed)",
+        "command": "Ok(2)",
+        "underlying": "Ok(6)"
+      }
+    }
+  },
+  "diagnostic_excerpts_sha256": "d7542fac6aca2e51e5fca8e851785ffa5ace685708639a033ef4fc3a93ccb055",
+  "historical_unchanged_budget_success": {
+    "base": "6c6cf2f0aa296fb27d2e120a648dd961b79f9d9b",
+    "log_sha256": "9857139ed92c111b617249d36c533c3eca4646e7d5bcdb2c6a881d97d66b021a",
+    "timings": [
+      "LEARN_FDE_C_TIMING command_readback_elapsed_us=248483 result=Ok(())",
+      "LEARN_FDE_C_TIMING evidence_readback_elapsed_us=245866 result=Ok(())",
+      "LEARN_FDE_C_TIMING evidence_peer_terminal=Ok(1)",
+      "LEARN_FDE_C_TIMING command_peer_terminal=Ok(2)",
+      "LEARN_FDE_C_TIMING underlying_peer_terminal=Ok(6)"
+    ],
+    "summary": [
+      "     Summary [   1.706s] 1 test run: 1 passed, 1699 skipped"
+    ],
+    "tested_product_files_already_equal": 5
+  },
+  "older_single_thread_raw_log_sha256": "3f3344f5fd7918d7be34cfca0a806c9d911cf72eebf572c9ac19ae719fb9a276",
+  "older_single_thread_timing": [
+    "LEARN_FDE_C_TIMING command_readback_elapsed_us=1214532 result=Ok(())",
+    "LEARN_FDE_C_TIMING evidence_readback_elapsed_us=502701 result=Err(OwnerUnavailable(\"original learning evidence owner\"))"
+  ],
+  "archived_join_change": {
+    "verified_originals": 268,
+    "archive_sha256": "3e35aa8e62a620d55a4bc513e1d3515a8633e556cd9eb7a0055638022cb4ef23",
+    "proposal_postimage": "8f1d295d42977224e7784d518af3847e5bc256e1",
+    "proposal_qualification": "Formatting only. This proposal does not prove the true readback satisfies its unchanged 500 ms bound and was not compiled.",
+    "earlier_reproduction": [
+      "     TIMEOUT [  60.013s] (1/2) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic",
+      "    LEARN_FDE_C_TIMING command_readback_elapsed_us=755256 result=Ok(())",
+      "    LEARN_FDE_C_TIMING evidence_readback_elapsed_us=502029 result=Err(OwnerUnavailable(\"original learning evidence owner\"))",
+      "     TIMEOUT [  60.020s] (2/2) codex-hepta-agentd runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression"
+    ]
+  },
+  "interpretation": "The six Published read_original scopes execute sequentially on this tested remote path. Some scopes conclude after the caller has returned. Each is total wall time around a synchronous semantic read and validation function. The observations do not isolate CPU, I/O, or scheduler shares or imply any one check may be removed."
+}
