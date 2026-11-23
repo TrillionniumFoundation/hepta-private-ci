@@ -1,0 +1,106 @@
+name: Check private bootstrap wire indirection against its original sources
+on:
+  push:
+    branches: ["diagnostic/agentd-bootstrap-wire-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: 43e5da1bb81369e4e999adfa8558f5ccb5460eb6
+  CANDIDATE: 2b75c8df6b804b87dd8c3cbca8d8a4b37d1d97d4
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+jobs:
+  strict:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 130
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - run: python3 scripts/hepta_ci_toolchain.py --github-env "$GITHUB_ENV"
+      - name: Original three-crate strict gate on the clean candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$CANDIDATE"
+          test "$(git rev-parse HEAD^^)" = "$BASE"
+          test "$(git diff "$BASE" "$CANDIDATE" --name-only)" = codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs
+          test "$(git rev-parse "$CANDIDATE:codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs")" = 054075188a68c0b6673c5779108be6556358d6c6
+          dir="$RUNNER_TEMP/wire-evidence"
+          mkdir "$dir"
+          echo "da02bc0a91f6e9e33913e8c914a697926276f820c9387eb4248e7249225a8922  qualification/bootstrap-wire-proof/baseline-115.json" | sha256sum -c
+          git worktree add --quiet --detach "$RUNNER_TEMP/wire-strict" "$CANDIDATE"
+          cd "$RUNNER_TEMP/wire-strict"
+          git rev-parse HEAD > "$dir/commit.txt"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/strict-target"
+          set +e
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings > "$dir/strict.log" 2>&1
+          status=$?
+          set -e
+          echo "$status" > "$dir/strict.exit"
+          python3 "$GITHUB_WORKSPACE/qualification/bootstrap-wire-proof/strict.py" "$dir" "$GITHUB_WORKSPACE/qualification/bootstrap-wire-proof/baseline-115.json"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: bootstrap-wire-strict
+          path: ${{ runner.temp }}/wire-evidence
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [base, candidate]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      ARM: ${{ matrix.arm }}
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Check original source guards and install the shared test-only wire observer
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$CANDIDATE"
+          test "$(git rev-parse HEAD^^)" = "$BASE"
+          ref=$BASE
+          if [ "$ARM" = candidate ]; then ref=$CANDIDATE; fi
+          src="$RUNNER_TEMP/wire-src"
+          evidence="$RUNNER_TEMP/wire-evidence"
+          mkdir "$evidence"
+          git worktree add --quiet --detach "$src" "$ref"
+          cd "$src"
+          git rev-parse HEAD > "$evidence/source.txt"
+          git ls-tree HEAD -- CALLERS.toml codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs qa/b4-no-bypass/test_post_a_physical_preparation_source_closure.py > "$evidence/originals.txt"
+          python3 -B -m unittest discover -s qa/b4-no-bypass -p test_post_a_physical_preparation_source_closure.py -v |& tee "$evidence/source-tests.log"
+          python3 "$GITHUB_WORKSPACE/qualification/bootstrap-wire-proof/observe.py" . | tee "$evidence/observer-hashes.txt"
+          git diff --stat > "$evidence/observer-stat.txt"
+          test "$(git diff --name-only | wc -l)" -eq 3
+      - name: Run the original musl libtests under their original credentials
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/wire-src"
+          evidence="$RUNNER_TEMP/wire-evidence"
+          ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$evidence/build.log"
+          binary=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$evidence/build.log" | tail -1)
+          test -x "$binary"
+          cp -L "$binary" "$RUNNER_TEMP/wire-bin-$ARM"
+          bash "$GITHUB_WORKSPACE/qualification/bootstrap-wire-proof/uid0.sh" "$ARM"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: bootstrap-wire-native-${{ matrix.arm }}
+          path: ${{ runner.temp }}/wire-evidence
