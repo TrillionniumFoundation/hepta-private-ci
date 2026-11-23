@@ -1,0 +1,32 @@
+{
+  "before_and_after_causality": false,
+  "full_shard_diagnostic_result": "6/6; Rust target 1.59 s, local native test action 1.821 s, original per-wait deadline 5 s",
+  "new_production_fix": false,
+  "new_run_count": 1,
+  "no_failure_stage_observed": true,
+  "original_7021_result": "6/6; whole target 0.68 s",
+  "original_c12_result": "5/6; whole target 6.32 s, generic wait failure",
+  "original_c6a_result": "5/6; whole target 5.86 s, generic wait failure",
+  "resource_links": {
+    "7021": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45139490724/job/137575118379",
+    "c12": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928408/job/137573328593",
+    "diagnostic": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45143783875/job/137587947219",
+    "prior_c6a": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45125165932/job/137528575116"
+  },
+  "result": "detached target all 6 passed; original five-stage failure did not recur",
+  "scope": "single fresh diagnostic on original full shard 4 Windows MSVC; one treatment of test-only failure reporting and an unchanged production tree",
+  "shard_failures": {
+    "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_15_of_16/test.log": [
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata"
+    ],
+    "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-all-test/shard_7_of_16/test.log": [
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ],
+    "windows_x86_64_msvc-fastbuild/testlogs/codex-rs/network-proxy/network-proxy-windows_stable_ingress-test/test.log": [
+      "restricted_tokens_select_stable_routes_and_cleanup"
+    ]
+  },
+  "source_pairs": "8 directly compared paths in the original prospective merges agree; 7 production/helpers/acceptance/toolchain paths unchanged in diagnostic; test-only process.rs differs",
+  "specific_root_cause_established": false
+}
