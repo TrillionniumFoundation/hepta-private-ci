@@ -2,8 +2,8 @@
 
 Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
 
-This separately frozen v10 candidate strengthens the source-only admission on
-top of #6983. It consumes the ten byte-exact index537 full-state
+This separately frozen v11 candidate strengthens the source-only admission on
+top of #6986. It consumes the ten byte-exact index537 full-state
 originals from #6957/#6959 and defines the unchanged exact continuation to
 index1159. Each lane would apply exactly 622 row actions and one signed
 ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
@@ -43,6 +43,21 @@ The runtime digest fields are compared against the resolved executing Python
 binary and a canonical sorted JSON list of every installed distribution name
 and version (`importlib-name-version-json-v1`); they are not accepted as
 unverified claims from the runtime original.
+The future host observation must now also bind the exact cgroup v2 relative
+path and leaf device/inode. Admission reads `/proc/self/cgroup` twice through
+one stable descriptor, resolves the live leaf under `/sys/fs/cgroup`, and reads
+every leaf-to-root `memory.current`/`memory.max` pair twice. It rejects a
+different hierarchy identity, an unbounded hierarchy, malformed counters, or
+live tightest-ancestor headroom below the frozen allocation. The observation's
+earlier headroom claim remains required but can no longer substitute for this
+live recomputation.
+
+The first local v11 test invocation is preserved as RED: the source verifiers
+passed, but the normal 36-test pass reported four failures and one error because
+the synthetic authorized fixture replaced `runtime_admission` without carrying
+the new `require_live_cgroup_v2` field. It executed zero authentic input or
+numerical work. The repair changes only that fixture constructor; the next
+normal and optimized 36-test passes both completed successfully.
 The current #6966 observation is only a time-point observation, not an
 allocation. The earlier static #6964 byte projection is not a bound.
 
@@ -111,5 +126,6 @@ outcome.
 #6939/#6950 remain RED; #6942 remains RED_TIMEOUT with completed actions
 UNKNOWN; #6901 remains UNKNOWN. #6957 remains the authoritative 0/2,585
 non-unique result. Tail termination, N256 qualification, C2 full replay (0/6),
-HPCA external custody/equal-budget benefit, cgroup-wide asynchronous cost, and production
-adoption remain open. Global state remains **HOLD / NoUpdate / all_closed=false**.
+HPCA external custody/equal-budget benefit, cgroup process containment,
+cgroup-wide simultaneous RSS/energy, and production adoption remain open.
+Global state remains **HOLD / NoUpdate / all_closed=false**.

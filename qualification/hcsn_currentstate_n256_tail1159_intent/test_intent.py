@@ -25,6 +25,7 @@ from .admission import (
     MAX_JSON_BYTES,
     REQUEST,
     SOURCE_FREEZE,
+    _live_cgroup_v2,
     _runtime_digests,
     admit_runtime,
 )
@@ -77,6 +78,7 @@ def _synthetic_status(ordinal, returncode=0, **changes):
 def _authorized_fixture(root):
     request = json.loads(REQUEST.read_text())
     request["actual_execution_authorized"] = True
+    live_cgroup = _live_cgroup_v2()
     common = {
         "identity": request["identity"],
         "execution_key": request["execution_key"],
@@ -95,6 +97,9 @@ def _authorized_fixture(root):
             "observed_at_utc": "2020-01-01T00:00:00Z",
             "expires_at_utc": "2100-01-01T00:00:00Z",
             "ancestor_cgroup_headroom_bytes": 268435456,
+            "cgroup_v2_relative_path": live_cgroup["relative_path"],
+            "cgroup_v2_leaf_device": live_cgroup["leaf_device"],
+            "cgroup_v2_leaf_inode": live_cgroup["leaf_inode"],
         },
         "allocation": {
             **common,
@@ -122,7 +127,7 @@ def _authorized_fixture(root):
     }
     originals_dir = root / "runtime_originals"
     originals_dir.mkdir()
-    admission = {"concurrency": 1}
+    admission = {"concurrency": 1, "require_live_cgroup_v2": True}
     paths = {}
     for kind, original in originals.items():
         relative = f"runtime_originals/{kind}.json"
@@ -267,6 +272,38 @@ def _replace_synthetic_checkpoint_body(result, result_path, transform):
 
 
 class Tail1159IntentTests(unittest.TestCase):
+    def setUp(self):
+        self._cgroup_temp = tempfile.TemporaryDirectory()
+        fixture = Path(self._cgroup_temp.name)
+        self._cgroup_root = fixture / "cgroup"
+        self._cgroup_leaf = self._cgroup_root / "lane"
+        self._cgroup_leaf.mkdir(parents=True)
+        (self._cgroup_root / "memory.current").write_text("1048576\n")
+        (self._cgroup_root / "memory.max").write_text("1073741824\n")
+        (self._cgroup_leaf / "memory.current").write_text("524288\n")
+        (self._cgroup_leaf / "memory.max").write_text("536870912\n")
+        self._proc_cgroup = fixture / "self.cgroup"
+        self._proc_cgroup.write_text("0::/lane\n")
+        self._cgroup_patches = [
+            patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent."
+                "admission.PROC_SELF_CGROUP",
+                self._proc_cgroup,
+            ),
+            patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent."
+                "admission.CGROUP_V2_ROOT",
+                self._cgroup_root,
+            ),
+        ]
+        for active_patch in self._cgroup_patches:
+            active_patch.start()
+
+    def tearDown(self):
+        for active_patch in reversed(self._cgroup_patches):
+            active_patch.stop()
+        self._cgroup_temp.cleanup()
+
     def test_frozen_work_denominator(self):
         request = json.loads(REQUEST.read_text())
         self.assertEqual(TARGET_INDEX - SOURCE_INDEX, 622)
@@ -282,7 +319,53 @@ class Tail1159IntentTests(unittest.TestCase):
         self.assertEqual(request["lane_log_caps"]["stderr_bytes"], 1048576)
         self.assertEqual(request["lane_command_timeout_seconds"], 6900)
         self.assertEqual(request["termination_grace_seconds"], 5)
+        self.assertTrue(request["runtime_admission"]["require_live_cgroup_v2"])
         self.assertFalse(request["actual_execution_authorized"])
+
+    def test_live_cgroup_uses_tightest_ancestor_headroom(self):
+        live = _live_cgroup_v2()
+        self.assertEqual(live["relative_path"], "/lane")
+        self.assertEqual(live["leaf_inode"], self._cgroup_leaf.stat().st_ino)
+        self.assertEqual(live["ancestor_headroom_bytes"], 536346624)
+
+    def test_live_cgroup_identity_change_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request, request_path, paths = _authorized_fixture(root)
+            observation = json.loads(paths["host_observation"].read_text())
+            observation["cgroup_v2_leaf_inode"] += 1
+            raw = (json.dumps(observation, sort_keys=True) + "\n").encode()
+            _replace_original(request, request_path, paths, "host_observation", raw)
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent."
+                "admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(
+                    os.environ, _environment(request, request_path), clear=True
+                ):
+                    with self.assertRaisesRegex(
+                        SystemExit, "live cgroup v2 identity differs"
+                    ):
+                        admit_runtime()
+
+    def test_live_cgroup_headroom_change_refuses_before_input_read(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            request, request_path, _ = _authorized_fixture(root)
+            (self._cgroup_leaf / "memory.current").write_text("500000000\n")
+            with patch(
+                "qualification.hcsn_currentstate_n256_tail1159_intent."
+                "admission.REQUEST",
+                request_path,
+            ):
+                with patch.dict(
+                    os.environ, _environment(request, request_path), clear=True
+                ):
+                    with self.assertRaisesRegex(
+                        SystemExit, "live ancestor cgroup headroom is below"
+                    ):
+                        admit_runtime()
 
     def test_log_drain_retains_exact_bytes_within_cap(self):
         with tempfile.TemporaryDirectory() as directory:

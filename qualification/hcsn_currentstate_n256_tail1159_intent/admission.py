@@ -24,6 +24,8 @@ ORIGINAL_SCHEMAS = {
 MAX_JSON_BYTES = 65536
 MAX_EXECUTABLE_BYTES = 67108864
 DEPENDENCY_MANIFEST_FORMAT = "importlib-name-version-json-v1"
+PROC_SELF_CGROUP = Path("/proc/self/cgroup")
+CGROUP_V2_ROOT = Path("/sys/fs/cgroup")
 
 
 def _sha256(raw):
@@ -130,6 +132,135 @@ def _bounded_regular_bytes(path, label, *, max_bytes=MAX_JSON_BYTES, single_link
     if reads[0] != reads[1] or len(reads[0]) != after.st_size:
         raise SystemExit(f"{label} changed while being read")
     return reads[0]
+
+
+def _bounded_pseudo_bytes(path, label, *, max_bytes=MAX_JSON_BYTES):
+    """Read a procfs/cgroupfs pseudo-file twice through one stable descriptor."""
+
+    try:
+        before = path.lstat()
+    except OSError as error:
+        raise SystemExit(f"{label} cannot be read") from error
+    if not stat.S_ISREG(before.st_mode):
+        raise SystemExit(f"{label} is not a regular pseudo-file")
+    flags = os.O_RDONLY
+    for name in ("O_BINARY", "O_CLOEXEC", "O_NOFOLLOW"):
+        flags |= getattr(os, name, 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as error:
+        raise SystemExit(f"{label} cannot be opened") from error
+    try:
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode):
+            raise SystemExit(f"{label} is not a regular pseudo-file")
+        if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino):
+            raise SystemExit(f"{label} changed while being opened")
+        reads = []
+        for _ in range(2):
+            os.lseek(descriptor, 0, os.SEEK_SET)
+            chunks = []
+            remaining = max_bytes + 1
+            while remaining:
+                chunk = os.read(descriptor, remaining)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            raw = b"".join(chunks)
+            if len(raw) > max_bytes:
+                raise SystemExit(f"{label} exceeds the byte cap")
+            reads.append(raw)
+        after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    try:
+        current = path.lstat()
+    except OSError as error:
+        raise SystemExit(f"{label} changed while being read") from error
+    stable_fields = ("st_dev", "st_ino", "st_mode", "st_nlink")
+    if any(getattr(opened, field) != getattr(after, field) for field in stable_fields):
+        raise SystemExit(f"{label} changed while being read")
+    if (current.st_dev, current.st_ino) != (after.st_dev, after.st_ino):
+        raise SystemExit(f"{label} path changed while being read")
+    if reads[0] != reads[1]:
+        raise SystemExit(f"{label} changed while being read")
+    return reads[0]
+
+
+def _strict_nonnegative_integer(raw, label):
+    try:
+        text = raw.decode("ascii").strip()
+        value = int(text)
+    except (UnicodeDecodeError, ValueError) as error:
+        raise SystemExit(f"{label} is not a nonnegative integer") from error
+    if value < 0 or str(value) != text:
+        raise SystemExit(f"{label} is not a canonical nonnegative integer")
+    return value
+
+
+def _live_cgroup_v2():
+    """Bind the current cgroup v2 leaf and recompute tight ancestor headroom."""
+
+    try:
+        cgroup_text = _bounded_pseudo_bytes(
+            PROC_SELF_CGROUP, "live /proc/self/cgroup"
+        ).decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise SystemExit("live /proc/self/cgroup is not UTF-8") from error
+    lines = cgroup_text.splitlines()
+    if len(lines) != 1 or not lines[0].startswith("0::"):
+        raise SystemExit("live process is not in one cgroup v2 hierarchy")
+    relative_text = lines[0][3:]
+    relative = Path(relative_text)
+    if (
+        not relative_text.startswith("/")
+        or ".." in relative.parts
+        or "\x00" in relative_text
+    ):
+        raise SystemExit("live cgroup v2 path is invalid")
+    try:
+        root = CGROUP_V2_ROOT.resolve(strict=True)
+        leaf = (root / relative_text.lstrip("/")).resolve(strict=True)
+    except OSError as error:
+        raise SystemExit("live cgroup v2 leaf cannot be resolved") from error
+    if leaf != root and root not in leaf.parents:
+        raise SystemExit("live cgroup v2 leaf escapes the hierarchy")
+    leaf_stat = leaf.stat()
+    if not stat.S_ISDIR(leaf_stat.st_mode):
+        raise SystemExit("live cgroup v2 leaf is not a directory")
+
+    finite_headrooms = []
+    current = leaf
+    while True:
+        current_raw = _bounded_pseudo_bytes(
+            current / "memory.current", "live cgroup memory.current"
+        )
+        usage = _strict_nonnegative_integer(
+            current_raw, "live cgroup memory.current"
+        )
+        maximum_raw = _bounded_pseudo_bytes(
+            current / "memory.max", "live cgroup memory.max"
+        )
+        maximum_text = maximum_raw.decode("ascii").strip()
+        if maximum_text != "max":
+            maximum = _strict_nonnegative_integer(
+                maximum_raw, "live cgroup memory.max"
+            )
+            if usage > maximum:
+                raise SystemExit("live cgroup memory.current exceeds memory.max")
+            finite_headrooms.append(maximum - usage)
+        if current == root:
+            break
+        current = current.parent
+    if not finite_headrooms:
+        raise SystemExit("live cgroup hierarchy has no finite memory bound")
+    return {
+        "relative_path": relative_text,
+        "leaf_device": leaf_stat.st_dev,
+        "leaf_inode": leaf_stat.st_ino,
+        "ancestor_headroom_bytes": min(finite_headrooms),
+    }
 
 
 def _parse_utc(value, field):
@@ -245,6 +376,8 @@ def _read_original(request, kind, source_manifest_sha256):
 
 def _validate_originals(request, originals):
     admission = request["runtime_admission"]
+    if admission.get("require_live_cgroup_v2") is not True:
+        raise SystemExit("live cgroup v2 admission is not required")
     concurrency = admission["concurrency"]
     if concurrency not in (1, 2, 4):
         raise SystemExit("concurrency is not frozen")
@@ -283,6 +416,23 @@ def _validate_originals(request, originals):
         raise SystemExit("observed cgroup headroom is not an integer")
     if headroom < memory_bytes:
         raise SystemExit("observed cgroup headroom is below the allocation")
+    live_cgroup = _live_cgroup_v2()
+    expected_cgroup = {
+        "relative_path": observation.get("cgroup_v2_relative_path"),
+        "leaf_device": observation.get("cgroup_v2_leaf_device"),
+        "leaf_inode": observation.get("cgroup_v2_leaf_inode"),
+    }
+    for field in ("leaf_device", "leaf_inode"):
+        if not isinstance(expected_cgroup[field], int) or isinstance(
+            expected_cgroup[field], bool
+        ):
+            raise SystemExit(f"observed cgroup v2 {field} is not an integer")
+    if expected_cgroup != {
+        field: live_cgroup[field] for field in expected_cgroup
+    }:
+        raise SystemExit("live cgroup v2 identity differs from the observation")
+    if live_cgroup["ancestor_headroom_bytes"] < memory_bytes:
+        raise SystemExit("live ancestor cgroup headroom is below the allocation")
 
     runtime = originals["runtime"]
     if not isinstance(runtime.get("runtime_id"), str) or not runtime["runtime_id"]:
