@@ -57,9 +57,14 @@ def panel(root, old, name):
     rec = read(root/'receipts'/(name+'.json'))
     camera_rec = read(root/'semantic'/(name+'.receipt.json'))
     rule=read(HERE/'protocol.json')['frontend']
+    camera_parts = camera_rec.get('parts', [camera_rec])
+    weight_shas = {part['weight_sha256'] for part in camera_parts}
+    for part in camera_rec.get('parts', []):
+        if digest(root/'semantic/parts'/part['file'])!=part['sha256']:
+            raise ValueError('camera part changed')
     if (rec['sha256']!=digest(rawfile) or rec['frozen_source_sha256']!=registry['sources_sha256']
             or rec['roster_sha256']!=registry['rosters_sha256'][name]
-            or camera_rec['weight_sha256']!=rule['camera_sha256']
+            or weight_shas!={rule['camera_sha256']}
             or camera_rec['output_sha256']!=digest(camera)
             or camera_rec['roster_sha256']!=rec['roster_sha256']):
         raise ValueError('unbound features, camera weights or clocks')
