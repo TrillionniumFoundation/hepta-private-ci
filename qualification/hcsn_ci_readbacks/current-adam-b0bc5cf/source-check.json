@@ -1,0 +1,38 @@
+[
+  [
+    "valid",
+    "actor",
+    0,
+    "{\"numerical_execution\": false, \"qualification\": \"HOLD\", \"request_identity\": \"hcsn-adjoint-four-amplitudes-adam-resume-20261123-torch210-v1\", \"source_commit\": \"b0bc5cf5bea7cb1aa4a320c5b87d884e9e083b70\", \"source_files\": 21, \"status\": \"SOURCE_CONSISTENT\"}"
+  ],
+  [
+    "valid",
+    "native_probe",
+    0,
+    "{\"numerical_execution\": false, \"qualification\": \"HOLD\", \"request_identity\": \"hcsn-adjoint-four-amplitudes-adam-resume-20261123-torch210-v1\", \"source_commit\": \"b0bc5cf5bea7cb1aa4a320c5b87d884e9e083b70\", \"source_files\": 21, \"status\": \"SOURCE_CONSISTENT\"}"
+  ],
+  [
+    "historical_identity",
+    "actor",
+    1,
+    "ValueError: current prospective actor identity differs"
+  ],
+  [
+    "historical_identity",
+    "native_probe",
+    1,
+    "ValueError: current prospective controller identity differs"
+  ],
+  [
+    "altered_inventory",
+    "actor",
+    1,
+    "ValueError: remote-prefrozen actor source inventory differs"
+  ],
+  [
+    "altered_inventory",
+    "native_probe",
+    1,
+    "ValueError: remote-prefrozen source inventory differs"
+  ]
+]
