@@ -2,6 +2,8 @@
 
 This research record covers two published synthetic fixtures, with one intentionally shared future input. Both the plain Cell and fitted Circuit retain a parent success on `keep` and their candidate succeeds on `later`. The present measurements use a single CPU host. User count, training throughput and production adoption are separate outcomes.
 
+The [hosted fit-and-cold replication](HOSTED_READOUT_ZH.md) now includes all retained original model weights and job receipts. The registered historical identities passed 4/8 on the first hosted CPU and 8/8 on the second. On the latter, two concurrent workers completed 535.79 fitted and cold-verified model pairs/hour against 317.97 with one worker. The former local recovery's terminal outcome remains unknown.
+
 ## Worker measurements
 
 | Balanced block | One worker (s) | Two workers (s) | Time with two admitted jobs (s) | Serial/parallel elapsed |

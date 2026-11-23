@@ -1,0 +1,49 @@
+{
+  "registered_model_pairs_verified": 8,
+  "requested_roster": "historical_exact",
+  "native_completed_pairs": 8,
+  "cold_arms": 16,
+  "semantic_answers": 32,
+  "primitive_model_calls": 48,
+  "material_byte_checks": 168,
+  "distinct_synthetic_future_inputs": 1,
+  "batches": [
+    {
+      "block": 1,
+      "workers": 1,
+      "seconds": 22.492671647,
+      "overlap_seconds": 0.0,
+      "rate": 320.1042594226601
+    },
+    {
+      "block": 1,
+      "workers": 2,
+      "seconds": 13.258049128000001,
+      "overlap_seconds": 9.832488596,
+      "rate": 543.0663237469939
+    },
+    {
+      "block": 2,
+      "workers": 2,
+      "seconds": 13.622981070000002,
+      "overlap_seconds": 9.997055844,
+      "rate": 528.5186819979923
+    },
+    {
+      "block": 2,
+      "workers": 1,
+      "seconds": 22.797335049,
+      "overlap_seconds": 0.0,
+      "rate": 315.82638867764615
+    }
+  ],
+  "median_rates": {
+    "1": 317.96532405015313,
+    "2": 535.7925028724931
+  },
+  "ratio": 1.68506583059976,
+  "worker_admission_overlap_only": true,
+  "user_count": 0,
+  "observed_adoptions": 0,
+  "adopted_candidates_per_hour": null
+}
