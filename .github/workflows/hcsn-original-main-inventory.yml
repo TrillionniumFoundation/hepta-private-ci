@@ -1,0 +1,40 @@
+name: Replay all Git blobs in the original main-tree audit
+on:
+  push:
+    branches: ["diagnosis/hcsn-original-tree-inventory-20261123"]
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check out the original default-branch revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 732e934ba496d90fbe042b8d41d479ef901643e5
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Retrieve only the immutable audit release
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ae5d6b22e0e229b464819a5f30de7a2d5c58e534
+          path: evidence
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: qualification/hcsn_ci_readbacks/repository-inventory-732e934
+      - name: Rehash every original file and verify the inventories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C source rev-parse HEAD)" = 732e934ba496d90fbe042b8d41d479ef901643e5
+          test "$(git -C evidence rev-parse HEAD)" = ae5d6b22e0e229b464819a5f30de7a2d5c58e534
+          test "$(git -C source ls-tree -rz -t HEAD | tr -cd '\000' | wc -c)" -eq 9843
+          python3 evidence/qualification/hcsn_ci_readbacks/repository-inventory-732e934/verify.py --repo source | tee inventory-replay.json
+      - name: Keep the independently computed result
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: original-main-inventory-replay
+          path: inventory-replay.json
+          if-no-files-found: error
