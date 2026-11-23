@@ -5,6 +5,8 @@ import hashlib
 import json
 from pathlib import Path
 import time
+import os
+import tempfile
 
 import numpy as np
 
@@ -40,12 +42,27 @@ def roster_for(source, original):
 
 
 def job(args):
-    src, row, feat_dir = args
+    src,row,feat_dir,binding=args
     dest=feat_dir/(row['query_id']+'.npz')
+    record=dest.with_suffix('.json')
+    if dest.exists() and record.exists():
+        receipt=json.loads(record.read_text())
+        if receipt.get('binding')==binding and receipt.get('sha256')==digest(dest):
+            return dict(receipt, cached=True)
     t=time.perf_counter()
-    a=extract(src, row['start_seconds'])
-    np.savez_compressed(dest, **a)
-    return {'query_id':row['query_id'],'seconds':time.perf_counter()-t,'sha256':digest(dest)}
+    features=extract(src,row['start_seconds'])
+    with tempfile.NamedTemporaryFile(dir=feat_dir,suffix='.npz',delete=False) as f:
+        tmp=Path(f.name)
+        try:
+            np.savez_compressed(f,**features)
+        except BaseException:
+            tmp.unlink(missing_ok=True)
+            raise
+    os.replace(tmp,dest)
+    receipt={'query_id':row['query_id'],'seconds':time.perf_counter()-t,
+             'sha256':digest(dest),'binding':binding}
+    save_json(record,receipt)
+    return dict(receipt,cached=False)
 
 
 def main():
@@ -75,7 +92,10 @@ def main():
     print(f'roster {roster} rows={len(rows)} held={missing}',flush=True)
     if ns.roster_only:return
     feat_dir=root/'window-cache'/ns.split;feat_dir.mkdir(exist_ok=True,parents=True)
-    todo=[(r['local_media'],r,feat_dir) for r in rows if not (feat_dir/(r['query_id']+'.npz')).exists()]
+    frontend_digest=digest(HERE/'recording_features.py')
+    inputs={str(m['pageid']):m['sha256'] for m in available}
+    todo=[(r['local_media'],r,feat_dir,{'input_sha256':inputs[r['recording']],
+           'frontend_sha256':frontend_digest,'start_seconds':r['start_seconds']}) for r in rows]
     with concurrent.futures.ThreadPoolExecutor(max_workers=ns.jobs) as pool:
         results=list(pool.map(job,todo))
     dest=root/'features';dest.mkdir(exist_ok=True)
