@@ -1,0 +1,921 @@
+{
+  "query_count_registered": 24,
+  "query_count_complete": 22,
+  "source_count": 6,
+  "family_seed_count": 3,
+  "selection_seal_sha256": "38d42a421574c6ab421b26d86c1689de26a5416803c544f9046526543416b710",
+  "confirmation_manifest_sha256": "b1c3e6996416c86d8e89f8db9cf1ceb2d33f4dc3dd2262e99d5125a73fe7b981",
+  "original_24_neural_family_bounds": {
+    "plain-keep": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "guaranteed_fail",
+        "r1_at_least_070": "guaranteed_pass",
+        "worst_keep_delta_at_least_minus005": "guaranteed_pass",
+        "absolute": "guaranteed_fail",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "guaranteed_pass",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.5182319493171784,
+        0.5916666666666667
+      ],
+      "mean_seed_r1": [
+        0.75,
+        0.7916666666666666
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.23176805068282166,
+          -0.08489861598384509
+        ],
+        "dev_locked_immediate": [
+          0.02656528265051175,
+          0.10000000000000002
+        ],
+        "matched_keep": [
+          0.0,
+          0.0
+        ],
+        "same_scores_disable_read": [
+          -0.17083333333333336,
+          -0.0973986159838451
+        ]
+      },
+      "worst_source_across_seeds": [
+        0.0,
+        0.0
+      ]
+    },
+    "context-keep": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "guaranteed_fail",
+        "r1_at_least_070": "guaranteed_fail",
+        "worst_keep_delta_at_least_minus005": "guaranteed_pass",
+        "absolute": "guaranteed_fail",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "guaranteed_fail",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.4946208382060673,
+        0.5680555555555556
+      ],
+      "mean_seed_r1": [
+        0.6805555555555557,
+        0.7222222222222222
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.2553791617939327,
+          -0.1085097270949562
+        ],
+        "dev_locked_immediate": [
+          0.002954171539400653,
+          0.07638888888888892
+        ],
+        "matched_keep": [
+          0.0,
+          0.0
+        ],
+        "same_scores_disable_read": [
+          -0.19444444444444445,
+          -0.12100972709495621
+        ]
+      },
+      "worst_source_across_seeds": [
+        0.0,
+        0.0
+      ]
+    },
+    "context-bp": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "guaranteed_fail",
+        "r1_at_least_070": "guaranteed_fail",
+        "worst_keep_delta_at_least_minus005": "guaranteed_fail",
+        "absolute": "guaranteed_fail",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "undetermined",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.5029541715394006,
+        0.576388888888889
+      ],
+      "mean_seed_r1": [
+        0.6805555555555557,
+        0.7222222222222222
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.24704582846059941,
+          -0.10017639376162286
+        ],
+        "dev_locked_immediate": [
+          0.011287504872733986,
+          0.08472222222222225
+        ],
+        "matched_keep": [
+          -0.04062314489965885,
+          0.05728981156632551
+        ],
+        "same_scores_disable_read": [
+          -0.18611111111111112,
+          -0.11267639376162286
+        ]
+      },
+      "worst_source_across_seeds": [
+        -0.44060830409692964,
+        -0.07500000000000001
+      ]
+    },
+    "fixed-keep": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "undetermined",
+        "r1_at_least_070": "guaranteed_pass",
+        "worst_keep_delta_at_least_minus005": "guaranteed_pass",
+        "absolute": "undetermined",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "guaranteed_pass",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.5960097270949561,
+        0.6694444444444444
+      ],
+      "mean_seed_r1": [
+        0.7777777777777777,
+        0.8194444444444445
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.15399027290504386,
+          -0.007120838206067304
+        ],
+        "dev_locked_immediate": [
+          0.10434306042828952,
+          0.1777777777777778
+        ],
+        "matched_keep": [
+          0.0,
+          0.0
+        ],
+        "same_scores_disable_read": [
+          -0.0930555555555556,
+          -0.019620838206067318
+        ]
+      },
+      "worst_source_across_seeds": [
+        0.0,
+        0.0
+      ]
+    },
+    "fixed-bp": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "undetermined",
+        "r1_at_least_070": "guaranteed_pass",
+        "worst_keep_delta_at_least_minus005": "guaranteed_pass",
+        "absolute": "undetermined",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "guaranteed_pass",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.5960097270949561,
+        0.6694444444444444
+      ],
+      "mean_seed_r1": [
+        0.7777777777777777,
+        0.8194444444444445
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.15399027290504386,
+          -0.007120838206067304
+        ],
+        "dev_locked_immediate": [
+          0.10434306042828952,
+          0.1777777777777778
+        ],
+        "matched_keep": [
+          0.0,
+          0.0
+        ],
+        "same_scores_disable_read": [
+          -0.0930555555555556,
+          -0.019620838206067318
+        ]
+      },
+      "worst_source_across_seeds": [
+        0.0,
+        0.0
+      ]
+    },
+    "learned-keep": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "undetermined",
+        "r1_at_least_070": "guaranteed_pass",
+        "worst_keep_delta_at_least_minus005": "guaranteed_pass",
+        "absolute": "undetermined",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "guaranteed_pass",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.5960097270949561,
+        0.6694444444444444
+      ],
+      "mean_seed_r1": [
+        0.7777777777777777,
+        0.8194444444444445
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.15399027290504386,
+          -0.007120838206067304
+        ],
+        "dev_locked_immediate": [
+          0.10434306042828952,
+          0.1777777777777778
+        ],
+        "matched_keep": [
+          0.0,
+          0.0
+        ],
+        "same_scores_disable_read": [
+          -0.0930555555555556,
+          -0.019620838206067318
+        ]
+      },
+      "worst_source_across_seeds": [
+        0.0,
+        0.0
+      ]
+    },
+    "learned-bp": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "undetermined",
+        "r1_at_least_070": "guaranteed_pass",
+        "worst_keep_delta_at_least_minus005": "guaranteed_pass",
+        "absolute": "undetermined",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "guaranteed_pass",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.5960097270949561,
+        0.6694444444444444
+      ],
+      "mean_seed_r1": [
+        0.7777777777777777,
+        0.8194444444444445
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.15399027290504386,
+          -0.007120838206067304
+        ],
+        "dev_locked_immediate": [
+          0.10434306042828952,
+          0.1777777777777778
+        ],
+        "matched_keep": [
+          0.0,
+          0.0
+        ],
+        "same_scores_disable_read": [
+          -0.0930555555555556,
+          -0.019620838206067318
+        ]
+      },
+      "worst_source_across_seeds": [
+        0.0,
+        0.0
+      ]
+    },
+    "qvi-keep": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "undetermined",
+        "r1_at_least_070": "guaranteed_pass",
+        "worst_keep_delta_at_least_minus005": "guaranteed_pass",
+        "absolute": "undetermined",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "guaranteed_pass",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.5765652826505118,
+        0.6499999999999999
+      ],
+      "mean_seed_r1": [
+        0.75,
+        0.7916666666666666
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.17343471734948832,
+          -0.026565282650511748
+        ],
+        "dev_locked_immediate": [
+          0.08489861598384509,
+          0.15833333333333335
+        ],
+        "matched_keep": [
+          0.0,
+          0.0
+        ],
+        "same_scores_disable_read": [
+          -0.11250000000000003,
+          -0.03906528265051176
+        ]
+      },
+      "worst_source_across_seeds": [
+        0.0,
+        0.0
+      ]
+    },
+    "qvi-bp": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "undetermined",
+        "r1_at_least_070": "guaranteed_pass",
+        "worst_keep_delta_at_least_minus005": "guaranteed_pass",
+        "absolute": "undetermined",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "guaranteed_pass",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.5765652826505118,
+        0.6499999999999999
+      ],
+      "mean_seed_r1": [
+        0.75,
+        0.7916666666666666
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.17343471734948832,
+          -0.026565282650511748
+        ],
+        "dev_locked_immediate": [
+          0.08489861598384509,
+          0.15833333333333335
+        ],
+        "matched_keep": [
+          0.0,
+          0.0
+        ],
+        "same_scores_disable_read": [
+          -0.11250000000000003,
+          -0.03906528265051176
+        ]
+      },
+      "worst_source_across_seeds": [
+        0.0,
+        0.0
+      ]
+    },
+    "external-keep": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "guaranteed_fail",
+        "r1_at_least_070": "guaranteed_pass",
+        "worst_keep_delta_at_least_minus005": "guaranteed_pass",
+        "absolute": "guaranteed_fail",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "guaranteed_pass",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.5793430604282895,
+        0.6527777777777778
+      ],
+      "mean_seed_r1": [
+        0.7777777777777777,
+        0.8194444444444445
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.17065693957171055,
+          -0.023787504872733973
+        ],
+        "dev_locked_immediate": [
+          0.08767639376162288,
+          0.16111111111111112
+        ],
+        "matched_keep": [
+          0.0,
+          0.0
+        ],
+        "same_scores_disable_read": [
+          -0.10972222222222223,
+          -0.03628750487273399
+        ]
+      },
+      "worst_source_across_seeds": [
+        0.0,
+        0.0
+      ]
+    },
+    "external-bp": {
+      "all_three_seed_gates": {
+        "utility_at_least_060": "guaranteed_fail",
+        "r1_at_least_070": "guaranteed_pass",
+        "worst_keep_delta_at_least_minus005": "guaranteed_fail",
+        "absolute": "guaranteed_fail",
+        "paid_gain": "guaranteed_fail",
+        "timing_gain_vs_immediate": "guaranteed_pass",
+        "any_reads": "guaranteed_pass",
+        "any_waits": "undetermined",
+        "positive_paid_timing": "guaranteed_fail",
+        "supported_paid_timing": "guaranteed_fail",
+        "joint": "guaranteed_fail"
+      },
+      "mean_seed_utility": [
+        0.5793430604282895,
+        0.6527777777777778
+      ],
+      "mean_seed_r1": [
+        0.7777777777777777,
+        0.8194444444444445
+      ],
+      "mean_seed_deltas": {
+        "trained_dynamic_noread": [
+          -0.17065693957171055,
+          -0.023787504872733973
+        ],
+        "dev_locked_immediate": [
+          0.08767639376162288,
+          0.16111111111111112
+        ],
+        "matched_keep": [
+          -0.02447823911649609,
+          0.02447823911649609
+        ],
+        "same_scores_disable_read": [
+          -0.10972222222222223,
+          -0.03628750487273399
+        ]
+      },
+      "worst_source_across_seeds": [
+        -0.44060830409692964,
+        -0.175
+      ]
+    }
+  },
+  "complete_22_neural_family_means": [
+    {
+      "family": "plain-keep",
+      "utility": 0.5958333333333333,
+      "r1": 0.7916666666666665,
+      "delta_vs_fixed": -0.05972222222222221,
+      "delta_vs_refit_noread": -0.1263888888888889,
+      "delta_vs_masked_read": -0.1263888888888889,
+      "delta_vs_locked_immediate": 0.1041666666666667,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": 0.0,
+      "reads_per_seed": 15.0,
+      "waited_per_seed": 0.0,
+      "capability": false,
+      "paid_timing": false,
+      "source_supported_timing": false
+    },
+    {
+      "family": "context-keep",
+      "utility": 0.5587962962962963,
+      "r1": 0.7129629629629629,
+      "delta_vs_fixed": -0.09675925925925925,
+      "delta_vs_refit_noread": -0.16342592592592595,
+      "delta_vs_masked_read": -0.16342592592592595,
+      "delta_vs_locked_immediate": 0.06712962962962966,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": 0.0,
+      "reads_per_seed": 11.666666666666666,
+      "waited_per_seed": 0.0,
+      "capability": false,
+      "paid_timing": false,
+      "source_supported_timing": false
+    },
+    {
+      "family": "context-bp",
+      "utility": 0.5685185185185185,
+      "r1": 0.7129629629629629,
+      "delta_vs_fixed": -0.08703703703703704,
+      "delta_vs_refit_noread": -0.1537037037037037,
+      "delta_vs_masked_read": -0.1537037037037037,
+      "delta_vs_locked_immediate": 0.07685185185185188,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": -0.07500000000000007,
+      "reads_per_seed": 11.0,
+      "waited_per_seed": 0.0,
+      "capability": false,
+      "paid_timing": false,
+      "source_supported_timing": false
+    },
+    {
+      "family": "fixed-keep",
+      "utility": 0.6555555555555554,
+      "r1": 0.8055555555555555,
+      "delta_vs_fixed": 0.0,
+      "delta_vs_refit_noread": -0.06666666666666668,
+      "delta_vs_masked_read": -0.06666666666666668,
+      "delta_vs_locked_immediate": 0.16388888888888895,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": 0.0,
+      "reads_per_seed": 11.666666666666666,
+      "waited_per_seed": 0.0,
+      "capability": true,
+      "paid_timing": false,
+      "source_supported_timing": false
+    },
+    {
+      "family": "fixed-bp",
+      "utility": 0.6555555555555554,
+      "r1": 0.8055555555555555,
+      "delta_vs_fixed": 0.0,
+      "delta_vs_refit_noread": -0.06666666666666668,
+      "delta_vs_masked_read": -0.06666666666666668,
+      "delta_vs_locked_immediate": 0.16388888888888895,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": 0.0,
+      "reads_per_seed": 11.666666666666666,
+      "waited_per_seed": 0.0,
+      "capability": true,
+      "paid_timing": false,
+      "source_supported_timing": false
+    },
+    {
+      "family": "learned-keep",
+      "utility": 0.6555555555555554,
+      "r1": 0.8055555555555555,
+      "delta_vs_fixed": 0.0,
+      "delta_vs_refit_noread": -0.06666666666666668,
+      "delta_vs_masked_read": -0.06666666666666668,
+      "delta_vs_locked_immediate": 0.16388888888888895,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": 0.0,
+      "reads_per_seed": 11.666666666666666,
+      "waited_per_seed": 0.0,
+      "capability": true,
+      "paid_timing": false,
+      "source_supported_timing": false
+    },
+    {
+      "family": "learned-bp",
+      "utility": 0.6555555555555554,
+      "r1": 0.8055555555555555,
+      "delta_vs_fixed": 0.0,
+      "delta_vs_refit_noread": -0.06666666666666668,
+      "delta_vs_masked_read": -0.06666666666666668,
+      "delta_vs_locked_immediate": 0.16388888888888895,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": 0.0,
+      "reads_per_seed": 11.666666666666666,
+      "waited_per_seed": 0.0,
+      "capability": true,
+      "paid_timing": false,
+      "source_supported_timing": false
+    },
+    {
+      "family": "qvi-keep",
+      "utility": 0.6361111111111111,
+      "r1": 0.7777777777777777,
+      "delta_vs_fixed": -0.019444444444444445,
+      "delta_vs_refit_noread": -0.08611111111111114,
+      "delta_vs_masked_read": -0.08611111111111114,
+      "delta_vs_locked_immediate": 0.14444444444444446,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": 0.0,
+      "reads_per_seed": 11.0,
+      "waited_per_seed": 0.0,
+      "capability": true,
+      "paid_timing": false,
+      "source_supported_timing": false
+    },
+    {
+      "family": "qvi-bp",
+      "utility": 0.6361111111111111,
+      "r1": 0.7777777777777777,
+      "delta_vs_fixed": -0.019444444444444445,
+      "delta_vs_refit_noread": -0.08611111111111114,
+      "delta_vs_masked_read": -0.08611111111111114,
+      "delta_vs_locked_immediate": 0.14444444444444446,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": 0.0,
+      "reads_per_seed": 11.0,
+      "waited_per_seed": 0.0,
+      "capability": true,
+      "paid_timing": false,
+      "source_supported_timing": false
+    },
+    {
+      "family": "external-keep",
+      "utility": 0.6328703703703704,
+      "r1": 0.8009259259259257,
+      "delta_vs_fixed": -0.022685185185185187,
+      "delta_vs_refit_noread": -0.08935185185185186,
+      "delta_vs_masked_read": -0.08935185185185186,
+      "delta_vs_locked_immediate": 0.14120370370370372,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": 0.0,
+      "reads_per_seed": 13.0,
+      "waited_per_seed": 0.0,
+      "capability": false,
+      "paid_timing": false,
+      "source_supported_timing": false
+    },
+    {
+      "family": "external-bp",
+      "utility": 0.6328703703703703,
+      "r1": 0.8009259259259257,
+      "delta_vs_fixed": -0.022685185185185187,
+      "delta_vs_refit_noread": -0.08935185185185186,
+      "delta_vs_masked_read": -0.08935185185185186,
+      "delta_vs_locked_immediate": 0.14120370370370372,
+      "worst_retain_vs_matched": 0.0,
+      "worst_test_vs_matched": -0.17500000000000004,
+      "reads_per_seed": 13.0,
+      "waited_per_seed": 0.0,
+      "capability": false,
+      "paid_timing": false,
+      "source_supported_timing": false
+    }
+  ],
+  "train_dev_frontend_screen": {
+    "handwritten_visual": {
+      "train": {
+        "n_queries": 24,
+        "n_groups": 6,
+        "n_paid_positive_queries": 10,
+        "paid_positive_groups": 3,
+        "paid_gain_mean": 0.28985857160255657,
+        "wait_gain_mean": 0.0018080950641100602,
+        "paid_gate_pass": true
+      },
+      "dev": {
+        "n_queries": 16,
+        "n_groups": 3,
+        "n_paid_positive_queries": 3,
+        "paid_positive_groups": 2,
+        "paid_gain_mean": 0.07700661621041273,
+        "wait_gain_mean": 0.0509984000683486,
+        "paid_gate_pass": true
+      }
+    },
+    "imagenet_fusion": {
+      "train": {
+        "n_queries": 24,
+        "n_groups": 6,
+        "n_paid_positive_queries": 12,
+        "paid_positive_groups": 5,
+        "paid_gain_mean": 0.3463838098717798,
+        "wait_gain_mean": 0.0,
+        "paid_gate_pass": true
+      },
+      "dev": {
+        "n_queries": 16,
+        "n_groups": 3,
+        "n_paid_positive_queries": 9,
+        "paid_positive_groups": 3,
+        "paid_gain_mean": 0.3084350866250485,
+        "wait_gain_mean": 0.019926870482984377,
+        "paid_gate_pass": true
+      }
+    },
+    "imagenet_visual": {
+      "train": {
+        "n_queries": 24,
+        "n_groups": 6,
+        "n_paid_positive_queries": 12,
+        "paid_positive_groups": 5,
+        "paid_gain_mean": 0.3463838098717798,
+        "wait_gain_mean": 0.0,
+        "paid_gate_pass": true
+      },
+      "dev": {
+        "n_queries": 16,
+        "n_groups": 3,
+        "n_paid_positive_queries": 9,
+        "paid_positive_groups": 3,
+        "paid_gain_mean": 0.31873288481731904,
+        "wait_gain_mean": 0.0010580020085882713,
+        "paid_gate_pass": true
+      }
+    },
+    "trained_visual": {
+      "train": {
+        "n_queries": 24,
+        "n_groups": 6,
+        "n_paid_positive_queries": 12,
+        "paid_positive_groups": 6,
+        "paid_gain_mean": 0.3267308325770942,
+        "wait_gain_mean": 0.009513689371980936,
+        "paid_gate_pass": true
+      },
+      "dev": {
+        "n_queries": 16,
+        "n_groups": 3,
+        "n_paid_positive_queries": 5,
+        "paid_positive_groups": 3,
+        "paid_gain_mean": 0.17289955148398573,
+        "wait_gain_mean": 0.0010580020085882713,
+        "paid_gate_pass": true
+      }
+    }
+  },
+  "full_cohort_opportunity_and_tabular": {
+    "always_read": [
+      0.49166666666666664,
+      0.49166666666666664
+    ],
+    "always_stop": [
+      0.7083333333333331,
+      0.7499999999999998
+    ],
+    "free_oracle": [
+      0.71872019902988,
+      0.7603868656965467
+    ],
+    "joint": [
+      0.8833333333333331,
+      0.895833333333333
+    ],
+    "paid_gain": [
+      0.1354464676367865,
+      0.16461313430345317
+    ],
+    "tabular_full": [
+      0.475,
+      0.5166666666666667
+    ],
+    "tabular_full_minus_instant": [
+      0.0,
+      0.0
+    ],
+    "tabular_full_minus_no_read": [
+      -0.24583333333333338,
+      -0.2041666666666667
+    ],
+    "tabular_instant": [
+      0.475,
+      0.5166666666666667
+    ],
+    "tabular_no_read": [
+      0.7083333333333331,
+      0.7499999999999998
+    ],
+    "wait_gain": [
+      0.0,
+      0.0010580020085882759
+    ]
+  },
+  "test_complete_tabular": {
+    "always_read": {
+      "utility": 0.4916666666666667,
+      "r1": 0.7916666666666666,
+      "reads": 22
+    },
+    "always_stop": {
+      "utility": 0.7222222222222222,
+      "r1": 0.7222222222222222,
+      "reads": 0
+    },
+    "full": {
+      "utility": 0.5041666666666665,
+      "r1": 0.7916666666666666,
+      "reads": 21
+    },
+    "immediate": {
+      "utility": 0.5041666666666665,
+      "r1": 0.7916666666666666,
+      "reads": 21
+    },
+    "mask_read": {
+      "utility": 0.22055143495440058,
+      "r1": 0.7222222222222222,
+      "reads": 0
+    },
+    "refit_no_read": {
+      "utility": 0.7222222222222222,
+      "r1": 0.7222222222222222,
+      "reads": 0
+    }
+  },
+  "additive_paid_opportunity_queries": [
+    {
+      "action": "READ",
+      "creator": "prod-rg72-yerevan-bookstore",
+      "free_guitar_probability": 0.8558544803945543,
+      "future_knowledge_paid_opportunity": 0.7,
+      "future_knowledge_wait_opportunity": 0.0,
+      "label": 0,
+      "margin": 0.7117089607891085,
+      "net_paid_gain_at_exit": 0.7,
+      "paid_change": "rescued",
+      "prefix": 1,
+      "query": "commons-112833470-w04",
+      "source": "112833470"
+    },
+    {
+      "action": "READ",
+      "creator": "prod-sgaponov-sergey-musaelyan",
+      "free_guitar_probability": 0.7742251874198569,
+      "future_knowledge_paid_opportunity": 0.7,
+      "future_knowledge_wait_opportunity": 0.0,
+      "label": 0,
+      "margin": 0.5484503748397138,
+      "net_paid_gain_at_exit": 0.7,
+      "paid_change": "rescued",
+      "prefix": 1,
+      "query": "commons-52488475-w01",
+      "source": "52488475"
+    },
+    {
+      "action": "READ",
+      "creator": "prod-sgaponov-sergey-musaelyan",
+      "free_guitar_probability": 0.6129581565902656,
+      "future_knowledge_paid_opportunity": 0.7,
+      "future_knowledge_wait_opportunity": 0.0,
+      "label": 0,
+      "margin": 0.2259163131805313,
+      "net_paid_gain_at_exit": 0.7,
+      "paid_change": "rescued",
+      "prefix": 1,
+      "query": "commons-52488475-w02",
+      "source": "52488475"
+    },
+    {
+      "action": "READ",
+      "creator": "prod-sgaponov-sergey-musaelyan",
+      "free_guitar_probability": 0.7613704039821103,
+      "future_knowledge_paid_opportunity": 0.7,
+      "future_knowledge_wait_opportunity": 0.0,
+      "label": 0,
+      "margin": 0.5227408079642206,
+      "net_paid_gain_at_exit": 0.7,
+      "paid_change": "rescued",
+      "prefix": 1,
+      "query": "commons-52488475-w03",
+      "source": "52488475"
+    },
+    {
+      "action": "READ",
+      "creator": "prod-kevincheeran-baiju-dharmajan",
+      "free_guitar_probability": 0.39028666374911253,
+      "future_knowledge_paid_opportunity": 0.45071522328287605,
+      "future_knowledge_wait_opportunity": 0.0,
+      "label": 1,
+      "margin": 0.219426672501775,
+      "net_paid_gain_at_exit": 0.7,
+      "paid_change": "rescued",
+      "prefix": 1,
+      "query": "commons-24766956-w01",
+      "source": "24766956"
+    }
+  ],
+  "complete_case_tabular_purchases": {
+    "already_correct": 12,
+    "both_wrong": 1,
+    "broke": 3,
+    "rescued": 5
+  }
+}

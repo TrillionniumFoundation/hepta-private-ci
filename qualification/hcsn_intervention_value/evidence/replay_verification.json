@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "checks": {
+    "verify_policy": {
+      "passed": true,
+      "archived_sha256": "a8bc0956fcd75f60a6281b56438bfada08903a7a1470d7a15655d0dea3a4f72a",
+      "counts": {
+        "arm_selections": 66,
+        "conditional_linear_refits": 186,
+        "development_and_retention_decisions": 372,
+        "test_policies_with_controls": 66,
+        "test_episode_actions": 7986,
+        "teacher_targets": 864
+      }
+    },
+    "partial_prefix": {
+      "passed": true,
+      "archived_sha256": "d04374b3b82f370c62bc5e7bbbdf3764da49d8f7e7c23ab58879efe51e7637c1",
+      "ignored_fields": [
+        "provenance.wall_seconds"
+      ]
+    },
+    "opportunity_bounds": {
+      "passed": true,
+      "archived_sha256": "dd5cbcc054536e948e701b4ecb8064bba108c4f6f56b3767c27c32e78bd82da5"
+    },
+    "partial_bounds": {
+      "passed": true,
+      "archived_sha256": "1da86003862d93151e53dcbd1d01b38693285ed4c093807ab4ce68b3994cac8f"
+    },
+    "verify_partial_bounds": {
+      "passed": true,
+      "archived_sha256": "1e63618bde5d55ec44b4b230386fa6b47f7fbaefaa7f9c48f538021e7ebbcf17",
+      "counts": {
+        "group_intervals": 1290,
+        "macro_and_worst_intervals": 430,
+        "group_sign_ranges": 137,
+        "hcsn_and_control_arms": 33
+      }
+    },
+    "families": {
+      "passed": true,
+      "archived_sha256": "bfe30f2ebab00c4390ec485d5a885a9ffb9628cc3b6fddbf9c8e26dc3b331082"
+    },
+    "attribution": {
+      "passed": true,
+      "archived_sha256": "eb427b8259c2ec6935d6ccff3bc2b2b72793835f5469f52a68373b09cd536d9b"
+    }
+  },
+  "comparison": "JSON value equality; only the independent prefix rerun wall clock is excluded."
+}
