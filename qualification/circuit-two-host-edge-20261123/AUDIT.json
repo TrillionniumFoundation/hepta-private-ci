@@ -1,0 +1,98 @@
+{
+  "raw_bundle_sha256": "6a0f2ee3ee3c23989183940d751b300e4aa275d54b9dae8394d247a26549bdd0",
+  "revision": "eba6e3ef8e909f627f0f58e095732fb6b6d2fb3e",
+  "run_id": 45189161669,
+  "hosted_jobs": {
+    "source": {
+      "id": 137742601657,
+      "runner_id": 1000246474,
+      "boot_sha256": "4cb9b87913492c464d6a3a5fe4f7cdcdf66828c2f2d37f16cb590ad680fc312a",
+      "cpu": "Intel(R) Xeon(R) 6973P-C",
+      "hostname": "runnervmeozm8",
+      "image_os": "ubuntu24",
+      "image_version": "20261116.376.1",
+      "job": "source",
+      "kernel": "7.0.0-1017-azure",
+      "os_release": "Ubuntu 24.04.5 LTS",
+      "runner": "GitHub Actions 1000246474"
+    },
+    "reader": {
+      "id": 137743888529,
+      "runner_id": 1000246496,
+      "boot_sha256": "c98f93071ad769fe33b000df917854ddf11db9ab2717d4241cf9c0bf8618c82a",
+      "cpu": "AMD EPYC 9V45 96-Core Processor",
+      "hostname": "runnervmxfy6o",
+      "image_os": "ubuntu22",
+      "image_version": "20261116.365.1",
+      "job": "reader",
+      "kernel": "6.8.0-1070-azure",
+      "os_release": "Ubuntu 22.04.5 LTS",
+      "runner": "GitHub Actions 1000246496"
+    }
+  },
+  "conditions": {
+    "source": {
+      "input_ids": [
+        4,
+        5
+      ],
+      "output_ids": [
+        7
+      ],
+      "answer": "1",
+      "preflight_s": 0.003483705,
+      "cold_load_s": 2.593350968,
+      "predict_call_s": 0.008307917,
+      "generation_s": 0.005171246000003293
+    },
+    "connected": {
+      "input_ids": [
+        4,
+        5,
+        0,
+        0,
+        0,
+        7
+      ],
+      "output_ids": [
+        7
+      ],
+      "answer": "1",
+      "preflight_s": 0.003615338,
+      "cold_load_s": 3.275935582,
+      "predict_call_s": 0.010370957,
+      "generation_s": 0.005852572000037526
+    },
+    "removed": {
+      "input_ids": [
+        4,
+        5
+      ],
+      "output_ids": [
+        6
+      ],
+      "answer": "0",
+      "preflight_s": 0.003843713,
+      "cold_load_s": 2.282582166,
+      "predict_call_s": 0.009529804,
+      "generation_s": 0.0054514759999619855
+    }
+  },
+  "connected_nodes_matching_single_host": 2,
+  "independent_greedy_forwards": 3,
+  "edge_artifact_id": 14825471244,
+  "application_answer_bytes": 1,
+  "envelope_file_bytes": 1160,
+  "application_files_total_bytes": 1161,
+  "artifact_zip_bytes": 929,
+  "upload_action_s": 1.043946429,
+  "download_action_s": 2.14775277,
+  "platform_submission_to_source_start_s": 84.0,
+  "platform_source_end_to_reader_start_s": 3.0,
+  "submission_to_source_first_user_step_s": 85.6024100780487,
+  "source_end_to_reader_first_user_step_s": 6.869507789611816,
+  "approximate_cross_vm_upload_start_to_download_completion_s": 14.219059416,
+  "underlying_physical_hosts_independently_attested": false,
+  "real_users": 0,
+  "payments": 0
+}
