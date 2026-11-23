@@ -1,0 +1,37 @@
+{
+  "schema": "hepta-scoped-format-receipt-v1",
+  "base_commit": "7b0af00123582ab16f55cb3f0c4314d0d3099909",
+  "base_tree": "97f51d185727871d5260c343d25d8776d6bbe497",
+  "checkout": "detached sparse Git checkout of named commit",
+  "entry_git_blobs": {
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/format.py": "5ec5819cd6441798f406a77514736baa7294ef4a",
+    "scripts/just-shell.py": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+  },
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "repository_working_directory": "codex-rs",
+  "executable_sha256": "5d485f1a76988050b71bcf9a3b285e41ad4fcecf7a0fb630892eb8135d1e1e04",
+  "executable_version": "just 1.58.0",
+  "target": "qualification/hcsn_blocker_followup/matched_radii/compare_edit_radii.py",
+  "status_porcelain_all_before": "?? qualification/hcsn_blocker_followup/matched_radii/compare_edit_radii.py",
+  "status_porcelain_all_after": "?? qualification/hcsn_blocker_followup/matched_radii/compare_edit_radii.py",
+  "started_utc": "2026-11-23T05:29:47.967241+00:00",
+  "ended_utc": "2026-11-23T05:29:48.364390+00:00",
+  "elapsed_seconds": 0.397087,
+  "exit_code": 0,
+  "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+  "stderr": "",
+  "before": {
+    "size": 5813,
+    "sha256": "789c99b493763d3f6b365eb63fc05b9e3da64df5fd6b058763c67772584bbb09"
+  },
+  "after": {
+    "size": 5813,
+    "sha256": "789c99b493763d3f6b365eb63fc05b9e3da64df5fd6b058763c67772584bbb09"
+  },
+  "identical_bytes": true,
+  "scope": "Changed-path registry. Its Python formatter owns sdk/python, scripts, and .github. The qualification script has no registered formatter. No repository-wide format or Ruff check is claimed."
+}
