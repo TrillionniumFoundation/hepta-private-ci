@@ -1,0 +1,159 @@
+{
+  "workflow": ".github/workflows/ndu-windows-storage-probe.yml",
+  "cutoff": "2026-11-23T03:20:50Z",
+  "history_count": 84,
+  "history_conclusions": {
+    "failure": 75,
+    "success": 9
+  },
+  "since_release": 27,
+  "since_release_jobs": {
+    "acl-observe/failure": 20,
+    "appcontainer-mechanism/failure": 27,
+    "observe/success": 27,
+    "cmd-path-observation/failure": 3,
+    "acl-observe/cancelled": 7
+  },
+  "addresses": {
+    "original": {
+      "tag": "original",
+      "ref": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+      "workflow_sha256": "1208ea5ab9f68c50e595d34aab26bc9faabefaaef9336b3f13fc3e861381d957",
+      "workflow_bytes": 58833,
+      "bound_sources": 37,
+      "bound_method_counts": {
+        "WINDOWS_METHODS": 17,
+        "ELEVATED_REFUSAL_METHODS": 3,
+        "MIC_COLLECTOR_METHODS": 7,
+        "PROBE_METHODS": 6
+      },
+      "lock_bytes_sha256": "847b14141eb7839a826835e2de27adb8adb6e42c5ac9c9e81acbdb710f5ca203",
+      "total_packages": 1540,
+      "normalized_expected": "70e88e7322db51e26e0485214ba4d600509b01471cda0dad0c0e21ad893fbc99",
+      "normalized_observed": "b6ce4d48bcc7c6206c95515f72d864bbab2235e1eb83fc0949c1288f861d2565",
+      "actual_raw_lock_checks": {
+        "Normal resolver must select exact anyhow 1.0.104": true,
+        "Normal lock must contain exactly one Matrix SDK record": true,
+        "Normal lock must contain the exact reviewed Matrix path-utils dependency": true,
+        "Normal lock differs from the reviewed ordinary-union dependency fingerprint": false
+      },
+      "git_blob_mismatches": {
+        "codex-rs/Cargo.toml": [
+          "520b0ba00e7e1e11f24773e42c21b5324578895b",
+          "a8a239fd98a0732e4baefe6b5008ea3314c54ace"
+        ]
+      }
+    },
+    "combined": {
+      "tag": "combined",
+      "ref": "602d228541136500ff1101ac4537f5ac8528234e",
+      "workflow_sha256": "1208ea5ab9f68c50e595d34aab26bc9faabefaaef9336b3f13fc3e861381d957",
+      "workflow_bytes": 58833,
+      "bound_sources": 37,
+      "bound_method_counts": {
+        "WINDOWS_METHODS": 17,
+        "ELEVATED_REFUSAL_METHODS": 3,
+        "MIC_COLLECTOR_METHODS": 7,
+        "PROBE_METHODS": 6
+      },
+      "lock_bytes_sha256": "eff478cc613c9092d08ad343af34d432fce2e36aa877c245e39fd287b9df8503",
+      "total_packages": 1540,
+      "normalized_expected": "70e88e7322db51e26e0485214ba4d600509b01471cda0dad0c0e21ad893fbc99",
+      "normalized_observed": "e71f225f34b4eebb4b8c116d3a03800f07f86a10e6e90fd3cf6e9dd97b13da84",
+      "actual_raw_lock_checks": {
+        "Normal resolver must select exact anyhow 1.0.104": true,
+        "Normal lock must contain exactly one Matrix SDK record": true,
+        "Normal lock must contain the exact reviewed Matrix path-utils dependency": true,
+        "Normal lock differs from the reviewed ordinary-union dependency fingerprint": false
+      },
+      "git_blob_mismatches": {
+        "codex-rs/.config/nextest.toml": [
+          "dee9888eb89babc27201e5fd19b640ec319aa79e",
+          "b0644005ace7aee0203fbc5de50094a158083a1f"
+        ],
+        "codex-rs/Cargo.toml": [
+          "520b0ba00e7e1e11f24773e42c21b5324578895b",
+          "38944025536086b5bde79792bd59e4c7eecbac62"
+        ],
+        "codex-rs/windows-sandbox-rs/src/elevated_admission_tests.rs": [
+          "08815dfe9832a838cebdbbddb00ddb5d002684e6",
+          "d7e48d6fba3268c58ad0b724b58f2fc720a01ec2"
+        ],
+        "codex-rs/windows-sandbox-rs/src/token_tests.rs": [
+          "5229b70c149e77ea68e33f57761f34ac2513ef66",
+          "463fe049379fd28555bfa45abe4efff8fbda6d8a"
+        ]
+      }
+    }
+  },
+  "latest_previous_complete_success": {
+    "ref": "93dd309eb57384e655096ac34d52fabd221d7ec9",
+    "run": 43777712400,
+    "jobs": {
+      "acl-observe": "success",
+      "observe": "success"
+    },
+    "workflow_sha256": "3acf72a4b4663f15618f602505673ac427dddd49841ae0534d74c902aa30e4b1",
+    "reviewed_sources": 23,
+    "registered_methods": {
+      "ACL_METHODS": 10,
+      "PROBE_METHODS": 6
+    }
+  },
+  "actual_logs": {
+    "137467299242": {
+      "length": 92855,
+      "lines": [
+        "Traceback (most recent call last):",
+        "RuntimeError: Reviewed mode/OID/SHA/size differs: codex-rs/.config/nextest.toml",
+        "##[error]Process completed with exit code 1.",
+        "Traceback (most recent call last):",
+        "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\a\\\\_temp\\\\hepta-windows-acl-tests\\\\preflight.json'",
+        "##[error]Process completed with exit code 1.",
+        "##[error]No files were found with the provided path: D:\\a\\_temp/hepta-windows-acl-tests. No artifacts will be uploaded.",
+        "##[error]No files were found with the provided path: D:\\a\\_temp/hepta-windows-acl. No artifacts will be uploaded."
+      ],
+      "first": "\ufeff2026-11-23T03:38:22.4614587Z Current runner version: '2.338.2'\r\n2026-11-23T03:38:22.4640993Z ##[gro"
+    },
+    "135973240982": {
+      "length": 92183,
+      "lines": [
+        "Traceback (most recent call last):",
+        "RuntimeError: Normal lock differs from the reviewed ordinary-union dependency fingerprint",
+        "##[error]Process completed with exit code 1.",
+        "Traceback (most recent call last):",
+        "FileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\a\\\\_temp\\\\hepta-windows-acl-tests\\\\preflight.json'",
+        "##[error]Process completed with exit code 1.",
+        "##[error]No files were found with the provided path: D:\\a\\_temp/hepta-windows-acl-tests. No artifacts will be uploaded.",
+        "##[error]No files were found with the provided path: D:\\a\\_temp/hepta-windows-acl. No artifacts will be uploaded."
+      ],
+      "first": "\ufeff2026-11-19T23:59:10.0500879Z Current runner version: '2.338.2'\r\n2026-11-19T23:59:10.0518709Z ##[gro"
+    },
+    "137467299464": {
+      "length": 57953,
+      "lines": [
+        "##[error]Process completed with exit code 1.",
+        "##[error]Process completed with exit code 1.",
+        "Traceback (most recent call last):",
+        "RuntimeError: reviewed native trace source bytes differ",
+        "##[error]Process completed with exit code 1.",
+        "##[error]No files were found with the provided path: D:\\a\\_temp/hepta-appcontainer-child-trace. No artifacts will be uploaded."
+      ],
+      "first": "\ufeff2026-11-23T03:35:10.2103803Z Current runner version: '2.338.2'\r\n2026-11-23T03:35:10.2132115Z ##[gro"
+    },
+    "135973241475": {
+      "length": 58868,
+      "lines": [
+        "##[error]Process completed with exit code 1.",
+        "##[error]Process completed with exit code 1."
+      ],
+      "first": "\ufeff2026-11-19T23:59:17.3078625Z Current runner version: '2.338.2'\r\n2026-11-19T23:59:17.3100606Z ##[gro"
+    },
+    "133007697151": {
+      "length": 77945,
+      "lines": [],
+      "first": "\ufeff2026-11-15T23:59:14.5036284Z Current runner version: '2.338.2'\r\n2026-11-15T23:59:14.5074588Z ##[gro"
+    }
+  },
+  "scope": "All returned workflow-history entries, all jobs in every run from publication inclusive, latest prior success, and real published lock-guard blocks and source Git blob identities. No Windows run, qualification, or change performed."
+}
