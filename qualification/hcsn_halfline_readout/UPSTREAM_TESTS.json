@@ -1,0 +1,29 @@
+{
+  "upstream": "4a3a61f1d68a9adbc738f4f5374b01467699c184",
+  "frozen_split_result": "PASS_DISCRETE_CHECKS_ONLY",
+  "frozen_split_source_count": 35,
+  "frozen_split_source_before_and_after_equal": true,
+  "frozen_split_source_inventory_sha256": "4f93c2552a8799884259fe1b126a327148656f08a92181be95f03c4ff08a14a3",
+  "original_continuum_rare_gate_closed": false,
+  "suites": {
+    "split": {
+      "tests": [
+        "test_full_delayed_physical_partials_at_two_fixed_geometries (qualification.hcsn_split_mesh.test_split.SplitMesh.test_full_delayed_physical_partials_at_two_fixed_geometries) ... ok",
+        "test_inherited_grading_preserves_common_operator (qualification.hcsn_split_mesh.test_split.SplitMesh.test_inherited_grading_preserves_common_operator) ... ok",
+        "test_negative_drift_low_noise_rates_and_generator_fd (qualification.hcsn_split_mesh.test_split.SplitMesh.test_negative_drift_low_noise_rates_and_generator_fd) ... ok",
+        "test_short_rare_continuum_failure_is_retained (qualification.hcsn_split_mesh.test_split.SplitMesh.test_short_rare_continuum_failure_is_retained) ... ok"
+      ],
+      "stderr_or_combined_sha256": "e2b3730be25c3660e9bc9a6387670084b4280924bbf8bed60d87b1809cb4ec8e"
+    },
+    "log_risk": {
+      "tests": [
+        "test_log_probability_and_gradients_at_rare_and_boundary_states (qualification.hcsn_differentiable.tests.test_logrisk.LogRiskTests.test_log_probability_and_gradients_at_rare_and_boundary_states) ... ok",
+        "test_nonpositive_deadlines_have_zero_probability_and_gradient (qualification.hcsn_differentiable.tests.test_logrisk.LogRiskTests.test_nonpositive_deadlines_have_zero_probability_and_gradient) ... ok",
+        "test_underflow_does_not_erase_log_gradient (qualification.hcsn_differentiable.tests.test_logrisk.LogRiskTests.test_underflow_does_not_erase_log_gradient) ... ok",
+        "test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) ... ok"
+      ],
+      "stderr_or_combined_sha256": "792ac2830d991674ddf52185651a2f287fbd2602de5d3b0db486c374a80f1e31"
+    }
+  },
+  "raw_run_zip_sha256": "548c764f007d1f5d78b592bf9a6c09166b8aee1b853f96cf68d3a45a87905e28"
+}

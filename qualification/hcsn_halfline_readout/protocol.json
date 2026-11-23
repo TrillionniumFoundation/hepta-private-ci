@@ -1,0 +1,42 @@
+{
+  "source": "4a3a61f1d68a9adbc738f4f5374b01467699c184",
+  "blobs": {
+    "qualification/hcsn_differentiable/tests/test_logrisk.py": "520792124b32039cbda79ad25aeb14bac8be1a97",
+    "qualification/hcsn_differentiable/tests/test_logrisk_hessian.py": "add58ab075a0afa20c339450cebb6862197e3abc",
+    "qualification/hcsn_split_mesh/CURRENT-MANIFEST.json": "95a503c1d929b55590268d49bdda41815bdd7126",
+    "qualification/hcsn_split_mesh/MANIFEST.json": "6af14a5912634b3ce4ae2e32fb135609f0051a98",
+    "qualification/hcsn_differentiable/__init__.py": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+    "qualification/hcsn_differentiable/operator.py": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+    "qualification/hcsn_differentiable/contract.py": "802c227f7104658ef0accdb7b92bf497000eb714",
+    "qualification/hcsn_regenerative/__init__.py": "ed97c39027a8639765fb9be8341224cd932d3def",
+    "qualification/hcsn_regenerative/tensor.py": "2dd22948e4a06339945bb492be57b8e2b33a1f17",
+    "qualification/hcsn_regenerative/tensor_normal.py": "c57d8e92af7d6a1bd09aceba5f8d6bebb1b47295",
+    "qualification/hcsn_split_mesh/test_split.py": "31c15fb80ac8dea5271f9c00bb297415a712be25",
+    "qualification/hcsn_split_mesh/mesh.py": "b4d3b776e7ea9f9a612b93e8d040f48ffe71478a"
+  },
+  "x": 0.5,
+  "mu": -0.12,
+  "sigma": 0.5,
+  "discount": 0.15,
+  "B": 0.01,
+  "R": "exp(0.51)",
+  "times": [
+    0.01,
+    0.1
+  ],
+  "quadrature_dps": [
+    70,
+    105
+  ],
+  "gates": {
+    "focal_relative_value": 5e-12,
+    "focal_relative_gradient": 3e-9,
+    "normal_nodal_relative_value": 5e-12,
+    "nodal_absolute_log": 3e-10,
+    "independent_oracle_relative": 1e-55,
+    "short_limit_relative_at_1e_5": 0.0005,
+    "near_boundary_gradient_relative_at_1e_6": 0.00001,
+    "near_boundary_probability_gap_at_1e_6": 0.00002
+  },
+  "scope": "Independent continuous half-line first passage, reset atom and both frozen meshes; no change to finite CTMC gate or dynamics."
+}
