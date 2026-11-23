@@ -1,0 +1,93 @@
+{
+  "ordinary": {
+    "authority_host_publication_acceptance_tests.rs": [
+      "authority_host_service::generation_publication::refusal::tests::acceptance::publication_first_transition_rejects_already_target_and_missing_prepare"
+    ],
+    "cell_q24_training_command_connection_tests.rs": [
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_rejects_experience_and_valid_other_freeze_context"
+    ],
+    "cell_q24_training_bootstrap_tests.rs": [
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_attenuation_and_prebound_transport_preserve_original_custody",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation",
+      "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody"
+    ],
+    "authority_host_q24_evaluation_acceptance_tests.rs": [
+      "authority_host_runtime::session::q24_evaluation::record::acceptance::tests::independent_b_acceptance_binds_every_original_receipt_and_physical_cut",
+      "authority_host_runtime::session::q24_evaluation::record::acceptance::tests::independent_b_acceptance_data_roundtrip_preserves_cut_and_rejects_unknown_fields",
+      "authority_host_runtime::session::q24_evaluation::record::acceptance::tests::independent_b_acceptance_rejects_completed_records_without_original_fact",
+      "authority_host_runtime::session::q24_evaluation::record::acceptance::tests::independent_b_acceptance_rejects_times_outside_original_verification"
+    ],
+    "authority_host_q24_evaluation_source_tests.rs": [
+      "authority_host_runtime::session::q24_evaluation::source::tests::independent_b_policy_statement_cannot_read_holdout_labels",
+      "authority_host_runtime::session::q24_evaluation::source::tests::independent_b_preregistered_cohort_does_not_predict_later_observation_times",
+      "authority_host_runtime::session::q24_evaluation::source::tests::independent_b_source_does_not_normalize_outcomes_or_invent_policy_support",
+      "authority_host_runtime::session::q24_evaluation::source::tests::independent_b_source_preserves_original_units_and_policy_probabilities",
+      "authority_host_runtime::session::q24_evaluation::source::tests::independent_b_source_rejects_missing_evidence_duplicate_identity_and_time_rewrite",
+      "authority_host_runtime::session::q24_evaluation::source::tests::independent_b_source_rejects_noncanonical_unknown_and_missing_data",
+      "authority_host_runtime::session::q24_evaluation::source::tests::independent_b_source_rejects_zero_probability_chosen_action_even_with_valid_totals"
+    ],
+    "root_independent_b_notice_tests.rs": [
+      "root_independent_b_notice::tests::original_b_notice_cancellation_and_expiry_do_not_receive_data",
+      "root_independent_b_notice::tests::original_b_notice_reader_has_no_reverse_write_side",
+      "root_independent_b_notice::tests::original_b_notice_rejects_partial_extra_oversized_and_missing_eof",
+      "root_independent_b_notice::tests::original_b_notice_requires_full_bounded_data_and_eof"
+    ],
+    "root_independent_b_publication_data_tests.rs": [
+      "root_independent_b_publication_data::tests::publication_data_preserves_complete_manifest_and_rejects_changed_native_material",
+      "root_independent_b_publication_data::tests::publication_data_refuses_legacy_or_wrong_purpose_without_reconstruction",
+      "root_independent_b_publication_data::tests::publication_data_refuses_noncanonical_unknown_and_incomplete_images"
+    ]
+  },
+  "uid0": {
+    "authority_host_learning_resident_checkpoint_expiry_tests.rs": [
+      "authority_host_service::resident::authority::tests::checkpoint_expiry::resident_root_checkpoint_expiry_stops_next_stage_and_preserves_committed_bytes"
+    ],
+    "authority_host_learning_resident_evaluation_tests.rs": [
+      "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature"
+    ],
+    "authority_host_learning_resident_model_tests.rs": [
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate"
+    ],
+    "authority_host_learning_resident_root_tests.rs": [
+      "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+      "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+      "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+      "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+      "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+      "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+      "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+      "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback"
+    ],
+    "authority_host_publication_acceptance_tests.rs": [
+      "authority_host_service::generation_publication::refusal::tests::acceptance::root_completed_publication_missing_acceptance_cannot_be_backfilled",
+      "authority_host_service::generation_publication::refusal::tests::acceptance::root_completed_publication_missing_lock_is_not_repaired"
+    ],
+    "authority_host_publication_refusal_tests.rs": [
+      "authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cold_restore_rejects_after_observed_primary_corruption",
+      "authority_host_service::generation_publication::refusal::tests::root_publication_refusal_cross_handle_attempts_and_missing_marker_fail_closed"
+    ],
+    "authority_host_q24_evaluation_files_tests.rs": [
+      "authority_host_runtime::session::q24_evaluation::files::tests::original_b_file_digest_refuses_corruption_then_restored_bytes",
+      "authority_host_runtime::session::q24_evaluation::files::tests::original_b_file_path_restore_does_not_revive_observed_replacement",
+      "authority_host_runtime::session::q24_evaluation::files::tests::original_b_files_reject_aliases_and_nonprivate_custody",
+      "authority_host_runtime::session::q24_evaluation::files::tests::original_b_plan_file_refuses_corruption_then_restored_bytes",
+      "authority_host_runtime::session::q24_evaluation::files::tests::original_b_plan_file_writes_once_and_never_replaces_a_conflicting_statement",
+      "authority_host_runtime::session::q24_evaluation::files::tests::original_b_writer_transfers_once_and_rechecks_output_physically"
+    ],
+    "root_independent_b_source_tests.rs": [
+      "root_independent_b_source_client::tests::original_b_source_closed_notice_rejects_an_added_writer",
+      "root_independent_b_source_client::tests::original_b_source_closed_notices_never_open_input_files",
+      "root_independent_b_source_client::tests::original_b_source_data_expiry_or_foreign_inode_writes_nothing",
+      "root_independent_b_source_client::tests::original_b_source_data_writes_once_and_refuses_readonly_or_replacement"
+    ]
+  }
+}
