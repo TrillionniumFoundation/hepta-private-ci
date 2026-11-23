@@ -1,0 +1,1211 @@
+{
+  "archive_sha256": "6d2a05d5a30223e79643719b108254907e77d2d2616386101975121ee0cdfb1b",
+  "sources": {
+    "base": "6a5a02835206697d154fc4a1977b4627aad372d9",
+    "candidate": "53a2877f11a550ec4fca694bacc5b449f20addc2"
+  },
+  "binary_sha256": {
+    "base": "719aa4c0742fa7cadbf5ba7866086714646306b0ea2583f54f6f81cc94d12625",
+    "candidate": "15285897e3e841f9460a8007c18a4b4d20c53ce2f92fc57307771a51d8ea31fd"
+  },
+  "fixture_deadline_ms": 500,
+  "benchmark": "same VM Linux musl, individual libtest executable, solo and two concurrent process groups",
+  "arms": {
+    "solo": {
+      "base": {
+        "attempts": 6,
+        "passes": 6,
+        "actual_call_us": [
+          241618,
+          223833,
+          240605,
+          238942,
+          237253,
+          235474
+        ],
+        "median_us": 238097.5,
+        "min_us": 223833,
+        "max_us": 241618
+      },
+      "candidate": {
+        "attempts": 6,
+        "passes": 6,
+        "actual_call_us": [
+          237153,
+          230323,
+          239371,
+          232621,
+          235670,
+          227203
+        ],
+        "median_us": 234145.5,
+        "min_us": 227203,
+        "max_us": 239371
+      }
+    },
+    "two-way": {
+      "base": {
+        "attempts": 4,
+        "passes": 4,
+        "actual_call_us": [
+          234520,
+          237559,
+          246186,
+          255786
+        ],
+        "median_us": 241872.5,
+        "min_us": 234520,
+        "max_us": 255786
+      },
+      "candidate": {
+        "attempts": 4,
+        "passes": 4,
+        "actual_call_us": [
+          242243,
+          243156,
+          241264,
+          236788
+        ],
+        "median_us": 241753.5,
+        "min_us": 236788,
+        "max_us": 243156
+      }
+    },
+    "solo_candidate_minus_base_us": [
+      -4465,
+      6490,
+      -1234,
+      -6321,
+      -1583,
+      -8271
+    ],
+    "candidate_shorter_pairs": 5,
+    "median_paired_change_us": -3024.0
+  },
+  "rows": [
+    {
+      "arm": "base",
+      "label": "solo-pair-01",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "0e8409df06b1aaac6e80d6422442e33b922afeca2c0c84b8fb264a5dacaf534d",
+      "evidence_us": 241618,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          54523,
+          55331
+        ],
+        [
+          12,
+          3,
+          29289,
+          29703
+        ],
+        [
+          13,
+          3,
+          28483,
+          28817
+        ],
+        [
+          7,
+          4,
+          53831,
+          54509
+        ],
+        [
+          14,
+          3,
+          27915,
+          28252
+        ],
+        [
+          15,
+          3,
+          33507,
+          33897
+        ]
+      ],
+      "owner_total_us": 227548,
+      "handler_total_us": 230509,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "solo-pair-01",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "bdfb7d0664f48268cb81de06f29e49d3b727662df2a933add69477c3d4442f5a",
+      "evidence_us": 237153,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          54470,
+          55177
+        ],
+        [
+          12,
+          3,
+          29863,
+          30297
+        ],
+        [
+          13,
+          3,
+          29153,
+          29450
+        ],
+        [
+          7,
+          4,
+          54033,
+          54735
+        ],
+        [
+          14,
+          3,
+          28174,
+          28475
+        ],
+        [
+          15,
+          3,
+          28323,
+          28615
+        ]
+      ],
+      "owner_total_us": 224016,
+      "handler_total_us": 226749,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "solo-pair-02",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "392c58a95e214170cbca2d293cca0450ab3ba8e147e81c09e0221c3b0a9fce47",
+      "evidence_us": 230323,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          50285,
+          50659
+        ],
+        [
+          12,
+          3,
+          28689,
+          28971
+        ],
+        [
+          13,
+          3,
+          35165,
+          35420
+        ],
+        [
+          7,
+          4,
+          49395,
+          49774
+        ],
+        [
+          14,
+          3,
+          27839,
+          28098
+        ],
+        [
+          15,
+          3,
+          27865,
+          28146
+        ]
+      ],
+      "owner_total_us": 219238,
+      "handler_total_us": 221068,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "base",
+      "label": "solo-pair-02",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "7a9881bdd333fa7767f483cb825451517e1146e8dd71654b2d0452f3ea8f26e8",
+      "evidence_us": 223833,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          51528,
+          52050
+        ],
+        [
+          12,
+          3,
+          28932,
+          29277
+        ],
+        [
+          13,
+          3,
+          27728,
+          27965
+        ],
+        [
+          7,
+          4,
+          50685,
+          51210
+        ],
+        [
+          14,
+          3,
+          26316,
+          26557
+        ],
+        [
+          15,
+          3,
+          26651,
+          26900
+        ]
+      ],
+      "owner_total_us": 211840,
+      "handler_total_us": 213959,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "base",
+      "label": "solo-pair-03",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "194ddabd68b0b63df10e3d36742d4d3d4670a71d5377077df4b5fbfb80c04a6f",
+      "evidence_us": 240605,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          53961,
+          54609
+        ],
+        [
+          12,
+          3,
+          29315,
+          29732
+        ],
+        [
+          13,
+          3,
+          28510,
+          28794
+        ],
+        [
+          7,
+          4,
+          53110,
+          53800
+        ],
+        [
+          14,
+          3,
+          33904,
+          34293
+        ],
+        [
+          15,
+          3,
+          28436,
+          28749
+        ]
+      ],
+      "owner_total_us": 227236,
+      "handler_total_us": 229977,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "solo-pair-03",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "88c07a8d2c4aa1f78adb21121a0e04b7d2f9fe2f2ed3966d417152a0c3597342",
+      "evidence_us": 239371,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          57752,
+          58747
+        ],
+        [
+          12,
+          3,
+          29304,
+          29717
+        ],
+        [
+          13,
+          3,
+          28567,
+          28874
+        ],
+        [
+          7,
+          4,
+          53678,
+          54391
+        ],
+        [
+          14,
+          3,
+          28077,
+          28381
+        ],
+        [
+          15,
+          3,
+          28162,
+          28475
+        ]
+      ],
+      "owner_total_us": 225540,
+      "handler_total_us": 228585,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "solo-pair-04",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "64a49553a8c8fc15c44ec9f6168b04eabe2c24207692fe4349996cfdf4a3575c",
+      "evidence_us": 232621,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          53840,
+          54553
+        ],
+        [
+          12,
+          3,
+          28815,
+          29138
+        ],
+        [
+          13,
+          3,
+          28941,
+          29296
+        ],
+        [
+          7,
+          4,
+          52085,
+          52651
+        ],
+        [
+          14,
+          3,
+          28331,
+          28647
+        ],
+        [
+          15,
+          3,
+          28413,
+          28746
+        ]
+      ],
+      "owner_total_us": 220425,
+      "handler_total_us": 223031,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "base",
+      "label": "solo-pair-04",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "4b02d9d9bb0156269a91371a30bd1a3c267cf2dc8ffc548b1dfc9acb8fdd077f",
+      "evidence_us": 238942,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          54502,
+          55295
+        ],
+        [
+          12,
+          3,
+          29688,
+          30143
+        ],
+        [
+          13,
+          3,
+          29049,
+          29350
+        ],
+        [
+          7,
+          4,
+          55603,
+          56307
+        ],
+        [
+          14,
+          3,
+          28272,
+          28578
+        ],
+        [
+          15,
+          3,
+          28149,
+          28458
+        ]
+      ],
+      "owner_total_us": 225263,
+      "handler_total_us": 228131,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "base",
+      "label": "solo-pair-05",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "61444a60f38aee8b1843d92eade8d12c56ed473374a79e00ca171570dc4e3a9f",
+      "evidence_us": 237253,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          54403,
+          55093
+        ],
+        [
+          12,
+          3,
+          30240,
+          30675
+        ],
+        [
+          13,
+          3,
+          29029,
+          29333
+        ],
+        [
+          7,
+          4,
+          53663,
+          54375
+        ],
+        [
+          14,
+          3,
+          28259,
+          28601
+        ],
+        [
+          15,
+          3,
+          28345,
+          28632
+        ]
+      ],
+      "owner_total_us": 223939,
+      "handler_total_us": 226709,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "solo-pair-05",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "2515e7f8655c4321e1f20ea8621b5fb0eb8e98cef0546bce379f55e5a4efee4a",
+      "evidence_us": 235670,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          54820,
+          55515
+        ],
+        [
+          12,
+          3,
+          29556,
+          29978
+        ],
+        [
+          13,
+          3,
+          28746,
+          29062
+        ],
+        [
+          7,
+          4,
+          53495,
+          54214
+        ],
+        [
+          14,
+          3,
+          27943,
+          28269
+        ],
+        [
+          15,
+          3,
+          28036,
+          28356
+        ]
+      ],
+      "owner_total_us": 222596,
+      "handler_total_us": 225394,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "solo-pair-06",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "49d3804f71d09c0f341a2ba3fdb1cebb85bd2f47ff59205e8278cfcdcee03b9f",
+      "evidence_us": 227203,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          50298,
+          50688
+        ],
+        [
+          12,
+          3,
+          28270,
+          28511
+        ],
+        [
+          13,
+          3,
+          28564,
+          28802
+        ],
+        [
+          7,
+          4,
+          53368,
+          53765
+        ],
+        [
+          14,
+          3,
+          28146,
+          28396
+        ],
+        [
+          15,
+          3,
+          27956,
+          28195
+        ]
+      ],
+      "owner_total_us": 216602,
+      "handler_total_us": 218357,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "base",
+      "label": "solo-pair-06",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "24a4bcf9d57a12d8326311ba84fce801a89b7fe9f06656b3bab0aab839572848",
+      "evidence_us": 235474,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          54652,
+          55315
+        ],
+        [
+          12,
+          3,
+          29362,
+          29767
+        ],
+        [
+          13,
+          3,
+          28456,
+          28781
+        ],
+        [
+          7,
+          4,
+          53899,
+          54609
+        ],
+        [
+          14,
+          3,
+          28282,
+          28598
+        ],
+        [
+          15,
+          3,
+          27918,
+          28208
+        ]
+      ],
+      "owner_total_us": 222569,
+      "handler_total_us": 225278,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "owners",
+      "passed": 13,
+      "failed": 0,
+      "log_sha256": "0f7f83d8fccf91a6e6ab43ad59f0e8256bc4a43d1401552c5319fdad0f240ade",
+      "cases": {
+        "q24_next_use_command_attests_actual_different_c_and_shares_dispatch": "ok",
+        "q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission": "ok",
+        "q24_next_use_command_healthy_evidence_readback_then_publication_withdrawal": "ok",
+        "q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly": "ok",
+        "q24_next_use_command_pins_both_original_signatures_before_dispatch": "ok",
+        "q24_next_use_command_preserves_original_expiry_and_external_custody": "ok",
+        "q24_next_use_command_readback_refuses_actual_publication_withdrawal": "ok",
+        "q24_remote_c_requires_actual_completion_and_original_selector_signature": "ok",
+        "q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations": "ok",
+        "q24_remote_current_refuses_withdrawal_after_a_successful_read": "ok",
+        "q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects": "ok",
+        "q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap": "ok",
+        "q24_remote_selection_reads_original_publication_before_c_and_recovers_signature": "ok"
+      }
+    },
+    {
+      "arm": "base",
+      "label": "owners",
+      "passed": 13,
+      "failed": 0,
+      "log_sha256": "9f2dd9e586b136fc86dcb68146a6271e77dd3cabf171c8df769352d968b28ac3",
+      "cases": {
+        "q24_next_use_command_attests_actual_different_c_and_shares_dispatch": "ok",
+        "q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission": "ok",
+        "q24_next_use_command_healthy_evidence_readback_then_publication_withdrawal": "ok",
+        "q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly": "ok",
+        "q24_next_use_command_pins_both_original_signatures_before_dispatch": "ok",
+        "q24_next_use_command_preserves_original_expiry_and_external_custody": "ok",
+        "q24_next_use_command_readback_refuses_actual_publication_withdrawal": "ok",
+        "q24_remote_c_requires_actual_completion_and_original_selector_signature": "ok",
+        "q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations": "ok",
+        "q24_remote_current_refuses_withdrawal_after_a_successful_read": "ok",
+        "q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects": "ok",
+        "q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap": "ok",
+        "q24_remote_selection_reads_original_publication_before_c_and_recovers_signature": "ok"
+      }
+    },
+    {
+      "arm": "base",
+      "label": "two-way-pair-1-1",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "99451f7de1e9f99fd5f21e43952f5dcdcc522575779dc78c58dfb85a469c5976",
+      "evidence_us": 234520,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          53784,
+          54172
+        ],
+        [
+          12,
+          3,
+          29321,
+          29653
+        ],
+        [
+          13,
+          3,
+          28891,
+          29205
+        ],
+        [
+          7,
+          4,
+          51674,
+          52069
+        ],
+        [
+          14,
+          3,
+          28977,
+          29304
+        ],
+        [
+          15,
+          3,
+          28795,
+          29134
+        ]
+      ],
+      "owner_total_us": 221442,
+      "handler_total_us": 223537,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "base",
+      "label": "two-way-pair-1-2",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "8e7e050a786d1c7f35b6fea288fef7917872d4008fee88f48772cdf8852944e6",
+      "evidence_us": 237559,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          54209,
+          54885
+        ],
+        [
+          12,
+          3,
+          30287,
+          30702
+        ],
+        [
+          13,
+          3,
+          28856,
+          29120
+        ],
+        [
+          7,
+          4,
+          52142,
+          52672
+        ],
+        [
+          14,
+          3,
+          28025,
+          28281
+        ],
+        [
+          15,
+          3,
+          30564,
+          30875
+        ]
+      ],
+      "owner_total_us": 224083,
+      "handler_total_us": 226535,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "two-way-pair-1-1",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "fd2dcc4976f9439e8f5021295f7ca84824aa5fd74d11793cb3a9525d6659513f",
+      "evidence_us": 242243,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          53321,
+          53909
+        ],
+        [
+          12,
+          3,
+          35295,
+          35755
+        ],
+        [
+          13,
+          3,
+          28300,
+          28570
+        ],
+        [
+          7,
+          4,
+          51386,
+          51989
+        ],
+        [
+          14,
+          3,
+          33929,
+          34233
+        ],
+        [
+          15,
+          3,
+          26615,
+          26868
+        ]
+      ],
+      "owner_total_us": 228846,
+      "handler_total_us": 231324,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "two-way-pair-1-2",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "2550a96f2f4b79173e078aa4f994d79254bee05dbb72549949ec02af2a051264",
+      "evidence_us": 243156,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          53021,
+          53632
+        ],
+        [
+          12,
+          3,
+          36056,
+          36471
+        ],
+        [
+          13,
+          3,
+          28499,
+          28738
+        ],
+        [
+          7,
+          4,
+          51472,
+          52092
+        ],
+        [
+          14,
+          3,
+          34143,
+          34468
+        ],
+        [
+          15,
+          3,
+          26770,
+          27005
+        ]
+      ],
+      "owner_total_us": 229961,
+      "handler_total_us": 232406,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "two-way-pair-2-1",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "3623f13d12a2a89bf7d77f6919bb533e5e5b58ad4219fbc9de7c7e2ac85764e1",
+      "evidence_us": 241264,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          55068,
+          55615
+        ],
+        [
+          12,
+          3,
+          28692,
+          28957
+        ],
+        [
+          13,
+          3,
+          28574,
+          28825
+        ],
+        [
+          7,
+          4,
+          53986,
+          54512
+        ],
+        [
+          14,
+          3,
+          29458,
+          29754
+        ],
+        [
+          15,
+          3,
+          32245,
+          32689
+        ]
+      ],
+      "owner_total_us": 228023,
+      "handler_total_us": 230352,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "candidate",
+      "label": "two-way-pair-2-2",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "d5132efdb099c3e808cb6f53615a6135fff55ee95bca75ca1b3b14650be32024",
+      "evidence_us": 236788,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          58676,
+          59155
+        ],
+        [
+          12,
+          3,
+          28535,
+          28803
+        ],
+        [
+          13,
+          3,
+          28691,
+          28958
+        ],
+        [
+          7,
+          4,
+          50204,
+          50580
+        ],
+        [
+          14,
+          3,
+          27922,
+          28172
+        ],
+        [
+          15,
+          3,
+          31319,
+          31619
+        ]
+      ],
+      "owner_total_us": 225347,
+      "handler_total_us": 227287,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "base",
+      "label": "two-way-pair-2-1",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "1b4116c591e93ce002fd98223e4be076f58ac2b5ef21f8c00ea65c1a4db83bd0",
+      "evidence_us": 246186,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          50692,
+          51087
+        ],
+        [
+          12,
+          3,
+          33774,
+          34062
+        ],
+        [
+          13,
+          3,
+          39257,
+          39559
+        ],
+        [
+          7,
+          4,
+          50246,
+          50622
+        ],
+        [
+          14,
+          3,
+          28469,
+          28720
+        ],
+        [
+          15,
+          3,
+          32115,
+          32399
+        ]
+      ],
+      "owner_total_us": 234553,
+      "handler_total_us": 236449,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    },
+    {
+      "arm": "base",
+      "label": "two-way-pair-2-2",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "d44561d414c8dda77f4ae66b90f90f43706e941371fbcbbd93827b6c6315d3c0",
+      "evidence_us": 255786,
+      "evidence_status": "Ok(())",
+      "original_calls": [
+        [
+          6,
+          4,
+          55385,
+          55874
+        ],
+        [
+          12,
+          3,
+          34799,
+          35220
+        ],
+        [
+          13,
+          3,
+          36316,
+          36676
+        ],
+        [
+          7,
+          4,
+          51612,
+          52023
+        ],
+        [
+          14,
+          3,
+          32689,
+          33007
+        ],
+        [
+          15,
+          3,
+          32399,
+          32710
+        ]
+      ],
+      "owner_total_us": 243200,
+      "handler_total_us": 245510,
+      "terminals": {
+        "evidence_peer_terminal": "Ok(1)",
+        "command_peer_terminal": "Ok(2)",
+        "underlying_peer_terminal": "Ok(6)"
+      }
+    }
+  ]
+}

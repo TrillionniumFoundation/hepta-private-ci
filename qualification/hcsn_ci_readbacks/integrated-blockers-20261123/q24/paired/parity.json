@@ -1,0 +1,64 @@
+{
+  "base": "6a5a02835206697d154fc4a1977b4627aad372d9",
+  "candidate": "53a2877f11a550ec4fca694bacc5b449f20addc2",
+  "all_nonmodified_Rust_in_the_two_files_exact_after_removing_changed_helpers": true,
+  "original_read_body": {
+    "only_changes": [
+      "tuple from the validated frozen-mode decision",
+      "same observation validation and receipt check with that mode",
+      "select by that mode"
+    ]
+  },
+  "unchanged_protected_files": 824,
+  "protected_files": 826,
+  "unchanged_boundary_rows": 1652,
+  "old_manifest_rejects_new_body": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs:fn decision(: required code order missing: ['context.prefix.clone()', 'mode(context)? == Mode::NextUse', '.receipts', '.pop()', 'prefix.head_digest = selection.predecessor', 'LearningIterationCoordinatorV1::from_snapshot(prefix)?']",
+  "original": {
+    "cases_passed": 7,
+    "rejects": 95,
+    "rejects_per_path": {
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs": 16,
+      "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs": 23,
+      "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs": 11,
+      "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs": 19,
+      "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs": 15,
+      "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs": 7,
+      "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs": 4
+    }
+  },
+  "candidate_unchanged_plus_new_mutations": {
+    "cases_passed": 7,
+    "rejects": 105,
+    "rejects_per_path": {
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs": 22,
+      "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs": 27,
+      "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs": 11,
+      "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs": 19,
+      "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs": 15,
+      "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs": 7,
+      "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs": 4
+    }
+  },
+  "blobs": {
+    "circuit_learning_read_service.rs": [
+      "d2f5062ce271600fdd20ec87998a6eb40e9693b4",
+      "ec55768375d08be7c4beb91ee22d5127095e9b55"
+    ],
+    "circuit_learning_read_wire.rs": [
+      "b7a6392ceaf4929714525c6c6e109ec306275957",
+      "3f2ee5e5c30e5ae379a89fc4e54957c562de9686"
+    ],
+    "circuit_learning_read_owner_tests.rs": [
+      "63295654af4ba14e56b564dee3f09db5d18d8253",
+      "63295654af4ba14e56b564dee3f09db5d18d8253"
+    ],
+    "circuit_next_use_command_owner_tests.rs": [
+      "5b5fbad6edc0e815231b89341c170d35af5e7383",
+      "5b5fbad6edc0e815231b89341c170d35af5e7383"
+    ],
+    "circuit_next_use_command_support_tests.rs": [
+      "91fb1d4a1657e328c25318c5935e52c203b5bc43",
+      "91fb1d4a1657e328c25318c5935e52c203b5bc43"
+    ]
+  }
+}
