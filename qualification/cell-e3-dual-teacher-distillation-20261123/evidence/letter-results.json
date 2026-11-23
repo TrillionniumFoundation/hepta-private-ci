@@ -1,0 +1,404 @@
+{
+  "bundle_sha256": "e8584d4560b2382e263bf4c3032bda4756aa0ca5cadfaa4c0b9d479794a5b970",
+  "confirmed_direction": {
+    "smol": [],
+    "t5": []
+  },
+  "denominators": {
+    "composition_pairs": 24,
+    "holdout": 120,
+    "old": 12,
+    "per_domain": 20
+  },
+  "discovery_advantages": {
+    "smol": [],
+    "t5": []
+  },
+  "domains": {
+    "discovery": {
+      "arithmetic": {
+        "both": 4,
+        "n": 12,
+        "neither": 4,
+        "smol_correct": 6,
+        "smol_only": 2,
+        "t5_correct": 6,
+        "t5_only": 2
+      },
+      "category": {
+        "both": 0,
+        "n": 12,
+        "neither": 0,
+        "smol_correct": 6,
+        "smol_only": 6,
+        "t5_correct": 6,
+        "t5_only": 6
+      },
+      "order": {
+        "both": 0,
+        "n": 12,
+        "neither": 0,
+        "smol_correct": 6,
+        "smol_only": 6,
+        "t5_correct": 6,
+        "t5_only": 6
+      },
+      "python": {
+        "both": 0,
+        "n": 12,
+        "neither": 0,
+        "smol_correct": 6,
+        "smol_only": 6,
+        "t5_correct": 6,
+        "t5_only": 6
+      },
+      "review": {
+        "both": 1,
+        "n": 12,
+        "neither": 2,
+        "smol_correct": 5,
+        "smol_only": 4,
+        "t5_correct": 6,
+        "t5_only": 5
+      },
+      "spelling": {
+        "both": 6,
+        "n": 12,
+        "neither": 6,
+        "smol_correct": 6,
+        "smol_only": 0,
+        "t5_correct": 6,
+        "t5_only": 0
+      }
+    },
+    "holdout": {
+      "arithmetic": {
+        "both": 0,
+        "n": 20,
+        "neither": 0,
+        "smol_correct": 10,
+        "smol_only": 10,
+        "t5_correct": 10,
+        "t5_only": 10
+      },
+      "category": {
+        "both": 0,
+        "n": 20,
+        "neither": 0,
+        "smol_correct": 10,
+        "smol_only": 10,
+        "t5_correct": 10,
+        "t5_only": 10
+      },
+      "order": {
+        "both": 0,
+        "n": 20,
+        "neither": 0,
+        "smol_correct": 10,
+        "smol_only": 10,
+        "t5_correct": 10,
+        "t5_only": 10
+      },
+      "python": {
+        "both": 0,
+        "n": 20,
+        "neither": 0,
+        "smol_correct": 10,
+        "smol_only": 10,
+        "t5_correct": 10,
+        "t5_only": 10
+      },
+      "review": {
+        "both": 0,
+        "n": 20,
+        "neither": 0,
+        "smol_correct": 10,
+        "smol_only": 10,
+        "t5_correct": 10,
+        "t5_only": 10
+      },
+      "spelling": {
+        "both": 0,
+        "n": 20,
+        "neither": 0,
+        "smol_correct": 10,
+        "smol_only": 10,
+        "t5_correct": 10,
+        "t5_only": 10
+      }
+    }
+  },
+  "human_users": 0,
+  "pairs": [
+    [
+      "composition-review-00",
+      "composition-order-00"
+    ],
+    [
+      "composition-review-01",
+      "composition-order-01"
+    ],
+    [
+      "composition-review-02",
+      "composition-order-02"
+    ],
+    [
+      "composition-review-03",
+      "composition-order-03"
+    ],
+    [
+      "composition-review-04",
+      "composition-order-04"
+    ],
+    [
+      "composition-review-05",
+      "composition-order-05"
+    ],
+    [
+      "composition-review-06",
+      "composition-order-06"
+    ],
+    [
+      "composition-review-07",
+      "composition-order-07"
+    ],
+    [
+      "composition-arithmetic-00",
+      "composition-python-00"
+    ],
+    [
+      "composition-arithmetic-01",
+      "composition-python-01"
+    ],
+    [
+      "composition-arithmetic-02",
+      "composition-python-02"
+    ],
+    [
+      "composition-arithmetic-03",
+      "composition-python-03"
+    ],
+    [
+      "composition-arithmetic-04",
+      "composition-python-04"
+    ],
+    [
+      "composition-arithmetic-05",
+      "composition-python-05"
+    ],
+    [
+      "composition-arithmetic-06",
+      "composition-python-06"
+    ],
+    [
+      "composition-arithmetic-07",
+      "composition-python-07"
+    ],
+    [
+      "composition-spelling-00",
+      "composition-category-00"
+    ],
+    [
+      "composition-spelling-01",
+      "composition-category-01"
+    ],
+    [
+      "composition-spelling-02",
+      "composition-category-02"
+    ],
+    [
+      "composition-spelling-03",
+      "composition-category-03"
+    ],
+    [
+      "composition-spelling-04",
+      "composition-category-04"
+    ],
+    [
+      "composition-spelling-05",
+      "composition-category-05"
+    ],
+    [
+      "composition-spelling-06",
+      "composition-category-06"
+    ],
+    [
+      "composition-spelling-07",
+      "composition-category-07"
+    ]
+  ],
+  "student": {
+    "best_single": {
+      "correct": 60,
+      "correct_pairs": 12,
+      "old": 12,
+      "per_domain": {
+        "arithmetic": 10,
+        "category": 10,
+        "order": 10,
+        "python": 10,
+        "review": 10,
+        "spelling": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          0,
+          60
+        ],
+        "t5": [
+          60,
+          60
+        ]
+      },
+      "worst_domain_count": 10
+    },
+    "fixed": {
+      "correct": 60,
+      "correct_pairs": 12,
+      "old": 12,
+      "per_domain": {
+        "arithmetic": 10,
+        "category": 10,
+        "order": 10,
+        "python": 10,
+        "review": 10,
+        "spelling": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          0,
+          60
+        ],
+        "t5": [
+          60,
+          60
+        ]
+      },
+      "worst_domain_count": 10
+    },
+    "mix": {
+      "correct": 60,
+      "correct_pairs": 9,
+      "old": 12,
+      "per_domain": {
+        "arithmetic": 11,
+        "category": 10,
+        "order": 12,
+        "python": 10,
+        "review": 7,
+        "spelling": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          14,
+          60
+        ],
+        "t5": [
+          46,
+          60
+        ]
+      },
+      "worst_domain_count": 7
+    },
+    "parent": {
+      "correct": 58,
+      "correct_pairs": 11,
+      "old": 12,
+      "per_domain": {
+        "arithmetic": 9,
+        "category": 10,
+        "order": 10,
+        "python": 9,
+        "review": 10,
+        "spelling": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          3,
+          60
+        ],
+        "t5": [
+          55,
+          60
+        ]
+      },
+      "worst_domain_count": 9
+    },
+    "smol": {
+      "correct": 60,
+      "correct_pairs": 5,
+      "old": 12,
+      "per_domain": {
+        "arithmetic": 10,
+        "category": 10,
+        "order": 10,
+        "python": 10,
+        "review": 11,
+        "spelling": 9
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          47,
+          60
+        ],
+        "t5": [
+          13,
+          60
+        ]
+      },
+      "worst_domain_count": 9
+    },
+    "sparse": {
+      "correct": 73,
+      "correct_pairs": 7,
+      "old": 12,
+      "per_domain": {
+        "arithmetic": 11,
+        "category": 14,
+        "order": 13,
+        "python": 10,
+        "review": 15,
+        "spelling": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          28,
+          60
+        ],
+        "t5": [
+          45,
+          60
+        ]
+      },
+      "worst_domain_count": 10
+    },
+    "t5": {
+      "correct": 60,
+      "correct_pairs": 12,
+      "old": 12,
+      "per_domain": {
+        "arithmetic": 10,
+        "category": 10,
+        "order": 10,
+        "python": 10,
+        "review": 10,
+        "spelling": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          0,
+          60
+        ],
+        "t5": [
+          60,
+          60
+        ]
+      },
+      "worst_domain_count": 10
+    }
+  },
+  "teacher_composition_correct": {
+    "smol": 12,
+    "t5": 12
+  }
+}

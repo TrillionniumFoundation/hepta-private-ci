@@ -1,0 +1,86 @@
+name: E3 cold teacher inheritance
+on:
+  push:
+    branches: [research/e3-open-teacher-cold-inheritance-20261123]
+    paths:
+      - 'qualification/cell-e3-dual-teacher-distillation-20261123/*.py'
+      - '.github/workflows/cell-e3-open-teacher-inheritance.yml'
+permissions:
+  contents: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        elicitation: [letter, native]
+    env:
+      OPENBLAS_NUM_THREADS: 1
+      TOKENIZERS_PARALLELISM: 'false'
+      PYTHONUNBUFFERED: '1'
+      MODE: ${{ matrix.elicitation }}
+    defaults:
+      run:
+        working-directory: qualification/cell-e3-dual-teacher-distillation-20261123
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned CPU inference stack
+        run: |
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.9.1
+          python -m pip install --disable-pip-version-check numpy==2.3.5 transformers==4.57.3 accelerate requests tokenizers==0.22.2
+      - name: Verify original teacher weights
+        run: python fetch_teachers.py "$RUNNER_TEMP/teachers"
+      - name: Discovery, distillation and pre-confirmation model freeze
+        env:
+          HF_HUB_OFFLINE: '1'
+        run: |
+          mkdir work
+          cp evidence/upstream.json work/
+          opt=()
+          if [[ "$MODE" == native ]]; then opt=(--native); fi
+          for teacher in t5 smol; do
+            python teachers.py fit "$RUNNER_TEMP/teachers" work --only "$teacher" "${opt[@]}"
+          done
+          python fit.py work work/owned-students.zip
+          sha256sum work/owned-students.zip work/freeze.json
+      - name: Score blind questions, cold-load owned models in isolated processes
+        env:
+          HF_HUB_OFFLINE: '1'
+        run: |
+          opt=()
+          if [[ "$MODE" == native ]]; then opt=(--native); fi
+          for teacher in t5 smol; do
+            python teachers.py confirmation "$RUNNER_TEMP/teachers" work --only "$teacher" "${opt[@]}"
+          done
+          python evaluate.py work --sudo-network
+          python - <<'PY'
+          import base64,hashlib,json,os,pathlib,zipfile
+          mode=os.environ["MODE"]
+          archive=pathlib.Path(mode+"-run.zip")
+          with zipfile.ZipFile(archive,"x",compression=zipfile.ZIP_DEFLATED) as out:
+              for f in sorted(pathlib.Path("work").iterdir()):
+                  out.write(f,f.name)
+          data=archive.read_bytes()
+          print("E3_ARC_SHA",hashlib.sha256(data).hexdigest(),len(data))
+          for k in range(0,len(data),3000):
+              print("E3_ARC_PART",k,base64.b64encode(data[k:k+3000]).decode())
+          clock_fields=("wall_seconds","cpu_seconds","load_and_guard_wall_s","inference_wall_seconds","inference_cpu_seconds","model_load_seconds","teacher","model","phase","examples","forwards","tokens","features","best_single","fixed_route","loopback_bytes","interfaces")
+          costs={}
+          for f in sorted(pathlib.Path("work").glob("*.json")):
+              rec=json.loads(f.read_bytes())
+              if f.name.startswith(("teacher-","cold-","freeze.")):
+                  costs[f.name]={k:v for k,v in rec.items() if k in clock_fields or (("wall" in k or "cpu" in k or "token" in k or "forward" in k or "timing" in k) and k!="rows")}
+          print("E3_COSTS",json.dumps(costs,separators=(",",":")))
+          print("E3_SCORES",json.dumps(json.loads(pathlib.Path("work/results.json").read_bytes()),separators=(",",":")))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e3-${{ matrix.elicitation }}-cold-readback
+          path: qualification/cell-e3-dual-teacher-distillation-20261123/*-run.zip
+          if-no-files-found: error

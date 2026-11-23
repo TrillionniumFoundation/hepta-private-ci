@@ -1,0 +1,418 @@
+{
+  "bundle_sha256": "f4e6a825dee601cda705965c9838e7a85be7631b5c78bb50884fe364492fd696",
+  "confirmed_direction": {
+    "smol": [
+      "addition"
+    ],
+    "t5": [
+      "german",
+      "french",
+      "agreement"
+    ]
+  },
+  "denominators": {
+    "composition_pairs": 24,
+    "holdout": 120,
+    "old": 12,
+    "per_domain": 20
+  },
+  "discovery_advantages": {
+    "smol": [
+      "addition",
+      "python",
+      "capital"
+    ],
+    "t5": [
+      "german",
+      "french",
+      "agreement"
+    ]
+  },
+  "domains": {
+    "discovery": {
+      "addition": {
+        "both": 9,
+        "n": 12,
+        "neither": 0,
+        "smol_correct": 11,
+        "smol_only": 2,
+        "t5_correct": 10,
+        "t5_only": 1
+      },
+      "agreement": {
+        "both": 10,
+        "n": 12,
+        "neither": 0,
+        "smol_correct": 10,
+        "smol_only": 0,
+        "t5_correct": 12,
+        "t5_only": 2
+      },
+      "capital": {
+        "both": 6,
+        "n": 12,
+        "neither": 0,
+        "smol_correct": 11,
+        "smol_only": 5,
+        "t5_correct": 7,
+        "t5_only": 1
+      },
+      "french": {
+        "both": 9,
+        "n": 12,
+        "neither": 0,
+        "smol_correct": 9,
+        "smol_only": 0,
+        "t5_correct": 12,
+        "t5_only": 3
+      },
+      "german": {
+        "both": 6,
+        "n": 12,
+        "neither": 3,
+        "smol_correct": 7,
+        "smol_only": 1,
+        "t5_correct": 8,
+        "t5_only": 2
+      },
+      "python": {
+        "both": 3,
+        "n": 12,
+        "neither": 4,
+        "smol_correct": 7,
+        "smol_only": 4,
+        "t5_correct": 4,
+        "t5_only": 1
+      }
+    },
+    "holdout": {
+      "addition": {
+        "both": 1,
+        "n": 20,
+        "neither": 6,
+        "smol_correct": 8,
+        "smol_only": 7,
+        "t5_correct": 7,
+        "t5_only": 6
+      },
+      "agreement": {
+        "both": 9,
+        "n": 20,
+        "neither": 0,
+        "smol_correct": 9,
+        "smol_only": 0,
+        "t5_correct": 20,
+        "t5_only": 11
+      },
+      "capital": {
+        "both": 15,
+        "n": 20,
+        "neither": 0,
+        "smol_correct": 17,
+        "smol_only": 2,
+        "t5_correct": 18,
+        "t5_only": 3
+      },
+      "french": {
+        "both": 7,
+        "n": 20,
+        "neither": 2,
+        "smol_correct": 8,
+        "smol_only": 1,
+        "t5_correct": 17,
+        "t5_only": 10
+      },
+      "german": {
+        "both": 13,
+        "n": 20,
+        "neither": 0,
+        "smol_correct": 15,
+        "smol_only": 2,
+        "t5_correct": 18,
+        "t5_only": 5
+      },
+      "python": {
+        "both": 5,
+        "n": 20,
+        "neither": 1,
+        "smol_correct": 10,
+        "smol_only": 5,
+        "t5_correct": 14,
+        "t5_only": 9
+      }
+    }
+  },
+  "human_users": 0,
+  "pairs": [
+    [
+      "composition-german-00",
+      "composition-french-00"
+    ],
+    [
+      "composition-german-01",
+      "composition-french-01"
+    ],
+    [
+      "composition-german-02",
+      "composition-french-02"
+    ],
+    [
+      "composition-german-03",
+      "composition-french-03"
+    ],
+    [
+      "composition-german-04",
+      "composition-french-04"
+    ],
+    [
+      "composition-german-05",
+      "composition-french-05"
+    ],
+    [
+      "composition-german-06",
+      "composition-french-06"
+    ],
+    [
+      "composition-german-07",
+      "composition-french-07"
+    ],
+    [
+      "composition-agreement-00",
+      "composition-addition-00"
+    ],
+    [
+      "composition-agreement-01",
+      "composition-addition-01"
+    ],
+    [
+      "composition-agreement-02",
+      "composition-addition-02"
+    ],
+    [
+      "composition-agreement-03",
+      "composition-addition-03"
+    ],
+    [
+      "composition-agreement-04",
+      "composition-addition-04"
+    ],
+    [
+      "composition-agreement-05",
+      "composition-addition-05"
+    ],
+    [
+      "composition-agreement-06",
+      "composition-addition-06"
+    ],
+    [
+      "composition-agreement-07",
+      "composition-addition-07"
+    ],
+    [
+      "composition-python-00",
+      "composition-capital-00"
+    ],
+    [
+      "composition-python-01",
+      "composition-capital-01"
+    ],
+    [
+      "composition-python-02",
+      "composition-capital-02"
+    ],
+    [
+      "composition-python-03",
+      "composition-capital-03"
+    ],
+    [
+      "composition-python-04",
+      "composition-capital-04"
+    ],
+    [
+      "composition-python-05",
+      "composition-capital-05"
+    ],
+    [
+      "composition-python-06",
+      "composition-capital-06"
+    ],
+    [
+      "composition-python-07",
+      "composition-capital-07"
+    ]
+  ],
+  "student": {
+    "best_single": {
+      "correct": 57,
+      "correct_pairs": 7,
+      "old": 12,
+      "per_domain": {
+        "addition": 13,
+        "agreement": 11,
+        "capital": 7,
+        "french": 11,
+        "german": 5,
+        "python": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          6,
+          17
+        ],
+        "t5": [
+          20,
+          44
+        ]
+      },
+      "worst_domain_count": 5
+    },
+    "fixed": {
+      "correct": 56,
+      "correct_pairs": 6,
+      "old": 12,
+      "per_domain": {
+        "addition": 13,
+        "agreement": 9,
+        "capital": 7,
+        "french": 10,
+        "german": 7,
+        "python": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          7,
+          17
+        ],
+        "t5": [
+          22,
+          44
+        ]
+      },
+      "worst_domain_count": 7
+    },
+    "mix": {
+      "correct": 53,
+      "correct_pairs": 10,
+      "old": 12,
+      "per_domain": {
+        "addition": 8,
+        "agreement": 11,
+        "capital": 9,
+        "french": 10,
+        "german": 7,
+        "python": 8
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          3,
+          17
+        ],
+        "t5": [
+          19,
+          44
+        ]
+      },
+      "worst_domain_count": 7
+    },
+    "parent": {
+      "correct": 64,
+      "correct_pairs": 8,
+      "old": 12,
+      "per_domain": {
+        "addition": 9,
+        "agreement": 10,
+        "capital": 11,
+        "french": 13,
+        "german": 11,
+        "python": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          9,
+          17
+        ],
+        "t5": [
+          28,
+          44
+        ]
+      },
+      "worst_domain_count": 9
+    },
+    "smol": {
+      "correct": 57,
+      "correct_pairs": 7,
+      "old": 12,
+      "per_domain": {
+        "addition": 13,
+        "agreement": 11,
+        "capital": 7,
+        "french": 11,
+        "german": 5,
+        "python": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          6,
+          17
+        ],
+        "t5": [
+          20,
+          44
+        ]
+      },
+      "worst_domain_count": 5
+    },
+    "sparse": {
+      "correct": 56,
+      "correct_pairs": 7,
+      "old": 12,
+      "per_domain": {
+        "addition": 11,
+        "agreement": 9,
+        "capital": 8,
+        "french": 10,
+        "german": 6,
+        "python": 12
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          8,
+          17
+        ],
+        "t5": [
+          23,
+          44
+        ]
+      },
+      "worst_domain_count": 6
+    },
+    "t5": {
+      "correct": 54,
+      "correct_pairs": 10,
+      "old": 12,
+      "per_domain": {
+        "addition": 8,
+        "agreement": 9,
+        "capital": 10,
+        "french": 10,
+        "german": 7,
+        "python": 10
+      },
+      "teacher_exclusive_inherited": {
+        "smol": [
+          7,
+          17
+        ],
+        "t5": [
+          19,
+          44
+        ]
+      },
+      "worst_domain_count": 7
+    }
+  },
+  "teacher_composition_correct": {
+    "smol": 4,
+    "t5": 10
+  }
+}

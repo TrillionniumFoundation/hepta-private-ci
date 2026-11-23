@@ -1,0 +1,95 @@
+{
+  "letter": {
+    "fixed_vs_sparse": {
+      "holdout": {
+        "both": 45,
+        "fixed_only": 15,
+        "sparse_only": 28,
+        "neither": 32
+      },
+      "pairs": {
+        "both": 5,
+        "fixed_only": 7,
+        "sparse_only": 2,
+        "neither": 10
+      },
+      "old": {
+        "both": 12,
+        "fixed_only": 0,
+        "sparse_only": 0,
+        "neither": 0
+      }
+    },
+    "teacher_discordance_two_sided_p": {
+      "review": 1,
+      "order": 1,
+      "arithmetic": 1,
+      "python": 1,
+      "spelling": 1,
+      "category": 1
+    },
+    "panel_sha256": "5bae588836fd72c8aca79351bacbef87929605698de2bd1e921a268017371835"
+  },
+  "native": {
+    "fixed_vs_sparse": {
+      "holdout": {
+        "both": 51,
+        "fixed_only": 12,
+        "sparse_only": 13,
+        "neither": 44
+      },
+      "pairs": {
+        "both": 6,
+        "fixed_only": 5,
+        "sparse_only": 1,
+        "neither": 12
+      },
+      "old": {
+        "both": 12,
+        "fixed_only": 0,
+        "sparse_only": 0,
+        "neither": 0
+      }
+    },
+    "teacher_discordance_two_sided_p": {
+      "review": 0.001953125,
+      "order": 0.548828125,
+      "arithmetic": 1,
+      "python": 1,
+      "spelling": 1,
+      "category": 0.7265625
+    },
+    "panel_sha256": "5bae588836fd72c8aca79351bacbef87929605698de2bd1e921a268017371835"
+  },
+  "completion": {
+    "fixed_vs_sparse": {
+      "holdout": {
+        "both": 51,
+        "fixed_only": 5,
+        "sparse_only": 5,
+        "neither": 59
+      },
+      "pairs": {
+        "both": 6,
+        "fixed_only": 0,
+        "sparse_only": 1,
+        "neither": 17
+      },
+      "old": {
+        "both": 12,
+        "fixed_only": 0,
+        "sparse_only": 0,
+        "neither": 0
+      }
+    },
+    "teacher_discordance_two_sided_p": {
+      "german": 0.453125,
+      "french": 0.01171875,
+      "agreement": 0.0009765625,
+      "addition": 1,
+      "python": 0.4239501953125,
+      "capital": 1
+    },
+    "panel_sha256": "3161f49d7c3689f9ecddd1308118b3ff344d2972ca9ea156318934ad199b4159"
+  }
+}

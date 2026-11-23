@@ -1,0 +1,119 @@
+{
+  "cold-best_single.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0017873440000357732,
+    "wall_seconds": 0.012934921000010036,
+    "cpu_seconds": 0.012933822000000001
+  },
+  "cold-fixed.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0017260419999729493,
+    "wall_seconds": 0.013115533000018331,
+    "cpu_seconds": 0.013114168999999998
+  },
+  "cold-mix.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0018325119999644812,
+    "wall_seconds": 0.013077995999992709,
+    "cpu_seconds": 0.013076323999999997
+  },
+  "cold-parent.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0017124019999528173,
+    "wall_seconds": 0.012379784000017935,
+    "cpu_seconds": 0.012378219000000003
+  },
+  "cold-smol.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0017795320000004722,
+    "wall_seconds": 0.013105797999969582,
+    "cpu_seconds": 0.013096232999999999
+  },
+  "cold-sparse.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0017827679999982138,
+    "wall_seconds": 0.01407374800010075,
+    "cpu_seconds": 0.014072108
+  },
+  "cold-t5.json": {
+    "loopback_bytes": 0,
+    "interfaces": [
+      "lo"
+    ],
+    "load_and_guard_wall_s": 0.0017620159999296447,
+    "wall_seconds": 0.013228612999910183,
+    "cpu_seconds": 0.013227116
+  },
+  "freeze.json": {
+    "features": 1639,
+    "fixed_route": {
+      "german": "t5",
+      "french": "t5",
+      "agreement": "t5",
+      "addition": "smol",
+      "python": "smol",
+      "capital": "smol"
+    },
+    "best_single": "smol",
+    "cpu_seconds": 0.04612293199999999,
+    "wall_seconds": 0.0613084340000114
+  },
+  "teacher-confirmation-smol.json": {
+    "teacher": "smol",
+    "phase": "confirmation",
+    "forwards_examples": 336,
+    "input_and_answer_tokens": 15084,
+    "wall_inference_s": 27.560297864000063,
+    "cpu_inference_s": 54.892188416,
+    "wall_load_prompt_and_inference_s": 27.856599431000063,
+    "cpu_load_prompt_and_inference_s": 55.338786012
+  },
+  "teacher-confirmation-t5.json": {
+    "teacher": "t5",
+    "phase": "confirmation",
+    "forwards_examples": 336,
+    "input_and_answer_tokens": 5022,
+    "wall_inference_s": 2.8148839240000143,
+    "cpu_inference_s": 5.627147765,
+    "wall_load_prompt_and_inference_s": 3.002779142999998,
+    "cpu_load_prompt_and_inference_s": 5.838240968000001
+  },
+  "teacher-fit-smol.json": {
+    "teacher": "smol",
+    "phase": "fit",
+    "forwards_examples": 528,
+    "input_and_answer_tokens": 22355,
+    "wall_inference_s": 41.321683820999965,
+    "cpu_inference_s": 82.28058219,
+    "wall_load_prompt_and_inference_s": 41.643256812000004,
+    "cpu_load_prompt_and_inference_s": 82.746789995
+  },
+  "teacher-fit-t5.json": {
+    "teacher": "t5",
+    "phase": "fit",
+    "forwards_examples": 528,
+    "input_and_answer_tokens": 6081,
+    "wall_inference_s": 3.921674054999926,
+    "cpu_inference_s": 7.840357962000001,
+    "wall_load_prompt_and_inference_s": 4.11718109100002,
+    "cpu_load_prompt_and_inference_s": 8.058792520999999
+  }
+}

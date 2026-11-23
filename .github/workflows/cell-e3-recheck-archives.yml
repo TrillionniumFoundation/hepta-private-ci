@@ -1,0 +1,19 @@
+name: Verify archived E3 per-item outcomes
+on:
+  push:
+    branches: [research/e3-open-teacher-cold-inheritance-20261123]
+    paths:
+      - 'verification/e3-cold-readbacks/verify.py'
+      - '.github/workflows/cell-e3-recheck-archives.yml'
+permissions:
+  contents: read
+jobs:
+  rescore:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Rescore all archived predictions without downloading either teacher
+        run: python3 -I -S verification/e3-cold-readbacks/verify.py
