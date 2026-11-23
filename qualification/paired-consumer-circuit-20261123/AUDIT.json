@@ -1,0 +1,53 @@
+{
+  "scope": "engineering_fixture",
+  "archive_sha256": "08640f268030dbb74b97cc63f1631e510848c99b8522231314b1f2a9b5c83099",
+  "archive_bytes": 76934,
+  "files": 66,
+  "unique_model_files": 10,
+  "original_cell_training_prompts": {
+    "reader": "1",
+    "source": "train"
+  },
+  "selection_cold_arms": 2,
+  "selection_cold_rows": 4,
+  "subsequent_route": "connected",
+  "independent_numpy_cell_forwards": 10,
+  "subsequent_nodes": [
+    {
+      "cell": "source",
+      "model_sha256": "f070491a231528af6892bb925d6295f0ad077bbbe40c28bbf8fb915fcaec53e3",
+      "input_ids": [
+        4,
+        5
+      ],
+      "output_ids": [
+        7
+      ],
+      "answer": "1"
+    },
+    {
+      "cell": "reader",
+      "model_sha256": "c831e8cc1f000605d66de5af84fc34895bfee3e395f99b5a34e30bca5e701aa0",
+      "input_ids": [
+        4,
+        5,
+        0,
+        0,
+        0,
+        7
+      ],
+      "output_ids": [
+        7
+      ],
+      "answer": "1"
+    }
+  ],
+  "subsequent_output_utf8": "1",
+  "operation": "1430e35c73c8da0006282ca07a291617558cdbd3112e571072ac51b9a0f34eb0",
+  "run_sha256": "f470f69b529195aa684a0da57def5caa5ff7f37989cb03649f6799b3302d1ffc",
+  "decision": "accepted",
+  "fixture_outcome_sha256": "47d81ffa9b99b15eacad8290f4f8c6912145be9fb15768f35a6d9c4364a89159",
+  "live_humans": 0,
+  "verified_remote_executions": 0,
+  "payments": 0
+}
