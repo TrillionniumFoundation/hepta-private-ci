@@ -1,0 +1,85 @@
+name: Refit and cold-read two published E5 models
+on:
+  push:
+    branches:
+      - research/e5-source-allocation-worker-control-20261123
+    paths:
+      - .github/workflows/e5-hosted-refit.yml
+permissions:
+  contents: read
+jobs:
+  replica:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      STUDY: qualification/e5-worker-readback-20261123
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: '3.11'
+      - name: Install the frozen CPU stack
+        run: |
+          python -m venv "$RUNNER_TEMP/e5-env"
+          "$RUNNER_TEMP/e5-env/bin/pip" install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu torch==2.6.0+cpu
+          "$RUNNER_TEMP/e5-env/bin/pip" install --only-binary=:all: numpy==2.2.6 transformers==4.49.0 peft==0.14.0 tokenizers==0.21.4 safetensors==0.7.0 accelerate==1.16.0 huggingface-hub==0.36.2
+      - name: Prepare source fixtures and evidence directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/e5-hosted"
+          unzip -q qualification/cell-cross-user-circuit-20261123/CIRCUIT_FIXTURE.zip -d "$RUNNER_TEMP/e5-reference"
+          "$RUNNER_TEMP/e5-env/bin/pip" freeze > "$RUNNER_TEMP/e5-hosted/dependencies.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/e5-hosted/source.txt"
+          lscpu > "$RUNNER_TEMP/e5-hosted/cpu.txt"
+          cat /proc/meminfo > "$RUNNER_TEMP/e5-hosted/memory-before.txt"
+          for name in cpu.max memory.max memory.events; do
+            if test -r "/sys/fs/cgroup/$name"; then
+              cat "/sys/fs/cgroup/$name" > "$RUNNER_TEMP/e5-hosted/cgroup-$name-before"
+            fi
+          done
+      - name: Fit, publish both arms to disk, cold-evaluate and read all four windows
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo unshare --net -- sudo -u "$USER" -H env \
+            OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false \
+            HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_DATASETS_OFFLINE=1 PYTHONDONTWRITEBYTECODE=1 \
+            PYTHONPATH="$GITHUB_WORKSPACE/scripts" "$RUNNER_TEMP/e5-env/bin/python" "$STUDY/hosted_replica.py" \
+            "$GITHUB_WORKSPACE/qualification/cell-cross-user-milestone-20261123/fixture" \
+            "$RUNNER_TEMP/e5-reference/fixture" "$RUNNER_TEMP/e5-hosted"
+      - name: Collect original material and resource observations
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -d "$RUNNER_TEMP/e5-hosted"; then
+            for name in cpu.max memory.max memory.events; do
+              if test -r "/sys/fs/cgroup/$name"; then
+                cat "/sys/fs/cgroup/$name" > "$RUNNER_TEMP/e5-hosted/cgroup-$name-after"
+              fi
+            done
+            python - "$RUNNER_TEMP" <<'PY'
+          import hashlib, pathlib, sys, zipfile
+          root = pathlib.Path(sys.argv[1])
+          archive = root / "E5_HOSTED_ORIGINALS.zip"
+          with zipfile.ZipFile(archive, "x", zipfile.ZIP_DEFLATED) as z:
+              for p in sorted((root / "e5-hosted").rglob("*")):
+                  if p.is_file():
+                      z.write(p, p.relative_to(root / "e5-hosted"))
+          print("E5_ARCHIVE_SHA256", hashlib.sha256(archive.read_bytes()).hexdigest(), archive.stat().st_size)
+          PY
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: e5-hosted-raw
+          path: ${{ runner.temp }}/E5_HOSTED_ORIGINALS.zip
+          if-no-files-found: error
+          retention-days: 30
