@@ -1,5 +1,6 @@
 """Single-arm student-only worker, started in an empty Linux network namespace."""
 
+import codecs
 import hashlib
 import json
 import os
@@ -25,6 +26,8 @@ def main():
             for ln in Path("/proc/net/dev").read_text().splitlines()[2:]
         }
 
+    # Zipfile reads CP437 member names lazily. Resolve its stdlib codec before locking reads.
+    codecs.lookup("cp437")
     before = interfaces()
     if set(before) != {"lo"} or any(before["lo"]):
         raise RuntimeError("Cold worker requires empty network namespace")

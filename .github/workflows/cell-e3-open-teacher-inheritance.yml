@@ -70,6 +70,13 @@ jobs:
           print("E3_ARC_SHA",hashlib.sha256(data).hexdigest(),len(data))
           for k in range(0,len(data),3000):
               print("E3_ARC_PART",k,base64.b64encode(data[k:k+3000]).decode())
+          clock_fields=("wall_seconds","cpu_seconds","load_and_guard_wall_s","inference_wall_seconds","inference_cpu_seconds","model_load_seconds","teacher","model","phase","examples","forwards","tokens","features","best_single","fixed_route","loopback_bytes","interfaces")
+          costs={}
+          for f in sorted(pathlib.Path("work").glob("*.json")):
+              rec=json.loads(f.read_bytes())
+              if f.name.startswith(("teacher-","cold-","freeze.")):
+                  costs[f.name]={k:v for k,v in rec.items() if k in clock_fields or (("wall" in k or "cpu" in k or "token" in k or "forward" in k or "timing" in k) and k!="rows")}
+          print("E3_COSTS",json.dumps(costs,separators=(",",":")))
           print("E3_SCORES",json.dumps(json.loads(pathlib.Path("work/results.json").read_bytes()),separators=(",",":")))
           PY
       - uses: actions/upload-artifact@v4
