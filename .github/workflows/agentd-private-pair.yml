@@ -1,0 +1,92 @@
+name: Agentd private migration paired evidence
+on:
+  push:
+    branches: ["diagnostic/agentd-private-pair-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: dafb12e11e7d95ffb9c5eb6d256223d6fd45ac34
+  CANDIDATE: 5cb599eb5bc26e8af6e561eb02894b77f8afb6bf
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Materialize both exact product worktrees and verify original fixtures
+        run: bash .github/scripts/agentd-private-tree-pair.sh
+      - name: Build and save two source-specific original libtest ELFs
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          for arm in base candidate; do
+            cd "$RUNNER_TEMP/source-private-$arm"
+            ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$RUNNER_TEMP/private16-evidence/build-$arm.log"
+            binary=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$RUNNER_TEMP/private16-evidence/build-$arm.log" | tail -1)
+            test -n "$binary" && test -x "$binary"
+            cp -L "$binary" "$RUNNER_TEMP/agentd-private-$arm"
+            file "$RUNNER_TEMP/agentd-private-$arm"
+            sha256sum "$RUNNER_TEMP/agentd-private-$arm"
+            git diff --exit-code
+          done
+      - name: Require different ELF identities and all eight original native cases on both
+        run: python3 .github/scripts/agentd-private-pair.py native
+      - name: Upload original compiler and native execution evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: private16-native-${{ env.CANDIDATE }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/private16-evidence
+          if-no-files-found: error
+  strict:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 130
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+      - name: Materialize both exact product worktrees and verify original fixtures
+        run: bash .github/scripts/agentd-private-tree-pair.sh
+      - name: Install the exact qualification Rust toolchain
+        run: python3 scripts/hepta_ci_toolchain.py --github-env "$GITHUB_ENV"
+      - name: Run the original three-crate all-targets strict command at both commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/strict-cargo-target"
+          for arm in base candidate; do
+            cd "$RUNNER_TEMP/source-private-$arm"
+            set +e
+            cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings > "$RUNNER_TEMP/private16-evidence/strict-$arm.log" 2>&1
+            rc=$?
+            set -e
+            tail -3 "$RUNNER_TEMP/private16-evidence/strict-$arm.log"
+            test "$rc" -ne 0
+            git diff --exit-code
+          done
+      - name: Compare all diagnostics including newly introduced ones
+        run: python3 .github/scripts/agentd-private-pair.py strict
+      - name: Upload both complete strict logs and their diagnostic delta
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: private16-strict-${{ env.CANDIDATE }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/private16-evidence
+          if-no-files-found: error
