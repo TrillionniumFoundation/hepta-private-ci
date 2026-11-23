@@ -11,7 +11,7 @@ import secrets
 import subprocess
 import sys
 
-from . import adoption, coding_sft, data, paired_cold, paired_consumer_run as cold
+from . import adoption, data, paired_cold, paired_consumer_run as cold
 from . import paired_intake as intake, paired_source
 
 require = intake.require
@@ -54,8 +54,7 @@ def context(home, admission):
     require(adoption.read_json(directory / "release.json") == dict(release, admission_sha256=admission),
             "published release differs")
     req = paired_cold.checked_request(directory / "paired.json", row[1])
-    require(data.digest(req["candidate"]) == release["candidate_sha256"]
-            and paired_cold.loader_for(req["candidate"]) is coding_sft, "expected released coding candidate")
+    require(data.digest(req["candidate"]) == release["candidate_sha256"], "released candidate differs")
     if cfg["scope"] == "owner_intake":
         require("paired_source_exposure" in req["candidate"]
                 and field(release["source_retention_sha256"]) == binding["anchor"]["source_retention_sha256"],
@@ -149,7 +148,7 @@ def execute(path, cfg, req, scope, selection, grant, materials):
         return read_run(path, scope, selection, req, materials)
     require(not (path / "STARTED.json").exists(), "prior execution uncertain; keep original for reconciliation")
     raw = private_material(cfg, "consumer-task-" + scope["task"] + ".json", data.MAX_RECORD_BYTES)
-    task = json.loads(raw)
+    task = data._parse(raw)
     require(data.digest(task) == scope["task"], "subsequent task bytes differ from B's statement")
     _, _, input_ids = cold.encoding(req, task, materials)
     reservation = dict(operation=scope["operation"])

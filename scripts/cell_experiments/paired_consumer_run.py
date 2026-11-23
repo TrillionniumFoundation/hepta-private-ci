@@ -52,6 +52,9 @@ def selection(folder, pair, req, materials, *, create=False):
         for n, (panel, record) in enumerate(ordered):
             raw = adoption.read_json(directory / arm / f"{n:04d}.json")
             pred = raw["prediction"]
+            loader = paired_cold.loader_for(model)
+            if loader is not coding_sft:
+                loader.check_prediction(model, pred, paired_cold.visible_task(record))
             score = data.verify_answer(record, pred["answer"])
             require(
                 data.digest(raw) == end["row_hashes"][n]
@@ -83,25 +86,36 @@ def encoding(req, task, materials):
     require(0 < len(ids) <= model["runtime"]["max_input_tokens"], "subsequent input exceeds budget")
     # Reuse the same A, catalog, historical panel, and tokenizer-collision exclusions.
     excluded = set(paired_cold.token_inputs(req, model, materials).values())
-    exposure = model.get("paired_source_exposure", {})
-    excluded.update(exposure.get("input_ids_sha256", []))
     from . import prospective_exposure
-    catalogs = list(exposure.get("registered_catalogs", []))
-    catalog = prospective_exposure.catalog_for(model)
-    if catalog is not None:
-        catalogs.append(catalog)
-    known = set(exposure.get("known_prompt_hashes", []))
-    for catalog in catalogs:
-        known.update(item["prompt_sha256"] for item in catalog["known_inputs"])
-        excluded.update(item["input_ids_sha256"] for item in catalog["known_inputs"])
+
+    known = set()
+    for arm in paired_cold.ARMS:
+        candidate = req[arm]
+        manifests = [candidate]
+        if paired_cold.loader_for(candidate) is not coding_sft:
+            from . import paired_consumer_circuit
+            cell_prompts, cell_tokens = paired_consumer_circuit.training_inputs(candidate, materials)
+            known.update(cell_prompts)
+            excluded.update(cell_tokens)
+            excluded.update(row["input_ids_sha256"] for row in candidate["router_training_inputs"])
+            manifests.extend(candidate["models"].values())
+        for manifest in manifests:
+            exposure = manifest.get("paired_source_exposure", {})
+            excluded.update(exposure.get("input_ids_sha256", []))
+            known.update(exposure.get("known_prompt_hashes", []))
+            catalogs = list(exposure.get("registered_catalogs", []))
+            catalog = prospective_exposure.catalog_for(manifest)
+            if catalog is not None:
+                catalogs.append(catalog)
+            for catalog in catalogs:
+                known.update(item["prompt_sha256"] for item in catalog["known_inputs"])
+                excluded.update(item["input_ids_sha256"] for item in catalog["known_inputs"])
     require(data.digest(ids) not in excluded and sha(task["input"].encode()) not in known,
             "subsequent task repeats a known prompt or effective input")
     return tokenizer, rendered, ids
 
 
-def inspect(req, task, materials, pred):
-    tokenizer, rendered, ids = encoding(req, task, materials)
-    model = req["candidate"]
+def inspect_cell(model, task, pred, tokenizer, rendered, ids):
     produced = pred["output_ids"]
     require(isinstance(produced, list) and all(type(t) is int and 0 <= t < len(tokenizer) for t in produced)
             and 0 < len(produced) <= model["runtime"]["max_new_tokens"]
@@ -116,17 +130,40 @@ def inspect(req, task, materials, pred):
     return pred["answer"].encode("utf-8")
 
 
+def inspect(req, task, materials, pred):
+    tokenizer, rendered, ids = encoding(req, task, materials)
+    model = req["candidate"]
+    loader = paired_cold.loader_for(model)
+    if loader is coding_sft:
+        return inspect_cell(model, task, pred, tokenizer, rendered, ids)
+    # Replay the route and edge from the visible request; verify every executed
+    # generation independently with that slot's own manifest-bound tokenizer.
+    loader.check_prediction(model, pred, task)
+    nodes = pred["circuit_trace"]["nodes"]
+    require(nodes[0]["output"]["input_ids"] == ids, "Circuit first input differs from registered preflight")
+    for node in nodes:
+        cell = model["models"][node["cell_id"]]
+        visible = node["request"]
+        tok = paired_cold.frozen_tokenizer(cell, materials)
+        text = coding_sft.prompt_text(visible["input"], tok, cell["runtime"]["message_protocol"],
+                                      visible.get("messages"))
+        inspect_cell(cell, visible, node["output"], tok, text, tok.encode(text, add_special_tokens=False))
+    return nodes[-1]["output"]["answer"].encode("utf-8")
+
+
 def worker(materials, path):
     """This process receives a private task and a manifest, never the issuer descriptors."""
     payload = adoption.read_json(path / "worker-input.json")
     model = payload["model"]
-    require(coding_sft.verify_model(model, materials) == payload["candidate"], "wrong cold candidate")
-    p = coding_sft.load_predictor(model, materials)
+    require(paired_cold.verify_materials(model, materials) == payload["candidate"], "wrong cold candidate")
+    loader = paired_cold.loader_for(model)
+    p = loader.load_predictor(model, materials)
     try:
-        pred = p.predict({"task": payload["task"]}, retain_encoding=True)
+        task = {"task": payload["task"]}
+        pred = p.predict(task, retain_encoding=True) if loader is coding_sft else p.predict(task)
     finally:
         p.close()
-    require(coding_sft.verify_model(model, materials) == payload["candidate"], "model changed during use")
+    require(paired_cold.verify_materials(model, materials) == payload["candidate"], "model changed during use")
     coding_sft.write_new(path / "worker-output.json", dict(nonce=payload["nonce"], prediction=pred))
 
 
