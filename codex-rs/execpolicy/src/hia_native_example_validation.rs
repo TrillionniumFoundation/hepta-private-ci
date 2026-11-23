@@ -40,7 +40,28 @@ struct Transition {
     misses: usize,
 }
 
+// Validate the request before passing any borrowed region to the native ABI.
+// Keep this same contract in the standalone response checker used by tests.
+fn validate_request(mode: u64, total: usize, index: usize, misses: usize, hit: bool) {
+    assert!(
+        mode == NEGATIVE || mode == POSITIVE,
+        "HIA example-validation input mode is invalid"
+    );
+    if total == 0 {
+        assert!(
+            index == 0 && misses == 0 && !hit,
+            "HIA empty-example input state is invalid"
+        );
+    } else {
+        assert!(
+            index < total && misses <= index && (mode != NEGATIVE || misses == 0),
+            "HIA example-validation input state is invalid"
+        );
+    }
+}
+
 fn step(mode: u64, total: usize, index: usize, misses: usize, hit: bool) -> Transition {
+    validate_request(mode, total, index, misses, hit);
     let total_word =
         u64::try_from(total).unwrap_or_else(|_| panic!("example-validation count exceeds u64"));
     let index_word =
@@ -98,21 +119,7 @@ fn validate_response(
     hit: bool,
     output: &[u8; OUTPUT_BYTES],
 ) -> Transition {
-    assert!(
-        mode == NEGATIVE || mode == POSITIVE,
-        "HIA example-validation input mode is invalid"
-    );
-    if total == 0 {
-        assert!(
-            index == 0 && misses == 0 && !hit,
-            "HIA empty-example input state is invalid"
-        );
-    } else {
-        assert!(
-            index < total && misses <= index && (mode != NEGATIVE || misses == 0),
-            "HIA example-validation input state is invalid"
-        );
-    }
+    validate_request(mode, total, index, misses, hit);
     let word = |offset: usize| {
         u64::from_le_bytes(
             output[offset..offset + 8]
