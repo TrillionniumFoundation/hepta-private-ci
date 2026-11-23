@@ -314,7 +314,6 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
         .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
 }
 
-
 #[test]
 fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
     let home = tempfile::tempdir()?;
