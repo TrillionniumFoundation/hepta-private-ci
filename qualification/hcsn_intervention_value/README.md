@@ -2,6 +2,8 @@
 
 This follow-up to [#6985](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6985) uses real, unaltered audiovisual music recordings. Gallery, training, development, retention and final confirmation have disjoint recording and creator identities. The task includes piano and guitar. Segments from one work share a source and cost measurements must count that dependence. The original artist, author attribution, file identity, licence and immutable revision for each recording are in [the roster](media/sources.json).
 
+**确认结果与新录制逐来源对照** · [中文研究报告](RESULTS.md) · [24 个原定查询的数值](evidence/summary.json) · [发布包明细及 SHA-256](evidence/archive_manifest.json)
+
 ## Physical decision
 
 At any of six 0.48-second prefixes the controller may return its free audio answer, acquire the current camera view and terminate, or wait until the next prefix. First observed prefix is time zero. The reward for a correct answer is one, the paid view costs 0.30, the flow cost of waiting is 0.40 per second and the discount rate is 0.20. The control can read the current and past free observations. Reference material and precomputed outcomes allow an evaluator to score counterfactual trajectories.
@@ -32,3 +34,16 @@ python -m qualification.hcsn_intervention_value.verify_policy /path/to/new/disco
 ```
 
 The discovery procedure writes a negative decision when no camera passes. To check a positive decision, first verify and preserve the full roster of fitted models, then use those sealed paths for `discovery confirm --policy-seal .../selection_seal.json`, `run confirm` and `verify_policy`. The [data build](media/CORPUS.md), [primary protocol](protocol.json), [policy details](policy_protocol.json) and [conditional fallback](alternate_protocol.json) describe all inputs. The published inputs include derived summaries, output probabilities, per-episode receipts and recording hashes. Original video and sound are obtained from each publisher.
+
+## Reproduce the published confirmation
+
+From this commit's repository root, pass a **new** directory to the unpacker. The second command works offline on the derived features, both decision traces and the measured partial interval.
+
+```sh
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
+python -m qualification.hcsn_intervention_value.replay qualification/hcsn_intervention_value/evidence /tmp/hepta-commons-confirm
+python -m qualification.hcsn_intervention_value.verify_release /tmp/hepta-commons-confirm
+python -m qualification.hcsn_intervention_value.verify_front_results /tmp/hepta-commons-confirm/primary/discovery
+```
+
+The archives hold all 24 semantic camera trajectories, 22 complete test trajectories and five original audio prefixes of a 23rd query. Reproducing raw decoding requires obtaining the licensed recordings listed in the roster. Archive verification, model decisions, finite-table opportunity enumeration and uncertainty calculations run without network access. Compare parsed JSON for the general interval report, whose object key order can vary between Python processes. The partial-prefix certificate records the new elapsed time on every run. The original budgets, source splits and model selection seals are preserved.

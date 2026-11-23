@@ -1,0 +1,171 @@
+{
+  "fully_observed": 22,
+  "individual_incomplete": {
+    "commons-112833470-w01": {
+      "always_read": [
+        0.7,
+        0.7
+      ],
+      "always_stop": [
+        0.0,
+        1.0
+      ],
+      "free_oracle": [
+        0.0,
+        1.0
+      ],
+      "joint": [
+        0.7,
+        1.0
+      ],
+      "paid_gain": [
+        0.0,
+        0.7
+      ],
+      "tabular_full": [
+        0.0,
+        1.0
+      ],
+      "tabular_full_minus_instant": [
+        0.0,
+        0.0
+      ],
+      "tabular_full_minus_no_read": [
+        -0.30000000000000004,
+        0.7
+      ],
+      "tabular_instant": [
+        0.0,
+        1.0
+      ],
+      "tabular_no_read": [
+        0.0,
+        1.0
+      ],
+      "wait_gain": [
+        0.0,
+        0.025392048206118623
+      ]
+    },
+    "commons-31045040-w04": {
+      "always_read": [
+        -0.3,
+        -0.3
+      ],
+      "always_stop": [
+        1.0,
+        1.0
+      ],
+      "free_oracle": [
+        1.0,
+        1.0
+      ],
+      "joint": [
+        1.0,
+        1.0
+      ],
+      "paid_gain": [
+        0.0,
+        0.0
+      ],
+      "tabular_full": [
+        -0.3,
+        -0.3
+      ],
+      "tabular_full_minus_instant": [
+        0.0,
+        0.0
+      ],
+      "tabular_full_minus_no_read": [
+        -1.3,
+        -1.3
+      ],
+      "tabular_instant": [
+        -0.3,
+        -0.3
+      ],
+      "tabular_no_read": [
+        1.0,
+        1.0
+      ],
+      "wait_gain": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "limits": {
+    "always_read": [
+      0.49166666666666664,
+      0.49166666666666664
+    ],
+    "always_stop": [
+      0.7083333333333331,
+      0.7499999999999998
+    ],
+    "free_oracle": [
+      0.71872019902988,
+      0.7603868656965467
+    ],
+    "joint": [
+      0.8833333333333331,
+      0.895833333333333
+    ],
+    "paid_gain": [
+      0.1354464676367865,
+      0.16461313430345317
+    ],
+    "tabular_full": [
+      0.475,
+      0.5166666666666667
+    ],
+    "tabular_full_minus_instant": [
+      0.0,
+      0.0
+    ],
+    "tabular_full_minus_no_read": [
+      -0.24583333333333338,
+      -0.2041666666666667
+    ],
+    "tabular_instant": [
+      0.475,
+      0.5166666666666667
+    ],
+    "tabular_no_read": [
+      0.7083333333333331,
+      0.7499999999999998
+    ],
+    "wait_gain": [
+      0.0,
+      0.0010580020085882759
+    ]
+  },
+  "original_creator_weights": {
+    "commons-112833470-w01": 0.041666666666666664,
+    "commons-112833470-w02": 0.041666666666666664,
+    "commons-112833470-w03": 0.041666666666666664,
+    "commons-112833470-w04": 0.041666666666666664,
+    "commons-197628831-w01": 0.041666666666666664,
+    "commons-197628831-w02": 0.041666666666666664,
+    "commons-197628831-w03": 0.041666666666666664,
+    "commons-197628831-w04": 0.041666666666666664,
+    "commons-198965915-w01": 0.041666666666666664,
+    "commons-198965915-w02": 0.041666666666666664,
+    "commons-198965915-w03": 0.041666666666666664,
+    "commons-198965915-w04": 0.041666666666666664,
+    "commons-24766956-w01": 0.041666666666666664,
+    "commons-24766956-w02": 0.041666666666666664,
+    "commons-24766956-w03": 0.041666666666666664,
+    "commons-24766956-w04": 0.041666666666666664,
+    "commons-31045040-w01": 0.041666666666666664,
+    "commons-31045040-w02": 0.041666666666666664,
+    "commons-31045040-w03": 0.041666666666666664,
+    "commons-31045040-w04": 0.041666666666666664,
+    "commons-52488475-w01": 0.041666666666666664,
+    "commons-52488475-w02": 0.041666666666666664,
+    "commons-52488475-w03": 0.041666666666666664,
+    "commons-52488475-w04": 0.041666666666666664
+  },
+  "scheduled": 24,
+  "scope": "Sharp over arbitrary missing free correctness sequences and finite-table margin/rank states, conditional on the frozen camera and intact input observations; the unknown waveform can impose additional restrictions."
+}

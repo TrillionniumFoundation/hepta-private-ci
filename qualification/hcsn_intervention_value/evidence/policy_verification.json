@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "selection_seal": "38d42a421574c6ab421b26d86c1689de26a5416803c544f9046526543416b710",
+  "phase": "confirm",
+  "counts": {
+    "arm_selections": 66,
+    "conditional_linear_refits": 186,
+    "development_and_retention_decisions": 372,
+    "test_policies_with_controls": 66,
+    "test_episode_actions": 7986,
+    "teacher_targets": 864
+  },
+  "max_selected_head_difference": 1.9245716131877089e-13,
+  "max_test_action_score_difference": 9.980904991380157e-14,
+  "scope": "Independent nested stopping rewards, calibrated nuisance values, original physical features, normal-equation heads, all attempted DEV/RETAIN actions and selections. Confirmation includes proposed and masked/restricted policies and per-query utility. BP search trajectories are replayed at their saved displacements, not gradient-audited."
+}
