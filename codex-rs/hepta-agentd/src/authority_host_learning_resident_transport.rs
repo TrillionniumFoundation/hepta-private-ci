@@ -75,7 +75,7 @@ enum ClientOriginV3 {
 }
 
 enum ResidentExchangeV3 {
-    Observed(RootResidentLearningObservationV3),
+    Observed(Box<RootResidentLearningObservationV3>),
     Refused(Error),
 }
 
@@ -374,7 +374,7 @@ impl AgentdRootResidentLearningClientV3 {
                                 .map(ResidentOriginalModelProofV3::encode),
                         });
                     }
-                    ResidentExchangeV3::Observed(observed)
+                    ResidentExchangeV3::Observed(Box::new(observed))
                 }
             };
             Ok((outcome, channel, fresh))
@@ -405,7 +405,7 @@ impl AgentdRootResidentLearningClientV3 {
         // unknown socket result, malformed reply or cancelled await never does.
         *self.channel.lock().map_err(|_| Error::Unavailable)? = Some(channel);
         match outcome {
-            ResidentExchangeV3::Observed(observed) => Ok(observed),
+            ResidentExchangeV3::Observed(observed) => Ok(*observed),
             ResidentExchangeV3::Refused(error) => Err(error),
         }
     }
