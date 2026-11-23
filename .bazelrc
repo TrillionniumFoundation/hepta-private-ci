@@ -48,6 +48,9 @@ common:windows --test_env=APPDATA
 common:windows --test_env=LOCALAPPDATA
 common:windows --test_env=ProgramData
 common:windows --test_env=SystemDrive
+# The original Windows queue hooks spawn PowerShell through the test process PATH.
+# Pass the hosted runner's PATH through rather than changing any queue assertions.
+common:windows --test_env=PATH
 # PowerShell appends .CPL during startup. Without the inherited PATHEXT,
 # native .exe hooks are treated as documents and lose their standard streams.
 common:windows --test_env=PATHEXT
