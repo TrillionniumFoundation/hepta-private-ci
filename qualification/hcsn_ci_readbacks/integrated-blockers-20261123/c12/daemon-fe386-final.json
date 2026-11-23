@@ -1,0 +1,149 @@
+{
+  "caller": {
+    "archive_bytes": 62439,
+    "archive_sha256": "92279fbd0ea5e4649697ddfb481931b068306d7b43a403fc5f0f55d50908b351",
+    "original_inventory": {
+      "boundaries": 1652,
+      "privilegedInventory": 1652,
+      "protectedFiles": 826,
+      "rustFilesScanned": 9141
+    },
+    "source_before_after": {
+      "head": "fe38676fae170002fcdce90b36dc949fac3ff671",
+      "status": "",
+      "tree": "7afec5e8ba43a101b4a4c1cf4f76a7a9af5384bf"
+    },
+    "stages": {
+      "self-test": {
+        "code": 0,
+        "log_bytes": 48,
+        "log_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+        "timed_out": false
+      },
+      "verify": {
+        "code": 0,
+        "log_bytes": 770005,
+        "log_sha256": "2de991230d84e60c8d440278ceb189e0f4111ce8b7c200a934ffc7a31257d6c3",
+        "timed_out": false
+      }
+    }
+  },
+  "caller_artifact": 14808596113,
+  "caller_job": 137612044942,
+  "independently_counted_final_junit": {
+    "ordinary": {
+      "failed": 0,
+      "passed": 2849,
+      "skipped": 0,
+      "uid": 1001
+    },
+    "root": {
+      "failed": 0,
+      "passed": 68,
+      "skipped": 0,
+      "uid": 0
+    }
+  },
+  "maintenance": {
+    "complete": true,
+    "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "paths": [],
+    "postimage_bytes": 0
+  },
+  "native_artifact": {
+    "bytes": 26921252,
+    "id": 14810439720,
+    "sha256": "73631172619db67a2cf31c86130aad2b46e4fb5e14a2b897b7ac297a1d56dee3"
+  },
+  "native_job": 137612046057,
+  "owner_coverage": [
+    202,
+    true
+  ],
+  "permanent_evidence": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/8e0bb5ae7e7c91a6a94aabee3a162790d48c754f/qualification/hcsn_ci_readbacks/daemon-fixed-base-format-20261123/format-followup/direct-c12/official-native",
+  "physical_files": 59144,
+  "snapshot_count": 6,
+  "source_inventory_sha256": "69a625e67575b19000e7b5722e2d2b8fd0afbcf30231420fbd39f75534664619",
+  "stages": {
+    "bins-check": {
+      "code": 0,
+      "log_bytes": 48182,
+      "log_sha256": "39350b08f510876dfd95fbc78d3503ec5aa013dc1f3a4d39e6f6e00f52435b0e",
+      "timed_out": false
+    },
+    "fix": {
+      "code": 0,
+      "log_bytes": 191453,
+      "log_sha256": "6c28a55e116a295c6b11e57ff3fd6180399d931373f1378e3c3d161bae353406",
+      "timed_out": false
+    },
+    "fmt": {
+      "code": 0,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    "helper-build": {
+      "code": 0,
+      "log_bytes": 206,
+      "log_sha256": "b6ff48c8663cf577557de5959a3a0597344f998e4440a349b7a8d836a4794e84",
+      "timed_out": false
+    },
+    "helper-verification": {
+      "code": 0,
+      "log_bytes": 1462,
+      "log_sha256": "46c2e20b393db72c103c26718431cd1e908bc614b0da0da6e9c3b10df2a642e3",
+      "timed_out": false
+    },
+    "ordinary": {
+      "code": 0,
+      "log_bytes": 1885955,
+      "log_sha256": "680b0fb4beaedc8f2166e5d227726fabeaf9b8d46754c561d55975bf48d521ba",
+      "timed_out": false
+    },
+    "root": {
+      "code": 0,
+      "log_bytes": 129907,
+      "log_sha256": "d7fd44d6f32de22ff051c955a60db4c93b87a1e93c93b1863a950b60197e2259",
+      "timed_out": false
+    },
+    "root-setup": {
+      "code": 0,
+      "log_bytes": 65,
+      "log_sha256": "431635ddd0b69927ef4ec21e7761f169017acdd9d631ef14fa595e4daf613013",
+      "timed_out": false
+    },
+    "root-unmount-bind": {
+      "code": 0,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    "root-unmount-witness-bind": {
+      "code": 0,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    "source-closure": {
+      "code": 0,
+      "log_bytes": 263912,
+      "log_sha256": "e81149cdb30bb6b2f0f488226a21556ee1651b09da634c5a7ae771df12712a4d",
+      "timed_out": false
+    }
+  },
+  "technical_receipt_sha256": "eb404331e13ba6a6a0741454fea1a336fc520b7085d1a23900daacfbfb662758",
+  "tree": "7afec5e8ba43a101b4a4c1cf4f76a7a9af5384bf",
+  "workflow": {
+    "attempt": 1,
+    "conclusion": "success",
+    "created_at": "2026-11-23T09:52:52Z",
+    "event": "workflow_dispatch",
+    "head_sha": "fe38676fae170002fcdce90b36dc949fac3ff671",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45150994913",
+    "id": 45150994913,
+    "run_started_at": "2026-11-23T09:52:52Z",
+    "status": "completed",
+    "updated_at": "2026-11-23T11:05:26Z"
+  }
+}
