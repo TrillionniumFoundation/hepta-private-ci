@@ -459,3 +459,23 @@ async fn initial_project_assignment_is_inserted_with_thread_row() -> anyhow::Res
     assert_eq!(deleted, (vec![thread_id.to_string()], Vec::new()));
     Ok(())
 }
+
+#[test]
+fn project_unix_millis_matches_chrono_at_epoch_boundaries() {
+    use std::time::Duration;
+
+    let instants = [
+        UNIX_EPOCH,
+        UNIX_EPOCH + Duration::from_micros(1),
+        UNIX_EPOCH + Duration::from_micros(1_001),
+        UNIX_EPOCH - Duration::from_micros(1),
+        UNIX_EPOCH - Duration::from_millis(1),
+        UNIX_EPOCH - Duration::from_micros(1_001),
+    ];
+    for instant in instants {
+        let reference = chrono::DateTime::<chrono::Utc>::from(instant);
+        assert_eq!(unix_millis(instant), Some(reference.timestamp_millis()));
+    }
+    assert_eq!(unix_millis(UNIX_EPOCH - Duration::from_micros(1)), Some(-1));
+    assert_eq!(unix_millis(UNIX_EPOCH - Duration::from_micros(1_001)), Some(-2));
+}
