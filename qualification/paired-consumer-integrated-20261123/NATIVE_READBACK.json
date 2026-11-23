@@ -1,0 +1,28 @@
+{
+  "native_source_commit": "5984cb73d7dad385135c200da82dd6ed664674c2",
+  "python_source_commit": "0cf29b6a13343dc8e3e162414b405cbb2e90e88b",
+  "full_native_source": {
+    "src_tree_git": "ed0d0358f008acf150da832023ced300527d9057",
+    "examples_tree_git": "526b198a63b137e5d1ec9086f564d1fb8357b78e",
+    "cargo_manifest_git": "f06bccfb6b0f9e808116f8ea7d330b246847b7f2"
+  },
+  "compiler": "rustc 1.96.0 x86_64-unknown-linux-gnu",
+  "local_binary_sha256": "39f5a50d38c365974d7eeb43a932453f58220d3e1d3b7818b03d9225fa261241",
+  "process_fixture_sha256": "2b9d0def2a76fec8690d646b4719971a801aa5595682a301826e80ddfddaf79e",
+  "original_cli_tests_passed": 5,
+  "python_native_contract_tests_passed": 1,
+  "issuer_tests_passed": 4,
+  "issuer_tests_scope": "Original test bodies against the complete production library. Public Root-stream constructor used in an isolated UID-0 user namespace with a simulated wire peer.",
+  "production_issuer_isolated_runs": 2,
+  "acknowledged_signed_development_deliveries": 10,
+  "real_human_authorizations": 0,
+  "authenticated_physical_outcomes": 0,
+  "new_payments": 0,
+  "local_build": "Full product library and CLI, using original Cargo dependency identities with direct rustc invocations. Hosted cargo --locked is an independent build.",
+  "isolated_runs_sha256": {
+    "1": "2f352d59257d56461b9347f3f0513a801e295c78d19172f013a6e4ddc4d15aca",
+    "2": "cfb0609f2bbe7364f3dcfbd63c9fd5a946b8cc7bf4194b2a0880cf62b644c4df"
+  },
+  "wire_test_log_sha256": "b2e56e16c5ff975c5677f472bb7fb9bbb714d5f459f8ef1859a0f49b3d612d1e",
+  "cold_use_fixture_native_statements_sha256": "3d3a4fc3c47de253c8dd12791cb7ffd6a87848442768b95586b47f3f6c67cbf1"
+}
