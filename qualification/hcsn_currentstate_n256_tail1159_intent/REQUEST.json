@@ -1,6 +1,6 @@
 {
   "actual_execution_authorized": false,
-  "base_pr": 6982,
+  "base_pr": 6983,
   "budget": {
     "canonical_raw_reencodes": 10,
     "checkpoint_decodes": 30,
@@ -23,7 +23,7 @@
     "per_cursor_raw_bytes": 50331648
   },
   "execution_key": "hcsn-n256-authentic-tail1159-20261122-c6bc-001",
-  "identity": "hcsn-n256-authentic-tail1159-target-semantic-binding-20261122-c6bc-v9",
+  "identity": "hcsn-n256-authentic-tail1159-process-containment-20261122-c6bc-v10",
   "intent_source_head": "e441e2df7bf2ae8f820e154132827ad0d08c9e23",
   "input": {
     "index537_collector_sha256": "452e22f354928f88742d840d3287c160153b8e86d4ed5346b0d0628d0ddacbf4",
@@ -36,6 +36,7 @@
     "stderr_bytes": 1048576,
     "stdout_bytes": 1048576
   },
+  "lane_command_timeout_seconds": 6900,
   "runtime_admission": {
     "allocation_path": null,
     "allocation_sha256": null,
@@ -48,5 +49,6 @@
     "runtime_sha256": null
   },
   "source_index": 537,
-  "target_index": 1159
+  "target_index": 1159,
+  "termination_grace_seconds": 5
 }

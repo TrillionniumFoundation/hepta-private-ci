@@ -19,7 +19,7 @@ def verify():
     freeze = json.loads(FREEZE.read_text())
     if freeze["status"] != "SOURCE_ONLY_RESOURCE_HOLD":
         raise SystemExit("source freeze status differs")
-    if freeze["base_head"] != "0234bf0edf6c02dd1165b6ce635727b2ba599721":
+    if freeze["base_head"] != "bde57770b19cedc26abdfc38eb4c79fe93247546":
         raise SystemExit("base head differs")
     for relative, expected in freeze["files"].items():
         raw = (REPO / relative).read_bytes()
@@ -54,6 +54,10 @@ def verify():
         "stdout_bytes": 1048576,
     }:
         raise SystemExit("lane log caps differ")
+    if request["lane_command_timeout_seconds"] != 6900:
+        raise SystemExit("lane command timeout differs")
+    if request["termination_grace_seconds"] != 5:
+        raise SystemExit("termination grace differs")
     if request["identity"] != freeze["identity"]:
         raise SystemExit("request and source-freeze identities differ")
     return freeze
