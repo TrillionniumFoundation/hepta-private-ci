@@ -272,16 +272,22 @@ if payload["prompt"] == "blocked":
 
 #[cfg(windows)]
 fn write_rejecting_prompt_hook(home: &Path) {
+    let trace = home.join("queue_hook_trace.log");
     let script_path = home.join("queue_prompt_hook.ps1");
     let log_path = home.join("queue_prompt_hook.log");
     let script = format!(
         r#"$ErrorActionPreference = 'Stop'
-$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+[IO.File]::AppendAllText('{trace}', "script-entered`n")
+$raw = [Console]::In.ReadToEnd()
+[IO.File]::AppendAllText('{trace}', ("stdin-chars=" + $raw.Length + "`n"))
+$payload = $raw | ConvertFrom-Json
+[IO.File]::AppendAllText('{trace}', ("prompt=" + $payload.prompt + "`n"))
 [IO.File]::AppendAllText('{log_path}', $payload.prompt + "`n")
 if ($payload.prompt -eq 'blocked') {{
     @{{ decision = 'block'; reason = 'blocked by queue hook' }} | ConvertTo-Json -Compress
 }}
 "#,
+        trace = trace.display().to_string().replace('\'', "''"),
         log_path = log_path.display().to_string().replace('\'', "''"),
     );
     std::fs::write(&script_path, script)
@@ -306,6 +312,7 @@ fn write_rejecting_prompt_hook(home: &Path) {
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
+    let trace = home.join("queue_hook_trace.log");
     let script_path = home.join(if cfg!(windows) {
         "queue_blocking_prompt_hook.ps1"
     } else {
@@ -316,7 +323,11 @@ fn write_blocking_prompt_hook(home: &Path) {
     let script = if cfg!(windows) {
         format!(
             r#"$ErrorActionPreference = 'Stop'
-$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+[IO.File]::AppendAllText('{trace}', "script-entered`n")
+$raw = [Console]::In.ReadToEnd()
+[IO.File]::AppendAllText('{trace}', ("stdin-chars=" + $raw.Length + "`n"))
+$payload = $raw | ConvertFrom-Json
+[IO.File]::AppendAllText('{trace}', ("prompt=" + $payload.prompt + "`n"))
 if ($payload.prompt -in @('delay exact persistence', 'delay exact rejection')) {{
     [IO.File]::WriteAllText('{entered_path}', 'entered')
     $deadline = [DateTime]::UtcNow.AddSeconds(20)
@@ -331,6 +342,7 @@ if ($payload.prompt -in @('delay exact persistence', 'delay exact rejection')) {
     }}
 }}
 "#,
+            trace = trace.display().to_string().replace('\'', "''"),
             entered_path = entered_path.display().to_string().replace('\'', "''"),
             release_path = release_path.display().to_string().replace('\'', "''"),
         )
@@ -433,8 +445,52 @@ fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
-    tokio::time::timeout(Duration::from_secs(10), async {
+fn print_queue_hook_event(event: &EventMsg) {
+    match event {
+        EventMsg::HookStarted(event) => eprintln!("queue hook started: {:?}", event.run),
+        EventMsg::HookCompleted(event) => eprintln!("queue hook completed: {:?}", event.run),
+        EventMsg::Error(error) => eprintln!("queue core error: {error:?}"),
+        EventMsg::Warning(warning) => eprintln!("queue core warning: {warning:?}"),
+        EventMsg::TurnStarted(_) => eprintln!("queue turn started"),
+        EventMsg::TurnComplete(_) => eprintln!("queue turn complete"),
+        _ => {}
+    }
+}
+
+async fn check_queue_deadline<T>(
+    test: &TestCodex,
+    result: Result<T, tokio::time::error::Elapsed>,
+    stage: &str,
+) -> anyhow::Result<T> {
+    let error = match result {
+        Ok(value) => return Ok(value),
+        Err(error) => error,
+    };
+    eprintln!("queue timeout at {stage}");
+    for filename in ["queue_hook_trace.log", "queue_prompt_hook.log"] {
+        let contents = fs::read_to_string(test.codex_home_path().join(filename));
+        eprintln!("{filename}: {contents:?}");
+    }
+    // Read outstanding events only after the original deadline has already failed.
+    let _ = tokio::time::timeout(Duration::from_secs(20), async {
+        for _ in 0..64 {
+            let Ok(event) = test.codex.next_event().await else {
+                break;
+            };
+            print_queue_hook_event(&event.msg);
+            if matches!(event.msg, EventMsg::HookCompleted(_)) {
+                break;
+            }
+        }
+    })
+    .await;
+    let late_trace = fs::read_to_string(test.codex_home_path().join("queue_hook_trace.log"));
+    eprintln!("queue fixture trace after the failed deadline: {late_trace:?}");
+    Err(anyhow::Error::new(error).context(stage.to_owned()))
+}
+
+async fn wait_for_path(test: &TestCodex, path: &Path) -> anyhow::Result<()> {
+    let result = tokio::time::timeout(Duration::from_secs(10), async {
         loop {
             if path.exists() {
                 return;
@@ -442,9 +498,13 @@ async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
     })
+    .await;
+    check_queue_deadline(
+        test,
+        result,
+        &format!("timed out waiting for `{}`", path.display()),
+    )
     .await
-    .with_context(|| format!("timed out waiting for `{}`", path.display()))?;
-    Ok(())
 }
 
 async fn test_queue() -> anyhow::Result<(Arc<dyn QueueStore>, TempDir)> {
@@ -1103,7 +1163,7 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
     let release = test
         .codex_home_path()
         .join("queue_blocking_prompt_hook.release");
-    wait_for_path(&entered).await?;
+    wait_for_path(&test, &entered).await?;
     owner_start.abort();
     let aborted = owner_start
         .await
@@ -1214,7 +1274,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
     let release = test
         .codex_home_path()
         .join("queue_blocking_prompt_hook.release");
-    wait_for_path(&entered).await?;
+    wait_for_path(&test, &entered).await?;
     tokio::time::sleep(Duration::from_millis(400)).await;
     let competing = competitor
         .start(test.codex.as_ref(), Some(item.id.clone()), None)
@@ -2572,17 +2632,19 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let following = staging.enqueue(thread_id, user_input("C")).await?;
     let queue = install_registered_queue(&test, installed.as_ref())?;
 
-    tokio::time::timeout(Duration::from_secs(10), async {
+    let result = tokio::time::timeout(Duration::from_secs(10), async {
         test.submit_text_turn("A").await?;
         for _ in 0..2 {
             wait_for_event_match(test.codex.as_ref(), |event| {
+                print_queue_hook_event(event);
                 matches!(event, EventMsg::TurnComplete(_)).then_some(())
             })
             .await;
         }
         anyhow::Ok(())
     })
-    .await??;
+    .await;
+    check_queue_deadline(&test, result, "automatic queue rejection").await??;
 
     let prompts = responses
         .requests()
@@ -2624,7 +2686,7 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
     );
 
     let rejected = queue.enqueue(thread_id, user_input("blocked")).await?;
-    let error = tokio::time::timeout(
+    let result = tokio::time::timeout(
         Duration::from_secs(10),
         queue.start(
             test.codex.as_ref(),
@@ -2632,8 +2694,10 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
             /*trace*/ None,
         ),
     )
-    .await?
-    .expect_err("hook rejection must not consume an unpersisted queue item");
+    .await;
+    let error = check_queue_deadline(&test, result, "explicit queue rejection")
+        .await?
+        .expect_err("hook rejection must not consume an unpersisted queue item");
     let QueueServiceError::CoreSubmissionError(error) = error else {
         anyhow::bail!("unexpected hook rejection error: {error:?}");
     };

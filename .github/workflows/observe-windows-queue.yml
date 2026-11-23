@@ -1,0 +1,88 @@
+name: Windows queue cold and warm observation
+
+on:
+  push:
+    branches: ["diagnostic/native-queue-6996-20261123"]
+
+permissions:
+  contents: read
+
+jobs:
+  queue:
+    name: Native queue first and second run (${{ matrix.lane }})
+    runs-on: windows-latest
+    timeout-minutes: 110
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [original, fixture-observation]
+    env:
+      SOURCE_SHA: ${{ matrix.lane == 'original' && '889802d81fb37f1b5e2355c4913574be2b6a6ea0' || github.sha }}
+    steps:
+      - name: Enable long paths for Git checkout
+        shell: bash
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Run the complete original target twice on this runner and preserve both outcomes
+        shell: bash
+        run: |
+          set -eu
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/queue-observation"
+          git ls-tree HEAD -- .bazelrc codex-rs/ext/queue/tests/queue_service.rs codex-rs/ext/queue/src/service.rs \
+            codex-rs/hooks/src/engine/command_runner.rs > "$RUNNER_TEMP/queue-observation/sources.txt"
+          failed=0
+          for phase in first second; do
+            result=0
+            ./.github/scripts/run-bazel-ci.sh \
+              --print-failed-action-summary --print-failed-test-logs \
+              --windows-msvc-host-platform --remote-download-toplevel \
+              -- test --platforms=//:windows_x86_64_msvc --nocache_test_results \
+              --build_metadata=COMMIT_SHA="$SOURCE_SHA" \
+              -- //codex-rs/ext/queue:queue-queue_service-test || result=$?
+            PHASE="$phase" RESULT="$result" python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import shutil
+          from pathlib import Path
+
+          phase = os.environ["PHASE"]
+          destination = Path(os.environ["RUNNER_TEMP"]) / "queue-observation" / phase
+          destination.mkdir()
+          root = Path(os.environ["BAZEL_OUTPUT_BASE"]) / "execroot"
+          matches = list(root.glob("*/bazel-out/*/testlogs/codex-rs/ext/queue/queue-queue_service-test/test.log"))
+          report = dict(phase=phase, original_returncode=int(os.environ["RESULT"]), head=os.environ["SOURCE_SHA"])
+          if len(matches) == 1:
+              log = matches[0]
+              for source in (log, log.with_suffix(".xml")):
+                  if source.is_file():
+                      shutil.copy2(source, destination / source.name)
+                      report[source.name] = hashlib.sha256(source.read_bytes()).hexdigest()
+              contents = log.read_text(encoding="utf-8", errors="replace")
+              report["cases"] = dict(re.findall(r"^test (\w+) \.\.\. (ok|FAILED|ignored)$", contents, re.M))
+              report["summary"] = re.findall(r"^test result: .*", contents, re.M)
+          else:
+              report["missing_log"] = [str(x) for x in matches]
+          (destination / "outcome.json").write_text(json.dumps(report, indent=2) + "\n")
+          print(json.dumps(report, sort_keys=True))
+          PY
+            if test "$result" -ne 0; then failed=1; fi
+          done
+          exit "$failed"
+      - name: Upload both original logs and source identities
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: queue-observation-${{ matrix.lane }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/queue-observation
+          if-no-files-found: error
