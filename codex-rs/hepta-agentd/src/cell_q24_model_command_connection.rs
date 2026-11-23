@@ -25,7 +25,7 @@ use std::time::Duration;
 
 enum Origin {
     Fresh,
-    Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+    Recovered(Option<Box<(LearningIterationSnapshotV1, Digest32)>>),
 }
 pub struct OriginalCellQ24ModelCommandConnectionV1 {
     peer: HostAuthorityPeerChannel,
@@ -76,7 +76,7 @@ impl OriginalCellQ24ModelCommandConnectionV1 {
             registration,
             timeout,
             lifetime,
-            Origin::Recovered(expected),
+            Origin::Recovered(expected.map(Box::new)),
         )
     }
     fn bind_original_stream(
@@ -156,7 +156,8 @@ impl OriginalCellQ24ModelCommandConnectionV1 {
             Origin::Fresh => (false, None),
             Origin::Recovered(expected) => {
                 let retained = expected
-                    .map(|(snapshot, material)| {
+                    .map(|original| {
+                        let (snapshot, material) = *original;
                         let original = snapshot
                             .receipts
                             .last()

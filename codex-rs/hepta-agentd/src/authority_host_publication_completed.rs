@@ -38,7 +38,7 @@ pub(crate) struct OriginalCompletedPublicationDataV1 {
 enum ReadPhase {
     AwaitingContext,
     Failed,
-    Observed(OriginalCompletedPublicationDataV1),
+    Observed(Box<OriginalCompletedPublicationDataV1>),
 }
 
 pub(crate) struct OriginalCompletedPublicationReadV1<'a> {
@@ -138,7 +138,7 @@ impl OriginalCompletedPublicationReadV1<'_> {
                 .map_err(io::Error::other)?,
             successor,
         };
-        self.phase = ReadPhase::Observed(data.clone());
+        self.phase = ReadPhase::Observed(Box::new(data.clone()));
         Ok(data)
     }
 
