@@ -1,0 +1,39 @@
+{
+  "current": {
+    "sha256": "6db5db1894738d3c9168ca8375ce83c5531851f6cc19e64f2bb8b1a6bdef04ac",
+    "files": 5,
+    "source_count": 35,
+    "tests": 4,
+    "skips": 0,
+    "rare_gate_closed": false,
+    "common_source_changed": true,
+    "changed_common_sources": [
+      "qualification/hcsn_joint_dde/audit_graded.py",
+      "qualification/hcsn_joint_dde/model.py"
+    ],
+    "elapsed_seconds": 5.0253288160000125,
+    "local_comparison": {
+      "numeric_fields": 5826,
+      "exact_fields": 856,
+      "max_absolute_difference": 0.0008393538940271007,
+      "max_difference_path": [
+        "records",
+        1,
+        "differences",
+        8,
+        "tolerance_scaled_error"
+      ]
+    }
+  },
+  "archived": {
+    "sha256": "afc72e8e00bea8784375bd2c891311c8c2ea973b30716143a07dd00832596eca",
+    "files": 5,
+    "source_count": 33,
+    "tests": 4,
+    "skips": 0,
+    "rare_gate_closed": false,
+    "common_source_changed": false,
+    "changed_common_sources": null,
+    "elapsed_seconds": 7.6362678769999945
+  }
+}
