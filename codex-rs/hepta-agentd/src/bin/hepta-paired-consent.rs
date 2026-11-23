@@ -46,10 +46,39 @@ mod linux {
     }
 
     #[derive(Deserialize)]
+    #[serde(rename_all = "snake_case")]
+    enum Outcome {
+        Accepted,
+        Rejected,
+    }
+
+    #[derive(Deserialize)]
     #[serde(tag = "use", rename_all = "snake_case", deny_unknown_fields)]
     enum Scope {
-        Train { failure: String, correction: String },
-        EvaluateOnly { freeze: String, task: String },
+        Train {
+            failure: String,
+            correction: String,
+        },
+        EvaluateOnly {
+            freeze: String,
+            task: String,
+        },
+        RequestConsumerRun {
+            operation: String,
+            pair: String,
+            candidate: String,
+            task: String,
+        },
+        ReportConsumerOutcome {
+            operation: String,
+            pair: String,
+            candidate: String,
+            task: String,
+            run_receipt: String,
+            output: String,
+            effect: String,
+            outcome: Outcome,
+        },
     }
 
     impl Scope {
@@ -68,6 +97,36 @@ mod linux {
                         task: task.parse()?,
                     }
                 }
+                Scope::RequestConsumerRun {
+                    operation,
+                    pair,
+                    candidate,
+                    task,
+                } => PairedLearningDataUse::RequestConsumerRun {
+                    operation: operation.parse()?,
+                    pair: pair.parse()?,
+                    candidate: candidate.parse()?,
+                    task: task.parse()?,
+                },
+                Scope::ReportConsumerOutcome {
+                    operation,
+                    pair,
+                    candidate,
+                    task,
+                    run_receipt,
+                    output,
+                    effect,
+                    outcome,
+                } => PairedLearningDataUse::ReportConsumerOutcome {
+                    operation: operation.parse()?,
+                    pair: pair.parse()?,
+                    candidate: candidate.parse()?,
+                    task: task.parse()?,
+                    run_receipt: run_receipt.parse()?,
+                    output: output.parse()?,
+                    effect: effect.parse()?,
+                    accepted: matches!(outcome, Outcome::Accepted),
+                },
             })
         }
     }
@@ -146,19 +205,33 @@ mod linux {
             study.to_string(),
             &owner.principal_id,
         ))?);
-        let scope = match allowed {
-            PairedLearningDataUse::TrainOnFailureAndCorrection { .. } => "train",
-            PairedLearningDataUse::EvaluateOnlyAfterFreeze { .. } => "evaluate_only",
+        let (scope, receipt_schema, hash_field) = match allowed {
+            PairedLearningDataUse::TrainOnFailureAndCorrection { .. } => (
+                "train",
+                "hepta.paired-learning.consent-readback.v1",
+                "consent_text_sha256",
+            ),
+            PairedLearningDataUse::EvaluateOnlyAfterFreeze { .. } => (
+                "evaluate_only",
+                "hepta.paired-learning.consent-readback.v1",
+                "consent_text_sha256",
+            ),
+            PairedLearningDataUse::RequestConsumerRun { .. } => (
+                "request_consumer_run",
+                "hepta.paired-learning.consumer-statement-readback.v1",
+                "statement_sha256",
+            ),
+            PairedLearningDataUse::ReportConsumerOutcome { .. } => (
+                "report_consumer_outcome",
+                "hepta.paired-learning.consumer-statement-readback.v1",
+                "statement_sha256",
+            ),
         };
-        println!(
-            "{}",
-            serde_json::json!({
-                "schema": "hepta.paired-learning.consent-readback.v1",
-                "study_sha256": study.to_string(), "delivery_id": delivery.to_string(),
-                "use": scope, "consent_text_sha256": consent.to_string(),
-                "study_principal_sha256": principal.to_string()
-            })
-        );
+        let receipt = serde_json::json!({
+            "schema": receipt_schema, "study_sha256": study.to_string(), "delivery_id": delivery.to_string(),
+            "use": scope, (hash_field): consent.to_string(), "study_principal_sha256": principal.to_string()
+        });
+        println!("{receipt}");
         Ok(())
     }
 }

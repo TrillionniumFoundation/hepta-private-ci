@@ -55,6 +55,30 @@ class ParticipantStatementTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertEqual(result.stdout, b"")
 
+    def test_consumer_request_and_outcome_domains(self):
+        common = dict(operation="44"*32, pair="55"*32, candidate="66"*32, task="77"*32)
+        start = dict(use="request_consumer_run", **common)
+        finish = dict(use="report_consumer_outcome", **common, run_receipt="88"*32,
+                      output="99"*32, effect="aa"*32, outcome="accepted")
+        def render(scope):
+            r = run(["--print-statement"], request(scope))
+            self.assertEqual(r.returncode, 0, r.stderr)
+            return r.stdout.decode()
+        self.assertIn("request one use", render(start))
+        original = render(finish)
+        self.assertTrue(original.endswith("My decision: accepted"))
+        self.assertIn("neither training nor payment", original)
+        for k in (*common, "run_receipt", "output", "effect"):
+            with self.subTest(field=k):
+                self.assertNotEqual(original, render(dict(finish, **{k:"bb"*32})))
+        self.assertNotEqual(original, render(dict(finish, outcome="rejected")))
+        self.assertNotEqual(original, render(start))
+        for scope in (dict(start, outcome="accepted"), dict(finish,outcome="yes"),
+                      dict(finish,output="AA"*32), {k:v for k,v in finish.items() if k!="effect"}):
+            r=run(["--print-statement"],request(scope))
+            self.assertNotEqual(r.returncode,0)
+            self.assertEqual(r.stdout,b"")
+
     def test_verification_still_requires_original_descriptors(self):
         result = run(["1", "/missing-study-home", "/missing-route"],
                      request(dict(use="train", failure=FIRST, correction=SECOND),

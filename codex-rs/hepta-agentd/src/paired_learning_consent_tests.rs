@@ -10,7 +10,10 @@ use super::fixture;
 use super::read;
 use super::send;
 use crate::AgentdFinalUseIssuerError;
+use crate::PairedLearningDataUse;
 use crate::PairedLearningDataUse::EvaluateOnlyAfterFreeze;
+use crate::PairedLearningDataUse::ReportConsumerOutcome;
+use crate::PairedLearningDataUse::RequestConsumerRun;
 use crate::PairedLearningDataUse::TrainOnFailureAndCorrection;
 use codex_hepta_types::Digest32;
 
@@ -117,12 +120,41 @@ fn rejects_a_different_study_scope_or_record_before_requesting_owner_evidence() 
 
 #[test]
 fn exact_statement_uses_the_existing_protected_human_verify_operation() {
-    let (provider, mut peer) = fixture(Duration::from_secs(3));
-    let study = Digest32::of_bytes(b"study");
-    let expected = EvaluateOnlyAfterFreeze {
+    rejects_malformed_owner_and_recovers_original(EvaluateOnlyAfterFreeze {
         freeze: Digest32::of_bytes(b"frozen pair"),
         task: Digest32::of_bytes(b"future task"),
-    };
+    });
+}
+
+#[test]
+fn consumer_request_and_outcome_use_the_original_human_verifier() {
+    let operation = Digest32::of_bytes(b"operation");
+    let pair = Digest32::of_bytes(b"pair");
+    let candidate = Digest32::of_bytes(b"candidate");
+    let task = Digest32::of_bytes(b"subsequent task");
+    rejects_malformed_owner_and_recovers_original(RequestConsumerRun {
+        operation,
+        pair,
+        candidate,
+        task,
+    });
+    for accepted in [true, false] {
+        rejects_malformed_owner_and_recovers_original(ReportConsumerOutcome {
+            operation,
+            pair,
+            candidate,
+            task,
+            run_receipt: Digest32::of_bytes(b"run"),
+            output: Digest32::of_bytes(b"output"),
+            effect: Digest32::of_bytes(b"effect"),
+            accepted,
+        });
+    }
+}
+
+fn rejects_malformed_owner_and_recovers_original(expected: PairedLearningDataUse) {
+    let (provider, mut peer) = fixture(Duration::from_secs(3));
+    let study = Digest32::of_bytes(b"study");
     let original = ingress(expected.consent_text(study));
     let retained = original.clone();
     let owner = json!({
