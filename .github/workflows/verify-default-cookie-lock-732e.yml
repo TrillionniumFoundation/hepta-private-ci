@@ -1,0 +1,58 @@
+name: Verify default-branch cookie dependency fix with original cargo-deny and committed locks
+on:
+  push:
+    branches: ["diagnostic/default-cookie-verify-732e-20261123"]
+permissions:
+  contents: read
+
+jobs:
+  original-cargo-deny:
+    uses: ./.github/workflows/cargo-deny.yml
+  committed-locks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 86d13925f313caaca0e674e47eb6c89a932d9976
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci-build
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-lock
+      - name: Check the committed Bazel lock and build the patched package
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/default-cookie-check"
+          mkdir "$p"
+          git rev-parse HEAD > "$p/source.txt"
+          git rev-parse HEAD^{tree} > "$p/tree.txt"
+          test "$(git rev-parse HEAD)" = 86d13925f313caaca0e674e47eb6c89a932d9976
+          test "$(git hash-object codex-rs/Cargo.lock)" = fe57c533e45e4e0b549da17c9a1ec2a8e21d34f1
+          test "$(git hash-object MODULE.bazel.lock)" = f2b6b85daad2e5e58ea849943d825b0feac74b4d
+          sha256sum codex-rs/Cargo.lock MODULE.bazel.lock > "$p/locks.sha256"
+          just bazel-lock-check |& tee "$p/bazel-lock-check.log"
+          cd codex-rs
+          cargo check --locked --package cookie@0.18.3 |& tee "$p/cargo-check.log"
+          cargo tree --locked --package cookie@0.18.3 --edges normal > "$p/cookie-dependencies.txt"
+          cd ..
+          sha256sum -c "$p/locks.sha256"
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: main-732e-patched-committed-locks
+          path: ${{ runner.temp }}/default-cookie-check
