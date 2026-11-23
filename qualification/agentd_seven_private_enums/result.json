@@ -1,0 +1,100 @@
+{
+  "artifacts": {
+    "base": {
+      "artifact_id": 14809774786,
+      "bytes": 49401,
+      "run": 45159928946,
+      "sha256": "5a9cfb8936a7cf7d43d743df7aa2320524f38d3c562f60854ab6654c2eb4ea74"
+    },
+    "candidate": {
+      "artifact_id": 14810807203,
+      "bytes": 49492,
+      "run": 45159928946,
+      "sha256": "23e9d123616f25e789cf8688368c49f491df59d702ea379a194872ad503e70ac"
+    },
+    "strict": {
+      "artifact_id": 14811255907,
+      "bytes": 29328,
+      "run": 45159928946,
+      "sha256": "43b26e7e5615b685c05eda5e2217f83dc6e48d548e48f594ec0ac08332c0f745"
+    },
+    "uid0-base": {
+      "artifact_id": 14812855441,
+      "bytes": 48666,
+      "run": 45161496753,
+      "sha256": "776eb07419adddc0ac8e90e472961fc1b76264dc23fd379402bd96136bcde587"
+    },
+    "uid0-candidate": {
+      "artifact_id": 14811196772,
+      "bytes": 48432,
+      "run": 45161496753,
+      "sha256": "be807ee22657bd68497d04885dab89a29a1b6e32d9086a13a66abd289fdd8ec9"
+    }
+  },
+  "base_original_root_prior": {
+    "checked_names": [
+      "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+      "authority_host_service::generation_initial::run_start_retention::tests::root_run_start_historical_join_cannot_skip_or_swallow_physical_read",
+      "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent"
+    ],
+    "passed": 68
+  },
+  "native": {
+    "base": {
+      "binary_sha256": "abb79f99f59754cde2cec06e36b4c026f8ff042abcdb674abe0aad79e010e0c6",
+      "commit": "c12ee03f3185d5a13949faca54f066dfd634e509",
+      "native_roster_size": 1723,
+      "real_outcomes": {
+        "ordinary": {
+          "neuron_generation_runtime::tests::update::learning::original_receipts::original_generation_receipt_rejects_known_expiry_before_claim": "ok",
+          "neuron_generation_runtime::tests::update::learning::original_receipts::original_generation_receipt_rejects_rollback_and_foreign_intent": "ok",
+          "neuron_generation_runtime::tests::update::learning::original_receipts::original_generation_receipts_require_committed_work_and_reopen_exact_bytes": "ok",
+          "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_reject_source_withdrawal_and_receipt_rollback": "ok",
+          "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_reject_wrong_key_role_and_expired_new_claim": "ok",
+          "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_require_actual_ordinary_c_and_reopen_original_bytes": "ok"
+        },
+        "uid0": {
+          "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback": "ok"
+        }
+      }
+    },
+    "candidate": {
+      "binary_sha256": "2d4efabba54502fa41475b75f0199bf41a44bf518b432fa6ccf0782938db17e9",
+      "commit": "f2d0f3ddaf5a2350ddb46584ad3b80d3271f982f",
+      "native_roster_size": 1723,
+      "real_outcomes": {
+        "ordinary": {
+          "neuron_generation_runtime::tests::update::learning::original_receipts::original_generation_receipt_rejects_known_expiry_before_claim": "ok",
+          "neuron_generation_runtime::tests::update::learning::original_receipts::original_generation_receipt_rejects_rollback_and_foreign_intent": "ok",
+          "neuron_generation_runtime::tests::update::learning::original_receipts::original_generation_receipts_require_committed_work_and_reopen_exact_bytes": "ok",
+          "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_reject_source_withdrawal_and_receipt_rollback": "ok",
+          "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_reject_wrong_key_role_and_expired_new_claim": "ok",
+          "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_require_actual_ordinary_c_and_reopen_original_bytes": "ok"
+        },
+        "uid0": {
+          "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback": "ok"
+        }
+      }
+    }
+  },
+  "original_source_suites_each": 11,
+  "protected_files_replayed_each": 826,
+  "registered_boundaries_counted_each": 1652,
+  "source_tests_run_each": 95,
+  "strict": {
+    "added": 0,
+    "after": 114,
+    "before": 115,
+    "exit": 101,
+    "large_enum_after": 34,
+    "large_enum_before": 35,
+    "removed": [
+      [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        77,
+        1,
+        "large size difference between variants"
+      ]
+    ]
+  }
+}

@@ -1,0 +1,231 @@
+2026-11-23T08:55:01.4597297Z error: field `profile` is never read
+2026-11-23T08:55:01.4597739Z   --> hepta-agentd/src/authority_host_completed_learning.rs:23:5
+2026-11-23T08:55:01.4626137Z error: methods `recipient_profile` and `original_end` are never used
+2026-11-23T08:55:01.4626519Z   --> hepta-agentd/src/authority_host_completed_learning.rs:46:19
+2026-11-23T08:55:01.4628437Z error: methods `readback_digest` and `read_original_publication` are never used
+2026-11-23T08:55:01.4628701Z    --> hepta-agentd/src/authority_host_run_start_store.rs:201:19
+2026-11-23T08:55:01.4630475Z error: method `inspect` is never used
+2026-11-23T08:55:01.4630688Z    --> hepta-agentd/src/authority_host_publication_refusal.rs:187:19
+2026-11-23T08:55:01.4631780Z error: method `original_work_expiry_seconds` is never used
+2026-11-23T08:55:01.4632032Z   --> hepta-agentd/src/authority_host_publication_completed_refusal.rs:35:19
+2026-11-23T08:55:01.4633324Z error: method `comparison_digest` is never used
+2026-11-23T08:55:01.4633524Z   --> hepta-agentd/src/root_independent_b_client.rs:72:19
+2026-11-23T08:55:01.4634865Z error: method `accept_original_completed_learning` is never used
+2026-11-23T08:55:01.4635105Z   --> hepta-agentd/src/root_completed_learning_history.rs:62:19
+2026-11-23T08:55:01.4636663Z error: associated function `bind_original_stage_channel` is never used
+2026-11-23T08:55:01.4636933Z    --> hepta-agentd/src/circuit_candidate_learning_read_capability.rs:250:19
+2026-11-23T08:55:01.4638357Z error: method `read_original_model` is never used
+2026-11-23T08:55:01.4638564Z   --> hepta-agentd/src/cell_q24_candidate_stage_model.rs:82:25
+2026-11-23T08:55:01.4639763Z error: variant `Unavailable` is never constructed
+2026-11-23T08:55:01.4639967Z   --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-23T08:55:01.4641567Z error: associated function `from_stream` is never used
+2026-11-23T08:55:01.4641795Z   --> hepta-agentd/src/root_generation_publication_stream.rs:29:19
+2026-11-23T08:55:01.9878375Z error: this function has too many arguments (10/7)
+2026-11-23T08:55:01.9878846Z    --> hepta-agentd/src/authority_host_completed_learning.rs:145:5
+2026-11-23T08:55:01.9914101Z error: this function has too many arguments (10/7)
+2026-11-23T08:55:01.9914567Z   --> hepta-agentd/src/authority_host_completed_observation.rs:28:5
+2026-11-23T08:55:01.9941570Z error: this function has too many arguments (15/7)
+2026-11-23T08:55:01.9941983Z    --> hepta-agentd/src/authority_host_completed_observation.rs:126:5
+2026-11-23T08:55:01.9999749Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:02.0000255Z   --> hepta-agentd/src/authority_host_completed_provider.rs:16:5
+2026-11-23T08:55:02.0479242Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:02.0479658Z   --> hepta-agentd/src/authority_host_post_a_derive.rs:29:5
+2026-11-23T08:55:02.0812492Z error: this function has too many arguments (11/7)
+2026-11-23T08:55:02.0812885Z    --> hepta-agentd/src/authority_host_post_a_learning.rs:122:5
+2026-11-23T08:55:02.1723222Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:02.1723605Z    --> hepta-agentd/src/authority_host_historical_read.rs:226:5
+2026-11-23T08:55:02.5319299Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:02.5319753Z   --> hepta-agentd/src/authority_host_q24_evaluation_provider.rs:84:5
+2026-11-23T08:55:02.5413156Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:02.5413550Z   --> hepta-agentd/src/authority_host_q24_evaluation_execute.rs:17:5
+2026-11-23T08:55:02.5569824Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:02.5570266Z   --> hepta-agentd/src/authority_host_q24_evaluation_ingress.rs:17:5
+2026-11-23T08:55:02.5647482Z error: this function has too many arguments (11/7)
+2026-11-23T08:55:02.5647877Z   --> hepta-agentd/src/authority_host_q24_evaluation_operation.rs:19:5
+2026-11-23T08:55:02.5651211Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:02.5651576Z   --> hepta-agentd/src/authority_host_q24_evaluation_operation.rs:48:5
+2026-11-23T08:55:02.5655306Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:02.5655662Z   --> hepta-agentd/src/authority_host_q24_evaluation_operation.rs:70:5
+2026-11-23T08:55:02.5779237Z error: this function has too many arguments (10/7)
+2026-11-23T08:55:02.5779625Z   --> hepta-agentd/src/authority_host_q24_evaluation_prepare.rs:16:5
+2026-11-23T08:55:02.5896697Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:02.5897139Z   --> hepta-agentd/src/authority_host_q24_evaluation_registration.rs:7:5
+2026-11-23T08:55:02.5935202Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:02.5935622Z    --> hepta-agentd/src/authority_host_q24_evaluation_registration.rs:123:5
+2026-11-23T08:55:02.7907714Z error: large size difference between variants
+2026-11-23T08:55:02.7908163Z   --> hepta-agentd/src/authority_host_historical_cell_session.rs:10:1
+2026-11-23T08:55:02.9025584Z error: large size difference between variants
+2026-11-23T08:55:02.9025978Z   --> hepta-agentd/src/authority_host_historical_ledger_session.rs:9:1
+2026-11-23T08:55:02.9334278Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:02.9334763Z    --> hepta-agentd/src/authority_host_generation_publication_runtime.rs:94:1
+2026-11-23T08:55:02.9338849Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:02.9339241Z    --> hepta-agentd/src/authority_host_generation_publication_runtime.rs:119:1
+2026-11-23T08:55:03.0908774Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:03.0909321Z   --> hepta-agentd/src/authority_host_completed_publication_deployment.rs:20:1
+2026-11-23T08:55:03.1744590Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:03.1744951Z   --> hepta-agentd/src/authority_host_original_publication_route.rs:7:1
+2026-11-23T08:55:03.5162336Z error: large size difference between variants
+2026-11-23T08:55:03.5163050Z   --> hepta-agentd/src/authority_host_historical_ledger_files.rs:36:1
+2026-11-23T08:55:03.5277918Z error: large size difference between variants
+2026-11-23T08:55:03.5278510Z   --> hepta-agentd/src/authority_host_historical_ledger_history.rs:26:1
+2026-11-23T08:55:03.7571474Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:03.7571908Z   --> hepta-agentd/src/authority_host_run_start_context.rs:47:5
+2026-11-23T08:55:03.7735242Z error: large size difference between variants
+2026-11-23T08:55:03.7735667Z   --> hepta-agentd/src/authority_host_run_start_historical.rs:7:1
+2026-11-23T08:55:03.7847619Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:03.7848028Z   --> hepta-agentd/src/authority_host_run_start_historical.rs:52:5
+2026-11-23T08:55:03.8697803Z error: large size difference between variants
+2026-11-23T08:55:03.8698280Z   --> hepta-agentd/src/authority_host_generation_initial_transport.rs:37:1
+2026-11-23T08:55:03.8942960Z error: this function has too many arguments (10/7)
+2026-11-23T08:55:03.8943661Z   --> hepta-agentd/src/authority_host_generation_initial_transport.rs:69:5
+2026-11-23T08:55:03.9724852Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:03.9725235Z    --> hepta-agentd/src/authority_host_generation_publication_enrollment.rs:95:5
+2026-11-23T08:55:04.0043091Z error: large size difference between variants
+2026-11-23T08:55:04.0043911Z   --> hepta-agentd/src/authority_host_generation_publication_transport.rs:25:1
+2026-11-23T08:55:04.0290467Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:04.0290877Z   --> hepta-agentd/src/authority_host_generation_publication_transport.rs:60:5
+2026-11-23T08:55:04.0298244Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:04.0298670Z   --> hepta-agentd/src/authority_host_generation_publication_transport.rs:82:5
+2026-11-23T08:55:04.0301068Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:04.0301324Z    --> hepta-agentd/src/authority_host_generation_publication_transport.rs:105:5
+2026-11-23T08:55:04.0596007Z error: large size difference between variants
+2026-11-23T08:55:04.0596915Z   --> hepta-agentd/src/authority_host_publication_bootstrap.rs:17:1
+2026-11-23T08:55:04.1538310Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:04.1538796Z   --> hepta-agentd/src/authority_host_publication_completed_open.rs:14:5
+2026-11-23T08:55:04.1789782Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:04.1790226Z   --> hepta-agentd/src/authority_host_publication_registration.rs:13:5
+2026-11-23T08:55:04.2379079Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:04.2379568Z   --> hepta-agentd/src/authority_host_publication_grant.rs:77:5
+2026-11-23T08:55:04.3606009Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:04.3606605Z    --> hepta-agentd/src/authority_host_q24_model_profile.rs:100:5
+2026-11-23T08:55:04.3943050Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:04.3943760Z   --> hepta-agentd/src/authority_host_q24_model_b_transport.rs:9:1
+2026-11-23T08:55:04.4264547Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:04.4264929Z   --> hepta-agentd/src/authority_host_q24_model_transport.rs:85:5
+2026-11-23T08:55:04.4267745Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:04.4268113Z    --> hepta-agentd/src/authority_host_q24_model_transport.rs:106:5
+2026-11-23T08:55:04.5813157Z error: large size difference between variants
+2026-11-23T08:55:04.5813906Z   --> hepta-agentd/src/authority_host_learning_resident_authority.rs:33:1
+2026-11-23T08:55:04.5819437Z error: large size difference between variants
+2026-11-23T08:55:04.5819671Z   --> hepta-agentd/src/authority_host_learning_resident_authority.rs:71:1
+2026-11-23T08:55:04.6156064Z error: large size difference between variants
+2026-11-23T08:55:04.6156646Z   --> hepta-agentd/src/authority_host_learning_resident_runtime.rs:56:1
+2026-11-23T08:55:04.6339321Z error: large size difference between variants
+2026-11-23T08:55:04.6339805Z   --> hepta-agentd/src/authority_host_learning_resident_stages.rs:24:1
+2026-11-23T08:55:04.6805411Z error: large size difference between variants
+2026-11-23T08:55:04.6805945Z   --> hepta-agentd/src/authority_host_learning_resident_transport.rs:72:1
+2026-11-23T08:55:04.6810513Z error: large size difference between variants
+2026-11-23T08:55:04.6810757Z   --> hepta-agentd/src/authority_host_learning_resident_transport.rs:77:1
+2026-11-23T08:55:04.6816027Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:04.6816527Z    --> hepta-agentd/src/authority_host_learning_resident_transport.rs:131:5
+2026-11-23T08:55:04.6819423Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:04.6819671Z    --> hepta-agentd/src/authority_host_learning_resident_transport.rs:159:5
+2026-11-23T08:55:04.6915022Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:04.6915439Z   --> hepta-agentd/src/authority_host_learning_resident_model_recovery.rs:20:5
+2026-11-23T08:55:05.6041414Z error: large size difference between variants
+2026-11-23T08:55:05.6041856Z   --> hepta-agentd/src/automation_effect_host.rs:76:1
+2026-11-23T08:55:06.5934818Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:06.5935269Z    --> hepta-agentd/src/cell_q24_dataset.rs:188:5
+2026-11-23T08:55:06.7597875Z error: large size difference between variants
+2026-11-23T08:55:06.7598618Z    --> hepta-agentd/src/cell_q24_task_ledger.rs:105:1
+2026-11-23T08:55:06.9465776Z error: large size difference between variants
+2026-11-23T08:55:06.9466484Z   --> hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs:68:1
+2026-11-23T08:55:07.0708309Z error: large size difference between variants
+2026-11-23T08:55:07.0709098Z   --> hepta-agentd/src/circuit_learning_completion_readiness.rs:68:1
+2026-11-23T08:55:07.2427651Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:07.2428109Z   --> hepta-agentd/src/circuit_retained_version_service.rs:71:5
+2026-11-23T08:55:07.2639319Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:07.2639783Z    --> hepta-agentd/src/circuit_retained_version_host.rs:157:5
+2026-11-23T08:55:07.3855254Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:07.3855598Z    --> hepta-agentd/src/circuit_model_version_service.rs:121:5
+2026-11-23T08:55:07.3967577Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:07.3968011Z    --> hepta-agentd/src/circuit_model_version_service.rs:262:5
+2026-11-23T08:55:07.3985009Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:07.3985375Z    --> hepta-agentd/src/circuit_model_version_service.rs:304:5
+2026-11-23T08:55:07.4051479Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:07.4051896Z    --> hepta-agentd/src/circuit_model_version_host.rs:199:5
+2026-11-23T08:55:07.5140643Z error: large size difference between variants
+2026-11-23T08:55:07.5141252Z    --> hepta-agentd/src/circuit_feature_current.rs:161:1
+2026-11-23T08:55:07.6870065Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:07.6870476Z    --> hepta-agentd/src/circuit_on_policy_evaluation_readback.rs:163:5
+2026-11-23T08:55:07.7084113Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:07.7084607Z   --> hepta-agentd/src/circuit_on_policy_evaluation_records.rs:29:1
+2026-11-23T08:55:07.7155311Z error: large size difference between variants
+2026-11-23T08:55:07.7155682Z   --> hepta-agentd/src/circuit_evaluation_cohort_custody.rs:23:1
+2026-11-23T08:55:07.7177617Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:07.7177960Z   --> hepta-agentd/src/circuit_evaluation_cohort_custody.rs:77:5
+2026-11-23T08:55:07.8465837Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:07.8466289Z    --> hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs:143:5
+2026-11-23T08:55:07.8560316Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:07.8560753Z   --> hepta-agentd/src/circuit_original_evaluation_provider_records.rs:48:1
+2026-11-23T08:55:07.8714952Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:07.8715426Z    --> hepta-agentd/src/circuit_original_evaluation_provider_records.rs:227:5
+2026-11-23T08:55:08.1644332Z error: large size difference between variants
+2026-11-23T08:55:08.1644796Z   --> hepta-agentd/src/circuit_task_learning.rs:30:1
+2026-11-23T08:55:08.8977717Z error: large size difference between variants
+2026-11-23T08:55:08.8978381Z   --> hepta-agentd/src/learning_iteration_command_evidence.rs:17:1
+2026-11-23T08:55:09.1171758Z error: large size difference between variants
+2026-11-23T08:55:09.1172111Z   --> hepta-agentd/src/cell_q24_model_command_effect.rs:13:1
+2026-11-23T08:55:09.1935215Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:09.1935703Z   --> hepta-agentd/src/cell_q24_model_command_connection.rs:61:5
+2026-11-23T08:55:09.1939460Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:09.1939682Z   --> hepta-agentd/src/cell_q24_model_command_connection.rs:82:5
+2026-11-23T08:55:09.3648204Z error: large size difference between variants
+2026-11-23T08:55:09.3648683Z    --> hepta-agentd/src/cell_q24_training_command_wire.rs:141:1
+2026-11-23T08:55:09.4552297Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:09.4552762Z    --> hepta-agentd/src/cell_q24_training_command.rs:235:5
+2026-11-23T08:55:09.5479865Z error: large size difference between variants
+2026-11-23T08:55:09.5480599Z    --> hepta-agentd/src/circuit_selection_command_wire.rs:136:1
+2026-11-23T08:55:09.5780886Z error: this function has too many arguments (10/7)
+2026-11-23T08:55:09.5781303Z    --> hepta-agentd/src/circuit_selection_command.rs:274:5
+2026-11-23T08:55:09.6491697Z error: large size difference between variants
+2026-11-23T08:55:09.6492113Z    --> hepta-agentd/src/circuit_next_use_command_wire.rs:136:1
+2026-11-23T08:55:09.6894749Z error: this function has too many arguments (11/7)
+2026-11-23T08:55:09.6895196Z    --> hepta-agentd/src/circuit_next_use_command.rs:297:5
+2026-11-23T08:55:09.7641624Z error: large size difference between variants
+2026-11-23T08:55:09.7642090Z    --> hepta-agentd/src/circuit_candidate_next_use_command_wire.rs:137:1
+2026-11-23T08:55:09.8075934Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:09.8076557Z    --> hepta-agentd/src/circuit_candidate_next_use_command.rs:282:5
+2026-11-23T08:55:09.8787932Z error: large size difference between variants
+2026-11-23T08:55:09.8788377Z    --> hepta-agentd/src/circuit_model_selection_command_wire.rs:136:1
+2026-11-23T08:55:09.9015700Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:09.9016282Z    --> hepta-agentd/src/circuit_model_selection_command.rs:212:5
+2026-11-23T08:55:09.9151479Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:09.9151886Z    --> hepta-agentd/src/cell_q24_material_command_service.rs:119:5
+2026-11-23T08:55:09.9954253Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:09.9954660Z    --> hepta-agentd/src/cell_q24_material_command.rs:236:5
+2026-11-23T08:55:10.0017803Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:10.0018156Z   --> hepta-agentd/src/cell_q24_material_source_connection.rs:35:5
+2026-11-23T08:55:10.1425910Z error: large size difference between variants
+2026-11-23T08:55:10.1426504Z   --> hepta-agentd/src/cell_q24_evaluation_stage.rs:32:1
+2026-11-23T08:55:10.1596259Z error: large size difference between variants
+2026-11-23T08:55:10.1596744Z   --> hepta-agentd/src/cell_q24_learning_owner_inputs.rs:48:1
+2026-11-23T08:55:10.1612827Z error: large size difference between variants
+2026-11-23T08:55:10.1613127Z    --> hepta-agentd/src/cell_q24_learning_owner_inputs.rs:164:1
+2026-11-23T08:55:10.3551873Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:10.3552399Z   --> hepta-agentd/src/cell_q24_model_current_admission.rs:20:1
+2026-11-23T08:55:10.4726971Z error: large size difference between variants
+2026-11-23T08:55:10.4727413Z   --> hepta-agentd/src/neuron_generation_receipt_owner.rs:81:1
+2026-11-23T08:55:11.0162507Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:11.0163022Z   --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:51:5
+2026-11-23T08:55:11.0167013Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:11.0167392Z   --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:76:5
+2026-11-23T08:55:11.0170985Z error: this function has too many arguments (10/7)
+2026-11-23T08:55:11.0171361Z    --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:101:5
+2026-11-23T08:55:11.1482054Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:11.1482585Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs:47:5
+2026-11-23T08:55:11.2077035Z error: this function has too many arguments (8/7)
+2026-11-23T08:55:11.2077546Z   --> hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs:12:1
+2026-11-23T08:55:11.2382986Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:11.2383459Z    --> hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs:371:1
+2026-11-23T08:55:11.3780964Z error: large size difference between variants
+2026-11-23T08:55:11.3781438Z   --> hepta-agentd/src/neuron_cell_evaluation_training_source.rs:21:1
+2026-11-23T08:55:13.2355375Z error: this function has too many arguments (9/7)
+2026-11-23T08:55:13.2355815Z   --> hepta-agentd/src/production_post_a_c_recovery.rs:22:5
+2026-11-23T08:55:13.2505669Z error: this function has too many arguments (10/7)
+2026-11-23T08:55:13.2506063Z    --> hepta-agentd/src/production_post_a_c_task.rs:140:5
+2026-11-23T08:55:13.2562062Z error: large size difference between variants
+2026-11-23T08:55:13.2562591Z   --> hepta-agentd/src/production_post_a_continuation.rs:61:1
+2026-11-23T08:55:14.5408228Z error: large size difference between variants
+2026-11-23T08:55:14.5408754Z   --> hepta-agentd/src/memory_serving_qualification.rs:17:1
+2026-11-23T08:55:15.8138826Z error: could not compile `codex-hepta-agentd` (lib) due to 115 previous errors

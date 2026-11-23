@@ -1,0 +1,111 @@
+{
+  "base": "c12ee03f3185d5a13949faca54f066dfd634e509",
+  "candidate": "f2d0f3ddaf5a2350ddb46584ad3b80d3271f982f",
+  "direct_donor_scope": "per whole historical file, others unchanged; production candidate takes only the three exact resident substitutions",
+  "donor": "24abd04c825cb0d5d0ce27b52ac5008eda13dde4",
+  "private_cases": [
+    "HistoryState",
+    "ReadState",
+    "ClientOriginV3",
+    "ResidentExchangeV3",
+    "OriginalCohort",
+    "OriginalLearningReceiptSourceV1",
+    "PreparedCTask"
+  ],
+  "readback_symbol_count_in_all_codex_rs": {
+    "recover_original_model_root_stream": [
+      [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_recovery.rs",
+        20,
+        "pub fn recover_original_model_root_stream("
+      ]
+    ],
+    "recover_original_root_stream": [
+      [
+        "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+        131,
+        "pub fn recover_original_root_stream("
+      ]
+    ]
+  },
+  "source_blob_comparisons": {
+    "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs": {
+      "base": "8c081ae67e7b4083bd58546963190d22709ecd1e",
+      "base_source_guard": "pass",
+      "candidate": "8c081ae67e7b4083bd58546963190d22709ecd1e",
+      "candidate_source_guard": "pass",
+      "direct_full_donor_source_guard": "pass",
+      "donor": "9b6844912fa9921ebab5f59b29305a451b6fdb6b",
+      "donor_lost_literal_markers": []
+    },
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs": {
+      "base": "40b744877e6e3a0e02dea0fdc9fffb8859eefdf7",
+      "base_source_guard": "pass",
+      "candidate": "747e86df3d0e937dc00ccec4ba9f898c7635a766",
+      "candidate_source_guard": "pass",
+      "direct_full_donor_source_guard": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(: required code order missing: ['Self::bind(', 'ClientOriginV3::Readback(authorization),\\n            expected.map(|(snapshot, attestations)| ResidentReadbackPinV3 {\\n                snapshot,\\n                attestations,\\n                model: None,\\n            }),\\n            timeout,\\n            lifetime']",
+      "donor": "dbc04d9ce656c5f19d8169ca73acdc5aaa221af9",
+      "donor_lost_literal_markers": []
+    },
+    "codex-rs/hepta-agentd/src/authority_host_run_start_historical.rs": {
+      "base": "3656ba59396ffcc5e873db6b28ab3d49bb48d30a",
+      "base_source_guard": "pass",
+      "candidate": "3656ba59396ffcc5e873db6b28ab3d49bb48d30a",
+      "candidate_source_guard": "pass",
+      "direct_full_donor_source_guard": "codex-rs/hepta-agentd/src/authority_host_run_start_historical.rs:fn require_original_publisher(: required code order missing: ['self.state.try_lock()', 'self.failed.store(true, Ordering::Release)', 'std::mem::replace(&mut *state, ReadState::Verifying)', 'ReadState::AwaitingBinding', 'require_end(self.end)?', 'self.retained.state.require_exact_unchecked()?', 'neuron_generation_process_identity_digest_v1(identity)', 'original.spawn_generation != identity.spawn_generation', '&original.target != target', 'target.scope().agent_id != identity.agent_id.as_str()', '&original.publisher != publisher', 'original.publisher_epoch != publisher_epoch', 'publisher_epoch == 0', 'original.initial_profile != initial_profile', 'original.writer != writer', 'original.target_files != target_files', '*state = ReadState::Bound(identity.clone())']",
+      "donor": "d3b0cd2e25479fec74656bc34f2629f319eeb211",
+      "donor_lost_literal_markers": []
+    },
+    "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs": {
+      "base": "3f35ff835cc669fab2e80a59b1fafdf868887e59",
+      "base_source_guard": "pass",
+      "candidate": "3f35ff835cc669fab2e80a59b1fafdf868887e59",
+      "candidate_source_guard": "pass",
+      "direct_full_donor_source_guard": "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs: required marker missing: 'Shared(OriginalCircuitEvaluationCohortReadbackV1)'",
+      "donor": "0251265dad9e4687174914d9827ef7aa90bc5b8e",
+      "donor_lost_literal_markers": [
+        "Shared(OriginalCircuitEvaluationCohortReadbackV1)",
+        "Paired(OriginalCircuitOnPolicyCohortReadbackV1)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs": {
+      "base": "741245a241f0e5f758f4b13c52249e0256ce2bd2",
+      "base_source_guard": "pass",
+      "candidate": "741245a241f0e5f758f4b13c52249e0256ce2bd2",
+      "candidate_source_guard": "pass",
+      "direct_full_donor_source_guard": "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs: required marker missing: 'Feature(OriginalCircuitFeatureLearningSourcesV1)'",
+      "donor": "64c8ee80ffa4bf310bb14dee4e4959c37fcbc0e3",
+      "donor_lost_literal_markers": [
+        "Feature(OriginalCircuitFeatureLearningSourcesV1)"
+      ]
+    },
+    "codex-rs/hepta-agentd/src/production_post_a_continuation.rs": {
+      "base": "963bd53b4d247e36eeecb07bae98284b42fb9c9c",
+      "base_source_guard": "pass",
+      "candidate": "963bd53b4d247e36eeecb07bae98284b42fb9c9c",
+      "candidate_source_guard": "pass",
+      "direct_full_donor_source_guard": "pass",
+      "donor": "852f6d2128d96d4e935364dd55ceb8829176e5c6",
+      "donor_lost_literal_markers": []
+    }
+  },
+  "unchanged_controls": {
+    "authority_host_historical_task.rs": "e89132647f7d40e9813a9bff227de2f2a5a117b8",
+    "authority_host_learning_resident_auth.rs": "11ac7fe65e891c5f8e0bd46098e461d15e20a081",
+    "authority_host_learning_resident_model_recovery.rs": "408aadf5c3121aaaba30f5dbbe762599af9ebdd8",
+    "authority_host_learning_resident_profile.rs": "0cb2317f282814db87c0eb355f3aabb7c0ce6143",
+    "authority_host_learning_resident_root_support_tests.rs": "73ead0c262b41d6a255d3b6b78a74e51af08ff7e",
+    "authority_host_learning_resident_root_tests.rs": "a3d0689fba79c04f208aa432c956582db0e88d09",
+    "authority_host_learning_resident_transport_tests.rs": "a5e77fc7ee60034461139cef18bfca52c0e927ab",
+    "authority_host_learning_resident_wire.rs": "fc7639e90284d2a46c48643ef169e90c2bbb2aa9",
+    "authority_host_run_start_retention_tests.rs": "c420228c544d26414eb21ae2035bc9227811daef",
+    "circuit_feature_historical_source.rs": "7056fed0c25c6f4c9306b7eeb15d49675e82dd0c",
+    "circuit_feature_learning_receipt_tests.rs": "5133327c3c43193eafd7685a3a0594fe136e4472",
+    "circuit_on_policy_evaluation_policy_tests.rs": "34f91615763011cca202cea77e1c15b9b5e2dd84",
+    "circuit_original_evaluation_panel_member_support_tests.rs": "5cb29191378daab7890e2024e7837cca66dbd3eb",
+    "circuit_original_evaluation_panel_tests.rs": "0240c93025b57b7de3a62dddb595843fd2b24814",
+    "neuron_generation_receipt_owner_tests.rs": "38dd5ac2a86fdf1e6c8d1235882fd6a180ca8873",
+    "ordinary_q24_cold_process_tests.rs": "6d1e0302d0ec0666cd89869a378b1e68bdeaed51",
+    "root_historical_ledger_data_tests.rs": "68f796dcbd33f5c1062dbae54d6323dd09ad4c44"
+  }
+}
