@@ -1,0 +1,73 @@
+name: Verify integrated Agentd source guards and original strict gate on 3b138733
+on:
+  push:
+    branches: ["diagnostic/combined-strict-3b138733-20261123"]
+permissions:
+  contents: read
+env:
+  SUBJECT: 3b1387335f57a67ae9f5878064feb26a1601d715
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 3b1387335f57a67ae9f5878064feb26a1601d715
+          persist-credentials: false
+      - name: Verify original caller census and publication source guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SUBJECT"
+          dir="$RUNNER_TEMP/source-evidence"
+          mkdir "$dir"
+          git rev-parse HEAD > "$dir/commit.txt"
+          python3 -B scripts/verify_hepta_callers.py verify > "$dir/callers.json"
+          for source_guard in test_first_publication_acceptance_source_closure.py test_original_publication_route_source_closure.py test_post_a_original_files_source_closure.py test_post_a_physical_preparation_source_closure.py test_post_a_publication_source_closure.py test_publication_v2_source_closure.py test_original_artifact_head_source_closure.py test_original_evaluation_provider_source_closure.py test_original_on_policy_evaluation_source_closure.py test_original_learning_owner_source_closure.py test_successor_historical_client_source_closure.py; do
+            test -s "qa/b4-no-bypass/$source_guard"
+            python3 -B -m unittest discover -s qa/b4-no-bypass -p "$source_guard" -v |& tee "$dir/$source_guard.log"
+            grep -Eq '^Ran [1-9][0-9]* tests?' "$dir/$source_guard.log"
+          done
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: combined-3b138-source
+          path: ${{ runner.temp }}/source-evidence
+
+  strict:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 130
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 3b1387335f57a67ae9f5878064feb26a1601d715
+          persist-credentials: false
+      - run: python3 scripts/hepta_ci_toolchain.py --github-env "$GITHUB_ENV"
+      - name: Execute original all-target strict compiler command
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SUBJECT"
+          dir="$RUNNER_TEMP/strict-evidence"
+          mkdir "$dir"
+          git rev-parse HEAD > "$dir/commit.txt"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/strict-target"
+          rustc -Vv > "$dir/rustc.txt"
+          cargo clippy --version > "$dir/clippy.txt"
+          set +e
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings > "$dir/strict.log" 2>&1
+          status=$?
+          set -e
+          echo "$status" > "$dir/strict.exit"
+          tail -15 "$dir/strict.log"
+          exit "$status"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: combined-3b138-strict
+          path: ${{ runner.temp }}/strict-evidence
