@@ -1,0 +1,69 @@
+name: Observe only the original resident queued-cancellation result
+on:
+  push:
+    branches: ["diagnostic/agentd-resident-readback-outcome-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: d1ab8c895dbdceda956f7765da36e07a71c7f760
+  OBSERVATION: 3dbf9f884e77fff4d0028d16fa306036e1af30a3
+jobs:
+  readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Require the one test-only source change and build the observed ELF
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          export evidence="$RUNNER_TEMP/queue-observation-evidence"
+          mkdir "$evidence"
+          test "$(git rev-parse HEAD^)" = "$OBSERVATION"
+          test "$(git rev-parse "$OBSERVATION^")" = "$BASE"
+          test "$(git diff --name-only "$BASE" "$OBSERVATION")" = codex-rs/hepta-agentd/src/authority_host_learning_resident_transport_tests.rs
+          git diff "$BASE" "$OBSERVATION" > "$evidence/observed-source.diff"
+          git worktree add --quiet --detach "$RUNNER_TEMP/queue-observation" "$OBSERVATION"
+          cd "$RUNNER_TEMP/queue-observation"
+          git rev-parse HEAD > "$evidence/source.txt"
+          ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$evidence/build.log"
+          file=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$evidence/build.log" | tail -1)
+          test -x "$file"
+          cp -L "$file" "$RUNNER_TEMP/queue-only-observation"
+          sha256sum "$RUNNER_TEMP/queue-only-observation" > "$evidence/elf.txt"
+      - name: Ten independent runs of the single original UID0 case
+        shell: bash
+        run: |
+          set -euo pipefail
+          export OBS_FIXTURE=/run/hepta-agentd-queued-readback-observe-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT
+          sudo -n mkdir -m 700 "$OBS_FIXTURE"
+          cleanup() {
+            for sub in witness-bind bind; do
+              if sudo -n mountpoint -q "$OBS_FIXTURE/$sub"; then sudo -n umount "$OBS_FIXTURE/$sub"; fi
+            done
+          }
+          trap cleanup EXIT
+          sudo -n mkdir -m 700 "$OBS_FIXTURE/source" "$OBS_FIXTURE/bind" "$OBS_FIXTURE/checkpoints" "$OBS_FIXTURE/witness-source" "$OBS_FIXTURE/witness-bind"
+          sudo -n mount --bind "$OBS_FIXTURE/source" "$OBS_FIXTURE/bind"
+          sudo -n mount --bind "$OBS_FIXTURE/witness-source" "$OBS_FIXTURE/witness-bind"
+          python3 .github/scripts/agentd-observe-readback.py
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: original-queued-readback-observation
+          path: ${{ runner.temp }}/queue-observation-evidence
+          if-no-files-found: error
