@@ -40,7 +40,7 @@ type Error = OriginalCellQ24TrainingCommandConnectionErrorV1;
 
 enum Origin {
     Fresh,
-    Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+    Recovered(Option<Box<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>>),
 }
 
 pub struct OriginalCellQ24TrainingCommandConnectionV1 {
@@ -91,7 +91,7 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
             material,
             timeout,
             lifetime,
-            Origin::Recovered(expected),
+            Origin::Recovered(expected.map(Box::new)),
         )
     }
 
@@ -202,7 +202,8 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
             Origin::Recovered(expected) => (
                 true,
                 expected
-                    .map(|(receipt, attestation)| {
+                    .map(|original| {
+                        let (receipt, attestation) = *original;
                         wire::authenticate_receipt(&context, receipt, attestation, verified_at)
                     })
                     .transpose()?,

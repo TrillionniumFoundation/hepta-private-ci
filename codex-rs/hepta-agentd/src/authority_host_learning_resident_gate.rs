@@ -143,7 +143,7 @@ impl Drop for ResidentContinuationV3 {
 enum GateActionV3 {
     Current,
     Begin(LearningIterationStageV1),
-    Checkpoint(LearningIterationSnapshotV1),
+    Checkpoint(Box<LearningIterationSnapshotV1>),
 }
 
 impl RootResidentLearningEffectGateV3 {
@@ -180,7 +180,7 @@ impl RootResidentLearningEffectGateV3 {
         // Preserve the original authority clock sampled after the actual CAS.
         // The same continuation must revalidate its complete role evidence at
         // that boundary before attempting any subsequent stage.
-        self.local(GateActionV3::Checkpoint(next), predecessor)
+        self.local(GateActionV3::Checkpoint(Box::new(next)), predecessor)
             .await
     }
 
