@@ -1,4 +1,6 @@
 use std::collections::BTreeMap;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use sqlx::Row;
 use uuid::Uuid;
@@ -182,7 +184,7 @@ impl StateRuntime {
             }
         }
         let id = Uuid::now_v7().to_string();
-        let now = chrono::Utc::now().timestamp_millis();
+        let now = current_unix_millis();
         let position = sqlx::query_scalar::<_, Option<i64>>("SELECT MAX(position) FROM projects")
             .fetch_one(&mut *tx)
             .await?
@@ -261,7 +263,7 @@ impl StateRuntime {
             tx.rollback().await?;
             return Ok(Some((current, false)));
         }
-        let now = chrono::Utc::now().timestamp_millis();
+        let now = current_unix_millis();
         sqlx::query("UPDATE projects SET name = ?, metadata = ?, updated_at_ms = ? WHERE id = ?")
             .bind(&next_name)
             .bind(serde_json::to_string(&next_metadata)?)
@@ -332,7 +334,7 @@ impl StateRuntime {
                 .await?;
         }
         sqlx::query("UPDATE projects SET updated_at_ms = ? WHERE id = ?")
-            .bind(chrono::Utc::now().timestamp_millis())
+            .bind(current_unix_millis())
             .bind(project_id)
             .execute(&mut *tx)
             .await?;
@@ -485,6 +487,24 @@ fn parse_project_cursor(cursor: &str) -> anyhow::Result<(i64, String)> {
 
 fn invalid_project_cursor(cursor: &str) -> anyhow::Error {
     anyhow::anyhow!("invalid project cursor: {cursor}")
+}
+
+/// Match Chrono's Unix-millisecond floor for times before and after the epoch.
+
+fn unix_millis(timestamp: SystemTime) -> Option<i64> {
+    match timestamp.duration_since(UNIX_EPOCH) {
+        Ok(elapsed) => i64::try_from(elapsed.as_millis()).ok(),
+        Err(before_epoch) => {
+            let elapsed = before_epoch.duration();
+            let whole_millis = i64::try_from(elapsed.as_millis()).ok()?;
+            let fractional = i64::from(elapsed.subsec_nanos() % 1_000_000 != 0);
+            whole_millis.checked_add(fractional)?.checked_neg()
+        }
+    }
+}
+
+fn current_unix_millis() -> i64 {
+    unix_millis(SystemTime::now()).expect("system time outside supported Unix-millisecond range")
 }
 
 #[cfg(test)]
