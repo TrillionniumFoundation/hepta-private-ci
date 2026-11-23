@@ -35,21 +35,7 @@ impl CellSplitDispatchReceiptV1 {
 
 /// Canonical digest of the concrete CNS route identity used by the binding.
 pub fn cns_route_digest_v1(route: &CnsRouteV1) -> Digest32 {
-    let mut bytes = b"hepta.cns.cell-route.v1\0".to_vec();
-    push_id(&mut bytes, &route.cns);
-    bytes.extend_from_slice(&route.generation.get().to_be_bytes());
-    bytes.extend_from_slice(route.hierarchy_digest.as_array());
-    push_id(&mut bytes, &route.source.system);
-    push_id(&mut bytes, &route.source.organ);
-    push_id(&mut bytes, &route.source.driver);
-    bytes.extend_from_slice(&(route.output_port as u64).to_be_bytes());
-    bytes.extend_from_slice(&(route.targets.len() as u64).to_be_bytes());
-    for target in &route.targets {
-        push_id(&mut bytes, &target.system);
-        push_id(&mut bytes, &target.organ);
-        push_id(&mut bytes, &target.driver);
-    }
-    Digest32::of_bytes(&bytes)
+    crate::organ_hierarchy::cns_route_digest_v1(route)
 }
 
 /// Digest the route together with the actual target input-port indices held by
