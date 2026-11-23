@@ -1,0 +1,55 @@
+{
+  "source": "610f91087b598656f7f3913e600c705b95bf071f",
+  "tree": "e7b3615a8eb989b6df6970ea0c42262811f480ce",
+  "artifact": 14814275143,
+  "zip_sha256": "b1bcaeb231266d79f378d45cfe2d8fe25223943286256403441505b0486a3b31",
+  "job": 137650500461,
+  "run": 45162302799,
+  "upstream_passed": 12,
+  "hosted_torch": "2.10.0+cpu",
+  "portable_torch": "2.15.0+cpu",
+  "comparisons": {
+    "finite-marked-reference.json": {
+      "numeric_entries": 610,
+      "different_numeric_entries": 133,
+      "largest_absolute_difference": 1.48029366542346e-11,
+      "largest_absolute_path": "/objective_fd/sigma/h_1e-5",
+      "version_or_reference_fields": []
+    },
+    "finite-marked.json": {
+      "numeric_entries": 106,
+      "different_numeric_entries": 38,
+      "largest_absolute_difference": 1.48029366542346e-11,
+      "largest_absolute_path": "/derivatives/sigma/independent_fd",
+      "version_or_reference_fields": [
+        "/torch",
+        "/reference_sha256"
+      ]
+    },
+    "mixed-continuum.json": {
+      "numeric_entries": 127,
+      "different_numeric_entries": 26,
+      "largest_absolute_difference": 1.1102230246251565e-16,
+      "largest_absolute_path": "/orders/0.06/32/errors/density_content",
+      "version_or_reference_fields": [
+        "/torch"
+      ]
+    },
+    "qvi-finite-bridge.json": {
+      "numeric_entries": 168,
+      "different_numeric_entries": 5,
+      "largest_absolute_difference": 2.220446049250313e-16,
+      "largest_absolute_path": "/perturbations/spike_cost/boundary_change_A",
+      "version_or_reference_fields": [
+        "/torch_version"
+      ]
+    }
+  },
+  "hosted_physical_gradient_max_error": 2.4029445100381963e-11,
+  "hosted_two_neuron_gradient_max_error": 5.340539122045129e-11,
+  "hosted_mixed_split_max_errors": [
+    1.5543122344752192e-15,
+    2.6645352591003757e-15
+  ],
+  "hosted_signed_and_unmarked_flux_max_error": 4.440892098500626e-16
+}
