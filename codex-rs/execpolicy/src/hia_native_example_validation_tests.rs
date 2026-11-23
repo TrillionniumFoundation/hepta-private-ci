@@ -165,3 +165,21 @@ fn rejects_positive_misses_exceeding_completed_examples() {
 fn rejects_negative_mode_with_prior_misses() {
     let _ = validate_response(NEGATIVE, 2, 0, 1, false, &frame([NEXT, 1, 0, 0]));
 }
+
+#[test]
+#[should_panic(expected = "input mode is invalid")]
+fn native_step_rejects_unknown_mode_before_ffi() {
+    let _ = super::step(7, 0, 0, 0, false);
+}
+
+#[test]
+#[should_panic(expected = "empty-example input state is invalid")]
+fn native_step_rejects_noncanonical_empty_state_before_ffi() {
+    let _ = super::step(POSITIVE, 0, 0, 0, true);
+}
+
+#[test]
+#[should_panic(expected = "input state is invalid")]
+fn native_step_rejects_impossible_miss_count_before_ffi() {
+    let _ = super::step(POSITIVE, 2, 0, 1, true);
+}
