@@ -39,10 +39,37 @@ mod linux {
     }
 
     #[derive(Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Statement {
+        study_sha256: String,
+        scope: Scope,
+    }
+
+    #[derive(Deserialize)]
     #[serde(tag = "use", rename_all = "snake_case", deny_unknown_fields)]
     enum Scope {
         Train { failure: String, correction: String },
         EvaluateOnly { freeze: String, task: String },
+    }
+
+    impl Scope {
+        fn parse(self) -> anyhow::Result<PairedLearningDataUse> {
+            Ok(match self {
+                Scope::Train {
+                    failure,
+                    correction,
+                } => PairedLearningDataUse::TrainOnFailureAndCorrection {
+                    failure: failure.parse()?,
+                    correction: correction.parse()?,
+                },
+                Scope::EvaluateOnly { freeze, task } => {
+                    PairedLearningDataUse::EvaluateOnlyAfterFreeze {
+                        freeze: freeze.parse()?,
+                        task: task.parse()?,
+                    }
+                }
+            })
+        }
     }
 
     fn inherited(fd: RawFd) -> std::io::Result<OwnedFd> {
@@ -64,10 +91,17 @@ mod linux {
     }
 
     pub(super) fn run() -> anyhow::Result<()> {
-        let usage = "hepta-paired-consent ROOT_PID SQLITE_HOME ROUTE_JSON < private-refs.json\nThe existing protected Linux owner passes the Root issuer socket on fd 3 and its held pidfd on fd 4.";
+        let usage = "hepta-paired-consent --print-statement < scope.json\nhepta-paired-consent ROOT_PID SQLITE_HOME ROUTE_JSON < private-refs.json\nThe existing protected Linux owner passes the Root issuer socket on fd 3 and its held pidfd on fd 4.";
         let args: Vec<_> = std::env::args_os().skip(1).collect();
         if matches!(args.as_slice(), [flag] if flag == "--help") {
             println!("{usage}");
+            return Ok(());
+        }
+        if matches!(args.as_slice(), [flag] if flag == "--print-statement") {
+            let statement: Statement = serde_json::from_slice(&bounded_json(std::io::stdin())?)?;
+            let study = statement.study_sha256.parse()?;
+            let scope = statement.scope.parse()?;
+            print!("{}", scope.consent_text(study));
             return Ok(());
         }
         let [pid, sqlite_home, route_file] = args.as_slice() else {
@@ -90,21 +124,7 @@ mod linux {
         let request: Request = serde_json::from_slice(&bytes)?;
         let study: Digest32 = request.study_sha256.parse()?;
         let delivery: Digest32 = request.delivery_id.parse()?;
-        let allowed = match request.scope {
-            Scope::Train {
-                failure,
-                correction,
-            } => PairedLearningDataUse::TrainOnFailureAndCorrection {
-                failure: failure.parse()?,
-                correction: correction.parse()?,
-            },
-            Scope::EvaluateOnly { freeze, task } => {
-                PairedLearningDataUse::EvaluateOnlyAfterFreeze {
-                    freeze: freeze.parse()?,
-                    task: task.parse()?,
-                }
-            }
-        };
+        let allowed = request.scope.parse()?;
         let sqlite =
             SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(sqlite_home)?);
         let runtime = tokio::runtime::Builder::new_current_thread()

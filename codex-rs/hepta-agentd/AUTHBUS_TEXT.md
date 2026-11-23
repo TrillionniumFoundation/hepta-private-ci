@@ -225,3 +225,32 @@ The latter hashes the compact JSON tuple
 `["hepta.paired-learning.principal.v1",study_sha256,registered_principal_id]`.
 Keep that result in the private intake. The site's existing enrollment records
 must still relate the registered principal to the person.
+
+### Prepare a statement on the participant's Linux machine
+
+Save the private, custodian-supplied study and record commitments as `scope.json`.
+For A its two fields are `study_sha256` and
+`scope={"use":"train","failure":"…","correction":"…"}`. For an independently
+enrolled B they are `study_sha256` and
+`scope={"use":"evaluate_only","freeze":"…","task":"…"}`. Use the actual
+64-character lowercase hex digests. B receives the separately observed freeze
+before first delivering the previously unseen task.
+
+```sh
+hepta-paired-consent --print-statement < scope.json
+```
+
+The command prints the exact unsigned consent text, including its record
+identities, with no trailing newline. Review the permitted use, task and
+hashes against the material you intend to share. To grant that permission,
+submit those exact bytes through your existing enrolled human-text UI on
+the original protected route. The site custodian takes the acknowledged
+`hepta.authbus:<hex>` private delivery ID from that Core user item and
+passes the hex ID to the existing owner verifier. Merely printing, saving
+or emailing the text confers no grant. Never post the private content or
+delivery ID in a GitHub issue.
+
+The enrolled site supplies the actual UI and identity association. This
+command neither opens a network service nor enrolls a new identity. Sites
+without that physical session must first register the participant through
+their existing enrollment authority.
