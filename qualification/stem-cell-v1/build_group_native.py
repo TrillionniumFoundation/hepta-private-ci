@@ -75,8 +75,12 @@ def without_dev_dependencies(text):
     result = "".join(kept)
     expected = copy.deepcopy(tomllib.loads(text))
     expected.pop("dev-dependencies", None)
-    for target in expected.get("target", {}).values():
+    retained_targets = tomllib.loads(result).get("target", {})
+    for name, target in expected.get("target", {}).items():
         target.pop("dev-dependencies", None)
+        # A dev-only target still has an empty parent table in the original parsed manifest.
+        if not target and name not in retained_targets:
+            result += f"\n[target.{toml_value(name)}]\n"
     if tomllib.loads(result) != expected:
         raise ValueError("dev dependency removal changed production manifest semantics")
     return result

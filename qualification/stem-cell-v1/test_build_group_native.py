@@ -66,6 +66,19 @@ default = []
             "features": {"default": []},
         })
 
+    def test_dev_only_target_retains_its_empty_parent_table(self):
+        source = """[package]
+name = "fixture"
+[target.'cfg(unix)'.dev-dependencies]
+test-fixture = "1"
+[target.'cfg(target_os = "windows")'.dev-dependencies.helper]
+version = "2"
+"""
+        self.assertEqual(tomllib.loads(without_dev_dependencies(source)), {
+            "package": {"name": "fixture"},
+            "target": {"cfg(unix)": {}, 'cfg(target_os = "windows")': {}},
+        })
+
     def test_production_path_outside_source_tree_is_rejected(self):
         outside = self.repo / "outside"
         outside.mkdir()
