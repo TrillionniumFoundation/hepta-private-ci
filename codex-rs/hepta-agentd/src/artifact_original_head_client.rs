@@ -30,7 +30,7 @@ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
 enum Origin {
     Fresh,
-    Readonly(Option<SignedCurrentArtifactHeadV1>),
+    Readonly(Option<Box<SignedCurrentArtifactHeadV1>>),
 }
 
 /// Consumed at most once. There is no API to extract/reopen the original
@@ -79,7 +79,7 @@ impl OriginalArtifactHeadConnectionV1 {
             config,
             timeout,
             lifetime,
-            Origin::Readonly(expected),
+            Origin::Readonly(expected.map(Box::new)),
         )
     }
 
@@ -209,7 +209,7 @@ impl OriginalArtifactHeadConnectionV1 {
             .config
             .verify_original_head(&source, &signed, current)?;
         if let Origin::Readonly(Some(expected)) = channel.origin
-            && expected != signed
+            && *expected != signed
         {
             return Err(Error::CommitUncertain);
         }

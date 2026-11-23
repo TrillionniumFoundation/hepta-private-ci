@@ -56,7 +56,7 @@ struct Quote {
     intent: Digest32,
 }
 enum OriginalSuccessorGrant {
-    Provided(SignedFinalUseGrant),
+    Provided(Box<SignedFinalUseGrant>),
     OriginalRoot,
 }
 struct Installation {
@@ -206,7 +206,7 @@ impl OriginalQ24PreparedSuccessorV1 {
                 "exact successor FinalUse binding",
             )));
         }
-        self.complete_original_grant(OriginalSuccessorGrant::Provided(signed))
+        self.complete_original_grant(OriginalSuccessorGrant::Provided(Box::new(signed)))
             .await
     }
 
