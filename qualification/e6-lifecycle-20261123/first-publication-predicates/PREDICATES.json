@@ -1,0 +1,180 @@
+{
+  "schema": "hepta.e6.offline_first_publication_predicates.v1",
+  "original_capture_sha256": "47364fc10bd07779339fbce47456586bab173a01b23ad45c83151f703f7fa5d4",
+  "original_source": "61503a7d3bc87a5584cd2f20b8b17ea3838fdcfd",
+  "candidate_source": "bf6d51904c8bcda5d50f3782c85ece84cb73a78f",
+  "frozen_members_verified": 34,
+  "main_conjunction": [
+    {
+      "field": "schema == 1",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": 1
+    },
+    {
+      "field": "purpose is the original publication acceptance purpose",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": "runtime.learning.original-publication-accepted.v1"
+    },
+    {
+      "field": "original_profile == profile.binding",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "already_in_20261121_capture": true
+    },
+    {
+      "field": "current == completed.current",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "already_in_20261121_capture": true
+    },
+    {
+      "field": "current.current == profile.intent.target",
+      "parent_61503": true,
+      "candidate_bf6d": true
+    },
+    {
+      "field": "current.prepared.is_none()",
+      "parent_61503": true,
+      "candidate_bf6d": true
+    },
+    {
+      "field": "current.initial.is_none()",
+      "parent_61503": true,
+      "candidate_bf6d": true
+    },
+    {
+      "field": "published.intent == profile.intent",
+      "parent_61503": true,
+      "candidate_bf6d": true
+    },
+    {
+      "field": "verified_at_unix_ms > 0",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": 1795261520803
+    },
+    {
+      "field": "original_work_expiry_seconds == initial.request.envelope.expiry_unix_seconds",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": {
+        "offset": 823,
+        "stored": 1795261752,
+        "decoded": 1795261752
+      }
+    },
+    {
+      "field": "previous_observation == profile.intent.previous_observation",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": "4d9358eed25c1770ab923a95a6646b1803a9bebc5c860a5ab1c835ddea442a3b"
+    },
+    {
+      "field": "target_observation matches required Generation cut",
+      "parent_61503": false,
+      "candidate_bf6d": true,
+      "readback": {
+        "accepted": "ce84840770506fa502f56f5986e474e2a1caeabf5d5db45b7c53d866354859e1",
+        "parent_final_cut": "4a7b04d69925dc7e887ec5678d7d637b83391c17478e4cd0425edc3cfe4711f5",
+        "candidate_initial_cut": "ce84840770506fa502f56f5986e474e2a1caeabf5d5db45b7c53d866354859e1"
+      }
+    },
+    {
+      "field": "completed.generation requires genesis (old) or drained (candidate)",
+      "parent_61503": false,
+      "candidate_bf6d": true,
+      "readback": {
+        "is_genesis": false,
+        "is_drained": true,
+        "journal_bytes": 93,
+        "frames": 1
+      }
+    },
+    {
+      "field": "computed signed_grant_digest == published.signed_grant_digest",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": "0f0437020f951ba5ba9f50cce0dd6a1275af8277894a8301d29d69c6ebb90d18"
+    },
+    {
+      "field": "accepted_revocations.authority_epoch == published grant epoch",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": [
+        1,
+        1
+      ]
+    },
+    {
+      "field": "published grant_id absent from accepted revoked_grant_ids",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": {
+        "number_revoked": 0
+      }
+    }
+  ],
+  "historical_time_conjunction": [
+    {
+      "field": "verified_at >= grant.not_before",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": [
+        1795261520803,
+        1795261520043
+      ]
+    },
+    {
+      "field": "verified_at < grant.expires",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": [
+        1795261520803,
+        1795261752000
+      ]
+    },
+    {
+      "field": "verified_at / 1000 < original work expiry",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": [
+        1795261520,
+        1795261752
+      ]
+    },
+    {
+      "field": "published witness verified_at <= verified_at",
+      "parent_61503": true,
+      "candidate_bf6d": true,
+      "readback": [
+        1795261520740,
+        1795261520803
+      ]
+    }
+  ],
+  "journal": {
+    "header_sha256": "ee04cb4b72043626626d990ef691e3293015d8d696b4cf89b1a6e9b86f165d3c",
+    "frame_anchor": "68237aa0d9d88625a9149a26f3cb3055bdbaffb6c0d7c14cca8f7e2c08b1461e",
+    "genesis_checkpoint": "ec0ac15284e07d8fc690c770253b07a9d817844db26e2bdb7629777828566344",
+    "final_checkpoint": "b76269735f5ebe2382be52d47511ccfdd87f3473acf7f1385a2de545c9979094",
+    "witness_bytes": 224,
+    "events": [
+      "drain"
+    ]
+  },
+  "checkpoint": {
+    "magic": "HEPLCP02",
+    "bytes": 1117,
+    "expiry_offset": 823,
+    "recorded_head_equals_registered_initial": true,
+    "initial_receipts": 0
+  },
+  "original_first_false_position": 12,
+  "second_false_position_if_individually_evaluated": 13,
+  "candidate_main_true": 16,
+  "historical_time_checks_true": 4,
+  "scope": "Python port on frozen cold01 inputs. Original Rust short-circuited its first conjunction. Rust initializer or live observer stamps, capability or signature issuance, cold expiry, restart, Adopt and future tasks were not executed. No compiler, native test, or daemon was invoked.",
+  "independent_tasks": 0
+}
