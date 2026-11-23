@@ -1,12 +1,13 @@
 {
   "actual_execution_authorized": false,
-  "base_pr": 6986,
+  "base_pr": 6989,
   "budget": {
     "canonical_raw_reencodes": 10,
     "checkpoint_decodes": 30,
     "checkpoint_encodes_cap": 20,
     "dynamic_steps": 0,
     "exponential_actions": 0,
+    "live_cgroup_reads": 11,
     "model_calls": 0,
     "optimizer_steps": 0,
     "provider_calls": 0,
@@ -23,7 +24,7 @@
     "per_cursor_raw_bytes": 50331648
   },
   "execution_key": "hcsn-n256-authentic-tail1159-20261122-c6bc-001",
-  "identity": "hcsn-n256-authentic-tail1159-live-cgroup-admission-20261122-c6bc-v11",
+  "identity": "hcsn-n256-authentic-tail1159-cgroup-prespawn-revalidation-20261122-c6bc-v12",
   "intent_source_head": "e441e2df7bf2ae8f820e154132827ad0d08c9e23",
   "input": {
     "index537_collector_sha256": "452e22f354928f88742d840d3287c160153b8e86d4ed5346b0d0628d0ddacbf4",

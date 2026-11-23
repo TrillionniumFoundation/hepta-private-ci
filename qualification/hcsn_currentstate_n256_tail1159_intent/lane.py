@@ -37,7 +37,9 @@ from .continuation import (
 )
 
 
-IDENTITY = "hcsn-n256-authentic-tail1159-live-cgroup-admission-20261122-c6bc-v11"
+IDENTITY = (
+    "hcsn-n256-authentic-tail1159-cgroup-prespawn-revalidation-20261122-c6bc-v12"
+)
 
 
 def _sha256(raw):
