@@ -16,3 +16,9 @@
 `history.json` 记录每个源当初的原提交身份。`sources.json` 保存原/新 Git 对象和 SHA-256。`changes.patch` 来自两个精确文件版本。`context-owner.json` 比较的是当前树与其原映射 observed sourceObjects；当前清单原本就不含脚本要求的 exactSourceEvidence 结构，不应将其作为四项已经通过原生资格的证据。
 
 在 Git checkout 上运行 `python3 verify_wiring.py /absolute/path/to/repo` 可重新读取两端各 1,842 个 Rust、TOML 与 Bazel 文件，核验文件 Git 对象并重新获得相同的模块引用结果。该范围不涵盖运行时生成的模块。
+
+## 原 fixed-base 格式阶段的宿主结果
+
+[单独源 97a379c5 的真实作业](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45147536205/job/137600455141) 在 Ubuntu 24.04 运行原 `just fmt --base b8e8c6e82abc1479c573f61a5e17d28d581e6cad --check`，退出 0。随后真正运行同一命令的写入模式，退出 0。两次工作区探针均为零字节，原档案材料未被改写。两个命令与 Git 检查合计用时 248 秒，格式脚本的 41+3 项原测试通过。完整 daemon 的其余作业未在此轮重新运行。
+
+两端都从 200 个实际 Cargo 包中确认 wire 包缺席。独立 manifest 两端均报工作区不含该成员。context 检查两端均因原身份策略而拒绝，supervisor 文件两端的独立原测试各 1/1，另外两臂均用 qualification feature 通过编译。运行 `python3 verify_hosted_candidate.py` 可直接用原始 ZIP 复验这些记录。

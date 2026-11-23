@@ -70,7 +70,8 @@ def main():
     if not args.rustfmt:
         return
     formatter = args.rustfmt.resolve()
-    assert b"rustfmt 1.9.0-stable" in call([str(formatter), "--version"])
+    assert sha(formatter.read_bytes()) == "342c3d56e8958da0b108108a39e37ceac64ebdd42e6eefafa237d219e5b7eb0c"
+    assert call([str(formatter), "--version"]).strip() == b"rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)"
     with tempfile.TemporaryDirectory(prefix="hepta-owner-rustfmt-") as temp:
         root = Path(temp)
         configs = {}
