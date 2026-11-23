@@ -29,3 +29,13 @@ python replay_lookup_negative_suites.py /path/to/c12 proposal
 ```
 
 The initial hosted owner job pair 45154868159 exited 127 when the diagnostic preparation script invoked unavailable rg. Its two jobs did not compile or execute the selected 33 Rust cases. The corrected run 45155293939 uses the Ubuntu runner's standard grep and separately checks the complete set of four harness-only files. Its source arms are the identical c12 and c21 commits from before this harness correction. The official daemon on the separate fe386 fixed-format source is a distinct run with its own evidence.
+
+## Hosted paired result
+
+Run 45155293939 completed on Ubuntu 24.04. The native job 137626562770 built the original musl Agentd target for c12 and c21 on one runner and measured 33 independently invoked ordinary tests per arm. All 66 exact cases passed. The released guard suites passed all 16 cases separately in each worktree on each of the two jobs. The original musl binary hashes differed. The sequential case times were 189.039 seconds on c12 and 183.122 seconds on c21, including per-case launch overhead and excluding builds. This pair was designed for correctness, not performance inference.
+
+Strict job 137626563297 ran the existing three-crate all-targets Clippy command on both trees. Both returned 101. Raw stderr gives 115 findings on c12, 114 on c21, with only the records::assemble (8/7) finding removed and no addition. verify_hosted_owners.py reads the original ZIPs, compares the two source commits, trees and five guard blobs, recomputes each case's stdout SHA256, test name and pass count, then separately parses every strict diagnostic. The smaller focused workflow was successful. The product strict gate still has 114 open findings. These jobs do not test the separate lookup.patch proposal.
+
+```sh
+python verify_hosted_owners.py --native hosted/native.zip --strict hosted/strict.zip
+```

@@ -1,0 +1,49 @@
+{
+  "native": {
+    "archive_sha256": "61930bc9eda5514117727b1e0d43271bd6b81d86a0e5c9e7f7a94a2df60a903d",
+    "bytes": 24726,
+    "result": {
+      "sources": {
+        "base": {
+          "fixtures": 33,
+          "raw_sha256": "7aa14ea1102e6f0a2af6288b1c8b00fa764cf3aef167a1a6333e0ff179d4db2c",
+          "elf_sha256": "abb79f99f59754cde2cec06e36b4c026f8ff042abcdb674abe0aad79e010e0c6",
+          "total_case_seconds": 189.039142
+        },
+        "candidate": {
+          "fixtures": 33,
+          "raw_sha256": "b0a1fa053e9c278b9b39709dc09693f443b231cb0c00b5227fd74256cc3a1d20",
+          "elf_sha256": "88df5d9b673cfc48d5e265ad51923de43757f20edc08b5d3fedc1dc75d092fa4",
+          "total_case_seconds": 183.1223
+        }
+      },
+      "same_elf_bytes": false,
+      "guard_tree": [
+        "100644 blob 4b84d98185ff0176876ba2ccfaa746fa90433d80\tCALLERS.toml",
+        "100644 blob 235bad55bab202753270ee029b75781c5136b027\tqa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+        "100644 blob 484d2ce662eef410e147259b562b4e2b0ce4e4ea\tqa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+        "100644 blob 70e6aa85f3988188332c08c3be32b10cf66cd33d\tscripts/hepta_callers_manifest_parts/part-0000.toml.gz",
+        "100644 blob 20fd8815acfcef5612424f8ae392b5cbfb7c3b0b\tscripts/hepta_callers_manifest_parts/part-0001.toml.gz"
+      ]
+    }
+  },
+  "strict": {
+    "archive_sha256": "b3edd0eee2d9f3a407d58c526baad2f6a7a995fc8d5f9c458ead991a62279f41",
+    "bytes": 47790,
+    "result": {
+      "before": 115,
+      "after": 114,
+      "added": [],
+      "removed": [
+        [
+          "hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+          "this function has too many arguments (8/7)"
+        ]
+      ],
+      "codes": [
+        101,
+        101
+      ]
+    }
+  }
+}
