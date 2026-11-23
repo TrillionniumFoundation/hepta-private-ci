@@ -30,6 +30,12 @@ python -m cell_experiments.paired_source_gate train MATERIALS SPEC.json SPEC_SHA
 
 The private operation directory is `MATERIALS/paired-training/<canonical digest of [study,failure,correction]>`. It holds the owner readback, plan, source completion, frozen pair and retention disposition. New A candidates carry their prior registered source catalogs and hashes of known prompts, sources and actual model input IDs. The ordinary two-stage future CLI uses those commitments. The source enrollment authority remains responsible for original consent, chronology, independent people and source provenance. The fixed retention rule preserves each item previously passed by the parent. Its passing disposition opens prospective evaluation, which still needs a new, authorized incoming task.
 
+For a new source-trained candidate, the enrollment site records the canonical SHA-256 of the pre-arrival `RETENTION.json` as `source_retention_sha256` in its independently held freeze observation. The ordinary `paired_intake install --scope owner_intake` checks the candidate, frozen parent and every previously passed panel item before creating its intake journal. If the report lives separately, pass `--source-retention` with its location. The same check covers older intake installations when admitting a task. The registration command reopens the original completion, training consent and both cold outputs, and reproduces the old-item scores before committing the digest. Both the ordinary freeze observer and the installer rejected this archived candidate without creating either a freeze observation or an intake journal. Their command outcomes are recorded in `DISPATCH_DENIAL.json`. A released eligible request carries the same digest into the funded admission. Use the enrollment site's own sequence in this command.
+
+```sh
+python -m cell_experiments.paired_observation INBOX STUDY_SHA FREEZE_SHA SEQUENCE freeze --source-retention OPERATION/RETENTION.json
+```
+
 The trainer supports fresh base weights with the declared LoRA modules and a matching pre-existing adapter. Each physical update slot is committed before compute. SQLite saves the edited coordinates, AdamW state, CPU RNG and per-step measurement atomically. A committed update is restored. An interrupted reservation consumes one of the bounded retry slots. The original frozen weights and completed case can be reopened without fitting again.
 
 ## Reproduction

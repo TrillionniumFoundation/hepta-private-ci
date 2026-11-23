@@ -8,6 +8,21 @@ from . import data
 from .paired_intake import digest_field, owner_file, require, sha, witness
 
 
+def check_training_statement(owner, completion):
+    failure, correction = (
+        digest_field(completion[k]) for k in ("failure_sha256", "correction_sha256")
+    )
+    text = (
+        f"Hepta paired learning consent v1\nStudy SHA-256: {completion['study_sha256']}\n"
+        "I authorize Hepta to train the study candidate using only these records.\n"
+        f"Failure SHA-256: {failure}\nCorrection SHA-256: {correction}"
+    )
+    require(
+        owner["consent_text_sha256"] == sha(text.encode()),
+        "A's exact allowed training records differ",
+    )
+
+
 def check(config, arrival, native, request_sha, candidate, training_run):
     """The site's enrolled-person reference must identify a person across their accounts."""
     left = witness(config, "training-person")
@@ -64,18 +79,7 @@ def check(config, arrival, native, request_sha, candidate, training_run):
         and owner["delivery_id"] == left["consent_delivery_id"],
         "A original training authorization differs from the enrolled principal",
     )
-    failure, correction = (
-        digest_field(completion[k]) for k in ("failure_sha256", "correction_sha256")
-    )
-    text = (
-        f"Hepta paired learning consent v1\nStudy SHA-256: {config['study']}\n"
-        "I authorize Hepta to train the study candidate using only these records.\n"
-        f"Failure SHA-256: {failure}\nCorrection SHA-256: {correction}"
-    )
-    require(
-        owner["consent_text_sha256"] == sha(text.encode()),
-        "A's exact allowed training records differ",
-    )
+    check_training_statement(owner, completion)
     require(
         right["arrival_id"] == arrival["arrival_id"]
         and right["record_sha256"] == arrival["record_sha256"]

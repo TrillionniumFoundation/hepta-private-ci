@@ -19,6 +19,7 @@ def observe(
     record=None,
     delivery=None,
     principal=None,
+    source_retention=None,
 ):
     """Called by the registered source owner with the sequence from its durable original event."""
     root = inbox.lstat()
@@ -44,7 +45,17 @@ def observe(
         )
         name = "freeze"
         event["schema"] = "hepta.paired-intake.freeze-observation.v1"
+        if source_retention is not None:
+            from . import paired_source_dispatch
+
+            event["source_retention_sha256"] = paired_source_dispatch.verify_originals(
+                Path(source_retention), study, freeze
+            )
     else:
+        paired_intake.require(
+            source_retention is None,
+            "the source retention belongs to the freeze observation",
+        )
         name = paired_intake.digest_field(arrival)
         original = inbox / "freeze.json"
         paired_intake.require(
@@ -93,7 +104,12 @@ def main():
     p.add_argument("freeze")
     p.add_argument("sequence", type=int)
     commands = p.add_subparsers(dest="op", required=True)
-    commands.add_parser("freeze")
+    freezer = commands.add_parser("freeze")
+    freezer.add_argument(
+        "--source-retention",
+        type=Path,
+        help="verify original source retention and bind its digest before task arrival",
+    )
     b = commands.add_parser("arrival")
     for label in ("arrival", "record", "delivery", "principal"):
         b.add_argument(label)
@@ -101,7 +117,7 @@ def main():
     fields = (
         {key: getattr(a, key) for key in ("arrival", "record", "delivery", "principal")}
         if a.op == "arrival"
-        else {}
+        else {"source_retention": a.source_retention}
     )
     print(observe(a.inbox, a.study, a.freeze, a.sequence, **fields))
 
