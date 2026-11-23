@@ -1,0 +1,118 @@
+{
+  "base": "c6a3ed9c36f88707d2f29630efe1e3ea4ee0e902",
+  "candidate": "43e5da1bb81369e4e999adfa8558f5ccb5460eb6",
+  "base_rust_digest": "7964c650787c6bbbe5ec80de235a19f8577ebb1d033229e9ac04aa5f7e059013",
+  "trees": [
+    [
+      "codex-rs",
+      "4249d707266358da500cd751bb63a5c5bf422989",
+      "133c13f94a362e7e7dd16c30b5c969ffe12d43f9",
+      169,
+      169
+    ],
+    [
+      "codex-rs/hepta-agentd",
+      "885017f39824192e9905ad0df9794eb3769e3ad3",
+      "5f2d84d0e70b12fcc31f8e1be2263943ef060b56",
+      40,
+      40
+    ],
+    [
+      "codex-rs/hepta-agentd/src",
+      "9c8d70a22f1550da93bc4f4c3eeedd4fbd342dd6",
+      "9f0ba26990a960d104d0c90e3c1a2ed629494bc1",
+      1581,
+      1581
+    ]
+  ],
+  "changed": [
+    [
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs",
+      "9df7156f13e7bf19c2686c55bdff96bce2ff8fee",
+      "9ce417f6ef265897d5630465f198149f9f42f8ee"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/authority_host_publication_completed.rs",
+      "71e5de886ea60ff137d03cd52e76d000bb3f169b",
+      "3fe8f71fde73f8053494e74afd5d084b558f7c5e"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+      "165cf63282bca1b1559a6945b2036bdffacf5105",
+      "ac60ad5aa5d8bee9d0e1fbc2219007e7330222bc"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+      "1d3a3c5f82fb7959ea7e7b39b24353a317cc2de7",
+      "8faeef72236d9293cf4d80f34ab9b812645e0357"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+      "ce2aabb0fb2948e9691476403b17731becfad375",
+      "94a1c601063ec0d27837580070d4e92aea649000"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+      "3546571b4cb448383c76b7ff11bf14a19104e86f",
+      "3376659e2d972bfe4659a0c5be1b928289f2b45b"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/cell_split_owner.rs",
+      "b1f1f143571170a0055aa4b39e9b92a1092c0faf",
+      "15065cb5a3704aea9dae87674930764b3162c47d"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "87259c6115daf460ef9b3d021d6c1963f583d70d",
+      "8e74655b571bc5753f3d99707e1aeb4f532d7955"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "15e500215e19d8ee1603535418a1be5cfbb0f353",
+      "d93eec223199739b6ce892a0f2c083f1f8aca82e"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs",
+      "209619c294208a49c0d432194fa182bdd1f50459",
+      "5cdb8043e7e5aea8016aca02848ae4b14efec785"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/circuit_task_source_data.rs",
+      "1d24ca9e2a48bc97f36c9a61cdf3e8660bb5723b",
+      "e58a8748c7d79b7f0cd255918f2dd1032c1f66b5"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+      "40d2c6d4ae804cdf0a582bfde4d32b9412e4e32c",
+      "f1e964d70ffb4e22a4663176525b274f6221ace7"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs",
+      "cb4df67fd0f3340c27c05cada46bbc11f080bc50",
+      "5a78300a2ca8c2982ffdb1e7946c4bf0c76e4dc7"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "bc1aff703a76799d08711dcf29f838642240a50c",
+      "2defd48598f20e530aa838ee11274ee4b794ed48"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/root_independent_b_client.rs",
+      "5bdf4f024815ca6d1b5aa1fbb6148bef88001c66",
+      "801d8663b2a110fd4ec959d5bf08b7aa3911b918"
+    ],
+    [
+      "codex-rs/hepta-agentd/src/root_independent_b_training.rs",
+      "89b6b78a41a0e21607efcca64b980a90d57e9a07",
+      "b3788ea619c8bbdc07fa1d6d66a76a641e8d5113"
+    ]
+  ],
+  "guard_files": {
+    "CALLERS.toml": "4b84d98185ff0176876ba2ccfaa746fa90433d80",
+    "scripts/hepta_caller_manifest.py": "629cc4cd913fad62f0f7aabe06365a6e0f944a6e",
+    "scripts/hepta_typed_callers.py": "13f59cb8bcdeafb1b326a3fc18d82f7ed785db15",
+    "scripts/verify_hepta_callers.py": "6a52dfccfefd0cd46445b095e4c9d781ca12d744",
+    "scripts/hepta_callers_manifest_parts/part-0000.toml.gz": "70e6aa85f3988188332c08c3be32b10cf66cd33d",
+    "scripts/hepta_callers_manifest_parts/part-0001.toml.gz": "20fd8815acfcef5612424f8ae392b5cbfb7c3b0b"
+  }
+}

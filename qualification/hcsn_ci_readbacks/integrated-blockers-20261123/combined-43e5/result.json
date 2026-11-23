@@ -1,0 +1,116 @@
+{
+  "all_original_cases_passed_both_arms": false,
+  "base": "e3277e9677688be5c4c235a7a127f0b51e373399",
+  "fixture_git_identities": [
+    "100644 blob 58298cdcbd25cd3c1f5541f236e8e5231114b3d7\tcodex-rs/hepta-agentd/src/authority_host_learning_resident_checkpoint_expiry_tests.rs",
+    "100644 blob fbe96b2bff6c10f4eec173aee547cf88fa6494ad\tcodex-rs/hepta-agentd/src/authority_host_learning_resident_evaluation_tests.rs",
+    "100644 blob 818208e9d7e68983a8617de9949d1c4326f3f866\tcodex-rs/hepta-agentd/src/authority_host_learning_resident_model_tests.rs",
+    "100644 blob a3d0689fba79c04f208aa432c956582db0e88d09\tcodex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+    "100644 blob 7f3a2c9210748ad167aba3383f6afc03b84368ce\tcodex-rs/hepta-agentd/src/authority_host_publication_acceptance_tests.rs",
+    "100644 blob 64a494afb6f7351fc3de7f0d0c887a131a1b39ee\tcodex-rs/hepta-agentd/src/authority_host_publication_refusal_tests.rs",
+    "100644 blob 8c20abea12c77e447f534f68f20d1e5c4881b8db\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_acceptance_tests.rs",
+    "100644 blob bdd50aec4ca465a3b204fb127db601f483872933\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_files_tests.rs",
+    "100644 blob f26d13bf7e0082513161390510f66cfdcba13479\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_source_tests.rs",
+    "100644 blob fb4710232f4e60ab7fd10696baa7754b63accb90\tcodex-rs/hepta-agentd/src/cell_q24_training_bootstrap_tests.rs",
+    "100644 blob 8bc3f7835bb923da0dc9710050e8474a0ee0780a\tcodex-rs/hepta-agentd/src/cell_q24_training_command_connection_tests.rs",
+    "100644 blob 5b5fbad6edc0e815231b89341c170d35af5e7383\tcodex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+    "100644 blob 68ea49667de7ce846ee78e02bafd1146a5af8dfa\tcodex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+    "100644 blob 835e7b13894b488dbd9ab83bc85621ba47b2ca2d\tcodex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+    "100644 blob 3617beb8fbdeebce4ec02e63e831db43e005f67f\tcodex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec_tests.rs",
+    "100644 blob e8efb24e00b87be61e4ae2a4bcf263566b4c94b5\tcodex-rs/hepta-agentd/src/root_independent_b_notice_tests.rs",
+    "100644 blob 9e073672506968d1a4bd3ef79b1a7f047245c894\tcodex-rs/hepta-agentd/src/root_independent_b_publication_data_tests.rs",
+    "100644 blob 7fc4e9ebdb5b82f4efb327d566304b10550b6a77\tcodex-rs/hepta-agentd/src/root_independent_b_source_tests.rs"
+  ],
+  "native": {
+    "base": {
+      "binary_sha256": "e22096190fb955ee70491be789b22e245de06add07b46128503213e828c9aa04",
+      "groups": {
+        "ordinary": {
+          "failed": [],
+          "passed": 62,
+          "selected": 62,
+          "terminal_summary": [
+            "test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 1661 filtered out; finished in 138.14s"
+          ]
+        },
+        "uid0": {
+          "failed": [
+            "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel"
+          ],
+          "passed": 29,
+          "selected": 30,
+          "terminal_summary": [
+            "test result: FAILED. 29 passed; 1 failed; 0 ignored; 0 measured; 1693 filtered out; finished in 19.29s"
+          ]
+        }
+      }
+    },
+    "candidate": {
+      "binary_sha256": "1ad9942a18dcd2ccb69d40b8e38edd262cf4cfa5c137c3674e7316d4ad550278",
+      "groups": {
+        "ordinary": {
+          "failed": [],
+          "passed": 62,
+          "selected": 62,
+          "terminal_summary": [
+            "test result: ok. 62 passed; 0 failed; 0 ignored; 0 measured; 1661 filtered out; finished in 137.73s"
+          ]
+        },
+        "uid0": {
+          "failed": [],
+          "passed": 30,
+          "selected": 30,
+          "terminal_summary": [
+            "test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 1693 filtered out; finished in 18.28s"
+          ]
+        }
+      }
+    }
+  },
+  "native_sha": "fc7fbc887f77883d185dd773c866560f02d3b118f46be196d59fe956dce3c115",
+  "source": "43e5da1bb81369e4e999adfa8558f5ccb5460eb6",
+  "strict": {
+    "after": 115,
+    "before": 124,
+    "new": [],
+    "removed": [
+      [
+        "hepta-agentd/src/authority_host_learning_resident_gate.rs",
+        "large size difference between variants"
+      ],
+      [
+        "hepta-agentd/src/authority_host_publication_completed.rs",
+        "large size difference between variants"
+      ],
+      [
+        "hepta-agentd/src/cell_q24_model_command_connection.rs",
+        "large size difference between variants"
+      ],
+      [
+        "hepta-agentd/src/cell_q24_training_command_connection.rs",
+        "large size difference between variants"
+      ],
+      [
+        "hepta-agentd/src/circuit_next_use_command.rs",
+        "this function has too many arguments (8/7)"
+      ],
+      [
+        "hepta-agentd/src/circuit_selection_command.rs",
+        "this function has too many arguments (8/7)"
+      ],
+      [
+        "hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+        "field `estimand` is never read"
+      ],
+      [
+        "hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs",
+        "method `context` is never used"
+      ],
+      [
+        "hepta-agentd/src/root_independent_b_client.rs",
+        "large size difference between variants"
+      ]
+    ]
+  },
+  "strict_sha": "762e51e6c0485e228bbf52f0e4c0dfdc438724cf6d38702d66e7d367a0053f3c"
+}
