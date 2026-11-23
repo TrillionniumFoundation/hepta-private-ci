@@ -43,7 +43,7 @@ impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
         identity: &AgentdIdentity,
         input: &super::CircuitTaskSourceInputV1,
     ) -> Result<(), Error> {
-        let mut owner = crate::q24_owner_watch!("source.try_lock", self.original.0.try_lock(), |e| match e { std::sync::TryLockError::WouldBlock=>"would_block",std::sync::TryLockError::Poisoned(_)=>"poisoned"}).map_err(|_| Error::Unavailable)?;
+        let mut owner = crate::q24_owner_watch!("source.try_lock", self.original.0.try_lock(), |e: &std::sync::TryLockError<_>| match e { std::sync::TryLockError::WouldBlock=>"would_block",std::sync::TryLockError::Poisoned(_)=>"poisoned"}).map_err(|_| Error::Unavailable)?;
         crate::q24_owner_watch!("source.owner_current", owner.require_current())?;
         if identity != &owner.identity
             || owner.sources.get(input.scope.run_id.as_str()) != Some(input)

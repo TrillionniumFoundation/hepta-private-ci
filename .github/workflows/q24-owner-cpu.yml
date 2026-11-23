@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          fetch-depth: 2
+          fetch-depth: 3
           persist-credentials: false
       - uses: ./.github/actions/prepare-bazel-ci
         with:
@@ -30,19 +30,20 @@ jobs:
           set -euo pipefail
           dst="$RUNNER_TEMP/q24-full/observed"
           mkdir -p "$dst"
-          test "$(git rev-parse HEAD^)" = "910fee9b64cafdf1da406b815d64e51f7c32fc20"
-          test "$(git rev-parse HEAD~1^{tree})" = "e3b7a3dd4df5bd6919e9fc6e528886bd3ea742c3"
+          test "$(git rev-parse HEAD^)" = "7258bcd5c214e729c7fc39ba909533684e7b34d9"
+          test "$(git rev-parse HEAD~2)" = "910fee9b64cafdf1da406b815d64e51f7c32fc20"
+          test "$(git rev-parse HEAD~2^{tree})" = "e3b7a3dd4df5bd6919e9fc6e528886bd3ea742c3"
           python3 - "$dst" <<'PYTHON'
           import json,subprocess,sys
           from pathlib import Path
           source=Path(".github/scripts/q24-owner-originals.json")
-          rows=json.loads(source.read_text()); head_parent="HEAD^"
+          rows=json.loads(source.read_text()); head_parent="HEAD~2"
           for path,blob in rows.items():
               assert subprocess.check_output(["git","rev-parse",head_parent+":"+path],text=True).strip()==blob,path
           (Path(sys.argv[1])/"observed-inputs.json").write_bytes(source.read_bytes())
           PYTHON
           git rev-parse HEAD > "$dst/ref.txt"
-          git diff --name-only HEAD^ HEAD > "$dst/changed-files.txt"
+          git diff --name-only HEAD~2 HEAD > "$dst/changed-files.txt"
           git ls-tree HEAD -- codex-rs/hepta-agentd/BUILD.bazel codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs > "$dst/fixture-blobs.txt"
           set +e
           ./.github/scripts/run-bazel-ci.sh --print-failed-test-logs --print-failed-action-summary --remote-download-toplevel -- test --test_tag_filters=-argument-comment-lint --test_verbose_timeout_warnings --nocache_test_results --build_metadata=COMMIT_SHA="$GITHUB_SHA" --build_event_json_file="$dst/bep.json" -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests |& tee "$dst/console.log"
