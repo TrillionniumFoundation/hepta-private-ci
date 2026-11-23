@@ -22,6 +22,13 @@ Field-wise equality excludes timing, which varies across machines. The separate 
 
 [The portable recording kit](media/source_replay.zip) contains the per-work permanent source URLs, attribution, licenses, byte hashes, original versions, clock checks, two frozen frontend paths, physical windows, RGB staging implementation, and its checks. Unzip the kit in an empty directory. Run `python pinned/portable_replay.py --help` there for the checkout, legal local original cache, weights and output arguments. FFmpeg, FFprobe, Pillow, torchvision and the exact ImageNet weights are necessary when reconstructing visual inputs from the original recordings. Derived feature replay needs only the archived features. [Recording release identity](media/evidence_packet.json) · [Camera equivalence on two original recordings](media/decoder_equivalence.json)
 
+All 88 queries were independently rebuilt from the original recordings in fresh directories. All six NPZ files, every raw feature and the 528 two-class camera prefix outputs match byte-for-byte. [Raw replay](evidence/raw_replay.json). On a memory-constrained Linux worker, recover a partially finished RGB stage using the verified files in the same new workspace. The recovery tool checks the saved item before resuming, divides preprocessing into bounded subprocesses and retains the original six-frame batch for model inference.
+
+```sh
+python qualification/hcsn_blocker_followup/media/portable_memory_recovery.py \
+  --workspace /path/to/portable-replay-workspace --kit /path/to/source_replay.zip --split test
+```
+
 The separate native movement experiment has its own original dataset credit, frozen source splits, fit seal and raw-sample verification. Its two archive pieces reconstruct a single ZIP. Follow [the movement study instructions](wait/README.md).
 
 The historical 412-sample gap is evaluated as an identifiability question. [The sample-clock witnesses](evidence/gap_witness.json) preserve the known suffix and camera data when they vary the missing segment. Source and replay assumptions are given in [gap_witness.py](gap_witness.py).

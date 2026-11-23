@@ -8,7 +8,7 @@ from . import experiment as ex
 from .verify_selector import verify
 from qualification.hcsn_intervention_value.replay import unpack
 from .incumbents import evaluate
-from . import readout_edit, verify_edit
+from . import readout_edit, verify_edit, verify_joint
 
 
 def equal(reference, actual, omit=()):
@@ -70,6 +70,8 @@ def main():
         unpack(opt.old_evidence,scratch/'old')
         prior=scratch/'old/primary'
         result=check(scratch/'new',prior/'discovery',prior/'policies',scratch)
+        result['exact_hull_checks']=verify_joint.verify(scratch/'new/media',prior/'discovery',scratch/'new/outcomes',
+                                                       opt.evidence/'joint_capacity.json')['panels']
         print(json.dumps(result,indent=2))
 
 
