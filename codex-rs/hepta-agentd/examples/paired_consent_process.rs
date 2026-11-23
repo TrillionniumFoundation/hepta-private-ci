@@ -256,6 +256,30 @@ mod linux {
         let study = Digest32::of_bytes(b"development study");
         let a = Digest32::of_bytes(b"development first record");
         let b = Digest32::of_bytes(b"development second record");
+        let pair = Digest32::of_bytes(b"development pair");
+        let operation = Digest32::of_bytes(b"development operation");
+        let run = Digest32::of_bytes(b"development run");
+        let output = Digest32::of_bytes(b"development output");
+        let effect = Digest32::of_bytes(b"development effect");
+        let consumer_report = |seq, accepted| {
+            (
+                seq,
+                PairedLearningDataUse::ReportConsumerOutcome {
+                    operation,
+                    pair,
+                    candidate: a,
+                    task: b,
+                    run_receipt: run,
+                    output,
+                    effect,
+                    accepted,
+                },
+                json!({"use":"report_consumer_outcome", "operation":operation.to_string(),
+                       "pair":pair.to_string(),"candidate":a.to_string(),"task":b.to_string(),
+                       "run_receipt":run.to_string(),"output":output.to_string(),"effect":effect.to_string(),
+                       "outcome":if accepted {"accepted"} else {"rejected"}}),
+            )
+        };
         for (seq, scope, scope_json) in [
             (
                 1,
@@ -270,6 +294,19 @@ mod linux {
                 PairedLearningDataUse::EvaluateOnlyAfterFreeze { freeze: a, task: b },
                 json!({"use":"evaluate_only","freeze":a.to_string(),"task":b.to_string()}),
             ),
+            (
+                3,
+                PairedLearningDataUse::RequestConsumerRun {
+                    operation,
+                    pair,
+                    candidate: a,
+                    task: b,
+                },
+                json!({"use":"request_consumer_run","operation":operation.to_string(),
+                       "pair":pair.to_string(),"candidate":a.to_string(),"task":b.to_string()}),
+            ),
+            consumer_report(4, true),
+            consumer_report(5, false),
         ] {
             let (delivery, ingress) = rt
                 .block_on(retain(
@@ -315,7 +352,7 @@ mod linux {
             );
             println!(
                 "{}",
-                json!({"scope":scope_json["use"],"delivery":delivery.to_string(),"study":study.to_string(),"issuer_request_sha256":received.to_string(),"acked_after_reopen":true,"exact_request_observed":true,"production_root_result":"Unavailable","stdout_bytes":observed.stdout.len(),"exit":observed.status.code(),"authenticated_humans":0})
+                json!({"scope":scope_json["use"],"decision":scope_json.get("outcome"),"delivery":delivery.to_string(),"study":study.to_string(),"issuer_request_sha256":received.to_string(),"acked_after_reopen":true,"exact_request_observed":true,"production_root_result":"Unavailable","stdout_bytes":observed.stdout.len(),"exit":observed.status.code(),"authenticated_humans":0})
             );
         }
         Ok(())
