@@ -51,7 +51,7 @@ e327 自身从冷检出重新编译的原始启动工作流也已成功。新 Ag
 
 十次真实 UID0 原进程把取消后的队列时序定位到工作线程归还信号量之前。旧程序五次实际返回 QueueFull，五次返回预期的 Unavailable。测试先保留 peer 读到 EOF 和通道槽为空的原断言，再显式等唯一的信号量许可返回，等待新增两秒上限，随后执行原精确读回断言。两套产品源码的 transport Git blob 完全相同。两枚不同原 libtest 各通过 10/10，二十次交替进程共 1.154459 秒。该数字限于这一个特权用例。[旧返回值与新测试的原生归档](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/942848ada99429f4cd1653f698b121e0f47767fb/qualification/hcsn_ci_readbacks/agentd-private-enums-20261123/queued-readback)
 
-#7016 已按快进方式更新到 e1969bcf8dbb9e9e42cd718401a9df6d13f79d98，含九项组合及这四行测试修改，仍为未合并草案。原先整组 92 项的 91/92 对 92/92 结果保留；另一项在两个调整后源码下重新绑定同一批 62 个普通和 30 个特权原用例，按先前两个 ELF 摘要核对后执行。[整组配对](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138043396) · [本次包含的四行改动](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e1969bcf8dbb9e9e42cd718401a9df6d13f79d98)
+#7016 已按快进方式更新到 e1969bcf8dbb9e9e42cd718401a9df6d13f79d98，含九项组合及这四行测试修改，仍为未合并草案。原先整组 92 项的 91/92 对 92/92 结果保留；两个调整后源码已按先前两个 ELF 摘要核验，各通过全部 62 个普通和 30 个真实 UID0 原用例，两侧均为 92/92。[双侧终局与原始回执](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/d67bdbe485c619addd6c8fe0379cb89650ec535a/qualification/hcsn_ci_readbacks/agentd-private-enums-20261123/queued-readback)。[整组配对](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138043396) · [本次包含的四行改动](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e1969bcf8dbb9e9e42cd718401a9df6d13f79d98)
 
 Linux musl 的原失败中，fleet 收到了一个可完整解析、其类型并非 Drain 的响应；另一个响应类型未留在原日志。三次独立原目标均通过两例。原生 core 的七份失败尝试分属三个 shard，两组后续通过，最终保留的失败是父 rollout 没有收到子代理已结束通知。正常结束的事件时序与通知写入正在单独验证。[真实运行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45137315561)
 

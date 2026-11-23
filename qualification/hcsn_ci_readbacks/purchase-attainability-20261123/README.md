@@ -95,3 +95,7 @@ coordinate_witness.json 保存了精确十进制位移。verify_coordinate_witne
 ## 尚未用于模型评估的独立来源库存
 
 再次核对两次研究的 44 项已用作品和 61 项未用候选，只检查原片、署名许可、制作与上传记录及原采样完整性条件。已缓存而未入选的 6 份原片共 215,549,142 字节。两份吉他都无法按原条件取齐四窗；钢琴中有一份严格的来源与权利证据齐全，另一份按发布者许可声明可用、上游许可复审尚未确认。其余分别为合成钢琴声和未指定主奏的钢琴小提琴合奏。当前实物无法组成拟检查的钢琴／吉他各 6 个新来源。在已登记 105 个页面内，即使把仍存疑的候选也算入，新的可选吉他上传账号至多两个。范围限于这个目录及已取得原件。没有开新预测或根据净收益选素材。[逐项原件、许可与技术回执说明](SOURCE_INVENTORY.md) · [完整清单及校验程序](unopened-source-inventory.zip)
+
+### 从七份原始 Git blob 的独立复算
+
+第二份实现只读取 TRAIN 和 DEV，重新构造音频、图库的输出和 18 个特征，再按二进制浮点输入的精确分数计算两套编辑的分差与逐来源效用。两套编辑的所有购买 ID、最差来源及两组符号检验逐项吻合。它还从逐题收益重建 34 条不等式，用六个正的对偶乘子直接复核八组策略的上界 −487/10920。该复算使用 NumPy、SciPy；仓库检出目录取名为 `trial`，在其父目录执行 `python trial/qualification/hcsn_ci_readbacks/purchase-attainability-20261123/independent/replay.py`。生成的 [receipt.json](independent/receipt.json) SHA-256 为 `733d4b5f3497366e57966c935cd0c6d2538c68075f4f3579c1b9660e057945ea`。[独立实现](independent/replay.py)

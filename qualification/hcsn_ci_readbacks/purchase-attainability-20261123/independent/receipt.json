@@ -1,0 +1,261 @@
+{
+  "commit": "0e744edcf0768f08618f1ca679ac4d7e3c7b8af3",
+  "independent_replay_source_sha256": "fb2c4a4a555dd0667187fb7ec84018b21c5d6627934973b54318ba19fd3fc008",
+  "input_sha256": {
+    "hcsn_blocker_followup/media/features/dev.npz": "0d9e0768b672bd3f50eb9a06acfaad3343a5ee0a87e46e265dcf639ba8cadee7",
+    "hcsn_blocker_followup/media/features/train.npz": "0348be0f0f768ce7aef0083f40fd8439a317a8e21dd8c1743b998ff24dd70ccf",
+    "hcsn_blocker_followup/media/roster/dev.json": "6b74b25bd5f424277f07a9d05c2d0da89daaf373a98e97741762502f0fb73a3a",
+    "hcsn_blocker_followup/media/roster/train.json": "895d9f345cfdadb6556d2721060a84ea6e731fa87cf6553805dd5e4b6fc84720",
+    "hcsn_blocker_followup/media/semantic/dev.npz": "6ad09598f5fc555a08f48f6d1275c342db34339fb50ff13de8284c4a3d00be5e",
+    "hcsn_blocker_followup/media/semantic/train.npz": "943bbea74ce19fc6de95ba15d9d29a9bbe9547518161bc6a39d38e5f94b33bcc",
+    "hcsn_blocker_followup/outcomes/fit.json": "5ab2265238dd1085e26e6c57bc2cf3f3d0f5a70b7128d30efe0eb546231a51de",
+    "hcsn_intervention_value/primary/discovery/front_weights.json": "8feca0900f68d8041a963b449b8b641f1d8b9bf747ad823a968f7efcf429bd66",
+    "trial/qualification/hcsn_blocker_followup/evidence/archive_manifest.json": "f6d9d2a961e57d8d0e4be363c7feb250e6384737f3e3502568bc0c449c94bfb0",
+    "trial/qualification/hcsn_ci_readbacks/purchase-attainability-20261123/cell_mixture_bound.json": "97110a2d514ebf6d5c672a6a57d4346fc9444913987c460b406a74df891c1af1",
+    "trial/qualification/hcsn_ci_readbacks/purchase-attainability-20261123/coordinate_witness.json": "b86752f8e79e870b555dbd9f4607ac8bcb5b0b463eaf6b85aaac8ff36cafcf05",
+    "trial/qualification/hcsn_ci_readbacks/purchase-attainability-20261123/coordinate_witness_result.json": "69252b592fbed94ca2e5d89166928f127a5df4d36734196841860cf7a3cf0d08",
+    "trial/qualification/hcsn_ci_readbacks/purchase-attainability-20261123/train_only_result.json": "cfd10aff6e021114c6ff062b711ff9a0427f81aa0eddfca88058df97a54a0538",
+    "trial/qualification/hcsn_ci_readbacks/purchase-attainability-20261123/train_only_seal.json": "e8b15f7ec750acaaf3127d2c16357ec5433cdba51f35f116052c183a2da81e80",
+    "trial/qualification/hcsn_intervention_value/evidence/archive_manifest.json": "91b5473681ba4586962a8a865bbc2142ebe86080236bda8202ae96acdabaca6c"
+  },
+  "lp": {
+    "dual": "-487/10920",
+    "min_slack": "0",
+    "positive_dual_support": 6,
+    "primal": "-487/10920",
+    "rows": 34,
+    "stationarity": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "1"
+    ]
+  },
+  "opened_splits": [
+    "train",
+    "dev"
+  ],
+  "replay": {
+    "joint": {
+      "dev": {
+        "bought": [
+          "newcommons-40222673-w01",
+          "newcommons-40222673-w02",
+          "newcommons-40222673-w03",
+          "newcommons-40222673-w04"
+        ],
+        "input_queries": 24,
+        "means": [
+          "7/60",
+          "1/24"
+        ],
+        "minimum_abs_margin": 0.10000993280769714,
+        "price_per_read": "3/10",
+        "source_differences": {
+          "new-prod-biswarup-ganguly-and-johnny-purty": [
+            "7/10",
+            "0"
+          ],
+          "new-prod-blues-breaking-records-gerry-joe-weise": [
+            "0",
+            "3/10"
+          ],
+          "new-prod-doug-haslam": [
+            "0",
+            "-7/10"
+          ],
+          "new-prod-santi-music-school": [
+            "0",
+            "-1/5"
+          ],
+          "new-prod-szervac-attila-tritonus-guitar-trio": [
+            "0",
+            "1/20"
+          ],
+          "new-prod-u-s-department-of-state-antony-blinken": [
+            "0",
+            "4/5"
+          ]
+        },
+        "source_sign_p": [
+          "1/2",
+          "1/2"
+        ],
+        "total_price_paid": "6/5",
+        "worst_vs_free": "0"
+      },
+      "l1": "9833757/10000000",
+      "nonzero": 8,
+      "train": {
+        "bought": [
+          "newcommons-43697361-w02",
+          "newcommons-46205579-w01",
+          "newcommons-46205579-w02",
+          "newcommons-46205579-w03",
+          "newcommons-46205579-w04",
+          "newcommons-184704912-w01",
+          "newcommons-184704912-w02",
+          "newcommons-184704912-w04",
+          "newcommons-67284494-w02",
+          "newcommons-67284494-w03",
+          "newcommons-67284494-w04"
+        ],
+        "input_queries": 32,
+        "means": [
+          "57/320",
+          "63/320"
+        ],
+        "minimum_abs_margin": 0.10000995916047031,
+        "price_per_read": "3/10",
+        "source_differences": {
+          "new-prod-alan-atanton-stewart-yeff": [
+            "21/40",
+            "-7/40"
+          ],
+          "new-prod-cultuur-in-actie-the-five-great-guitars": [
+            "0",
+            "3/10"
+          ],
+          "new-prod-drtrumpet": [
+            "0",
+            "-7/10"
+          ],
+          "new-prod-isaacvp": [
+            "0",
+            "13/10"
+          ],
+          "new-prod-isak-zvegelj-ljubljana-street-country": [
+            "0",
+            "4/5"
+          ],
+          "new-prod-jhistory": [
+            "1/5",
+            "0"
+          ],
+          "new-prod-tobias-frei-prophecy": [
+            "21/40",
+            "3/40"
+          ],
+          "new-prod-trumpetrep": [
+            "7/40",
+            "-1/40"
+          ]
+        },
+        "source_sign_p": [
+          "1/16",
+          "1/2"
+        ],
+        "total_price_paid": "33/10",
+        "worst_vs_free": "0"
+      }
+    },
+    "train_only": {
+      "dev": {
+        "bought": [
+          "newcommons-40222673-w01",
+          "newcommons-40222673-w03",
+          "newcommons-142796455-w03"
+        ],
+        "input_queries": 24,
+        "means": [
+          "1/240",
+          "-17/240"
+        ],
+        "minimum_abs_margin": 0.01633242116480789,
+        "price_per_read": "3/10",
+        "source_differences": {
+          "new-prod-biswarup-ganguly-and-johnny-purty": [
+            "7/20",
+            "-7/20"
+          ],
+          "new-prod-blues-breaking-records-gerry-joe-weise": [
+            "0",
+            "3/10"
+          ],
+          "new-prod-doug-haslam": [
+            "0",
+            "-7/10"
+          ],
+          "new-prod-santi-music-school": [
+            "0",
+            "-1/5"
+          ],
+          "new-prod-szervac-attila-tritonus-guitar-trio": [
+            "0",
+            "1/20"
+          ],
+          "new-prod-u-s-department-of-state-antony-blinken": [
+            "-13/40",
+            "19/40"
+          ]
+        },
+        "source_sign_p": [
+          "3/4",
+          "21/32"
+        ],
+        "total_price_paid": "9/10",
+        "worst_vs_free": "-13/40"
+      },
+      "l1": "4800781/5000000",
+      "nonzero": 6,
+      "train": {
+        "bought": [
+          "newcommons-46205579-w01",
+          "newcommons-46205579-w04"
+        ],
+        "input_queries": 32,
+        "means": [
+          "7/160",
+          "1/16"
+        ],
+        "minimum_abs_margin": 0.10000993781781642,
+        "price_per_read": "3/10",
+        "source_differences": {
+          "new-prod-alan-atanton-stewart-yeff": [
+            "0",
+            "-7/10"
+          ],
+          "new-prod-cultuur-in-actie-the-five-great-guitars": [
+            "0",
+            "3/10"
+          ],
+          "new-prod-drtrumpet": [
+            "0",
+            "-7/10"
+          ],
+          "new-prod-isaacvp": [
+            "0",
+            "13/10"
+          ],
+          "new-prod-isak-zvegelj-ljubljana-street-country": [
+            "0",
+            "4/5"
+          ],
+          "new-prod-jhistory": [
+            "7/20",
+            "3/20"
+          ],
+          "new-prod-tobias-frei-prophecy": [
+            "0",
+            "-9/20"
+          ],
+          "new-prod-trumpetrep": [
+            "0",
+            "-1/5"
+          ]
+        },
+        "source_sign_p": [
+          "1/2",
+          "163/256"
+        ],
+        "total_price_paid": "3/5",
+        "worst_vs_free": "0"
+      }
+    }
+  }
+}
