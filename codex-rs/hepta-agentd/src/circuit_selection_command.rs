@@ -255,12 +255,14 @@ impl OriginalCircuitSelectionCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             context,
-            timeout,
-            lifetime,
             false,
             None,
         )
@@ -293,27 +295,32 @@ impl OriginalCircuitSelectionCommandClientV1 {
             })
             .transpose()?;
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             context,
-            timeout,
-            lifetime,
             true,
             retained,
         )
     }
 
     fn bind_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         context: OriginalCircuitSelectionCommandContextV1,
-        timeout: Duration,
-        lifetime: Duration,
         execution_requested: bool,
         retained: Option<OriginalCircuitSelectionCommandReceiptV1>,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let started_at = now()?;
         let binding = context.binding(started_at)?;
         if peer.actor_id != context.training.owners.selector {
