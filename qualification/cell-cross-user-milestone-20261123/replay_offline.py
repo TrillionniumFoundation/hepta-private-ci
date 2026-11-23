@@ -21,11 +21,10 @@ def network_readout():
     }
 
 
-def run(output, outer_namespace):
+def run(output, outer_namespace, fixture):
     before = network_readout()
     if before["network_namespace"] == outer_namespace or before["interfaces"] != ["lo"]:
         raise RuntimeError("expected a new network namespace with only loopback")
-    fixture = Path(__file__).resolve().parent / "fixture"
     reference = json.loads((fixture / "request.json").read_bytes())
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     with TemporaryDirectory(dir=output) as temporary:
@@ -87,10 +86,16 @@ def run(output, outer_namespace):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output", type=Path)
+    parser.add_argument(
+        "--fixture",
+        type=Path,
+        default=Path(__file__).resolve().parent / "fixture",
+        help="Directory with frozen engineering materials, request and original paired result",
+    )
     parser.add_argument("--inside", help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.inside:
-        run(args.output, args.inside)
+        run(args.output, args.inside, args.fixture)
         return
     env = {
         **os.environ,
@@ -108,6 +113,8 @@ def main():
             sys.executable,
             __file__,
             str(args.output.resolve()),
+            "--fixture",
+            str(args.fixture.resolve()),
             "--inside",
             os.readlink("/proc/self/ns/net"),
         ],

@@ -56,7 +56,7 @@ def freeze(spec_path, materials, output):
     paired_cold.checked_panels({"retention": spec["retention"]}, parent["runtime"])
     for manifest in (parent, candidate):
         adoption.require(
-            coding_sft.verify_model(manifest, materials) == data.digest(manifest),
+            paired_cold.verify_materials(manifest, materials) == data.digest(manifest),
             "model inventory differs from disk",
         )
     return publish({"schema": FREEZE_SCHEMA, **spec}, output)

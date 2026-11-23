@@ -1,4 +1,4 @@
-"""Compare a frozen coding_sft parent and child in two fresh local processes.
+"""Compare frozen coding models or local routed Circuits in two fresh processes.
 
 Run python -m cell_experiments.paired_cold REQUEST CANONICAL_SHA256 MATERIALS OUT.
 REQUEST uses schema hepta.paired-cold.request.v1, embedded parent/candidate model
@@ -21,15 +21,34 @@ ARMS = ("parent", "candidate")
 PANELS = ("future", "retention")
 
 
-def checked_models(parent, child):
+def loader_for(model):
+    if (
+        model["family"] == coding_sft.FAMILY
+        and model["schema"] == coding_sft.MODEL_SCHEMA
+    ):
+        return coding_sft
+    from .online_v4 import circuit_bundle
+
+    adoption.require(
+        model["family"] == circuit_bundle.FAMILY
+        and model["schema"] == circuit_bundle.SCHEMA,
+        "unsupported model profile",
+    )
+    return circuit_bundle
+
+
+def verify_materials(model, materials):
+    loader = loader_for(model)
+    if loader is coding_sft:
+        return coding_sft.verify_model(model, materials)
+    return loader.checked_bundle(model, materials)
+
+
+def cell_weights_changed(parent, child):
     for model in (parent, child):
         adoption.need(model, "parent schema family files runtime")
-    adoption.require(child["parent"] == data.digest(parent), "wrong candidate parent")
-    for model in (parent, child):
         adoption.require(
-            model["schema"] == coding_sft.MODEL_SCHEMA
-            and model["family"] == coding_sft.FAMILY,
-            "unsupported model profile",
+            loader_for(model) is coding_sft, "expected a coding Cell manifest"
         )
 
     def inference_settings(model):
@@ -52,9 +71,17 @@ def checked_models(parent, child):
         }
 
     def weight_hashes(model):
-        return sorted(
-            f["sha256"] for f in model["files"] if f["path"].endswith(".safetensors")
+        runtime = model["runtime"]
+        weights = [Path(runtime["base_directory"]) / "model.safetensors"]
+        if runtime.get("adapter_directory"):
+            weights.append(
+                Path(runtime["adapter_directory"]) / "adapter_model.safetensors"
+            )
+        files = {Path(item["path"]): item["sha256"] for item in model["files"]}
+        adoption.require(
+            all(path in files for path in weights), "missing loaded Cell weights"
         )
+        return [files[path] for path in weights]
 
     adoption.require(
         inference_settings(parent) == inference_settings(child)
@@ -62,7 +89,50 @@ def checked_models(parent, child):
         == artifacts(child, frozen_input_artifact),
         "inference settings or tokenizer changed",
     )
-    adoption.require(weight_hashes(parent) != weight_hashes(child), "unchanged weights")
+    return weight_hashes(parent) != weight_hashes(child)
+
+
+def checked_models(parent, child):
+    for model in (parent, child):
+        adoption.need(model, "parent schema family runtime")
+    adoption.require(child["parent"] == data.digest(parent), "wrong candidate parent")
+    loader = loader_for(parent)
+    adoption.require(loader is loader_for(child), "incompatible paired model families")
+    if loader is coding_sft:
+        adoption.require(cell_weights_changed(parent, child), "unchanged weights")
+        return
+    for bundle in (parent, child):
+        adoption.need(bundle, "models budget router router_sha256")
+        adoption.need(bundle["router"], "plan graphs weights")
+        adoption.require(
+            data.digest(bundle["router"]) == bundle["router_sha256"],
+            "router digest differs",
+        )
+    adoption.require(
+        set(parent["models"]) == set(child["models"]) and parent["models"],
+        "Cell slots changed",
+    )
+    adoption.require(
+        parent["runtime"] == child["runtime"] and parent["budget"] == child["budget"],
+        "Circuit runtime or budget changed",
+    )
+    adoption.require(
+        all(
+            parent["router"][key] == child["router"][key] for key in ("plan", "graphs")
+        ),
+        "Circuit routing plan or graph inventory changed",
+    )
+    changed = []
+    for cell_id in sorted(parent["models"]):
+        old, new = parent["models"][cell_id], child["models"][cell_id]
+        if cell_weights_changed(old, new):
+            adoption.require(
+                new["parent"] == data.digest(old), "wrong changed Cell parent"
+            )
+            changed.append(cell_id)
+    router_changed = parent["router"]["weights"] != child["router"]["weights"]
+    adoption.require(changed or router_changed, "unchanged Cell and router weights")
+    return {"changed_cell_weights": changed, "router_weights_changed": router_changed}
 
 
 def checked_panels(panels, runtime):
@@ -121,11 +191,14 @@ def checked_request(path, expected):
     return req
 
 
-def token_inputs(req, model, materials):
-    """Catch template collapse and tokenizer collisions before loading model weights."""
+def frozen_tokenizer(model, materials):
+    """Open the manifest-bound tokenizer used for the original task input."""
     from transformers import AutoTokenizer
 
-    coding_sft.verify_model(model, materials)
+    verify_materials(model, materials)
+    loader = loader_for(model)
+    if loader is not coding_sft:
+        model = loader.input_manifest(model)
     runtime = model["runtime"]
     protocol = chat_protocol.protocol_name(runtime)
     tokenizer = AutoTokenizer.from_pretrained(
@@ -139,6 +212,21 @@ def token_inputs(req, model, materials):
             == runtime["chat_template_sha256"],
             "preflight tokenizer template changed",
         )
+    return tokenizer
+
+
+def token_inputs(req, model, materials):
+    """Catch template collapse and tokenizer collisions before loading model weights."""
+    tokenizer = frozen_tokenizer(model, materials)
+    runtime = model["runtime"]
+    protocol = chat_protocol.protocol_name(runtime)
+    router_training = set()
+    if loader_for(model) is not coding_sft:
+        router_training = {
+            sample["input_ids_sha256"]
+            for arm in ARMS
+            for sample in req[arm]["router_training_inputs"]
+        }
     inputs = {}
     seen = set()
     for panel in PANELS:
@@ -154,16 +242,29 @@ def token_inputs(req, model, materials):
             )
             token_hash = data.digest(tokens)
             adoption.require(token_hash not in seen, "repeated model input token IDs")
+            if panel == "future":
+                adoption.require(
+                    token_hash not in router_training,
+                    "future input repeats a frozen router training input",
+                )
             seen.add(token_hash)
             inputs[record["task_id"]] = token_hash
     return inputs
+
+
+def visible_task(record):
+    return {
+        key: record["task"][key]
+        for key in ("input", "messages")
+        if key in record["task"]
+    }
 
 
 def cold_arm(req, arm, materials, out, expected):
     model = req[arm]
     inputs = token_inputs(req, model, materials)
     start = time.time_ns()
-    predictor = coding_sft.load_predictor(model, materials)
+    predictor = loader_for(model).load_predictor(model, materials)
     model_digest = data.digest(model)
     loaded = time.time_ns()
     rows = []
@@ -171,11 +272,8 @@ def cold_arm(req, arm, materials, out, expected):
         for panel in PANELS:
             for record in req[panel]:
                 # Only the deployment-time task input enters the predictor.
-                visible = {"input": record["task"]["input"]}
-                if "messages" in record["task"]:
-                    visible["messages"] = record["task"]["messages"]
                 prediction = adoption.prediction(
-                    predictor, {"task": visible}, model_digest
+                    predictor, {"task": visible_task(record)}, model_digest
                 )
                 outcome = data.verify_answer(record, prediction["answer"])
                 row = dict(
@@ -189,7 +287,7 @@ def cold_arm(req, arm, materials, out, expected):
                 coding_sft.write_new(out / arm / f"{len(rows):04d}.json", row)
                 rows.append(row)
         adoption.require(
-            coding_sft.verify_model(model, materials) == model_digest,
+            verify_materials(model, materials) == model_digest,
             "cold model changed during execution",
         )
     finally:
@@ -210,8 +308,15 @@ def cold_arm(req, arm, materials, out, expected):
     )
 
 
-def compare(req, out, expected, pids):
+def compare(req, out, expected, pids, materials=None):
     receipts = [adoption.read_json(out / arm / "END.json") for arm in ARMS]
+    loader = loader_for(req["parent"])
+    circuit = loader is not coding_sft
+    if circuit:
+        adoption.require(
+            materials is not None, "Circuit readback requires original model materials"
+        )
+        tokenizers = {arm: frozen_tokenizer(req[arm], materials) for arm in ARMS}
     keys = [(p, r) for p in PANELS for r in req[p]]
     for arm, receipt, pid in zip(ARMS, receipts, pids, strict=True):
         adoption.require(
@@ -227,11 +332,25 @@ def compare(req, out, expected, pids):
         p: {"both": 0, "parent_only": 0, "candidate_only": 0, "neither": 0}
         for p in PANELS
     }
+    work = {
+        arm: {"model_calls": 0, "input_tokens": 0, "output_tokens": 0} for arm in ARMS
+    }
     for i, (panel, task) in enumerate(keys):
         scores, inputs = [], []
         for arm, receipt in zip(ARMS, receipts, strict=True):
             row = adoption.read_json(out / arm / f"{i:04d}.json")
             prediction = row["prediction"]
+            if circuit:
+                loader.check_prediction(
+                    req[arm], prediction, visible_task(task), tokenizers[arm]
+                )
+                original = prediction["circuit_trace"]["nodes"][0]["output"]
+                adoption.require(
+                    original["input_ids_sha256"] == row["input_ids_sha256"],
+                    "Circuit executed input differs from preflight",
+                )
+                for key in work[arm]:
+                    work[arm][key] += prediction["circuit_trace"]["cost"][key]
             outcome = data.verify_answer(task, prediction["answer"])
             adoption.require(
                 row["panel"] == panel
@@ -264,8 +383,18 @@ def compare(req, out, expected, pids):
     return {
         "schema": "hepta.paired-cold.result.v1",
         "request_sha256": expected,
-        "model_family": coding_sft.FAMILY,
-        "circuit_loaded": False,
+        "model_family": req["parent"]["family"],
+        "circuit_loaded": circuit,
+        **(
+            {
+                "paired_circuit_changes": checked_models(
+                    req["parent"], req["candidate"]
+                ),
+                "measured_circuit_work": work,
+            }
+            if circuit
+            else {}
+        ),
         "evaluation_order": list(PANELS),
         "retention_scope": "pooled covered tasks passed by the frozen parent",
         "cold_receipts": receipts,
@@ -333,7 +462,9 @@ def main():
                     raise
                 if status:
                     raise subprocess.CalledProcessError(status, command)
-    coding_sft.write_new(out / "RESULT.json", compare(req, out, args.digest, pids))
+    coding_sft.write_new(
+        out / "RESULT.json", compare(req, out, args.digest, pids, args.materials)
+    )
 
 
 if __name__ == "__main__":
