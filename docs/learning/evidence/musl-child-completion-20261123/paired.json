@@ -1,0 +1,175 @@
+{
+  "schema": "hepta.ci.legacy-child-completion-investigation.v1",
+  "product": "aad73002ea6b3ce63928cbb3125b23430ec6d7a7",
+  "original": "e3277e9677688be5c4c235a7a127f0b51e373399",
+  "baseline_test_only": "0561d91569c78b1980f2678badd767d2d207928c",
+  "driver": "3fbc25042576f2b9fbbbbf15a01191850002bf31",
+  "original_failing_job": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45130787598/job/137546561415",
+  "original_execution_archive": {
+    "id": 14799441045,
+    "sha256": "4ce46b8bf6e31dbc5387fb59cce4ef3db5fd9864793d4f8ae9af94cb463f2daf",
+    "bytes": 14363580
+  },
+  "chronology_utc": {
+    "parent_model_responded": "07:51:14.071058",
+    "child_model_responded": "07:51:14.097735",
+    "parent_refused_idle_injection": "07:51:14.151638",
+    "assertion": "timed out waiting for parent rollout to include subagent notification",
+    "ordinary_bound_seconds": 6
+  },
+  "prior_source_matched": {
+    "source_order": [
+      "unix.rs",
+      "hepta-agentd/src/state.rs",
+      "hepta-agentd/src/state_control.rs",
+      "five_agent_rolling_upgrade.rs",
+      "subagent_notifications.rs",
+      "core/src/session/inject.rs"
+    ],
+    "source_blobs": [
+      [
+        "e3277e9677688be5c4c235a7a127f0b51e373399",
+        "358947b30ce73232eb42491a44c7787b24a9386e",
+        "e612ae7b1d013e89a37ee6ac1152fb04f6895b26",
+        "acc7dbe55cd8385570bddc0acc47168054fcc5e3",
+        "8b44dc8ecbdc201a6ff20fb125064e2dc5865e39",
+        "3874ec95c3ed88e3dffce7dbc55f3f2019f1923c",
+        "4f6cdaf8c9d56ea775a54c135e0d2de375a4a0d0"
+      ],
+      [
+        "c6a3ed9c36f88707d2f29630efe1e3ea4ee0e902",
+        "358947b30ce73232eb42491a44c7787b24a9386e",
+        "e612ae7b1d013e89a37ee6ac1152fb04f6895b26",
+        "acc7dbe55cd8385570bddc0acc47168054fcc5e3",
+        "8b44dc8ecbdc201a6ff20fb125064e2dc5865e39",
+        "3874ec95c3ed88e3dffce7dbc55f3f2019f1923c",
+        "4f6cdaf8c9d56ea775a54c135e0d2de375a4a0d0"
+      ],
+      [
+        "de4ef594bfefec05a64fc2ae3b717a640a57b263",
+        "358947b30ce73232eb42491a44c7787b24a9386e",
+        "e612ae7b1d013e89a37ee6ac1152fb04f6895b26",
+        "acc7dbe55cd8385570bddc0acc47168054fcc5e3",
+        "8b44dc8ecbdc201a6ff20fb125064e2dc5865e39",
+        "3874ec95c3ed88e3dffce7dbc55f3f2019f1923c",
+        "4f6cdaf8c9d56ea775a54c135e0d2de375a4a0d0"
+      ]
+    ],
+    "neutral_comparators": [
+      {
+        "job": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45125165932/job/137528575274",
+        "core_s": 72.5,
+        "fleet_s": 4.3
+      },
+      {
+        "job": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45110023804/job/137481302823",
+        "core_s": 66.5,
+        "fleet_s": 5.1
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "id": 14801390724,
+      "name": "original-six-agent-fleet-three-musl",
+      "bytes": 1105,
+      "digest": "sha256:5cb8ef4b286fc4f79347411546d7f8a4367d20b135e41fc6cc07c11d4b633f1b"
+    },
+    {
+      "id": 14800233642,
+      "name": "legacy-child-completion-candidate",
+      "bytes": 1395,
+      "digest": "sha256:163f93c2cb5f7ee0f311328aa01ae5061de1e877ce0011f84110a57ac57226bd"
+    },
+    {
+      "id": 14800039545,
+      "name": "legacy-child-completion-baseline",
+      "bytes": 1568,
+      "digest": "sha256:a2985d25cc61e0c0d7dc4efe2eb74df552745de6889a684ddd8d99f57ff8854f"
+    }
+  ],
+  "witness": {
+    "baseline": 0,
+    "candidate": 1,
+    "opportunities_each": 1,
+    "retired_genuine_finish_before_exposing_notice": true,
+    "shutdown_negative": true,
+    "recorded_count": 1
+  },
+  "original_end_to_end": {
+    "baseline": {
+      "passed": 3,
+      "total": 3,
+      "seconds": [
+        0.71,
+        0.7,
+        0.74
+      ]
+    },
+    "candidate": {
+      "passed": 3,
+      "total": 3,
+      "seconds": [
+        0.44,
+        0.48,
+        0.47
+      ]
+    }
+  },
+  "parent_control_log": [
+    "child notification was discarded before the normal finish owner retired",
+    "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2485 filtered out; finished in 0.05s",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1548 filtered out; finished in 0.71s",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1548 filtered out; finished in 0.70s",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1548 filtered out; finished in 0.74s",
+    "baseline 3 of 3"
+  ],
+  "candidate_log": [
+    "test session::inject::tests::terminal_child_notification_waits_for_normal_finish_and_stays_single ... ok",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2485 filtered out; finished in 0.15s",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1548 filtered out; finished in 0.44s",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1548 filtered out; finished in 0.48s",
+    "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1548 filtered out; finished in 0.47s",
+    "candidate 3 of 3"
+  ],
+  "fleet_three": {
+    "0.log": {
+      "cases": [
+        "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated",
+        "five_real_agentd_processes_roll_one_agent_without_stopping_peers"
+      ],
+      "sha256": "cf18c5bab1b467d664ec12d0b45fe451ac4afcbe7827260905322b34cf741457",
+      "elapsed": "6.88s"
+    },
+    "1.log": {
+      "cases": [
+        "five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+        "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated"
+      ],
+      "sha256": "9efda8d62625741d7063496bdc824130c36a0c934bfa7bf6aa1ed7fd3fe1a03f",
+      "elapsed": "14.40s"
+    },
+    "2.log": {
+      "cases": [
+        "five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+        "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated"
+      ],
+      "sha256": "7cf4ea88cfd43fb22f232b62935393c1e1ba0e1f92c2c5966d7e2196c0fe9fa4",
+      "elapsed": "8.21s"
+    }
+  },
+  "qualifications": {
+    "fleet_state_in_original": "The supervisor parsed a bounded complete response with a non-Drain payload. The variant was not logged.",
+    "scope": "Local deterministic root-cause test distinguishes event loss. Both ordinary isolated runs passed. The original full-workspace run stays red.",
+    "clippy_local_expectation": "clippy::await_holding_invalid_type at the internal notification method names its required active-turn guard"
+  },
+  "gnu_clippy": {
+    "job": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138242632/job/137569597146",
+    "source": "aad73002ea6b3ce63928cbb3125b23430ec6d7a7",
+    "target": "//codex-rs/core:core-unit-tests-bin",
+    "artifact": 14801690470,
+    "sha256": "sha256:3eb4b570c7385e64cb65c18f25fb0ddf048ab63164ee531d2b6861690e2faf9c",
+    "result": "success",
+    "build_actions": 25074
+  }
+}

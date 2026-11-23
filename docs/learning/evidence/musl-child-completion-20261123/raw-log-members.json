@@ -1,0 +1,78 @@
+{
+  "baseline": {
+    "end-to-end/0.log": {
+      "sha256": "1737bc534f4973bb7809554d334ce1e53d9c9ece02025ea1bb82baec9cd76372",
+      "cases": [
+        [
+          "suite::subagent_notifications::subagent_notification_is_included_without_wait",
+          "ok"
+        ]
+      ]
+    },
+    "end-to-end/2.log": {
+      "sha256": "f3fbc8a2da91cc734fa0cd20f659120dce72d8f79d7b41d5c6d5246fa626aeda",
+      "cases": [
+        [
+          "suite::subagent_notifications::subagent_notification_is_included_without_wait",
+          "ok"
+        ]
+      ]
+    },
+    "end-to-end/1.log": {
+      "sha256": "3c92694f79cdb91fce16bbaef4404fa534beaa1c9d1dda5699398728d29da406",
+      "cases": [
+        [
+          "suite::subagent_notifications::subagent_notification_is_included_without_wait",
+          "ok"
+        ]
+      ]
+    },
+    "witness/test.log": {
+      "sha256": "a3325e33d3e54f0eafd0691ca0860ed484c7879f4eca851c997c2eaa54f1ec9a",
+      "cases": [
+        [
+          "session::inject::tests::terminal_child_notification_waits_for_normal_finish_and_stays_single",
+          "FAILED"
+        ]
+      ]
+    }
+  },
+  "candidate": {
+    "end-to-end/0.log": {
+      "sha256": "b004ce20e9fc6f6475057de67bd9c9940d41f6998926a637df105587e19a6690",
+      "cases": [
+        [
+          "suite::subagent_notifications::subagent_notification_is_included_without_wait",
+          "ok"
+        ]
+      ]
+    },
+    "end-to-end/1.log": {
+      "sha256": "b8a88c1cf6b29b42da936966c99505e8d0511d2e67bfa762aebeebefae75e723",
+      "cases": [
+        [
+          "suite::subagent_notifications::subagent_notification_is_included_without_wait",
+          "ok"
+        ]
+      ]
+    },
+    "end-to-end/2.log": {
+      "sha256": "868caa33b9abf3712b875807b2ac93bd39bedda75db31db03f39406e259e10c1",
+      "cases": [
+        [
+          "suite::subagent_notifications::subagent_notification_is_included_without_wait",
+          "ok"
+        ]
+      ]
+    },
+    "witness/test.log": {
+      "sha256": "fd5c793d6024d1200d207913042126afcc983e00b4b51b4840215142927a901f",
+      "cases": [
+        [
+          "session::inject::tests::terminal_child_notification_waits_for_normal_finish_and_stays_single",
+          "ok"
+        ]
+      ]
+    }
+  }
+}

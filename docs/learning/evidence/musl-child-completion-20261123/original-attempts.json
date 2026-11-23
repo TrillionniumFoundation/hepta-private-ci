@@ -1,0 +1,88 @@
+{
+  "codex-rs/core/core-all-test/shard_11_of_16/test.log": {
+    "status": "ok",
+    "counts": "85 passed; 0 failed; 1 ignored; 0 measured; 1463 filtered out; finished in 45.87s",
+    "failures": [],
+    "raw_sha256": "cea9821ac57308553a018520a5c0930010800a0cb0f581fcef8bb44ac47e6c2a",
+    "archive_member": "test-attempt-logs-rze2jyke/files/000002.log"
+  },
+  "codex-rs/core/core-all-test/shard_11_of_16/test_attempts/attempt_1.log": {
+    "status": "FAILED",
+    "counts": "84 passed; 1 failed; 1 ignored; 0 measured; 1463 filtered out; finished in 59.98s",
+    "failures": [
+      "suite::network_approval::guardian_network_approval_preserves_action_and_outcome_routing"
+    ],
+    "raw_sha256": "85c29d49e4416bbfdc22c4d14df16ff7ba94af4c54965ed58daec78ef915d9b2",
+    "archive_member": "test-attempt-logs-rze2jyke/files/000003.log"
+  },
+  "codex-rs/core/core-all-test/shard_11_of_16/test_attempts/attempt_2.log": {
+    "status": "FAILED",
+    "counts": "84 passed; 1 failed; 1 ignored; 0 measured; 1463 filtered out; finished in 62.87s",
+    "failures": [
+      "suite::network_approval::guardian_network_approval_preserves_action_and_outcome_routing"
+    ],
+    "raw_sha256": "aed1f4eb32bb3e66e597a858bd9b9da048e65d4cb09320eef6e8228fb19fb70e",
+    "archive_member": "test-attempt-logs-rze2jyke/files/000004.log"
+  },
+  "codex-rs/core/core-all-test/shard_14_of_16/test.log": {
+    "status": "FAILED",
+    "counts": "82 passed; 1 failed; 0 ignored; 0 measured; 1466 filtered out; finished in 37.93s",
+    "failures": [
+      "suite::subagent_notifications::subagent_notification_is_included_without_wait"
+    ],
+    "raw_sha256": "be7acee6a2d805e5a6cc143c2183fc85f94238abe7b7cf0dcd7f632dbb3f0601",
+    "archive_member": "test-attempt-logs-rze2jyke/files/000007.log"
+  },
+  "codex-rs/core/core-all-test/shard_14_of_16/test_attempts/attempt_1.log": {
+    "status": "FAILED",
+    "counts": "82 passed; 1 failed; 0 ignored; 0 measured; 1466 filtered out; finished in 51.51s",
+    "failures": [
+      "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_3_manually_enabled_multimodal"
+    ],
+    "raw_sha256": "d43c948f649520ee1700cc93ba976730c3de9caa1b16b296ddd2784ec77d5c73",
+    "archive_member": "test-attempt-logs-rze2jyke/files/000008.log"
+  },
+  "codex-rs/core/core-all-test/shard_14_of_16/test_attempts/attempt_2.log": {
+    "status": "FAILED",
+    "counts": "82 passed; 1 failed; 0 ignored; 0 measured; 1466 filtered out; finished in 46.38s",
+    "failures": [
+      "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_3_manually_enabled_multimodal"
+    ],
+    "raw_sha256": "921b2080dc8ddddb3f5097eceb53c01445741c88ba8c9d7644eb13280e3ff242",
+    "archive_member": "test-attempt-logs-rze2jyke/files/000009.log"
+  },
+  "codex-rs/core/core-all-test/shard_9_of_16/test.log": {
+    "status": "ok",
+    "counts": "108 passed; 0 failed; 0 ignored; 0 measured; 1441 filtered out; finished in 44.98s",
+    "failures": [],
+    "raw_sha256": "a8b7deb667a80bc0f8e96c5bfb98651279de82dbf68ca64565d58c5f8c0bbcb3",
+    "archive_member": "test-attempt-logs-rze2jyke/files/000020.log"
+  },
+  "codex-rs/core/core-all-test/shard_9_of_16/test_attempts/attempt_1.log": {
+    "status": "FAILED",
+    "counts": "107 passed; 1 failed; 0 ignored; 0 measured; 1441 filtered out; finished in 70.70s",
+    "failures": [
+      "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_11_cua_manually_enabled_multimodal"
+    ],
+    "raw_sha256": "e43479c004065fb7558fa4a269898e22be5ad1a5e7b25129bd7c1585a9c7c919",
+    "archive_member": "test-attempt-logs-rze2jyke/files/000021.log"
+  },
+  "codex-rs/core/core-all-test/shard_9_of_16/test_attempts/attempt_2.log": {
+    "status": "FAILED",
+    "counts": "107 passed; 1 failed; 0 ignored; 0 measured; 1441 filtered out; finished in 66.12s",
+    "failures": [
+      "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_11_cua_manually_enabled_multimodal"
+    ],
+    "raw_sha256": "468a6bf1684fb3b0ef9fb1123dc4779db14f29795494a3ad3799d3c4490e39ca",
+    "archive_member": "test-attempt-logs-rze2jyke/files/000022.log"
+  },
+  "codex-rs/hepta-agentd/hepta-agentd-five_agent_rolling_upgrade-test/test.log": {
+    "status": "FAILED",
+    "counts": "1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.28s",
+    "failures": [
+      "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated"
+    ],
+    "raw_sha256": "7888f3ab2f0baa1adcaf1f26a20b2aa82b803d2acdf086629e9ea0f1848971e7",
+    "archive_member": "test-attempt-logs-xkne41l9/files/000001.log"
+  }
+}
