@@ -208,6 +208,41 @@ fn jwt_expiration_handles_missing_exp() {
 }
 
 #[test]
+fn jwt_expiration_preserves_signed_and_unrepresentable_seconds() {
+    for seconds in [-1_i64, 0, 1, 1_700_000_000] {
+        let jwt = fake_jwt(serde_json::json!({ "exp": seconds }));
+        assert_eq!(
+            parse_jwt_expiration(&jwt).expect("valid integer expiration"),
+            Utc.timestamp_opt(seconds, 0).single()
+        );
+    }
+
+    // These are valid JSON i64 values, but outside Chrono's datetime range.
+    for seconds in [i64::MIN, i64::MAX] {
+        let jwt = fake_jwt(serde_json::json!({ "exp": seconds }));
+        assert_eq!(
+            parse_jwt_expiration(&jwt).expect("valid JWT with unsupported timestamp"),
+            None
+        );
+    }
+}
+
+#[test]
+fn jwt_expiration_rejects_non_integer_claims() {
+    for exp in [
+        serde_json::json!("1700000000"),
+        serde_json::json!(1.5),
+        serde_json::json!(u64::MAX),
+    ] {
+        let jwt = fake_jwt(serde_json::json!({ "exp": exp }));
+        assert!(
+            parse_jwt_expiration(&jwt).is_err(),
+            "non-i64 expiration must not be accepted"
+        );
+    }
+}
+
+#[test]
 fn jwt_expiration_rejects_malformed_jwt() {
     let err = parse_jwt_expiration("not-a-jwt").expect_err("should fail");
     assert_eq!(err.to_string(), "invalid ID token format");
