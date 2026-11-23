@@ -1,6 +1,15 @@
 //! Exercise the actual protected-client wire contract against a local test peer.
 
-use super::*;
+use std::thread;
+use std::time::Duration;
+
+use pretty_assertions::assert_eq;
+use serde_json::json;
+
+use super::fixture;
+use super::read;
+use super::send;
+use crate::AgentdFinalUseIssuerError;
 use crate::PairedLearningDataUse::EvaluateOnlyAfterFreeze;
 use crate::PairedLearningDataUse::TrainOnFailureAndCorrection;
 use codex_hepta_types::Digest32;
