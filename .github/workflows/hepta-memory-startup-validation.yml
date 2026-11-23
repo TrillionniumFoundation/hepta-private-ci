@@ -92,6 +92,8 @@ jobs:
             chmod 755 "$children/$name"
             echo "CARGO_BIN_EXE_$name=$children/$name" >> "$GITHUB_ENV"
           done
+          # The POSIX recipe shell drops environment names containing a hyphen.
+          echo "CARGO_BIN_EXE_hepta_joint_propose=$children/hepta-joint-propose" >> "$GITHUB_ENV"
       - name: Match the archived Agentd roster against the original Cargo target
         working-directory: codex-rs
         env:
@@ -99,6 +101,7 @@ jobs:
         run: |
           set -euo pipefail
           children="$RUNNER_TEMP/startup-test-children"
+          sh -cu 'test -x "$CARGO_BIN_EXE_codex" && test -x "$CARGO_BIN_EXE_hepta_joint_propose"'
           cargo nextest --version | cmp - "$children/nextest-version.txt"
           cargo nextest list --archive-file "$children/agentd-lib.tar.zst" --workspace-remap "$PWD" --message-format json > "$children/restored-list.json"
           python3 - "$children" <<'PYTHON'
