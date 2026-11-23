@@ -19,7 +19,7 @@ def verify():
     freeze = json.loads(FREEZE.read_text())
     if freeze["status"] != "SOURCE_ONLY_RESOURCE_HOLD":
         raise SystemExit("source freeze status differs")
-    if freeze["base_head"] != "bde57770b19cedc26abdfc38eb4c79fe93247546":
+    if freeze["base_head"] != "c93875c2f5a10c95deec30de0cb17da15da16f27":
         raise SystemExit("base head differs")
     for relative, expected in freeze["files"].items():
         raw = (REPO / relative).read_bytes()
@@ -39,6 +39,7 @@ def verify():
         "concurrency": None,
         "host_observation_path": None,
         "host_observation_sha256": None,
+        "require_live_cgroup_v2": True,
         "runtime_path": None,
         "runtime_sha256": None,
     }:
