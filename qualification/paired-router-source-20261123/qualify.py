@@ -20,7 +20,7 @@ def main(archive, out):
     root.mkdir(parents=True, exist_ok=False)
     with zipfile.ZipFile(archive) as z:
         for name in z.namelist():
-            if name.startswith("original/materials/") and not name.endswith("/"):
+            if name.startswith(("original/materials/base/", "original/materials/reader/", "original/materials/source/")) and not name.endswith("/"):
                 relative = Path(name).relative_to("original/materials")
                 assert ".." not in relative.parts
                 path = root / relative
