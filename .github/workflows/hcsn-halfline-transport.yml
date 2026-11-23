@@ -43,6 +43,11 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/halfline/source.txt"
           python -B -m qualification.hcsn_halfline_readout.verify --output "$RUNNER_TEMP/halfline/readout.json"
           python -B -m qualification.hcsn_halfline_transport.verify --output "$RUNNER_TEMP/halfline/transport.json"
+      - name: Verify positive-delay marked renewal against fresh independent time and space integrals
+        run: |
+          set -euo pipefail
+          python -B qualification/hcsn_halfline_transport/finite_marked_reference/reference.py --output "$RUNNER_TEMP/halfline/finite-marked-reference.json" --timing "$RUNNER_TEMP/halfline/finite-marked-reference-time.json"
+          python -B -m qualification.hcsn_halfline_transport.verify_finite_marked --reference "$RUNNER_TEMP/halfline/finite-marked-reference.json" --output "$RUNNER_TEMP/halfline/finite-marked.json"
       - name: Run the original discrete, interval and log-risk tests
         run: |
           set -euo pipefail

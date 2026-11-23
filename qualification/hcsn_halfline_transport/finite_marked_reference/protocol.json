@@ -1,0 +1,14 @@
+{
+  "task": "Independent positive time and spatial quadrature for deterministic delayed marked renewal",
+  "x": 0.23, "mu": -0.35, "sigma": 0.58, "a": 0.21, "d": 0.14,
+  "horizons": [0.09,0.21,0.39,0.61], "edges": [0,0.08,0.18,0.32,0.57,1],
+  "target_y": [0.11,0.21,0.43,0.82], "phase_fraction_edges": [0,0.2,0.55,1],
+  "m0": [0.7,-0.45], "R": [[0.68,0.24],[-0.21,0.81]],
+  "marks": "event n emits and holds R^(n-1) m0; n-th release applies R",
+  "z_tail": 39, "time_orders": [128,256], "space_orders": [20,32],
+  "fd": "T=.61; physical x,mu,sigma,a,d,T; then m0[0,1],R00,R01,R10,R11. Five-point centered, h=2e-5 and 1e-5 for all inputs",
+  "objective": "For P=[6 active including tail,3 phase], C=[9,2] signed marks; sum P_i*(i+1)/9 + sum C_ij*(2*i+j+1)/18 + [.37,-.21].marked_cumulative_hits + [-.08,.04].marked_event_rate, indices from zero.",
+  "rare": {"x":0.5,"mu":-0.12,"sigma":0.5,"a":0.5,"d":0.2,"T":0.21,"edges":[0,0.5,0.75,1],"target_y":[0.5,0.625]},
+  "extra_check": "Inverse Laplace using separate transforms of first leg x and n-1 legs a, plus the killed-resolvent image, on both sides of reset for the fourth release",
+  "source": "No product formula, product module, old scalar released_interval, or training data imported"
+}
