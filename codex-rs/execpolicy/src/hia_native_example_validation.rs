@@ -98,6 +98,21 @@ fn validate_response(
     hit: bool,
     output: &[u8; OUTPUT_BYTES],
 ) -> Transition {
+    assert!(
+        mode == NEGATIVE || mode == POSITIVE,
+        "HIA example-validation input mode is invalid"
+    );
+    if total == 0 {
+        assert!(
+            index == 0 && misses == 0 && !hit,
+            "HIA empty-example input state is invalid"
+        );
+    } else {
+        assert!(
+            index < total && misses <= index && (mode != NEGATIVE || misses == 0),
+            "HIA example-validation input state is invalid"
+        );
+    }
     let word = |offset: usize| {
         u64::from_le_bytes(
             output[offset..offset + 8]
