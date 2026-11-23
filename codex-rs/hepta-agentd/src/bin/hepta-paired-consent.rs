@@ -1,0 +1,135 @@
+//! Private one-shot verification for an already attached Linux owner.
+
+#[cfg(not(target_os = "linux"))]
+fn main() -> anyhow::Result<()> {
+    anyhow::bail!("paired consent requires the original Linux Root and human UI")
+}
+
+#[cfg(target_os = "linux")]
+fn main() -> anyhow::Result<()> {
+    linux::run()
+}
+
+#[cfg(target_os = "linux")]
+mod linux {
+    use std::io::Read;
+    use std::os::fd::FromRawFd;
+    use std::os::fd::OwnedFd;
+    use std::os::fd::RawFd;
+    use std::os::unix::net::UnixStream;
+    use std::path::PathBuf;
+    use std::sync::Arc;
+    use std::time::Duration;
+
+    use codex_hepta_agentd::AgentdUnixFinalUseGrantProvider;
+    use codex_hepta_agentd::PairedLearningDataUse;
+    use codex_hepta_agentd::text_session::AgentdTextSessionConfig;
+    use codex_hepta_evidence::HeptaEvidenceStore;
+    use codex_hepta_types::Digest32;
+    use codex_state::SqliteConfig;
+    use codex_utils_absolute_path::AbsolutePathBuf;
+    use serde::Deserialize;
+
+    #[derive(Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Request {
+        root_pid: u32,
+        sqlite_home: PathBuf,
+        route: AgentdTextSessionConfig,
+        study_sha256: String,
+        delivery_id: String,
+        scope: Scope,
+    }
+
+    #[derive(Deserialize)]
+    #[serde(tag = "use", rename_all = "snake_case", deny_unknown_fields)]
+    enum Scope {
+        Train { failure: String, correction: String },
+        EvaluateOnly { freeze: String, task: String },
+    }
+
+    fn inherited(fd: RawFd) -> std::io::Result<OwnedFd> {
+        // fcntl checks that the inherited descriptor exists. Duplicate above
+        // both fixed slots so a missing pidfd cannot alias a new duplicate.
+        let owned = unsafe { libc::fcntl(fd, libc::F_DUPFD_CLOEXEC, 5) };
+        if owned < 0 {
+            return Err(std::io::Error::last_os_error());
+        }
+        // SAFETY: a successful F_DUPFD_CLOEXEC returns a new descriptor we own.
+        Ok(unsafe { OwnedFd::from_raw_fd(owned) })
+    }
+
+    pub(super) fn run() -> anyhow::Result<()> {
+        if std::env::args_os().len() != 1 {
+            anyhow::bail!(
+                "hepta-paired-consent reads private request JSON on stdin; inherit the protected Root socket on fd 3 and its held pidfd on fd 4"
+            );
+        }
+        let mut bytes = Vec::new();
+        std::io::stdin().take(32769).read_to_end(&mut bytes)?;
+        anyhow::ensure!(bytes.len() <= 32768, "private request exceeds 32 KiB");
+        let request: Request = serde_json::from_slice(&bytes)?;
+        let study: Digest32 = request.study_sha256.parse()?;
+        let delivery: Digest32 = request.delivery_id.parse()?;
+        let allowed = match request.scope {
+            Scope::Train {
+                failure,
+                correction,
+            } => PairedLearningDataUse::TrainOnFailureAndCorrection {
+                failure: failure.parse()?,
+                correction: correction.parse()?,
+            },
+            Scope::EvaluateOnly { freeze, task } => {
+                PairedLearningDataUse::EvaluateOnlyAfterFreeze {
+                    freeze: freeze.parse()?,
+                    task: task.parse()?,
+                }
+            }
+        };
+        let issuer = Arc::new(AgentdUnixFinalUseGrantProvider::from_root_stream(
+            UnixStream::from(inherited(3)?),
+            request.root_pid,
+            inherited(4)?,
+            Duration::from_secs(3),
+            Duration::from_secs(15),
+        )?);
+        let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
+            &request.sqlite_home,
+        )?);
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()?;
+        let owner = runtime.block_on(async {
+            let evidence = HeptaEvidenceStore::open_existing_read_only(&sqlite).await?;
+            let result = issuer
+                .verify_retained_paired_learning_consent(
+                    &evidence,
+                    &request.route,
+                    delivery,
+                    study,
+                    allowed,
+                )
+                .await;
+            evidence.close().await;
+            Ok::<_, anyhow::Error>(result?)
+        })?;
+        let principal = Digest32::of_bytes(&serde_json::to_vec(&(
+            "hepta.paired-learning.principal.v1",
+            study.to_string(),
+            &owner.principal_id,
+        ))?);
+        let scope = match allowed {
+            PairedLearningDataUse::TrainOnFailureAndCorrection { .. } => "train",
+            PairedLearningDataUse::EvaluateOnlyAfterFreeze { .. } => "evaluate_only",
+        };
+        println!(
+            "{}",
+            serde_json::json!({
+                "schema": "hepta.paired-learning.consent-readback.v1",
+                "study_sha256": study.to_string(), "delivery_id": delivery.to_string(),
+                "use": scope, "study_principal_sha256": principal.to_string()
+            })
+        );
+        Ok(())
+    }
+}

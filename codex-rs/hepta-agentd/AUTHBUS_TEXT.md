@@ -191,3 +191,30 @@ statement is produced by `scope.consent_text(study)`. Keep the original
 signed statement and owner association private. The enrollment authority must
 check distinct people. The intake log must independently witness freeze and
 arrival order, and settlement must verify the payer's order separately.
+
+### Separate host process
+
+Build the Linux executable with `cargo build -p codex-hepta-agentd --bin
+hepta-paired-consent` from `codex-rs`. The trusted launcher transfers an
+exclusive, already connected original Root issuer socket on fd 3 and its
+pre-held Root pidfd on fd 4. The request comes on stdin. The launcher must
+supply the same independently established Root PID, registered route and
+existing SQLite home it uses for this host. Keep the route and descriptor
+handoff under the registered host owner's control. A regular shell with only
+a delivery hash lacks the live Root channel required to verify it.
+
+After that handoff, invoke `hepta-paired-consent < private-request.json`.
+The request fields are `root_pid`, `sqlite_home`, `route` (the existing
+`AgentdTextSessionConfig` object), `delivery_id`, `study_sha256` and
+`scope`. For A the scope fields are `{"use":"train","failure":"…","correction":"…"}`.
+For B use `{"use":"evaluate_only","freeze":"…","task":"…"}`. Each digest
+field takes its actual 64 lowercase hexadecimal characters. Supply B's
+consent-message delivery ID only after the separately witnessed freeze.
+
+The executable opens the existing evidence database read-only, verifies
+one delivered consent statement and exits. Its JSON stdout contains the
+study, delivery and verified use, plus a study-specific principal reference.
+The latter hashes the compact JSON tuple
+`["hepta.paired-learning.principal.v1",study_sha256,registered_principal_id]`.
+Keep that result in the private intake. The site's existing enrollment records
+must still relate the registered principal to the person.
