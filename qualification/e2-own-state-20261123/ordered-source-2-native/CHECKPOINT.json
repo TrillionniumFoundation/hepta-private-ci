@@ -1,0 +1,164 @@
+{
+  "accepted_scientific_claims": [],
+  "as_of": "2026-11-21T03:00:00Z",
+  "candidate_count": 4,
+  "candidates": [
+    {
+      "commit": "20caed831605ec341ed670302f6b0f17685f156d",
+      "function": "_process_file",
+      "ordinal": 0,
+      "parent": "3512a9d86912720ae67181ad2e9fd9cc28a73408",
+      "position": [
+        2,
+        0
+      ],
+      "source_path": "sqlparse/cli.py",
+      "status_at_checkpoint": "FAILED_NO_RETRY"
+    },
+    {
+      "commit": "ef2012a5eeb491e604dea2b00d516904a3830c87",
+      "function": "group_comments",
+      "ordinal": 1,
+      "parent": "26112ddb139361cc76218b3e3b50067652678fec",
+      "position": [
+        14,
+        1
+      ],
+      "source_path": "sqlparse/engine/grouping.py",
+      "status_at_checkpoint": "REFUSED"
+    },
+    {
+      "commit": "111b35cffcfe44b16fbdd27507f165bafd52a2a1",
+      "function": "group_functions",
+      "ordinal": 2,
+      "parent": "f80af6a4007f11ada847218df8c29dc859238290",
+      "position": [
+        25,
+        0
+      ],
+      "source_path": "sqlparse/engine/grouping.py",
+      "status_at_checkpoint": "NATIVE_PAIR_READY_FOR_PREPARATION"
+    },
+    {
+      "commit": "8efa3935de40ba069a11f95551605d30d6efe998",
+      "function": "validate_options",
+      "ordinal": 3,
+      "parent": "0e9b42dde0ab87c1956566bae572a971bfbe1ef5",
+      "position": [
+        30,
+        10
+      ],
+      "source_path": "sqlparse/formatter.py",
+      "status_at_checkpoint": "UNOPENED"
+    }
+  ],
+  "commits_examined": 31,
+  "head": "09dbe1eec31ed1b3cd05366748865f11ba427d32",
+  "ordinal_1_pair": {
+    "after": {
+      "actual_wait_returncode": 1,
+      "errors": 0,
+      "failed_cases": [
+        {
+          "classname": "tests.test_cli",
+          "name": "test_script"
+        }
+      ],
+      "failures": 1,
+      "junit_sha256": "91fe4feb789acf1d312ed71ee24c985d3e34d9af32cf66dd039519039f04a7f8",
+      "skipped": 2,
+      "tests": 499,
+      "timed_out": false
+    },
+    "before": {
+      "actual_wait_returncode": 1,
+      "errors": 0,
+      "failed_cases": [
+        {
+          "classname": "tests.test_cli",
+          "name": "test_script"
+        }
+      ],
+      "failures": 1,
+      "junit_sha256": "e3f52dc762d4473f5e435f73e697ac47e09fe818a03c03c1a0aa61e76d2f4b4d",
+      "skipped": 2,
+      "tests": 499,
+      "timed_out": false
+    },
+    "owner_result_sha256": "bbd6f7338b0a0feb43b3badaa1e6e2f3e582945037642de34398021ba7ecdd8d",
+    "status": "ORIGINAL_NATIVE_PAIR_REJECTED"
+  },
+  "ordinal_2_pair": {
+    "after": {
+      "actual_wait_returncode": 0,
+      "errors": 0,
+      "failed_cases": [],
+      "failures": 0,
+      "junit_sha256": "4e157b1c9f113eaccf6f105d889ccdfa584f540f503061da2d483b8dee689003",
+      "sandbox_attestation_sha256": "cd11f540494a9b54b7addfdfdd9726aab067067f81997669cda349d2c0b2f2fa",
+      "skipped": 0,
+      "tests": 100,
+      "timed_out": false
+    },
+    "before": {
+      "actual_wait_returncode": 1,
+      "errors": 0,
+      "failed_cases": [
+        {
+          "classname": "tests.test_grouping",
+          "name": "test_grouping_alias_ctas_lowercase_as"
+        }
+      ],
+      "failures": 1,
+      "junit_sha256": "e6da24e9c2ace9ac1305d302393c28c508a19bb40baf01d304e54c1d86ed90cb",
+      "sandbox_attestation_sha256": "5bb08bbf2a17de90358ec556aa1c144d151ebd764878bc3c222eccdb3dac4221",
+      "skipped": 0,
+      "tests": 100,
+      "timed_out": false
+    },
+    "candidate_selected": false,
+    "owner_result_bytes": 33704,
+    "owner_result_sha256": "1f874b9a1e35e9d073a086bab07839ec49faa0ec2a7cb48bb644a329f1a8cc7a",
+    "same_original_case_set": true,
+    "status": "ORIGINAL_NATIVE_PAIR_PASSED",
+    "task_spec_sha256": "ac6980a3957d86477398f2e9886f2c679c33237a0ed027c38fb78b3a348414aa"
+  },
+  "original_archive": {
+    "bytes": 5092,
+    "file": "original-receipts.tar.xz",
+    "sha256": "e5913d5cd5ac7a2116825038c05ddf8f3f3b94b52aedf1ab53ebbb77471d0867"
+  },
+  "original_source_receipts": [
+    {
+      "bytes": 25971,
+      "file": "source02-RESULT.json",
+      "sha256": "7758a4e6bad3d0d8f627203c292f2e0fafa7a715398996c8fa5291fb9ac2e6cd"
+    },
+    {
+      "bytes": 238,
+      "file": "source02-material0-FINAL.json",
+      "sha256": "feae9cbc716fb1980e651f7fc2b407f993b45d3c3cd049edf5f400ed22b4d952"
+    },
+    {
+      "bytes": 304,
+      "file": "source02-material1-FINAL.json",
+      "sha256": "8625750eede1d4b54dbbc5694df19825aa2c20251c55191b5ebb79da584ec601"
+    },
+    {
+      "bytes": 330,
+      "file": "source02-material2-MATERIALIZED.json",
+      "sha256": "b4624375e27074070fc675588b588da5a0250b3e965afbf0e898ca00a7ea7bf6"
+    }
+  ],
+  "panel_terminal": false,
+  "population_unit": "One upstream owner and one paired regression with 100 ordered test case instances; held-out student evaluation pending.",
+  "project": "andialbrecht/sqlparse",
+  "qualification_native_children": 4,
+  "registration_order_is_zero_based": true,
+  "scan_status": "ORDERED_STATIC_SCAN_COMPLETE",
+  "schema": "hepta.e2.sqlparse-native-acquisition-checkpoint.v1",
+  "source_ordinal": 2,
+  "source_terminal": false,
+  "student_model_calls": 0,
+  "training_updates": 0
+}
