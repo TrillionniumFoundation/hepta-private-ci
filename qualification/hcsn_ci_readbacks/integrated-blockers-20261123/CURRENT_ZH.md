@@ -1,5 +1,11 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 19:21 UTC #7052 MemoryCell 正式取消：外部 Laya 权重交付阻塞，不可签收训练
+
+- 精确 c923 原 [MemoryCell 45240608027](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240608027) 已 `completed/cancelled`。原 Laya job 137934297752 在固定 `convaiinnovations/laya@7b928d8...` 的 `model.safetensors` 下载中，19:03/19:08 UTC 两次后端 HTTP 读取超时、19:21:13 最终取消；真正训练步骤 skipped，上传明示无工件。其他六个 job 各自成功，原 source-format 的局部绿门依旧保留。不能说 Laya 训练已通过，也不能未经证据断言是谁触发整个运行取消。
+- 不重复重跑。先验证原锁定模型的可重取、摘要与可信缓存或镜像；不替换权重/来源或放松测试。[原生 job 步骤、关键时刻与终态不可变记录](7052-c9236b4-laya-download-cancelled-20261123-1921Z.md)。全仓 HOLD。
+
+
 ## 2026-11-23 19:20 UTC #7052 c923 原生 source-format 转绿；严格残余定位两条（全仓仍 HOLD）
 
 - 精确 #7052 `c9236b4` 原 [MemoryCell 45240608027](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240608027) **source-format 137924066774 实际 success**；原 [Learning artifacts 45240608033](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240608033) source-inventory/source/merge/required **4/4 success**。MemoryCell laya-pretrained、blocking-ci 其他分片在读回时未终结；只签收已证实局部绿门。
