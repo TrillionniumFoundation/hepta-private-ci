@@ -1,0 +1,251 @@
+{
+  "dev": {
+    "dual_holm_statistically_possible": false,
+    "input_sha256": {
+      "camera": "6ad09598f5fc555a08f48f6d1275c342db34339fb50ff13de8284c4a3d00be5e",
+      "raw": "0d9e0768b672bd3f50eb9a06acfaad3343a5ee0a87e46e265dcf639ba8cadee7",
+      "roster": "6b74b25bd5f424277f07a9d05c2d0da89daaf373a98e97741762502f0fb73a3a"
+    },
+    "minimum_sign_p_vs_immediate_free_then_paid": [
+      "1/16",
+      "1/16"
+    ],
+    "number_of_joint_terminal_assignments": "79496847203390844133441536",
+    "optimal_waits_by_initial_status_elapsed_steps_and_terminal_action": [],
+    "original_wait_opportunity_gate": false,
+    "queries": 24,
+    "source_macro": {
+      "gain_vs_free_now": 0.35000000000000003,
+      "gain_vs_paid_now": 0.275,
+      "joint": 0.85,
+      "wait_gain_vs_best_now": 0.0
+    },
+    "sources": {
+      "new-prod-biswarup-ganguly-and-johnny-purty": {
+        "gain_vs_free_now": 0.7,
+        "gain_vs_paid_now": 0.0,
+        "joint": 0.7,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-blues-breaking-records-gerry-joe-weise": {
+        "gain_vs_free_now": 0.0,
+        "gain_vs_paid_now": 0.30000000000000004,
+        "joint": 1.0,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-doug-haslam": {
+        "gain_vs_free_now": 0.7,
+        "gain_vs_paid_now": 0.0,
+        "joint": 0.7,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-santi-music-school": {
+        "gain_vs_free_now": 0.35,
+        "gain_vs_paid_now": 0.15000000000000002,
+        "joint": 0.8500000000000001,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-szervac-attila-tritonus-guitar-trio": {
+        "gain_vs_free_now": 0.35,
+        "gain_vs_paid_now": 0.4,
+        "joint": 0.85,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-u-s-department-of-state-antony-blinken": {
+        "gain_vs_free_now": 0.0,
+        "gain_vs_paid_now": 0.8,
+        "joint": 1.0,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      }
+    },
+    "waiting_queries": 0
+  },
+  "test": {
+    "dual_holm_statistically_possible": false,
+    "input_sha256": {
+      "camera": "0ddca4fff414559ff99b9cb9ed7c595f0beca41cd63f102dd9ec20a49749f019",
+      "raw": "b29b87d68199fe8318dd4b9635f9e8645da457f6025cc3cc1ff304c44cd4a8cf",
+      "roster": "ba285c079e2c6b01f5d8254b65508d40fb776d6f22d696506903c46bebd34505"
+    },
+    "minimum_sign_p_vs_immediate_free_then_paid": [
+      "1/16",
+      "1/256"
+    ],
+    "number_of_joint_terminal_assignments": "34182189187166852111368841966125056",
+    "optimal_waits_by_initial_status_elapsed_steps_and_terminal_action": [
+      [
+        "both_initially_wrong",
+        2,
+        "paid",
+        1
+      ],
+      [
+        "only_paid_initially_correct",
+        1,
+        "free",
+        2
+      ]
+    ],
+    "original_wait_opportunity_gate": false,
+    "queries": 32,
+    "source_macro": {
+      "gain_vs_free_now": 0.20559727004186806,
+      "gain_vs_paid_now": 0.2868472700418681,
+      "joint": 0.8930972700418681,
+      "wait_gain_vs_best_now": 0.008722270041868107
+    },
+    "sources": {
+      "new-prod-beag-music": {
+        "gain_vs_free_now": 0.0570821362318856,
+        "gain_vs_paid_now": 0.6070821362318857,
+        "joint": 0.8070821362318856,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0570821362318856
+      },
+      "new-prod-canadapiano1998": {
+        "gain_vs_free_now": 0.5249999999999999,
+        "gain_vs_paid_now": 0.07500000000000001,
+        "joint": 0.7749999999999999,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel": {
+        "gain_vs_free_now": 0.0,
+        "gain_vs_paid_now": 0.30000000000000004,
+        "joint": 1.0,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-golf-bravo-yaroslavsky-station": {
+        "gain_vs_free_now": 0.5313480120515296,
+        "gain_vs_paid_now": 0.08134801205152964,
+        "joint": 0.7813480120515296,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.006348012051529628
+      },
+      "new-prod-la-argentinita-manolo-de-huelva-film": {
+        "gain_vs_free_now": 0.0,
+        "gain_vs_paid_now": 0.55,
+        "joint": 1.0,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-paramount-chico-marx-the-cocoanuts": {
+        "gain_vs_free_now": 0.0,
+        "gain_vs_paid_now": 0.30000000000000004,
+        "joint": 1.0,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-sir-amugi": {
+        "gain_vs_free_now": 0.5313480120515296,
+        "gain_vs_paid_now": 0.08134801205152964,
+        "joint": 0.7813480120515297,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.006348012051529628
+      },
+      "new-prod-viktor-o-ledenyov-summer-guitar-festival": {
+        "gain_vs_free_now": 0.0,
+        "gain_vs_paid_now": 0.30000000000000004,
+        "joint": 1.0,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      }
+    },
+    "waiting_queries": 3
+  },
+  "train": {
+    "dual_holm_statistically_possible": true,
+    "input_sha256": {
+      "camera": "943bbea74ce19fc6de95ba15d9d29a9bbe9547518161bc6a39d38e5f94b33bcc",
+      "raw": "0348be0f0f768ce7aef0083f40fd8439a317a8e21dd8c1743b998ff24dd70ccf",
+      "roster": "895d9f345cfdadb6556d2721060a84ea6e731fa87cf6553805dd5e4b6fc84720"
+    },
+    "minimum_sign_p_vs_immediate_free_then_paid": [
+      "1/32",
+      "1/64"
+    ],
+    "number_of_joint_terminal_assignments": "34182189187166852111368841966125056",
+    "optimal_waits_by_initial_status_elapsed_steps_and_terminal_action": [
+      [
+        "only_paid_initially_correct",
+        1,
+        "free",
+        1
+      ]
+    ],
+    "original_wait_opportunity_gate": false,
+    "queries": 32,
+    "source_macro": {
+      "gain_vs_free_now": 0.3289185015064412,
+      "gain_vs_paid_now": 0.34766850150644124,
+      "joint": 0.8289185015064412,
+      "wait_gain_vs_best_now": 0.0007935015064412035
+    },
+    "sources": {
+      "new-prod-alan-atanton-stewart-yeff": {
+        "gain_vs_free_now": 0.7,
+        "gain_vs_paid_now": 0.0,
+        "joint": 0.7,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-cultuur-in-actie-the-five-great-guitars": {
+        "gain_vs_free_now": 0.0,
+        "gain_vs_paid_now": 0.30000000000000004,
+        "joint": 0.75,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-drtrumpet": {
+        "gain_vs_free_now": 0.7,
+        "gain_vs_paid_now": 0.0,
+        "joint": 0.7,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-isaacvp": {
+        "gain_vs_free_now": 0.0,
+        "gain_vs_paid_now": 1.3,
+        "joint": 1.0,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-isak-zvegelj-ljubljana-street-country": {
+        "gain_vs_free_now": 0.0,
+        "gain_vs_paid_now": 0.8,
+        "joint": 1.0,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-jhistory": {
+        "gain_vs_free_now": 0.35,
+        "gain_vs_paid_now": 0.15000000000000002,
+        "joint": 0.8500000000000001,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-tobias-frei-prophecy": {
+        "gain_vs_free_now": 0.5249999999999999,
+        "gain_vs_paid_now": 0.07500000000000001,
+        "joint": 0.7749999999999999,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.0
+      },
+      "new-prod-trumpetrep": {
+        "gain_vs_free_now": 0.3563480120515296,
+        "gain_vs_paid_now": 0.15634801205152965,
+        "joint": 0.8563480120515297,
+        "queries": 4,
+        "wait_gain_vs_best_now": 0.006348012051529628
+      }
+    },
+    "waiting_queries": 1
+  }
+}
