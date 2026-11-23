@@ -34,13 +34,17 @@ fn digest(label: impl AsRef<[u8]>) -> Digest32 {
 
 fn coordinate(index: usize, count: usize) -> QualificationResult<FixedQ32> {
     let numerator = i128::try_from(index + 1).map_err(|error| format!("invalid index: {error}"))?;
-    let denominator = i128::try_from(count + 1).map_err(|error| format!("invalid count: {error}"))?;
+    let denominator =
+        i128::try_from(count + 1).map_err(|error| format!("invalid count: {error}"))?;
     let raw = numerator * i128::from(FixedQ32::ONE.raw()) / denominator;
     let coordinate = i64::try_from(raw).map_err(|error| format!("invalid coordinate: {error}"))?;
     Ok(FixedQ32::from_raw(coordinate))
 }
 
-fn sensor_design(candidate_count: usize, requested_count: usize) -> QualificationResult<SensorCoreDesignV1> {
+fn sensor_design(
+    candidate_count: usize,
+    requested_count: usize,
+) -> QualificationResult<SensorCoreDesignV1> {
     let candidates = (0..candidate_count)
         .map(|index| -> QualificationResult<SensorPointV1> {
             Ok(SensorPointV1 {
@@ -64,8 +68,10 @@ fn sensor_design(candidate_count: usize, requested_count: usize) -> Qualificatio
 
 fn run_sensor(candidate_count: usize, requested_count: usize) -> QualificationResult<Duration> {
     let design = sensor_design(candidate_count, requested_count)?;
-    let candidates = u64::try_from(candidate_count).map_err(|error| format!("candidate count: {error}"))?;
-    let requested = u64::try_from(requested_count).map_err(|error| format!("requested count: {error}"))?;
+    let candidates =
+        u64::try_from(candidate_count).map_err(|error| format!("candidate count: {error}"))?;
+    let requested =
+        u64::try_from(requested_count).map_err(|error| format!("requested count: {error}"))?;
     // Validation + initial distances + winner and update scans for each selected
     // point + the selected-point separation matrix, with explicit headroom.
     let max_operations = candidates
@@ -85,10 +91,12 @@ fn run_tabular(sample_count: usize, iteration: usize) -> QualificationResult<Dur
     let sensor = id("qualification-sensor")?;
     let action = id("qualification-action")?;
     let iteration_u64 = u64::try_from(iteration).map_err(|error| format!("iteration: {error}"))?;
-    let sample_count_u64 = u64::try_from(sample_count).map_err(|error| format!("sample count: {error}"))?;
+    let sample_count_u64 =
+        u64::try_from(sample_count).map_err(|error| format!("sample count: {error}"))?;
     let samples = (0..sample_count)
         .map(|index| -> QualificationResult<TabularOperatorSampleV1> {
-            let index_u64 = u64::try_from(index).map_err(|error| format!("sample index: {error}"))?;
+            let index_u64 =
+                u64::try_from(index).map_err(|error| format!("sample index: {error}"))?;
             let mut evidence = [0_u8; 24];
             evidence[..8].copy_from_slice(&iteration_u64.to_be_bytes());
             evidence[8..16].copy_from_slice(&index_u64.to_be_bytes());
@@ -97,7 +105,9 @@ fn run_tabular(sample_count: usize, iteration: usize) -> QualificationResult<Dur
                 sample_id: id(format!("qualification-sample-{iteration:02}-{index:07}"))?,
                 sensor_id: sensor.clone(),
                 action_id: action.clone(),
-                target: FixedQ32::from_raw(i64::try_from(index % 17).map_err(|error| format!("target: {error}"))?),
+                target: FixedQ32::from_raw(
+                    i64::try_from(index % 17).map_err(|error| format!("target: {error}"))?,
+                ),
                 evidence_digest: digest(evidence),
             })
         })
@@ -214,11 +224,11 @@ fn try_main() -> QualificationResult<ExitCode> {
         "{{\n  \"schema\": \"hepta.learning-operator.performance.v1\",\n  \"measurementScope\": \"complete operation including input materialization\",\n  \"thresholdClass\": \"qualification runaway guard, not production SLO\",\n  \"peakRssKiB\": {rss},\n  \"peakRssLimitKiB\": {MAX_RSS_KIB},\n  \"cases\": [\n    {}\n  ],\n  \"passed\": {passed}\n}}\n",
         rows.join(",\n    ")
     );
-    if let Some(parent) = output.parent() {
-        if let Err(error) = fs::create_dir_all(parent) {
-            eprintln!("cannot create performance output directory: {error}");
-            return Ok(ExitCode::FAILURE);
-        }
+    if let Some(parent) = output.parent()
+        && let Err(error) = fs::create_dir_all(parent)
+    {
+        eprintln!("cannot create performance output directory: {error}");
+        return Ok(ExitCode::FAILURE);
     }
     if let Err(error) = fs::write(&output, document.as_bytes()) {
         eprintln!("cannot write performance output: {error}");
