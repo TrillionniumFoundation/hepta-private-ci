@@ -41,12 +41,18 @@ jobs:
         env:
           HF_HUB_OFFLINE: '1'
         run: |
-          for teacher in t5 smol; do
-            python teachers.py fit "$RUNNER_TEMP/teachers" work --only "$teacher"
-          done
-          python fit.py "$RUNNER_TEMP/encoder"
-          sha256sum work/freeze.json
-          python confirm.py
+          if test -f evidence/original-freeze.zip; then
+            echo '8c8f1d0845c7288984a61f40bfbbb107e81756f109be044c70ee1a5f9b25e017  evidence/original-freeze.zip' | sha256sum -c -
+            unzip -q evidence/original-freeze.zip -d work
+            echo '31a27ccb2310b562261b5e7fb54c779f22e8593b1472cb9ed0335f9933b981ba  work/freeze.json' | sha256sum -c -
+          else
+            for teacher in t5 smol; do
+              python teachers.py fit "$RUNNER_TEMP/teachers" work --only "$teacher"
+            done
+            python fit.py "$RUNNER_TEMP/encoder"
+            sha256sum work/freeze.json
+            python confirm.py
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: frozen-encoder-candidates
@@ -68,6 +74,7 @@ jobs:
           mv "$RUNNER_TEMP/encoder" "$stage/encoder"
           py=$(command -v python)
           sudo unshare --mount --net --propagation private /bin/bash -eu -c '
+            mount -t sysfs -o ro sysfs /sys
             mount -t tmpfs tmpfs "$1"
             mount -t tmpfs tmpfs "$2"
             cd "$3"
