@@ -15,8 +15,8 @@ struct PublicationBootstrapV2 {
 #[derive(Deserialize)]
 #[serde(untagged)]
 enum VersionedBootstrap {
-    Legacy(PublicationBootstrap),
-    Durable(PublicationBootstrapV2),
+    Legacy(Box<PublicationBootstrap>),
+    Durable(Box<PublicationBootstrapV2>),
 }
 
 #[derive(Serialize)]
@@ -57,6 +57,7 @@ pub(crate) fn decode_original_publication_bootstrap(
             if PublicationVersion::from_purpose(&route.purpose)?
                 == PublicationVersion::LegacyV1 =>
         {
+            let route = *route;
             Ok((route, None))
         }
         VersionedBootstrap::Durable(value)
@@ -64,6 +65,7 @@ pub(crate) fn decode_original_publication_bootstrap(
                 && PublicationVersion::from_purpose(&value.route.purpose)?
                     == PublicationVersion::DurableV2 =>
         {
+            let value = *value;
             Ok((value.route, Some(value.prepared)))
         }
         _ => Err(io::Error::other(

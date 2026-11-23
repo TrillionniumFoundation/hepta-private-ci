@@ -167,13 +167,13 @@ impl<T> InstrumentedMutex<T> {
         }
     }
 
-    pub(crate) async fn lock(
-        &self,
-        class: SupervisorLockClass,
-    ) -> InstrumentedMutexGuard<'_, T> {
+    pub(crate) async fn lock(&self, class: SupervisorLockClass) -> InstrumentedMutexGuard<'_, T> {
         let waiting_since = Instant::now();
         let guard = self.inner.lock().await;
-        self.metrics.class(class).wait.record(waiting_since.elapsed());
+        self.metrics
+            .class(class)
+            .wait
+            .record(waiting_since.elapsed());
         InstrumentedMutexGuard {
             guard,
             metrics: Arc::clone(&self.metrics),
@@ -271,11 +271,7 @@ fn bucket_upper_bound(index: usize) -> u64 {
     }
 }
 
-fn quantile_upper_bound(
-    buckets: &[u64; HISTOGRAM_BUCKETS],
-    count: u64,
-    percentile: u64,
-) -> u64 {
+fn quantile_upper_bound(buckets: &[u64; HISTOGRAM_BUCKETS], count: u64, percentile: u64) -> u64 {
     if count == 0 {
         return 0;
     }
