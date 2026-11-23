@@ -568,7 +568,7 @@ which = "8"
 whoami = "1.6.1"
 wildmatch = "2.6.1"
 winapi-util = "0.1.11"
-zip = "2.4.2"
+zip = { version = "=9.0.5", default-features = false, features = ["aes-crypto", "bzip2-rs", "deflate64", "deflate", "lzma", "time", "zstd", "xz"] }
 zstd = "0.13"
 
 wiremock = "0.6"
@@ -661,6 +661,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Keep the native BZip2 codec without enabling a second backend.
+zip = { path = "third_party/zip-9.0.5" }
 # Backport the upstream TOML parser migration for the age localization macros.
 i18n-config = { path = "third_party/i18n-config-0.4.8" }
 # Keep Rama alpha.4 while using its Hickory 0.26 DNS adapter.
