@@ -3,33 +3,53 @@
 //! Build this example on Linux and run it in the private root described in the qualification.
 #[cfg(target_os = "linux")]
 mod linux {
-    use anyhow::{Context, Result, ensure};
+    use anyhow::Context;
+    use anyhow::Result;
+    use anyhow::ensure;
+    use codex_hepta_agentd::AgentdIdentity;
+    use codex_hepta_agentd::AuthBusTextBody;
+    use codex_hepta_agentd::AuthBusTextIngress;
+    use codex_hepta_agentd::DeploymentFinalUseIssuer;
+    use codex_hepta_agentd::DeploymentGrantPolicy;
+    use codex_hepta_agentd::HostAuthorityLane;
+    use codex_hepta_agentd::HostAuthorityService;
+    use codex_hepta_agentd::PairedLearningDataUse;
+    use codex_hepta_agentd::authbus_text_claims;
     use codex_hepta_agentd::text_session::AgentdTextSessionConfig;
-    use codex_hepta_agentd::{
-        AgentdIdentity, AuthBusTextBody, AuthBusTextIngress, DeploymentFinalUseIssuer,
-        DeploymentGrantPolicy, HostAuthorityLane, HostAuthorityService, PairedLearningDataUse,
-        authbus_text_claims,
-    };
-    use codex_hepta_authbus::{IssuerRegistration, SignedMessage};
-    use codex_hepta_contracts::{
-        AgentId, HostAuthorityClock, HostAuthorityPeerPolicy, HostIssuerPeer,
-        HostIssuerTransportError, RootAuthorityDirectory, SystemAuthorityClock,
-    };
-    use codex_hepta_evidence::{AuthBusClaimRequest, AuthBusDeliveryState, HeptaEvidenceStore};
-    use codex_hepta_types::{Digest32, Generation, StableId};
+    use codex_hepta_authbus::IssuerRegistration;
+    use codex_hepta_authbus::SignedMessage;
+    use codex_hepta_contracts::AgentId;
+    use codex_hepta_contracts::HostAuthorityClock;
+    use codex_hepta_contracts::HostAuthorityPeerPolicy;
+    use codex_hepta_contracts::HostIssuerPeer;
+    use codex_hepta_contracts::HostIssuerTransportError;
+    use codex_hepta_contracts::RootAuthorityDirectory;
+    use codex_hepta_contracts::SystemAuthorityClock;
+    use codex_hepta_evidence::AuthBusClaimRequest;
+    use codex_hepta_evidence::AuthBusDeliveryState;
+    use codex_hepta_evidence::HeptaEvidenceStore;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::StableId;
     use codex_state::SqliteConfig;
     use codex_utils_absolute_path::AbsolutePathBuf;
     use ed25519_dalek::VerifyingKey;
-    use serde_json::{Value, json};
-    use std::io::{self, Write};
-    use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
+    use serde_json::Value;
+    use serde_json::json;
+    use std::io;
+    use std::io::Write;
+    use std::os::fd::AsRawFd;
+    use std::os::fd::FromRawFd;
+    use std::os::fd::OwnedFd;
     use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::net::UnixStream;
     use std::os::unix::process::CommandExt;
     use std::path::Path;
-    use std::process::{Command, Stdio};
+    use std::process::Command;
+    use std::process::Stdio;
     use std::sync::Arc;
-    use std::time::{Duration, Instant};
+    use std::time::Duration;
+    use std::time::Instant;
 
     fn pidfd(pid: u32) -> io::Result<OwnedFd> {
         // SAFETY: successful pidfd_open returns an owned descriptor.
@@ -256,6 +276,30 @@ mod linux {
         let study = Digest32::of_bytes(b"development study");
         let a = Digest32::of_bytes(b"development first record");
         let b = Digest32::of_bytes(b"development second record");
+        let pair = Digest32::of_bytes(b"development pair");
+        let operation = Digest32::of_bytes(b"development operation");
+        let run = Digest32::of_bytes(b"development run");
+        let output = Digest32::of_bytes(b"development output");
+        let effect = Digest32::of_bytes(b"development effect");
+        let consumer_report = |seq, accepted| {
+            (
+                seq,
+                PairedLearningDataUse::ReportConsumerOutcome {
+                    operation,
+                    pair,
+                    candidate: a,
+                    task: b,
+                    run_receipt: run,
+                    output,
+                    effect,
+                    accepted,
+                },
+                json!({"use":"report_consumer_outcome", "operation":operation.to_string(),
+                       "pair":pair.to_string(),"candidate":a.to_string(),"task":b.to_string(),
+                       "run_receipt":run.to_string(),"output":output.to_string(),"effect":effect.to_string(),
+                       "outcome":if accepted {"accepted"} else {"rejected"}}),
+            )
+        };
         for (seq, scope, scope_json) in [
             (
                 1,
@@ -270,6 +314,19 @@ mod linux {
                 PairedLearningDataUse::EvaluateOnlyAfterFreeze { freeze: a, task: b },
                 json!({"use":"evaluate_only","freeze":a.to_string(),"task":b.to_string()}),
             ),
+            (
+                3,
+                PairedLearningDataUse::RequestConsumerRun {
+                    operation,
+                    pair,
+                    candidate: a,
+                    task: b,
+                },
+                json!({"use":"request_consumer_run","operation":operation.to_string(),
+                       "pair":pair.to_string(),"candidate":a.to_string(),"task":b.to_string()}),
+            ),
+            consumer_report(4, true),
+            consumer_report(5, false),
         ] {
             let (delivery, ingress) = rt
                 .block_on(retain(
@@ -315,7 +372,7 @@ mod linux {
             );
             println!(
                 "{}",
-                json!({"scope":scope_json["use"],"delivery":delivery.to_string(),"study":study.to_string(),"issuer_request_sha256":received.to_string(),"acked_after_reopen":true,"exact_request_observed":true,"production_root_result":"Unavailable","stdout_bytes":observed.stdout.len(),"exit":observed.status.code(),"authenticated_humans":0})
+                json!({"scope":scope_json["use"],"decision":scope_json.get("outcome"),"delivery":delivery.to_string(),"study":study.to_string(),"issuer_request_sha256":received.to_string(),"acked_after_reopen":true,"exact_request_observed":true,"production_root_result":"Unavailable","stdout_bytes":observed.stdout.len(),"exit":observed.status.code(),"authenticated_humans":0})
             );
         }
         Ok(())
