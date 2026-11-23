@@ -74,6 +74,28 @@ fn original_ingress(
     retained: AuthBusRetainedDelivery,
 ) -> Result<crate::AuthBusTextIngress, AgentdError> {
     let client_id = original_client_id(original)?;
+    let ingress = retained_text_ingress(route, client_id, retained)?;
+    let ThreadItem::UserMessage { content, .. } = original else {
+        return Err(invalid("not an original user item"));
+    };
+    if *content
+        != vec![UserInput::Text {
+            text: ingress.body.text.clone(),
+            text_elements: vec![],
+        }]
+    {
+        return Err(invalid(
+            "original turn text differs from its signed human input",
+        ));
+    }
+    Ok(ingress)
+}
+
+pub(crate) fn retained_text_ingress(
+    route: &AgentdTextSessionConfig,
+    client_id: &str,
+    retained: AuthBusRetainedDelivery,
+) -> Result<crate::AuthBusTextIngress, AgentdError> {
     if retained.message.claims.subject_id.as_str() != route.agent_id.as_str()
         || retained.message.claims.scope_digest != crate::authbus_ingress::scope(&route.agent_id)
         || retained.status.state != AuthBusDeliveryState::Acked
@@ -93,19 +115,6 @@ fn original_ingress(
         || Digest32::of_bytes(&retained.payload) != retained.message.claims.payload_digest
     {
         return Err(invalid("original human input payload or route mismatch"));
-    }
-    let ThreadItem::UserMessage { content, .. } = original else {
-        return Err(invalid("not an original user item"));
-    };
-    if *content
-        != vec![UserInput::Text {
-            text: body.text.clone(),
-            text_elements: vec![],
-        }]
-    {
-        return Err(invalid(
-            "original turn text differs from its signed human input",
-        ));
     }
     let claims = retained.message.claims;
     Ok(crate::AuthBusTextIngress {

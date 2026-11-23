@@ -1,4 +1,7 @@
 //! Socket/pidfd protocol fixtures; no deployed Root or signature qualification.
+#[path = "paired_learning_consent_tests.rs"]
+mod paired_learning_consent_tests;
+
 use super::*;
 use pretty_assertions::assert_eq;
 use serde_json::json;
