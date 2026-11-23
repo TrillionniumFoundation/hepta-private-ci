@@ -5,6 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from group_attention_campaign_review import review
 from group_optimizer_paired_review import review_pair, digest
 from test_group_attention_campaign_review import fixture
 
@@ -70,6 +71,23 @@ class PairTests(unittest.TestCase):
             report["teacher"] = original
             (b / "teacher.json").write_text(json.dumps(original))
             (b / "report.json").write_text(json.dumps(report))
+            with self.assertRaisesRegex(ValueError, "teacher slot archive digest mismatch"):
+                review_pair(a, b)
+
+            # Both TRAIN operations fit into one declared slot in the second arm.
+            # Give that arm an internally valid receipt before comparing the pair.
+            protocol = json.loads((b / "protocol.json").read_text())
+            protocol["max_depth"] = 1
+            original["slot_assignments"][0]["slots"] = [0, 0]
+            original.update(slot_assignment_sha256=digest(original["slot_assignments"]),
+                            supervised_slots=1, coalesced_teacher_steps=1,
+                            max_operations_per_slot=2)
+            report["protocol_sha256"] = digest(protocol)
+            report["training"]["attention"]["max_operations_per_slot"] = 2
+            (b / "protocol.json").write_text(json.dumps(protocol))
+            (b / "teacher.json").write_text(json.dumps(original))
+            (b / "report.json").write_text(json.dumps(report))
+            self.assertTrue(review(b)["passed"])
             with self.assertRaisesRegex(ValueError, "teacher operation alignment"):
                 review_pair(a, b)
 
