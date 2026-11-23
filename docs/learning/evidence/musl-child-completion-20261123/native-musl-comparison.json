@@ -1,0 +1,486 @@
+{
+  "archive": {
+    "7016": {
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/14803055341/zip",
+      "created_at": "2026-11-23T08:53:41Z",
+      "digest": "sha256:a7e76943f9cab6781c95a5b93d555d1ca098a87aa50c3d4ae989d676c36d5f39",
+      "expired": false,
+      "expires_at": "2027-02-21T08:28:45Z",
+      "id": 14803055341,
+      "name": "bazel-execution-logs-test-x86_64-unknown-linux-musl",
+      "size_in_bytes": 12984394,
+      "updated_at": "2026-11-23T08:53:41Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/14803055341",
+      "workflow_run": {
+        "head_branch": "integration/hcsn-verified-agentd-followups-20261123",
+        "head_repository_id": 1320694176,
+        "head_sha": "c12ee03f3185d5a13949faca54f066dfd634e509",
+        "id": 45138928408,
+        "repository_id": 1320694176
+      }
+    },
+    "7021": {
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/14802771449/zip",
+      "created_at": "2026-11-23T08:57:04Z",
+      "digest": "sha256:eff25095ea0acd576f5d34bc0d94113a5d4ddfac93d7ca51cced48b182a0ae36",
+      "expired": false,
+      "expires_at": "2027-02-21T08:32:52Z",
+      "id": 14802771449,
+      "name": "bazel-execution-logs-test-x86_64-unknown-linux-musl",
+      "size_in_bytes": 12978256,
+      "updated_at": "2026-11-23T08:57:04Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/14802771449",
+      "workflow_run": {
+        "head_branch": "integration/hcsn-child-completion-maintenance-20261123",
+        "head_repository_id": 1320694176,
+        "head_sha": "4de33d145135dc2018b013f39b9ad8903e3a4208",
+        "id": 45139490724,
+        "repository_id": 1320694176
+      }
+    }
+  },
+  "case": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_healthy_evidence_readback_then_publication_withdrawal",
+  "fnv_shard_index": 1,
+  "observations": {
+    "7016": {
+      "retained_original_members": {
+        "7016/test-attempt-logs-atskssrv/console.log": "31d3a55973b7bed71d808c575b3ee54626963d2d26c78d31e857b2b5989f8565",
+        "7016/test-attempt-logs-atskssrv/files/000001.log": "d41e060b4451a61cac4af382a61e35b6154fcdd1ed7c146aa44e2143929b4c4e",
+        "7016/test-attempt-logs-atskssrv/files/000002.log": "f5d3e01d3a0b5afba10289280ee5c88e0183a7d4ce196d8d2e053ce1500fbadc",
+        "7016/test-attempt-logs-atskssrv/files/000003.log": "3ffee415c6c3f7b7ce7f17eb8b6efb0f4d259df4162046df68e347f16e51ce9d",
+        "7016/test-attempt-logs-atskssrv/files/000004.log": "070f4ac88e0c198df12ff4bee8e5a361b2ce0afe26d457dd36c05f7f1b3bc468",
+        "7016/test-attempt-logs-atskssrv/manifest.json": "2b875e3902f983c61444ae26075f80d0654a7ddb1b54cb7f15828a2b35b8adc2"
+      },
+      "shards": [
+        {
+          "action_digest_proto_16": "b104cb8dde51b8264a9dc6e3d7f57077d412e6fbabe2124fbe85dbb9bedc9ef0:322",
+          "cache_hit": false,
+          "environment": {
+            "TEST_SHARD_INDEX": "0",
+            "TEST_TIMEOUT": "300",
+            "TEST_TOTAL_SHARDS": "4"
+          },
+          "execution_wall_seconds": 85.856,
+          "exit_code": 0,
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "member": "execution-log-test-test-2764.zst",
+          "runner": "remote",
+          "saved_member": "7016/compact/shard_0.protobuf",
+          "spawn_digest_all_fields": "d206d787793cd353f2e1bc63016e406bb668a9ec1291d0c0291cd1e0d48f3400",
+          "status": "",
+          "test_driver_names": [
+            "test-setup.sh",
+            "hepta-agentd-unit-tests"
+          ],
+          "timeout_ms": 300000,
+          "zero_based_compact_stream_message": 219538
+        },
+        {
+          "action_digest_proto_16": "44d20e1ac4d2e7bf7f27fa1ccb84060b07ccfc3c376baf3908af028ae46cba07:322",
+          "cache_hit": false,
+          "environment": {
+            "TEST_SHARD_INDEX": "1",
+            "TEST_TIMEOUT": "300",
+            "TEST_TOTAL_SHARDS": "4"
+          },
+          "execution_wall_seconds": 74.641,
+          "exit_code": 101,
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "member": "execution-log-test-test-2764.zst",
+          "runner": "remote",
+          "saved_member": "7016/compact/shard_1.protobuf",
+          "spawn_digest_all_fields": "f9220b6e320a5fbb82d41fcd5476cb832ad617c9f8adf4ad3d2437755baaf006",
+          "status": "NON_ZERO_EXIT",
+          "test_driver_names": [
+            "test-setup.sh",
+            "hepta-agentd-unit-tests"
+          ],
+          "timeout_ms": 300000,
+          "zero_based_compact_stream_message": 218982
+        },
+        {
+          "action_digest_proto_16": "649fce8bf961c80e60f33ddc8ce8e7d7ad4d3f4319cbca316c0e9c679faab2ef:322",
+          "cache_hit": false,
+          "environment": {
+            "TEST_SHARD_INDEX": "2",
+            "TEST_TIMEOUT": "300",
+            "TEST_TOTAL_SHARDS": "4"
+          },
+          "execution_wall_seconds": 61.044,
+          "exit_code": 0,
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "member": "execution-log-test-test-2764.zst",
+          "runner": "remote",
+          "saved_member": "7016/compact/shard_2.protobuf",
+          "spawn_digest_all_fields": "5104cd11ee4f28cc2a8f55fdc6093adc129f485d27decf3af05120664776c6a8",
+          "status": "",
+          "test_driver_names": [
+            "test-setup.sh",
+            "hepta-agentd-unit-tests"
+          ],
+          "timeout_ms": 300000,
+          "zero_based_compact_stream_message": 218870
+        },
+        {
+          "action_digest_proto_16": "f01820ffa4103249b865bb353c42924251595a6207514018624f9c943eb2cb36:322",
+          "cache_hit": false,
+          "environment": {
+            "TEST_SHARD_INDEX": "3",
+            "TEST_TIMEOUT": "300",
+            "TEST_TOTAL_SHARDS": "4"
+          },
+          "execution_wall_seconds": 109.098,
+          "exit_code": 0,
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "member": "execution-log-test-test-2764.zst",
+          "runner": "remote",
+          "saved_member": "7016/compact/shard_3.protobuf",
+          "spawn_digest_all_fields": "b3341c579aeb557a57982f84a1f0501536133ffaf660539f6b3575c36e55dbc8",
+          "status": "",
+          "test_driver_names": [
+            "test-setup.sh",
+            "hepta-agentd-unit-tests"
+          ],
+          "timeout_ms": 300000,
+          "zero_based_compact_stream_message": 219679
+        }
+      ]
+    },
+    "7021": {
+      "retained_original_members": {
+        "7021/test-attempt-logs-c8172t42/console.log": "4ac59f7afc9302e750bee17c8dc5c923ef6426dc1130a0756d3ab3b1bf9ee455",
+        "7021/test-attempt-logs-c8172t42/manifest.json": "3301d6f8f8a80e163111e85b4a542f6f992cfb88c7e053c6dd0e24a3093bad39"
+      },
+      "shards": [
+        {
+          "action_digest_proto_16": "dc8c37192c3a77e75ac927fd31935ebc28629ef40f5fe5f2e9c56646c549e11b:322",
+          "cache_hit": false,
+          "environment": {
+            "TEST_SHARD_INDEX": "0",
+            "TEST_TIMEOUT": "300",
+            "TEST_TOTAL_SHARDS": "4"
+          },
+          "execution_wall_seconds": 85.338,
+          "exit_code": 0,
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "member": "execution-log-test-test-2888.zst",
+          "runner": "remote",
+          "saved_member": "7021/compact/shard_0.protobuf",
+          "spawn_digest_all_fields": "80874ec1199c97246724a793948d192301a1e771fc835559f968b674631d3270",
+          "status": "",
+          "test_driver_names": [
+            "test-setup.sh",
+            "hepta-agentd-unit-tests"
+          ],
+          "timeout_ms": 300000,
+          "zero_based_compact_stream_message": 219667
+        },
+        {
+          "action_digest_proto_16": "925a445d6de17944a60cfe84239bf55b0c64c4eb49296d5f5735cf5b40be875d:322",
+          "cache_hit": false,
+          "environment": {
+            "TEST_SHARD_INDEX": "1",
+            "TEST_TIMEOUT": "300",
+            "TEST_TOTAL_SHARDS": "4"
+          },
+          "execution_wall_seconds": 87.41,
+          "exit_code": 0,
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "member": "execution-log-test-test-2888.zst",
+          "runner": "remote",
+          "saved_member": "7021/compact/shard_1.protobuf",
+          "spawn_digest_all_fields": "86c7c9450474365a5f3e092a3077c6b959f7c1c63208f024ccb4af86db910676",
+          "status": "",
+          "test_driver_names": [
+            "test-setup.sh",
+            "hepta-agentd-unit-tests"
+          ],
+          "timeout_ms": 300000,
+          "zero_based_compact_stream_message": 219675
+        },
+        {
+          "action_digest_proto_16": "cf514e51dec6a8be8ab786c90b406fdbd1142c66496f5683d6aa448c1d8009e7:322",
+          "cache_hit": false,
+          "environment": {
+            "TEST_SHARD_INDEX": "2",
+            "TEST_TIMEOUT": "300",
+            "TEST_TOTAL_SHARDS": "4"
+          },
+          "execution_wall_seconds": 59.233,
+          "exit_code": 0,
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "member": "execution-log-test-test-2888.zst",
+          "runner": "remote",
+          "saved_member": "7021/compact/shard_2.protobuf",
+          "spawn_digest_all_fields": "d8f43620bd862519acc51d8e6386de869877387ae43d63223d36f439a9fee918",
+          "status": "",
+          "test_driver_names": [
+            "test-setup.sh",
+            "hepta-agentd-unit-tests"
+          ],
+          "timeout_ms": 300000,
+          "zero_based_compact_stream_message": 219659
+        },
+        {
+          "action_digest_proto_16": "a3a48ab176447753dddb955f26a058551e17d4c3a91b816fa15db9a6f648ffe3:322",
+          "cache_hit": false,
+          "environment": {
+            "TEST_SHARD_INDEX": "3",
+            "TEST_TIMEOUT": "300",
+            "TEST_TOTAL_SHARDS": "4"
+          },
+          "execution_wall_seconds": 106.27,
+          "exit_code": 0,
+          "label": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "member": "execution-log-test-test-2888.zst",
+          "runner": "remote",
+          "saved_member": "7021/compact/shard_3.protobuf",
+          "spawn_digest_all_fields": "adb31be4deb9a3e799addd7b138e2814f8e2920b47298071797bd0c3951fcb46",
+          "status": "",
+          "test_driver_names": [
+            "test-setup.sh",
+            "hepta-agentd-unit-tests"
+          ],
+          "timeout_ms": 300000,
+          "zero_based_compact_stream_message": 219683
+        }
+      ]
+    }
+  },
+  "product_tree_pair": {
+    "base_head": "c12ee03f3185d5a13949faca54f066dfd634e509",
+    "candidate_head": "4de33d145135dc2018b013f39b9ad8903e3a4208",
+    "changes": [
+      "codex-rs/core/src/codex_thread.rs",
+      "codex-rs/core/src/session/inject.rs"
+    ]
+  },
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "retained_zip_sha256": "1bd9f7d8550cab47ba77089de6362a32bf99191ddc0bff8d970c1f5fd9ebe563",
+  "source_map": {
+    "72bfe5f82b4d630208db65a1ed442dcd28e00263": {
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs": "d1d2313b12e9e83dde7b2a66a095531432a00073",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs": "5bddd975ebdc6c57732bc87c4a125cbf22596cdd",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs": "cbaa7ec0dcc8a76a07e830c5b2720734bdf606e8",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs": "5b5fbad6edc0e815231b89341c170d35af5e7383",
+      "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs": "3fb90129d801c9bc1d8079ec98388c9cd47bdcce",
+      "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs": "4ea1fb812060a5464fce66fc7242c15714a789de"
+    },
+    "8f8bceff9c84e77fad567fde6e95f57692fe5dbe": {
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs": "d2f5062ce271600fdd20ec87998a6eb40e9693b4",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs": "71def38dfe19995ba1caf27bf27dcca0f416b9a5",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs": "8f2b039c6c96ce90029ef22e29d2ccf5d1ed6039",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs": "5b5fbad6edc0e815231b89341c170d35af5e7383",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs": "91fb1d4a1657e328c25318c5935e52c203b5bc43",
+      "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs": "3fb90129d801c9bc1d8079ec98388c9cd47bdcce",
+      "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs": "50a18f615e66520f737dcb7028a641ffb438ce83"
+    },
+    "ae404b2935fa0b7ea39bf09ef1016917a507f6d5": {
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs": "d2f5062ce271600fdd20ec87998a6eb40e9693b4",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs": "71def38dfe19995ba1caf27bf27dcca0f416b9a5",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs": "8f2b039c6c96ce90029ef22e29d2ccf5d1ed6039",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs": "5b5fbad6edc0e815231b89341c170d35af5e7383",
+      "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs": "91fb1d4a1657e328c25318c5935e52c203b5bc43",
+      "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs": "3fb90129d801c9bc1d8079ec98388c9cd47bdcce",
+      "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs": "50a18f615e66520f737dcb7028a641ffb438ce83"
+    }
+  },
+  "steps": {
+    "7016": [
+      {
+        "conclusion": "success",
+        "name": "Set up job",
+        "number": 1,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "number": 2,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Prepare Bazel CI",
+        "number": 3,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Check rusty_v8 MODULE.bazel checksums",
+        "number": 4,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Check MODULE.bazel.lock is up to date",
+        "number": 5,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Install OpenSSH for the native operator-acceptance test action",
+        "number": 6,
+        "status": "completed"
+      },
+      {
+        "conclusion": "failure",
+        "name": "bazel test //...",
+        "number": 7,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run operator acceptance with native OpenSSH",
+        "number": 8,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run Linux sandbox integration on the native kernel",
+        "number": 9,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run native Core and app-server integration with host namespace support",
+        "number": 10,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Upload Bazel execution logs",
+        "number": 11,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Save bazel repository cache",
+        "number": 12,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Check for a clean worktree",
+        "number": 13,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Post Prepare Bazel CI",
+        "number": 25,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "number": 26,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Complete job",
+        "number": 27,
+        "status": "completed"
+      }
+    ],
+    "7021": [
+      {
+        "conclusion": "success",
+        "name": "Set up job",
+        "number": 1,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "number": 2,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Prepare Bazel CI",
+        "number": 3,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Check rusty_v8 MODULE.bazel checksums",
+        "number": 4,
+        "status": "completed"
+      },
+      {
+        "conclusion": "skipped",
+        "name": "Check MODULE.bazel.lock is up to date",
+        "number": 5,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Install OpenSSH for the native operator-acceptance test action",
+        "number": 6,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "bazel test //...",
+        "number": 7,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run operator acceptance with native OpenSSH",
+        "number": 8,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run Linux sandbox integration on the native kernel",
+        "number": 9,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Run native Core and app-server integration with host namespace support",
+        "number": 10,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Upload Bazel execution logs",
+        "number": 11,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Save bazel repository cache",
+        "number": 12,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Check for a clean worktree",
+        "number": 13,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Post Prepare Bazel CI",
+        "number": 25,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "number": 26,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "name": "Complete job",
+        "number": 27,
+        "status": "completed"
+      }
+    ]
+  }
+}
