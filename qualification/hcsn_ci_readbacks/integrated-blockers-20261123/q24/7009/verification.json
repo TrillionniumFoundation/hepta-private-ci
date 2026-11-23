@@ -1,0 +1,70 @@
+{
+  "run": 45115542852,
+  "job": 137503935281,
+  "artifact": 14792623213,
+  "records": [
+    {
+      "member": "test-attempt-logs-0b8ly022/files/000016.log",
+      "case": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_11_cua_manually_enabled_multimodal",
+      "state": "ok",
+      "kind": "Guardian",
+      "sha256": "b485a84c6d27c81135df1f247a4f514a7bb3709692a6f2511c0dbaddc8a88e5a"
+    },
+    {
+      "member": "test-attempt-logs-0b8ly022/files/000017.log",
+      "case": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_11_cua_manually_enabled_multimodal",
+      "state": "FAILED",
+      "kind": "Guardian",
+      "sha256": "a92bf07311fb32270aae4a4d7cf518e53192682a2bbb0d5c2f7d453d562ebb23"
+    },
+    {
+      "member": "test-attempt-logs-xihq4tnb/files/000004.log",
+      "case": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic",
+      "state": "FAILED",
+      "kind": "Q24",
+      "sha256": "79d5638502337fcd9f46a2ddec7be7994504edd38b3d22a079397f10f0e46b25"
+    }
+  ],
+  "evidence": {
+    "calls": [
+      [
+        6,
+        4,
+        104353
+      ],
+      [
+        12,
+        3,
+        66782
+      ],
+      [
+        13,
+        3,
+        58892
+      ],
+      [
+        7,
+        4,
+        127502
+      ],
+      [
+        14,
+        3,
+        58442
+      ],
+      [
+        15,
+        3,
+        59603
+      ]
+    ],
+    "total_read_original_us": 475574,
+    "evidence_timing": [
+      "LEARN_FDE_C_TIMING command_readback_elapsed_us=602139 result=Ok(())",
+      "LEARN_FDE_C_TIMING evidence_readback_elapsed_us=501389 result=Err(OwnerUnavailable(\"original learning evidence owner\"))",
+      "LEARN_FDE_C_TIMING evidence_peer_terminal=Err(Transport(DeadlineElapsed))",
+      "LEARN_FDE_C_TIMING command_peer_terminal=Ok(2)",
+      "LEARN_FDE_C_TIMING underlying_peer_terminal=Ok(6)"
+    ]
+  }
+}
