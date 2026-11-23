@@ -39,6 +39,7 @@ codex-hepta-neuron = { path = "../hepta-neuron" }
 sha2 = { workspace = true }
 
 [dev-dependencies]
+codex-utils-cargo-bin = { workspace = true }
 codex-hepta-infer-core = { path = "../hepta-infer-core", features = ["qualification-owned-file-read"] }
 core_test_support = { workspace = true }
 
