@@ -1,5 +1,11 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 15:35 UTC #7032 b1af67a 正式 46 job 全仓终局：28 绿／6 跳／5 取消／7 红
+
+- 原 [blocking-ci 45184439037](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184439037) 已最终 `completed/failure`，固定 source `b1af67a38f8cf9cee700cc067da1e6001ce220a8`；独立逐项从全部 46 个 job 复算 **28 success、6 skipped、5 cancelled、7 failure**。原 `CI required` job 137804276199 亦红，不能用先前 45 job 在途快照断言总门。
+- 精确 source 的 `cargo-deny` 安全门及 HCSN 原科学工作流仍分别成功；两类局部通过不改变全仓失败。Windows shard4 四项未资格化生产隔离正例、Linux musl 三个具名故障、learning.operator 两个严格门都保留；macOS ARM 四项及 Intel 全测被取消，未认证。原安全问题不应用 main 另一锁图的通过作替代。
+- 已独立读原始失败输出和上传工件清单，固定 [全 46 个 job／具名错误／原 ZIP ID 和后续边界](7032-b1af67a-full-blocking-final-20261123-1535Z.md)，提交仅增加不变证据，不重跑已完成 CI、不改变任何采纳/权限/超时门。#7032 继续 Draft，联合资格 **HOLD**。
+
 ## 2026-11-23 14:30 UTC #7032 b1af67a 原 source 安全门转绿；全仓仍 HOLD
 
 - 原自动 [blocking-ci 45184439037](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184439037) 的**确切 b1af67a source** 上，原 `cargo-deny` 以及 clean-worktree 均终结 success；原 [HCSN continuous-transport 45184438921](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184438921) 亦 success，科学 ZIP ID 14822933158。新的源码级**安全局部门**可签收，不能代表原全仓或 main 依赖图通过。
