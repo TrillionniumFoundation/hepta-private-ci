@@ -261,7 +261,9 @@ class NativeChatTests(unittest.TestCase):
         del event["trainable"]
         legacy = encode()
         self.assertEqual(legacy["input_ids"], masked["input_ids"])
-        self.assertEqual(legacy["labels"][start:end], tokenizer.encode(event["content"]))
+        self.assertEqual(
+            legacy["labels"][start:end], tokenizer.encode(event["content"])
+        )
         event["trainable"] = "false"
         with self.assertRaisesRegex(ValueError, "explicit boolean"):
             encode()

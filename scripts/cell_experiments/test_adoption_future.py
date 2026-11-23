@@ -141,7 +141,10 @@ class AdoptionFutureTests(unittest.TestCase):
     def test_chat_identity_follows_the_selected_generation_protocol(self):
         self.add_d()
         candidate = self.request["candidate"]
-        candidate["runtime"] = {**candidate["runtime"], "message_protocol": "native_chat_v2"}
+        candidate["runtime"] = {
+            **candidate["runtime"],
+            "message_protocol": "native_chat_v2",
+        }
         candidate_digest = a.digest(candidate)
         self.request["training"]["candidate_model_digest"] = candidate_digest
         candidate_row = self.request["evaluation"]["rows"][1]
