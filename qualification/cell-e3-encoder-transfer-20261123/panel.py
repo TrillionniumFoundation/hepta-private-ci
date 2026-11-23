@@ -11,7 +11,7 @@ WORDS = [
     ("sister", "Schwester", "sœur"), ("friend", "Freund", "ami"), ("book", "Buch", "livre"),
     ("horse", "Pferd", "cheval"), ("snow", "Schnee", "neige"), ("forest", "Wald", "forêt"),
     ("child", "Kind", "enfant"), ("uncle", "Onkel", "oncle"), ("wine", "Wein", "vin"),
-    ("mountain", "Berg", "montagne"), ("bridge", "Brücke", "pont"), ("island", "Insel", "île"),
+    ("mountain", "Berg", "montagne"), ("bridge", "Brücke", "pont"), ("island", "Insel", "île"),  # codespell:ignore pont
     ("river", "Fluss", "rivière"), ("chair", "Stuhl", "chaise"), ("cup", "Tasse", "tasse"),
     ("star", "Stern", "étoile"), ("cloud", "Wolke", "nuage"), ("street", "Straße", "rue"),
     ("song", "Lied", "chanson"), ("boat", "Boot", "bateau"), ("bed", "Bett", "lit"),
