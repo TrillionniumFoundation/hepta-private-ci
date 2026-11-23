@@ -152,14 +152,16 @@ class OriginalEvaluationPanelClosureTests(unittest.TestCase):
         for marker in (
             "let before = self.read_cells()?",
             "self.qualification.completed_bytes()?",
-            "sources\n            .prepare(&self.qualification.config, started_at, training)\n            .await?",
+            "sources\n                .prepare(&self.qualification.config, started_at, training)\n                .await?",
             ".finish_readback(",
-            "drop(sources)",
+            "let (prepared, qualification) = {",
+            "(prepared, qualification)\n        };",
             "let after = self.read_cells()?",
             "if before != after",
         ):
             self.rejects(MEMBER, "fn read_original(", marker)
         self.rejects(MEMBER, "fn read_original(", "false", "true")
+        self.rejects(MEMBER, "fn read_original(", "let bytes = self.qualification.completed_bytes()?", "let bytes = Vec::new()")
         for effect in ("owner.qualify_or_readback()", "File::open(path)", "self.qualification.config = changed"):
             with self.assertRaises(PROOF.VerificationFailure):
                 self.verifies(MEMBER, (ROOT / MEMBER).read_text() + "\nfn bypass() { " + effect + "; }\n")

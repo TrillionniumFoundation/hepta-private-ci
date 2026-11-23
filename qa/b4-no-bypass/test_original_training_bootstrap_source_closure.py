@@ -222,6 +222,7 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
         for marker in ("matches!(self.origin, Origin::Recovered)", "request.action == wire::Action::Execute",
                        "matches!(self.origin, Origin::Fresh)", "request.action == wire::Action::Readback"):
             self.rejects(SERVICE, "fn command_response(", marker)
+        self.rejects(SERVICE, "fn command_response(", "|| (matches!(self.origin, Origin::Fresh)", "&& (matches!(self.origin, Origin::Fresh)")
         self.rejects(MAIN, "fn recover_original_custody(", "Origin::Recovered", "Origin::Fresh")
 
     def require_current_first_in_writer_lane(self, source):

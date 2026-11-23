@@ -62,33 +62,35 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
         let started_at = original::now()?;
         let cohort_before = OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?;
         let before = self.read_cells()?;
-        let mut sources = OriginalCellEvaluationQualificationSourcesV1 {
-            runner: &mut self.runner,
-            journals: CellEvaluationJournalsV1 {
-                candidate: &self.candidate,
-                fixed_expert: &self.fixed_expert,
-            },
-            candidate_plan: &self.candidate_plan,
-            baseline_plan: &self.baseline_plan,
-            executions: &mut self.executions,
-            trainer: self.trainer.as_ref(),
+        let (prepared, qualification) = {
+            let mut sources = OriginalCellEvaluationQualificationSourcesV1 {
+                runner: &mut self.runner,
+                journals: CellEvaluationJournalsV1 {
+                    candidate: &self.candidate,
+                    fixed_expert: &self.fixed_expert,
+                },
+                candidate_plan: &self.candidate_plan,
+                baseline_plan: &self.baseline_plan,
+                executions: &mut self.executions,
+                trainer: self.trainer.as_ref(),
+            };
+            let bytes = self.qualification.completed_bytes()?;
+            let prepared = sources
+                .prepare(&self.qualification.config, started_at, training)
+                .await?;
+            let qualification = self
+                .qualification
+                .finish_readback(
+                    &mut sources,
+                    &prepared,
+                    &bytes,
+                    started_at,
+                    /*new_publication*/ false,
+                    training,
+                )
+                .await?;
+            (prepared, qualification)
         };
-        let bytes = self.qualification.completed_bytes()?;
-        let prepared = sources
-            .prepare(&self.qualification.config, started_at, training)
-            .await?;
-        let qualification = self
-            .qualification
-            .finish_readback(
-                &mut sources,
-                &prepared,
-                &bytes,
-                started_at,
-                /*new_publication*/ false,
-                training,
-            )
-            .await?;
-        drop(sources);
         let after = self.read_cells()?;
         let cohort_after = OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?;
         if before != after || cohort_before != cohort_after {
