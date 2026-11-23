@@ -28,7 +28,7 @@ def question(prompt, reverse):
     return f"{prompt}\n{options}\nAnswer with the letter A or B."
 
 
-def measure(model_dir, records, name, revision, batch):
+def measure(model_dir, records, name, revision, batch, native):
     identity = json.loads((model_dir / "identity.json").read_bytes())
     if identity["revision"] != revision or identity["license"] != "apache-2.0":
         raise ValueError("Model identity differs")
@@ -37,11 +37,13 @@ def measure(model_dir, records, name, revision, batch):
     tok = AutoTokenizer.from_pretrained(model_dir, local_files_only=True)
     is_t5 = name == "t5"
     cls = AutoModelForSeq2SeqLM if is_t5 else AutoModelForCausalLM
-    dtype = torch.float32 if is_t5 else torch.bfloat16
+    dtype = torch.float32
     model = cls.from_pretrained(
         model_dir, local_files_only=True, dtype=dtype, low_cpu_mem_usage=True
     ).eval()
-    ids = [tok.encode(label, add_special_tokens=False) for label in ("A", "B")]
+    answers = ("yes", "no") if is_t5 else ("Yes", "No")
+    verbalizers = answers if native else ("A", "B")
+    ids = [tok.encode(label, add_special_tokens=False) for label in verbalizers]
     if any(len(v) != 1 for v in ids):
         raise ValueError(f"Multi-token choice {ids}")
     a, b = [v[0] for v in ids]
@@ -50,8 +52,8 @@ def measure(model_dir, records, name, revision, batch):
         tok.pad_token = tok.eos_token
     queued = []
     for item in records:
-        for reverse in (False, True):
-            q = question(item["prompt"], reverse)
+        for reverse in ((False,) if native else (False, True)):
+            q = (item["prompt"] + "\nAnswer " + answers[0] + " or " + answers[1] + ".") if native else question(item["prompt"], reverse)
             if not is_t5:
                 q = tok.apply_chat_template(
                     [{"role": "user", "content": q}],
@@ -93,6 +95,10 @@ def measure(model_dir, records, name, revision, batch):
             input_tokens += int(mask.sum())
     rows = []
     for i, item in enumerate(records):
+        if native:
+            margin = scores[i]
+            rows.append({"id": item["id"], "yes_minus_no": margin, "margin": margin, "label": int(margin > 0)})
+            continue
         forward, reverse = scores[2 * i : 2 * i + 2]
         margin = forward - reverse
         rows.append(
@@ -107,6 +113,7 @@ def measure(model_dir, records, name, revision, batch):
     elapsed, cpu_time = time.perf_counter() - start, time.process_time() - cpu
     return {
         "teacher": name,
+        "verbalizers": list(verbalizers),
         "dtype": str(dtype),
         "identity": identity,
         "original_weights_sha256": sha_file(model_dir / "model.safetensors"),
@@ -128,6 +135,7 @@ def main():
     p.add_argument("assets", type=Path)
     p.add_argument("output", type=Path)
     p.add_argument("--only", choices=["t5", "smol"])
+    p.add_argument("--native", action="store_true")
     args = p.parse_args()
     torch.set_num_threads(2)
     torch.set_num_interop_threads(1)
@@ -144,7 +152,7 @@ def main():
         out = args.output / f"teacher-{args.phase}-{name}.json"
         if out.exists():
             raise FileExistsError(out)
-        t = measure(args.assets / folder, rows, name, rev, 12 if name == "t5" else 4)
+        t = measure(args.assets / folder, rows, name, rev, 12 if name == "t5" else 4, args.native)
         t.update(
             panel_sha256=PANEL_HASH,
             torch=str(torch.__version__),

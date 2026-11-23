@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -34,6 +35,7 @@ def outcomes(rows, ta, tb):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("evidence", type=Path)
+    p.add_argument("--sudo-network", action="store_true", help="Create the isolated network namespace using sudo on a hosted Linux runner")
     a = p.parse_args()
     e = a.evidence.resolve()
     bundle = e / "owned-students.zip"
@@ -57,8 +59,7 @@ def main():
         for arm in ARMS:
             proc = subprocess.run(
                 [
-                    "unshare",
-                    "-Urn",
+                    *(["sudo", "-n", "unshare", "--net", f"--setgid={os.getgid()}", f"--setuid={os.getuid()}"] if a.sudo_network else ["unshare", "-Urn"]),
                     sys.executable,
                     "-I",
                     "-S",
