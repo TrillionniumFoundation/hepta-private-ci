@@ -10,7 +10,49 @@ concurrency:
   group: memory-cell-startup-${{ github.event.pull_request.head.sha }}
   cancel-in-progress: false
 jobs:
+  build-test-children:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Prepare native dependencies for the two child processes
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+          python3 scripts/hepta_ci_v8.py
+      - name: Build and record both child executables from the checked-out source
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-cli --bin codex -p codex-hepta-infer-worker-host --bin hepta-joint-propose
+          children="$RUNNER_TEMP/startup-test-children"
+          mkdir -p "$children"
+          git rev-parse HEAD > "$children/source.txt"
+          for name in codex hepta-joint-propose; do
+            install -m 755 "$CARGO_TARGET_DIR/debug/$name" "$children/$name"
+          done
+          (cd "$children" && sha256sum codex hepta-joint-propose > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: startup-test-children
+          path: ${{ runner.temp }}/startup-test-children
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 1
   startup-and-owner-regressions:
+    needs: build-test-children
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -27,6 +69,22 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: cargo-nextest
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: startup-test-children
+          path: ${{ runner.temp }}/startup-test-children
+      - name: Bind the verified child processes for the original Agentd suite
+        run: |
+          set -euo pipefail
+          children="$RUNNER_TEMP/startup-test-children"
+          test "$(cat "$children/source.txt")" = "$(git rev-parse HEAD)"
+          (cd "$children" && sha256sum --check SHA256SUMS)
+          mkdir -p /tmp/memory-startup-validation
+          cp "$children/SHA256SUMS" /tmp/memory-startup-validation/child-binaries.sha256
+          for name in codex hepta-joint-propose; do
+            chmod 755 "$children/$name"
+            echo "CARGO_BIN_EXE_$name=$children/$name" >> "$GITHUB_ENV"
+          done
       - name: Test startup fences and unopened service factory
         run: |
           set -euo pipefail
