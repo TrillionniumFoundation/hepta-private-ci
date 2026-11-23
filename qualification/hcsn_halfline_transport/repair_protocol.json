@@ -1,0 +1,19 @@
+{
+  "first_protocol_sha256": "e9f4cb5177c1ed2bcbc2d84b798dafa2b46c2207064c084be319b2c26aa8fb3b",
+  "background": "Legacy 192-node squared-time renewal quadrature missed the declared relative tolerance on the half-open release bin [.5,.75) at both prespecified deadlines.",
+  "same_bins": [
+    0,
+    0.25,
+    0.5,
+    0.75,
+    1,
+    2
+  ],
+  "same_times": [
+    0.21,
+    0.3
+  ],
+  "new_rule": "s=h*sin(pi*u/2)^2, h-s=h*cos(pi*u/2)^2, 64/128 fixed Gauss-Legendre nodes in u; apply the existing direct killed interval and tail kernels and hit density.",
+  "same_relative_tolerance": 2e-10,
+  "extra_check": "Require consistency of orders, positive adaptive integral against positive killed density, same mass ledger and independent FD for the released bin with respect to initial distance, time, drift and sigma. Original relative failures remain reported."
+}

@@ -1,0 +1,94 @@
+{
+  "head": "67b04d5833f5660a22c5658a90793f7f76249aa0",
+  "tree": "89eba72ea5e4e20372cd83e02f922984b26fdbbb",
+  "run": 45126290551,
+  "job": 137531254957,
+  "artifact": 14795658203,
+  "zip_sha256": "20b7269d7e952b279c4e48041eb0f28826a43cb412f19584a95322d1bb0f9482",
+  "members": {
+    "readout.json": "9258d5ea6d23f1d9c76fc2b9899d05aaf0f971151611f5126dac00d709969241",
+    "transport.json": "e0cafa411ce88c42bfcae236e8f8e7b84bd98cdf55f1c19c6bc1dbe2ec521766",
+    "source.txt": "7a3a0380569bec5c354a90ced684d12d5d54b0094f73ba5d62cf17917b951ad6",
+    "upstream.log": "c3f1d5d2bb3bb58a05df06f0b989b3d9b18bfad304c07a2470056da6b4a94e9d"
+  },
+  "code_reference_blobs": 9,
+  "hosted_native": {
+    "count": 12,
+    "seconds": 12.564,
+    "covered_names": [
+      "qualification.hcsn_differentiable.tests.test_logrisk.LogRiskTests.test_log_probability_and_gradients_at_rare_and_boundary_states",
+      "qualification.hcsn_differentiable.tests.test_logrisk.LogRiskTests.test_nonpositive_deadlines_have_zero_probability_and_gradient",
+      "qualification.hcsn_differentiable.tests.test_logrisk.LogRiskTests.test_underflow_does_not_erase_log_gradient",
+      "qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes",
+      "qualification.hcsn_differentiable.tests.test_probability_intervals.ProbabilityIntervalTests.test_full_triggering_space_refinement_preserves_probability",
+      "qualification.hcsn_differentiable.tests.test_probability_intervals.ProbabilityIntervalTests.test_killed_intervals_and_first_order_gradients",
+      "qualification.hcsn_differentiable.tests.test_probability_intervals.ProbabilityIntervalTests.test_normal_intervals_cover_cdf_sf_and_extreme_tails",
+      "qualification.hcsn_differentiable.tests.test_probability_intervals.ProbabilityIntervalTests.test_rare_left_bin_matches_eighty_digit_reference",
+      "qualification.hcsn_split_mesh.test_split.SplitMesh.test_full_delayed_physical_partials_at_two_fixed_geometries",
+      "qualification.hcsn_split_mesh.test_split.SplitMesh.test_inherited_grading_preserves_common_operator",
+      "qualification.hcsn_split_mesh.test_split.SplitMesh.test_negative_drift_low_noise_rates_and_generator_fd",
+      "qualification.hcsn_split_mesh.test_split.SplitMesh.test_short_rare_continuum_failure_is_retained"
+    ]
+  },
+  "local_native_seconds": 13.473,
+  "readout": {
+    "runtime": {
+      "local": {
+        "python": "3.12.14",
+        "torch": "2.15.0+cpu",
+        "numpy": "2.3.5",
+        "scipy": "1.17.0",
+        "mpmath": "1.3.0"
+      },
+      "hosted": {
+        "python": "3.12.16",
+        "torch": "2.10.0+cpu",
+        "numpy": "2.3.5",
+        "scipy": "1.17.0",
+        "mpmath": "1.3.0"
+      }
+    },
+    "canonical_sha256_without_runtime": [
+      "35c5d08efd3400515a475ac6e65e5c5b93dce2c734b36631337fcecff7d56a1f",
+      "35c5d08efd3400515a475ac6e65e5c5b93dce2c734b36631337fcecff7d56a1f"
+    ],
+    "scalar_meta_equal": 14,
+    "numeric_leaves": 150,
+    "changed_numbers": 0,
+    "changed_physical_values": 0,
+    "largest_physical_relative": [],
+    "largest_absolute": [],
+    "differing_values": [],
+    "conditional_absolute_log_gradients_and_probs_checked": true
+  },
+  "transport": {
+    "runtime": {
+      "local": {
+        "python": "3.12.14",
+        "numpy": "2.3.5",
+        "torch": "2.15.0+cpu",
+        "scipy": "1.17.0",
+        "mpmath": "1.3.0"
+      },
+      "hosted": {
+        "python": "3.12.16",
+        "numpy": "2.3.5",
+        "torch": "2.10.0+cpu",
+        "scipy": "1.17.0",
+        "mpmath": "1.3.0"
+      }
+    },
+    "canonical_sha256_without_runtime": [
+      "b6feb45b4c993b08c07840c5c14de97a7001f728e20fca4a8e25ec0d5f1fca06",
+      "b6feb45b4c993b08c07840c5c14de97a7001f728e20fca4a8e25ec0d5f1fca06"
+    ],
+    "scalar_meta_equal": 15,
+    "numeric_leaves": 308,
+    "changed_numbers": 0,
+    "changed_physical_values": 0,
+    "largest_physical_relative": [],
+    "largest_absolute": [],
+    "differing_values": [],
+    "conditional_absolute_log_gradients_and_probs_checked": true
+  }
+}
