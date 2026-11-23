@@ -1,7 +1,9 @@
 """Two declared split meshes: discrete gradients and retained rare failures."""
 
+import hashlib
 import json
 import math
+from pathlib import Path
 import unittest
 
 import numpy as np
@@ -30,8 +32,17 @@ class SplitMesh(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        directory = Path(__file__).resolve().parent
+        root = directory.parents[1]
+        original = json.loads((directory / "MANIFEST.json").read_text())["sources"]
+        changed = sorted(
+            path for path, expected in original.items()
+            if not path.startswith("qualification/hcsn_split_mesh/")
+            and hashlib.sha256((root / path).read_bytes()).hexdigest() != expected
+        )
         print("SPLIT_EVIDENCE", json.dumps(dict(records=cls.records, exploratory_only=True,
-            continuum_rare_gate_closed=False, common_source_changed=False,
+            continuum_rare_gate_closed=False, common_source_changed=bool(changed),
+            changed_common_sources=changed,
             torch_adapter_supplied=False, fixed_physical_prior_jacobian=False), sort_keys=True))
 
     def setUp(self):
