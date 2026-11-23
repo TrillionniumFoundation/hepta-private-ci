@@ -1,5 +1,6 @@
 set -euo pipefail
-test "$(git rev-parse HEAD^)" = "$CANDIDATE"
+git merge-base --is-ancestor "$CANDIDATE" HEAD
+test "$(git diff --name-only "$CANDIDATE" HEAD | sort)" = "$(printf '%s\n' .github/scripts/agentd-owners-{cases.json,driver.py,prepare.sh} .github/workflows/agentd-existing-cohort-source-owners.yml | sort)"
 test "$(git rev-parse "$CANDIDATE^")" = "$BASE"
 dst="$RUNNER_TEMP/owners-lint-evidence"
 mkdir -p "$dst"
@@ -7,8 +8,8 @@ cp .github/scripts/agentd-owners-cases.json "$RUNNER_TEMP/owners-cases.json"
 cp .github/scripts/agentd-owners-driver.py "$RUNNER_TEMP/owners-driver.py"
 git diff --name-only "$BASE" "$CANDIDATE" -- > "$dst/product-diff.txt"
 test "$(wc -l < "$dst/product-diff.txt")" = 2
-rg -Fx 'codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs' "$dst/product-diff.txt"
-rg -Fx 'codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs' "$dst/product-diff.txt"
+grep -Fx 'codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs' "$dst/product-diff.txt"
+grep -Fx 'codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs' "$dst/product-diff.txt"
 for arm in base candidate; do
   if [ "$arm" = base ]; then ref="$BASE"; else ref="$CANDIDATE"; fi
   git worktree add --quiet --detach "$RUNNER_TEMP/owners-$arm" "$ref"
