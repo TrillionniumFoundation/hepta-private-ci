@@ -1,0 +1,92 @@
+name: Windows queue service
+
+on:
+  pull_request:
+    paths:
+      - ".bazelrc"
+      - "codex-rs/ext/queue/**"
+      - ".github/workflows/windows-queue-service.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  queue:
+    name: Original queue service suite on native Windows
+    runs-on: windows-latest
+    timeout-minutes: 120
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Enable long Git paths for the checkout
+        shell: bash
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Run the original unfiltered suite with a fresh test action
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- test \
+            --platforms=//:windows_x86_64_msvc \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA="$CANDIDATE_SHA" \
+            -- //codex-rs/ext/queue:queue-queue_service-test
+      - name: Print the original case verdicts and retain the source log and XML
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib
+          import os
+          import re
+          from pathlib import Path
+          from shutil import copy2
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "queue-service-evidence"
+          output.mkdir(exist_ok=True)
+          root = Path(os.environ["BAZEL_OUTPUT_BASE"]) / "execroot"
+          pattern = "*/bazel-out/*/testlogs/codex-rs/ext/queue/queue-queue_service-test/test.log"
+          logs = list(root.glob(pattern))
+          if len(logs) != 1:
+              raise SystemExit(f"Expected one original test log under {root}, found {logs}")
+          for path in (logs[0], logs[0].with_suffix(".xml")):
+              copy2(path, output / path.name)
+              print(f"{path.name} SHA-256 {hashlib.sha256(path.read_bytes()).hexdigest()}")
+          log = logs[0].read_text(encoding="utf-8", errors="replace")
+          cases = (
+              "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+              "core_error_after_started_never_releases_ambiguous_dispatch",
+              "explicitly_started_rejected_queue_messages_remain_durable",
+              "rejected_queue_messages_remain_durable_and_block_followups",
+          )
+          verdicts = dict(re.findall(r"^test (\w+) \.\.\. (ok|FAILED|ignored)$", log, re.M))
+          for case in cases:
+              print(f"{case} = {verdicts.get(case, 'MISSING')}")
+          summary = re.search(r"^test result: .*", log, re.M)
+          if summary:
+              print(summary.group())
+          if not summary or not re.search(r"^test result: ok\. \d+ passed; 0 failed; 0 ignored; 0 measured; 0 filtered out", summary.group()):
+              raise SystemExit("The complete original suite did not pass")
+          if any(verdicts.get(case) != "ok" for case in cases):
+              raise SystemExit("One or more original queue cases did not pass")
+          PY
+      - name: Upload original queue evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: native-queue-${{ env.CANDIDATE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/queue-service-evidence
+          if-no-files-found: error

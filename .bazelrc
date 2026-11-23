@@ -40,6 +40,17 @@ common:macos --test_env=PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr
 common:windows --test_env=SYSTEMROOT
 common:windows --test_env=COMSPEC
 common:windows --test_env=WINDIR
+# Native Windows hook processes need their standard program and profile paths.
+common:windows --test_env=ProgramFiles
+common:windows --test_env=ProgramFiles(x86)
+common:windows --test_env=USERPROFILE
+common:windows --test_env=APPDATA
+common:windows --test_env=LOCALAPPDATA
+common:windows --test_env=ProgramData
+common:windows --test_env=SystemDrive
+# The original Windows queue hooks spawn PowerShell through the test process PATH.
+# Pass the hosted runner's PATH through rather than changing any queue assertions.
+common:windows --test_env=PATH
 # PowerShell appends .CPL during startup. Without the inherited PATHEXT,
 # native .exe hooks are treated as documents and lose their standard streams.
 common:windows --test_env=PATHEXT
