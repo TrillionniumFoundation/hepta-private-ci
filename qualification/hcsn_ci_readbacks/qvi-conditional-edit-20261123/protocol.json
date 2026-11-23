@@ -1,0 +1,15 @@
+{
+  "source": "610f91087b598656f7f3913e600c705b95bf071f",
+  "scope": "Calibrate a specified stationary QVI boundary and preserve one receiver input in its declared two-neuron diagnostic, under the original continuous recurrence; no labeled retrieval data.",
+  "target_first_boundary_displacement": -0.01,
+  "anchor_initial": 0.72,
+  "other_initials": [0.65, 0.79, 1.05],
+  "edited_coordinates": ["source spike_cost", "receiver input offset"],
+  "other_parameters": "identical to verify_qvi_finite_bridge.py",
+  "arms": ["keep initial", "structural two-coordinate inverse", "joint LBFGS BP from same initial"],
+  "solver": {"max_iter": 40, "max_eval": 60, "tolerance_grad": 1e-13, "tolerance_change": 1e-16, "line_search_fn": "strong_wolfe"},
+  "objective": "squared source-boundary discrepancy plus squared receiver start discrepancy on anchor",
+  "gates": {"boundary_abs": 1e-7, "anchor_receiver_features_inf": 1e-7, "max_abs_parameter_delta": 0.10},
+  "timing": "single CPU thread, same framework, warm one unmeasured complete paired run; five timed alternating pairs, include common baseline, goal derivation, edit, three off-anchor evaluations and final validation; count optimization closures, never infer task-training time",
+  "off_anchor": "report every held initial; no fitting, no selection and no off-anchor pass requirement"
+}
