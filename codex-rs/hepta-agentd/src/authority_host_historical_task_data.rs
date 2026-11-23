@@ -32,11 +32,13 @@ pub(super) struct OriginalHistoricalSourceCellObservationV1 {
     pub(super) cell_cut_digest: Digest32,
 }
 
+type PhysicalMetadata = (u64, i64, i64, i64, i64);
+
 struct HeldOriginalSourceCellDataV1 {
     inputs: RootHistoricalSourceInputsV1,
     source: HistoricalCircuitTaskSourceV1<FileAnchorWitnessStore>,
     observed: OriginalHistoricalSourceCellObservationV1,
-    physical: [(u64, i64, i64, i64, i64); 2],
+    physical: [PhysicalMetadata; 2],
     _retired: RetiredCheckpointPublisher,
 }
 
@@ -260,9 +262,7 @@ impl HeldOriginalSourceCellDataV1 {
     }
 }
 
-fn physical_metadata(
-    inputs: &RootHistoricalSourceInputsV1,
-) -> io::Result<[(u64, i64, i64, i64, i64); 2]> {
+fn physical_metadata(inputs: &RootHistoricalSourceInputsV1) -> io::Result<[PhysicalMetadata; 2]> {
     let journal = inputs.journal.metadata()?;
     let witness = inputs.witness.metadata()?;
     Ok([journal, witness].map(|metadata| {
