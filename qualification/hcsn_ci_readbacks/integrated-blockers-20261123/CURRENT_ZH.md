@@ -1,5 +1,12 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 19:20 UTC #7052 c923 原生 source-format 转绿；严格残余定位两条（全仓仍 HOLD）
+
+- 精确 #7052 `c9236b4` 原 [MemoryCell 45240608027](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240608027) **source-format 137924066774 实际 success**；原 [Learning artifacts 45240608033](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240608033) source-inventory/source/merge/required **4/4 success**。MemoryCell laya-pretrained、blocking-ci 其他分片在读回时未终结；只签收已证实局部绿门。
+- 原 [blocking-ci 45240607977](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240607977) exact-source 137926050442 与 prospective-merge 137926050436 两臂相同两条原生 `-D warnings` 严格失败：`organ_hierarchy.rs:235 cns_route_digest_v1` 本地死代码，以及 `control_runtime_publication.rs:88 ControlRuntimePublicationV1::new` 八参数 `too_many_arguments`；均退出 101。原 Bellman 文件的此前格式和 `collapsible_if` 不再出现在本次失败日志，但全链未绿，不能据此签收完整性能门。
+- 未修改生产 V1 签名、权限、拒绝语义或 Clippy 约束；未重跑已完成作业/合并 Draft。Windows、musl、Q24、main 安全锁图、残余严格与所有联合生产资格继续 HOLD。[固定源码、原作业与具名残余证据](7052-c9236b4-native-readback-20261123-1920Z.md)。
+
+
 ## 2026-11-23 18:38 UTC #7052 原 Rustfmt/Clippy 双臂失败归档与单文件后继（待原 CI）
 
 - 读取 #7052 原 source `76d2197c` 的正式 [blocking-ci 45235530500](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45235530500)：exact-source、deterministic-merge 均因 Bellman 性能示例第 217 行 `clippy::collapsible_if` 退出 101；source 原日志另保留 `hepta-control-plane` 两条严格诊断。原 [MemoryCell 45235530046](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45235530046) 的 `source-format` 对同一文件给出 7 处原 rustfmt 差异，仍红。
