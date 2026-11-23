@@ -1,0 +1,22 @@
+{
+  "sealed_results_sha256": "0ff3c8503076a44dc64be76206a25d3fa18ba70e50f506721f203aa9c57a7901",
+  "policy_source_rows_recomputed": 192,
+  "source_windows": 4,
+  "video_price": "3/10",
+  "worst_source_floor": "-1/20",
+  "exact_rule": "a source with one or more purchases requires at least one net corrected answer",
+  "selected_gradient": {
+    "wins": 2,
+    "losses": 1,
+    "ties": 5,
+    "one_sided_sign_p": "1/2"
+  },
+  "omit_only_the_one_purchase_on_the_losing_source": {
+    "scope": "arithmetic counterfactual, not an evaluated policy",
+    "vs_free_positive_sources": 2,
+    "negative_sources": 0,
+    "ties": 6,
+    "one_sided_sign_p": "1/4",
+    "passes_familywise_0_05": false
+  }
+}
