@@ -15,7 +15,7 @@ import subprocess
 import sys
 import time
 
-from . import adoption, chat_protocol, coding_sft, data
+from . import adoption, chat_protocol, coding_sft, data, prospective_exposure
 
 ARMS = ("parent", "candidate")
 PANELS = ("future", "retention")
@@ -188,6 +188,7 @@ def checked_request(path, expected):
         "positive per-arm time budget required",
     )
     checked_panels({p: req[p] for p in PANELS}, parent["runtime"])
+    prospective_exposure.check_request(req, prospective_exposure.catalog_for(child))
     return req
 
 
@@ -227,6 +228,12 @@ def token_inputs(req, model, materials):
             for arm in ARMS
             for sample in req[arm]["router_training_inputs"]
         }
+    catalog = prospective_exposure.catalog_for(req.get("candidate", model))
+    exposed_inputs = (
+        {row["input_ids_sha256"] for row in catalog["known_inputs"]}
+        if catalog
+        else set()
+    )
     inputs = {}
     seen = set()
     for panel in PANELS:
@@ -243,6 +250,10 @@ def token_inputs(req, model, materials):
             token_hash = data.digest(tokens)
             adoption.require(token_hash not in seen, "repeated model input token IDs")
             if panel == "future":
+                adoption.require(
+                    token_hash not in exposed_inputs,
+                    "future matches known historical input token IDs",
+                )
                 adoption.require(
                     token_hash not in router_training,
                     "future input repeats a frozen router training input",

@@ -16,7 +16,7 @@ import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from . import adoption, coding_sft, data, paired_cold
+from . import adoption, coding_sft, data, paired_cold, prospective_exposure
 
 FREEZE_SCHEMA = "hepta.paired-cold.freeze.v1"
 REQUEST_SCHEMA = "hepta.paired-cold.request.v1"
@@ -62,7 +62,7 @@ def freeze(spec_path, materials, output):
     return publish({"schema": FREEZE_SCHEMA, **spec}, output)
 
 
-def assemble(snapshot_path, expected_freeze, future_path, output):
+def assemble(snapshot_path, expected_freeze, future_path, output, *, materials=None):
     snapshot = adoption.read_json(snapshot_path)
     adoption.require(
         isinstance(snapshot, dict)
@@ -81,6 +81,13 @@ def assemble(snapshot_path, expected_freeze, future_path, output):
             "future data must be evaluation-only confirmation records",
         )
     request = {**snapshot, "schema": REQUEST_SCHEMA, "future": future}
+    catalog = prospective_exposure.catalog_for(snapshot["candidate"])
+    if catalog is not None:
+        prospective_exposure.check_request(request, catalog)
+        # Both preflights use the exact frozen local inference material. No predictor is loaded.
+        model_root = materials if materials is not None else Path(snapshot_path).parent
+        for arm in paired_cold.ARMS:
+            paired_cold.token_inputs(request, request[arm], model_root)
     return publish(request, output, check_request=True)
 
 
@@ -96,11 +103,22 @@ def main():
     second.add_argument("freeze_sha")
     second.add_argument("future", type=Path)
     second.add_argument("request", type=Path)
+    second.add_argument(
+        "--materials", type=Path, help="frozen model root when separate from snapshot"
+    )
     args = parser.parse_args()
     if args.operation == "freeze":
         print(freeze(args.spec, args.materials, args.snapshot))
     else:
-        print(assemble(args.snapshot, args.freeze_sha, args.future, args.request))
+        print(
+            assemble(
+                args.snapshot,
+                args.freeze_sha,
+                args.future,
+                args.request,
+                materials=args.materials,
+            )
+        )
 
 
 if __name__ == "__main__":

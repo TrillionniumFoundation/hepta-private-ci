@@ -43,3 +43,28 @@ EXP=qualification/public-historical-a-qwen2-052-20261123
 PYTHONPATH=scripts HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
   python "$EXP/replay_historical.py" "$PUBLIC_PARQUET" "$EXP/run" "$NEW_OUTPUT"
 ```
+
+## Assemble an independently received prospective evaluation
+
+After the authorized intake has received a new evaluation-only task, it can assemble the request from the original freeze. Supply a private JSON list of v1 confirmation records with an authorized agent origin and unexposed declaration. Keep the request private. The output digest can be bound to the original intake receipt.
+
+```bash
+EXP=qualification/public-historical-a-qwen2-052-20261123
+PYTHONPATH=scripts HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+  python -m cell_experiments.paired_freeze assemble "$EXP/run/FROZEN.json" \
+  447ace5cc8bc031cc772e63ccb90380f16fc81404003bc04057ec4f8b7470ef6 \
+  "$AUTHORIZED_FUTURE_LIST" "$NEW_PRIVATE_REQUEST" --materials "$EXP/run"
+```
+
+The registered catalog binds this candidate, its original freeze, the three known prompt fingerprints, their exact frozen model token-ID fingerprints, the old source material and the published row locator. The registered candidate requires this catalog and both frozen local inventories. No archived user prompt or Parquet dependency is needed at intake.
+
+The normal v1 `source.repository`, `source.path` and `source.sha256` can identify the original trusted delivery, including an AuthBus receipt. For separate deliveries citing a shared file, attach the hash of each retained original delivery as `source.intake_receipt_sha256`. Preserve `source.row_zero_based` for a row-addressed source and copy any available `source.original_task_id` and `source.operation_id` from their original issuer. Neither optional identifier needs to exist. Equal IDs from different issuers are distinct. Equal answers and shared providers are allowed.
+
+The historical release predates the freeze. A new task about an old document uses the new delivery as its original source. The intake owner must independently authenticate the original pointer, authorization, distinct user and post-freeze arrival, check semantic overlap and prevent repeat counting across accepted requests. A digest comparison alone cannot authenticate provenance or detect paraphrases and intentionally substituted pointers.
+
+An independent auditor with the pinned public Parquet and the reproduce environment can recompute all six input fingerprints from the original training inputs and both local model tokenizers. This command prints only the verified catalog digest.
+
+```bash
+PYTHONPATH=scripts HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+  python "$EXP/verify_prospective_exposures.py" "$PUBLIC_PARQUET"
+```
