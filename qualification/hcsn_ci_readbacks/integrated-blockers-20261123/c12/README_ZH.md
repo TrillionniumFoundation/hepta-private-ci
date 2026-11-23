@@ -12,3 +12,5 @@ repo-checks 原作业从 08:32:16 至 09:12:31，配给 40 分钟。前置步骤
 python ../memory-startup/verify_full.py startup-tests.zip --source c12ee03f3185d5a13949faca54f066dfd634e509 --digest 2946327047596b49f097857dcd548fc26a35e7c18c597e80216dffdf39a334aa | cmp - startup-tests.json
 python ../memory-startup/compare_full_rosters.py ../memory-startup/e327-tests.zip startup-tests.zip | cmp - startup-comparison.json
 ```
+
+c12 的 daemon 原生工作流也已终结。独立解析两份 JUnit，普通 2,849/2,849、真实 Root 68/68，零跳过；202 项学习所有者原用例覆盖齐全。随后固定基址 fmt 对历史 2909 快照找不到所属 Rust 工作区，退出 2。该工作流最终失败。仓库级取消作业已单独按原 40 分钟作业配额、同一提交与同一检查命令重试一次。[两份原 XML 与事件记录](daemon-original-members.zip) · [独立结果](daemon-result.json) · [daemon 终态](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928116) · [仓库原作业第二次执行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928408/job/137602127556)

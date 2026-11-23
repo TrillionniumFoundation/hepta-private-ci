@@ -50,8 +50,14 @@ def run(args):
                     assert observation['source_sha256']==original_sha and observation['action_seal']==args.action_seal
                 else:
                     started=time.perf_counter()
-                    rgb_disk.one(row)
-                    z,details=vision_disk.tensors(row,transform)
+                    try:
+                        rgb_disk.one(row)
+                        z,details=vision_disk.tensors(row,transform)
+                    except ValueError as error:
+                        if row['query_id']!='fresh-37320740-w01' or str(error)!='invalid frame sequence':
+                            raise
+                        from recover_preroll import recover
+                        z,details=recover(row,path,transform)
                     decoded=time.perf_counter()
                     logits=model(z);prob=vision.cumulative_class_probability(logits,idx)
                     observation={'query_id':row['query_id'],'source_sha256':original_sha,'action_seal':args.action_seal,
@@ -59,7 +65,7 @@ def run(args):
                        'posterior':prob.numpy().tolist(),'clock':details['details'],
                        'decode_transform_wall_seconds':decoded-started,'inference_wall_seconds':time.perf_counter()-decoded}
                     save(destination,observation)
-                    (root/'rgb-cache'/row['split']/(row['query_id']+'.rgb')).unlink()
+                    (root/'rgb-cache'/row['split']/(row['query_id']+'.rgb')).unlink(missing_ok=True)
                 probs.append(observation['posterior']);all_records.append(observation)
     assert len(all_records)==48
     np.savez_compressed(out/'camera.npz',query_id=np.asarray([row['query_id'] for row in rows]),probability=np.asarray(probs))

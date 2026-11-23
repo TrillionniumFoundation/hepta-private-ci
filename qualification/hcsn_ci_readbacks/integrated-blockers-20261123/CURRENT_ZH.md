@@ -3,7 +3,7 @@
 ## 当前可复核的结论
 
 - **已见到哪些查询值得补读。** 在价格 0.30 下，音频偏吉他、图库偏钢琴、音频边际不超过 0.65 的一组，TRAIN 和 DEV 每次补读视频的平均净收益分别为 +0.300 和 +0.155。整组一律补读仍有 3 个训练来源、2 个开发来源越过最差损失限额。仅用 TRAIN 冻结的 6 坐标编辑在 DEV 买 3 次，救回 2 个错误并新引入 1 个，最差来源为 −0.325。八分组上界和 18 连续特征两套编辑均已由只读 TRAIN、DEV 的第二份实现逐题复核。[独立复算](../purchase-attainability-20261123/independent/receipt.json)
-- **新确认集的取得条件。** 原先 105 个发布页面以外的多语种发现新增 329 个发布页面。从出处和录制描述选定的 18 份原片核查顺序已预先封存，各来源需通过原版四时窗和制作身份检查。预测尚未开启。[取得顺序](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6cbeada32241e550c4708bb8cc84f4517234a4b9/qualification/hcsn_ci_readbacks/purchase-attainability-20261123/expanded-source-queue.json)
+- **新 12 个来源已经完成前瞻验证。** 冻结 24 套策略的 1,152 个动作后运行付费前端。上述错配组在 14 次购买中救回 7 个错误，净增 +0.20／次，但仍有 5 个来源跌破保持线。QVI 相对两种阈值均仅 +0.00278，单侧 p=0.75。全部 48 个窗口反序复跑得到完全相同的 288 个前缀后验。独立评分器复核 670 项。原 SVD 首时点策略效用 0.80625，最差来源 −0.075，仍未达到采纳标准。[新队列完整结果](../fresh-boundary-20261123/RESULTS_ZH.md)
 - **当前集成源码。** #7016 c12 的两个原 Rust 严格作业各有 115 项，与已资格源码 43e5 的诊断路径、行列和消息全部吻合。另一个单文件候选在自己的原三 crate 作业上减少 1 项到 114，新增零项。它已经过两臂的原普通／真实 UID0 测试、编码回放和完整权限调用审核。对 c12 应用该文件的预期树已独立重算；c12 原作业的计数仍是 115。[c12 双作业](c12/strict-jobs.json) · [单文件独立资格和 c12 物件对照](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cf46c20ca012fb65e49715e0a398bb5d35fcaeb1/qualification/agentd_bootstrap_wire/C12_ZH.md)
 - **Windows 与 musl。** 六个原 Windows 桌面/令牌控制均通过，原单测目标 289 过、5 原忽略。第六次整 shard 的四项隔离正例仍失败，分离会话也再次超时。c12 的原 musl 构建唯一最终红例是 Q24 发布撤回前读到连接关闭；子草案 #7021 的完整同类 musl 原作业通过。两树的六份关键 Q24 源码完全相同，尚无因果归因。[Windows 原件](windows-capability/NATIVE.md) · [两次 musl 原件](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e3fce928e4395868148da24c1d91e83a5765e37a/docs/learning/evidence/musl-child-completion-20261123/native-musl-comparison.md)
 

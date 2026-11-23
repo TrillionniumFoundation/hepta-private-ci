@@ -11,12 +11,12 @@ SELECTED = ("ordinary.xml","root.xml","ordinary.summary.json","root.summary.json
             "checkout.json","before-tests.json","after-tests.json","final.json","maintenance-summary.json",
             "qualification-status.json","driver-error.json","original-learning-owner-coverage.json")
 
-def summarize(z):
+def summarize(z, source=SHA, run=45130787310, job=137545550941):
     report = {}
     for arm, expected in (("ordinary",2849),("root",68)):
         raw = z.read(arm+".xml")
         s = json.loads(z.read(arm+".summary.json"))
-        assert s["source_sha"]==SHA and s["status"]=="passed" and hashlib.sha256(raw).hexdigest()==s["junit_sha256"]
+        assert s["source_sha"]==source and s["status"]=="passed" and hashlib.sha256(raw).hexdigest()==s["junit_sha256"]
         root = ET.fromstring(raw)
         cases=root.findall(".//testcase")
         assert len(cases)==expected==s["total_testcases"]
@@ -31,13 +31,16 @@ def summarize(z):
     rec = json.loads(z.read("original-learning-owner-coverage.json"))
     assert rec["expected_count"]==202 and rec["exact_pass_coverage"]
     assert not json.loads(z.read("maintenance-summary.json"))["complete"]
-    return {"source":SHA,"run":45130787310,"job":137545550941,"all_test_suites":report,
+    return {"source":source,"run":run,"job":job,"all_test_suites":report,
             "original_learning_owner_cases":202,"fmt":fmt, "maintenance_complete":False}
 
 if __name__=="__main__":
     cli=argparse.ArgumentParser(description=__doc__)
     cli.add_argument("archive",type=Path)
+    cli.add_argument("--source",default=SHA)
+    cli.add_argument("--run",type=int,default=45130787310)
+    cli.add_argument("--job",type=int,default=137545550941)
     args=cli.parse_args()
     with ZipFile(args.archive) as z:
         assert not z.testzip() and set(SELECTED)<=set(z.namelist())
-        print(json.dumps(summarize(z),sort_keys=True,indent=2))
+        print(json.dumps(summarize(z,args.source,args.run,args.job),sort_keys=True,indent=2))
