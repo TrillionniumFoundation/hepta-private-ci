@@ -1,0 +1,38 @@
+{
+  "job": 137481302908,
+  "artifact": 14790874381,
+  "original_bazel_spawns": [
+    {
+      "args": [
+        "external/bazel_tools/tools/test/test-setup.sh",
+        "codex-rs/hepta-control-plane/hepta-control-plane-unit-tests"
+      ],
+      "label": "//codex-rs/hepta-control-plane:hepta-control-plane-unit-tests",
+      "mnemonic": "TestRunner",
+      "strategy": "darwin-sandbox",
+      "status": "NON_ZERO_EXIT",
+      "spawn_exit": 101
+    },
+    {
+      "args": [
+        "external/bazel_tools/tools/test/generate-xml.sh",
+        "bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/hepta-control-plane/hepta-control-plane-unit-tests/test.log",
+        "bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/hepta-control-plane/hepta-control-plane-unit-tests/test.xml",
+        "3",
+        "101"
+      ],
+      "label": "//codex-rs/hepta-control-plane:hepta-control-plane-unit-tests",
+      "mnemonic": "TestRunner",
+      "strategy": "darwin-sandbox",
+      "status": "",
+      "spawn_exit": 0
+    }
+  ],
+  "compact_log_entries_scanned": 200846,
+  "native_log_hashes": {
+    "log": "8d84a173a5123202c6951b1a695f49cab682c82bfb0eacb4ae70848c42f421b5",
+    "xml": "a5b69f2afd01a23cd73bc7973baadbba414f264a555bf0312581757f17ede245"
+  },
+  "raw_log_and_xml_error": "read-only cold orphan inspection: WriterUnavailable",
+  "raw_log_and_xml_name_failed_lock": false
+}

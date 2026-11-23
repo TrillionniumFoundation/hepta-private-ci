@@ -1,0 +1,84 @@
+{
+  "source": "ae2ad4941e0734c311d74904c9bbacc6c5136b6c",
+  "original_job": 137481302908,
+  "run": 45116325592,
+  "job": 137499899180,
+  "artifact_sha256": "5cfaa39eb622b71cd8398e199a61350d77ea71c1ac60712324d8d48795b87c6e",
+  "roster_sha256": "8dc2d94683f5b9be869913fa90171d86f1eb4942dddf7d16c6d1fa8f53618772",
+  "observed_contrast": false,
+  "scope": "Full same-binary native ARM macOS libtest default and serial, on a single runner, in six fresh, non-retried processes. No global product or deployed concurrency claim.",
+  "runs": [
+    {
+      "index": 1,
+      "mode": "parallel",
+      "bazel_strategy": "darwin-sandbox",
+      "passed": 185,
+      "failed": [],
+      "filtered": 0,
+      "seconds": 1.31,
+      "writer_unavailable": false,
+      "log_sha256": "2048504125a5de7445695531363d6443254d5fa57db53c831916a110328c2b51",
+      "xml_sha256": "45787179868f103e24eb7a8869587ef6b05defab6690a66587401e3ca4f723ef"
+    },
+    {
+      "index": 2,
+      "mode": "serial",
+      "bazel_strategy": "darwin-sandbox",
+      "passed": 185,
+      "failed": [],
+      "filtered": 0,
+      "seconds": 3.35,
+      "writer_unavailable": false,
+      "log_sha256": "d99318dc0626731ddcb74069d50ae10c9a2ab0f43c7de6c1a4cab2138f1b275e",
+      "xml_sha256": "cce5aa4c9d90c8dd4e808600e566a17ae5e829f37bb59d79994a2cfe410649dd"
+    },
+    {
+      "index": 3,
+      "mode": "serial",
+      "bazel_strategy": "darwin-sandbox",
+      "passed": 185,
+      "failed": [],
+      "filtered": 0,
+      "seconds": 2.33,
+      "writer_unavailable": false,
+      "log_sha256": "ba9f47e29880719953dd397bee65fbeda0dbcc10ac1eb3e3399dff9caa0ac8c5",
+      "xml_sha256": "77e01ac08482192b84c0578d4561a72d8283e5afe5e1e00f9d06204f09a589bc"
+    },
+    {
+      "index": 4,
+      "mode": "parallel",
+      "bazel_strategy": "darwin-sandbox",
+      "passed": 185,
+      "failed": [],
+      "filtered": 0,
+      "seconds": 1.46,
+      "writer_unavailable": false,
+      "log_sha256": "3504ff20987b6336cf0a9c8fe7e4c341da8d1bd426f922c465ca4706e8556248",
+      "xml_sha256": "cd7c67fbee890b526cd9fa508fa676fd9243d1038009b664442c12a9ab5c6d2d"
+    },
+    {
+      "index": 5,
+      "mode": "parallel",
+      "bazel_strategy": "darwin-sandbox",
+      "passed": 185,
+      "failed": [],
+      "filtered": 0,
+      "seconds": 2.42,
+      "writer_unavailable": false,
+      "log_sha256": "3ba5b9c6020b1f0ffb24d3bef96a9594fba3dae0882b4ab1deeddb237dbb58f1",
+      "xml_sha256": "cffdcf9dc3b52d5c882c754b5576793b59a7aab1b254ff63ef01ff1f2c2b07a0"
+    },
+    {
+      "index": 6,
+      "mode": "serial",
+      "bazel_strategy": "darwin-sandbox",
+      "passed": 185,
+      "failed": [],
+      "filtered": 0,
+      "seconds": 3.93,
+      "writer_unavailable": false,
+      "log_sha256": "e039c425536e1ddca8c8deb0582d42c9db8b9bcf57fa8b03d65dc0acd4f24f7f",
+      "xml_sha256": "277e9c80241acde49c7baf2b2d502e35f04f6ba9351f9ea1871e4e8ad6efea21"
+    }
+  ]
+}

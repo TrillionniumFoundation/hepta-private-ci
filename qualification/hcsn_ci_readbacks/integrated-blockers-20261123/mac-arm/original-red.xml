@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="codex-rs/hepta-control-plane/hepta-control-plane-unit-tests" tests="1" failures="0" errors="1">
+    <testcase name="codex-rs/hepta-control-plane/hepta-control-plane-unit-tests" classname="" status="run" duration="3" time="3"><error message="exited with error code 101"></error></testcase>
+      <system-out>
+Generated test.log (if the file is not UTF-8, then this may be unreadable):
+<![CDATA[exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+Executing tests from //codex-rs/hepta-control-plane:hepta-control-plane-unit-tests
+-----------------------------------------------------------------------------
+
+running 185 tests
+test cart::tests::controller_reports_saturation_and_keeps_stop_latched ... ok
+test cart::tests::command_binding_covers_every_dispatched_field ... ok
+test cart::tests::external_tick_overflow_is_atomic_but_local_reflex_remains_latched ... ok
+test cart::tests::rejected_dispatch_does_not_mutate_the_plant_and_stop_fences_old_work ... ok
+test cart::tests::rejected_dispatched_emergency_does_not_change_the_plant_latch ... ok
+test cart::tests::rejected_regressing_emergency_request_preserves_prior_controller_state ... ok
+test cart::tests::stale_future_duplicate_generation_and_calibration_samples_are_rejected ... ok
+test cart::tests::successful_dispatched_emergency_latches_against_tracking_work ... ok
+test cart::tests::quantized_braking_reports_its_difference_from_the_rational_reference ... ok
+test cart::tests::rejected_emergency_requests_leave_the_controller_unchanged ... ok
+test cart::tests::typed_controller_and_plant_replay_the_explicit_euler_q24_golden ... ok
+test cell_split_route::tests::abi_port_binding_mismatch_is_rejected_before_cutover ... ok
+test cell_split_route::tests::invalid_child_route_does_not_publish_activation ... ok
+test cell_split_route::tests::cutover_fences_parent_and_emits_child_dispatch_receipt ... ok
+test cell_split_route::tests::reopened_successor_rejects_parent_route_and_binds_tombstone_fence ... ok
+test cell_split_route::tests::wrong_predicate_and_unbound_child_route_are_rejected_before_handler ... ok
+test control_runtime_owner::tests::invalid_signature_is_rejected_before_snapshot_admission ... ok
+test control_runtime_publication::tests::memory_publisher_is_compare_and_publish_and_idempotent ... ok
+test execution_attempt::tests::attempt_codec_round_trips_and_rejects_tampering ... ok
+test execution_attempt::tests::exact_attempt_reconciles_a_late_terminal_observation_without_retry ... ok
+test execution_attempt::tests::pre_dispatch_timeout_requires_a_new_attempt_identity ... ok
+test execution_attempt::tests::revocation_after_authorization_is_indeterminate_not_success ... ok
+test control_runtime_owner::tests::unique_owner_authenticates_persists_publishes_and_recovers_attempts ... ok
+test io::tests::raw_authority_grants_and_wrong_actuator_are_rejected_without_mutation ... ok
+test io::tests::sensor_age_and_calibration_expiry_fail_closed ... ok
+test io::tests::typed_sensor_controller_actuator_slice_returns_terminal_receipt ... ok
+test module_runtime::retention_tests::compaction_cannot_reopen_bootstrap_for_a_retired_identity ... ok
+test module_runtime::retention_tests::failed_rollback_is_atomic_including_generation_fences ... ok
+test module_runtime::retention_tests::pending_candidate_pins_its_own_predecessor_payload ... ok
+test control_runtime_publication::tests::file_publisher_round_trips_and_rejects_stale_head ... ok
+test module_runtime::retention_tests::rejected_candidates_release_work_budget_but_not_their_epoch_fence ... ok
+test module_runtime::retention_tests::selected_capacity_counts_draining_and_quarantined_writers ... ok
+test module_runtime::safety_tests::draining_writer_is_not_dispatchable_but_keeps_its_domain ... ok
+test module_runtime::safety_tests::effectful_or_stateful_candidate_cannot_take_stateless_promotion_shortcut ... ok
+test module_runtime::safety_tests::quarantined_active_writer_requires_reconciliation_before_domain_reuse ... ok
+test module_runtime::safety_tests::quarantining_an_unselected_candidate_does_not_acquire_a_writer_domain ... ok
+test module_runtime::safety_tests::retirement_does_not_reopen_bootstrap_or_rewind_generation ... ok
+test module_runtime::tests::replacement_is_shadow_canary_promote_with_single_writer ... ok
+test module_runtime::tests::rollback_uses_fresh_generation_instead_of_resurrection ... ok
+test module_runtime::tests::second_active_writer_for_same_domain_is_rejected ... ok
+test module_runtime::retention_tests::thousand_upgrade_rollback_cycles_keep_payloads_bounded_and_epochs_fenced ... ok
+test ndu_publication::tests::abrupt_process_exit_after_control_begin_fences_recovery ... ok
+test ndu_publication::tests::checkpoint_advance_invalidates_frozen_cutover_without_losing_new_state ... ok
+test ndu_publication::tests::concurrent_model_and_cns_cas_cannot_both_commit_one_predecessor ... ok
+test ndu_publication::tests::concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner ... ok
+test ndu_publication::tests::cutover_and_checkpoint_cas_use_same_exclusive_owner ... ok
+test ndu_publication::tests::deleted_control_wal_cannot_bootstrap_a_fresh_history ... ok
+test ndu_publication::tests::direct_single_phase_cns_publication_is_always_denied_and_never_appends ... ok
+test ndu_publication::tests::fixed_stack_control_owner_marker_matches_original_decimal_grammar ... ok
+test ndu_publication::tests::fabricated_control_wal_length_poisoned_by_real_owner_readback ... ok
+test ndu_publication::tests::guarded_cutover_commits_real_callback_once_and_replays_original_wal ... ok
+test ndu_publication::tests::fixed_stack_original_control_wal_tail_protects_short_and_multirow_histories ... ok
+test ndu_publication::tests::inplace_wal_truncate_and_equal_length_tail_rewrite_fence_live_observer ... ok
+test ndu_publication::tests::insufficient_space_for_commit_denies_before_durable_begin_or_model ... ok
+test ndu_publication::tests::lost_wal_during_real_callback_never_publishes_success_or_recreates_history ... ok
+test ndu_publication::tests::live_control_owner_rejects_same_bytes_rebound_marker_after_identity_check ... ok
+test ndu_publication::tests::lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state ... ok
+test ndu_publication::tests::original_control_actor_replays_fsynced_history_without_moving_writer_offset ... ok
+test ndu_publication::tests::missing_or_unbounded_original_cns_receipt_never_commits_control_handoff ... ok
+test ndu_publication::tests::original_control_cns_join_poisoned_by_earlier_same_inode_wal_corruption ... ok
+test ndu_publication::tests::original_control_wal_requires_effective_uid_for_private_owner_and_reopen ... ok
+test ndu_publication::tests::original_pending_begin_inspector_reads_only_fsynced_wal_after_crash ... ok
+test ndu_publication::tests::original_pending_begin_inspector_refuses_non_orphan_or_mutated_prefix ... ok
+test ndu_publication::tests::orphaned_durable_prepare_fences_model_and_cutover_after_restart ... ok
+test ndu_publication::tests::pinned_dirfd_keeps_original_wal_bootstrap_out_of_rebound_directory ... ok
+test ndu_publication::tests::production_owner_replays_checkpoint_and_requires_single_writer ... ok
+test ndu_publication::tests::original_pending_begin_inspector_repeated_cold_reopen_retains_quarantine ... FAILED
+test ndu_publication::tests::signed_original_receipt_binding_does_not_mask_a_later_checkpoint_frontier ... ok
+test ndu_publication::tests::symlink_and_world_accessible_directory_cannot_own_frontier ... ok
+test ndu_publication::tests::symlink_in_ancestor_cannot_alias_or_bootstrap_original_control_owner ... ok
+test ndu_publication::tests::truncated_journal_is_rejected_without_mutating_history ... ok
+test ndu_publication::tests::sigkill_after_control_begin_without_commit_keeps_original_wal_quarantined ... ok
+test ndu_publication::tests::unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin ... ok
+test organ_graph::tests::disconnected_exit_and_stray_feedback_profiles_are_rejected ... ok
+test organ_graph::tests::graph_kinds_enforce_independent_invariants ... ok
+test organ_graph::tests::ports_scope_and_central_dependencies_fail_closed ... ok
+test organ_graph::tests::qualified_feedback_does_not_create_a_startup_or_failure_domain_cycle ... ok
+test organ_hierarchy::tests::actual_dispatch_preserves_all_levels_and_driver_outputs ... ok
+test organ_hierarchy::tests::already_started_candidate_is_not_a_registered_successor ... ok
+test organ_hierarchy::tests::candidate_start_failure_does_not_publish_new_routes ... ok
+test organ_hierarchy::tests::declaration_order_does_not_change_route_identity ... ok
+test organ_hierarchy::tests::edited_routes_are_rejected_before_any_driver_callback ... ok
+test organ_hierarchy::tests::hierarchy_binds_full_graph_and_generation_not_just_source_provenance ... ok
+test organ_hierarchy::tests::independent_driver_catalog_and_manifest_are_required ... ok
+test ndu_publication::tests::valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin ... ok
+test organ_hierarchy::tests::invalid_replacement_identity_leaves_predecessor_routes_and_callbacks_unchanged ... ok
+test organ_hierarchy::tests::invalid_system_memberships_never_start_handlers ... ok
+test organ_hierarchy::tests::partial_failure_retains_host_quarantine_and_never_uses_direct_fallback ... ok
+test organ_hierarchy::tests::predecessor_stop_failure_keeps_old_identity_and_denies_dispatch ... ok
+test organ_hierarchy::tests::recovery_requires_inactive_predecessor_and_publishes_exact_successor ... ok
+test organ_hierarchy::tests::live_hierarchy_replacement_adds_retires_and_fences_routes ... ok
+test organ_hierarchy::tests::stopped_and_oversized_requests_preserve_existing_host_checks ... ok
+test organ_hierarchy::tests::stopped_predecessor_does_not_start_a_candidate ... ok
+test organ_hierarchy::tests::system_or_driver_replacement_invalidates_old_routes ... ok
+test organ_registry::tests::one_reviewed_driver_constructs_two_distinct_organ_instances ... ok
+test organ_registry::tests::creates_only_selected_handlers_from_a_superset_registry ... ok
+test organ_registry::tests::rejects_handler_identity_drift ... ok
+test organ_registry::tests::rejects_duplicate_or_unknown_bindings_before_factory_calls ... ok
+test organ_registry::tests::shared_driver_still_validates_every_digest_before_any_factory_call ... ok
+test organ_registry_lifecycle_tests::factory_and_start_panics_preserve_the_serving_generation ... ok
+test organ_registry_lifecycle_tests::invalid_graph_digest_and_generation_reject_before_factory ... ok
+test organ_registry_lifecycle_tests::healthy_forty_first_component_add_replace_retire_preserves_core ... ok
+test organ_registry_lifecycle_tests::original_owner_start_panic_still_propagates_without_new_rollback ... ok
+test organ_registry_lifecycle_tests::quarantined_predecessor_rejects_before_factory_without_recovery ... ok
+test organ_registry_lifecycle_tests::predecessor_and_candidate_cleanup_stop_panics_retain_both_errors_once ... ok
+test organ_registry_lifecycle_tests::start_panic_with_cleanup_panic_keeps_both_faults_and_old_host ... ok
+test organ_registry_lifecycle_tests::stop_panic_is_not_retried_and_blocks_further_replacement ... ok
+test organ_runtime::tests::abi_and_local_fallback_status_are_generation_bound_and_deny_all ... ok
+test organ_runtime::tests::candidate_cleanup_precedes_state_restoration_even_when_callbacks_fail ... ok
+test organ_runtime::tests::candidate_start_failure_preserves_the_predecessor ... ok
+test organ_runtime::tests::candidate_start_failure_rolls_back_the_snapshot_before_publication ... ok
+test organ_runtime::tests::failed_predecessor_stop_preserves_the_rollback_error ... ok
+test organ_runtime::tests::failed_state_restoration_quarantines_predecessor_dispatch ... ok
+test organ_runtime::tests::failed_stop_is_quarantined_and_never_retried_by_drop ... ok
+test organ_runtime::tests::handler_fault_quarantines_and_next_dispatch_preflights_every_target ... ok
+test organ_runtime::tests::invalid_successor_does_not_invoke_state_owner ... ok
+test organ_runtime::tests::migration_callback_runs_before_successor_publication ... ok
+test organ_runtime::tests::migration_failure_rolls_back_and_preserves_predecessor ... ok
+test organ_runtime::tests::oversized_output_quarantines_the_handler ... ok
+test organ_runtime::tests::predecessor_stop_failure_blocks_publication_and_records_cleanup_faults ... ok
+test organ_runtime::tests::rejects_effect_scope_and_requires_an_exact_handler_set ... ok
+test organ_runtime::tests::repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences ... ok
+test organ_runtime::tests::start_failure_quarantines_fault_and_cleans_up_in_reverse ... ok
+test organ_runtime::tests::starts_routes_and_stops_in_graph_order_without_authority ... ok
+test module_runtime::retention_tests::full_pending_queue_does_not_starve_rollback_or_expand_selected_capacity ... ok
+test organ_runtime::tests::successor_generation_replaces_a_read_only_organ_and_fences_old_dispatch ... ok
+test organ_wire::tests::compiled_catalog_must_match_manifests_before_any_callback ... ok
+test organ_wire::tests::complete_graph_round_trip_reaches_real_host_without_granting_authority ... ok
+test organ_wire::tests::every_payload_byte_is_bound_to_independent_host_digest ... ok
+test organ_wire::tests::hostile_lengths_fail_before_collection_or_string_allocation ... ok
+test organ_wire::tests::native_feedback_ports_and_placement_cannot_be_inferred_or_forged ... ok
+test organ_wire::tests::overlapping_v1_and_native_fields_must_agree_even_with_approved_digest ... ok
+test organ_wire::tests::producer_rejects_positive_effect_scope_and_ambiguous_port_identities ... ok
+test organ_wire::tests::registry_admission_is_required_before_native_handoff_host_construction ... ok
+test organ_wire::tests::trusted_digest_does_not_excuse_invalid_wire_shape_or_execution_profile ... ok
+test planner::tests::changed_configuration_invalidates_prepared_plan ... ok
+test planner::tests::coherent_snapshot_prepares_finalizes_and_emits_authority_free_grant_requests ... ok
+test planner::tests::essential_floor_survives_overload_before_ndu_evaluation ... ok
+test planner::tests::evaluation_must_cover_exact_prepared_candidate_set ... ok
+test planner::tests::evaluation_policy_is_frozen_before_ndu_evaluation ... ok
+test planner::tests::grant_request_revalidates_snapshot_masks_and_digest ... ok
+test planner::tests::missing_or_stale_required_owner_blocks_global_planning ... ok
+test planner::tests::missing_resource_axis_is_unavailable_not_zero_cost ... ok
+test planner::tests::resource_profile_and_snapshot_policy_are_mandatory_and_digest_bound ... ok
+test planner::tests::tampered_candidate_operation_resource_or_owner_is_rejected ... ok
+test planner::tests::tampered_candidate_payload_is_rejected_before_grant_request ... ok
+test planner::tests::tampered_ndu_binding_is_rejected ... ok
+test planner_context::tests::empty_context_never_becomes_a_utility_claim_and_invalid_observations_reject ... ok
+test planner_context::tests::measured_context_is_selected_and_budget_excess_abstains ... ok
+test planner_context::tests::receipt_binds_actual_bytes_source_and_generation ... ok
+test planner_journal::tests::hash_chain_round_trips_and_preserves_selected_pointer ... ok
+test planner_journal::tests::identical_identity_is_idempotent_but_payload_drift_conflicts ... ok
+test planner_journal::tests::reopen_rejects_noncanonical_snapshot_and_decision_records ... ok
+test planner_journal::tests::reopen_replays_semantics_and_rejects_revocation_without_decision ... ok
+test planner_journal::tests::reopen_replays_semantics_and_rejects_selection_without_decision ... ok
+test planner_journal::tests::revocation_clears_selection_and_prevents_reselection ... ok
+test planner_journal::tests::truncation_and_tampering_fail_closed ... ok
+test planner_journal::tests::typed_api_rejects_revocation_without_a_recorded_decision ... ok
+test planner_journal_store::tests::compare_and_commit_rejects_stale_writers ... ok
+test organ_runtime::tests::stateful_feature_history_replace_failure_retire_preserves_effect_idempotency ... ok
+test planner_journal_store::tests::recovery_advances_an_anchor_only_along_the_exact_durable_chain ... ok
+test planner_journal_store::tests::recovery_rejects_a_journal_behind_the_anchor ... ok
+test planner_ndu::tests::expired_snapshot_cannot_become_a_plan_despite_valid_ndu_scores ... ok
+test planner_ndu::tests::omitted_candidate_or_foreign_owner_cannot_supply_a_planning_result ... ok
+test planner_ndu::tests::owner_evaluation_composes_into_real_planner_without_self_reported_selection ... ok
+test planner_ndu::tests::policy_mutations_after_preparation_are_rejected ... ok
+test scope_lane_wal::tests::export_reopen_roundtrip_and_bad_frame_rejection ... ok
+test scope_lane_wal::tests::file_wal_rejects_symlink_and_hardlink_before_writing_header ... ok
+test scope_lane_wal::tests::file_wal_repairs_incomplete_length_before_new_commits ... ok
+test planner_journal_store::tests::durable_owner_round_trips_file_store_and_anchor ... ok
+test scope_lane_wal::tests::file_wal_syncs_frames_and_repairs_torn_tail ... ok
+test scope_lane_wal::tests::newly_created_scope_wal_is_owner_only_on_unix ... ok
+test scope_lane_wal::tests::poisoned_scope_writer_cannot_acknowledge_even_an_old_duplicate ... ok
+test scope_lane_wal::tests::scope_lanes_are_independent_and_fenced ... ok
+test scope_lane_wal::tests::torn_tail_recovery_can_append_again_without_overwriting_predecessor ... ok
+test tests::invalid_transition_is_rejected ... ok
+test tests::quarantine_updates_desired_state_without_effect_authority ... ok
+test tests::stale_epoch_is_rejected ... ok
+test tests::stale_revision_is_rejected ... ok
+test timing::tests::blocking_and_higher_priority_interference_are_included ... ok
+test timing::tests::overflow_sized_execution_is_reported_as_a_deadline_miss ... ok
+test trusted_clock::tests::manual_clock_advances_monotonically ... ok
+test trusted_clock::tests::manual_clock_rejects_regression ... ok
+test scope_lane_wal::tests::incremental_scope_lanes_replay_many_distinct_committed_frames ... ok
+test organ_registry_lifecycle_tests::repeated_healthy_add_and_retire_fences_each_previous_generation ... ok
+
+failures:
+
+---- ndu_publication::tests::original_pending_begin_inspector_repeated_cold_reopen_retains_quarantine stdout ----
+
+thread 'ndu_publication::tests::original_pending_begin_inspector_repeated_cold_reopen_retains_quarantine' (74085) panicked at hepta-control-plane/src/ndu_publication_tests.rs:788:10:
+read-only cold orphan inspection: WriterUnavailable
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    ndu_publication::tests::original_pending_begin_inspector_repeated_cold_reopen_retains_quarantine
+
+test result: FAILED. 184 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.56s]]>
+      </system-out>
+    </testsuite>
+</testsuites>
