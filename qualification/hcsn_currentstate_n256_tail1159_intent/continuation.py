@@ -63,6 +63,39 @@ def parse_index537(raw, parent_payload):
     )
 
 
+def parse_index1159(raw):
+    """Parse one canonical index1159 state without replaying its parent."""
+
+    metadata = inspect_canonical_checkpoint(raw, TARGET_SCHEMA, TARGET_INDEX)
+    body = json.loads(raw)["body"]
+    checkpoint = AuthenticCheckpoint(
+        source_payload_sha256=body["source_payload_sha256"],
+        parent_payload_sha256=body["parent_payload_sha256"],
+        lane=metadata["lane"],
+        included_index=TARGET_INDEX,
+        iterate=tuple(
+            _fraction_from_pair(value, "iterate") for value in body["iterate"]
+        ),
+        coefficient=_fraction_from_pair(body["coefficient"], "coefficient"),
+        growth_coefficient=_fraction_from_pair(
+            body["growth_coefficient"], "growth coefficient"
+        ),
+        exponential_sum=_fraction_from_pair(
+            body["exponential_sum"], "exponential sum"
+        ),
+        partial=tuple(
+            _fraction_from_pair(value, "partial") for value in body["partial"]
+        ),
+    )
+    if len(checkpoint.iterate) != metadata["vector_length"] or len(
+        checkpoint.partial
+    ) != metadata["vector_length"]:
+        raise NonSubstochasticSignedIntervalError(
+            "index1159 vector dimension mismatch"
+        )
+    return checkpoint
+
+
 def advance_to_index1159(checkpoint, parent_payload, progress=None):
     """Apply exactly 622 authentic recurrence row actions."""
 

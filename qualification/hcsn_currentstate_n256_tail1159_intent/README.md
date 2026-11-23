@@ -2,8 +2,8 @@
 
 Status: **SOURCE-ONLY / RESOURCE HOLD / all_closed=false**.
 
-This separately frozen v8 candidate strengthens the source-only admission on
-top of #6981. It consumes the ten byte-exact index537 full-state
+This separately frozen v9 candidate strengthens the source-only admission on
+top of #6982. It consumes the ten byte-exact index537 full-state
 originals from #6957/#6959 and defines the unchanged exact continuation to
 index1159. Each lane would apply exactly 622 row actions and one signed
 ratio-bound tail check. The ten-lane cap is 6,220 row actions, ten tail checks,
@@ -50,10 +50,25 @@ The collector no longer accepts lane-authored metadata as proof of output. It
 reads each result, tail and compact checkpoint through a descriptor-bound,
 single-link regular-file reader; rejects ambiguous JSON and schema drift;
 recomputes every byte count and digest; decodes each compact checkpoint once to
-verify the raw digest and raw cap; reconstructs the tail denominator,
+verify the raw digest and raw cap; parses that raw target into the complete
+exact checkpoint state; requires its lane to equal the result stem; and
+re-encodes the exact state to require byte-for-byte canonical equality. It also
+reconstructs the tail denominator,
 uniqueness, rounding digest and work ledger; and requires ten safe lane stems.
 These ten collector decodes raise the complete planned decode denominator from
-20 to 30 without changing recurrence, tail, rounding or model work.
+20 to 30. The new source-only collector work is separately bounded at ten
+semantic checkpoint parses and ten canonical raw re-encodes without changing
+recurrence, tail, rounding or model work.
+
+This target semantic binding is deliberately not an independent numerical
+oracle. It does not restore an index537 parent, replay the 622 row actions, or
+recompute the signed tail from the parsed target. Those parent/recurrence/tail
+cross-bindings require a separately frozen execution and budget. Passing this
+collector therefore cannot establish recurrence correctness, tail termination,
+N256 qualification, arbitrary resume, N512 scalability, full-state migration,
+or production readiness. The final record keeps a separate
+`candidate_tail_output_all_unique` observation while
+`tail_termination_closed` remains false.
 
 Each future lane stdout and stderr stream is now drained concurrently with
 constant memory and retained under a separately frozen 1 MiB per-stream cap.
@@ -81,5 +96,5 @@ outcome.
 #6939/#6950 remain RED; #6942 remains RED_TIMEOUT with completed actions
 UNKNOWN; #6901 remains UNKNOWN. #6957 remains the authoritative 0/2,585
 non-unique result. Tail termination, N256 qualification, C2 full replay (0/6),
-HPCA external custody/equal-budget benefit, asynchronous cost, and production
+HPCA external custody/equal-budget benefit, cgroup-wide asynchronous cost, and production
 adoption remain open. Global state remains **HOLD / NoUpdate / all_closed=false**.

@@ -1,7 +1,8 @@
 {
   "actual_execution_authorized": false,
-  "base_pr": 6981,
+  "base_pr": 6982,
   "budget": {
+    "canonical_raw_reencodes": 10,
     "checkpoint_decodes": 30,
     "checkpoint_encodes_cap": 20,
     "dynamic_steps": 0,
@@ -11,6 +12,7 @@
     "provider_calls": 0,
     "recurrence_row_actions": 6220,
     "rounding_calls_cap": 5180,
+    "semantic_checkpoint_parses": 10,
     "tail_checks": 10,
     "torch_calls": 0,
     "training_calls": 0
@@ -21,7 +23,7 @@
     "per_cursor_raw_bytes": 50331648
   },
   "execution_key": "hcsn-n256-authentic-tail1159-20261122-c6bc-001",
-  "identity": "hcsn-n256-authentic-tail1159-process-cost-ledger-20261122-c6bc-v8",
+  "identity": "hcsn-n256-authentic-tail1159-target-semantic-binding-20261122-c6bc-v9",
   "intent_source_head": "e441e2df7bf2ae8f820e154132827ad0d08c9e23",
   "input": {
     "index537_collector_sha256": "452e22f354928f88742d840d3287c160153b8e86d4ed5346b0d0628d0ddacbf4",
