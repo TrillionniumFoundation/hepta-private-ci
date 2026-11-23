@@ -1,0 +1,755 @@
+{
+  "healthy": [
+    {
+      "call": 1,
+      "authenticated": true,
+      "caller_ms": 319.303,
+      "transport_branch": [
+        "select_frame_ok"
+      ],
+      "owner_scopes": 6,
+      "positive_replies": 6,
+      "all_owner_wall_ms": 294.696066,
+      "all_owner_cpu_ms": 233.821992,
+      "all_owner_wall_minus_cpu_ms": 60.874074,
+      "inclusive_operations": {
+        "artifact.candidate_files": {
+          "n": 300,
+          "wall_ms": 1.768375,
+          "cpu_ms": 1.163275,
+          "wall_minus_cpu_ms": 0.6051,
+          "errors": 0
+        },
+        "artifact.registry": {
+          "n": 300,
+          "wall_ms": 104.621415,
+          "cpu_ms": 79.326821,
+          "wall_minus_cpu_ms": 25.294594,
+          "errors": 0
+        },
+        "artifact.signature": {
+          "n": 300,
+          "wall_ms": 16.096692,
+          "cpu_ms": 14.121284,
+          "wall_minus_cpu_ms": 1.975408,
+          "errors": 0
+        },
+        "control.head_digest": {
+          "n": 600,
+          "wall_ms": 27.495255,
+          "cpu_ms": 20.121155,
+          "wall_minus_cpu_ms": 7.3741,
+          "errors": 0
+        },
+        "control.host_load": {
+          "n": 600,
+          "wall_ms": 53.274407,
+          "cpu_ms": 44.416799,
+          "wall_minus_cpu_ms": 8.857608,
+          "errors": 0
+        },
+        "control.initial_validation": {
+          "n": 600,
+          "wall_ms": 0.348346,
+          "cpu_ms": 0.114406,
+          "wall_minus_cpu_ms": 0.23394,
+          "errors": 0
+        },
+        "control.store": {
+          "n": 600,
+          "wall_ms": 98.006268,
+          "cpu_ms": 77.758447,
+          "wall_minus_cpu_ms": 20.247821,
+          "errors": 0
+        },
+        "finaluse.authenticate": {
+          "n": 300,
+          "wall_ms": 26.351653,
+          "cpu_ms": 23.62256,
+          "wall_minus_cpu_ms": 2.729093,
+          "errors": 0
+        },
+        "finaluse.current_state": {
+          "n": 300,
+          "wall_ms": 3.658442,
+          "cpu_ms": 3.366972,
+          "wall_minus_cpu_ms": 0.29147,
+          "errors": 0
+        },
+        "finaluse.frontier_load": {
+          "n": 300,
+          "wall_ms": 1.803388,
+          "cpu_ms": 1.640855,
+          "wall_minus_cpu_ms": 0.162533,
+          "errors": 0
+        },
+        "finaluse.live_state": {
+          "n": 300,
+          "wall_ms": 1.337779,
+          "cpu_ms": 1.16527,
+          "wall_minus_cpu_ms": 0.172509,
+          "errors": 0
+        },
+        "finaluse.state_mutex": {
+          "n": 300,
+          "wall_ms": 0.104975,
+          "cpu_ms": 0.054566,
+          "wall_minus_cpu_ms": 0.050409,
+          "errors": 0
+        },
+        "finaluse.store_revalidate": {
+          "n": 300,
+          "wall_ms": 1.18542,
+          "cpu_ms": 1.032228,
+          "wall_minus_cpu_ms": 0.153192,
+          "errors": 0
+        },
+        "finaluse.verify_state": {
+          "n": 300,
+          "wall_ms": 0.145176,
+          "cpu_ms": 0.080525,
+          "wall_minus_cpu_ms": 0.064651,
+          "errors": 0
+        },
+        "input.all": {
+          "n": 18,
+          "wall_ms": 131.637212,
+          "cpu_ms": 107.891311,
+          "wall_minus_cpu_ms": 23.745901,
+          "errors": 0
+        },
+        "input.source": {
+          "n": 18,
+          "wall_ms": 8.946706,
+          "cpu_ms": 7.341019,
+          "wall_minus_cpu_ms": 1.605687,
+          "errors": 0
+        },
+        "input.task_current": {
+          "n": 36,
+          "wall_ms": 122.576438,
+          "cpu_ms": 100.428063,
+          "wall_minus_cpu_ms": 22.148375,
+          "errors": 0
+        },
+        "journal.physical": {
+          "n": 184,
+          "wall_ms": 17.403822,
+          "cpu_ms": 12.5453,
+          "wall_minus_cpu_ms": 4.858522,
+          "errors": 0
+        },
+        "journal.witness": {
+          "n": 368,
+          "wall_ms": 4.854627,
+          "cpu_ms": 3.835113,
+          "wall_minus_cpu_ms": 1.019514,
+          "errors": 0
+        },
+        "live.artifact_mutex": {
+          "n": 300,
+          "wall_ms": 0.139407,
+          "cpu_ms": 0.079059,
+          "wall_minus_cpu_ms": 0.060348,
+          "errors": 0
+        },
+        "live.authorities": {
+          "n": 300,
+          "wall_ms": 157.227022,
+          "cpu_ms": 125.711005,
+          "wall_minus_cpu_ms": 31.516017,
+          "errors": 0
+        },
+        "live.clock": {
+          "n": 300,
+          "wall_ms": 0.143301,
+          "cpu_ms": 0.083506,
+          "wall_minus_cpu_ms": 0.059795,
+          "errors": 0
+        },
+        "live.control": {
+          "n": 600,
+          "wall_ms": 101.084972,
+          "cpu_ms": 80.079581,
+          "wall_minus_cpu_ms": 21.005391,
+          "errors": 0
+        },
+        "live.final_use": {
+          "n": 300,
+          "wall_ms": 30.56218,
+          "cpu_ms": 27.588668,
+          "wall_minus_cpu_ms": 2.973512,
+          "errors": 0
+        },
+        "live.revalidate_and_clock": {
+          "n": 300,
+          "wall_ms": 126.065644,
+          "cpu_ms": 97.512489,
+          "wall_minus_cpu_ms": 28.553155,
+          "errors": 0
+        },
+        "live.selected_mutex": {
+          "n": 300,
+          "wall_ms": 0.158448,
+          "cpu_ms": 0.063129,
+          "wall_minus_cpu_ms": 0.095319,
+          "errors": 0
+        },
+        "next_use.cell": {
+          "n": 2,
+          "wall_ms": 57.539277,
+          "cpu_ms": 40.751823,
+          "wall_minus_cpu_ms": 16.787454,
+          "errors": 0
+        },
+        "selection.all": {
+          "n": 12,
+          "wall_ms": 92.417012,
+          "cpu_ms": 75.752234,
+          "wall_minus_cpu_ms": 16.664778,
+          "errors": 0
+        },
+        "selection.coordinator": {
+          "n": 14,
+          "wall_ms": 0.873459,
+          "cpu_ms": 0.651622,
+          "wall_minus_cpu_ms": 0.221837,
+          "errors": 0
+        },
+        "selection.task_current": {
+          "n": 28,
+          "wall_ms": 96.169398,
+          "cpu_ms": 76.883408,
+          "wall_minus_cpu_ms": 19.28599,
+          "errors": 0
+        },
+        "selection.version_and_lock": {
+          "n": 14,
+          "wall_ms": 13.122459,
+          "cpu_ms": 10.673897,
+          "wall_minus_cpu_ms": 2.448562,
+          "errors": 0
+        },
+        "selection.version_lock": {
+          "n": 14,
+          "wall_ms": 0.00754,
+          "cpu_ms": 0.004958,
+          "wall_minus_cpu_ms": 0.002582,
+          "errors": 0
+        },
+        "source.active": {
+          "n": 18,
+          "wall_ms": 4.412346,
+          "cpu_ms": 3.827045,
+          "wall_minus_cpu_ms": 0.585301,
+          "errors": 0
+        },
+        "source.owner_current": {
+          "n": 36,
+          "wall_ms": 4.433878,
+          "cpu_ms": 3.408118,
+          "wall_minus_cpu_ms": 1.02576,
+          "errors": 0
+        },
+        "source.publication": {
+          "n": 4,
+          "wall_ms": 9.877783,
+          "cpu_ms": 6.824175,
+          "wall_minus_cpu_ms": 3.053608,
+          "errors": 0
+        },
+        "source.try_lock": {
+          "n": 18,
+          "wall_ms": 0.008822,
+          "cpu_ms": 0.005954,
+          "wall_minus_cpu_ms": 0.002868,
+          "errors": 0
+        },
+        "task.live_current": {
+          "n": 140,
+          "wall_ms": 120.649894,
+          "cpu_ms": 96.662876,
+          "wall_minus_cpu_ms": 23.987018,
+          "errors": 0
+        },
+        "task.original_version_and_lock": {
+          "n": 70,
+          "wall_ms": 121.952961,
+          "cpu_ms": 97.484765,
+          "wall_minus_cpu_ms": 24.468196,
+          "errors": 0
+        },
+        "task.version_mutex": {
+          "n": 70,
+          "wall_ms": 0.02864,
+          "cpu_ms": 0.017789,
+          "wall_minus_cpu_ms": 0.010851,
+          "errors": 0
+        },
+        "version.current": {
+          "n": 70,
+          "wall_ms": 60.020049,
+          "cpu_ms": 47.913093,
+          "wall_minus_cpu_ms": 12.106956,
+          "errors": 0
+        },
+        "version.generation_observation": {
+          "n": 70,
+          "wall_ms": 61.747137,
+          "cpu_ms": 49.373823,
+          "wall_minus_cpu_ms": 12.373314,
+          "errors": 0
+        }
+      },
+      "errors": []
+    },
+    {
+      "call": 2,
+      "authenticated": false,
+      "caller_ms": 4.074,
+      "transport_branch": [
+        "select_frame_error"
+      ],
+      "owner_scopes": 1,
+      "positive_replies": 0,
+      "all_owner_wall_ms": 0.210061,
+      "all_owner_cpu_ms": 0.17868,
+      "all_owner_wall_minus_cpu_ms": 0.031381,
+      "inclusive_operations": {
+        "control.head_digest": {
+          "n": 1,
+          "wall_ms": 0.034089,
+          "cpu_ms": 0.033889,
+          "wall_minus_cpu_ms": 0.0002,
+          "errors": 0
+        },
+        "control.host_load": {
+          "n": 1,
+          "wall_ms": 0.076792,
+          "cpu_ms": 0.07656,
+          "wall_minus_cpu_ms": 0.000232,
+          "errors": 0
+        },
+        "control.initial_validation": {
+          "n": 1,
+          "wall_ms": 0.00034,
+          "cpu_ms": 0.00018,
+          "wall_minus_cpu_ms": 0.00016,
+          "errors": 0
+        },
+        "control.store": {
+          "n": 1,
+          "wall_ms": 0.137432,
+          "cpu_ms": 0.13728,
+          "wall_minus_cpu_ms": 0.000152,
+          "errors": 0
+        },
+        "input.all": {
+          "n": 1,
+          "wall_ms": 0.195181,
+          "cpu_ms": 0.165849,
+          "wall_minus_cpu_ms": 0.029332,
+          "errors": 1
+        },
+        "input.task_current": {
+          "n": 1,
+          "wall_ms": 0.191972,
+          "cpu_ms": 0.162829,
+          "wall_minus_cpu_ms": 0.029143,
+          "errors": 1
+        },
+        "live.artifact_mutex": {
+          "n": 1,
+          "wall_ms": 0.00044,
+          "cpu_ms": 0.000291,
+          "wall_minus_cpu_ms": 0.000149,
+          "errors": 0
+        },
+        "live.authorities": {
+          "n": 1,
+          "wall_ms": 0.04646,
+          "cpu_ms": 0.015938,
+          "wall_minus_cpu_ms": 0.030522,
+          "errors": 1
+        },
+        "live.clock": {
+          "n": 1,
+          "wall_ms": 0.000551,
+          "cpu_ms": 0.000391,
+          "wall_minus_cpu_ms": 0.00016,
+          "errors": 0
+        },
+        "live.control": {
+          "n": 1,
+          "wall_ms": 0.14051,
+          "cpu_ms": 0.140349,
+          "wall_minus_cpu_ms": 0.000161,
+          "errors": 0
+        },
+        "live.revalidate_and_clock": {
+          "n": 1,
+          "wall_ms": 0.00624,
+          "cpu_ms": 0.00608,
+          "wall_minus_cpu_ms": 0.00016,
+          "errors": 1
+        },
+        "live.selected_mutex": {
+          "n": 1,
+          "wall_ms": 0.00042,
+          "cpu_ms": 0.000271,
+          "wall_minus_cpu_ms": 0.000149,
+          "errors": 0
+        },
+        "task.live_current": {
+          "n": 1,
+          "wall_ms": 0.189152,
+          "cpu_ms": 0.160009,
+          "wall_minus_cpu_ms": 0.029143,
+          "errors": 1
+        }
+      },
+      "errors": [
+        {
+          "id": 6,
+          "cut": 4,
+          "operation": "live.revalidate_and_clock",
+          "category": "invalid_other",
+          "monotonic_us": 52869405
+        },
+        {
+          "id": 6,
+          "cut": 4,
+          "operation": "live.authorities",
+          "category": "Unavailable",
+          "monotonic_us": 52869444
+        },
+        {
+          "id": 6,
+          "cut": 4,
+          "operation": "task.live_current",
+          "category": "Unavailable",
+          "monotonic_us": 52869445
+        },
+        {
+          "id": 6,
+          "cut": 4,
+          "operation": "input.task_current",
+          "category": "invalid_unavailable",
+          "monotonic_us": 52869447
+        },
+        {
+          "id": 6,
+          "cut": 4,
+          "operation": "input.all",
+          "category": "error",
+          "monotonic_us": 52869450
+        }
+      ]
+    }
+  ],
+  "timing": [
+    {
+      "call": 1,
+      "authenticated": true,
+      "caller_ms": 471.152,
+      "transport_branch": [
+        "select_frame_ok"
+      ],
+      "owner_scopes": 6,
+      "positive_replies": 6,
+      "all_owner_wall_ms": 436.068418,
+      "all_owner_cpu_ms": 277.45625,
+      "all_owner_wall_minus_cpu_ms": 158.612168,
+      "inclusive_operations": {
+        "artifact.candidate_files": {
+          "n": 300,
+          "wall_ms": 2.392503,
+          "cpu_ms": 1.438132,
+          "wall_minus_cpu_ms": 0.954371,
+          "errors": 0
+        },
+        "artifact.registry": {
+          "n": 300,
+          "wall_ms": 166.208952,
+          "cpu_ms": 99.236977,
+          "wall_minus_cpu_ms": 66.971975,
+          "errors": 0
+        },
+        "artifact.signature": {
+          "n": 300,
+          "wall_ms": 20.479918,
+          "cpu_ms": 15.563496,
+          "wall_minus_cpu_ms": 4.916422,
+          "errors": 0
+        },
+        "control.head_digest": {
+          "n": 600,
+          "wall_ms": 37.93347,
+          "cpu_ms": 23.062447,
+          "wall_minus_cpu_ms": 14.871023,
+          "errors": 0
+        },
+        "control.host_load": {
+          "n": 600,
+          "wall_ms": 73.62803,
+          "cpu_ms": 50.332077,
+          "wall_minus_cpu_ms": 23.295953,
+          "errors": 0
+        },
+        "control.initial_validation": {
+          "n": 600,
+          "wall_ms": 0.379123,
+          "cpu_ms": 0.121656,
+          "wall_minus_cpu_ms": 0.257467,
+          "errors": 0
+        },
+        "control.store": {
+          "n": 600,
+          "wall_ms": 142.332824,
+          "cpu_ms": 90.149405,
+          "wall_minus_cpu_ms": 52.183419,
+          "errors": 0
+        },
+        "finaluse.authenticate": {
+          "n": 300,
+          "wall_ms": 34.571087,
+          "cpu_ms": 25.755719,
+          "wall_minus_cpu_ms": 8.815368,
+          "errors": 0
+        },
+        "finaluse.current_state": {
+          "n": 300,
+          "wall_ms": 5.442071,
+          "cpu_ms": 4.255743,
+          "wall_minus_cpu_ms": 1.186328,
+          "errors": 0
+        },
+        "finaluse.frontier_load": {
+          "n": 300,
+          "wall_ms": 2.825982,
+          "cpu_ms": 2.091896,
+          "wall_minus_cpu_ms": 0.734086,
+          "errors": 0
+        },
+        "finaluse.live_state": {
+          "n": 300,
+          "wall_ms": 1.946513,
+          "cpu_ms": 1.517779,
+          "wall_minus_cpu_ms": 0.428734,
+          "errors": 0
+        },
+        "finaluse.state_mutex": {
+          "n": 300,
+          "wall_ms": 0.119253,
+          "cpu_ms": 0.066296,
+          "wall_minus_cpu_ms": 0.052957,
+          "errors": 0
+        },
+        "finaluse.store_revalidate": {
+          "n": 300,
+          "wall_ms": 1.805557,
+          "cpu_ms": 1.365908,
+          "wall_minus_cpu_ms": 0.439649,
+          "errors": 0
+        },
+        "finaluse.verify_state": {
+          "n": 300,
+          "wall_ms": 0.203945,
+          "cpu_ms": 0.095388,
+          "wall_minus_cpu_ms": 0.108557,
+          "errors": 0
+        },
+        "input.all": {
+          "n": 18,
+          "wall_ms": 196.916104,
+          "cpu_ms": 126.082182,
+          "wall_minus_cpu_ms": 70.833922,
+          "errors": 0
+        },
+        "input.source": {
+          "n": 18,
+          "wall_ms": 13.773661,
+          "cpu_ms": 8.785248,
+          "wall_minus_cpu_ms": 4.988413,
+          "errors": 0
+        },
+        "input.task_current": {
+          "n": 36,
+          "wall_ms": 182.918631,
+          "cpu_ms": 117.143401,
+          "wall_minus_cpu_ms": 65.77523,
+          "errors": 0
+        },
+        "journal.physical": {
+          "n": 184,
+          "wall_ms": 26.217784,
+          "cpu_ms": 15.413183,
+          "wall_minus_cpu_ms": 10.804601,
+          "errors": 0
+        },
+        "journal.witness": {
+          "n": 368,
+          "wall_ms": 7.008023,
+          "cpu_ms": 4.51845,
+          "wall_minus_cpu_ms": 2.489573,
+          "errors": 0
+        },
+        "live.artifact_mutex": {
+          "n": 300,
+          "wall_ms": 0.2842,
+          "cpu_ms": 0.136431,
+          "wall_minus_cpu_ms": 0.147769,
+          "errors": 0
+        },
+        "live.authorities": {
+          "n": 300,
+          "wall_ms": 235.765914,
+          "cpu_ms": 151.009626,
+          "wall_minus_cpu_ms": 84.756288,
+          "errors": 0
+        },
+        "live.clock": {
+          "n": 300,
+          "wall_ms": 0.247285,
+          "cpu_ms": 0.10301,
+          "wall_minus_cpu_ms": 0.144275,
+          "errors": 0
+        },
+        "live.control": {
+          "n": 600,
+          "wall_ms": 146.100621,
+          "cpu_ms": 92.570062,
+          "wall_minus_cpu_ms": 53.530559,
+          "errors": 0
+        },
+        "live.final_use": {
+          "n": 300,
+          "wall_ms": 40.736993,
+          "cpu_ms": 30.701639,
+          "wall_minus_cpu_ms": 10.035354,
+          "errors": 0
+        },
+        "live.revalidate_and_clock": {
+          "n": 300,
+          "wall_ms": 194.034918,
+          "cpu_ms": 119.53535,
+          "wall_minus_cpu_ms": 74.499568,
+          "errors": 0
+        },
+        "live.selected_mutex": {
+          "n": 300,
+          "wall_ms": 0.231611,
+          "cpu_ms": 0.076836,
+          "wall_minus_cpu_ms": 0.154775,
+          "errors": 0
+        },
+        "next_use.cell": {
+          "n": 2,
+          "wall_ms": 85.202332,
+          "cpu_ms": 52.389425,
+          "wall_minus_cpu_ms": 32.812907,
+          "errors": 0
+        },
+        "selection.all": {
+          "n": 12,
+          "wall_ms": 135.720206,
+          "cpu_ms": 88.147311,
+          "wall_minus_cpu_ms": 47.572895,
+          "errors": 0
+        },
+        "selection.coordinator": {
+          "n": 14,
+          "wall_ms": 1.429125,
+          "cpu_ms": 0.803215,
+          "wall_minus_cpu_ms": 0.62591,
+          "errors": 0
+        },
+        "selection.task_current": {
+          "n": 28,
+          "wall_ms": 142.318389,
+          "cpu_ms": 91.335764,
+          "wall_minus_cpu_ms": 50.982625,
+          "errors": 0
+        },
+        "selection.version_and_lock": {
+          "n": 14,
+          "wall_ms": 19.281066,
+          "cpu_ms": 12.799994,
+          "wall_minus_cpu_ms": 6.481072,
+          "errors": 0
+        },
+        "selection.version_lock": {
+          "n": 14,
+          "wall_ms": 0.017619,
+          "cpu_ms": 0.007359,
+          "wall_minus_cpu_ms": 0.01026,
+          "errors": 0
+        },
+        "source.active": {
+          "n": 18,
+          "wall_ms": 7.447999,
+          "cpu_ms": 4.605229,
+          "wall_minus_cpu_ms": 2.84277,
+          "errors": 0
+        },
+        "source.owner_current": {
+          "n": 36,
+          "wall_ms": 6.071947,
+          "cpu_ms": 4.008814,
+          "wall_minus_cpu_ms": 2.063133,
+          "errors": 0
+        },
+        "source.publication": {
+          "n": 4,
+          "wall_ms": 12.839977,
+          "cpu_ms": 7.690963,
+          "wall_minus_cpu_ms": 5.149014,
+          "errors": 0
+        },
+        "source.try_lock": {
+          "n": 18,
+          "wall_ms": 0.025922,
+          "cpu_ms": 0.012597,
+          "wall_minus_cpu_ms": 0.013325,
+          "errors": 0
+        },
+        "task.live_current": {
+          "n": 140,
+          "wall_ms": 175.76119,
+          "cpu_ms": 113.717311,
+          "wall_minus_cpu_ms": 62.043879,
+          "errors": 0
+        },
+        "task.original_version_and_lock": {
+          "n": 70,
+          "wall_ms": 182.249926,
+          "cpu_ms": 115.525186,
+          "wall_minus_cpu_ms": 66.72474,
+          "errors": 0
+        },
+        "task.version_mutex": {
+          "n": 70,
+          "wall_ms": 0.080272,
+          "cpu_ms": 0.041549,
+          "wall_minus_cpu_ms": 0.038723,
+          "errors": 0
+        },
+        "version.current": {
+          "n": 70,
+          "wall_ms": 88.192049,
+          "cpu_ms": 56.196643,
+          "wall_minus_cpu_ms": 31.995406,
+          "errors": 0
+        },
+        "version.generation_observation": {
+          "n": 70,
+          "wall_ms": 93.733702,
+          "cpu_ms": 59.05404,
+          "wall_minus_cpu_ms": 34.679662,
+          "errors": 0
+        }
+      },
+      "errors": []
+    }
+  ]
+}

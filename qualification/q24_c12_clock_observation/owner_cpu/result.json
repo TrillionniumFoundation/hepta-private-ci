@@ -1,0 +1,3834 @@
+{
+  "bazel_exit": 0,
+  "cases": {
+    "healthy": {
+      "calls": [
+        {
+          "authenticated": true,
+          "caller_us": 319303,
+          "client_index": 1,
+          "outer_server": {
+            "bound": "per_request",
+            "cut": 0,
+            "deadline": 53046843,
+            "depth": 1,
+            "events": {
+              "enter": 52545974,
+              "exit": 52865029,
+              "handler_enter": 52546849,
+              "handler_ok": 52865013,
+              "reply_written": 52865028
+            },
+            "id": 1,
+            "io": "exchange",
+            "pid": 13,
+            "role": "nextuse_service",
+            "thread": 1738
+          },
+          "outer_transport": {
+            "deadline_setup": 52546739,
+            "end": 52865143,
+            "exchange_done": 52865086,
+            "reply_validated": 52865141,
+            "select": 52546741,
+            "select_frame_ok": 52865086,
+            "start": 52546679
+          },
+          "owner_calls": [
+            {
+              "cpu_ns": 48808401,
+              "cut": 4,
+              "errors": [],
+              "id": 4,
+              "metrics": {
+                "artifact.candidate_files": [
+                  66,
+                  248288,
+                  208986,
+                  0
+                ],
+                "artifact.registry": [
+                  66,
+                  17458336,
+                  14704350,
+                  0
+                ],
+                "artifact.signature": [
+                  66,
+                  3058446,
+                  2919953,
+                  0
+                ],
+                "control.head_digest": [
+                  132,
+                  4368570,
+                  4167562,
+                  0
+                ],
+                "control.host_load": [
+                  132,
+                  9364445,
+                  8691041,
+                  0
+                ],
+                "control.initial_validation": [
+                  132,
+                  42977,
+                  21226,
+                  0
+                ],
+                "control.store": [
+                  132,
+                  16415126,
+                  15293837,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  66,
+                  5393844,
+                  5129128,
+                  0
+                ],
+                "finaluse.current_state": [
+                  66,
+                  703188,
+                  681564,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  66,
+                  355461,
+                  332533,
+                  0
+                ],
+                "finaluse.live_state": [
+                  66,
+                  241382,
+                  230680,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  66,
+                  22019,
+                  11110,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  66,
+                  214129,
+                  202928,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  66,
+                  28564,
+                  18149,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  18858143,
+                  16484777,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  1176472,
+                  1089901,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  17662700,
+                  15375085,
+                  0
+                ],
+                "journal.physical": [
+                  68,
+                  4522928,
+                  4163703,
+                  0
+                ],
+                "journal.witness": [
+                  136,
+                  1386853,
+                  1354039,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  66,
+                  27079,
+                  16653,
+                  0
+                ],
+                "live.authorities": [
+                  66,
+                  27704967,
+                  24467200,
+                  0
+                ],
+                "live.clock": [
+                  66,
+                  24702,
+                  14468,
+                  0
+                ],
+                "live.control": [
+                  132,
+                  16848529,
+                  15685450,
+                  0
+                ],
+                "live.final_use": [
+                  66,
+                  6203404,
+                  5936506,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  66,
+                  21390818,
+                  18409608,
+                  0
+                ],
+                "live.selected_mutex": [
+                  66,
+                  21708,
+                  11313,
+                  0
+                ],
+                "next_use.cell": [
+                  1,
+                  19652644,
+                  18080949,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  11615968,
+                  10801667,
+                  0
+                ],
+                "selection.coordinator": [
+                  3,
+                  109780,
+                  88011,
+                  0
+                ],
+                "selection.task_current": [
+                  6,
+                  15441887,
+                  14300014,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  3,
+                  2089899,
+                  1989653,
+                  0
+                ],
+                "selection.version_lock": [
+                  3,
+                  1409,
+                  958,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  621534,
+                  572729,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  534809,
+                  496125,
+                  0
+                ],
+                "source.publication": [
+                  2,
+                  3148460,
+                  2986594,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  1449,
+                  978,
+                  0
+                ],
+                "task.live_current": [
+                  30,
+                  20641124,
+                  18523231,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  15,
+                  20470765,
+                  18481471,
+                  0
+                ],
+                "task.version_mutex": [
+                  15,
+                  6091,
+                  3782,
+                  0
+                ],
+                "version.current": [
+                  15,
+                  9603896,
+                  8907267,
+                  0
+                ],
+                "version.generation_observation": [
+                  15,
+                  10817663,
+                  9526979,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 53778526
+            },
+            {
+              "cpu_ns": 27961681,
+              "cut": 3,
+              "errors": [],
+              "id": 8,
+              "metrics": {
+                "artifact.candidate_files": [
+                  42,
+                  137151,
+                  120894,
+                  0
+                ],
+                "artifact.registry": [
+                  42,
+                  11123694,
+                  9622217,
+                  0
+                ],
+                "artifact.signature": [
+                  42,
+                  1994388,
+                  1895325,
+                  0
+                ],
+                "control.head_digest": [
+                  84,
+                  2688341,
+                  2499049,
+                  0
+                ],
+                "control.host_load": [
+                  84,
+                  6143974,
+                  5782707,
+                  0
+                ],
+                "control.initial_validation": [
+                  84,
+                  27371,
+                  13175,
+                  0
+                ],
+                "control.store": [
+                  84,
+                  10591821,
+                  9860203,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  42,
+                  3207119,
+                  3118240,
+                  0
+                ],
+                "finaluse.current_state": [
+                  42,
+                  420217,
+                  408711,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  42,
+                  213688,
+                  201634,
+                  0
+                ],
+                "finaluse.live_state": [
+                  42,
+                  142247,
+                  135318,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  42,
+                  13724,
+                  7013,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  42,
+                  125057,
+                  117980,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  42,
+                  16422,
+                  9904,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  17706719,
+                  16259633,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  1285864,
+                  1201678,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  16404004,
+                  15040586,
+                  0
+                ],
+                "journal.physical": [
+                  12,
+                  850432,
+                  778451,
+                  0
+                ],
+                "journal.witness": [
+                  24,
+                  248332,
+                  242120,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  42,
+                  16506,
+                  9384,
+                  0
+                ],
+                "live.authorities": [
+                  42,
+                  17376763,
+                  15671897,
+                  0
+                ],
+                "live.clock": [
+                  42,
+                  14651,
+                  8129,
+                  0
+                ],
+                "live.control": [
+                  84,
+                  10940040,
+                  10160563,
+                  0
+                ],
+                "live.final_use": [
+                  42,
+                  3691816,
+                  3602866,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  42,
+                  13616251,
+                  11993509,
+                  0
+                ],
+                "live.selected_mutex": [
+                  42,
+                  13956,
+                  7247,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  12467230,
+                  11338555,
+                  0
+                ],
+                "selection.coordinator": [
+                  2,
+                  95471,
+                  79229,
+                  0
+                ],
+                "selection.task_current": [
+                  4,
+                  10794965,
+                  9815208,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  2,
+                  1553354,
+                  1427080,
+                  0
+                ],
+                "selection.version_lock": [
+                  2,
+                  902,
+                  591,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  732183,
+                  677907,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  540801,
+                  509960,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  1451,
+                  971,
+                  0
+                ],
+                "task.live_current": [
+                  20,
+                  13671374,
+                  12487469,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  10,
+                  13517614,
+                  12355080,
+                  0
+                ],
+                "task.version_mutex": [
+                  10,
+                  3760,
+                  2200,
+                  0
+                ],
+                "version.current": [
+                  10,
+                  6766497,
+                  6088371,
+                  0
+                ],
+                "version.generation_observation": [
+                  10,
+                  6728612,
+                  6242124,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 30568280
+            },
+            {
+              "cpu_ns": 27208152,
+              "cut": 3,
+              "errors": [],
+              "id": 9,
+              "metrics": {
+                "artifact.candidate_files": [
+                  42,
+                  139267,
+                  117085,
+                  0
+                ],
+                "artifact.registry": [
+                  42,
+                  10647051,
+                  9267834,
+                  0
+                ],
+                "artifact.signature": [
+                  42,
+                  2035216,
+                  1892864,
+                  0
+                ],
+                "control.head_digest": [
+                  84,
+                  2610405,
+                  2431535,
+                  0
+                ],
+                "control.host_load": [
+                  84,
+                  6152777,
+                  5741019,
+                  0
+                ],
+                "control.initial_validation": [
+                  84,
+                  26186,
+                  12264,
+                  0
+                ],
+                "control.store": [
+                  84,
+                  10431728,
+                  9684585,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  42,
+                  3241157,
+                  3133501,
+                  0
+                ],
+                "finaluse.current_state": [
+                  42,
+                  463116,
+                  419831,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  42,
+                  250315,
+                  204205,
+                  0
+                ],
+                "finaluse.live_state": [
+                  42,
+                  149830,
+                  140223,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  42,
+                  13808,
+                  6955,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  42,
+                  132214,
+                  121744,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  42,
+                  16293,
+                  9738,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  17437899,
+                  15811625,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  1128634,
+                  1049851,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  16289050,
+                  14740901,
+                  0
+                ],
+                "journal.physical": [
+                  12,
+                  764824,
+                  688193,
+                  0
+                ],
+                "journal.witness": [
+                  24,
+                  234612,
+                  229929,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  42,
+                  15966,
+                  8717,
+                  0
+                ],
+                "live.authorities": [
+                  42,
+                  17028186,
+                  15322358,
+                  0
+                ],
+                "live.clock": [
+                  42,
+                  13809,
+                  7249,
+                  0
+                ],
+                "live.control": [
+                  84,
+                  10790641,
+                  9984586,
+                  0
+                ],
+                "live.final_use": [
+                  42,
+                  3768774,
+                  3629256,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  42,
+                  13192279,
+                  11619345,
+                  0
+                ],
+                "live.selected_mutex": [
+                  42,
+                  13247,
+                  6643,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  12081900,
+                  11084929,
+                  0
+                ],
+                "selection.coordinator": [
+                  2,
+                  94760,
+                  63964,
+                  0
+                ],
+                "selection.task_current": [
+                  4,
+                  10483747,
+                  9662237,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  2,
+                  1487304,
+                  1341497,
+                  0
+                ],
+                "selection.version_lock": [
+                  2,
+                  1009,
+                  629,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  609701,
+                  556282,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  507613,
+                  481151,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  1322,
+                  869,
+                  0
+                ],
+                "task.live_current": [
+                  20,
+                  13210732,
+                  12092773,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  10,
+                  13553338,
+                  12298398,
+                  0
+                ],
+                "task.version_mutex": [
+                  10,
+                  4104,
+                  2533,
+                  0
+                ],
+                "version.current": [
+                  10,
+                  6701983,
+                  6049844,
+                  0
+                ],
+                "version.generation_observation": [
+                  10,
+                  6829933,
+                  6224416,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 29854728
+            },
+            {
+              "cpu_ns": 61516770,
+              "cut": 4,
+              "errors": [],
+              "id": 5,
+              "metrics": {
+                "artifact.candidate_files": [
+                  66,
+                  813278,
+                  356350,
+                  0
+                ],
+                "artifact.registry": [
+                  66,
+                  32841800,
+                  19036267,
+                  0
+                ],
+                "artifact.signature": [
+                  66,
+                  4536644,
+                  3266067,
+                  0
+                ],
+                "control.head_digest": [
+                  132,
+                  12176842,
+                  5767159,
+                  0
+                ],
+                "control.host_load": [
+                  132,
+                  16873229,
+                  11044304,
+                  0
+                ],
+                "control.initial_validation": [
+                  132,
+                  191126,
+                  33792,
+                  0
+                ],
+                "control.store": [
+                  132,
+                  34915754,
+                  20103985,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  66,
+                  7704479,
+                  5716168,
+                  0
+                ],
+                "finaluse.current_state": [
+                  66,
+                  1058744,
+                  888940,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  66,
+                  462424,
+                  427425,
+                  0
+                ],
+                "finaluse.live_state": [
+                  66,
+                  456583,
+                  324524,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  66,
+                  24063,
+                  12562,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  66,
+                  401617,
+                  291300,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  66,
+                  49404,
+                  21517,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  31868873,
+                  19649273,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  2423360,
+                  1351160,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  29425326,
+                  18273366,
+                  0
+                ],
+                "journal.physical": [
+                  68,
+                  9161793,
+                  5072929,
+                  0
+                ],
+                "journal.witness": [
+                  136,
+                  2499340,
+                  1535253,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  66,
+                  43792,
+                  21769,
+                  0
+                ],
+                "live.authorities": [
+                  66,
+                  48532054,
+                  30339745,
+                  0
+                ],
+                "live.clock": [
+                  66,
+                  46951,
+                  23594,
+                  0
+                ],
+                "live.control": [
+                  132,
+                  35955816,
+                  20654856,
+                  0
+                ],
+                "live.final_use": [
+                  66,
+                  8940108,
+                  6760520,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  66,
+                  39381632,
+                  23395409,
+                  0
+                ],
+                "live.selected_mutex": [
+                  66,
+                  81622,
+                  23215,
+                  0
+                ],
+                "next_use.cell": [
+                  1,
+                  37886633,
+                  22670874,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  24471830,
+                  14732392,
+                  0
+                ],
+                "selection.coordinator": [
+                  3,
+                  258450,
+                  152969,
+                  0
+                ],
+                "selection.task_current": [
+                  6,
+                  31819646,
+                  18908837,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  3,
+                  4203622,
+                  2629270,
+                  0
+                ],
+                "selection.version_lock": [
+                  3,
+                  2011,
+                  1300,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  910535,
+                  638053,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  1491814,
+                  691640,
+                  0
+                ],
+                "source.publication": [
+                  2,
+                  6729323,
+                  3837581,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  1718,
+                  1238,
+                  0
+                ],
+                "task.live_current": [
+                  30,
+                  38575020,
+                  23428031,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  15,
+                  38557284,
+                  23312281,
+                  0
+                ],
+                "task.version_mutex": [
+                  15,
+                  6596,
+                  4325,
+                  0
+                ],
+                "version.current": [
+                  15,
+                  19165049,
+                  11386800,
+                  0
+                ],
+                "version.generation_observation": [
+                  15,
+                  19349726,
+                  11878657,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 101943814
+            },
+            {
+              "cpu_ns": 34445601,
+              "cut": 3,
+              "errors": [],
+              "id": 10,
+              "metrics": {
+                "artifact.candidate_files": [
+                  42,
+                  228018,
+                  191976,
+                  0
+                ],
+                "artifact.registry": [
+                  42,
+                  15894165,
+                  13086674,
+                  0
+                ],
+                "artifact.signature": [
+                  42,
+                  2290725,
+                  2128907,
+                  0
+                ],
+                "control.head_digest": [
+                  84,
+                  2854554,
+                  2697909,
+                  0
+                ],
+                "control.host_load": [
+                  84,
+                  7402485,
+                  6780814,
+                  0
+                ],
+                "control.initial_validation": [
+                  84,
+                  34954,
+                  21564,
+                  0
+                ],
+                "control.store": [
+                  84,
+                  12890560,
+                  11739421,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  42,
+                  3493516,
+                  3339756,
+                  0
+                ],
+                "finaluse.current_state": [
+                  42,
+                  516298,
+                  500132,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  42,
+                  273412,
+                  256729,
+                  0
+                ],
+                "finaluse.live_state": [
+                  42,
+                  173570,
+                  166977,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  42,
+                  16498,
+                  9025,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  42,
+                  155756,
+                  148734,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  42,
+                  17884,
+                  11204,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  22648843,
+                  19881001,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  1483002,
+                  1333106,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  21146739,
+                  18527955,
+                  0
+                ],
+                "journal.physical": [
+                  12,
+                  1066914,
+                  925173,
+                  0
+                ],
+                "journal.witness": [
+                  24,
+                  247598,
+                  243255,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  42,
+                  18997,
+                  12009,
+                  0
+                ],
+                "live.authorities": [
+                  42,
+                  23103086,
+                  19868241,
+                  0
+                ],
+                "live.clock": [
+                  42,
+                  27933,
+                  21368,
+                  0
+                ],
+                "live.control": [
+                  84,
+                  13376281,
+                  12138268,
+                  0
+                ],
+                "live.final_use": [
+                  42,
+                  4080601,
+                  3923648,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  42,
+                  18949090,
+                  15864514,
+                  0
+                ],
+                "live.selected_mutex": [
+                  42,
+                  14093,
+                  7549,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  16084384,
+                  14143691,
+                  0
+                ],
+                "selection.coordinator": [
+                  2,
+                  152389,
+                  136711,
+                  0
+                ],
+                "selection.task_current": [
+                  4,
+                  14090646,
+                  12367390,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  2,
+                  1821634,
+                  1618510,
+                  0
+                ],
+                "selection.version_lock": [
+                  2,
+                  998,
+                  700,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  795071,
+                  710622,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  673260,
+                  606862,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  1522,
+                  1029,
+                  0
+                ],
+                "task.live_current": [
+                  20,
+                  17077795,
+                  15067755,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  10,
+                  18150000,
+                  15814269,
+                  0
+                ],
+                "task.version_mutex": [
+                  10,
+                  4149,
+                  2591,
+                  0
+                ],
+                "version.current": [
+                  10,
+                  8928996,
+                  7838664,
+                  0
+                ],
+                "version.generation_observation": [
+                  10,
+                  9195611,
+                  7947303,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 39245109
+            },
+            {
+              "cpu_ns": 33881387,
+              "cut": 3,
+              "errors": [],
+              "id": 11,
+              "metrics": {
+                "artifact.candidate_files": [
+                  42,
+                  202373,
+                  167984,
+                  0
+                ],
+                "artifact.registry": [
+                  42,
+                  16656369,
+                  13609479,
+                  0
+                ],
+                "artifact.signature": [
+                  42,
+                  2181273,
+                  2018168,
+                  0
+                ],
+                "control.head_digest": [
+                  84,
+                  2796543,
+                  2557941,
+                  0
+                ],
+                "control.host_load": [
+                  84,
+                  7337497,
+                  6376914,
+                  0
+                ],
+                "control.initial_validation": [
+                  84,
+                  25732,
+                  12385,
+                  0
+                ],
+                "control.store": [
+                  84,
+                  12761279,
+                  11076416,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  42,
+                  3311538,
+                  3185767,
+                  0
+                ],
+                "finaluse.current_state": [
+                  42,
+                  496879,
+                  467794,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  42,
+                  248088,
+                  218329,
+                  0
+                ],
+                "finaluse.live_state": [
+                  42,
+                  174167,
+                  167548,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  42,
+                  14863,
+                  7901,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  42,
+                  156647,
+                  149542,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  42,
+                  16609,
+                  10013,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  23116735,
+                  19805002,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  1449374,
+                  1315323,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  21648619,
+                  18470170,
+                  0
+                ],
+                "journal.physical": [
+                  12,
+                  1036931,
+                  916851,
+                  0
+                ],
+                "journal.witness": [
+                  24,
+                  237892,
+                  230517,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  42,
+                  17067,
+                  10527,
+                  0
+                ],
+                "live.authorities": [
+                  42,
+                  23481966,
+                  20041564,
+                  0
+                ],
+                "live.clock": [
+                  42,
+                  15255,
+                  8698,
+                  0
+                ],
+                "live.control": [
+                  84,
+                  13173665,
+                  11455858,
+                  0
+                ],
+                "live.final_use": [
+                  42,
+                  3877477,
+                  3735872,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  42,
+                  19535574,
+                  16230104,
+                  0
+                ],
+                "live.selected_mutex": [
+                  42,
+                  13822,
+                  7162,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  15695700,
+                  13651000,
+                  0
+                ],
+                "selection.coordinator": [
+                  2,
+                  162609,
+                  130738,
+                  0
+                ],
+                "selection.task_current": [
+                  4,
+                  13538507,
+                  11829722,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  2,
+                  1966646,
+                  1667887,
+                  0
+                ],
+                "selection.version_lock": [
+                  2,
+                  1211,
+                  780,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  743322,
+                  671452,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  685581,
+                  622380,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  1360,
+                  869,
+                  0
+                ],
+                "task.live_current": [
+                  20,
+                  17473849,
+                  15063617,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  10,
+                  17703960,
+                  15223266,
+                  0
+                ],
+                "task.version_mutex": [
+                  10,
+                  3940,
+                  2358,
+                  0
+                ],
+                "version.current": [
+                  10,
+                  8853628,
+                  7642147,
+                  0
+                ],
+                "version.generation_observation": [
+                  10,
+                  8825592,
+                  7554344,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 39305609
+            }
+          ],
+          "owner_cpu_ns": 233821992,
+          "owner_wall_minus_cpu_ns": 60874074,
+          "owner_wall_ns": 294696066,
+          "totals_count_wall_ns_cpu_ns_errors": {
+            "artifact.candidate_files": [
+              300,
+              1768375,
+              1163275,
+              0
+            ],
+            "artifact.registry": [
+              300,
+              104621415,
+              79326821,
+              0
+            ],
+            "artifact.signature": [
+              300,
+              16096692,
+              14121284,
+              0
+            ],
+            "control.head_digest": [
+              600,
+              27495255,
+              20121155,
+              0
+            ],
+            "control.host_load": [
+              600,
+              53274407,
+              44416799,
+              0
+            ],
+            "control.initial_validation": [
+              600,
+              348346,
+              114406,
+              0
+            ],
+            "control.store": [
+              600,
+              98006268,
+              77758447,
+              0
+            ],
+            "finaluse.authenticate": [
+              300,
+              26351653,
+              23622560,
+              0
+            ],
+            "finaluse.current_state": [
+              300,
+              3658442,
+              3366972,
+              0
+            ],
+            "finaluse.frontier_load": [
+              300,
+              1803388,
+              1640855,
+              0
+            ],
+            "finaluse.live_state": [
+              300,
+              1337779,
+              1165270,
+              0
+            ],
+            "finaluse.state_mutex": [
+              300,
+              104975,
+              54566,
+              0
+            ],
+            "finaluse.store_revalidate": [
+              300,
+              1185420,
+              1032228,
+              0
+            ],
+            "finaluse.verify_state": [
+              300,
+              145176,
+              80525,
+              0
+            ],
+            "input.all": [
+              18,
+              131637212,
+              107891311,
+              0
+            ],
+            "input.source": [
+              18,
+              8946706,
+              7341019,
+              0
+            ],
+            "input.task_current": [
+              36,
+              122576438,
+              100428063,
+              0
+            ],
+            "journal.physical": [
+              184,
+              17403822,
+              12545300,
+              0
+            ],
+            "journal.witness": [
+              368,
+              4854627,
+              3835113,
+              0
+            ],
+            "live.artifact_mutex": [
+              300,
+              139407,
+              79059,
+              0
+            ],
+            "live.authorities": [
+              300,
+              157227022,
+              125711005,
+              0
+            ],
+            "live.clock": [
+              300,
+              143301,
+              83506,
+              0
+            ],
+            "live.control": [
+              600,
+              101084972,
+              80079581,
+              0
+            ],
+            "live.final_use": [
+              300,
+              30562180,
+              27588668,
+              0
+            ],
+            "live.revalidate_and_clock": [
+              300,
+              126065644,
+              97512489,
+              0
+            ],
+            "live.selected_mutex": [
+              300,
+              158448,
+              63129,
+              0
+            ],
+            "next_use.cell": [
+              2,
+              57539277,
+              40751823,
+              0
+            ],
+            "selection.all": [
+              12,
+              92417012,
+              75752234,
+              0
+            ],
+            "selection.coordinator": [
+              14,
+              873459,
+              651622,
+              0
+            ],
+            "selection.task_current": [
+              28,
+              96169398,
+              76883408,
+              0
+            ],
+            "selection.version_and_lock": [
+              14,
+              13122459,
+              10673897,
+              0
+            ],
+            "selection.version_lock": [
+              14,
+              7540,
+              4958,
+              0
+            ],
+            "source.active": [
+              18,
+              4412346,
+              3827045,
+              0
+            ],
+            "source.owner_current": [
+              36,
+              4433878,
+              3408118,
+              0
+            ],
+            "source.publication": [
+              4,
+              9877783,
+              6824175,
+              0
+            ],
+            "source.try_lock": [
+              18,
+              8822,
+              5954,
+              0
+            ],
+            "task.live_current": [
+              140,
+              120649894,
+              96662876,
+              0
+            ],
+            "task.original_version_and_lock": [
+              70,
+              121952961,
+              97484765,
+              0
+            ],
+            "task.version_mutex": [
+              70,
+              28640,
+              17789,
+              0
+            ],
+            "version.current": [
+              70,
+              60020049,
+              47913093,
+              0
+            ],
+            "version.generation_observation": [
+              70,
+              61747137,
+              49373823,
+              0
+            ]
+          }
+        },
+        {
+          "authenticated": false,
+          "caller_us": 4074,
+          "client_index": 2,
+          "outer_server": {
+            "bound": "per_request",
+            "cut": 0,
+            "deadline": 53365887,
+            "depth": 1,
+            "events": {
+              "enter": 52865118,
+              "err_invalid_request": 52869676,
+              "exit": 52869708,
+              "handler_enter": 52865895,
+              "original_handler_error": 52869674,
+              "shutdown_enter": 52869676,
+              "shutdown_return": 52869696
+            },
+            "id": 2,
+            "io": "exchange",
+            "pid": 13,
+            "role": "nextuse_service",
+            "thread": 1738
+          },
+          "outer_transport": {
+            "deadline_setup": 52865853,
+            "end": 52869741,
+            "select": 52865854,
+            "select_frame_error": 52869725,
+            "start": 52865836
+          },
+          "owner_calls": [
+            {
+              "cpu_ns": 178680,
+              "cut": 4,
+              "errors": [
+                [
+                  "live.revalidate_and_clock",
+                  "invalid_other",
+                  52869405
+                ],
+                [
+                  "live.authorities",
+                  "Unavailable",
+                  52869444
+                ],
+                [
+                  "task.live_current",
+                  "Unavailable",
+                  52869445
+                ],
+                [
+                  "input.task_current",
+                  "invalid_unavailable",
+                  52869447
+                ],
+                [
+                  "input.all",
+                  "error",
+                  52869450
+                ]
+              ],
+              "id": 6,
+              "metrics": {
+                "control.head_digest": [
+                  1,
+                  34089,
+                  33889,
+                  0
+                ],
+                "control.host_load": [
+                  1,
+                  76792,
+                  76560,
+                  0
+                ],
+                "control.initial_validation": [
+                  1,
+                  340,
+                  180,
+                  0
+                ],
+                "control.store": [
+                  1,
+                  137432,
+                  137280,
+                  0
+                ],
+                "input.all": [
+                  1,
+                  195181,
+                  165849,
+                  1
+                ],
+                "input.task_current": [
+                  1,
+                  191972,
+                  162829,
+                  1
+                ],
+                "live.artifact_mutex": [
+                  1,
+                  440,
+                  291,
+                  0
+                ],
+                "live.authorities": [
+                  1,
+                  46460,
+                  15938,
+                  1
+                ],
+                "live.clock": [
+                  1,
+                  551,
+                  391,
+                  0
+                ],
+                "live.control": [
+                  1,
+                  140510,
+                  140349,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  1,
+                  6240,
+                  6080,
+                  1
+                ],
+                "live.selected_mutex": [
+                  1,
+                  420,
+                  271,
+                  0
+                ],
+                "task.live_current": [
+                  1,
+                  189152,
+                  160009,
+                  1
+                ]
+              },
+              "service_replied": false,
+              "wall_ns": 210061
+            }
+          ],
+          "owner_cpu_ns": 178680,
+          "owner_wall_minus_cpu_ns": 31381,
+          "owner_wall_ns": 210061,
+          "totals_count_wall_ns_cpu_ns_errors": {
+            "control.head_digest": [
+              1,
+              34089,
+              33889,
+              0
+            ],
+            "control.host_load": [
+              1,
+              76792,
+              76560,
+              0
+            ],
+            "control.initial_validation": [
+              1,
+              340,
+              180,
+              0
+            ],
+            "control.store": [
+              1,
+              137432,
+              137280,
+              0
+            ],
+            "input.all": [
+              1,
+              195181,
+              165849,
+              1
+            ],
+            "input.task_current": [
+              1,
+              191972,
+              162829,
+              1
+            ],
+            "live.artifact_mutex": [
+              1,
+              440,
+              291,
+              0
+            ],
+            "live.authorities": [
+              1,
+              46460,
+              15938,
+              1
+            ],
+            "live.clock": [
+              1,
+              551,
+              391,
+              0
+            ],
+            "live.control": [
+              1,
+              140510,
+              140349,
+              0
+            ],
+            "live.revalidate_and_clock": [
+              1,
+              6240,
+              6080,
+              1
+            ],
+            "live.selected_mutex": [
+              1,
+              420,
+              271,
+              0
+            ],
+            "task.live_current": [
+              1,
+              189152,
+              160009,
+              1
+            ]
+          }
+        }
+      ],
+      "owner_profiles_in_whole_case": 17
+    },
+    "timing": {
+      "calls": [
+        {
+          "authenticated": true,
+          "caller_us": 471152,
+          "client_index": 1,
+          "outer_server": {
+            "bound": "per_request",
+            "cut": 0,
+            "deadline": 85894782,
+            "depth": 1,
+            "events": {
+              "enter": 85394356,
+              "exit": 85865166,
+              "handler_enter": 85394798,
+              "handler_ok": 85865146,
+              "reply_written": 85865164
+            },
+            "id": 1,
+            "io": "exchange",
+            "pid": 13,
+            "role": "nextuse_service",
+            "thread": 2443
+          },
+          "outer_transport": {
+            "deadline_setup": 85394680,
+            "end": 85865239,
+            "exchange_done": 85865204,
+            "reply_validated": 85865237,
+            "select": 85394680,
+            "select_frame_ok": 85865204,
+            "start": 85394658
+          },
+          "owner_calls": [
+            {
+              "cpu_ns": 70824374,
+              "cut": 4,
+              "errors": [],
+              "id": 6,
+              "metrics": {
+                "artifact.candidate_files": [
+                  66,
+                  956563,
+                  433498,
+                  0
+                ],
+                "artifact.registry": [
+                  66,
+                  40016843,
+                  23621834,
+                  0
+                ],
+                "artifact.signature": [
+                  66,
+                  5092458,
+                  3664600,
+                  0
+                ],
+                "control.head_digest": [
+                  132,
+                  10009759,
+                  5635135,
+                  0
+                ],
+                "control.host_load": [
+                  132,
+                  18405253,
+                  12027053,
+                  0
+                ],
+                "control.initial_validation": [
+                  132,
+                  96644,
+                  32289,
+                  0
+                ],
+                "control.store": [
+                  132,
+                  35650112,
+                  21699143,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  66,
+                  9456700,
+                  6229233,
+                  0
+                ],
+                "finaluse.current_state": [
+                  66,
+                  1548574,
+                  1105608,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  66,
+                  753541,
+                  529380,
+                  0
+                ],
+                "finaluse.live_state": [
+                  66,
+                  610613,
+                  425475,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  66,
+                  31119,
+                  17317,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  66,
+                  576880,
+                  387598,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  66,
+                  66890,
+                  26887,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  37078476,
+                  23061720,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  2762761,
+                  1721740,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  34279377,
+                  21308772,
+                  0
+                ],
+                "journal.physical": [
+                  68,
+                  10067172,
+                  5925308,
+                  0
+                ],
+                "journal.witness": [
+                  136,
+                  2839835,
+                  1779132,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  66,
+                  69171,
+                  30646,
+                  0
+                ],
+                "live.authorities": [
+                  66,
+                  58779042,
+                  36216607,
+                  0
+                ],
+                "live.clock": [
+                  66,
+                  75548,
+                  32821,
+                  0
+                ],
+                "live.control": [
+                  132,
+                  36486574,
+                  22276040,
+                  0
+                ],
+                "live.final_use": [
+                  66,
+                  11233695,
+                  7511536,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  66,
+                  47324622,
+                  28523503,
+                  0
+                ],
+                "live.selected_mutex": [
+                  66,
+                  31928,
+                  17400,
+                  0
+                ],
+                "next_use.cell": [
+                  1,
+                  44226073,
+                  26790877,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  26267103,
+                  16202744,
+                  0
+                ],
+                "selection.coordinator": [
+                  3,
+                  329074,
+                  175688,
+                  0
+                ],
+                "selection.task_current": [
+                  6,
+                  36578762,
+                  21958598,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  3,
+                  4490341,
+                  2885176,
+                  0
+                ],
+                "selection.version_lock": [
+                  3,
+                  1600,
+                  1060,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  1748909,
+                  973910,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  936580,
+                  708759,
+                  0
+                ],
+                "source.publication": [
+                  2,
+                  6897013,
+                  4162264,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  1481,
+                  1020,
+                  0
+                ],
+                "task.live_current": [
+                  30,
+                  42855086,
+                  26869170,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  15,
+                  44499059,
+                  27004810,
+                  0
+                ],
+                "task.version_mutex": [
+                  15,
+                  7350,
+                  5050,
+                  0
+                ],
+                "version.current": [
+                  15,
+                  22220840,
+                  13308084,
+                  0
+                ],
+                "version.generation_observation": [
+                  15,
+                  22174871,
+                  13618451,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 115377445
+            },
+            {
+              "cpu_ns": 32730653,
+              "cut": 3,
+              "errors": [],
+              "id": 12,
+              "metrics": {
+                "artifact.candidate_files": [
+                  42,
+                  201970,
+                  146881,
+                  0
+                ],
+                "artifact.registry": [
+                  42,
+                  17804323,
+                  11883406,
+                  0
+                ],
+                "artifact.signature": [
+                  42,
+                  2374767,
+                  1997369,
+                  0
+                ],
+                "control.head_digest": [
+                  84,
+                  4188322,
+                  2839851,
+                  0
+                ],
+                "control.host_load": [
+                  84,
+                  8954929,
+                  6663691,
+                  0
+                ],
+                "control.initial_validation": [
+                  84,
+                  75582,
+                  16081,
+                  0
+                ],
+                "control.store": [
+                  84,
+                  16020299,
+                  11386924,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  42,
+                  3856829,
+                  3352701,
+                  0
+                ],
+                "finaluse.current_state": [
+                  42,
+                  793476,
+                  580449,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  42,
+                  448126,
+                  300180,
+                  0
+                ],
+                "finaluse.live_state": [
+                  42,
+                  257853,
+                  189364,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  42,
+                  15110,
+                  7983,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  42,
+                  239879,
+                  166707,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  42,
+                  18682,
+                  11913,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  26004049,
+                  18703360,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  2212924,
+                  1418102,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  23743485,
+                  17259058,
+                  0
+                ],
+                "journal.physical": [
+                  12,
+                  1457362,
+                  954832,
+                  0
+                ],
+                "journal.witness": [
+                  24,
+                  551567,
+                  300290,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  42,
+                  26479,
+                  16584,
+                  0
+                ],
+                "live.authorities": [
+                  42,
+                  25714086,
+                  18537503,
+                  0
+                ],
+                "live.clock": [
+                  42,
+                  17587,
+                  10356,
+                  0
+                ],
+                "live.control": [
+                  84,
+                  16545089,
+                  11698098,
+                  0
+                ],
+                "live.final_use": [
+                  42,
+                  4737924,
+                  4019344,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  42,
+                  20870712,
+                  14424620,
+                  0
+                ],
+                "live.selected_mutex": [
+                  42,
+                  33578,
+                  10214,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  19397118,
+                  13612283,
+                  0
+                ],
+                "selection.coordinator": [
+                  2,
+                  133131,
+                  112180,
+                  0
+                ],
+                "selection.task_current": [
+                  4,
+                  16228745,
+                  11706063,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  2,
+                  2997250,
+                  1773619,
+                  0
+                ],
+                "selection.version_lock": [
+                  2,
+                  1000,
+                  680,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  913188,
+                  653350,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  1223162,
+                  732231,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  11080,
+                  5320,
+                  0
+                ],
+                "task.live_current": [
+                  20,
+                  19075787,
+                  14288413,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  10,
+                  20824734,
+                  14659128,
+                  0
+                ],
+                "task.version_mutex": [
+                  10,
+                  5340,
+                  3598,
+                  0
+                ],
+                "version.current": [
+                  10,
+                  9883023,
+                  7145961,
+                  0
+                ],
+                "version.generation_observation": [
+                  10,
+                  10897518,
+                  7482570,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 45841421
+            },
+            {
+              "cpu_ns": 31141345,
+              "cut": 3,
+              "errors": [],
+              "id": 13,
+              "metrics": {
+                "artifact.candidate_files": [
+                  42,
+                  138727,
+                  124801,
+                  0
+                ],
+                "artifact.registry": [
+                  42,
+                  15034295,
+                  11197431,
+                  0
+                ],
+                "artifact.signature": [
+                  42,
+                  2270151,
+                  1958956,
+                  0
+                ],
+                "control.head_digest": [
+                  84,
+                  3596776,
+                  2829005,
+                  0
+                ],
+                "control.host_load": [
+                  84,
+                  7873023,
+                  6291388,
+                  0
+                ],
+                "control.initial_validation": [
+                  84,
+                  28145,
+                  13771,
+                  0
+                ],
+                "control.store": [
+                  84,
+                  14324734,
+                  10947445,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  42,
+                  3696971,
+                  3365781,
+                  0
+                ],
+                "finaluse.current_state": [
+                  42,
+                  488165,
+                  481117,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  42,
+                  242468,
+                  235040,
+                  0
+                ],
+                "finaluse.live_state": [
+                  42,
+                  175463,
+                  168852,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  42,
+                  14337,
+                  7633,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  42,
+                  158334,
+                  151220,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  42,
+                  17800,
+                  11151,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  21874731,
+                  17642232,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  1585887,
+                  1199550,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  20267383,
+                  16420563,
+                  0
+                ],
+                "journal.physical": [
+                  12,
+                  884338,
+                  761209,
+                  0
+                ],
+                "journal.witness": [
+                  24,
+                  394606,
+                  260560,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  42,
+                  30273,
+                  14682,
+                  0
+                ],
+                "live.authorities": [
+                  42,
+                  22197835,
+                  17690025,
+                  0
+                ],
+                "live.clock": [
+                  42,
+                  15817,
+                  9207,
+                  0
+                ],
+                "live.control": [
+                  84,
+                  14689207,
+                  11215598,
+                  0
+                ],
+                "live.final_use": [
+                  42,
+                  4253425,
+                  3931585,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  42,
+                  17858618,
+                  13671054,
+                  0
+                ],
+                "live.selected_mutex": [
+                  42,
+                  14429,
+                  7827,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  17344476,
+                  13099351,
+                  0
+                ],
+                "selection.coordinator": [
+                  2,
+                  165671,
+                  113167,
+                  0
+                ],
+                "selection.task_current": [
+                  4,
+                  15340045,
+                  11429136,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  2,
+                  1823780,
+                  1540728,
+                  0
+                ],
+                "selection.version_lock": [
+                  2,
+                  1081,
+                  761,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  1001772,
+                  656850,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  567326,
+                  524950,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  1470,
+                  1020,
+                  0
+                ],
+                "task.live_current": [
+                  20,
+                  17878410,
+                  13916517,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  10,
+                  17718741,
+                  13917293,
+                  0
+                ],
+                "task.version_mutex": [
+                  10,
+                  17540,
+                  5759,
+                  0
+                ],
+                "version.current": [
+                  10,
+                  9156444,
+                  6932284,
+                  0
+                ],
+                "version.generation_observation": [
+                  10,
+                  8523203,
+                  6953828,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 39816107
+            },
+            {
+              "cpu_ns": 64315848,
+              "cut": 4,
+              "errors": [],
+              "id": 7,
+              "metrics": {
+                "artifact.candidate_files": [
+                  66,
+                  344843,
+                  271955,
+                  0
+                ],
+                "artifact.registry": [
+                  66,
+                  33668529,
+                  21685515,
+                  0
+                ],
+                "artifact.signature": [
+                  66,
+                  4323417,
+                  3378286,
+                  0
+                ],
+                "control.head_digest": [
+                  132,
+                  8801199,
+                  5322730,
+                  0
+                ],
+                "control.host_load": [
+                  132,
+                  16132366,
+                  11201390,
+                  0
+                ],
+                "control.initial_validation": [
+                  132,
+                  66628,
+                  22517,
+                  0
+                ],
+                "control.store": [
+                  132,
+                  30549749,
+                  20160624,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  66,
+                  6297383,
+                  5440354,
+                  0
+                ],
+                "finaluse.current_state": [
+                  66,
+                  947019,
+                  838937,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  66,
+                  448650,
+                  403030,
+                  0
+                ],
+                "finaluse.live_state": [
+                  66,
+                  365206,
+                  304034,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  66,
+                  23971,
+                  13419,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  66,
+                  336577,
+                  272466,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  66,
+                  29036,
+                  18559,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  28085431,
+                  20684159,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  1613448,
+                  1286073,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  26412440,
+                  19368426,
+                  0
+                ],
+                "journal.physical": [
+                  68,
+                  9346651,
+                  5537629,
+                  0
+                ],
+                "journal.witness": [
+                  136,
+                  2595726,
+                  1645458,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  66,
+                  64405,
+                  27963,
+                  0
+                ],
+                "live.authorities": [
+                  66,
+                  46825319,
+                  32593448,
+                  0
+                ],
+                "live.clock": [
+                  66,
+                  82068,
+                  25490,
+                  0
+                ],
+                "live.control": [
+                  132,
+                  31311795,
+                  20694335,
+                  0
+                ],
+                "live.final_use": [
+                  66,
+                  7372515,
+                  6415374,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  66,
+                  39195379,
+                  26003687,
+                  0
+                ],
+                "live.selected_mutex": [
+                  66,
+                  91408,
+                  19339,
+                  0
+                ],
+                "next_use.cell": [
+                  1,
+                  40976259,
+                  25598548,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  19613641,
+                  13924359,
+                  0
+                ],
+                "selection.coordinator": [
+                  3,
+                  172922,
+                  131060,
+                  0
+                ],
+                "selection.task_current": [
+                  6,
+                  27816250,
+                  19071752,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  3,
+                  3890500,
+                  2770689,
+                  0
+                ],
+                "selection.version_lock": [
+                  3,
+                  11650,
+                  3269,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  638835,
+                  612238,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  942141,
+                  642143,
+                  0
+                ],
+                "source.publication": [
+                  2,
+                  5942964,
+                  3528699,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  1849,
+                  1019,
+                  0
+                ],
+                "task.live_current": [
+                  30,
+                  34945179,
+                  24143550,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  15,
+                  35665569,
+                  24518277,
+                  0
+                ],
+                "task.version_mutex": [
+                  15,
+                  26961,
+                  12440,
+                  0
+                ],
+                "version.current": [
+                  15,
+                  16595947,
+                  11784665,
+                  0
+                ],
+                "version.generation_observation": [
+                  15,
+                  19005801,
+                  12677917,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 95648704
+            },
+            {
+              "cpu_ns": 34638928,
+              "cut": 3,
+              "errors": [],
+              "id": 14,
+              "metrics": {
+                "artifact.candidate_files": [
+                  42,
+                  195275,
+                  171356,
+                  0
+                ],
+                "artifact.registry": [
+                  42,
+                  30424593,
+                  12930340,
+                  0
+                ],
+                "artifact.signature": [
+                  42,
+                  2920214,
+                  2072883,
+                  0
+                ],
+                "control.head_digest": [
+                  84,
+                  5648335,
+                  3033237,
+                  0
+                ],
+                "control.host_load": [
+                  84,
+                  10463555,
+                  6452719,
+                  0
+                ],
+                "control.initial_validation": [
+                  84,
+                  66671,
+                  14704,
+                  0
+                ],
+                "control.store": [
+                  84,
+                  22896188,
+                  11673267,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  42,
+                  6595364,
+                  3691364,
+                  0
+                ],
+                "finaluse.current_state": [
+                  42,
+                  837762,
+                  597175,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  42,
+                  454164,
+                  291021,
+                  0
+                ],
+                "finaluse.live_state": [
+                  42,
+                  292645,
+                  209634,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  42,
+                  16092,
+                  9151,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  42,
+                  274075,
+                  188379,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  42,
+                  50786,
+                  13520,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  44141023,
+                  20872757,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  3178033,
+                  1575083,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  40944249,
+                  19278235,
+                  0
+                ],
+                "journal.physical": [
+                  12,
+                  2565259,
+                  1095912,
+                  0
+                ],
+                "journal.witness": [
+                  24,
+                  277643,
+                  267349,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  42,
+                  38085,
+                  17770,
+                  0
+                ],
+                "live.authorities": [
+                  42,
+                  42313003,
+                  20081429,
+                  0
+                ],
+                "live.clock": [
+                  42,
+                  38981,
+                  14911,
+                  0
+                ],
+                "live.control": [
+                  84,
+                  23453790,
+                  11972174,
+                  0
+                ],
+                "live.final_use": [
+                  42,
+                  7540947,
+                  4386020,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  42,
+                  34637052,
+                  15594122,
+                  0
+                ],
+                "live.selected_mutex": [
+                  42,
+                  35548,
+                  11196,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  25419381,
+                  13357602,
+                  0
+                ],
+                "selection.coordinator": [
+                  2,
+                  101641,
+                  70402,
+                  0
+                ],
+                "selection.task_current": [
+                  4,
+                  22359651,
+                  11643932,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  2,
+                  2941531,
+                  1626019,
+                  0
+                ],
+                "selection.version_lock": [
+                  2,
+                  1159,
+                  780,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  1893691,
+                  875701,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  1259505,
+                  673594,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  1461,
+                  1010,
+                  0
+                ],
+                "task.live_current": [
+                  20,
+                  31502527,
+                  15556184,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  10,
+                  31790412,
+                  15351700,
+                  0
+                ],
+                "task.version_mutex": [
+                  10,
+                  12731,
+                  11191,
+                  0
+                ],
+                "version.current": [
+                  10,
+                  15251043,
+                  7402602,
+                  0
+                ],
+                "version.generation_observation": [
+                  10,
+                  16504710,
+                  7912396,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 70739456
+            },
+            {
+              "cpu_ns": 43805102,
+              "cut": 3,
+              "errors": [],
+              "id": 15,
+              "metrics": {
+                "artifact.candidate_files": [
+                  42,
+                  555125,
+                  289641,
+                  0
+                ],
+                "artifact.registry": [
+                  42,
+                  29260369,
+                  17918451,
+                  0
+                ],
+                "artifact.signature": [
+                  42,
+                  3498911,
+                  2491402,
+                  0
+                ],
+                "control.head_digest": [
+                  84,
+                  5689079,
+                  3402489,
+                  0
+                ],
+                "control.host_load": [
+                  84,
+                  11798904,
+                  7695836,
+                  0
+                ],
+                "control.initial_validation": [
+                  84,
+                  45453,
+                  22294,
+                  0
+                ],
+                "control.store": [
+                  84,
+                  22891742,
+                  14282002,
+                  0
+                ],
+                "finaluse.authenticate": [
+                  42,
+                  4667840,
+                  3676286,
+                  0
+                ],
+                "finaluse.current_state": [
+                  42,
+                  827075,
+                  652457,
+                  0
+                ],
+                "finaluse.frontier_load": [
+                  42,
+                  479033,
+                  333245,
+                  0
+                ],
+                "finaluse.live_state": [
+                  42,
+                  244733,
+                  220420,
+                  0
+                ],
+                "finaluse.state_mutex": [
+                  42,
+                  18624,
+                  10793,
+                  0
+                ],
+                "finaluse.store_revalidate": [
+                  42,
+                  219812,
+                  199538,
+                  0
+                ],
+                "finaluse.verify_state": [
+                  42,
+                  20751,
+                  13358,
+                  0
+                ],
+                "input.all": [
+                  3,
+                  39732394,
+                  25117954,
+                  0
+                ],
+                "input.source": [
+                  3,
+                  2420608,
+                  1584700,
+                  0
+                ],
+                "input.task_current": [
+                  6,
+                  37271697,
+                  23508347,
+                  0
+                ],
+                "journal.physical": [
+                  12,
+                  1897002,
+                  1138293,
+                  0
+                ],
+                "journal.witness": [
+                  24,
+                  348646,
+                  265661,
+                  0
+                ],
+                "live.artifact_mutex": [
+                  42,
+                  55787,
+                  28786,
+                  0
+                ],
+                "live.authorities": [
+                  42,
+                  39936629,
+                  25890614,
+                  0
+                ],
+                "live.clock": [
+                  42,
+                  17284,
+                  10225,
+                  0
+                ],
+                "live.control": [
+                  84,
+                  23614166,
+                  14713817,
+                  0
+                ],
+                "live.final_use": [
+                  42,
+                  5598487,
+                  4437780,
+                  0
+                ],
+                "live.revalidate_and_clock": [
+                  42,
+                  34148535,
+                  21318364,
+                  0
+                ],
+                "live.selected_mutex": [
+                  42,
+                  24720,
+                  10860,
+                  0
+                ],
+                "selection.all": [
+                  2,
+                  27678487,
+                  17950972,
+                  0
+                ],
+                "selection.coordinator": [
+                  2,
+                  526686,
+                  200718,
+                  0
+                ],
+                "selection.task_current": [
+                  4,
+                  23994936,
+                  15526283,
+                  0
+                ],
+                "selection.version_and_lock": [
+                  2,
+                  3137664,
+                  2203763,
+                  0
+                ],
+                "selection.version_lock": [
+                  2,
+                  1129,
+                  809,
+                  0
+                ],
+                "source.active": [
+                  3,
+                  1251604,
+                  833180,
+                  0
+                ],
+                "source.owner_current": [
+                  6,
+                  1143233,
+                  727137,
+                  0
+                ],
+                "source.try_lock": [
+                  3,
+                  8581,
+                  3208,
+                  0
+                ],
+                "task.live_current": [
+                  20,
+                  29504201,
+                  18943477,
+                  0
+                ],
+                "task.original_version_and_lock": [
+                  10,
+                  31751411,
+                  20073978,
+                  0
+                ],
+                "task.version_mutex": [
+                  10,
+                  10350,
+                  3511,
+                  0
+                ],
+                "version.current": [
+                  10,
+                  15084752,
+                  9623047,
+                  0
+                ],
+                "version.generation_observation": [
+                  10,
+                  16627599,
+                  10408878,
+                  0
+                ]
+              },
+              "service_replied": true,
+              "wall_ns": 68645285
+            }
+          ],
+          "owner_cpu_ns": 277456250,
+          "owner_wall_minus_cpu_ns": 158612168,
+          "owner_wall_ns": 436068418,
+          "totals_count_wall_ns_cpu_ns_errors": {
+            "artifact.candidate_files": [
+              300,
+              2392503,
+              1438132,
+              0
+            ],
+            "artifact.registry": [
+              300,
+              166208952,
+              99236977,
+              0
+            ],
+            "artifact.signature": [
+              300,
+              20479918,
+              15563496,
+              0
+            ],
+            "control.head_digest": [
+              600,
+              37933470,
+              23062447,
+              0
+            ],
+            "control.host_load": [
+              600,
+              73628030,
+              50332077,
+              0
+            ],
+            "control.initial_validation": [
+              600,
+              379123,
+              121656,
+              0
+            ],
+            "control.store": [
+              600,
+              142332824,
+              90149405,
+              0
+            ],
+            "finaluse.authenticate": [
+              300,
+              34571087,
+              25755719,
+              0
+            ],
+            "finaluse.current_state": [
+              300,
+              5442071,
+              4255743,
+              0
+            ],
+            "finaluse.frontier_load": [
+              300,
+              2825982,
+              2091896,
+              0
+            ],
+            "finaluse.live_state": [
+              300,
+              1946513,
+              1517779,
+              0
+            ],
+            "finaluse.state_mutex": [
+              300,
+              119253,
+              66296,
+              0
+            ],
+            "finaluse.store_revalidate": [
+              300,
+              1805557,
+              1365908,
+              0
+            ],
+            "finaluse.verify_state": [
+              300,
+              203945,
+              95388,
+              0
+            ],
+            "input.all": [
+              18,
+              196916104,
+              126082182,
+              0
+            ],
+            "input.source": [
+              18,
+              13773661,
+              8785248,
+              0
+            ],
+            "input.task_current": [
+              36,
+              182918631,
+              117143401,
+              0
+            ],
+            "journal.physical": [
+              184,
+              26217784,
+              15413183,
+              0
+            ],
+            "journal.witness": [
+              368,
+              7008023,
+              4518450,
+              0
+            ],
+            "live.artifact_mutex": [
+              300,
+              284200,
+              136431,
+              0
+            ],
+            "live.authorities": [
+              300,
+              235765914,
+              151009626,
+              0
+            ],
+            "live.clock": [
+              300,
+              247285,
+              103010,
+              0
+            ],
+            "live.control": [
+              600,
+              146100621,
+              92570062,
+              0
+            ],
+            "live.final_use": [
+              300,
+              40736993,
+              30701639,
+              0
+            ],
+            "live.revalidate_and_clock": [
+              300,
+              194034918,
+              119535350,
+              0
+            ],
+            "live.selected_mutex": [
+              300,
+              231611,
+              76836,
+              0
+            ],
+            "next_use.cell": [
+              2,
+              85202332,
+              52389425,
+              0
+            ],
+            "selection.all": [
+              12,
+              135720206,
+              88147311,
+              0
+            ],
+            "selection.coordinator": [
+              14,
+              1429125,
+              803215,
+              0
+            ],
+            "selection.task_current": [
+              28,
+              142318389,
+              91335764,
+              0
+            ],
+            "selection.version_and_lock": [
+              14,
+              19281066,
+              12799994,
+              0
+            ],
+            "selection.version_lock": [
+              14,
+              17619,
+              7359,
+              0
+            ],
+            "source.active": [
+              18,
+              7447999,
+              4605229,
+              0
+            ],
+            "source.owner_current": [
+              36,
+              6071947,
+              4008814,
+              0
+            ],
+            "source.publication": [
+              4,
+              12839977,
+              7690963,
+              0
+            ],
+            "source.try_lock": [
+              18,
+              25922,
+              12597,
+              0
+            ],
+            "task.live_current": [
+              140,
+              175761190,
+              113717311,
+              0
+            ],
+            "task.original_version_and_lock": [
+              70,
+              182249926,
+              115525186,
+              0
+            ],
+            "task.version_mutex": [
+              70,
+              80272,
+              41549,
+              0
+            ],
+            "version.current": [
+              70,
+              88192049,
+              56196643,
+              0
+            ],
+            "version.generation_observation": [
+              70,
+              93733702,
+              59054040,
+              0
+            ]
+          }
+        }
+      ],
+      "owner_profiles_in_whole_case": 22
+    }
+  },
+  "focus": {
+    "healthy": {
+      "outcome": "ok",
+      "shard": 2
+    },
+    "timing": {
+      "outcome": "ok",
+      "shard": 4
+    }
+  },
+  "sha256": "72f7baef7dae44c669480b082d19e2b3f0232dadabc98f7ab8f056d35ba4cd6d",
+  "shards_pass_fail_ignored_measured_filtered": {
+    "1": [
+      379,
+      0,
+      40,
+      0,
+      1304
+    ],
+    "2": [
+      393,
+      0,
+      36,
+      0,
+      1294
+    ],
+    "3": [
+      384,
+      0,
+      51,
+      0,
+      1288
+    ],
+    "4": [
+      396,
+      0,
+      44,
+      0,
+      1283
+    ]
+  },
+  "source": "c25cf4146572501427cc35f1c03f4d585c1c4758"
+}
