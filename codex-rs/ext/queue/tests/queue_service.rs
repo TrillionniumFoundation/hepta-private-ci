@@ -270,16 +270,23 @@ if payload["prompt"] == "blocked":
         .unwrap_or_else(|error| panic!("write queue hooks: {error}"));
 }
 
+// The generated Windows script runs in Windows PowerShell 5.1. Read the real
+// JSON payload without loading the PowerShell Utility module inside the deadline.
+const WINDOWS_QUEUE_HOOK_INPUT: &str = r#"[void][Reflection.Assembly]::Load('System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35')
+$json = [System.Web.Script.Serialization.JavaScriptSerializer]::new()
+$payload = $json.DeserializeObject([Console]::In.ReadToEnd())
+$prompt = $payload['prompt']"#;
+
 #[cfg(windows)]
 fn write_rejecting_prompt_hook(home: &Path) {
     let script_path = home.join("queue_prompt_hook.ps1");
     let log_path = home.join("queue_prompt_hook.log");
     let script = format!(
         r#"$ErrorActionPreference = 'Stop'
-$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
-[IO.File]::AppendAllText('{log_path}', $payload.prompt + "`n")
-if ($payload.prompt -eq 'blocked') {{
-    @{{ decision = 'block'; reason = 'blocked by queue hook' }} | ConvertTo-Json -Compress
+{WINDOWS_QUEUE_HOOK_INPUT}
+[IO.File]::AppendAllText('{log_path}', $prompt + "`n")
+if ($prompt -eq 'blocked') {{
+    [Console]::Out.WriteLine($json.Serialize(@{{ decision = 'block'; reason = 'blocked by queue hook' }}))
 }}
 "#,
         log_path = log_path.display().to_string().replace('\'', "''"),
@@ -316,18 +323,18 @@ fn write_blocking_prompt_hook(home: &Path) {
     let script = if cfg!(windows) {
         format!(
             r#"$ErrorActionPreference = 'Stop'
-$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
-if ($payload.prompt -in @('delay exact persistence', 'delay exact rejection')) {{
+{WINDOWS_QUEUE_HOOK_INPUT}
+if ($prompt -in @('delay exact persistence', 'delay exact rejection')) {{
     [IO.File]::WriteAllText('{entered_path}', 'entered')
     $deadline = [DateTime]::UtcNow.AddSeconds(20)
     while (-not [IO.File]::Exists('{release_path}')) {{
         if ([DateTime]::UtcNow -ge $deadline) {{
             throw 'timed out waiting to release queue persistence hook'
         }}
-        Start-Sleep -Milliseconds 10
+        [Threading.Thread]::Sleep(10)
     }}
-    if ($payload.prompt -eq 'delay exact rejection') {{
-        @{{ decision = 'block'; reason = 'delayed queue rejection' }} | ConvertTo-Json -Compress
+    if ($prompt -eq 'delay exact rejection') {{
+        [Console]::Out.WriteLine($json.Serialize(@{{ decision = 'block'; reason = 'delayed queue rejection' }}))
     }}
 }}
 "#,
