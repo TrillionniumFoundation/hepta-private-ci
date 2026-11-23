@@ -17,10 +17,10 @@ mod linux {
     use std::os::fd::OwnedFd;
     use std::os::fd::RawFd;
     use std::os::unix::net::UnixStream;
-    use std::path::PathBuf;
     use std::sync::Arc;
     use std::time::Duration;
 
+    use anyhow::Context;
     use codex_hepta_agentd::AgentdUnixFinalUseGrantProvider;
     use codex_hepta_agentd::PairedLearningDataUse;
     use codex_hepta_agentd::text_session::AgentdTextSessionConfig;
@@ -33,9 +33,6 @@ mod linux {
     #[derive(Deserialize)]
     #[serde(deny_unknown_fields)]
     struct Request {
-        root_pid: u32,
-        sqlite_home: PathBuf,
-        route: AgentdTextSessionConfig,
         study_sha256: String,
         delivery_id: String,
         scope: Scope,
@@ -59,15 +56,37 @@ mod linux {
         Ok(unsafe { OwnedFd::from_raw_fd(owned) })
     }
 
-    pub(super) fn run() -> anyhow::Result<()> {
-        if std::env::args_os().len() != 1 {
-            anyhow::bail!(
-                "hepta-paired-consent reads private request JSON on stdin; inherit the protected Root socket on fd 3 and its held pidfd on fd 4"
-            );
-        }
+    fn bounded_json(reader: impl Read) -> anyhow::Result<Vec<u8>> {
         let mut bytes = Vec::new();
-        std::io::stdin().take(32769).read_to_end(&mut bytes)?;
-        anyhow::ensure!(bytes.len() <= 32768, "private request exceeds 32 KiB");
+        reader.take(32769).read_to_end(&mut bytes)?;
+        anyhow::ensure!(bytes.len() <= 32768, "private JSON exceeds 32 KiB");
+        Ok(bytes)
+    }
+
+    pub(super) fn run() -> anyhow::Result<()> {
+        let usage = "hepta-paired-consent ROOT_PID SQLITE_HOME ROUTE_JSON < private-refs.json\nThe existing protected Linux owner passes the Root issuer socket on fd 3 and its held pidfd on fd 4.";
+        let args: Vec<_> = std::env::args_os().skip(1).collect();
+        if matches!(args.as_slice(), [flag] if flag == "--help") {
+            println!("{usage}");
+            return Ok(());
+        }
+        let [pid, sqlite_home, route_file] = args.as_slice() else {
+            anyhow::bail!("{usage}");
+        };
+        let root_pid: u32 = pid.to_str().context("invalid Root PID")?.parse()?;
+        // Verify inherited capabilities before opening a route or reading stdin.
+        let issuer = Arc::new(AgentdUnixFinalUseGrantProvider::from_root_stream(
+            UnixStream::from(
+                inherited(3).context("missing inherited private Root socket on fd 3")?,
+            ),
+            root_pid,
+            inherited(4).context("missing inherited original Root pidfd on fd 4")?,
+            Duration::from_secs(3),
+            Duration::from_secs(15),
+        )?);
+        let route: AgentdTextSessionConfig =
+            serde_json::from_slice(&bounded_json(std::fs::File::open(route_file)?)?)?;
+        let bytes = bounded_json(std::io::stdin())?;
         let request: Request = serde_json::from_slice(&bytes)?;
         let study: Digest32 = request.study_sha256.parse()?;
         let delivery: Digest32 = request.delivery_id.parse()?;
@@ -86,16 +105,8 @@ mod linux {
                 }
             }
         };
-        let issuer = Arc::new(AgentdUnixFinalUseGrantProvider::from_root_stream(
-            UnixStream::from(inherited(3)?),
-            request.root_pid,
-            inherited(4)?,
-            Duration::from_secs(3),
-            Duration::from_secs(15),
-        )?);
-        let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
-            &request.sqlite_home,
-        )?);
+        let sqlite =
+            SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(sqlite_home)?);
         let runtime = tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .build()?;
@@ -103,16 +114,13 @@ mod linux {
             let evidence = HeptaEvidenceStore::open_existing_read_only(&sqlite).await?;
             let result = issuer
                 .verify_retained_paired_learning_consent(
-                    &evidence,
-                    &request.route,
-                    delivery,
-                    study,
-                    allowed,
+                    &evidence, &route, delivery, study, allowed,
                 )
                 .await;
             evidence.close().await;
             Ok::<_, anyhow::Error>(result?)
         })?;
+        let consent = Digest32::of_bytes(allowed.consent_text(study).as_bytes());
         let principal = Digest32::of_bytes(&serde_json::to_vec(&(
             "hepta.paired-learning.principal.v1",
             study.to_string(),
@@ -127,7 +135,8 @@ mod linux {
             serde_json::json!({
                 "schema": "hepta.paired-learning.consent-readback.v1",
                 "study_sha256": study.to_string(), "delivery_id": delivery.to_string(),
-                "use": scope, "study_principal_sha256": principal.to_string()
+                "use": scope, "consent_text_sha256": consent.to_string(),
+                "study_principal_sha256": principal.to_string()
             })
         );
         Ok(())
