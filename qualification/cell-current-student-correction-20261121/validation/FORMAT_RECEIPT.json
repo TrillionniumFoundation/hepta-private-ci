@@ -1,0 +1,44 @@
+{
+  "source": "e147c1d851b0a5b5c03dbeb0285d443bd7057973",
+  "job_id": "1a1fc235a65-ffbe-1cc8",
+  "readback": "{\"argv\": [\"/home/qian-qi/.cargo/bin/just\", \"fmt\"], \"cwd\": \"/home/qian-qi/work/hepta-e16-ac5459-20261121/e2-source/codex-rs\", \"exit_code\": 0, \"seconds\": 0.1142044709995389, \"source\": \"e147c1d851b0a5b5c03dbeb0285d443bd7057973\"}\n{\"file_hashes\": [{\"path\": \"qualification/cell-current-student-correction-20261121/corrections.py\", \"sha256\": \"da699c0b25cf36432cff8952b9c4ec64b7cbae083ade08b9552ccabf48c8a59c\", \"bytes\": 9767}, {\"path\": \"qualification/cell-current-student-correction-20261121/learner.py\", \"sha256\": \"f391f073b906c4e02481e49d1195941e8ba66c0c4f9d50acd7c6b2433aa1947a\", \"bytes\": 20200}, {\"path\": \"qualification/cell-current-student-correction-20261121/comparison.py\", \"sha256\": \"5918e4a67c8e2ffb71969885bcde569ed8ebf215dfed91473102546dd67570bb\", \"bytes\": 3680}, {\"path\": \"qualification/cell-current-student-correction-20261121/test_corrections.py\", \"sha256\": \"f61b66ba7cb23c146120db6c535acc4a2855da87bd114701c38a42b2e8b2bdc4\", \"bytes\": 6765}, {\"path\": \"qualification/cell-current-student-correction-20261121/README.md\", \"sha256\": \"4efbfd146d408cb4949205a7ba1c756b3e5de838fe94bbbeeec7b4d33ae86a24\", \"bytes\": 4418}], \"stdout\": \"No changed files need formatting. Use --all for a full repository check.\\n\", \"stderr\": \"\"}\n",
+  "status": {
+    "at_unix_ms": 1795231539004,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1fc235a65-ffbe-1cc8",
+    "launch_nonce": "ee28548d301adfa4de70b38e58b43956",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1222,
+        "stored": 1222
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "qualification_paths_have_no_registered_formatter": true,
+  "ruff_validation_claimed": false
+}

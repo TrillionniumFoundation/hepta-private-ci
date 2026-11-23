@@ -1,0 +1,66 @@
+{
+  "reviewed_at": "2026-11-21T06:03:32.598975+00:00",
+  "scope": "Independent local receipt, cache hash, dependency constraints and interval accounting review; no execution or network",
+  "closure_sha256": "a7bf67d65bef981338a10d04ec78600932ca20fbd579fc3b4d52f2d664d25b55",
+  "terminal_sha256": "bbe8459c9f4fd885530347843838854fe79ac24ae69030fa9df66dd0ad301de8",
+  "result_sha256": "34a34a194a3bfac505e93f4370489567fe9c36b37cc2542965de400772374c1f",
+  "outer_elapsed_seconds": 39.03839302062988,
+  "selected_packages": 44,
+  "all_original_38_selections_unchanged": true,
+  "root_requirements": 12,
+  "active_dependency_edges": 71,
+  "all_selected_reachable": true,
+  "frozen_core_versions": {
+    "torch": "2.9.1+cu128",
+    "transformers": "4.57.3",
+    "tokenizers": "0.22.2",
+    "safetensors": "0.7.0",
+    "peft": "0.18.0"
+  },
+  "cached_new_responses_sha_verified": 12,
+  "additional_metadata_bytes": 3378797,
+  "whole_wheel_bytes": 4109714899,
+  "conditional_missing_bytes": 504322940,
+  "holes": {
+    "torch": {
+      "half_open_ranges": [
+        [
+          265197372,
+          337830618
+        ],
+        [
+          536817272,
+          563051030
+        ],
+        [
+          645233174,
+          675661236
+        ],
+        [
+          782353844,
+          788271442
+        ],
+        [
+          879104338,
+          900881648
+        ]
+      ],
+      "bytes": 156989974,
+      "retained_unique_bytes": 743891674
+    },
+    "nvidia-nvshmem-cu12": {
+      "half_open_ranges": [
+        [
+          39147520,
+          124657145
+        ]
+      ],
+      "bytes": 85509625,
+      "retained_unique_bytes": 39147520
+    }
+  },
+  "original_stage_a_blocked_preserved": true,
+  "runtime_ready": false,
+  "stage_b_executed": false,
+  "qualification": "METADATA_ONLY_COMPLETE_MATERIALS_PENDING"
+}

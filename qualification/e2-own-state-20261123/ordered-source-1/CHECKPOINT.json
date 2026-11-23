@@ -1,0 +1,243 @@
+{
+  "actual_four_candidates": [
+    {
+      "FINAL_bytes": 245,
+      "FINAL_sha256": "e496e7eade98fba33ef45cc70ad869c7a76acd2e16e503d7d2e08d9847cab836",
+      "FINAL_version": "2050:54134670:245:1795265026332231984:1795265026332231984",
+      "commit": "4d1c5ab0ffa022b5a9a13d3d670c1c39b340ff24",
+      "complete_durable_confirmed": true,
+      "exit_code": 1,
+      "job": "1a1fe1cbe21-ffbe-2076",
+      "ordinal": 0,
+      "parent": "2510cccbb44d56e05eb3f6ba1921091b0720b4ac",
+      "position": [
+        11,
+        0
+      ],
+      "refusal": {
+        "actual_native_completion_may_be_unknown": false,
+        "automatic_retry": false,
+        "error": "invalid literal for int() with base 10: '-'",
+        "error_type": "ValueError",
+        "model_calls": 0,
+        "native_dispatch_upper_bound": 0,
+        "phase": "compatibility",
+        "status": "REFUSED"
+      },
+      "source_path": "tomlkit/_utils.py",
+      "terminal": "failed",
+      "terminal_unix_ms": 1795265026608
+    },
+    {
+      "FINAL_bytes": 245,
+      "FINAL_sha256": "e496e7eade98fba33ef45cc70ad869c7a76acd2e16e503d7d2e08d9847cab836",
+      "FINAL_version": "2050:54137325:245:1795265856878542040:1795265856878542040",
+      "commit": "7ab0c794ddb4f7cfe837721365ba7302f769c6ab",
+      "complete_durable_confirmed": true,
+      "exit_code": 1,
+      "job": "1a1fe2e8f19-ffbe-20a1",
+      "ordinal": 1,
+      "parent": "004fce630d2537542a03fa8d4d6d62dae418b422",
+      "position": [
+        21,
+        1
+      ],
+      "refusal": {
+        "actual_native_completion_may_be_unknown": false,
+        "automatic_retry": false,
+        "error": "invalid literal for int() with base 10: '-'",
+        "error_type": "ValueError",
+        "model_calls": 0,
+        "native_dispatch_upper_bound": 0,
+        "phase": "compatibility",
+        "status": "REFUSED"
+      },
+      "source_path": "tomlkit/api.py",
+      "terminal": "failed",
+      "terminal_unix_ms": 1795265856953
+    },
+    {
+      "FINAL_bytes": 245,
+      "FINAL_sha256": "e496e7eade98fba33ef45cc70ad869c7a76acd2e16e503d7d2e08d9847cab836",
+      "FINAL_version": "2050:54137783:245:1795266193936891417:1795266193936891417",
+      "commit": "004fce630d2537542a03fa8d4d6d62dae418b422",
+      "complete_durable_confirmed": true,
+      "exit_code": 1,
+      "job": "1a1fe33c859-ffbe-20ad",
+      "ordinal": 2,
+      "parent": "0092bddb22afc13242fe6963a4529d73ef6eda5c",
+      "position": [
+        22,
+        0
+      ],
+      "refusal": {
+        "actual_native_completion_may_be_unknown": false,
+        "automatic_retry": false,
+        "error": "invalid literal for int() with base 10: '-'",
+        "error_type": "ValueError",
+        "model_calls": 0,
+        "native_dispatch_upper_bound": 0,
+        "phase": "compatibility",
+        "status": "REFUSED"
+      },
+      "source_path": "tomlkit/api.py",
+      "terminal": "failed",
+      "terminal_unix_ms": 1795266194004
+    },
+    {
+      "FINAL_bytes": 245,
+      "FINAL_sha256": "e496e7eade98fba33ef45cc70ad869c7a76acd2e16e503d7d2e08d9847cab836",
+      "FINAL_version": "2050:54139839:245:1795266495860142145:1795266495860142145",
+      "commit": "10fbd373f4ce2916ba08d7a2c4421a77f68a2ca2",
+      "complete_durable_confirmed": true,
+      "exit_code": 1,
+      "job": "1a1fe382c8e-ffbe-20b5",
+      "ordinal": 3,
+      "parent": "eddd27e43a62fe58707c311bfad2f52e72493f53",
+      "position": [
+        29,
+        0
+      ],
+      "refusal": {
+        "actual_native_completion_may_be_unknown": false,
+        "automatic_retry": false,
+        "error": "invalid literal for int() with base 10: '-'",
+        "error_type": "ValueError",
+        "model_calls": 0,
+        "native_dispatch_upper_bound": 0,
+        "phase": "compatibility",
+        "status": "REFUSED"
+      },
+      "source_path": "tomlkit/api.py",
+      "terminal": "failed",
+      "terminal_unix_ms": 1795266495913
+    }
+  ],
+  "frozen_as_of": "2026-11-21T03:00:00Z",
+  "frozen_selection_commit": "4c55d9bfe1898c0066b3ae7cb05744fe99f6b418",
+  "immediate_error": "ValueError: invalid literal for int() with base 10: '-'",
+  "independent_scored_tasks": 0,
+  "inspected_commits": 30,
+  "model_invocations": 0,
+  "native_qualification_invocations": 0,
+  "next_source_environment_and_dispatch": {
+    "H_scan_dispatch_response": "MCP request timed out",
+    "actual_scan_pty": "dpty-5f610b3fb0cb5b4e926d5248013df5499de254a9f284abe977ec014b40f52b0e",
+    "deployment": {
+      "deployment": {
+        "bytes": 4025,
+        "path": "/home/qian-qi/work/hepta-current-student-correction-20261121-ac5459/fresh-single-native-v1/DEPLOYMENT_02_andialbrecht_sqlparse_v1.json",
+        "sha256": "e944c27fa1955498cb3959d552923da2e96a0fa052ee6baac2da3c30227a806b"
+      },
+      "new_metadata": {
+        "bytes": 5583,
+        "path": "/home/qian-qi/work/hepta-current-student-correction-20261121-ac5459/fresh-single-native-v1/evidence/REPOSITORY_02_andialbrecht_sqlparse.json",
+        "sha256": "2fd596e6dc7505ecb8b97d2df17d94664702166cb45d10d980d1cdfd299dc005"
+      }
+    },
+    "fresh_model_generations": 0,
+    "frozen_wheel_paths_observation": {
+      "disk_free": 226650382336,
+      "original_wheel_file_presence_only": 0,
+      "total": 44
+    },
+    "full_training_or_generation_environment_requalified": false,
+    "new_acquisition_environment": {
+      "new_scan_only_python": "/home/qian-qi/work/hepta-e2-acquisition-runtime-20261123-ac5459/venv/bin/python",
+      "new_site_packages": [],
+      "same_physical_binary": true
+    },
+    "original_interpreter_launch": {
+      "exit_code": 127,
+      "stderr_or_stdout": "/usr/bin/timeout: failed to run command ‘/home/qian-qi/work/hepta-e2-stage-c-install-rebuilt-v2-20261121-ac5459/venv/bin/python’: No such file or directory\r\n"
+    },
+    "original_native_environment_guard": {
+      "native_adapter_original_gate": "PASS",
+      "no_native_calls": true,
+      "original_verifier_root": "/home/qian-qi/work/hepta-e2-native-verifier-recovery-v1-20261121-ac5459/venv",
+      "scope": {
+        "host_mount_closure_complete": false,
+        "inventory_binding": {
+          "path": "/home/qian-qi/work/hepta-current-student-correction-20261121-ac5459/fresh-single-native-v1/evidence/NATIVE_ENVIRONMENT.json",
+          "sha256": "5d86a0fa1260f171ba1cc2e9ac01e4a015b915bb48e3dcd06b55d8b74328a7ed"
+        },
+        "scope": "complete venv tree plus explicitly hashed external symlink file targets; host /usr,/lib,/lib64 dependency closure is not fully inventoried"
+      }
+    },
+    "original_train_updates_in_this_checkpoint": 0,
+    "release_original_guard": {
+      "new_model_or_native_calls": 0,
+      "numpy_loaded": false,
+      "scan_slot_claimed": false,
+      "selection_digest": "394ee2e8f4b5d00dac00b177ecbb83bd578f7c8473e5d7a90b03c8d6e2b5b1f7",
+      "source_release": "PASSED",
+      "third_party_modules_loaded": [],
+      "torch_loaded": false,
+      "transformers_loaded": false
+    },
+    "same_request_reconciliation": "MCP request timed out",
+    "scan_hard_seconds": 1860,
+    "scientific_result_at_snapshot": null,
+    "scope": "Source index 2 environment repair and original scan dispatch",
+    "source": "andialbrecht/sqlparse",
+    "state_at_early_snapshot": "DISPATCHED",
+    "target_observation_after_both_calls": {
+      "matched_current_scanners": [],
+      "matched_original_deployment_jobs": [],
+      "recent_job_count": 16,
+      "scan_dir": false,
+      "scan_slot": false,
+      "timestamp_ns": "1795411346262323942",
+      "uncertain_marker": false
+    },
+    "verified_cpython": {
+      "cpython": {
+        "bytes": 8020928,
+        "identity": {
+          "ctime_ns": "1789164879262713172",
+          "device": 2050,
+          "inode": 36451609,
+          "mode": 33261,
+          "mtime_ns": "1788171506000000000",
+          "size": 8020928
+        },
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+        "sys_version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "version": [
+          3,
+          12,
+          3
+        ]
+      },
+      "original_physical_identity_equal": true,
+      "original_proof_sha256": "d5bbcdb18862056080eecc3dd087d611d5d9e33badc9b1f71aea07db8e82e2ed"
+    }
+  },
+  "ordinal_3_fourth_candidate_job": "1a1fe382c8e-ffbe-20b5",
+  "original_error_location": "prepare_fresh.py tree_inventory line39 int(size), before native evaluation",
+  "postterminal_observation": {
+    "after_native_claim": 2,
+    "before_native_claim": 2,
+    "scan02_intent": 2,
+    "scan02_result": 2,
+    "uncertainty_marker": 2
+  },
+  "postterminal_observation_values": "errno=2 means ENOENT at that observation only.",
+  "qualified_independent_owners": 0,
+  "registered_repository_git_slots_consumed": 224,
+  "remaining_commits_unread": 20,
+  "repository": "python-poetry/tomlkit",
+  "scan_job": "1a1fe15d4ca-ffbe-206c",
+  "scan_result_sha256": "331b8f9987091f0fd51c85b783da84857cea9bb342e0f880917904a0ca9573cc",
+  "scheduled_candidates": 4,
+  "schema": "hepta.e2.ordered-source1-closure.source2-launch.v1",
+  "source_head": "7bf7284dbd622557d9909f8fee017a4cb169a139",
+  "source_index": 1,
+  "training_effect_estimated": false,
+  "tree_entry_observation": {
+    "mode": "160000",
+    "path": "tests/toml-test",
+    "size_column": "-",
+    "type": "commit"
+  }
+}

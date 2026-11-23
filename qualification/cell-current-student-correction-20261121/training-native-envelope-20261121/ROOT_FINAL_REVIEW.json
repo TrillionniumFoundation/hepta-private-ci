@@ -1,0 +1,30 @@
+{
+  "additional_native_parent_reserved_updates": 8,
+  "cost_boundaries": "900 work / 960 hard SIGALRM / 1020 H outer; signal is not guaranteed immediate GPU preemption; H completion required; unknown keeps reservation",
+  "created_utc": "2026-11-21T10:13:28.921885+00:00",
+  "first_actual_completed_updates": 8,
+  "first_actual_job": "1a1fd898e0f-ffbe-1f80",
+  "first_actual_model_digest": "c9769528de0d58979687ca83afa8dfb96846755a5965ce73cb7f068a3bd12d13",
+  "first_job_complete_durable_confirmed": true,
+  "first_possible_upper_updates": 8,
+  "fresh_content_reads": 0,
+  "global_updates_cap": 16,
+  "native_adoption": false,
+  "native_pending_plan_changed_fields": [
+    "predecessor_gate",
+    "status"
+  ],
+  "native_plan_sha256": "79f5bd7b9ab601560c3b1867b0fb37707c6808c794d84143a51e2e1350a90e8f",
+  "native_task_executions": 0,
+  "new_generation_calls": 0,
+  "next_fresh_phase_blocked_until_both_children_and_published_weights_selection": true,
+  "predecessor_proof_sha256": "41989036c3e247a128cd94e35544e49d733b2490f3bcc492ff373552219fd19f",
+  "same_updates_not_equal_compute": true,
+  "schema": "hepta.e2.root-native-training-preexecution-review.v1",
+  "scientific_confirmation_qualified": false,
+  "source_unchanged_from_document": true,
+  "status": "FROZEN_FOR_ONE_ORIGINAL_NATIVE_PARENT_TRAINING_CALL",
+  "ten_predecessor_originals_byte_identical_to_root_readbacks": true,
+  "training_calls_this_review": 0,
+  "training_runtime_live_predecessor_checks_required": true
+}

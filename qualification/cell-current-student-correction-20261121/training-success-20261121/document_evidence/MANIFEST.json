@@ -1,0 +1,135 @@
+{
+  "actual_document_adapter": {
+    "bytes": 2193720,
+    "sha256": "8d5bd43cdfe6ad07652b58c42ccf0d6fa45e71ff11c73fb14d967c3d1885006a"
+  },
+  "append_native_as_sibling_later": true,
+  "archive": {
+    "bytes": 4707771,
+    "file": "document-success-originals.tar.gz",
+    "internal_inventory_path": "CONTENTS.json",
+    "internal_inventory_sha256": "4a5b4330ef887f92131e641a153d110c947f9f9cb72af923b72bc80644693afc",
+    "members": 133,
+    "original_member_count": 132,
+    "original_member_file_bytes": 7712551,
+    "sha256": "4a01fd54b86038c5f111a6d071efb2b0bd42a3c34ba30e83bfd4be0844feec89",
+    "uncompressed_tar_bytes": 7843840,
+    "uncompressed_tar_sha256": "c955597e378ac12d424989346e4a7e13e37f7729dd0aad05471cf96a9b88c486"
+  },
+  "container": "concatenate raw parts in listed order into gzip(tar)",
+  "external_prerequisite_evidence": [
+    "9ac43214d5c5d27c33021dfa44d1920e54e22902 CPU/runtime evidence commit",
+    "4778bbecc11f5f06dd62d84c078b240f2f48ca24 document launch-envelope evidence commit"
+  ],
+  "full_archive_byte_verification_passed": true,
+  "original_doc_result_sha256": "c277e9f885a059270ee62dbe92a7f3aa54b400ea63a04f29c57cad347c21b2bf",
+  "original_review_note": "The original root terminal review still says adapter readback/publication pending because it predates readback; it is preserved unchanged. The later document-readback/MANIFEST verifies all11 including full adapter.",
+  "original_root_terminal_review_sha256": "e03e4e803fa9995bf7dba4fa957a628c2dcb6b1d4e6ca84fb7d4678195f7ade1",
+  "parts": [
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "9089c0687381ed9cd824ebefce17eb58f53e035d",
+      "offset": 0,
+      "path": "originals.tar.gz.part-000",
+      "sha256": "504152ecd05cb373e55fb88c2a8d4f8fc8b2f0e5b90a2c0c188457b0be74e01a"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "c37427e7889b4fea74a23c5357cc9ed89a6591f0",
+      "offset": 340000,
+      "path": "originals.tar.gz.part-001",
+      "sha256": "d260b8d2722c4a1f460d6c55cdd21756dd675f7e90d2ece691abd1d951a05ebb"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "bcdf0f72f83c8e3b7db6d03969a46901c2460389",
+      "offset": 680000,
+      "path": "originals.tar.gz.part-002",
+      "sha256": "7da0d3825b1aff261e4731824a863a1360953590cd0166f36a183113acc51ca6"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "46b1e6633568682121294b37373318d2c4b625c9",
+      "offset": 1020000,
+      "path": "originals.tar.gz.part-003",
+      "sha256": "8e9cf358cadb14580c1f217ee1a1bf6190e72cec031907f1230ebac4a25a75a1"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "0a982cd5da2fb300642387e110ed7c14edc9a6dc",
+      "offset": 1360000,
+      "path": "originals.tar.gz.part-004",
+      "sha256": "b1b4af2b86547366df5d3812e465dfaff9aae4db52c6367396ba0bbbc2625312"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "c3f8ac55550ff779d226a854b2c14fc1c6d68cda",
+      "offset": 1700000,
+      "path": "originals.tar.gz.part-005",
+      "sha256": "65acd67f2f8fe8229fcedbe3728f47b06d9707cc40241c0a4db2da6150130bae"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "bacd165caedba214e6d442733c4313deae608c82",
+      "offset": 2040000,
+      "path": "originals.tar.gz.part-006",
+      "sha256": "4d0945760431761e95874f30f49df79eefa370cfa96196394f932daa8b779d61"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "2755c02c0c210d265eb65b1f27338d88b770d3ab",
+      "offset": 2380000,
+      "path": "originals.tar.gz.part-007",
+      "sha256": "004b37e80ceb795d2ce0472be6bde01f9320cea7870d8dd4d8e5f1a17f0a9778"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "35b997c5f30f8a98b61b02698549b17ba68febd3",
+      "offset": 2720000,
+      "path": "originals.tar.gz.part-008",
+      "sha256": "e39888f1677c985934b2a0993e4c30c06dbd7077d725e80d6afcb1c3d2e7aee6"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "742089bd269235ddc3c172c102c5bd6aa284d6c3",
+      "offset": 3060000,
+      "path": "originals.tar.gz.part-009",
+      "sha256": "2c9e61cdb463b4f8b104e57ff911db24c64e9bc064f279a1feda8128221b886b"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "f1934d1329f6ff2bba77156d8244a85757ec3be1",
+      "offset": 3400000,
+      "path": "originals.tar.gz.part-010",
+      "sha256": "571f3ea5cf76e952ae2343ada455b7f8157a6ea1de975bde4162b3fdabbe06fd"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "9609fd6734ddbd4c87a9649208e9d32a730fd727",
+      "offset": 3740000,
+      "path": "originals.tar.gz.part-011",
+      "sha256": "74ee5afb2735b486b23c812890c7727dcf3f7eb14de5390c524763d4cbc72aef"
+    },
+    {
+      "bytes": 340000,
+      "git_blob_sha1": "1a76425bfa4934691d9040310defdd4cf748ab8e",
+      "offset": 4080000,
+      "path": "originals.tar.gz.part-012",
+      "sha256": "71cf5cddd9644324ea6177db1bd39ae0123b756535b00cc856a43f5d0482ceda"
+    },
+    {
+      "bytes": 287771,
+      "git_blob_sha1": "6fe274d53a9c8c0db9805867607509c461543450",
+      "offset": 4420000,
+      "path": "originals.tar.gz.part-013",
+      "sha256": "95c18c41a3ea3b9cc368c4ac89690c4b3eae2b8e3da4aa069de0b15ec0d44d8f"
+    }
+  ],
+  "publication_prefix": "qualification/cell-current-student-correction-20261121/training-success-20261121/document_evidence",
+  "readback_transport_note": "Preserve first H log read error and SSH255 raw binary read failure. One read-only four-offset batch was repeated at the original pinned version after its first response failed. No training execution was retried.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.e2.document-success-publication-package.v1",
+  "selection_must_be_published_separately_after_both_children": true,
+  "snapshot_note": "Historical drafts, correction-era source bytes and authored reviews are included without upgrading them to actual executions; only the original launched frozen envelope produced this result. The native pending draft and local assembler are preparation, not a native training run.",
+  "status": "IMMUTABLE_BLOBS_PREPARATION_ROOT_OWNS_COMMIT_AND_REF"
+}

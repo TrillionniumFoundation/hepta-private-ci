@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.e2.fresh-analysis-preregistration.v1",
+  "scope": "Analysis of the already frozen fresh selection only; does not change acquisition, generation, training, native or cost budgets",
+  "selection_canonical_digest": "394ee2e8f4b5d00dac00b177ecbb83bd578f7c8473e5d7a90b03c8d6e2b5b1f7",
+  "weights_canonical_digest": "d6c289bff885756a11b354aef53bfe2dc93394dfef17a8c84ea026d53658f498",
+  "before_candidate_metadata_or_content_access": true,
+  "unit": {
+    "independent_task_count_if_panel_complete": 4,
+    "distinct_owner_count_if_panel_complete": 4,
+    "model_modes": [
+      "document_evidence",
+      "native_feedback"
+    ],
+    "arms": {
+      "frozen": "original frozen parent",
+      "retrieval": "same original parent with frozen retrieval rule",
+      "final_only": "child after its original eight updates"
+    },
+    "maximum_outputs": 24,
+    "independent_training_seed_repetitions": 0,
+    "authenticated_users": 0
+  },
+  "contrasts": [
+    {
+      "id": "child_vs_parent",
+      "report_separately_for_each_mode": true,
+      "paired_by": "same frozen task",
+      "metric": "mean(child actual native success - frozen parent actual native success) over the four fixed tasks"
+    },
+    {
+      "id": "child_vs_parent_retrieval",
+      "report_separately_for_each_mode": true,
+      "paired_by": "same frozen task",
+      "metric": "mean(child actual native success - parent-plus-retrieval actual native success) over the four fixed tasks"
+    }
+  ],
+  "reporting": {
+    "show_every_frozen_task_and_every_arm": true,
+    "include_losses_ties_output_cap_refusals_and_execution_errors": true,
+    "no_best_student_only_selection": true,
+    "no_pooling_24_outputs_as_independent_trials": true,
+    "no_pooling_two_modes_as_independent_tasks_or_seeds": true,
+    "new_same_task_tuning_or_retry": false,
+    "confirmation_from_this_panel_alone": false
+  },
+  "statistics": {
+    "show_integer_pair_counts_and_difference_in_success_fraction": true,
+    "optional_exact_two_sided_paired_sign_test": "Conditional on discordant task pairs within each mode; label all planned contrasts and do not claim multiplicity-adjusted confirmation",
+    "all_four_discordant_pairs_same_direction_two_sided_p_value": 0.125,
+    "confidence_scope": "Four fixed selected tasks from distinct owners; selection and task-family limitations retained. No population or real-user scaling claim."
+  },
+  "missingness": {
+    "panel_refused": "Do not generate/evaluate a replacement panel. No fresh performance estimate.",
+    "incomplete_arm_or_uncertain_native_cleanup": "Report attempted slots and actual terminal states; complete paired comparison remains unavailable. Do not drop missing tasks, impute success, restart arms or select a favorable completed subset.",
+    "actual_output_cap_refusal": "Record task failure under the frozen policy and retain no-native-call status.",
+    "actual_native_test_failure": "Record task failure and original complete native receipt."
+  },
+  "cost": {
+    "report_fit_and_owner_and_transport_time_separately": true,
+    "do_not_sum_nested_clocks": true,
+    "show_actual_generation_and_native_attempt_counts": true,
+    "full_system_cost_known": false
+  },
+  "limitations": [
+    "The frozen source commit cutoff precedes training; this is after-freeze source acquisition, not evidence of tasks newly arising after training.",
+    "Old evaluations remain exposed and cannot re-enter as unseen data.",
+    "Fresh task improvement does not itself prove retention of all old abilities, native adoption, real next-task benefit, multi-teacher inheritance, Circuit necessity, user scaling, or useful-work settlement."
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "archive_bytes_unchanged": true,
+  "archive_sha256": "412cd9263d8b08e5885c823e7a6b4c365e7c4878361c437ff511383b378221e1",
+  "corrected_path_check": "PASS: new prefix, zero overlap with all seven correction and four prior execution-evidence paths",
+  "experimental_scope_replay": false,
+  "first_path_check_failure": {
+    "archive_and_all_176_member_hash_checks_already_passed": true,
+    "cause": "The local non-overlap checker initially treated an old publication object containing files as a list of file entries.",
+    "chunk_id": "a168b0",
+    "classification": "LOCAL_PATH_MANIFEST_SHAPE_ERROR_NOT_A_SCOPE_OR_TEST_RUN",
+    "correction": "Read files from the existing wrapper object when present, otherwise use the existing list. Repeat only the incomplete path/publication checks.",
+    "exit_code": 1,
+    "failure_before_new_path_manifest_written": true,
+    "old_originals_or_archive_mutated": false,
+    "original_output": "Traceback (most recent call last):\n  File \"<stdin>\", line 23, in <module>\n  File \"<stdin>\", line 23, in <genexpr>\nTypeError: string indices must be integers, not 'str'\n",
+    "remote_jobs_or_network_requests": 0,
+    "schema": "hepta.e2.metadata-evidence.local-packaging-check-failure.v1",
+    "tests_or_models_executed": 0,
+    "wall_time_seconds": 0.647739393
+  },
+  "known_existing_paths": [
+    "qualification/cell-current-student-correction-20261121/README.md",
+    "qualification/cell-current-student-correction-20261121/comparison.py",
+    "qualification/cell-current-student-correction-20261121/corrections.py",
+    "qualification/cell-current-student-correction-20261121/execution-20261121/EVIDENCE.tar.gz",
+    "qualification/cell-current-student-correction-20261121/execution-20261121/EVIDENCE_MANIFEST.json",
+    "qualification/cell-current-student-correction-20261121/execution-20261121/README.md",
+    "qualification/cell-current-student-correction-20261121/execution-20261121/RESULT.json",
+    "qualification/cell-current-student-correction-20261121/learner.py",
+    "qualification/cell-current-student-correction-20261121/prepared/CORRECTIONS.json",
+    "qualification/cell-current-student-correction-20261121/prepared/PROTOCOL.json",
+    "qualification/cell-current-student-correction-20261121/test_corrections.py"
+  ],
+  "model_or_native_runs": 0,
+  "new_public_network_requests": 0,
+  "new_tests": 0,
+  "prior_documents": [
+    {
+      "files": 7,
+      "path": "/tmp/hepta-e16-ac5459-20261121/e2_work/PUBLICATION_FILES_FINAL.json",
+      "sha256": "a877569d77515ebc31d1811ed7867adc2a0128faf321d334372bfc35a19460f1"
+    },
+    {
+      "files": 4,
+      "path": "/tmp/hepta-e16-ac5459-20261121/e2_work/PUBLICATION_FILES_EVIDENCE.json",
+      "sha256": "83ad89001a0d59fb011541c2ea7faf2d00195e0fdd2d17cc3837e5a5407a8e1a"
+    }
+  ],
+  "remote_host_jobs": 0,
+  "schema": "hepta.e2.metadata-evidence.local-packaging-review.v1"
+}

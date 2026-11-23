@@ -1,0 +1,256 @@
+{
+  "schema": "hepta.e2.first-real-source-publication-summary.v1",
+  "status": "ONE_SOURCE_SCANNED_FOUR_ORIGINAL_MATERIALS_COMPATIBILITY_REFUSED_ZERO_QUALIFIED_TASKS",
+  "repository": "tartley/colorama",
+  "repository_index": 0,
+  "source_count_in_this_package": 1,
+  "selection_commit": "4c55d9bfe1898c0066b3ae7cb05744fe99f6b418",
+  "current_prior_restore_checkpoint_commit": "44864f0f2937b86d4696deaf5fb0835067d33a13",
+  "source_access_as_of": "2026-11-21T03:00:00Z",
+  "source_access_started_at_ns": "1795261784798687020",
+  "postfreeze_access_does_not_prove_task_creation_after_training": true,
+  "scan": {
+    "job_id": "1a1fdf0dc8b-ffbe-2021",
+    "H_state": "succeeded",
+    "H_exit_code": 0,
+    "terminal_unix_ms": 1795261950904,
+    "H_stdout_bytes": 245,
+    "H_stderr_bytes": 0,
+    "H_complete_durable_confirmed": true,
+    "result_bytes": 16700,
+    "result_sha256": "7f57561507007684121b7d783a83806b8f37b1752b6fda9130ba23c81ecd1434",
+    "retained_commit_ids": 50,
+    "inspected_commit_prefix": 34,
+    "unread_commits": 16,
+    "source_rows": 19,
+    "source_blob_files": 38,
+    "ordered_first_four_positions": [
+      [
+        4,
+        2
+      ],
+      [
+        17,
+        0
+      ],
+      [
+        31,
+        0
+      ],
+      [
+        33,
+        0
+      ]
+    ],
+    "owner_original_files": 1061,
+    "owner_original_bytes": 414429,
+    "original_tool_response_files": 69,
+    "Git_commands": 186,
+    "Git_shared_slots": [
+      0,
+      185
+    ],
+    "all_commands_exit0_full_streams": true,
+    "model_calls": 0,
+    "native_children": 0
+  },
+  "materials": [
+    {
+      "ordinal": 0,
+      "position": [
+        4,
+        2
+      ],
+      "job_id": "1a1fdf8e0e8-ffbe-2038",
+      "H_state": "failed",
+      "H_exit_code": 1,
+      "terminal_unix_ms": 1795262471606,
+      "status": "REFUSED",
+      "phase": "compatibility",
+      "inner_error": "exactly one original supported test root required",
+      "original_owner_files": 23,
+      "original_owner_bytes": 13621,
+      "shared_slots": [
+        186,
+        189
+      ],
+      "Git_commands": 4,
+      "all_Git_exit0_full_streams": true,
+      "model_calls": 0,
+      "native_dispatches": 0
+    },
+    {
+      "ordinal": 1,
+      "position": [
+        17,
+        0
+      ],
+      "job_id": "1a1fe02ce8c-ffbe-204a",
+      "H_state": "failed",
+      "H_exit_code": 1,
+      "terminal_unix_ms": 1795263001196,
+      "status": "REFUSED",
+      "phase": "compatibility",
+      "inner_error": "exactly one original supported test root required",
+      "original_owner_files": 23,
+      "original_owner_bytes": 13526,
+      "shared_slots": [
+        190,
+        193
+      ],
+      "Git_commands": 4,
+      "all_Git_exit0_full_streams": true,
+      "model_calls": 0,
+      "native_dispatches": 0
+    },
+    {
+      "ordinal": 2,
+      "position": [
+        31,
+        0
+      ],
+      "job_id": "1a1fe071e57-ffbe-2054",
+      "H_state": "failed",
+      "H_exit_code": 1,
+      "terminal_unix_ms": 1795263279370,
+      "status": "REFUSED",
+      "phase": "compatibility",
+      "inner_error": "exactly one original supported test root required",
+      "original_owner_files": 23,
+      "original_owner_bytes": 13526,
+      "shared_slots": [
+        194,
+        197
+      ],
+      "Git_commands": 4,
+      "all_Git_exit0_full_streams": true,
+      "model_calls": 0,
+      "native_dispatches": 0
+    },
+    {
+      "ordinal": 3,
+      "position": [
+        33,
+        0
+      ],
+      "job_id": "1a1fe0b9f9a-ffbe-205d",
+      "H_state": "failed",
+      "H_exit_code": 1,
+      "terminal_unix_ms": 1795263541805,
+      "status": "REFUSED",
+      "phase": "compatibility",
+      "inner_error": "exactly one original supported test root required",
+      "original_owner_files": 23,
+      "original_owner_bytes": 13525,
+      "shared_slots": [
+        198,
+        201
+      ],
+      "Git_commands": 4,
+      "all_Git_exit0_full_streams": true,
+      "model_calls": 0,
+      "native_dispatches": 0
+    }
+  ],
+  "original_source_attempt_accounting": {
+    "scan_attempts": 1,
+    "material_attempts": 4,
+    "same_key_reconciliation_after_material00_MCP_timeout_adds_attempts": 0,
+    "material00_original_timeout_preserved": true,
+    "material00_actual_existing_job_reused": true,
+    "failure_consumed_material_slots": 4,
+    "Git_shared_commands": 202,
+    "Git_shared_slot_range": [
+      0,
+      201
+    ],
+    "Git_repository_cap": 2000,
+    "native_qualification_slots_created": 0,
+    "native_qualified_tasks": 0,
+    "model_generation_calls": 0,
+    "training_calls_in_this_source_stage": 0,
+    "authenticated_human_users": 0,
+    "additional_materials_or_retries": 0,
+    "test_root_constraint_changed": false
+  },
+  "original_deadlines": {
+    "scan_H_outer_seconds": 1860,
+    "material_H_outer_seconds": 2160,
+    "each_Git_command_seconds": 600,
+    "each_original_GitCommands_instance_seconds": 1800,
+    "GitCommands_clock_is_per_instance": true,
+    "repository_command_slots_shared_across_scan_materials": true,
+    "new_budget_or_order_rule_added": false
+  },
+  "collection": {
+    "all_owner_originals": 1153,
+    "all_owner_original_bytes": 468627,
+    "all_original_bytes_versions_and_SHA_verified": true,
+    "listing_SSH255_errors_preserved": 2,
+    "small_file_batch_errors": 0,
+    "files_are_not_atomic_directory_snapshot": true,
+    "full_upstream_git_database_downloaded": false,
+    "H_durability_does_not_imply_new_blanket_inner_stream_powerloss_guarantee": true,
+    "all_material_own_uncertainty_and_native_claims_explicit_FileNotFound": true,
+    "unrelated_host_process_absence_claimed": false,
+    "root_scan_three_shape_errors_preserved": true,
+    "packager_scan_wrapper_error_preserved": true,
+    "material03_requests_results_wrapper_preserved": true,
+    "original_runtime_AST_values_preserved_without_local_recomputation": true,
+    "root_frozen_control_files": 23,
+    "later_source_metadata_or_artifacts_included": false,
+    "new_remote_requests_by_packager": 0,
+    "new_process_Git_native_model_execution_by_packager": 0
+  },
+  "interpretation": {
+    "refusal_occurs_before_native_materializer_and_model": true,
+    "student_performance_measured": false,
+    "independent_new_task_learning_gain": false,
+    "file_command_blob_or_material_counts_are_independent_samples": false,
+    "full_E2_scientific_success": false,
+    "human_user_growth_evidence": false,
+    "physical_energy_network_storage_cost_complete": false
+  },
+  "archive": {
+    "name": "first-source-scan-and-four-materials.tar.xz",
+    "kind": "NEW_LOCAL_ARCHIVE_OF_RETAINED_ORIGINALS_AND_LABELED_REVIEWS",
+    "bytes": 233156,
+    "sha256": "7392b687376dcb0f0aa2bcf2205c5506a07d46faf7e8c248667852fab1d73045",
+    "compression": "xz",
+    "member_count": 1345,
+    "expanded_bytes": 5306585,
+    "member_index": {
+      "name": "MEMBER_INDEX.json",
+      "bytes": 648099,
+      "sha256": "3d4057baa374ae63bb64cfd583d05add6c062c0b4d88101a83d4ad4258a31bc4"
+    },
+    "all_members_verified_after_packing": true,
+    "remote_original_archive_claimed": false
+  },
+  "reviews": [
+    {
+      "member": "INDEPENDENT_SCAN_REVIEW.json",
+      "bytes": 45948,
+      "sha256": "32b323424168351dd92dbd4d5f688b4cf632445746740054ca5f814819ee2c2c"
+    },
+    {
+      "member": "INDEPENDENT_MATERIALS_REVIEW.json",
+      "bytes": 22480,
+      "sha256": "5b853654463789c922a7f4739fe790ec75f8c90955cc154895aa7d0145c14de9"
+    },
+    {
+      "member": "INDEPENDENT_CONTROL_REVIEW.json",
+      "bytes": 3301,
+      "sha256": "3cf8abeb09f579d43a10ec56062bb230b023b1747fe33c41439b61a0a691a643"
+    }
+  ],
+  "publication": {
+    "prefix": "qualification/cell-current-student-correction-20261121/fresh-first-source-actual-20261121",
+    "old_paths_overwritten": false,
+    "new_executable_verifier": false,
+    "new_allowlist_ignore_or_protocol_rule": false,
+    "all_Git_modes": "100644",
+    "max_blob_bytes": 350000,
+    "tree_commit_ref_PR_changed_by_packager": false
+  }
+}

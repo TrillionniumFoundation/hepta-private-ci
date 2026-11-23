@@ -1,0 +1,41 @@
+--- reviewed_faba7b0738af388c
++++ final_with_evidence_inventory
+@@ -531,6 +531,30 @@
+     return total
+ 
+ 
++def evidence_inventory():
++    names = ["CLAIM.json", "PLAN.json", "EXECUTION_CONTEXT.json", "INPUTS_BEFORE.json", "INPUTS_AFTER.json",
++             "PHASE_EVENTS.jsonl", "BOOTSTRAP_PIP_REPORT.json", "INSTALL_REPORT.json", "TREE_BEFORE.json",
++             "TREE_AFTER.json", "NATIVE_ENVIRONMENT_CANDIDATE.json"]
++    names.extend("phases/" + phase + "/" + name for phase in PHASES for name in
++                 ("PARENT_CLAIM.json", "CHILD_CLAIM.json", "CHILD_RESULT.json", "CHILD_POST_FSYNC.json", "STDOUT.log", "STDERR.log", "PARENT_RESULT.json"))
++    rows = []
++    for name in names:
++        path = OWNER / name
++        if not os.path.lexists(path):
++            continue
++        row = hash_regular(path, 8388608)
++        descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
++        try:
++            require(stamp(os.fstat(descriptor)) == row["identity"], "evidence changed before fsync")
++            os.fsync(descriptor)
++        finally:
++            os.close(descriptor)
++        fsync_directory(path.parent)
++        rows.append(row)
++    fsync_directory(OWNER)
++    return rows
++
++
+ def parent_main(plan_path, plan_sha):
+     started, started_ns = time.monotonic(), time.time_ns()
+     install_signals()
+@@ -610,6 +634,7 @@
+         require(inputs_after == inputs_before, "original inputs changed after restoration")
+         result["inputs_unchanged"] = True
+         result["retained_bytes_before_terminal"] = owned_retained_bytes()
++        result["original_artifacts"] = evidence_inventory()
+     except BaseException as error:
+         arm(context["final_deadline_monotonic"])
+         result["error"] = str(result["error"]) + " | FINAL_INPUT_OR_RETAINED_CHECK: " + repr(error)

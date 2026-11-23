@@ -1,0 +1,93 @@
+{
+  "actual_session_id": null,
+  "actual_status": "NOT_STARTED",
+  "automatic_retry": false,
+  "deployment_files": [
+    "restore_native_verifier.py",
+    "RESTORE_REQUIREMENTS.txt",
+    "RESTORE_BOOTSTRAP_REQUIREMENTS.txt",
+    "OFFLINE_RESTORE_PLAN.json"
+  ],
+  "files": [
+    {
+      "bytes": 5941,
+      "git_blob_sha1": "7c99805eadda4b7e904a1e0ec636bc8a75b10641",
+      "name": "FORMAT_SCOPE_NEW_E2_CODE.json",
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/native_verifier_recovery_preparation/frozen_v1/FORMAT_SCOPE_NEW_E2_CODE.json",
+      "sha256": "0b2a0441a2668e428f461d0ea0e87c8359d705be59a91fd81a554d82d5ecfb2b"
+    },
+    {
+      "bytes": 813,
+      "git_blob_sha1": "d57b3db838bfcd389457bf47613e282ebfb355d8",
+      "name": "HPTY_LAUNCH_ARGUMENTS.json",
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/native_verifier_recovery_preparation/frozen_v1/HPTY_LAUNCH_ARGUMENTS.json",
+      "sha256": "89177b5b05e0f6a12fe61672a349e58c9a099b172ecea37841832d30f47f9f82"
+    },
+    {
+      "bytes": 19607,
+      "git_blob_sha1": "4635e47d649fed3439239fcfcae86db259009d56",
+      "name": "OFFLINE_RESTORE_PLAN.json",
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/native_verifier_recovery_preparation/frozen_v1/OFFLINE_RESTORE_PLAN.json",
+      "sha256": "0fbdcbf96f0f14d19aa5d57ab32e18c8732c7d5863113e731d4a647662d9eccd"
+    },
+    {
+      "bytes": 4684,
+      "git_blob_sha1": "179d90485f3f325560e2c0cf1c670b3da2370283",
+      "name": "READBACK_AND_ADMISSION_PLAN.json",
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/native_verifier_recovery_preparation/frozen_v1/READBACK_AND_ADMISSION_PLAN.json",
+      "sha256": "c01238da07590c977c844da029e8a3f315ab96b0c23f081f004ef0bcd9339288"
+    },
+    {
+      "bytes": 143,
+      "git_blob_sha1": "d271a6d3e931634e2a6343ca916ca15de76aed7f",
+      "name": "RESTORE_BOOTSTRAP_REQUIREMENTS.txt",
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/native_verifier_recovery_preparation/frozen_v1/RESTORE_BOOTSTRAP_REQUIREMENTS.txt",
+      "sha256": "7aa10fd84f51806bdc3ff996362ad6e83c0fc6494c3b3eea0d1b9e999a3a48b0"
+    },
+    {
+      "bytes": 1813,
+      "git_blob_sha1": "f612126763e87c2fd54a3b8e5e3eef6eff6828a6",
+      "name": "RESTORE_DIFF_FROM_ROOT_FIRST_REVIEW.patch",
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/native_verifier_recovery_preparation/frozen_v1/RESTORE_DIFF_FROM_ROOT_FIRST_REVIEW.patch",
+      "sha256": "ff5f5663970315d10857ed1414eab08ce7190968006538bb6e450caa01af73cb"
+    },
+    {
+      "bytes": 1733,
+      "git_blob_sha1": "a943544e0d25edf094dd57374a12be4d76a82569",
+      "name": "RESTORE_REQUIREMENTS.txt",
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/native_verifier_recovery_preparation/frozen_v1/RESTORE_REQUIREMENTS.txt",
+      "sha256": "0421a480d1f63aed798fb00d18f736cc5f925cf3ef30456a62cdc6b3218f6541"
+    },
+    {
+      "bytes": 4830,
+      "git_blob_sha1": "01f5e42b0f7caf4248d3296e87173e44274c4942",
+      "name": "STATIC_REVIEW.json",
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/native_verifier_recovery_preparation/frozen_v1/STATIC_REVIEW.json",
+      "sha256": "eac7e8f97f876544287508891fdd5db60c8e245481238f817ef994e97dc430d6"
+    },
+    {
+      "bytes": 15121,
+      "git_blob_sha1": "95eedb41ccfbeae8b4a4c60ae3222225e96ad7b3",
+      "name": "admit_restored_environment.py",
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/native_verifier_recovery_preparation/frozen_v1/admit_restored_environment.py",
+      "sha256": "446baaa1106e37dc26ccacd04af90f3679c9c296b3881f775d0f51b465907f5c"
+    },
+    {
+      "bytes": 38424,
+      "git_blob_sha1": "fa8228e4b2ccf301a4d5343d279a6a91b637b6c2",
+      "name": "restore_native_verifier.py",
+      "path": "/tmp/hepta-e16-ac5459-recovered-20261121/e2_training_candidate/native_verifier_recovery_preparation/frozen_v1/restore_native_verifier.py",
+      "sha256": "5d93149a57fdb24d79670cfa2731e46248cf417029859f35b602f74a1af8a39e"
+    }
+  ],
+  "local_only_actual_proof_admission_source": "admit_restored_environment.py",
+  "outer_arguments_file": "HPTY_LAUNCH_ARGUMENTS.json",
+  "remote_input_directory": "/home/qian-qi/work/hepta-e16-ac5459-20261121/e2-native-verifier-offline-v1-inputs",
+  "root_exclusive_launch": true,
+  "schema": "hepta.native-verifier-offline-envelope.v1",
+  "source_files_to_format_before_execution": [
+    "restore_native_verifier.py",
+    "admit_restored_environment.py"
+  ],
+  "status": "FROZEN_READY_FOR_ROOT_SINGLE_EXECUTION_NOT_STARTED"
+}
