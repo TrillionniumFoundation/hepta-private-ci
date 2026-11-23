@@ -1,5 +1,11 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 14:30 UTC #7032 b1af67a 原 source 安全门转绿；全仓仍 HOLD
+
+- 原自动 [blocking-ci 45184439037](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184439037) 的**确切 b1af67a source** 上，原 `cargo-deny` 以及 clean-worktree 均终结 success；原 [HCSN continuous-transport 45184438921](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184438921) 亦 success，科学 ZIP ID 14822933158。新的源码级**安全局部门**可签收，不能代表原全仓或 main 依赖图通过。
+- 原 `learning.operator exact source` 仍退出 101；Windows shard 4 仍有三个 elevated 与一个 restricted-token 产品隔离正例真实失败；Linux musl 出现 remote-control 唤醒超时、parent subagent 通知未入 rollout、zsh 子命令应 Declined 实得 Failed。macOS ARM 部分任务取消。此次读取的作业列表仅第一页 30 条，整个 workflow 当时仍 in_progress；没有把第一页面计数宣称为全终局。
+- [原 job、具名错误、artifact ID 与保留边界的固定回执](7032-b1af67a-source-ci-readback-20261123-1430Z.md)。保留所有历史红例、原时限、公开 V1、实验封存和 main 不同锁图的 59 项安全告警。无重复运行、无红草案合并。
+
 ## 2026-11-23 13:29 UTC #7032 精确双锁修补进入原 source CI（待终态）
 
 - #7032 原科学 head `610f91087b598656f7f3913e600c705b95bf071f` 已用非强制 fast-forward 和原 head 租约推进至已独立资格的 `b1af67a38f8cf9cee700cc067da1e6001ce220a8`。GitHub commit compare 为 **ahead 2、behind 0**，修改文件 **只有** `codex-rs/Cargo.lock` 和 `MODULE.bazel.lock`；冻结研究输入、公开 V1、安全拒绝、原测试名单均不变。原科学 source 和原红 CI 历史保留。[精确双锁提交](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b1af67a38f8cf9cee700cc067da1e6001ce220a8) · [PR #7032 审计记录](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7032#issuecomment-7102629142)
