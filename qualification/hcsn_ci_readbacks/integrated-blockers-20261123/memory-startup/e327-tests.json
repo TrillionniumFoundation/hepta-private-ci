@@ -1,0 +1,50 @@
+{
+  "artifact_sha256": "c536af811702755540018fdfa241dd4921cb6f149e26b4400bd8d710ee45e61a",
+  "binary_id": "codex-hepta-agentd",
+  "checked_members": 10,
+  "child_checksums": {
+    "agentd-lib.tar.zst": "3f61954407daa39463fbd19a9680ae0d44f6203e411020cbc7bab783df954a03",
+    "codex": "bfe734b5f125062912d26b405e1a0c4f115eb2d374fdb66b6b7bb8da701d9200",
+    "hepta-joint-propose": "2b01c0175706727c2bceac3763e864f25111a62dc2a680af77aac30cad041c01",
+    "nextest-version.txt": "5c2764053db8c4d8203c610667ee5dbecfeca1af742b15d0324d5c4a727ab012",
+    "source-list.json": "07cbb02d201b6bc0aad18292e40b22ebeb0a6b767896ef613fcb536a2f5088a1"
+  },
+  "controls": {
+    "bootstrap.log": {
+      "passed": 6,
+      "run": 6,
+      "skipped": 1717
+    },
+    "fleet.log": {
+      "passed": 2,
+      "run": 2,
+      "skipped": 1721
+    },
+    "process.log": {
+      "passed": 6,
+      "run": 6,
+      "skipped": 1717
+    },
+    "readiness.log": {
+      "passed": 3,
+      "run": 3,
+      "skipped": 1720
+    }
+  },
+  "full": {
+    "passed": 1552,
+    "run": 1552,
+    "skipped": 171
+  },
+  "listed": 1723,
+  "previously_failed_now_passed": {
+    "neuron_generation_process_bootstrap::tests::actual_joint_reopens_the_same_clock_journal_prefix_and_original_result": "hepta-joint-propose",
+    "neuron_generation_process_bootstrap::tests::actual_opened_files_reject_raced_aliases_and_non_regular_assets": "hepta-joint-propose",
+    "neuron_generation_process_bootstrap::tests::identity_assets_clock_and_descriptor_are_checked_before_any_owner_creation": "hepta-joint-propose",
+    "neuron_generation_process_bootstrap::tests::paths_reject_aliases_and_reopen_never_falls_back_to_creation": "hepta-joint-propose",
+    "neuron_generation_runtime::tests::joint::synthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen": "hepta-joint-propose",
+    "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement": "codex"
+  },
+  "selected_cases_with_named_passes": 1552,
+  "source": "e3277e9677688be5c4c235a7a127f0b51e373399"
+}
