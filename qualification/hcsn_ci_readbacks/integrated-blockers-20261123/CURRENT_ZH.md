@@ -60,3 +60,7 @@ HAPT 的 12 个已规定起始姿势／置信组能组成 4,096 种多等一个�
 九项组合 43e5 的完整原权限调用检查已运行 1,505.985 秒并通过。对合法源文件范围和脚本逐项核验后，完整 770,005 字节的回执与旧 c6a、e327 两份正式托管输出均逐字相同。[完整 9,141 文件收据](combined-43e5/)
 
 e196 的专项提交标题含跳过 CI 的标记；重开同一草案未产生仓库检查。随后保留完全相同的 Git 树 9554ddb1b5cca7502b58b7bacfc446671fe5289c，在其子提交 c12ee03f3185d5a13949faca54f066dfd634e509 启动正式资格。当前 #7016 固定在 c12，实际已收到 13 条工作流。e327 的已终结结果及各独立原始对照仍按原源码标记。[新仓库级原运行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928408) · [新源码启动验证](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928118) · [新源码 daemon 原生验证](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928116)
+
+e327 的 daemon 原生工作流也已终结。普通 2,849/2,849，Root 68/68，两份 JUnit 逐例无跳过，原名册中的 202 个学习用例覆盖完毕。后续固定基址 fmt 遇到历史证据快照缺可解析的所属工作区，退出 2，工作流最终失败。[原生两份 XML、格式化错误及独立复算](daemon-e327/)
+
+对 musl 子通知的修复已放入 #7021 独立草案，基于当前 #7016，只改两个 core 源文件。在真实父回合结束所有者被保持的同一交错，旧源码真实丢失 0/1，候选正常结束后恰收一次 1/1。没有强制竞争时，两侧原六秒端到端用例各通过 3/3。原 GNU Clippy 通过。未确定类别的 fleet 回复属于另一条失败。[修复草案](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7021) · [原运行与受控对照](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/f2d9a96fbff616596ef2c4c42addd1a0431a66c7/docs/learning/evidence/musl-child-completion-20261123)
