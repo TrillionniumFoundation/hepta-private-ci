@@ -1,0 +1,52 @@
+{
+  "cell_adoption": false,
+  "changed_historical_members": [
+    "qualification/hcsn_joint_dde/audit_graded.py",
+    "qualification/hcsn_joint_dde/model.py"
+  ],
+  "cold_restore_errors": {
+    "active": 2.0970669645237194e-11,
+    "discounted_active_time": 1.468297705642385e-11,
+    "discounted_events": 1.609334887575642e-11,
+    "discounted_remaining_phase": 8.89715870422414e-11,
+    "events": 1.1450507209076477e-11,
+    "refractory": 8.439816207017614e-11,
+    "upper": 6.320811929416692e-14
+  },
+  "cold_restore_started_at": 0.137,
+  "complete_c2_replays": 0,
+  "fit_final": {
+    "gradients": [
+      -0.00017302442384773404,
+      -0.0016323321982009878
+    ],
+    "mark": 1.9958537364456628,
+    "relative_mse": 3.5602012631380052e-06,
+    "reset": 0.6494962836801368,
+    "step": 120
+  },
+  "fit_initial": {
+    "gradients": [
+      -0.07667078457647707,
+      -0.5799390429765987
+    ],
+    "mark": 0.5,
+    "relative_mse": 0.4790290513124848,
+    "reset": 0.42000000000000004,
+    "step": 0
+  },
+  "fit_scope": "same-model synthetic reset position and signed mark",
+  "independent_future_tasks": 0,
+  "loss_goal": 0.0002,
+  "numpy": "2.3.5",
+  "optimizer_updates": 120,
+  "python": "3.12.14",
+  "scipy": "1.17.0",
+  "skips": 0,
+  "source_commit": "6a5a02835206697d154fc4a1977b4627aad372d9",
+  "source_inventory_sha256": "8c333b8713ddafaa8ec667a6c3dec2986eafe3a057b905acc49211c46702c8d6",
+  "status": "PASS_BOUNDED_RESEARCH",
+  "test_process_wall_seconds": 101.28282196600048,
+  "tests_passed": 45,
+  "torch": "2.15.0+cpu"
+}

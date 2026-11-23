@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/0214baad95a1/lab3/physical_current/tree/qualification/hcsn_reset_aligned/qualify_common.py", line 124, in <module>
+    main()
+  File "/workspace/scratch/0214baad95a1/lab3/physical_current/tree/qualification/hcsn_reset_aligned/qualify_common.py", line 65, in main
+    raise RuntimeError("candidate source differs from its frozen common manifest")
+RuntimeError: candidate source differs from its frozen common manifest
