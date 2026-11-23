@@ -1526,7 +1526,7 @@ async fn seed_thread_metadata(
             .sqlite()
             .home()
             .join(format!("rollout-{thread_id}.jsonl")),
-        chrono::Utc::now(),
+        std::time::SystemTime::now().into(),
         SessionSource::Cli,
     );
     runtime.upsert_thread(&builder.build("test-provider")).await
