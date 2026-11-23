@@ -1,0 +1,47 @@
+{
+  "upstream": "4a3a61f1d68a9adbc738f4f5374b01467699c184",
+  "upstream_blobs": {
+    "qualification/hcsn_regenerative/tensor_state.py": "b69fcb9fef58396fdf8044de93d61906d02b82d7",
+    "qualification/hcsn_differentiable/network.py": "490d2d46c686e8b8f7b9ba63ff89b60993fe13c1",
+    "qualification/hcsn_differentiable/checkpoint.py": "9080bd46bfeb49cbb7202b660b5f08deae729842",
+    "qualification/hcsn_differentiable/encoder.py": "3920420439e3a23c5bfabaf4602648dc6c81420d",
+    "qualification/hcsn_differentiable/tests/test_probability_intervals.py": "223b43f477713bd9aa53ba62ed4c7fa8c3acd454"
+  },
+  "previous_protocol_sha256": "dce57a6b2184f09d7baa8a10118f03307ade06d736f511de6037b783b945a2cc",
+  "previous_verifier_sha256": "377c3cdacf837e5a93daddaed457259976f9c5c026ce2a703cb8a145e325de09",
+  "focal": {
+    "x": 0.5,
+    "mu": -0.12,
+    "sigma": 0.5,
+    "discount": 0.15,
+    "reset": 0.5,
+    "refractory": 0.2
+  },
+  "first_times": [
+    0.01,
+    0.1
+  ],
+  "second_times": [
+    0.21,
+    0.3
+  ],
+  "semigroup": {
+    "split_fraction": 0.4,
+    "interval_indexes": [
+      0,
+      31,
+      32
+    ],
+    "tail": false
+  },
+  "gates": {
+    "mass_absolute": 3e-13,
+    "normal_bin_relative": 5e-11,
+    "semigroup_relative": 2e-9,
+    "rare_phase_relative": 5e-11,
+    "one_reset_relative": 2e-10,
+    "independent_gradient_relative": 0.00003,
+    "marked_absolute": 2e-13
+  },
+  "scope": "Constant generator on a half-line, fixed lower boundary, point start, signed state-independent marks, deterministic refractory and reset. One extra event, no finite-bin semigroup claim."
+}

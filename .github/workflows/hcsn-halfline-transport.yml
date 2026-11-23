@@ -1,0 +1,60 @@
+name: HCSN fixed-boundary transport
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_halfline_readout/**"
+      - "qualification/hcsn_halfline_transport/**"
+      - "qualification/hcsn_differentiable/**"
+      - "qualification/hcsn_regenerative/**"
+      - "qualification/hcsn_split_mesh/**"
+      - ".github/workflows/hcsn-halfline-transport.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  continuous-transport:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_COMMIT }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the CPU numerical environment
+        run: |
+          python -m pip install numpy==2.3.5 scipy==1.17.0 mpmath==1.3.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Check the source, continuous readouts and marked transport
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"
+          mkdir -p "$RUNNER_TEMP/halfline"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/halfline/source.txt"
+          python -B -m qualification.hcsn_halfline_readout.verify --output "$RUNNER_TEMP/halfline/readout.json"
+          python -B -m qualification.hcsn_halfline_transport.verify --output "$RUNNER_TEMP/halfline/transport.json"
+      - name: Run the original discrete, interval and log-risk tests
+        run: |
+          set -euo pipefail
+          python -B -m unittest -v \
+            qualification.hcsn_split_mesh.test_split \
+            qualification.hcsn_differentiable.tests.test_probability_intervals \
+            qualification.hcsn_differentiable.tests.test_logrisk \
+            qualification.hcsn_differentiable.tests.test_logrisk_hessian \
+            2>&1 | tee "$RUNNER_TEMP/halfline/upstream.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hcsn-continuous-transport-${{ env.SOURCE_COMMIT }}
+          path: ${{ runner.temp }}/halfline
+          if-no-files-found: error
