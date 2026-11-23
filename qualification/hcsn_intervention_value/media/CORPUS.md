@@ -36,3 +36,22 @@ python qualification/hcsn_intervention_value/media/verify_media.py --root /path/
 A separate process can materialize and inspect the sealed TEST descriptors with `--split test`. Fit processes have no reason to open this shard. The per-split NPZ stores `audio` and `visual` as float64 arrays shaped `(excerpts,6,52)` and `(excerpts,6,76)`. The last two axes index time and features. They are cumulative arithmetic means of the prefix's interval descriptors. `audio_block` and `visual_block` store the underlying six interval vectors. `dt`, `label`, `group`, `recording`, `query_id`, `start_seconds` and `split` provide clocks and provenance. Piano is label 0 and guitar is label 1. The independent fixed gallery has the same fields. The gallery and query features are computed from distinct source files.
 
 The acoustic frontend uses 24 logarithmically spaced frequency bands, their normalized energy profiles and four level, centroid, zero-crossing and spectral-change statistics. The visual frontend uses 48 regional color means, 16 spatial gradient magnitudes, 8 regional motion measures, three color-channel deviations and one grayscale deviation. Each interval averages twelve 40-ms observations. Video selects the last presented frame before the observation deadline and performs no temporal interpolation. No target, recording identity, source identifier, time after the deadline or gallery sample enters either descriptor.
+
+## Original source-clock coverage
+
+A post-seal, full linear decode of all original PCM frame timestamps found that 22 of the 24 registered TEST excerpts cover their full intervals. The original media lack the first 412 samples of the scheduled Yerevan bookstore excerpt `commons-112833470-w01` and the last 7,666 samples of `commons-31045040-w04`, both at 44,100 Hz. The latter has five fully observed prefixes. Their recording identities and scheduled intervals stay in the original roster and the eligibility receipt. The complete-case TEST archive has 11 guitar and 11 piano excerpts from all six registered TEST producers. The first five prefixes of the partial guitar query have a separate archive. A same-recording control reproduced all four arrays of the corresponding prefixes bit-for-bit.
+
+To recheck from the frozen 24-episode roster:
+
+```sh
+python qualification/hcsn_intervention_value/media/build.py --root /path/to/commons --split test --roster-only
+python qualification/hcsn_intervention_value/media/coverage.py --roster /path/to/commons/roster/test.json --out /path/to/commons/test_audio_coverage.json
+python qualification/hcsn_intervention_value/media/complete_cases.py --root /path/to/commons --split test --coverage /path/to/commons/test_audio_coverage.json
+python qualification/hcsn_intervention_value/media/valid_tail.py --root /path/to/commons
+```
+
+Some original codecs exhibit offsets in PCM presentation timestamps that cancel later in the recording. A strict window has full endpoint coverage and no internal gap or overlap larger than one source timestamp tick. Gallery, TRAIN, DEV, RETAIN and TEST contain respectively 4/8, 15/24, 16/16, 5/16 and 22/24 strict windows. The largest clock excursion within non-TEST windows was 10.16 ms in gallery and TRAIN and 19.34 ms in RETAIN. Changing the timing definition changes which windows qualify. The evidence archive includes per-source and per-window clock measurements. Reproduce the fixed-score sensitivity with:
+
+```sh
+python qualification/hcsn_intervention_value/media/clock_sensitivity.py --raw /path/to/commons --discovery /path/to/frozen/discovery --output /path/to/clock_sensitivity.json
+```

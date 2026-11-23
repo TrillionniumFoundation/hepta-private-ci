@@ -22,10 +22,13 @@ def main():
     roster=json.loads((root/'roster/test.json').read_text())
     path=root/'features/test.complete.npz';receipt=root/'receipts/test.complete.json'
     audit=json.loads(receipt.read_text())
-    if f.digest(path) not in json.dumps(audit):raise ValueError('unbound complete-case file')
+    if f.digest(path) != audit['shard_sha256']:
+        raise ValueError('unbound complete-case file')
     d=f.load_raw(path);ids=d['query_id'].astype(str).tolist()
     if len(ids)!=len(set(ids)):raise ValueError('duplicate complete-case query')
     all_ids=[r['query_id'] for r in roster]
+    if ids != audit['complete_query_ids'] or all_ids != audit['all_original_query_ids']:
+        raise ValueError('validity receipt does not bind the ordered rosters')
     omitted=sorted(set(all_ids)-set(ids))
     if any(n not in all_ids for n in ids) or len(ids)+len(omitted)!=len(all_ids):
         raise ValueError('invalid media subset')
