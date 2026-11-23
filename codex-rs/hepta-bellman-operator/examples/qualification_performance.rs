@@ -222,7 +222,7 @@ fn try_main() -> QualificationResult<ExitCode> {
     }
     if let Err(error) = fs::write(&output, document.as_bytes()) {
         eprintln!("cannot write performance output: {error}");
-        return ExitCode::FAILURE;
+        return Ok(ExitCode::FAILURE);
     }
     println!("{document}");
     if passed {
