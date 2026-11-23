@@ -1,0 +1,62 @@
+name: Q24 observe deadline selections on the exact impaired musl source
+on:
+  push:
+    branches: ["diagnostic/q24-original-clock-selection-20261123"]
+permissions:
+  contents: read
+jobs:
+  observed:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Run all original Agentd tests with default concurrency, four shards, no result cache
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          dst="$RUNNER_TEMP/q24-full/observed"
+          mkdir -p "$dst"
+          test "$(git rev-parse HEAD^)" = "ae404b2935fa0b7ea39bf09ef1016917a507f6d5"
+          test "$(git rev-parse HEAD~1^{tree})" = "9554ddb1b5cca7502b58b7bacfc446671fe5289c"
+          python3 - "$dst" <<'PYTHON'
+          import json,subprocess,sys
+          from pathlib import Path
+          source=Path(".github/scripts/q24-clock-originals.json")
+          rows=json.loads(source.read_text()); head_parent="HEAD^"
+          for path,blob in rows.items():
+              assert subprocess.check_output(["git","rev-parse",head_parent+":"+path],text=True).strip()==blob,path
+          (Path(sys.argv[1])/"observed-inputs.json").write_bytes(source.read_bytes())
+          PYTHON
+          git rev-parse HEAD > "$dst/ref.txt"
+          git diff --name-only HEAD^ HEAD > "$dst/changed-files.txt"
+          git ls-tree HEAD -- codex-rs/hepta-agentd/BUILD.bazel codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs > "$dst/fixture-blobs.txt"
+          set +e
+          ./.github/scripts/run-bazel-ci.sh --print-failed-test-logs --print-failed-action-summary --remote-download-toplevel -- test --test_tag_filters=-argument-comment-lint --test_verbose_timeout_warnings --nocache_test_results --build_metadata=COMMIT_SHA="$GITHUB_SHA" --build_event_json_file="$dst/bep.json" -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests |& tee "$dst/console.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          echo "$status" > "$dst/exit.txt"
+          python3 .github/scripts/q24-full-target-record.py observed
+          exit "$status"
+      - name: Archive all test outputs including successful-case stage times
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: q24-stages-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/q24-full
+            !${{ runner.temp }}/q24-full/**/bep.json
+          if-no-files-found: error

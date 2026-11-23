@@ -20,9 +20,11 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         channel: &mut HostAuthorityPeerChannel,
     ) -> Result<u64, Error> {
         for request_id in 1..=128_u64 {
+            #[cfg(test)]
+            let _q24_scope=codex_hepta_contracts::q24_clock_observer::enter(crate::learning_iteration_evidence_client::q24_stage_probe::case(),"selector_service",request_id,0);
             if !channel.exchange(|bytes| {
                 self.evidence_response(bytes, request_id)
-                    .map_err(|_| HostIssuerTransportError::InvalidRequest)
+                    .inspect_err(|_| { #[cfg(test)] codex_hepta_contracts::q24_clock_observer::event("original_handler_error"); }).map_err(|_| HostIssuerTransportError::InvalidRequest)
             })? {
                 return Ok(request_id - 1);
             }

@@ -142,6 +142,8 @@ impl OriginalCircuitLearningReadClientV1 {
     /// Each invocation performs original owner I/O. Failed or cancelled reads
     /// consume this connection. A historical successful read cannot satisfy it.
     pub async fn read_current(&self) -> Result<OriginalCircuitLearningReadbackV1, Error> {
+        #[cfg(test)]
+        let mut q24_trace = crate::learning_iteration_evidence_client::q24_stage_probe::Span::new("published_client", self.context.prefix.receipts.len() as u64);
         let mut channel = self
             .channel
             .try_lock()
@@ -161,12 +163,26 @@ impl OriginalCircuitLearningReadClientV1 {
             .checked_add(1)
             .ok_or(Error::Unavailable)?;
         let bytes = serde_json::to_vec(&request)?;
+        #[cfg(test)]
+        q24_trace.mark("spawn_submitted");
+        #[cfg(test)]
+        let q24_ticket = q24_trace.ticket(request.request_id);
+        #[cfg(test)]
+        let q24_cut=self.context.prefix.receipts.len() as u64;
         let (channel, response) = tokio::task::spawn_blocking(move || {
+            #[cfg(test)]
+            let mut q24_job = crate::learning_iteration_evidence_client::q24_stage_probe::Span::from_ticket("published_worker", q24_ticket);
+            #[cfg(test)]
+            let _q24_scope=codex_hepta_contracts::q24_clock_observer::enter(q24_ticket.0,"published_client",q24_ticket.1,q24_cut);
             let response = channel.peer.request(&bytes)?;
+            #[cfg(test)]
+            q24_job.mark("peer_returned");
             Ok::<_, Error>((channel, response))
         })
         .await
         .map_err(|_| Error::Unavailable)??;
+        #[cfg(test)]
+        q24_trace.mark("resumed");
         let response: wire::Response = serde_json::from_slice(&response)?;
         response.require_request(&request)?;
         let current = response.read.decode(&self.context)?;
@@ -183,6 +199,8 @@ impl OriginalCircuitLearningReadClientV1 {
             *retained = Some(current.clone());
         }
         *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);
+        #[cfg(test)]
+        q24_trace.mark("reply_verified");
         Ok(current)
     }
 

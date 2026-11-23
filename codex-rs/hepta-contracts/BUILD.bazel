@@ -9,7 +9,7 @@ codex_rust_crate(
         "fixtures/AUTHBUS_SOURCE_MANIFEST.v1.json",
     ],
     crate_name = "codex_hepta_contracts",
-    rustc_flags_extra = hepta_dev_rustc_flags(1),
+    rustc_flags_extra = hepta_dev_rustc_flags(1) + ["--cfg=hepta_q24_deadline_observer", "--check-cfg=cfg(hepta_q24_deadline_observer)"],
     # Exact G4/G5 caller files inspected by callers_manifest_tests.rs.
     test_data_extra = [
         "//codex-rs/app-server:src/request_processors/thread_delete.rs",

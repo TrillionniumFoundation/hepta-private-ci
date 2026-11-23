@@ -17,6 +17,9 @@ mod authority_consumer_wire;
 mod authority_host_clock;
 #[cfg(target_os = "linux")]
 mod authority_host_issuer_transport;
+#[cfg(all(target_os = "linux", hepta_q24_deadline_observer))]
+#[path = "q24_clock_observer.rs"]
+pub mod q24_clock_observer;
 #[cfg(unix)]
 mod authority_host_store;
 pub mod authority_lease;

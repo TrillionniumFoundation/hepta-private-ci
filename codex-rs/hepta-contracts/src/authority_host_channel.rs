@@ -101,7 +101,7 @@ impl OwnerChannel {
                 PollFd::new(&self.owner, PollFlags::IN),
             ];
             match poll(&mut descriptors, Some(&timeout)) {
-                Ok(0) => return Err(HostIssuerTransportError::DeadlineElapsed),
+                Ok(0) => { #[cfg(hepta_q24_deadline_observer)] crate::q24_clock_observer::event("poll_deadline"); return Err(HostIssuerTransportError::DeadlineElapsed); },
                 Ok(_) => {
                     // Owner exit wins even when an inherited stream is also
                     // ready. The pidfd pins the original process instance.
@@ -168,7 +168,7 @@ impl OwnerChannel {
         while !bytes.is_empty() {
             self.wait(stream, PollFlags::OUT, deadline)?;
             match stream.write(bytes) {
-                Ok(0) => return Err(HostIssuerTransportError::Closed),
+                Ok(0) => { #[cfg(hepta_q24_deadline_observer)] crate::q24_clock_observer::event("zero_io_closed"); return Err(HostIssuerTransportError::Closed); },
                 Ok(count) => bytes = &bytes[count..],
                 Err(error)
                     if matches!(
@@ -186,5 +186,5 @@ fn remaining(deadline: Instant) -> Result<Duration, HostIssuerTransportError> {
     deadline
         .checked_duration_since(Instant::now())
         .filter(|duration| !duration.is_zero())
-        .ok_or(HostIssuerTransportError::DeadlineElapsed)
+        .ok_or(HostIssuerTransportError::DeadlineElapsed).inspect_err(|_| { #[cfg(hepta_q24_deadline_observer)] crate::q24_clock_observer::event("clock_expired"); })
 }

@@ -89,16 +89,22 @@ impl HostAuthorityPeerChannel {
     /// response or any other uncertainty closes the channel permanently; this
     /// method never reconnects or retries a possibly delivered request.
     pub fn request(&mut self, request: &[u8]) -> Result<Vec<u8>, HostIssuerTransportError> {
+        #[cfg(hepta_q24_deadline_observer)]
+        let _q24_io=crate::q24_clock_observer::channel("request");
         let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
         let result = (|| {
             if request.is_empty() || request.len() > self.policy.request_bound {
                 return Err(HostIssuerTransportError::InvalidRequest);
             }
             let deadline = self.owner.deadline(self.policy.timeout);
+            #[cfg(hepta_q24_deadline_observer)]
+            crate::q24_clock_observer::bound(deadline,self.owner.end());
             self.owner.check(deadline)?;
             self.owner
                 .write_until(&mut stream, &(request.len() as u32).to_be_bytes(), deadline)?;
             self.owner.write_until(&mut stream, request, deadline)?;
+            #[cfg(hepta_q24_deadline_observer)]
+            crate::q24_clock_observer::event("request_sent");
             let mut length = [0; 4];
             self.owner.read_until(&mut stream, &mut length, deadline)?;
             let length = u32::from_be_bytes(length) as usize;
@@ -117,7 +123,13 @@ impl HostAuthorityPeerChannel {
                 Ok(response)
             }
             Err(error) => {
+                #[cfg(hepta_q24_deadline_observer)]
+                crate::q24_clock_observer::outcome(&error);
+                #[cfg(hepta_q24_deadline_observer)]
+                crate::q24_clock_observer::event("shutdown_enter");
                 let _ = stream.shutdown(Shutdown::Both);
+                #[cfg(hepta_q24_deadline_observer)]
+                crate::q24_clock_observer::event("shutdown_return");
                 Err(error)
             }
         }
@@ -142,6 +154,8 @@ impl HostAuthorityPeerChannel {
         &mut self,
         handle: impl FnOnce(&[u8], Instant) -> Result<Vec<u8>, HostIssuerTransportError>,
     ) -> Result<bool, HostIssuerTransportError> {
+        #[cfg(hepta_q24_deadline_observer)]
+        let _q24_io=crate::q24_clock_observer::channel("exchange");
         let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
         let result = self.exchange_inner(&mut stream, handle);
         match result {
@@ -151,7 +165,13 @@ impl HostAuthorityPeerChannel {
             }
             Ok(false) => Ok(false),
             Err(error) => {
+                #[cfg(hepta_q24_deadline_observer)]
+                crate::q24_clock_observer::outcome(&error);
+                #[cfg(hepta_q24_deadline_observer)]
+                crate::q24_clock_observer::event("shutdown_enter");
                 let _ = stream.shutdown(Shutdown::Both);
+                #[cfg(hepta_q24_deadline_observer)]
+                crate::q24_clock_observer::event("shutdown_return");
                 Err(error)
             }
         }
@@ -168,9 +188,13 @@ impl HostAuthorityPeerChannel {
             .read(stream, &mut length[..1], self.owner.end())?
             == 0
         {
+            #[cfg(hepta_q24_deadline_observer)]
+            crate::q24_clock_observer::event("initial_eof");
             return Ok(false);
         }
         let deadline = self.owner.deadline(self.policy.timeout);
+        #[cfg(hepta_q24_deadline_observer)]
+        crate::q24_clock_observer::bound(deadline,self.owner.end());
         self.owner.read_until(stream, &mut length[1..], deadline)?;
         let length = u32::from_be_bytes(length) as usize;
         if length == 0 || length > self.policy.request_bound {
@@ -179,7 +203,11 @@ impl HostAuthorityPeerChannel {
         let mut bytes = vec![0; length];
         self.owner.read_until(stream, &mut bytes, deadline)?;
         self.owner.check(deadline)?;
+        #[cfg(hepta_q24_deadline_observer)]
+        crate::q24_clock_observer::event("handler_enter");
         let response = handle(&bytes, deadline)?;
+        #[cfg(hepta_q24_deadline_observer)]
+        crate::q24_clock_observer::event("handler_ok");
         self.owner.check(deadline)?;
         if response.is_empty() || response.len() > self.policy.response_bound {
             return Err(HostIssuerTransportError::Unavailable);
@@ -187,6 +215,8 @@ impl HostAuthorityPeerChannel {
         self.owner
             .write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?;
         self.owner.write_until(stream, &response, deadline)?;
+        #[cfg(hepta_q24_deadline_observer)]
+        crate::q24_clock_observer::event("reply_written");
         self.owner.check(deadline)?;
         Ok(true)
     }

@@ -115,9 +115,13 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         channel: &mut HostAuthorityPeerChannel,
     ) -> Result<u64, Error> {
         for request_id in 1..=128 {
+            #[cfg(test)]
+            let _q24_scope=codex_hepta_contracts::q24_clock_observer::enter(crate::learning_iteration_evidence_client::q24_stage_probe::case(),"published_service",request_id,self.context.prefix.receipts.len() as u64);
             let mut failure = None;
             let exchanged = channel.exchange(|bytes| {
                 self.response(bytes, request_id).map_err(|error| {
+                    #[cfg(test)]
+                    codex_hepta_contracts::q24_clock_observer::event("original_handler_error");
                     failure = Some(error);
                     HostIssuerTransportError::InvalidRequest
                 })
@@ -134,6 +138,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     pub(super) fn response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
         #[cfg(test)]
         let qualification_started = std::time::Instant::now();
+        #[cfg(test)]
+        let mut q24_trace = crate::learning_iteration_evidence_client::q24_stage_probe::Span::new("published_handler", request_id);
         let started_at = now()?;
         let request: wire::Request = serde_json::from_slice(bytes)?;
         request.require_context(&self.context, self.binding, request_id)?;
@@ -142,9 +148,13 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         }
         #[cfg(test)]
         let qualification_owner_started = std::time::Instant::now();
+        #[cfg(test)]
+        q24_trace.mark("validated");
         let read = self.read_original()?;
         #[cfg(test)]
         let qualification_owner_us = qualification_owner_started.elapsed().as_micros();
+        #[cfg(test)]
+        q24_trace.mark("owner_returned");
         let fresh = now()?;
         if fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding {
             return Err(Error::Binding("original read window after owner I/O"));
@@ -162,6 +172,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             qualification_started.elapsed().as_micros(),
             bytes.len(),
         );
+        #[cfg(test)]
+        q24_trace.mark("encoded");
         Ok(bytes)
     }
 
@@ -197,10 +209,18 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     fn read_original(&self) -> Result<Readback, Error> {
+        #[cfg(test)]
+        let mut q24_trace = crate::learning_iteration_evidence_client::q24_stage_probe::Span::new("published_owner", self.context.prefix.receipts.len() as u64);
         self.require_task_input_current()?;
+        #[cfg(test)]
+        q24_trace.mark("input1");
         let coordinator = wire::decision(&self.context)?;
+        #[cfg(test)]
+        q24_trace.mark("decision");
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
         let selection = cell.read_learning_selection(&coordinator)?;
+        #[cfg(test)]
+        q24_trace.mark("selection1");
         self.require_original_selection(&selection)?;
         let Publication::Update { original, .. } = &self.cell.task.0.publication else {
             return Err(Error::Binding("original successor publication"));
@@ -208,6 +228,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         let publication = original.publication_digest()?;
         let source_input =
             circuit_feature_task_digest_v1(self.cell.task.definition(), self.cell.task.source())?;
+        #[cfg(test)]
+        q24_trace.mark("binding");
         let (observation, source_publication) = match wire::mode(&self.context)? {
             wire::Mode::Selection => (selection.clone(), None),
             wire::Mode::NextUse => {
@@ -228,11 +250,19 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
                 (observed, Some(before.publication_digest()))
             }
         };
+        #[cfg(test)]
+        q24_trace.mark("stage_observation");
         self.require_task_input_current()?;
+        #[cfg(test)]
+        q24_trace.mark("input2");
         if cell.read_learning_selection(&coordinator)? != selection {
             return Err(Error::Binding("original selection changed during read"));
         }
+        #[cfg(test)]
+        q24_trace.mark("selection2");
         self.require_task_input_current()?;
+        #[cfg(test)]
+        q24_trace.mark("input3");
         Ok(Readback {
             observation,
             publication,
