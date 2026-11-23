@@ -1,0 +1,76 @@
+{
+  "original_archive_sha256": "4a69291c427ea72a4d1e10eac64d459dd32606045f2e16c320b2bfad5578af43",
+  "panels": {
+    "dev": {
+      "all_paid_utility": "23/40",
+      "free_utility": "1/2",
+      "hindsight_utility": "17/20",
+      "hindsight_wins_vs_all_paid": 4,
+      "hindsight_wins_vs_free": 4,
+      "masks": 16777216,
+      "masks_passing_both_registered_sign_tests": 0,
+      "masks_passing_free_at_nominal_0_05": 0,
+      "min_raw_one_sided_p_vs_free": "1/16",
+      "min_raw_one_sided_p_vs_paid": "1/16",
+      "rescuable_windows_per_source": {
+        "new-prod-biswarup-ganguly-and-johnny-purty": 4,
+        "new-prod-blues-breaking-records-gerry-joe-weise": 0,
+        "new-prod-doug-haslam": 4,
+        "new-prod-santi-music-school": 2,
+        "new-prod-szervac-attila-tritonus-guitar-trio": 2,
+        "new-prod-u-s-department-of-state-antony-blinken": 0
+      },
+      "sources": 6,
+      "windows": 24
+    },
+    "test": {
+      "all_paid_utility": "97/160",
+      "free_utility": "11/16",
+      "hindsight_utility": "283/320",
+      "hindsight_wins_vs_all_paid": 8,
+      "hindsight_wins_vs_free": 3,
+      "masks": 4294967296,
+      "masks_passing_both_registered_sign_tests": 0,
+      "masks_passing_free_at_nominal_0_05": 0,
+      "min_raw_one_sided_p_vs_free": "1/8",
+      "min_raw_one_sided_p_vs_paid": "1/256",
+      "rescuable_windows_per_source": {
+        "new-prod-beag-music": 0,
+        "new-prod-canadapiano1998": 3,
+        "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel": 0,
+        "new-prod-golf-bravo-yaroslavsky-station": 3,
+        "new-prod-la-argentinita-manolo-de-huelva-film": 0,
+        "new-prod-paramount-chico-marx-the-cocoanuts": 0,
+        "new-prod-sir-amugi": 3,
+        "new-prod-viktor-o-ledenyov-summer-guitar-festival": 0
+      },
+      "sources": 8,
+      "windows": 32
+    },
+    "train_out_of_source": {
+      "all_paid_utility": "77/160",
+      "free_utility": "1/2",
+      "hindsight_utility": "53/64",
+      "hindsight_wins_vs_all_paid": 6,
+      "hindsight_wins_vs_free": 5,
+      "masks": 4294967296,
+      "masks_passing_both_registered_sign_tests": 9,
+      "masks_passing_free_at_nominal_0_05": 453600,
+      "min_raw_one_sided_p_vs_free": "1/32",
+      "min_raw_one_sided_p_vs_paid": "1/64",
+      "rescuable_windows_per_source": {
+        "new-prod-alan-atanton-stewart-yeff": 4,
+        "new-prod-cultuur-in-actie-the-five-great-guitars": 0,
+        "new-prod-drtrumpet": 4,
+        "new-prod-isaacvp": 0,
+        "new-prod-isak-zvegelj-ljubljana-street-country": 0,
+        "new-prod-jhistory": 2,
+        "new-prod-tobias-frei-prophecy": 3,
+        "new-prod-trumpetrep": 2
+      },
+      "sources": 8,
+      "windows": 32
+    }
+  },
+  "scope": "frozen first-prefix stop/buy answers and price only; hindsight feasibility, not a fitted policy"
+}
