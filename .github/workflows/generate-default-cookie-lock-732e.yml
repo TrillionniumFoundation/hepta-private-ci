@@ -1,0 +1,86 @@
+name: Generate exact default-branch cookie fix and observe original dependency gate
+on:
+  push:
+    branches: ["diagnostic/default-cookie-lock-732e-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: 732e934ba496d90fbe042b8d41d479ef901643e5
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+
+jobs:
+  baseline-cargo-deny:
+    uses: ./.github/workflows/cargo-deny.yml
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 732e934ba496d90fbe042b8d41d479ef901643e5
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci-build
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-lock
+      - name: Resolve the precise patched package and regenerate both native locks
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          p="$RUNNER_TEMP/default-cookie-lock"
+          mkdir "$p"
+          test "$(git rev-parse HEAD)" = "$BASE"
+          git rev-parse HEAD > "$p/source.txt"
+          git rev-parse HEAD^{tree} > "$p/tree.txt"
+          git ls-tree HEAD -- codex-rs/Cargo.lock MODULE.bazel.lock > "$p/input-blobs.txt"
+          sha256sum codex-rs/Cargo.lock MODULE.bazel.lock > "$p/input.sha256"
+          git show HEAD:codex-rs/Cargo.lock > "$p/base-Cargo.lock"
+          git show HEAD:MODULE.bazel.lock > "$p/base-MODULE.bazel.lock"
+          cargo -V > "$p/cargo-version.txt"
+          bazel --version > "$p/bazel-version.txt"
+          just --version > "$p/just-version.txt"
+          (cd codex-rs && cargo update -p cookie@0.18.1 --precise 0.18.3) |& tee "$p/cargo-update.log"
+          cp codex-rs/Cargo.lock "$p/Cargo.lock"
+          python3 - "$p" <<'PY'
+          import pathlib, sys, tomllib
+          root = pathlib.Path(sys.argv[1])
+          old, new = [tomllib.loads((root/p).read_text()) for p in ('base-Cargo.lock','Cargo.lock')]
+          def packages(data):
+              return {p['name'] + '@' + p['version'] + '#' + p.get('source',''): p for p in data['package']}
+          a,b=packages(old),packages(new)
+          old_only=sorted(a.keys()-b.keys())
+          new_only=sorted(b.keys()-a.keys())
+          assert len(old_only)==len(new_only)==1 and a[old_only[0]]['name']==b[new_only[0]]['name']=='cookie'
+          assert a[old_only[0]]['version']=='0.18.1' and b[new_only[0]]['version']=='0.18.3'
+          assert b[new_only[0]]['checksum']=='d55f2d6c30eeec7d5c6f98bd4395d4abb1895629eab97ee6522d340623615f8a'
+          assert a[old_only[0]]['dependencies']==b[new_only[0]]['dependencies']
+          assert all(a[k]==b[k] for k in a.keys() & b.keys())
+          PY
+          just bazel-lock-update |& tee "$p/bazel-lock-update.log"
+          cp MODULE.bazel.lock "$p/MODULE.bazel.lock"
+          sha256sum codex-rs/Cargo.lock MODULE.bazel.lock > "$p/generated.sha256"
+          just bazel-lock-check |& tee "$p/bazel-lock-check.log"
+          sha256sum -c "$p/generated.sha256"
+          git diff --name-only > "$p/changed.txt"
+          git diff --numstat > "$p/numstat.txt"
+          git diff --check
+          python3 - "$p" <<'PY'
+          import pathlib, sys
+          paths=(pathlib.Path(sys.argv[1])/'changed.txt').read_text().splitlines()
+          assert set(paths) in ({"codex-rs/Cargo.lock"}, {"codex-rs/Cargo.lock","MODULE.bazel.lock"}), paths
+          PY
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: main-732e-cookie-lock-generation
+          path: ${{ runner.temp }}/default-cookie-lock
