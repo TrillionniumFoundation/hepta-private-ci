@@ -355,8 +355,7 @@ pub(in super::super) fn cohort(
             context,
             task,
             ledger_binding,
-            &snapshot_id,
-            outcome_watermark,
+            (&snapshot_id, outcome_watermark),
             preimage,
         )?;
     }

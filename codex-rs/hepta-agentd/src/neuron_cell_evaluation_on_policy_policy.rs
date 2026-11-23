@@ -15,8 +15,7 @@ pub(super) fn verify_pre_b_policy(
     context: &Context,
     task: &crate::OriginalCellEvaluationPanelTaskV1,
     ledger: Digest32,
-    snapshot_id: &StableId,
-    outcome_watermark: u64,
+    (snapshot_id, outcome_watermark): (&StableId, u64),
     bytes: &[u8],
 ) -> Result<(), Error> {
     let policy =
