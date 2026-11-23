@@ -472,10 +472,10 @@ rcgen = { version = "0.14.7", default-features = false, features = [
 regex = "1.12.3"
 regex-lite = "0.1.8"
 reqwest = { version = "0.12", features = ["cookies"] }
-rmcp = { version = "=3.1.3", default-features = false }
+rmcp = { version = "=3.9.0", default-features = false }
 runfiles = { git = "https://github.com/dzbarsky/rules_rust", rev = "b56cbaa8465e74127f1ea216f813cd377295ad81" }
 rustix = { version = "1.1.4", features = ["net"] }
-rustls = { version = "0.23", default-features = false, features = [
+rustls = { version = "0.23.46", default-features = false, features = [
     "aws_lc_rs",
     "std",
 ] }
@@ -661,6 +661,10 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Backport the upstream TOML parser migration for the age localization macros.
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
+# Keep Rama alpha.4 while using its Hickory 0.26 DNS adapter.
+rama-dns = { path = "third_party/rama-dns-0.3.0-alpha.4" }
 # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
 # bitmap import and patched chunk dependency without changing their public API.
 imbl = { path = "third_party/imbl-6.1.0" }

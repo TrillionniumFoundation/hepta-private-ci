@@ -1,0 +1,3 @@
+# i18n-config 0.4.8 parser compatibility patch
+
+Official i18n-config 0.4.8 crate SHA-256: `3e06b90c8a0d252e203c94344b21e35a30f3a3a85dc7db5af8f8df9f3e0c63ef`. The distributed MIT license is retained. Upstream migrated its TOML parser in [kellpossible/cargo-i18n@2ce7b1d](https://github.com/kellpossible/cargo-i18n/commit/2ce7b1dfe9a8cc224288bf50cbc2a67a6de863c4). This backport uses the maintained 1.1 parser already present in this workspace, with only its deserialization and parser features requested. Two parse calls and the associated error payload type change. Existing configuration structs, macro clients and message assets are kept. The application workspace Cargo.lock records the resolved graph.
