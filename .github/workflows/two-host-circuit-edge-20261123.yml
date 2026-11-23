@@ -1,0 +1,101 @@
+name: Frozen Circuit edge across two hosted jobs
+on:
+  push:
+    branches: [research/frozen-circuit-two-host-edge-20261123]
+    paths:
+      - .github/workflows/two-host-circuit-edge-20261123.yml
+      - qualification/circuit-two-host-edge-20261123/PROTOCOL.md
+      - qualification/circuit-two-host-edge-20261123/run.py
+      - qualification/circuit-two-host-edge-20261123/install.sh
+permissions:
+  contents: read
+env:
+  STUDY: qualification/circuit-two-host-edge-20261123
+  PYTHONPATH: scripts
+  PYTHONDONTWRITEBYTECODE: '1'
+  HF_HUB_OFFLINE: '1'
+  TRANSFORMERS_OFFLINE: '1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      edge_sha: ${{ steps.generate.outputs.edge_sha }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - name: Record source job start
+        run: |
+          mkdir "$RUNNER_TEMP/source-evidence"
+          date +%s%N > "$RUNNER_TEMP/source-evidence/job-first-step.ns"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with: {python-version: '3.12'}
+      - name: Install frozen CPU profile
+        run: bash "$STUDY/install.sh"
+      - name: Cold-load source and generate the real edge bytes
+        id: generate
+        run: |
+          "$RUNNER_TEMP/hepta-edge-env/bin/python" "$STUDY/run.py" source "$RUNNER_TEMP/source-evidence" "$RUNNER_TEMP/edge"
+          date +%s%N > "$RUNNER_TEMP/source-evidence/upload-before.ns"
+      - name: Upload application edge
+        id: upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frozen-circuit-edge
+          path: ${{ runner.temp }}/edge/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Record source handoff
+        env:
+          EDGE_ID: ${{ steps.upload.outputs.artifact-id }}
+          EDGE_DIGEST: ${{ steps.upload.outputs.artifact-digest }}
+        run: |
+          date +%s%N > "$RUNNER_TEMP/source-evidence/upload-after.ns"
+          printf '%s\n' "$EDGE_ID" > "$RUNNER_TEMP/source-evidence/edge-artifact-id"
+          printf '%s\n' "$EDGE_DIGEST" > "$RUNNER_TEMP/source-evidence/edge-artifact-sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frozen-circuit-source-observation
+          path: ${{ runner.temp }}/source-evidence/
+          if-no-files-found: error
+          retention-days: 30
+  reader:
+    needs: source
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_ENVELOPE_SHA: ${{ needs.source.outputs.edge_sha }}
+    steps:
+      - name: Record reader job start and begin download
+        run: |
+          mkdir "$RUNNER_TEMP/reader-evidence"
+          date +%s%N > "$RUNNER_TEMP/reader-evidence/job-first-step.ns"
+          date +%s%N > "$RUNNER_TEMP/reader-evidence/download-before.ns"
+      - name: Download the producing job's exact edge artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.source.outputs.artifact_id }}
+          path: ${{ runner.temp }}/edge
+          merge-multiple: true
+      - name: Record edge delivery
+        run: date +%s%N > "$RUNNER_TEMP/reader-evidence/download-after.ns"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with: {python-version: '3.12'}
+      - name: Install frozen CPU profile
+        run: bash "$STUDY/install.sh"
+      - name: Verify source and cold-read connected and removed-edge arms
+        run: |
+          for condition in connected removed; do
+            "$RUNNER_TEMP/hepta-edge-env/bin/python" "$STUDY/run.py" "$condition" "$RUNNER_TEMP/reader-evidence" "$RUNNER_TEMP/edge"
+          done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frozen-circuit-reader-observation
+          path: ${{ runner.temp }}/reader-evidence/
+          if-no-files-found: error
+          retention-days: 30
