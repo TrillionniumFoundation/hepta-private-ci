@@ -1,0 +1,60 @@
+{
+  "repair": "a36a2b557b92c79b9ec197ea5ffce027d8417096",
+  "tested_blob": "d49911644cc68f7635384366053c43613a4ad9b8",
+  "verification": "5658e6ab2c2a80a4640d51f4477079d5b91a8da8",
+  "run": 45119007764,
+  "gnu_clippy_job": 137508243213,
+  "gnu_clippy_target": "//codex-rs/app-server:app-server-all-test-bin",
+  "completed_events": [
+    {
+      "targetCompleted": {
+        "label": "//codex-rs/app-server:app-server-all-test-bin",
+        "aspect": "@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect",
+        "configuration": {
+          "id": "45a9f187654556e103ec666584c7b9b1714ca05e74aeb43bed077fb4451bc895"
+        }
+      }
+    },
+    {
+      "targetCompleted": {
+        "label": "//codex-rs/app-server:app-server-all-test-bin",
+        "configuration": {
+          "id": "45a9f187654556e103ec666584c7b9b1714ca05e74aeb43bed077fb4451bc895"
+        }
+      }
+    }
+  ],
+  "musl_job": 137508243462,
+  "case": "suite::v2::app_list::list_apps_emits_updates_and_returns_after_both_lists_load",
+  "maximum_attempts_per_run": 1,
+  "musl": [
+    {
+      "run": 1,
+      "passed": 1,
+      "filtered": 1024,
+      "seconds": 4.41,
+      "stdout_sha256": "087fd0b7c29b401720cbd9f84d2094ee924c457de20993e0b29739d85fd4060c",
+      "xml_sha256": "19d40c11825a4ed44bae283d8c737dffb8224f3fae99f8f3761f464a9ba54398"
+    },
+    {
+      "run": 2,
+      "passed": 1,
+      "filtered": 1024,
+      "seconds": 4.41,
+      "stdout_sha256": "087fd0b7c29b401720cbd9f84d2094ee924c457de20993e0b29739d85fd4060c",
+      "xml_sha256": "19d40c11825a4ed44bae283d8c737dffb8224f3fae99f8f3761f464a9ba54398"
+    },
+    {
+      "run": 3,
+      "passed": 1,
+      "filtered": 1024,
+      "seconds": 4.41,
+      "stdout_sha256": "087fd0b7c29b401720cbd9f84d2094ee924c457de20993e0b29739d85fd4060c",
+      "xml_sha256": "19d40c11825a4ed44bae283d8c737dffb8224f3fae99f8f3761f464a9ba54398"
+    }
+  ],
+  "artifact_digests": {
+    "original-app-list-gnu-clippy": "sha256:d14bf764169bc141435abd9e43d43359076c375c77d01812e07e6019537012de",
+    "exact-app-list-watch-three-musl": "sha256:b8e3e02636d86339edb125d6ea820c74edf3c1978dd733ad3ad11d9d00cc8701"
+  }
+}

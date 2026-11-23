@@ -1,0 +1,67 @@
+{
+  "scope": "Read-only existing archives; no proposed source change.",
+  "hosted": {
+    "137467966911": {
+      "source": "dc187e6cd05cfe0a27b26059693b7038910e8088",
+      "results": [
+        "//codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test     PASSED in 29.1s"
+      ]
+    },
+    "137481302863": {
+      "source": "ae2ad4941e0734c311d74904c9bbacc6c5136b6c",
+      "results": [
+        "FLEET_TIMING peer_threads_complete count=2",
+        "FLEET_TIMING peer_threads_complete count=4",
+        "Error: normal drain must keep control alive and exit successfully, not force recovery: Some(ProcessExit { success: false, code: Some(1) }); active=true; healthy=true; runtime_generation=Some(10); release_change_pending=false; last_exit=Some(ProcessExit { success: false, code: Some(1) }); last_health=HealthSnapshot { promotion_ready: true, ready: true, fenced: false, lifecycle: Running, process_id: 39160, workspace: \"/private/tmp/.tmpf7d3kZ/workspace-0\", home_root: \"/private/tmp/.tmpf7d3kZ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/home\", run_root: \"/private/tmp/.tmpf7d3kZ/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/run\" }; stdout (tail, max 4096 bytes):",
+        "hepta-agentd module=control-server: runtime owner failure retained during shutdown: Broken pipe (os error 32)",
+        "Error: agentd protocol error: runtime failed while draining; shutdown is not successful",
+        "//codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test     FAILED in 28.1s"
+      ]
+    },
+    "137462395353": {
+      "source": "f778459c3c38648c0bbf6f5a99866c38d90b4880",
+      "results": [
+        "test unix::drain_tests::malformed_or_wrong_generation_drain_frames_still_reject ... FAILED",
+        "//codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test (cached) PASSED in 29.1s"
+      ]
+    }
+  },
+  "core_git_blobs": {
+    "dc187e6cd05cfe0a27b26059693b7038910e8088": {
+      "hepta-agentd/tests/five_agent_rolling_upgrade.rs": "8b44dc8ecbdc201a6ff20fb125064e2dc5865e39",
+      "hepta-agentd/src/control.rs": "f8df537d13d69a9df50fdaf1e5e41bccc1dd9a65",
+      "hepta-agentd/src/control_frames.rs": "ce5146eaf5bd985b76ff324bd84486de37052069",
+      "hepta-agentd/src/control_frames_tests.rs": "dd7b6a9cf507c04a397b78ac546efa3f20510c98",
+      "hepta-agentd/src/runtime_tasks.rs": "f3d944dac723233082c0a890d88b2a22375860e6",
+      "hepta-agentd/src/runtime.rs": "e9559e3e44c6d52085b6d0b66ee14a859ff8db7d",
+      "hepta-supervisor/src/unix.rs": "358947b30ce73232eb42491a44c7787b24a9386e",
+      "hepta-supervisor/src/unix_drain_tests.rs": "22f0a0b5a42246766210adea3795b6bc15c9aa9d"
+    },
+    "ae2ad4941e0734c311d74904c9bbacc6c5136b6c": {
+      "hepta-agentd/tests/five_agent_rolling_upgrade.rs": "8b44dc8ecbdc201a6ff20fb125064e2dc5865e39",
+      "hepta-agentd/src/control.rs": "f8df537d13d69a9df50fdaf1e5e41bccc1dd9a65",
+      "hepta-agentd/src/control_frames.rs": "ce5146eaf5bd985b76ff324bd84486de37052069",
+      "hepta-agentd/src/control_frames_tests.rs": "dd7b6a9cf507c04a397b78ac546efa3f20510c98",
+      "hepta-agentd/src/runtime_tasks.rs": "f3d944dac723233082c0a890d88b2a22375860e6",
+      "hepta-agentd/src/runtime.rs": "e9559e3e44c6d52085b6d0b66ee14a859ff8db7d",
+      "hepta-supervisor/src/unix.rs": "358947b30ce73232eb42491a44c7787b24a9386e",
+      "hepta-supervisor/src/unix_drain_tests.rs": "22f0a0b5a42246766210adea3795b6bc15c9aa9d"
+    },
+    "f778459c3c38648c0bbf6f5a99866c38d90b4880": {
+      "hepta-agentd/tests/five_agent_rolling_upgrade.rs": "8b44dc8ecbdc201a6ff20fb125064e2dc5865e39",
+      "hepta-agentd/src/control.rs": "f8df537d13d69a9df50fdaf1e5e41bccc1dd9a65",
+      "hepta-agentd/src/control_frames.rs": "ce5146eaf5bd985b76ff324bd84486de37052069",
+      "hepta-agentd/src/control_frames_tests.rs": "dd7b6a9cf507c04a397b78ac546efa3f20510c98",
+      "hepta-agentd/src/runtime_tasks.rs": "f3d944dac723233082c0a890d88b2a22375860e6",
+      "hepta-agentd/src/runtime.rs": "e9559e3e44c6d52085b6d0b66ee14a859ff8db7d",
+      "hepta-supervisor/src/unix.rs": "358947b30ce73232eb42491a44c7787b24a9386e",
+      "hepta-supervisor/src/unix_drain_tests.rs": "22f0a0b5a42246766210adea3795b6bc15c9aa9d"
+    }
+  },
+  "trace_interpretation": {
+    "observable": "A control-server failure retained Broken pipe (OS error 32); runtime drain then exited unsuccessfully (exit 1). The assertion checked the prior process exit even though the newly promoted process was healthy. The fleet Bazel integration executable exited 101.",
+    "unobserved": "No request ID, method, bytes written, initiating peer or syscall phase is tagged by the logged error. Inspecting control_frames shows the frame write and the shutdown can both propagate BrokenPipe. No basis to reclassify it as a successful reply.",
+    "related_audit": "qa/repository-consolidation/20261116/graph-and-ci-audit/ci-evidence/mac-control-close-order-v1.json.gz documented synthetic macOS ARM socket ordering; its accepted ENOTCONN after a successful full frame write is implemented. Separate original native unit tests deliberately preserve BrokenPipe on partial write and on shutdown.",
+    "historical_control": "#6999 Intel target genuinely executed and passed on darwin-sandbox; fixture, Control, frames, runtime, and Supervisor files in binding map match #7005, but actual native binaries have different digests and crate-wide revision differs. #6992 Intel rolling target was cached green and its separate unix supervisor malformed/wrong-generation test failed."
+  }
+}
