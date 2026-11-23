@@ -1,0 +1,143 @@
+name: Legacy child completion and fleet replay on musl
+on:
+  push:
+    branches: [diagnostic/legacy-subagent-completion-20261123]
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - side: baseline
+            source: 0561d91569c78b1980f2678badd767d2d207928c
+          - side: candidate
+            source: aad73002ea6b3ce63928cbb3125b23430ec6d7a7
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+      SIDE: ${{ matrix.side }}
+      SOURCE: ${{ matrix.source }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source }}
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Test the real held parent finish under the original ownership fence
+        id: witness
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          mkdir -p "$RUNNER_TEMP/completion/witness"
+          set +e
+          ./.github/scripts/run-bazel-ci.sh --print-failed-test-logs -- test \
+            --strategy=TestRunner=local --test_sharding_strategy=disabled \
+            --test_arg=terminal_child_notification_waits_for_normal_finish_and_stays_single \
+            --flaky_test_attempts=1 --nocache_test_results --remote_upload_local_results=false \
+            --build_metadata=COMMIT_SHA="$SOURCE" -- //codex-rs/core:core-unit-tests
+          status=$?
+          set -e
+          root=bazel-testlogs/codex-rs/core/core-unit-tests
+          cp -L "$root/test.log" "$RUNNER_TEMP/completion/witness/test.log"
+          log="$RUNNER_TEMP/completion/witness/test.log"
+          if test "$SIDE" = baseline; then
+            test "$status" -ne 0
+            grep -F 'child notification was discarded before the normal finish owner retired' "$log"
+            grep -F '0 passed; 1 failed; 0 ignored;' "$log"
+          else
+            test "$status" -eq 0
+            grep -F 'terminal_child_notification_waits_for_normal_finish_and_stays_single ... ok' "$log"
+            grep -F '1 passed; 0 failed; 0 ignored;' "$log"
+          fi
+      - name: Replay the unchanged original end-to-end notification without extending its six seconds
+        if: always() && !cancelled()
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/completion/end-to-end"
+          case_name=suite::subagent_notifications::subagent_notification_is_included_without_wait
+          set +e
+          ./.github/scripts/run-bazel-ci.sh --print-failed-test-logs -- test \
+            --strategy=TestRunner=local --test_sharding_strategy=disabled \
+            --test_arg=--exact --test_arg="$case_name" --runs_per_test=3 \
+            --flaky_test_attempts=1 --nocache_test_results --remote_upload_local_results=false \
+            --build_metadata=COMMIT_SHA="$SOURCE" -- //codex-rs/core:core-all-test
+          status=$?
+          set -e
+          shopt -s globstar nullglob
+          logs=(bazel-testlogs/codex-rs/core/core-all-test/**/test.log)
+          test "${#logs[@]}" -eq 3
+          good=0
+          for i in "${!logs[@]}"; do
+            file="${logs[$i]}"
+            cp -L "$file" "$RUNNER_TEMP/completion/end-to-end/$i.log"
+            if grep -Fq "test $case_name ... ok" "$file"; then
+              grep -F '1 passed; 0 failed; 0 ignored;' "$file"
+              good=$((good+1))
+            else
+              grep -F 'timed out waiting for parent rollout to include subagent notification' "$file"
+              grep -F '0 passed; 1 failed; 0 ignored;' "$file"
+            fi
+          done
+          echo "$SIDE $good of 3"
+          if test "$SIDE" = candidate; then test "$status" -eq 0 && test "$good" -eq 3; fi
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always() && !cancelled()
+        with:
+          name: legacy-child-completion-${{ matrix.side }}
+          path: ${{ runner.temp }}/completion
+          if-no-files-found: error
+
+  fleet:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: e3277e9677688be5c4c235a7a127f0b51e373399
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Replay original unchanged two-case fleet target using its remote execution strategy
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = e3277e9677688be5c4c235a7a127f0b51e373399
+          ./.github/scripts/run-bazel-ci.sh --print-failed-test-logs -- test \
+            --runs_per_test=3 --flaky_test_attempts=1 --nocache_test_results \
+            --build_metadata=COMMIT_SHA="$(git rev-parse HEAD)" -- //codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test
+      - name: Capture every original fleet test process
+        if: always() && !cancelled()
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/fleet"
+          shopt -s globstar nullglob
+          logs=(bazel-testlogs/codex-rs/hepta-agentd/hepta-agentd-five_agent_rolling_upgrade-test/**/test.log)
+          test "${#logs[@]}" -eq 3
+          for i in "${!logs[@]}"; do cp -L "${logs[$i]}" "$RUNNER_TEMP/fleet/$i.log"; done
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always() && !cancelled()
+        with:
+          name: original-six-agent-fleet-three-musl
+          path: ${{ runner.temp }}/fleet
+          if-no-files-found: error
