@@ -1,0 +1,246 @@
+{
+  "diversity_protocol": {
+    "compute": "Freeze numeric caps and matching tolerances. Match realized training MACs (including attention, loss and recomputation), verification work and accelerator service seconds per arm. Record padded, prompt and target tokens, CPU seconds and joules. Exclude unmatched comparisons.",
+    "control": "Use the same parent, tokenizer, optimizer, hardware and update rule within each block. Evaluate on the same independent future tasks and retention panel.",
+    "design": "Randomize nested user cohorts within domain strata across independent enrollment blocks. Freeze seeds and repeat counts.",
+    "exposure": "Verify each roster member contributed permitted material to a committed update. Record the distinct pseudonymous user count, exposure share per user, domain coverage and duplicate fraction.",
+    "intervention": "Keep one Cell and vary the number of distinct authenticated humans who contribute.",
+    "outcome": "For each evaluation user, compute the difference in task success between candidate and frozen parent. Average equally over users and compare with the one-user arm. Include all assigned tasks and predeclare timeout handling.",
+    "uncertainty": "Preregister paired uncertainty over independent training cohorts and held-out users, sample sizes and a retention noninferiority margin before outcomes."
+  },
+  "entry": "Before a new run, verify the qualifying cross-user candidate, independent permissions and receipts, fresh sealed tasks and frozen cost limits. Confirm that the run fits the remaining authorized budget and available host capacity.",
+  "measurements": [],
+  "observed_diversity_effect": null,
+  "observed_system_speedup": null,
+  "points": [
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_total/u1/c1",
+      "max_distinct_users_if_enrolled": 1,
+      "proposed_parallel_cells": 1,
+      "proposed_units": 32,
+      "proposed_users": 1,
+      "regime": "fixed_total"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_total/u4/c1",
+      "max_distinct_users_if_enrolled": 4,
+      "proposed_parallel_cells": 1,
+      "proposed_units": 32,
+      "proposed_users": 4,
+      "regime": "fixed_total"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_total/u16/c1",
+      "max_distinct_users_if_enrolled": 16,
+      "proposed_parallel_cells": 1,
+      "proposed_units": 32,
+      "proposed_users": 16,
+      "regime": "fixed_total"
+    },
+    {
+      "covers_every_user_under_unit_binding": false,
+      "id": "fixed_total/u64/c1",
+      "max_distinct_users_if_enrolled": 32,
+      "proposed_parallel_cells": 1,
+      "proposed_units": 32,
+      "proposed_users": 64,
+      "regime": "fixed_total"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u1/c1",
+      "max_distinct_users_if_enrolled": 1,
+      "proposed_parallel_cells": 1,
+      "proposed_units": 32,
+      "proposed_users": 1,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u1/c2",
+      "max_distinct_users_if_enrolled": 1,
+      "proposed_parallel_cells": 2,
+      "proposed_units": 32,
+      "proposed_users": 1,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u1/c4",
+      "max_distinct_users_if_enrolled": 1,
+      "proposed_parallel_cells": 4,
+      "proposed_units": 32,
+      "proposed_users": 1,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u4/c1",
+      "max_distinct_users_if_enrolled": 4,
+      "proposed_parallel_cells": 1,
+      "proposed_units": 128,
+      "proposed_users": 4,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u4/c2",
+      "max_distinct_users_if_enrolled": 4,
+      "proposed_parallel_cells": 2,
+      "proposed_units": 128,
+      "proposed_users": 4,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u4/c4",
+      "max_distinct_users_if_enrolled": 4,
+      "proposed_parallel_cells": 4,
+      "proposed_units": 128,
+      "proposed_users": 4,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u16/c1",
+      "max_distinct_users_if_enrolled": 16,
+      "proposed_parallel_cells": 1,
+      "proposed_units": 512,
+      "proposed_users": 16,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u16/c2",
+      "max_distinct_users_if_enrolled": 16,
+      "proposed_parallel_cells": 2,
+      "proposed_units": 512,
+      "proposed_users": 16,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u16/c4",
+      "max_distinct_users_if_enrolled": 16,
+      "proposed_parallel_cells": 4,
+      "proposed_units": 512,
+      "proposed_users": 16,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u64/c1",
+      "max_distinct_users_if_enrolled": 64,
+      "proposed_parallel_cells": 1,
+      "proposed_units": 2048,
+      "proposed_users": 64,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u64/c2",
+      "max_distinct_users_if_enrolled": 64,
+      "proposed_parallel_cells": 2,
+      "proposed_units": 2048,
+      "proposed_users": 64,
+      "regime": "fixed_per_source"
+    },
+    {
+      "covers_every_user_under_unit_binding": true,
+      "id": "fixed_per_source/u64/c4",
+      "max_distinct_users_if_enrolled": 64,
+      "proposed_parallel_cells": 4,
+      "proposed_units": 2048,
+      "proposed_users": 64,
+      "regime": "fixed_per_source"
+    }
+  ],
+  "proposed_comparisons": [
+    {
+      "baseline": "fixed_total/u1/c1",
+      "estimate": "diversity",
+      "treatment": "fixed_total/u4/c1"
+    },
+    {
+      "baseline": "fixed_total/u1/c1",
+      "estimate": "diversity",
+      "treatment": "fixed_total/u16/c1"
+    },
+    {
+      "baseline": "fixed_per_source/u1/c1",
+      "estimate": "system",
+      "treatment": "fixed_per_source/u1/c2"
+    },
+    {
+      "baseline": "fixed_per_source/u1/c1",
+      "estimate": "system",
+      "treatment": "fixed_per_source/u1/c4"
+    },
+    {
+      "baseline": "fixed_per_source/u4/c1",
+      "estimate": "system",
+      "treatment": "fixed_per_source/u4/c2"
+    },
+    {
+      "baseline": "fixed_per_source/u4/c1",
+      "estimate": "system",
+      "treatment": "fixed_per_source/u4/c4"
+    },
+    {
+      "baseline": "fixed_per_source/u16/c1",
+      "estimate": "system",
+      "treatment": "fixed_per_source/u16/c2"
+    },
+    {
+      "baseline": "fixed_per_source/u16/c1",
+      "estimate": "system",
+      "treatment": "fixed_per_source/u16/c4"
+    },
+    {
+      "baseline": "fixed_per_source/u64/c1",
+      "estimate": "system",
+      "treatment": "fixed_per_source/u64/c2"
+    },
+    {
+      "baseline": "fixed_per_source/u64/c1",
+      "estimate": "system",
+      "treatment": "fixed_per_source/u64/c4"
+    }
+  ],
+  "runs_authorized_by_this_design": 0,
+  "schema": "hepta.e5.prospective-human-cell-design.v1",
+  "scope": "Proposed comparisons. Arms and replicates may share the existing authorized budget according to its terms. Before execution, account for their combined cost against the remaining allowance.",
+  "source_plan": {
+    "commit": "8288481188abb2d01b4248f6cad635a375e13229",
+    "path": "qualification/cell-e5-material-adapter-20261120/NEXT_TRAINING_PLAN.json",
+    "sha256": "f803383cbc70456d92799b78e96d70dff62cbfd84d13a4c1f1c34d9450c32e26"
+  },
+  "status": "PROPOSAL_ONLY",
+  "system_protocol": {
+    "control": "Use the same per-user token, compute and verification limits, exposure list, parent, hardware pool, offered load, task order and seeds. Randomize run order within blocks. Log each user's resource use including retries.",
+    "intervention": "Vary the simultaneous Cell count within a fixed, authenticated user roster.",
+    "outcome": "Divide the count of unique verified useful work IDs by elapsed batch seconds, from submission through drain. Include queueing, synchronization, verification and retries. Report speedup against serial, failures, p95 arrival-to-verdict latency and retention.",
+    "overlap": "Record distinct worker IDs and job start and finish on a common monotonic clock, or record clock-error bounds across hosts. Require sustained concurrency over the preregistered interval and report busy Cell-seconds at each concurrency level.",
+    "train_semantics": "Freeze the same dependency graph, Cell update rule, synchronization and merge order for serial and parallel runs. Record committed candidate lineage and apply the same teacher-off quality and retention gates. A serial dependency chain permits one active update at a time.",
+    "uncertainty": "Repeat matched serial and parallel blocks and estimate paired speedup intervals across independent runs. Report devices per Cell, shared resources, workload skew and clock uncertainty."
+  },
+  "unbound_compute_fields_in_source_plan": [
+    "GPU_CPU_memory_and_energy_limits",
+    "MAC_limit_per_point",
+    "actual_nonpad_prompt_tokens_per_source",
+    "actual_target_tokens_and_masks_per_source",
+    "wall_seconds_limit_per_point"
+  ],
+  "unbound_verification_fields_in_source_plan": [
+    "B_selection_rule_and_C_NoUpdate_acceptance_threshold",
+    "independent_future_B_tasks",
+    "independent_future_C_tasks",
+    "max_generated_tokens",
+    "new_candidate_generation_count",
+    "new_candidate_native_child_count",
+    "retention_task_manifest"
+  ]
+}
