@@ -38,3 +38,11 @@
 e327 的仓库 build-test 原输出中另提取了 770,005 字节的权限调用回执。与 c6a 已归档回执逐字节一致，SHA-256 为 2de991230d84e60c8d440278ceb189e0f4111ce8b7c200a934ffc7a31257d6c3。实测相同的 9,141 个 Rust 文件数、1,652 个清单边界、826 个受保护文件与 authorityGranted=false。[e327 仓库原作业](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45130787598/job/137546560666)
 
 e327 自身从冷检出重新编译的原始启动工作流也已成功。新 Agentd 二进制长 597,708,816 字节，对应 SHA-256 以 b0a412d13359 开头。不同于 c6a 的旧 ELF。新二进制在原正式套件中运行 265.528 秒，源与恢复名册 1,723 项完全相同，可执行项 1,552/1,552 逐名通过，原忽略 171 项。此前六项失败均有自己的通过行，另四个控制组分别 6/6、3/3、6/6、2/2。[两阶段冷构建和原生执行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45130787247) · [原始归档与逐项复核](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/57263947fb62efda78071af3c85709c7af202200/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/memory-startup/E327.md)
+
+## 内生边界、重复释放与编码器的适用范围
+
+#6739 已合并的一维再生 QVI 根据任务收益求出内生阈值。它在常系数、仿射存活收益、固定重置位置和确定不应期下支持八个物理参数的隐式梯度。三个任务、九个优化初值的阈值最大误差为 5.32e−9。仓内另有给定直线的解析首触、两段折线的独立核积分、有限格可微多次释放，以及固定连续边界的多次释放参考。它们的边界假设、是否带符号及能否反传分别列出。真实视听检索原研究有 51 个封存配置，达到全部任务采用门槛的有 0 个。[范围、原始源码及实验](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a77450f69f2da792bc65739adaefe3a438be8c05/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/HCSN_SCOPE_ZH.md)
+
+既有 CREMA-D 研究的确认集有 8 名新演员、192 个配对片段。在相同 60 秒训练 CPU 预算下，HCSN 融合准确率 30.9896%，Transformer 为 34.7005%；HCSN 相对 LIF 高 9.570 个百分点，是八项主要收益比较中唯一达到预设门槛的一项。音频检索视频的 R@1 分别为 HCSN 0.4557%、Transformer 7.8776%。这些数据将小任务的局部收益和端到端编码器的性能要求分开。[90 个配置及原始对照](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/980b8d0a1ccd672a2aa84d8c75610d67528ff70d/experiments/hcsn_blocker_closure_v1/av/RESULTS_ZH.md)
+
+继续只用购买前的八个音频分组，TRAIN 和 DEV 的全部 256 张二值决策表产生 128 种不同动作。14 个来源都满足保持下限的只有两种，其中一种全免费，另一种只买一条训练查询。允许在每组输出任意连续购买概率后，约束同样 14 个来源的期望保持下限，DEV 相对一律购买的最大增益仍是 −487/10920（−0.04460）。这个上界有独立可验的有理数对偶证书，原逐题评分器复核两分区全部 512 次离散评分。一组查询的平均购买收益可为正，而仅凭这些购买前信息仍无法可靠部署。[精确证书、逐来源假设、原始评分复算](../purchase-attainability-20261123/README.md)

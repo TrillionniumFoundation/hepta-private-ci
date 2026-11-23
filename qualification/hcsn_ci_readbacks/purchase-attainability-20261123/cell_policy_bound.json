@@ -1,0 +1,60 @@
+{
+  "all_binary_tables": 256,
+  "best_minimum_mean_gain_vs_both_controls_across_both_splits_under_floor": "-3/40",
+  "distinct_observed_action_tables": 128,
+  "floor_and_both_mean_gains_0_03_on_both_splits": 0,
+  "floor_preserving_tables": [
+    {
+      "buy_cells": [],
+      "panels": {
+        "dev": {
+          "buys": 0,
+          "floor": true,
+          "gain_free": "0",
+          "gain_paid": "-3/40",
+          "worst": 0
+        },
+        "train": {
+          "buys": 0,
+          "floor": true,
+          "gain_free": "0",
+          "gain_paid": "3/160",
+          "worst": 0
+        }
+      }
+    },
+    {
+      "buy_cells": [
+        2
+      ],
+      "panels": {
+        "dev": {
+          "buys": 0,
+          "floor": true,
+          "gain_free": "0",
+          "gain_paid": "-3/40",
+          "worst": "0"
+        },
+        "train": {
+          "buys": 1,
+          "floor": true,
+          "gain_free": "7/320",
+          "gain_paid": "13/320",
+          "worst": "0"
+        }
+      }
+    }
+  ],
+  "nonempty_cells_across_train_dev": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    7
+  ],
+  "nontrivial_tables_preserving_floor": 1,
+  "registered_cells": 8,
+  "tables_preserving_all_train_dev_sources": 2
+}
