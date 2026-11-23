@@ -1,0 +1,35 @@
+{
+  "base": "e3277e9677688be5c4c235a7a127f0b51e373399",
+  "candidate": "674a8c2c7317399247895763373c6157119c767c",
+  "native": {
+    "base": {
+      "binary_sha256": "e22096190fb955ee70491be789b22e245de06add07b46128503213e828c9aa04",
+      "passed": 14
+    },
+    "candidate": {
+      "binary_sha256": "0787a76026bb4fe7ddf5e5f5c416a6885bab5b249edc9a53752c94092cd86197",
+      "passed": 14
+    }
+  },
+  "native_archive_sha256": "a85486e352779ab0a1838ae3e9ad00c9939125d8356e20e4e36e9f0af882c55b",
+  "owner_fixture_blobs": [
+    "100644 blob 5b5fbad6edc0e815231b89341c170d35af5e7383\tcodex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+    "100644 blob 835e7b13894b488dbd9ab83bc85621ba47b2ca2d\tcodex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs"
+  ],
+  "strict": {
+    "after": 122,
+    "before": 124,
+    "new": [],
+    "removed": [
+      [
+        "hepta-agentd/src/circuit_next_use_command.rs",
+        "this function has too many arguments (8/7)"
+      ],
+      [
+        "hepta-agentd/src/circuit_selection_command.rs",
+        "this function has too many arguments (8/7)"
+      ]
+    ]
+  },
+  "strict_archive_sha256": "bea06f0697d12a390cc5a6384e71a5b2a3158a8be56d389123935f87cb1ea544"
+}
