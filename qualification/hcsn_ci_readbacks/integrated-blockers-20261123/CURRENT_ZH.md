@@ -56,3 +56,7 @@ e327 自身从冷检出重新编译的原始启动工作流也已成功。新 Ag
 Linux musl 的原失败中，fleet 收到了一个可完整解析、其类型并非 Drain 的响应；另一个响应类型未留在原日志。三次独立原目标均通过两例。原生 core 的七份失败尝试分属三个 shard，两组后续通过，最终保留的失败是父 rollout 没有收到子代理已结束通知。正常结束的事件时序与通知写入正在单独验证。[真实运行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45137315561)
 
 HAPT 的 12 个已规定起始姿势／置信组能组成 4,096 种多等一个采样块的规则。对原 TRAIN 和 DEV 的两次独立穷举表明，共同能达到的受试者平均增益上限 0.008708，低于所需的 0.015。原记录的两种退出方式逐题复算共 8,192 个配置读数。此项仅讨论等一个 0.48 秒块。[全部配置及原数据身份](../purchase-attainability-20261123/README.md)
+
+九项组合 43e5 的完整原权限调用检查已运行 1,505.985 秒并通过。对合法源文件范围和脚本逐项核验后，完整 770,005 字节的回执与旧 c6a、e327 两份正式托管输出均逐字相同。[完整 9,141 文件收据](combined-43e5/)
+
+e196 的专项提交标题含跳过 CI 的标记；重开同一草案未产生仓库检查。随后保留完全相同的 Git 树 9554ddb1b5cca7502b58b7bacfc446671fe5289c，在其子提交 c12ee03f3185d5a13949faca54f066dfd634e509 启动正式资格。当前 #7016 固定在 c12，实际已收到 13 条工作流。e327 的已终结结果及各独立原始对照仍按原源码标记。[新仓库级原运行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928408) · [新源码启动验证](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928118) · [新源码 daemon 原生验证](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928116)

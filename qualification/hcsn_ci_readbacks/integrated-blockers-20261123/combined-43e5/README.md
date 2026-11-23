@@ -17,3 +17,5 @@
 ```sh
 python verify_full_pair.py strict.zip native.zip cases.json expected_removed.json --strict-sha 762e51e6c0485e228bbf52f0e4c0dfdc438724cf6d38702d66e7d367a0053f3c --native-sha fc7fbc887f77883d185dd773c866560f02d3b118f46be196d59fe956dce3c115 | cmp - result.json
 ```
+
+43e5 物理目录的完整调用校验器也已正式结束，退出码 0，实测 1,505.985 秒。输出 770,005 字节，SHA-256 为 2de991230d84e60c8d440278ceb189e0f4111ce8b7c200a934ffc7a31257d6c3。全部边界 1,652、保护文件 826、Rust 源文件 9,141、authorityGranted=false。本次输出与 c6a 的原始托管回执、e327 的原始仓库 build-test 回执，两次字节比较均相同。full-callers.zip 内有完整原输出与实际进程收据。
