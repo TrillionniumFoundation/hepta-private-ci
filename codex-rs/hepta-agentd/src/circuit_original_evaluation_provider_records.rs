@@ -26,6 +26,7 @@ use codex_hepta_types::StableId;
 use super::Error;
 use super::OriginalCircuitEvaluationCohortConfigV1;
 use super::OriginalCircuitEvaluationEpisodeV1;
+use super::OriginalCircuitEvaluationSourceOwnersV1;
 use super::OriginalCircuitEvaluationSourceV1;
 use super::Publications;
 use crate::CircuitTaskSourcePublicationV1;
@@ -47,14 +48,14 @@ struct Episode<'a> {
 
 pub(super) fn assemble(
     config: &OriginalCircuitEvaluationCohortConfigV1,
-    ledger: &LedgerWriter,
+    OriginalCircuitEvaluationSourceOwnersV1 { ledger, sources }: &OriginalCircuitEvaluationSourceOwnersV1,
     dataset: &DatasetSnapshotReceiptV3,
     records: &[LedgerRecord],
     publications: &Publications,
-    sources: &[OriginalCircuitEvaluationSourceV1],
     training_binding: &super::binding::CandidateBinding,
     current: u64,
 ) -> Result<TemporalComparisonInputsV1, Error> {
+    let sources = sources.as_slice();
     let rule = &config.rule;
     let expected: BTreeSet<_> = rule
         .history
