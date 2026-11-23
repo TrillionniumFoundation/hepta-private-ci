@@ -184,7 +184,7 @@ impl StateRuntime {
             }
         }
         let id = Uuid::now_v7().to_string();
-        let now = current_unix_millis();
+        let now = current_unix_millis()?;
         let position = sqlx::query_scalar::<_, Option<i64>>("SELECT MAX(position) FROM projects")
             .fetch_one(&mut *tx)
             .await?
@@ -263,7 +263,7 @@ impl StateRuntime {
             tx.rollback().await?;
             return Ok(Some((current, false)));
         }
-        let now = current_unix_millis();
+        let now = current_unix_millis()?;
         sqlx::query("UPDATE projects SET name = ?, metadata = ?, updated_at_ms = ? WHERE id = ?")
             .bind(&next_name)
             .bind(serde_json::to_string(&next_metadata)?)
@@ -334,7 +334,7 @@ impl StateRuntime {
                 .await?;
         }
         sqlx::query("UPDATE projects SET updated_at_ms = ? WHERE id = ?")
-            .bind(current_unix_millis())
+            .bind(current_unix_millis()?)
             .bind(project_id)
             .execute(&mut *tx)
             .await?;
@@ -490,7 +490,6 @@ fn invalid_project_cursor(cursor: &str) -> anyhow::Error {
 }
 
 /// Match Chrono's Unix-millisecond floor for times before and after the epoch.
-
 fn unix_millis(timestamp: SystemTime) -> Option<i64> {
     match timestamp.duration_since(UNIX_EPOCH) {
         Ok(elapsed) => i64::try_from(elapsed.as_millis()).ok(),
@@ -503,8 +502,9 @@ fn unix_millis(timestamp: SystemTime) -> Option<i64> {
     }
 }
 
-fn current_unix_millis() -> i64 {
-    unix_millis(SystemTime::now()).expect("system time outside supported Unix-millisecond range")
+fn current_unix_millis() -> anyhow::Result<i64> {
+    unix_millis(SystemTime::now())
+        .ok_or_else(|| anyhow::anyhow!("system time outside supported Unix-millisecond range"))
 }
 
 #[cfg(test)]
