@@ -193,6 +193,14 @@ def nonlinear_screen(initial, features, train, *, config=FitConfig(), row_weight
             if len(ids) != len(h) or not all(isinstance(k, str) and k for k in ids):
                 raise ValueError("expected canonical complete causal prefix identities")
             structural = ids[i] == ids[j]
+        elif "xt" in train and "clock" in train:
+            x, dt = train["xt"], train["clock"]
+            if x.ndim != 3 or dt.shape != x.shape[:2] or x.shape[0]*x.shape[1] != len(h):
+                raise ValueError("registered complete prefix arrays do not match policy rows")
+            ii, ti = divmod(i, x.shape[1])
+            jj, tj = divmod(j, x.shape[1])
+            structural = (ti == tj and torch.equal(x[ii, :ti+1], x[jj, :tj+1])
+                          and torch.equal(dt[ii, :ti+1], dt[jj, :tj+1]))
     return {"pair": pair, "local_fixed_head_contrast_jacobian": derivative,
             "identical_complete_input_prefix": structural,
             "scope": "Local sensitivity at the incumbent. Identical complete prefixes, if supplied, imply equal scores for any deterministic shared model.",

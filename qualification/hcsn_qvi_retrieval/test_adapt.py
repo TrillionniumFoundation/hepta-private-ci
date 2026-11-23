@@ -44,6 +44,32 @@ class ConditionalComparison(unittest.TestCase):
             fd = (cost(x.detach() + delta) - cost(x.detach() - delta)) / (2 * delta[i])
             self.assertAlmostEqual(float(fd), float(gradient[i]), places=8)
 
+    def test_real_flow_conditional_objective_adjoint_in_all_boundary_modes(self):
+        from .dynamics import RetrievalFlow
+
+        with torch.random.fork_rng():
+            torch.manual_seed(2028)
+            x = torch.randn((8, 3, 8), dtype=torch.float64)
+            dt = x.new_full((8, 3), .48)
+            split = {"targets": torch.randn((24, 3), dtype=torch.float64)}
+            for mode in ("fixed", "learned", "qvi"):
+                torch.manual_seed(17)
+                model = RetrievalFlow(8, mode=mode)
+                theta = torch.full_like(model.initial_edit_vector(), .015).requires_grad_()
+
+                def objective(t):
+                    h, y, w = data_arrays(torch.cat((x, model.features_with_edit(t, x, dt)), -1), split)
+                    head, _ = solve_readout(h.detach(), y, w, .001)
+                    return w @ (predict(h, head)-y).square().sum(1) + .001*head[:-1].square().sum()
+
+                gradient = torch.autograd.grad(objective(theta), theta)[0]
+                with torch.no_grad():
+                    for j in range(len(theta)):
+                        d = torch.zeros_like(theta)
+                        d[j] = 2e-5
+                        centered = (objective(theta+d)-objective(theta-d))/(2*d[j])
+                        self.assertLess(abs(float(centered-gradient[j])), 2e-8, (mode, j))
+
     def test_bp_counters_and_radius(self):
         result = fit_arm("bp", self.theta, self.feats, self.train, self.dev,
                          config=self.cfg, score=self.score)
