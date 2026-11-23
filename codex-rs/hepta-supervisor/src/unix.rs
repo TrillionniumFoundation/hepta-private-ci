@@ -733,9 +733,31 @@ fn interpret_agent_drain_response(
             .checked_add(2)
             .is_some_and(|generation| response.current_generation == generation);
     let AgentdPayload::Drain(snapshot) = response.payload else {
-        return Err(ProcessDriverError::new(
-            "Agentd drain request did not return a drain acknowledgement",
-        ));
+        // The full response has already decoded as AgentdPayload. Its protocol
+        // discriminator is a fixed public enum name. Never log the body, error
+        // message, or a peer-chosen error code.
+        #[derive(serde::Deserialize)]
+        struct PayloadTag {
+            #[serde(rename = "type")]
+            kind: String,
+        }
+        #[derive(serde::Deserialize)]
+        struct TaggedResponse {
+            payload: PayloadTag,
+        }
+        let category = match response.payload {
+            AgentdPayload::Error { code, .. } => match code.as_str() {
+                "request_rejected" => "error/request_rejected".to_string(),
+                "unsupported_schema" => "error/unsupported_schema".to_string(),
+                _ => "error".to_string(),
+            },
+            _ => serde_json::from_slice::<TaggedResponse>(&response_bytes)
+                .map(|value| value.payload.kind)
+                .unwrap_or_else(|_| "non-drain".to_string()),
+        };
+        return Err(ProcessDriverError::new(format!(
+            "Agentd drain request did not return a drain acknowledgement (response type {category})"
+        )));
     };
     if !exact_envelope
         || snapshot.lifecycle != AgentLifecycle::Draining

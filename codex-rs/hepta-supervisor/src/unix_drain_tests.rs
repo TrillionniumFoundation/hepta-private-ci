@@ -98,6 +98,41 @@ fn malformed_or_wrong_generation_drain_frames_still_reject() -> TestResult {
 }
 
 #[test]
+fn non_drain_response_names_only_its_protocol_category() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let identity = identity(&temp)?;
+    let mut response = acknowledgement(&identity);
+    let expected = "Agentd drain request did not return a drain acknowledgement";
+    for (code, label) in [
+        ("request_rejected", "error/request_rejected"),
+        ("unsupported_schema", "error/unsupported_schema"),
+        ("private-peer-code", "error"),
+    ] {
+        response.payload = AgentdPayload::Error {
+            code: code.to_string(),
+            message: "private error contents".to_string(),
+        };
+        let error = interpret_agent_drain_response(&identity, 17, Ok(frame(&response)?))
+            .expect_err("a remote error is never a drain acknowledgement");
+        assert_eq!(
+            error.to_string(),
+            format!("{expected} (response type {label})")
+        );
+    }
+    response.payload = AgentdPayload::ObjectiveConflict {
+        run_id: "private-run".to_string(),
+        conflict_digest: "private-conflict".to_string(),
+    };
+    let error = interpret_agent_drain_response(&identity, 17, Ok(frame(&response)?))
+        .expect_err("an unrelated typed response is never a drain acknowledgement");
+    assert_eq!(
+        error.to_string(),
+        format!("{expected} (response type objective_conflict)")
+    );
+    Ok(())
+}
+
+#[test]
 fn only_exact_closed_admission_with_no_running_turns_is_drained() -> TestResult {
     let temp = tempfile::tempdir()?;
     let identity = identity(&temp)?;
