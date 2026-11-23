@@ -1,0 +1,6 @@
+# #7052 CNS 路由摘要重复实现：可逆候选（2026-11-23）
+
+- 原 source job [137926050442](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240607977/job/137926050442) 19:09:03 UTC 的两个严格错误：organ_hierarchy.rs:235 的 cns_route_digest_v1 未使用；control_runtime_publication.rs:88 的 ControlRuntimePublicationV1::new 参数过多。原 101 不改。
+- 父源 `c9236b4ee6d73a8de3bf4ccb7887a41715738d3c`：lib.rs blob 01b239f4189c6ea67aaf56ca02a34621b5c83c38 从 cell_split_route_digest 导出公开 V1；该文件 blob e1c8d26caf910c23cc0a7c3928b8c0ce13d7204b 与 organ_hierarchy.rs blob 6274dd06ab3378a03741aff001ae6f694f5aff21 的摘要函数，逐字符替换 helper 名 push_id -> append_id 后完全相同。两个 helper 的标识符归一化后完全相同（UTF-8、u64 big-endian 长度前缀、字节）。域、字段、顺序、目标数及目标顺序、Digest32 运算均保持。此为源文本独立比较，不是原生 Rust 测试。
+- 已将公开函数实现委托给原 organ_hierarchy 中的等价函数，保留两个入口和公开签名。GitHub compare [精确父子](https://github.com/TrillionniumFoundation/hepta-private-ci/compare/c9236b4ee6d73a8de3bf4ccb7887a41715738d3c...78c1012d1b6d63a2cd3d67e2534ba8b8d62e34b6) 确认 ahead=1, behind=0，仅 cell_split_route_digest.rs 1 增 15 删，新 blob 900784c81894e9231b904892894e540fbe051c5f。#7052 读回 head `78c1012d1b6d63a2cd3d67e2534ba8b8d62e34b6`，仍 Draft。
+- 未更改控制面权限、拒绝、摘要格式或公开 V1；未修改八参数构造器或加 lint 豁免。八参数构造器仍需兼容方案。初次新 commit 工作流读回空列表，尚无原生资格证据；不重复派发。新候选和全仓均 HOLD。Laya 权重未取得完整字节；其他冻结科学及工程门维持原索引。
