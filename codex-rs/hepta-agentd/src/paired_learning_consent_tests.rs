@@ -21,6 +21,48 @@ fn ingress(text: String) -> crate::AuthBusTextIngress {
     }
 }
 
+#[tokio::test]
+async fn missing_consent_delivery_refuses_before_a_protected_owner_lookup() {
+    let root = tempfile::tempdir().unwrap();
+    let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
+        &codex_state::SqliteConfig::from_sqlite_home(
+            codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(root.path()).unwrap(),
+        ),
+    )
+    .await
+    .unwrap();
+    let (issuer, _peer) = fixture(Duration::from_secs(2));
+    let issuer = std::sync::Arc::new(issuer);
+    let route = crate::text_session::AgentdTextSessionConfig {
+        control_socket: "/fixture/socket".into(),
+        agent_id: codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2d18")
+            .unwrap(),
+        spawn_generation: 1,
+        thread_id: "fixture-thread".into(),
+        app_server_session_id: "fixture-app".into(),
+        codex_home: "/fixture/home".into(),
+    };
+    let scope = EvaluateOnlyAfterFreeze {
+        freeze: Digest32::of_bytes(b"pair"),
+        task: Digest32::of_bytes(b"task"),
+    };
+    let error = issuer
+        .verify_retained_paired_learning_consent(
+            &evidence,
+            &route,
+            Digest32::of_bytes(b"absent delivery"),
+            Digest32::of_bytes(b"study"),
+            scope,
+        )
+        .await
+        .unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("paired consent delivery unavailable")
+    );
+}
+
 #[test]
 fn rejects_a_different_study_scope_or_record_before_requesting_owner_evidence() {
     let (provider, _peer) = fixture(Duration::from_secs(2));

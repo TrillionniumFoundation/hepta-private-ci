@@ -154,3 +154,40 @@ Run the scoped suites with
 scoped fix/format workflow. This
 profile supplies no production key hosting, provider quota ledger, cross-backup
 rollback protection, or exactly-once external-effect guarantee.
+
+## Private consent for paired learning
+
+The attached Linux host can look up one consent message using the private
+AuthBus delivery ID from its original Core user item (`hepta.authbus:<hex>`).
+Pass its existing evidence store, registered UI route and protected Root client.
+The call reads only that delivery and verifies the exact signed statement on
+the live Root lane. It returns the private `TextOwnerReceipt` to the caller.
+
+```rust
+let scope = PairedLearningDataUse::EvaluateOnlyAfterFreeze { freeze, task };
+let owner = issuer
+    .verify_retained_paired_learning_consent(&evidence, &route, delivery_id, study, scope)
+    .await?;
+```
+
+`issuer` is an `Arc<AgentdUnixFinalUseGrantProvider>` already installed by
+the trusted host. The existing bootstrap takes a connected UID-0 issuer
+stream and the launcher's held pidfd for that Root. A host that lacks the
+registered live human UI and original protected issuer cannot verify this
+consent from a copied public key or saved owner JSON.
+
+| Digest | Exact input |
+| --- | --- |
+| `study` | SHA-256 of the study protocol bytes named by both participants and independently pinned by intake. |
+| `failure` | `cell_experiments.data.record_digest` of A's complete original v1 failure record, including the verifier evidence retained there. |
+| `correction` | `record_digest` of A's separately retained complete corrected v1 record for the same task. Training intake checks the failure, the correction, their task relationship and training rights. |
+| `freeze` | The separately retained canonical digest returned by `paired_freeze.freeze` before B's arrival. |
+| `task` | `record_digest` of B's entire evaluation-only v1 confirmation record, including its verifier parameters and record metadata. |
+
+`record_digest` hashes the UTF-8 canonical record JSON produced by the
+existing Python data module. The training scope is
+`TrainOnFailureAndCorrection { failure, correction }`. Each original UI
+statement is produced by `scope.consent_text(study)`. Keep the original
+signed statement and owner association private. The enrollment authority must
+check distinct people. The intake log must independently witness freeze and
+arrival order, and settlement must verify the payer's order separately.
