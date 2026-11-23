@@ -1,5 +1,11 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 13:29 UTC #7032 精确双锁修补进入原 source CI（待终态）
+
+- #7032 原科学 head `610f91087b598656f7f3913e600c705b95bf071f` 已用非强制 fast-forward 和原 head 租约推进至已独立资格的 `b1af67a38f8cf9cee700cc067da1e6001ce220a8`。GitHub commit compare 为 **ahead 2、behind 0**，修改文件 **只有** `codex-rs/Cargo.lock` 和 `MODULE.bazel.lock`；冻结研究输入、公开 V1、安全拒绝、原测试名单均不变。原科学 source 和原红 CI 历史保留。[精确双锁提交](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b1af67a38f8cf9cee700cc067da1e6001ce220a8) · [PR #7032 审计记录](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7032#issuecomment-7102629142)
+- 相同 `b1af67a3` 在之前的原生资格 [45165787601](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45165787601) 通过 cargo-deny advisories/bans/licenses/sources、locked Cargo 与 Bazel 生成锁三条原作业；该**独立候选**的依赖修复闭合，不等于联合仓库闭合。最新 push 已由 GitHub 自动启动 [原 blocking-ci 45184439037](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184439037) 和 [原 HCSN 科学复验 45184438921](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184438921)，首次读回为 queued；没有人为重复派作业。终局须读取原日志、JUnit、失败名录及 artifact 后方可认证。
+- main 的另一依赖图 59 个 RustSec 告警不因上述变更而闭合；Windows 四项产品隔离正例、Agentd 严格原 101 及 Q24 500ms 尾延迟仍 HOLD。未合并任何受保护分支。
+
 ## 2026-11-23 12:23 UTC 双锁原安全资格更新（保留原 #7032 失败与 main HOLD）
 
 - #7032 源 `610f9108` 的原 cargo-deny 仍 FAIL。两文件锁修复候选 `b1af67a38f8cf9cee700cc067da1e6001ce220a8` 在完全独立的原生作业 [45165787601](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45165787601) 中，原 cargo-deny、正式 Cargo 重建与 locked check、Bazel 生成器与原锁核验 **3/3 全部成功**。其成功只归属精确候选，不意味着科学原 source / 全仓资格绿。[原件身份与双依赖图](cookie-7032-paired-security-20261123.md)
