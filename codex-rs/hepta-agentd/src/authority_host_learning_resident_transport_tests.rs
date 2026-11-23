@@ -109,7 +109,9 @@ pub(in crate::authority_host_service::resident) fn queued_admit_cancellation(
             "cancelled queued Admit wrote a frame"
         );
         assert!(client.channel.try_lock().expect("client slot").is_none());
-        assert!(matches!(client.readback().await, Err(Error::Unavailable)));
+        let readback = client.readback().await;
+        eprintln!("queued original readback error after peer EOF: {:?}", readback.as_ref().err());
+        assert!(matches!(readback, Err(Error::Unavailable)));
         Ok::<_, anyhow::Error>(())
     })
 }
