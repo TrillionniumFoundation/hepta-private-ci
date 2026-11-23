@@ -1,0 +1,447 @@
+{
+  "arm": "rule",
+  "cases": [
+    {
+      "execution_ns": 2551786844,
+      "id": "known",
+      "receipt": {
+        "bytes": 99887766,
+        "name": "Blank.txt",
+        "records": 10101010,
+        "sha256": "0cd37251aafe355936f2865533daf43331bc84968337588b445b27896496927c"
+      },
+      "validation": {
+        "checked_records": 10101010,
+        "independent_bytes": 99887766,
+        "independent_sha256": "0cd37251aafe355936f2865533daf43331bc84968337588b445b27896496927c",
+        "verification_ns": 5370614176,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 10908205,
+      "id": "new-00",
+      "receipt": {
+        "bytes": 32,
+        "name": "items0.txt",
+        "records": 11,
+        "sha256": "222de16f4e806da50e31c5815e5fafe01d1ace0f657c507786d065af60c2fc42"
+      },
+      "validation": {
+        "checked_records": 11,
+        "independent_bytes": 32,
+        "independent_sha256": "222de16f4e806da50e31c5815e5fafe01d1ace0f657c507786d065af60c2fc42",
+        "verification_ns": 53780,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 380561,
+      "id": "new-01",
+      "receipt": {
+        "bytes": 23,
+        "name": "items1.txt",
+        "records": 7,
+        "sha256": "1a3fc2145cb941d7d2e7dcf71f1470a77d01db0c6e059526ea9dd40648d6a675"
+      },
+      "validation": {
+        "checked_records": 7,
+        "independent_bytes": 23,
+        "independent_sha256": "1a3fc2145cb941d7d2e7dcf71f1470a77d01db0c6e059526ea9dd40648d6a675",
+        "verification_ns": 114605,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 501566,
+      "id": "new-02",
+      "receipt": {
+        "bytes": 0,
+        "name": "items2.txt",
+        "records": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "validation": {
+        "checked_records": 0,
+        "independent_bytes": 0,
+        "independent_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "verification_ns": 23754,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 631980,
+      "id": "new-03",
+      "receipt": {
+        "bytes": 202,
+        "name": "items3.txt",
+        "records": 57,
+        "sha256": "39ba87614b8c70e09a4e88410823d9812dbff8693610e160786f161e005cd9b4"
+      },
+      "validation": {
+        "checked_records": 57,
+        "independent_bytes": 202,
+        "independent_sha256": "39ba87614b8c70e09a4e88410823d9812dbff8693610e160786f161e005cd9b4",
+        "verification_ns": 162814,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 459167,
+      "id": "new-04",
+      "receipt": {
+        "bytes": 31,
+        "name": "items4.txt",
+        "records": 9,
+        "sha256": "00d3f06349d6d63bc3f9c482865d23e0db950330a7e45d03ee6acbcf9efe29e1"
+      },
+      "validation": {
+        "checked_records": 9,
+        "independent_bytes": 31,
+        "independent_sha256": "00d3f06349d6d63bc3f9c482865d23e0db950330a7e45d03ee6acbcf9efe29e1",
+        "verification_ns": 36588,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 497428,
+      "id": "new-05",
+      "receipt": {
+        "bytes": 29,
+        "name": "items5.txt",
+        "records": 8,
+        "sha256": "a66bf1a5d3ca83307f5ae13d3046c674ae2b99f0419651c8f0db4c8b9b2b466a"
+      },
+      "validation": {
+        "checked_records": 8,
+        "independent_bytes": 29,
+        "independent_sha256": "a66bf1a5d3ca83307f5ae13d3046c674ae2b99f0419651c8f0db4c8b9b2b466a",
+        "verification_ns": 116407,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 6230653,
+      "id": "new-06",
+      "receipt": {
+        "bytes": 182,
+        "name": "items6.txt",
+        "records": 52,
+        "sha256": "7034b50bb9932d7f1093fa395472770cbb4f671b5549c53f0c071d7c090fa383"
+      },
+      "validation": {
+        "checked_records": 52,
+        "independent_bytes": 182,
+        "independent_sha256": "7034b50bb9932d7f1093fa395472770cbb4f671b5549c53f0c071d7c090fa383",
+        "verification_ns": 41778,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 282487,
+      "id": "new-07",
+      "receipt": {
+        "bytes": 27,
+        "name": "items7.txt",
+        "records": 8,
+        "sha256": "5b7819926b65a9c26ebe500abd2689b50f292a17b79fe397e44b8d2fd258384a"
+      },
+      "validation": {
+        "checked_records": 8,
+        "independent_bytes": 27,
+        "independent_sha256": "5b7819926b65a9c26ebe500abd2689b50f292a17b79fe397e44b8d2fd258384a",
+        "verification_ns": 27481,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 200044,
+      "id": "new-08",
+      "receipt": {
+        "bytes": 78,
+        "name": "items8.txt",
+        "records": 22,
+        "sha256": "5aee4c1f597d39c7bc730cc73c013955f260c9a5dc6e6b9621bd3e057eaf2d88"
+      },
+      "validation": {
+        "checked_records": 22,
+        "independent_bytes": 78,
+        "independent_sha256": "5aee4c1f597d39c7bc730cc73c013955f260c9a5dc6e6b9621bd3e057eaf2d88",
+        "verification_ns": 30397,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 815102,
+      "id": "new-09",
+      "receipt": {
+        "bytes": 183,
+        "name": "items9.txt",
+        "records": 49,
+        "sha256": "50b3e8f9df09404ff7a4b91b29b31524bc2094cd5aada4a34ff1c695758c0289"
+      },
+      "validation": {
+        "checked_records": 49,
+        "independent_bytes": 183,
+        "independent_sha256": "50b3e8f9df09404ff7a4b91b29b31524bc2094cd5aada4a34ff1c695758c0289",
+        "verification_ns": 60503,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 345375,
+      "id": "new-10",
+      "receipt": {
+        "bytes": 0,
+        "name": "items10.txt",
+        "records": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "validation": {
+        "checked_records": 0,
+        "independent_bytes": 0,
+        "independent_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "verification_ns": 21730,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 259164,
+      "id": "new-11",
+      "receipt": {
+        "bytes": 67,
+        "name": "items11.txt",
+        "records": 19,
+        "sha256": "ca365b4b0d18b7a4f424c16cbc08e1921e66f00bb901f5a9fc0e3881ae7e9799"
+      },
+      "validation": {
+        "checked_records": 19,
+        "independent_bytes": 67,
+        "independent_sha256": "ca365b4b0d18b7a4f424c16cbc08e1921e66f00bb901f5a9fc0e3881ae7e9799",
+        "verification_ns": 29715,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 541832,
+      "id": "new-12",
+      "receipt": {
+        "bytes": 57,
+        "name": "items12.txt",
+        "records": 18,
+        "sha256": "06a19adfcdd15ade989f6a329e86336391c8ee4d85a529792142ea0ab10944be"
+      },
+      "validation": {
+        "checked_records": 18,
+        "independent_bytes": 57,
+        "independent_sha256": "06a19adfcdd15ade989f6a329e86336391c8ee4d85a529792142ea0ab10944be",
+        "verification_ns": 31037,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 291844,
+      "id": "new-13",
+      "receipt": {
+        "bytes": 29,
+        "name": "items13.txt",
+        "records": 8,
+        "sha256": "a66bf1a5d3ca83307f5ae13d3046c674ae2b99f0419651c8f0db4c8b9b2b466a"
+      },
+      "validation": {
+        "checked_records": 8,
+        "independent_bytes": 29,
+        "independent_sha256": "a66bf1a5d3ca83307f5ae13d3046c674ae2b99f0419651c8f0db4c8b9b2b466a",
+        "verification_ns": 24626,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 237524,
+      "id": "new-14",
+      "receipt": {
+        "bytes": 24,
+        "name": "items14.txt",
+        "records": 8,
+        "sha256": "342ae78845aa5b716066395fc534319f0fc908bcafd13b36cfe4327e3ce4a40f"
+      },
+      "validation": {
+        "checked_records": 8,
+        "independent_bytes": 24,
+        "independent_sha256": "342ae78845aa5b716066395fc534319f0fc908bcafd13b36cfe4327e3ce4a40f",
+        "verification_ns": 27801,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 412781,
+      "id": "new-15",
+      "receipt": {
+        "bytes": 84,
+        "name": "items15.txt",
+        "records": 25,
+        "sha256": "991a17afdbe531166599e4a7937d15efe753d4c891086eca1b3711281a6357bb"
+      },
+      "validation": {
+        "checked_records": 25,
+        "independent_bytes": 84,
+        "independent_sha256": "991a17afdbe531166599e4a7937d15efe753d4c891086eca1b3711281a6357bb",
+        "verification_ns": 39163,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 641798,
+      "id": "new-16",
+      "receipt": {
+        "bytes": 49,
+        "name": "items16.txt",
+        "records": 14,
+        "sha256": "d12740cc86d6850e45b59e3d6bf650523e0a44411c052111ad2004a58a515713"
+      },
+      "validation": {
+        "checked_records": 14,
+        "independent_bytes": 49,
+        "independent_sha256": "d12740cc86d6850e45b59e3d6bf650523e0a44411c052111ad2004a58a515713",
+        "verification_ns": 31068,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 607695,
+      "id": "new-17",
+      "receipt": {
+        "bytes": 32,
+        "name": "items17.txt",
+        "records": 9,
+        "sha256": "077f2cb5c214a57ddc33f3d5c374a1352d5cf9ec945c305d9e7eae6666e5efa8"
+      },
+      "validation": {
+        "checked_records": 9,
+        "independent_bytes": 32,
+        "independent_sha256": "077f2cb5c214a57ddc33f3d5c374a1352d5cf9ec945c305d9e7eae6666e5efa8",
+        "verification_ns": 153016,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 995028,
+      "id": "new-18",
+      "receipt": {
+        "bytes": 0,
+        "name": "items18.txt",
+        "records": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "validation": {
+        "checked_records": 0,
+        "independent_bytes": 0,
+        "independent_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "verification_ns": 25628,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 661314,
+      "id": "new-19",
+      "receipt": {
+        "bytes": 71,
+        "name": "items19.txt",
+        "records": 21,
+        "sha256": "ab6fdb4c485f73df706291f2bbcdc39decd3215ceb579ce0c261532729e91af2"
+      },
+      "validation": {
+        "checked_records": 21,
+        "independent_bytes": 71,
+        "independent_sha256": "ab6fdb4c485f73df706291f2bbcdc39decd3215ceb579ce0c261532729e91af2",
+        "verification_ns": 40455,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 564444,
+      "id": "new-20",
+      "receipt": {
+        "bytes": 64,
+        "name": "items20.txt",
+        "records": 18,
+        "sha256": "a2ee4e03fd752004d0edde3e96d7e6a00a03ff8032e146100f1fa98e239bf50c"
+      },
+      "validation": {
+        "checked_records": 18,
+        "independent_bytes": 64,
+        "independent_sha256": "a2ee4e03fd752004d0edde3e96d7e6a00a03ff8032e146100f1fa98e239bf50c",
+        "verification_ns": 38081,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 435864,
+      "id": "new-21",
+      "receipt": {
+        "bytes": 13,
+        "name": "items21.txt",
+        "records": 4,
+        "sha256": "8e3df0b8916f4dccdfb267dc4281143ce8fdd6672dabf3615de56b43e7a6f7ae"
+      },
+      "validation": {
+        "checked_records": 4,
+        "independent_bytes": 13,
+        "independent_sha256": "8e3df0b8916f4dccdfb267dc4281143ce8fdd6672dabf3615de56b43e7a6f7ae",
+        "verification_ns": 35196,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 330297,
+      "id": "new-22",
+      "receipt": {
+        "bytes": 70,
+        "name": "items22.txt",
+        "records": 20,
+        "sha256": "3f267469e28eb65194e2e6bcc7635597a643d1e22942f9330e8fe182a04978ff"
+      },
+      "validation": {
+        "checked_records": 20,
+        "independent_bytes": 70,
+        "independent_sha256": "3f267469e28eb65194e2e6bcc7635597a643d1e22942f9330e8fe182a04978ff",
+        "verification_ns": 30467,
+        "verified": true
+      }
+    },
+    {
+      "execution_ns": 378547,
+      "id": "new-23",
+      "receipt": {
+        "bytes": 65,
+        "name": "items23.txt",
+        "records": 18,
+        "sha256": "9b14efd795c130a65ec90dbec840a7ca36b0a6e3abd63874511310a510ba182a"
+      },
+      "validation": {
+        "checked_records": 18,
+        "independent_bytes": 65,
+        "independent_sha256": "9b14efd795c130a65ec90dbec840a7ca36b0a6e3abd63874511310a510ba182a",
+        "verification_ns": 82063,
+        "verified": true
+      }
+    }
+  ],
+  "controls": {
+    "leaf": "ValueError",
+    "occupied": "FileExistsError",
+    "quota": "ValueError"
+  },
+  "net_after": {
+    "lo": [
+      0,
+      0
+    ]
+  },
+  "net_before": {
+    "lo": [
+      0,
+      0
+    ]
+  }
+}
