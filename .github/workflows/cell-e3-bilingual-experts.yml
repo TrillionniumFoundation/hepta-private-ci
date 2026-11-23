@@ -1,0 +1,89 @@
+name: E3 held-out human translation references
+on:
+  push:
+    branches: [research/e3-encoder-transfer-20261123]
+    paths: ['qualification/cell-e3-encoder-transfer-20261123/translation/study.py', 'qualification/cell-e3-encoder-transfer-20261123/translation/material.py', 'qualification/cell-e3-encoder-transfer-20261123/translation/marian.py', 'qualification/cell-e3-encoder-transfer-20261123/translation/sentences.py', '.github/workflows/cell-e3-bilingual-experts.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      PYTHONUNBUFFERED: '1'
+    defaults:
+      run:
+        working-directory: qualification/cell-e3-encoder-transfer-20261123/translation
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/cell-e3-encoder-transfer-20261123
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: original-flores-marian-identities
+          github-token: ${{ github.token }}
+          run-id: 45181970877
+          path: ${{ runner.temp }}/flores
+      - name: Install pinned CPU inference dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.9.1
+          python -m pip install --disable-pip-version-check numpy==2.3.5 transformers==4.57.3 accelerate tokenizers==0.22.2 sentencepiece==0.2.1 sacremoses==0.1.1 requests
+      - name: Verify raw released teachers and construct the weight-only control
+        run: |
+          cp ../encoder.py .
+          cmp SOURCES.json "$RUNNER_TEMP/flores/identity.json"
+          python ../assets.py "$RUNNER_TEMP/third"
+          python material.py "$RUNNER_TEMP/teachers" "$RUNNER_TEMP/packed"
+      - name: Learn student heads, fix components and draw one blind split
+        env:
+          HF_HUB_OFFLINE: '1'
+        run: |
+          python study.py fit work "$RUNNER_TEMP/flores" "$RUNNER_TEMP/teachers" "$RUNNER_TEMP/third" "$RUNNER_TEMP/packed"
+          python study.py seed work "$RUNNER_TEMP/flores"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frozen-human-reference-trial
+          path: qualification/cell-e3-encoder-transfer-20261123/translation/work/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quantized-open-specialist-components
+          path: ${{ runner.temp }}/packed
+          if-no-files-found: error
+      - name: Score original teachers on the frozen holdout
+        run: HF_HUB_OFFLINE=1 python study.py teachers work "$RUNNER_TEMP/teachers"
+      - name: Execute independent students and weight-reuse graphs without teachers
+        run: |
+          stage="$RUNNER_TEMP/bilingual-cold"
+          mkdir -p "$stage/work"
+          cp encoder.py study.py sentences.py marian.py "$stage/"
+          cp work/{freeze.json,heads.npz,policy.json,blind.json} "$stage/work/"
+          sudo unshare -m -n --propagation private bash -eu -c '
+            mount -t sysfs -o ro sysfs /sys
+            for d in "$1" "$2" "$3"; do mount -t tmpfs tmpfs "$d"; done
+            cd "$4"
+            HF_HUB_OFFLINE=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false "$5" study.py cold work "$6" "$7"
+          ' -- "$GITHUB_WORKSPACE" "$RUNNER_TEMP/teachers" "$RUNNER_TEMP/flores" "$stage" "$(command -v python)" "$RUNNER_TEMP/third" "$RUNNER_TEMP/packed"
+          cp "$stage/work"/cold-*.json work/
+          python study.py summarize work "$RUNNER_TEMP/flores"
+          cp ATTRIBUTION.md work/
+          python - <<'PY'
+          import zipfile,pathlib,hashlib
+          p=pathlib.Path("bilingual-results.zip")
+          with zipfile.ZipFile(p,"x",zipfile.ZIP_DEFLATED) as z:
+              for f in sorted(pathlib.Path("work").iterdir()):
+                  z.write(f,f.name)
+          print("E3_BILINGUAL_ARCHIVE",len(p.read_bytes()),hashlib.sha256(p.read_bytes()).hexdigest())
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: human-reference-translation-receipts
+          path: qualification/cell-e3-encoder-transfer-20261123/translation/bilingual-results.zip
+          if-no-files-found: error

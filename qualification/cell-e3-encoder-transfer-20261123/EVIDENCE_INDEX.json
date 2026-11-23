@@ -1,0 +1,42 @@
+{
+  "primary_independent_recheck": {
+    "run": 45183142093,
+    "predictions": 5440
+  },
+  "primary_repeated": {
+    "run": 45184302553,
+    "same_frozen_seed": true,
+    "same_heads": true,
+    "matching_answers_and_routes": 2448
+  },
+  "human_reference_and_tensor_rebuild": {
+    "run": 45184302597,
+    "jobs": {
+      "references": 137725783774,
+      "weights": 137725784388
+    },
+    "choice_scores": 1680,
+    "free_translation_scores": 224,
+    "rebuilt_tensor_sha256": {
+      "de": "dd399eba593787b00db18df08d36bd3ab5b1b3a3d2882341ae049582a32bf386",
+      "fr": "71730eb223bc08f8783566dc6ac132843b5041dd013130493f7203b4c32fe18c"
+    }
+  },
+  "component_artifact": {
+    "run": 45184664669,
+    "id": 14822437875,
+    "name": "bilingual-quantized-weights-tokenizers-and-notices",
+    "sha256": "sha256:cee5a2a0186ea7529728b975b1792407914e05204c4366446f07e6c694485d23",
+    "expires_at": "2027-02-21T13:30:52Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184664669/artifacts/14822437875"
+  },
+  "choice_timing": {
+    "requests": 112,
+    "expert_inputs": 224,
+    "input_and_target_tokens": 11352,
+    "fixed_load_and_inference_s": 14.134,
+    "learned_load_and_inference_s": 14.0803,
+    "gate_cost_timed_separately": false
+  },
+  "hardware": "Separate hosted jobs. Physical machine identity and heterogeneous-hardware equivalence were not established."
+}

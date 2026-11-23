@@ -1,0 +1,95 @@
+name: E3 learned final-layer adapters
+on:
+  push:
+    branches: [research/e3-encoder-transfer-20261123]
+    paths: ['qualification/cell-e3-encoder-transfer-20261123/adapter-comparison/*.py', '.github/workflows/cell-e3-encoder-adapters.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      PYTHONUNBUFFERED: '1'
+    defaults:
+      run:
+        working-directory: qualification/cell-e3-encoder-transfer-20261123
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/cell-e3-encoder-transfer-20261123
+            qualification/cell-e3-native-answer-transfer-20261123
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned CPU stack
+        run: |
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.9.1
+          python -m pip install --disable-pip-version-check numpy==2.3.5 transformers==4.57.3 accelerate requests tokenizers==0.22.2
+      - name: Restore exact baseline and fit all five new adapters
+        run: |
+          cp adapter-comparison/{run_adapter,lowrank,summary}.py .
+          python assets.py "$RUNNER_TEMP/encoder"
+          python - <<'PY'
+          import hashlib,json,pathlib,zipfile
+          z=pathlib.Path("evidence/original-freeze.zip")
+          assert hashlib.sha256(z.read_bytes()).hexdigest()=="8c8f1d0845c7288984a61f40bfbbb107e81756f109be044c70ee1a5f9b25e017"
+          with zipfile.ZipFile(z) as f:
+              for name in ("teacher-fit-smol.json","teacher-fit-t5.json","heads.npz","policy.json","freeze.json","confirmation-seed.json"):
+                  f.extract(name,"work")
+          PY
+          python run_adapter.py fit work "$RUNNER_TEMP/encoder" ../cell-e3-native-answer-transfer-20261123
+          sha256sum work/adapter-freeze.json
+      - name: Supply only blind inputs, frozen third encoder and adapters to cold processes
+        run: |
+          unzip -qo evidence/original-freeze.zip 'blind.json' -d work
+          stage="$RUNNER_TEMP/adapter-cold"
+          mkdir "$stage"
+          cp encoder.py run_adapter.py lowrank.py "$stage/"
+          cp work/{heads.npz,policy.json,freeze.json,blind.json,adapter-freeze.json,lora-*.npz} "$stage/"
+          mv "$RUNNER_TEMP/encoder" "$stage/encoder"
+          py=$(command -v python)
+          sudo unshare --mount --net --propagation private /bin/bash -eu -c '
+            mount -t sysfs -o ro sysfs /sys
+            mount -t tmpfs tmpfs "$1"
+            cd "$2"
+            for arm in parent t5 smol best_single mix fixed sparse without_t5 without_smol gold shuffled; do
+              HF_HUB_OFFLINE=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false "$3" run_adapter.py cold "$2" "$2/encoder" "$arm"
+            done
+          ' -- "$GITHUB_WORKSPACE" "$stage" "$py"
+          cp "$stage"/cold-*.json work/
+      - name: Read teacher confirmation receipts from the exact registered companion run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for attempt in {1..50}; do
+            status=$(gh run view 45181760509 --json status --jq .status)
+            if test "$status" = completed; then break; fi
+            sleep 12
+          done
+          test "$(gh run view 45181760509 --json conclusion --jq .conclusion)" = success
+          gh run download 45181760509 -n third-encoder-transfer-receipts -D received
+          unzip -qo received/encoder-run.zip 'teacher-confirmation*' -d work
+          python evaluate.py
+          python summary.py
+          python - <<'PY'
+          import base64,hashlib,zipfile,pathlib
+          p=pathlib.Path("encoder-adapters.zip")
+          with zipfile.ZipFile(p,"x",zipfile.ZIP_DEFLATED) as z:
+              for f in sorted(pathlib.Path("work").iterdir()):
+                  z.write(f,f.name)
+          raw=p.read_bytes()
+          print("E3_ARCHIVE_SHA",hashlib.sha256(raw).hexdigest(),len(raw))
+          for i in range(0,len(raw),2400):
+              print("E3_ARCHIVE_CHUNK",i,base64.b64encode(raw[i:i+2400]).decode())
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: encoder-adapter-readbacks
+          path: qualification/cell-e3-encoder-transfer-20261123/encoder-adapters.zip
+          if-no-files-found: error

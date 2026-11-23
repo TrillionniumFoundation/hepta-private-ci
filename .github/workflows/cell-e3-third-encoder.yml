@@ -1,0 +1,102 @@
+name: E3 independent encoder transfer
+on:
+  push:
+    branches: [research/e3-encoder-transfer-20261123]
+    paths: ['qualification/cell-e3-encoder-transfer-20261123/*.py', '.github/workflows/cell-e3-third-encoder.yml']
+permissions:
+  contents: read
+jobs:
+  evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      PYTHONUNBUFFERED: '1'
+    defaults:
+      run:
+        working-directory: qualification/cell-e3-encoder-transfer-20261123
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/cell-e3-encoder-transfer-20261123
+            qualification/cell-e3-dual-teacher-distillation-20261123
+            qualification/cell-e3-native-answer-transfer-20261123
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned inference dependencies
+        run: |
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.9.1
+          python -m pip install --disable-pip-version-check numpy==2.3.5 transformers==4.57.3 accelerate requests tokenizers==0.22.2
+      - name: Resolve and verify independent model material
+        run: |
+          cp ../cell-e3-native-answer-transfer-20261123/teachers.py .
+          mkdir work
+          python ../cell-e3-dual-teacher-distillation-20261123/fetch_teachers.py "$RUNNER_TEMP/teachers"
+          python assets.py "$RUNNER_TEMP/encoder"
+      - name: Fit and freeze every head and routing parameter
+        env:
+          HF_HUB_OFFLINE: '1'
+        run: |
+          if test -f evidence/original-freeze.zip; then
+            echo '8c8f1d0845c7288984a61f40bfbbb107e81756f109be044c70ee1a5f9b25e017  evidence/original-freeze.zip' | sha256sum -c -
+            unzip -q evidence/original-freeze.zip -d work
+            echo '31a27ccb2310b562261b5e7fb54c779f22e8593b1472cb9ed0335f9933b981ba  work/freeze.json' | sha256sum -c -
+          else
+            for teacher in t5 smol; do
+              python teachers.py fit "$RUNNER_TEMP/teachers" work --only "$teacher"
+            done
+            python fit.py "$RUNNER_TEMP/encoder"
+            sha256sum work/freeze.json
+            python confirm.py
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frozen-encoder-candidates
+          path: qualification/cell-e3-encoder-transfer-20261123/work/
+          if-no-files-found: error
+      - name: Evaluate held-out teacher likelihoods
+        env:
+          HF_HUB_OFFLINE: '1'
+        run: |
+          for teacher in t5 smol; do
+            python teachers.py confirmation "$RUNNER_TEMP/teachers" work --only "$teacher"
+          done
+      - name: Cold-load nine arms with teacher assets and repository hidden
+        run: |
+          stage="$RUNNER_TEMP/third-encoder-cold"
+          mkdir "$stage"
+          cp encoder.py cold.py "$stage/"
+          cp work/{heads.npz,policy.json,freeze.json,blind.json} "$stage/"
+          mv "$RUNNER_TEMP/encoder" "$stage/encoder"
+          py=$(command -v python)
+          sudo unshare --mount --net --propagation private /bin/bash -eu -c '
+            mount -t sysfs -o ro sysfs /sys
+            mount -t tmpfs tmpfs "$1"
+            mount -t tmpfs tmpfs "$2"
+            cd "$3"
+            for arm in parent t5 smol best_single mix fixed sparse without_t5 without_smol; do
+              HF_HUB_OFFLINE=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false "$4" cold.py "$arm" "$3"
+            done
+          ' -- "$GITHUB_WORKSPACE" "$RUNNER_TEMP/teachers" "$stage" "$py"
+          cp "$stage"/cold-*.json work/
+          python evaluate.py
+          python - <<'PY'
+          import base64, hashlib, pathlib, zipfile
+          p = pathlib.Path("encoder-run.zip")
+          with zipfile.ZipFile(p,"x",zipfile.ZIP_DEFLATED) as z:
+              for f in sorted(pathlib.Path("work").iterdir()):
+                  z.write(f,f.name)
+          data=p.read_bytes()
+          print("E3_ARCHIVE_SHA",hashlib.sha256(data).hexdigest(),len(data))
+          for i in range(0,len(data),2400):
+              print("E3_ARCHIVE_CHUNK",i,base64.b64encode(data[i:i+2400]).decode())
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: third-encoder-transfer-receipts
+          path: qualification/cell-e3-encoder-transfer-20261123/encoder-run.zip
+          if-no-files-found: error

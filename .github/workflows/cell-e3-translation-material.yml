@@ -1,0 +1,24 @@
+name: E3 original FLORES and Marian identities
+on:
+  push:
+    branches: [research/e3-encoder-transfer-20261123]
+    paths: ['qualification/cell-e3-encoder-transfer-20261123/translation/acquire.py', '.github/workflows/cell-e3-translation-material.yml']
+permissions:
+  contents: read
+jobs:
+  identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/cell-e3-encoder-transfer-20261123/translation
+      - name: Authenticate corpus and bind released checkpoints
+        working-directory: qualification/cell-e3-encoder-transfer-20261123/translation
+        run: python3 acquire.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: original-flores-marian-identities
+          path: qualification/cell-e3-encoder-transfer-20261123/translation/upstream/
+          if-no-files-found: error

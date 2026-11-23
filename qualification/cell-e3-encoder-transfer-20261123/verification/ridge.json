@@ -1,0 +1,262 @@
+{
+  "checked": {
+    "best_single": {
+      "domain": {
+        "addition": 8,
+        "agreement": 11,
+        "api": 12,
+        "capital": 24,
+        "french": 13,
+        "german": 11,
+        "python": 11,
+        "text": 14
+      },
+      "exclusive": {
+        "smol": [
+          11,
+          20
+        ],
+        "t5": [
+          0,
+          13
+        ]
+      },
+      "old": 16,
+      "pairs": 9,
+      "total": 104
+    },
+    "fixed": {
+      "domain": {
+        "addition": 8,
+        "agreement": 22,
+        "api": 12,
+        "capital": 24,
+        "french": 17,
+        "german": 10,
+        "python": 12,
+        "text": 14
+      },
+      "exclusive": {
+        "smol": [
+          11,
+          20
+        ],
+        "t5": [
+          11,
+          13
+        ]
+      },
+      "old": 16,
+      "pairs": 7,
+      "total": 119
+    },
+    "mix": {
+      "domain": {
+        "addition": 9,
+        "agreement": 12,
+        "api": 20,
+        "capital": 24,
+        "french": 18,
+        "german": 10,
+        "python": 9,
+        "text": 12
+      },
+      "exclusive": {
+        "smol": [
+          11,
+          20
+        ],
+        "t5": [
+          1,
+          13
+        ]
+      },
+      "old": 16,
+      "pairs": 8,
+      "total": 114
+    },
+    "parent": {
+      "domain": {
+        "addition": 10,
+        "agreement": 15,
+        "api": 16,
+        "capital": 24,
+        "french": 20,
+        "german": 14,
+        "python": 14,
+        "text": 12
+      },
+      "exclusive": {
+        "smol": [
+          9,
+          20
+        ],
+        "t5": [
+          5,
+          13
+        ]
+      },
+      "old": 16,
+      "pairs": 12,
+      "total": 125
+    },
+    "smol": {
+      "domain": {
+        "addition": 8,
+        "agreement": 11,
+        "api": 12,
+        "capital": 24,
+        "french": 13,
+        "german": 11,
+        "python": 11,
+        "text": 14
+      },
+      "exclusive": {
+        "smol": [
+          11,
+          20
+        ],
+        "t5": [
+          0,
+          13
+        ]
+      },
+      "old": 16,
+      "pairs": 9,
+      "total": 104
+    },
+    "sparse": {
+      "domain": {
+        "addition": 8,
+        "agreement": 22,
+        "api": 13,
+        "capital": 24,
+        "french": 18,
+        "german": 10,
+        "python": 13,
+        "text": 16
+      },
+      "exclusive": {
+        "smol": [
+          11,
+          20
+        ],
+        "t5": [
+          11,
+          13
+        ]
+      },
+      "old": 16,
+      "pairs": 8,
+      "total": 124
+    },
+    "t5": {
+      "domain": {
+        "addition": 10,
+        "agreement": 22,
+        "api": 11,
+        "capital": 24,
+        "french": 17,
+        "german": 10,
+        "python": 12,
+        "text": 13
+      },
+      "exclusive": {
+        "smol": [
+          3,
+          20
+        ],
+        "t5": [
+          11,
+          13
+        ]
+      },
+      "old": 16,
+      "pairs": 4,
+      "total": 119
+    },
+    "without_smol": {
+      "domain": {
+        "addition": 10,
+        "agreement": 22,
+        "api": 11,
+        "capital": 24,
+        "french": 17,
+        "german": 10,
+        "python": 12,
+        "text": 13
+      },
+      "exclusive": {
+        "smol": [
+          3,
+          20
+        ],
+        "t5": [
+          11,
+          13
+        ]
+      },
+      "old": 16,
+      "pairs": 4,
+      "total": 119
+    },
+    "without_t5": {
+      "domain": {
+        "addition": 8,
+        "agreement": 11,
+        "api": 12,
+        "capital": 24,
+        "french": 13,
+        "german": 11,
+        "python": 11,
+        "text": 14
+      },
+      "exclusive": {
+        "smol": [
+          11,
+          20
+        ],
+        "t5": [
+          0,
+          13
+        ]
+      },
+      "old": 16,
+      "pairs": 9,
+      "total": 104
+    }
+  },
+  "comparisons": {
+    "fixed": {
+      "versus_parent": [
+        23,
+        29
+      ]
+    },
+    "mix": {
+      "versus_parent": [
+        18,
+        29
+      ]
+    },
+    "sparse": {
+      "versus_parent": [
+        26,
+        27
+      ]
+    }
+  },
+  "pair_count": 32,
+  "predictions": 2448,
+  "seed": "e2921fea10e8b726e1e813142aa534be424501bc71c51262",
+  "sha256": "84b379a59d454e22009b434c254628e56e023467366ca9bde237df469154ffe0",
+  "teachers": {
+    "smol": [
+      "addition",
+      "api"
+    ],
+    "t5": [
+      "agreement"
+    ]
+  }
+}

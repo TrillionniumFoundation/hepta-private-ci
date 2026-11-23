@@ -1,0 +1,52 @@
+name: E3 licensed packed components
+on:
+  push:
+    branches: [research/e3-encoder-transfer-20261123]
+    paths: ['qualification/cell-e3-encoder-transfer-20261123/translation/COMPONENT_NOTICES.md', '.github/workflows/cell-e3-packed-notices.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/cell-e3-encoder-transfer-20261123/translation
+      - uses: actions/download-artifact@v4
+        with:
+          name: quantized-open-specialist-components
+          github-token: ${{ github.token }}
+          run-id: 45182790906
+          path: ${{ runner.temp }}/packed
+      - name: Verify tensors and attach upstream terms and modifications
+        working-directory: qualification/cell-e3-encoder-transfer-20261123/translation
+        run: |
+          cp SOURCES.json COMPONENT_NOTICES.md "$RUNNER_TEMP/packed/"
+          python3 - "$RUNNER_TEMP/packed" <<'PY'
+          import hashlib,json,pathlib,requests,sys,zipfile
+          out=pathlib.Path(sys.argv[1]); meta=json.loads((out/'SOURCES.json').read_bytes())
+          with zipfile.ZipFile('bilingual-results.zip') as z: want=json.loads(z.read('freeze.json'))['packed']
+          def save(url,path):
+              r=requests.get(url,timeout=35); r.raise_for_status(); path.write_bytes(r.content)
+          for lang,rec in meta['teachers'].items():
+              folder=out/lang
+              with (folder/'packed.safetensors').open('rb') as f: assert hashlib.file_digest(f,'sha256').hexdigest()==want[lang]
+              dst=folder/'upstream';dst.mkdir()
+              root='https://huggingface.co/'+rec['id']+'/resolve/'+rec['revision']+'/'
+              info=requests.get('https://huggingface.co/api/models/'+rec['id']+'/revision/'+rec['revision'],timeout=35);info.raise_for_status()
+              available=[v['rfilename'] for v in info.json()['siblings']]
+              for n in available:
+                  if '/' not in n and (n=='README.md' or n.lower().startswith(('license','notice','copying'))): save(root+n,dst/n)
+              url='https://www.apache.org/licenses/LICENSE-2.0.txt' if lang=='fr' else 'https://creativecommons.org/licenses/by/4.0/legalcode.txt'
+              save(url,dst/'LICENSE-TEXT.txt')
+              assert (dst/'LICENSE-TEXT.txt').stat().st_size>3000 and (dst/'README.md').is_file()
+              print(lang,want[lang],sorted(p.name for p in dst.iterdir()))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bilingual-quantized-weights-tokenizers-and-notices
+          path: ${{ runner.temp }}/packed
+          if-no-files-found: error

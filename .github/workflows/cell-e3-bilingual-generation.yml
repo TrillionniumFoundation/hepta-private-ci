@@ -1,0 +1,83 @@
+name: E3 free bilingual generation
+on:
+  push:
+    branches: [research/e3-encoder-transfer-20261123]
+    paths: ['qualification/cell-e3-encoder-transfer-20261123/translation/generation/generate.py','.github/workflows/cell-e3-bilingual-generation.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  decode:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      PYTHONUNBUFFERED: '1'
+    defaults:
+      run:
+        working-directory: qualification/cell-e3-encoder-transfer-20261123/translation
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/cell-e3-encoder-transfer-20261123
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: original-flores-marian-identities
+          github-token: ${{ github.token }}
+          run-id: 45181970877
+          path: ${{ runner.temp }}/flores
+      - uses: actions/download-artifact@v4
+        with:
+          name: frozen-human-reference-trial
+          github-token: ${{ github.token }}
+          run-id: 45182790906
+          path: qualification/cell-e3-encoder-transfer-20261123/translation/work
+      - uses: actions/download-artifact@v4
+        with:
+          name: quantized-open-specialist-components
+          github-token: ${{ github.token }}
+          run-id: 45182790906
+          path: ${{ runner.temp }}/packed
+      - name: Install stack and recover the exact original model material
+        run: |
+          python -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu torch==2.9.1
+          python -m pip install --disable-pip-version-check numpy==2.3.5 transformers==4.57.3 accelerate tokenizers==0.22.2 sentencepiece==0.2.1 sacremoses==0.1.1 sacrebleu==2.5.1 requests
+          cp ../encoder.py generation/generate.py .
+          python ../assets.py "$RUNNER_TEMP/third"
+          python -c 'from material import download; import pathlib,sys; download(pathlib.Path(sys.argv[1]))' "$RUNNER_TEMP/original"
+          python generate.py prepare work "$RUNNER_TEMP/flores"
+      - name: Generate independent raw teacher outputs
+        run: HF_HUB_OFFLINE=1 python generate.py teachers work "$RUNNER_TEMP/original"
+      - name: Decode without references, alternatives or teacher files and rescore
+        run: |
+          stage="$RUNNER_TEMP/free-bilingual"
+          mkdir -p "$stage/work"
+          cp encoder.py generate.py study.py sentences.py marian.py "$stage/"
+          cp work/{heads.npz,policy.json,freeze.json,generation-inputs.json} "$stage/work/"
+          sudo unshare -m -n --propagation private bash -eu -c '
+            mount -t sysfs -o ro sysfs /sys
+            for d in "$1" "$2" "$3"; do mount -t tmpfs tmpfs "$d"; done
+            cd "$4"
+            HF_HUB_OFFLINE=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false "$5" generate.py cold work "$6" "$7"
+          ' -- "$GITHUB_WORKSPACE" "$RUNNER_TEMP/original" "$RUNNER_TEMP/flores" "$stage" "$(command -v python)" "$RUNNER_TEMP/packed" "$RUNNER_TEMP/third"
+          cp "$stage/work"/{packed-generations,generation-routes}.json work/
+          python generate.py summarize work
+          cp ATTRIBUTION.md work/
+          python - <<'PY'
+          import hashlib,zipfile,pathlib
+          z=pathlib.Path("free-bilingual.zip")
+          keep=("generation-inputs.json","original-generations.json","packed-generations.json","generation-routes.json","generation-results.json","references.json","freeze.json","seed.json","ATTRIBUTION.md")
+          with zipfile.ZipFile(z,"x",zipfile.ZIP_DEFLATED) as f:
+              for n in keep: f.write(pathlib.Path("work")/n,n)
+          print("E3_FREE_ARCHIVE",hashlib.sha256(z.read_bytes()).hexdigest())
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: free-bilingual-receipts
+          path: qualification/cell-e3-encoder-transfer-20261123/translation/free-bilingual.zip
+          if-no-files-found: error
