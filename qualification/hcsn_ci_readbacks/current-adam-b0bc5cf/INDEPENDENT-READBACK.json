@@ -1,0 +1,991 @@
+{
+  "actual_invocations": {
+    "adam_updates": 9,
+    "adjoints": 13,
+    "forwards": 13
+  },
+  "adam_algebra_checks": [
+    {
+      "actor": "uniform-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "active",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "uniform-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "uniform-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_mass",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "uniform-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "uniform-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.020725573332533827
+      },
+      "parameter": "active",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 2.0679515313825692e-25,
+        "maximum_mixed_gate_ratio": 0.00020624495901375362
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.021366139284825107
+      },
+      "parameter": "content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 4.1359030627651384e-25,
+        "maximum_mixed_gate_ratio": 0.00041155476862506996
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_mass",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.018574969223735215
+      },
+      "parameter": "phase_content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-first",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "active",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "uniform-first",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "uniform-first",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_mass",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "uniform-first",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "uniform-crash",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.020725573332533827
+      },
+      "parameter": "active",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 2.0679515313825692e-25,
+        "maximum_mixed_gate_ratio": 0.00020624495901375362
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-crash",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.021366139284825107
+      },
+      "parameter": "content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 4.1359030627651384e-25,
+        "maximum_mixed_gate_ratio": 0.00041155476862506996
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-crash",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_mass",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-crash",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.018574969223735215
+      },
+      "parameter": "phase_content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-resumed",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.020725573332533827
+      },
+      "parameter": "active",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 2.0679515313825692e-25,
+        "maximum_mixed_gate_ratio": 0.00020624495901375362
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-resumed",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.021366139284825107
+      },
+      "parameter": "content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 4.1359030627651384e-25,
+        "maximum_mixed_gate_ratio": 0.00041155476862506996
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-resumed",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_mass",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 2
+    },
+    {
+      "actor": "uniform-resumed",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.018574969223735215
+      },
+      "parameter": "phase_content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 2
+    },
+    {
+      "actor": "graded-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "active",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "graded-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "graded-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_mass",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "graded-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "graded-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.019765400042564742
+      },
+      "parameter": "active",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 4.1359030627651384e-25,
+        "maximum_mixed_gate_ratio": 0.00041156983584760936
+      },
+      "step": 2
+    },
+    {
+      "actor": "graded-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 5.421010862427522e-20,
+        "maximum_mixed_gate_ratio": 0.03464987636548425
+      },
+      "parameter": "content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 1.6543612251060553e-24,
+        "maximum_mixed_gate_ratio": 0.0016288385689035645
+      },
+      "step": 2
+    },
+    {
+      "actor": "graded-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_mass",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 2
+    },
+    {
+      "actor": "graded-continuous",
+      "first_moment": {
+        "maximum_absolute_error": 1.3552527156068805e-20,
+        "maximum_mixed_gate_ratio": 0.011132798677459841
+      },
+      "parameter": "phase_content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 2
+    },
+    {
+      "actor": "graded-first",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "active",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "graded-first",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "graded-first",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_mass",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "graded-first",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 1
+    },
+    {
+      "actor": "graded-resumed",
+      "first_moment": {
+        "maximum_absolute_error": 2.710505431213761e-20,
+        "maximum_mixed_gate_ratio": 0.019765400042564742
+      },
+      "parameter": "active",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 4.1359030627651384e-25,
+        "maximum_mixed_gate_ratio": 0.00041156983584760936
+      },
+      "step": 2
+    },
+    {
+      "actor": "graded-resumed",
+      "first_moment": {
+        "maximum_absolute_error": 5.421010862427522e-20,
+        "maximum_mixed_gate_ratio": 0.03464987636548425
+      },
+      "parameter": "content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 1.6543612251060553e-24,
+        "maximum_mixed_gate_ratio": 0.0016288385689035645
+      },
+      "step": 2
+    },
+    {
+      "actor": "graded-resumed",
+      "first_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "parameter": "phase_mass",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 2
+    },
+    {
+      "actor": "graded-resumed",
+      "first_moment": {
+        "maximum_absolute_error": 1.3552527156068805e-20,
+        "maximum_mixed_gate_ratio": 0.011132798677459841
+      },
+      "parameter": "phase_content",
+      "parameter_update": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "second_moment": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "step": 2
+    }
+  ],
+  "checkpoint_payloads_read": [
+    {
+      "bytes": 26953,
+      "logical_sha256": "7299698044f998943b581caaa549117725da98a66f5cafab0538d0177405a49b",
+      "path": "crash-published.pt",
+      "sha256": "396df9ba4b11aca52cd6979e5ebc03eca176bf4871288fa130e91092d81c546b"
+    },
+    {
+      "bytes": 26953,
+      "logical_sha256": "4cd25227bd58998814b495d554b8e3840e151f1f10b0dfb1bd162409fcc5c013",
+      "path": "crash-published.pt.pending",
+      "sha256": "08a01beebfc6aab30646d71284018a18be85619f93c89528eacf8c369ea48c56"
+    },
+    {
+      "bytes": 28809,
+      "logical_sha256": "125e70c5b50b6222d1f932d10e59aaa3220ea825b8f0ef0f3b3438a18df3f3c6",
+      "path": "graded-continuous/state.pt",
+      "sha256": "2f199a5961565f178b88450ebda4c60f2111823e1a0a1b6cefb9b5864ddfc65c"
+    },
+    {
+      "bytes": 28809,
+      "logical_sha256": "8f19993b90bee47fa348fb88aea2636caefb8de1e03677a8de5abd43ee4da753",
+      "path": "graded-continuous/step1.pt",
+      "sha256": "b1c0fc15ccf8763bf304e1b71b12f2b7a34e561181ed48b46d28dfed37c46c13"
+    },
+    {
+      "bytes": 28809,
+      "logical_sha256": "125e70c5b50b6222d1f932d10e59aaa3220ea825b8f0ef0f3b3438a18df3f3c6",
+      "path": "graded-continuous/step2.pt",
+      "sha256": "2f199a5961565f178b88450ebda4c60f2111823e1a0a1b6cefb9b5864ddfc65c"
+    },
+    {
+      "bytes": 28809,
+      "logical_sha256": "8f19993b90bee47fa348fb88aea2636caefb8de1e03677a8de5abd43ee4da753",
+      "path": "graded-first/state.pt",
+      "sha256": "b1c0fc15ccf8763bf304e1b71b12f2b7a34e561181ed48b46d28dfed37c46c13"
+    },
+    {
+      "bytes": 28809,
+      "logical_sha256": "8f19993b90bee47fa348fb88aea2636caefb8de1e03677a8de5abd43ee4da753",
+      "path": "graded-first/step1.pt",
+      "sha256": "b1c0fc15ccf8763bf304e1b71b12f2b7a34e561181ed48b46d28dfed37c46c13"
+    },
+    {
+      "bytes": 28809,
+      "logical_sha256": "125e70c5b50b6222d1f932d10e59aaa3220ea825b8f0ef0f3b3438a18df3f3c6",
+      "path": "graded-resumed/state.pt",
+      "sha256": "3c572b24691f8ed4185c7b00768352cb98b57e879588d9b77fa3358fee120edd"
+    },
+    {
+      "bytes": 28809,
+      "logical_sha256": "125e70c5b50b6222d1f932d10e59aaa3220ea825b8f0ef0f3b3438a18df3f3c6",
+      "path": "graded-resumed/step2.pt",
+      "sha256": "3c572b24691f8ed4185c7b00768352cb98b57e879588d9b77fa3358fee120edd"
+    },
+    {
+      "bytes": 23277,
+      "logical_sha256": "eaa5ec5e3b0af4ea8629fb91c64be3b246ff9fa4096c29f93f62305f2da01b49",
+      "path": "omit-adam.pt",
+      "sha256": "f423bba5b41e062937eaad081702f0cf40c6931c2cf6ea8abb8c7873b636cc14"
+    },
+    {
+      "bytes": 26953,
+      "logical_sha256": "4cd25227bd58998814b495d554b8e3840e151f1f10b0dfb1bd162409fcc5c013",
+      "path": "uniform-continuous/state.pt",
+      "sha256": "1efc8ae63519b30a9921f26851b955853f7c2eed00903d122b76457144ef9df2"
+    },
+    {
+      "bytes": 26953,
+      "logical_sha256": "7299698044f998943b581caaa549117725da98a66f5cafab0538d0177405a49b",
+      "path": "uniform-continuous/step1.pt",
+      "sha256": "396df9ba4b11aca52cd6979e5ebc03eca176bf4871288fa130e91092d81c546b"
+    },
+    {
+      "bytes": 26953,
+      "logical_sha256": "4cd25227bd58998814b495d554b8e3840e151f1f10b0dfb1bd162409fcc5c013",
+      "path": "uniform-continuous/step2.pt",
+      "sha256": "1efc8ae63519b30a9921f26851b955853f7c2eed00903d122b76457144ef9df2"
+    },
+    {
+      "bytes": 26953,
+      "logical_sha256": "7299698044f998943b581caaa549117725da98a66f5cafab0538d0177405a49b",
+      "path": "uniform-first/state.pt",
+      "sha256": "396df9ba4b11aca52cd6979e5ebc03eca176bf4871288fa130e91092d81c546b"
+    },
+    {
+      "bytes": 26953,
+      "logical_sha256": "7299698044f998943b581caaa549117725da98a66f5cafab0538d0177405a49b",
+      "path": "uniform-first/step1.pt",
+      "sha256": "396df9ba4b11aca52cd6979e5ebc03eca176bf4871288fa130e91092d81c546b"
+    },
+    {
+      "bytes": 26953,
+      "logical_sha256": "4cd25227bd58998814b495d554b8e3840e151f1f10b0dfb1bd162409fcc5c013",
+      "path": "uniform-resumed/state.pt",
+      "sha256": "08a01beebfc6aab30646d71284018a18be85619f93c89528eacf8c369ea48c56"
+    },
+    {
+      "bytes": 26953,
+      "logical_sha256": "4cd25227bd58998814b495d554b8e3840e151f1f10b0dfb1bd162409fcc5c013",
+      "path": "uniform-resumed/step2.pt",
+      "sha256": "08a01beebfc6aab30646d71284018a18be85619f93c89528eacf8c369ea48c56"
+    }
+  ],
+  "complete_logical_equalities": [
+    "uniform complete step1",
+    "uniform complete step2",
+    "graded complete step1",
+    "graded complete step2",
+    "omit control other fields exact",
+    "crash published remains full step1",
+    "crash pending is complete continuous step2"
+  ],
+  "inspector": {
+    "bytes": 21049,
+    "sha256": "a9ca1d486936f7eecbcdaa9134ed14e62d24e7d03cb0c410277611e5f3581434"
+  },
+  "job_id": 137483750375,
+  "loss_and_live_vjp_checks": [
+    {
+      "actor": "uniform-continuous",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 7.267578899794458e-12,
+        "maximum_mixed_gate_ratio": 0.000578515742870031
+      },
+      "loss": 0.00012957484636914255,
+      "loss_label": "step1",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 8.281788666311685e-12,
+        "maximum_mixed_gate_ratio": 2.4519688961658835e-05
+      }
+    },
+    {
+      "actor": "uniform-continuous",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 7.270392621272492e-12,
+        "maximum_mixed_gate_ratio": 0.0005798845637021448
+      },
+      "loss": 0.00012623640092883804,
+      "loss_label": "step2",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 7.914263645478203e-12,
+        "maximum_mixed_gate_ratio": 2.348137815701933e-05
+      }
+    },
+    {
+      "actor": "uniform-continuous",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 7.273504715188395e-12,
+        "maximum_mixed_gate_ratio": 0.0005813599743880054
+      },
+      "loss": 0.00012415952097178108,
+      "loss_label": "next",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 8.073830016011585e-12,
+        "maximum_mixed_gate_ratio": 2.3945768077599425e-05
+      }
+    },
+    {
+      "actor": "uniform-first",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 7.267578899794458e-12,
+        "maximum_mixed_gate_ratio": 0.000578515742870031
+      },
+      "loss": 0.00012957484636914255,
+      "loss_label": "step1",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 8.281788666311685e-12,
+        "maximum_mixed_gate_ratio": 2.4519688961658835e-05
+      }
+    },
+    {
+      "actor": "uniform-crash",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 7.270392621272492e-12,
+        "maximum_mixed_gate_ratio": 0.0005798845637021448
+      },
+      "loss": 0.00012623640092883804,
+      "loss_label": "step2",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 7.914263645478203e-12,
+        "maximum_mixed_gate_ratio": 2.348137815701933e-05
+      }
+    },
+    {
+      "actor": "uniform-resumed",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 7.270392621272492e-12,
+        "maximum_mixed_gate_ratio": 0.0005798845637021448
+      },
+      "loss": 0.00012623640092883804,
+      "loss_label": "step2",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 7.914263645478203e-12,
+        "maximum_mixed_gate_ratio": 2.348137815701933e-05
+      }
+    },
+    {
+      "actor": "uniform-resumed",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 7.273504715188395e-12,
+        "maximum_mixed_gate_ratio": 0.0005813599743880054
+      },
+      "loss": 0.00012415952097178108,
+      "loss_label": "next",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 8.073830016011585e-12,
+        "maximum_mixed_gate_ratio": 2.3945768077599425e-05
+      }
+    },
+    {
+      "actor": "graded-continuous",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 6.538375483394754e-11,
+        "maximum_mixed_gate_ratio": 0.006174270380458799
+      },
+      "loss": 0.00012123812812085409,
+      "loss_label": "step1",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 1.23535665204344e-12,
+        "maximum_mixed_gate_ratio": 3.4566444089807153e-06
+      }
+    },
+    {
+      "actor": "graded-continuous",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 6.520940731835623e-11,
+        "maximum_mixed_gate_ratio": 0.006161828603721256
+      },
+      "loss": 0.00011950914353061687,
+      "loss_label": "step2",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 1.1973130820130962e-12,
+        "maximum_mixed_gate_ratio": 3.375054016359534e-06
+      }
+    },
+    {
+      "actor": "graded-continuous",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 6.500635750181227e-11,
+        "maximum_mixed_gate_ratio": 0.006146685913802764
+      },
+      "loss": 0.0001146134472943795,
+      "loss_label": "next",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 1.1791730786248067e-12,
+        "maximum_mixed_gate_ratio": 3.3302980121649356e-06
+      }
+    },
+    {
+      "actor": "graded-first",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 6.538375483394754e-11,
+        "maximum_mixed_gate_ratio": 0.006174270380458799
+      },
+      "loss": 0.00012123812812085409,
+      "loss_label": "step1",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 1.23535665204344e-12,
+        "maximum_mixed_gate_ratio": 3.4566444089807153e-06
+      }
+    },
+    {
+      "actor": "graded-resumed",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 6.520940731835623e-11,
+        "maximum_mixed_gate_ratio": 0.006161828603721256
+      },
+      "loss": 0.00011950914353061687,
+      "loss_label": "step2",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 1.1973130820130962e-12,
+        "maximum_mixed_gate_ratio": 3.375054016359534e-06
+      }
+    },
+    {
+      "actor": "graded-resumed",
+      "cotangent": {
+        "maximum_absolute_error": 0.0,
+        "maximum_mixed_gate_ratio": 0.0
+      },
+      "forward_old_G": {
+        "maximum_absolute_error": 6.500635750181227e-11,
+        "maximum_mixed_gate_ratio": 0.006146685913802764
+      },
+      "loss": 0.0001146134472943795,
+      "loss_label": "next",
+      "vjp_old_G_transpose": {
+        "maximum_absolute_error": 1.1791730786248067e-12,
+        "maximum_mixed_gate_ratio": 3.3302980121649356e-06
+      }
+    }
+  ],
+  "next_loss_and_four_gradient_buffers_exact_both_geometries": true,
+  "original_admission_controls_are_actual_not_new_audit_executions": true,
+  "original_zip": {
+    "bytes": 986525,
+    "crc_members": 66,
+    "sha256": "e2a02c10f197f8cdd6feba81963814e73e658b6992bea7c91292631c53409065"
+  },
+  "passed": true,
+  "producer_checks": 46,
+  "producer_checks_are_overlapping_not_independent_replications": true,
+  "ptzip_reader": {
+    "bytes": 5466,
+    "sha256": "43a7e522d629c5fbec433b4b95a1724c089e60011da4e791ebed04e2217ae1ac"
+  },
+  "reference_inspector_commit": "de4ef594bfefec05a64fc2ae3b717a640a57b263",
+  "review_cpu_seconds": 0.310288589,
+  "review_new_candidate_model_torch_ode_adjoint_expm_static_optimizer_calls": 0,
+  "review_wall_seconds": 0.3120680510000966,
+  "run_id": 45111212131,
+  "schema": "hcsn-adjoint-adam-retained-artifact-independent-audit-v1",
+  "scope": [
+    "Fixed physics/support N7/N12, four raw FP64 initial tensors, first-order synthetic MSE, exact same-runtime/source restoration only.",
+    "Independent Adam arithmetic is algebra on retained values, not an optimizer execution; moments and updates are checked within explicit FP64 rounding gates, while path restoration equality is exact over full payload.",
+    "Process crash on the same running OS, not power loss, hostile Python/checkpoint or dependency-binary attestation.",
+    "No n512/full-network/physical gradients/migration/historical training/task benefit/energy/adoption qualification."
+  ],
+  "source_commit": "b0bc5cf5bea7cb1aa4a320c5b87d884e9e083b70",
+  "strict_nonexecuting_ptzip_reader": true,
+  "unknown_actor_costs": []
+}
