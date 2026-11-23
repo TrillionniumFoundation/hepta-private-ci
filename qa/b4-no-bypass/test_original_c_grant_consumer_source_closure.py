@@ -136,7 +136,7 @@ class OriginalCGrantConsumerSourceTests(unittest.TestCase):
             "self.slot.closed.cancelled()",
             "tokio::time::timeout(",
             "let issued = match requested",
-            "OriginalSuccessorGrant::Provided(signed) => Ok((original.prepared, signed))",
+            "OriginalSuccessorGrant::Provided(signed) => Ok((original.prepared, *signed))",
             "OriginalSuccessorGrant::OriginalRoot =>",
             "OriginalCellQ24PreparedPublicationV1::issue_original_successor_final_use(",
             "Arc::clone(&state)",
