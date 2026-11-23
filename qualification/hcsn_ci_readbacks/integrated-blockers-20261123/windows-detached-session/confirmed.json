@@ -1,0 +1,164 @@
+{
+  "context_diff_sha256": "e95a746f070b5dbc926b6385391f4990ddcc136276abfe552136ef1649eb91c0",
+  "historical": {
+    "7005": {
+      "artifact": 14790212814,
+      "cases": {
+        "exec_server_dedupes_retried_process_write_ids": "ok",
+        "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin": "ok",
+        "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests": "ok",
+        "exec_server_resumes_detached_session_without_killing_processes": "ok",
+        "exec_server_runs_ordinary_requests_serially_by_default": "ok",
+        "exec_server_starts_process_over_websocket": "ok"
+      },
+      "errors": [],
+      "job": 137481302886,
+      "log_sha256": "6a302bc17e7871daaa03c3cacd230bd9e77db22909deea7029ecefa4ab0f5341",
+      "target_summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.72s",
+      "zip_sha256": "7dfe9d1bca9dc8d57fcd2d2b4d00c4ebfb1265e7cd2e190e05e2d0e2fc043aaa"
+    },
+    "7009": {
+      "artifact": 14792963395,
+      "cases": {
+        "exec_server_dedupes_retried_process_write_ids": "ok",
+        "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin": "ok",
+        "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests": "ok",
+        "exec_server_resumes_detached_session_without_killing_processes": "ok",
+        "exec_server_runs_ordinary_requests_serially_by_default": "ok",
+        "exec_server_starts_process_over_websocket": "ok"
+      },
+      "errors": [],
+      "job": 137503935193,
+      "log_sha256": "e312adf3d338fb5ef58b7f3c2b187f6302522984f25233d08cf28b3c8ff380ed",
+      "target_summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.40s",
+      "zip_sha256": "d41ee9736c1ab51afe5c0a642d7465962f6a7c11a626b187024fead3d88fec31"
+    },
+    "7013": {
+      "artifact": 14794386164,
+      "cases": {
+        "exec_server_dedupes_retried_process_write_ids": "ok",
+        "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin": "ok",
+        "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests": "ok",
+        "exec_server_resumes_detached_session_without_killing_processes": "ok",
+        "exec_server_runs_ordinary_requests_serially_by_default": "ok",
+        "exec_server_starts_process_over_websocket": "ok"
+      },
+      "errors": [],
+      "job": 137513221713,
+      "log_sha256": "0d26731454f31376d0235b0e89516fe54fea5b9b210c5156f788c84cfad1086a",
+      "target_summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.23s",
+      "zip_sha256": "c92968abcd151078e1f996d128aa736d0b694376a557d5716690c9f02fe3f508"
+    },
+    "c6a": {
+      "artifact": 14796846759,
+      "cases": {
+        "exec_server_dedupes_retried_process_write_ids": "ok",
+        "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin": "ok",
+        "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests": "ok",
+        "exec_server_resumes_detached_session_without_killing_processes": "FAILED",
+        "exec_server_runs_ordinary_requests_serially_by_default": "ok",
+        "exec_server_starts_process_over_websocket": "ok"
+      },
+      "errors": [
+        "Error: timed out waiting for exec-server websocket event"
+      ],
+      "job": 137528575116,
+      "log_sha256": "e5d8030375cbc54f814a5af7cd8dac6d634cc17dfb76389d22aae8841e22caf3",
+      "target_summary": "test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.86s",
+      "zip_sha256": "ec9c6110c906f4ad69d5698b0b3ea47ab4890413e9420d9144a5f18f4c24ea15"
+    }
+  },
+  "observation_zip_sha256": "1bc6894eff455ee2c4e8ce0f89b8833a5e6b0d07f1f261714e0357fc252c2d3f",
+  "observations": {
+    "contextual-1": {
+      "bazel_exit": 0,
+      "cases": {
+        "exec_server_dedupes_retried_process_write_ids": "ok",
+        "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin": "ok",
+        "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests": "ok",
+        "exec_server_resumes_detached_session_without_killing_processes": "ok",
+        "exec_server_runs_ordinary_requests_serially_by_default": "ok",
+        "exec_server_starts_process_over_websocket": "ok"
+      },
+      "errors": [],
+      "log_sha256": "6a302bc17e7871daaa03c3cacd230bd9e77db22909deea7029ecefa4ab0f5341",
+      "target_summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.72s",
+      "xml_sha256": "d2155b8a3f7fb2407cd55d1dc7ae4b3fa069af01f1cbe46952301693f66ef5b6"
+    },
+    "contextual-2": {
+      "bazel_exit": 0,
+      "cases": {
+        "exec_server_dedupes_retried_process_write_ids": "ok",
+        "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin": "ok",
+        "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests": "ok",
+        "exec_server_resumes_detached_session_without_killing_processes": "ok",
+        "exec_server_runs_ordinary_requests_serially_by_default": "ok",
+        "exec_server_starts_process_over_websocket": "ok"
+      },
+      "errors": [],
+      "log_sha256": "aed5b5107aa0694ea9d2ac34ea341b458a01a59bfad50c099fe90ee2b31c5b4b",
+      "target_summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.63s",
+      "xml_sha256": "2b44e1389b7bdb3c43914b1cf81e10cc6d9d697c506f25b194d22b85d6889641"
+    },
+    "contextual-3": {
+      "bazel_exit": 0,
+      "cases": {
+        "exec_server_dedupes_retried_process_write_ids": "ok",
+        "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin": "ok",
+        "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests": "ok",
+        "exec_server_resumes_detached_session_without_killing_processes": "ok",
+        "exec_server_runs_ordinary_requests_serially_by_default": "ok",
+        "exec_server_starts_process_over_websocket": "ok"
+      },
+      "errors": [],
+      "log_sha256": "7393022b3639244d99f111171041cd7a5b2b8e74bc8701b1b7854f55294bd9c9",
+      "target_summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s",
+      "xml_sha256": "ff8204fea9cb4c34cebceeb3547619b23dc61085ca63d55bc6017c4333d0468e"
+    },
+    "original-1": {
+      "bazel_exit": 0,
+      "cases": {
+        "exec_server_dedupes_retried_process_write_ids": "ok",
+        "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin": "ok",
+        "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests": "ok",
+        "exec_server_resumes_detached_session_without_killing_processes": "ok",
+        "exec_server_runs_ordinary_requests_serially_by_default": "ok",
+        "exec_server_starts_process_over_websocket": "ok"
+      },
+      "errors": [],
+      "log_sha256": "8e4436b1f08a4e994946bc1f432c222cd05971bee1881034efe3876a529799dc",
+      "target_summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s",
+      "xml_sha256": "9fc1b3fb7767c49c2310b70e666a168b7196bd3159f8d53ab6d411458179fb3d"
+    },
+    "original-2": {
+      "bazel_exit": 0,
+      "cases": {
+        "exec_server_dedupes_retried_process_write_ids": "ok",
+        "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin": "ok",
+        "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests": "ok",
+        "exec_server_resumes_detached_session_without_killing_processes": "ok",
+        "exec_server_runs_ordinary_requests_serially_by_default": "ok",
+        "exec_server_starts_process_over_websocket": "ok"
+      },
+      "errors": [],
+      "log_sha256": "d07c2be1c53158df37947fda49b80b19d8555c5d4cc733b89001b6db2e4a2070",
+      "target_summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s",
+      "xml_sha256": "5788fdc80fc19324a3b5a709acbb58ebc213f9ba99d2b8580a0d6c15184765db"
+    },
+    "original-3": {
+      "bazel_exit": 0,
+      "cases": {
+        "exec_server_dedupes_retried_process_write_ids": "ok",
+        "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin": "ok",
+        "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests": "ok",
+        "exec_server_resumes_detached_session_without_killing_processes": "ok",
+        "exec_server_runs_ordinary_requests_serially_by_default": "ok",
+        "exec_server_starts_process_over_websocket": "ok"
+      },
+      "errors": [],
+      "log_sha256": "7393022b3639244d99f111171041cd7a5b2b8e74bc8701b1b7854f55294bd9c9",
+      "target_summary": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s",
+      "xml_sha256": "ff8204fea9cb4c34cebceeb3547619b23dc61085ca63d55bc6017c4333d0468e"
+    }
+  }
+}
