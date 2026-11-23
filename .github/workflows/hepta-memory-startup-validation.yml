@@ -17,6 +17,7 @@ jobs:
     env:
       CARGO_BUILD_JOBS: "2"
       CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -24,6 +25,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
       - name: Prepare native dependencies for the two child processes
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
@@ -43,7 +47,10 @@ jobs:
           for name in codex hepta-joint-propose; do
             install -m 755 "$CARGO_TARGET_DIR/debug/$name" "$children/$name"
           done
-          (cd "$children" && sha256sum codex hepta-joint-propose > SHA256SUMS)
+          cargo nextest --version > "$children/nextest-version.txt"
+          cargo nextest archive --locked -p codex-hepta-agentd --lib --archive-file "$children/agentd-lib.tar.zst"
+          NEXTEST_PROFILE=local cargo nextest list --locked -p codex-hepta-agentd --lib --message-format json > "$children/source-list.json"
+          (cd "$children" && sha256sum codex hepta-joint-propose agentd-lib.tar.zst source-list.json nextest-version.txt > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: startup-test-children
@@ -85,28 +92,59 @@ jobs:
             chmod 755 "$children/$name"
             echo "CARGO_BIN_EXE_$name=$children/$name" >> "$GITHUB_ENV"
           done
+      - name: Match the archived Agentd roster against the original Cargo target
+        working-directory: codex-rs
+        env:
+          NEXTEST_PROFILE: local
+        run: |
+          set -euo pipefail
+          children="$RUNNER_TEMP/startup-test-children"
+          cargo nextest --version | cmp - "$children/nextest-version.txt"
+          cargo nextest list --archive-file "$children/agentd-lib.tar.zst" --workspace-remap "$PWD" --message-format json > "$children/restored-list.json"
+          python3 - "$children" <<'PYTHON'
+          import json
+          import sys
+          from pathlib import Path
+
+          root = Path(sys.argv[1])
+          sys.path.insert(0, str(Path.cwd().parent / "scripts"))
+          from hepta_scoped_archive import inventory
+
+          def original_roster(filename):
+              data = json.loads((root / filename).read_text())
+              suites = list(data["rust-suites"].values())
+              if len(suites) != 1 or suites[0]["kind"] != "lib":
+                  raise SystemExit("expected exactly the original Agentd libtest")
+              return inventory(data, {"codex-hepta-agentd"})
+
+          source = original_roster("source-list.json")
+          if not source[1] or source != original_roster("restored-list.json"):
+              raise SystemExit("restored test names, selection or ignores differ from the original target")
+          print(f"Matched {len(source[0])} original cases, {len(source[1])} selected and {len(source[2])} ignored")
+          PYTHON
+          cp "$children/source-list.json" "$children/restored-list.json" /tmp/memory-startup-validation/
       - name: Test startup fences and unopened service factory
         run: |
           set -euo pipefail
           mkdir -p /tmp/memory-startup-validation
           git rev-parse HEAD > /tmp/memory-startup-validation/tested-commit.txt
           cd codex-rs
-          just test -p codex-hepta-agentd --lib memory_bootstrap::tests 2>&1 | tee /tmp/memory-startup-validation/bootstrap.log
-          just test -p codex-hepta-agentd --lib service::fleet::startup::tests 2>&1 | tee /tmp/memory-startup-validation/readiness.log
+          just test --archive-file "$RUNNER_TEMP/startup-test-children/agentd-lib.tar.zst" --workspace-remap "$PWD" memory_bootstrap::tests 2>&1 | tee /tmp/memory-startup-validation/bootstrap.log
+          just test --archive-file "$RUNNER_TEMP/startup-test-children/agentd-lib.tar.zst" --workspace-remap "$PWD" service::fleet::startup::tests 2>&1 | tee /tmp/memory-startup-validation/readiness.log
       - name: Test existing serving cancellation, generation retirement and fleet owners
         if: always() && !cancelled()
         run: |
           set -euo pipefail
           cd codex-rs
-          just test -p codex-hepta-agentd --lib memory_serving_process::tests 2>&1 | tee /tmp/memory-startup-validation/process.log
-          just test -p codex-hepta-agentd --lib shared_memory_training::selected::service::fleet::tests 2>&1 | tee /tmp/memory-startup-validation/fleet.log
+          just test --archive-file "$RUNNER_TEMP/startup-test-children/agentd-lib.tar.zst" --workspace-remap "$PWD" memory_serving_process::tests 2>&1 | tee /tmp/memory-startup-validation/process.log
+          just test --archive-file "$RUNNER_TEMP/startup-test-children/agentd-lib.tar.zst" --workspace-remap "$PWD" shared_memory_training::selected::service::fleet::tests 2>&1 | tee /tmp/memory-startup-validation/fleet.log
       - name: Run the entire affected Agentd unit suite without weakening filters
         if: always() && !cancelled()
         run: |
           set -euo pipefail
           mkdir -p /tmp/memory-startup-validation
           cd codex-rs
-          just test -p codex-hepta-agentd --lib 2>&1 | tee /tmp/memory-startup-validation/all-agentd-unit-tests.log
+          just test --archive-file "$RUNNER_TEMP/startup-test-children/agentd-lib.tar.zst" --workspace-remap "$PWD" 2>&1 | tee /tmp/memory-startup-validation/all-agentd-unit-tests.log
       - name: Retain exact source and test evidence, never a production signature
         if: always()
         run: |
