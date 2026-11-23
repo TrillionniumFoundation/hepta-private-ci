@@ -1,0 +1,320 @@
+{
+  "category_counts": {
+    "boxed_donor_no_individual_qualification": 7,
+    "donor_only_v2_full_entry_positive_unverified": 1,
+    "missing_original_predecessor_citation": 1,
+    "public_declaration_scope_review_required": 6,
+    "qualified_here": 1,
+    "same_donor_declaration": 1,
+    "scoped_representation_and_consumer_review_required": 8,
+    "scoped_tagged_wire_and_constructor_review_required": 9,
+    "separately_qualified": 1
+  },
+  "donor": "24abd04c825cb0d5d0ce27b52ac5008eda13dde4",
+  "rows": [
+    {
+      "category": "scoped_representation_and_consumer_review_required",
+      "line": 10,
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_cell_session.rs",
+      "source_blob": "eafe06a2bcab8ab7f585b58aafda207568703c44",
+      "type": "OriginalCellCustody",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "scoped_representation_and_consumer_review_required",
+      "line": 9,
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_ledger_session.rs",
+      "source_blob": "88565706043ea4d94d2c93165f07b7ca2388674c",
+      "type": "OriginalLedgerCustody",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "scoped_representation_and_consumer_review_required",
+      "line": 36,
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_ledger_files.rs",
+      "source_blob": "ca7e8019492444d8d0cfad2080f28c34280303ff",
+      "type": "OriginalLedgerReadModeV1",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "boxed_donor_no_individual_qualification",
+      "donor_blob": "9b6844912fa9921ebab5f59b29305a451b6fdb6b",
+      "donor_declaration_changed": true,
+      "line": 26,
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs",
+      "source_blob": "8c081ae67e7b4083bd58546963190d22709ecd1e",
+      "type": "HistoryState",
+      "visibility": "private"
+    },
+    {
+      "category": "boxed_donor_no_individual_qualification",
+      "donor_blob": "d3b0cd2e25479fec74656bc34f2629f319eeb211",
+      "donor_declaration_changed": true,
+      "line": 7,
+      "path": "codex-rs/hepta-agentd/src/authority_host_run_start_historical.rs",
+      "source_blob": "3656ba59396ffcc5e873db6b28ab3d49bb48d30a",
+      "type": "ReadState",
+      "visibility": "private"
+    },
+    {
+      "category": "scoped_tagged_wire_and_constructor_review_required",
+      "line": 37,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "source_blob": "c932fa8620748b123857bf69b4c8332314d2c3d4",
+      "type": "Command",
+      "visibility": "pub(crate)"
+    },
+    {
+      "category": "scoped_tagged_wire_and_constructor_review_required",
+      "line": 25,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "source_blob": "76146f752c55516edc71d9b2945cd3d781db0d1c",
+      "type": "Command",
+      "visibility": "pub(crate)"
+    },
+    {
+      "category": "separately_qualified",
+      "donor_blob": "0fb49f59184943dc4447dfa86b7f2b7a8763d7c0",
+      "donor_declaration_changed": true,
+      "line": 17,
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs",
+      "source_blob": "270d025b44c5d3f5aed8d3438b7fc6f34ff9dab8",
+      "type": "VersionedBootstrap",
+      "visibility": "private"
+    },
+    {
+      "category": "scoped_representation_and_consumer_review_required",
+      "line": 33,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "source_blob": "0e76ccfbe2b1bfa9cb48fb876128d2ab0220ae2a",
+      "type": "ResidentAuthorizationV3",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "scoped_representation_and_consumer_review_required",
+      "line": 71,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "source_blob": "0e76ccfbe2b1bfa9cb48fb876128d2ab0220ae2a",
+      "type": "ResidentStoreValueV3",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "same_donor_declaration",
+      "donor_blob": "2358d36fbc8ab2e99d4f27e766ea3187f2a016ee",
+      "donor_declaration_changed": false,
+      "line": 56,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "source_blob": "2358d36fbc8ab2e99d4f27e766ea3187f2a016ee",
+      "type": "ResidentStagesV3",
+      "visibility": "private"
+    },
+    {
+      "category": "scoped_representation_and_consumer_review_required",
+      "line": 24,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "source_blob": "39aa262d6eec74c84f3d9757ca270573c280353b",
+      "type": "ResidentOriginalStageOwnersV3",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "boxed_donor_no_individual_qualification",
+      "donor_blob": "dbc04d9ce656c5f19d8169ca73acdc5aaa221af9",
+      "donor_declaration_changed": true,
+      "line": 72,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "source_blob": "40b744877e6e3a0e02dea0fdc9fffb8859eefdf7",
+      "type": "ClientOriginV3",
+      "visibility": "private"
+    },
+    {
+      "category": "boxed_donor_no_individual_qualification",
+      "donor_blob": "dbc04d9ce656c5f19d8169ca73acdc5aaa221af9",
+      "donor_declaration_changed": true,
+      "line": 77,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "source_blob": "40b744877e6e3a0e02dea0fdc9fffb8859eefdf7",
+      "type": "ResidentExchangeV3",
+      "visibility": "private"
+    },
+    {
+      "category": "donor_only_v2_full_entry_positive_unverified",
+      "donor_blob": "089bd0bfa2947c039556c7c6c34fae3f70ad772c",
+      "donor_declaration_changed": true,
+      "line": 76,
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "source_blob": "da2899bf712adfcbf9759882130a8c769eadc45e",
+      "type": "AutomationEffectHostFile",
+      "visibility": "private"
+    },
+    {
+      "category": "public_declaration_scope_review_required",
+      "line": 105,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "source_blob": "8829e2bea22e8713539262abaf95f1994307dfd7",
+      "type": "OriginalCellQ24TaskLedgerStatusV1",
+      "visibility": "pub"
+    },
+    {
+      "category": "scoped_tagged_wire_and_constructor_review_required",
+      "line": 68,
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs",
+      "source_blob": "ce5b07126c29f6cb5aaa32e5c3f46acd5963aad7",
+      "type": "Readiness",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "scoped_tagged_wire_and_constructor_review_required",
+      "line": 68,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "source_blob": "5f13b084585c882cf016dc1d7e8e3afaa4b89d89",
+      "type": "Readiness",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "qualified_here",
+      "donor_blob": "3b98a5d15c8b09fd1185a4f27941376e15ba7a3f",
+      "donor_declaration_changed": true,
+      "line": 161,
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "source_blob": "cf84a80c1d0eedbf8fee6d9dffccd5d4730b87a3",
+      "type": "Publication",
+      "visibility": "private"
+    },
+    {
+      "category": "boxed_donor_no_individual_qualification",
+      "donor_blob": "0251265dad9e4687174914d9827ef7aa90bc5b8e",
+      "donor_declaration_changed": true,
+      "line": 23,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+      "source_blob": "3f35ff835cc669fab2e80a59b1fafdf868887e59",
+      "type": "OriginalCohort",
+      "visibility": "private"
+    },
+    {
+      "category": "public_declaration_scope_review_required",
+      "line": 30,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_learning.rs",
+      "source_blob": "6003965bbaab608b98719672b995eb5c33f8da70",
+      "type": "CircuitTaskLearningReadinessV1",
+      "visibility": "pub"
+    },
+    {
+      "category": "scoped_representation_and_consumer_review_required",
+      "line": 17,
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_command_evidence.rs",
+      "source_blob": "9d1bd68ab50d8caac3bbfe8ecdbd0e6dd9ffab47",
+      "type": "OriginalCommandEvidenceV1",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "scoped_representation_and_consumer_review_required",
+      "line": 13,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs",
+      "source_blob": "01387db0a5247d56530c50c4a2ab586ed210cfa2",
+      "type": "Observed",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "scoped_tagged_wire_and_constructor_review_required",
+      "line": 141,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+      "source_blob": "a24dbbf280dcfff9c3d52deeaa087ffc8a11bdc8",
+      "type": "CommandResult",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "scoped_tagged_wire_and_constructor_review_required",
+      "line": 136,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+      "source_blob": "5d7c468f0d9c4ae0f1b72b34e5b8b3f373150cb3",
+      "type": "CommandResult",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "scoped_tagged_wire_and_constructor_review_required",
+      "line": 136,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+      "source_blob": "b3666b09a69ee50a466c540c935950098591ce0d",
+      "type": "CommandResult",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "scoped_tagged_wire_and_constructor_review_required",
+      "line": 137,
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_wire.rs",
+      "source_blob": "254f899523a26f774473a66bc04a4f797cb3ab1c",
+      "type": "CommandResult",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "scoped_tagged_wire_and_constructor_review_required",
+      "line": 136,
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_wire.rs",
+      "source_blob": "6fa4f8d052ca29b9f8d6c073384d7c570cfb05d1",
+      "type": "CommandResult",
+      "visibility": "pub(super)"
+    },
+    {
+      "category": "public_declaration_scope_review_required",
+      "line": 32,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs",
+      "source_blob": "55f64838bd24a54be6bb71cd029833ecb8eb1412",
+      "type": "OriginalCellQ24EvaluationTimingV1",
+      "visibility": "pub"
+    },
+    {
+      "category": "public_declaration_scope_review_required",
+      "line": 48,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "source_blob": "e3df14447054dade007ba8dcd50798fa7ab071c8",
+      "type": "OriginalCellQ24SourceInputsV1",
+      "visibility": "pub"
+    },
+    {
+      "category": "public_declaration_scope_review_required",
+      "line": 164,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "source_blob": "e3df14447054dade007ba8dcd50798fa7ab071c8",
+      "type": "OriginalCellQ24TrainingInputsV1",
+      "visibility": "pub"
+    },
+    {
+      "category": "boxed_donor_no_individual_qualification",
+      "donor_blob": "64c8ee80ffa4bf310bb14dee4e4959c37fcbc0e3",
+      "donor_declaration_changed": true,
+      "line": 81,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs",
+      "source_blob": "741245a241f0e5f758f4b13c52249e0256ce2bd2",
+      "type": "OriginalLearningReceiptSourceV1",
+      "visibility": "private"
+    },
+    {
+      "category": "public_declaration_scope_review_required",
+      "line": 21,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_source.rs",
+      "source_blob": "4320bc7df86d940d9c70bd746c8b3b8f2a8da2cc",
+      "type": "OriginalCellEvaluationTrainerV1",
+      "visibility": "pub"
+    },
+    {
+      "category": "boxed_donor_no_individual_qualification",
+      "donor_blob": "852f6d2128d96d4e935364dd55ceb8829176e5c6",
+      "donor_declaration_changed": true,
+      "line": 61,
+      "path": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+      "source_blob": "963bd53b4d247e36eeecb07bae98284b42fb9c9c",
+      "type": "PreparedCTask",
+      "visibility": "private"
+    },
+    {
+      "category": "missing_original_predecessor_citation",
+      "donor_blob": "814ca0a11bd200572a0be348189584af807f95e1",
+      "donor_declaration_changed": true,
+      "line": 17,
+      "path": "codex-rs/hepta-agentd/src/memory_serving_qualification.rs",
+      "source_blob": "d54c1cb1872bfb098bb970fd593388a3f0fae3f3",
+      "type": "Decision",
+      "visibility": "private"
+    }
+  ]
+}

@@ -1,0 +1,355 @@
+{
+  "base": "c12ee03f3185d5a13949faca54f066dfd634e509",
+  "counts": {
+    "private": 12,
+    "pub": 6,
+    "pub(crate)": 2,
+    "pub(super)": 15
+  },
+  "diagnostics": [
+    {
+      "line": 10,
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_cell_session.rs",
+      "protected": true,
+      "type": "OriginalCellCustody",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 9,
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_ledger_session.rs",
+      "protected": true,
+      "type": "OriginalLedgerCustody",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 36,
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_ledger_files.rs",
+      "protected": true,
+      "type": "OriginalLedgerReadModeV1",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 26,
+      "path": "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs",
+      "protected": true,
+      "type": "HistoryState",
+      "visibility": "private"
+    },
+    {
+      "line": 7,
+      "path": "codex-rs/hepta-agentd/src/authority_host_run_start_historical.rs",
+      "protected": true,
+      "type": "ReadState",
+      "visibility": "private"
+    },
+    {
+      "line": 37,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "protected": true,
+      "type": "Command",
+      "visibility": "pub(crate)"
+    },
+    {
+      "line": 25,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      "protected": true,
+      "type": "Command",
+      "visibility": "pub(crate)"
+    },
+    {
+      "line": 17,
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_bootstrap.rs",
+      "protected": true,
+      "type": "VersionedBootstrap",
+      "visibility": "private"
+    },
+    {
+      "line": 33,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "protected": true,
+      "type": "ResidentAuthorizationV3",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 71,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "protected": true,
+      "type": "ResidentStoreValueV3",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 56,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "protected": true,
+      "type": "ResidentStagesV3",
+      "visibility": "private"
+    },
+    {
+      "line": 24,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "protected": true,
+      "type": "ResidentOriginalStageOwnersV3",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 72,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "protected": true,
+      "type": "ClientOriginV3",
+      "visibility": "private"
+    },
+    {
+      "line": 77,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "protected": true,
+      "type": "ResidentExchangeV3",
+      "visibility": "private"
+    },
+    {
+      "line": 76,
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "protected": true,
+      "type": "AutomationEffectHostFile",
+      "visibility": "private"
+    },
+    {
+      "line": 105,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "protected": true,
+      "type": "OriginalCellQ24TaskLedgerStatusV1",
+      "visibility": "pub"
+    },
+    {
+      "line": 68,
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs",
+      "protected": true,
+      "type": "Readiness",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 68,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "protected": true,
+      "type": "Readiness",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 161,
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "protected": true,
+      "type": "Publication",
+      "visibility": "private"
+    },
+    {
+      "line": 23,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+      "protected": true,
+      "type": "OriginalCohort",
+      "visibility": "private"
+    },
+    {
+      "line": 30,
+      "path": "codex-rs/hepta-agentd/src/circuit_task_learning.rs",
+      "protected": true,
+      "type": "CircuitTaskLearningReadinessV1",
+      "visibility": "pub"
+    },
+    {
+      "line": 17,
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_command_evidence.rs",
+      "protected": true,
+      "type": "OriginalCommandEvidenceV1",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 13,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs",
+      "protected": true,
+      "type": "Observed",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 141,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+      "protected": true,
+      "type": "CommandResult",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 136,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+      "protected": true,
+      "type": "CommandResult",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 136,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+      "protected": true,
+      "type": "CommandResult",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 137,
+      "path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command_wire.rs",
+      "protected": true,
+      "type": "CommandResult",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 136,
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_wire.rs",
+      "protected": true,
+      "type": "CommandResult",
+      "visibility": "pub(super)"
+    },
+    {
+      "line": 32,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs",
+      "protected": false,
+      "type": "OriginalCellQ24EvaluationTimingV1",
+      "visibility": "pub"
+    },
+    {
+      "line": 48,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "protected": true,
+      "type": "OriginalCellQ24SourceInputsV1",
+      "visibility": "pub"
+    },
+    {
+      "line": 164,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "protected": true,
+      "type": "OriginalCellQ24TrainingInputsV1",
+      "visibility": "pub"
+    },
+    {
+      "line": 81,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs",
+      "protected": true,
+      "type": "OriginalLearningReceiptSourceV1",
+      "visibility": "private"
+    },
+    {
+      "line": 21,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_source.rs",
+      "protected": true,
+      "type": "OriginalCellEvaluationTrainerV1",
+      "visibility": "pub"
+    },
+    {
+      "line": 61,
+      "path": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+      "protected": true,
+      "type": "PreparedCTask",
+      "visibility": "private"
+    },
+    {
+      "line": 17,
+      "path": "codex-rs/hepta-agentd/src/memory_serving_qualification.rs",
+      "protected": false,
+      "type": "Decision",
+      "visibility": "private"
+    }
+  ],
+  "donor": "24abd04c825cb0d5d0ce27b52ac5008eda13dde4",
+  "explicit_sites": {
+    "circuit_candidate_learning_read_service.rs": {
+      "base": "0c69a62f13abe729a801950d4bd158cd9196bcbc",
+      "explicit_variant_sites": [
+        191,
+        237
+      ]
+    },
+    "circuit_feature_current.rs": {
+      "base": "cf84a80c1d0eedbf8fee6d9dffccd5d4730b87a3",
+      "explicit_variant_sites": [
+        270,
+        297
+      ]
+    },
+    "circuit_feature_current_control.rs": {
+      "base": "4ed1174b620f8bc80b98f2746b96188053b4be0b",
+      "explicit_variant_sites": [
+        27
+      ]
+    },
+    "circuit_feature_current_learning.rs": {
+      "base": "300080cc47dea3f0f3af81aeba1c6d4e7fc6c1e6",
+      "explicit_variant_sites": [
+        18,
+        80
+      ]
+    },
+    "circuit_feature_historical_source.rs": {
+      "base": "7056fed0c25c6f4c9306b7eeb15d49675e82dd0c",
+      "explicit_variant_sites": [
+        79,
+        142,
+        182,
+        223
+      ]
+    },
+    "circuit_feature_learning_source.rs": {
+      "base": "7ad27a6aceb45cb70101e8ba6031905789dd4e36",
+      "explicit_variant_sites": [
+        37,
+        111,
+        164,
+        191
+      ]
+    },
+    "circuit_learning_model_binding.rs": {
+      "base": "dbc715425d0705ccab600c76d481dbcd290f47a4",
+      "explicit_variant_sites": [
+        101
+      ]
+    },
+    "circuit_learning_read_service.rs": {
+      "base": "d2f5062ce271600fdd20ec87998a6eb40e9693b4",
+      "explicit_variant_sites": [
+        205
+      ]
+    },
+    "circuit_learning_retained_binding.rs": {
+      "base": "264a24cbbc8efe73967503bc3261acf03f93ac34",
+      "explicit_variant_sites": [
+        106
+      ]
+    },
+    "circuit_model_version_task.rs": {
+      "base": "a746c147e7a2a09beed6d69c229f775ee037e755",
+      "explicit_variant_sites": [
+        100,
+        170
+      ]
+    },
+    "circuit_retained_version_c_task.rs": {
+      "base": "629d650530d64c042687032e4f84d6720ec8ef8e",
+      "explicit_variant_sites": [
+        88,
+        155
+      ]
+    },
+    "circuit_retained_version_effect.rs": {
+      "base": "10e7f4e97a954901bd565c48a41bf1b959a0de6e",
+      "explicit_variant_sites": [
+        158
+      ]
+    }
+  },
+  "git_blobs": [
+    "cf84a80c1d0eedbf8fee6d9dffccd5d4730b87a3",
+    "2bff88a5537cfd8776ef96c4d340f698041c8a66",
+    "3b98a5d15c8b09fd1185a4f27941376e15ba7a3f"
+  ],
+  "product": "6d65e2ee95f37d1f4983e3ba7393ed8ac2163c80",
+  "unchanged_production_and_fixture_blobs": {
+    "cell_q24_retained_learning_source_tests.rs": "ff38e1ce9cb68d15c1d81616f2c2cf19d7f9bbdd",
+    "circuit_feature_learning_receipt_tests.rs": "5133327c3c43193eafd7685a3a0594fe136e4472",
+    "circuit_q24_task_test_support.rs": "0343d1855a29a7673ed1de1cedbd4c78083c6834",
+    "neuron_generation_initial_bootstrap.rs": "c808361ee7a476fe8304fefb6f4f16e7af379043",
+    "neuron_generation_update_bootstrap.rs": "4256c5b8a17c8e523b6438191c582883025e2b92"
+  }
+}

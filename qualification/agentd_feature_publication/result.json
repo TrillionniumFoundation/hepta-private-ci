@@ -1,0 +1,41 @@
+{
+  "candidate": "6d65e2ee95f37d1f4983e3ba7393ed8ac2163c80",
+  "candidate_native_sha256": "401ad6b68a1b031772961afd0b3eb9d9310d9d9e19d959575a7cf1d202ea97d1",
+  "compiler_exit": 101,
+  "guard": {
+    "boundary": 1652,
+    "protected": 826,
+    "suites": {
+      "test_original_learning_owner_source_closure": 15,
+      "test_successor_historical_client_source_closure": 12
+    }
+  },
+  "large_enum": {
+    "base": 35,
+    "candidate": 34
+  },
+  "native_artifact_sha256": "39cc832c2b9ca5019aa0ebf8560ad98a49972d917c8d84dac5f3eb4316cffcfe",
+  "native_results": {
+    "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_reject_source_withdrawal_and_receipt_rollback": "ok",
+    "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_reject_wrong_key_role_and_expired_new_claim": "ok",
+    "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_require_actual_ordinary_c_and_reopen_original_bytes": "ok",
+    "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_binds_root_scope_and_consumer_without_relaxing_current_task_identity": "ok",
+    "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_refuses_other_database_and_stays_fenced_after_original_replacement": "ok",
+    "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_uses_original_outbox_after_current_advances_and_new_task_runs": "ok"
+  },
+  "native_test_count": 6,
+  "other_changes_to_diagnostics": 0,
+  "removed": [
+    [
+      "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      161,
+      1,
+      "large size difference between variants"
+    ]
+  ],
+  "strict_artifact_sha256": "cd63f4134fb365e0e2bd9523aaee7e9126f219903ad50b0c1b0b145a0a71722c",
+  "strict_count": {
+    "base": 115,
+    "candidate": 114
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "musl_archive": "1bd9f7d8550cab47ba77089de6362a32bf99191ddc0bff8d970c1f5fd9ebe563",
+  "musl_source": "ae404b2935fa0b7ea39bf09ef1016917a507f6d5",
+  "musl_tests": {
+    "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_reject_source_withdrawal_and_receipt_rollback": {
+      "member": "7016/test-attempt-logs-atskssrv/files/000002.log",
+      "sha256": "f5d3e01d3a0b5afba10289280ee5c88e0183a7d4ce196d8d2e053ce1500fbadc",
+      "status": "ok"
+    },
+    "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_reject_wrong_key_role_and_expired_new_claim": {
+      "member": "7016/test-attempt-logs-atskssrv/files/000001.log",
+      "sha256": "d41e060b4451a61cac4af382a61e35b6154fcdd1ed7c146aa44e2143929b4c4e",
+      "status": "ok"
+    },
+    "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_require_actual_ordinary_c_and_reopen_original_bytes": {
+      "member": "7016/test-attempt-logs-atskssrv/files/000004.log",
+      "sha256": "070f4ac88e0c198df12ff4bee8e5a361b2ce0afe26d457dd36c05f7f1b3bc468",
+      "status": "ok"
+    },
+    "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_binds_root_scope_and_consumer_without_relaxing_current_task_identity": {
+      "member": "7016/test-attempt-logs-atskssrv/files/000001.log",
+      "sha256": "d41e060b4451a61cac4af382a61e35b6154fcdd1ed7c146aa44e2143929b4c4e",
+      "status": "ok"
+    },
+    "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_refuses_other_database_and_stays_fenced_after_original_replacement": {
+      "member": "7016/test-attempt-logs-atskssrv/files/000004.log",
+      "sha256": "070f4ac88e0c198df12ff4bee8e5a361b2ce0afe26d457dd36c05f7f1b3bc468",
+      "status": "ok"
+    },
+    "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_uses_original_outbox_after_current_advances_and_new_task_runs": {
+      "member": "7016/test-attempt-logs-atskssrv/files/000002.log",
+      "sha256": "f5d3e01d3a0b5afba10289280ee5c88e0183a7d4ce196d8d2e053ce1500fbadc",
+      "status": "ok"
+    }
+  },
+  "musl_tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c",
+  "startup_archive": "2946327047596b49f097857dcd548fc26a35e7c18c597e80216dffdf39a334aa",
+  "startup_log": "6d889d4c247a49679b73a69c4149d557d05c807c9611ccda7bbcd7fbb33c1a7b",
+  "startup_tests": {
+    "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_reject_source_withdrawal_and_receipt_rollback": "PASS",
+    "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_reject_wrong_key_role_and_expired_new_claim": "PASS",
+    "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::feature_receipts_require_actual_ordinary_c_and_reopen_original_bytes": "PASS",
+    "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_binds_root_scope_and_consumer_without_relaxing_current_task_identity": "PASS",
+    "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_refuses_other_database_and_stays_fenced_after_original_replacement": "PASS",
+    "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_uses_original_outbox_after_current_advances_and_new_task_runs": "PASS"
+  },
+  "strict": {
+    "strict-137573328612.log": {
+      "count": 115,
+      "large_variants": 35,
+      "sha256": "c9dae04cfb22965baedb6a9228199216378d47667f1ad5a6510971dc56702da7"
+    },
+    "strict-137573328628.log": {
+      "count": 115,
+      "large_variants": 35,
+      "sha256": "1e6335c4542ccd208ecba68ae44560db6368262646ad6ce0feb792be9f21a1cc"
+    }
+  }
+}
