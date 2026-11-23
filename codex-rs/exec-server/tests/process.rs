@@ -722,12 +722,22 @@ async fn exec_server_resumes_detached_session_without_killing_processes() -> any
         .await?;
     let response = server
         .wait_for_event(|event| {
+            if let JSONRPCMessage::Error(reply) = event
+                && reply.id == initialize_id
+            {
+                eprintln!(
+                    "WRESUME_FULL_SHARD wait=initialize_id rpc_code={} active_owner={}",
+                    reply.error.code,
+                    reply.error.message.contains("is already attached to another connection"),
+                );
+            }
             matches!(
                 event,
                 JSONRPCMessage::Response(JSONRPCResponse { id, .. }) if id == &initialize_id
             )
         })
-        .await?;
+        .await
+        .map_err(|error| error.context("WRESUME_FULL_SHARD wait=initialize_id"))?;
     let JSONRPCMessage::Response(JSONRPCResponse { result, .. }) = response else {
         panic!("expected initialize response");
     };
@@ -753,12 +763,22 @@ async fn exec_server_resumes_detached_session_without_killing_processes() -> any
         .await?;
     let _ = server
         .wait_for_event(|event| {
+            if let JSONRPCMessage::Error(reply) = event
+                && reply.id == process_start_id
+            {
+                eprintln!(
+                    "WRESUME_FULL_SHARD wait=process_start_id rpc_code={} active_owner={}",
+                    reply.error.code,
+                    reply.error.message.contains("is already attached to another connection"),
+                );
+            }
             matches!(
                 event,
                 JSONRPCMessage::Response(JSONRPCResponse { id, .. }) if id == &process_start_id
             )
         })
-        .await?;
+        .await
+        .map_err(|error| error.context("WRESUME_FULL_SHARD wait=process_start_id"))?;
 
     server.disconnect_websocket().await?;
     server.reconnect_websocket().await?;
@@ -775,12 +795,22 @@ async fn exec_server_resumes_detached_session_without_killing_processes() -> any
         .await?;
     let response = server
         .wait_for_event(|event| {
+            if let JSONRPCMessage::Error(reply) = event
+                && reply.id == resume_initialize_id
+            {
+                eprintln!(
+                    "WRESUME_FULL_SHARD wait=resume_initialize_id rpc_code={} active_owner={}",
+                    reply.error.code,
+                    reply.error.message.contains("is already attached to another connection"),
+                );
+            }
             matches!(
                 event,
                 JSONRPCMessage::Response(JSONRPCResponse { id, .. }) if id == &resume_initialize_id
             )
         })
-        .await?;
+        .await
+        .map_err(|error| error.context("WRESUME_FULL_SHARD wait=resume_initialize_id"))?;
     let JSONRPCMessage::Response(JSONRPCResponse { result, .. }) = response else {
         panic!("expected resume initialize response");
     };
@@ -804,12 +834,22 @@ async fn exec_server_resumes_detached_session_without_killing_processes() -> any
         .await?;
     let response = server
         .wait_for_event(|event| {
+            if let JSONRPCMessage::Error(reply) = event
+                && reply.id == process_read_id
+            {
+                eprintln!(
+                    "WRESUME_FULL_SHARD wait=process_read_id rpc_code={} active_owner={}",
+                    reply.error.code,
+                    reply.error.message.contains("is already attached to another connection"),
+                );
+            }
             matches!(
                 event,
                 JSONRPCMessage::Response(JSONRPCResponse { id, .. }) if id == &process_read_id
             )
         })
-        .await?;
+        .await
+        .map_err(|error| error.context("WRESUME_FULL_SHARD wait=process_read_id"))?;
     let JSONRPCMessage::Response(JSONRPCResponse { result, .. }) = response else {
         panic!("expected process/read response");
     };
@@ -828,12 +868,22 @@ async fn exec_server_resumes_detached_session_without_killing_processes() -> any
         .await?;
     let response = server
         .wait_for_event(|event| {
+            if let JSONRPCMessage::Error(reply) = event
+                && reply.id == terminate_id
+            {
+                eprintln!(
+                    "WRESUME_FULL_SHARD wait=terminate_id rpc_code={} active_owner={}",
+                    reply.error.code,
+                    reply.error.message.contains("is already attached to another connection"),
+                );
+            }
             matches!(
                 event,
                 JSONRPCMessage::Response(JSONRPCResponse { id, .. }) if id == &terminate_id
             )
         })
-        .await?;
+        .await
+        .map_err(|error| error.context("WRESUME_FULL_SHARD wait=terminate_id"))?;
     let JSONRPCMessage::Response(JSONRPCResponse { result, .. }) = response else {
         panic!("expected process/terminate response");
     };

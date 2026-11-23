@@ -1,0 +1,135 @@
+name: Windows full shard four detached-session observation
+on:
+  push:
+    branches: ["diagnostic/windows-resume-full-shard4-20261123"]
+
+permissions:
+  contents: read
+
+jobs:
+  test-windows-shard:
+    # Split the native Windows Bazel test leg across separate Windows hosts.
+    # Build actions and host-loaded proc macros use the same MSVC ABI as the
+    # test binaries, avoiding cross-ABI native archive linkage.
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 4
+    runs-on: windows-latest
+    name: Bazel test on windows-latest for x86_64-pc-windows-msvc shard ${{ matrix.shard }}/4
+    environment:
+      name: bazel
+      deployment: false
+
+    steps:
+      - name: Enable Windows long paths before checkout
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Test BuildBuddy Bazel wrapper
+        if: matrix.shard == 1
+        shell: pwsh
+        run: python -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          # Reuse the former monolithic Windows test cache for restores. Do
+          # not save it from every shard below; duplicate uploads would sit on
+          # the PR-blocking critical path after the useful test work is done.
+          cache-scope: bazel-test
+
+      - name: Smoke test the native MSVC header parser
+        if: matrix.shard == 1
+        shell: pwsh
+        run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
+
+      - name: bazel test shard
+        env:
+          BAZEL_TEST_SHARD: ${{ matrix.shard }}
+          BAZEL_TEST_SHARD_COUNT: 4
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          bazel_test_query='tests(//...) except tests(//third_party/v8:all) except attr(tags, "manual", tests(//...))'
+          mapfile -t bazel_targets < <(
+            ./.github/scripts/run-bazel-query-ci.sh --output=label -- "${bazel_test_query}" \
+              | LC_ALL=C sort
+          )
+
+          selected_targets=()
+          for bazel_target in "${bazel_targets[@]}"; do
+            target_bucket="$(
+              printf '%s\n' "${bazel_target}" \
+                | cksum \
+                | awk -v shard_count="${BAZEL_TEST_SHARD_COUNT}" '{ print ($1 % shard_count) + 1 }'
+            )"
+            if [[ "${target_bucket}" == "${BAZEL_TEST_SHARD}" ]]; then
+              selected_targets+=("${bazel_target}")
+            fi
+          done
+
+          if [[ ${#selected_targets[@]} -eq 0 ]]; then
+            echo "No Bazel test targets selected for Windows shard ${BAZEL_TEST_SHARD}/${BAZEL_TEST_SHARD_COUNT}." >&2
+            exit 1
+          fi
+
+          echo "Selected ${#selected_targets[@]} of ${#bazel_targets[@]} Bazel test targets for Windows shard ${BAZEL_TEST_SHARD}/${BAZEL_TEST_SHARD_COUNT}."
+
+          bazel_test_args=(
+            test
+            --platforms=//:windows_x86_64_msvc
+            --skip_incompatible_explicit_targets
+            --test_tag_filters=-argument-comment-lint
+            --test_verbose_timeout_warnings
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA}
+            --build_metadata=TAG_windows_test_shard=${BAZEL_TEST_SHARD}
+          )
+
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            "${bazel_test_args[@]}" \
+            -- \
+            "${selected_targets[@]}"
+
+      # A large failed test can exceed Bazel's 1 MiB console limit. Keep
+      # source test.log files for review: the compact execution trace does
+      # not preserve their assertion/snapshot stdout (see shard-1 on #2734).
+      # Diagnostic-only: no test selection, command, or gate is changed.
+      - name: Upload raw Windows Bazel test logs on failure
+        if: failure() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-testlogs-windows-shard-${{ matrix.shard }}-attempt-${{ github.run_attempt }}
+          path: ${{ env.BAZEL_OUTPUT_BASE }}/execroot/_main/bazel-out/**/testlogs/**/test.log
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload Bazel execution logs
+        if: always() && !cancelled()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-${{ matrix.shard }}
+          path: ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: ignore
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
