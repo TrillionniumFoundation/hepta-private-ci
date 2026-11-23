@@ -31,8 +31,38 @@ def bindings():
                                       Path(metrics.__file__), Path(frozen.__file__))}
 
 
+def verify_registry(root):
+    registry = read(root/'data_freeze.json')
+    previous = HERE.parent/'hcsn_intervention_value/media/sources.json'
+    guards = [(root/'sources.json',registry['sources_sha256']),
+              (previous,registry['previous_sources_sha256']),
+              (HERE/'recording_plan.json',registry['plan_sha256']),
+              (HERE/'evidence/data_freeze.json',digest(root/'data_freeze.json'))]
+    guards += [(root/'roster'/(name+'.json'),signature)
+               for name,signature in registry['rosters_sha256'].items()]
+    if any(digest(f)!=h for f,h in guards):
+        raise ValueError('unregistered media')
+    original, new = read(previous), read(root/'sources.json')
+    for key in ('pageid','sha1','uploader','group','producer'):
+        normalize=lambda rows: [str(r[key]).strip().casefold() for r in rows]
+        fresh=normalize(new)
+        if len(fresh)!=len(set(fresh)) or set(fresh)&set(normalize(original)):
+            raise ValueError('shared recording or production identity: '+key)
+    return registry
+
+
 def panel(root, old, name):
     rawfile, camera = root/'features'/(name+'.npz'), root/'semantic'/(name+'.npz')
+    registry = verify_registry(root)
+    rec = read(root/'receipts'/(name+'.json'))
+    camera_rec = read(root/'semantic'/(name+'.receipt.json'))
+    rule=read(HERE/'protocol.json')['frontend']
+    if (rec['sha256']!=digest(rawfile) or rec['frozen_source_sha256']!=registry['sources_sha256']
+            or rec['roster_sha256']!=registry['rosters_sha256'][name]
+            or camera_rec['weight_sha256']!=rule['camera_sha256']
+            or camera_rec['output_sha256']!=digest(camera)
+            or camera_rec['roster_sha256']!=rec['roster_sha256']):
+        raise ValueError('unbound features, camera weights or clocks')
     raw = frozen.load_raw(rawfile)
     if set(raw['split'].astype(str)) != {name}:
         raise ValueError('incorrect split label')
@@ -67,16 +97,22 @@ def features(d):
 def fit_all(train, dev):
     x, z = features(train), features(dev)
     y, groups = selector.target(train), train['group']
-    fits, pred, cv = {}, {}, {}
+    fits, pred, cv, timing = {}, {}, {}, {}
     for m in selector.MODELS:
+        start, cpu = time.perf_counter(), time.process_time()
         fits[m] = selector.fit(m,x,y,groups)
         pred[m] = selector.predict(m,fits[m],z)
+        full_wall = time.perf_counter()-start
         cv[m] = np.empty(len(y))
         for g in np.unique(groups):
             mask = groups == g
             fold = selector.fit(m,x[~mask],y[~mask],groups[~mask])
             cv[m][mask] = selector.predict(m,fold,x[mask])
-    return fits, pred, cv
+        timing[m] = {'full_fit_and_dev_predict_seconds':full_wall,
+                     'with_held_source_refits_wall_seconds':time.perf_counter()-start,
+                     'with_held_source_refits_cpu_seconds':time.process_time()-cpu,
+                     'held_source_refits':len(np.unique(groups))}
+    return fits, pred, cv, timing
 
 
 def scores(d, pred):
@@ -98,7 +134,8 @@ def fit(args):
     train, tb = panel(args.root,args.old,'train')
     dev, db = panel(args.root,args.old,'dev')
     exclude(ids(train),ids(dev))
-    models, pred, cv = fit_all(train,dev)
+    models, pred, cv, timing = fit_all(train,dev)
+    write(d/'fit_cost.json',timing)
     validation, training = scores(dev,pred), scores(train,cv)
     def rank(name):
         return (round(validation[name]['utility'],12),round(validation[name]['worst_delta_free'],12),
@@ -109,7 +146,7 @@ def fit(args):
     write(d/'selection.json',{'primary':primary,'active':active,'rank':ordered,'dev':validation,'train_out_of_source':training})
     write(d/'train_dev_traces.json',{'dev':traces(dev,pred),'train_out_of_source':traces(train,cv)})
     write(d/'seal.json',{'source':bindings(),'inputs':{'train':tb,'dev':db},
-          'identities':{'train':ids(train),'dev':ids(dev)},'files':{n:digest(d/n) for n in ['fit.json','selection.json','train_dev_traces.json']},
+          'identities':{'train':ids(train),'dev':ids(dev)},'files':{n:digest(d/n) for n in ['fit.json','selection.json','train_dev_traces.json','fit_cost.json']},
           'heldout_scored':False,'wall_seconds':time.perf_counter()-t})
     print(primary,active)
 

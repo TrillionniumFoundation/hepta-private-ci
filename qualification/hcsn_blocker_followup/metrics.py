@@ -30,6 +30,8 @@ def evaluate(data, read, predicted=None):
     pvalues = [sign_p(q) for q in contrasts]
     delta = [float(np.mean(v)) for v in contrasts]
     res = {'utility': float(w@value), 'r1': float(w@hit), 'buy': int(read.sum()),
+           'buy_rate':float(w@read),
+           'break_even_price_vs_free':float(w@(read*(cam.astype(float)-free.astype(float)))/(w@read)) if read.any() else None,
            'n': len(y), 'sources': perf, 'delta_free': delta[0], 'delta_paid': delta[1],
            'worst_delta_free': min(contrasts[0]), 'one_sided_sign_p': pvalues,
            'adopt': bool(0 < read.sum() < len(y) and min(delta) >= .03-1.e-12
