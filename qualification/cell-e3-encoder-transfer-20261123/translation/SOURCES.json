@@ -1,0 +1,91 @@
+{
+  "corpus": {
+    "archive_sha256": "49fa80207b09fcc0eca8253ed13303b3a0ae0f16081af862601c73ac76f2cba6",
+    "license": "CC-BY-SA-4.0",
+    "name": "FLORES-101",
+    "source_files": {
+      "deu.dev": "12fac774c6f79d966774a1829648a6e107700662e9e7b9e31ad08541382b97aa",
+      "deu.devtest": "9a1bfa90d153fedb7ff80047f4a63d493998888eddb056e8a28e24592f26e5f2",
+      "eng.dev": "51a25f527fd81f428b6933d85a2f5e5544af92aa82042c7fbf0c4120327fba0a",
+      "eng.devtest": "612e9fbe87997617c0fa8fa8929654a4f49b728d96738112c2b86ef6a1d78d88",
+      "fra.dev": "7c1e1043b9d8cc6cb6fd4388ce068060f36518fd3597357a381cfdbe8ce5ab00",
+      "fra.devtest": "82f5b000db419ef9254eea7857cce82943b361090942f17ed696e3dce2944f42"
+    },
+    "upstream": "https://github.com/facebookresearch/flores/tree/main/flores101",
+    "url": "https://dl.fbaipublicfiles.com/flores101/dataset/flores101_dataset.tar.gz"
+  },
+  "teachers": {
+    "de": {
+      "files": {
+        "config.json": {
+          "blob": "0a49d3f4024d5ea51560d51f29d75722d794fb16",
+          "lfs_sha256": null
+        },
+        "generation_config.json": {
+          "blob": "3d05a5bad924f2121cf5a006b36dfda02970289b",
+          "lfs_sha256": null
+        },
+        "pytorch_model.bin": {
+          "blob": "a30060b112529b126b8781ec8277c5c1dee064a2",
+          "lfs_sha256": "da068344b1b0c20e6d4a8f77f48e06646b90d679029006b18579e68977206bdd"
+        },
+        "source.spm": {
+          "blob": "e73d58f99c702eb1746e3dc55bc76255d7aa4a94",
+          "lfs_sha256": null
+        },
+        "target.spm": {
+          "blob": "9dd0d88081be8d75fbc029762329cc11bfad07b9",
+          "lfs_sha256": null
+        },
+        "tokenizer_config.json": {
+          "blob": "c1fe32f77a961c887ae8266fbd92f4f583fe309a",
+          "lfs_sha256": null
+        },
+        "vocab.json": {
+          "blob": "0da41bcf74fa9a6af4855c7350e27819796d9ca9",
+          "lfs_sha256": null
+        }
+      },
+      "id": "Helsinki-NLP/opus-mt-en-de",
+      "license": "cc-by-4.0",
+      "revision": "6183067f769a302e3861815543b9f312c71b0ca4",
+      "weight": "pytorch_model.bin"
+    },
+    "fr": {
+      "files": {
+        "config.json": {
+          "blob": "1ca77a4a9305ea071d96dd12dbe7c69c3a224f8e",
+          "lfs_sha256": null
+        },
+        "generation_config.json": {
+          "blob": "a76623f9e228ce241586c6dc0ede54b9674940a6",
+          "lfs_sha256": null
+        },
+        "pytorch_model.bin": {
+          "blob": "396bf4eb15e01fa5193edcf1e0af5eed70032954",
+          "lfs_sha256": "cc1de10b49342ad2f33e06bc4474ddd6eaca278474903c4a8636ce15680d64de"
+        },
+        "source.spm": {
+          "blob": "5b989d2ad3cc6596bef819b2ad755f3e06377476",
+          "lfs_sha256": null
+        },
+        "target.spm": {
+          "blob": "e95b99a0e1a115d0f27eb051c7afc5a2859f1630",
+          "lfs_sha256": null
+        },
+        "tokenizer_config.json": {
+          "blob": "599f1c74f7e68d1351c801ef3557a03fd846d171",
+          "lfs_sha256": null
+        },
+        "vocab.json": {
+          "blob": "f12d2f5f9cddfc4b05dee175269d98cab8274c12",
+          "lfs_sha256": null
+        }
+      },
+      "id": "Helsinki-NLP/opus-mt-en-fr",
+      "license": "apache-2.0",
+      "revision": "dd7f6540a7a48a7f4db59e5c0b9c42c8eea67f18",
+      "weight": "pytorch_model.bin"
+    }
+  }
+}
