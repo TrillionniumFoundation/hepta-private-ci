@@ -30,7 +30,7 @@ impl Inner {
         #[cfg(any(unix, windows))]
         {
             let mut state = state;
-            if self.store.revalidate_owner().is_err() {
+            if crate::q24_owner_watch!("finaluse.store_revalidate", self.store.revalidate_owner(), |q24_err: &crate::FinalUseError| match q24_err {crate::FinalUseError::InvalidGrant=>"InvalidGrant",crate::FinalUseError::InvalidTrust=>"InvalidTrust",crate::FinalUseError::AntiRollbackViolation=>"AntiRollbackViolation",crate::FinalUseError::InvalidSignature=>"InvalidSignature",crate::FinalUseError::BindingMismatch=>"BindingMismatch",crate::FinalUseError::EpochMismatch=>"EpochMismatch",crate::FinalUseError::StaleRevocationHead=>"StaleRevocationHead",crate::FinalUseError::Revoked=>"Revoked",crate::FinalUseError::NotYetValid=>"NotYetValid",crate::FinalUseError::Expired=>"Expired",crate::FinalUseError::AlreadyClaimed=>"AlreadyClaimed",crate::FinalUseError::CapacityExceeded=>"CapacityExceeded",crate::FinalUseError::DispatchInProgress=>"DispatchInProgress",crate::FinalUseError::Unavailable=>"Unavailable",crate::FinalUseError::UnsafeStateDirectory=>"UnsafeStateDirectory",crate::FinalUseError::StateLocked=>"StateLocked", _=>"other_category"}).is_err() {
                 state.failed = true;
                 return Err(FinalUseError::Unavailable);
             }
@@ -46,9 +46,9 @@ impl Inner {
         &self,
         state: MutexGuard<'state, State>,
     ) -> Result<MutexGuard<'state, State>, FinalUseError> {
-        let mut state = self.ensure_live_state(state)?;
+        let mut state = crate::q24_owner_watch!("finaluse.live_state", self.ensure_live_state(state), |q24_err: &crate::FinalUseError| match q24_err {crate::FinalUseError::InvalidGrant=>"InvalidGrant",crate::FinalUseError::InvalidTrust=>"InvalidTrust",crate::FinalUseError::AntiRollbackViolation=>"AntiRollbackViolation",crate::FinalUseError::InvalidSignature=>"InvalidSignature",crate::FinalUseError::BindingMismatch=>"BindingMismatch",crate::FinalUseError::EpochMismatch=>"EpochMismatch",crate::FinalUseError::StaleRevocationHead=>"StaleRevocationHead",crate::FinalUseError::Revoked=>"Revoked",crate::FinalUseError::NotYetValid=>"NotYetValid",crate::FinalUseError::Expired=>"Expired",crate::FinalUseError::AlreadyClaimed=>"AlreadyClaimed",crate::FinalUseError::CapacityExceeded=>"CapacityExceeded",crate::FinalUseError::DispatchInProgress=>"DispatchInProgress",crate::FinalUseError::Unavailable=>"Unavailable",crate::FinalUseError::UnsafeStateDirectory=>"UnsafeStateDirectory",crate::FinalUseError::StateLocked=>"StateLocked", _=>"other_category"})?;
         if let Some(frontier_store) = &self.frontier_store {
-            let trusted = match frontier_store.load(&self.signer_id) {
+            let trusted = match crate::q24_owner_watch!("finaluse.frontier_load", frontier_store.load(&self.signer_id), |q24_err: &crate::AuthorityTrustError| match q24_err {crate::AuthorityTrustError::Invalid=>"Invalid",crate::AuthorityTrustError::Conflict=>"Conflict",crate::AuthorityTrustError::Unavailable=>"Unavailable", _=>"other_category"}) {
                 Ok(trusted) => trusted,
                 Err(error) => {
                     state.failed = true;

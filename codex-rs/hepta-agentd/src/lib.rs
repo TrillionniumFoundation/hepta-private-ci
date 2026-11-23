@@ -2084,3 +2084,16 @@ pub use shared_memory_training::MemoryServingHandleV1;
 pub use shared_memory_training::MemoryServingOwnerHandlesV1;
 pub use shared_memory_training::MemoryServingQualificationV1;
 pub use shared_memory_training::SelectedMemoryServiceV1;
+
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! q24_owner_watch {
+    ($name:literal,$value:expr) => { $crate::q24_owner_watch!($name,$value,|_| "error") };
+    ($name:literal,$value:expr,$class:expr) => {{
+        #[cfg(all(test,target_os="linux"))] let mut q24_meter = codex_hepta_contracts::q24_clock_observer::owner::Meter::start($name);
+        let q24_result = $value;
+        #[cfg(all(test,target_os="linux"))] q24_meter.finish(match &q24_result { Ok(_) => "ok", Err(q24_type) => ($class)(q24_type) });
+        q24_result
+    }};
+}

@@ -43,15 +43,15 @@ impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
         identity: &AgentdIdentity,
         input: &super::CircuitTaskSourceInputV1,
     ) -> Result<(), Error> {
-        let mut owner = self.original.0.try_lock().map_err(|_| Error::Unavailable)?;
-        owner.require_current()?;
+        let mut owner = crate::q24_owner_watch!("source.try_lock", self.original.0.try_lock(), |e| match e { std::sync::TryLockError::WouldBlock=>"would_block",std::sync::TryLockError::Poisoned(_)=>"poisoned"}).map_err(|_| Error::Unavailable)?;
+        crate::q24_owner_watch!("source.owner_current", owner.require_current())?;
         if identity != &owner.identity
             || owner.sources.get(input.scope.run_id.as_str()) != Some(input)
         {
             return Err(Error::InvalidBinding);
         }
-        owner.require_active(input.scope.run_id.as_str())?;
-        owner.require_current()
+        crate::q24_owner_watch!("source.active", owner.require_active(input.scope.run_id.as_str()))?;
+        crate::q24_owner_watch!("source.owner_current", owner.require_current())
     }
 
     /// Read-only exact protocol check for the separately frozen on-policy

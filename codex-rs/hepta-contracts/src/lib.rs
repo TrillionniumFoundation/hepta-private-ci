@@ -383,3 +383,16 @@ pub use codex_utils_windows_private_state::stage::replace_synced_state_stage;
 #[cfg(all(test, windows))]
 #[path = "windows_state_stage_tests.rs"]
 mod windows_state_stage_tests;
+
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! q24_owner_watch {
+    ($name:literal,$value:expr) => { $crate::q24_owner_watch!($name,$value,|_| "error") };
+    ($name:literal,$value:expr,$class:expr) => {{
+        #[cfg(all(hepta_q24_deadline_observer,target_os="linux"))] let mut q24_meter = $crate::q24_clock_observer::owner::Meter::start($name);
+        let q24_result = $value;
+        #[cfg(all(hepta_q24_deadline_observer,target_os="linux"))] q24_meter.finish(match &q24_result { Ok(_) => "ok", Err(q24_type) => ($class)(q24_type) });
+        q24_result
+    }};
+}

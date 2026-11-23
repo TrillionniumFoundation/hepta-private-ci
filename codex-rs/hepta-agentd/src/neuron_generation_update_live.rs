@@ -218,33 +218,33 @@ impl LiveGenerationCurrent {
         // Lock order is artifact owner -> selected payload -> FinalUse owner.
         // The update coordinator temporarily rebinds its terminal old journal
         // to the concrete Control floor before it holds this artifact lock.
-        let artifacts = self
+        let artifacts = crate::q24_owner_watch!("live.artifact_mutex", self
             .authorities
             .artifacts
-            .lock_initial()
+            .lock_initial(), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        let mut selected = self
+        let mut selected = crate::q24_owner_watch!("live.selected_mutex", self
             .selected
-            .lock()
+            .lock())
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        artifacts
+        crate::q24_owner_watch!("live.revalidate_and_clock", artifacts
             .readback()
             .revalidate_owner(
                 &self.current,
                 &mut selected,
-                self.authorities
+                crate::q24_owner_watch!("live.clock", self.authorities
                     .clock
-                    .now_unix_ms()
+                    .now_unix_ms())
                     .map_err(|_| CellGenerationErrorV2::Unavailable)?,
-            )
+            ), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        self.authorities
+        crate::q24_owner_watch!("live.final_use", self.authorities
             .final_use
             .verify_retained_use(
                 self.publication.signed_grant(),
                 &self.expected,
                 self.publication.witness(),
-            )
+            ), |q24_err: &codex_hepta_contracts::FinalUseError| match q24_err {codex_hepta_contracts::FinalUseError::InvalidGrant=>"InvalidGrant",codex_hepta_contracts::FinalUseError::InvalidTrust=>"InvalidTrust",codex_hepta_contracts::FinalUseError::AntiRollbackViolation=>"AntiRollbackViolation",codex_hepta_contracts::FinalUseError::InvalidSignature=>"InvalidSignature",codex_hepta_contracts::FinalUseError::BindingMismatch=>"BindingMismatch",codex_hepta_contracts::FinalUseError::EpochMismatch=>"EpochMismatch",codex_hepta_contracts::FinalUseError::StaleRevocationHead=>"StaleRevocationHead",codex_hepta_contracts::FinalUseError::Revoked=>"Revoked",codex_hepta_contracts::FinalUseError::NotYetValid=>"NotYetValid",codex_hepta_contracts::FinalUseError::Expired=>"Expired",codex_hepta_contracts::FinalUseError::AlreadyClaimed=>"AlreadyClaimed",codex_hepta_contracts::FinalUseError::CapacityExceeded=>"CapacityExceeded",codex_hepta_contracts::FinalUseError::DispatchInProgress=>"DispatchInProgress",codex_hepta_contracts::FinalUseError::Unavailable=>"Unavailable",codex_hepta_contracts::FinalUseError::UnsafeStateDirectory=>"UnsafeStateDirectory",codex_hepta_contracts::FinalUseError::StateLocked=>"StateLocked", _=>"other_category"})
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         Ok(())
     }
@@ -266,10 +266,10 @@ impl CellGenerationCurrentV1 for LiveGenerationCurrent {
         if binding != self.publication.target() {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        self.current.check_current(binding)?;
-        self.check_live()?;
+        crate::q24_owner_watch!("live.control", self.current.check_current(binding), |q24_err: &codex_hepta_neuron::CellGenerationErrorV2| match q24_err {codex_hepta_neuron::CellGenerationErrorV2::Unavailable=>"Unavailable",codex_hepta_neuron::CellGenerationErrorV2::InvalidBinding=>"InvalidBinding",codex_hepta_neuron::CellGenerationErrorV2::Pending=>"Pending",codex_hepta_neuron::CellGenerationErrorV2::Capacity=>"Capacity", _=>"other_category"})?;
+        crate::q24_owner_watch!("live.authorities", self.check_live(), |q24_err: &codex_hepta_neuron::CellGenerationErrorV2| match q24_err {codex_hepta_neuron::CellGenerationErrorV2::Unavailable=>"Unavailable",codex_hepta_neuron::CellGenerationErrorV2::InvalidBinding=>"InvalidBinding",codex_hepta_neuron::CellGenerationErrorV2::Pending=>"Pending",codex_hepta_neuron::CellGenerationErrorV2::Capacity=>"Capacity", _=>"other_category"})?;
         // CURRENT/authority I/O cannot make an earlier Control sample fresh.
-        self.current.check_current(binding)
+        crate::q24_owner_watch!("live.control", self.current.check_current(binding), |q24_err: &codex_hepta_neuron::CellGenerationErrorV2| match q24_err {codex_hepta_neuron::CellGenerationErrorV2::Unavailable=>"Unavailable",codex_hepta_neuron::CellGenerationErrorV2::InvalidBinding=>"InvalidBinding",codex_hepta_neuron::CellGenerationErrorV2::Pending=>"Pending",codex_hepta_neuron::CellGenerationErrorV2::Capacity=>"Capacity", _=>"other_category"})
     }
 }
 

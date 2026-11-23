@@ -186,19 +186,19 @@ impl CurrentStore {
 
     pub(super) fn load(&self) -> Result<CurrentHead, AgentdError> {
         let head = match &self.store {
-            Store::Host(store) => store.load(&self.owner_id).map_err(invalid)?,
+            Store::Host(store) => crate::q24_owner_watch!("control.host_load", store.load(&self.owner_id), |q24_err: &codex_hepta_contracts::AuthorityTrustError| match q24_err {codex_hepta_contracts::AuthorityTrustError::Invalid=>"Invalid",codex_hepta_contracts::AuthorityTrustError::Conflict=>"Conflict",codex_hepta_contracts::AuthorityTrustError::Unavailable=>"Unavailable", _=>"other_category"}).map_err(invalid)?,
             #[cfg(target_os = "linux")]
-            Store::Root(original) => original.observe()?,
+            Store::Root(original) => crate::q24_owner_watch!("control.root_load", original.observe(), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?,
             #[cfg(target_os = "linux")]
-            Store::RootInitial(original) => original.observe_initial_current()?,
+            Store::RootInitial(original) => crate::q24_owner_watch!("control.root_initial_load", original.observe_initial_current(), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?,
             #[cfg(test)]
-            Store::Test { store } => store.load(&self.owner_id).map_err(invalid)?,
+            Store::Test { store } => crate::q24_owner_watch!("control.host_load", store.load(&self.owner_id), |q24_err: &codex_hepta_contracts::AuthorityTrustError| match q24_err {codex_hepta_contracts::AuthorityTrustError::Invalid=>"Invalid",codex_hepta_contracts::AuthorityTrustError::Conflict=>"Conflict",codex_hepta_contracts::AuthorityTrustError::Unavailable=>"Unavailable", _=>"other_category"}).map_err(invalid)?,
         };
         if head.schema_version != 1 || owner_id(head.current.scope())? != self.owner_id {
             return Err(invalid("generation current scope or schema differs"));
         }
-        head.current.digest().map_err(invalid)?;
-        head.validate_initial()?;
+        crate::q24_owner_watch!("control.head_digest", head.current.digest()).map_err(invalid)?;
+        crate::q24_owner_watch!("control.initial_validation", head.validate_initial(), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?;
         Ok(head)
     }
 

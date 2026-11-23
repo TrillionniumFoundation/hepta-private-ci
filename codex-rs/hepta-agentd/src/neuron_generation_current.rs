@@ -325,9 +325,9 @@ impl CellGenerationCurrentV1 for NeuronGenerationCurrentOwnerV1 {
         &self,
         binding: &CellGenerationOwnerBindingV1,
     ) -> Result<CellGenerationOpenModeV1, CellGenerationErrorV2> {
-        let head = self
+        let head = crate::q24_owner_watch!("control.store", self
             .store
-            .load()
+            .load(), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         if matches!(head.initial.as_ref(), Some(InitialState::Prepared(_))) {
             if &head.current == binding {

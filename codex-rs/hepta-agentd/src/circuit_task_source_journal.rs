@@ -136,13 +136,13 @@ impl<W: AnchorWitnessStore> SourceOwner<W> {
             return Err(Error::CommitUncertain);
         }
         let result = (|| {
-            let before = self.witness.current().map_err(|_| Error::CommitUncertain)?;
+            let before = crate::q24_owner_watch!("journal.witness", self.witness.current()).map_err(|_| Error::CommitUncertain)?;
             let journal: &mut LockedFileProductEvaluationExecutionStoreV1 = &mut self.journal;
-            let physical = journal
-                .read_current_anchor()
+            let physical = crate::q24_owner_watch!("journal.physical", journal
+                .read_current_anchor())
                 .map_err(|_| Error::CommitUncertain)?;
             let current = anchor(physical);
-            let after = self.witness.current().map_err(|_| Error::CommitUncertain)?;
+            let after = crate::q24_owner_watch!("journal.witness", self.witness.current()).map_err(|_| Error::CommitUncertain)?;
             if before != Some(current) || after != Some(current) {
                 return Err(Error::CommitUncertain);
             }

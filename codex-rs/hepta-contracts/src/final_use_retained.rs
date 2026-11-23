@@ -48,21 +48,21 @@ impl FinalUseAuthority {
         if self.0.frontier_store.is_none() {
             return Err(FinalUseError::InvalidTrust);
         }
-        let retained: RetainedUse<'_> = RetainedUse::authenticate(
+        let retained: RetainedUse<'_> = crate::q24_owner_watch!("finaluse.authenticate", RetainedUse::authenticate(
             &self.0.signer_id,
             &self.0.issuer_keys,
             self.0.profile,
             signed,
             expected,
             witness,
-        )?;
-        let state = self
+        ), |q24_err: &crate::FinalUseError| match q24_err {crate::FinalUseError::InvalidGrant=>"InvalidGrant",crate::FinalUseError::InvalidTrust=>"InvalidTrust",crate::FinalUseError::AntiRollbackViolation=>"AntiRollbackViolation",crate::FinalUseError::InvalidSignature=>"InvalidSignature",crate::FinalUseError::BindingMismatch=>"BindingMismatch",crate::FinalUseError::EpochMismatch=>"EpochMismatch",crate::FinalUseError::StaleRevocationHead=>"StaleRevocationHead",crate::FinalUseError::Revoked=>"Revoked",crate::FinalUseError::NotYetValid=>"NotYetValid",crate::FinalUseError::Expired=>"Expired",crate::FinalUseError::AlreadyClaimed=>"AlreadyClaimed",crate::FinalUseError::CapacityExceeded=>"CapacityExceeded",crate::FinalUseError::DispatchInProgress=>"DispatchInProgress",crate::FinalUseError::Unavailable=>"Unavailable",crate::FinalUseError::UnsafeStateDirectory=>"UnsafeStateDirectory",crate::FinalUseError::StateLocked=>"StateLocked", _=>"other_category"})?;
+        let state = crate::q24_owner_watch!("finaluse.state_mutex", self
             .0
             .state
-            .lock()
+            .lock())
             .map_err(|_| FinalUseError::Unavailable)?;
-        let state = self.0.ensure_current_effect_state(state)?;
-        retained.verify_state(&state)
+        let state = crate::q24_owner_watch!("finaluse.current_state", self.0.ensure_current_effect_state(state), |q24_err: &crate::FinalUseError| match q24_err {crate::FinalUseError::InvalidGrant=>"InvalidGrant",crate::FinalUseError::InvalidTrust=>"InvalidTrust",crate::FinalUseError::AntiRollbackViolation=>"AntiRollbackViolation",crate::FinalUseError::InvalidSignature=>"InvalidSignature",crate::FinalUseError::BindingMismatch=>"BindingMismatch",crate::FinalUseError::EpochMismatch=>"EpochMismatch",crate::FinalUseError::StaleRevocationHead=>"StaleRevocationHead",crate::FinalUseError::Revoked=>"Revoked",crate::FinalUseError::NotYetValid=>"NotYetValid",crate::FinalUseError::Expired=>"Expired",crate::FinalUseError::AlreadyClaimed=>"AlreadyClaimed",crate::FinalUseError::CapacityExceeded=>"CapacityExceeded",crate::FinalUseError::DispatchInProgress=>"DispatchInProgress",crate::FinalUseError::Unavailable=>"Unavailable",crate::FinalUseError::UnsafeStateDirectory=>"UnsafeStateDirectory",crate::FinalUseError::StateLocked=>"StateLocked", _=>"other_category"})?;
+        crate::q24_owner_watch!("finaluse.verify_state", retained.verify_state(&state), |q24_err: &crate::FinalUseError| match q24_err {crate::FinalUseError::InvalidGrant=>"InvalidGrant",crate::FinalUseError::InvalidTrust=>"InvalidTrust",crate::FinalUseError::AntiRollbackViolation=>"AntiRollbackViolation",crate::FinalUseError::InvalidSignature=>"InvalidSignature",crate::FinalUseError::BindingMismatch=>"BindingMismatch",crate::FinalUseError::EpochMismatch=>"EpochMismatch",crate::FinalUseError::StaleRevocationHead=>"StaleRevocationHead",crate::FinalUseError::Revoked=>"Revoked",crate::FinalUseError::NotYetValid=>"NotYetValid",crate::FinalUseError::Expired=>"Expired",crate::FinalUseError::AlreadyClaimed=>"AlreadyClaimed",crate::FinalUseError::CapacityExceeded=>"CapacityExceeded",crate::FinalUseError::DispatchInProgress=>"DispatchInProgress",crate::FinalUseError::Unavailable=>"Unavailable",crate::FinalUseError::UnsafeStateDirectory=>"UnsafeStateDirectory",crate::FinalUseError::StateLocked=>"StateLocked", _=>"other_category"})
     }
 }
 

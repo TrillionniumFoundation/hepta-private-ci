@@ -83,3 +83,30 @@ impl Drop for Span {
         }
     }
 }
+
+pub(crate) fn thread_cpu_ns()->Option<u64> {
+    let mut sample=libc::timespec{tv_sec:0,tv_nsec:0};
+    // SAFETY: Linux writes one live timespec for this calling thread.
+    if unsafe{libc::clock_gettime(libc::CLOCK_THREAD_CPUTIME_ID,&mut sample)}!=0 || sample.tv_sec<0 || !(0..1_000_000_000).contains(&sample.tv_nsec){return None}
+    (sample.tv_sec as u64).checked_mul(1_000_000_000)?.checked_add(sample.tv_nsec as u64)
+}
+
+pub(crate) fn pinned_kind(error:&codex_hepta_learning_artifacts::PinnedCandidateLoadError)->&'static str {
+    use codex_hepta_learning_artifacts::PinnedCandidateLoadError::*;
+    match error {PinMismatch=>"pin_mismatch",FrontierMismatch=>"frontier_mismatch",Ineligible=>"ineligible",Unavailable=>"unavailable",Storage(e)=>storage_kind(e)}
+}
+fn storage_kind(error:&codex_hepta_learning_artifacts::ArtifactStorageError)->&'static str {
+    use codex_hepta_learning_artifacts::ArtifactStorageError::*;
+    match error { Io(std::io::ErrorKind::NotFound)=>"storage_io_not_found", Io(std::io::ErrorKind::PermissionDenied)=>"storage_io_permission",
+        Io(_)=>"storage_io_other",Busy=>"storage_busy",Unavailable=>"storage_unavailable",Indeterminate=>"storage_indeterminate",
+        PayloadMismatch=>"storage_payload_mismatch", _=>"storage_other_category" }
+}
+pub(crate) fn service_kind(error:&codex_hepta_learning_artifacts::LearningArtifactOwnerServiceError)->&'static str {
+    use codex_hepta_learning_artifacts::{LearningArtifactOwnerServiceError as E, ArtifactOwnerHostError as H};
+    match error {
+        E::Host(H::Io(std::io::ErrorKind::NotFound))=>"host_io_not_found",E::Host(H::Io(std::io::ErrorKind::PermissionDenied))=>"host_io_permission",
+        E::Host(H::Io(_))=>"host_io_other",E::Host(H::Storage(e))=>storage_kind(e),E::Host(H::CurrentHeadExpired)=>"host_current_head_expired",
+        E::Host(H::CurrentHeadRollback)=>"host_current_head_rollback",E::Host(H::CheckpointMissing)=>"host_checkpoint_missing",
+        E::Host(H::WriterFenceBusy)=>"host_writer_fence_busy",E::Host(_)=>"host_other_category",E::Publication(_)=>"publication",
+        E::RecoveryRequired(_)=>"recovery_required",E::WithdrawalFrontierConflict=>"withdrawal_frontier_conflict", _=>"service_other_category" }
+}

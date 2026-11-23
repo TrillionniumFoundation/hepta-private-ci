@@ -12,9 +12,9 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
         &self,
         coordinator: &LearningIterationCoordinatorV1,
     ) -> Result<LearningIterationObservationV1, AgentdError> {
-        LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())
+        crate::q24_owner_watch!("selection.coordinator", LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone()))
             .map_err(invalid)?;
-        self.task.require_current()?;
+        crate::q24_owner_watch!("selection.task_current", self.task.require_current(), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?;
         let Publication::Update { original, previous } = &self.task.0.publication else {
             return Err(invalid("initial Feature task is not a learning selection"));
         };
@@ -29,12 +29,12 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
                 "learning selection differs from original completed source",
             ));
         }
-        let result = self.task.0.original.lock().map_err(invalid)?.selection(
+        let result = crate::q24_owner_watch!("selection.version_and_lock", crate::q24_owner_watch!("selection.version_lock", self.task.0.original.lock()).map_err(invalid)?.selection(
             original,
             coordinator,
             &previous.manifest,
-        )?;
-        self.task.require_current()?;
+        ), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?;
+        crate::q24_owner_watch!("selection.task_current", self.task.require_current(), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?;
         Ok(result)
     }
 

@@ -191,7 +191,7 @@ trait OriginalVersion: Send {
 
 impl<W: AnchorWitnessStore + Send> OriginalVersion for CellGenerationJournalV2<W> {
     fn require_current(&self) -> Result<(), AgentdError> {
-        let observed = self.observe_generation().map_err(invalid)?;
+        let observed = crate::q24_owner_watch!("version.generation_observation", self.observe_generation(), |q24_err: &codex_hepta_neuron::CellGenerationErrorV2| match q24_err {codex_hepta_neuron::CellGenerationErrorV2::Unavailable=>"Unavailable",codex_hepta_neuron::CellGenerationErrorV2::InvalidBinding=>"InvalidBinding",codex_hepta_neuron::CellGenerationErrorV2::Pending=>"Pending",codex_hepta_neuron::CellGenerationErrorV2::Capacity=>"Capacity", _=>"other_category"}).map_err(invalid)?;
         if observed.snapshot().revision != 0
             || observed.pending_request_digest().is_some()
             || observed.pending_output().is_some()
@@ -200,7 +200,7 @@ impl<W: AnchorWitnessStore + Send> OriginalVersion for CellGenerationJournalV2<W
         {
             return Err(invalid("published task already contains GenerationV2 work"));
         }
-        self.require_current().map_err(invalid)
+        crate::q24_owner_watch!("version.current", self.require_current(), |q24_err: &codex_hepta_neuron::CellGenerationErrorV2| match q24_err {codex_hepta_neuron::CellGenerationErrorV2::Unavailable=>"Unavailable",codex_hepta_neuron::CellGenerationErrorV2::InvalidBinding=>"InvalidBinding",codex_hepta_neuron::CellGenerationErrorV2::Pending=>"Pending",codex_hepta_neuron::CellGenerationErrorV2::Capacity=>"Capacity", _=>"other_category"}).map_err(invalid)
     }
     fn is_drained(&self) -> Result<bool, AgentdError> {
         self.is_drained().map_err(invalid)
@@ -389,14 +389,14 @@ impl PublishedCircuitFeatureTaskV1 {
     }
 
     fn require_current(&self) -> Result<(), AgentdError> {
-        self.0
+        crate::q24_owner_watch!("task.live_current", self.0
             .current
-            .check_current(self.0.publication.target())
+            .check_current(self.0.publication.target()), |q24_err: &codex_hepta_neuron::CellGenerationErrorV2| match q24_err {codex_hepta_neuron::CellGenerationErrorV2::Unavailable=>"Unavailable",codex_hepta_neuron::CellGenerationErrorV2::InvalidBinding=>"InvalidBinding",codex_hepta_neuron::CellGenerationErrorV2::Pending=>"Pending",codex_hepta_neuron::CellGenerationErrorV2::Capacity=>"Capacity", _=>"other_category"})
             .map_err(invalid)?;
-        OriginalVersion::require_current(self.0.original.lock().map_err(invalid)?.as_ref())?;
-        self.0
+        crate::q24_owner_watch!("task.original_version_and_lock", OriginalVersion::require_current(crate::q24_owner_watch!("task.version_mutex", self.0.original.lock()).map_err(invalid)?.as_ref()), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?;
+        crate::q24_owner_watch!("task.live_current", self.0
             .current
-            .check_current(self.0.publication.target())
+            .check_current(self.0.publication.target()), |q24_err: &codex_hepta_neuron::CellGenerationErrorV2| match q24_err {codex_hepta_neuron::CellGenerationErrorV2::Unavailable=>"Unavailable",codex_hepta_neuron::CellGenerationErrorV2::InvalidBinding=>"InvalidBinding",codex_hepta_neuron::CellGenerationErrorV2::Pending=>"Pending",codex_hepta_neuron::CellGenerationErrorV2::Capacity=>"Capacity", _=>"other_category"})
             .map_err(invalid)
     }
 

@@ -73,3 +73,9 @@ impl Drop for Scope {
         }
     }
 }
+
+pub(super) fn published_service()->Option<(&'static str,u64,u64)> {
+    ACTIVE.with(|c|c.borrow().as_ref().and_then(|v| (v.role=="published_service" && v.io=="exchange" && v.depth==1).then_some((v.case,v.id,v.cut))))
+}
+#[path="q24_owner_cpu.rs"]
+pub mod owner;

@@ -178,7 +178,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     fn require_task_input_current(&self) -> Result<(), Error> {
-        self.cell.task.require_current()?;
+        crate::q24_owner_watch!("input.task_current", self.cell.task.require_current(), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?;
         let input = self.cell.task.source();
         let request = &self.context.prefix.request;
         if self.identity.agent_id.as_str() != request.agent_id.as_str()
@@ -190,8 +190,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             return Err(Error::Binding("original distinct published task input"));
         }
         let source: &CircuitTaskSourceReadbackV1<_> = &self.source;
-        source.require_original_input(&self.identity, input)?;
-        self.cell.task.require_current()?;
+        crate::q24_owner_watch!("input.source", source.require_original_input(&self.identity, input))?;
+        crate::q24_owner_watch!("input.task_current", self.cell.task.require_current(), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?;
         Ok(())
     }
 
@@ -210,15 +210,17 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
 
     fn read_original(&self) -> Result<Readback, Error> {
         #[cfg(test)]
+        let _q24_owner=codex_hepta_contracts::q24_clock_observer::owner::begin(crate::learning_iteration_evidence_client::q24_stage_probe::thread_cpu_ns);
+        #[cfg(test)]
         let mut q24_trace = crate::learning_iteration_evidence_client::q24_stage_probe::Span::new("published_owner", self.context.prefix.receipts.len() as u64);
-        self.require_task_input_current()?;
+        crate::q24_owner_watch!("input.all", self.require_task_input_current())?;
         #[cfg(test)]
         q24_trace.mark("input1");
         let coordinator = wire::decision(&self.context)?;
         #[cfg(test)]
         q24_trace.mark("decision");
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
-        let selection = cell.read_learning_selection(&coordinator)?;
+        let selection = crate::q24_owner_watch!("selection.all", cell.read_learning_selection(&coordinator), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?;
         #[cfg(test)]
         q24_trace.mark("selection1");
         self.require_original_selection(&selection)?;
@@ -233,16 +235,16 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         let (observation, source_publication) = match wire::mode(&self.context)? {
             wire::Mode::Selection => (selection.clone(), None),
             wire::Mode::NextUse => {
-                let before = self
+                let before = crate::q24_owner_watch!("source.publication", self
                     .source
-                    .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?;
+                    .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id))?;
                 let prefix =
                     LearningIterationCoordinatorV1::from_snapshot(self.context.prefix.clone())?;
                 let observed =
-                    cell.read_learning_next_use(&prefix, &self.source, &self.identity)?;
-                if self
+                    crate::q24_owner_watch!("next_use.cell", cell.read_learning_next_use(&prefix, &self.source, &self.identity), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})?;
+                if crate::q24_owner_watch!("source.publication", self
                     .source
-                    .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?
+                    .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id))?
                     != before
                 {
                     return Err(Error::Binding("original C source changed during read"));
@@ -252,15 +254,15 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         };
         #[cfg(test)]
         q24_trace.mark("stage_observation");
-        self.require_task_input_current()?;
+        crate::q24_owner_watch!("input.all", self.require_task_input_current())?;
         #[cfg(test)]
         q24_trace.mark("input2");
-        if cell.read_learning_selection(&coordinator)? != selection {
+        if crate::q24_owner_watch!("selection.all", cell.read_learning_selection(&coordinator), |e: &crate::AgentdError| match e {crate::AgentdError::Invalid(s) if s=="Unavailable"=>"invalid_unavailable",crate::AgentdError::Invalid(_)=>"invalid_other",crate::AgentdError::Io(_)=>"io",crate::AgentdError::Json(_)=>"json",_=>"other_category"})? != selection {
             return Err(Error::Binding("original selection changed during read"));
         }
         #[cfg(test)]
         q24_trace.mark("selection2");
-        self.require_task_input_current()?;
+        crate::q24_owner_watch!("input.all", self.require_task_input_current())?;
         #[cfg(test)]
         q24_trace.mark("input3");
         Ok(Readback {

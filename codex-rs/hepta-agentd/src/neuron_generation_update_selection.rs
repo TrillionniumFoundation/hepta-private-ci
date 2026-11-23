@@ -220,16 +220,16 @@ impl AgentdSelectedGenerationV1 {
             return Err(invalid("generation selection withdrawal cut changed"));
         }
         let current: VerifiedCurrentRegistryViewV1 =
-            owner.current_registry_view(now).map_err(invalid)?;
-        let verified = self
+            crate::q24_owner_watch!("artifact.registry", owner.current_registry_view(now), crate::learning_iteration_evidence_client::q24_stage_probe::service_kind).map_err(invalid)?;
+        let verified = crate::q24_owner_watch!("artifact.signature", self
             .verifier
-            .verify(&self.signed, &current, now)
+            .verify(&self.signed, &current, now), |q24_err: &codex_hepta_learning_artifacts::ArtifactSelectionError| match q24_err {codex_hepta_learning_artifacts::ArtifactSelectionError::InvalidTrust=>"InvalidTrust",codex_hepta_learning_artifacts::ArtifactSelectionError::InvalidOwnerTrust=>"InvalidOwnerTrust",codex_hepta_learning_artifacts::ArtifactSelectionError::OwnerTrustMismatch=>"OwnerTrustMismatch",codex_hepta_learning_artifacts::ArtifactSelectionError::AuthorityKeyCollision=>"AuthorityKeyCollision",codex_hepta_learning_artifacts::ArtifactSelectionError::InvalidKey=>"InvalidKey",codex_hepta_learning_artifacts::ArtifactSelectionError::UnknownSelector=>"UnknownSelector",codex_hepta_learning_artifacts::ArtifactSelectionError::InvalidSignature=>"InvalidSignature",codex_hepta_learning_artifacts::ArtifactSelectionError::SelectorContext=>"SelectorContext",codex_hepta_learning_artifacts::ArtifactSelectionError::SelectorRevoked=>"SelectorRevoked",codex_hepta_learning_artifacts::ArtifactSelectionError::SelectionContext=>"SelectionContext",codex_hepta_learning_artifacts::ArtifactSelectionError::CurrentHeadMismatch=>"CurrentHeadMismatch",codex_hepta_learning_artifacts::ArtifactSelectionError::ArtifactUnavailable=>"ArtifactUnavailable",codex_hepta_learning_artifacts::ArtifactSelectionError::ManifestMismatch=>"ManifestMismatch",codex_hepta_learning_artifacts::ArtifactSelectionError::RoleCollision=>"RoleCollision",codex_hepta_learning_artifacts::ArtifactSelectionError::Lifecycle(_)=>"Lifecycle",codex_hepta_learning_artifacts::ArtifactSelectionError::Load(_)=>"Load", _=>"other_category"})
             .map_err(invalid)?;
         if verified.selection_digest() != self.observation.selection {
             return Err(invalid("generation selection identity changed"));
         }
-        self.candidate
-            .with_current(current, |_| ())
+        crate::q24_owner_watch!("artifact.candidate_files", self.candidate
+            .with_current(current, |_| ()), crate::learning_iteration_evidence_client::q24_stage_probe::pinned_kind)
             .map_err(invalid)?;
         self.observed_at = now;
         Ok(())
