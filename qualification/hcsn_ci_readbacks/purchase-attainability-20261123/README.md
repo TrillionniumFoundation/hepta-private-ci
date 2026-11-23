@@ -16,12 +16,17 @@
 
 另用训练和开发的 14 个来源做独立抽源的敏感性计算。逐题预知购买效果时，5 个来源可同时胜过两个基线，4 个来源只可胜过免费，5 个来源只可胜过一律购买。若未来来源独立且三类来源的比例与这 14 个相同，使用 8 个新来源时，统计门槛在数学上可达的概率为 45.37%；使用 12 个为 96.42%。轮流移除一个先导来源，达到 95% 可达概率所需的来源数为 11–13 个。这是逐题预知条件下对实验设计的敏感性计算。真实模型的检验功效还取决于事前选购能力和最差来源损失。该计算读取的封存成员只含训练和开发。
 
+## 哪类查询在训练和开发来源上有购买价值
+
+按原分类器已固定的 8 个分组，逐一核算所有训练和开发窗口。音频头偏向吉他、置信边际不超过 0.65、音频图库偏向钢琴的一组有最多跨来源的同向证据。训练 6 个来源的 10 题中救回 7 题、改错 1 题，每次购买平均净增 0.30。开发 5 个来源的 11 题中救回 7 题、改错 2 题，每次购买平均净增约 0.155。如果这一组一律购买，训练有 3 个来源、开发有 2 个来源跌破原保持下限。相同图库分歧但高置信的组，训练每购净损 0.80，开发每购净增 0.075。后验和图库分歧是可在购买前看到的研究线索；按这几项直接触发购买仍有明确的来源风险。完整 8 组、样本数和各来源收益在 observable_result.json。该分析仅重算训练、开发两个分区，没有在已打开的测试来源上另选规则。
+
 从仓库根目录运行
 
 ```sh
 python qualification/hcsn_ci_readbacks/purchase-attainability-20261123/verify.py qualification/hcsn_blocker_followup
 python -m qualification.hcsn_ci_readbacks.purchase-attainability-20261123.replay_frontends qualification
 python qualification/hcsn_ci_readbacks/purchase-attainability-20261123/pilot.py qualification/hcsn_blocker_followup
+python -m qualification.hcsn_ci_readbacks.purchase-attainability-20261123.observable_cells qualification
 ```
 
 [冻结实验](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7b0af00123582ab16f55cb3f0c4314d0d3099909/qualification/hcsn_blocker_followup/RESULTS.md) · [原先登记的双对照采用条件](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7b0af00123582ab16f55cb3f0c4314d0d3099909/qualification/hcsn_blocker_followup/protocol.json)
