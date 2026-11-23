@@ -1,0 +1,552 @@
+{
+  "archive_sha256": "09d47d98e5c88342f84bbeb84a86092ab71347a983a4aa6b71035d5427e4a6c4",
+  "list_source_archive": "6d2a05d5a30223e79643719b108254907e77d2d2616386101975121ee0cdfb1b",
+  "scope": "Entire one target on original RBE strategy, same Actions orchestrator, fresh test actions. Unchanged default libtest concurrency; other repository targets absent. Successful libtest captures do not publish elapsed time for a successful individual case.",
+  "arms": {
+    "base": {
+      "ref": "6a5a02835206697d154fc4a1977b4627aad372d9",
+      "bazel_return": 0,
+      "roster_sha256": "1be64459a4056a5ee62f90929b10a3c1b5dd0f251fc2d5d2c1598a0f85643862",
+      "counts": {
+        "ok": 1552,
+        "FAILED": 0,
+        "ignored": 171
+      },
+      "healthy_withdrawal": "ok",
+      "q24_timing_case": "ok",
+      "shards": [
+        {
+          "shard": 1,
+          "attempt": 1,
+          "case_count": 419,
+          "log_sha256": "9059cea1bd45eb7f86571f6cfe9961ffca44b4f00e2e9514fd55e0bb8142b238",
+          "xml_sha256": "b8ba0742112f3d403c7a27a5312c8e95cdf019ccfc947b1050465cbe52606478",
+          "action": {
+            "status": "PASSED",
+            "testAttemptDurationMillis": "77624",
+            "testAttemptDuration": "77.624s",
+            "testAttemptStartMillisEpoch": "1795413423988",
+            "testAttemptStart": "2026-11-23T05:57:03.988Z",
+            "executionInfo": {
+              "strategy": "remote",
+              "timingBreakdown": {
+                "child": [
+                  {
+                    "name": "parseTime",
+                    "time": "0.002s"
+                  },
+                  {
+                    "name": "fetchTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "queueTime",
+                    "time": "0.057s"
+                  },
+                  {
+                    "name": "uploadTime",
+                    "time": "0.285s"
+                  },
+                  {
+                    "name": "setupTime",
+                    "time": "0.216s"
+                  },
+                  {
+                    "name": "executionWallTime",
+                    "time": "77.624s"
+                  },
+                  {
+                    "name": "processOutputsTime",
+                    "time": "0.153s"
+                  },
+                  {
+                    "name": "networkTime",
+                    "time": "0.277s"
+                  }
+                ],
+                "name": "totalTime",
+                "time": "78.729s"
+              }
+            }
+          },
+          "counts": {
+            "ok": 379,
+            "FAILED": 0,
+            "ignored": 40
+          },
+          "failures": [],
+          "nested_child_statuses": {
+            "state::notes_objective::lock_tests::notes_objective_drain_child": "ok"
+          },
+          "interleaved_label_resolved_from_unambiguous_outer_total": {}
+        },
+        {
+          "shard": 2,
+          "attempt": 1,
+          "case_count": 429,
+          "log_sha256": "6de80b827e0d363fda84897e8a7759e15a8c5933c5671ed8c43c255a08cbab07",
+          "xml_sha256": "e0a3798a1a1204b9d866b5a03c41b431d1a393e84588550f23dbaafaa3a30901",
+          "action": {
+            "status": "PASSED",
+            "testAttemptDurationMillis": "80386",
+            "testAttemptDuration": "80.386s",
+            "testAttemptStartMillisEpoch": "1795413423988",
+            "testAttemptStart": "2026-11-23T05:57:03.988Z",
+            "executionInfo": {
+              "strategy": "remote",
+              "timingBreakdown": {
+                "child": [
+                  {
+                    "name": "parseTime",
+                    "time": "0.004s"
+                  },
+                  {
+                    "name": "fetchTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "queueTime",
+                    "time": "0.060s"
+                  },
+                  {
+                    "name": "uploadTime",
+                    "time": "0.282s"
+                  },
+                  {
+                    "name": "setupTime",
+                    "time": "0.114s"
+                  },
+                  {
+                    "name": "executionWallTime",
+                    "time": "80.386s"
+                  },
+                  {
+                    "name": "processOutputsTime",
+                    "time": "0.145s"
+                  },
+                  {
+                    "name": "networkTime",
+                    "time": "0.179s"
+                  }
+                ],
+                "name": "totalTime",
+                "time": "81.283s"
+              }
+            }
+          },
+          "counts": {
+            "ok": 393,
+            "FAILED": 0,
+            "ignored": 36
+          },
+          "failures": [],
+          "nested_child_statuses": {},
+          "interleaved_label_resolved_from_unambiguous_outer_total": {}
+        },
+        {
+          "shard": 3,
+          "attempt": 1,
+          "case_count": 435,
+          "log_sha256": "b47f82110d5d26559d864635ad97118fb7f6cc09cee4a611b85a8299d03259f1",
+          "xml_sha256": "13d3c33eb201ec129ff24a3445824cad0cb9958e48fcf794b575a7557bc28f73",
+          "action": {
+            "status": "PASSED",
+            "testAttemptDurationMillis": "60654",
+            "testAttemptDuration": "60.654s",
+            "testAttemptStartMillisEpoch": "1795413423988",
+            "testAttemptStart": "2026-11-23T05:57:03.988Z",
+            "executionInfo": {
+              "strategy": "remote",
+              "timingBreakdown": {
+                "child": [
+                  {
+                    "name": "parseTime",
+                    "time": "0.002s"
+                  },
+                  {
+                    "name": "fetchTime",
+                    "time": "0.002s"
+                  },
+                  {
+                    "name": "queueTime",
+                    "time": "0.094s"
+                  },
+                  {
+                    "name": "uploadTime",
+                    "time": "0.287s"
+                  },
+                  {
+                    "name": "setupTime",
+                    "time": "0.854s"
+                  },
+                  {
+                    "name": "executionWallTime",
+                    "time": "60.654s"
+                  },
+                  {
+                    "name": "processOutputsTime",
+                    "time": "0.150s"
+                  },
+                  {
+                    "name": "networkTime",
+                    "time": "0.276s"
+                  }
+                ],
+                "name": "totalTime",
+                "time": "62.436s"
+              }
+            }
+          },
+          "counts": {
+            "ok": 384,
+            "FAILED": 0,
+            "ignored": 51
+          },
+          "failures": [],
+          "nested_child_statuses": {},
+          "interleaved_label_resolved_from_unambiguous_outer_total": {}
+        },
+        {
+          "shard": 4,
+          "attempt": 1,
+          "case_count": 440,
+          "log_sha256": "fbca75bcf4dedf6378d9cb5b224a41ebb20a6074b9ce67b7f61ef109f89faa0f",
+          "xml_sha256": "334b7664958d01bd5b80b5b9e848d5f988a6c27ba4aab4ef1c47b666eda84bd6",
+          "action": {
+            "status": "PASSED",
+            "testAttemptDurationMillis": "103717",
+            "testAttemptDuration": "103.717s",
+            "testAttemptStartMillisEpoch": "1795413423990",
+            "testAttemptStart": "2026-11-23T05:57:03.990Z",
+            "executionInfo": {
+              "strategy": "remote",
+              "timingBreakdown": {
+                "child": [
+                  {
+                    "name": "parseTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "fetchTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "queueTime",
+                    "time": "0.058s"
+                  },
+                  {
+                    "name": "uploadTime",
+                    "time": "0.286s"
+                  },
+                  {
+                    "name": "setupTime",
+                    "time": "1.024s"
+                  },
+                  {
+                    "name": "executionWallTime",
+                    "time": "103.717s"
+                  },
+                  {
+                    "name": "processOutputsTime",
+                    "time": "0.145s"
+                  },
+                  {
+                    "name": "networkTime",
+                    "time": "0.276s"
+                  }
+                ],
+                "name": "totalTime",
+                "time": "105.620s"
+              }
+            }
+          },
+          "counts": {
+            "ok": 396,
+            "FAILED": 0,
+            "ignored": 44
+          },
+          "failures": [],
+          "nested_child_statuses": {},
+          "interleaved_label_resolved_from_unambiguous_outer_total": {},
+          "q24_current": "ok",
+          "q24_failure_timing": null
+        }
+      ]
+    },
+    "candidate": {
+      "ref": "53a2877f11a550ec4fca694bacc5b449f20addc2",
+      "bazel_return": 3,
+      "roster_sha256": "1be64459a4056a5ee62f90929b10a3c1b5dd0f251fc2d5d2c1598a0f85643862",
+      "counts": {
+        "ok": 1551,
+        "FAILED": 1,
+        "ignored": 171
+      },
+      "healthy_withdrawal": "FAILED",
+      "q24_timing_case": "ok",
+      "shards": [
+        {
+          "shard": 1,
+          "attempt": 1,
+          "case_count": 419,
+          "log_sha256": "110df258cf9a36f007c35173e579b54dce45a223da0c55fa61953de8e68ef9fb",
+          "xml_sha256": "e5bc53afd06f08cb6447e7c09794cd2b96fd03a9ac43aee3f7212e2afe66138d",
+          "action": {
+            "status": "PASSED",
+            "testAttemptDurationMillis": "80607",
+            "testAttemptDuration": "80.607s",
+            "testAttemptStartMillisEpoch": "1795413571566",
+            "testAttemptStart": "2026-11-23T05:59:31.566Z",
+            "executionInfo": {
+              "strategy": "remote",
+              "timingBreakdown": {
+                "child": [
+                  {
+                    "name": "parseTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "fetchTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "queueTime",
+                    "time": "0.055s"
+                  },
+                  {
+                    "name": "uploadTime",
+                    "time": "0.341s"
+                  },
+                  {
+                    "name": "setupTime",
+                    "time": "0.395s"
+                  },
+                  {
+                    "name": "executionWallTime",
+                    "time": "80.607s"
+                  },
+                  {
+                    "name": "processOutputsTime",
+                    "time": "0.113s"
+                  },
+                  {
+                    "name": "networkTime",
+                    "time": "0.282s"
+                  }
+                ],
+                "name": "totalTime",
+                "time": "81.909s"
+              }
+            }
+          },
+          "counts": {
+            "ok": 379,
+            "FAILED": 0,
+            "ignored": 40
+          },
+          "failures": [],
+          "nested_child_statuses": {
+            "state::notes_objective::lock_tests::notes_objective_drain_child": "ok"
+          },
+          "interleaved_label_resolved_from_unambiguous_outer_total": {
+            "cognitive_checkpoint_unix::tests::original_peer_exit_refuses_even_while_a_child_retains_the_connected_descriptor": "ok"
+          }
+        },
+        {
+          "shard": 2,
+          "attempt": 1,
+          "case_count": 429,
+          "log_sha256": "08f58609eaac6297e11d6ebcdfd77238d5e7107cfe2d3422c91835de67baa427",
+          "xml_sha256": "cc8350d52875ff71efd1c7fdbeaa048894a7de2dd0872e477b7fe9b73f6ba673",
+          "action": {
+            "status": "FAILED",
+            "testAttemptDurationMillis": "90830",
+            "testAttemptDuration": "90.830s",
+            "testAttemptStartMillisEpoch": "1795413571566",
+            "testAttemptStart": "2026-11-23T05:59:31.566Z",
+            "executionInfo": {
+              "strategy": "remote",
+              "timingBreakdown": {
+                "child": [
+                  {
+                    "name": "parseTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "fetchTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "queueTime",
+                    "time": "0.061s"
+                  },
+                  {
+                    "name": "uploadTime",
+                    "time": "0.345s"
+                  },
+                  {
+                    "name": "setupTime",
+                    "time": "0.470s"
+                  },
+                  {
+                    "name": "executionWallTime",
+                    "time": "90.830s"
+                  },
+                  {
+                    "name": "processOutputsTime",
+                    "time": "0.148s"
+                  },
+                  {
+                    "name": "networkTime",
+                    "time": "0.278s"
+                  }
+                ],
+                "name": "totalTime",
+                "time": "92.247s"
+              },
+              "exitCode": 101
+            }
+          },
+          "counts": {
+            "ok": 392,
+            "FAILED": 1,
+            "ignored": 36
+          },
+          "failures": [
+            "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_healthy_evidence_readback_then_publication_withdrawal"
+          ],
+          "nested_child_statuses": {},
+          "interleaved_label_resolved_from_unambiguous_outer_total": {}
+        },
+        {
+          "shard": 3,
+          "attempt": 1,
+          "case_count": 435,
+          "log_sha256": "672422c766ca414824b1a7544e4052f4052fc2db996736df854598f10dd86ffb",
+          "xml_sha256": "dfa0d10adf1b136fe6d4e537359f299f2878406321910f6fc1e818b363635d4e",
+          "action": {
+            "status": "PASSED",
+            "testAttemptDurationMillis": "61832",
+            "testAttemptDuration": "61.832s",
+            "testAttemptStartMillisEpoch": "1795413571567",
+            "testAttemptStart": "2026-11-23T05:59:31.567Z",
+            "executionInfo": {
+              "strategy": "remote",
+              "timingBreakdown": {
+                "child": [
+                  {
+                    "name": "parseTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "fetchTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "queueTime",
+                    "time": "0.061s"
+                  },
+                  {
+                    "name": "uploadTime",
+                    "time": "0.343s"
+                  },
+                  {
+                    "name": "setupTime",
+                    "time": "0.443s"
+                  },
+                  {
+                    "name": "executionWallTime",
+                    "time": "61.832s"
+                  },
+                  {
+                    "name": "processOutputsTime",
+                    "time": "0.146s"
+                  },
+                  {
+                    "name": "networkTime",
+                    "time": "0.190s"
+                  }
+                ],
+                "name": "totalTime",
+                "time": "63.131s"
+              }
+            }
+          },
+          "counts": {
+            "ok": 384,
+            "FAILED": 0,
+            "ignored": 51
+          },
+          "failures": [],
+          "nested_child_statuses": {},
+          "interleaved_label_resolved_from_unambiguous_outer_total": {}
+        },
+        {
+          "shard": 4,
+          "attempt": 1,
+          "case_count": 440,
+          "log_sha256": "92c2e572fc3b1e35b04d9d42005466aaae0e87bd07b516cac9e4ab9ee8336ebe",
+          "xml_sha256": "a015dffbf047caec0d782cf87dc234dfa05b18990be4637f2f9989de4ddf93e6",
+          "action": {
+            "status": "PASSED",
+            "testAttemptDurationMillis": "106654",
+            "testAttemptDuration": "106.654s",
+            "testAttemptStartMillisEpoch": "1795413571566",
+            "testAttemptStart": "2026-11-23T05:59:31.566Z",
+            "executionInfo": {
+              "strategy": "remote",
+              "timingBreakdown": {
+                "child": [
+                  {
+                    "name": "parseTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "fetchTime",
+                    "time": "0.001s"
+                  },
+                  {
+                    "name": "queueTime",
+                    "time": "0.059s"
+                  },
+                  {
+                    "name": "uploadTime",
+                    "time": "0.345s"
+                  },
+                  {
+                    "name": "setupTime",
+                    "time": "0.600s"
+                  },
+                  {
+                    "name": "executionWallTime",
+                    "time": "106.654s"
+                  },
+                  {
+                    "name": "processOutputsTime",
+                    "time": "0.149s"
+                  },
+                  {
+                    "name": "networkTime",
+                    "time": "0.275s"
+                  }
+                ],
+                "name": "totalTime",
+                "time": "108.194s"
+              }
+            }
+          },
+          "counts": {
+            "ok": 396,
+            "FAILED": 0,
+            "ignored": 44
+          },
+          "failures": [],
+          "nested_child_statuses": {},
+          "interleaved_label_resolved_from_unambiguous_outer_total": {},
+          "q24_current": "ok",
+          "q24_failure_timing": null
+        }
+      ]
+    }
+  }
+}
