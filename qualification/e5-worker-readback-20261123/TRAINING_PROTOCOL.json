@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.e5.training-worker-control.v1",
+  "frozen_before_fit": true,
+  "base_commit": "8a04316f6362db52b7946a48f151744f50a99fba",
+  "worker_protocol_sha256": "b7991574f51813d7017a0eb5480f044e4887ecbf80ac1461df2ed9115fd64206",
+  "blocks": [
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      1
+    ]
+  ],
+  "training_modules": {
+    "plain": "cell_experiments.test_paired_cold",
+    "circuit": "cell_experiments.test_paired_circuit"
+  },
+  "per_job_arguments": [
+    "--fixture",
+    "NEW_DIRECTORY"
+  ],
+  "scope": "Run both original synthetic trainers from initial seeds plus their original paired cold evaluation for every worker setting. Compare to the two registered request commitments, actual saved models, answers and inference work; include construction, CPU SGD, checkpoint serialization, cold evaluation and drain. Zero actual users and no adoption or payment. Public synthetic inputs deliberately share a train/future feature. New preparation before any training in this control.",
+  "stop_rule": "Retain any execution or material mismatches and suppress speed comparisons unless the same published model pairs and readouts are obtained. Budget is two complete balanced blocks, no retries."
+}

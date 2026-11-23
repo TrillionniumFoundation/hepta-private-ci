@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.e5.hosted-independent-replication.v1",
+  "registered_before_execution": true,
+  "original_study": "45ae7f59f3ff01b9de34181de10ebe62f1cd3109",
+  "new_question": "On a fresh hosted Linux CPU runner with historical CPU libraries and released trainer address spaces, do the two registered refits regenerate the original models and complete the same detached-teacher assessments, and what elapsed throughput does the independent worker sweep observe?",
+  "scope": "Independent hosted replication. Preserve local attempt 03 as unknown and all local failures. Differences in machine and load preclude attributing changes to execve or pooling rates across machines.",
+  "materials": "Pin the original two request digests, module and bytes from 45ae7f59f3ff01b9de34181de10ebe62f1cd3109, using its historical --train --release-trainer path. Each job performs a fresh SGD fit, serializes, freezes and cold-evaluates both arms.",
+  "pairs": [
+    "e0cd3479b1fa58d00896432c908433434cce9a5a1e3dad0df9e79adf8e35f93f",
+    "7d60577d12d49a10a6896cdef6c9762f7dd40e8d831cdeaf0597c3d626d50276"
+  ],
+  "design": {
+    "blocks": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        1
+      ]
+    ],
+    "jobs_per_batch": 2,
+    "training_jobs": 8,
+    "max_retries": 0,
+    "threads_per_model": 1,
+    "no_external_interfaces_during_fit_or_scoring": true,
+    "hardware": "ubuntu-24.04 x86_64 GitHub-hosted Linux CPU. Record effective CPU quota, CPU model/memory before run; separate dependency preparation from clock."
+  },
+  "decision": "Use all four batches. Report per-block 1/2 worker times and ratio of median completed-pair rates only if every offered job regenerated its exact original manifest and verified the same outputs, preservation and primitive work, and the expected admitted overlaps occurred. Preserve raw data on failure; validate those gates from original rows separately.",
+  "raw": "Persist each trainer output, all generated model weights, per-job returned clocks, all cold model receipts and originals. Include environment, resource control and net-device snapshot. One hosted schedule. Acquire or install dependencies and fix packaging if needed without creating substitute data or selecting a favorable run.",
+  "real_enrolled_users": 0,
+  "real_future_users": 0,
+  "independent_adoptions": 0,
+  "production_rate": null
+}

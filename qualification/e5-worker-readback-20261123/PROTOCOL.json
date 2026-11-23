@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.e5.registered-worker-control.v1",
+  "base_commit": "8a04316f6362db52b7946a48f151744f50a99fba",
+  "original_source_plan_sha256": "f803383cbc70456d92799b78e96d70dff62cbfd84d13a4c1f1c34d9450c32e26",
+  "scope": "Public engineering fixture evaluation. Frozen weights, no training or user enrollment in the worker control.",
+  "blocks": [
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      1
+    ]
+  ],
+  "threads_per_model": 1,
+  "retries": 0,
+  "jobs": [
+    {
+      "name": "plain",
+      "request_sha256": "e0cd3479b1fa58d00896432c908433434cce9a5a1e3dad0df9e79adf8e35f93f",
+      "source_commit": "1df26bf88c32a7c61340f1c1a93ae88d7841509b",
+      "source_path": "qualification/cell-cross-user-milestone-20261123/fixture"
+    },
+    {
+      "name": "circuit",
+      "request_sha256": "7d60577d12d49a10a6896cdef6c9762f7dd40e8d831cdeaf0597c3d626d50276",
+      "source_commit": "e088eb8cded407557b7b22abbe4f7fabe72ef4a4",
+      "source_path": "qualification/cell-cross-user-circuit-20261123/CIRCUIT_FIXTURE.zip#fixture"
+    }
+  ],
+  "timing": "One coordinator monotonic clock, just before submitting jobs through completion, receipt inspection and pool drain. Include queue, process creation and two cold model loads for each pair. Job spans include reading/verifying evaluator results. Peak overlap is admitted job concurrency including load/wait. Source checkout and published fixture acquisition precede timing.",
+  "control_outcome": "Completed unique registered model-pair evaluations per elapsed hour; keep all assigned jobs and failures. Raw answers, task/model identities, counts and inference token consumption must match between worker settings. Report distinct future inputs separately from model-pair requests.",
+  "human_study": {
+    "status": "preregistered unit allocation; no live enrollment in this file",
+    "users": [
+      1,
+      4,
+      16,
+      64
+    ],
+    "regimes": {
+      "fixed_total": 64,
+      "fixed_per_user": 32
+    },
+    "workers": [
+      1,
+      2
+    ],
+    "allocation_rule": "one enrolled user's material per update unit; deterministic round robin over frozen randomly ordered nested eligible cohort slots",
+    "primary_outcome": "Distinct frozen candidate model identities that pass old retention, improve independent future users against the parent and are actually adopted for a subsequent task divided by submission-to-drain hours. Repeated payments, retries and repeated use of a candidate do not increment the candidate numerator. Unauthenticated adoption or an incomplete time window leaves the rate unidentified.",
+    "budget_scope": "Fixed-total 64 units is a new design. All user counts in the new fixed-total curve rerun at 64. The historical 32-total comparison remains registered separately. Numeric MAC, verification and hardware constraints and independent live source receipts must be bound before scientific comparison. Worker sweep uses matched identical rosters and offered work, counting retries against budgets."
+  }
+}

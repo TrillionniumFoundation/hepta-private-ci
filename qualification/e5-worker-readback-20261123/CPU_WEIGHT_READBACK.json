@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.e5.cpu-weight-readback.v1",
+  "original_circuit_zip_sha256": "9ca95174be3f7e24e55164cfc41df15c26a6d17f91357af8ae6d37f986d29aa6",
+  "historical_adapter_sha256": "1bd54e3b301598ee45b6c6103aef57aedb93b746bdcbc9b2be4af05cd153ae9a",
+  "hosted_adapter_sha256": "5ab21d570de5621cc82e6d1de7834e63613e07b0dd4e496106def6d27dcc7e8b",
+  "identical_hosted_fits": 4,
+  "tensors": [
+    {
+      "name": "base_model.model.lm_head.base_layer.weight",
+      "shape": [
+        8,
+        8
+      ],
+      "changed_entries": 0,
+      "entries": []
+    },
+    {
+      "name": "base_model.model.lm_head.lora_A.weight",
+      "shape": [
+        1,
+        8
+      ],
+      "changed_entries": 0,
+      "entries": []
+    },
+    {
+      "name": "base_model.model.lm_head.lora_B.weight",
+      "shape": [
+        8,
+        1
+      ],
+      "changed_entries": 7,
+      "entries": [
+        {
+          "index": 0,
+          "historical": -0.22936323285102844,
+          "hosted": -0.22936317324638367,
+          "abs_diff": 5.960464477539063e-08
+        },
+        {
+          "index": 1,
+          "historical": -0.22936323285102844,
+          "hosted": -0.22936317324638367,
+          "abs_diff": 5.960464477539063e-08
+        },
+        {
+          "index": 2,
+          "historical": -0.22936323285102844,
+          "hosted": -0.22936317324638367,
+          "abs_diff": 5.960464477539063e-08
+        },
+        {
+          "index": 3,
+          "historical": -0.22936323285102844,
+          "hosted": -0.22936317324638367,
+          "abs_diff": 5.960464477539063e-08
+        },
+        {
+          "index": 4,
+          "historical": -0.22936323285102844,
+          "hosted": -0.22936317324638367,
+          "abs_diff": 5.960464477539063e-08
+        },
+        {
+          "index": 5,
+          "historical": -0.22936323285102844,
+          "hosted": -0.22936317324638367,
+          "abs_diff": 5.960464477539063e-08
+        },
+        {
+          "index": 6,
+          "historical": -1.0401782989501953,
+          "hosted": -1.0401781797409058,
+          "abs_diff": 1.1920928955078125e-07
+        }
+      ]
+    }
+  ],
+  "causality": "This compares frozen tensor bytes. Candidate router coefficients, task definitions and scheduler code were unchanged. The original hardware and kernel dispatch were not measured in this comparison."
+}

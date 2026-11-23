@@ -1,0 +1,9 @@
+{
+  "schema": "hepta.e5.training-worker-control.release-trainer.v1",
+  "parent_training_protocol_sha256": "74e928e9bb12be4edb5a92fa06490d9495051bf7d7aec50b3ea100cc712d2ee4",
+  "rationale": "The recorded historical-runtime sweep returned one verified result in eight attempts; seven fixture processes received SIGKILL, and the captured kernel cause is unknown. Keep that whole sweep. In the original execution a trainer with torch loaded waits for paired_cold, while another process loads a model to evaluate it.",
+  "intervention": "Run the same original seeded fixtures, training and freezing calls. After all material is on disk replace the trainer interpreter via execve with the original paired evaluator command. This releases the trainer process address space before cold generation. Preserve all checked weight and router commitments, task order, work and output verification, worker count and original block order.",
+  "runtime": "CPU PyTorch 2.6.0+cpu, Transformers 4.49.0, PEFT 0.14.0 and tokenizers 0.21.4, one thread/model, network namespace without external interfaces; shared host memory and load are uncontrolled.",
+  "stop_rule": "One additional two-block schedule [1,2], [2,1], two registered jobs per batch; total eight independent attempts. No retries or further timing. Report engineer throughput only if all four batches bind the two original pairs, all answers and work match, and planned concurrency was achieved. Archive all raw output and failures.",
+  "real_users": 0
+}
