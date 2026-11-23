@@ -1,5 +1,10 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 18:38 UTC #7052 原 Rustfmt/Clippy 双臂失败归档与单文件后继（待原 CI）
+
+- 读取 #7052 原 source `76d2197c` 的正式 [blocking-ci 45235530500](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45235530500)：exact-source、deterministic-merge 均因 Bellman 性能示例第 217 行 `clippy::collapsible_if` 退出 101；source 原日志另保留 `hepta-control-plane` 两条严格诊断。原 [MemoryCell 45235530046](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45235530046) 的 `source-format` 对同一文件给出 7 处原 rustfmt 差异，仍红。
+- 在 #7052 原分支依次按原 rustfmt 差异排版、合并等价 `if let`，只改这一原示例文件；[新候选 `c9236b4ee6d73a8de3bf4ccb7887a41715738d3c`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c9236b4ee6d73a8de3bf4ccb7887a41715738d3c) 相对 `76d2197c` **ahead=1、behind=0、一文件**。保留写入失败的非零退出、所有严格原判据、冻结科学源和公开 V1，未增豁免。GitHub 已自动启动 [blocking-ci 45240607977](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240607977) 和 [MemoryCell 45240608027](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45240608027)，**未获得最终原 CI 通过**；不重复派发、不得合并 Draft。[原逐项日志、候选和新跑标识的固定记录](7052-c9236b4-format-clippy-followup-20261123.md)。其余严格诊断、Windows 生产隔离、musl、Q24、main 安全门继续 HOLD。
+
 ## 2026-11-23 16:43 UTC #7052 Bellman 原严格门可逆单文件候选，等待原生 CI
 
 - 对 [#7032 b1af67a 原 learning.operator 失败作业 137727965016](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45184439037/job/137727965016) 作具名日志核验，发现 `codex-rs/hepta-bellman-operator/examples/qualification_performance.rs` 里 **15 处 `expect` 和 2 处 `unwrap`** 被原 `-D clippy::expect_used/-D clippy::unwrap_used` 拦截；另有 `hepta-control-plane` 的不同严格诊断，未混作已闭合。
