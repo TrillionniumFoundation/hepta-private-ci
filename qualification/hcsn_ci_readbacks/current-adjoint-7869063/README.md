@@ -15,3 +15,5 @@ python -B -m qualification.hcsn_adjoint_torch.native_probe \
 ```
 
 The independent reference basis, tolerances and numerical test body match the original procedure. The source manifest binds the current state/flux implementation. The probe evaluates first-order derivatives with respect to the four input tensors at fixed model coefficients. It applies zero optimizer updates.
+
+Both GitHub-hosted PyTorch 2.10.0 jobs passed. The current worker ran the complete probe in 65.03 seconds, the archived worker in 56.72 seconds. The current 2.10.0 arrays match the independent current 2.15.0 arrays byte for byte. The archived-worker arrays match the original November reference archive byte for byte. These comparisons cover all 888 stored arrays. Each six-file Actions ZIP was downloaded in its original form and verified against the GitHub artifact digest before publication. [Current hosted job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45106995789/job/137470458296) · [Archived hosted job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45106995789/job/137470458710)
