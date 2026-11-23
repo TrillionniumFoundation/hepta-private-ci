@@ -92,7 +92,8 @@ class RoutedPairTests(unittest.TestCase):
 
 if __name__ == "__main__":
     if len(sys.argv) == 3 and sys.argv[1] == "--fixture":
-        destination = Path(sys.argv[2]).resolve()
+        # PEFT records this name in adapter_config.json. Preserve a supplied relative path.
+        destination = Path(sys.argv[2])
         print(
             json.dumps(
                 evaluate_fixture(destination, setup_fixture(destination)), indent=2

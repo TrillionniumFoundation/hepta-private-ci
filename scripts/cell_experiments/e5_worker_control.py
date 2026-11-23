@@ -139,11 +139,18 @@ def evaluate(job, material, root, env, training_modules):
         str(material),
         str(out),
     ]
+    cwd = None
     if training_modules:
-        command = [sys.executable, "-m", training_modules[name], "--fixture", str(out)]
-        out = out / "evaluation"
+        # PEFT serializes the supplied base directory into the signed model material.
+        # Refit from the relative path recorded in the original public fixture.
+        fixture = "circuit-fitted-controls-final" if name == "circuit" else "plain"
+        cwd = root.resolve()
+        command = [sys.executable, "-m", training_modules[name], "--fixture", fixture]
+        out = root / fixture / "evaluation"
     with (root / f"{name}.log").open("xb") as log:
-        result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, env=env)
+        result = subprocess.run(
+            command, stdout=log, stderr=subprocess.STDOUT, env=env, cwd=cwd
+        )
     row = dict(request=expected, start_ns=start, returncode=result.returncode)
     if result.returncode == 0:
         try:
@@ -222,6 +229,7 @@ def run(plain, circuit, out, *, train=False):
     out.mkdir(parents=True, mode=0o700, exist_ok=False)
     env = {
         **os.environ,
+        "PYTHONPATH": os.pathsep.join(str(Path(p).resolve()) for p in sys.path if p),
         "HF_HUB_OFFLINE": "1",
         "TRANSFORMERS_OFFLINE": "1",
         "OMP_NUM_THREADS": "1",
