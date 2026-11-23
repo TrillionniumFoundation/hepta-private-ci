@@ -11,6 +11,7 @@ HERE = Path(__file__).resolve().parent
 REPO = "TrillionniumFoundation/hepta-private-ci"
 REG = re.compile(r"^test (\S+) \.\.\. (ok|FAILED|ignored)\b", re.M)
 RUNS = {
+    "c12": (45138928408, 137573328593, 14802049282, "c12ee03f3185d5a13949faca54f066dfd634e509", "1f4f551c88fd1b1d221b101663e680502f061f6b919e7aca72b2b358ece47e01"),
     "e327": (45130787598, 137546561430, 14799018890, "e3277e9677688be5c4c235a7a127f0b51e373399", "2f16bb0ab2f7a2826040335a356c4f5f760e6c985fa5144dda3038280fa0eb90"),
     "7005": (45110023804, 137481302886, 14790212814, "de4ef594bfefec05a64fc2ae3b717a640a57b263", "7dfe9d1bca9dc8d57fcd2d2b4d00c4ebfb1265e7cd2e190e05e2d0e2fc043aaa"),
     "7009": (45115542852, 137503935193, 14792963395, "de944cb80e0104c28383aee6ec55b9a43f23606b", "d41ee9736c1ab51afe5c0a642d7465962f6a7c11a626b187024fead3d88fec31"),
@@ -66,7 +67,7 @@ def report(directory):
                             "diagnostic_categories":[key for key,value in WITNESSES.items() if value in text],
                         }
             count = len(z.namelist())
-        required = set(FOUR) | ({EXTRA[0]} if tag=="c6a" else set())
+        required = set(FOUR) | ({EXTRA[0]} if tag in ("c6a", "c12") else set())
         observed = set(failures)
         if observed != required or len(failures) != len(observed):
             raise RuntimeError(f"Unexpected complete roster of final failures on {tag}: {sorted(observed)}")
@@ -85,7 +86,7 @@ def report(directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("directory", type=Path, help="folder containing 7005.zip, 7009.zip, 7013.zip, c6a.zip and e327.zip")
+    parser.add_argument("directory", type=Path, help="folder containing 7005.zip, 7009.zip, 7013.zip, c6a.zip e327.zip and c12.zip")
     parser.add_argument("--download", action="store_true", help="download missing ZIPs through an authenticated gh CLI")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()

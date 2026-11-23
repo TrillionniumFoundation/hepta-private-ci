@@ -32,3 +32,7 @@ cmp /tmp/windows-final.json final-archives.json
 ## #7016 的第五次原运行
 
 e3277e96 的 shard 4 正式终结。从其原始 ZIP 的 139 个成员中提取全部最终 test.log，最终失败恰为上表四个原隔离正例。分离会话用例成功，原 exec-server-process-test 目标 1.7 秒通过，作业汇总没有缓存标记。四个隔离正例的连续五次原失败保留；c6a 的分离会话红也仍在原记录内。复核程序现同时校验五个原始 ZIP。e327.zip 是第 5 份原 ZIP，另一个专项目录保留了分离会话的独立原生重跑。[原 Windows 作业](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45130787598/job/137546561430) · [六个完整会话目标](../windows-detached-session/DETACHED.md)
+
+## c12 的第六份原运行
+
+扫描 c12 原 shard 全部 139 个成员，恰有五个具名的最终失败。四个 Windows 隔离正例第六次均失败。分离会话用例再次在等待 WebSocket 事件时超时；该项在这六次整 shard 中四过两败。两次失败的原夹具都将五处等待汇合到同一错误，既有专项六次整目标的 36/36 不能定位哪个请求超时。下载六份原 ZIP 后上述程序可独立复核。[原作业](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928408/job/137573328593) · [本次原 ZIP](c12.zip)
