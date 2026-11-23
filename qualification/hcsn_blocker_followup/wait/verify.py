@@ -38,7 +38,7 @@ def samples(archive,subjects):
 
 
 def replay_class(train,valid,alltrain,leaveout):
-    g,post,gold,m=train;gv,pv,_,v=valid; ans=[]
+    g,post,gold,m=train;gv,pv,_,v=valid; predictions=[]
     for i in range(2):
         x=np.concatenate([m[:,j] for j in range(i+1)],-1);y=np.concatenate([v[:,j] for j in range(i+1)],-1);pred=np.empty(y.shape[:2])
         for src in np.unique(gv) if leaveout else (None,):
@@ -49,8 +49,8 @@ def replay_class(train,valid,alltrain,leaveout):
                     value=x[tr,t]; center=w@value;sd=np.sqrt(w@(value-center)**2).clip(1e-6);a=(value-center)/sd;d=a.shape[-1]
                     coef=np.linalg.lstsq(np.vstack((a*np.sqrt(w[:,None]),np.sqrt(.1)*np.eye(d))),np.r_[(gy-b)*np.sqrt(w),np.zeros(d)],rcond=None)[0]
                     pred[test,t]=(((y[test,t]-center)/sd)@coef+b).clip(.001,.999)
-        ans.append(np.stack((1-pred,pred),-1))
-    return ans
+        predictions.append(np.stack((1-pred,pred),-1))
+    return predictions
 
 
 def independent_value(z,t,a):
