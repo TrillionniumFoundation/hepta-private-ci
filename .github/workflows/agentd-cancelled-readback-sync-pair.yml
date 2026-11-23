@@ -1,0 +1,84 @@
+name: Pair the original cancelled-readback assertion after its test-only lane barrier
+on:
+  push:
+    branches: ["diagnostic/agentd-resident-cancel-sync-pair-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: e3277e9677688be5c4c235a7a127f0b51e373399
+  COMBINED: 43e5da1bb81369e4e999adfa8558f5ccb5460eb6
+  SYNC_BASE: 3002afb8e319abd7909e57ac816b0fedc8f0233c
+  SYNC_COMBINED: e1969bcf8dbb9e9e42cd718401a9df6d13f79d98
+jobs:
+  paired:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Verify both fixed products and build each original libtest with identical adjusted fixture
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/sync-evidence"
+          t=codex-rs/hepta-agentd/src/authority_host_learning_resident_transport_tests.rs
+          c=codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs
+          mkdir "$d"
+          test "$(git rev-parse HEAD^)" = "$SYNC_COMBINED"
+          test "$(git rev-parse HEAD^2)" = "$SYNC_BASE"
+          test "$(git rev-parse "$SYNC_COMBINED^")" = "$COMBINED"
+          test "$(git rev-parse "$SYNC_BASE^")" = "$BASE"
+          for arm in base combined; do
+            cd "$GITHUB_WORKSPACE"
+            if [ "$arm" = base ]; then before=$BASE; ref=$SYNC_BASE; else before=$COMBINED; ref=$SYNC_COMBINED; fi
+            test "$(git diff --name-only "$before" "$ref")" = "$t"
+            git diff "$before" "$ref" > "$d/$arm-source.diff"
+            git ls-tree "$before" -- "$c" "$t" > "$d/$arm-before.tsv"
+            git ls-tree "$ref" -- "$c" "$t" > "$d/$arm-after.tsv"
+            git rev-parse "$before" "$ref" > "$d/$arm-commits.txt"
+            git worktree add --quiet --detach "$RUNNER_TEMP/sync-$arm" "$ref"
+            cd "$RUNNER_TEMP/sync-$arm"
+            ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$d/build-$arm.log"
+            elf=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$d/build-$arm.log" | tail -1)
+            test -x "$elf"
+            cp -L "$elf" "$RUNNER_TEMP/sync-bin-$arm"
+            sha256sum "$RUNNER_TEMP/sync-bin-$arm" > "$d/$arm-elf.txt"
+          done
+          cmp "$d/base-before.tsv" "$d/combined-before.tsv"
+          cmp "$d/base-after.tsv" "$d/combined-after.tsv"
+          if cmp -s "$RUNNER_TEMP/sync-bin-base" "$RUNNER_TEMP/sync-bin-combined"; then exit 1; fi
+      - name: Alternate ten real UID0 invocations per original product
+        shell: bash
+        run: |
+          set -euo pipefail
+          export OBS_FIXTURE=/run/hepta-resident-cancel-barrier-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT
+          sudo -n mkdir -m 700 "$OBS_FIXTURE"
+          cleanup() {
+            for sub in witness-bind bind; do
+              if sudo -n mountpoint -q "$OBS_FIXTURE/$sub"; then sudo -n umount "$OBS_FIXTURE/$sub"; fi
+            done
+          }
+          trap cleanup EXIT
+          sudo -n mkdir -m 700 "$OBS_FIXTURE/source" "$OBS_FIXTURE/bind" "$OBS_FIXTURE/checkpoints" "$OBS_FIXTURE/witness-source" "$OBS_FIXTURE/witness-bind"
+          sudo -n mount --bind "$OBS_FIXTURE/source" "$OBS_FIXTURE/bind"
+          sudo -n mount --bind "$OBS_FIXTURE/witness-source" "$OBS_FIXTURE/witness-bind"
+          python3 .github/scripts/agentd-cancel-sync-pair.py
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: original-cancelled-readback-sync-pair
+          path: ${{ runner.temp }}/sync-evidence
+          if-no-files-found: error
