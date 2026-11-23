@@ -1,0 +1,124 @@
+name: Qualify app-list wakeup with original Clippy and musl
+
+on:
+  push:
+    branches:
+      - verify/app-list-watch-gnu-musl-20261123
+
+permissions:
+  contents: read
+
+jobs:
+  musl:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+      CANDIDATE: a36a2b557b92c79b9ec197ea5ffce027d8417096
+      CASE: suite::v2::app_list::list_apps_emits_updates_and_returns_after_both_lists_load
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a36a2b557b92c79b9ec197ea5ffce027d8417096
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Repeat the exact original test three times without retries
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          ./.github/scripts/run-bazel-ci.sh --print-failed-test-logs -- \
+            test --strategy=TestRunner=local --test_sharding_strategy=disabled \
+            --test_arg=--exact --test_arg="$CASE" --runs_per_test=3 \
+            --flaky_test_attempts=1 --nocache_test_results \
+            --remote_upload_local_results=false \
+            --build_metadata=COMMIT_SHA="$CANDIDATE" \
+            -- //codex-rs/app-server:app-server-all-test
+      - name: Require three positive single-test process reports
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+          import re
+
+          root = Path("bazel-testlogs/codex-rs/app-server/app-server-all-test")
+          logs = sorted(root.glob("**/test.log"))
+          assert len(logs) == 3, logs
+          for path in logs:
+              data = path.read_bytes()
+              report = data.decode()
+              assert "test " + os.environ["CASE"] + " ... ok" in report, path
+              assert re.search(r"test result: ok\. 1 passed; 0 failed; 0 ignored;", report), path
+              print(path, hashlib.sha256(data).hexdigest())
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: exact-app-list-watch-three-musl
+          path: |
+            bazel-testlogs/codex-rs/app-server/app-server-all-test/**/test.log
+            bazel-testlogs/codex-rs/app-server/app-server-all-test/**/test.xml
+          if-no-files-found: warn
+
+  clippy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a36a2b557b92c79b9ec197ea5ffce027d8417096
+          persist-credentials: false
+      - name: Prepare original GNU Clippy toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-clippy
+      - name: Check original lint aspect on the previously failing unit
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = a36a2b557b92c79b9ec197ea5ffce027d8417096
+          test "$(git hash-object codex-rs/app-server/tests/suite/v2/app_list.rs)" = d49911644cc68f7635384366053c43613a4ad9b8
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary -- \
+            build --config=clippy --build_metadata=TAG_job=clippy \
+            --build_metadata=COMMIT_SHA="$(git rev-parse HEAD)" \
+            --remote_upload_local_results=false \
+            --build_event_json_file="$RUNNER_TEMP/app-list-clippy.jsonl" \
+            -- //codex-rs/app-server:app-server-all-test-bin
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          directory = Path(os.environ["RUNNER_TEMP"])
+          events = []
+          with (directory / "app-list-clippy.jsonl").open() as file:
+              for line in file:
+                  event = json.loads(line)
+                  target = event.get("id", {}).get("targetCompleted", {})
+                  if target.get("label") == "//codex-rs/app-server:app-server-all-test-bin":
+                      events.append(event)
+          assert any(e.get("completed", {}).get("success") for e in events)
+          assert any("clippy" in json.dumps(e).lower() for e in events)
+          (directory / "app-list-clippy-result.json").write_text(json.dumps(events, indent=2) + "\n")
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: original-app-list-gnu-clippy
+          path: ${{ runner.temp }}/app-list-clippy-result.json
+          if-no-files-found: warn
