@@ -1,0 +1,82 @@
+{
+  "original": {
+    "archive_sha256": "fc7fbc887f77883d185dd773c866560f02d3b118f46be196d59fe956dce3c115",
+    "stage": "original",
+    "arms": {
+      "base": {
+        "source": "e3277e9677688be5c4c235a7a127f0b51e373399",
+        "elf_sha256": "e22096190fb955ee70491be789b22e245de06add07b46128503213e828c9aa04",
+        "tests": {
+          "ordinary": {
+            "passed": 62,
+            "failed": [],
+            "libtest_s": 138.14
+          },
+          "uid0": {
+            "passed": 29,
+            "failed": [
+              "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel"
+            ],
+            "libtest_s": 19.29
+          }
+        }
+      },
+      "candidate": {
+        "source": "43e5da1bb81369e4e999adfa8558f5ccb5460eb6",
+        "elf_sha256": "1ad9942a18dcd2ccb69d40b8e38edd262cf4cfa5c137c3674e7316d4ad550278",
+        "tests": {
+          "ordinary": {
+            "passed": 62,
+            "failed": [],
+            "libtest_s": 137.73
+          },
+          "uid0": {
+            "passed": 30,
+            "failed": [],
+            "libtest_s": 18.28
+          }
+        }
+      }
+    },
+    "listed_fixture_blobs_sha256": "46fd2761abacc081bc4833b6c6dde4e8b0be5289eacb0ff8f1bfbb31f49865a8"
+  },
+  "sync": {
+    "archive_sha256": "41644ef5083521419e8670fa0ddfb73e0fd74a3d46c582d93d59675a0c1e4aa6",
+    "stage": "sync",
+    "arms": {
+      "base": {
+        "source": "3002afb8e319abd7909e57ac816b0fedc8f0233c",
+        "elf_sha256": "9c6013bb5c1f7cff5a85464afdf694e0bbce2371b71c2095ea2eda2873605cd8",
+        "tests": {
+          "ordinary": {
+            "passed": 62,
+            "failed": [],
+            "libtest_s": 135.99
+          },
+          "uid0": {
+            "passed": 30,
+            "failed": [],
+            "libtest_s": 18.62
+          }
+        }
+      },
+      "candidate": {
+        "source": "e1969bcf8dbb9e9e42cd718401a9df6d13f79d98",
+        "elf_sha256": "abb79f99f59754cde2cec06e36b4c026f8ff042abcdb674abe0aad79e010e0c6",
+        "tests": {
+          "ordinary": {
+            "passed": 62,
+            "failed": [],
+            "libtest_s": 137.5
+          },
+          "uid0": {
+            "passed": 30,
+            "failed": [],
+            "libtest_s": 18.18
+          }
+        }
+      }
+    },
+    "listed_fixture_blobs_sha256": "46fd2761abacc081bc4833b6c6dde4e8b0be5289eacb0ff8f1bfbb31f49865a8"
+  }
+}
