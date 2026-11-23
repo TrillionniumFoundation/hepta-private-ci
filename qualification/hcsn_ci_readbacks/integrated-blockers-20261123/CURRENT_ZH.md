@@ -5,12 +5,15 @@
 - **已见到哪些查询值得补读。** 在价格 0.30 下，音频偏吉他、图库偏钢琴、音频边际不超过 0.65 的一组，TRAIN 和 DEV 每次补读视频的平均净收益分别为 +0.300 和 +0.155。整组一律补读仍有 3 个训练来源、2 个开发来源越过最差损失限额。仅用 TRAIN 冻结的 6 坐标编辑在 DEV 买 3 次，救回 2 个错误并新引入 1 个，最差来源为 −0.325。八分组上界和 18 连续特征两套编辑均已由只读 TRAIN、DEV 的第二份实现逐题复核。[独立复算](../purchase-attainability-20261123/independent/receipt.json)
 - **新 12 个来源已经完成前瞻验证。** 冻结 24 套策略的 1,152 个动作后运行付费前端。上述错配组在 14 次购买中救回 7 个错误，净增 +0.20／次，但仍有 5 个来源跌破保持线。QVI 相对两种阈值均仅 +0.00278，单侧 p=0.75。全部 48 个窗口反序复跑得到完全相同的 288 个前缀后验。独立评分器复核 670 项。原 SVD 首时点策略效用 0.80625，最差来源 −0.075，仍未达到采纳标准。[新队列完整结果](../fresh-boundary-20261123/RESULTS_ZH.md)
 - **读出层的编辑容量与训练迁移已分别核验。** 原 SVD 排序的 47 个阈值无一同时通过均值和最差来源。改动 9 个坐标、L1=0.96549 后，可在新 48 窗的已知结局上维持 0.10 判断裕度并使最差来源持平。首时点理想 17 买、31 停需要 L1 严格大于 1.94386。仅在 TRAIN 上重新求解的一个编辑虽在训练内过门，三个非训练面板 0/3 过门。旧训练中既有 27 个正确动作的可见矩阵精确满秩 19，要求每个连续分数不变的精确权重编辑维数为 0。[证书、开发对照与独立复算](../fresh-boundary-20261123/RESULTS_ZH.md)
+- **25 文件组合源码的原三 crate 严格构建已实测。** 3b138733 相对 #7016 c12 跨四个问题净减 4 项，原命令仍以 101 退出，剩 111 项（68 参数过多、33 大枚举、10 未使用）。四项分别是私有 bootstrap、Feature 更新前驱、原记录提供器参数和既有 Artifact wire 状态。按文件、行、列、消息完整比较，另有一条原参数诊断从同一文件 227 行移到 228 行。c12 比对为 5 条旧坐标消失、1 条迁移到新坐标。两个独立原件分别证明真实 33/33 配对和 6/6 冷读撤销。11e 原调用回执在 9,141 个 Rust 文件上逐字相同。[组合完整源与原 strict ZIP](c12/combined-25.json) · [原始编译器输出](c12/combined-25-strict.zip) · [记录参数与守卫](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/756372f26d18ea1afe722b57c67738fbf91a0eef/qualification/hcsn_ci_readbacks/agentd-existing-arguments-20261123) · [私有枚举与 35 项原范围](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0eb846bfeaf225ed22cc0e5b642dcfae9be219b9/qualification/agentd_feature_publication/README_ZH.md)
+- **Q24 的 500 毫秒门有新的时间分解。** 原四片 379、393、384、396 项全过，171 项按原配置忽略。两条未撤销读取分别 319.303 与 471.152 毫秒。六次所有者调用中，登记表和存储检查耗时最多。主动撤销后的拒绝耗时 4.074 毫秒。前轮两次超时和未撤销时的连接关闭仍保留，单次通过不足以把历史故障归因。[四片原日志、CPU 和经过时间](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/253a22790d7e6756d55e16ab17d0b135224d0c12/qualification/q24_c12_clock_observation/owner_cpu/README_ZH.md)
+- **Windows 的最终与中间失败已分开复核。** #7021 的四个最终红例与 c12 四个隔离用例同名。三个 elevated 各三次失败，一个 restricted-token 失败一次。此前 c12 超时的 detached-session 在这个子源码上 6/6 通过。子代理 plaintext replay 单次中间失败后同名重试通过。两个原归档共核对 46 对 log/XML。[两次全量原记录](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/55e8fbce4faf34b33a4128717efe8317464b2c2e/docs/learning/evidence/windows-detach-resume-20261123/original-7021-shard4.md)
 - **#7016 的维护任务已在原源码闭合。** 第二次在原 40 分钟额度内完成，历时 36 分 45 秒，权限全集和全部后续维护步骤通过。全仓第二轮 33 成功、6 跳过、7 失败。另建的 21 文件组合在三种叠加顺序下给出相同 Git 树。[逐步回执与组合源树](c12/README_ZH.md)
 - **#7021 原 46 作业已终结。** 34 成功、6 条件跳过、6 失败。真实 musl 整片、Intel macOS 全测和主仓库维护均成功，Windows 和严格构建未过。#7016 直接后继 fe38676f 读取和写入两道原固定基址格式命令均通过，两次全工作树干净，完整原生 daemon 正在独立源码上执行。[#7021 原名册](7021-blocking.json) · [格式原门及补丁](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/ccf81fa929577ef1e0edc14a13e1262cc436db69/qualification/hcsn_ci_readbacks/daemon-fixed-base-format-20261123/format-followup/direct-c12) · [完整原生工作流](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45150994913)
 - **当前集成源码。** #7016 c12 的两个原 Rust 严格作业各有 115 项，与已资格源码 43e5 的诊断路径、行列和消息全部吻合。另一个单文件候选在自己的原三 crate 作业上减少 1 项到 114，新增零项。它已经过两臂的原普通／真实 UID0 测试、编码回放和完整权限调用审核。对 c12 应用该文件的预期树已独立重算；c12 原作业的计数仍是 115。[c12 双作业](c12/strict-jobs.json) · [单文件独立资格和 c12 物件对照](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cf46c20ca012fb65e49715e0a398bb5d35fcaeb1/qualification/agentd_bootstrap_wire/C12_ZH.md)
 - **Windows 与 musl。** 六个原 Windows 桌面/令牌控制均通过，原单测目标 289 过、5 原忽略。第六次整 shard 的四项隔离正例仍失败，分离会话也再次超时。c12 的原 musl 构建唯一最终红例是 Q24 发布撤回前读到连接关闭；子草案 #7021 的完整同类 musl 原作业通过。两树的六份关键 Q24 源码完全相同，尚无因果归因。[Windows 原件](windows-capability/NATIVE.md) · [两次 musl 原件](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e3fce928e4395868148da24c1d91e83a5765e37a/docs/learning/evidence/musl-child-completion-20261123/native-musl-comparison.md)
 
-## 已回答的研究问题
+## 先前研究各自的冻结面板
 
 | 问题 | 原始条件和结果 |
 | --- | --- |
@@ -18,7 +21,7 @@
 | 什么查询值得花价钱 | 22 个新录制来源上的分区和价格均已冻结。实测梯度策略的测试效用为 0.765625，免费为 0.6875，最差来源损失 0.075 超过容许的 0.05。以往 22 个主策略均未达到采用条件。新复算表明即使知道每一题的两种答案，九个可救错误也只落在三个测试来源。全部 2³² 个首时点动作组合中满足原统计准则的有零个。训练、开发分组给出了音频头与图库分歧时的净购买收益，也重算了真实传感器上等待 0.48 秒的十二组结果。[效用与分组](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63f88428b64033ff417a7f4af9ea985bc0d4ea92/qualification/hcsn_ci_readbacks/purchase-attainability-20261123/README.md) |
 | 能否靠编辑取代 BP | 当前证据支持冻结非线性部分时直接求解条件线性读出。实际干预的来源保持门槛和双对照检验仍未达标。在同等新来源效用、检索质量和最坏保持下限下，尚无胜过 BP、传统 SNN 或 Transformer 的训练墙钟结果。[五种适配方法](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0307d62f4d4226a979692cb4420746e8c84af0d4/qualification/hcsn_flow_integration_v1/RESULTS.md) |
 
-## 已终结的仓库级运行
+## 早期仓库级运行
 
 #7013 的源 c6a3ed9c 和 prospective merge 14272605 具有相同 Git 树。原 blocking-ci 的 46 个作业包括 34 项成功、6 项按工作流条件跳过和 6 项失败。Linux GNU、musl、macOS ARM、Intel 的原 Bazel 测试，Linux、macOS、Windows 的原 Bazel Clippy，以及仓库 build-test 均成功。完整权限调用检查涵盖 9,141 个 Rust 源文件、1,652 个边界、826 个受保护文件，权限授予标志为 false。[46 个作业逐项状态](c6a-blocking.json) · [原运行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45125165932) · [完整权限回执](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/7c0e392f4f9348d587c366d145f94325c69fc002/docs/learning/evidence/agentd-private-migration-20261123)
 
@@ -27,7 +30,7 @@
 - 两个原始 Rust 严格构建在 source 和 prospective 各报 128 项。后续修复四项，在不同的两个 musl ELF 上各通过 51 个原测试，严格命令仍以 124 项诊断退出。这 124 项包含 71 个参数过多、40 个变体过大和 13 个未使用代码诊断。[四项修复及原件](strict-four/) · [双源严格作业](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45127907565)
 - Windows shard 4 的最终 test.log 共有五个失败。其中四个原隔离正例在连续四次同源系的原生运行均失败。第五个是分离会话等候 WebSocket 事件超时，此前同名测试三次通过。另外两条在中间尝试中失败但最终通过。Windows 私有状态专项独立成功。[四次逐用例原件](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/8e7de7cc4b195df4bb588067ea1ea684c11b3ead/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/windows-capability) · [私有状态专项](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45125165764)
 
-## MemoryCell 启动
+## MemoryCell 启动的修复经过
 
 原先缺两个测试子进程，随后一次运行又因冷编译用完 30 分钟而中止。将同源编译与正式执行分开后，原 c6a 全部 1,552 项得以运行，1,547 项通过，五项仍找不到同一个带连字符的子程序。增加 Rust 定位器原已支持的下划线环境变量后，独立托管机在同一套三个 ELF 上逐项通过全部 1,552 项。171 个原始忽略项及四个原控制组均核对通过。[未通过和通过的原 ZIP、独立复算](memory-startup/FULL.md)
 
@@ -57,7 +60,7 @@ e327 自身从冷检出重新编译的原始启动工作流也已成功。新 Ag
 
 继续只用购买前的八个音频分组，TRAIN 和 DEV 的全部 256 张二值决策表产生 128 种不同动作。14 个来源都满足保持下限的只有两种，其中一种全免费，另一种只买一条训练查询。允许在每组输出任意连续购买概率后，约束同样 14 个来源的期望保持下限，DEV 相对一律购买的最大增益仍是 −487/10920（−0.04460）。这个上界有独立可验的有理数对偶证书，原逐题评分器复核两分区全部 512 次离散评分。一组查询的平均购买收益可为正，而仅凭这些购买前信息仍无法可靠部署。[精确证书、逐来源假设、原始评分复算](../purchase-attainability-20261123/README.md)
 
-## 取消后的读回及当前草案
+## 早期取消后的读回与草案沿革
 
 十次真实 UID0 原进程把取消后的队列时序定位到工作线程归还信号量之前。旧程序五次实际返回 QueueFull，五次返回预期的 Unavailable。测试先保留 peer 读到 EOF 和通道槽为空的原断言，再显式等唯一的信号量许可返回，等待新增两秒上限，随后执行原精确读回断言。两套产品源码的 transport Git blob 完全相同。两枚不同原 libtest 各通过 10/10，二十次交替进程共 1.154459 秒。该数字限于这一个特权用例。[旧返回值与新测试的原生归档](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/942848ada99429f4cd1653f698b121e0f47767fb/qualification/hcsn_ci_readbacks/agentd-private-enums-20261123/queued-readback)
 
@@ -79,4 +82,4 @@ e327 的 daemon 原生工作流也已终结。普通 2,849/2,849，Root 68/68，
 
 在相同原特征、价格和半径上，仅用 TRAIN 标签另外拟合一次，再封存权重后重放 DEV。六个编辑坐标、L1=0.9601562。TRAIN 两购两救、最差来源持平；DEV 三购两救一改错，效用仅高于免费 0.00417、低于一律购买 0.07083，最差来源损失 0.325。两批共同参与求解的容量正例不能作为此方法可迁移的证据。[训练封存及开发结果](../purchase-attainability-20261123/README.md)
 
-两期 44 个既有来源已逐项排除。现存未用的六份视频中，两份吉他均无法在四个规定时段取得有效窗口；严格核实新来源与许可的钢琴有一份。已登记的 105 页即使包含尚待复核的线索，可提供的新吉他上传账号至多两个。这个清点未查看任何新预测。现有库不足以组成独立的 6 钢琴＋6 吉他确认队列。[盲盘点](../purchase-attainability-20261123/SOURCE_INVENTORY.md)
+在扩展检索前，两期 44 个既有来源已逐项排除。当时库内未用的六份视频中，两份吉他均无法在四个规定时段取得有效窗口；严格核实新来源与许可的钢琴有一份。已登记的 105 页即使包含尚待复核的线索，可提供的新吉他上传账号至多两个。这个清点未查看任何新预测。这批旧资源不足以组成 6 钢琴＋6 吉他的队列。随后扩展的来源已通过取证并完成前瞻比较，见页首的新 12 来源结果。[盲盘点](../purchase-attainability-20261123/SOURCE_INVENTORY.md)
