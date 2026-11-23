@@ -1,0 +1,169 @@
+{
+  "schema": "hepta.e5.retained-aggregate.v1",
+  "scope": "Two public, deliberately constructed development model pairs use one distinct synthetic future input. No actual human enrollments, authenticated adoptions or settlement.",
+  "protocols": {
+    "allocation": "467f9990e02969403a4c520488385fa472f98e59",
+    "training": "f74ade08675759bc77210d19350dd19f9d2622ea",
+    "historical_replay": "0a874decd2b83f9d2fc4a4f414f263051576f64d",
+    "release_trainer": "be0ed847f21fa9b24f868b1b5b35b7874f849b68"
+  },
+  "registered_pairs": [
+    "e0cd3479b1fa58d00896432c908433434cce9a5a1e3dad0df9e79adf8e35f93f",
+    "7d60577d12d49a10a6896cdef6c9762f7dd40e8d831cdeaf0597c3d626d50276"
+  ],
+  "future_input_sha256": "1d9283d848ea941ace1fe0d2378ef8b70056a0d4d1648b95a322d90163e78285",
+  "authenticated_training_users": 0,
+  "independent_future_users": 0,
+  "authenticated_adoptions_observed": 0,
+  "unique_adopted_candidates_per_hour": null,
+  "human_scale_observations": [],
+  "sweeps": {
+    "cold_01": {
+      "attempts": 8,
+      "native_return_code_zero": 8,
+      "coordinator_accepted": 0,
+      "reason": "Tuple vs JSON-array representation comparison in an initial reader rejected canonical-equal verdicts. Preserved as a failed readout."
+    },
+    "training_01": {
+      "attempts": 8,
+      "native_return_code_zero": 8,
+      "coordinator_accepted": 0,
+      "reason": "Torch 2.9.1 / Transformers 4.57.3 rebuilt other config/tokenizer inventories and thus other registered request digests; the reader rejected all cases."
+    },
+    "cold_02": {
+      "batches": [
+        {
+          "block": 1,
+          "workers": 1,
+          "seconds": 33.30795556,
+          "two_admitted_job_seconds": 0,
+          "verified_distinct_pairs": 2,
+          "returncodes": [
+            0,
+            0
+          ],
+          "pairs_per_hour": 216.16457326629143
+        },
+        {
+          "block": 1,
+          "workers": 2,
+          "seconds": 18.155531013,
+          "two_admitted_job_seconds": 12.384061642,
+          "verified_distinct_pairs": 2,
+          "returncodes": [
+            0,
+            0
+          ],
+          "pairs_per_hour": 396.5733635025352
+        },
+        {
+          "block": 2,
+          "workers": 2,
+          "seconds": 16.423830252,
+          "two_admitted_job_seconds": 11.495408016,
+          "verified_distinct_pairs": 2,
+          "returncodes": [
+            0,
+            0
+          ],
+          "pairs_per_hour": 438.3873852521842
+        },
+        {
+          "block": 2,
+          "workers": 1,
+          "seconds": 31.658062728,
+          "two_admitted_job_seconds": 0,
+          "verified_distinct_pairs": 2,
+          "returncodes": [
+            0,
+            0
+          ],
+          "pairs_per_hour": 227.4302145984427
+        }
+      ],
+      "attempts": 8,
+      "verified_pairs": 8,
+      "matched_outputs_and_work": true,
+      "requested_overlap_observed": true,
+      "median_pairs_per_hour": {
+        "one": 221.79739393236707,
+        "two": 417.4803743773597
+      },
+      "ratio_of_median_rates": 1.882260052634624,
+      "speedup_by_balanced_block": [
+        1.8345899955308569,
+        1.9275687974274374
+      ],
+      "distinct_request_identities_total": 2,
+      "distinct_authored_future_inputs_total": 1,
+      "primitive_model_calls_per_complete_batch": 12,
+      "old_parent_successes_preserved": true,
+      "retention": "One authored retention task per request",
+      "future": "On the one authored future input each fixture parent failed and its candidate succeeded."
+    },
+    "training_02": {
+      "attempts": 8,
+      "verified_pairs": 1,
+      "failed_by_sigkill": 7,
+      "batches": [
+        {
+          "block": 1,
+          "workers": 1,
+          "seconds": 29.193781873,
+          "returncodes": [
+            0,
+            -9
+          ],
+          "verified_distinct_pairs": 1
+        },
+        {
+          "block": 1,
+          "workers": 2,
+          "seconds": 3.667103387,
+          "returncodes": [
+            -9,
+            -9
+          ],
+          "verified_distinct_pairs": 0
+        },
+        {
+          "block": 2,
+          "workers": 2,
+          "seconds": 8.414864645,
+          "returncodes": [
+            -9,
+            -9
+          ],
+          "verified_distinct_pairs": 0
+        },
+        {
+          "block": 2,
+          "workers": 1,
+          "seconds": 22.61022882,
+          "returncodes": [
+            -9,
+            -9
+          ],
+          "verified_distinct_pairs": 0
+        }
+      ],
+      "regenerated_configured_request_sha256_count": {
+        "plain": 3,
+        "circuit": 2
+      },
+      "median_pairs_per_hour": null,
+      "ratio_of_median_rates": null,
+      "cause": "Seven top-level return codes were -9. A nested paired_cold traceback also indicated SIGKILL. Kernel OOM/cgroup cause was unavailable. These are timing observations with failures, not usable training speedups."
+    },
+    "training_03": {
+      "protocol_commit": "be0ed847f21fa9b24f868b1b5b35b7874f849b68",
+      "started": true,
+      "observed_result": null,
+      "cause": "Started in an isolated network namespace, then the shared execution environment became unavailable. No terminal outcome observed in this aggregate."
+    }
+  },
+  "raw_evidence": {
+    "availability": "The coordinator reread completed local SUMMARY/BATCH data before the shared execution environment disconnected. Raw intermediate directories were inaccessible for export when this aggregate was written. This artifact contains read-back aggregates, not complete independent raw receipt replication.",
+    "unobserved_training_recovery_outputs": "unknown"
+  }
+}
