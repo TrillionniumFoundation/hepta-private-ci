@@ -1,0 +1,6 @@
+{
+  "design": "Exploratory follow-up chosen after reading the six-arm results and the exposed historical item's outputs. This is not one of the initially registered arms.",
+  "models": "Load the exact trajectory and write_only weights independently from the already published freeze. At CREATE, RUN and DONE use the trajectory model, at WRITE use the write-only model. Advance only on each actual generated action accepted by the original runner. Use the separately frozen trajectory model for the old no-tool task. No weight fitting.",
+  "control": "Copy the stored demonstration action at the current observable state, ignore the new query entirely. Report it as deterministic non-model replay, including the archived zero rehearsal target for the old no-tool item.",
+  "scoring": "Reuse the released 19-item engineering panel as an exposed diagnostic; generation uses task text and current state only. Score the final produced artifact against its requested arithmetic semantics at the end. No new human, generalization selection or production adoption."
+}

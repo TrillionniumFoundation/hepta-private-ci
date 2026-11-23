@@ -1,0 +1,20 @@
+{
+  "scope": "Research comparison on public OpenHands feedback row 52. No new person, payment or admission. Preserve the original prospective candidate.",
+  "parent": "e4173baea6cdb1e6278ce556c6a7f4bab64efd3312d132964675c37d4a24d3a1",
+  "parquet": "f8176795f554d2e40296ad17154f1539a4eb20474dee71de3bb1b3f36d41a9a0",
+  "task": "Observe two runtime errors and a successful retry. Project the final successful tool sequence to four actions: create file, supply its original literal contents, run, finish. Train only on agent actions and old digit-zero rehearsal; exclude hidden thoughts and future observations. Terminal message is mapped to DONE, not transcribed. Use the two error markers as a state prefix for all coding tasks.",
+  "arms": ["frozen", "retrieval", "direct", "local_bp", "trajectory", "write_only"],
+  "methods": {
+    "frozen": "Original unmodified parent.",
+    "retrieval": "Unmodified parent, same-state single nearest authorized training example by lexeme Jaccard, prompt with retrieved action target. Enforce the common input cap by shortening the retrieved string only. Identical old-task retrieval implementation.",
+    "direct": "Same projected trajectory and rehearsal, frozen features, direct ridge solve on an untied final projection, lambda 0.01 and equal weight per distinct example.",
+    "local_bp": "600 AdamW steps, last transformer block only, lr 0.003.",
+    "trajectory": "600 AdamW steps on all model coordinates, lr 0.003.",
+    "write_only": "600 AdamW steps on all coordinates, same sampled rows and rehearsal. Only WRITE turns and rehearsal produce gradients; keep nominal opportunities, record actual steps."
+  },
+  "training": "CPU one thread, seed 731. Cycle CREATE, WRITE, RUN, DONE, OLD over 600 opportunities; fixed last step; no tune/restart on scores. Freeze complete per-arm weight inventories, retrieval corpus and evaluator source before sampling the development panel.",
+  "inference": {"input_tokens": 170, "new_tokens": 80, "slots_per_episode": 4, "decode": "greedy; stop failed rollout on invalid action; report actual calls and tokens, separate one-call probes at oracle states", "teacher": "offline"},
+  "panel": "One exposed historical task, one old fixed check, six authored paraphrases of the same mathematical task, twelve newly sampled divisor/bound pairs (distinct from A) with the same six paraphrase templates. Draw the seed independently after all models and the evaluation program are frozen. Same sample, budget and scoring for every arm. Paraphrases and counterfactuals are developer tasks, not new training users or a prospective B.",
+  "grading": "Final success requires CREATE then a bounded for/range/modulo/print program then RUN then DONE, and the computed list must equal the exact requested multiples. A separate four-stage teacher-forced-state diagnostic checks each predicted action without giving credit for recovery. The common old prompt must produce 0. Every generation, including empty/rejected, is retained. No arbitrary generated code is executed.",
+  "report": "Per-arm fit and cold block wall/process CPU, input/output tokens, first failed state, callable action count, final success, old retention, semantic vs wording transfer. Quality timing is unsupported for arms missing the required success and retention. Engineer-scale run only."
+}

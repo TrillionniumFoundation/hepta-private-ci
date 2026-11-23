@@ -1,0 +1,51 @@
+name: Historical Cell weight readback
+on:
+  push:
+    branches:
+      - research/historical-four-arm-transfer-20261123
+    paths:
+      - qualification/historical-four-arm-transfer-20261123/independent.py
+      - qualification/historical-four-arm-transfer-20261123/models.zip.part*
+      - qualification/historical-four-arm-transfer-20261123/cold.zip
+      - .github/workflows/historical-cell-weight-readback.yml
+permissions:
+  contents: read
+jobs:
+  readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      STUDY: qualification/historical-four-arm-transfer-20261123
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install 'numpy==1.26.4'
+      - name: Load published weights and replay every generation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat "$STUDY/models.zip.part1" "$STUDY/models.zip.part2" > "$RUNNER_TEMP/models.zip"
+          echo "28b46e1f84215a0f3554f737930bab93e1d46f890445b14eda61abdb7b32b327  $RUNNER_TEMP/models.zip" | sha256sum --check --status
+          unzip -q "$RUNNER_TEMP/models.zip" -d "$RUNNER_TEMP/models"
+          unzip -q "$STUDY/cold.zip" -d "$RUNNER_TEMP/cold"
+          python "$STUDY/independent.py" "$RUNNER_TEMP/models" "$RUNNER_TEMP/cold" > "$RUNNER_TEMP/independent.json"
+          python - "$RUNNER_TEMP/independent.json" <<'PY'
+          import hashlib, json, pathlib, sys
+          f = pathlib.Path(sys.argv[1])
+          r = json.loads(f.read_bytes())
+          assert r["total"] == 577
+          print("matching generations", r["checked"])
+          print("receipt sha256", hashlib.sha256(f.read_bytes()).hexdigest())
+          for arm in ("fixed_graph", "replay"):
+              rows = list(r[arm]["cases"].values())
+              print(arm, [sum(x["success"] for x in g) for g in (rows[:1], rows[1:7], rows[7:])], "old", r[arm]["old_correct"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: historical-cell-independent-readback
+          path: ${{ runner.temp }}/independent.json
+          retention-days: 14
