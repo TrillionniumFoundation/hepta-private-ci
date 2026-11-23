@@ -136,7 +136,7 @@ impl RootHistoricalTaskPublicationDataV1 {
             return Err(Error::InvalidBinding);
         }
         let record = original_record(&request_bytes)?;
-        let mut request_reader = Reader::new(&request_bytes, b"HCSTREQ1")?;
+        let mut request_reader = Reader::new(&request_bytes, *b"HCSTREQ1")?;
         let (start, objective, deadline_ms): (CircuitStartV2, String, u64) =
             serde_json::from_slice(request_reader.blob()?).map_err(|_| Error::InvalidBinding)?;
         let request = CircuitTaskRequestV1 {
@@ -148,7 +148,7 @@ impl RootHistoricalTaskPublicationDataV1 {
         if super::request(&request, &record)? != request_bytes {
             return Err(Error::InvalidBinding);
         }
-        let mut result = Reader::new(&result_bytes, b"HCSTRES1")?;
+        let mut result = Reader::new(&result_bytes, *b"HCSTRES1")?;
         let saved_input = result.blob()?;
         let input = decode_input(saved_input)?;
         let (history_digest, output) = publication(&result_bytes, saved_input)?;
