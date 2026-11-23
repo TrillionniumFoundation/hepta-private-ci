@@ -1,0 +1,29 @@
+{
+  "delta": [
+    "0.0000000",
+    "0.0000000",
+    "0.0000000",
+    "0.0000000",
+    "0.0000000",
+    "0.0000000",
+    "0.0000000",
+    "0.0000000",
+    "-0.0600674",
+    "0.0000000",
+    "0.0715204",
+    "0.0000000",
+    "-0.1828863",
+    "0.0000000",
+    "0.0000000",
+    "0.1486051",
+    "0.0000000",
+    "-0.0157388",
+    "-0.4813382"
+  ],
+  "design": "One predefined search in the existing radius 1. Minimize L1 with a sufficing solver gap of 1. Require per-source gain >= -.05 and mean gain >= .03 versus each baseline on TRAIN. Registered edit price .30 and margin .10 with 0.00001 rounding reserve.",
+  "fit_labels": [
+    "train"
+  ],
+  "source_sha256": "b6dcedd6fa796dadc49b6c573b5e2d0464e96e6014826195513a9cd3856b0469",
+  "starting_head": "full-svd-.1"
+}

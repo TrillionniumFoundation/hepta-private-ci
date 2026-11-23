@@ -10,14 +10,22 @@ from qualification.hcsn_blocker_followup import experiment, readout_edit, select
 from verify_coordinate_witness import restore, training_inputs
 
 
-def search(qual):
+def search(qual, splits=("train", "dev")):
+    if splits not in (("train",), ("train", "dev")):
+        raise ValueError("unregistered fitting partitions")
     panels = []
     with TemporaryDirectory() as folder:
         root = Path(folder)
         restore(qual/"hcsn_intervention_value/evidence", root/"old", lambda s:s=="primary/discovery/front_weights.json")
-        restore(qual/"hcsn_blocker_followup/evidence", root/"new", training_inputs)
+        def inputs(name):
+            if not training_inputs(name):
+                return False
+            if splits==("train",) and name.startswith(("media/features/dev", "media/semantic/dev", "media/semantic/parts/dev", "media/receipts/dev")):
+                return False
+            return True
+        restore(qual/"hcsn_blocker_followup/evidence", root/"new", inputs)
         fit = json.loads((root/"new/outcomes/fit.json").read_text())["full-svd-.1"]
-        for split in ("train","dev"):
+        for split in splits:
             data,_ = experiment.panel(root/"new/media", root/"old/primary/discovery", split)
             panels.append((readout_edit.matrix(data,fit),10*selector.target(data)-3,data["group"]))
     design = np.concatenate([x for x,_,_ in panels])
@@ -60,4 +68,7 @@ def search(qual):
 if __name__=="__main__":
     arg=argparse.ArgumentParser(description=__doc__)
     arg.add_argument("qualification",type=Path)
-    print(json.dumps({"delta":search(arg.parse_args().qualification)},indent=2))
+    arg.add_argument("--train-only", action="store_true")
+    opts=arg.parse_args()
+    partitions=("train",) if opts.train_only else ("train","dev")
+    print(json.dumps({"delta":search(opts.qualification, partitions)},indent=2))
