@@ -1,0 +1,86 @@
+name: Compare original Artifact Head response codecs on fixed product sources
+on:
+  push:
+    branches: ["diagnostic/canonical-head-0652-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: 11e1660799a97fe3a52def730d36f98cb070f8ad
+  CANDIDATE: 0652ab8f32a36da9c13cdf18ee3d22eb44863d92
+jobs:
+  paired-wire:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Build actual source-locked musl tests and retain two independent executables
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$CANDIDATE"
+          test "$(git rev-parse HEAD^^)" = "$BASE"
+          prod=codex-rs/hepta-agentd/src/artifact_original_head_wire.rs
+          fixture=codex-rs/hepta-agentd/src/artifact_original_head_tests.rs
+          support=codex-rs/hepta-agentd/src/artifact_original_head_support_tests.rs
+          test "$(git diff --name-only "$BASE" "$CANDIDATE")" = "$prod"
+          proof="$GITHUB_WORKSPACE/qualification/canonical-head-wire-comparison"
+          output="$RUNNER_TEMP/canonical-head-evidence"
+          mkdir "$output"
+          git rev-parse HEAD > "$output/driver.txt"
+          for arm in base candidate; do
+            sha=$BASE
+            blob=1e6cad7a4dbc6f559169471b56d0634a64acb77e
+            if [[ $arm == candidate ]]; then
+              sha=$CANDIDATE
+              blob=932c51b759f06809df648bab0ae730feb3bb21a0
+            fi
+            src="$RUNNER_TEMP/canonical-head-src-$arm"
+            git worktree add --quiet --detach "$src" "$sha"
+            (
+              cd "$src"
+              git rev-parse HEAD > "$output/$arm-source.txt"
+              test "$(git rev-parse HEAD)" = "$sha"
+              test "$(git hash-object "$prod")" = "$blob"
+              test "$(git hash-object "$fixture")" = c5427b44c054e6276a9d053bedd8f9870b209e79
+              test "$(git hash-object "$support")" = a322d61efc03b105fc14ccbc5f55b545ad3b879d
+              python3 -B -m unittest discover -s qa/b4-no-bypass -p test_original_artifact_head_source_closure.py -v |& tee "$output/$arm-source-guard.log"
+              grep -q '^Ran 9 tests' "$output/$arm-source-guard.log"
+              git ls-tree HEAD -- "$prod" "$fixture" "$support" > "$output/$arm-original-blobs.txt"
+              cat "$proof/observer.rs" >> "$fixture"
+              test "$(git diff --name-only)" = "$fixture"
+              git show "HEAD:$fixture" | cmp -n "$(git cat-file -s "HEAD:$fixture")" - "$fixture"
+              sha256sum "$fixture" > "$output/$arm-observer.txt"
+              ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$output/$arm-build.log"
+              binary=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$output/$arm-build.log" | tail -1)
+              test -x "$binary"
+              cp -L "$binary" "$RUNNER_TEMP/canonical-head-$arm"
+              sha256sum "$RUNNER_TEMP/canonical-head-$arm" > "$output/$arm-elf.txt"
+            )
+            git worktree remove --force "$src"
+          done
+          cmp "$output/base-observer.txt" "$output/candidate-observer.txt"
+      - name: Original head fixtures, status partitions, bounds and cross-executable readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TEST_EVIDENCE="$RUNNER_TEMP/canonical-head-evidence"
+          python3 qualification/canonical-head-wire-comparison/pair.py
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: canonical-head-wire-pair
+          path: ${{ runner.temp }}/canonical-head-evidence
