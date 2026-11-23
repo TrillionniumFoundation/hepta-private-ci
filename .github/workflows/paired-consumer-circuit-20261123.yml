@@ -1,0 +1,43 @@
+name: Subsequent routed Circuit fixture originals
+on:
+  push:
+    branches: [research/paired-consumer-circuit-20261123]
+    paths:
+      - scripts/cell_experiments/paired_consumer*.py
+      - scripts/cell_experiments/test_paired_consumer_circuit.py
+      - .github/workflows/paired-consumer-circuit-20261123.yml
+permissions:
+  contents: read
+jobs:
+  consumer-originals:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: scripts
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: "3.12"
+      - name: Install the Cell integrity CPU numerical profile
+        run: |
+          python -m venv "$RUNNER_TEMP/consumer-env"
+          "$RUNNER_TEMP/consumer-env/bin/pip" install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu torch==2.9.1+cpu
+          "$RUNNER_TEMP/consumer-env/bin/pip" install --only-binary=:all: numpy==2.3.5 transformers==4.57.3 peft==0.18.0 tokenizers==0.22.2 accelerate==1.16.0 safetensors==0.7.0 huggingface-hub==0.36.2
+      - name: Retain original authored requests, model files, output and decisions
+        run: |
+          "$RUNNER_TEMP/consumer-env/bin/python" -m cell_experiments.test_paired_consumer_circuit --fixture "$RUNNER_TEMP/circuit-originals"
+          (cd "$RUNNER_TEMP/circuit-originals" && zip -q -r "$RUNNER_TEMP/CONSUMER_CIRCUIT_ORIGINALS.zip" .)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: paired-consumer-circuit-originals
+          path: ${{ runner.temp }}/CONSUMER_CIRCUIT_ORIGINALS.zip
+          if-no-files-found: error
+          retention-days: 30
