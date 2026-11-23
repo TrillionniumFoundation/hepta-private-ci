@@ -1,0 +1,1794 @@
+{
+  "cpu_name": "AMD EPYC 7763 64-Core Processor",
+  "device": "cpu",
+  "feature_extraction_threads": 2,
+  "feature_matrix_shape": [
+    464,
+    1152
+  ],
+  "fit_median_seconds": {
+    "bp_lbfgs": 0.13832508999999504,
+    "direct": 0.014645776999998361
+  },
+  "fit_speed_ratio": 9.444708191310745,
+  "frozen_encoder": {
+    "files": {
+      "config.json": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41",
+      "model.safetensors": "53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db",
+      "special_tokens_map.json": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3",
+      "tokenizer.json": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+      "tokenizer_config.json": "acb92769e8195aabd29b7b2137a9e6d6e25c476a4f15aa4355c233426c61576b",
+      "vocab.txt": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+    },
+    "id": "sentence-transformers/all-MiniLM-L6-v2",
+    "license": "apache-2.0",
+    "revision": "c9745ed1d9f207416be6d2e6f8de32d1f16199bf"
+  },
+  "holdout_rows": 272,
+  "matches_published": {
+    "bp_lbfgs": 272,
+    "direct": 272
+  },
+  "matrix_sha256": "abd5e0f756464b2549f709f47c717bd0de8856266f7131ad9b25190cdff36157",
+  "max_direct_difference_from_published": 6.8833827526759706e-15,
+  "max_weight_difference": 2.319837287129145e-07,
+  "measurements": {
+    "load": 0.2168811570000173,
+    "training_features": 4.596532043999986
+  },
+  "original_panel_archive_sha256": "84b379a59d454e22009b434c254628e56e023467366ca9bde237df469154ffe0",
+  "real_participants": 0,
+  "residual_sha256": "d0f047397ef16c497b37212ea493e16af1a9e61f7aeb57147773ee523471cdf6",
+  "rows": [
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-german-000",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-001",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-002",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-german-003",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-german-004",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-005",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-006",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-german-007",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-german-008",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-009",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-010",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-german-011",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-012",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-013",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-014",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-german-015",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-016",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-017",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-german-018",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-german-019",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-020",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-021",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-german-022",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-german-023",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-000",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-001",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-002",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-003",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-004",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-005",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-006",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-007",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-008",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-009",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-010",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-011",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-012",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-013",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-014",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-015",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-016",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-017",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-018",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-019",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-020",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-french-021",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-022",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-french-023",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-000",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-agreement-001",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-agreement-002",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-003",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-agreement-004",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-agreement-005",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-agreement-006",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-agreement-007",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-008",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-009",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-010",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-011",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-agreement-012",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-agreement-013",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-014",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-015",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-016",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-017",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-018",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-019",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-020",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-agreement-021",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-agreement-022",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-agreement-023",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-000",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-001",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-002",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-003",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-004",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-005",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-006",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-007",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-008",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-009",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-010",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-011",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-012",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-013",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-014",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-015",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-016",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-017",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-018",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-019",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-020",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-021",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-addition-022",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-addition-023",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-000",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-python-001",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-002",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-python-003",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-python-004",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-python-005",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-006",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-python-007",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-008",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-009",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-010",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-011",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-python-012",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-013",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-014",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-python-015",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-016",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-017",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-018",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-019",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-python-020",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-021",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-python-022",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-python-023",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-000",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-001",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-002",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-003",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-004",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-005",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-006",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-007",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-008",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-009",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-010",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-011",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-012",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-013",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-014",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-015",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-016",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-017",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-018",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-capital-019",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-020",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-021",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-022",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-capital-023",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-api-000",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-001",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-002",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-003",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-004",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-005",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-006",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-007",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-api-008",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-api-009",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-010",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-011",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-012",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-013",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-api-014",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-015",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-api-016",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-api-017",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-018",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-api-019",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-api-020",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-api-021",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-api-022",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-api-023",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-000",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-001",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-002",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-003",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-004",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-005",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-006",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-007",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-008",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-009",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-010",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-011",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-012",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-013",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-014",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-015",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-016",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-017",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-018",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-019",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "holdout-text-020",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-021",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-022",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "holdout-text-023",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-german-000",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-german-001",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-german-002",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-german-003",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-german-004",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-german-005",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-german-006",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-german-007",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-french-000",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-french-001",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-french-002",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-french-003",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-french-004",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-french-005",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-french-006",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-french-007",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-agreement-000",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-agreement-001",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-agreement-002",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-agreement-003",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-agreement-004",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-agreement-005",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-agreement-006",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-agreement-007",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-addition-000",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-addition-001",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-addition-002",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-addition-003",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-addition-004",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-addition-005",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-addition-006",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-addition-007",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-python-000",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-python-001",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-python-002",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-python-003",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-python-004",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-python-005",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-python-006",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-python-007",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-capital-000",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-capital-001",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-capital-002",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-capital-003",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-capital-004",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-capital-005",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-capital-006",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-capital-007",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-api-000",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-api-001",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-api-002",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-api-003",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-api-004",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-api-005",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-api-006",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-api-007",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-text-000",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-text-001",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-text-002",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-text-003",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-text-004",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-text-005",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "composition-text-006",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "composition-text-007",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "old-test-0",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "old-test-1",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "old-test-2",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "old-test-3",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "old-test-4",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "old-test-5",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "old-test-6",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "old-test-7",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "old-test-8",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "old-test-9",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "old-test-10",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "old-test-11",
+      "published": 1
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "old-test-12",
+      "published": 0
+    },
+    {
+      "bp": 0,
+      "direct": 0,
+      "id": "old-test-13",
+      "published": 0
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "old-test-14",
+      "published": 1
+    },
+    {
+      "bp": 1,
+      "direct": 1,
+      "id": "old-test-15",
+      "published": 1
+    }
+  ],
+  "runs": [
+    {
+      "backward_calls": 0,
+      "method": "direct",
+      "objective": 17.138918059430814,
+      "relative_stationarity": 1.7356131430067868e-15,
+      "repeat": 0,
+      "seconds": 0.015395196000014266
+    },
+    {
+      "backward_calls": 144,
+      "method": "bp_lbfgs",
+      "objective": 17.138918059431266,
+      "relative_stationarity": 1.317930739400502e-08,
+      "repeat": 0,
+      "seconds": 0.13919787300000053
+    },
+    {
+      "backward_calls": 144,
+      "method": "bp_lbfgs",
+      "objective": 17.138918059431266,
+      "relative_stationarity": 1.317930739400502e-08,
+      "repeat": 1,
+      "seconds": 0.1380290040000034
+    },
+    {
+      "backward_calls": 0,
+      "method": "direct",
+      "objective": 17.138918059430814,
+      "relative_stationarity": 1.7356131430067868e-15,
+      "repeat": 1,
+      "seconds": 0.014700690000012173
+    },
+    {
+      "backward_calls": 0,
+      "method": "direct",
+      "objective": 17.138918059430814,
+      "relative_stationarity": 1.7356131430067868e-15,
+      "repeat": 2,
+      "seconds": 0.014145175999999537
+    },
+    {
+      "backward_calls": 144,
+      "method": "bp_lbfgs",
+      "objective": 17.138918059431266,
+      "relative_stationarity": 1.317930739400502e-08,
+      "repeat": 2,
+      "seconds": 0.13832508999999504
+    },
+    {
+      "backward_calls": 144,
+      "method": "bp_lbfgs",
+      "objective": 17.138918059431266,
+      "relative_stationarity": 1.317930739400502e-08,
+      "repeat": 3,
+      "seconds": 0.13797302899999409
+    },
+    {
+      "backward_calls": 0,
+      "method": "direct",
+      "objective": 17.138918059430814,
+      "relative_stationarity": 1.7356131430067868e-15,
+      "repeat": 3,
+      "seconds": 0.014788135000003422
+    },
+    {
+      "backward_calls": 0,
+      "method": "direct",
+      "objective": 17.138918059430814,
+      "relative_stationarity": 1.7356131430067868e-15,
+      "repeat": 4,
+      "seconds": 0.014301699000014878
+    },
+    {
+      "backward_calls": 144,
+      "method": "bp_lbfgs",
+      "objective": 17.138918059431266,
+      "relative_stationarity": 1.317930739400502e-08,
+      "repeat": 4,
+      "seconds": 0.13831667499999867
+    },
+    {
+      "backward_calls": 144,
+      "method": "bp_lbfgs",
+      "objective": 17.138918059431266,
+      "relative_stationarity": 1.317930739400502e-08,
+      "repeat": 5,
+      "seconds": 0.1383424039999852
+    },
+    {
+      "backward_calls": 0,
+      "method": "direct",
+      "objective": 17.138918059430814,
+      "relative_stationarity": 1.7356131430067868e-15,
+      "repeat": 5,
+      "seconds": 0.014645776999998361
+    },
+    {
+      "backward_calls": 0,
+      "method": "direct",
+      "objective": 17.138918059430814,
+      "relative_stationarity": 1.7356131430067868e-15,
+      "repeat": 6,
+      "seconds": 0.014278004000004785
+    },
+    {
+      "backward_calls": 144,
+      "method": "bp_lbfgs",
+      "objective": 17.138918059431266,
+      "relative_stationarity": 1.317930739400502e-08,
+      "repeat": 6,
+      "seconds": 0.14189200499998833
+    }
+  ],
+  "same_answers": 272,
+  "shared_load_and_features_plus_fit_ratio": 1.025616777583614,
+  "torch": "2.9.1+cpu",
+  "torch_threads": 1
+}
