@@ -47,6 +47,7 @@ use pretty_assertions::assert_eq;
 use serde_json::json;
 use std::collections::BTreeMap;
 use std::sync::Arc;
+use std::time::SystemTime;
 use tempfile::TempDir;
 use time::OffsetDateTime;
 use tokio::io::AsyncBufReadExt;
@@ -119,7 +120,7 @@ fn remote_control_auth_dot_json(account_id: Option<&str>) -> AuthDotJson {
             refresh_token: "refresh-token".to_string(),
             account_id: account_id.map(str::to_string),
         }),
-        last_refresh: Some(chrono::Utc::now()),
+        last_refresh: Some(SystemTime::now().into()),
         agent_identity: None,
         personal_access_token: None,
         bedrock_api_key: None,
