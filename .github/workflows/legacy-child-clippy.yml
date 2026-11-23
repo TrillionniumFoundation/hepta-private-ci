@@ -1,0 +1,64 @@
+name: Qualify legacy child delivery under original Core GNU Clippy
+
+on:
+  push:
+    branches:
+      - diagnostic/legacy-subagent-clippy-20261123
+
+permissions:
+  contents: read
+
+jobs:
+  clippy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: aad73002ea6b3ce63928cbb3125b23430ec6d7a7
+          persist-credentials: false
+      - name: Prepare original GNU Clippy toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-clippy
+      - name: Check the original lint aspect on the Core unit and product dependencies
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = aad73002ea6b3ce63928cbb3125b23430ec6d7a7
+          test "$(git hash-object codex-rs/core/src/session/inject.rs)" = bca8355a459d59eba55bcb8f5249196217b24315
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary -- \
+            build --config=clippy --build_metadata=TAG_job=clippy \
+            --build_metadata=COMMIT_SHA="$(git rev-parse HEAD)" \
+            --remote_upload_local_results=false \
+            --build_event_json_file="$RUNNER_TEMP/legacy-child-clippy.jsonl" \
+            -- //codex-rs/core:core-unit-tests-bin
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          directory = Path(os.environ["RUNNER_TEMP"])
+          events = []
+          with (directory / "legacy-child-clippy.jsonl").open() as file:
+              for line in file:
+                  event = json.loads(line)
+                  target = event.get("id", {}).get("targetCompleted", {})
+                  if target.get("label") == "//codex-rs/core:core-unit-tests-bin":
+                      events.append(event)
+          assert any(e.get("completed", {}).get("success") for e in events)
+          assert any("clippy" in json.dumps(e).lower() for e in events)
+          (directory / "legacy-child-clippy-result.json").write_text(json.dumps(events, indent=2) + "\n")
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: original-legacy-child-gnu-clippy
+          path: ${{ runner.temp }}/legacy-child-clippy-result.json
+          if-no-files-found: warn
