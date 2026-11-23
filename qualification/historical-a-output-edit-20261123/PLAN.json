@@ -1,0 +1,13 @@
+{
+  "scope": "Retrospective methods control on the single known licensed OpenHands case. No future user data.",
+  "source_freeze": "447ace5cc8bc031cc772e63ccb90380f16fc81404003bc04057ec4f8b7470ef6",
+  "source_parent": "e4173baea6cdb1e6278ce556c6a7f4bab64efd3312d132964675c37d4a24d3a1",
+  "features": "Frozen final normalized hidden state at each next-token position. Successful file contents plus EOS, old training response plus EOS. No prompt token is targeted.",
+  "parameterization": "Add delta to untied output matrix only. Both controls have the same initial logits. Each example carries half the objective weight.",
+  "objective": "Squared distance of logits to one-hot labels plus 0.01 times squared Frobenius norm of delta. No intercept.",
+  "direct": "Solve the positive definite normal equation in float64.",
+  "bp": "Autograd gradient descent on the identical convex objective, fixed 1/L step, at most 240 iterations or relative gradient norm at most 1e-8.",
+  "timing": "One CPU thread, one untimed warm-up per arm, six repetitions alternating order; retain every sample. Fit time includes each method's own setup and stopping. Common feature extraction and per-arm cold starts reported separately.",
+  "score": "Autoregressive greedy generation in separate processes from durable float32 weights on already known A and predefined old item. Measure byte exact or AST equivalence for A and digit zero for the old task. Single fixed hyperparameter setting, no tuning.",
+  "outcome_policy": "Keep both results whatever the outcome. No promotion and no change to the independently frozen candidate."
+}
