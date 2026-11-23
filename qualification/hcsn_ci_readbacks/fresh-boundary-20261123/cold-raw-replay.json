@@ -1,0 +1,37 @@
+{
+  "actions_source_zip_members": 4,
+  "camera_weights_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+  "equal_camera_row_fields": [
+    "source_sha256",
+    "rgb_sha256",
+    "transform_sha256",
+    "logits_sha256",
+    "posterior",
+    "clock",
+    "query_id"
+  ],
+  "equal_scoring_fields": [
+    "primary",
+    "scores",
+    "opportunity",
+    "prior_audio_subgroup",
+    "queries",
+    "sources",
+    "policies",
+    "all_original_evaluators_match"
+  ],
+  "exact_artifact_sha256": {
+    "actions.json": "b76f924fef28528cefcab1bbe97f98e4a9e4627d841ed7c97f1668536496905a",
+    "audio.npz": "f4d1cd97b64b80cd8dfee99b61d6bf5b6caa2c5bbe8e66d66251e7e33f660480",
+    "camera.npz": "c72730270654a850e5c5939e327d24eeae3d6d2a04eec3fda349f8f83f14e5fb",
+    "free.npz": "5be8322e0e256f70119facde0b312b1d878b0ca76d870b32bb61e80b5be8d6c9",
+    "qvalues.npz": "c2c820e32ff4564c9216ae9d2f7fba6f3b837d55c29cc6aed7b35058fa8ee1ef",
+    "roster.json": "d4a0146197403ffe5e425e09593968329fde5db7e063f1add87df6ee190edcd9"
+  },
+  "fresh_action_wall_seconds": 36.05913483900076,
+  "fresh_camera_uncached_wall_seconds": 182.21772860999772,
+  "fresh_scorer_wall_seconds": 0.033921779999218415,
+  "frozen_files_restored": 25,
+  "prefix_posteriors": 288,
+  "source_windows": 48
+}
