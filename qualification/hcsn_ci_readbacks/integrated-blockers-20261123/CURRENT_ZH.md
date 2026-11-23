@@ -1,5 +1,11 @@
 # Hepta 研究与集成核验
 
+## 2026-11-23 22:26 UTC #7052 Laya 原生交付与有限训练闭合；严格双臂仅余一项
+
+- 精确 `78c1012` [MemoryCell 45272004826](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45272004826) 原 7/7 success。Laya 原固定权重实读 inventory 的 842609210 字节及 SHA256 与上游 LFS 一致；实际 8 步 LoRA、4100 参数、8.81636 秒；独立下载并复算原 ZIP 14866134293 摘要、CRC、两文件及 4100 个 F32。四测试对前后均 3/4，非全基准、非生产采纳。此精确源码的权重交付与有限训练原生门局部闭合，保留历史取消。Learning artifacts 原 4/4 success。
+- [blocking-ci 45272005010](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45272005010) 尚在执行；source/merge 原完整日志均从两条减至唯一八参数公开 V1 构造器诊断，仍退出 101；CNS 重复实现诊断消失。不改公开 V1/不加豁免。
+- 补读 e3ab 原 [45162515924](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45162515924) 三 job success；严格原输出 111→110、两侧仍 exit 101、无新增诊断；native 两组 6/6、1/1。不能把诊断验证作业成功算严格通过。全仓 HOLD。 [原件与独立复算](7052-78c1012-laya-native-and-strict-20261123-2226Z.md)
+
 ## 2026-11-23 #7052 CNS 摘要重复实现修补候选（待原生验证）
 
 - 从原 source 严格日志确认两个残余诊断。两份 CNS route digest 原函数仅 helper 名不同；helper 归一化也完全相同。已在 Draft #7052 提交 [`78c1012d`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/78c1012d1b6d63a2cd3d67e2534ba8b8d62e34b6)，公开入口委托给原等价实现，父子 Git compare 仅一文件（1 增 15 删），保留公开 V1、摘要和安全语义。未修改八参数构造器、未增 lint 豁免。新 commit 初读无工作流，原生资格仍 HOLD；不重复派发、不合并。[精确源与原日志](7052-route-digest-single-implementation-20261123.md)。
