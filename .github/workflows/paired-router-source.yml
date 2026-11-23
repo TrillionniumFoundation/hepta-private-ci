@@ -1,6 +1,7 @@
 name: Source-authorized Circuit router qualification
 on:
   push:
+    branches: [research/paired-consumer-router-source-20261123]
     paths:
       - '.github/workflows/paired-router-source.yml'
       - 'qualification/paired-router-source-20261123/qualify.py'

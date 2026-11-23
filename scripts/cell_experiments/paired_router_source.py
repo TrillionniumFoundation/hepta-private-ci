@@ -47,7 +47,7 @@ def inspect_node(model, node, root):
 def review_search(root, folder, parent, example):
     """Replay the original scored topologies, relays and actual slot tokenizations."""
     search, plan, raw = (read(folder / name) for name in ("SEARCH.json", "PLAN.json", "BUNDLE.json"))
-    router, cells, budget = circuit._components(parent)
+    _, _, budget = circuit._components(parent)
     rows = search["observations"]
     graphs = [circuit._graph(g) for g in parent["router"]["graphs"]]
     require(raw["models"] == parent["models"] and raw["budget"] == parent["budget"]
@@ -74,6 +74,22 @@ def review_search(root, folder, parent, example):
                 and result["cost"] == row["cost"] == dict(circuit._cost(nodes), verifier_calls=1),
                 "search scoring or prices differ")
         verified.append((row, result))
+    # Independently reproduce the original ridge solution from the original
+    # per-graph labels, measured tokens and committed feature map.
+    import numpy as np
+    settings = circuit_router.RouterPlan(**parent["router"]["plan"])
+    features, _ = circuit_router.prompt_features(example, settings.feature_dimensions)
+    x = np.asarray([features])
+    target = []
+    for row, result in verified:
+        c = result["cost"]
+        utility = (int(result["success"]) - settings.output_token_penalty * c["output_tokens"] /
+                   (budget.model_calls * budget.max_output_tokens_per_call)
+                   - settings.model_call_penalty * c["model_calls"] / budget.model_calls)
+        require(abs(row["utility"] - utility) <= 1e-12, "router utility differs from observed score and cost")
+        target.append(utility)
+    weights = np.linalg.solve(x.T @ x + settings.ridge * np.eye(x.shape[1]), x.T @ np.asarray([target])).T
+    require(np.allclose(weights, raw["router"]["weights"], rtol=1e-10, atol=1e-12), "A-only router weights differ")
     return raw, verified
 
 
