@@ -1,0 +1,124 @@
+name: Qualify resident observation on the integrated 25-file parent
+on:
+  push:
+    branches: ["diagnostic/agentd-resident-integrated-3b-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: 3b1387335f57a67ae9f5878064feb26a1601d715
+  CANDIDATE: e3ab74ed1fbbea54c9fa08218b17accf786f8ada
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: e3ab74ed1fbbea54c9fa08218b17accf786f8ada
+          persist-credentials: false
+      - name: Verify original caller census and publication source guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          dir="$RUNNER_TEMP/source-evidence"
+          mkdir "$dir"
+          git rev-parse HEAD > "$dir/commit.txt"
+          python3 -B scripts/verify_hepta_callers.py verify > "$dir/callers.json"
+          for source_guard in test_first_publication_acceptance_source_closure.py test_original_artifact_head_source_closure.py test_original_evaluation_provider_source_closure.py test_original_learning_owner_source_closure.py test_original_model_root_source_closure.py test_original_next_use_command_source_closure.py test_original_no_update_stage_source_closure.py test_original_on_policy_evaluation_source_closure.py test_original_publication_route_source_closure.py test_original_readonly_ready_source_closure.py test_original_selector_command_source_closure.py test_original_training_bootstrap_source_closure.py test_original_training_command_source_closure.py test_original_training_initial_connection_source_closure.py test_post_a_original_files_source_closure.py test_post_a_physical_preparation_source_closure.py test_post_a_publication_source_closure.py test_publication_v2_source_closure.py test_resident_root_source_closure.py test_successor_historical_client_source_closure.py; do
+            test -s "qa/b4-no-bypass/$source_guard"
+            python3 -B -m unittest discover -s qa/b4-no-bypass -p "$source_guard" -v |& tee "$dir/$source_guard.log"
+            grep -Eq '^Ran [1-9][0-9]* tests?' "$dir/$source_guard.log"
+          done
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: integrated-resident-source
+          path: ${{ runner.temp }}/source-evidence
+
+  strict:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 130
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - run: python3 scripts/hepta_ci_toolchain.py --github-env "$GITHUB_ENV"
+      - name: Run stock strict target and compare its complete error census
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$CANDIDATE"
+          test "$(git rev-parse HEAD^^)" = "$BASE"
+          evidence="$RUNNER_TEMP/resident-proof"
+          mkdir "$evidence"
+          src="$RUNNER_TEMP/resident-strict"
+          git worktree add --quiet --detach "$src" "$CANDIDATE"
+          cd "$src"
+          git rev-parse HEAD > "$evidence/source.txt"
+          test "$(git diff --name-only "$BASE" "$CANDIDATE")" = "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/resident-target"
+          set +e
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings > "$evidence/strict.log" 2>&1
+          status=$?
+          set -e
+          echo "$status" > "$evidence/strict.exit"
+          python3 "$GITHUB_WORKSPACE/qualification/private-payload-check/strict.py" "$evidence" "$GITHUB_WORKSPACE/qualification/private-payload-check/strict-base.json"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: integrated-resident-strict
+          path: ${{ runner.temp }}/resident-proof
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        arm: [candidate]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      ARM: ${{ matrix.arm }}
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - name: Build the selected original source and run the registered cases
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$CANDIDATE"
+          test "$(git rev-parse HEAD^^)" = "$BASE"
+          evidence="$RUNNER_TEMP/resident-proof"
+          tools="$GITHUB_WORKSPACE/qualification/private-payload-check"
+          mkdir "$evidence"
+          src="$RUNNER_TEMP/resident-native"
+          ref="$BASE"
+          if [ "$ARM" = candidate ]; then ref="$CANDIDATE"; fi
+          git worktree add --quiet --detach "$src" "$ref"
+          cd "$src"
+          git rev-parse HEAD > "$evidence/source.txt"
+          test "$(git diff --name-only "$BASE" "$CANDIDATE")" = "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs"
+          git ls-tree HEAD -- codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs codex-rs/hepta-agentd/src/neuron_generation_receipt_owner.rs > "$evidence/product-inputs.txt"
+          ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$evidence/build.log"
+          binary=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$evidence/build.log" | tail -1)
+          test -x "$binary"
+          bash "$tools/uid0.sh" "$ARM" "$tools" "$binary" "$evidence"
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: integrated-resident-native-${{ matrix.arm }}
+          path: ${{ runner.temp }}/resident-proof
