@@ -2,14 +2,14 @@ name: Hepta Group Exact-Run Raw Archive Replay (Research)
 on:
   pull_request:
     paths:
-      - 'qualification/stem-cell-v1/group_feedback_factorial_raw_replay.py'
-      - 'qualification/stem-cell-v1/test_group_feedback_factorial_raw_replay.py'
-      - 'qualification/stem-cell-v1/test_group_raw_read_once.py'
-      - '.github/workflows/hepta-group-feedback-raw-replay.yml'
+      - "qualification/stem-cell-v1/group_feedback_factorial_raw_replay.py"
+      - "qualification/stem-cell-v1/test_group_feedback_factorial_raw_replay.py"
+      - "qualification/stem-cell-v1/test_group_raw_read_once.py"
+      - ".github/workflows/hepta-group-feedback-raw-replay.yml"
   workflow_dispatch:
     inputs:
       original_run_id:
-        description: 'Completed original Granite97 2x2 push workflow run ID'
+        description: "Completed original Granite97 2x2 push workflow run ID"
         required: true
         type: number
 
@@ -32,7 +32,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Compile independent raw archive entry and adversarial tests
         run: |
           python -m py_compile qualification/stem-cell-v1/group_feedback_factorial_raw_replay.py
@@ -59,7 +59,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Authenticate immutable successful original push workflow
         env:
           GH_TOKEN: ${{ github.token }}

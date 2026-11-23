@@ -5,16 +5,16 @@ on:
     branches:
       - research/hepta-neural-cell-fabric-p09-budget-shadow-20261017
     paths:
-      - 'qualification/neural-cell-fabric-p0/p09_*.py'
-      - 'qualification/neural-cell-fabric-p0/test_p09_*.py'
-      - 'qualification/neural-cell-fabric-p0/P09_BUDGET_SHADOW_NEGATIVE.md'
-      - '.github/workflows/hepta-cell-fabric-p09-budget-shadow.yml'
+      - "qualification/neural-cell-fabric-p0/p09_*.py"
+      - "qualification/neural-cell-fabric-p0/test_p09_*.py"
+      - "qualification/neural-cell-fabric-p0/P09_BUDGET_SHADOW_NEGATIVE.md"
+      - ".github/workflows/hepta-cell-fabric-p09-budget-shadow.yml"
   pull_request:
     paths:
-      - 'qualification/neural-cell-fabric-p0/p09_*.py'
-      - 'qualification/neural-cell-fabric-p0/test_p09_*.py'
-      - 'qualification/neural-cell-fabric-p0/P09_BUDGET_SHADOW_NEGATIVE.md'
-      - '.github/workflows/hepta-cell-fabric-p09-budget-shadow.yml'
+      - "qualification/neural-cell-fabric-p0/p09_*.py"
+      - "qualification/neural-cell-fabric-p0/test_p09_*.py"
+      - "qualification/neural-cell-fabric-p0/P09_BUDGET_SHADOW_NEGATIVE.md"
+      - ".github/workflows/hepta-cell-fabric-p09-budget-shadow.yml"
   workflow_dispatch:
 
 permissions:
@@ -39,7 +39,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Source tests; ORIGINAL materials absent means explicit SKIP
         working-directory: qualification/neural-cell-fabric-p0
         run: |
@@ -62,7 +62,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Fixed CPU dependencies and authenticated historical source
         working-directory: qualification/neural-cell-fabric-p0
         env:

@@ -3,9 +3,9 @@ name: Hepta Cell Meta pinned Granite retrospective physical study (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/cell_meta_execution_af/physical_router_real_*.py'
-      - 'qualification/cell_meta_execution_af/PHYSICAL_ROUTER_GRANITE_HANDOFF.md'
-      - '.github/workflows/hepta-cell-meta-granite-real.yml'
+      - "qualification/cell_meta_execution_af/physical_router_real_*.py"
+      - "qualification/cell_meta_execution_af/PHYSICAL_ROUTER_GRANITE_HANDOFF.md"
+      - ".github/workflows/hepta-cell-meta-granite-real.yml"
   workflow_dispatch:
 
 permissions:
@@ -16,13 +16,13 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  HF_HUB_DISABLE_TELEMETRY: '1'
-  TOKENIZERS_PARALLELISM: 'false'
-  OMP_NUM_THREADS: '2'
-  MKL_NUM_THREADS: '2'
-  OPENBLAS_NUM_THREADS: '2'
-  PYTHONDONTWRITEBYTECODE: '1'
-  PYTHONPATH: '.'
+  HF_HUB_DISABLE_TELEMETRY: "1"
+  TOKENIZERS_PARALLELISM: "false"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+  OPENBLAS_NUM_THREADS: "2"
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONPATH: "."
 
 jobs:
   offline-contract:
@@ -44,7 +44,7 @@ jobs:
           git diff --check
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Install physical CPU tensor backend for numerical trial only
         run: |
           set -euo pipefail
@@ -119,7 +119,7 @@ jobs:
           git diff --check
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Install pinned CPU model dependencies, no pickle/remote-code fallback
         run: |
           set -euo pipefail

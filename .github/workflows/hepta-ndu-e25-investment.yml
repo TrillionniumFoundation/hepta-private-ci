@@ -1,9 +1,9 @@
 name: Hepta NDU E25 true five-param investment (DENY_ALL)
-'on':
+"on":
   pull_request:
     paths:
-      - 'experiments/ndu_tree_fbsde_gates/merton/real_head/e25_allocation/**'
-      - '.github/workflows/hepta-ndu-e25-investment.yml'
+      - "experiments/ndu_tree_fbsde_gates/merton/real_head/e25_allocation/**"
+      - ".github/workflows/hepta-ndu-e25-investment.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
-      PYTHONHASHSEED: '0'
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Require exact successful E25 external original model and reviewer run
         run: |
           set -euo pipefail
@@ -101,11 +101,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
-      PYTHONHASHSEED: '0'
-      OPENBLAS_NUM_THREADS: '1'
-      MKL_NUM_THREADS: '1'
-      OMP_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -114,7 +114,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Install independent numerical reviewer
         run: |
           set -euo pipefail

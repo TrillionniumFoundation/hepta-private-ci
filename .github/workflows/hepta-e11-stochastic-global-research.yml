@@ -2,10 +2,10 @@ name: Hepta E11 exact stochastic global and independent controls (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e11_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e11_*.py'
-      - 'qualification/shared-stem-system2-architecture/E11_EXACT_STOCHASTIC_GLOBAL_20261015.md'
-      - '.github/workflows/hepta-e11-stochastic-global-research.yml'
+      - "qualification/shared-stem-system2-architecture/e11_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e11_*.py"
+      - "qualification/shared-stem-system2-architecture/E11_EXACT_STOCHASTIC_GLOBAL_20261015.md"
+      - ".github/workflows/hepta-e11-stochastic-global-research.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,7 +18,7 @@ jobs:
       matrix:
         source_profile: [source_head, synthetic_merge]
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: qualification/shared-stem-system2-architecture
       ROOT: qualification/shared-stem-system2-architecture
       OUTPUT: /tmp/hepta-e11-stochastic
@@ -28,7 +28,7 @@ jobs:
           ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze original HEAD and E10 source identity
         shell: bash
         run: |

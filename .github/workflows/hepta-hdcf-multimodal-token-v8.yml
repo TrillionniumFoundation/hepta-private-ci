@@ -5,12 +5,12 @@ on:
     branches:
       - research/hdcf-multimodal-token-v8-20261016
     paths:
-      - 'qualification/hdcf-research/multimodal_token_bridge_v8.py'
-      - 'qualification/hdcf-research/test_multimodal_token_bridge_v8.py'
-      - 'qualification/hdcf-research/MULTIMODAL_TOKEN_V8.md'
-      - 'qualification/hdcf-research/modality_necessity_v9.py'
-      - 'qualification/hdcf-research/test_modality_necessity_v9.py'
-      - '.github/workflows/hepta-hdcf-multimodal-token-v8.yml'
+      - "qualification/hdcf-research/multimodal_token_bridge_v8.py"
+      - "qualification/hdcf-research/test_multimodal_token_bridge_v8.py"
+      - "qualification/hdcf-research/MULTIMODAL_TOKEN_V8.md"
+      - "qualification/hdcf-research/modality_necessity_v9.py"
+      - "qualification/hdcf-research/test_modality_necessity_v9.py"
+      - ".github/workflows/hepta-hdcf-multimodal-token-v8.yml"
   workflow_dispatch:
 
 permissions:
@@ -30,7 +30,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Verify exact checkout HEAD and parent original CellBank
         run: |
           set -euo pipefail

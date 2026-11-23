@@ -2,10 +2,10 @@ name: Hepta E12 global action-gap and learned Cell continuation (research DENY_A
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e12_action_gap*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e12_action_gap.py'
-      - 'qualification/shared-stem-system2-architecture/E12_GLOBAL_ACTION_GAP_20261016.md'
-      - '.github/workflows/hepta-e12-action-gap.yml'
+      - "qualification/shared-stem-system2-architecture/e12_action_gap*.py"
+      - "qualification/shared-stem-system2-architecture/test_e12_action_gap.py"
+      - "qualification/shared-stem-system2-architecture/E12_GLOBAL_ACTION_GAP_20261016.md"
+      - ".github/workflows/hepta-e12-action-gap.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,14 +23,14 @@ jobs:
     env:
       ROOT: qualification/shared-stem-system2-architecture
       PYTHONPATH: qualification/shared-stem-system2-architecture
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze tested original math, source and ref
         shell: bash
         run: |
@@ -91,14 +91,14 @@ jobs:
     env:
       ROOT: qualification/shared-stem-system2-architecture
       PYTHONPATH: qualification/shared-stem-system2-architecture
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Train original E12 neural Head on TRAIN mathematical groups only
         shell: bash
         run: |
@@ -126,14 +126,14 @@ jobs:
     env:
       ROOT: qualification/shared-stem-system2-architecture
       PYTHONPATH: qualification/shared-stem-system2-architecture
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: e12-gap-train-${{ matrix.source_profile }}
@@ -167,14 +167,14 @@ jobs:
     env:
       ROOT: qualification/shared-stem-system2-architecture
       PYTHONPATH: qualification/shared-stem-system2-architecture
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: e12-gap-train-${{ matrix.source_profile }}

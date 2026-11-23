@@ -3,10 +3,10 @@ name: Hepta Stem V4 independent real public Cell learning audit (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/stem-cell-v1/banking77_independent_v4.py'
-      - 'qualification/stem-cell-v1/test_banking77_independent_v4.py'
-      - 'qualification/stem-cell-v1/STEM_V4_PUBLIC_LEARNING_AUDIT.md'
-      - '.github/workflows/hepta-stem-v4-public-learning-audit.yml'
+      - "qualification/stem-cell-v1/banking77_independent_v4.py"
+      - "qualification/stem-cell-v1/test_banking77_independent_v4.py"
+      - "qualification/stem-cell-v1/STEM_V4_PUBLIC_LEARNING_AUDIT.md"
+      - ".github/workflows/hepta-stem-v4-public-learning-audit.yml"
 
 permissions:
   contents: read
@@ -22,7 +22,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Exact-HEAD source-only tests (archive-optional case is not physical evidence)
         working-directory: qualification/stem-cell-v1
         shell: bash
@@ -52,7 +52,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Fetch exact existing real-model artifact and pinned original publisher CSVs
         shell: bash
         run: |

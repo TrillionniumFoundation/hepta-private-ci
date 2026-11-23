@@ -2,8 +2,8 @@ name: Hepta NDU Merton source-science NO-GO receipt (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'experiments/ndu_tree_fbsde_gates/merton/science_hold/**'
-      - '.github/workflows/hepta-ndu-merton-science-hold.yml'
+      - "experiments/ndu_tree_fbsde_gates/merton/science_hold/**"
+      - ".github/workflows/hepta-ndu-merton-science-hold.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Verify original negative observation without inventing a qualification
         shell: bash
         run: |

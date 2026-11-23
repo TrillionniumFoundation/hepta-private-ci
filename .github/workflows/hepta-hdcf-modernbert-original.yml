@@ -5,8 +5,8 @@ on:
     branches:
       - research/hdcf-stem-graph-gates-20261016
     paths:
-      - 'qualification/hdcf-research/**'
-      - '.github/workflows/hepta-hdcf-modernbert-original.yml'
+      - "qualification/hdcf-research/**"
+      - ".github/workflows/hepta-hdcf-modernbert-original.yml"
   workflow_dispatch:
 
 permissions:
@@ -27,7 +27,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Run offline source, actual-Head SGD and provenance regressions
         working-directory: qualification/hdcf-research
         run: |
@@ -105,7 +105,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Stage fixed original source without loading pretrained model
         run: |
           set -euo pipefail
@@ -146,7 +146,7 @@ jobs:
           path: ${{ runner.temp }}/public
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Install exact stock CPU pretrained dependencies
         run: |
           set -euo pipefail
@@ -189,7 +189,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - uses: actions/download-artifact@v4
         with:
           name: hdcf-original-modernbert-frozen-features
@@ -207,7 +207,8 @@ jobs:
           path: ${{ runner.temp }}/trial.json
 
   independent-blind-review:
-    needs: [original-source-stage, pretrained-feature-producer, train-cpu-cell-heads]
+    needs:
+      [original-source-stage, pretrained-feature-producer, train-cpu-cell-heads]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -216,7 +217,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - uses: actions/download-artifact@v4
         with:
           name: hdcf-public-inputs-no-test-labels

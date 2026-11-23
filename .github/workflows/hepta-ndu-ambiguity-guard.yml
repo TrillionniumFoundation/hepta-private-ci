@@ -2,8 +2,8 @@ name: Hepta Merton ambiguity-bound research (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/robustness/**'
-      - '.github/workflows/hepta-ndu-ambiguity-guard.yml'
+      - "experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/robustness/**"
+      - ".github/workflows/hepta-ndu-ambiguity-guard.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Bind historical nested source and exact candidate identity
         shell: bash
         run: |

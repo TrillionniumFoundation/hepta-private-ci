@@ -5,16 +5,16 @@ on:
     branches:
       - research/hepta-neural-cell-fabric-p08-new-publisher-20261017
     paths:
-      - 'qualification/neural-cell-fabric-p0/p08_*.py'
-      - 'qualification/neural-cell-fabric-p0/test_p08_*.py'
-      - 'qualification/neural-cell-fabric-p0/P08_NEW_PUBLISHER.md'
-      - '.github/workflows/hepta-cell-fabric-p08-huff-transfer.yml'
+      - "qualification/neural-cell-fabric-p0/p08_*.py"
+      - "qualification/neural-cell-fabric-p0/test_p08_*.py"
+      - "qualification/neural-cell-fabric-p0/P08_NEW_PUBLISHER.md"
+      - ".github/workflows/hepta-cell-fabric-p08-huff-transfer.yml"
   pull_request:
     paths:
-      - 'qualification/neural-cell-fabric-p0/p08_*.py'
-      - 'qualification/neural-cell-fabric-p0/test_p08_*.py'
-      - 'qualification/neural-cell-fabric-p0/P08_NEW_PUBLISHER.md'
-      - '.github/workflows/hepta-cell-fabric-p08-huff-transfer.yml'
+      - "qualification/neural-cell-fabric-p0/p08_*.py"
+      - "qualification/neural-cell-fabric-p0/test_p08_*.py"
+      - "qualification/neural-cell-fabric-p0/P08_NEW_PUBLISHER.md"
+      - ".github/workflows/hepta-cell-fabric-p08-huff-transfer.yml"
   workflow_dispatch:
 
 permissions:
@@ -39,7 +39,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Source/adversarial without network or pretrained model
         working-directory: qualification/neural-cell-fabric-p0
         run: |
@@ -62,7 +62,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Publisher material pin, no untrusted code
         run: |
           python -m pip install --disable-pip-version-check 'huggingface_hub==0.34.4' 'numpy==2.2.6'
@@ -111,7 +111,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Pin CPU-only Torch and reviewed model loader
         run: |
           set -euo pipefail
@@ -154,7 +154,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Original reviewer dependencies (no Torch/Transformers)
         run: |
           python -m pip install --disable-pip-version-check 'numpy==2.2.6' 'huggingface_hub==0.34.4'

@@ -2,10 +2,10 @@ name: Hepta E14 original-human MultiRC paired NDU gate (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e14_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e14_*.py'
-      - 'qualification/shared-stem-system2-architecture/E14_ORIGINAL_MULTIRC_FBSDE_20261015.md'
-      - '.github/workflows/hepta-e14-original-human-multirc-fbsde.yml'
+      - "qualification/shared-stem-system2-architecture/e14_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e14_*.py"
+      - "qualification/shared-stem-system2-architecture/E14_ORIGINAL_MULTIRC_FBSDE_20261015.md"
+      - ".github/workflows/hepta-e14-original-human-multirc-fbsde.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,14 +23,14 @@ jobs:
       PYTHONPATH: qualification/shared-stem-system2-architecture
       HEPTA_E14_ARCHIVE: /tmp/hepta-e14-original-11946621518.zip
       E14: /tmp/hepta-e14-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze exact original execution HEAD
         shell: bash
         run: |
@@ -92,14 +92,14 @@ jobs:
       PYTHONPATH: qualification/shared-stem-system2-architecture
       ZIP: /tmp/e14-original-11946621518.zip
       E14: /tmp/hepta-e14-scored-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: hepta-e14-blind-${{ matrix.profile }}

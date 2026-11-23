@@ -2,8 +2,8 @@ name: Hepta NDU Merton real residual Head (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'experiments/ndu_tree_fbsde_gates/merton/real_head/**'
-      - '.github/workflows/hepta-ndu-merton-real-head.yml'
+      - "experiments/ndu_tree_fbsde_gates/merton/real_head/**"
+      - ".github/workflows/hepta-ndu-merton-real-head.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Acquire exact original artifacts without forwarding API credentials
         env:
           GH_TOKEN: ${{ github.token }}

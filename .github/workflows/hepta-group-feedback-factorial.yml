@@ -4,10 +4,10 @@ on:
     branches:
       - research/group-feedback-factorial-20261015
     paths:
-      - 'qualification/stem-cell-v1/group_*.py'
-      - 'qualification/stem-cell-v1/test_group_*.py'
-      - 'qualification/stem-cell-v1/TRAIN_VERIFIER_FACTORIAL_HANDOFF_20261015.md'
-      - '.github/workflows/hepta-group-feedback-factorial.yml'
+      - "qualification/stem-cell-v1/group_*.py"
+      - "qualification/stem-cell-v1/test_group_*.py"
+      - "qualification/stem-cell-v1/TRAIN_VERIFIER_FACTORIAL_HANDOFF_20261015.md"
+      - ".github/workflows/hepta-group-feedback-factorial.yml"
   workflow_dispatch:
 
 permissions:
@@ -28,7 +28,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Install pinned actual CPU dependencies
         run: |
           python -m pip install 'torch==2.10.0+cpu' --index-url https://download.pytorch.org/whl/cpu
@@ -45,8 +45,8 @@ jobs:
             qualification/stem-cell-v1/test_group_feedback_factorial_review.py
       - name: Normal and optimized Python exact-source CPU regressions
         env:
-          OMP_NUM_THREADS: '1'
-          MKL_NUM_THREADS: '1'
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
           PYTHONPATH: qualification/stem-cell-v1
         run: |
           python - <<'PY'
@@ -91,7 +91,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Install fixed source and CPU model stack
         run: |
           python -m pip install 'torch==2.10.0+cpu' --index-url https://download.pytorch.org/whl/cpu
@@ -99,8 +99,8 @@ jobs:
       - name: Fetch original Granite97 revision into isolated local-only snapshot
         env:
           SNAPSHOT: ${{ runner.temp }}/granite97-frozen
-          OMP_NUM_THREADS: '1'
-          MKL_NUM_THREADS: '1'
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
           PYTHONPATH: qualification/stem-cell-v1
         run: |
           python - <<'PY'
@@ -112,9 +112,9 @@ jobs:
         env:
           SNAPSHOT: ${{ runner.temp }}/granite97-frozen
           RESULT_ROOT: ${{ runner.temp }}/group-feedback-four-arm
-          OMP_NUM_THREADS: '1'
-          MKL_NUM_THREADS: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          TOKENIZERS_PARALLELISM: "false"
         run: |
           python qualification/stem-cell-v1/group_feedback_factorial_campaign.py \
             --snapshot "$SNAPSHOT" --output-root "$RESULT_ROOT" \

@@ -2,8 +2,8 @@ name: Hepta P0 independent physical four-Stem replay (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/p0-four-stem-replay/**'
-      - '.github/workflows/hepta-p0-independent-four-stem-replay.yml'
+      - "qualification/p0-four-stem-replay/**"
+      - ".github/workflows/hepta-p0-independent-four-stem-replay.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,12 +16,12 @@ jobs:
       HEPTA_P0_HISTORICAL_ZIP: /tmp/hepta-p0-reference-11886761368.zip
       HEPTA_P0_PHYSICAL_ZIP: /tmp/hepta-p0-physical-11908591037.zip
       OUTPUT: /tmp/hepta-p0-independent-replay
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze exact source and workflow identity
         shell: bash
         run: |

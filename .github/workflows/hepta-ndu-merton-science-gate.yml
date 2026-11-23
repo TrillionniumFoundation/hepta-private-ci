@@ -2,8 +2,8 @@ name: Hepta NDU Merton original-source science gate (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'experiments/ndu_tree_fbsde_gates/merton/qualification/**'
-      - '.github/workflows/hepta-ndu-merton-science-gate.yml'
+      - "experiments/ndu_tree_fbsde_gates/merton/qualification/**"
+      - ".github/workflows/hepta-ndu-merton-science-gate.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Execute stdlib-only scientific rejection contracts, ordinary and optimized
         shell: bash
         run: |

@@ -2,10 +2,10 @@ name: Hepta E20 original Reader output-decision/Brier bounds (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e20_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e20_*.py'
-      - 'qualification/shared-stem-system2-architecture/E20_OUTPUT_BRIER_AND_DECISION_20261015.md'
-      - '.github/workflows/hepta-e20-original-reader-brier-and-decision.yml'
+      - "qualification/shared-stem-system2-architecture/e20_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e20_*.py"
+      - "qualification/shared-stem-system2-architecture/E20_OUTPUT_BRIER_AND_DECISION_20261015.md"
+      - ".github/workflows/hepta-e20-original-reader-brier-and-decision.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
       matrix:
         source_profile: [source_head, synthetic_merge]
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: qualification/shared-stem-system2-architecture
       ROOT: qualification/shared-stem-system2-architecture
       OUTPUT: /tmp/hepta-e20-original
@@ -30,7 +30,7 @@ jobs:
           ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze exact source ref and original numeric source SHA
         shell: bash
         run: |

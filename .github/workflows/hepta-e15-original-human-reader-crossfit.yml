@@ -2,10 +2,10 @@ name: Hepta E15 original-human Reader Cell Head crossfit (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e15_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e15_*.py'
-      - 'qualification/shared-stem-system2-architecture/E15_*.md'
-      - '.github/workflows/hepta-e15-original-human-reader-crossfit.yml'
+      - "qualification/shared-stem-system2-architecture/e15_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e15_*.py"
+      - "qualification/shared-stem-system2-architecture/E15_*.md"
+      - ".github/workflows/hepta-e15-original-human-reader-crossfit.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,14 +23,14 @@ jobs:
       PYTHONPATH: qualification/shared-stem-system2-architecture
       SOURCE: /tmp/hepta-e15-original-trained-reader.zip
       OUT: /tmp/hepta-e15-material-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze original source identity
         shell: bash
         run: |
@@ -128,14 +128,14 @@ jobs:
       PYTHONPATH: qualification/shared-stem-system2-architecture
       HEPTA_E15_ARCHIVE: /tmp/hepta-e15-original-trained-reader.zip
       OUT: /tmp/hepta-e15-predict-${{ matrix.profile }}-${{ matrix.fold }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           name: hepta-e15-material-${{ matrix.profile }}-${{ matrix.fold }}
@@ -195,14 +195,14 @@ jobs:
       PYTHONPATH: qualification/shared-stem-system2-architecture
       SOURCE: /tmp/hepta-e15-original-trained-reader.zip
       OUT: /tmp/hepta-e15-score-${{ matrix.profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/download-artifact@v4
         with:
           pattern: hepta-e15-blind-${{ matrix.profile }}-*

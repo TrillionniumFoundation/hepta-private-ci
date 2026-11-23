@@ -2,8 +2,8 @@ name: Hepta original real mmBERT finite BSDE vs closed form replay (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/ndu-real-bsde-replay/**'
-      - '.github/workflows/hepta-original-real-bsde-replay.yml'
+      - "qualification/ndu-real-bsde-replay/**"
+      - ".github/workflows/hepta-original-real-bsde-replay.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Source/runtime identity
         run: |
           git rev-parse HEAD

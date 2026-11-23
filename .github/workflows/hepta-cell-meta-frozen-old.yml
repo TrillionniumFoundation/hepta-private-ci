@@ -3,9 +3,9 @@ name: Hepta Cell Meta E2f frozen old-parent control
 on:
   pull_request:
     paths:
-      - 'qualification/cell_meta_execution_af/physical_router_frozen_old*.py'
-      - 'qualification/cell_meta_execution_af/FROZEN_PARENT_CONTROL.md'
-      - '.github/workflows/hepta-cell-meta-frozen-old.yml'
+      - "qualification/cell_meta_execution_af/physical_router_frozen_old*.py"
+      - "qualification/cell_meta_execution_af/FROZEN_PARENT_CONTROL.md"
+      - ".github/workflows/hepta-cell-meta-frozen-old.yml"
   workflow_dispatch:
 
 permissions:
@@ -16,10 +16,10 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  OMP_NUM_THREADS: '1'
-  MKL_NUM_THREADS: '1'
-  OPENBLAS_NUM_THREADS: '1'
-  PYTHONDONTWRITEBYTECODE: '1'
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  OPENBLAS_NUM_THREADS: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
   frozen-control:
@@ -56,7 +56,7 @@ jobs:
           message: Synthetic frozen Cell Meta research merge
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Install pinned CPU Torch (no pretrained model)
         run: |
           set -euo pipefail

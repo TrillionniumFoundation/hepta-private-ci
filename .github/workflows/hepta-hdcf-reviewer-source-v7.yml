@@ -5,12 +5,12 @@ on:
     branches:
       - research/hdcf-publisher-target-revalidation-20261016
     paths:
-      - 'qualification/hdcf-research/**'
-      - '.github/workflows/hepta-hdcf-reviewer-source-v7.yml'
+      - "qualification/hdcf-research/**"
+      - ".github/workflows/hepta-hdcf-reviewer-source-v7.yml"
   pull_request:
     paths:
-      - 'qualification/hdcf-research/**'
-      - '.github/workflows/hepta-hdcf-reviewer-source-v7.yml'
+      - "qualification/hdcf-research/**"
+      - ".github/workflows/hepta-hdcf-reviewer-source-v7.yml"
   workflow_dispatch:
 
 permissions:
@@ -36,7 +36,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Run offline adversarial tests normal and -O
         working-directory: hdcf/qualification/hdcf-research
         run: |

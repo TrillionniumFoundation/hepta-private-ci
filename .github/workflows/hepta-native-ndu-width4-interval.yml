@@ -2,8 +2,8 @@ name: Native NDU four-weight interval scaling research
 on:
   pull_request:
     paths:
-      - 'codex-rs/hepta-ndu/research/native_stem_abcd/width4_interval/**'
-      - '.github/workflows/hepta-native-ndu-width4-interval.yml'
+      - "codex-rs/hepta-ndu/research/native_stem_abcd/width4_interval/**"
+      - ".github/workflows/hepta-native-ndu-width4-interval.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
-      OPENBLAS_NUM_THREADS: '1'
-      MKL_NUM_THREADS: '1'
-      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
     steps:
       - name: Checkout selected exact HEAD
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -24,7 +24,7 @@ jobs:
       - name: Python
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Pin numerical dependencies
         run: |
           python -m pip install numpy==2.3.5 scipy==1.17.0

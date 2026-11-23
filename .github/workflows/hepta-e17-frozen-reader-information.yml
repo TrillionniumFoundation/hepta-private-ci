@@ -2,10 +2,10 @@ name: Hepta E17 original frozen Reader answer-information audit (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e17_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e17_*.py'
-      - 'qualification/shared-stem-system2-architecture/E17_ORIGINAL_READER_INFORMATION_20261015.md'
-      - '.github/workflows/hepta-e17-frozen-reader-information.yml'
+      - "qualification/shared-stem-system2-architecture/e17_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e17_*.py"
+      - "qualification/shared-stem-system2-architecture/E17_ORIGINAL_READER_INFORMATION_20261015.md"
+      - ".github/workflows/hepta-e17-frozen-reader-information.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,14 +23,14 @@ jobs:
       PYTHONPATH: qualification/shared-stem-system2-architecture
       HEPTA_E17_REAL_ARCHIVE: /tmp/hepta-e17-original-pretrained.zip
       OUTPUT: /tmp/hepta-e17-original-frozen-reader-${{ matrix.source_profile }}
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Freeze exact source, original test code and SOURCE HEAD boundary
         shell: bash
         run: |
