@@ -1,0 +1,45 @@
+{
+  "run": 45135852345,
+  "job": 137561814315,
+  "archive_sha256": "4ecf851bd8d88d5bd7b6622eeccf7af143cecc3c6da9adc28de379a04399cedf",
+  "arms": {
+    "base": {
+      "sources": [
+        "e3277e9677688be5c4c235a7a127f0b51e373399",
+        "3002afb8e319abd7909e57ac816b0fedc8f0233c"
+      ],
+      "elf_sha256": "9c6013bb5c1f7cff5a85464afdf694e0bbce2371b71c2095ea2eda2873605cd8",
+      "pass": 10,
+      "fail": 0,
+      "wall_s_total": 0.6741952999997238,
+      "wall_s_median": 0.048271915000043464,
+      "wall_s_min": 0.04747823200000312,
+      "wall_s_max": 0.23921051199999965,
+      "libtest_s_total": 0.22
+    },
+    "combined": {
+      "sources": [
+        "43e5da1bb81369e4e999adfa8558f5ccb5460eb6",
+        "e1969bcf8dbb9e9e42cd718401a9df6d13f79d98"
+      ],
+      "elf_sha256": "abb79f99f59754cde2cec06e36b4c026f8ff042abcdb674abe0aad79e010e0c6",
+      "pass": 10,
+      "fail": 0,
+      "wall_s_total": 0.4703456350000579,
+      "wall_s_median": 0.046982933000037974,
+      "wall_s_min": 0.045904523999979574,
+      "wall_s_max": 0.05086705200005781,
+      "libtest_s_total": 0.1
+    }
+  },
+  "whole_loop_wall_s": 1.1544591849999506,
+  "actual_uid": [
+    0,
+    0
+  ],
+  "transport_git_blob": "40b744877e6e3a0e02dea0fdc9fffb8859eefdf7",
+  "test_git_blobs": [
+    "12f37a10e306a9ede9f67cedb1a4a02306b1c0b0",
+    "a5e77fc7ee60034461139cef18bfca52c0e927ab"
+  ]
+}
