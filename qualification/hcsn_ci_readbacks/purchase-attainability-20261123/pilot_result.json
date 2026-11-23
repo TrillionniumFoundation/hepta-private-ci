@@ -1,0 +1,75 @@
+{
+  "assumption": "four windows per source; future independent groups drawn with the pilot's three empirical opportunity types; hindsight oracle only",
+  "dev": {
+    "minimum_sources_for_opportunity_only": {
+      "19/20": 12,
+      "4/5": 10,
+      "9/10": 11
+    },
+    "opportunity_feasibility_at_fixed_n": {
+      "12": 0.962483,
+      "16": 0.998415,
+      "24": 0.999999,
+      "8": 0.408017
+    },
+    "source_counts": {
+      "both": 2,
+      "free": 2,
+      "paid": 2
+    }
+  },
+  "omit_one_source_of_type": {
+    "both": {
+      "19/20": 13,
+      "4/5": 11,
+      "9/10": 12
+    },
+    "free": {
+      "19/20": 12,
+      "4/5": 10,
+      "9/10": 11
+    },
+    "paid": {
+      "19/20": 11,
+      "4/5": 10,
+      "9/10": 11
+    }
+  },
+  "pooled": {
+    "minimum_sources_for_opportunity_only": {
+      "19/20": 12,
+      "4/5": 10,
+      "9/10": 11
+    },
+    "opportunity_feasibility_at_fixed_n": {
+      "12": 0.964209,
+      "16": 0.998244,
+      "24": 0.999998,
+      "8": 0.453675
+    },
+    "source_counts": {
+      "both": 5,
+      "free": 4,
+      "paid": 5
+    }
+  },
+  "source_sha256": "8a489d8b47b63973bbe195d765a07f01c48ccfe2b1a6ef7b2f18cbb12a5f8cdc",
+  "train": {
+    "minimum_sources_for_opportunity_only": {
+      "19/20": 12,
+      "4/5": 10,
+      "9/10": 11
+    },
+    "opportunity_feasibility_at_fixed_n": {
+      "12": 0.958224,
+      "16": 0.997363,
+      "24": 0.999994,
+      "8": 0.478071
+    },
+    "source_counts": {
+      "both": 3,
+      "free": 2,
+      "paid": 3
+    }
+  }
+}

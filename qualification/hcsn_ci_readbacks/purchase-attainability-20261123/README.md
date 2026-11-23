@@ -14,11 +14,14 @@
 
 下轮可在训练和开发来源上先核查可救错误分布，登记独立录制来源数、费用和分析方法，再一次性打开新的测试来源。若只有胜和持平，单侧 p≤0.05 至少需要 5 个正来源，p≤0.025 至少需要 6 个。在有负来源时须按原符号检验重新计算。事后按标签筛入来源会改变研究问题。
 
+另用训练和开发的 14 个来源做独立抽源的敏感性计算。逐题预知购买效果时，5 个来源可同时胜过两个基线，4 个来源只可胜过免费，5 个来源只可胜过一律购买。若未来来源独立且三类来源的比例与这 14 个相同，使用 8 个新来源时，统计门槛在数学上可达的概率为 45.37%；使用 12 个为 96.42%。轮流移除一个先导来源，达到 95% 可达概率所需的来源数为 11–13 个。这是逐题预知条件下对实验设计的敏感性计算。真实模型的检验功效还取决于事前选购能力和最差来源损失。该计算读取的封存成员只含训练和开发。
+
 从仓库根目录运行
 
 ```sh
 python qualification/hcsn_ci_readbacks/purchase-attainability-20261123/verify.py qualification/hcsn_blocker_followup
 python -m qualification.hcsn_ci_readbacks.purchase-attainability-20261123.replay_frontends qualification
+python qualification/hcsn_ci_readbacks/purchase-attainability-20261123/pilot.py qualification/hcsn_blocker_followup
 ```
 
 [冻结实验](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7b0af00123582ab16f55cb3f0c4314d0d3099909/qualification/hcsn_blocker_followup/RESULTS.md) · [原先登记的双对照采用条件](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7b0af00123582ab16f55cb3f0c4314d0d3099909/qualification/hcsn_blocker_followup/protocol.json)
