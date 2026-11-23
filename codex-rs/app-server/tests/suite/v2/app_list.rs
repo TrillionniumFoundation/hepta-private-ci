@@ -52,6 +52,7 @@ use rmcp::transport::streamable_http_server::session::local::LocalSessionManager
 use serde_json::json;
 use tempfile::TempDir;
 use tokio::net::TcpListener;
+use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
 use tokio::time::timeout;
 
@@ -579,13 +580,15 @@ async fn list_apps_emits_updates_and_returns_after_both_lists_load() -> Result<(
     ];
 
     let tools = vec![connector_tool("beta", "Beta App")?];
-    let (server_url, server_handle) = start_apps_server_with_delays(
+    let (server_url, server_handle, server_control) = start_apps_server_with_delays_and_control(
         connectors.clone(),
         tools,
-        Duration::from_millis(300),
+        Duration::ZERO,
         Duration::ZERO,
     )
     .await?;
+    // Keep both directory routes pending until the client observes the accessible-only update.
+    let directory_response = server_control.directory_gate.lock().await;
 
     let codex_home = TempDir::new()?;
     write_connectors_config(codex_home.path(), &server_url)?;
@@ -633,6 +636,7 @@ async fn list_apps_emits_updates_and_returns_after_both_lists_load() -> Result<(
 
     let first_update = read_app_list_updated_notification(&mut mcp).await?;
     assert_eq!(first_update.data, expected_accessible);
+    drop(directory_response);
 
     let expected_merged = vec![
         AppInfo {
@@ -1458,6 +1462,7 @@ struct AppsServerState {
     expected_account_id: String,
     response: Arc<StdMutex<serde_json::Value>>,
     directory_delay: Duration,
+    directory_gate: Arc<Mutex<()>>,
 }
 
 #[derive(Clone)]
@@ -1474,6 +1479,7 @@ impl AppListMcpServer {
 
 #[derive(Clone)]
 struct AppsServerControl {
+    directory_gate: Arc<Mutex<()>>,
     response: Arc<StdMutex<serde_json::Value>>,
     tools: Arc<StdMutex<Vec<Tool>>>,
 }
@@ -1561,7 +1567,9 @@ async fn start_apps_server_with_delays_and_control_inner(
         json!({ "apps": connectors, "next_token": null }),
     ));
     let tools = Arc::new(StdMutex::new(tools));
+    let directory_gate = Arc::new(Mutex::new(()));
     let state = AppsServerState {
+        directory_gate: Arc::clone(&directory_gate),
         expected_bearer: format!("Bearer {expected_bearer}"),
         expected_account_id: "account-123".to_string(),
         response: response.clone(),
@@ -1569,6 +1577,7 @@ async fn start_apps_server_with_delays_and_control_inner(
     };
     let state = Arc::new(state);
     let server_control = AppsServerControl {
+        directory_gate,
         response,
         tools: tools.clone(),
     };
@@ -1627,6 +1636,7 @@ async fn list_directory_connectors(
     } else if !external_logos_ok {
         Err(StatusCode::BAD_REQUEST)
     } else {
+        let _directory_response = state.directory_gate.lock().await;
         let response = state
             .response
             .lock()
