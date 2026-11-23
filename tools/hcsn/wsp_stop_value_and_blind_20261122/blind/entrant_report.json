@@ -1,0 +1,298 @@
+{
+  "method": "Compute trusted logit residuals. Enumerate one- and two-column supports in the hidden activation matrix augmented by a bias column. Solve each small linear system on the first three quarters of probes. Require agreement on all probes. Choose the exact candidate with the fewest changed scalar weights. Snap exact sign reversals and permutations to their native operations.",
+  "indexing": "Zero-based. W2 has shape (output, hidden).",
+  "scope": "Counts and minimality refer to enumerated readout edits, not every possible network parameterization. Verification probes are supplied examples and no private data was used.",
+  "threshold": 1e-10,
+  "models": {
+    "1fc8165988.npz": {
+      "action": "REPAIR",
+      "setup_probes": 24,
+      "verification_probes": 8,
+      "before": {
+        "max_abs": 0.10867432124186513,
+        "rmse": 0.03963527922993116
+      },
+      "rank_of_probe_residual_at_1e-10": 1,
+      "small_support_systems_tested": 1225,
+      "exact_sparse_supports_found": 1,
+      "changed_coordinates": [
+        {
+          "tensor": "W2",
+          "index": [
+            0,
+            45
+          ],
+          "before": 0.03881483164908475,
+          "after": -0.03881483164908475,
+          "delta": -0.0776296632981695
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            1,
+            45
+          ],
+          "before": 0.03543496234254288,
+          "after": -0.03543496234254288,
+          "delta": -0.07086992468508577
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            2,
+            45
+          ],
+          "before": -0.13300667299129967,
+          "after": 0.13300667299129967,
+          "delta": 0.26601334598259935
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            3,
+            45
+          ],
+          "before": -0.15558226689058754,
+          "after": 0.15558226689058754,
+          "delta": 0.3111645337811751
+        }
+      ],
+      "identifiability": "Finite probes allow other functions and off-probe effects. Historical parameter values and the original fault are not uniquely established.",
+      "hypothesis": "negate one outgoing hidden-unit column",
+      "support_indices": [
+        45
+      ],
+      "equivalent_encoding": "Negating that input weight row and its bias gives exactly the same map on all inputs, by oddness of tanh. The outgoing edit touches fewer scalars.",
+      "changed_scalar_count": 4,
+      "after": {
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "verification_after": {
+        "max_abs": 0.0,
+        "rmse": 0.0
+      }
+    },
+    "3ae4338cd3.npz": {
+      "action": "REPAIR",
+      "setup_probes": 24,
+      "verification_probes": 8,
+      "before": {
+        "max_abs": 0.20018661276696048,
+        "rmse": 0.05839576742975375
+      },
+      "rank_of_probe_residual_at_1e-10": 1,
+      "small_support_systems_tested": 1225,
+      "exact_sparse_supports_found": 1,
+      "changed_coordinates": [
+        {
+          "tensor": "W2",
+          "index": [
+            0,
+            2
+          ],
+          "before": 0.014030586038591229,
+          "after": -0.2005159266716519,
+          "delta": -0.21454651271024314
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            0,
+            13
+          ],
+          "before": -0.2005159266716519,
+          "after": 0.014030586038591229,
+          "delta": 0.21454651271024314
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            1,
+            2
+          ],
+          "before": 0.09034215054017009,
+          "after": -0.1581574931858336,
+          "delta": -0.2484996437260037
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            1,
+            13
+          ],
+          "before": -0.1581574931858336,
+          "after": 0.09034215054017009,
+          "delta": 0.2484996437260037
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            2,
+            2
+          ],
+          "before": 0.024545511749469746,
+          "after": -0.06634146516787044,
+          "delta": -0.09088697691734018
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            2,
+            13
+          ],
+          "before": -0.06634146516787044,
+          "after": 0.024545511749469746,
+          "delta": 0.09088697691734018
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            3,
+            2
+          ],
+          "before": 0.29272472013781464,
+          "after": -0.0959040476481264,
+          "delta": -0.388628767785941
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            3,
+            13
+          ],
+          "before": -0.0959040476481264,
+          "after": 0.29272472013781464,
+          "delta": 0.388628767785941
+        }
+      ],
+      "identifiability": "Finite probes allow other functions and off-probe effects. Historical parameter values and the original fault are not uniquely established.",
+      "hypothesis": "exchange two outgoing hidden-unit columns",
+      "support_indices": [
+        2,
+        13
+      ],
+      "equivalent_encoding": "Exchanging those input weight rows and their biases gives the same map on all inputs. The outgoing exchange touches fewer scalars.",
+      "changed_scalar_count": 8,
+      "after": {
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "verification_after": {
+        "max_abs": 0.0,
+        "rmse": 0.0
+      }
+    },
+    "625dd2cff2.npz": {
+      "action": "REPAIR",
+      "setup_probes": 24,
+      "verification_probes": 8,
+      "before": {
+        "max_abs": 0.2806332316835959,
+        "rmse": 0.11473430619509037
+      },
+      "rank_of_probe_residual_at_1e-10": 1,
+      "small_support_systems_tested": 1225,
+      "exact_sparse_supports_found": 1,
+      "changed_coordinates": [
+        {
+          "tensor": "W2",
+          "index": [
+            2,
+            12
+          ],
+          "before": 0.18627847815863782,
+          "after": -0.18372152184136223,
+          "delta": -0.37000000000000005
+        }
+      ],
+      "identifiability": "Finite probes allow other functions and off-probe effects. Historical parameter values and the original fault are not uniquely established.",
+      "hypothesis": "sparse additive correction",
+      "support_indices": [
+        12
+      ],
+      "changed_scalar_count": 1,
+      "after": {
+        "max_abs": 1.1102230246251565e-16,
+        "rmse": 2.2882574235218375e-17
+      },
+      "verification_after": {
+        "max_abs": 5.551115123125783e-17,
+        "rmse": 1.7690777709386487e-17
+      }
+    },
+    "cdf42cf8e4.npz": {
+      "action": "REPAIR",
+      "setup_probes": 24,
+      "verification_probes": 8,
+      "before": {
+        "max_abs": 0.19510319428182754,
+        "rmse": 0.04816401160011849
+      },
+      "rank_of_probe_residual_at_1e-10": 1,
+      "small_support_systems_tested": 1225,
+      "exact_sparse_supports_found": 1,
+      "changed_coordinates": [
+        {
+          "tensor": "W2",
+          "index": [
+            3,
+            26
+          ],
+          "before": -0.3731227893973195,
+          "after": -0.1031227893973195,
+          "delta": 0.27
+        },
+        {
+          "tensor": "W2",
+          "index": [
+            3,
+            36
+          ],
+          "before": 0.680609670814081,
+          "after": 0.3706096708140809,
+          "delta": -0.31000000000000005
+        }
+      ],
+      "identifiability": "Finite probes allow other functions and off-probe effects. Historical parameter values and the original fault are not uniquely established.",
+      "hypothesis": "sparse additive correction",
+      "support_indices": [
+        26,
+        36
+      ],
+      "changed_scalar_count": 2,
+      "after": {
+        "max_abs": 1.1102230246251565e-16,
+        "rmse": 1.8027775184845912e-17
+      },
+      "verification_after": {
+        "max_abs": 5.551115123125783e-17,
+        "rmse": 9.813077866773595e-18
+      }
+    },
+    "f4255fc463.npz": {
+      "action": "KEEP",
+      "setup_probes": 24,
+      "verification_probes": 8,
+      "before": {
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "rank_of_probe_residual_at_1e-10": 0,
+      "small_support_systems_tested": 0,
+      "exact_sparse_supports_found": 0,
+      "changed_coordinates": [],
+      "identifiability": "Finite probes allow other functions and off-probe effects. Historical parameter values and the original fault are not uniquely established.",
+      "hypothesis": "Existing weights reproduce every trusted logit.",
+      "changed_scalar_count": 0,
+      "after": {
+        "max_abs": 0.0,
+        "rmse": 0.0
+      },
+      "verification_after": {
+        "max_abs": 0.0,
+        "rmse": 0.0
+      }
+    }
+  }
+}

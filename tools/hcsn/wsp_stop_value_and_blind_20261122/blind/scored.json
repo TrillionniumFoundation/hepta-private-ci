@@ -1,0 +1,206 @@
+{
+  "protocol_hash": "8d00b4510ada7285e910971bc9e1d4f82aa5f7c0d09fbacaa6b0eaacc3d46a6a",
+  "solver_hash": "f59201c8381b1a6efb216d1795486293e79323fe85fd618547293fcb4dd9ccb9",
+  "results": [
+    {
+      "id": "cdf42cf8e4",
+      "fit": 11,
+      "fault": "two",
+      "edited_elements": {
+        "W1": 0,
+        "b1": 0,
+        "W2": 2,
+        "b2": 0
+      },
+      "healthy_disagreement": {
+        "W1": 0,
+        "b1": 0,
+        "W2": 2,
+        "b2": 0
+      },
+      "model_hash": "0ead2e5d6d3bbd7f91aed08b3835591bb716c8f82912a22e478842bd6103a08b",
+      "worlds": [
+        {
+          "states": 412,
+          "world": 16,
+          "max_logit_error": 1.1102230246251565e-16,
+          "original_payoff": 0.02048443988040829,
+          "damaged_payoff": 0.019301543117662006,
+          "repaired_payoff": 0.02048443988040829,
+          "damaged_changed_actions": 34,
+          "repaired_changed_actions": 0
+        },
+        {
+          "states": 454,
+          "world": 25,
+          "max_logit_error": 2.220446049250313e-16,
+          "original_payoff": 0.13937008331504702,
+          "damaged_payoff": 0.13937008331504702,
+          "repaired_payoff": 0.13937008331504702,
+          "damaged_changed_actions": 4,
+          "repaired_changed_actions": 0
+        }
+      ]
+    },
+    {
+      "id": "f4255fc463",
+      "fit": 23,
+      "fault": "keep",
+      "edited_elements": {
+        "W1": 0,
+        "b1": 0,
+        "W2": 0,
+        "b2": 0
+      },
+      "healthy_disagreement": {
+        "W1": 0,
+        "b1": 0,
+        "W2": 0,
+        "b2": 0
+      },
+      "model_hash": "a677a55612cc572404990cf94c378ac00a315cfcf068967986306c8d0bbcd1d1",
+      "worlds": [
+        {
+          "states": 744,
+          "world": 16,
+          "max_logit_error": 0.0,
+          "original_payoff": 0.45613516730891984,
+          "damaged_payoff": 0.45613516730891984,
+          "repaired_payoff": 0.45613516730891984,
+          "damaged_changed_actions": 0,
+          "repaired_changed_actions": 0
+        },
+        {
+          "states": 322,
+          "world": 25,
+          "max_logit_error": 0.0,
+          "original_payoff": 0.21807015799628904,
+          "damaged_payoff": 0.21807015799628904,
+          "repaired_payoff": 0.21807015799628904,
+          "damaged_changed_actions": 0,
+          "repaired_changed_actions": 0
+        }
+      ]
+    },
+    {
+      "id": "1fc8165988",
+      "fit": 37,
+      "fault": "neg1",
+      "edited_elements": {
+        "W1": 0,
+        "b1": 0,
+        "W2": 4,
+        "b2": 0
+      },
+      "healthy_disagreement": {
+        "W1": 85,
+        "b1": 1,
+        "W2": 4,
+        "b2": 0
+      },
+      "model_hash": "b2c322314b3385bc3863cda53ac6c8830091d1cf8d5d7068242d7cefc3d8a5ad",
+      "worlds": [
+        {
+          "states": 620,
+          "world": 16,
+          "max_logit_error": 0.0,
+          "original_payoff": 0.25641752644925514,
+          "damaged_payoff": 0.25641752644925514,
+          "repaired_payoff": 0.25641752644925514,
+          "damaged_changed_actions": 27,
+          "repaired_changed_actions": 0
+        },
+        {
+          "states": 593,
+          "world": 25,
+          "max_logit_error": 0.0,
+          "original_payoff": 0.35347301350745886,
+          "damaged_payoff": 0.35347301350745886,
+          "repaired_payoff": 0.35347301350745886,
+          "damaged_changed_actions": 2,
+          "repaired_changed_actions": 0
+        }
+      ]
+    },
+    {
+      "id": "3ae4338cd3",
+      "fit": 53,
+      "fault": "swap2",
+      "edited_elements": {
+        "W1": 0,
+        "b1": 0,
+        "W2": 8,
+        "b2": 0
+      },
+      "healthy_disagreement": {
+        "W1": 0,
+        "b1": 0,
+        "W2": 0,
+        "b2": 0
+      },
+      "model_hash": "1564aabe70cdf07e667ebe9f8a404dfb085500d68a52665487acfefd1e749d6e",
+      "worlds": [
+        {
+          "states": 555,
+          "world": 16,
+          "max_logit_error": 0.0,
+          "original_payoff": 0.1675564415974962,
+          "damaged_payoff": 0.16728164811586219,
+          "repaired_payoff": 0.1675564415974962,
+          "damaged_changed_actions": 32,
+          "repaired_changed_actions": 0
+        },
+        {
+          "states": 312,
+          "world": 25,
+          "max_logit_error": 0.0,
+          "original_payoff": 0.19843801845275258,
+          "damaged_payoff": 0.19843801845275258,
+          "repaired_payoff": 0.19843801845275258,
+          "damaged_changed_actions": 50,
+          "repaired_changed_actions": 0
+        }
+      ]
+    },
+    {
+      "id": "625dd2cff2",
+      "fit": 71,
+      "fault": "down",
+      "edited_elements": {
+        "W1": 0,
+        "b1": 0,
+        "W2": 1,
+        "b2": 0
+      },
+      "healthy_disagreement": {
+        "W1": 0,
+        "b1": 0,
+        "W2": 1,
+        "b2": 0
+      },
+      "model_hash": "d7ec5b4d4f83402fa3ba5bd2bd8fef4406f37f93114cb1b45c66f924dacafb5f",
+      "worlds": [
+        {
+          "states": 374,
+          "world": 16,
+          "max_logit_error": 1.1102230246251565e-16,
+          "original_payoff": 0.0013863620259071396,
+          "damaged_payoff": 0.0042863620259071394,
+          "repaired_payoff": 0.0013863620259071396,
+          "damaged_changed_actions": 24,
+          "repaired_changed_actions": 0
+        },
+        {
+          "states": 793,
+          "world": 25,
+          "max_logit_error": 5.551115123125783e-17,
+          "original_payoff": 0.11607572814143774,
+          "damaged_payoff": 0.11607572814143774,
+          "repaired_payoff": 0.11607572814143774,
+          "damaged_changed_actions": 12,
+          "repaired_changed_actions": 0
+        }
+      ]
+    }
+  ]
+}
