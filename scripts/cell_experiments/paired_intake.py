@@ -114,9 +114,9 @@ def install(args):
     require(
         args.scope in ("owner_intake", "engineering_fixture"), "invalid intake scope"
     )
+    snapshot = json.loads(args.snapshot.read_bytes())
     require(
-        data.digest(json.loads(args.snapshot.read_bytes()))
-        == digest_field(args.freeze),
+        data.digest(snapshot) == digest_field(args.freeze),
         "wrong frozen snapshot",
     )
     path = args.inbox.resolve(strict=True)
@@ -150,6 +150,19 @@ def install(args):
         anchor["schema"] == "hepta.paired-intake.freeze-observation.v1",
         "wrong original freeze observation",
     )
+    if (
+        args.scope == "owner_intake"
+        and "paired_source_exposure" in snapshot["candidate"]
+    ):
+        from . import paired_source_dispatch
+
+        receipt = (
+            getattr(args, "source_retention", None)
+            or args.snapshot.parent / "RETENTION.json"
+        )
+        config["qualified_source_retention"] = paired_source_dispatch.authorize(
+            snapshot, anchor, receipt
+        )
     config["anchor"] = anchor
     import fcntl
 
@@ -292,6 +305,27 @@ def admit(args):
             witness(config, "freeze") == config["anchor"],
             "original freeze observation changed",
         )
+        qualified_retention = None
+        if config["scope"] == "owner_intake":
+            snapshot = json.loads(args.snapshot.read_bytes())
+            require(
+                data.digest(snapshot) == config["freeze"],
+                "different frozen pair at intake",
+            )
+            if "paired_source_exposure" in snapshot["candidate"]:
+                qualified_retention = config.get("qualified_source_retention")
+                if not qualified_retention or qualified_retention != config[
+                    "anchor"
+                ].get("source_retention_sha256"):
+                    from . import paired_source_dispatch
+
+                    receipt = (
+                        getattr(args, "source_retention", None)
+                        or args.snapshot.parent / "RETENTION.json"
+                    )
+                    qualified_retention = paired_source_dispatch.authorize(
+                        snapshot, config["anchor"], receipt
+                    )
         arrival = witness(config, digest_field(args.arrival))
         fields = (
             "arrival_id",
@@ -370,6 +404,8 @@ def admit(args):
             request_sha256=request_sha,
             scope=config["scope"],
         )
+        if qualified_retention is not None:
+            release["source_retention_sha256"] = digest_field(qualified_retention)
         binding = dict(
             anchor=config["anchor"],
             arrival=arrival,
@@ -449,12 +485,27 @@ def release(home, admission):
             require(row is not None, "admission does not exist")
             request_sha, request, binding_bytes, state = row
             binding = json.loads(binding_bytes)
+            original_request = json.loads(request)
             require(
                 data.digest(binding) == admission
-                and data.digest(json.loads(request)) == request_sha
+                and data.digest(original_request) == request_sha
                 and binding["release"]["request_sha256"] == request_sha,
                 "retained admission changed",
             )
+            config = json.loads(db.execute("SELECT value FROM settings").fetchone()[0])
+            if (
+                config["scope"] == "owner_intake"
+                and "paired_source_exposure" in original_request["candidate"]
+            ):
+                pinned = binding["release"].get("source_retention_sha256")
+                require(
+                    pinned
+                    and binding["release"]["scope"] == config["scope"]
+                    and pinned == binding["anchor"].get("source_retention_sha256")
+                    and binding["anchor"] == config["anchor"],
+                    "original admission lacks a qualified source retention commitment; inspect any prior delivery as historical only",
+                )
+                digest_field(pinned)
             receipt = {**binding["release"], "admission_sha256": admission}
             files = {
                 "paired.json": request + b"\n",
@@ -526,6 +577,11 @@ def main():
     init.add_argument("native", type=Path)
     init.add_argument("native_sha256")
     init.add_argument(
+        "--source-retention",
+        type=Path,
+        help="new enrolled A retention report if stored separately from FROZEN.json",
+    )
+    init.add_argument(
         "--scope", choices=("owner_intake", "engineering_fixture"), required=True
     )
     accept = actions.add_parser("admit")
@@ -536,6 +592,11 @@ def main():
     accept.add_argument("root_pid")
     accept.add_argument("sqlite_home", type=Path)
     accept.add_argument("route", type=Path)
+    accept.add_argument(
+        "--source-retention",
+        type=Path,
+        help="original retention report if rechecking an older owner store",
+    )
     accept.add_argument(
         "--training-run",
         type=Path,

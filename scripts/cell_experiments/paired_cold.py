@@ -15,7 +15,14 @@ import subprocess
 import sys
 import time
 
-from . import adoption, chat_protocol, coding_sft, data, prospective_exposure
+from . import (
+    adoption,
+    chat_protocol,
+    coding_sft,
+    data,
+    prospective_exposure,
+    paired_source,
+)
 
 ARMS = ("parent", "candidate")
 PANELS = ("future", "retention")
@@ -189,6 +196,7 @@ def checked_request(path, expected):
     )
     checked_panels({p: req[p] for p in PANELS}, parent["runtime"])
     prospective_exposure.check_request(req, prospective_exposure.catalog_for(child))
+    paired_source.check_future(req)
     return req
 
 
@@ -233,6 +241,11 @@ def token_inputs(req, model, materials):
         {row["input_ids_sha256"] for row in catalog["known_inputs"]}
         if catalog
         else set()
+    )
+    exposed_inputs.update(
+        req.get("candidate", model)
+        .get("paired_source_exposure", {})
+        .get("input_ids_sha256", [])
     )
     inputs = {}
     seen = set()
