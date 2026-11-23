@@ -5,16 +5,16 @@ on:
     branches:
       - research/hepta-neural-cell-fabric-p07-feature-necessity-20261017
     paths:
-      - 'qualification/neural-cell-fabric-p0/p07_feature_necessity.py'
-      - 'qualification/neural-cell-fabric-p0/test_p07_feature_necessity.py'
-      - 'qualification/neural-cell-fabric-p0/P07_FEATURE_NECESSITY.md'
-      - '.github/workflows/hepta-cell-fabric-p07-feature-necessity.yml'
+      - "qualification/neural-cell-fabric-p0/p07_feature_necessity.py"
+      - "qualification/neural-cell-fabric-p0/test_p07_feature_necessity.py"
+      - "qualification/neural-cell-fabric-p0/P07_FEATURE_NECESSITY.md"
+      - ".github/workflows/hepta-cell-fabric-p07-feature-necessity.yml"
   pull_request:
     paths:
-      - 'qualification/neural-cell-fabric-p0/p07_feature_necessity.py'
-      - 'qualification/neural-cell-fabric-p0/test_p07_feature_necessity.py'
-      - 'qualification/neural-cell-fabric-p0/P07_FEATURE_NECESSITY.md'
-      - '.github/workflows/hepta-cell-fabric-p07-feature-necessity.yml'
+      - "qualification/neural-cell-fabric-p0/p07_feature_necessity.py"
+      - "qualification/neural-cell-fabric-p0/test_p07_feature_necessity.py"
+      - "qualification/neural-cell-fabric-p0/P07_FEATURE_NECESSITY.md"
+      - ".github/workflows/hepta-cell-fabric-p07-feature-necessity.yml"
   workflow_dispatch:
 
 permissions:
@@ -36,7 +36,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Exact source-head and pinned local numerical dependencies
         run: |
           set -euo pipefail
@@ -66,7 +66,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Exact source-head and private source/producer/reviewer directories
         run: |
           set -euo pipefail

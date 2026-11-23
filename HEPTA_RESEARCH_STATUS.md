@@ -15,17 +15,17 @@ Public disclosure of this round's code, checkpoints, raw data and evidence to `T
 - [Exact-commit public byte readback](research_evidence/hepta_stable_flow_20261029/releases/public_recovery_parts_readback.json)
 - [All 1,170 committed scientific files compared with the archive manifest](research_evidence/hepta_stable_flow_20261029/releases/public_scientific_tree_readback.json)
 
-| Release identity | Value |
-| --- | --- |
-| Scientific evidence commit | `fc7d141c19703e7e104cff2a8dae5c492f034a77` |
-| Archive-parts publication commit | `5a2dd4945fc04785ec142920dc28c5042666211f` |
-| Archive filename | `hepta_recovery_evidence_20261030.tar.gz` |
-| Archive bytes | **18,821,020** |
-| Archive SHA-256 | `604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423` |
-| Evidence files | **1,170**, plus the manifest |
-| Uncompressed evidence bytes | **35,438,067** |
-| Public parts | **9** |
-| Public readback receipt SHA-256 | `170213f68767cdf678c4c89a640b4f7a25cca6ab74b8b9379fea51e7f44b5d90` |
+| Release identity                 | Value                                                              |
+| -------------------------------- | ------------------------------------------------------------------ |
+| Scientific evidence commit       | `fc7d141c19703e7e104cff2a8dae5c492f034a77`                         |
+| Archive-parts publication commit | `5a2dd4945fc04785ec142920dc28c5042666211f`                         |
+| Archive filename                 | `hepta_recovery_evidence_20261030.tar.gz`                          |
+| Archive bytes                    | **18,821,020**                                                     |
+| Archive SHA-256                  | `604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423` |
+| Evidence files                   | **1,170**, plus the manifest                                       |
+| Uncompressed evidence bytes      | **35,438,067**                                                     |
+| Public parts                     | **9**                                                              |
+| Public readback receipt SHA-256  | `170213f68767cdf678c4c89a640b4f7a25cca6ab74b8b9379fea51e7f44b5d90` |
 
 The archive uses the distinct `hepta-recovery-evidence-v1` contract. It preserves available original files, exact digest-verified reconstructions and explicitly new numerical and timing measurements. It does not claim to be the missing earlier complete archive. Its final audit explicitly retains `all_research_blockers_closed=false` and `original_archive_recovered=false`.
 
@@ -40,11 +40,11 @@ The tasks are selective copy and multi-query associative recall, each with 1,024
 Mean query accuracy across the three registered training seeds:
 
 | Task and checkpoint budget | Analytic | Matched C1 | Sigmoid | Ordinary | Frozen controller parameters |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Selective copy, CPU30 | 20.98% | 33.40% | 74.80% | 76.81% | 75.05% |
-| MQAR, CPU30 | 14.83% | 29.18% | 76.94% | 85.50% | 72.62% |
-| Selective copy, update384 | 100% | 100% | 100% | 100% | 100% |
-| MQAR, update384 | 100% | 100% | 100% | 100% | 100% |
+| -------------------------- | -------: | ---------: | ------: | -------: | ---------------------------: |
+| Selective copy, CPU30      |   20.98% |     33.40% |  74.80% |   76.81% |                       75.05% |
+| MQAR, CPU30                |   14.83% |     29.18% |  76.94% |   85.50% |                       72.62% |
+| Selective copy, update384  |     100% |       100% |    100% |     100% |                         100% |
+| MQAR, update384            |     100% |       100% |    100% |     100% |                         100% |
 
 At update384, all arms and seeds also achieved 100% sequence accuracy. This task saturation does not identify an analytic-operator contribution. The step0 accuracies were 11.23%–13.77%, near the 12.5% uniform baseline.
 
@@ -68,11 +68,11 @@ The new timing execution uses the same registered 20 seed81301 aliases, B1/B32 f
 
 Eight of 16 model pairs satisfied the registered empirical quality band; all eight were update384 pairs. Across both tasks and both batch sizes, the analytic/comparator median wall-time ratios were:
 
-| Comparator | Ratio range |
-| --- | ---: |
-| Matched C1 | **0.963–1.392×** |
-| Ordinary | **1.904–2.653×** |
-| Sigmoid | **1.870–3.471×** |
+| Comparator                   |      Ratio range |
+| ---------------------------- | ---------------: |
+| Matched C1                   | **0.963–1.392×** |
+| Ordinary                     | **1.904–2.653×** |
+| Sigmoid                      | **1.870–3.471×** |
 | Frozen controller parameters | **0.445–1.003×** |
 
 A ratio above one means the analytic implementation was slower for that case. These CPU medians from one training seed are descriptive. The empirical quality band is not a statistical equivalence result, and timing repetitions are not independent model-training seeds. No GPU, energy, decoder streaming or KV-cache advantage is asserted.

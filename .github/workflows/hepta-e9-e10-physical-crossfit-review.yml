@@ -2,14 +2,14 @@ name: Hepta E9-E10 real-model crossfit and negative route review (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e9_*.py'
-      - 'qualification/shared-stem-system2-architecture/e10_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e9_*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e10_*.py'
-      - 'qualification/shared-stem-system2-architecture/E9_E10_*.md'
-      - 'qualification/shared-stem-system2-architecture/observations/E9_*.json'
-      - 'qualification/shared-stem-system2-architecture/observations/E10_*.json'
-      - '.github/workflows/hepta-e9-e10-physical-crossfit-review.yml'
+      - "qualification/shared-stem-system2-architecture/e9_*.py"
+      - "qualification/shared-stem-system2-architecture/e10_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e9_*.py"
+      - "qualification/shared-stem-system2-architecture/test_e10_*.py"
+      - "qualification/shared-stem-system2-architecture/E9_E10_*.md"
+      - "qualification/shared-stem-system2-architecture/observations/E9_*.json"
+      - "qualification/shared-stem-system2-architecture/observations/E10_*.json"
+      - ".github/workflows/hepta-e9-e10-physical-crossfit-review.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 18
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: qualification/shared-stem-system2-architecture
       ROOT: qualification/shared-stem-system2-architecture
       OUTPUT: /tmp/hepta-e9-e10-audit
@@ -31,7 +31,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Bind exact current source before any artifact IO
         shell: bash
         run: |

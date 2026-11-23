@@ -2,8 +2,8 @@ name: Hepta NDU Merton P1 research contracts
 on:
   pull_request:
     paths:
-      - 'experiments/ndu_tree_fbsde_gates/merton/token_portfolio_p1/**'
-      - '.github/workflows/hepta-ndu-token-portfolio-p1.yml'
+      - "experiments/ndu_tree_fbsde_gates/merton/token_portfolio_p1/**"
+      - ".github/workflows/hepta-ndu-token-portfolio-p1.yml"
   workflow_dispatch:
 permissions:
   contents: read

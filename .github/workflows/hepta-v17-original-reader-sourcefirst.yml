@@ -3,12 +3,12 @@ on:
   push:
     branches: [research/stem-v17-original-reader-sourcefirst-20261016]
     paths:
-      - 'research/hepta_v17_reader/**'
-      - '.github/workflows/hepta-v17-original-reader-sourcefirst.yml'
+      - "research/hepta_v17_reader/**"
+      - ".github/workflows/hepta-v17-original-reader-sourcefirst.yml"
   pull_request:
     paths:
-      - 'research/hepta_v17_reader/**'
-      - '.github/workflows/hepta-v17-original-reader-sourcefirst.yml'
+      - "research/hepta_v17_reader/**"
+      - ".github/workflows/hepta-v17-original-reader-sourcefirst.yml"
 permissions:
   contents: read
   actions: read
@@ -26,7 +26,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Exact source / no-network / assertion-independent negatives
         shell: bash
         run: |
@@ -61,7 +61,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Install exact research CPU operator dependencies
         run: |
           set -euo pipefail

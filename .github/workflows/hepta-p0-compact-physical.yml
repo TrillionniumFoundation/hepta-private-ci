@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 75
     env:
-      OPENBLAS_NUM_THREADS: '1'
-      MKL_NUM_THREADS: '1'
-      OMP_NUM_THREADS: '2'
-      TOKENIZERS_PARALLELISM: 'false'
-      HF_HUB_DISABLE_TELEMETRY: '1'
-      PYTHONHASHSEED: '0'
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      PYTHONHASHSEED: "0"
       OUTPUT_ROOT: /tmp/p0-compact-output
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Exact checkout and independent source provenance
         shell: bash
         run: |

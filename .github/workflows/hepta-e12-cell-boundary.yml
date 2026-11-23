@@ -2,10 +2,10 @@ name: Hepta E12 exact Cell boundary handoff research (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/shared-stem-system2-architecture/e12_cell_boundary*.py'
-      - 'qualification/shared-stem-system2-architecture/test_e12_cell_boundary*.py'
-      - 'qualification/shared-stem-system2-architecture/E12_CELL_BOUNDARY_HANDOFF_20261016.md'
-      - '.github/workflows/hepta-e12-cell-boundary.yml'
+      - "qualification/shared-stem-system2-architecture/e12_cell_boundary*.py"
+      - "qualification/shared-stem-system2-architecture/test_e12_cell_boundary*.py"
+      - "qualification/shared-stem-system2-architecture/E12_CELL_BOUNDARY_HANDOFF_20261016.md"
+      - ".github/workflows/hepta-e12-cell-boundary.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,7 +18,7 @@ jobs:
       matrix:
         source_profile: [source_head, synthetic_merge]
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
       PYTHONPATH: qualification/shared-stem-system2-architecture
       ROOT: qualification/shared-stem-system2-architecture
       OUTPUT: /tmp/hepta-e12-cell-boundary
@@ -28,7 +28,7 @@ jobs:
           ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Bind actual source and complete test code
         shell: bash
         run: |

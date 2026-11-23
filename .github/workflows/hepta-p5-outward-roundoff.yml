@@ -2,8 +2,8 @@ name: Hepta P5 exact-integer outward roundoff re-audit (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'qualification/ndu-p5-roundoff/**'
-      - '.github/workflows/hepta-p5-outward-roundoff.yml'
+      - "qualification/ndu-p5-roundoff/**"
+      - ".github/workflows/hepta-p5-outward-roundoff.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,13 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      PYTHONHASHSEED: '0'
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Pin independent high-precision test oracle
         run: |
           set -euo pipefail

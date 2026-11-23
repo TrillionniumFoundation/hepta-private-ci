@@ -2,8 +2,8 @@ name: Hepta NDU Tree FBSDE research gates (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'experiments/ndu_tree_fbsde_gates/**'
-      - '.github/workflows/hepta-ndu-tree-fbsde-gates.yml'
+      - "experiments/ndu_tree_fbsde_gates/**"
+      - ".github/workflows/hepta-ndu-tree-fbsde-gates.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Pin physical Head-only NumPy dependency
         run: python -m pip install --disable-pip-version-check numpy==2.3.5
       - name: Record exact source and runtime
@@ -43,8 +43,8 @@ jobs:
           python -W error::ResourceWarning -m unittest -v "${TEST_MODULES[@]}"
       - name: Execute separate-process 64/256/1024/4096 actual CPU Head-only batches
         env:
-          OPENBLAS_NUM_THREADS: '1'
-          MKL_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
         run: |
           set -euo pipefail
           mkdir -p /tmp/ndu-shadow-head-panel
@@ -59,8 +59,8 @@ jobs:
             --output /tmp/ndu-shadow-head-panel/panel_audit.json
       - name: Train actual synthetic teacher-distilled gated Cell, seal, score in separate process
         env:
-          OPENBLAS_NUM_THREADS: '1'
-          MKL_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
         run: |
           set -euo pipefail
           python experiments/ndu_tree_fbsde_gates/teacher_study.py \
@@ -74,8 +74,8 @@ jobs:
             --output /tmp/ndu-shadow-head-panel/teacher_independent_process_score.json
       - name: Score sealed Head policies against cost-adjusted exact Bellman
         env:
-          OPENBLAS_NUM_THREADS: '1'
-          MKL_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
         run: |
           set -euo pipefail
           F_HASH=$(sha256sum /tmp/ndu-shadow-head-panel/teacher_future_inputs.json | cut -d' ' -f1)
@@ -86,8 +86,8 @@ jobs:
             --output /tmp/ndu-shadow-head-panel/teacher_decision_utility.json
       - name: Execute actual paired observed-return System2 Critic, seal two source-disjoint future windows
         env:
-          OPENBLAS_NUM_THREADS: '1'
-          MKL_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
         run: |
           set -euo pipefail
           mkdir -p /tmp/ndu-shadow-head-panel/paired-raw
@@ -104,4 +104,3 @@ jobs:
           path: /tmp/ndu-shadow-head-panel/
           retention-days: 7
           if-no-files-found: warn
-

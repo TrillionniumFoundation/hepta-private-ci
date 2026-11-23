@@ -2,10 +2,10 @@ name: Hepta Merton separate news replication (DENY_ALL)
 on:
   pull_request:
     paths:
-      - 'experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/**'
-      - '.github/workflows/hepta-ndu-merton-news.yml'
-      - '.github/scripts/hepta_artifact_fetch.py'
-      - '.github/scripts/test_hepta_artifact_fetch.py'
+      - "experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/**"
+      - ".github/workflows/hepta-ndu-merton-news.yml"
+      - ".github/scripts/hepta_artifact_fetch.py"
+      - ".github/scripts/test_hepta_artifact_fetch.py"
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,9 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      OPENBLAS_NUM_THREADS: '1'
-      OMP_NUM_THREADS: '1'
-      MKL_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,7 +29,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Install numeric dependency and record exact source
         shell: bash
         run: |

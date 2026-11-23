@@ -2,10 +2,10 @@ name: Hepta HPCA recorded CPU replay audit
 on:
   pull_request:
     paths:
-      - 'qualification/hpca-neuroscience-20261110/HPCA_V2_PROCESS_REPLAY_*'
-      - 'qualification/hpca-neuroscience-20261110/verify_hpca_process_replay.py'
-      - 'qualification/hpca-neuroscience-20261110/test_hpca_process_replay.py'
-      - '.github/workflows/hepta-hpca-process-replay-audit.yml'
+      - "qualification/hpca-neuroscience-20261110/HPCA_V2_PROCESS_REPLAY_*"
+      - "qualification/hpca-neuroscience-20261110/verify_hpca_process_replay.py"
+      - "qualification/hpca-neuroscience-20261110/test_hpca_process_replay.py"
+      - ".github/workflows/hepta-hpca-process-replay-audit.yml"
   workflow_dispatch:
 jobs:
   recorded-replay-consistency:
