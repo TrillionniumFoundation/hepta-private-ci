@@ -1,0 +1,61 @@
+{
+  "correction": "aa351ea14ec401a45ad5526b0a9db674d1ead810a48037af0f770663ddc40503",
+  "enrolled_people": 0,
+  "failure": "fac1e45ef90d652507ea5dc6c3339ba107088bfe3effa82f1c7486800e2384c0",
+  "native_A_grants": 0,
+  "new_B_arrivals": 0,
+  "original_calls": [
+    {
+      "effect_sha256": "d5990fcd0a7ebb06ac4be04daa0448d98367a0a9ae02d146f6dfeb3f333c5c89",
+      "semantic_success": false,
+      "slot": "failure",
+      "text_sha256": "bc237aec467eef4ad72ab44c19ed2edbed79f7b5824a2e7ebfb3faf583433e66",
+      "training": "pending_original_A_consent"
+    },
+    {
+      "effect_sha256": "239a81250a11b7eb41ba628f69045ed1777f93f4a60c77d370bfe1707382c026",
+      "semantic_success": true,
+      "slot": "correction",
+      "text_sha256": "4576c78212427cd7b0e500dc5c5c1eaff7bdb6d537fa4f977c8a0667883d8531",
+      "training": "pending_original_A_consent"
+    }
+  ],
+  "originating_client": "local official MCP SDK",
+  "payments": 0,
+  "result": {
+    "cell_manifests": {
+      "reader": "c831e8cc1f000605d66de5af84fc34895bfee3e395f99b5a34e30bca5e701aa0",
+      "source": "f070491a231528af6892bb925d6295f0ad077bbbe40c28bbf8fb915fcaec53e3"
+    },
+    "cell_parameters_updated": 0,
+    "correction_sha256": "aa351ea14ec401a45ad5526b0a9db674d1ead810a48037af0f770663ddc40503",
+    "decision": "no_update_no_distinct_graph_success",
+    "derived_record_sha256": "2ab3fac8d43c2773e0821737a8a460ee90535288278a19a4292c55d1f2a323af",
+    "failure_sha256": "fac1e45ef90d652507ea5dc6c3339ba107088bfe3effa82f1c7486800e2384c0",
+    "future_records_consumed": 0,
+    "owner_receipt_sha256": "d7197aa20820fb71f636d3e84ddce1328d908df06737cb3029818c78713b3847",
+    "parent_sha256": "cbd4d49e8950fbc9b237210d176b9cfe8c8ff0967ba8cdd345f22a7143abbcb0",
+    "payment_authorized": false,
+    "schema": "hepta.paired-learning.router-only.v1",
+    "scope": "engineering_fixture",
+    "scores": [
+      {
+        "graph": "connected",
+        "raw_result_sha256": "2b1ab55c3bf1a5683c570675ad88c0907efb230aa46cd512499b89e0faf2810f",
+        "success": false
+      },
+      {
+        "graph": "disconnected",
+        "raw_result_sha256": "5d36c109c21c89b9a8259aa13cf0cfa4ae1f49435a96a4ce09d903b52be4b02c",
+        "success": false
+      }
+    ],
+    "search_sha256": "20c3d92f4a6294f9eff7608d114ccd7108e1eb6c07313f52f7a18d445d393a91",
+    "source_plan_sha256": "57dd08c26b1678a56aeff2b28cccfdc727afcf32df6c97e387ebd97dd92ac4b6",
+    "study_sha256": "f8800bfef6894bafe33e7bbd2ccffffb163f70706d02f5f2e62737ffd4fc198d",
+    "topology_source": "original_parent_router"
+  },
+  "scope": "engineering_fixture",
+  "selected_parent": "cbd4d49e8950fbc9b237210d176b9cfe8c8ff0967ba8cdd345f22a7143abbcb0",
+  "study": "f8800bfef6894bafe33e7bbd2ccffffb163f70706d02f5f2e62737ffd4fc198d"
+}
