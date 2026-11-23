@@ -3,6 +3,7 @@
 
 import argparse
 import hashlib
+import importlib.util
 import os
 import shlex
 import subprocess
@@ -16,6 +17,14 @@ except ModuleNotFoundError:  # Python 3.10 uses Cargo for Rust edition metadata.
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
+
+# The repository and its isolated integration fixtures both load this formatter
+# by file path. Resolve the helper from the same checkout in either context.
+_retained_spec = importlib.util.spec_from_file_location(
+    "hepta_retained_rust", Path(__file__).with_name("hepta_retained_rust.py")
+)
+retained_rust = importlib.util.module_from_spec(_retained_spec)
+_retained_spec.loader.exec_module(retained_rust)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -138,6 +147,7 @@ def verified_verbatim_fixture_paths() -> frozenset[str]:
             raise ValueError(
                 f"cannot verify verbatim fixture {relative!r}: {error}"
             ) from error
+    retained_rust.verify_all(root)
     return frozenset(VERBATIM_FIXTURES) | verified_original_evidence_paths()
 
 
@@ -365,6 +375,27 @@ def changed_paths(base: str | None = None) -> list[str]:
 
 
 def rust_file_command(path: str, *, check: bool) -> Command:
+    if path in retained_rust.INVENTORY["archived"]:
+        # Each retained source stays on the selected list. Its stored qualification
+        # applies only to the exact original bytes and has no authority to rewrite them.
+        return Command(
+            (
+                sys.executable,
+                retained_rust.__file__,
+                "--root",
+                str(REPO_ROOT),
+                str(REPO_ROOT / path),
+            ),
+            REPO_ROOT,
+        )
+    if path in retained_rust.INVENTORY["maintained_builders"]:
+        # These standalone sources are compiled using a generated Cargo manifest
+        # or a direct rustc flag. Their builders own their editions and import rules.
+        edition = retained_rust.builder_edition(REPO_ROOT, path)
+        args = ["rustfmt", "--edition", edition, "--config", "skip_children=true"]
+        if check:
+            args.append("--check")
+        return Command((*args, "--", str(REPO_ROOT / path)), REPO_ROOT / "codex-rs")
     manifest = next(
         (
             parent / "Cargo.toml"

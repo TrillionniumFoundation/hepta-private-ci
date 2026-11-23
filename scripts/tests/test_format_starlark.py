@@ -50,6 +50,10 @@ class StarlarkSelectionTests(unittest.TestCase):
         custody = (
             *self.original.VERBATIM_FIXTURES,
             *self.original.ORIGINAL_EVIDENCE_FILES,
+            *self.original.retained_rust.INVENTORY["archived"],
+            *self.original.retained_rust.INVENTORY["companions"],
+            "scripts/hepta_retained_rust.py",
+            "scripts/format_provenance/retained_rust.json",
         )
         for relative in ("scripts/format.py", "tools/buildifier", *custody, *EVIDENCE):
             destination = self.root / relative
