@@ -40,7 +40,8 @@ def shard(root, name):
     with np.load(path, allow_pickle=False) as data:
         s = {key:data[key] for key in ("x","dt","scores","read_scores","target","group","split","query_id","gallery_id")}
     groups = {f"ravdess-actor-{g:02d}" for g in MANIFEST["splits"][name]}
-    if (set(s["group"]) != groups or set(s["split"]) != {name}
+    if (len(s["x"]) != PROTOCOL["pre_score_data_erratum"]["eligible_queries"][name]
+            or set(s["group"]) != groups or set(s["split"]) != {name}
             or len(np.unique(s["query_id"])) != len(s["x"])
             or set(s["query_id"]) != set(s["gallery_id"].flatten())):
         raise ValueError("split / gallery identity mismatch")

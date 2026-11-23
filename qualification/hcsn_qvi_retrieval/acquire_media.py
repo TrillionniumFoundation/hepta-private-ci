@@ -106,7 +106,13 @@ def main():
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
         results=list(pool.map(lambda actor: obtain_actor(actor, manifest, args.cache),actors))
     rows=[item for group in results for item in group]
-    assert len({r["sha256"] for r in rows})==192
+    by_digest = {}
+    for row in rows:
+        by_digest.setdefault(row["sha256"], []).append(row["recording"])
+    duplicates = {k: sorted(v) for k,v in by_digest.items() if len(v)>1}
+    erratum = manifest["source_integrity_erratum"]
+    if len(rows)!=192 or duplicates!={erratum["duplicate_sha256"]:sorted(erratum["duplicate_files"])}:
+        raise ValueError("source inventory differs from the frozen corpus erratum")
     (args.cache/"recordings.json").write_text(json.dumps(rows,indent=2)+"\n")
 
 

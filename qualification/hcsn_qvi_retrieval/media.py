@@ -15,7 +15,10 @@ import time
 
 import numpy as np
 
-from acquire_media import MANIFEST, file_names
+if __package__:
+    from .acquire_media import MANIFEST, file_names
+else:
+    from acquire_media import MANIFEST, file_names
 
 
 def run(argv):
@@ -90,9 +93,10 @@ def match_scores(query, candidates, steps, subframes):
     return -np.sqrt(numerator / (np.arange(1,steps+1)*subframes)[:,None])
 
 
-def check_arrays(arrays, selected_splits):
+def check_arrays(arrays, selected_splits, erratum):
     n,steps,width = arrays["x"].shape
-    if (n,steps,width) != (8 * sum(map(len,selected_splits.values())),6,8):
+    expected = sum(erratum["expected_queries"][s] for s in selected_splits)
+    if (n,steps,width) != (expected,6,8):
         raise ValueError("unexpected number of queries, prefixes, or free features")
     for name in ("scores","read_scores"):
         if arrays[name].shape != (n,steps,2):
@@ -104,7 +108,8 @@ def check_arrays(arrays, selected_splits):
     if list(map(len,groups)) != list(map(len,selected_splits.values())) or len(set.union(*groups)) != sum(map(len,groups)):
         raise ValueError("actor split overlap or incomplete splits")
     for group in np.unique(arrays["group"]):
-        if not np.array_equal(np.bincount(arrays["target"][arrays["group"]==group]),[4,4]):
+        positions = np.bincount(arrays["target"][arrays["group"]==group], minlength=2)
+        if len(positions)!=2 or positions[0]!=positions[1] or not positions[0]:
             raise ValueError("unbalanced target positions")
 
 
@@ -112,6 +117,8 @@ def build(cache, manifest, selected_splits, wait_limit):
     steps = manifest["clock"]["steps"]
     seconds = manifest["clock"]["seconds_per_step"]
     subframes = manifest["clock"]["subframes_per_step"]
+    erratum = manifest["source_integrity_erratum"]
+    exclude = {tuple(pair) for pair in erratum["excluded_actor_emotion"]}
     sources = {}
     wait_time = 0.0
     rows = {k:[] for k in ("x","scores","read_scores","target","group","split","dt","query_id","gallery_id")}
@@ -127,8 +134,11 @@ def build(cache, manifest, selected_splits, wait_limit):
                     time.sleep(2)
                 wait_time += time.monotonic() - started
                 sources[name] = hashlib.sha256(path.read_bytes()).hexdigest()
-                clips[name] = modality_features(path,steps,seconds,subframes)
+                if (actor, int(name.split("-")[2])) not in exclude:
+                    clips[name] = modality_features(path,steps,seconds,subframes)
             for emo in manifest["emotion_ids"]:
+                if (actor, emo) in exclude:
+                    continue
                 for rep in manifest["repetition_ids"]:
                     key = f"hepta-qvi-ravdess-v1/{actor}/{emo}/{rep}".encode()
                     order = [1,2] if hashlib.sha256(key).digest()[0]%2==0 else [2,1]
@@ -154,7 +164,7 @@ def build(cache, manifest, selected_splits, wait_limit):
                         rows["gallery_id"].append(names)
             print(f"decoded actor {actor:02d}",flush=True)
     arrays = {name:np.asarray(value) for name,value in rows.items()}
-    check_arrays(arrays, selected_splits)
+    check_arrays(arrays, selected_splits, erratum)
     return arrays, sources, wait_time
 
 
