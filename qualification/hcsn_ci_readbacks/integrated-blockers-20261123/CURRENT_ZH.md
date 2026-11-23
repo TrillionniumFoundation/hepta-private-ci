@@ -46,3 +46,13 @@ e327 自身从冷检出重新编译的原始启动工作流也已成功。新 Ag
 既有 CREMA-D 研究的确认集有 8 名新演员、192 个配对片段。在相同 60 秒训练 CPU 预算下，HCSN 融合准确率 30.9896%，Transformer 为 34.7005%；HCSN 相对 LIF 高 9.570 个百分点，是八项主要收益比较中唯一达到预设门槛的一项。音频检索视频的 R@1 分别为 HCSN 0.4557%、Transformer 7.8776%。这些数据将小任务的局部收益和端到端编码器的性能要求分开。[90 个配置及原始对照](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/980b8d0a1ccd672a2aa84d8c75610d67528ff70d/experiments/hcsn_blocker_closure_v1/av/RESULTS_ZH.md)
 
 继续只用购买前的八个音频分组，TRAIN 和 DEV 的全部 256 张二值决策表产生 128 种不同动作。14 个来源都满足保持下限的只有两种，其中一种全免费，另一种只买一条训练查询。允许在每组输出任意连续购买概率后，约束同样 14 个来源的期望保持下限，DEV 相对一律购买的最大增益仍是 −487/10920（−0.04460）。这个上界有独立可验的有理数对偶证书，原逐题评分器复核两分区全部 512 次离散评分。一组查询的平均购买收益可为正，而仅凭这些购买前信息仍无法可靠部署。[精确证书、逐来源假设、原始评分复算](../purchase-attainability-20261123/README.md)
+
+## 取消后的读回及当前草案
+
+十次真实 UID0 原进程把取消后的队列时序定位到工作线程归还信号量之前。旧程序五次实际返回 QueueFull，五次返回预期的 Unavailable。测试先保留 peer 读到 EOF 和通道槽为空的原断言，再显式等唯一的信号量许可返回，等待新增两秒上限，随后执行原精确读回断言。两套产品源码的 transport Git blob 完全相同。两枚不同原 libtest 各通过 10/10，二十次交替进程共 1.154459 秒。该数字限于这一个特权用例。[旧返回值与新测试的原生归档](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/942848ada99429f4cd1653f698b121e0f47767fb/qualification/hcsn_ci_readbacks/agentd-private-enums-20261123/queued-readback)
+
+#7016 已按快进方式更新到 e1969bcf8dbb9e9e42cd718401a9df6d13f79d98，含九项组合及这四行测试修改，仍为未合并草案。原先整组 92 项的 91/92 对 92/92 结果保留；另一项在两个调整后源码下重新绑定同一批 62 个普通和 30 个特权原用例，按先前两个 ELF 摘要核对后执行。[整组配对](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138043396) · [本次包含的四行改动](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e1969bcf8dbb9e9e42cd718401a9df6d13f79d98)
+
+Linux musl 的原失败中，fleet 收到了一个可完整解析、其类型并非 Drain 的响应；另一个响应类型未留在原日志。三次独立原目标均通过两例。原生 core 的七份失败尝试分属三个 shard，两组后续通过，最终保留的失败是父 rollout 没有收到子代理已结束通知。正常结束的事件时序与通知写入正在单独验证。[真实运行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45137315561)
+
+HAPT 的 12 个已规定起始姿势／置信组能组成 4,096 种多等一个采样块的规则。对原 TRAIN 和 DEV 的两次独立穷举表明，共同能达到的受试者平均增益上限 0.008708，低于所需的 0.015。原记录的两种退出方式逐题复算共 8,192 个配置读数。此项仅讨论等一个 0.48 秒块。[全部配置及原数据身份](../purchase-attainability-20261123/README.md)
