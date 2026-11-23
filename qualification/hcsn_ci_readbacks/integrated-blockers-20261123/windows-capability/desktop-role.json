@@ -1,0 +1,16 @@
+{
+  "bazel_exit": 0,
+  "desktop": [
+    "desktop::tests::desktop_rejects_unrestricted_and_invalid_tokens",
+    "desktop::tests::legacy_refuses_before_readonly_desktop_mechanism_fixture",
+    "desktop::tests::legacy_refuses_before_workspace_desktop_mechanism_fixture",
+    "desktop::tests::readonly_desktop_requires_a_qualified_token_backend",
+    "desktop::tests::separate_desktop_roles_refuse_sessions_with_the_same_read_roots",
+    "desktop::tests::workspace_private_desktop_requires_a_qualified_token_backend"
+  ],
+  "interleaved_output_records": 2,
+  "native_target": {
+    "ignored": 5,
+    "ok": 289
+  }
+}

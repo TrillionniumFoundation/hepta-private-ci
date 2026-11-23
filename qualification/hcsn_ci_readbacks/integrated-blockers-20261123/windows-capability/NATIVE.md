@@ -36,3 +36,5 @@ e3277e96 的 shard 4 正式终结。从其原始 ZIP 的 139 个成员中提取�
 ## c12 的第六份原运行
 
 扫描 c12 原 shard 全部 139 个成员，恰有五个具名的最终失败。四个 Windows 隔离正例第六次均失败。分离会话用例再次在等待 WebSocket 事件时超时；该项在这六次整 shard 中四过两败。两次失败的原夹具都将五处等待汇合到同一错误，既有专项六次整目标的 36/36 不能定位哪个请求超时。下载六份原 ZIP 后上述程序可独立复核。[原作业](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45138928408/job/137573328593) · [本次原 ZIP](c12.zip)
+
+另在 c12 的相同 Rust 源树上独立运行原 windows-sandbox-rs 单测目标，禁止命中测试缓存，要求单次执行。六个指定的桌面/令牌准入与拒绝控制全部通过。对原始文本与 Bazel XML 的复算给出 289 过、0 败、5 原忽略。测试程序的两行输出与并行诊断交错，托管收集器的行首计数漏记这两条；四份 Rust 汇总与按具名结果恢复的 294 项一一对应。这些用例验证底层按角色拒绝或要求合格后端的行为。整 shard 的四个端到端隔离正例仍为红。[具名原目标](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45140086113/job/137575625240) · [原 ZIP](desktop-role.zip) · [复算实现](verify_desktop.py)
