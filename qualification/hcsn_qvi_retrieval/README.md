@@ -27,8 +27,10 @@ PYTHONPATH="$pkg:${PYTHONPATH:-.}:." python -m unittest qualification.hcsn_qvi_r
 python -m qualification.hcsn_qvi_retrieval.run_study diagnose /tmp/qvi-input /tmp/qvi-study
 python -m qualification.hcsn_qvi_retrieval.run_study fit /tmp/qvi-input /tmp/qvi-study
 python -m qualification.hcsn_qvi_retrieval.run_study confirm /tmp/qvi-input /tmp/qvi-study
-python -m qualification.hcsn_qvi_retrieval.verify /tmp/qvi-input /tmp/qvi-study
+
 ```
+
+The numerical replay also checks the original external acquisition cost receipts. For an exact replay, unpack the released files as described below. A new raw-media acquisition has its own process timing and therefore different external receipts.
 
 Running the saved agent program reproduces its edits. Its original discovery
 included a separate TRAIN-only diagnostic disclosure and an agent-authoring
@@ -71,3 +73,26 @@ both can satisfy the original legal action rankings with a 0.001 margin. It
 keeps the existing hidden representation and base Belief scores fixed. A
 feasible TRAIN solution supplies a candidate for fresh independent utility
 evaluation. The RAVDESS task and these checkpoints have different action sets.
+
+## Replaying the evidence
+
+Unpack `evidence/inputs.zip` to recover the precomputed `data/` directory including cost and source receipts. The parent numerical verifier accepts that directory. The separate experiments live in the adjacent `hcsn_qvi_task_surface` and `hcsn_qvi_encoder_controls` packages. The former maps the fitted external Bellman intervention advantage to the physical threshold. The latter includes audio-features-only, discrete LIF and a small causal self-attention encoder. All selection seals were published before model confirmation. Use the shared data and distinct evidence directories.
+
+For the old five-checkpoint experiment, obtain the [archive part manifest](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2d0120e208ed81515837a7530c9f6943af03e87f/tools/hcsn/wsp_20261104/joint/PARTS.json), fetch parts at `5b69a046d886cf4c2a73c50e58197360ea15d8f5` and concatenate in manifest order. The resulting 14,316,376-byte ZIP has SHA-256 `87173e7699117f9870393832f428b9f3e0046efe7f92035be7b37f5348ad9124`. The evaluator accepts that archive or a ZIP retaining the original five model member names. Supply the seven original sources identified by Git object in `geometry_confirm.py` in one directory, the released LP displacements, and the original `evidence/geometry_confirm_seal.json` to `geometry_confirm.py evaluate`. Every checkpoint and schedule identity is verified on replay. Running `seal` deliberately creates a new roster.
+
+From the repository root the released run can be checked independently with the following commands. Each output directory in this example is fresh.
+
+```sh
+pkg=qualification/hcsn_qvi_retrieval
+unzip -q "$pkg/evidence/inputs.zip" -d /tmp/hepta-input
+unzip -q "$pkg/evidence/primary_runs.zip" -d /tmp/hepta-primary
+unzip -q "$pkg/evidence/external_surface_runs.zip" -d /tmp/hepta-surface
+unzip -q "$pkg/evidence/encoder_controls_runs.zip" -d /tmp/hepta-encoders
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
+python -m qualification.hcsn_qvi_retrieval.verify /tmp/hepta-input/data /tmp/hepta-primary
+python -m qualification.hcsn_qvi_task_surface.verify /tmp/hepta-input/data /tmp/hepta-surface
+python -m qualification.hcsn_qvi_encoder_controls.verify /tmp/hepta-input/data /tmp/hepta-encoders
+python "$pkg/analysis/all_arms.py" /tmp/hepta-primary /tmp/hepta-surface /tmp/hepta-encoders
+```
+
+[Full results](RESULTS.md) and [evidence manifest](evidence/MANIFEST.json).
