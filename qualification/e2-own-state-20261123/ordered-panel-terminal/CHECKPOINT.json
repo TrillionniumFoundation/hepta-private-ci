@@ -1,0 +1,817 @@
+{
+  "actual_slot_counts": {
+    "evaluation_native": 0,
+    "generation": 0,
+    "material": 19,
+    "qualification_native": 6,
+    "scan": 6
+  },
+  "archive": {
+    "bytes": 68336,
+    "filename": "original-panel-receipts.tar.xz",
+    "internal_file_index_sha256": "00e43099631653bd7c714e1e2fea7466cf6b450a1655d54a993faab9503fa52e",
+    "members": 165,
+    "sha256": "041b31de1c2aca01645aba4a30f9518c5e368d1085331543d870b36677c3d31c",
+    "uncompressed_payload_bytes": 806515
+  },
+  "as_of": "2026-11-21T03:00:00Z",
+  "bound_verifier_environment_sha256": "5d86a0fa1260f171ba1cc2e9ac01e4a015b915bb48e3dcd06b55d8b74328a7ed",
+  "denominators": {
+    "actual_material_attempts": 19,
+    "authenticated_user_sources": 0,
+    "completed_fresh_student_score_pairs": 0,
+    "completed_native_qualification_children": 6,
+    "fresh_student_generation_calls": 0,
+    "fresh_student_native_verifier_calls": 0,
+    "independent_training_repeats_in_this_panel": 0,
+    "native_case_occurrences_with_junit_counts": 1198,
+    "native_children_without_junit_counts": 2,
+    "new_training_updates_in_acquisition": 0,
+    "original_owner_groups_scanned": 6,
+    "pre_scan_exclusions": 2,
+    "qualification_native_claims_without_confirmed_native_child": 0,
+    "qualified_independent_upstream_sources": 1,
+    "registered_source_entries": 8,
+    "required_upstream_sources": 4,
+    "static_qualification_candidates": 20,
+    "unknown_native_completions_flagged_in_original_final": 0
+  },
+  "derived_export_code_sha256": "4e78da42044c054e2edd488bc3ec1f7ee325bd5ac1ae3a6efaa5adb70c5b137f",
+  "entire_candidate_tasks_not_redistributed": true,
+  "evidence_scope": "Upstream BEFORE and maintainer-reference AFTER are original regression qualification. A model recovery effect has no fresh score estimator for this refused panel.",
+  "excluded_fingerprints": 9905,
+  "excluded_inventory_sha256": "dac49a908669ef870d1efce1117699e13698cded0a3098df895a8749f0d90f2c",
+  "frozen_weights_receipt_sha256": "c7ac446407e45c81fc00f51748d7aaaa29e9a8f1f290a6eef146c1da9c41ee32",
+  "local_integrity_and_readiness_packager_sha256": "82c3b7584cd3a74da76d2b1f86f160b54b9b28f2a5f022d6d9b0417dd6a1ee88",
+  "original_machine_export_summary_sha256": "767b866acd5f60c26b1eaad242b0ba743ca9c9c068cd888cd3f09922b38cd7c6",
+  "original_operator_files": {
+    "ancestor": {
+      "bytes": 26011,
+      "name": "native_sandbox.py",
+      "sha256": "49cced4d3eb61ee86b1f55a11ca097be7618a0fc9b59e515f1b1d7676bec671c"
+    },
+    "codec": {
+      "bytes": 11198,
+      "name": "replacement_codec.py",
+      "sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3"
+    },
+    "context_source": {
+      "bytes": 21856,
+      "name": "prepare_task.py",
+      "sha256": "cf3e7d0e207b5553618d6eee436b2550d6205c76151b655296c4e193d1a7fbbc"
+    },
+    "materializer_source": {
+      "bytes": 17187,
+      "name": "materialize_reference.py",
+      "sha256": "b4bc2a6eea7c8f2b9b5a21cd157b030b2b4b8484354f4ef63017d155e058598f"
+    },
+    "native_source": {
+      "bytes": 28876,
+      "name": "future_native.py",
+      "sha256": "023caf96622e555a670215a2dc2373e635b74dfa3bf01c1f656c94d224398ddd"
+    },
+    "scanner_source": {
+      "bytes": 21101,
+      "name": "scan_history.py",
+      "sha256": "b8edd528f1e4401a007430fca9364d53a75398742e6af0f46e95bb019c4a178a"
+    }
+  },
+  "original_selection_sha256": "6482ce86db176fc50d8e3be401df9a71da2410cc9babdc5b347a15a87b87a6b7",
+  "original_source_code_sha256": {
+    "acquire_fresh.py": "6fc56fabf22493e18e3eaaad9be4a53a53a59c3d7353f6f91c2b2969c53386b2",
+    "assemble_fresh.py": "1e68051b82c563c206e196443e693f75a9b79d113391d5af3e9580b734700d3f",
+    "fresh_contract.py": "724f29a89e97293e209f2aad27e3b3b88d8a57a1534c065c3adf6f7b21f2af3f",
+    "prepare_fresh.py": "dc4313d7837a9420d5d6c7f672422b43d6cc43a8fbc49a94244515e459789185",
+    "run_fresh.py": "16e0f964c413b0e4f6ef2c97bf197a057cf3882b773d4c5ae0952957eecec38d"
+  },
+  "qualified_task_identities": [
+    {
+      "authenticated_users": 0,
+      "origin_kind": "curated_development",
+      "pretraining_contamination_eliminated": false,
+      "record_id": "fresh-andialbrecht/sqlparse:111b35cffcfe44b16fbdd27507f165bafd52a2a1",
+      "source": "andialbrecht/sqlparse",
+      "task_sha256": "85290c837b066975c904a8f2fdff2a0c6052941b727cef78bc53ddf30f40b7d7",
+      "training_allowed": false
+    }
+  ],
+  "runtime_readiness": {
+    "default_tensor_entrypoint": {
+      "actual_error": "ImportError: libcudnn.so.9: cannot open shared object file: No such file or directory",
+      "disposition": "ORIGINAL_GUARD_PREPARATION_PREREQUISITE_FAILED",
+      "model_calls": 0,
+      "original_stderr_sha256": "c9b09b03a80d13bcd5e2fe49a59bc4c25abaf49978623fdfe87b52e240fe8d4b"
+    },
+    "engineering_receipts_archive": {
+      "bytes": 5528,
+      "filename": "runtime-readiness-receipts.tar.xz",
+      "sha256": "ed7b57e7c3942eb7313c38322199b6e21732b881c9d66d38de5ec73801d37d89"
+    },
+    "scientific_tokenizer_preparation_environment": {
+      "gpu_generation_admission": false,
+      "interpreter_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "original_backend_versions": {
+        "safetensors": "0.7.0",
+        "tokenizers": "0.22.2",
+        "torch": "2.9.1+cu128",
+        "transformers": "4.57.3"
+      },
+      "original_base_manifest_versions_and_chat_template_guard_passed": true,
+      "original_wheels_installed": 21,
+      "sqlparse_six_official_preparation_receipts_match_independent_token_sequences": true,
+      "transformers_optional_tensor_backend": "USE_TORCH=0",
+      "verified_source_modules": {
+        "torch/utils/checkpoint.py": "431b229da53972d79bed7e5dbfb6ace2922fff30192ea103208f484e59490f23",
+        "transformers/masking_utils.py": "7a963feed8173b8265298dd24350c166222ce6b4719442fce48ab414d0478a6a",
+        "transformers/models/qwen2/modeling_qwen2.py": "08742a7c82a8713bc22f632f01c97b7eca3ef0e947180e7d6c9beec4897c4ff8"
+      }
+    },
+    "separate_engineering_cost": {
+      "additional_generation_or_training_dependency_wheels_fetched_after_refusal_became_inevitable": 0,
+      "combined_public_http_response_bytes": 940356917,
+      "original_20_small_wheels_http_response_bytes": 39475269,
+      "original_torch_wheel_http_response_bytes": 900881648,
+      "original_torch_wheel_sha256": "7cb4018f4ce68b61fd3ef87dc1c4ca520731c7b5b200e360ad47b612d7844063",
+      "private_lan_payload_bytes_separate": 750288932,
+      "qualification_native_children_billed_to_engineering": 0
+    }
+  },
+  "schema": "hepta.e2.current-student.original-panel-terminal-evidence.v1",
+  "selection_publication": {
+    "actual_ref_readback_confirmed": true,
+    "all_62_new_blob_path_associations_verified": true,
+    "branch": "research/e2-own-state-correction-20261121-ac5459",
+    "commit": "4c55d9bfe1898c0066b3ae7cb05744fe99f6b418",
+    "evidence": {
+      "CREATE_COMMIT_RAW.json": {
+        "bytes": 195,
+        "path": "/tmp/hepta-e16-ac5459-recovered-20261121/root/e2_fresh_selection_publication/CREATE_COMMIT_RAW.json",
+        "sha256": "69335ee9164877c34b3fbca73c28d018de5166cbdfd36f20df361fbb9557547f"
+      },
+      "PUBLISHED_BLOB_ASSOCIATION_REVIEW.json": {
+        "bytes": 13799,
+        "path": "/tmp/hepta-e16-ac5459-recovered-20261121/root/e2_fresh_selection_publication/PUBLISHED_BLOB_ASSOCIATION_REVIEW.json",
+        "sha256": "a0d71953b9bc5ab7b852510fa78c7ac74d678c11c5d1f1e1247c9b6f366f784b"
+      },
+      "READBACK_commit.json": {
+        "bytes": 4560,
+        "path": "/tmp/hepta-e16-ac5459-recovered-20261121/root/e2_fresh_selection_publication/READBACK_commit.json",
+        "sha256": "195453c66a2de4ea4a2a48b8aee374aaa8c87e8e9ce526762e348fd962976073"
+      },
+      "READBACK_ref.json": {
+        "bytes": 2192,
+        "path": "/tmp/hepta-e16-ac5459-recovered-20261121/root/e2_fresh_selection_publication/READBACK_ref.json",
+        "sha256": "8304761fbf61bdaae34a9503f29095f9af1c638080670025fe64ee6e957e23cc"
+      },
+      "READBACK_selection.json": {
+        "bytes": 4429,
+        "path": "/tmp/hepta-e16-ac5459-recovered-20261121/root/e2_fresh_selection_publication/READBACK_selection.json",
+        "sha256": "bc371aaab719c1d991de42e25e46532f5bdfdf4b26129b5a059933cc8f5c69b4"
+      },
+      "READBACK_weights.json": {
+        "bytes": 7936,
+        "path": "/tmp/hepta-e16-ac5459-recovered-20261121/root/e2_fresh_selection_publication/READBACK_weights.json",
+        "sha256": "30a63339721f47f8b9aa80f0e33a11004fbe7573855486fa5a5391d0913566c3"
+      },
+      "UPDATE_REF_RAW.json": {
+        "bytes": 161,
+        "path": "/tmp/hepta-e16-ac5459-recovered-20261121/root/e2_fresh_selection_publication/UPDATE_REF_RAW.json",
+        "sha256": "0aad31566ba642e38c47f18ab55ad16470654eade0b74575427dd592d966998e"
+      }
+    },
+    "excluded_inventory_digest": "92143d5f19cd8de8c57cb22c42938648d74a8dd2acd3df8777581827ff65af49",
+    "fixed_commit_selection_and_weights_exact_bytes_readback": true,
+    "fresh_candidate_content_reads_before_this_proof": 0,
+    "fresh_candidate_metadata_reads_before_this_proof": 0,
+    "parent_commit": "c1ce4de7c9bd6c48bae155aeedbfe04f7ccf3196",
+    "published_at_ns": "1795260177279713864",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "schema": "hepta.current-student-fresh-selection-publication.v1",
+    "selection_digest": "394ee2e8f4b5d00dac00b177ecbb83bd578f7c8473e5d7a90b03c8d6e2b5b1f7",
+    "tree": "dd526f6cdc20eba7082fe37c2670e775ff103969",
+    "weights_digest": "d6c289bff885756a11b354aef53bfe2dc93394dfef17a8c84ea026d53658f498"
+  },
+  "sources": [
+    {
+      "candidate_attempts": [
+        {
+          "commit": "6bffc262b2c990d05a2cba784afd7455b52ddd80",
+          "disposition": "REFUSED",
+          "error": "exactly one original supported test root required",
+          "final_sha256": "a8611c61e9839f4813474f140dcd04e086a9145e44d81a39554f2e5d2b59e323",
+          "function": "_wipe_internal_state_for_tests",
+          "model_calls": 0,
+          "ordinal": 0,
+          "path": "colorama/initialise.py",
+          "phase": "compatibility",
+          "position": [
+            4,
+            2
+          ]
+        },
+        {
+          "commit": "8cf8f6d688d369808c51e69cb0e5a1139ecc04b6",
+          "disposition": "REFUSED",
+          "error": "exactly one original supported test root required",
+          "final_sha256": "a8611c61e9839f4813474f140dcd04e086a9145e44d81a39554f2e5d2b59e323",
+          "function": "enable_vt_processing",
+          "model_calls": 0,
+          "ordinal": 1,
+          "path": "colorama/winterm.py",
+          "phase": "compatibility",
+          "position": [
+            17,
+            0
+          ]
+        },
+        {
+          "commit": "1a82924e382dfa29db3aade22e41484692db9e70",
+          "disposition": "REFUSED",
+          "error": "exactly one original supported test root required",
+          "final_sha256": "a8611c61e9839f4813474f140dcd04e086a9145e44d81a39554f2e5d2b59e323",
+          "function": "_wipe_internal_state_for_tests",
+          "model_calls": 0,
+          "ordinal": 2,
+          "path": "colorama/initialise.py",
+          "phase": "compatibility",
+          "position": [
+            31,
+            0
+          ]
+        },
+        {
+          "commit": "479da74614d1bb669dd90f81c9e19c8b01767526",
+          "disposition": "REFUSED",
+          "error": "exactly one original supported test root required",
+          "final_sha256": "a8611c61e9839f4813474f140dcd04e086a9145e44d81a39554f2e5d2b59e323",
+          "function": "enable_vt_processing",
+          "model_calls": 0,
+          "ordinal": 3,
+          "path": "colorama/winterm.py",
+          "phase": "compatibility",
+          "position": [
+            33,
+            0
+          ]
+        }
+      ],
+      "commit_summaries_retained": 34,
+      "cutoff": "2026-11-21T03:00:00Z",
+      "disposition": "NO_QUALIFIED_TASK",
+      "git_head": "841634ed2a0da5d5ac2d867db533da8131266cb2",
+      "index": 0,
+      "project": "tartley/colorama",
+      "qualification_candidates": 4,
+      "scan_error": null,
+      "scan_sha256": "7f57561507007684121b7d783a83806b8f37b1752b6fda9130ba23c81ecd1434",
+      "scan_status": "ORDERED_STATIC_SCAN_COMPLETE"
+    },
+    {
+      "candidate_attempts": [
+        {
+          "commit": "4d1c5ab0ffa022b5a9a13d3d670c1c39b340ff24",
+          "disposition": "REFUSED",
+          "error": "invalid literal for int() with base 10: '-'",
+          "final_sha256": "e496e7eade98fba33ef45cc70ad869c7a76acd2e16e503d7d2e08d9847cab836",
+          "first_retained_tree_witness": {
+            "git_object": "08ed8697864548b3cdb4b8decbf496bef47e1c82",
+            "kind": "commit",
+            "mode": "160000",
+            "path": "tests/toml-test",
+            "size_field": "-"
+          },
+          "function": "merge_dicts",
+          "model_calls": 0,
+          "ordinal": 0,
+          "path": "tomlkit/_utils.py",
+          "phase": "compatibility",
+          "position": [
+            11,
+            0
+          ]
+        },
+        {
+          "commit": "7ab0c794ddb4f7cfe837721365ba7302f769c6ab",
+          "disposition": "REFUSED",
+          "error": "invalid literal for int() with base 10: '-'",
+          "final_sha256": "e496e7eade98fba33ef45cc70ad869c7a76acd2e16e503d7d2e08d9847cab836",
+          "first_retained_tree_witness": {
+            "git_object": "08ed8697864548b3cdb4b8decbf496bef47e1c82",
+            "kind": "commit",
+            "mode": "160000",
+            "path": "tests/toml-test",
+            "size_field": "-"
+          },
+          "function": "register_encoder",
+          "model_calls": 0,
+          "ordinal": 1,
+          "path": "tomlkit/api.py",
+          "phase": "compatibility",
+          "position": [
+            21,
+            1
+          ]
+        },
+        {
+          "commit": "004fce630d2537542a03fa8d4d6d62dae418b422",
+          "disposition": "REFUSED",
+          "error": "invalid literal for int() with base 10: '-'",
+          "final_sha256": "e496e7eade98fba33ef45cc70ad869c7a76acd2e16e503d7d2e08d9847cab836",
+          "first_retained_tree_witness": {
+            "git_object": "08ed8697864548b3cdb4b8decbf496bef47e1c82",
+            "kind": "commit",
+            "mode": "160000",
+            "path": "tests/toml-test",
+            "size_field": "-"
+          },
+          "function": "date",
+          "model_calls": 0,
+          "ordinal": 2,
+          "path": "tomlkit/api.py",
+          "phase": "compatibility",
+          "position": [
+            22,
+            0
+          ]
+        },
+        {
+          "commit": "10fbd373f4ce2916ba08d7a2c4421a77f68a2ca2",
+          "disposition": "REFUSED",
+          "error": "invalid literal for int() with base 10: '-'",
+          "final_sha256": "e496e7eade98fba33ef45cc70ad869c7a76acd2e16e503d7d2e08d9847cab836",
+          "first_retained_tree_witness": {
+            "git_object": "08ed8697864548b3cdb4b8decbf496bef47e1c82",
+            "kind": "commit",
+            "mode": "160000",
+            "path": "tests/toml-test",
+            "size_field": "-"
+          },
+          "function": "string",
+          "model_calls": 0,
+          "ordinal": 3,
+          "path": "tomlkit/api.py",
+          "phase": "compatibility",
+          "position": [
+            29,
+            0
+          ]
+        }
+      ],
+      "commit_summaries_retained": 30,
+      "cutoff": "2026-11-21T03:00:00Z",
+      "disposition": "NO_QUALIFIED_TASK",
+      "git_head": "7bf7284dbd622557d9909f8fee017a4cb169a139",
+      "index": 1,
+      "project": "python-poetry/tomlkit",
+      "qualification_candidates": 4,
+      "scan_error": null,
+      "scan_sha256": "331b8f9987091f0fd51c85b783da84857cea9bb342e0f880917904a0ca9573cc",
+      "scan_status": "ORDERED_STATIC_SCAN_COMPLETE"
+    },
+    {
+      "candidate_attempts": [
+        {
+          "commit": "20caed831605ec341ed670302f6b0f17685f156d",
+          "disposition": "FAILED_NO_RETRY",
+          "error": "unsafe name in patch",
+          "final_sha256": "feae9cbc716fb1980e651f7fc2b407f993b45d3c3cd049edf5f400ed22b4d952",
+          "function": "_process_file",
+          "model_calls": 0,
+          "ordinal": 0,
+          "path": "sqlparse/cli.py",
+          "phase": "original_materializer",
+          "position": [
+            2,
+            0
+          ]
+        },
+        {
+          "commit": "ef2012a5eeb491e604dea2b00d516904a3830c87",
+          "disposition": "REFUSED",
+          "error": null,
+          "final_sha256": "8625750eede1d4b54dbbc5694df19825aa2c20251c55191b5ebb79da584ec601",
+          "function": "group_comments",
+          "model_calls": 0,
+          "native_pair_bound_by": [
+            "FINAL.json",
+            "MATERIALIZED.json"
+          ],
+          "native_pair_sha256": "bbd6f7338b0a0feb43b3badaa1e6e2f3e582945037642de34398021ba7ecdd8d",
+          "native_pair_status": "ORIGINAL_NATIVE_PAIR_REJECTED",
+          "ordinal": 1,
+          "original_case_set_cardinality": 499,
+          "path": "sqlparse/engine/grouping.py",
+          "phase": null,
+          "position": [
+            14,
+            1
+          ],
+          "sides": {
+            "after": {
+              "actual_native_child": true,
+              "actual_wait_returncode": 1,
+              "errors": 0,
+              "failures": 1,
+              "junit_sha256": "91fe4feb789acf1d312ed71ee24c985d3e34d9af32cf66dd039519039f04a7f8",
+              "sandbox_attestation_sha256": "763a7d762dfaf8d84021c080947da8e24ecc972d818adececaa60e34a0ddb9ac",
+              "skipped": 2,
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "9721bd7add0adf0a3df41622720c5b162faa14136ce755bfbf8b7858dfbcf6a8",
+              "tests": 499,
+              "timed_out": false
+            },
+            "before": {
+              "actual_native_child": true,
+              "actual_wait_returncode": 1,
+              "errors": 0,
+              "failures": 1,
+              "junit_sha256": "e3f52dc762d4473f5e435f73e697ac47e09fe818a03c03c1a0aa61e76d2f4b4d",
+              "sandbox_attestation_sha256": "ae9312e4ee44ae6cfc3128a613cc511df6ade8fdf9153a331850d1069e743b44",
+              "skipped": 2,
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "0a238ba3f27e497f459d6a453b40ad17496b36d3d5b73fbe371f5c5aafd77b07",
+              "tests": 499,
+              "timed_out": false
+            }
+          }
+        },
+        {
+          "capacity": {
+            "document_evidence": {
+              "final_only": {
+                "input_ids_digest": "fa2ac494a083bc3df4d92ae78cc7ebec7c1eb915e0a6ff952a0bbf04136056df",
+                "input_tokens": 734,
+                "reference_continuation_tokens": 230,
+                "reference_token_ids_digest": "daf1c976933dc18a9d8fb18ebde77e1dabba13a0d7df5e59aa9d4e03700adbdc",
+                "truncations": 0
+              },
+              "frozen": {
+                "input_ids_digest": "fa2ac494a083bc3df4d92ae78cc7ebec7c1eb915e0a6ff952a0bbf04136056df",
+                "input_tokens": 734,
+                "reference_continuation_tokens": 230,
+                "reference_token_ids_digest": "daf1c976933dc18a9d8fb18ebde77e1dabba13a0d7df5e59aa9d4e03700adbdc",
+                "truncations": 0
+              },
+              "retrieval": {
+                "input_ids_digest": "4c818a9ad5139ad2686a7bd31b9fff0d854e62297671acd9e5bd1f6cbed006eb",
+                "input_tokens": 885,
+                "reference_continuation_tokens": 230,
+                "reference_token_ids_digest": "daf1c976933dc18a9d8fb18ebde77e1dabba13a0d7df5e59aa9d4e03700adbdc",
+                "truncations": 0
+              }
+            },
+            "native_feedback": {
+              "final_only": {
+                "input_ids_digest": "fa2ac494a083bc3df4d92ae78cc7ebec7c1eb915e0a6ff952a0bbf04136056df",
+                "input_tokens": 734,
+                "reference_continuation_tokens": 230,
+                "reference_token_ids_digest": "daf1c976933dc18a9d8fb18ebde77e1dabba13a0d7df5e59aa9d4e03700adbdc",
+                "truncations": 0
+              },
+              "frozen": {
+                "input_ids_digest": "fa2ac494a083bc3df4d92ae78cc7ebec7c1eb915e0a6ff952a0bbf04136056df",
+                "input_tokens": 734,
+                "reference_continuation_tokens": 230,
+                "reference_token_ids_digest": "daf1c976933dc18a9d8fb18ebde77e1dabba13a0d7df5e59aa9d4e03700adbdc",
+                "truncations": 0
+              },
+              "retrieval": {
+                "input_ids_digest": "4c818a9ad5139ad2686a7bd31b9fff0d854e62297671acd9e5bd1f6cbed006eb",
+                "input_tokens": 885,
+                "reference_continuation_tokens": 230,
+                "reference_token_ids_digest": "daf1c976933dc18a9d8fb18ebde77e1dabba13a0d7df5e59aa9d4e03700adbdc",
+                "truncations": 0
+              }
+            }
+          },
+          "commit": "111b35cffcfe44b16fbdd27507f165bafd52a2a1",
+          "disposition": "QUALIFIED",
+          "error": null,
+          "final_sha256": "24d76971c903f949ef8de285edc3bf914079f94c400aeaf0b0cb7f7a7c4efd09",
+          "function": "group_functions",
+          "license_review_sha256": "667bfe1a3695a983a3b7fa8ce11a541780771add8d23b8e05ca437b93640360b",
+          "model_calls": 0,
+          "native_pair_bound_by": [
+            "MATERIALIZED.json"
+          ],
+          "native_pair_sha256": "1f874b9a1e35e9d073a086bab07839ec49faa0ec2a7cb48bb644a329f1a8cc7a",
+          "native_pair_status": "ORIGINAL_NATIVE_PAIR_PASSED",
+          "ordinal": 2,
+          "original_case_set_cardinality": 100,
+          "path": "sqlparse/engine/grouping.py",
+          "phase": null,
+          "position": [
+            25,
+            0
+          ],
+          "record_id": "fresh-andialbrecht/sqlparse:111b35cffcfe44b16fbdd27507f165bafd52a2a1",
+          "sides": {
+            "after": {
+              "actual_native_child": true,
+              "actual_wait_returncode": 0,
+              "errors": 0,
+              "failures": 0,
+              "junit_sha256": "4e157b1c9f113eaccf6f105d889ccdfa584f540f503061da2d483b8dee689003",
+              "sandbox_attestation_sha256": "cd11f540494a9b54b7addfdfdd9726aab067067f81997669cda349d2c0b2f2fa",
+              "skipped": 0,
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "cc9c6ac463bdeaa94de015842d2cc6d95453994bde06a9d9ee74bf340eea366c",
+              "tests": 100,
+              "timed_out": false
+            },
+            "before": {
+              "actual_native_child": true,
+              "actual_wait_returncode": 1,
+              "errors": 0,
+              "failures": 1,
+              "junit_sha256": "e6da24e9c2ace9ac1305d302393c28c508a19bb40baf01d304e54c1d86ed90cb",
+              "sandbox_attestation_sha256": "5bb08bbf2a17de90358ec556aa1c144d151ebd764878bc3c222eccdb3dac4221",
+              "skipped": 0,
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_sha256": "58b3e7cb1e53c23a8f662a277ebdb00c0dfa8d44e8bb748c699775cdcd82d501",
+              "tests": 100,
+              "timed_out": false
+            }
+          },
+          "task_digest": "cd75fcb3c3d56dc34b7d2999cadbbd7d15ed13defbe1567e253839b3d3457c2e",
+          "task_sha256": "85290c837b066975c904a8f2fdff2a0c6052941b727cef78bc53ddf30f40b7d7"
+        }
+      ],
+      "commit_summaries_retained": 31,
+      "cutoff": "2026-11-21T03:00:00Z",
+      "disposition": "SELECTED",
+      "git_head": "09dbe1eec31ed1b3cd05366748865f11ba427d32",
+      "index": 2,
+      "project": "andialbrecht/sqlparse",
+      "qualification_candidates": 4,
+      "scan_error": null,
+      "scan_sha256": "7758a4e6bad3d0d8f627203c292f2e0fafa7a715398996c8fa5291fb9ac2e6cd",
+      "scan_status": "ORDERED_STATIC_SCAN_COMPLETE"
+    },
+    {
+      "candidate_attempts": [
+        {
+          "commit": "0b2880591780a426b0551436f47a17e7a76d954f",
+          "disposition": "REFUSED",
+          "error": "nonregular or oversized original tree blob",
+          "final_sha256": "38b887533d0f53a388645b4990b7ca77bc3f66b43ed34eaafd8fe60b475ffc20",
+          "first_retained_tree_witness": {
+            "git_object": "04c99a55caae5d51f17666f554c2c8cea0aadfc0",
+            "kind": "blob",
+            "mode": "120000",
+            "path": "docs/changelog.md",
+            "size_field": "15"
+          },
+          "function": "find_dotenv",
+          "model_calls": 0,
+          "ordinal": 0,
+          "path": "src/dotenv/main.py",
+          "phase": "compatibility",
+          "position": [
+            4,
+            0
+          ]
+        },
+        {
+          "commit": "791414804eff08a23f0b7970968e1717e3b28e66",
+          "disposition": "REFUSED",
+          "error": "nonregular or oversized original tree blob",
+          "final_sha256": "38b887533d0f53a388645b4990b7ca77bc3f66b43ed34eaafd8fe60b475ffc20",
+          "first_retained_tree_witness": {
+            "git_object": "04c99a55caae5d51f17666f554c2c8cea0aadfc0",
+            "kind": "blob",
+            "mode": "120000",
+            "path": "docs/changelog.md",
+            "size_field": "15"
+          },
+          "function": "cli",
+          "model_calls": 0,
+          "ordinal": 1,
+          "path": "src/dotenv/cli.py",
+          "phase": "compatibility",
+          "position": [
+            5,
+            0
+          ]
+        },
+        {
+          "commit": "6a49d6d88fd9bd99bef8d63b9eb6f2e46ecc7072",
+          "disposition": "REFUSED",
+          "error": "nonregular or oversized original tree blob",
+          "final_sha256": "38b887533d0f53a388645b4990b7ca77bc3f66b43ed34eaafd8fe60b475ffc20",
+          "first_retained_tree_witness": {
+            "git_object": "04c99a55caae5d51f17666f554c2c8cea0aadfc0",
+            "kind": "blob",
+            "mode": "120000",
+            "path": "docs/changelog.md",
+            "size_field": "15"
+          },
+          "function": "rewrite",
+          "model_calls": 0,
+          "ordinal": 2,
+          "path": "src/dotenv/main.py",
+          "phase": "compatibility",
+          "position": [
+            7,
+            1
+          ]
+        },
+        {
+          "commit": "f215c0274dc4c310e5ca5feb4c6bddade25ece21",
+          "disposition": "REFUSED",
+          "error": "nonregular or oversized original tree blob",
+          "final_sha256": "38b887533d0f53a388645b4990b7ca77bc3f66b43ed34eaafd8fe60b475ffc20",
+          "first_retained_tree_witness": {
+            "git_object": "04c99a55caae5d51f17666f554c2c8cea0aadfc0",
+            "kind": "blob",
+            "mode": "120000",
+            "path": "docs/changelog.md",
+            "size_field": "15"
+          },
+          "function": "get",
+          "model_calls": 0,
+          "ordinal": 3,
+          "path": "src/dotenv/cli.py",
+          "phase": "compatibility",
+          "position": [
+            11,
+            0
+          ]
+        }
+      ],
+      "commit_summaries_retained": 12,
+      "cutoff": "2026-11-21T03:00:00Z",
+      "disposition": "NO_QUALIFIED_TASK",
+      "git_head": "4fbc6ff07215367ece731006855e732d1405992c",
+      "index": 3,
+      "project": "theskumar/python-dotenv",
+      "qualification_candidates": 4,
+      "scan_error": null,
+      "scan_sha256": "4107296c261fd145552ff75bab7f1288dd489415fefc00a1379b12ecc368dddc",
+      "scan_status": "ORDERED_STATIC_SCAN_COMPLETE"
+    },
+    {
+      "candidate_attempts": [
+        {
+          "commit": "65bab7582ce14c55cdeec2244c65ea23039c9e6f",
+          "disposition": "REFUSED",
+          "error": "fallback would omit original suffix tests",
+          "final_sha256": "ca1e5b5d158a0157bebf77d8215f3a399de1ba0f713e744d411995a8d728e2a3",
+          "first_retained_tree_witness": {
+            "git_object": "51c83341904397bc1c0ad1117e5e02d9788b7012",
+            "kind": "blob",
+            "mode": "100755",
+            "path": "tests/decoding_test.py",
+            "size_field": "1279"
+          },
+          "function": "_load_date",
+          "model_calls": 0,
+          "ordinal": 0,
+          "path": "toml/decoder.py",
+          "phase": "compatibility",
+          "position": [
+            0,
+            0
+          ]
+        },
+        {
+          "commit": "06f54ed2a063cdae04424baea0611fb5b281f82b",
+          "disposition": "REFUSED",
+          "error": null,
+          "final_sha256": "72a2a1d33a9ad4f2e3b2b3d74672ba471187594cfef2105845201ddced15f3a5",
+          "function": "loads",
+          "model_calls": 0,
+          "native_pair_bound_by": [
+            "FINAL.json",
+            "MATERIALIZED.json"
+          ],
+          "native_pair_sha256": "ace2241ca69f28adea4daf5635d383d723e4e64cfc993807bbcdb840f6ad17da",
+          "native_pair_status": "ORIGINAL_NATIVE_PAIR_REJECTED",
+          "ordinal": 1,
+          "original_case_set_cardinality": 0,
+          "path": "toml/decoder.py",
+          "phase": null,
+          "position": [
+            5,
+            0
+          ],
+          "sides": {
+            "after": {
+              "actual_native_child": true,
+              "actual_wait_returncode": 1,
+              "observed_terminal_stderr_line": "SyntaxError: Generator expression must be parenthesized",
+              "sandbox_attestation_sha256": "89489d581ac9399f343b047c9db38c6763b57f63a147def59feda836df9c3f66",
+              "stderr_sha256": "a1436065dc2701b292305964a74a9655080b01ba92f1fa7c5a6052dd3f7cad4e",
+              "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "timed_out": false
+            },
+            "before": {
+              "actual_native_child": true,
+              "actual_wait_returncode": 1,
+              "observed_terminal_stderr_line": "SyntaxError: Generator expression must be parenthesized",
+              "sandbox_attestation_sha256": "b8a0b7623b9707d206840e03d9b17852d60f98df387420ac40ce2a96cb453b65",
+              "stderr_sha256": "a1436065dc2701b292305964a74a9655080b01ba92f1fa7c5a6052dd3f7cad4e",
+              "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "timed_out": false
+            }
+          }
+        },
+        {
+          "commit": "230f0c9cffd230354759949dd1dd89acd3dddb80",
+          "disposition": "REFUSED",
+          "error": "fallback would omit original suffix tests",
+          "final_sha256": "ca1e5b5d158a0157bebf77d8215f3a399de1ba0f713e744d411995a8d728e2a3",
+          "first_retained_tree_witness": {
+            "git_object": "cd4040d89c22572a5111f9d315c7a614b34e1136",
+            "kind": "blob",
+            "mode": "100755",
+            "path": "tests/decoding_test.py",
+            "size_field": "1738"
+          },
+          "function": "loads",
+          "model_calls": 0,
+          "ordinal": 2,
+          "path": "toml/decoder.py",
+          "phase": "compatibility",
+          "position": [
+            12,
+            0
+          ]
+        },
+        {
+          "commit": "9be64582fff86b9c5bd94ce52a5fedcb3d4fac01",
+          "disposition": "REFUSED",
+          "error": "fallback would omit original suffix tests",
+          "final_sha256": "ca1e5b5d158a0157bebf77d8215f3a399de1ba0f713e744d411995a8d728e2a3",
+          "first_retained_tree_witness": {
+            "git_object": "cd4040d89c22572a5111f9d315c7a614b34e1136",
+            "kind": "blob",
+            "mode": "100755",
+            "path": "tests/decoding_test.py",
+            "size_field": "1738"
+          },
+          "function": "dumps",
+          "model_calls": 0,
+          "ordinal": 3,
+          "path": "toml/encoder.py",
+          "phase": "compatibility",
+          "position": [
+            16,
+            0
+          ]
+        }
+      ],
+      "commit_summaries_retained": 17,
+      "cutoff": "2026-11-21T03:00:00Z",
+      "disposition": "NO_QUALIFIED_TASK",
+      "git_head": "65bab7582ce14c55cdeec2244c65ea23039c9e6f",
+      "index": 4,
+      "project": "uiri/toml",
+      "qualification_candidates": 4,
+      "scan_error": null,
+      "scan_sha256": "8a108eecba7acd43458a31dce03f81622cbabe105379c55359ef4ea24dbe704f",
+      "scan_status": "ORDERED_STATIC_SCAN_COMPLETE"
+    },
+    {
+      "candidate_attempts": [],
+      "disposition": "BEFORE_SCAN_REFUSAL",
+      "index": 5,
+      "original_exclusion_owner": "jaraco",
+      "project": "jaraco/inflect"
+    },
+    {
+      "candidate_attempts": [],
+      "disposition": "BEFORE_SCAN_REFUSAL",
+      "index": 6,
+      "original_exclusion_owner": "agronholm",
+      "project": "agronholm/exceptiongroup"
+    },
+    {
+      "candidate_attempts": [],
+      "commit_summaries_retained": 50,
+      "cutoff": "2026-11-21T03:00:00Z",
+      "disposition": "NO_QUALIFIED_TASK",
+      "git_head": "aac059c906170ee7b6ce1aa086a226f3aded5c99",
+      "index": 7,
+      "project": "jd/tenacity",
+      "qualification_candidates": 0,
+      "scan_error": null,
+      "scan_sha256": "50fa57326a7f51b33bf56955306b51b802d45c8c2cc9048f07f0a38d69cd5b34",
+      "scan_status": "ORDERED_STATIC_SCAN_COMPLETE"
+    }
+  ],
+  "terminal": {
+    "automatic_retry": false,
+    "qualified_sources": 1,
+    "replacement_sources": 0,
+    "selection_audit": {
+      "path": "/home/qian-qi/work/e2-fresh-current-student-20261121-ac5459/panel/SELECTION_AUDIT.json",
+      "sha256": "c5cd3373cf428ae12a1069ad295325c1ad72fa422696fac523cdcc51e4673879"
+    },
+    "selection_digest": "394ee2e8f4b5d00dac00b177ecbb83bd578f7c8473e5d7a90b03c8d6e2b5b1f7",
+    "status": "PANEL_REFUSED"
+  },
+  "terminal_filename": "PANEL_REFUSED.json",
+  "terminal_sha256": "8427d36e7532e56e1d1985001c8df7271ecca7eb29ad8f93598a9b3854f397e3",
+  "weights_digest": "d6c289bff885756a11b354aef53bfe2dc93394dfef17a8c84ea026d53658f498"
+}
