@@ -210,6 +210,31 @@ def regression(h, targets, ridge):
     return np.linalg.solve(matrix.T @ matrix + np.diag(penalty), matrix.T @ y)
 
 
+def data_times(data):
+    record = load(data/"data_cost.json")
+    jobs = load(data/"process_receipts.json")
+    spans = []
+    for job in [*jobs["originals"],jobs["corrected"]]:
+        start, finish = job["start"],job["finish"]
+        require(start["job_id"] == finish["job_id"] and finish["at_unix_ms"]>=start["at_unix_ms"],
+                "malformed data process interval")
+        spans.append((start["at_unix_ms"], finish["at_unix_ms"]))
+    spans.sort()
+    merged = [list(spans[0])]
+    for a,b in spans[1:]:
+        if a > merged[-1][1]:
+            merged.append([a,b])
+        else:
+            merged[-1][1] = max(merged[-1][1],b)
+    active = sum(b-a for a,b in merged)/1000.
+    duration = (merged[-1][1]-merged[0][0])/1000.
+    same([active,duration,duration-active],[record["total_active_data_process_wall_union_seconds"],
+         record["first_launch_to_last_terminal_seconds_including_intervention"],
+         record["gap_for_integrity_diagnosis_and_revision_seconds"]])
+    return {"data_active_union_seconds":active,"launch_to_terminal_span_seconds":duration,
+            "unmeasured_external_authoring_and_cpu_are_not_zero":True}
+
+
 def verify(data, evidence):
     plan, manifest = load(HERE/"protocol.json"), load(HERE/"data_manifest.json")
     sealpath = evidence/"selection_seal.json"
@@ -355,7 +380,9 @@ def verify(data, evidence):
         counters[key] = counts
     family = {f"{m}-{a}":all(chosen_results[f"{m}-{a}-{s}"]["passed"] for s in plan["seed"])
               for m,a in itertools.product(plan["modes"],plan["methods"])}
-    return {"passed":True, "models_verified":len(arms),"candidate_selections_replayed":nsamples,
+    diagnostic_cost = sum(process_cost(evidence,"diagnose",mode)["wall_seconds"] for mode in plan["modes"])
+    return {"passed":True, "models_verified":len(arms), "data_time":data_times(data),
+            "diagnostic_cold_child_seconds":diagnostic_cost,"candidate_selections_replayed":nsamples,
             "independent_replay_physical_feature_calls":len(seen),"selected":selections,"arms":chosen_results,
             "family_success":family,"summed_cold_child_seconds":totals,"fit_counters":counters,
             "selection_seal_sha256":seal_sha,
