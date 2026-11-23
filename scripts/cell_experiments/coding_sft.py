@@ -267,7 +267,7 @@ class Predictor:
         self.model, self.tokenizer, self.model_digest = _load(manifest, artifact_root)
         self.model.eval()
 
-    def predict(self, record):
+    def predict(self, record, *, retain_encoding=False):
         torch, _, _ = _libraries()
         prompt = record["task"]["input"]
         protocol = chat_protocol.protocol_name(self.manifest["runtime"])
@@ -290,7 +290,18 @@ class Predictor:
                 eos_token_id=self.tokenizer.eos_token_id,
             )
         produced = output[0, encoded.input_ids.shape[1] :]
+        encoding = {}
+        if retain_encoding:
+            input_ids = encoded.input_ids[0].tolist()
+            encoding = {
+                "rendered_input": rendered,
+                "input_ids": input_ids,
+                "input_ids_sha256": digest(input_ids),
+                "output_ids": produced.tolist(),
+                "eos_token_id": self.tokenizer.eos_token_id,
+            }
         return {
+            **encoding,
             "answer": self.tokenizer.decode(produced, skip_special_tokens=True),
             "loaded_model_digest": self.model_digest,
             "input_sha256": hashlib.sha256(prompt.encode()).hexdigest(),

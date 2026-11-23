@@ -140,9 +140,28 @@ class FrozenRouter:
         }
 
 
-def fit_router(records, graphs, cells, budget, generate, verify, output_dir, *, plan):
+def fit_router(
+    records,
+    graphs,
+    cells,
+    budget,
+    generate,
+    verify,
+    output_dir,
+    *,
+    plan,
+    execution_profile="verified_v4",
+):
     """Execute every predeclared A candidate; search cost is retained in full."""
     _validate_plan(plan)
+    if execution_profile == "verified_v4":
+        runner = run_graph
+    elif execution_profile == "local_last_answer_v1":
+        from .circuit_bundle import training_graph
+
+        runner = training_graph
+    else:
+        raise ValueError("unsupported router training execution profile")
     require(
         isinstance(records, list) and 1 <= len(records) <= 4096,
         "bounded A records required",
@@ -182,6 +201,14 @@ def fit_router(records, graphs, cells, budget, generate, verify, output_dir, *, 
         "feature_spec": "signed SHA256 lexical hashes of original prompt; L2 normalize; bias=1",
         "utility": "final business success - output_token_penalty*(tokens/declared token cap) - model_call_penalty*(calls/call cap)",
     }
+    if execution_profile == "local_last_answer_v1":
+        for contract in frozen["contracts"]:
+            contract.update(
+                output_selection="last_slot",
+                selection_evidence="blind final-slot generation",
+                edge_definition={"answer": "first generated answer as one tool turn"},
+            )
+        frozen["execution_profile"] = execution_profile
     write_new(directory / "PLAN.json", frozen)
     started = time.perf_counter()
     x, feature_costs, observations = [], [], []
@@ -192,7 +219,7 @@ def fit_router(records, graphs, cells, budget, generate, verify, output_dir, *, 
         feature_costs.append(cost)
         for graph_index, graph in enumerate(graphs):
             location = directory / (f"task-{row_index:04d}") / graph.graph_id
-            result = run_graph(record, graph, cells, budget, generate, verify, location)
+            result = runner(record, graph, cells, budget, generate, verify, location)
             require(
                 type(result["success"]) is bool,
                 "unknown business result cannot label router",
@@ -205,12 +232,15 @@ def fit_router(records, graphs, cells, budget, generate, verify, output_dir, *, 
                 / (budget.model_calls * budget.max_output_tokens_per_call)
                 - plan.model_call_penalty * c["model_calls"] / budget.model_calls
             )
+            result_path = location / "RESULT.json"
+            if execution_profile == "local_last_answer_v1":
+                result_path = result_path.relative_to(directory)
             observations.append(
                 {
                     "task_id": record["task_id"],
                     "graph_id": graph.graph_id,
                     "result_digest": digest(result),
-                    "result_path": str(location / "RESULT.json"),
+                    "result_path": str(result_path),
                     "success": result["success"],
                     "utility": float(y[row_index, graph_index]),
                     "cost": c,
