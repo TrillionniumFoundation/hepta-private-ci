@@ -125,3 +125,38 @@ fn header_auth_does_not_cache_private_catalogs_without_a_stable_identity() {
         assert!(load_cached_directory_plugins(codex_home.path(), &config, &auth, scope).is_none());
     }
 }
+
+#[cfg(windows)]
+#[test]
+fn catalog_update_survives_a_transient_reader_sharing_denial() {
+    use std::os::windows::fs::OpenOptionsExt;
+
+    let codex_home = tempfile::tempdir().expect("create codex home");
+    let config = RemotePluginServiceConfig::new(
+        "https://chatgpt.com/backend-api".to_string(),
+        crate::test_support::test_http_client_factory(),
+    );
+    let auth = CodexAuth::Headers(AuthHeaders::new(http::HeaderMap::new()));
+    let scope = RemotePluginScope::Global;
+    let key = RemotePluginCatalogCacheKey::new(&config, &auth, scope).expect("global catalog key");
+    let destination = cache_path(codex_home.path(), &key);
+    codex_utils_path::write_atomically(&destination, "previous catalog").expect("seed cache");
+    let reader = std::fs::OpenOptions::new()
+        .read(true)
+        .share_mode(0)
+        .open(&destination)
+        .expect("hold destination reader");
+    let release = std::thread::spawn(move || {
+        std::thread::sleep(Duration::from_millis(50));
+        drop(reader);
+    });
+
+    write_cached_directory_plugins(codex_home.path(), &config, &auth, scope, &[]);
+    release.join().expect("release reader");
+    let refreshed =
+        load_cached_directory_plugins(codex_home.path(), &config, &auth, scope).expect("new cache");
+    assert_eq!(
+        refreshed.freshness,
+        RemotePluginCatalogCacheFreshness::Fresh
+    );
+}

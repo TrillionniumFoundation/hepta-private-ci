@@ -1,0 +1,54 @@
+{
+  "qualified_media": true,
+  "partitions": {
+    "train": {
+      "windows": 32,
+      "recordings": 8,
+      "raw_sha256": "0348be0f0f768ce7aef0083f40fd8439a317a8e21dd8c1743b998ff24dd70ccf",
+      "semantic_sha256": "943bbea74ce19fc6de95ba15d9d29a9bbe9547518161bc6a39d38e5f94b33bcc",
+      "roster_sha256": "895d9f345cfdadb6556d2721060a84ea6e731fa87cf6553805dd5e4b6fc84720",
+      "raw_receipt_sha256": "bfe8be285114b9663270e94e2a3a87051fc0ac8942b8018115d0a674d0a7057a",
+      "semantic_receipt_sha256": "4fa2f869b209c55f986f67caec7501fb2e58acf2250c8147b70581f118a3a24f"
+    },
+    "dev": {
+      "windows": 24,
+      "recordings": 6,
+      "raw_sha256": "0d9e0768b672bd3f50eb9a06acfaad3343a5ee0a87e46e265dcf639ba8cadee7",
+      "semantic_sha256": "6ad09598f5fc555a08f48f6d1275c342db34339fb50ff13de8284c4a3d00be5e",
+      "roster_sha256": "6b74b25bd5f424277f07a9d05c2d0da89daaf373a98e97741762502f0fb73a3a",
+      "raw_receipt_sha256": "0b34b65f4078001758771ead2d38b37e5492340ddf38ac7fafb82b42e2c1431f",
+      "semantic_receipt_sha256": "06d98b467f73247e1d9c4974a4c0a0a3616cf99ff514828655125384b9185e45"
+    },
+    "test": {
+      "windows": 32,
+      "recordings": 8,
+      "raw_sha256": "b29b87d68199fe8318dd4b9635f9e8645da457f6025cc3cc1ff304c44cd4a8cf",
+      "semantic_sha256": "0ddca4fff414559ff99b9cb9ed7c595f0beca41cd63f102dd9ec20a49749f019",
+      "roster_sha256": "ba285c079e2c6b01f5d8254b65508d40fb776d6f22d696506903c46bebd34505",
+      "raw_receipt_sha256": "2163ac573b3010c6461122972c55e0baa5976d3079a5c579424c068f7a2b82f6",
+      "semantic_receipt_sha256": "17e63bead8ff3121510e18c319e6cf30182bdae07c9adda6fa8355851115ba46"
+    }
+  },
+  "data_seal_sha256": "26d04b4fae73e40d36c7a5ba5c606e264a92e258ddf81b6832458314092d8de1",
+  "source_report_sha256": "82fc1bea2d38eb2abc0903fa810504161de462dedd250c0cdca743516f340f3a",
+  "source_kit_sha256": "4358f818d748ce69fc180ebcc8b228e55d0024ba8eb6432d224a2a52a3d428ce",
+  "source_kit_bytes": 131972,
+  "kit_entries": 92,
+  "portable_entry": "pinned/portable_replay.py",
+  "originals_in_kit": false,
+  "model_weights_in_kit": false,
+  "test_authorization": {
+    "authorization_utc": "2026-11-23T02:47:08.125350+00:00",
+    "published_selection_commit": "02d92eed5904d70d27876ad38c015d5a9f392970",
+    "selection_sha256": "e0be804a3310eb6917c36865ead0fe43b3f981f00bc46b439e7b176b6be8bba0",
+    "editing_sha256": "088ec5c0420324394d7b895d96618b919adcd12c1bc238c6088af45c597eac1b",
+    "data_seal_sha256": "26d04b4fae73e40d36c7a5ba5c606e264a92e258ddf81b6832458314092d8de1"
+  },
+  "test_completion": {
+    "ended_utc": "2026-11-23T02:47:31.172459+00:00",
+    "elapsed_seconds": 22.98780918121338,
+    "scope": "parallel raw decoding, RGB staging, frozen inference, and strict shard assembly after authorization. Disk staging and inference timings overlap."
+  },
+  "pretrained_reference": "Existing repo checkout qualification/hcsn_intervention_value/media and official ResNet-18 ImageNet V1 checkpoint f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec.",
+  "semantic_comparison_sha256": "59df43072a9757cd34a60c9e3c3f218b5ebcc8a00b7b8f2af50f2a362dd6f8ef"
+}

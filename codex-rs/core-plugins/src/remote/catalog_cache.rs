@@ -136,10 +136,23 @@ pub(crate) fn write_cached_directory_plugins(
     }) else {
         return;
     };
-    if let Err(failure) =
-        codex_utils_path::write_atomically_with_error_stage(&cache_path, &contents)
-    {
+    let attempts = if cfg!(windows) { 8 } else { 1 };
+    for attempt in 1..=attempts {
+        let Err(failure) =
+            codex_utils_path::write_atomically_with_error_stage(&cache_path, &contents)
+        else {
+            return;
+        };
         let err = &failure.error;
+        // Windows readers can briefly prevent atomic replacement of an existing cache file.
+        if attempt < attempts
+            && matches!(failure.stage, codex_utils_path::AtomicWriteStage::Persist)
+            && matches!(err.raw_os_error(), Some(5 | 32))
+            && cache_path.is_file()
+        {
+            std::thread::sleep(Duration::from_millis(25));
+            continue;
+        }
         warn!(
             stage = "remote_plugin_catalog_cache_write",
             atomic_write_stage = ?failure.stage,
@@ -148,6 +161,7 @@ pub(crate) fn write_cached_directory_plugins(
             cache_file = ?cache_path.file_name(),
             "failed to write remote plugin catalog disk cache"
         );
+        return;
     }
 }
 

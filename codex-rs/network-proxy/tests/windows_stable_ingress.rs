@@ -422,7 +422,9 @@ fn run_restricted_child_blocking(
         )
     }
     .map(|raw| unsafe { OwnedHandle::from_raw_handle(raw as *mut std::ffi::c_void) });
-    let refusal = production_token.expect_err("filesystem token admission must remain closed");
+    let Err(refusal) = production_token else {
+        anyhow::bail!("filesystem token admission must remain closed");
+    };
     assert_eq!(
         refusal.downcast_ref::<ElevatedWindowsSandboxIsolationUnavailable>(),
         Some(&ElevatedWindowsSandboxIsolationUnavailable)

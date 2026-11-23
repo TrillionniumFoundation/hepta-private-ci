@@ -122,6 +122,17 @@ class LiteralModuleScopeContract(unittest.TestCase):
                     )[1]
                 )
 
+    def test_lint_expectations_preserve_literal_paths_and_other_uncertainty(self):
+        expectation = '#[expect(unused_imports, reason = "fixture")]\n'
+        self.assertEqual(self.parsed(expectation + TOP_LEVEL), ({TARGET}, False))
+        for text in (
+            "#[expect::rewrite]\n" + TOP_LEVEL,
+            expectation + "#[unknown_attribute]\n" + TOP_LEVEL,
+            "mod nested {" + expectation + TOP_LEVEL + "}",
+        ):
+            with self.subTest(text=text):
+                self.assertTrue(self.parsed(text)[1])
+
     def test_unusual_lexemes_cannot_hide_a_nested_path(self):
         noise = [
             'const C: &core::ffi::CStr = c"}";',
