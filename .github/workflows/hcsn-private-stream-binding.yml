@@ -1,0 +1,82 @@
+name: Verify two private command binders on the original strict and native targets
+on:
+  push:
+    branches: ["diagnostic/hcsn-agentd-private-stream-bindings-20261123"]
+permissions:
+  contents: read
+env:
+  BASE: e3277e9677688be5c4c235a7a127f0b51e373399
+  CANDIDATE: 674a8c2c7317399247895763373c6157119c767c
+  CARGO_INCREMENTAL: "0"
+  CARGO_TERM_COLOR: never
+jobs:
+  strict:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 130
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+      - run: bash .github/scripts/agentd-streams-prepare.sh
+      - run: python3 scripts/hepta_ci_toolchain.py --github-env "$GITHUB_ENV"
+      - name: Original all-targets three-crate strict gate on both fixed sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/streams-strict-target"
+          for arm in base candidate; do
+            cd "$RUNNER_TEMP/streams-$arm"
+            set +e
+            cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings > "$RUNNER_TEMP/streams-lint-evidence/strict-$arm.log" 2>&1
+            code=$?
+            set -e
+            echo "$code" > "$RUNNER_TEMP/streams-lint-evidence/strict-$arm.exit"
+            tail -3 "$RUNNER_TEMP/streams-lint-evidence/strict-$arm.log"
+          done
+          python3 "$RUNNER_TEMP/streams-driver.py" strict
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: strict-streams-pair-${{ env.CANDIDATE }}
+          path: ${{ runner.temp }}/streams-lint-evidence
+  owner_tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-musl
+          cache-scope: bazel-test
+      - run: bash .github/scripts/agentd-streams-prepare.sh
+      - name: Build both original Agentd libtests and run exact owner cases
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          for arm in base candidate; do
+            cd "$RUNNER_TEMP/streams-$arm"
+            ./.github/scripts/run-bazel-ci.sh --remote-download-toplevel --print-failed-action-summary -- build --show_result=1 --color=no --curses=no -- //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin |& tee "$RUNNER_TEMP/streams-lint-evidence/build-$arm.log"
+            binary=$(sed -nE 's/^  (bazel-bin\/[^ ]+)$/\1/p' "$RUNNER_TEMP/streams-lint-evidence/build-$arm.log" | tail -1)
+            test -x "$binary"
+            cp -L "$binary" "$RUNNER_TEMP/agentd-streams-$arm"
+            sha256sum "$RUNNER_TEMP/agentd-streams-$arm" > "$RUNNER_TEMP/streams-lint-evidence/binary-$arm.txt"
+            python3 "$RUNNER_TEMP/streams-driver.py" native-arm "$arm"
+          done
+          if cmp -s "$RUNNER_TEMP/agentd-streams-base" "$RUNNER_TEMP/agentd-streams-candidate"; then exit 1; fi
+          python3 "$RUNNER_TEMP/streams-driver.py" native
+      - if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: native-streams-pair-${{ env.CANDIDATE }}
+          path: ${{ runner.temp }}/streams-lint-evidence
