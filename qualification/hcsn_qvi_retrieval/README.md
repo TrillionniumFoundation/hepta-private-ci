@@ -23,7 +23,7 @@ do
   python "$pkg/media.py" /tmp/qvi-raw "/tmp/qvi-input/$split.npz" --split "$split"
 done
 python "$pkg/verify_media.py" /tmp/qvi-raw/recordings.json /tmp/qvi-input
-python -m unittest qualification.hcsn_qvi_retrieval.test_ndu qualification.hcsn_qvi_retrieval.test_media qualification.hcsn_qvi_retrieval.test_dynamics qualification.hcsn_qvi_retrieval.test_adapt
+PYTHONPATH="$pkg:${PYTHONPATH:-.}:." python -m unittest qualification.hcsn_qvi_retrieval.test_ndu qualification.hcsn_qvi_retrieval.test_media qualification.hcsn_qvi_retrieval.test_dynamics qualification.hcsn_qvi_retrieval.test_adapt
 python -m qualification.hcsn_qvi_retrieval.run_study diagnose /tmp/qvi-input /tmp/qvi-study
 python -m qualification.hcsn_qvi_retrieval.run_study fit /tmp/qvi-input /tmp/qvi-study
 python -m qualification.hcsn_qvi_retrieval.run_study confirm /tmp/qvi-input /tmp/qvi-study
