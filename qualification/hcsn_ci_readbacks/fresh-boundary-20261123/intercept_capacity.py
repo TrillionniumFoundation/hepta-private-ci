@@ -29,7 +29,7 @@ def sign_probability(differences):
     return Fraction(sum(math.comb(len(nonzero), i) for i in range(wins, len(nonzero) + 1)), 2 ** len(nonzero))
 
 
-def analyze():
+def load_first_prefix():
     protocol = json.loads((HERE / 'protocol.json').read_text())
     frozen = protocol['frozen_sha256']
     front = json.loads(archived_bytes(QUAL / 'hcsn_intervention_value/evidence/records-04.zip', 'primary/discovery/front_weights.json', frozen['audio_gallery']))
@@ -61,6 +61,13 @@ def analyze():
     yfree = probabilities[:, 0].argmax(-1) == labels
     ypaid = camera['probability'][:, 0].argmax(-1) == labels
     data = {'group': source, 'target': labels, 'scores': probabilities, 'read_scores': camera['probability']}
+    return design, np.r_[fit['beta'], fit['bias']], data, yfree, ypaid, [r['query_id'] for r in rows]
+
+
+def analyze():
+    design, coefficients, data, yfree, ypaid, rows = load_first_prefix()
+    scores = design @ coefficients
+    source = data['group']
     normals = np.unique(scores)
     # With strict score > threshold, each group of tied scores enters at once.
     # Put one threshold below the minimum and one at each distinct observed value.

@@ -1,0 +1,6 @@
+{
+  "scope": "Development follow-up designed after release of all outcomes for the preceding prospective study. This additional method can be retrospectively evaluated. Those panels cannot establish prospective generalization of this method.",
+  "inputs": "Only the initial 32-window, 8-source TRAIN panel of hcsn_blocker_followup and the original frozen audio/gallery, pretrained camera outputs and source SVD coefficients are available to fitting. No DEV, old TEST or 48-window fresh labels may enter this fit.",
+  "fit": "One mixed-integer optimization, raw per-source net vs free >=0, radius .999 around initial SVD, strictly separated actions by a .10001 score gap on both sides, original purchase price .30. Maximize collected reward in integer tenths with a 0.00001 L1 penalty. Limit 90 sec. Round signed changes to multiples of 1e-9. No selection among margins, seeds, induction objectives or validation panels.",
+  "evaluation": "Seal the single fit before computing its post-fit results on all three already disclosed non-training panels. Reuse original utility, paired source sign tests/Holm, accuracy and -0.05 worst source threshold vs immediate free, and both +0.03 practical gains. Report all panels. Keep model weights and price fixed. Time training and validation separately. If the DEV panel fails, do not acquire another cohort for this edit."
+}
