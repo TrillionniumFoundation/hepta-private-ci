@@ -1,0 +1,59 @@
+{
+  "lookup": {
+    "original_git_blobs": {
+      "circuit_on_policy_evaluation_episode.rs": "a95939a0ad17393cc7aafe918df67a3f018c8b11",
+      "circuit_original_evaluation_provider.rs": "c9313c239c6cc5dc30b793a4c05f839b54ee1bd8",
+      "circuit_original_evaluation_provider_records.rs": "f6860787be7c3548bf231f3dd22a4ec510cb69c7"
+    },
+    "candidate_git_blobs": {
+      "circuit_on_policy_evaluation_episode.rs": "c8142cdf53cc414824d88d2ccdc08b86043ca010",
+      "circuit_original_evaluation_provider.rs": "6381a0b74080e0758936226c464356ceb7e0ef96",
+      "circuit_original_evaluation_provider_records.rs": "26d18d8da976088e0f9d187156c63a31f797caae"
+    },
+    "patch_sha256": "bbef3e506491a09fc7f0660ee73948223cc9e6549c07d5e727c82e603a032155",
+    "all_original_file_bytes_recovered": true,
+    "rejected_negative_controls": [
+      "historical decision source",
+      "historical outcome source",
+      "historical publication source",
+      "historical drops lookup",
+      "held-out decision source",
+      "held-out outcome source",
+      "held-out publication source",
+      "held-out drops lookup",
+      "wrong episode key",
+      "unpacked outcome alias",
+      "lookup written",
+      "added lookup capability",
+      "external visibility",
+      "additional implementation",
+      "changed independent terminality",
+      "ignore zero support",
+      "unbound lineage",
+      "no freshness",
+      "moved previous caller",
+      "changed other episode check"
+    ]
+  },
+  "owner": {
+    "original_git_blobs": {
+      "circuit_original_evaluation_provider_read.rs": "4be0fc89cceacb42570a09609f110b730c537e85",
+      "circuit_original_evaluation_provider_records.rs": "f6860787be7c3548bf231f3dd22a4ec510cb69c7"
+    },
+    "candidate_git_blobs": {
+      "circuit_original_evaluation_provider_read.rs": "fb88e755c88a2c0ca519f6618274669eeaa2c3c5",
+      "circuit_original_evaluation_provider_records.rs": "e7c01d41a3b6b935e5f6c9088b9a2ee55224bef4"
+    },
+    "patch_sha256": "0e2e01fbfad2e304de7621ea8be561e913cd70d4a1e739d820d6117af0419a54",
+    "all_original_file_bytes_recovered": true,
+    "rejected_negative_controls": [
+      "unrelated cohort owner",
+      "owner with mutable binding",
+      "owned source clone",
+      "omit first source read",
+      "remove fresh source read",
+      "omit outcome validation",
+      "unrelated ledger-based identity"
+    ]
+  }
+}

@@ -1,0 +1,2342 @@
+[
+  {
+    "index": 1,
+    "path": "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs",
+    "line": 145,
+    "name": "with_original_completed_context",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "scope: &FrozenLearningScopeV2",
+      "checkpoint: &crate::LearningIterationCheckpointRecordV1",
+      "observed: &RootOriginalHistoricalCompleteTaskObservationV1",
+      "end: Instant",
+      "action: impl FnOnce(&OriginalCompletedLearningContextV1<'_>) -> io::Result<T>"
+    ],
+    "donor": [
+      "&self",
+      "call_inputs: HostAuthorityCallInputs<'_>",
+      "scope: &FrozenLearningScopeV2",
+      "checkpoint: &crate::LearningIterationCheckpointRecordV1",
+      "observed: &RootOriginalHistoricalCompleteTaskObservationV1",
+      "action: impl FnOnce(&OriginalCompletedLearningContextV1<'_>) -> io::Result<T>"
+    ],
+    "current_blob": "c3f9d334e13aef74fd441c8e416f0c5c242539e6",
+    "donor_blob": "25ee8f5e89ad3dd8aac80b715a63b520ea62ea6f",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 2,
+    "path": "codex-rs/hepta-agentd/src/authority_host_completed_observation.rs",
+    "line": 28,
+    "name": "observe_completed_learning",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "fixed: &CompletedLearningRuntime",
+      "files: &CompletedFiles",
+      "accepted: Option<&RootCompletedLearningAcceptanceDataV1>",
+      "mode: OriginalCompletedPublicationModeV1",
+      "end: Instant"
+    ],
+    "donor": [
+      "&self",
+      "call_inputs: HostAuthorityCallInputs<'_>",
+      "fixed: &CompletedLearningRuntime",
+      "files: &CompletedFiles",
+      "accepted: Option<&RootCompletedLearningAcceptanceDataV1>",
+      "mode: OriginalCompletedPublicationModeV1"
+    ],
+    "current_blob": "2f735a56a6a19b091ba863ddf226e26b0591f770",
+    "donor_blob": "20301f1923a522523db93838b0643ebb26312332",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 3,
+    "path": "codex-rs/hepta-agentd/src/authority_host_completed_observation.rs",
+    "line": 126,
+    "name": "observe_completed_profile",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "fixed: &CompletedLearningRuntime",
+      "files: &CompletedFiles",
+      "accepted: Option<&RootCompletedLearningAcceptanceDataV1>",
+      "mode: OriginalCompletedPublicationModeV1",
+      "initial: &LearningIterationSnapshotV1",
+      "observed: &RootOriginalHistoricalCompleteTaskObservationV1",
+      "checkpoint: &crate::LearningIterationCheckpointRecordV1",
+      "checkpoint_digest: Digest32",
+      "profile: HostAuthorityLearningProfileV1",
+      "end: Instant"
+    ],
+    "donor": [
+      "&self",
+      "call_inputs: HostAuthorityCallInputs<'_>",
+      "fixed: &CompletedLearningRuntime",
+      "files: &CompletedFiles",
+      "accepted: Option<&RootCompletedLearningAcceptanceDataV1>",
+      "mode: OriginalCompletedPublicationModeV1",
+      "profile_inputs: CompletedProfileInputs<'_>"
+    ],
+    "current_blob": "2f735a56a6a19b091ba863ddf226e26b0591f770",
+    "donor_blob": "20301f1923a522523db93838b0643ebb26312332",
+    "new_types": [
+      "CompletedProfileInputs",
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "CompletedProfileInputs"
+    ],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 4,
+    "path": "codex-rs/hepta-agentd/src/authority_host_completed_provider.rs",
+    "line": 16,
+    "name": "completed_learning_operation",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "operation: HistoricalReadOperationV1",
+      "request_id: u64",
+      "end: Instant"
+    ],
+    "donor": [
+      "&self",
+      "call_inputs: HostAuthorityCallInputs<'_>",
+      "operation: HistoricalReadOperationV1",
+      "request_id: u64"
+    ],
+    "current_blob": "2e9a404fadd6a0a25c8f7dcb368206c3b1a6b471",
+    "donor_blob": "dc80bf4b6d0cfe56665f9a95730c5ab532f55089",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 5,
+    "path": "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+    "line": 29,
+    "name": "with_original_derived_profile",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "identity: &AgentdIdentity",
+      "proof: &str",
+      "initial: &LearningIterationSnapshotV1",
+      "observed: &RootOriginalHistoricalCompleteTaskObservationV1",
+      "trust: &RootHistoricalLearningTrustV1",
+      "end: Instant",
+      "action: impl FnOnce(HostAuthorityLearningProfileV1) -> io::Result<T>"
+    ],
+    "donor": [
+      "&self",
+      "service: &HostAuthorityService",
+      "initial_inputs: PostAInitialInputs<'_>",
+      "observed: &RootOriginalHistoricalCompleteTaskObservationV1",
+      "trust: &RootHistoricalLearningTrustV1",
+      "end: Instant",
+      "action: impl FnOnce(HostAuthorityLearningProfileV1) -> io::Result<T>"
+    ],
+    "current_blob": "d6305ee5d9db0c91e082a6a3c9677547c0ca6d7c",
+    "donor_blob": "becb66459f3e2dd803c1bf6d8656bb7f45bbb821",
+    "new_types": [
+      "PostAInitialInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "PostAInitialInputs"
+    ],
+    "specialized": "pub(in super::super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 6,
+    "path": "codex-rs/hepta-agentd/src/authority_host_post_a_learning.rs",
+    "line": 122,
+    "name": "prepare_original_installation",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "proof: &str",
+      "initial: &LearningIterationSnapshotV1",
+      "observed: &RootOriginalHistoricalCompleteTaskObservationV1",
+      "trust: &RootHistoricalLearningTrustV1",
+      "end: Instant",
+      "session_end: Instant"
+    ],
+    "donor": [
+      "&self",
+      "inputs: HostAuthorityCallInputs<'_>",
+      "proof: &str",
+      "initial: &LearningIterationSnapshotV1",
+      "observed: &RootOriginalHistoricalCompleteTaskObservationV1",
+      "trust: &RootHistoricalLearningTrustV1",
+      "session_end: Instant"
+    ],
+    "current_blob": "dd0f4e6e59104339feab9815774cab656f565c10",
+    "donor_blob": "05902d40d2aa55d247828f67dadd4c31837650e3",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 7,
+    "path": "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+    "line": 226,
+    "name": "observe_complete_task",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "operation: HistoricalReadOperationV1",
+      "request_id: u64",
+      "end: Instant"
+    ],
+    "donor": [
+      "&self",
+      "call_inputs: HostAuthorityCallInputs<'_>",
+      "operation: HistoricalReadOperationV1",
+      "request_id: u64"
+    ],
+    "current_blob": "29c76ae5d032123203a8ba21adc6d6916f5b0890",
+    "donor_blob": "df4e640e3f6f9e323dea541a34dd82bf88fa0eb5",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 8,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_provider.rs",
+    "line": 84,
+    "name": "new",
+    "current": [
+      "files: &'a OriginalBInputs",
+      "authorities: &'a OriginalBAuthorities",
+      "plan: &'a CellEvaluationPlanV1",
+      "namespace: Digest32",
+      "unit_profile: Digest32",
+      "registered_at: u64",
+      "clock: &'a dyn Fn() -> io::Result<u64>",
+      "admitted: &'a OriginalBReleasedSource"
+    ],
+    "donor": [
+      "files: &'a OriginalBInputs",
+      "authorities: &'a OriginalBAuthorities",
+      "plan: &'a CellEvaluationPlanV1",
+      "enrollment: &OriginalBEnrollment",
+      "protocol: &OriginalBProtocolData",
+      "clock: &'a dyn Fn() -> io::Result<u64>",
+      "admitted: &'a OriginalBReleasedSource"
+    ],
+    "current_blob": "222c829b1c77dd83f1b47a8ef088a650f056783f",
+    "donor_blob": "c1aeb6fef778b32b470a1ff66ff4d660103d6b5b",
+    "new_types": [
+      "OriginalBEnrollment",
+      "OriginalBProtocolData"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 9,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_execute.rs",
+    "line": 17,
+    "name": "perform",
+    "current": [
+      "&mut self",
+      "files: &OriginalBInputs",
+      "enrollment: &mut OriginalBEnrollment",
+      "training: &LearningIterationSnapshotV1",
+      "training_attestation: &SignedLearningEvidenceV1",
+      "protocol: &OriginalBProtocolData",
+      "authorities: &OriginalBAuthorities",
+      "clock: &dyn Fn() -> io::Result<u64>",
+      "mode: OriginalBResultMode"
+    ],
+    "donor": [
+      "&mut self",
+      "files: &OriginalBInputs",
+      "enrollment: &mut OriginalBEnrollment",
+      "inputs: OriginalBExecutionInputs<'_>",
+      "clock: &dyn Fn() -> io::Result<u64>",
+      "mode: OriginalBResultMode"
+    ],
+    "current_blob": "ae3a4cf04eb1d0497263c5114d957cdd6bee7bac",
+    "donor_blob": "c3489ef5f2791d8163e5c5f1510d01bf62785439",
+    "new_types": [
+      "OriginalBExecutionInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(in super::super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 10,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_ingress.rs",
+    "line": 17,
+    "name": "retain_original_signed_source",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "source_peer: &OriginalBSourcePeer",
+      "frame_end: Instant",
+      "request: &SourceRequest"
+    ],
+    "donor": [
+      "&self",
+      "inputs: HostAuthorityCallInputs<'_>",
+      "source_peer: &OriginalBSourcePeer",
+      "request: &SourceRequest"
+    ],
+    "current_blob": "16d5a8998e8b5678664f970ba89c8135ad486eb1",
+    "donor_blob": "e9b40993194537fa63e0f3dade2273a62cfe88e8",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(in super::super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 11,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_operation.rs",
+    "line": 19,
+    "name": "complete_from_original_training",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "frame_end: Instant",
+      "training_head: Digest32",
+      "attestation: &SignedLearningEvidenceV1",
+      "plan_attestation: &SignedLearningEvidenceV1",
+      "source_admission: &crate::root_independent_b_source_ready::SourceReadyData",
+      "action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>"
+    ],
+    "donor": [
+      "&self",
+      "inputs: HostAuthorityCallInputs<'_>",
+      "training_head: Digest32",
+      "attestation: &SignedLearningEvidenceV1",
+      "plan_attestation: &SignedLearningEvidenceV1",
+      "source_admission: &crate::root_independent_b_source_ready::SourceReadyData",
+      "action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>"
+    ],
+    "current_blob": "8537fa1efbb59cd76754a14c77cf5b440b4d2c96",
+    "donor_blob": "cb7cc45977555474396a78d6bb8ba63307c42931",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 12,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_operation.rs",
+    "line": 48,
+    "name": "with_original_completed_evaluation",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "frame_end: Instant",
+      "training_head: Digest32",
+      "action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>"
+    ],
+    "donor": [
+      "&self",
+      "inputs: HostAuthorityCallInputs<'_>",
+      "training_head: Digest32",
+      "action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>"
+    ],
+    "current_blob": "8537fa1efbb59cd76754a14c77cf5b440b4d2c96",
+    "donor_blob": "cb7cc45977555474396a78d6bb8ba63307c42931",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 13,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_operation.rs",
+    "line": 70,
+    "name": "with_operation",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "frame_end: Instant",
+      "training_head: Digest32",
+      "operation: Operation<'_>",
+      "action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>"
+    ],
+    "donor": [
+      "&self",
+      "inputs: HostAuthorityCallInputs<'_>",
+      "training_head: Digest32",
+      "operation: Operation<'_>",
+      "action: impl for<'a> FnOnce(OriginalRootBEvaluationBorrowV1<'a>) -> io::Result<T>"
+    ],
+    "current_blob": "8537fa1efbb59cd76754a14c77cf5b440b4d2c96",
+    "donor_blob": "cb7cc45977555474396a78d6bb8ba63307c42931",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 4
+  },
+  {
+    "index": 14,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_prepare.rs",
+    "line": 16,
+    "name": "prepare_original_candidate",
+    "current": [
+      "&self",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "frame_end: Instant",
+      "training_head: Digest32",
+      "attestation: &SignedLearningEvidenceV1",
+      "training_work: &crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1",
+      "action: impl FnOnce(PreparedPlanData) -> io::Result<T>"
+    ],
+    "donor": [
+      "&self",
+      "inputs: HostAuthorityCallInputs<'_>",
+      "training_head: Digest32",
+      "attestation: &SignedLearningEvidenceV1",
+      "training_work: &crate::cell_composed_q24::OriginalQ24TrainingWorkDataV1",
+      "action: impl FnOnce(PreparedPlanData) -> io::Result<T>"
+    ],
+    "current_blob": "76eadd50857a5fa27dfe51eb9fbc6f922c9ffedc",
+    "donor_blob": "8814504053ccb1c031048fc3d8d693808b8fab59",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(in super::super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 15,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_registration.rs",
+    "line": 7,
+    "name": "register_original_b",
+    "current": [
+      "path: &Path",
+      "initial: &LearningIterationSnapshotV1",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "request_end: Instant",
+      "session_end: Instant"
+    ],
+    "donor": [
+      "path: &Path",
+      "initial: &LearningIterationSnapshotV1",
+      "inputs: HostAuthorityCallInputs<'_>",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "session_end: Instant"
+    ],
+    "current_blob": "7b3305550b1853a0de29a2f88e25645b0064ecda",
+    "donor_blob": "3fbcfe1f698c280012226c8168c77f25df0dcecf",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 4
+  },
+  {
+    "index": 16,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_registration.rs",
+    "line": 123,
+    "name": "reopen_original_b",
+    "current": [
+      "path: &Path",
+      "initial: &LearningIterationSnapshotV1",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "request_end: Instant",
+      "session_end: Instant"
+    ],
+    "donor": [
+      "path: &Path",
+      "initial: &LearningIterationSnapshotV1",
+      "inputs: HostAuthorityCallInputs<'_>",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "session_end: Instant"
+    ],
+    "current_blob": "7b3305550b1853a0de29a2f88e25645b0064ecda",
+    "donor_blob": "3fbcfe1f698c280012226c8168c77f25df0dcecf",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 4
+  },
+  {
+    "index": 17,
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+    "line": 94,
+    "name": "serve_optional_until",
+    "current": [
+      "publication: Option<&BoundPublication>",
+      "learning: &crate::authority_host_service::RegisteredHostLearningCheckpointV1",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "end: Instant",
+      "original: impl FnOnce() -> io::Result<()>"
+    ],
+    "donor": [
+      "publication: Option<&BoundPublication>",
+      "learning: &crate::authority_host_service::RegisteredHostLearningCheckpointV1",
+      "service: &HostAuthorityService",
+      "peer_inputs: HostAuthorityRegistrationInputs<'_>",
+      "end: Instant",
+      "original: impl FnOnce() -> io::Result<()>"
+    ],
+    "current_blob": "9270332552aafca56a3a26a0bbb2a2756efcaf73",
+    "donor_blob": "866b94f9c64d85a35079d0c6cb0984fb869a449f",
+    "new_types": [
+      "HostAuthorityRegistrationInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(in super::super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 18,
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+    "line": 119,
+    "name": "serve_optional_with_end",
+    "current": [
+      "publication: Option<&BoundPublication>",
+      "learning: &crate::authority_host_service::RegisteredHostLearningCheckpointV1",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "original_end: Option<Instant>",
+      "original: impl FnOnce() -> io::Result<()>"
+    ],
+    "donor": [
+      "publication: Option<&BoundPublication>",
+      "learning: &crate::authority_host_service::RegisteredHostLearningCheckpointV1",
+      "service: &HostAuthorityService",
+      "peer_inputs: HostAuthorityRegistrationInputs<'_>",
+      "original_end: Option<Instant>",
+      "original: impl FnOnce() -> io::Result<()>"
+    ],
+    "current_blob": "9270332552aafca56a3a26a0bbb2a2756efcaf73",
+    "donor_blob": "866b94f9c64d85a35079d0c6cb0984fb869a449f",
+    "new_types": [
+      "HostAuthorityRegistrationInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 19,
+    "path": "codex-rs/hepta-agentd/src/authority_host_completed_publication_deployment.rs",
+    "line": 20,
+    "name": "with_original_completed_publication",
+    "current": [
+      "path: &Path",
+      "initial: &LearningIterationSnapshotV1",
+      "scope: &FrozenLearningScopeV2",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "end: Instant",
+      "mode: OriginalCompletedPublicationModeV1",
+      "action: impl FnOnce(&mut OriginalCompletedPublicationReadV1<'_>) -> io::Result<T>"
+    ],
+    "donor": [
+      "path: &Path",
+      "initial: &LearningIterationSnapshotV1",
+      "scope: &FrozenLearningScopeV2",
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "read_inputs: OriginalCompletedPublicationReadInputs",
+      "action: impl FnOnce(&mut OriginalCompletedPublicationReadV1<'_>) -> io::Result<T>"
+    ],
+    "current_blob": "e8187bf2c50be9b9ccad9697411e4e9ffd9842f9",
+    "donor_blob": "a327fcd66f97ed29b9ae76e77d3de6e921f30f73",
+    "new_types": [
+      "OriginalCompletedPublicationReadInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(in crate::authority_host_runtime::session)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 20,
+    "path": "codex-rs/hepta-agentd/src/authority_host_original_publication_route.rs",
+    "line": 7,
+    "name": "prepare_original_publication_route",
+    "current": [
+      "service: &HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner_pidfd: &OwnedFd",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "original_end: Option<Instant>",
+      "version: PublicationVersion",
+      "prepared: Option<crate::authority_host_runtime::PreparedPublicationData>"
+    ],
+    "donor": [
+      "service: &HostAuthorityService",
+      "peer_inputs: HostAuthorityRegistrationInputs<'_>",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "original_end: Option<Instant>",
+      "version: PublicationVersion",
+      "prepared: Option<crate::authority_host_runtime::PreparedPublicationData>"
+    ],
+    "current_blob": "8cb03bc1b8306df8f4460e001c04a017013c7f33",
+    "donor_blob": "4c762978246064b67f12db0d4f36aebd41b76c80",
+    "new_types": [
+      "HostAuthorityRegistrationInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(in crate::authority_host_runtime::session)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 21,
+    "path": "codex-rs/hepta-agentd/src/authority_host_run_start_context.rs",
+    "line": 47,
+    "name": "retain_initial_run_start",
+    "current": [
+      "&self",
+      "retained: &RegisteredInitialRunStartRetentionV1",
+      "slot: &RegisteredGenerationInitial",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "publisher_pidfd: &OwnedFd",
+      "publication: &OriginalRunStartPublicationDataV1",
+      "request_id: u64",
+      "session_end: Instant"
+    ],
+    "donor": [
+      "&self",
+      "retained: &RegisteredInitialRunStartRetentionV1",
+      "slot: &RegisteredGenerationInitial",
+      "peer_inputs: HostAuthorityRegistrationInputs<'_>",
+      "publication: &OriginalRunStartPublicationDataV1",
+      "request_id: u64",
+      "session_end: Instant"
+    ],
+    "current_blob": "4394dc6a89945373a9d070bcc452bb8c5ebaa84e",
+    "donor_blob": "7227d882aaf83275b06d2324fb4d82ad85b69aa8",
+    "new_types": [
+      "HostAuthorityRegistrationInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 22,
+    "path": "codex-rs/hepta-agentd/src/authority_host_run_start_historical.rs",
+    "line": 52,
+    "name": "require_original_publisher",
+    "current": [
+      "&self",
+      "identity: &AgentdIdentity",
+      "target: &CellGenerationOwnerBindingV1",
+      "publisher: &CognitiveCheckpointPeerLifetime",
+      "publisher_epoch: u64",
+      "initial_profile: &str",
+      "writer: &str",
+      "target_files: &str"
+    ],
+    "donor": [
+      "&self",
+      "identity: &AgentdIdentity",
+      "target: &CellGenerationOwnerBindingV1",
+      "publisher: RootOriginalRunStartPublisherV1<'_>",
+      "initial_profile: &str",
+      "writer: &str",
+      "target_files: &str"
+    ],
+    "current_blob": "3656ba59396ffcc5e873db6b28ab3d49bb48d30a",
+    "donor_blob": "d3b0cd2e25479fec74656bc34f2629f319eeb211",
+    "new_types": [
+      "RootOriginalRunStartPublisherV1"
+    ],
+    "new_declarations_in_same_file": [
+      "RootOriginalRunStartPublisherV1"
+    ],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 7
+  },
+  {
+    "index": 23,
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+    "line": 69,
+    "name": "serve_generation_initial",
+    "current": [
+      "&self",
+      "slot: &RegisteredGenerationInitial",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "stream: UnixStream",
+      "policy: HostAuthorityPeerPolicy",
+      "owner: OwnedFd",
+      "source_capability: Option<&Mutex<Option<crate::RootHistoricalSourceCaptureCapabilityV1>>>",
+      "session_end: Instant",
+      "retained_run_start: Option<&RegisteredInitialRunStartRetentionV1>"
+    ],
+    "donor": [
+      "&self",
+      "slot: &RegisteredGenerationInitial",
+      "transport: GenerationInitialTransport<'_>",
+      "source_capability: Option<&Mutex<Option<crate::RootHistoricalSourceCaptureCapabilityV1>>>",
+      "session_end: Instant",
+      "retained_run_start: Option<&RegisteredInitialRunStartRetentionV1>"
+    ],
+    "current_blob": "c932fa8620748b123857bf69b4c8332314d2c3d4",
+    "donor_blob": "c10a7333f573650624c1327b31f470ebeeb95587",
+    "new_types": [
+      "GenerationInitialTransport"
+    ],
+    "new_declarations_in_same_file": [
+      "GenerationInitialTransport"
+    ],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 24,
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+    "line": 95,
+    "name": "enroll_armed_generation_publication",
+    "current": [
+      "&self",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "inputs: RootGenerationPublicationEnrollmentV1",
+      "version: PublicationVersion",
+      "refusal: Arc<PublicationRefusal>"
+    ],
+    "donor": [
+      "&self",
+      "peer_inputs: HostAuthorityRegistrationInputs<'_>",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "inputs: RootGenerationPublicationEnrollmentV1",
+      "version: PublicationVersion",
+      "refusal: Arc<PublicationRefusal>"
+    ],
+    "current_blob": "d85d92ef900e0e3d5c995a2d3c75f73cd15bdb68",
+    "donor_blob": "d4c8c3c9d05ae826c7cd0830511ad1b9348f5ffe",
+    "new_types": [
+      "HostAuthorityRegistrationInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 25,
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+    "line": 60,
+    "name": "serve_generation_publication",
+    "current": [
+      "&self",
+      "slot: &RegisteredGenerationPublication",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "stream: UnixStream",
+      "policy: HostAuthorityPeerPolicy",
+      "owner: OwnedFd"
+    ],
+    "donor": [
+      "&self",
+      "slot: &RegisteredGenerationPublication",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "transport: GenerationPublicationTransport<'_>"
+    ],
+    "current_blob": "76146f752c55516edc71d9b2945cd3d781db0d1c",
+    "donor_blob": "f22307f62c58127ac4bfe5f94d72b5dc485c25dd",
+    "new_types": [
+      "GenerationPublicationTransport"
+    ],
+    "new_declarations_in_same_file": [
+      "GenerationPublicationTransport"
+    ],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 26,
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+    "line": 82,
+    "name": "serve_generation_publication_until",
+    "current": [
+      "&self",
+      "slot: &RegisteredGenerationPublication",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "stream: UnixStream",
+      "policy: HostAuthorityPeerPolicy",
+      "owner: OwnedFd",
+      "end: Instant"
+    ],
+    "donor": [
+      "&self",
+      "slot: &RegisteredGenerationPublication",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "transport: GenerationPublicationTransport<'_>",
+      "end: Instant"
+    ],
+    "current_blob": "76146f752c55516edc71d9b2945cd3d781db0d1c",
+    "donor_blob": "f22307f62c58127ac4bfe5f94d72b5dc485c25dd",
+    "new_types": [
+      "GenerationPublicationTransport"
+    ],
+    "new_declarations_in_same_file": [
+      "GenerationPublicationTransport"
+    ],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 4
+  },
+  {
+    "index": 27,
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs",
+    "line": 105,
+    "name": "serve_generation_publication_with_end",
+    "current": [
+      "&self",
+      "slot: &RegisteredGenerationPublication",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "stream: UnixStream",
+      "policy: HostAuthorityPeerPolicy",
+      "owner: OwnedFd",
+      "original_end: Option<Instant>"
+    ],
+    "donor": [
+      "&self",
+      "slot: &RegisteredGenerationPublication",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "transport: GenerationPublicationTransport<'_>",
+      "original_end: Option<Instant>"
+    ],
+    "current_blob": "76146f752c55516edc71d9b2945cd3d781db0d1c",
+    "donor_blob": "f22307f62c58127ac4bfe5f94d72b5dc485c25dd",
+    "new_types": [
+      "GenerationPublicationTransport"
+    ],
+    "new_declarations_in_same_file": [
+      "GenerationPublicationTransport"
+    ],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 4
+  },
+  {
+    "index": 28,
+    "path": "codex-rs/hepta-agentd/src/authority_host_publication_completed_open.rs",
+    "line": 14,
+    "name": "open_existing",
+    "current": [
+      "proof: &'a OriginalPublicationHistoryProofV1<'a>",
+      "service: &'a HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "root_path: &Path",
+      "inputs: RootGenerationPublicationEnrollmentV1",
+      "files: Arc<crate::authority_host_runtime::RootOriginalSuccessorFilesV1>",
+      "mode: OriginalCompletedPublicationModeV1",
+      "end: Instant"
+    ],
+    "donor": [
+      "proof: &'a OriginalPublicationHistoryProofV1<'a>",
+      "service: &'a HostAuthorityService",
+      "config: &HostAuthorityServiceConfig",
+      "root_path: &Path",
+      "inputs: RootGenerationPublicationEnrollmentV1",
+      "files: Arc<crate::authority_host_runtime::RootOriginalSuccessorFilesV1>",
+      "read_inputs: OriginalCompletedPublicationReadInputs"
+    ],
+    "current_blob": "d1b7d633a16b8fa3eb4c854ea35a2a2e6cf1bf60",
+    "donor_blob": "87e9f38edd45073b4f62caadb39102de36620b07",
+    "new_types": [
+      "OriginalCompletedPublicationReadInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 29,
+    "path": "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs",
+    "line": 13,
+    "name": "enroll_generation_publication",
+    "current": [
+      "&self",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "inputs: RootGenerationPublicationEnrollmentV1",
+      "version: PublicationVersion",
+      "end: Instant",
+      "successor: Option<Arc<crate::authority_host_runtime::RootOriginalSuccessorFilesV1>>"
+    ],
+    "donor": [
+      "&self",
+      "peer_inputs: HostAuthorityRegistrationInputs<'_>",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "inputs: RootGenerationPublicationEnrollmentV1",
+      "version: PublicationVersion",
+      "end: Instant",
+      "successor: Option<Arc<crate::authority_host_runtime::RootOriginalSuccessorFilesV1>>"
+    ],
+    "current_blob": "de02a85c863c94899f002fa7680f5ce97d5bb0e7",
+    "donor_blob": "a4492559f296a120f97d6f0b7f2be364bc929197",
+    "new_types": [
+      "HostAuthorityRegistrationInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 30,
+    "path": "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs",
+    "line": 77,
+    "name": "issue_generation_publication_grant",
+    "current": [
+      "&self",
+      "slot: &RegisteredGenerationPublication",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner: &OwnedFd",
+      "request: &Request",
+      "sequence: &mut u64",
+      "end: Instant"
+    ],
+    "donor": [
+      "&self",
+      "slot: &RegisteredGenerationPublication",
+      "learning: &RegisteredHostLearningCheckpointV1",
+      "peer_inputs: HostAuthorityRegistrationInputs<'_>",
+      "request: &Request",
+      "sequence: &mut u64",
+      "end: Instant"
+    ],
+    "current_blob": "a415fdedccd8628ded992a798962ad2c06abffd4",
+    "donor_blob": "264d9b211380a9dd1f06d97a37953b00292dbed4",
+    "new_types": [
+      "HostAuthorityRegistrationInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 31,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_profile.rs",
+    "line": 100,
+    "name": "new",
+    "current": [
+      "identity: &AgentdIdentity",
+      "writer_proof: &str",
+      "initial: &LearningIterationSnapshotV1",
+      "scope: &FrozenLearningScopeV2",
+      "journal: FilePin",
+      "witness: FilePin",
+      "witness_domain: Digest32",
+      "local_policy: Digest32"
+    ],
+    "donor": [
+      "identity: &AgentdIdentity",
+      "writer_proof: &str",
+      "initial: &LearningIterationSnapshotV1",
+      "scope: &FrozenLearningScopeV2",
+      "files: ModelFilePins",
+      "witness_domain: Digest32",
+      "local_policy: Digest32"
+    ],
+    "current_blob": "4fcebb6235b8ade45784b9b8a9e6aee61e4b500e",
+    "donor_blob": "ddb7bff836e6e6fde5bf3ed2e8eed42555e1ccb8",
+    "new_types": [
+      "ModelFilePins"
+    ],
+    "new_declarations_in_same_file": [
+      "ModelFilePins"
+    ],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 32,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_b_transport.rs",
+    "line": 9,
+    "name": "serve_original_b_model_request",
+    "current": [
+      "service: &HostAuthorityService",
+      "factory: &RegisteredQ24ModelFactory",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "owner_pidfd: &OwnedFd",
+      "bytes: &[u8]",
+      "next_request_id: &mut u64",
+      "frame_end: Instant"
+    ],
+    "donor": [
+      "inputs: HostAuthorityCallInputs<'_>",
+      "factory: &RegisteredQ24ModelFactory",
+      "bytes: &[u8]",
+      "next_request_id: &mut u64"
+    ],
+    "current_blob": "5ac75c306fcb37f95b2be1e0e9f2b2fd2b2a70bc",
+    "donor_blob": "1476734648c5759cdd9e2067e2d68bdfabfaeefe",
+    "new_types": [
+      "HostAuthorityCallInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 33,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+    "line": 85,
+    "name": "serve_q24_model_factory_until",
+    "current": [
+      "&self",
+      "factory: &RegisteredQ24ModelFactory",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "stream: UnixStream",
+      "policy: HostAuthorityPeerPolicy",
+      "owner_pidfd: OwnedFd",
+      "end: Instant"
+    ],
+    "donor": [
+      "&self",
+      "factory: &RegisteredQ24ModelFactory",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "connection: ModelConnectionInputs",
+      "end: Instant"
+    ],
+    "current_blob": "cc6f6b3337ed1ca460619bd3052b159c13b7c461",
+    "donor_blob": "6ad57f782d5d4b9cd01aae6df26d3a00512f7278",
+    "new_types": [
+      "ModelConnectionInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "ModelConnectionInputs"
+    ],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 34,
+    "path": "codex-rs/hepta-agentd/src/authority_host_q24_model_transport.rs",
+    "line": 106,
+    "name": "serve_q24_model_factory_with_end",
+    "current": [
+      "&self",
+      "factory: &RegisteredQ24ModelFactory",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "stream: UnixStream",
+      "policy: HostAuthorityPeerPolicy",
+      "owner_pidfd: OwnedFd",
+      "original_end: Option<Instant>"
+    ],
+    "donor": [
+      "&self",
+      "factory: &RegisteredQ24ModelFactory",
+      "config: &HostAuthorityServiceConfig",
+      "registration: &HostAuthorityRegistration",
+      "connection: ModelConnectionInputs",
+      "original_end: Option<Instant>"
+    ],
+    "current_blob": "cc6f6b3337ed1ca460619bd3052b159c13b7c461",
+    "donor_blob": "6ad57f782d5d4b9cd01aae6df26d3a00512f7278",
+    "new_types": [
+      "ModelConnectionInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "ModelConnectionInputs"
+    ],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 35,
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+    "line": 131,
+    "name": "recover_original_root_stream",
+    "current": [
+      "stream: UnixStream",
+      "root: AgentdRootAuthorityPeer",
+      "held_root_pidfd: OwnedFd",
+      "profile: RootResidentLearningProfileV3",
+      "authorization: RootResidentLearningReadbackAuthorizationV3",
+      "verifier: LearningEvidenceVerifierV1",
+      "expected: Option<(LearningIterationSnapshotV1, Vec<SignedLearningEvidenceV1>)>",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "connection: RootResidentLearningConnectionV3",
+      "profile: RootResidentLearningProfileV3",
+      "authorization: RootResidentLearningReadbackAuthorizationV3",
+      "verifier: LearningEvidenceVerifierV1",
+      "expected: Option<(LearningIterationSnapshotV1, Vec<SignedLearningEvidenceV1>)>",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "current_blob": "40b744877e6e3a0e02dea0fdc9fffb8859eefdf7",
+    "donor_blob": "dbc04d9ce656c5f19d8169ca73acdc5aaa221af9",
+    "new_types": [
+      "RootResidentLearningConnectionV3"
+    ],
+    "new_declarations_in_same_file": [
+      "RootResidentLearningConnectionV3"
+    ],
+    "specialized": "pub",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 36,
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+    "line": 159,
+    "name": "bind",
+    "current": [
+      "stream: UnixStream",
+      "root: AgentdRootAuthorityPeer",
+      "held_root_pidfd: OwnedFd",
+      "profile: RootResidentLearningProfileV3",
+      "verifier: LearningEvidenceVerifierV1",
+      "origin: ClientOriginV3",
+      "expected: Option<ResidentReadbackPinV3>",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "connection: RootResidentLearningConnectionV3",
+      "profile: RootResidentLearningProfileV3",
+      "verifier: LearningEvidenceVerifierV1",
+      "origin: ClientOriginV3",
+      "expected: Option<ResidentReadbackPinV3>",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "current_blob": "40b744877e6e3a0e02dea0fdc9fffb8859eefdf7",
+    "donor_blob": "dbc04d9ce656c5f19d8169ca73acdc5aaa221af9",
+    "new_types": [
+      "RootResidentLearningConnectionV3"
+    ],
+    "new_declarations_in_same_file": [
+      "RootResidentLearningConnectionV3"
+    ],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 37,
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_recovery.rs",
+    "line": 20,
+    "name": "recover_original_model_root_stream",
+    "current": [
+      "stream: UnixStream",
+      "root: AgentdRootAuthorityPeer",
+      "held_root_pidfd: OwnedFd",
+      "profile: RootResidentLearningProfileV3",
+      "authorization: RootResidentLearningReadbackAuthorizationV3",
+      "verifier: LearningEvidenceVerifierV1",
+      "expected: ( LearningIterationSnapshotV1, Vec<SignedLearningEvidenceV1>, Vec<u8>, )",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "connection: RootResidentLearningConnectionV3",
+      "profile: RootResidentLearningProfileV3",
+      "authorization: RootResidentLearningReadbackAuthorizationV3",
+      "verifier: LearningEvidenceVerifierV1",
+      "expected: ( LearningIterationSnapshotV1, Vec<SignedLearningEvidenceV1>, Vec<u8>, )",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "current_blob": "408aadf5c3121aaaba30f5dbbe762599af9ebdd8",
+    "donor_blob": "5fc33b9524ad4b69199d45cc7b3058bcebeff1fc",
+    "new_types": [
+      "RootResidentLearningConnectionV3"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 38,
+    "path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+    "line": 188,
+    "name": "read_current_at_clock",
+    "current": [
+      "&mut self",
+      "initial: &LearningIterationSnapshotV1",
+      "baseline: &LoadedCellQ24ModelV1",
+      "rule: CellQ24DatasetRuleV1",
+      "plan: DatasetFreezePlanV2",
+      "freeze_evidence: &SignedLearningEvidenceV1",
+      "require_work_deadline: bool",
+      "mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>"
+    ],
+    "donor": [
+      "&mut self",
+      "inputs: DatasetReadInputs<'_>",
+      "rule: CellQ24DatasetRuleV1",
+      "plan: DatasetFreezePlanV2",
+      "freeze_evidence: &SignedLearningEvidenceV1",
+      "require_work_deadline: bool",
+      "mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>"
+    ],
+    "current_blob": "8b949b8921c3f21e37c0d666dcec4239b2423f7b",
+    "donor_blob": "e6685ed253ba4a04dfb6ed15c709242a94ad7a82",
+    "new_types": [
+      "DatasetReadInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "DatasetReadInputs"
+    ],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 39,
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+    "line": 71,
+    "name": "serve_original_ordinary",
+    "current": [
+      "self: Arc<Self>",
+      "stream: UnixStream",
+      "consumer: AgentdRootAuthorityPeer",
+      "consumer_uid: u32",
+      "original_consumer_pidfd: OwnedFd",
+      "timeout: Duration",
+      "lifetime: Duration",
+      "arg0_paths: codex_arg0::Arg0DispatchPaths"
+    ],
+    "donor": [
+      "self: Arc<Self>",
+      "input: OriginalTaskStream",
+      "arg0_paths: codex_arg0::Arg0DispatchPaths"
+    ],
+    "current_blob": "771a33453238653a587632c04bf62b988421fb1b",
+    "donor_blob": "05e962bd475279a812f7af15fb55c5d84a2a557f",
+    "new_types": [
+      "OriginalTaskStream"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub async",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 2
+  },
+  {
+    "index": 40,
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+    "line": 157,
+    "name": "from_original_owners",
+    "current": [
+      "material: OriginalCellQ24MaterialReceiptConfigV1",
+      "dataset: OriginalCellQ24DatasetCommandReadbackV1",
+      "trainer: OriginalCellQ24TrainingCommandConnectionV1",
+      "inputs: RetainedVersionInputsV1",
+      "task: OriginalCircuitRetainedTaskInputsV1",
+      "artifact_checkpoint: OriginalCircuitRetainedArtifactCheckpointV1",
+      "final_use_issuer: AgentdUnixFinalUseGrantProvider",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "material: OriginalCellQ24MaterialReceiptConfigV1",
+      "dataset: OriginalCellQ24DatasetCommandReadbackV1",
+      "trainer: OriginalCellQ24TrainingCommandConnectionV1",
+      "publication_task: OriginalCircuitRetainedPublicationTaskV1",
+      "artifact_checkpoint: OriginalCircuitRetainedArtifactCheckpointV1",
+      "final_use_issuer: AgentdUnixFinalUseGrantProvider",
+      "lifetime: Duration"
+    ],
+    "current_blob": "62276bf49eca564a3a66ef28422b5ed42437ad7a",
+    "donor_blob": "8a4bbc923f21220f5109ace646896d4d8fefa35c",
+    "new_types": [
+      "OriginalCircuitRetainedPublicationTaskV1"
+    ],
+    "new_declarations_in_same_file": [
+      "OriginalCircuitRetainedPublicationTaskV1"
+    ],
+    "specialized": "pub",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 41,
+    "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+    "line": 121,
+    "name": "serve_original_ordinary",
+    "current": [
+      "self: Arc<Self>",
+      "stream: UnixStream",
+      "consumer: AgentdRootAuthorityPeer",
+      "consumer_uid: u32",
+      "original_consumer_pidfd: OwnedFd",
+      "timeout: Duration",
+      "lifetime: Duration",
+      "arg0_paths: codex_arg0::Arg0DispatchPaths"
+    ],
+    "donor": [
+      "self: Arc<Self>",
+      "input: OriginalTaskStream",
+      "arg0_paths: codex_arg0::Arg0DispatchPaths"
+    ],
+    "current_blob": "b3a51265dc040f2b3e95645fa7797a27bf301223",
+    "donor_blob": "33d112084e2b40bf05a8767860b43912e780c0e1",
+    "new_types": [
+      "OriginalTaskStream"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub async",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 2
+  },
+  {
+    "index": 42,
+    "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+    "line": 262,
+    "name": "serve_original_next_use_readback",
+    "current": [
+      "self: Arc<Self>",
+      "selection: Selection",
+      "stream: UnixStream",
+      "consumer: AgentdRootAuthorityPeer",
+      "consumer_uid: u32",
+      "original_consumer_pidfd: OwnedFd",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "self: Arc<Self>",
+      "selection: Selection",
+      "input: OriginalTaskStream"
+    ],
+    "current_blob": "b3a51265dc040f2b3e95645fa7797a27bf301223",
+    "donor_blob": "33d112084e2b40bf05a8767860b43912e780c0e1",
+    "new_types": [
+      "OriginalTaskStream"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub async",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 2
+  },
+  {
+    "index": 43,
+    "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+    "line": 304,
+    "name": "serve_original_completion_readiness",
+    "current": [
+      "self: Arc<Self>",
+      "selection: Selection",
+      "stream: UnixStream",
+      "consumer: AgentdRootAuthorityPeer",
+      "consumer_uid: u32",
+      "original_consumer_pidfd: OwnedFd",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "self: Arc<Self>",
+      "selection: Selection",
+      "input: OriginalTaskStream"
+    ],
+    "current_blob": "b3a51265dc040f2b3e95645fa7797a27bf301223",
+    "donor_blob": "33d112084e2b40bf05a8767860b43912e780c0e1",
+    "new_types": [
+      "OriginalTaskStream"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub async",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 2
+  },
+  {
+    "index": 44,
+    "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+    "line": 199,
+    "name": "new",
+    "current": [
+      "predecessors: Predecessors",
+      "initial_binding: Digest32",
+      "model: OriginalCellQ24ModelCommandClientV1",
+      "control: Arc<NeuronGenerationCurrentOwnerV1>",
+      "artifacts: ModelVersionArtifactOwner",
+      "origin: Origin",
+      "state: OriginalModelVersionState",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "predecessors: Predecessors",
+      "initial_binding: Digest32",
+      "model: OriginalCellQ24ModelCommandClientV1",
+      "control: Arc<NeuronGenerationCurrentOwnerV1>",
+      "artifacts: ModelVersionArtifactOwner",
+      "initial: ModelVersionInitialState",
+      "lifetime: Duration"
+    ],
+    "current_blob": "2a82d012ee7efac1d5ef174a0f1ac628c9bda1d0",
+    "donor_blob": "7e5573fbcc22f10cec9b279e8c3b603e76b3f386",
+    "new_types": [
+      "ModelVersionInitialState"
+    ],
+    "new_declarations_in_same_file": [
+      "ModelVersionInitialState"
+    ],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 45,
+    "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+    "line": 163,
+    "name": "require_original_member",
+    "current": [
+      "&self",
+      "registration: &OriginalCellEvaluationPanelRegistrationV1",
+      "task: &OriginalCellEvaluationPanelTaskV1",
+      "training: &LearningIterationSnapshotV1",
+      "scope: &FrozenLearningScopeV2",
+      "plan: &CellEvaluationPlanV1",
+      "training_evidence: &SignedLearningEvidenceV1",
+      "verifier: &LearningEvidenceVerifierV1"
+    ],
+    "donor": [
+      "&self",
+      "inputs: crate::circuit_on_policy_evaluation::CohortMemberInputs<'_>"
+    ],
+    "current_blob": "fee6149f92218b224e1d1a37b1afe8bf2e28fc5a",
+    "donor_blob": "e5254706fde9f4890b505e06735e3eb955a7ec03",
+    "new_types": [
+      "CohortMemberInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 1
+  },
+  {
+    "index": 46,
+    "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+    "line": 29,
+    "name": "assemble",
+    "current": [
+      "config: &OriginalCircuitOnPolicyCohortConfigV1",
+      "ledger: &LedgerWriter",
+      "dataset: &DatasetSnapshotReceiptV3",
+      "records: &[LedgerRecord]",
+      "publications: &Publications",
+      "sources: &[OriginalCircuitEvaluationSourceV1]",
+      "training_binding: &super::binding::CandidateBinding",
+      "pairing: &OnPolicyPairingContractV1",
+      "current: u64"
+    ],
+    "donor": [
+      "config: &OriginalCircuitOnPolicyCohortConfigV1",
+      "ledger: &LedgerWriter",
+      "inputs: CohortReadInputs<'_>",
+      "sources: &[OriginalCircuitEvaluationSourceV1]",
+      "training_binding: &super::binding::CandidateBinding",
+      "pairing: &OnPolicyPairingContractV1",
+      "current: u64"
+    ],
+    "current_blob": "304345f4adf17257385696a59945c3684215b774",
+    "donor_blob": "76f2a51ad5a246d715bc3c04a527c07dcb1a1362",
+    "new_types": [
+      "CohortReadInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "CohortReadInputs"
+    ],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 47,
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+    "line": 77,
+    "name": "require_original_member",
+    "current": [
+      "&self",
+      "registration: &OriginalCellEvaluationPanelRegistrationV1",
+      "task: &OriginalCellEvaluationPanelTaskV1",
+      "training: &LearningIterationSnapshotV1",
+      "scope: &FrozenLearningScopeV2",
+      "plan: &CellEvaluationPlanV1",
+      "training_evidence: &SignedLearningEvidenceV1",
+      "verifier: &LearningEvidenceVerifierV1"
+    ],
+    "donor": [
+      "&self",
+      "inputs: CohortMemberInputs<'_>"
+    ],
+    "current_blob": "3f35ff835cc669fab2e80a59b1fafdf868887e59",
+    "donor_blob": "0251265dad9e4687174914d9827ef7aa90bc5b8e",
+    "new_types": [
+      "CohortMemberInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "CohortMemberInputs"
+    ],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 1
+  },
+  {
+    "index": 48,
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs",
+    "line": 143,
+    "name": "require_original_member",
+    "current": [
+      "&self",
+      "registration: &OriginalCellEvaluationPanelRegistrationV1",
+      "task: &OriginalCellEvaluationPanelTaskV1",
+      "training: &LearningIterationSnapshotV1",
+      "scope: &FrozenLearningScopeV2",
+      "plan: &CellEvaluationPlanV1",
+      "training_evidence: &SignedLearningEvidenceV1",
+      "verifier: &LearningEvidenceVerifierV1"
+    ],
+    "donor": [
+      "&self",
+      "inputs: crate::circuit_on_policy_evaluation::CohortMemberInputs<'_>"
+    ],
+    "current_blob": "86ab44215e5ea3a5c0134221ccf1be8d2100917a",
+    "donor_blob": "29afc1665186d913d0ae25e25a1a96390da2bf18",
+    "new_types": [
+      "CohortMemberInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(crate)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 1
+  },
+  {
+    "index": 49,
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+    "line": 48,
+    "name": "assemble",
+    "current": [
+      "config: &OriginalCircuitEvaluationCohortConfigV1",
+      "ledger: &LedgerWriter",
+      "dataset: &DatasetSnapshotReceiptV3",
+      "records: &[LedgerRecord]",
+      "publications: &Publications",
+      "sources: &[OriginalCircuitEvaluationSourceV1]",
+      "training_binding: &super::binding::CandidateBinding",
+      "current: u64"
+    ],
+    "donor": [
+      "config: &OriginalCircuitEvaluationCohortConfigV1",
+      "ledger: &LedgerWriter",
+      "inputs: CohortReadInputs<'_>",
+      "sources: &[OriginalCircuitEvaluationSourceV1]",
+      "training_binding: &super::binding::CandidateBinding",
+      "current: u64"
+    ],
+    "current_blob": "f6860787be7c3548bf231f3dd22a4ec510cb69c7",
+    "donor_blob": "981884add618dc1cb1c159611526f379b821be90",
+    "new_types": [
+      "CohortReadInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "CohortReadInputs"
+    ],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 50,
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+    "line": 227,
+    "name": "read_episode",
+    "current": [
+      "config: &OriginalCircuitEvaluationCohortConfigV1",
+      "ledger: &LedgerWriter",
+      "requested: &OriginalCircuitEvaluationEpisodeV1",
+      "decisions: &BTreeMap<StableId, &'a AuthenticatedDecisionRecordV2>",
+      "outcomes: &BTreeMap<StableId, (&'a AuthenticatedOutcomeRecordV2, Digest32)>",
+      "publications: &'a Publications",
+      "sources: &[OriginalCircuitEvaluationSourceV1]",
+      "training: &super::binding::CandidateBinding",
+      "current: u64"
+    ],
+    "donor": [
+      "config: &OriginalCircuitEvaluationCohortConfigV1",
+      "ledger: &LedgerWriter",
+      "requested: &OriginalCircuitEvaluationEpisodeV1",
+      "records: EpisodeRecords<'_, 'a>",
+      "sources: &[OriginalCircuitEvaluationSourceV1]",
+      "training: &super::binding::CandidateBinding",
+      "current: u64"
+    ],
+    "current_blob": "f6860787be7c3548bf231f3dd22a4ec510cb69c7",
+    "donor_blob": "981884add618dc1cb1c159611526f379b821be90",
+    "new_types": [
+      "EpisodeRecords"
+    ],
+    "new_declarations_in_same_file": [
+      "EpisodeRecords"
+    ],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 51,
+    "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+    "line": 61,
+    "name": "recover_from_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "material: OriginalCellQ24MaterialReceiptConfigV1",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "expected: Option<(LearningIterationSnapshotV1, Digest32)>",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "transport: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "material: OriginalCellQ24MaterialReceiptConfigV1",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "expected: Option<(LearningIterationSnapshotV1, Digest32)>"
+    ],
+    "current_blob": "ac60ad5aa5d8bee9d0e1fbc2219007e7330222bc",
+    "donor_blob": "559ea5ddebbf799a09faf4394e67bd2ed255b558",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 52,
+    "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+    "line": 82,
+    "name": "bind_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "material: OriginalCellQ24MaterialReceiptConfigV1",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "timeout: Duration",
+      "lifetime: Duration",
+      "origin: Origin"
+    ],
+    "donor": [
+      "transport: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "material: OriginalCellQ24MaterialReceiptConfigV1",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "origin: Origin"
+    ],
+    "current_blob": "ac60ad5aa5d8bee9d0e1fbc2219007e7330222bc",
+    "donor_blob": "559ea5ddebbf799a09faf4394e67bd2ed255b558",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 53,
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+    "line": 235,
+    "name": "bind_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "context: OriginalCellQ24TrainingCommandContextV1",
+      "timeout: Duration",
+      "lifetime: Duration",
+      "execution_requested: bool",
+      "retained: Option<OriginalCellQ24TrainingCommandReceiptV1>"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "context: OriginalCellQ24TrainingCommandContextV1",
+      "execution_requested: bool",
+      "retained: Option<OriginalCellQ24TrainingCommandReceiptV1>"
+    ],
+    "current_blob": "d1c30d5e28bf859b71994ff7431e9469656bfebe",
+    "donor_blob": "4d6977b54bf5bbb8559f6b920f706377e4b7070a",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 54,
+    "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+    "line": 274,
+    "name": "recover_from_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "training: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "verifier: LearningEvidenceVerifierV1",
+      "training_evidence: SignedLearningEvidenceV1",
+      "expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "training: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "verifier: LearningEvidenceVerifierV1",
+      "training_evidence: SignedLearningEvidenceV1",
+      "expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>"
+    ],
+    "current_blob": "d93eec223199739b6ce892a0f2c083f1f8aca82e",
+    "donor_blob": "1cf70d99d132f710b26f9e2b2e2d9ea6897f7115",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 55,
+    "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+    "line": 297,
+    "name": "recover_from_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "selection: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "verifier: LearningEvidenceVerifierV1",
+      "training_evidence: SignedLearningEvidenceV1",
+      "selection_evidence: SignedLearningEvidenceV1",
+      "expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "selection: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "verifier: LearningEvidenceVerifierV1",
+      "training_evidence: SignedLearningEvidenceV1",
+      "selection_evidence: SignedLearningEvidenceV1",
+      "expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>"
+    ],
+    "current_blob": "8e74655b571bc5753f3d99707e1aeb4f532d7955",
+    "donor_blob": "d24a50357f946743932168d008f20b36bbaae558",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 56,
+    "path": "codex-rs/hepta-agentd/src/circuit_candidate_next_use_command.rs",
+    "line": 282,
+    "name": "bind_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "context: OriginalCircuitCandidateNextUseCommandContextV1",
+      "timeout: Duration",
+      "lifetime: Duration",
+      "execution_requested: bool",
+      "retained: Option<OriginalCircuitCandidateNextUseCommandReceiptV1>"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "context: OriginalCircuitCandidateNextUseCommandContextV1",
+      "execution_requested: bool",
+      "retained: Option<OriginalCircuitCandidateNextUseCommandReceiptV1>"
+    ],
+    "current_blob": "56eb9115e624cc217eac5244aa4edcfbcdfc5a7d",
+    "donor_blob": "28cbf3e953907bc6688e66592c3a363208dd51a0",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 57,
+    "path": "codex-rs/hepta-agentd/src/circuit_model_selection_command.rs",
+    "line": 212,
+    "name": "bind_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "context: OriginalCircuitCandidateLearningReadContextV1",
+      "timeout: Duration",
+      "lifetime: Duration",
+      "execution_requested: bool",
+      "retained: Option<OriginalCircuitModelSelectionCommandReceiptV1>"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "context: OriginalCircuitCandidateLearningReadContextV1",
+      "execution_requested: bool",
+      "retained: Option<OriginalCircuitModelSelectionCommandReceiptV1>"
+    ],
+    "current_blob": "4b13d5c5a814730b23cb08880499cd9336a77f82",
+    "donor_blob": "2f1823430157d32da8939ec9f216e500baaa7fbd",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 58,
+    "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+    "line": 119,
+    "name": "serve_role_commands",
+    "current": [
+      "&self",
+      "role: Role",
+      "stream: UnixStream",
+      "consumer: AgentdRootAuthorityPeer",
+      "consumer_uid: u32",
+      "original_consumer_pidfd: OwnedFd",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "&self",
+      "role: Role",
+      "input: crate::OriginalCellQ24NoUpdateTaskStreamV1"
+    ],
+    "current_blob": "58afc356fff945a5377c3556fa0ba79139d3fad6",
+    "donor_blob": "6ff22d2cf530ebe3834414d654c1dbc9adee5b9f",
+    "new_types": [
+      "OriginalCellQ24NoUpdateTaskStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 2
+  },
+  {
+    "index": 59,
+    "path": "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+    "line": 236,
+    "name": "bind_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "config: OriginalCellQ24MaterialReceiptConfigV1",
+      "role: Role",
+      "timeout: Duration",
+      "lifetime: Duration",
+      "readback_only: bool",
+      "expected: Option<OriginalCellQ24MaterialCommandReceiptV1>"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "config: OriginalCellQ24MaterialReceiptConfigV1",
+      "role: Role",
+      "readback_only: bool",
+      "expected: Option<OriginalCellQ24MaterialCommandReceiptV1>"
+    ],
+    "current_blob": "0d7cc45f2627da45790d3a3ad624661a03374948",
+    "donor_blob": "48a3ba4c3cb30c39a6fc381159a2154267817763",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 4
+  },
+  {
+    "index": 60,
+    "path": "codex-rs/hepta-agentd/src/cell_q24_material_source_connection.rs",
+    "line": 35,
+    "name": "from_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "initial: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "baseline: Arc<LoadedCellQ24ModelV1>",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "initial: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "baseline: Arc<LoadedCellQ24ModelV1>"
+    ],
+    "current_blob": "df63719d221d05dce9862d4a82af424043b71a61",
+    "donor_blob": "2f78d2029795f5691f0f28610f86adf1b815be77",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 3
+  },
+  {
+    "index": 61,
+    "path": "codex-rs/hepta-agentd/src/cell_q24_model_current_admission.rs",
+    "line": 20,
+    "name": "validate_current_material",
+    "current": [
+      "trainer: &mut CellQ24TrainingOwnerV1<T>",
+      "dataset_cut: &LearningIterationSnapshotV1",
+      "scope: Digest32",
+      "owner_binding: Digest32",
+      "training_cut: &LearningIterationSnapshotV1",
+      "training_attestation: &SignedLearningEvidenceV1",
+      "material: &OriginalCellEvaluationModelMaterialV1",
+      "now: u64"
+    ],
+    "donor": [
+      "trainer: &mut CellQ24TrainingOwnerV1<T>",
+      "dataset_cut: &LearningIterationSnapshotV1",
+      "binding: TrainingBindingInputs",
+      "training_cut: &LearningIterationSnapshotV1",
+      "training_attestation: &SignedLearningEvidenceV1",
+      "material: &OriginalCellEvaluationModelMaterialV1",
+      "now: u64"
+    ],
+    "current_blob": "3d6a689e30f8b82607ef051490deb91239cf1498",
+    "donor_blob": "9630c0bfe0b0b990ff8003839ddc4cb882120b98",
+    "new_types": [
+      "TrainingBindingInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "TrainingBindingInputs"
+    ],
+    "specialized": "pub(in super::super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 62,
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+    "line": 51,
+    "name": "from_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "initial: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "verifier: LearningEvidenceVerifierV1",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "initial: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "verifier: LearningEvidenceVerifierV1"
+    ],
+    "current_blob": "086a50cd688da7e06d4e290dabd56d68ff975e86",
+    "donor_blob": "de44a42479d34d4d2c927e936c84f48eec93f798",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 4
+  },
+  {
+    "index": 63,
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+    "line": 76,
+    "name": "recover_from_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "initial: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "verifier: LearningEvidenceVerifierV1",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "initial: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "verifier: LearningEvidenceVerifierV1"
+    ],
+    "current_blob": "086a50cd688da7e06d4e290dabd56d68ff975e86",
+    "donor_blob": "de44a42479d34d4d2c927e936c84f48eec93f798",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 4
+  },
+  {
+    "index": 64,
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+    "line": 101,
+    "name": "bind_initial",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "initial: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "verifier: LearningEvidenceVerifierV1",
+      "timeout: Duration",
+      "lifetime: Duration",
+      "origin: Origin"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "initial: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "verifier: LearningEvidenceVerifierV1",
+      "origin: Origin"
+    ],
+    "current_blob": "086a50cd688da7e06d4e290dabd56d68ff975e86",
+    "donor_blob": "de44a42479d34d4d2c927e936c84f48eec93f798",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 65,
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+    "line": 47,
+    "name": "from_original_stream",
+    "current": [
+      "stream: UnixStream",
+      "peer: LearningIterationEvidencePeerV1",
+      "original_owner_pidfd: OwnedFd",
+      "initial: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "verifier: LearningEvidenceVerifierV1",
+      "timeout: Duration",
+      "lifetime: Duration"
+    ],
+    "donor": [
+      "input: crate::OriginalCellQ24NoUpdatePeerStreamV1",
+      "initial: LearningIterationSnapshotV1",
+      "scope: FrozenLearningScopeV2",
+      "registration: OriginalCellEvaluationPanelRegistrationV1",
+      "verifier: LearningEvidenceVerifierV1"
+    ],
+    "current_blob": "06ff49a3a2984546e701edd9671e1aa6ec308066",
+    "donor_blob": "4f116c47616de12374b73fb33d896175a075e474",
+    "new_types": [
+      "OriginalCellQ24NoUpdatePeerStreamV1"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 4
+  },
+  {
+    "index": 66,
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+    "line": 12,
+    "name": "verify_pre_b_policy",
+    "current": [
+      "member: &Member",
+      "checked: &Checked",
+      "context: &Context",
+      "task: &crate::OriginalCellEvaluationPanelTaskV1",
+      "ledger: Digest32",
+      "snapshot_id: &StableId",
+      "outcome_watermark: u64",
+      "bytes: &[u8]"
+    ],
+    "donor": [
+      "member: &Member",
+      "checked: &Checked",
+      "context: &Context",
+      "task: &crate::OriginalCellEvaluationPanelTaskV1",
+      "dataset: PolicyDatasetInputs<'_>",
+      "bytes: &[u8]"
+    ],
+    "current_blob": "cc4887c0aa6a744fc0534756bbfe59d715208585",
+    "donor_blob": "7c14d495965a75d164465e9066ab8bf34220dd79",
+    "new_types": [
+      "PolicyDatasetInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "PolicyDatasetInputs"
+    ],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 67,
+    "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+    "line": 371,
+    "name": "publication",
+    "current": [
+      "member: &Member",
+      "context: &Context",
+      "bundle: &Bundle",
+      "execution_digest: Digest32",
+      "authentication: Digest32",
+      "publication: Digest32",
+      "disposition: u8",
+      "failed: &[StableId]",
+      "signatures: [&SignedLearningEvidenceV1; 3]"
+    ],
+    "donor": [
+      "member: &Member",
+      "context: &Context",
+      "bundle: &Bundle",
+      "digests: PublicationDigests",
+      "disposition: u8",
+      "failed: &[StableId]",
+      "signatures: [&SignedLearningEvidenceV1; 3]"
+    ],
+    "current_blob": "dffd0e383842eddd9ef3c1665c0c0f00e7ae8c18",
+    "donor_blob": "1614a54a99a9b10a765fa7b41cae95698ee7685b",
+    "new_types": [
+      "PublicationDigests"
+    ],
+    "new_declarations_in_same_file": [
+      "PublicationDigests"
+    ],
+    "specialized": "pub(super)",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  },
+  {
+    "index": 68,
+    "path": "codex-rs/hepta-agentd/src/production_post_a_c_recovery.rs",
+    "line": 22,
+    "name": "open_original_existing_task",
+    "current": [
+      "self",
+      "route: &OriginalPreparedPublicationRoute",
+      "identity: &AgentdIdentity",
+      "decision: &Decision",
+      "selected: &CellBackendManifestV2",
+      "baseline: Arc<LoadedCellQ24ModelV1>",
+      "owners: &OriginalCellQ24LearningStageOwnersV1",
+      "files: &mut OriginalFiles",
+      "cancelled: &CancellationToken"
+    ],
+    "donor": [
+      "self",
+      "selection: OriginalCTaskSelectionInputs<'_>",
+      "baseline: Arc<LoadedCellQ24ModelV1>",
+      "owners: &OriginalCellQ24LearningStageOwnersV1",
+      "files: &mut OriginalFiles",
+      "cancelled: &CancellationToken"
+    ],
+    "current_blob": "b5d7c80ddcf5f7f3da80c19cceab23b8cc7a0c2a",
+    "donor_blob": "50551f01aa95bd1ad21d41dc60a2216292c2f36d",
+    "new_types": [
+      "OriginalCTaskSelectionInputs"
+    ],
+    "new_declarations_in_same_file": [],
+    "specialized": "pub(in crate::production_launcher::post_a_q24) async",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 5
+  },
+  {
+    "index": 69,
+    "path": "codex-rs/hepta-agentd/src/production_post_a_c_task.rs",
+    "line": 140,
+    "name": "open_original_new_task",
+    "current": [
+      "self",
+      "route: &OriginalPreparedPublicationRoute",
+      "identity: &AgentdIdentity",
+      "decision: &Decision",
+      "selected: &CellBackendManifestV2",
+      "baseline: Arc<LoadedCellQ24ModelV1>",
+      "owners: &OriginalCellQ24LearningStageOwnersV1",
+      "receipt: &OriginalHistoricalTaskReadReceiptV1",
+      "files: &mut OriginalFiles",
+      "cancelled: &CancellationToken"
+    ],
+    "donor": [
+      "self",
+      "selection: OriginalCTaskSelectionInputs<'_>",
+      "baseline: Arc<LoadedCellQ24ModelV1>",
+      "owners: &OriginalCellQ24LearningStageOwnersV1",
+      "receipt: &OriginalHistoricalTaskReadReceiptV1",
+      "files: &mut OriginalFiles",
+      "cancelled: &CancellationToken"
+    ],
+    "current_blob": "b0d4dc82c9bf2fb856c87c75c1fb1411d8de6753",
+    "donor_blob": "50ce6228b032da9be8747488fe3ed580db1d3f81",
+    "new_types": [
+      "OriginalCTaskSelectionInputs"
+    ],
+    "new_declarations_in_same_file": [
+      "OriginalCTaskSelectionInputs"
+    ],
+    "specialized": "pub(super) async",
+    "overloads_in_donor": 1,
+    "match_largest_overlap": 6
+  }
+]

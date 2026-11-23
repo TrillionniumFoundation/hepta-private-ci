@@ -1,0 +1,42 @@
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs
+@@ -79,11 +79,10 @@
+         let sources = self.read_sources()?;
+         let inputs = records::assemble(
+             &self.config,
+-            &self.owners.ledger,
++            &self.owners,
+             &receipt,
+             &records,
+             &sources,
+-            &self.owners.sources,
+             &training,
+             started_at,
+         )?;
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs
+@@ -26,6 +26,7 @@
+ use super::Error;
+ use super::OriginalCircuitEvaluationCohortConfigV1;
+ use super::OriginalCircuitEvaluationEpisodeV1;
++use super::OriginalCircuitEvaluationSourceOwnersV1;
+ use super::OriginalCircuitEvaluationSourceV1;
+ use super::Publications;
+ use crate::CircuitTaskSourcePublicationV1;
+@@ -47,14 +48,14 @@
+ 
+ pub(super) fn assemble(
+     config: &OriginalCircuitEvaluationCohortConfigV1,
+-    ledger: &LedgerWriter,
++    OriginalCircuitEvaluationSourceOwnersV1 { ledger, sources }: &OriginalCircuitEvaluationSourceOwnersV1,
+     dataset: &DatasetSnapshotReceiptV3,
+     records: &[LedgerRecord],
+     publications: &Publications,
+-    sources: &[OriginalCircuitEvaluationSourceV1],
+     training_binding: &super::binding::CandidateBinding,
+     current: u64,
+ ) -> Result<TemporalComparisonInputsV1, Error> {
++    let sources = sources.as_slice();
+     let rule = &config.rule;
+     let expected: BTreeSet<_> = rule
+         .history

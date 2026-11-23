@@ -1,0 +1,117 @@
+--- a/codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs
++++ b/codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs
+@@ -4,11 +4,11 @@
+ 
+ use super::Error;
+ use super::OriginalCircuitOnPolicyCohortConfigV1;
+-use super::Publications;
+ use crate::CircuitTaskSourcePublicationV1;
+ use crate::OriginalCircuitEvaluationEpisodeV1;
+ use crate::OriginalCircuitEvaluationSourceV1;
+ use crate::circuit_learning_run_id_v1;
++pub(super) use crate::circuit_original_evaluation_provider::EpisodeRecords;
+ use crate::circuit_task::CircuitTaskPolicyProjectionV1;
+ use codex_hepta_intelligence_eval::OpeAction;
+ use codex_hepta_intelligence_eval::OpeRow;
+@@ -20,15 +20,6 @@
+ use codex_hepta_types::FixedQ32;
+ use codex_hepta_types::ProbabilityQ32;
+ use codex_hepta_types::StableId;
+-use std::collections::BTreeMap;
+-
+-/// Read-only lookup inputs; the original episode authentication follows unchanged.
+-pub(super) struct EpisodeRecords<'lookup, 'data> {
+-    pub(super) decisions: &'lookup BTreeMap<StableId, &'data AuthenticatedDecisionRecordV2>,
+-    pub(super) outcomes:
+-        &'lookup BTreeMap<StableId, (&'data AuthenticatedOutcomeRecordV2, Digest32)>,
+-    pub(super) publications: &'data Publications,
+-}
+ 
+ pub(super) struct Episode<'a> {
+     pub(super) decision: &'a AuthenticatedDecisionRecordV2,
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs
+@@ -20,6 +20,8 @@
+ use codex_hepta_intelligence_eval::TemporalComparisonInputsV1;
+ use codex_hepta_intelligence_eval::TemporalEvaluationError;
+ use codex_hepta_learning_artifacts::LearningIterationError;
++use codex_hepta_learning_ledger::AuthenticatedDecisionRecordV2;
++use codex_hepta_learning_ledger::AuthenticatedOutcomeRecordV2;
+ use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+ use codex_hepta_learning_ledger::ProductionLedgerError;
+ use codex_hepta_learning_ledger::SignedEvidenceError;
+@@ -79,6 +81,14 @@
+ }
+ 
+ type Publications = BTreeMap<StableId, CircuitTaskSourcePublicationV1>;
++
++/// Read-only lookup inputs; the original episode authentication follows unchanged.
++pub(crate) struct EpisodeRecords<'lookup, 'data> {
++    pub(crate) decisions: &'lookup BTreeMap<StableId, &'data AuthenticatedDecisionRecordV2>,
++    pub(crate) outcomes:
++        &'lookup BTreeMap<StableId, (&'data AuthenticatedOutcomeRecordV2, Digest32)>,
++    pub(crate) publications: &'data Publications,
++}
+ 
+ /// One observed cohort with its original owners retained. The only public
+ /// observations are metadata for freezing the original evaluation plan.
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs
+@@ -23,6 +23,7 @@
+ use codex_hepta_types::ProbabilityQ32;
+ use codex_hepta_types::StableId;
+ 
++use super::EpisodeRecords;
+ use super::Error;
+ use super::OriginalCircuitEvaluationCohortConfigV1;
+ use super::OriginalCircuitEvaluationEpisodeV1;
+@@ -123,9 +124,11 @@
+             config,
+             ledger,
+             requested,
+-            &decisions,
+-            &outcomes,
+-            publications,
++            EpisodeRecords {
++                decisions: &decisions,
++                outcomes: &outcomes,
++                publications,
++            },
+             sources,
+             training_binding,
+             current,
+@@ -161,9 +164,11 @@
+             config,
+             ledger,
+             &requested.episode,
+-            &decisions,
+-            &outcomes,
+-            publications,
++            EpisodeRecords {
++                decisions: &decisions,
++                outcomes: &outcomes,
++                publications,
++            },
+             sources,
+             training_binding,
+             current,
+@@ -228,13 +233,16 @@
+         config: &OriginalCircuitEvaluationCohortConfigV1,
+         ledger: &LedgerWriter,
+         requested: &OriginalCircuitEvaluationEpisodeV1,
+-        decisions: &BTreeMap<StableId, &'a AuthenticatedDecisionRecordV2>,
+-        outcomes: &BTreeMap<StableId, (&'a AuthenticatedOutcomeRecordV2, Digest32)>,
+-        publications: &'a Publications,
++        records: EpisodeRecords<'_, 'a>,
+         sources: &[OriginalCircuitEvaluationSourceV1],
+         training: &super::binding::CandidateBinding,
+         current: u64,
+     ) -> Result<Episode<'a>, Error> {
++        let EpisodeRecords {
++            decisions,
++            outcomes,
++            publications,
++        } = records;
+         let decision = *decisions
+             .get(&requested.episode_id)
+             .ok_or(Error::Binding("original Decision"))?;

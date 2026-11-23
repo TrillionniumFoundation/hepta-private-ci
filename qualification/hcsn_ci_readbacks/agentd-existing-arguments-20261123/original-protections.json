@@ -1,0 +1,727 @@
+{
+  "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+      "source_sha256": "50bc09e0b2b66be7c0bdc44ecae0e5ff9982bedde8c1d7a0f8600d82f57a5cc3",
+      "forbidden": [
+        "SigningKey",
+        ".drive_q24",
+        ".prediction_q24",
+        "ProbabilityQ32::from_raw",
+        "f64",
+        "f32",
+        "unwrap_or",
+        "if false"
+      ],
+      "required": [
+        "actual earlier historical outcome window",
+        "actual held-out baseline and observation window",
+        "one active original Outcome per episode",
+        "exact original policy and independent terminal Outcome"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn assemble(",
+          "sequence": [
+            "fn assemble(",
+            "for record in records",
+            "LedgerEvent::AuthenticatedDecisionV2",
+            "decisions.insert",
+            "LedgerEvent::AuthenticatedOutcomeV2",
+            "outcomes\n                    .insert",
+            "LedgerEvent::CreditBatchV2",
+            "credits.insert",
+            "decisions.keys()",
+            "!= expected",
+            "outcomes.keys()",
+            "!= expected",
+            "credit.outcome_id != outcome.outcome_id",
+            "Some(credit.terminal_outcome) != outcome.value",
+            "for requested in &rule.history",
+            "Episode::read_episode(",
+            "row.admitted_at < rule.history_start_unix_seconds",
+            "row.observed_at > rule.candidate_plan.fold.training_watermark",
+            "OutcomeTrainingSample",
+            "outcome: row.value",
+            "observed_at: row.observed_at",
+            "evidence_digest: row.evidence",
+            "for requested in &rule.targets",
+            "Episode::read_episode(",
+            "row.admitted_at < rule.candidate_plan.fold.evaluation_start",
+            "row.observed_at > rule.evaluation_end_unix_seconds",
+            "row.source.bundle_digest() != training_binding.baseline",
+            "require_arm(config, &row, candidate, training_binding.candidate)?",
+            "require_arm(config, &row, baseline, training_binding.baseline)?",
+            "candidate.input().operation_id == baseline.input().operation_id",
+            "CircuitTaskSourcePublicationV1::original_policy(candidate)?",
+            "CircuitTaskSourcePublicationV1::original_policy(baseline)?",
+            "decision_at: row.admitted_at",
+            "cluster_id: row.principal",
+            "Ok(TemporalComparisonInputsV1"
+          ],
+          "top_level": [
+            "for record in records",
+            "for requested in &rule.history",
+            "for requested in &rule.targets",
+            "Ok(TemporalComparisonInputsV1"
+          ]
+        },
+        {
+          "function": "fn require_arm(",
+          "sequence": [
+            "fn require_arm(",
+            "arm.bundle_digest() != bundle",
+            "left.scope.principal_digest != right.scope.principal_digest",
+            "left.observation != right.observation",
+            "left.source_frontier != right.source_frontier",
+            "left.ndu_snapshot_digest != right.ndu_snapshot_digest",
+            "left.objective_digest != right.objective_digest",
+            "left.candidates != right.candidates",
+            "behavior.source.original_record().objective_semantic_bytes",
+            "arm.original_record().objective_semantic_bytes",
+            "behavior\n            .source\n            .original_record()\n            .objective_function_v1_bytes",
+            "arm.original_record().objective_function_v1_bytes",
+            "admitted_at < config.rule.candidate_plan.fold.evaluation_start",
+            "admitted_at > config.rule.evaluation_end_unix_seconds",
+            "Ok(())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn observation(",
+          "sequence": [
+            "fn observation(",
+            "row.policy.entries().len() != evaluation.entries().len()",
+            "row.policy.entries().iter().zip(evaluation.entries())",
+            "behavior.candidate_id != evaluated.candidate_id",
+            "behavior.allowed != evaluated.allowed",
+            "behavior_probability: probability(behavior.probability_ppm)?",
+            "evaluation_probability: probability(evaluated.probability_ppm)?",
+            "predicted_outcome: FixedQ32::ZERO",
+            "chosen_action: row.decision.selected_candidate_id.clone()",
+            "finalized_outcome: Some(row.value)",
+            "outcome_observed_at: row.observed_at",
+            "outcome_evidence: row.evidence",
+            "outcome_model_evidence: Digest32::ZERO"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn probability(",
+          "sequence": [
+            "fn probability(",
+            "match ppm",
+            "0 => Ok(ProbabilityQ32::ZERO)",
+            "1_000_000 => Ok(ProbabilityQ32::ONE)",
+            "_ => Err(Error::Binding("
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn read_episode(",
+          "sequence": [
+            "fn read_episode(",
+            "circuit_learning_run_id_v1(",
+            "&owner.identity.agent_id",
+            "&requested.episode_id",
+            "CircuitTaskSourcePublicationV1::original_policy(source)?",
+            "let mut original_candidate_ids = policy\n            .entries()\n            .iter()\n            .map(|entry| entry.candidate_id.clone())\n            .collect::<Vec<_>>();\n        original_candidate_ids.sort();",
+            "source\n            .original_record()\n            .admission\n            .observed_at_unix_micros",
+            "outcome\n            .observed_at\n            .ok_or",
+            "outcome\n            .finalized_at\n            .ok_or",
+            "outcome\n            .value\n            .ok_or",
+            "original_run != requested.behavior_run_id",
+            "decision.record_id != requested.behavior_run_id",
+            "input.scope.run_id != requested.behavior_run_id",
+            "decision.run_snapshot_digest != input.ndu_snapshot_digest",
+            "decision.selected_candidate_id != *policy.selected()",
+            "decision.selected_propensity != ProbabilityQ32::ONE",
+            "decision.candidate_ids != original_candidate_ids",
+            "outcome.terminality != AuthenticatedOutcomeTerminality::Terminal",
+            "outcome.censoring_reason.is_some()",
+            "outcome.unit_profile_digest != config.rule.unit_profile_digest",
+            "outcome.expected_delay_profile_digest != config.rule.expected_delay_profile_digest",
+            "training.generator.principal().principal_id == outcome.observer_id",
+            "training.generator.controller_id() == &outcome.observer_controller_id",
+            "training.generator.principal().credential_chain_digest\n                == outcome.observer_credential_chain_digest",
+            "training.generator.principal().signing_key_digest\n                == outcome.observer_signing_key_digest",
+            "decision.generator_id == outcome.observer_id",
+            "decision.generator_controller_id == outcome.observer_controller_id",
+            "decision.generator_credential_chain_digest\n                == outcome.observer_credential_chain_digest",
+            "decision.generator_signing_key_digest == outcome.observer_signing_key_digest",
+            "admitted_at > observed_at",
+            "observed_at > outcome.latest_observable_at",
+            "outcome.latest_observable_at > finalized_at",
+            "finalized_at > current",
+            "!(FixedQ32::ZERO..=FixedQ32::ONE).contains(&value)",
+            "input.scope.principal_digest",
+            "ledger.binding_digest().as_array()",
+            "requested.episode_id.as_str().as_bytes()",
+            "Ok(Episode"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn read_episode(",
+          "sequence": [
+            "fn read_episode(",
+            "\n        config: &OriginalCircuitEvaluationCohortConfigV1,\n        ledger: &LedgerWriter,\n        requested: &OriginalCircuitEvaluationEpisodeV1,\n        decisions: &BTreeMap<StableId, &'a AuthenticatedDecisionRecordV2>,\n        outcomes: &BTreeMap<StableId, (&'a AuthenticatedOutcomeRecordV2, Digest32)>,\n        publications: &'a Publications,\n        sources: &[OriginalCircuitEvaluationSourceV1],\n        training: &super::binding::CandidateBinding,\n        current: u64,\n    ) -> Result<Episode<'a>, Error> {\n        let decision = *decisions\n            .get(&requested.episode_id)\n            .ok_or(Error::Binding(                   ))?;\n        let (outcome, evidence) = *outcomes\n            .get(&requested.episode_id)\n            .ok_or(Error::Binding(                  ))?;\n        let source = publications\n            .get(&requested.behavior_run_id)\n            .ok_or(Error::Binding(                        ))?;\n        let owner = sources\n            .iter()\n            .find(|owner| owner.run_id == requested.behavior_run_id)\n            .ok_or(Error::Binding(                          ))?;\n        let original_run =\n            circuit_learning_run_id_v1(ledger, &owner.identity.agent_id, &requested.episode_id)\n                .map_err(|_| Error::Binding(                                          ))?;\n        let policy = CircuitTaskSourcePublicationV1::original_policy(source)?;\n                                                                          \n                                                                          \n                                                                             \n        let mut original_candidate_ids = policy\n            .entries()\n            .iter()\n            .map(|entry| entry.candidate_id.clone())\n            .collect::<Vec<_>>();\n        original_candidate_ids.sort();\n        let input = source.input();\n        let admitted_at = source\n            .original_record()\n            .admission\n            .observed_at_unix_micros\n            .div_ceil(1_000_000);\n        let observed_at = outcome\n            .observed_at\n            .ok_or(Error::Binding(                               ))?;\n        let finalized_at = outcome\n            .finalized_at\n            .ok_or(Error::Binding(                                ))?;\n        let value = outcome\n            .value\n            .ok_or(Error::Binding(                                      ))?;\n        if original_run != requested.behavior_run_id\n            || decision.record_id != requested.behavior_run_id\n            || input.scope.run_id != requested.behavior_run_id\n            || source.original_record().snapshot.run_id != requested.behavior_run_id\n            || source.original_record().snapshot.objective_digest != config.rule.objective_digest\n            || input.objective_digest != config.rule.objective_digest\n            || decision.objective_digest != config.rule.objective_digest\n            || decision.run_snapshot_digest != input.ndu_snapshot_digest\n            || decision.selected_candidate_id != *policy.selected()\n            || decision.selected_propensity != ProbabilityQ32::ONE\n            || decision.candidate_ids != original_candidate_ids\n            || decision.candidate_completeness_digest.is_zero()\n            || decision.authentication_digest.is_zero()\n            || decision.support_digest.is_zero()\n            || outcome.authentication_digest.is_zero()\n            || outcome.support_digest.is_zero()\n            || outcome.terminality != AuthenticatedOutcomeTerminality::Terminal\n            || outcome.censoring_reason.is_some()\n            || outcome.unit_profile_digest != config.rule.unit_profile_digest\n            || outcome.expected_delay_profile_digest != config.rule.expected_delay_profile_digest\n            || training.generator.principal().principal_id == outcome.observer_id\n            || training.generator.controller_id() == &outcome.observer_controller_id\n            || training.generator.principal().credential_chain_digest\n                == outcome.observer_credential_chain_digest\n            || training.generator.principal().signing_key_digest\n                == outcome.observer_signing_key_digest\n            || decision.generator_id == outcome.observer_id\n            || decision.generator_controller_id == outcome.observer_controller_id\n            || decision.generator_credential_chain_digest\n                == outcome.observer_credential_chain_digest\n            || decision.generator_signing_key_digest == outcome.observer_signing_key_digest\n            || admitted_at == 0\n            || admitted_at > observed_at\n            || observed_at > outcome.latest_observable_at\n            || outcome.latest_observable_at > finalized_at\n            || finalized_at > current\n            || !(FixedQ32::ZERO..=FixedQ32::ONE).contains(&value)\n        {\n            return Err(Error::Binding(\n                                                                        ,\n            ));\n        }\n        let principal = StableId::new(format!(              , input.scope.principal_digest))\n            .map_err(|_| Error::Binding(                            ))?;\n        let lineage = StableId::new(format!(\n                        ,\n            Digest32::of_parts(&[\n                b                                                ,\n                ledger.binding_digest().as_array(),\n                requested.episode_id.as_str().as_bytes(),\n            ])\n        ))\n        .map_err(|_| Error::Binding(                          ))?;\n        Ok(Episode {\n            decision,\n            outcome,\n            evidence,\n            source,\n            policy,\n            value,\n            observed_at,\n            admitted_at,\n            principal,\n            lineage,\n        })\n    }"
+          ]
+        }
+      ]
+    }
+  ],
+  "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs": [
+    {
+      "required_function_order": [
+        {
+          "function": "fn read_original_material(",
+          "sequence": [
+            "fn read_original_material(",
+            "binding::authenticate_training(&self.config, started_at)?",
+            "started_at < self.config.rule.evaluation_end_unix_seconds",
+            "LedgerWriter::read_current_durable_snapshot(",
+            "before\n            .records()\n            .iter()\n            .any",
+            "record.event.record_id() == &self.config.training.request.source_run_id",
+            "dataset_freeze_signing_payload_v2(",
+            "self.config.verifier.verify(",
+            "LearningEvidenceRoleV1::Evaluator",
+            "verify_signed_role_separation(&training.generator, &evaluator, started_at)?",
+            "LedgerWriter::freeze_dataset(",
+            "receipt.snapshot.ledger_head_digest != before.head_digest",
+            "receipt.snapshot.pending_outcomes != 0",
+            "receipt.snapshot.censored_outcomes != 0",
+            "receipt.snapshot.source_record_digests.is_empty()",
+            "receipt.snapshot.source_record_digests.len() > 4096",
+            "LedgerWriter::read_dataset_records(",
+            "actual.sort_unstable()",
+            "if actual != receipt.snapshot.source_record_digests",
+            "let sources = self.read_sources()?",
+            "records::assemble(",
+            "self.rule_digest",
+            "self.config.registration.evaluation_profile()",
+            "self.config.training.head_digest",
+            "self.config.scope.binding()",
+            "self.owners.ledger.binding_digest()",
+            "self.owners.ledger.trust_distribution_digest()",
+            "before.head_digest",
+            "receipt.snapshot.dataset_digest",
+            "receipt.correction_cut_digest",
+            "receipt.revocation_cut_digest",
+            "&self.config.training_evidence, &self.config.freeze_evidence",
+            "evidence.signing_bytes()",
+            "full.extend_from_slice(&evidence.signature)",
+            "observed.publication_digest().as_array()",
+            "if self.read_sources()? != sources",
+            "LedgerWriter::read_current_durable_snapshot(",
+            "!= before",
+            "let fresh_now = clock()?",
+            "if fresh_now < started_at",
+            "binding::authenticate_training(&self.config, fresh_now)?",
+            "self.config.verifier.verify(",
+            "LearningEvidenceRoleV1::Evaluator",
+            "verify_signed_role_separation(&fresh_training.generator, &fresh_evaluator, fresh_now)?",
+            "LedgerWriter::freeze_dataset(",
+            "!= receipt",
+            "LedgerWriter::read_dataset_records(",
+            "self.last_observed_at = fresh_now",
+            "Ok(Materialized"
+          ],
+          "top_level": [
+            "let training = binding::authenticate_training",
+            "let before = LedgerWriter::read_current_durable_snapshot",
+            "let sources = self.read_sources()?",
+            "if self.read_sources()? != sources",
+            "let fresh_now = clock()?",
+            "if fresh_now < started_at",
+            "self.last_observed_at = fresh_now",
+            "Ok(Materialized"
+          ]
+        },
+        {
+          "function": "fn read_sources(",
+          "sequence": [
+            "fn read_sources(",
+            "for original in &self.owners.sources",
+            "CircuitTaskSourceReadbackV1::read_run_publication(",
+            "&original.source",
+            "&original.identity",
+            "&original.run_id",
+            "publication.input().scope.run_id != original.run_id",
+            "publication.original_record().snapshot.run_id != original.run_id",
+            "publication.input().objective_digest != self.config.rule.objective_digest",
+            "observed\n                    .insert(original.run_id.clone(), publication)\n                    .is_some()",
+            "!= self.config.rule.run_ids()",
+            "Ok(observed)"
+          ],
+          "top_level": [
+            "for original in &self.owners.sources"
+          ]
+        }
+      ],
+      "forbidden": [
+        "SigningKey",
+        "File::open",
+        "File::create",
+        "UnixStream",
+        "append_",
+        "unwrap_or",
+        "if false"
+      ],
+      "required": [
+        "B must use an independent original ledger domain",
+        "same original signed B freeze after all I/O"
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs"
+    }
+  ],
+  "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs": [
+    {
+      "required_function_order": [
+        {
+          "function": "fn read_original(",
+          "sequence": [
+            "fn read_original(",
+            "Self::read_original_with_clock(owners, config, now)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn read_original_with_clock(",
+          "sequence": [
+            "fn read_original_with_clock(",
+            "binding::validate_configuration(&owners, &config)?",
+            "manifest: None",
+            "dataset: None",
+            "last_observed_at: 0",
+            "let observed = owner.read_current_with_clock(clock)?",
+            "owner.manifest = Some(observed.manifest)",
+            "owner.dataset = Some(observed.dataset)",
+            "Ok(owner)"
+          ],
+          "top_level": [
+            "let rule_digest = binding::validate_configuration",
+            "let observed = owner.read_current_with_clock"
+          ]
+        },
+        {
+          "function": "fn into_final_holdout_provider(",
+          "sequence": [
+            "fn into_final_holdout_provider(",
+            "self,",
+            "binding::require_plan(&self, &plan)?",
+            "original: self",
+            "release_attempted: false",
+            "release_completed: false"
+          ],
+          "top_level": [
+            "binding::require_plan(&self, &plan)?"
+          ]
+        },
+        {
+          "function": "fn read_current_with_clock(",
+          "sequence": [
+            "fn read_current_with_clock(",
+            "if self.fenced",
+            "return Err(Error::Indeterminate)",
+            "self.fenced = true",
+            "let started_at = clock()?",
+            "if started_at < self.last_observed_at",
+            "return Err(Error::Binding(",
+            "OriginalCircuitEvaluationCohortV1::read_original_material(",
+            "expected != observed.manifest",
+            "expected != &observed.dataset",
+            "return Err(Error::Binding(",
+            "self.fenced = false",
+            "Ok(observed)"
+          ],
+          "top_level": [
+            "if self.fenced",
+            "self.fenced = true",
+            "let started_at = clock()?",
+            "if started_at < self.last_observed_at",
+            "self.fenced = false",
+            "Ok(observed)"
+          ]
+        },
+        {
+          "function": "fn authority(",
+          "sequence": [
+            "fn authority(",
+            "AuthorityPosture::DENY_ALL"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn manifest_digest(",
+          "sequence": [
+            "fn manifest_digest(",
+            "self.manifest_with_clock(now)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn release_after_consumption(",
+          "sequence": [
+            "fn release_after_consumption(",
+            "self.release_with_clock(receipt, now)"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn manifest_with_clock(",
+          "sequence": [
+            "fn manifest_with_clock(",
+            "if self.release_attempted",
+            "return Err(ProductProviderErrorV1::Indeterminate)",
+            "read_current_with_clock(clock)",
+            ".map(|observed| observed.manifest)",
+            ".map_err(provider_error)"
+          ],
+          "top_level": [
+            "if self.release_attempted"
+          ]
+        },
+        {
+          "function": "fn release_with_clock(",
+          "sequence": [
+            "fn release_with_clock(",
+            "if self.release_attempted",
+            "return Err(ProductProviderErrorV1::Indeterminate)",
+            "self.release_attempted = true",
+            "self.plan.product_plan().frozen_plan",
+            "receipt.disposition != HoldoutUseDispositionV1::Recorded",
+            "used.disposition != HoldoutUseDispositionV1::Recorded",
+            "receipt.sequence == 0",
+            "receipt.head_digest != receipt.record_digest",
+            "receipt.authority.grants_any()",
+            "used.authority.grants_any()",
+            "used.plan_id != plan.plan_id",
+            "used.plan_digest != plan.plan_digest",
+            "used.claim_scope != plan.claim_scope",
+            "used.candidate_id != plan.candidate_id",
+            "used.baseline_id != plan.baseline_id",
+            "used.objective_digest != plan.objective_digest",
+            "used.dataset_digest != plan.dataset_digest",
+            "used.estimand_digest != plan.estimand_digest",
+            "used.metric_contract_digest != plan.metric_contract_digest",
+            "used.final_holdout_window_id != plan.final_holdout_window_id",
+            "used.holdout_digest != plan.final_holdout_digest",
+            "used.registry_digest.is_zero()",
+            "used.use_digest.is_zero()",
+            "return Err(ProductProviderErrorV1::Rejected)",
+            "read_current_with_clock(clock)",
+            "if observed.manifest != plan.final_holdout_digest",
+            "return Err(ProductProviderErrorV1::Indeterminate)",
+            "self.release_completed = true",
+            "Ok(observed.inputs)"
+          ],
+          "top_level": [
+            "if self.release_attempted",
+            "self.release_attempted = true",
+            "if observed.manifest != plan.final_holdout_digest",
+            "self.release_completed = true",
+            "Ok(observed.inputs)"
+          ]
+        },
+        {
+          "function": "fn now(",
+          "sequence": [
+            "fn now(",
+            "SystemTime::now()",
+            ".duration_since(UNIX_EPOCH)",
+            ".map(|elapsed| elapsed.as_secs())"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn into_readback_only(",
+          "sequence": [
+            "self,",
+            "binding::require_plan(&self, &plan)?",
+            "OriginalCircuitEvaluationCohortReadbackV1::retaining(self, plan)",
+            "OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut readback)?",
+            "Ok(readback)"
+          ],
+          "top_level": [
+            "binding::require_plan(&self, &plan)?",
+            "OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut readback)?"
+          ]
+        },
+        {
+          "function": "fn into_original_readback(",
+          "sequence": [
+            "self,\n    )",
+            "if !self.release_completed || self.original.fenced",
+            "return Err(Error::Indeterminate)",
+            "OriginalCircuitEvaluationCohortReadbackV1::retaining(\n            self.original,\n            self.plan,\n        )"
+          ],
+          "top_level": [
+            "if !self.release_completed || self.original.fenced"
+          ]
+        }
+      ],
+      "forbidden": [
+        "SigningKey",
+        "File::open",
+        "File::create",
+        "UnixStream::connect",
+        "impl Clone for OriginalCircuitEvaluationCohortV1",
+        "Deserialize",
+        "pub owners:",
+        "pub config:",
+        "pub fn read_original_with_clock",
+        "pub fn read_current_with_clock",
+        "pub fn release_with_clock",
+        "pub fn reset",
+        "unwrap_or",
+        "if false"
+      ],
+      "required": [
+        "pub struct OriginalCircuitEvaluationCohortV1",
+        "owners: OriginalCircuitEvaluationSourceOwnersV1",
+        "config: OriginalCircuitEvaluationCohortConfigV1",
+        "manifest: Option<Digest32>",
+        "dataset: Option<DatasetSnapshotReceiptV3>",
+        "fenced: bool",
+        "pub struct OriginalCircuitFinalHoldoutProviderV1",
+        "release_attempted: bool",
+        "same exact original cohort and signatures",
+        "release_completed: bool"
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs"
+    }
+  ],
+  "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs": [
+    {
+      "required_function_order": [
+        {
+          "function": "fn read_episode(",
+          "sequence": [
+            "fn read_episode(",
+            "circuit_learning_run_id_v1(",
+            "&owner.identity.agent_id",
+            "&requested.episode_id",
+            "CircuitTaskSourcePublicationV1::original_policy(source)?",
+            "source\n            .original_record()\n            .admission\n            .observed_at_unix_micros",
+            "outcome\n            .observed_at\n            .ok_or",
+            "outcome\n            .finalized_at\n            .ok_or",
+            "outcome\n            .value\n            .ok_or",
+            "original_run != requested.behavior_run_id",
+            "decision.record_id != requested.behavior_run_id",
+            "input.scope.run_id != requested.behavior_run_id",
+            "decision.run_snapshot_digest != input.ndu_snapshot_digest",
+            "!CircuitTaskPolicyProjectionV1::checkpoint_before(&policy).is_zero()",
+            "decision.selected_candidate_id != *policy.selected()",
+            "decision.selected_propensity != ProbabilityQ32::ONE",
+            "decision.candidate_ids\n                != policy\n                    .entries()",
+            "outcome.terminality != AuthenticatedOutcomeTerminality::Terminal",
+            "outcome.censoring_reason.is_some()",
+            "outcome.unit_profile_digest != config.rule.unit_profile_digest",
+            "outcome.expected_delay_profile_digest != config.rule.expected_delay_profile_digest",
+            "training.generator.principal().principal_id == outcome.observer_id",
+            "training.generator.controller_id() == &outcome.observer_controller_id",
+            "training.generator.principal().credential_chain_digest\n                == outcome.observer_credential_chain_digest",
+            "training.generator.principal().signing_key_digest\n                == outcome.observer_signing_key_digest",
+            "decision.generator_id == outcome.observer_id",
+            "decision.generator_controller_id == outcome.observer_controller_id",
+            "decision.generator_credential_chain_digest\n                == outcome.observer_credential_chain_digest",
+            "decision.generator_signing_key_digest == outcome.observer_signing_key_digest",
+            "admitted_at > observed_at",
+            "observed_at > outcome.latest_observable_at",
+            "outcome.latest_observable_at > finalized_at",
+            "finalized_at > current",
+            "!(FixedQ32::ZERO..=FixedQ32::ONE).contains(&value)",
+            "config.rule.source_input(&requested.behavior_run_id)?",
+            "input.scope != expected.scope",
+            "input.source_frontier != expected.source_frontier",
+            "input.objective_digest != expected.objective_digest",
+            "input.ndu_snapshot_digest != expected.ndu_snapshot_digest",
+            "input.monotonic_micros != expected.monotonic_micros",
+            "input.deadline_micros != expected.deadline_micros",
+            "input.observation != expected.observation",
+            "input.candidates != expected.candidates",
+            "config.rule.protocol.require_publication(source)?",
+            "input.scope.principal_digest",
+            "super::binding::episode_lineage(ledger, &requested.episode_id)?",
+            "Ok(Episode"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn probability(",
+          "sequence": [
+            "fn probability(",
+            "match ppm",
+            "0 => Ok(ProbabilityQ32::ZERO)",
+            "1_000_000 => Ok(ProbabilityQ32::ONE)",
+            "_ => Err(Error::Binding("
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn observation(",
+          "sequence": [
+            "for behavior in row.policy.entries()",
+            "behavior_probability: probability(behavior.probability_ppm)?",
+            "evaluation_probability: probability(behavior.probability_ppm)?",
+            "predicted_outcome: FixedQ32::ZERO",
+            "decision_id: row.decision.record_id.clone()",
+            "chosen_action: row.decision.selected_candidate_id.clone()",
+            "finalized_outcome: Some(row.value)",
+            "outcome_observed_at: row.observed_at",
+            "outcome_evidence: row.evidence",
+            "outcome_model_evidence: Digest32::ZERO"
+          ],
+          "top_level": []
+        }
+      ],
+      "forbidden": [
+        "SigningKey",
+        ".drive_q24",
+        ".prediction_q24",
+        "ProbabilityQ32::from_raw",
+        "f64",
+        "f32",
+        "unwrap_or",
+        "if false",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "CellQ24FeatureWorkerV1::new",
+        "shared_worker(",
+        "into_worker(",
+        "PublishedCircuitFeatureTaskV1::",
+        "FinalUseGrant",
+        "with_root_learning_stage_owners"
+      ],
+      "required": [
+        "pub(super) struct Episode",
+        "exact original policy and independent terminal Outcome"
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs"
+    }
+  ],
+  "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs": [
+    {
+      "required_function_order": [
+        {
+          "function": "fn assemble(",
+          "sequence": [
+            "rule\n        .history\n        .iter()\n        .map(|row| row.episode.episode_id.clone())",
+            "rule.pairs.iter().flat_map",
+            "row.candidate.episode_id.clone(),\n                row.baseline.episode_id.clone()",
+            "for record in records",
+            "LedgerEvent::AuthenticatedDecisionV2",
+            "decisions.insert",
+            "LedgerEvent::AuthenticatedOutcomeV2",
+            "outcomes",
+            "LedgerEvent::CreditBatchV2",
+            "credits.insert",
+            "decisions.keys().cloned().collect::<BTreeSet<_>>() != expected",
+            "outcomes.keys().cloned().collect::<BTreeSet<_>>() != expected",
+            "credit.outcome_id != outcome.outcome_id",
+            "Some(credit.terminal_outcome) != outcome.value",
+            "for requested in &rule.history",
+            "Episode::read_episode(",
+            "row.admitted_at < rule.history_start_unix_seconds",
+            "row.observed_at > rule.candidate_plan.fold.training_watermark",
+            "row.source.bundle_digest() != training_binding.baseline",
+            "outcome: row.value",
+            "observed_at: row.observed_at",
+            "evidence_digest: row.evidence",
+            "for requested in &rule.pairs",
+            "pairing\n            .pairs\n            .iter()\n            .find(|pair| pair.pair_id == requested.pair_id)",
+            "Episode::read_episode(",
+            "&requested.candidate",
+            "Episode::read_episode(",
+            "&requested.baseline",
+            "left.decision.record_id == right.decision.record_id",
+            "left.outcome.outcome_id == right.outcome.outcome_id",
+            "left.evidence == right.evidence",
+            "left.source.input().operation_id == right.source.input().operation_id",
+            "left.source.publication_digest() == right.source.publication_digest()",
+            "left.source.history_digest() == right.source.history_digest()",
+            "left.principal != right.principal",
+            "left.source.bundle_digest() != training_binding.candidate",
+            "right.source.bundle_digest() != training_binding.baseline",
+            "append_arm(\n            &mut candidate,\n            &left,\n            pair",
+            "append_arm(\n            &mut baseline,\n            &right,\n            pair",
+            "Ok(OnPolicyTemporalComparisonInputsV1"
+          ],
+          "top_level": [
+            "for record in records",
+            "for requested in &rule.history",
+            "for requested in &rule.pairs",
+            "Ok(OnPolicyTemporalComparisonInputsV1"
+          ]
+        },
+        {
+          "function": "fn append_arm(",
+          "sequence": [
+            "row.admitted_at < evaluation_start",
+            "row.observed_at > evaluation_end",
+            "row\n            .outcome\n            .finalized_at\n            .is_none_or(|at| at > evaluation_end)",
+            "!CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy).is_zero()",
+            "super::episode::observation(row)?",
+            "decision_id: row.decision.record_id.clone()",
+            "principal_lineage: row.principal.clone()",
+            "episode_lineage: row.lineage.clone()",
+            "decision_at: row.admitted_at",
+            "actions: row.decision.candidate_ids.clone()",
+            "cluster_id: row.principal.clone()",
+            "OnPolicyArmProvenanceV1",
+            "behavior_run_id: row.source.input().scope.run_id.clone()",
+            "model_digest: row.source.bundle_digest()",
+            "input_digest: pair.input_digest",
+            "protocol_digest: pair.protocol_digest",
+            "checkpoint_before: CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy)",
+            "source_evidence_digest: row.source.publication_digest()",
+            "execution_evidence_digest: history_digest(row.source.history_digest())?"
+          ],
+          "top_level": []
+        },
+        {
+          "function": "fn history_digest(",
+          "sequence": [
+            "value\n        .as_str()\n        .parse::<Digest32>()",
+            "if digest.is_zero()",
+            "return Err(Error::Binding(",
+            "Ok(digest)"
+          ],
+          "top_level": []
+        }
+      ],
+      "forbidden": [
+        "SigningKey",
+        "LearningEvidenceVerifierV1::new",
+        "UnixStream::connect",
+        "File::open",
+        "File::create",
+        "CellQ24FeatureWorkerV1::new",
+        "shared_worker(",
+        "into_worker(",
+        "PublishedCircuitFeatureTaskV1::",
+        "FinalUseGrant",
+        "with_root_learning_stage_owners",
+        "if false",
+        "unwrap_or",
+        ".drive_q24",
+        ".prediction_q24",
+        "ProbabilityQ32::from_raw",
+        "f32",
+        "f64",
+        "cluster_id: pair",
+        "cluster_id: row.lineage"
+      ],
+      "required": [
+        "one active original Outcome per episode",
+        "OnPolicyTemporalComparisonInputsV1",
+        "source_evidence_digest: row.source.publication_digest()",
+        "execution_evidence_digest: history_digest(row.source.history_digest())?"
+      ],
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs"
+    }
+  ]
+}

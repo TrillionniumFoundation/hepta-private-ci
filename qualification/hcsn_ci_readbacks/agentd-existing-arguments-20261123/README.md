@@ -1,0 +1,31 @@
+# Existing private argument types in the Agentd strict diagnostics
+
+The fixed baseline is c12ee03f3185d5a13949faca54f066dfd634e509. The previous three-crate all-targets strict result had 115 diagnostics. This inventory concerns all 69 too-many-arguments findings in 54 Agentd files. The historical comparison source is 24abd04c825cb0d5d0ce27b52ac5008eda13dde4. Each pair in signature-pair.json binds both Git file blobs, the Rust function and both argument lists. The 9,141 baseline Rust files under codex-rs were separately checked for the 27 argument types appearing only in the donor signatures. Five type names already existed, covering 16 diagnostics. Fourteen involve Q24 task or peer streams, one concerns authority registration or enrollment, and one uses three borrowed lookups. The other 53 donor edits rely on types absent from this baseline. The inventory does not rule out alternate source designs for those 53. verify_census.py accepts a normal Git repository containing both commits.
+
+## Existing original evaluation source owners
+
+The independent source-only candidate c21e7d47d05772e21562460f53baf9f8746737b7 uses the existing OriginalCircuitEvaluationSourceOwnersV1 in the private records::assemble function. The unchanged source type contains exactly the ledger and the sources vector. Previously the sole caller separately borrowed those two fields of the same owner. The function now pattern-destructures one shared borrow in its signature and takes the original shared slice before the previous body. It gains no writable access and retains the same ledger, source list, data arguments and freshness time. Neither source set nor admission state is changed. The source type and its crate visibility are unchanged. This two-file change reduces the argument count from eight to seven. The code from the first rule lookup to EOF is byte-identical. The released closure tests passed 16/16 on each measured local source. The signed source manifest, existing tests, original qualification and total gate status are separate evidence.
+
+## Existing three immutable episode lookups
+
+The separate three-file lookup.patch is a source-level proposal associated with diagnostic 50. It relocates the already existing EpisodeRecords type from one private sibling into their shared provider module, changes its Rust visibility to pub(crate), binds the same three borrowed facts in both historical and held-out calls, and unpacks them before any episode work. No type method is added. The construction fields become visible to more code inside the crate, while the two modules remain private to the crate. The on-policy consumer retains its narrower re-export. The shared reader's executable body from its first Decision lookup and the on-policy Episode implementation are byte-identical. This proposal has not been accepted by the released product verifier.
+
+Released protected_file rows retain a 5,791-character function binding for read_episode. Both original suites contained eight cases. The old source passed 16/16. The lookup proposal on the unmodified verifier passed 13/16, with source errors in the original independent-outcome join, policy projection and arm provenance tests. They failed on the required function binding before all negative mutations could execute. The archived source-specific 5329441a qualification documents why the original private signature was chosen and which independent facts it protects. No formal guard, production caller, authority input or manifest has been updated.
+
+An evidence-only replay projects only the changed records file through the exact inverse of a SHA-bound Rust patch, then invokes the released protected-file predicate. It leaves the direct boundary predicates and all other source checks intact. In this proposed view the original 16 tests pass. The released predicate accepted the valid inputs 178 times in both baseline and projected suites. Each rejected 626 altered inputs. The projected suite accounts for 42 released rejections after projection and 584 direct rejections. Separately verify_argument_boundary.py recovers the exact c12 Git blobs for all modified files and rejects 20 additional changed lookup or authority representations and seven owner changes. The result measures those named changes. It does not qualify the lookup proposal for use with the original released manifest.
+
+The original protected records file has declared SHA256 50bc09e0b2b66be7c0bdc44ecae0e5ff9982bedde8c1d7a0f8600d82f57a5cc3. It matches the c12 source. The whole-file candidate hashes are 15ba674626033669302c3d8f01bbe080d1bd9edc7c3c21e55617214c1c90e3d2 for the owner edit and 4b396d7e366e2cc717b399d170fdbbf5312e44883763d7dcc605a1dc42c90d4e for the lookups. The released verifier checks required markers, order and exclusions and does not read this per-row source_sha256 field. In the unmodified baseline, 57 of the 58 such fields match their physical files. The one preceding mismatch is independently identified in source-hash-context.json. No prior source receipt was rebound to make these edits appear to match.
+
+## Replay
+
+Use a checkout of c12 containing both Git commit objects for the census. The lookup suite creates a temporary fixture, using hard links on a shared filesystem and physical copies otherwise. Use --temp-dir to select its location. No production source or manifest is edited. The archived raw and projected modes are distinct.
+
+```sh
+python verify_census.py /path/to/repository
+python verify_argument_boundary.py /path/to/c12
+python replay_lookup_negative_suites.py /path/to/c12 base
+python replay_lookup_negative_suites.py /path/to/c12 raw
+python replay_lookup_negative_suites.py /path/to/c12 proposal
+```
+
+The initial hosted owner job pair 45154868159 exited 127 when the diagnostic preparation script invoked unavailable rg. Its two jobs did not compile or execute the selected 33 Rust cases. The corrected run 45155293939 uses the Ubuntu runner's standard grep and separately checks the complete set of four harness-only files. Its source arms are the identical c12 and c21 commits from before this harness correction. The official daemon on the separate fe386 fixed-format source is a distinct run with its own evidence.
