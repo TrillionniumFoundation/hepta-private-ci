@@ -1,0 +1,36 @@
+{
+  "archive_bytes": 289720969,
+  "archive_member_count": 109,
+  "archive_sha256": "14f7d0cf986c244e63f93351f404a28997abc0ff6df5b77c04f3aba0a4c96a5e",
+  "child_processes": {
+    "codex": {
+      "bytes": 567401776,
+      "machine": "x86-64",
+      "sha256": "bfe734b5f125062912d26b405e1a0c4f115eb2d374fdb66b6b7bb8da701d9200"
+    },
+    "hepta-joint-propose": {
+      "bytes": 1451896,
+      "machine": "x86-64",
+      "sha256": "2b01c0175706727c2bceac3763e864f25111a62dc2a680af77aac30cad041c01"
+    }
+  },
+  "ignored": 171,
+  "manifest": {
+    "agentd-lib.tar.zst": "e4fc5fcf9c49baec19fd906b51b225997f0645a60607bedbf32a83c517f7b06a",
+    "codex": "bfe734b5f125062912d26b405e1a0c4f115eb2d374fdb66b6b7bb8da701d9200",
+    "hepta-joint-propose": "2b01c0175706727c2bceac3763e864f25111a62dc2a680af77aac30cad041c01",
+    "nextest-version.txt": "5c2764053db8c4d8203c610667ee5dbecfeca1af742b15d0324d5c4a727ab012",
+    "source-list.json": "07cbb02d201b6bc0aad18292e40b22ebeb0a6b767896ef613fcb536a2f5088a1"
+  },
+  "native_test_binary": {
+    "target/debug/deps/codex_hepta_agentd-b4c8313925a9a1c1": {
+      "bytes": 597827464,
+      "machine": "x86-64",
+      "sha256": "1a635fa32c9dbc47bdc015db44cdcc7f011b5ff6f6a0fa3918d043757b8cc933"
+    }
+  },
+  "native_tool": "cargo-nextest 0.9.111 (342aa1788 2025-11-04)",
+  "roster_size": 1723,
+  "selected": 1552,
+  "source": "c12ee03f3185d5a13949faca54f066dfd634e509"
+}
