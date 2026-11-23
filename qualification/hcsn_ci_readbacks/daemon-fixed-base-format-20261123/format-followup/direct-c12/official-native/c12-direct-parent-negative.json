@@ -1,0 +1,186 @@
+{
+  "archive_bytes": 18170178,
+  "archive_sha256": "ddf16083372d026c657405349f7738c3dbb59cf0261159ebc3c2cc1adcb4ffb4",
+  "source": "c12ee03f3185d5a13949faca54f066dfd634e509",
+  "run": 45138928116,
+  "snapshots": {
+    "checkout": {
+      "commit": "c12ee03f3185d5a13949faca54f066dfd634e509",
+      "files": 59142,
+      "inventory_sha256": "3a81a15b4dc236ea6430213118e2406a99f3949298942e57c651efc14be3b32d",
+      "status": "",
+      "tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c",
+      "physical_tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c"
+    },
+    "before-tests": {
+      "commit": "c12ee03f3185d5a13949faca54f066dfd634e509",
+      "files": 59142,
+      "inventory_sha256": "3a81a15b4dc236ea6430213118e2406a99f3949298942e57c651efc14be3b32d",
+      "status": "",
+      "tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c",
+      "physical_tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c"
+    },
+    "after-tests": {
+      "commit": "c12ee03f3185d5a13949faca54f066dfd634e509",
+      "files": 59142,
+      "inventory_sha256": "3a81a15b4dc236ea6430213118e2406a99f3949298942e57c651efc14be3b32d",
+      "status": "",
+      "tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c",
+      "physical_tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c"
+    },
+    "final": {
+      "commit": "c12ee03f3185d5a13949faca54f066dfd634e509",
+      "files": 59142,
+      "inventory_sha256": "3a81a15b4dc236ea6430213118e2406a99f3949298942e57c651efc14be3b32d",
+      "status": "",
+      "tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c",
+      "physical_tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c"
+    }
+  },
+  "cases": {
+    "ordinary": {
+      "xml": {
+        "passed": 2849
+      },
+      "test_count": 2849,
+      "required_euid": 1001,
+      "seconds": 1355.0612695470002,
+      "old_case_ids_absent": [],
+      "new_case_ids": [],
+      "source_tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c"
+    },
+    "root": {
+      "xml": {
+        "passed": 68
+      },
+      "test_count": 68,
+      "required_euid": 0,
+      "seconds": 45.003683144000206,
+      "old_case_ids_absent": [],
+      "new_case_ids": [],
+      "source_tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c"
+    }
+  },
+  "stages": {
+    "source-closure": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 263912,
+      "log_sha256": "ac38a2ddcd9cc83f2d3215c4cc49b2c9b8c13ff24b005db6a03a28f524dfbc84"
+    },
+    "helper-build": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 206,
+      "log_sha256": "b6ff48c8663cf577557de5959a3a0597344f998e4440a349b7a8d836a4794e84"
+    },
+    "ordinary": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 1885894,
+      "log_sha256": "8ff5585c0f7e04f359be3653ad2c23d73143d5dd5b3f1fdafb13ccee1a71bb8b"
+    },
+    "root-setup": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 65,
+      "log_sha256": "712e700c7a9fad23f6d0720e9995b0a533304859102f1b465999e7d035cebc18"
+    },
+    "root": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 129889,
+      "log_sha256": "ead0f9d1442b773f5a1325d538f45743644bc8ba2eae840f073a47b1d8bcbd41"
+    },
+    "helper-verification": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 1462,
+      "log_sha256": "42134294c65a3b547253b9fd9ceab7d993e34f4d6d3bd5187e6cb61cb20b9e15"
+    },
+    "fix": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 191453,
+      "log_sha256": "2ecf6a3941c6ca6f6ffe3e273656b17b0df8bbfda9d91790da1d1ccbb458cd07"
+    },
+    "fmt": {
+      "code": 2,
+      "timed_out": false,
+      "log_bytes": 273,
+      "log_sha256": "151b04b64f55954a2c333a4fd282155d858e1696590f90030a27fd8fe52f9c64"
+    },
+    "root-unmount-witness-bind": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "root-unmount-bind": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "qualification": {
+    "failed": true,
+    "maintenance_complete": false,
+    "maintenance_started": true,
+    "source_sha": "c12ee03f3185d5a13949faca54f066dfd634e509"
+  },
+  "ordinary_original_owner_coverage": [
+    202,
+    true
+  ],
+  "helpers": {
+    "hepta-joint-propose": {
+      "bytes": 1451840,
+      "sha256": "375a47755f0d303ea4adcf2eabb77d057c6a379d4b2fa274a9563447e56ba884",
+      "package": "codex-hepta-infer-worker-host"
+    },
+    "codex": {
+      "bytes": 567537624,
+      "sha256": "b1c1848ac69077c49beea96f9b58baa2ed276d3259c0afb6bd4dca79ccf479be",
+      "package": "codex-cli"
+    }
+  },
+  "maintenance": {
+    "complete": false,
+    "paths": [],
+    "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "postimage_bytes": 0
+  },
+  "driver_error": {
+    "error": "fmt failed; retained raw log and execution record"
+  },
+  "caller": {
+    "archive_bytes": 62437,
+    "archive_sha256": "79aee5e189fcb34c671ed22aeac82fb412a7616618110cb2b7bc3d0dcd3e3cd9",
+    "source_before_after": {
+      "head": "c12ee03f3185d5a13949faca54f066dfd634e509",
+      "status": "",
+      "tree": "9554ddb1b5cca7502b58b7bacfc446671fe5289c"
+    },
+    "original_inventory": {
+      "boundaries": 1652,
+      "privilegedInventory": 1652,
+      "protectedFiles": 826,
+      "rustFilesScanned": 9141
+    },
+    "stages": {
+      "self-test": {
+        "code": 0,
+        "log_bytes": 48,
+        "log_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+        "timed_out": false
+      },
+      "verify": {
+        "code": 0,
+        "log_bytes": 770005,
+        "log_sha256": "2de991230d84e60c8d440278ceb189e0f4111ce8b7c200a934ffc7a31257d6c3",
+        "timed_out": false
+      }
+    }
+  }
+}

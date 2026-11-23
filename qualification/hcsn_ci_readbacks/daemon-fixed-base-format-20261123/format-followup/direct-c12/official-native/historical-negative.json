@@ -1,0 +1,145 @@
+{
+  "archive_bytes": 18171364,
+  "archive_sha256": "0e0596308ecaffd28175048843c78ae7d5a37b26c00e3b76bffb0d09909fd6fc",
+  "source": "e3277e9677688be5c4c235a7a127f0b51e373399",
+  "run": 45130787310,
+  "snapshots": {
+    "checkout": {
+      "commit": "e3277e9677688be5c4c235a7a127f0b51e373399",
+      "files": 59142,
+      "inventory_sha256": "e06eae401e9d7a0fb3e0cf3ef6e56448f889003eb95d2177e885d8e8893143cb",
+      "status": "",
+      "tree": "19a310dd5b8b26553bb88efc7360e9cb3f29af47",
+      "physical_tree": "19a310dd5b8b26553bb88efc7360e9cb3f29af47"
+    },
+    "before-tests": {
+      "commit": "e3277e9677688be5c4c235a7a127f0b51e373399",
+      "files": 59142,
+      "inventory_sha256": "e06eae401e9d7a0fb3e0cf3ef6e56448f889003eb95d2177e885d8e8893143cb",
+      "status": "",
+      "tree": "19a310dd5b8b26553bb88efc7360e9cb3f29af47",
+      "physical_tree": "19a310dd5b8b26553bb88efc7360e9cb3f29af47"
+    },
+    "after-tests": {
+      "commit": "e3277e9677688be5c4c235a7a127f0b51e373399",
+      "files": 59142,
+      "inventory_sha256": "e06eae401e9d7a0fb3e0cf3ef6e56448f889003eb95d2177e885d8e8893143cb",
+      "status": "",
+      "tree": "19a310dd5b8b26553bb88efc7360e9cb3f29af47",
+      "physical_tree": "19a310dd5b8b26553bb88efc7360e9cb3f29af47"
+    },
+    "final": {
+      "commit": "e3277e9677688be5c4c235a7a127f0b51e373399",
+      "files": 59142,
+      "inventory_sha256": "e06eae401e9d7a0fb3e0cf3ef6e56448f889003eb95d2177e885d8e8893143cb",
+      "status": "",
+      "tree": "19a310dd5b8b26553bb88efc7360e9cb3f29af47",
+      "physical_tree": "19a310dd5b8b26553bb88efc7360e9cb3f29af47"
+    }
+  },
+  "cases": {
+    "ordinary": {
+      "xml": {
+        "passed": 2849
+      },
+      "test_count": 2849,
+      "required_euid": 1001,
+      "seconds": 1363.830155099,
+      "old_case_ids_absent": [],
+      "new_case_ids": [],
+      "source_tree": "19a310dd5b8b26553bb88efc7360e9cb3f29af47"
+    },
+    "root": {
+      "xml": {
+        "passed": 68
+      },
+      "test_count": 68,
+      "required_euid": 0,
+      "seconds": 47.14472531499996,
+      "old_case_ids_absent": [],
+      "new_case_ids": [],
+      "source_tree": "19a310dd5b8b26553bb88efc7360e9cb3f29af47"
+    }
+  },
+  "stages": {
+    "source-closure": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 263912,
+      "log_sha256": "6ad1ca6ef4c54657907f3bee29716a23820a863631be330a0c92bff1f42eb030"
+    },
+    "helper-build": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 206,
+      "log_sha256": "b6ff48c8663cf577557de5959a3a0597344f998e4440a349b7a8d836a4794e84"
+    },
+    "ordinary": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 1886048,
+      "log_sha256": "1fd0376d661f7295f664549165028f2dbccad3e7a970ebf0959a7aabd0915ace"
+    },
+    "root-setup": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 65,
+      "log_sha256": "3f1a2bf78f1841b62438e84e8ebf93eba70a643823108edc84a1cb702bd5ae6b"
+    },
+    "root": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 130463,
+      "log_sha256": "3ea6bed45950a76e7fd7bd36208d7dad7c947552855bd4bd1ca1eb5608c674db"
+    },
+    "helper-verification": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 1462,
+      "log_sha256": "d5493400b88591199fbe68e4ea6ee6c766f1ce101150e667299ea1df54325670"
+    },
+    "fix": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 197627,
+      "log_sha256": "33d43082f043a6ce3fdec7cd219e6bb0cfe9eeeaae19b6de2b1c2c98a74fc233"
+    },
+    "fmt": {
+      "code": 2,
+      "timed_out": false,
+      "log_bytes": 273,
+      "log_sha256": "151b04b64f55954a2c333a4fd282155d858e1696590f90030a27fd8fe52f9c64"
+    },
+    "root-unmount-witness-bind": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "root-unmount-bind": {
+      "code": 0,
+      "timed_out": false,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "qualification": {
+    "failed": true,
+    "maintenance_complete": false,
+    "maintenance_started": true,
+    "source_sha": "e3277e9677688be5c4c235a7a127f0b51e373399"
+  },
+  "ordinary_original_owner_coverage": [
+    202,
+    true
+  ],
+  "maintenance": {
+    "complete": false,
+    "paths": [],
+    "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "postimage_bytes": 0
+  },
+  "driver_error": {
+    "error": "fmt failed; retained raw log and execution record"
+  }
+}
