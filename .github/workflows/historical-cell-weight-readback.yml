@@ -5,7 +5,7 @@ on:
       - research/historical-four-arm-transfer-20261123
     paths:
       - qualification/historical-four-arm-transfer-20261123/independent.py
-      - qualification/historical-four-arm-transfer-20261123/models.zip
+      - qualification/historical-four-arm-transfer-20261123/models.zip.part*
       - qualification/historical-four-arm-transfer-20261123/cold.zip
       - .github/workflows/historical-cell-weight-readback.yml
 permissions:
@@ -28,7 +28,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          unzip -q "$STUDY/models.zip" -d "$RUNNER_TEMP/models"
+          cat "$STUDY/models.zip.part1" "$STUDY/models.zip.part2" > "$RUNNER_TEMP/models.zip"
+          echo "28b46e1f84215a0f3554f737930bab93e1d46f890445b14eda61abdb7b32b327  $RUNNER_TEMP/models.zip" | sha256sum --check --status
+          unzip -q "$RUNNER_TEMP/models.zip" -d "$RUNNER_TEMP/models"
           unzip -q "$STUDY/cold.zip" -d "$RUNNER_TEMP/cold"
           python "$STUDY/independent.py" "$RUNNER_TEMP/models" "$RUNNER_TEMP/cold" > "$RUNNER_TEMP/independent.json"
           python - "$RUNNER_TEMP/independent.json" <<'PY'

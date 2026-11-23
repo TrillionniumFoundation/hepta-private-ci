@@ -39,7 +39,9 @@
 ```sh
 study=qualification/historical-four-arm-transfer-20261123
 work=$(mktemp -d)
-unzip -q "$study/models.zip" -d "$work/models"
+cat "$study/models.zip.part1" "$study/models.zip.part2" > "$work/models.zip"
+echo "28b46e1f84215a0f3554f737930bab93e1d46f890445b14eda61abdb7b32b327  $work/models.zip" | sha256sum --check
+unzip -q "$work/models.zip" -d "$work/models"
 unzip -q "$study/cold.zip" -d "$work/cold"
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python "$study/independent.py" "$work/models" "$work/cold" > "$work/independent.json"
 ```
