@@ -131,6 +131,12 @@ fn empty_result_rejects_nonzero_reserved_word() {
 }
 
 #[test]
+#[should_panic(expected = "reserved response is nonzero")]
+fn unwritten_empty_response_cannot_masquerade_as_done() {
+    let _ = validate_response(POSITIVE, 0, 0, 0, false, &[0xA5; OUTPUT_BYTES]);
+}
+
+#[test]
 #[should_panic(expected = "terminal event before the final example")]
 fn negative_unmatched_event_cannot_finish_early() {
     let _ = validate_response(NEGATIVE, 2, 0, 0, false, &frame([DONE, 1, 0, 0]));
