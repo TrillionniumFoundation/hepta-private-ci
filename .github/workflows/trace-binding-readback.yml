@@ -1,0 +1,38 @@
+name: Cold-read historical trace bindings and file delivery
+on:
+  push:
+    branches:
+      - research/trace-binding-controls-20261123
+    paths:
+      - qualification/trace-binding-controls-20261123/verify.py
+      - .github/workflows/trace-binding-readback.yml
+permissions:
+  contents: read
+jobs:
+  readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'numpy==2.3.5'
+      - name: Refit, cold-load every arm, write and independently verify full files
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo env HEPTA_CI_NET=sudo OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 "$(which python)" \
+            qualification/trace-binding-controls-20261123/verify.py qualification/historical-four-arm-transfer-20261123 \
+            --retain-known "$RUNNER_TEMP/Blank.txt"
+          seq 99 99 999999999 | sha256sum > "$RUNNER_TEMP/reference-sum.txt"
+          test "$(cut -d' ' -f1 "$RUNNER_TEMP/reference-sum.txt")" = "$(sha256sum "$RUNNER_TEMP/Blank.txt" | cut -d' ' -f1)"
+          xz -c -3 "$RUNNER_TEMP/Blank.txt" > "$RUNNER_TEMP/Blank.txt.xz"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: verified-public-arithmetic-file
+          path: |
+            ${{ runner.temp }}/Blank.txt.xz
+            ${{ runner.temp }}/reference-sum.txt
+          compression-level: 0
+          retention-days: 14
