@@ -98,5 +98,55 @@
         "source_xml_sha256": "56127fd55b6506a7b3a26d368d2c06e38dbb68dfee8626b4f93544e5d050226d"
       }
     ]
+  },
+  {
+    "file": "codec-original-environment.zip",
+    "sha256": "312a34336b1e70303dae376cd16fb679d47f7b3f801246ee63ffe2344b5b6bff",
+    "source_objects": [
+      "100644 blob 9bf1ee45be9065fc94907d921cde0204b16b8d55\t.bazelrc",
+      "100644 blob 2053e58f84ffb753aa02c9fb11325141b48f2648\tcodex-rs/ext/queue/src/service.rs",
+      "100644 blob 1a0f07cdaaf637478000e4b6af5793a52d7f8a8d\tcodex-rs/ext/queue/tests/queue_service.rs",
+      "100644 blob c47affc3fb218a52d7815956d632348e11017513\tcodex-rs/hooks/src/engine/command_runner.rs"
+    ],
+    "attempts": [
+      {
+        "phase": "first",
+        "head": "53275fc9d8952d5845a735b23eac90232f8c7404",
+        "status": "ok",
+        "passed": 39,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0,
+        "elapsed": 51.97,
+        "four": {
+          "caller_abort_after_core_started_keeps_exact_authority_until_persistence": "ok",
+          "core_error_after_started_never_releases_ambiguous_dispatch": "ok",
+          "explicitly_started_rejected_queue_messages_remain_durable": "ok",
+          "rejected_queue_messages_remain_durable_and_block_followups": "ok"
+        },
+        "case_set_sha256": "153af4c73d69ab13bb35bc7d5c979b7608bc28ef21a2256b630b3f0b053e547b",
+        "source_log_sha256": "734521d6b738e7c89b366ab19300ea02c72ee99a375a75354fa7a55fd3b4607f",
+        "source_xml_sha256": "5b96e41ee736f543125d89e164c3cc7032f161db350c8c77f535fd92851a5193"
+      },
+      {
+        "phase": "second",
+        "head": "53275fc9d8952d5845a735b23eac90232f8c7404",
+        "status": "ok",
+        "passed": 39,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0,
+        "elapsed": 52.23,
+        "four": {
+          "caller_abort_after_core_started_keeps_exact_authority_until_persistence": "ok",
+          "core_error_after_started_never_releases_ambiguous_dispatch": "ok",
+          "explicitly_started_rejected_queue_messages_remain_durable": "ok",
+          "rejected_queue_messages_remain_durable_and_block_followups": "ok"
+        },
+        "case_set_sha256": "153af4c73d69ab13bb35bc7d5c979b7608bc28ef21a2256b630b3f0b053e547b",
+        "source_log_sha256": "10f09ccc25407d4593c205b999d8a5a533d945ff1fc7afdf9b17a8ec039f31af",
+        "source_xml_sha256": "f7f30c1e6a1dec829e18d64e4f3d363011ecb2c58017c795c91f15dda725c723"
+      }
+    ]
   }
 ]
