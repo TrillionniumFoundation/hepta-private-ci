@@ -1,0 +1,102 @@
+[
+  {
+    "file": "6996-unmodified-repeats.zip",
+    "sha256": "ba5f8bf8b6ea5fedb73a241d1284c8419085294d52a468397d68cfdbc8facfa2",
+    "source_objects": [
+      "100644 blob b24e4947bba62d231db9b223402f30672cb76c32\t.bazelrc",
+      "100644 blob 2053e58f84ffb753aa02c9fb11325141b48f2648\tcodex-rs/ext/queue/src/service.rs",
+      "100644 blob 9b7dfb593aac7f5d9bf03f4a296c990694e15f54\tcodex-rs/ext/queue/tests/queue_service.rs",
+      "100644 blob c47affc3fb218a52d7815956d632348e11017513\tcodex-rs/hooks/src/engine/command_runner.rs"
+    ],
+    "attempts": [
+      {
+        "phase": "first",
+        "head": "889802d81fb37f1b5e2355c4913574be2b6a6ea0",
+        "status": "FAILED",
+        "passed": 35,
+        "failed": 4,
+        "ignored": 0,
+        "filtered": 0,
+        "elapsed": 53.41,
+        "four": {
+          "caller_abort_after_core_started_keeps_exact_authority_until_persistence": "FAILED",
+          "core_error_after_started_never_releases_ambiguous_dispatch": "FAILED",
+          "explicitly_started_rejected_queue_messages_remain_durable": "FAILED",
+          "rejected_queue_messages_remain_durable_and_block_followups": "FAILED"
+        },
+        "case_set_sha256": "153af4c73d69ab13bb35bc7d5c979b7608bc28ef21a2256b630b3f0b053e547b",
+        "source_log_sha256": "fa083b181d9c7a8afaef6771224aa79c583b33de6979f88f91e92fd3bcd17e03",
+        "source_xml_sha256": "447e3f21fbd8f20ccc996ad14251381cddec8070f17177c2da57a9da75c827e3"
+      },
+      {
+        "phase": "second",
+        "head": "889802d81fb37f1b5e2355c4913574be2b6a6ea0",
+        "status": "FAILED",
+        "passed": 35,
+        "failed": 4,
+        "ignored": 0,
+        "filtered": 0,
+        "elapsed": 53.61,
+        "four": {
+          "caller_abort_after_core_started_keeps_exact_authority_until_persistence": "FAILED",
+          "core_error_after_started_never_releases_ambiguous_dispatch": "FAILED",
+          "explicitly_started_rejected_queue_messages_remain_durable": "FAILED",
+          "rejected_queue_messages_remain_durable_and_block_followups": "FAILED"
+        },
+        "case_set_sha256": "153af4c73d69ab13bb35bc7d5c979b7608bc28ef21a2256b630b3f0b053e547b",
+        "source_log_sha256": "2368521fce4c0c53816f9fbe634825b34cbc3b484368d71998d03493284278d4",
+        "source_xml_sha256": "a8dce10756ce6b999f56da6d79e2f09c4b0a737fe9e49d1772f3bd1b282ba233"
+      }
+    ]
+  },
+  {
+    "file": "6996-observed-phases.zip",
+    "sha256": "1f038216771320d9ae9c9e7300008b26eabae4b4755282526944ee227ce189b4",
+    "source_objects": [
+      "100644 blob b24e4947bba62d231db9b223402f30672cb76c32\t.bazelrc",
+      "100644 blob 2053e58f84ffb753aa02c9fb11325141b48f2648\tcodex-rs/ext/queue/src/service.rs",
+      "100644 blob af4b7d33178f76a60eaf0898c854dd68cb7426b0\tcodex-rs/ext/queue/tests/queue_service.rs",
+      "100644 blob c47affc3fb218a52d7815956d632348e11017513\tcodex-rs/hooks/src/engine/command_runner.rs"
+    ],
+    "attempts": [
+      {
+        "phase": "first",
+        "head": "b13c920763a1aad801bfdc94e0d5db9650dc2228",
+        "status": "FAILED",
+        "passed": 35,
+        "failed": 4,
+        "ignored": 0,
+        "filtered": 0,
+        "elapsed": 61.73,
+        "four": {
+          "caller_abort_after_core_started_keeps_exact_authority_until_persistence": "FAILED",
+          "core_error_after_started_never_releases_ambiguous_dispatch": "FAILED",
+          "explicitly_started_rejected_queue_messages_remain_durable": "FAILED",
+          "rejected_queue_messages_remain_durable_and_block_followups": "FAILED"
+        },
+        "case_set_sha256": "153af4c73d69ab13bb35bc7d5c979b7608bc28ef21a2256b630b3f0b053e547b",
+        "source_log_sha256": "0593a476e9c659d3cfffb41bf3c4ba7b755e06292f0534863b6e9c07cf759608",
+        "source_xml_sha256": "b4d56b47d08f072eb113eedb2bd90fea57f273576fa17a7ba9d838ab865707e4"
+      },
+      {
+        "phase": "second",
+        "head": "b13c920763a1aad801bfdc94e0d5db9650dc2228",
+        "status": "FAILED",
+        "passed": 35,
+        "failed": 4,
+        "ignored": 0,
+        "filtered": 0,
+        "elapsed": 52.14,
+        "four": {
+          "caller_abort_after_core_started_keeps_exact_authority_until_persistence": "FAILED",
+          "core_error_after_started_never_releases_ambiguous_dispatch": "FAILED",
+          "explicitly_started_rejected_queue_messages_remain_durable": "FAILED",
+          "rejected_queue_messages_remain_durable_and_block_followups": "FAILED"
+        },
+        "case_set_sha256": "153af4c73d69ab13bb35bc7d5c979b7608bc28ef21a2256b630b3f0b053e547b",
+        "source_log_sha256": "54426ac00380eecba6a9e2b3866e5173e2db35dfaed90302b6ec946e3221cf96",
+        "source_xml_sha256": "56127fd55b6506a7b3a26d368d2c06e38dbb68dfee8626b4f93544e5d050226d"
+      }
+    ]
+  }
+]
