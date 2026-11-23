@@ -1,0 +1,53 @@
+{
+  "scope": "Original Windows shard 4/4. Repeated final log lines, Bazel attempts and replays do not count as independent positive qualifications. Other attempt failures are listed separately.",
+  "four_original_cases": [
+    "restricted_tokens_select_stable_routes_and_cleanup",
+    "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+    "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+    "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+  ],
+  "jobs": [
+    {
+      "run": 45110023804,
+      "job": 137481302886,
+      "source": "de4ef594bfefec05a64fc2ae3b717a640a57b263",
+      "gha_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "job_conclusion": "failure",
+      "reported_other_failing_cases": [],
+      "diagnostics": {
+        "private_desktop_required": true,
+        "elevated_backend_unqualified": true
+      },
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45110023804/job/137481302886"
+    },
+    {
+      "run": 45115542852,
+      "job": 137503935193,
+      "source": "de944cb80e0104c28383aee6ec55b9a43f23606b",
+      "gha_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "job_conclusion": "failure",
+      "reported_other_failing_cases": [
+        "suite::cli_stream::responses_mode_stream_cli_supports_openai_base_url_config_override",
+        "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context"
+      ],
+      "diagnostics": {
+        "private_desktop_required": true,
+        "elevated_backend_unqualified": true
+      },
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45115542852/job/137503935193"
+    },
+    {
+      "run": 45120356546,
+      "job": 137513221713,
+      "source": "a4ff555f72833160e24217ecb57612d3943db2cd",
+      "gha_name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "job_conclusion": "failure",
+      "reported_other_failing_cases": [],
+      "diagnostics": {
+        "private_desktop_required": true,
+        "elevated_backend_unqualified": true
+      },
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45120356546/job/137513221713"
+    }
+  ]
+}

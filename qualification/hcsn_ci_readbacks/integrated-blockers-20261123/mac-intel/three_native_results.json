@@ -1,0 +1,71 @@
+{
+  "pr6999": {
+    "artifact": 14789902347,
+    "execution": {
+      "runner": "darwin-sandbox",
+      "exit": 0,
+      "args": [
+        "external/bazel_tools/tools/test/test-setup.sh",
+        "codex-rs/hepta-agentd/hepta-agentd-five_agent_rolling_upgrade-test"
+      ]
+    },
+    "native_failure_log_hashes": {},
+    "binary_objects": {
+      "bazel-out/darwin_x86_64-fastbuild/bin/codex-rs/hepta-agentd/hepta-agentd-five_agent_rolling_upgrade-test": {
+        "hash": "2400c119995ddf9abda0d9378af5134870757b0a0ce8088499756226a8f94e62",
+        "bytes": 98851512
+      },
+      "bazel-out/darwin_x86_64-fastbuild/bin/codex-rs/hepta-agentd/codex-hepta-agentd": {
+        "hash": "639e2e6851d026b29e5f2c66eec7614fd8f5484f543a24fe74db352e5438dbf6",
+        "bytes": 441541848
+      }
+    }
+  },
+  "pr7005": {
+    "artifact": 14791994823,
+    "execution": {
+      "runner": "darwin-sandbox",
+      "exit": 101,
+      "args": [
+        "external/bazel_tools/tools/test/test-setup.sh",
+        "codex-rs/hepta-agentd/hepta-agentd-five_agent_rolling_upgrade-test"
+      ]
+    },
+    "native_failure_log_hashes": {
+      "log": "a354cc75ec86a00850a594df24252b64e261e3c3b9af20c06f3556e779fee458",
+      "xml": "050b3eb10af9c59742b2dfadd9e592862eeec83ebea57981382123ce6d6f2425"
+    },
+    "binary_objects": {
+      "bazel-out/darwin_x86_64-fastbuild/bin/codex-rs/hepta-agentd/codex-hepta-agentd": {
+        "hash": "3bb9836e01261e18ce4f63393a46f65e4145d66b72992ca1ea18c20ff7aa9fc3",
+        "bytes": 441541840
+      },
+      "bazel-out/darwin_x86_64-fastbuild/bin/codex-rs/hepta-agentd/hepta-agentd-five_agent_rolling_upgrade-test": {
+        "hash": "f3cdd934b765745cdea306313d1a4214821136b0dd635820a2de8912601727ab",
+        "bytes": 98851568
+      }
+    }
+  },
+  "pr7009": {
+    "artifact": 14794131217,
+    "execution": {
+      "runner": "darwin-sandbox",
+      "exit": 0,
+      "args": [
+        "external/bazel_tools/tools/test/test-setup.sh",
+        "codex-rs/hepta-agentd/hepta-agentd-five_agent_rolling_upgrade-test"
+      ]
+    },
+    "native_failure_log_hashes": {},
+    "binary_objects": {
+      "bazel-out/darwin_x86_64-fastbuild/bin/codex-rs/hepta-agentd/codex-hepta-agentd": {
+        "hash": "05b58f74632aa13b7674db5b10a823bcaf0349e338f6b4fca9bd9474a9570c12",
+        "bytes": 441541840
+      },
+      "bazel-out/darwin_x86_64-fastbuild/bin/codex-rs/hepta-agentd/hepta-agentd-five_agent_rolling_upgrade-test": {
+        "hash": "5dec56c4f45db24af7b8e6f8e11914a9c6c355f4c3b62185dc997393fbb43321",
+        "bytes": 98851520
+      }
+    }
+  }
+}
