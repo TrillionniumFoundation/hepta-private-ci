@@ -7,9 +7,9 @@ use std::sync::Mutex;
 use std::sync::PoisonError;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
+use std::time::Duration;
+use std::time::SystemTime;
 
-use chrono::DateTime;
-use chrono::Utc;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS;
 use codex_extension_api::EphemeralModelInputContributor;
@@ -134,16 +134,16 @@ fn extension(backend: Arc<FakeBackend>) -> TestExtension {
     )
 }
 
-fn timestamp(seconds: i64) -> DateTime<Utc> {
-    DateTime::from_timestamp(seconds, 0).expect("valid timestamp")
+fn timestamp(seconds: u64) -> SystemTime {
+    SystemTime::UNIX_EPOCH + Duration::from_secs(seconds)
 }
 
 fn candidate(thread_id: &str, summary: &str) -> Stage1RecallCandidate {
     Stage1RecallCandidate {
         thread_id: ThreadId::try_from(thread_id).expect("valid thread id"),
-        source_updated_at: timestamp(10),
+        source_updated_at: timestamp(10).into(),
         rollout_summary: summary.to_string(),
-        generated_at: timestamp(20),
+        generated_at: timestamp(20).into(),
     }
 }
 
@@ -735,7 +735,7 @@ async fn missing_error_and_timeout_backends_are_typed_and_digest_only() {
 #[tokio::test]
 async fn invalid_source_time_and_empty_candidate_fail_closed_without_attachment() {
     let mut backwards = candidate(THREAD_ID, "rust");
-    backwards.generated_at = timestamp(5);
+    backwards.generated_at = timestamp(5).into();
     for (response, expected) in [
         (
             FakeBackendResponse::Candidate(Some(backwards)),
