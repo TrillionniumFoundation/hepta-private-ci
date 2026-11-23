@@ -1,0 +1,105 @@
+{
+  "local_bp": {
+    "changed": [
+      "transformer.h.1.attn.c_attn.bias",
+      "transformer.h.1.attn.c_attn.weight",
+      "transformer.h.1.attn.c_proj.bias",
+      "transformer.h.1.attn.c_proj.weight",
+      "transformer.h.1.ln_1.bias",
+      "transformer.h.1.ln_1.weight",
+      "transformer.h.1.ln_2.bias",
+      "transformer.h.1.ln_2.weight",
+      "transformer.h.1.mlp.c_fc.bias",
+      "transformer.h.1.mlp.c_fc.weight",
+      "transformer.h.1.mlp.c_proj.bias",
+      "transformer.h.1.mlp.c_proj.weight"
+    ],
+    "identical_original_tensors": 16,
+    "added": []
+  },
+  "direct": {
+    "changed": [],
+    "identical_original_tensors": 28,
+    "added": [
+      "lm_head.weight"
+    ]
+  },
+  "write_only": {
+    "changed": [
+      "transformer.h.0.attn.c_attn.bias",
+      "transformer.h.0.attn.c_attn.weight",
+      "transformer.h.0.attn.c_proj.bias",
+      "transformer.h.0.attn.c_proj.weight",
+      "transformer.h.0.ln_1.bias",
+      "transformer.h.0.ln_1.weight",
+      "transformer.h.0.ln_2.bias",
+      "transformer.h.0.ln_2.weight",
+      "transformer.h.0.mlp.c_fc.bias",
+      "transformer.h.0.mlp.c_fc.weight",
+      "transformer.h.0.mlp.c_proj.bias",
+      "transformer.h.0.mlp.c_proj.weight",
+      "transformer.h.1.attn.c_attn.bias",
+      "transformer.h.1.attn.c_attn.weight",
+      "transformer.h.1.attn.c_proj.bias",
+      "transformer.h.1.attn.c_proj.weight",
+      "transformer.h.1.ln_1.bias",
+      "transformer.h.1.ln_1.weight",
+      "transformer.h.1.ln_2.bias",
+      "transformer.h.1.ln_2.weight",
+      "transformer.h.1.mlp.c_fc.bias",
+      "transformer.h.1.mlp.c_fc.weight",
+      "transformer.h.1.mlp.c_proj.bias",
+      "transformer.h.1.mlp.c_proj.weight",
+      "transformer.ln_f.bias",
+      "transformer.ln_f.weight",
+      "transformer.wpe.weight",
+      "transformer.wte.weight"
+    ],
+    "identical_original_tensors": 0,
+    "added": []
+  },
+  "trajectory": {
+    "changed": [
+      "transformer.h.0.attn.c_attn.bias",
+      "transformer.h.0.attn.c_attn.weight",
+      "transformer.h.0.attn.c_proj.bias",
+      "transformer.h.0.attn.c_proj.weight",
+      "transformer.h.0.ln_1.bias",
+      "transformer.h.0.ln_1.weight",
+      "transformer.h.0.ln_2.bias",
+      "transformer.h.0.ln_2.weight",
+      "transformer.h.0.mlp.c_fc.bias",
+      "transformer.h.0.mlp.c_fc.weight",
+      "transformer.h.0.mlp.c_proj.bias",
+      "transformer.h.0.mlp.c_proj.weight",
+      "transformer.h.1.attn.c_attn.bias",
+      "transformer.h.1.attn.c_attn.weight",
+      "transformer.h.1.attn.c_proj.bias",
+      "transformer.h.1.attn.c_proj.weight",
+      "transformer.h.1.ln_1.bias",
+      "transformer.h.1.ln_1.weight",
+      "transformer.h.1.ln_2.bias",
+      "transformer.h.1.ln_2.weight",
+      "transformer.h.1.mlp.c_fc.bias",
+      "transformer.h.1.mlp.c_fc.weight",
+      "transformer.h.1.mlp.c_proj.bias",
+      "transformer.h.1.mlp.c_proj.weight",
+      "transformer.ln_f.bias",
+      "transformer.ln_f.weight",
+      "transformer.wpe.weight",
+      "transformer.wte.weight"
+    ],
+    "identical_original_tensors": 0,
+    "added": []
+  },
+  "frozen": {
+    "changed": [],
+    "identical_original_tensors": 28,
+    "added": []
+  },
+  "retrieval": {
+    "changed": [],
+    "identical_original_tensors": 28,
+    "added": []
+  }
+}
