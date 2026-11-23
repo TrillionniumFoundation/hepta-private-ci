@@ -1,0 +1,1676 @@
+{
+  "agreement": {
+    "dev": {
+      "actions_equal": 24,
+      "max_reported_float_error": 2.220446049250313e-16,
+      "min_absolute_margin_exact": true,
+      "sources_equal": 6
+    },
+    "test": {
+      "actions_equal": 32,
+      "max_reported_float_error": 1.1102230246251565e-16,
+      "min_absolute_margin_exact": true,
+      "sources_equal": 8
+    },
+    "third_cohort": {
+      "actions_equal": 48,
+      "max_reported_float_error": 1.1102230246251565e-16,
+      "min_absolute_margin_exact": true,
+      "sources_equal": 12
+    },
+    "train": {
+      "actions_equal": 32,
+      "max_reported_float_error": 1.1102230246251565e-16,
+      "min_absolute_margin_exact": true,
+      "sources_equal": 8
+    }
+  },
+  "edit_l1": "196611861/250000000",
+  "edit_nonzero": 10,
+  "inputs_sha256": {
+    "archive_manifest.json": "f6d9d2a961e57d8d0e4be363c7feb250e6384737f3e3502568bc0c449c94bfb0",
+    "audio.npz": "f4d1cd97b64b80cd8dfee99b61d6bf5b6caa2c5bbe8e66d66251e7e33f660480",
+    "camera.npz": "c72730270654a850e5c5939e327d24eeae3d6d2a04eec3fda349f8f83f14e5fb",
+    "fit.json": "5ab2265238dd1085e26e6c57bc2cf3f3d0f5a70b7128d30efe0eb546231a51de",
+    "media/features/dev.npz": "0d9e0768b672bd3f50eb9a06acfaad3343a5ee0a87e46e265dcf639ba8cadee7",
+    "media/features/test.npz": "b29b87d68199fe8318dd4b9635f9e8645da457f6025cc3cc1ff304c44cd4a8cf",
+    "media/features/train.npz": "0348be0f0f768ce7aef0083f40fd8439a317a8e21dd8c1743b998ff24dd70ccf",
+    "media/roster/dev.json": "6b74b25bd5f424277f07a9d05c2d0da89daaf373a98e97741762502f0fb73a3a",
+    "media/roster/test.json": "ba285c079e2c6b01f5d8254b65508d40fb776d6f22d696506903c46bebd34505",
+    "media/roster/train.json": "895d9f345cfdadb6556d2721060a84ea6e731fa87cf6553805dd5e4b6fc84720",
+    "media/semantic/dev.npz": "6ad09598f5fc555a08f48f6d1275c342db34339fb50ff13de8284c4a3d00be5e",
+    "media/semantic/test.npz": "0ddca4fff414559ff99b9cb9ed7c595f0beca41cd63f102dd9ec20a49749f019",
+    "media/semantic/train.npz": "943bbea74ce19fc6de95ba15d9d29a9bbe9547518161bc6a39d38e5f94b33bcc",
+    "primary/discovery/front_weights.json": "8feca0900f68d8041a963b449b8b641f1d8b9bf747ad823a968f7efcf429bd66",
+    "roster.json": "d4a0146197403ffe5e425e09593968329fde5db7e063f1add87df6ee190edcd9"
+  },
+  "panels": {
+    "dev": {
+      "design_sha256": "2c1345eb1826aa59a8975f8b5a9cf84847d5884bf398f043112b9be5845a674f",
+      "metrics": {
+        "adopt": false,
+        "bought": {
+          "already_right": 3,
+          "both_wrong": 0,
+          "harm": 2,
+          "rescue": 7
+        },
+        "break_even_price_vs_free": "5/12",
+        "buy": 12,
+        "buy_rate": "1/2",
+        "delta_free": "7/120",
+        "delta_paid": "-1/60",
+        "missed_rescues": 5,
+        "n": 24,
+        "one_sided_sign_p": [
+          "1/2",
+          "1/2"
+        ],
+        "oracle_buy_gain": "7/20",
+        "r1": "17/24",
+        "utility": "67/120",
+        "worst_delta_free": "-13/20"
+      },
+      "min_absolute_margin": "13561909072879304219610952828338387337/1267650600228229401496703205376000000000",
+      "sources": {
+        "new-prod-biswarup-ganguly-and-johnny-purty": {
+          "accuracy": "1",
+          "buy": 4,
+          "delta_free": "7/10",
+          "delta_paid": "0",
+          "n": 4,
+          "value": "7/10"
+        },
+        "new-prod-blues-breaking-records-gerry-joe-weise": {
+          "accuracy": "1",
+          "buy": 3,
+          "delta_free": "-9/40",
+          "delta_paid": "3/40",
+          "n": 4,
+          "value": "31/40"
+        },
+        "new-prod-doug-haslam": {
+          "accuracy": "1/2",
+          "buy": 2,
+          "delta_free": "7/20",
+          "delta_paid": "-7/20",
+          "n": 4,
+          "value": "7/20"
+        },
+        "new-prod-santi-music-school": {
+          "accuracy": "3/4",
+          "buy": 1,
+          "delta_free": "7/40",
+          "delta_paid": "-1/40",
+          "n": 4,
+          "value": "27/40"
+        },
+        "new-prod-szervac-attila-tritonus-guitar-trio": {
+          "accuracy": "1/2",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "1/20",
+          "n": 4,
+          "value": "1/2"
+        },
+        "new-prod-u-s-department-of-state-antony-blinken": {
+          "accuracy": "1/2",
+          "buy": 2,
+          "delta_free": "-13/20",
+          "delta_paid": "3/20",
+          "n": 4,
+          "value": "7/20"
+        }
+      },
+      "windows": {
+        "newcommons-142796455-w01": {
+          "buy": true,
+          "free_hit": true,
+          "group": "new-prod-u-s-department-of-state-antony-blinken",
+          "hit": false,
+          "margin": "737816970029942531068787479424960150013/5070602400912917605986812821504000000000",
+          "paid_hit": false,
+          "utility_tenths": -3
+        },
+        "newcommons-142796455-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-u-s-department-of-state-antony-blinken",
+          "hit": true,
+          "margin": "-1510298905839066390030856650923086917439/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-142796455-w03": {
+          "buy": true,
+          "free_hit": true,
+          "group": "new-prod-u-s-department-of-state-antony-blinken",
+          "hit": false,
+          "margin": "2053374981309423673118049555828506065787/5070602400912917605986812821504000000000",
+          "paid_hit": false,
+          "utility_tenths": -3
+        },
+        "newcommons-142796455-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-u-s-department-of-state-antony-blinken",
+          "hit": true,
+          "margin": "-12062931682605121790130640051848919973901/40564819207303340847894502572032000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-40222673-w01": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-biswarup-ganguly-and-johnny-purty",
+          "hit": true,
+          "margin": "1089010957398633342530587123659068572601/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-40222673-w02": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-biswarup-ganguly-and-johnny-purty",
+          "hit": true,
+          "margin": "206362372877411664636138357563422580683/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-40222673-w03": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-biswarup-ganguly-and-johnny-purty",
+          "hit": true,
+          "margin": "3499160805606356893290697959418898209219/8112963841460668169578900514406400000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-40222673-w04": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-biswarup-ganguly-and-johnny-purty",
+          "hit": true,
+          "margin": "1404947573990436437882650580466170000837/16225927682921336339157801028812800000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-41489852-w01": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-szervac-attila-tritonus-guitar-trio",
+          "hit": false,
+          "margin": "-1435517277353618473878651432255925582307/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "newcommons-41489852-w02": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-szervac-attila-tritonus-guitar-trio",
+          "hit": false,
+          "margin": "-5878219244174240780767001401214683735517/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "newcommons-41489852-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-szervac-attila-tritonus-guitar-trio",
+          "hit": true,
+          "margin": "-709205146059363147477403612219219187431/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-41489852-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-szervac-attila-tritonus-guitar-trio",
+          "hit": true,
+          "margin": "-5083012813534250637230281438292527224607/8112963841460668169578900514406400000000",
+          "paid_hit": false,
+          "utility_tenths": 10
+        },
+        "newcommons-46917193-w01": {
+          "buy": true,
+          "free_hit": true,
+          "group": "new-prod-blues-breaking-records-gerry-joe-weise",
+          "hit": true,
+          "margin": "257065860818672787774946663969346269727/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-46917193-w02": {
+          "buy": true,
+          "free_hit": true,
+          "group": "new-prod-blues-breaking-records-gerry-joe-weise",
+          "hit": true,
+          "margin": "803144973105556006422039480189318795451/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-46917193-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-blues-breaking-records-gerry-joe-weise",
+          "hit": true,
+          "margin": "-321643968479563891341443878957630524531/4056481920730334084789450257203200000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-46917193-w04": {
+          "buy": true,
+          "free_hit": true,
+          "group": "new-prod-blues-breaking-records-gerry-joe-weise",
+          "hit": true,
+          "margin": "173972561058729790191041656980881506153/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-68801795-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-santi-music-school",
+          "hit": true,
+          "margin": "-630846509599231144472870504232004336753/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-68801795-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-santi-music-school",
+          "hit": true,
+          "margin": "-875167387920567112092479506306186878671/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-68801795-w03": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-santi-music-school",
+          "hit": false,
+          "margin": "-14450919552455923604411756941122382569241/649037107316853453566312041152512000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "newcommons-68801795-w04": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-santi-music-school",
+          "hit": true,
+          "margin": "1035704058381670434403031495149053491729/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-90400953-w01": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-doug-haslam",
+          "hit": false,
+          "margin": "-1244695699177032756546058336912581666959/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "newcommons-90400953-w02": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-doug-haslam",
+          "hit": true,
+          "margin": "14008255628403890673464424935986830329/316912650057057350374175801344000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-90400953-w03": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-doug-haslam",
+          "hit": true,
+          "margin": "1084549636304527882740992806563501897037/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-90400953-w04": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-doug-haslam",
+          "hit": false,
+          "margin": "-13561909072879304219610952828338387337/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        }
+      }
+    },
+    "test": {
+      "design_sha256": "fe95300949aa7cfe0b7d5d51831b8da288c61d7b94454bd2bcc84ede3ef89bb6",
+      "metrics": {
+        "adopt": false,
+        "bought": {
+          "already_right": 5,
+          "both_wrong": 1,
+          "harm": 0,
+          "rescue": 3
+        },
+        "break_even_price_vs_free": "1/3",
+        "buy": 9,
+        "buy_rate": "9/32",
+        "delta_free": "3/320",
+        "delta_paid": "29/320",
+        "missed_rescues": 6,
+        "n": 32,
+        "one_sided_sign_p": [
+          "13/16",
+          "93/256"
+        ],
+        "oracle_buy_gain": "63/320",
+        "r1": "25/32",
+        "utility": "223/320",
+        "worst_delta_free": "-9/40"
+      },
+      "min_absolute_margin": "72495068938513656014769322407449626203/3245185536584267267831560205762560000000",
+      "sources": {
+        "new-prod-beag-music": {
+          "accuracy": "3/4",
+          "buy": 1,
+          "delta_free": "-3/40",
+          "delta_paid": "19/40",
+          "n": 4,
+          "value": "27/40"
+        },
+        "new-prod-canadapiano1998": {
+          "accuracy": "3/4",
+          "buy": 2,
+          "delta_free": "7/20",
+          "delta_paid": "-1/10",
+          "n": 4,
+          "value": "3/5"
+        },
+        "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel": {
+          "accuracy": "1",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "3/10",
+          "n": 4,
+          "value": "1"
+        },
+        "new-prod-golf-bravo-yaroslavsky-station": {
+          "accuracy": "1/2",
+          "buy": 1,
+          "delta_free": "7/40",
+          "delta_paid": "-11/40",
+          "n": 4,
+          "value": "17/40"
+        },
+        "new-prod-la-argentinita-manolo-de-huelva-film": {
+          "accuracy": "1",
+          "buy": 2,
+          "delta_free": "-3/20",
+          "delta_paid": "2/5",
+          "n": 4,
+          "value": "17/20"
+        },
+        "new-prod-paramount-chico-marx-the-cocoanuts": {
+          "accuracy": "1",
+          "buy": 3,
+          "delta_free": "-9/40",
+          "delta_paid": "3/40",
+          "n": 4,
+          "value": "31/40"
+        },
+        "new-prod-sir-amugi": {
+          "accuracy": "1/4",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "-9/20",
+          "n": 4,
+          "value": "1/4"
+        },
+        "new-prod-viktor-o-ledenyov-summer-guitar-festival": {
+          "accuracy": "1",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "3/10",
+          "n": 4,
+          "value": "1"
+        }
+      },
+      "windows": {
+        "newcommons-147121838-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-beag-music",
+          "hit": true,
+          "margin": "-21136789080033971990029604418551494767089/40564819207303340847894502572032000000000",
+          "paid_hit": false,
+          "utility_tenths": 10
+        },
+        "newcommons-147121838-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-beag-music",
+          "hit": true,
+          "margin": "-12704106439689059951760641983765140623141/40564819207303340847894502572032000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-147121838-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-beag-music",
+          "hit": true,
+          "margin": "-16688542584273572024581935627026885323/31691265005705735037417580134400000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-147121838-w04": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-beag-music",
+          "hit": false,
+          "margin": "72495068938513656014769322407449626203/3245185536584267267831560205762560000000",
+          "paid_hit": false,
+          "utility_tenths": -3
+        },
+        "newcommons-157539108-w01": {
+          "buy": true,
+          "free_hit": true,
+          "group": "new-prod-paramount-chico-marx-the-cocoanuts",
+          "hit": true,
+          "margin": "71713326509098306842210218183492924315423/162259276829213363391578010288128000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-157539108-w02": {
+          "buy": true,
+          "free_hit": true,
+          "group": "new-prod-paramount-chico-marx-the-cocoanuts",
+          "hit": true,
+          "margin": "8835730355123655161119193293972528058283/40564819207303340847894502572032000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-157539108-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-paramount-chico-marx-the-cocoanuts",
+          "hit": true,
+          "margin": "-2575744402504819668593857655677650441757/3245185536584267267831560205762560000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-157539108-w04": {
+          "buy": true,
+          "free_hit": true,
+          "group": "new-prod-paramount-chico-marx-the-cocoanuts",
+          "hit": true,
+          "margin": "1477243279480576335737289872771881383273/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-163037840-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel",
+          "hit": true,
+          "margin": "-212200529394206080228261651245820682861/253530120045645880299340641075200000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-163037840-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel",
+          "hit": true,
+          "margin": "-18329514239884919593262118082647620468557/20282409603651670423947251286016000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-163037840-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel",
+          "hit": true,
+          "margin": "-1975736298278346073749085286727484515869/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-163037840-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-concert-films-corporation-paul-gordon-jakob-gimpel",
+          "hit": true,
+          "margin": "-79558986241882282906533307942807870148181/81129638414606681695789005144064000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-198374754-w01": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-canadapiano1998",
+          "hit": true,
+          "margin": "2071371237368028228954241363256844275779/8112963841460668169578900514406400000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-198374754-w02": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-canadapiano1998",
+          "hit": true,
+          "margin": "159696755043239029560685056462511224447/633825300114114700748351602688000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-198374754-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-canadapiano1998",
+          "hit": true,
+          "margin": "-2438640564107642245116916307423651152971/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-198374754-w04": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-canadapiano1998",
+          "hit": false,
+          "margin": "-6361380442126217388135980875717358651651/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "newcommons-28102065-w01": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-golf-bravo-yaroslavsky-station",
+          "hit": true,
+          "margin": "40376821843764692335819641018107730139/202824096036516704239472512860160000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-28102065-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-golf-bravo-yaroslavsky-station",
+          "hit": true,
+          "margin": "-6090237713298529925263229230691322334893/8112963841460668169578900514406400000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-28102065-w03": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-golf-bravo-yaroslavsky-station",
+          "hit": false,
+          "margin": "-58358381447847711132022348372503788059409/324518553658426726783156020576256000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "newcommons-28102065-w04": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-golf-bravo-yaroslavsky-station",
+          "hit": false,
+          "margin": "-481426653185348641996451988906084677417/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "newcommons-63566948-w01": {
+          "buy": true,
+          "free_hit": true,
+          "group": "new-prod-la-argentinita-manolo-de-huelva-film",
+          "hit": true,
+          "margin": "271338415850443251369069770847294795841/1014120480182583521197362564300800000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-63566948-w02": {
+          "buy": true,
+          "free_hit": true,
+          "group": "new-prod-la-argentinita-manolo-de-huelva-film",
+          "hit": true,
+          "margin": "311085182342253676046679585086964886817341/1298074214633706907132624082305024000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-63566948-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-la-argentinita-manolo-de-huelva-film",
+          "hit": true,
+          "margin": "-61909426154984717657139603094207648241/405648192073033408478945025720320000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-63566948-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-la-argentinita-manolo-de-huelva-film",
+          "hit": true,
+          "margin": "-1147430293205344373569876135073860876487/10141204801825835211973625643008000000000",
+          "paid_hit": false,
+          "utility_tenths": 10
+        },
+        "newcommons-85721948-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-viktor-o-ledenyov-summer-guitar-festival",
+          "hit": true,
+          "margin": "-129270970820319973483935098335907126119/158456325028528675187087900672000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-85721948-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-viktor-o-ledenyov-summer-guitar-festival",
+          "hit": true,
+          "margin": "-813988231973177236340073419482060300027/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-85721948-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-viktor-o-ledenyov-summer-guitar-festival",
+          "hit": true,
+          "margin": "-1183459057086696435203522851404711893941/2028240960365167042394725128601600000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-85721948-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-viktor-o-ledenyov-summer-guitar-festival",
+          "hit": true,
+          "margin": "-276169591817367693404624417198461810503/316912650057057350374175801344000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-99719538-w01": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-sir-amugi",
+          "hit": false,
+          "margin": "-6371537900939894329125997120302609884791/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "newcommons-99719538-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-sir-amugi",
+          "hit": true,
+          "margin": "-6816922206337861323539043952381615341611/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-99719538-w03": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-sir-amugi",
+          "hit": false,
+          "margin": "-5134982524367136856290435799562330249311/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "newcommons-99719538-w04": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-sir-amugi",
+          "hit": false,
+          "margin": "-1818599669315181867690417004030096759757/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        }
+      }
+    },
+    "third_cohort": {
+      "design_sha256": "798dd120ee328d4181f8ee3e1cc7671885b6223280f6d7e2fbbaa30407efb494",
+      "metrics": {
+        "adopt": false,
+        "bought": {
+          "already_right": 8,
+          "both_wrong": 0,
+          "harm": 0,
+          "rescue": 8
+        },
+        "break_even_price_vs_free": "1/2",
+        "buy": 16,
+        "buy_rate": "1/3",
+        "delta_free": "1/15",
+        "delta_paid": "1/80",
+        "missed_rescues": 9,
+        "n": 48,
+        "one_sided_sign_p": [
+          "163/256",
+          "1/2"
+        ],
+        "oracle_buy_gain": "119/480",
+        "r1": "13/16",
+        "utility": "57/80",
+        "worst_delta_free": "-3/20"
+      },
+      "min_absolute_margin": "278325425061489081081892047307451269231/20282409603651670423947251286016000000000",
+      "sources": {
+        "production-105119679": {
+          "accuracy": "1",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "3/10",
+          "n": 4,
+          "value": "1"
+        },
+        "production-126248598": {
+          "accuracy": "1",
+          "buy": 3,
+          "delta_free": "1/40",
+          "delta_paid": "3/40",
+          "n": 4,
+          "value": "31/40"
+        },
+        "production-127272146": {
+          "accuracy": "1",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "3/10",
+          "n": 4,
+          "value": "1"
+        },
+        "production-134016998": {
+          "accuracy": "1/2",
+          "buy": 2,
+          "delta_free": "-3/20",
+          "delta_paid": "-7/20",
+          "n": 4,
+          "value": "7/20"
+        },
+        "production-134436235": {
+          "accuracy": "3/4",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "1/20",
+          "n": 4,
+          "value": "3/4"
+        },
+        "production-135637675": {
+          "accuracy": "1",
+          "buy": 1,
+          "delta_free": "-3/40",
+          "delta_paid": "9/40",
+          "n": 4,
+          "value": "37/40"
+        },
+        "production-138262210": {
+          "accuracy": "3/4",
+          "buy": 1,
+          "delta_free": "-3/40",
+          "delta_paid": "-1/40",
+          "n": 4,
+          "value": "27/40"
+        },
+        "production-141599859": {
+          "accuracy": "1/2",
+          "buy": 1,
+          "delta_free": "7/40",
+          "delta_paid": "-11/40",
+          "n": 4,
+          "value": "17/40"
+        },
+        "production-194861907": {
+          "accuracy": "1",
+          "buy": 2,
+          "delta_free": "-3/20",
+          "delta_paid": "3/20",
+          "n": 4,
+          "value": "17/20"
+        },
+        "production-37320740": {
+          "accuracy": "1",
+          "buy": 4,
+          "delta_free": "7/10",
+          "delta_paid": "0",
+          "n": 4,
+          "value": "7/10"
+        },
+        "production-56412195": {
+          "accuracy": "3/4",
+          "buy": 2,
+          "delta_free": "7/20",
+          "delta_paid": "-1/10",
+          "n": 4,
+          "value": "3/5"
+        },
+        "production-9917138": {
+          "accuracy": "1/2",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "-1/5",
+          "n": 4,
+          "value": "1/2"
+        }
+      },
+      "windows": {
+        "fresh-105119679-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-105119679",
+          "hit": true,
+          "margin": "-43538126456102300994336886474452616421081/40564819207303340847894502572032000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-105119679-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-105119679",
+          "hit": true,
+          "margin": "-3122323050598707012732060443981128752167/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-105119679-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-105119679",
+          "hit": true,
+          "margin": "-1280322762658475007222798455275368832493/4056481920730334084789450257203200000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-105119679-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-105119679",
+          "hit": true,
+          "margin": "-8365231749231713831342923138361747611851/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-126248598-w01": {
+          "buy": true,
+          "free_hit": true,
+          "group": "production-126248598",
+          "hit": true,
+          "margin": "30117565719323421060198983768409331159/31691265005705735037417580134400000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-126248598-w02": {
+          "buy": true,
+          "free_hit": false,
+          "group": "production-126248598",
+          "hit": true,
+          "margin": "1078439053327749565850345637717501004723/1622592768292133633915780102881280000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-126248598-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-126248598",
+          "hit": true,
+          "margin": "-1877816682894247314785640941689813352931/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-126248598-w04": {
+          "buy": true,
+          "free_hit": true,
+          "group": "production-126248598",
+          "hit": true,
+          "margin": "13017196543374920997169171223164829066313/20282409603651670423947251286016000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-127272146-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-127272146",
+          "hit": true,
+          "margin": "-890530635147809210633811977220555245709/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-127272146-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-127272146",
+          "hit": true,
+          "margin": "-8806906422524393142112205655590782359619/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-127272146-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-127272146",
+          "hit": true,
+          "margin": "-8877315333438694888214887535799148682411/20282409603651670423947251286016000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-127272146-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-127272146",
+          "hit": true,
+          "margin": "-3786662014001849567466874980166831059823/20282409603651670423947251286016000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-134016998-w01": {
+          "buy": true,
+          "free_hit": true,
+          "group": "production-134016998",
+          "hit": true,
+          "margin": "159572266475258567388911000629592691199/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-134016998-w02": {
+          "buy": true,
+          "free_hit": true,
+          "group": "production-134016998",
+          "hit": true,
+          "margin": "101867591311346342605634836405214845499/2028240960365167042394725128601600000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-134016998-w03": {
+          "buy": false,
+          "free_hit": false,
+          "group": "production-134016998",
+          "hit": false,
+          "margin": "-532627407810051571605507310944813005111/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "fresh-134016998-w04": {
+          "buy": false,
+          "free_hit": false,
+          "group": "production-134016998",
+          "hit": false,
+          "margin": "-373763672365532837783911406393283101177/2028240960365167042394725128601600000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "fresh-134436235-w01": {
+          "buy": false,
+          "free_hit": false,
+          "group": "production-134436235",
+          "hit": false,
+          "margin": "-274779858208280281221933073612381752707/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "fresh-134436235-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-134436235",
+          "hit": true,
+          "margin": "-519362571445558415648480797921952907761/633825300114114700748351602688000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-134436235-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-134436235",
+          "hit": true,
+          "margin": "-845481046229076068436248634129773496721/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-134436235-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-134436235",
+          "hit": true,
+          "margin": "-1551451512728238216404667289061843673059/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-135637675-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-135637675",
+          "hit": true,
+          "margin": "-1029156446032940590691530566636051714318983/1298074214633706907132624082305024000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-135637675-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-135637675",
+          "hit": true,
+          "margin": "-5348780073920905649537395249524705921397/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-135637675-w03": {
+          "buy": true,
+          "free_hit": true,
+          "group": "production-135637675",
+          "hit": true,
+          "margin": "241746903571460980594280629560471104691/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-135637675-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-135637675",
+          "hit": true,
+          "margin": "-570936473599880050555973024460365011591/633825300114114700748351602688000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-138262210-w01": {
+          "buy": false,
+          "free_hit": false,
+          "group": "production-138262210",
+          "hit": false,
+          "margin": "-674476643677105402790566232249098386191/2028240960365167042394725128601600000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "fresh-138262210-w02": {
+          "buy": true,
+          "free_hit": true,
+          "group": "production-138262210",
+          "hit": true,
+          "margin": "950174088400289833790297024981316278971/20282409603651670423947251286016000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-138262210-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-138262210",
+          "hit": true,
+          "margin": "-1101803408575848272281352827608050333747/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-138262210-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-138262210",
+          "hit": true,
+          "margin": "-6669604246794750961024332057475095068667/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-141599859-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-141599859",
+          "hit": true,
+          "margin": "-1368875931472228746158584538853830964059/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-141599859-w02": {
+          "buy": false,
+          "free_hit": false,
+          "group": "production-141599859",
+          "hit": false,
+          "margin": "-35324701641483843151498050631749860340047/81129638414606681695789005144064000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "fresh-141599859-w03": {
+          "buy": true,
+          "free_hit": false,
+          "group": "production-141599859",
+          "hit": true,
+          "margin": "2272486305722663835714878120412339933569/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-141599859-w04": {
+          "buy": false,
+          "free_hit": false,
+          "group": "production-141599859",
+          "hit": false,
+          "margin": "-1380350104791702592025347747871577272381/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "fresh-194861907-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-194861907",
+          "hit": true,
+          "margin": "-1588322545529782343840581118144895939553/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-194861907-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-194861907",
+          "hit": true,
+          "margin": "-3712245784898987066430424308970506880587/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-194861907-w03": {
+          "buy": true,
+          "free_hit": true,
+          "group": "production-194861907",
+          "hit": true,
+          "margin": "853371714322125766428112112318549305427/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-194861907-w04": {
+          "buy": true,
+          "free_hit": true,
+          "group": "production-194861907",
+          "hit": true,
+          "margin": "2966084409176449442648140683201378767029/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-37320740-w01": {
+          "buy": true,
+          "free_hit": false,
+          "group": "production-37320740",
+          "hit": true,
+          "margin": "2643276481449884711188537805734342824829/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-37320740-w02": {
+          "buy": true,
+          "free_hit": false,
+          "group": "production-37320740",
+          "hit": true,
+          "margin": "2643276481449884711188537805734342824829/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-37320740-w03": {
+          "buy": true,
+          "free_hit": false,
+          "group": "production-37320740",
+          "hit": true,
+          "margin": "4732973648821121712633818821175906141987/20282409603651670423947251286016000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-37320740-w04": {
+          "buy": true,
+          "free_hit": false,
+          "group": "production-37320740",
+          "hit": true,
+          "margin": "977305906769149116698041994645490612347/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-56412195-w01": {
+          "buy": true,
+          "free_hit": false,
+          "group": "production-56412195",
+          "hit": true,
+          "margin": "2643276481449884711188537805734342824829/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-56412195-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-56412195",
+          "hit": true,
+          "margin": "-14711074234907327550381628506661241753233/20282409603651670423947251286016000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-56412195-w03": {
+          "buy": false,
+          "free_hit": false,
+          "group": "production-56412195",
+          "hit": false,
+          "margin": "-239903024122642324505153859608310752027/507060240091291760598681282150400000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "fresh-56412195-w04": {
+          "buy": true,
+          "free_hit": false,
+          "group": "production-56412195",
+          "hit": true,
+          "margin": "1052834359949927004866920427825634033569/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "fresh-9917138-w01": {
+          "buy": false,
+          "free_hit": false,
+          "group": "production-9917138",
+          "hit": false,
+          "margin": "-278325425061489081081892047307451269231/20282409603651670423947251286016000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "fresh-9917138-w02": {
+          "buy": false,
+          "free_hit": false,
+          "group": "production-9917138",
+          "hit": false,
+          "margin": "-80922883547782730893429823244262396349/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 0
+        },
+        "fresh-9917138-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-9917138",
+          "hit": true,
+          "margin": "-1694099471128348098025005348609351107303/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "fresh-9917138-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "production-9917138",
+          "hit": true,
+          "margin": "-3224652678864559993428984492870403176701/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        }
+      }
+    },
+    "train": {
+      "design_sha256": "8c703225c0411cfc9791066a24361c4354eef8ddeff9e49b6d06d8fe30aa6f68",
+      "metrics": {
+        "adopt": true,
+        "bought": {
+          "already_right": 0,
+          "both_wrong": 0,
+          "harm": 0,
+          "rescue": 15
+        },
+        "break_even_price_vs_free": "1",
+        "buy": 15,
+        "buy_rate": "15/32",
+        "delta_free": "21/64",
+        "delta_paid": "111/320",
+        "missed_rescues": 0,
+        "n": 32,
+        "one_sided_sign_p": [
+          "1/32",
+          "1/64"
+        ],
+        "oracle_buy_gain": "21/64",
+        "r1": "31/32",
+        "utility": "53/64",
+        "worst_delta_free": "0"
+      },
+      "min_absolute_margin": "4056887512356006315238145765992918184547/40564819207303340847894502572032000000000",
+      "sources": {
+        "new-prod-alan-atanton-stewart-yeff": {
+          "accuracy": "1",
+          "buy": 4,
+          "delta_free": "7/10",
+          "delta_paid": "0",
+          "n": 4,
+          "value": "7/10"
+        },
+        "new-prod-cultuur-in-actie-the-five-great-guitars": {
+          "accuracy": "3/4",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "3/10",
+          "n": 4,
+          "value": "3/4"
+        },
+        "new-prod-drtrumpet": {
+          "accuracy": "1",
+          "buy": 4,
+          "delta_free": "7/10",
+          "delta_paid": "0",
+          "n": 4,
+          "value": "7/10"
+        },
+        "new-prod-isaacvp": {
+          "accuracy": "1",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "13/10",
+          "n": 4,
+          "value": "1"
+        },
+        "new-prod-isak-zvegelj-ljubljana-street-country": {
+          "accuracy": "1",
+          "buy": 0,
+          "delta_free": "0",
+          "delta_paid": "4/5",
+          "n": 4,
+          "value": "1"
+        },
+        "new-prod-jhistory": {
+          "accuracy": "1",
+          "buy": 2,
+          "delta_free": "7/20",
+          "delta_paid": "3/20",
+          "n": 4,
+          "value": "17/20"
+        },
+        "new-prod-tobias-frei-prophecy": {
+          "accuracy": "1",
+          "buy": 3,
+          "delta_free": "21/40",
+          "delta_paid": "3/40",
+          "n": 4,
+          "value": "31/40"
+        },
+        "new-prod-trumpetrep": {
+          "accuracy": "1",
+          "buy": 2,
+          "delta_free": "7/20",
+          "delta_paid": "3/20",
+          "n": 4,
+          "value": "17/20"
+        }
+      },
+      "windows": {
+        "newcommons-112877831-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-isaacvp",
+          "hit": true,
+          "margin": "-226938229305985392377511541849211864819/316912650057057350374175801344000000000",
+          "paid_hit": false,
+          "utility_tenths": 10
+        },
+        "newcommons-112877831-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-isaacvp",
+          "hit": true,
+          "margin": "-7009843373443607532458554667053970958251/20282409603651670423947251286016000000000",
+          "paid_hit": false,
+          "utility_tenths": 10
+        },
+        "newcommons-112877831-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-isaacvp",
+          "hit": true,
+          "margin": "-664610332908478429645636889663242703351/1267650600228229401496703205376000000000",
+          "paid_hit": false,
+          "utility_tenths": 10
+        },
+        "newcommons-112877831-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-isaacvp",
+          "hit": true,
+          "margin": "-2717593923871085585866113525911700410123/10141204801825835211973625643008000000000",
+          "paid_hit": false,
+          "utility_tenths": 10
+        },
+        "newcommons-114759433-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-cultuur-in-actie-the-five-great-guitars",
+          "hit": true,
+          "margin": "-507110946442594777096404944838479709179/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-114759433-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-cultuur-in-actie-the-five-great-guitars",
+          "hit": true,
+          "margin": "-507110952267369936751503386599649820467/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-114759433-w03": {
+          "buy": false,
+          "free_hit": false,
+          "group": "new-prod-cultuur-in-actie-the-five-great-guitars",
+          "hit": false,
+          "margin": "-20848352917344404933540109745644668156241/20282409603651670423947251286016000000000",
+          "paid_hit": false,
+          "utility_tenths": 0
+        },
+        "newcommons-114759433-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-cultuur-in-actie-the-five-great-guitars",
+          "hit": true,
+          "margin": "-64910200946109273222910005081761758235797/649037107316853453566312041152512000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-115344562-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-isak-zvegelj-ljubljana-street-country",
+          "hit": true,
+          "margin": "-601682048683275591669419466194948502667/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-115344562-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-isak-zvegelj-ljubljana-street-country",
+          "hit": true,
+          "margin": "-15204239581207643718683833116343909577/20282409603651670423947251286016000000",
+          "paid_hit": false,
+          "utility_tenths": 10
+        },
+        "newcommons-115344562-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-isak-zvegelj-ljubljana-street-country",
+          "hit": true,
+          "margin": "-126777735362131414147500723886191608173/1267650600228229401496703205376000000000",
+          "paid_hit": false,
+          "utility_tenths": 10
+        },
+        "newcommons-115344562-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-isak-zvegelj-ljubljana-street-country",
+          "hit": true,
+          "margin": "-20109881743056063712957272364912445975943/32451855365842672678315602057625600000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-184704912-w01": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-alan-atanton-stewart-yeff",
+          "hit": true,
+          "margin": "1638062920397326469107335846544154767617/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-184704912-w02": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-alan-atanton-stewart-yeff",
+          "hit": true,
+          "margin": "2371589055445834560824174715447963051011/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-184704912-w03": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-alan-atanton-stewart-yeff",
+          "hit": true,
+          "margin": "230668366394064860293828175222898377883/2028240960365167042394725128601600000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-184704912-w04": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-alan-atanton-stewart-yeff",
+          "hit": true,
+          "margin": "3241926058417457614760465575148358019487/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-43697361-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-trumpetrep",
+          "hit": true,
+          "margin": "-258692207253392894671838720520864979053/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-43697361-w02": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-trumpetrep",
+          "hit": true,
+          "margin": "908309214007545936529335447149018505209/1267650600228229401496703205376000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-43697361-w03": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-trumpetrep",
+          "hit": true,
+          "margin": "253555474557842500391844122554354816261/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-43697361-w04": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-trumpetrep",
+          "hit": true,
+          "margin": "-4056887512356006315238145765992918184547/40564819207303340847894502572032000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-46205579-w01": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-jhistory",
+          "hit": true,
+          "margin": "1324823849516025891343220857066423102433/2535301200456458802993406410752000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-46205579-w02": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-jhistory",
+          "hit": true,
+          "margin": "-63388867533122329301492371580699502747/633825300114114700748351602688000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-46205579-w03": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-jhistory",
+          "hit": true,
+          "margin": "-2818242685728979261440174655322518921909/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-46205579-w04": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-jhistory",
+          "hit": true,
+          "margin": "3792348475267748688836748223541626652719/20282409603651670423947251286016000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-67284494-w01": {
+          "buy": false,
+          "free_hit": true,
+          "group": "new-prod-tobias-frei-prophecy",
+          "hit": true,
+          "margin": "-7890382935702065093214786630319768065097/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 10
+        },
+        "newcommons-67284494-w02": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-tobias-frei-prophecy",
+          "hit": true,
+          "margin": "1014221884306781041288935124070391972727/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-67284494-w03": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-tobias-frei-prophecy",
+          "hit": true,
+          "margin": "6444510113229133406307696889244575460703/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-67284494-w04": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-tobias-frei-prophecy",
+          "hit": true,
+          "margin": "1014221883829459791260406346763701234067/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-91863130-w01": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-drtrumpet",
+          "hit": true,
+          "margin": "507110946706432049898937819264668624007/5070602400912917605986812821504000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-91863130-w02": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-drtrumpet",
+          "hit": true,
+          "margin": "79856490796042944084687636089700822205331/81129638414606681695789005144064000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-91863130-w03": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-drtrumpet",
+          "hit": true,
+          "margin": "184755946278566929378709441518549553720861/162259276829213363391578010288128000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        },
+        "newcommons-91863130-w04": {
+          "buy": true,
+          "free_hit": false,
+          "group": "new-prod-drtrumpet",
+          "hit": true,
+          "margin": "2643276481449884711188537805734342824829/10141204801825835211973625643008000000000",
+          "paid_hit": true,
+          "utility_tenths": 7
+        }
+      }
+    }
+  },
+  "program_sha256": "47fd6ed915ff1dbbca2dafb1ff5fcd9a846422936620e02bd7aad821293406f6",
+  "reported_results_sha256": "10d85dfba22029872bb724545c5808f205c487307aca09d2062bb62fc221e5ed",
+  "train_seal_sha256": "6ae738217ea463d48a5aac72b0b46c52dd9fdfabec4a3aed9e947cd20c340dae"
+}
