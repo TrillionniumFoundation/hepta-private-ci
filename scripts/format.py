@@ -65,6 +65,43 @@ ORIGINAL_EVIDENCE_FILES = {
 }
 
 
+# PR 2909, source 5993cb909547070e4b56ca9465996a5a946fafca, archived four
+# files. Its omitted workspace manifest (Git blob d2703b590935ab17316e6c258657c0ce5ab7412a)
+# lists hepta-control-plane and sets workspace.package.edition to 2024.
+WAL_PROJECTION = "AUDIT/2026-10-20-agent-continuation/cell_p0/sources/2909/codex-rs"
+WAL_RUSTFMT_CONFIG = "scripts/format_provenance/cell-p0-2909/rustfmt.toml"
+WAL_RUST_SOURCES = {
+    f"{WAL_PROJECTION}/hepta-control-plane/src/scope_lane_wal.rs": "cfd1d6a58f8e8e878b4ada517af6d9770d6fcf69efabd88afcb41056fdc29ca2",
+    f"{WAL_PROJECTION}/hepta-control-plane/src/scope_lane_wal_tests.rs": "c6fdee03df0c9dc6455c2a108c836fb0022415cc0b52e33e7b775dd9b3113268",
+}
+WAL_FORMAT_INPUTS = {
+    **WAL_RUST_SOURCES,
+    f"{WAL_PROJECTION}/hepta-control-plane/Cargo.toml": "e3aab0b702f89e12d8bdc90b31fc15f823d66f6114b611c8948688e97eea2fe6",
+    f"{WAL_PROJECTION}/Cargo.lock": "17bef7bc25e239f0a9ba7dfe8aef6a5ca0c8ef4b5c01d32994132cae153e6384",
+    WAL_RUSTFMT_CONFIG: "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c",
+}
+
+
+def verify_wal_format_inputs() -> None:
+    """Bind the four archived source bytes and original formatting rules before planning."""
+    root = REPO_ROOT.resolve()
+    for name, expected in WAL_FORMAT_INPUTS.items():
+        path = root / name
+        try:
+            if (
+                not path.is_relative_to(root)
+                or path.resolve(strict=True) != path
+                or not path.is_file()
+            ):
+                raise ValueError(
+                    f"archived WAL input is not a regular original: {name}"
+                )
+            if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+                raise ValueError(f"archived WAL input changed: {name}")
+        except (OSError, RuntimeError) as error:
+            raise ValueError(f"cannot verify archived WAL input: {name}") from error
+
+
 def verified_original_evidence_paths() -> frozenset[str]:
     """Validate exact archived source bytes before any full or scoped format."""
     root = REPO_ROOT.resolve()
@@ -138,6 +175,7 @@ def verified_verbatim_fixture_paths() -> frozenset[str]:
             raise ValueError(
                 f"cannot verify verbatim fixture {relative!r}: {error}"
             ) from error
+    verify_wal_format_inputs()
     return frozenset(VERBATIM_FIXTURES) | verified_original_evidence_paths()
 
 
@@ -365,6 +403,25 @@ def changed_paths(base: str | None = None) -> list[str]:
 
 
 def rust_file_command(path: str, *, check: bool) -> Command:
+    if path in WAL_RUST_SOURCES:
+        verify_wal_format_inputs()
+        # Keep the archived source in the command list and check its original bytes
+        # in both modes. Other files still need their own enclosing Rust workspace.
+        return Command(
+            (
+                "rustfmt",
+                "--check",
+                "--edition",
+                "2024",
+                "--config-path",
+                str(REPO_ROOT / WAL_RUSTFMT_CONFIG),
+                "--config",
+                "skip_children=true",
+                "--",
+                str(REPO_ROOT / path),
+            ),
+            REPO_ROOT / "codex-rs",
+        )
     manifest = next(
         (
             parent / "Cargo.toml"

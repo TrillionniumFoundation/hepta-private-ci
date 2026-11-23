@@ -31,7 +31,11 @@ class FormatterScopeTests(unittest.TestCase):
         self.git("config", "user.name", "Scope Test")
         self.git("config", "user.email", "scope@localhost")
         # Reproduce the immutable test-input inventory in this real Git fixture.
-        for relative in (*FMT.VERBATIM_FIXTURES, *FMT.ORIGINAL_EVIDENCE_FILES):
+        for relative in (
+            *FMT.VERBATIM_FIXTURES,
+            *FMT.ORIGINAL_EVIDENCE_FILES,
+            *FMT.WAL_FORMAT_INPUTS,
+        ):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(SOURCE_ROOT / relative, destination)
@@ -474,6 +478,56 @@ class FormatterScopeTests(unittest.TestCase):
         self.write("scripts/pyproject.toml", '[project]\nrequires-python=">=3.12"\n')
         groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
         self.assertEqual(groups[0].commands[0].args[-1], "scripts")
+
+    def test_archived_wal_keeps_both_originals_in_the_formatting_scope(self):
+        names = sorted(FMT.WAL_RUST_SOURCES)
+        for mode in (False, True):
+            commands = FMT.scoped_formatter_groups(names, check=mode)[0].commands
+            self.assertEqual(
+                [c.args[-1] for c in commands], [str(self.root / n) for n in names]
+            )
+            for c in commands:
+                self.assertEqual(c.cwd, self.root / "codex-rs")
+                self.assertIn("--check", c.args)
+                self.assertEqual(c.args[c.args.index("--edition") + 1], "2024")
+                self.assertEqual(
+                    c.args[c.args.index("--config-path") + 1],
+                    str(self.root / FMT.WAL_RUSTFMT_CONFIG),
+                )
+        neighbor = str(Path(names[0]).with_name("new.rs"))
+        self.write(neighbor, "fn new() {}")
+        with self.assertRaisesRegex(ValueError, "owning Rust workspace missing"):
+            FMT.scoped_formatter_groups([neighbor], check=False)
+
+    def test_archived_wal_rejects_drift_or_removal_before_scheduling_any_formatter(
+        self,
+    ):
+        for name in FMT.WAL_FORMAT_INPUTS:
+            path = self.root / name
+            original = path.read_bytes()
+            with self.subTest(name=name):
+                path.write_bytes(original + b" ")
+                with self.assertRaisesRegex(ValueError, "archived WAL input changed"):
+                    FMT.scoped_formatter_groups([], check=False)
+                with self.assertRaisesRegex(ValueError, "archived WAL input changed"):
+                    FMT.formatter_groups(check=True)
+                path.unlink()
+                with self.assertRaisesRegex(
+                    ValueError, "cannot verify archived WAL input"
+                ):
+                    FMT.scoped_formatter_groups([], check=False)
+                path.write_bytes(original)
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink creation")
+    def test_archived_wal_rejects_same_bytes_behind_a_symlink(self):
+        path = self.root / next(iter(FMT.WAL_RUST_SOURCES))
+        with tempfile.TemporaryDirectory() as outside:
+            copy = Path(outside) / "identical.rs"
+            copy.write_bytes(path.read_bytes())
+            path.unlink()
+            path.symlink_to(copy)
+            with self.assertRaisesRegex(ValueError, "not a regular original"):
+                FMT.scoped_formatter_groups([], check=False)
 
     def test_rust_edition_comes_from_nearest_or_explicit_workspace(self):
         self.write("codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n')
