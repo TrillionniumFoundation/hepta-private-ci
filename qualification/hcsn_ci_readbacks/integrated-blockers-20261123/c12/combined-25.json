@@ -35,5 +35,30 @@
   "source_job": 137634154058,
   "canonical_wire_preflight": 45156905998,
   "baseline": "11e1660799a97fe3a52def730d36f98cb070f8ad",
-  "source_changes_relative_to_c12": 25
+  "source_changes_relative_to_c12": 25,
+  "strict_conclusion": "failure",
+  "compiler_exit": 101,
+  "strict_remaining": 111,
+  "source_conclusion": "success",
+  "source_archive": 14810985622,
+  "source_archive_sha256": "677aced60a304e561b92b50eda4a29573a8637b941de00a38ad1e381afef9b1b",
+  "source_guard_suites": 11,
+  "source_guard_tests": 96,
+  "caller_boundaries": 1652,
+  "protected_files": 826,
+  "rust_sources": 9141,
+  "caller_output_sha256": "2de991230d84e60c8d440278ceb189e0f4111ce8b7c200a934ffc7a31257d6c3",
+  "canonical_wire_preflight_comparison_tests": 0,
+  "canonical_wire_success_run": 45158841882,
+  "canonical_wire_success_job": 137638687597,
+  "canonical_wire_success_archive": 14809569222,
+  "canonical_wire_success_archive_sha256": "6296d5511fff32848b96fdc5c458f38584426b0fce0d9a1fed02c69f1872fe84",
+  "independent_replay": {
+    "program": "verify_combined_25.py",
+    "result": "combined-25-independent.json",
+    "raw": [
+      "combined-25-inputs.zip",
+      "combined-25-strict.zip"
+    ]
+  }
 }

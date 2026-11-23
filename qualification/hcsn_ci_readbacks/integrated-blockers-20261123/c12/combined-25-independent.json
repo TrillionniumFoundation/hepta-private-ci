@@ -1,0 +1,1169 @@
+{
+  "bootstrap_guards": {
+    "boundaries": 1652,
+    "callers_sha256": "2de991230d84e60c8d440278ceb189e0f4111ce8b7c200a934ffc7a31257d6c3",
+    "guard_tests": {
+      "test_first_publication_acceptance_source_closure.py.log": 7,
+      "test_original_publication_route_source_closure.py.log": 4,
+      "test_post_a_original_files_source_closure.py.log": 5,
+      "test_post_a_physical_preparation_source_closure.py.log": 12,
+      "test_post_a_publication_source_closure.py.log": 9,
+      "test_publication_v2_source_closure.py.log": 7
+    },
+    "guard_total": 44,
+    "protected": 826,
+    "rust_files": 9141
+  },
+  "bootstrap_source": "11e1660799a97fe3a52def730d36f98cb070f8ad",
+  "bootstrap_wire": {
+    "elf": "874405a2f55b2ad0b210f80300386e03b18202f6c4e2c9b01cd0bf705256d2b7",
+    "native": {
+      "ELF_SHA256": "874405a2f55b2ad0b210f80300386e03b18202f6c4e2c9b01cd0bf705256d2b7",
+      "TEST-only observer": true,
+      "ordinary": {
+        "codec_observations": 0,
+        "exit": 0,
+        "log_sha256": "52814c5d07fc740a047f41b9dfd1af50feafbca1175027e3095e220894d50a6f",
+        "matched": [
+          [
+            "authority_host_runtime::session::generation_publication::deployment::post_a::successor::tests::successor_deployment_requires_every_original_pin_and_bounded_context",
+            "ok"
+          ],
+          [
+            "authority_host_service::generation_publication::versions::tests::versioned_record_rejects_hybrid_unknown_fields_and_invalid_live_binding",
+            "ok"
+          ]
+        ],
+        "pass": true,
+        "summary": [
+          "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1721 filtered out; finished in 0.01s"
+        ]
+      },
+      "selection": {
+        "root_broker_late_enrolls_publishes_and_recovers_original_current": "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+        "successor_deployment_requires_every_original_pin_and_bounded_context": "authority_host_runtime::session::generation_publication::deployment::post_a::successor::tests::successor_deployment_requires_every_original_pin_and_bounded_context",
+        "versioned_record_rejects_hybrid_unknown_fields_and_invalid_live_binding": "authority_host_service::generation_publication::versions::tests::versioned_record_rejects_hybrid_unknown_fields_and_invalid_live_binding"
+      },
+      "uid0": {
+        "codec_observations": 10,
+        "exit": 0,
+        "log_sha256": "9dad5b54bd987eda7e7fa78fd54d266cbe9d12dd8413b4af8d35041ae7376b9d",
+        "matched": [
+          [
+            "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+            "ok"
+          ]
+        ],
+        "pass": true,
+        "summary": [
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1722 filtered out; finished in 1.40s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1722 filtered out; finished in 1.37s",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1722 filtered out; finished in 3.31s"
+        ]
+      }
+    },
+    "observations": 10,
+    "observer_sha256": {
+      "authority_host_generation_publication_root_fixture_tests.rs": "51c4efe5cd395b58cb8bf7d3992f5ef30cc286bfb684520cf7d67d1a5b962822",
+      "authority_host_publication_deployment_tests.rs": "59b5d27020357cdcc470a90c416873b938190695b032c36245672f3edc6f540c",
+      "authority_host_successor_deployment_files_tests.rs": "25059b256e4caa4cc0fe810cf6f324127b260319ef968459a390780119871284"
+    },
+    "phases": [
+      [
+        "Publish",
+        "Ok(())"
+      ],
+      [
+        "Recover",
+        "Ok(())"
+      ],
+      [
+        "RetiredSession",
+        "Ok(())"
+      ],
+      [
+        "StalePrepare",
+        "Ok(())"
+      ],
+      [
+        "RefusedReopen",
+        "Err(Custom { kind: Other, error: \"publication verification unfinished or refused\" })"
+      ],
+      [
+        "Publish",
+        "Ok(())"
+      ],
+      [
+        "Recover",
+        "Ok(())"
+      ],
+      [
+        "RetiredSession",
+        "Ok(())"
+      ],
+      [
+        "Revoked",
+        "Ok(())"
+      ],
+      [
+        "RefusedReopen",
+        "Err(Custom { kind: Other, error: \"publication verification unfinished or refused\" })"
+      ]
+    ],
+    "root_children": [
+      [
+        "StalePrepare",
+        "60001",
+        "11140",
+        "11136"
+      ],
+      [
+        "Revoked",
+        "60001",
+        "11187",
+        "11136"
+      ]
+    ]
+  },
+  "by_message": {
+    "associated function `bind_original_stage_channel` is never used": 1,
+    "associated function `from_stream` is never used": 1,
+    "field `profile` is never read": 1,
+    "large size difference between variants": 33,
+    "method `accept_original_completed_learning` is never used": 1,
+    "method `comparison_digest` is never used": 1,
+    "method `inspect` is never used": 1,
+    "method `original_work_expiry_seconds` is never used": 1,
+    "method `read_original_model` is never used": 1,
+    "methods `readback_digest` and `read_original_publication` are never used": 1,
+    "methods `recipient_profile` and `original_end` are never used": 1,
+    "this function has too many arguments (10/7)": 7,
+    "this function has too many arguments (11/7)": 3,
+    "this function has too many arguments (15/7)": 1,
+    "this function has too many arguments (8/7)": 36,
+    "this function has too many arguments (9/7)": 21
+  },
+  "clippy": "clippy 0.1.96 (ac68faa20c 2026-05-25)",
+  "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+  "compiler_summary": [
+    "error: could not compile `codex-hepta-agentd` (lib) due to 111 previous errors"
+  ],
+  "diagnostics": [
+    [
+      "hepta-agentd/src/authority_host_completed_learning.rs",
+      23,
+      5,
+      "",
+      "field `profile` is never read"
+    ],
+    [
+      "hepta-agentd/src/authority_host_completed_learning.rs",
+      46,
+      19,
+      "",
+      "methods `recipient_profile` and `original_end` are never used"
+    ],
+    [
+      "hepta-agentd/src/authority_host_completed_learning.rs",
+      145,
+      5,
+      "",
+      "this function has too many arguments (10/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_completed_observation.rs",
+      28,
+      5,
+      "",
+      "this function has too many arguments (10/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_completed_observation.rs",
+      126,
+      5,
+      "",
+      "this function has too many arguments (15/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_completed_provider.rs",
+      16,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_completed_publication_deployment.rs",
+      20,
+      1,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      37,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      69,
+      5,
+      "",
+      "this function has too many arguments (10/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      95,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      94,
+      1,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_generation_publication_runtime.rs",
+      119,
+      1,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      25,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      60,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      82,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_generation_publication_transport.rs",
+      105,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_historical_cell_session.rs",
+      10,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_historical_ledger_files.rs",
+      36,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_historical_ledger_history.rs",
+      26,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_historical_ledger_session.rs",
+      9,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_historical_read.rs",
+      226,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      33,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      71,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_learning_resident_model_recovery.rs",
+      20,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      56,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      24,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      72,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      77,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      131,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      159,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_original_publication_route.rs",
+      7,
+      1,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_post_a_derive.rs",
+      29,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_post_a_learning.rs",
+      122,
+      5,
+      "",
+      "this function has too many arguments (11/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_publication_completed_open.rs",
+      14,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_publication_completed_refusal.rs",
+      35,
+      19,
+      "",
+      "method `original_work_expiry_seconds` is never used"
+    ],
+    [
+      "hepta-agentd/src/authority_host_publication_grant.rs",
+      77,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_publication_refusal.rs",
+      187,
+      19,
+      "",
+      "method `inspect` is never used"
+    ],
+    [
+      "hepta-agentd/src/authority_host_publication_registration.rs",
+      13,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_evaluation_execute.rs",
+      17,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_evaluation_ingress.rs",
+      17,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_evaluation_operation.rs",
+      19,
+      5,
+      "",
+      "this function has too many arguments (11/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_evaluation_operation.rs",
+      48,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_evaluation_operation.rs",
+      70,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_evaluation_prepare.rs",
+      16,
+      5,
+      "",
+      "this function has too many arguments (10/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_evaluation_provider.rs",
+      84,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_evaluation_registration.rs",
+      7,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_evaluation_registration.rs",
+      123,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_model_b_transport.rs",
+      9,
+      1,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_model_profile.rs",
+      100,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_model_transport.rs",
+      85,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_q24_model_transport.rs",
+      106,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_run_start_context.rs",
+      47,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_run_start_historical.rs",
+      7,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/authority_host_run_start_historical.rs",
+      52,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/authority_host_run_start_store.rs",
+      201,
+      19,
+      "",
+      "methods `readback_digest` and `read_original_publication` are never used"
+    ],
+    [
+      "hepta-agentd/src/automation_effect_host.rs",
+      76,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      82,
+      25,
+      "",
+      "method `read_original_model` is never used"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_dataset.rs",
+      188,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_evaluation_stage.rs",
+      32,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      48,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      164,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_material_command.rs",
+      236,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_material_command_service.rs",
+      119,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_material_source_connection.rs",
+      35,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_model_command_connection.rs",
+      61,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_model_command_connection.rs",
+      82,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_model_command_effect.rs",
+      13,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_model_current_admission.rs",
+      20,
+      1,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_task_ledger.rs",
+      105,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_training_command.rs",
+      235,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/cell_q24_training_command_wire.rs",
+      141,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/circuit_candidate_learning_completion_readiness.rs",
+      68,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/circuit_candidate_learning_read_capability.rs",
+      250,
+      19,
+      "",
+      "associated function `bind_original_stage_channel` is never used"
+    ],
+    [
+      "hepta-agentd/src/circuit_candidate_next_use_command.rs",
+      282,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_candidate_next_use_command_wire.rs",
+      137,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+      23,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/circuit_evaluation_cohort_custody.rs",
+      77,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      68,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/circuit_model_selection_command.rs",
+      212,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_model_selection_command_wire.rs",
+      136,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/circuit_model_version_host.rs",
+      199,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_model_version_service.rs",
+      121,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_model_version_service.rs",
+      262,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_model_version_service.rs",
+      304,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_next_use_command.rs",
+      297,
+      5,
+      "",
+      "this function has too many arguments (11/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_next_use_command_wire.rs",
+      136,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/circuit_on_policy_evaluation_readback.rs",
+      163,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      29,
+      1,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs",
+      143,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+      228,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_retained_version_host.rs",
+      157,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_retained_version_service.rs",
+      71,
+      5,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_selection_command.rs",
+      274,
+      5,
+      "",
+      "this function has too many arguments (10/7)"
+    ],
+    [
+      "hepta-agentd/src/circuit_selection_command_wire.rs",
+      136,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/circuit_task_learning.rs",
+      30,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/learning_iteration_command_evidence.rs",
+      17,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/memory_serving_qualification.rs",
+      17,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      51,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      76,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      101,
+      5,
+      "",
+      "this function has too many arguments (10/7)"
+    ],
+    [
+      "hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+      47,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs",
+      371,
+      1,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs",
+      12,
+      1,
+      "",
+      "this function has too many arguments (8/7)"
+    ],
+    [
+      "hepta-agentd/src/neuron_cell_evaluation_training_source.rs",
+      21,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/neuron_generation_receipt_owner.rs",
+      81,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/production_post_a_c_recovery.rs",
+      22,
+      5,
+      "",
+      "this function has too many arguments (9/7)"
+    ],
+    [
+      "hepta-agentd/src/production_post_a_c_task.rs",
+      140,
+      5,
+      "",
+      "this function has too many arguments (10/7)"
+    ],
+    [
+      "hepta-agentd/src/production_post_a_continuation.rs",
+      61,
+      1,
+      "",
+      "large size difference between variants"
+    ],
+    [
+      "hepta-agentd/src/root_completed_learning_history.rs",
+      62,
+      19,
+      "",
+      "method `accept_original_completed_learning` is never used"
+    ],
+    [
+      "hepta-agentd/src/root_generation_publication_stream.rs",
+      29,
+      19,
+      "",
+      "associated function `from_stream` is never used"
+    ],
+    [
+      "hepta-agentd/src/root_independent_b_client.rs",
+      72,
+      19,
+      "",
+      "method `comparison_digest` is never used"
+    ]
+  ],
+  "first_wire_attempt": {
+    "base_elf": "22ac3c6852a3b5e694268af5b50270b83ad43fbc0ae2bf7759c7830acb97b230",
+    "candidate_elf": false,
+    "driver": "b0122305c6c4213d59ecd04bf8a74977b5ecd200",
+    "execution_comparison_cases": 0,
+    "failure": "Candidate build stopped at Bazel dependency analysis after workspace_directory changed.",
+    "source_guards_each": 9
+  },
+  "integrated_guards": {
+    "boundaries": 1652,
+    "callers_sha256": "2de991230d84e60c8d440278ceb189e0f4111ce8b7c200a934ffc7a31257d6c3",
+    "guard_tests": {
+      "test_first_publication_acceptance_source_closure.py.log": 7,
+      "test_original_artifact_head_source_closure.py.log": 9,
+      "test_original_evaluation_provider_source_closure.py.log": 8,
+      "test_original_learning_owner_source_closure.py.log": 15,
+      "test_original_on_policy_evaluation_source_closure.py.log": 8,
+      "test_original_publication_route_source_closure.py.log": 4,
+      "test_post_a_original_files_source_closure.py.log": 5,
+      "test_post_a_physical_preparation_source_closure.py.log": 12,
+      "test_post_a_publication_source_closure.py.log": 9,
+      "test_publication_v2_source_closure.py.log": 7,
+      "test_successor_historical_client_source_closure.py.log": 12
+    },
+    "guard_total": 96,
+    "protected": 826,
+    "rust_files": 9141
+  },
+  "integrated_source": "3b1387335f57a67ae9f5878064feb26a1601d715",
+  "paired_wire": {
+    "arms": {
+      "base": {
+        "cases": {
+          "cross": [
+            "artifact_original_head::source::tests::native_canonical_comparison::original_codec_reads_other_products_five_responses"
+          ],
+          "original": [
+            "artifact_original_head::source::tests::original_artifact_head_lost_reply_reads_original_without_recreating_writer",
+            "artifact_original_head::source::tests::original_artifact_head_restored_source_cannot_revive_consumed_connection",
+            "artifact_original_head::source::tests::original_artifact_head_signs_once_and_cold_reads_saved_signature"
+          ],
+          "wire": [
+            "artifact_original_head::source::tests::native_canonical_comparison::original_codec_checks_status_partition_and_bounds",
+            "artifact_original_head::source::tests::native_canonical_comparison::original_codec_emits_five_canonical_responses"
+          ]
+        },
+        "elf": "22ac3c6852a3b5e694268af5b50270b83ad43fbc0ae2bf7759c7830acb97b230",
+        "frames": {
+          "1": "4022dde0d5b3f7894c2311e71e50058868ddbae7e459ff7046b2f197ee1c6328",
+          "2": "af9f01c9fa6e673030ee4268b3ea5de1daa4d9fed4cd282d6fa4062ea716e523",
+          "3": "3193be952061d7979f14f4ca9be6d30b674d80d76772665226a0c582f4f045ab",
+          "4": "d714cb71f7b88295cf0e9b90ca205869a1fa7fd626a7650786617f620c48e140",
+          "5": "08669a23ebfc4ed47db80e6754f3ef1a8b6d1fa90f76f992d46469038e6157d5"
+        },
+        "original_guard_tests": 9,
+        "product_blob": "1e6cad7a4dbc6f559169471b56d0634a64acb77e",
+        "source": "11e1660799a97fe3a52def730d36f98cb070f8ad"
+      },
+      "candidate": {
+        "cases": {
+          "cross": [
+            "artifact_original_head::source::tests::native_canonical_comparison::original_codec_reads_other_products_five_responses"
+          ],
+          "original": [
+            "artifact_original_head::source::tests::original_artifact_head_lost_reply_reads_original_without_recreating_writer",
+            "artifact_original_head::source::tests::original_artifact_head_restored_source_cannot_revive_consumed_connection",
+            "artifact_original_head::source::tests::original_artifact_head_signs_once_and_cold_reads_saved_signature"
+          ],
+          "wire": [
+            "artifact_original_head::source::tests::native_canonical_comparison::original_codec_checks_status_partition_and_bounds",
+            "artifact_original_head::source::tests::native_canonical_comparison::original_codec_emits_five_canonical_responses"
+          ]
+        },
+        "elf": "273bf97455b5db308ce229831f6a038f20a99c0bba315bc11e6fa37110bbd92f",
+        "frames": {
+          "1": "4022dde0d5b3f7894c2311e71e50058868ddbae7e459ff7046b2f197ee1c6328",
+          "2": "af9f01c9fa6e673030ee4268b3ea5de1daa4d9fed4cd282d6fa4062ea716e523",
+          "3": "3193be952061d7979f14f4ca9be6d30b674d80d76772665226a0c582f4f045ab",
+          "4": "d714cb71f7b88295cf0e9b90ca205869a1fa7fd626a7650786617f620c48e140",
+          "5": "08669a23ebfc4ed47db80e6754f3ef1a8b6d1fa90f76f992d46469038e6157d5"
+        },
+        "original_guard_tests": 9,
+        "product_blob": "932c51b759f06809df648bab0ae730feb3bb21a0",
+        "source": "0652ab8f32a36da9c13cdf18ee3d22eb44863d92"
+      }
+    },
+    "driver": "578044e1ccfb12569765207b6e8c955d20d6c330",
+    "fixture_test_only": true,
+    "maximum_wire_bytes": 16384,
+    "original_archive_sha256": "6296d5511fff32848b96fdc5c458f38584426b0fce0d9a1fed02c69f1872fe84",
+    "tag_length_partition_per_elf": 512
+  },
+  "publisher_artifacts": {
+    "11e-native": {
+      "artifact": 14807639771,
+      "bytes": 12324,
+      "run": 45154413605,
+      "sha256": "7dccad9d6dd713b1671d0a0c91663e981cfd7083c055ab0754e2ca9e53ec52ca"
+    },
+    "11e-source": {
+      "artifact": 14809821869,
+      "bytes": 64581,
+      "run": 45154413605,
+      "sha256": "c625518c538b848d4f0d72233797c3d0e81c9dd520eb416178d9f87c8fbd9ff8"
+    },
+    "11e-strict": {
+      "artifact": 14808930207,
+      "bytes": 29494,
+      "run": 45154413605,
+      "sha256": "68b42c9aef406361ef6f71c3d5592b1668be50a31508634382e4d79c991670c3"
+    },
+    "c12-strict": {
+      "artifact": 14808498546,
+      "bytes": 47790,
+      "run": 45155293939,
+      "sha256": "b3edd0eee2d9f3a407d58c526baad2f6a7a995fc8d5f9c458ead991a62279f41"
+    },
+    "first-wire": {
+      "artifact": 14809961397,
+      "bytes": 13974,
+      "run": 45156905998,
+      "sha256": "c8834da07c83d00243f8a2d115d6cdfb26eca8ce8d18c79d48190f18c5770482"
+    },
+    "integrated-source": {
+      "artifact": 14810985622,
+      "bytes": 67903,
+      "run": 45157522735,
+      "sha256": "677aced60a304e561b92b50eda4a29573a8637b941de00a38ad1e381afef9b1b"
+    },
+    "integrated-strict": {
+      "artifact": 14809048803,
+      "bytes": 29170,
+      "run": 45157522735,
+      "sha256": "da9a032221b447d1bf8907ee6858ff22a05832912bc7f5c998b403ffc9886521"
+    },
+    "paired-wire": {
+      "artifact": 14809569222,
+      "bytes": 20558,
+      "run": 45158841882,
+      "sha256": "6296d5511fff32848b96fdc5c458f38584426b0fce0d9a1fed02c69f1872fe84"
+    }
+  },
+  "strict_exit_codes": {
+    "bootstrap": 101,
+    "c12": 101,
+    "integrated": 101
+  },
+  "strict_total": 111,
+  "vs_bootstrap": {
+    "added": [
+      [
+        "hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+        228,
+        5,
+        "",
+        "this function has too many arguments (9/7)"
+      ]
+    ],
+    "earlier_count": 114,
+    "removed": [
+      [
+        "hepta-agentd/src/artifact_original_head_wire.rs",
+        26,
+        5,
+        "",
+        "variant `Unavailable` is never constructed"
+      ],
+      [
+        "hepta-agentd/src/circuit_feature_current.rs",
+        161,
+        1,
+        "",
+        "large size difference between variants"
+      ],
+      [
+        "hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+        48,
+        1,
+        "",
+        "this function has too many arguments (8/7)"
+      ],
+      [
+        "hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+        227,
+        5,
+        "",
+        "this function has too many arguments (9/7)"
+      ]
+    ]
+  },
+  "vs_c12": {
+    "added": [
+      [
+        "hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+        228,
+        5,
+        "",
+        "this function has too many arguments (9/7)"
+      ]
+    ],
+    "earlier_count": 115,
+    "removed": [
+      [
+        "hepta-agentd/src/artifact_original_head_wire.rs",
+        26,
+        5,
+        "",
+        "variant `Unavailable` is never constructed"
+      ],
+      [
+        "hepta-agentd/src/authority_host_publication_bootstrap.rs",
+        17,
+        1,
+        "",
+        "large size difference between variants"
+      ],
+      [
+        "hepta-agentd/src/circuit_feature_current.rs",
+        161,
+        1,
+        "",
+        "large size difference between variants"
+      ],
+      [
+        "hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+        48,
+        1,
+        "",
+        "this function has too many arguments (8/7)"
+      ],
+      [
+        "hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+        227,
+        5,
+        "",
+        "this function has too many arguments (9/7)"
+      ]
+    ]
+  }
+}
