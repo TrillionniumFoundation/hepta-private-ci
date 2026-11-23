@@ -126,7 +126,7 @@ def inspect(output, request, expected):
     )
 
 
-def evaluate(job, material, root, env, training_modules):
+def evaluate(job, material, root, env, training_modules, fixture_flag):
     name, expected = job["name"], job["request_sha256"]
     out = root / name
     start = time.monotonic_ns()
@@ -145,7 +145,7 @@ def evaluate(job, material, root, env, training_modules):
         # Refit from the relative path recorded in the original public fixture.
         fixture = "circuit-fitted-controls-final" if name == "circuit" else "plain"
         cwd = root.resolve()
-        command = [sys.executable, "-m", training_modules[name], "--fixture", fixture]
+        command = [sys.executable, "-m", training_modules[name], fixture_flag, fixture]
         out = root / fixture / "evaluation"
     with (root / f"{name}.log").open("xb") as log:
         result = subprocess.run(
@@ -164,12 +164,14 @@ def evaluate(job, material, root, env, training_modules):
     return row
 
 
-def batch(jobs, materials, workers, root, env, training_modules):
+def batch(jobs, materials, workers, root, env, training_modules, fixture_flag):
     root.mkdir(mode=0o700)
     start = time.monotonic_ns()
     with ThreadPoolExecutor(max_workers=workers) as pool:
         pending = [
-            pool.submit(evaluate, job, material, root, env, training_modules)
+            pool.submit(
+                evaluate, job, material, root, env, training_modules, fixture_flag
+            )
             for job, material in zip(jobs, materials, strict=True)
         ]
         finished = [future.result() for future in pending]
@@ -196,7 +198,7 @@ def batch(jobs, materials, workers, root, env, training_modules):
     )
 
 
-def run(plain, circuit, out, *, train=False):
+def run(plain, circuit, out, *, train=False, release_trainer=False):
     plan = protocol()
     jobs = plan["jobs"]
     training_modules = {}
@@ -217,6 +219,19 @@ def run(plain, circuit, out, *, train=False):
         ):
             raise ValueError("worker protocol differs")
         plan["scope"] = training["scope"]
+    fixture_flag = "--fixture"
+    if release_trainer:
+        correction = PROTOCOL.with_name("RELEASE_TRAINER_PROTOCOL.json").read_bytes()
+        if (
+            not train
+            or json.loads(correction)["parent_training_protocol_sha256"] != plan_hash
+            or hashlib.sha256(correction).hexdigest()
+            != "fafa22c8e0f9aefd05de380efc787318556392e5c3b11bd3c88e5f6df30581ff"
+        ):
+            raise ValueError("registered training recovery differs")
+        plan_hash = hashlib.sha256(correction).hexdigest()
+        fixture_flag = "--fit-exec"
+        plan["scope"] += " Trainer address space released before evaluation."
     materials = [plain.resolve(), circuit.resolve()]
     for job, directory in zip(jobs, materials, strict=True):
         if (
@@ -242,7 +257,13 @@ def run(plain, circuit, out, *, train=False):
         for workers in ordering:
             name = f"block-{block}-workers-{workers}"
             observation = batch(
-                jobs, materials, workers, out / name, env, training_modules
+                jobs,
+                materials,
+                workers,
+                out / name,
+                env,
+                training_modules,
+                fixture_flag,
             )
             coding_sft.write_new(out / name / "BATCH.json", observation)
             results.append(observation)
@@ -304,8 +325,19 @@ def main():
         action="store_true",
         help="fit each public fixture from scratch before cold scoring",
     )
+    parser.add_argument(
+        "--release-trainer",
+        action="store_true",
+        help="replace each trainer process with the paired cold evaluator after fitting",
+    )
     args = parser.parse_args()
-    if not run(args.plain, args.circuit, args.output, train=args.train):
+    if not run(
+        args.plain,
+        args.circuit,
+        args.output,
+        train=args.train,
+        release_trainer=args.release_trainer,
+    ):
         parser.exit(1, "paired observations or worker overlap differed; see summary\n")
 
 

@@ -13,7 +13,7 @@ from . import coding_sft, data, paired_cold, paired_freeze
 from .online_v4.test_circuit_bundle import setup_fixture
 
 
-def evaluate_fixture(root, request):
+def evaluate_fixture(root, request, *, release_trainer=False):
     spec = {
         key: request[key]
         for key in ("parent", "candidate", "retention", "timeout_seconds")
@@ -29,19 +29,18 @@ def evaluate_fixture(root, request):
         raise ValueError("assembled fixture differs from the registered request")
     out = root / "evaluation"
     env = {**os.environ, "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"}
-    subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "cell_experiments.paired_cold",
-            str(path),
-            bound,
-            str(root),
-            str(out),
-        ],
-        env=env,
-        check=True,
-    )
+    command = [
+        sys.executable,
+        "-m",
+        "cell_experiments.paired_cold",
+        str(path),
+        bound,
+        str(root),
+        str(out),
+    ]
+    if release_trainer:
+        os.execve(sys.executable, command, env)
+    subprocess.run(command, env=env, check=True)
     return json.loads((out / "RESULT.json").read_bytes())
 
 
@@ -91,12 +90,17 @@ class RoutedPairTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3 and sys.argv[1] == "--fixture":
+    if len(sys.argv) == 3 and sys.argv[1] in ("--fixture", "--fit-exec"):
         # PEFT records this name in adapter_config.json. Preserve a supplied relative path.
         destination = Path(sys.argv[2])
         print(
             json.dumps(
-                evaluate_fixture(destination, setup_fixture(destination)), indent=2
+                evaluate_fixture(
+                    destination,
+                    setup_fixture(destination),
+                    release_trainer=sys.argv[1] == "--fit-exec",
+                ),
+                indent=2,
             )
         )
     else:

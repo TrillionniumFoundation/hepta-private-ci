@@ -157,22 +157,20 @@ def fixture(root):
     return request
 
 
-def run(root, request, *, capture=False):
+def run(root, request, *, capture=False, release_trainer=False):
     env = {**os.environ, "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"}
-    subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "cell_experiments.paired_cold",
-            str(root / "request.json"),
-            data.digest(request),
-            str(root),
-            str(root / "evaluation"),
-        ],
-        env=env,
-        check=True,
-        capture_output=capture,
-    )
+    command = [
+        sys.executable,
+        "-m",
+        "cell_experiments.paired_cold",
+        str(root / "request.json"),
+        data.digest(request),
+        str(root),
+        str(root / "evaluation"),
+    ]
+    if release_trainer:
+        os.execve(sys.executable, command, env)
+    subprocess.run(command, env=env, check=True, capture_output=capture)
     return json.loads((root / "evaluation" / "RESULT.json").read_text())
 
 
@@ -278,8 +276,13 @@ class PairedColdTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3 and sys.argv[1] == "--fixture":
+    if len(sys.argv) == 3 and sys.argv[1] in ("--fixture", "--fit-exec"):
         dst = Path(sys.argv[2])
-        print(json.dumps(run(dst, fixture(dst)), indent=2))
+        print(
+            json.dumps(
+                run(dst, fixture(dst), release_trainer=sys.argv[1] == "--fit-exec"),
+                indent=2,
+            )
+        )
     else:
         unittest.main()
