@@ -1,0 +1,35 @@
+{
+  "source": "4adbacbd99f4d37e415cb90bc15a27b5b105e393",
+  "root_tree": "aa1b8df4fa706c57afafbf5c8f6eaa09154e4d9e",
+  "baseline": {
+    "source": "c6a3ed9c36f88707d2f29630efe1e3ea4ee0e902",
+    "git_root_tree": "bcf1ec97025a53d89940f167ff7c16cad2c91985",
+    "rust_files": 9141,
+    "digest": "7964c650787c6bbbe5ec80de235a19f8577ebb1d033229e9ac04aa5f7e059013",
+    "input_files": 9147,
+    "input_manifest": "3ca907aba16f4b998e8b4c03df7bdf9e058737fd42336671349cf68fbd4f0378",
+    "input_sources": {
+      "verified on host": 9134,
+      "verified from GitHub": 13
+    },
+    "command": [
+      "python3",
+      "-B",
+      "scripts/verify_hepta_callers.py",
+      "verify"
+    ],
+    "started": 1795417406.7442513
+  },
+  "candidate_rust_corpus": "66199882317c79778f22e5d34dc894068644517e59b2afea030e9d63bd60dc62",
+  "candidate_rust_files": 9141,
+  "delta": {
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs": {
+      "before": "40d2c6d4ae804cdf0a582bfde4d32b9412e4e32c",
+      "after": "f1e964d70ffb4e22a4663176525b274f6221ace7"
+    },
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs": {
+      "before": "cb4df67fd0f3340c27c05cada46bbc11f080bc50",
+      "after": "5a78300a2ca8c2982ffdb1e7946c4bf0c76e4dc7"
+    }
+  }
+}
