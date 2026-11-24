@@ -64,7 +64,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0' 2>&1 | tee "$RUNNER_TEMP/catalog-metadata/install.log"
-          python -m pip install --only-binary=:all: 'numpy==1.26.4' 'safetensors==0.6.2' 2>&1 | tee -a "$RUNNER_TEMP/catalog-metadata/install.log"
+          python -m pip install --only-binary=:all: 'numpy==1.26.4' 'safetensors==0.6.2' 'packaging==26.3' 2>&1 | tee -a "$RUNNER_TEMP/catalog-metadata/install.log"
           python -m pip check
           python -m pip freeze > "$RUNNER_TEMP/catalog-metadata/runtime.txt"
       - name: Run catalog admission tests without a pretrained model
