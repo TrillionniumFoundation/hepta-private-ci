@@ -32,6 +32,9 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
+    # The pinned RBE image has no /usr/bin/ssh-keygen. Native CI supplies
+    # OpenSSH; keep the real signing/verification tests on that executor.
+    tags = ["no-remote-exec"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",

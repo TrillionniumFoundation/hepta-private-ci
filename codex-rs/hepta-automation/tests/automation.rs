@@ -971,6 +971,18 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // The v18 timer trigger reads dispatch outcomes and runs. Remove its
+    // owning table (and attached triggers) before either referenced table is
+    // changed. The v17 dedupe table must also be absent when migrations replay.
+    for statement in [
+        "DROP TABLE automation_timer_lifecycle",
+        "DROP TABLE destination_operation_dedupe",
+    ] {
+        sqlx::query(statement)
+            .execute(&mut *rewind)
+            .await
+            .expect("drop post-v16 owner objects before their dependencies");
+    }
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
@@ -997,6 +1009,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         "DROP TABLE IF EXISTS automation_calendar_schedule_versions",
         "DROP TABLE IF EXISTS automation_occurrence_events",
         "DROP TABLE IF EXISTS taskflow_step_outbox",
+        // This also removes the terminal_scan_cursor column added by v16.
         "DROP TABLE IF EXISTS automation_occurrence_lifecycle",
         "DROP TABLE IF EXISTS automation_schedule_metadata",
     ] {
