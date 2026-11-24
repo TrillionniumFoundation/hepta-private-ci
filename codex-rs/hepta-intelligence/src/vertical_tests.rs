@@ -737,11 +737,18 @@ fn omitted_cognitive_read_evidence_fails_closed() {
 
 #[test]
 fn objective_weights_normalize_or_reject_for_unique_and_abstain_only_recommendations() {
-    for weight in [FixedQ32::ZERO, FixedQ32::from_raw(1_i64 << 31)] {
+    let half = FixedQ32::from_raw(FixedQ32::ONE.raw() / 2);
+    for (weight, missing_axis) in [(FixedQ32::ZERO, false), (half, false), (half, true)] {
         let mut profile = objective_profile();
         profile.soft_dimensions[0].baseline_weight = weight;
         for abstain_only in [false, true] {
             let mut request = vertical_request_with_profile(profile.clone());
+            if missing_axis {
+                request
+                    .ndu_profile
+                    .dimensions
+                    .push((id("quality.unweighted"), AxisDirection::Maximize));
+            }
             if abstain_only {
                 request
                     .ndu_contributions
@@ -754,6 +761,13 @@ fn objective_weights_normalize_or_reject_for_unique_and_abstain_only_recommendat
                 &request.objective_context,
             ));
             let result = run_read_only_vertical(request);
+            if missing_axis {
+                assert!(matches!(
+                    result,
+                    Err(ReadOnlyVerticalError::SoftDimensionMismatch)
+                ));
+                continue;
+            }
             if weight == FixedQ32::ZERO {
                 let error = result.expect_err("zero total weight must reject");
                 assert!(matches!(
