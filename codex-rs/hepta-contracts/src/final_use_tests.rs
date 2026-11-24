@@ -300,6 +300,48 @@ fn capacity_snapshot_tracks_claims_revocations_and_epoch_rollover() {
 }
 
 #[test]
+fn classical_revocation_capacity_matches_the_durable_owner_limit() {
+    let (authority, _signed, directory) = fixture().unwrap();
+    let ceiling = FinalUseAuthenticationProfile::ClassicalV1.max_revocations();
+    let initial = authority.capacity().unwrap();
+    assert_eq!(initial.max_claims, MAX_CLAIMS);
+    assert_eq!(initial.max_revocations, ceiling);
+    assert!(initial.max_revocations < initial.max_claims);
+
+    let mut head = authority.revocation_head().unwrap();
+    head.revision += 1;
+    head.revoked_grant_ids = (0..ceiling - 1).map(|id| format!("revoked:{id}")).collect();
+    authority.update_revocations(head.clone()).unwrap();
+    let almost_full = authority.capacity().unwrap();
+    assert_eq!(almost_full.remaining_revocations(), 1);
+    assert!(!almost_full.rollover_required_with_reserve(0));
+    assert!(almost_full.rollover_required_with_reserve(1));
+
+    head.revision += 1;
+    assert!(head.revoked_grant_ids.insert("revoked:last".into()));
+    authority.update_revocations(head.clone()).unwrap();
+    let full = authority.capacity().unwrap();
+    assert_eq!(full.revoked_grants, ceiling);
+    assert_eq!(full.remaining_revocations(), 0);
+    assert!(full.rollover_required_with_reserve(0));
+    let frontier = authority.frontier().unwrap();
+    let snapshot_path = directory.path().join("authority.json");
+    let snapshot = std::fs::read(&snapshot_path).unwrap();
+
+    let mut overflow = head.clone();
+    overflow.revision += 1;
+    assert!(overflow.revoked_grant_ids.insert("revoked:overflow".into()));
+    assert_eq!(
+        authority.update_revocations(overflow),
+        Err(FinalUseError::StaleRevocationHead)
+    );
+    assert_eq!(authority.revocation_head().unwrap(), head);
+    assert_eq!(authority.capacity().unwrap(), full);
+    assert_eq!(authority.frontier().unwrap(), frontier);
+    assert_eq!(std::fs::read(snapshot_path).unwrap(), snapshot);
+}
+
+#[test]
 fn expired_grant_is_denied_using_verifier_clock() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.not_before_unix_ms = 1;
