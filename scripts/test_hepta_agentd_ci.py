@@ -206,7 +206,7 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.jobs = dict(zip(parts[1::2], parts[2::2]))
 
     def assert_terminal_dependencies(self, job):
-        self.assertEqual(job_field(job, "if").strip(), "${{ always() }}")
+        self.assertEqual(job_field(job, "if").strip(), "${{ !cancelled() }}")
         self.assertCountEqual(job_needs(job), LANES)
 
     def test_behavior_and_format_lanes_have_no_predecessor_gate(self):
@@ -219,7 +219,7 @@ class WorkflowDependencyTests(unittest.TestCase):
             self.assertNotIn("refresh-derived", self.jobs[name])
             self.assertNotIn("cargo fmt", self.jobs[name])
 
-    def test_terminal_gate_is_always_run_and_binds_all_lanes(self):
+    def test_terminal_gate_runs_on_lane_failure_and_binds_all_lanes(self):
         job = self.jobs["qualification-result"]
         self.assert_terminal_dependencies(job)
         expected = re.findall(r"(?m)^          EXPECTED_NEEDS: '([^']+)'$", job)
@@ -236,7 +236,7 @@ class WorkflowDependencyTests(unittest.TestCase):
             LANES + ("unreviewed-lane",),
             LANES + (LANES[0],),
         ):
-            job = f"    if: ${{{{ always() }}}}\n    needs: [{', '.join(needs)}]\n"
+            job = f"    if: ${{{{ !cancelled() }}}}\n    needs: [{', '.join(needs)}]\n"
             with (
                 self.subTest(needs=needs),
                 self.assertRaises((AssertionError, ValueError)),

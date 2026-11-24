@@ -182,6 +182,17 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
         )
         self.assertIn('python3 scripts/hepta_ci_scope.py "${args[@]}"', scope)
 
+    def test_feedback_scripts_require_the_inner_workspace_regression(self):
+        text = WORKFLOW.read_text()
+        scope = text.split(
+            "      - name: Determine whether the shared-core regression gate applies\n",
+            1,
+        )[1].split("      - name: Prepare native workspace prerequisites\n", 1)[0]
+        inputs = scope.split('elif git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- \\\n', 1)[1]
+        inputs = inputs.split("; then", 1)[0].split()
+        self.assertIn("scripts/hepta_workspace.py", inputs)
+        self.assertIn("scripts/test_hepta_native_feedback.py", inputs)
+
 
 class NativeFeedbackExecutionTests(unittest.TestCase):
     def setUp(self):
