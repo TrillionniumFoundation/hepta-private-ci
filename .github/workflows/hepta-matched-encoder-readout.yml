@@ -45,6 +45,7 @@ jobs:
           TRANSFORMERS_OFFLINE: '1'
         run: |
           python -m unittest discover -s matched-edit -p 'test_resident.py' -v
+          python -m unittest discover -s matched-edit -p 'test_acceptance.py' -v
           python matched-edit/online.py "$RUNNER_TEMP/encoder" "$RUNNER_TEMP/resident-encoder.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
