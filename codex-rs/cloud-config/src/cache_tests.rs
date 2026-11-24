@@ -217,7 +217,8 @@ fn persisted_timestamp_migration_preserves_legacy_cache_bytes_and_signatures() {
         ),
         (
             r#"{"version":1,"cached_at":"2026-01-01T00:00:00.100Z","expires_at":"2026-01-01T01:00:00.100Z","chatgpt_user_id":"user-fixture","account_id":"account-fixture","bundle":{"config_toml":{"enterprise_managed":[]},"requirements_toml":{"enterprise_managed":[]}}}"#,
-            "8l5a+46KNHyfcvcMSS6tu7FjZ+JuzGaTYDOQs/oRe+s=",
+            // This fixed Base64 HMAC is byte-for-byte legacy evidence.
+            "8l5a+46KNHyfcvcMSS6tu7FjZ+JuzGaTYDOQs/oRe+s=", // codespell:ignore ore
         ),
         (
             r#"{"version":1,"cached_at":"2026-01-01T00:00:00.000100Z","expires_at":"2026-01-01T01:00:00.000100Z","chatgpt_user_id":"user-fixture","account_id":"account-fixture","bundle":{"config_toml":{"enterprise_managed":[]},"requirements_toml":{"enterprise_managed":[]}}}"#,
