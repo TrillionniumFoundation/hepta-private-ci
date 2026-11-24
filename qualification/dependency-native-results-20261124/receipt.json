@@ -1,0 +1,138 @@
+{
+  "keyring": {
+    "run_id": 45434905989,
+    "job_id": 138594123698,
+    "artifact_id": 14947424282,
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45434905989",
+    "artifact_sha256": "c4e81b3d181c76283b0ee7cd08772216c807050d920cd2f334581c8d642746ec",
+    "members": {
+      "build-baseline.log": {
+        "bytes": 10007,
+        "sha256": "d3426db5079ea540ffb6228d144f6cba52288c4213f943ee28dda0044a01bb63"
+      },
+      "build-candidate.log": {
+        "bytes": 3399,
+        "sha256": "614ed6e4844c18e02c3ad5b2a7fd0187b90dd4b176943661e1dc3c5c0b4d4307"
+      },
+      "candidate-ldd.txt": {
+        "bytes": 230,
+        "sha256": "f0b5217e0ad23593a4c0d4279a29b08bcc631d1802ca0c194a33d4136bffe630"
+      },
+      "client-receipt.json": {
+        "bytes": 1998,
+        "sha256": "cda90f476eafdee55a69ab564a431a06acfd0af3a3aa58c66811ecf6ea0fd51e"
+      },
+      "fixture-stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "identity.json": {
+        "bytes": 1446,
+        "sha256": "27975bc8ee75e1b941d2fb51c049641c071935cb849d9d992eb388ec19d95e79"
+      },
+      "result.json": {
+        "bytes": 1333,
+        "sha256": "aeae949a3ad8d44a6af13a3037d15f4945fc2db00c98e171ac233215ee028c33"
+      },
+      "secrets-tests.log": {
+        "bytes": 67060,
+        "sha256": "648cf7da33a9e79e447803baef7799b48ef44e61614ffb18073d169ae6f0f65e"
+      },
+      "server-receipt.json": {
+        "bytes": 27947,
+        "sha256": "31085c060ccbb337bf76ef19d0b29108d8bfe66764f85ed3e16ed609cf9d0aa8"
+      }
+    },
+    "workflow_conclusion": "success",
+    "qualification": {
+      "client_steps": 11,
+      "encrypted_sessions": 49,
+      "client_steps_exit_zero": true,
+      "secrets_tests_run": 9,
+      "secrets_tests_passed": 9,
+      "secrets_tests_skipped": 0,
+      "transport": "private dbus-run-session with synthetic secrets",
+      "session_wall_seconds": 45.675497338000014,
+      "production_workspace_full_ci_qualified": false
+    }
+  },
+  "matrix": {
+    "run_id": 45434905910,
+    "job_id": 138594217616,
+    "artifact_id": 14948324244,
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45434905910",
+    "artifact_sha256": "0e694fcf7e8ed16740d344b3a24c7addbb8b04c3c70214ad73356e1597a3cfb6",
+    "members": {
+      "baseline-binary-sha256.txt": {
+        "bytes": 151,
+        "sha256": "1dadbc7d73a8478d03579d4ca74f2db2e5707e91658f0dfdac8d4cf623bcb5c2"
+      },
+      "baseline-create.log": {
+        "bytes": 64875,
+        "sha256": "60aba9d67d0158fdbe1d94d7f56051d7b070b9a19fcbba1567bc1b1f9b5373a6"
+      },
+      "baseline-head.txt": {
+        "bytes": 41,
+        "sha256": "312e4b9e7558aac824b24160d3bdd34e580af175e5f608276b7ca5363e270f3a"
+      },
+      "baseline-reopen.log": {
+        "bytes": 355,
+        "sha256": "5a8454dccbbd4665f27fd01e01afd2457ced9a919e7e6679cabcbf6642ff4c5a"
+      },
+      "consumer-tests.log": {
+        "bytes": 2798,
+        "sha256": "e20429882a3cdb9242458229b16cd8b8a96c0d66c62b9b109f41cc84b5030815"
+      },
+      "current-binary-sha256.txt": {
+        "bytes": 151,
+        "sha256": "e8c70cb8e6d2b873ac73f6defb894563e9d64855f3a7894b12ebf23285667386"
+      },
+      "current-head.txt": {
+        "bytes": 41,
+        "sha256": "bca76995e872712b7aaa0679ff719c7d2e0179e3878e834f591379ab9c5c820f"
+      },
+      "expected-device.json": {
+        "bytes": 279,
+        "sha256": "42c04e6417d75ec0d60526a8cb61109f7e08e57f4cfd4eb5d4eb9dd8b966a8ef"
+      },
+      "source-sha256.txt": {
+        "bytes": 320,
+        "sha256": "b06f1ee612f806e2decc0223e75749e02613cb715b797e2ebe5ceeca8c69474c"
+      },
+      "upgrade.log": {
+        "bytes": 25304,
+        "sha256": "b3f897671bb1614bc8a27e68d08be33a4e8470db6248027bdfe1ece2e1b8dca2"
+      },
+      "upgraded-reopen.log": {
+        "bytes": 1512,
+        "sha256": "eece50de42707deb59787f4f5960146790e133e1ecf6b42ac9472c933bdbebde"
+      },
+      "wrong-passphrase.log": {
+        "bytes": 1533,
+        "sha256": "00b7e3dccbcd525b73ecd2fb293c1272752037a33d26ce3c9561eec00ad0bdc4"
+      }
+    },
+    "workflow_conclusion": "failure",
+    "qualification": {
+      "baseline_sha": "07c8994f2402a58f6b59eb648c801fc40c6e2b96",
+      "old_store_create": true,
+      "old_store_reopen": true,
+      "new_store_upgrade": true,
+      "new_store_second_reopen": true,
+      "wrong_passphrase_rejected": true,
+      "device_keys_and_custom_state_preserved": true,
+      "consumer_tests_executed": 0,
+      "consumer_compile_error": "E0615 gap_fill_tests.rs:368 assigns the now-method bundled_latest_thread_event",
+      "replacement_fixture_commit": "a308cb346f342ad4cd90111e59f9f1bb83985948",
+      "replacement_fixture_ci_qualified": false,
+      "full_ci_qualified": false
+    }
+  },
+  "source_sha": "fb00e4422c293ffb318c9d7535e1991a3bbac707",
+  "limitations": [
+    "The exact source is fb00, not an untested later integration head.",
+    "Keyring uses the real old/new clients with a synthetic Secret Service, not a desktop distribution compatibility survey.",
+    "Matrix migration was tested before consumer test compilation failed. No consumer test pass is inferred.",
+    "The next source also changes bundled SQLite ownership on Windows; these Linux results do not qualify that VFS."
+  ]
+}
