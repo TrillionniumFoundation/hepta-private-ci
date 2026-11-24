@@ -1,0 +1,503 @@
+{
+  "schema": "hepta.knowledge-graph.ordinary-ci-evidence.v1",
+  "observed_at_utc": "2026-10-01T06:23:56.317Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "claim_scope": {
+    "purpose": "Read-only ordinary CI diagnostics, exact source provenance and main-blob attribution.",
+    "grants_deep_knowledge_graph_acceptance": false,
+    "grants_whole_module_native_acceptance": false,
+    "grants_product_runtime_acceptance": false,
+    "no_rerun_dispatch_or_check_relaxation_performed": true
+  },
+  "source_refs": {
+    "prior_candidate": "676a18740ee50e93ca50c077a2e69b9c47f6b40e",
+    "current_candidate": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+    "current_candidate_tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+    "main": "997e7beef8151160065df36b024bc8da5c989e93"
+  },
+  "main_blob_comparison": {
+    "compared_refs": [
+      "676a18740ee50e93ca50c077a2e69b9c47f6b40e",
+      "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "997e7beef8151160065df36b024bc8da5c989e93"
+    ],
+    "method": "git rev-parse <exact-commit>:<path>; identical_blob denotes identical bytes in all three exact commits.",
+    "files": [
+      {
+        "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+        "identical_blob": "1cfc512354ad99152d86ca58af8d050c09240e33"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+        "identical_blob": "95b3250abc07fd2766a9e86de2064b434d6f4b6c"
+      },
+      {
+        "path": "CALLERS.toml",
+        "identical_blob": "72ff8a07bd3819974cf2a8db95e2676ab8026b28"
+      },
+      {
+        "path": "scripts/format.py",
+        "identical_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+      },
+      {
+        "path": "justfile",
+        "identical_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+      },
+      {
+        "path": "sdk/python/tests/test_artifact_workflow_and_binaries.py",
+        "identical_blob": "23a3cc4493c7b03d824ddb0eab48d30bc818556b"
+      },
+      {
+        "path": ".github/scripts/run-bazel-ci.sh",
+        "identical_blob": "6b313e00b0f8075613af2add100426369bc7ec1e"
+      },
+      {
+        "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+        "identical_blob": "16c950831f25877a3c959af1dda28f3c41fea740"
+      },
+      {
+        "path": ".github/workflows/bazel.yml",
+        "identical_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c"
+      },
+      {
+        "path": "scripts/list-bazel-clippy-targets.sh",
+        "identical_blob": "d12a256d00673350b1a10fd8070f7001840e65c4"
+      },
+      {
+        "path": ".github/workflows/hepta-architecture-convergence.yml",
+        "identical_blob": "f9ec412a561bcc8806a11cc4b0955a203d1b785f"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime_executable.rs",
+        "identical_blob": "08d713812793023d06a251191b50e7bf159e62e4"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime_executable_tests.rs",
+        "identical_blob": "b62103de7b42ed2a99e7e3cba0ae7f291761b9dd"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "identical_blob": "c075e561eaa96820706ad98d20972eb5fd924b06"
+      },
+      {
+        "path": "codex-rs/hepta-intuition/src/qualified_tests.rs",
+        "identical_blob": "e77027ea30aadaac0ca5e4cab1e624d5f7bf3978"
+      },
+      {
+        "path": "codex-rs/hepta-intuition/BUILD.bazel",
+        "identical_blob": "0cf48691722716d4244b5b79374aaaf588e069ef"
+      },
+      {
+        "path": "codex-rs/hepta-fleet/src/module_catalog.rs",
+        "identical_blob": "78c61c6197ee9eaa2f46972b4137466c9896537e"
+      },
+      {
+        "path": "codex-rs/hepta-fleet/BUILD.bazel",
+        "identical_blob": "60d143e67757f064ec3e4b2a8e8225c69f09bff4"
+      },
+      {
+        "path": "docs/modules/MODULES.json",
+        "identical_blob": "e4a5965a06b0af917130bd929158e714684a91bc"
+      },
+      {
+        "path": "defs.bzl",
+        "identical_blob": "02594a4a37c7f71f2d08b595f980966ce4b3eedb"
+      }
+    ]
+  },
+  "faults": {
+    "authority": {
+      "classification": "inherited_main_inventory_defect",
+      "tests_run": 11,
+      "failures": 1,
+      "errors": 1,
+      "exit_code": 1,
+      "diagnostic": "final_use_guarded_effect and async-dispatch boundaries absent from canonical inventory; eight overescaped regexes raise re.error: missing ), unterminated subpattern.",
+      "owner_repair": "Reconcile methods/boundaries/caller sets; repair regex escaping and rerun existing closed-world QA without weakening it.",
+      "main_identical_paths": [
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+        "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+        "CALLERS.toml"
+      ]
+    },
+    "formatter": {
+      "classification": "inherited_main_formatter_test_drift",
+      "passed": 127,
+      "failed": 4,
+      "skipped": 38,
+      "exit_code": 1,
+      "diagnostic": "Tests expect fmt: and scripts-only groups after fmt *args: and .github support; two full-group mocks instead invoke changed-path discovery and absent Git in isolated PATH.",
+      "owner_repair": "Update CLI/group expectations; use --all for full-group tests or mock changed-path discovery while retaining scoped-format behavior.",
+      "main_identical_paths": [
+        "scripts/format.py",
+        "justfile",
+        "sdk/python/tests/test_artifact_workflow_and_binaries.py"
+      ]
+    },
+    "windows_launch": {
+      "classification": "inherited_shared_runner_launch_failure",
+      "exit_code": 126,
+      "actual_clippy_actions_executed": false,
+      "source_lint_result": "unobserved",
+      "diagnostic": "/usr/bin/env: 'python3': Argument list too long after target discovery. Rust Clippy never started.",
+      "owner_repair": "Transport the complete target set via a target-pattern/response file, preserving all targets and strict lint settings.",
+      "main_identical_paths": [
+        ".github/scripts/run-bazel-ci.sh",
+        ".github/scripts/run_bazel_with_buildbuddy.py",
+        ".github/workflows/bazel.yml",
+        "scripts/list-bazel-clippy-targets.sh"
+      ]
+    },
+    "runtime_image": {
+      "classification": "inherited_main_unwired_module_and_zero_test_gate",
+      "diagnostic": "runtime_executable.rs and four intended tests exist, but lib.rs has no module declaration and no production consumers use its identity types.",
+      "intended_tests": [
+        "implementation_changes_when_code_changes_without_manifest_change",
+        "module_and_manifest_are_separate_from_shared_executable_identity",
+        "empty_or_oversized_images_never_produce_a_manifest_fallback",
+        "process_observation_caches_actual_executable_bytes"
+      ],
+      "owner_repair": "Wire the module, intended tests and product registration consumer. An unrelated selector or a reduced minimum cannot preserve executable-image identity intent.",
+      "main_identical_paths": [
+        ".github/workflows/hepta-architecture-convergence.yml",
+        "codex-rs/hepta-agentd/src/runtime_executable.rs",
+        "codex-rs/hepta-agentd/src/runtime_executable_tests.rs",
+        "codex-rs/hepta-agentd/src/lib.rs"
+      ]
+    },
+    "intuition_lint": {
+      "classification": "inherited_main_source_lint_defect_outside_knowledge_graph",
+      "actual_clippy_action_executed": true,
+      "exit_code": 1,
+      "target": "//codex-rs/hepta-intuition:hepta-intuition-unit-tests-bin",
+      "diagnostic": "hepta-intuition/src/qualified_tests.rs:158:38 request.clone() is redundant under -D clippy::redundant-clone.",
+      "owner_repair": "Consume request directly where it has no further use; rerun the same strict Clippy target.",
+      "main_identical_paths": [
+        "codex-rs/hepta-intuition/src/qualified_tests.rs",
+        "codex-rs/hepta-intuition/BUILD.bazel"
+      ]
+    },
+    "fleet_compile_input": {
+      "classification": "inherited_main_bazel_compile_input_defect_outside_knowledge_graph",
+      "exit_code": 1,
+      "bazel_test_targets_executed": 32,
+      "bazel_test_targets_passed": 32,
+      "bazel_test_targets_failed_to_build": 1,
+      "bazel_test_targets_skipped": 530,
+      "bazel_test_targets_total": 563,
+      "target": "//codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin",
+      "diagnostic": "hepta-fleet/src/module_catalog.rs:15:38 include_str! cannot read ../../../docs/modules/MODULES.json in the Bazel sandbox.",
+      "owner_repair": "Declare the canonical atlas JSON as Fleet Rust compile-time Bazel input; rerun the affected target and platform suite.",
+      "main_identical_paths": [
+        "codex-rs/hepta-fleet/src/module_catalog.rs",
+        "codex-rs/hepta-fleet/BUILD.bazel",
+        "docs/modules/MODULES.json",
+        "defs.bzl"
+      ]
+    }
+  },
+  "ordinary_blocking_ci_prior": {
+    "run_id": 36820078134,
+    "status": "completed",
+    "conclusion": "cancelled",
+    "head_sha": "676a18740ee50e93ca50c077a2e69b9c47f6b40e",
+    "updated_at": "2026-10-01T05:41:56Z",
+    "tested_merge_sha": "4fed329478fa5b8a202ed82a608cbfe890724f71",
+    "tested_tree": "c19b803b775251fa097f25211fae12e6c5016d9e",
+    "head_tree": "c19b803b775251fa097f25211fae12e6c5016d9e",
+    "tested_merge_has_identical_head_tree": true,
+    "review_scope": "Three requested completed failed jobs; overall run later cancelled when superseded.",
+    "reviewed_failed_jobs": [
+      {
+        "job_id": 110234086629,
+        "name": "repo-checks / build-test",
+        "conclusion": "failure",
+        "fault": "authority",
+        "failed_step": "Verify Hepta privileged caller closed set",
+        "raw_log_sha256": "a404cac7b099d652f6cf6f376f9514fd233e1062372b1b94a448d6113a08287f",
+        "raw_log_bytes": 82996
+      },
+      {
+        "job_id": 110234086723,
+        "name": "sdk / python-sdk",
+        "conclusion": "failure",
+        "fault": "formatter",
+        "failed_step": "Test Python SDK",
+        "raw_log_sha256": "a9d02ca4d3f416a7bcef4d1a7c0e4dc0d21aa3741c2ca28e28ab00d7a8fbcb30",
+        "raw_log_bytes": 65862
+      },
+      {
+        "job_id": 110234086979,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "conclusion": "failure",
+        "fault": "windows_launch",
+        "failed_step": "bazel build --config=clippy lint targets",
+        "raw_log_sha256": "1bef71a6f8344d2efcfa81bbb9637ab9fa58a2d5bc328f626a2f845f279f1979",
+        "raw_log_bytes": 160808
+      }
+    ],
+    "all_green": false
+  },
+  "architecture_current": {
+    "run_id": 36820967024,
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+    "updated_at": "2026-10-01T06:07:40Z",
+    "source_head": {
+      "job_id": 110236330346,
+      "conclusion": "failure",
+      "tested_sha": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "tested_tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "native_preparation_and_owner_steps_10_through_21": "actually executed and passed",
+      "failed_step": {
+        "number": 22,
+        "name": "Optional service process lifecycle and executable identity"
+      },
+      "command_records": [
+        {
+          "record": "source-head/prompt.json",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "-p",
+            "codex-hepta-prompt-optimizer"
+          ],
+          "command_exit_code": 0,
+          "gate_exit_code": 0,
+          "minimum_tests": 1,
+          "tests_passed": 43,
+          "tests_failed": 0,
+          "raw_log_file": "prompt.json.f21d6d1a710449628f5c3945ceb4792d.log",
+          "raw_log_sha256": "2b88c32442095a6e27668b28deca32dc1746c9fdc875a1bc05a7b64e2a7bc550",
+          "raw_log_bytes": 5111,
+          "before_after_same_exact_clean_source": true,
+          "timed_out": false,
+          "output_limit_exceeded": false
+        },
+        {
+          "record": "source-head/browser.json",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "-p",
+            "codex-hepta-agentd",
+            "browser_servo"
+          ],
+          "command_exit_code": 0,
+          "gate_exit_code": 0,
+          "minimum_tests": 1,
+          "tests_passed": 3,
+          "tests_failed": 0,
+          "raw_log_file": "browser.json.106e303023824a9aa461f8cae73fcc77.log",
+          "raw_log_sha256": "df9bb9dced28b39606206fd48b038547700b38393db3c66c423dceabe5e69625",
+          "raw_log_bytes": 43884,
+          "before_after_same_exact_clean_source": true,
+          "timed_out": false,
+          "output_limit_exceeded": false,
+          "agentd_unit_tests_compiled": 176,
+          "agentd_unit_tests_filtered_out": 173
+        },
+        {
+          "record": "source-head/runtime-image.json",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "--manifest-path",
+            "codex-rs/Cargo.toml",
+            "-p",
+            "codex-hepta-agentd",
+            "runtime_executable"
+          ],
+          "command_exit_code": 0,
+          "gate_exit_code": 1,
+          "minimum_tests": 1,
+          "tests_passed": 0,
+          "tests_failed": 0,
+          "raw_log_file": "runtime-image.json.cffcd86411374828b58e1df27ac6969e.log",
+          "raw_log_sha256": "7cdb4825fda1373a3f604e03a90d9d75685d5837a35ee21f899e70b913692766",
+          "raw_log_bytes": 9673,
+          "before_after_same_exact_clean_source": true,
+          "timed_out": false,
+          "output_limit_exceeded": false,
+          "agentd_unit_tests_filtered_out": 176,
+          "selected_tests_executed": 0,
+          "fault": "runtime_image",
+          "gate_error": "required tests were not observed passing"
+        }
+      ],
+      "all_extracted_command_log_hashes_verified": 28,
+      "all_extracted_commands_preserved_exact_clean_source": true,
+      "not_executed_after_runtime_image_gate_failure": [
+        "operation_timer_fence",
+        "optional_module_restart forty_first_service"
+      ],
+      "skipped_steps": [
+        "Derived-view drift",
+        "Verify unchanged reviewed source"
+      ],
+      "agentd_seven_source_fence_tests": {
+        "module": "prompt_runtime_source_tests",
+        "tests": [
+          "pipeline_attachment_deadline_is_capped_at_selected_portfolio_expiry",
+          "signed_revoke_after_reopen_blocks_staged_prompt_before_deadline",
+          "cached_prepare_and_idempotent_dispatch_recheck_current_owner",
+          "legacy_unbound_stage_is_restored_but_cannot_dispatch_through_pipeline",
+          "legacy_pending_dispatch_can_be_reconciled_through_bound_pipeline",
+          "persisted_registry_source_digest_is_checked_on_restore",
+          "waiting_prepare_rechecks_poison_after_indeterminate_commit"
+        ],
+        "selected_or_executed_by_this_run": false,
+        "qualification": "Agentd library/176-unit-test compilation is compilation evidence. The browser filter passed three other tests; neither it nor runtime_executable selects these seven fences."
+      }
+    },
+    "base_merge": {
+      "job_id": 110236330223,
+      "conclusion": "success",
+      "base_sha": "997e7beef8151160065df36b024bc8da5c989e93",
+      "lane": "base-merge",
+      "native_execution_required": false,
+      "requires_source_head_success": true,
+      "schema_version": 1,
+      "source_sha": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+      "source_tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "tested_sha": "559a6206006ce182d9a207468cf4eafe11659786",
+      "tested_tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+      "native_preparation_and_owner_steps_10_through_22": "all skipped",
+      "qualifies_deep_or_native_knowledge_graph": false
+    },
+    "required_aggregate": {
+      "job_id": 110242062173,
+      "name": "Architecture required",
+      "conclusion": "failure",
+      "exit_code": 1,
+      "raw_log_sha256": "e856e4d33ca3d94ae5a8f38882621cc828b6e45216e7e1e513995ceb77c66c28",
+      "reason": "Identical-tree reuse still requires source-head success; source-head minimum-test gate failed."
+    },
+    "archived_artifacts": [
+      {
+        "artifact_id": 11143819365,
+        "lane": "source-head",
+        "zip_sha256": "9e35ff1ac14a4054cfea6cad198cf8324771afc51f3fcdbdb6c49fb606d59dbe"
+      },
+      {
+        "artifact_id": 11143397098,
+        "lane": "base-merge",
+        "zip_sha256": "e4dcff0922a47b857b445c9b5e08f0ad07e356f8985dee00fd12dfcc3b6f1e98"
+      }
+    ]
+  },
+  "ordinary_blocking_ci_current": {
+    "run_id": 36820967378,
+    "status": "in_progress",
+    "conclusion": null,
+    "head_sha": "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00",
+    "updated_at": "2026-10-01T05:43:45Z",
+    "is_final": false,
+    "tested_merge_sha": "c4788d7bba0a9586b64cb63bae2f41aa3541ee72",
+    "tested_merge_parents": [
+      "997e7beef8151160065df36b024bc8da5c989e93",
+      "2be1a1d66e0e235818d0e6a7fc3705e6d5372e00"
+    ],
+    "tested_tree": "d8be04d981a6a643c314b17a8f630f1a6629e6e8",
+    "tested_merge_has_identical_head_tree": true,
+    "all_green": false,
+    "job_state_counts": {
+      "success": 10,
+      "failure": 5,
+      "in_progress": 12,
+      "skipped": 3
+    },
+    "completed_failed_jobs": [
+      {
+        "job_id": 110236540864,
+        "name": "repo-checks / build-test",
+        "conclusion": "failure",
+        "fault": "authority",
+        "raw_log_sha256": "0363fe975d69973176ac3cffa3363135d8248276d2c818b31ddbfca242a744a4",
+        "raw_log_bytes": 82997
+      },
+      {
+        "job_id": 110236540919,
+        "name": "sdk / python-sdk",
+        "conclusion": "failure",
+        "fault": "formatter",
+        "raw_log_sha256": "f1f8278028cbc70e908079d5223b8ee08c803354a37f790be6e17aca8239c6ed",
+        "raw_log_bytes": 65861
+      },
+      {
+        "job_id": 110236541196,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "conclusion": "failure",
+        "fault": "fleet_compile_input",
+        "raw_log_sha256": "1a5150579810db69ba8f9a137ae85c925798cea2d05da0df28a6ff834124376f",
+        "raw_log_bytes": 804871
+      },
+      {
+        "job_id": 110236541234,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "conclusion": "failure",
+        "fault": "intuition_lint",
+        "raw_log_sha256": "9c4b357436157bf6325723b132e982283d2d21e4c7a1196b30bf54a13bb4b34c",
+        "raw_log_bytes": 435906
+      },
+      {
+        "job_id": 110236541259,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "conclusion": "failure",
+        "fault": "windows_launch",
+        "raw_log_sha256": "1cf918c2a427c9266fafb61df867ef17aef8db30a10c5f8bd04d832f7475b103",
+        "raw_log_bytes": 160460
+      }
+    ],
+    "pending_or_running_job_ids": [
+      110236540899,
+      110236541179,
+      110236541214,
+      110236541220,
+      110236541223,
+      110236541233,
+      110236541250,
+      110236541252,
+      110236541267,
+      110236541272,
+      110236541277,
+      110236541283
+    ],
+    "skipped_jobs": [
+      {
+        "job_id": 110236541960,
+        "name": "Lightweight prose and derived checks"
+      },
+      {
+        "job_id": 110236542510,
+        "name": "Hepta scoped native checks"
+      },
+      {
+        "job_id": 110236542758,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)"
+      }
+    ],
+    "native_path_preflight_scope": "Successful Native Hepta paths/Cargo manifest jobs are preflights, without deep KG, seven-fence or product acceptance."
+  },
+  "not_established_by_these_runs": [
+    "The dedicated seven Agentd prompt-source fences executed successfully.",
+    "Deep KG native regression, declared-capacity/history curves, crash recovery and strict lint all passed.",
+    "A base-merge success with skipped native owners replaces the failed source-head lane.",
+    "Windows Clippy passed despite failing before any actual Clippy action.",
+    "Full ordinary blocking CI passed: current run has unfinished jobs and five diagnosed failures."
+  ],
+  "retrieval": {
+    "run_url_template": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/{run_id}",
+    "job_url_template": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/{run_id}/job/{job_id}",
+    "raw_job_hash_encoding": "SHA-256 of GitHub connector decoded content encoded as UTF-8, not workflow-log ZIP bytes.",
+    "command_logs": "Download architecture artifacts by ID; verify ZIP SHA-256, then named command records and raw log SHA-256."
+  }
+}

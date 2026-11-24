@@ -142,31 +142,18 @@ pub(crate) fn canonical_generation_from_projection(
 
     let mut occurrence_to_canonical = BTreeMap::<String, StableId>::new();
     let mut canonical_nodes =
-        BTreeMap::<StableId, (StableId, Digest32, Vec<KnowledgeSupportV2>)>::new();
+        BTreeMap::<StableId, (&ProjectionNode, Vec<KnowledgeSupportV2>)>::new();
     for node in nodes {
         let canonical_id = stable_id(&node.canonical_entity_id, "canonical entity id")?;
         occurrence_to_canonical.insert(node.node_id.clone(), canonical_id.clone());
-        let kind_id = stable_digest_id(
-            "kg-kind:v1:",
-            b"hepta:cognitive:kg-node-kind:v1",
-            &[node.entity_type.as_bytes()],
-        )?;
-        let payload_digest = framed_digest32(
-            b"hepta:cognitive:kg-node-payload:v1",
-            &[
-                node.canonical_entity_id.as_bytes(),
-                node.entity_type.as_bytes(),
-                node.label.as_bytes(),
-            ],
-        );
         let support = node_support(node)?;
         match canonical_nodes.entry(canonical_id) {
             std::collections::btree_map::Entry::Vacant(entry) => {
-                entry.insert((kind_id, payload_digest, vec![support]));
+                entry.insert((node, vec![support]));
             }
             std::collections::btree_map::Entry::Occupied(mut entry) => {
-                let (existing_kind, existing_payload, supports) = entry.get_mut();
-                if *existing_kind != kind_id || *existing_payload != payload_digest {
+                let (first_node, supports) = entry.get_mut();
+                if first_node.entity_type != node.entity_type || first_node.label != node.label {
                     return Err(CognitiveStoreError::Conflict(
                         "canonical KG node supports disagree on kind or payload".to_string(),
                     ));
@@ -178,15 +165,26 @@ pub(crate) fn canonical_generation_from_projection(
 
     let canonical_nodes = canonical_nodes
         .into_iter()
-        .map(
-            |(node_id, (node_kind_id, payload_digest, supports))| KnowledgeNodeV2 {
+        .map(|(node_id, (node, supports))| {
+            Ok(KnowledgeNodeV2 {
                 node_id,
-                node_kind_id,
-                payload_digest,
+                node_kind_id: stable_digest_id(
+                    "kg-kind:v1:",
+                    b"hepta:cognitive:kg-node-kind:v1",
+                    &[node.entity_type.as_bytes()],
+                )?,
+                payload_digest: framed_digest32(
+                    b"hepta:cognitive:kg-node-payload:v1",
+                    &[
+                        node.canonical_entity_id.as_bytes(),
+                        node.entity_type.as_bytes(),
+                        node.label.as_bytes(),
+                    ],
+                ),
                 supports,
-            },
-        )
-        .collect::<Vec<_>>();
+            })
+        })
+        .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
 
     let mut canonical_edges = BTreeMap::<KnowledgeEdgeIdentityV2, Vec<KnowledgeSupportV2>>::new();
     for edge in edges {
@@ -880,7 +878,7 @@ impl CognitiveStore {
             let entity_type: String = row.try_get("entity_type").map_err(unavailable)?;
             let label: String = row.try_get("label").map_err(unavailable)?;
             if let Some(shape) = canonical_shapes.get(&stored_canonical_entity_id) {
-                if shape != &(entity_type.clone(), label.clone()) {
+                if (shape.0.as_str(), shape.1.as_str()) != (entity_type.as_str(), label.as_str()) {
                     return Err(CognitiveStoreError::Conflict(format!(
                         "active KG supports disagree on type or label for {stored_canonical_entity_id}"
                     )));

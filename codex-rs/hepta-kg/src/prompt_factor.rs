@@ -216,3 +216,7 @@ impl fmt::Display for PromptFactorProjectionErrorV1 {
 }
 
 impl StdError for PromptFactorProjectionErrorV1 {}
+
+#[cfg(all(test, unix))]
+#[path = "prompt_factor_tests.rs"]
+mod tests;

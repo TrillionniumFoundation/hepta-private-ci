@@ -63,6 +63,15 @@ pub(crate) struct CanonicalFactSet {
     pub(crate) relations: Vec<CanonicalRelationFact>,
 }
 
+/// Exact correction inputs consumed inside the caller's existing transaction.
+pub(crate) struct KgCorrectionInput<'a> {
+    pub(crate) memory_id: &'a StableMemoryId,
+    pub(crate) expected_revision: u64,
+    pub(crate) source: &'a SourceDraft,
+    pub(crate) draft: &'a MemoryRevisionDraft,
+    pub(crate) facts: &'a KgFactSetDraft,
+}
+
 impl CognitiveStore {
     /// Atomically appends the cited source, creates the first memory revision,
     /// persists its immutable structured facts, and publishes the next complete
@@ -142,11 +151,13 @@ impl CognitiveStore {
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
-                source,
-                draft,
-                facts,
+                KgCorrectionInput {
+                    memory_id,
+                    expected_revision,
+                    source,
+                    draft,
+                    facts,
+                },
             )
             .await?;
         transaction.commit().await.map_err(unavailable)?;
@@ -157,12 +168,15 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
-        source: &SourceDraft,
-        draft: &MemoryRevisionDraft,
-        facts: &KgFactSetDraft,
+        input: KgCorrectionInput<'_>,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let KgCorrectionInput {
+            memory_id,
+            expected_revision,
+            source,
+            draft,
+            facts,
+        } = input;
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active
