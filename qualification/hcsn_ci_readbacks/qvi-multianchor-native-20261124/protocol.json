@@ -1,0 +1,113 @@
+{
+  "schema": "hepta-qvi-multianchor-native-v1",
+  "frozen_before_any_parameter_fit": true,
+  "evidence_base": "f8a6b335d8499a8546aac8a46dd6128518650cfd",
+  "science_source": "610f91087b598656f7f3913e600c705b95bf071f",
+  "scope": "Original two-QVI-neuron diagnostic; preserve receiver 49 outputs while moving source boundary -0.01. Existing readout coefficients only; no new features, state, reset laws, labels or task objective.",
+  "fixture": "qualification/hcsn_halfline_transport/verify_qvi_finite_bridge.py",
+  "supports": {
+    "original": [
+      "A.spike_cost",
+      "B.input_offset"
+    ],
+    "readout": [
+      "A.spike_cost",
+      "B.input_offset",
+      "existing_projection[0]",
+      "existing_projection[1]"
+    ]
+  },
+  "support_qualification": "Projection values already occur in original graph but were frozen in the prior two-coordinate protocol. This explicitly enlarged edit mask is compared to identical-support BP; it does not invalidate the old two-coordinate lower bound.",
+  "fixed_coefficients": {
+    "DIRECT": 0.31,
+    "SIGNED": 0.48
+  },
+  "boundary_displacement": -0.01,
+  "anchor_sets": {
+    "one": [
+      0.72
+    ],
+    "two": [
+      0.72,
+      1.4
+    ],
+    "three": [
+      0.65,
+      0.72,
+      1.4
+    ],
+    "five": [
+      0.6,
+      0.72,
+      0.9,
+      1.15,
+      1.4
+    ],
+    "nine": [
+      0.6,
+      0.65,
+      0.72,
+      0.8,
+      0.9,
+      1.02,
+      1.15,
+      1.27,
+      1.4
+    ]
+  },
+  "validation": {
+    "fit_use": false,
+    "retention_midpoints": {
+      "count": 257,
+      "low": 0.6,
+      "high": 1.4,
+      "formula": "low+(i+0.5)*(high-low)/count"
+    },
+    "extrapolation_midpoints": {
+      "count": 64,
+      "low": 1.4,
+      "high": 2.4,
+      "formula": "low+(i+0.5)*(high-low)/count"
+    },
+    "claim": "Unseen continuous-valued initial conditions, finite deterministic validation; not a proof over every real initial state and not fresh task sources."
+  },
+  "arms": [
+    "KEEP",
+    "CONST_ORIGINAL_ANCHOR",
+    "CONST_ANCHOR_MINIMAX",
+    "READOUT_NATIVE_BOUNDED_LS",
+    "READOUT_BP_CONDITIONAL",
+    "READOUT_BP_JOINT"
+  ],
+  "objectives": {
+    "native": "Analytic cost inversion enforces target boundary; minimize mean squared receiver-start error on all fit anchors over the three readout coordinates within the box. Enumerate all 27 active/free patterns with deterministic small least squares.",
+    "bp_conditional": "Same analytic cost and exactly same three-coordinate bounded least-squares problem; gradients through actual Torch FP64 readout.",
+    "bp_joint": "Joint four-coordinate bounded optimization of squared boundary discrepancy plus mean squared receiver-start discrepancy, all from identical original initialization.",
+    "const_minimax": "Analytic cost and minimax constant offset over fit anchors, original two-coordinate mask.",
+    "const_original": "Original single-anchor compensation at 0.72, original two-coordinate mask."
+  },
+  "limits": {
+    "max_abs_parameter_delta": 0.1,
+    "native_fit_start_abs": 1e-10,
+    "boundary_abs": 1e-07,
+    "receiver_49_outputs_inf": 1e-07,
+    "native_svd_relative_cutoff": 1e-12,
+    "native_jacobi_sweeps": 64
+  },
+  "bp_solver": {
+    "name": "SciPy L-BFGS-B with Torch FP64 exact first derivatives",
+    "maxiter": 40,
+    "maxfun": 60,
+    "maxls": 20,
+    "gtol": 1e-13,
+    "ftol": 1e-16,
+    "initialization": "original parameters; conditional cost already fixed analytically",
+    "bounds": "per-coordinate original +/-0.1; source cost also strictly positive"
+  },
+  "infeasibility_certificate": "For recorded FP64 A,r and box L, any witness u gives inf_delta ||A delta-r||inf >= |u^T r|-L||A^T u||1. Rust outward-rounded arithmetic reports a conservative lower bound. This certifies the recorded finite linear problem, not continuum physical arithmetic.",
+  "acceptance": "Boundary, parameter box, every fit anchor and all 321 unseen initial states must pass unchanged 1e-7 receiver-output gate. Native plan fit gate is separate. No new tolerance or validation selection after results.",
+  "rollback": "Write diagnostic candidate in isolated checkpoint store, reopen and verify entire fixed validation. Commit locally only if every gate passes; otherwise restore original bytes and record pre/post SHA256 equality. No production publication or trading authority.",
+  "comparison": "All arms include common baseline/target preparation, solve time, independent validation time and process overhead. One warm solver call then three timed alternating repeats; no repeated end-to-end data selection. Report CPU time, peak RSS, gradient calls and forward calls. Torch one CPU thread; no GPU or remote training.",
+  "budget": "At most 5 anchor sets x 2 BP arms x 4 (warm+timed) solves x solver configured maxfun 60; record any line-search overrun. No hyperparameter search; numerical bug fixes get separate attempt records.",
+  "reporting": "Keep every arm, all fit/validation errors, failures, solver termination, source/output hashes. Distinguish local improvement, fit feasibility, finite validation and any unclosed task/production claim."
+}
