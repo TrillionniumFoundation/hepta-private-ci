@@ -50,7 +50,6 @@ pub struct GatedHeadCandidateV2 {
 struct GatedHeadArtifactV2 {
     candidate: GatedHeadCandidateV2,
     head_digest: String,
-    parameter_count: usize,
 }
 
 /// Qualification-only CPU driver; no signed artifact load/worker CAS.
@@ -121,7 +120,6 @@ impl GatedHeadCpuDriverV2 {
             GatedHeadArtifactV2 {
                 candidate,
                 head_digest: head_digest.clone(),
-                parameter_count,
             },
         );
         self.tensor_bytes = next_bytes;
@@ -1116,7 +1114,7 @@ mod tests {
             GatedHeadCpuDriverV2::catalog_digest_for(&[first.clone(), second.clone()]),
             Err(Error::ModelAlreadyLoaded)
         );
-        let selected = manifest_for(&[first.clone()]);
+        let selected = manifest_for(std::slice::from_ref(&first));
         let mut driver = GatedHeadCpuDriverV2::new(selected).expect("driver");
         driver.register_head(first).expect("first");
         assert_eq!(driver.register_head(second), Err(Error::ModelAlreadyLoaded));
