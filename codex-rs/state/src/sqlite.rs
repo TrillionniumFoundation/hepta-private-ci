@@ -335,7 +335,7 @@ impl SqliteConfig {
             .foreign_keys(true)
             .busy_timeout(Duration::from_secs(5))
             .log_statements(LevelFilter::Off);
-        let mut connection = super::sqlite_private_owner::with_private_owner(options)?
+        let mut connection = Self::with_private_creation_owner(options)?
             .connect()
             .await?;
         let checkpoint = async {

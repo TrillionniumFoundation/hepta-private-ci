@@ -1,4 +1,3 @@
-use super::with_private_owner;
 use crate::SqliteConfig;
 use crate::runtime::test_support::unique_temp_dir;
 use codex_utils_absolute_path::test_support::PathExt;
@@ -82,7 +81,7 @@ async fn private_readonly_sqlx_worker_retains_the_explicit_vfs() -> anyhow::Resu
     sqlx::query("CREATE TABLE fact(value INTEGER); INSERT INTO fact VALUES (9)")
         .execute(&writer)
         .await?;
-    let options = with_private_owner(
+    let options = SqliteConfig::with_private_creation_owner(
         SqliteConnectOptions::new()
             .filename(&path)
             .create_if_missing(false)

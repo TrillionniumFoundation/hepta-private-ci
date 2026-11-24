@@ -22,28 +22,34 @@ use sqlx::sqlite::SqliteSynchronous;
 use std::path::Path;
 use std::time::Duration;
 
-pub(super) fn with_private_owner(
-    options: SqliteConnectOptions,
-) -> Result<SqliteConnectOptions, Error> {
-    #[cfg(windows)]
-    {
-        let name = libsqlite3_sys::hepta_win32_owner_vfs_name().map_err(|code| {
-            Error::Protocol(format!(
-                "private SQLite creation owner is unavailable: {code}"
-            ))
-        })?;
-        let name = name.to_str().map_err(|error| {
-            Error::Protocol(format!("invalid private SQLite VFS name: {error}"))
-        })?;
-        Ok(options.vfs(name))
-    }
-    #[cfg(not(windows))]
-    {
-        Ok(options)
-    }
-}
-
 impl SqliteConfig {
+    /// Select creation ownership for an already-private connection configuration.
+    ///
+    /// This changes only the Windows VFS selection, preserving the caller's
+    /// read-only, timeout, journal and other settings. It is an explicit opt-in,
+    /// not private-directory or recovery-identity validation. Registration errors
+    /// must propagate before a worker opens the database; Unix options are unchanged.
+    pub fn with_private_creation_owner(
+        options: SqliteConnectOptions,
+    ) -> Result<SqliteConnectOptions, Error> {
+        #[cfg(windows)]
+        {
+            let name = libsqlite3_sys::hepta_win32_owner_vfs_name().map_err(|code| {
+                Error::Protocol(format!(
+                    "private SQLite creation owner is unavailable: {code}"
+                ))
+            })?;
+            let name = name.to_str().map_err(|error| {
+                Error::Protocol(format!("invalid private SQLite VFS name: {error}"))
+            })?;
+            Ok(options.vfs(name))
+        }
+        #[cfg(not(windows))]
+        {
+            Ok(options)
+        }
+    }
+
     /// Open a private writable database using the ordinary state-DB settings.
     ///
     /// The caller owns private-directory and pathname validation. On Windows
@@ -60,7 +66,7 @@ impl SqliteConfig {
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
             .max_connections(5)
-            .connect_with(with_private_owner(options)?)
+            .connect_with(Self::with_private_creation_owner(options)?)
             .await
     }
 
@@ -83,7 +89,7 @@ impl SqliteConfig {
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
             .max_connections(5)
-            .connect_with(with_private_owner(options)?)
+            .connect_with(Self::with_private_creation_owner(options)?)
             .await
     }
 }

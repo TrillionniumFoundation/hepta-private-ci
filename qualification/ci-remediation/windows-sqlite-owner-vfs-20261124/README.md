@@ -118,6 +118,15 @@ paths are not reclassified as private by this change. Existing directory, object
 identity and recovery checks remain separate requirements; in particular the
 unavailable identity-bound and immutable recovery openers remain unavailable.
 
+The opt-in H4 harness inspects a live cognitive writer with a separate read-only
+connection. It uses `SqliteConfig::with_private_creation_owner` to share the
+writer's policy while preserving its existing read-only, single-connection and
+five-second timeout settings. The helper only selects the Windows VFS; it does
+not validate a directory or claim H4 physical power-loss qualification. The
+qualification-only `product_database` importer remains outside this change: its
+Windows directory/owner checks need an independent implementation, and changing
+its VFS alone would not establish its stated private-snapshot contract.
+
 Two additional state tests exercise actual SQLx workers: multiple simultaneous
 private pool connections with live DB/WAL/SHM validation and close/reopen, and a
 private read-only connection with rejected writes. Both inspect the actual VFS
