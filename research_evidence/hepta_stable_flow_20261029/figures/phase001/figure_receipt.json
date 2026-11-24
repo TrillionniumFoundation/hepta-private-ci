@@ -9,8 +9,8 @@
     },
     {
       "path": "hepta_phase_dynamics.svg",
-      "bytes": 155289,
-      "sha256": "1270cc447d9d32e72d6e4b482aab7c44c6ede5f4a57a5f8e239ae87a2f07ba39"
+      "bytes": 151813,
+      "sha256": "43f39ee9044a7b643218a58200c0c72115aa09ae36daf39f0374ecfc78259450"
     },
     {
       "path": "hepta_phase_dynamics.pdf",
@@ -18,5 +18,12 @@
       "sha256": "702070a551d7bfbfbc0c234676cf274d7887fa6fef97e4cdb0663f72e0c5331b"
     }
   ],
-  "interpretation": "Selected untrained parameters; continuous oscillations and actual numerical failures retained"
+  "interpretation": "Selected untrained parameters; continuous oscillations and actual numerical failures retained",
+  "svg_whitespace_derivation": {
+    "archive": "original-svg-evidence.tar.gz",
+    "archive_sha256": "4a4d3d3f2885e2ac6989e278194750f7e23392baa44d670c15b751f2f4104408",
+    "original_manifest": "figure_receipt.json",
+    "original_manifest_sha256": "ea30eb578fa6905b7e3e668b06cfcb16f77eee9ed576c4d8c71a5ea9c1310294",
+    "normalization": "Only trailing formatting whitespace was removed. Figure data, vector text, PNGs and PDFs are unchanged; the original SVG bytes and receipt are in the archive."
+  }
 }
