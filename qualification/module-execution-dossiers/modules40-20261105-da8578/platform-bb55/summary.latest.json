@@ -1,0 +1,697 @@
+{
+  "kind": "read_only_platform_observation",
+  "sourceCandidate": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+  "sourceTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+  "polls": [
+    {
+      "directory": "poll-0001",
+      "observedAtUtc": "2026-11-05 15:50:19 UTC"
+    },
+    {
+      "directory": "poll-0002",
+      "observedAtUtc": "2026-11-05 15:53:20 UTC"
+    },
+    {
+      "directory": "poll-0003",
+      "observedAtUtc": "2026-11-05 15:54:21 UTC"
+    },
+    {
+      "directory": "poll-0004",
+      "observedAtUtc": "2026-11-05 16:03:22 UTC"
+    }
+  ],
+  "evidenceBoundary": "Run/job head_sha identifies the source associated with the run. A base-merge lane's executed commit/tree must be established separately from its logs or receipts; no live merge identity is promoted here.",
+  "mutationsPerformed": false,
+  "runs": [
+    {
+      "id": 42058691662,
+      "name": "v8-canary",
+      "workflowPath": ".github/workflows/v8-canary.yml",
+      "event": "pull_request",
+      "reportedHeadSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "reportedHeadBranch": "integration/modules40-final-20261105-da8578",
+      "eventBaseFromRunApi": [
+        {
+          "number": 4888,
+          "base": "07378034e060f23259bc99c7367f12b1284140f3",
+          "head": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+        }
+      ],
+      "runAttempt": 1,
+      "runStatus": "in_progress",
+      "runConclusion": null,
+      "observedAtUtc": "2026-11-05 16:03:22 UTC",
+      "runEvidence": "poll-0004/runs.raw.json",
+      "jobEvidence": "poll-0004/jobs-42058691662.raw.json",
+      "jobCountReported": 1,
+      "jobCountRetained": 1,
+      "jobStatusCounts": {
+        "in_progress": 1
+      },
+      "runningJobs": [
+        {
+          "id": 127354029946,
+          "name": "metadata",
+          "runnerId": 1000001906,
+          "runnerName": "GitHub Actions 1000001906",
+          "labels": [
+            "ubuntu-latest"
+          ],
+          "startedAt": "2026-11-05T16:01:17Z",
+          "currentSteps": [
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 2,
+              "started_at": "2026-11-05T16:01:19Z",
+              "completed_at": null
+            }
+          ]
+        }
+      ],
+      "queuedJobs": [],
+      "terminalJobs": [],
+      "executedMergeCommit": null,
+      "executedMergeTree": null
+    },
+    {
+      "id": 42058691681,
+      "name": "Hepta architecture convergence",
+      "workflowPath": ".github/workflows/hepta-architecture-convergence.yml",
+      "event": "pull_request",
+      "reportedHeadSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "reportedHeadBranch": "integration/modules40-final-20261105-da8578",
+      "eventBaseFromRunApi": [
+        {
+          "number": 4888,
+          "base": "07378034e060f23259bc99c7367f12b1284140f3",
+          "head": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+        }
+      ],
+      "runAttempt": 1,
+      "runStatus": "queued",
+      "runConclusion": null,
+      "observedAtUtc": "2026-11-05 16:03:22 UTC",
+      "runEvidence": "poll-0004/runs.raw.json",
+      "jobEvidence": "poll-0004/jobs-42058691681.raw.json",
+      "jobCountReported": 2,
+      "jobCountRetained": 2,
+      "jobStatusCounts": {
+        "queued": 2
+      },
+      "runningJobs": [],
+      "queuedJobs": [
+        {
+          "id": 127354030487,
+          "name": "Architecture convergence (source-head)",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04-arm"
+          ]
+        },
+        {
+          "id": 127354031045,
+          "name": "Architecture convergence (base-merge)",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04-arm"
+          ]
+        }
+      ],
+      "terminalJobs": [],
+      "executedMergeCommit": null,
+      "executedMergeTree": null
+    },
+    {
+      "id": 42058691726,
+      "name": "Rust UI product foundation",
+      "workflowPath": ".github/workflows/ui-product-foundation.yml",
+      "event": "pull_request",
+      "reportedHeadSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "reportedHeadBranch": "integration/modules40-final-20261105-da8578",
+      "eventBaseFromRunApi": [
+        {
+          "number": 4888,
+          "base": "07378034e060f23259bc99c7367f12b1284140f3",
+          "head": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+        }
+      ],
+      "runAttempt": 1,
+      "runStatus": "queued",
+      "runConclusion": null,
+      "observedAtUtc": "2026-11-05 16:03:22 UTC",
+      "runEvidence": "poll-0004/runs.raw.json",
+      "jobEvidence": "poll-0004/jobs-42058691726.raw.json",
+      "jobCountReported": 5,
+      "jobCountRetained": 5,
+      "jobStatusCounts": {
+        "queued": 5
+      },
+      "runningJobs": [],
+      "queuedJobs": [
+        {
+          "id": 127354030431,
+          "name": "Original native presentation / base-merge",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354030750,
+          "name": "Generate UI dependency lock for review",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354030818,
+          "name": "Original native presentation / source-head",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354030927,
+          "name": "Rust UI foundation / base-merge",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354030929,
+          "name": "Rust UI foundation / source-head",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        }
+      ],
+      "terminalJobs": [],
+      "executedMergeCommit": null,
+      "executedMergeTree": null
+    },
+    {
+      "id": 42058691782,
+      "name": "Windows original CI regressions (declared scope only)",
+      "workflowPath": ".github/workflows/hepta-windows-current-ci.yml",
+      "event": "pull_request",
+      "reportedHeadSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "reportedHeadBranch": "integration/modules40-final-20261105-da8578",
+      "eventBaseFromRunApi": [
+        {
+          "number": 4888,
+          "base": "07378034e060f23259bc99c7367f12b1284140f3",
+          "head": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+        }
+      ],
+      "runAttempt": 1,
+      "runStatus": "in_progress",
+      "runConclusion": null,
+      "observedAtUtc": "2026-11-05 16:03:22 UTC",
+      "runEvidence": "poll-0004/runs.raw.json",
+      "jobEvidence": "poll-0004/jobs-42058691782.raw.json",
+      "jobCountReported": 1,
+      "jobCountRetained": 1,
+      "jobStatusCounts": {
+        "in_progress": 1
+      },
+      "runningJobs": [
+        {
+          "id": 127354039308,
+          "name": "original-regressions",
+          "runnerId": 1000001839,
+          "runnerName": "GitHub Actions 1000001839",
+          "labels": [
+            "windows-latest"
+          ],
+          "startedAt": "2026-11-05T15:50:33Z",
+          "currentSteps": [
+            {
+              "name": "Run the original process, transport and backend regressions",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 6,
+              "started_at": "2026-11-05T15:51:17Z",
+              "completed_at": null
+            }
+          ]
+        }
+      ],
+      "queuedJobs": [],
+      "terminalJobs": [],
+      "executedMergeCommit": null,
+      "executedMergeTree": null
+    },
+    {
+      "id": 42058691802,
+      "name": "blocking-ci",
+      "workflowPath": ".github/workflows/blocking-ci.yml",
+      "event": "pull_request",
+      "reportedHeadSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "reportedHeadBranch": "integration/modules40-final-20261105-da8578",
+      "eventBaseFromRunApi": [
+        {
+          "number": 4888,
+          "base": "07378034e060f23259bc99c7367f12b1284140f3",
+          "head": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+        }
+      ],
+      "runAttempt": 1,
+      "runStatus": "queued",
+      "runConclusion": null,
+      "observedAtUtc": "2026-11-05 16:03:22 UTC",
+      "runEvidence": "poll-0004/runs.raw.json",
+      "jobEvidence": "poll-0004/jobs-42058691802.raw.json",
+      "jobCountReported": 3,
+      "jobCountRetained": 3,
+      "jobStatusCounts": {
+        "queued": 2,
+        "failure": 1
+      },
+      "runningJobs": [],
+      "queuedJobs": [
+        {
+          "id": 127354031142,
+          "name": "Select blocking CI scope",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354031747,
+          "name": "Blob size policy / Blob size policy",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        }
+      ],
+      "terminalJobs": [
+        {
+          "id": 127354031805,
+          "name": "Codespell / Check for spelling errors",
+          "conclusion": "failure",
+          "completedAt": "2026-11-05T16:01:50Z"
+        }
+      ],
+      "executedMergeCommit": null,
+      "executedMergeTree": null
+    },
+    {
+      "id": 42058691813,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "workflowPath": ".github/workflows/hepta-windows-private-state-native.yml",
+      "event": "pull_request",
+      "reportedHeadSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "reportedHeadBranch": "integration/modules40-final-20261105-da8578",
+      "eventBaseFromRunApi": [
+        {
+          "number": 4888,
+          "base": "07378034e060f23259bc99c7367f12b1284140f3",
+          "head": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+        }
+      ],
+      "runAttempt": 1,
+      "runStatus": "in_progress",
+      "runConclusion": null,
+      "observedAtUtc": "2026-11-05 16:03:22 UTC",
+      "runEvidence": "poll-0004/runs.raw.json",
+      "jobEvidence": "poll-0004/jobs-42058691813.raw.json",
+      "jobCountReported": 1,
+      "jobCountRetained": 1,
+      "jobStatusCounts": {
+        "in_progress": 1
+      },
+      "runningJobs": [
+        {
+          "id": 127354029766,
+          "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+          "runnerId": 1000001824,
+          "runnerName": "GitHub Actions 1000001824",
+          "labels": [
+            "windows-latest"
+          ],
+          "startedAt": "2026-11-05T15:48:54Z",
+          "currentSteps": [
+            {
+              "name": "Validate Agentd Prompt Runtime integration and reopened state",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 8,
+              "started_at": "2026-11-05T15:51:03Z",
+              "completed_at": null
+            }
+          ]
+        }
+      ],
+      "queuedJobs": [],
+      "terminalJobs": [],
+      "executedMergeCommit": null,
+      "executedMergeTree": null
+    },
+    {
+      "id": 42058691827,
+      "name": "Production HOS2 owner proposal",
+      "workflowPath": ".github/workflows/hepta-production-hos2-proposal.yml",
+      "event": "pull_request",
+      "reportedHeadSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "reportedHeadBranch": "integration/modules40-final-20261105-da8578",
+      "eventBaseFromRunApi": [
+        {
+          "number": 4888,
+          "base": "07378034e060f23259bc99c7367f12b1284140f3",
+          "head": "bb55b0d7d263c396ec504c45393d938c3428dae5"
+        }
+      ],
+      "runAttempt": 1,
+      "runStatus": "completed",
+      "runConclusion": "skipped",
+      "observedAtUtc": "2026-11-05 16:03:22 UTC",
+      "runEvidence": "poll-0004/runs.raw.json",
+      "jobEvidence": "poll-0004/jobs-42058691827.raw.json",
+      "jobCountReported": 1,
+      "jobCountRetained": 1,
+      "jobStatusCounts": {
+        "skipped": 1
+      },
+      "runningJobs": [],
+      "queuedJobs": [],
+      "terminalJobs": [
+        {
+          "id": 127354090994,
+          "name": "owner-candidate",
+          "conclusion": "skipped",
+          "completedAt": "2026-11-05T15:48:22Z"
+        }
+      ],
+      "executedMergeCommit": null,
+      "executedMergeTree": null
+    },
+    {
+      "id": 42058694002,
+      "name": "rust-ci-full",
+      "workflowPath": ".github/workflows/rust-ci-full.yml",
+      "event": "push",
+      "reportedHeadSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "reportedHeadBranch": "verification/modules40-20261105-da8578-bb55-full-ci",
+      "eventBaseFromRunApi": [],
+      "runAttempt": 1,
+      "runStatus": "queued",
+      "runConclusion": null,
+      "observedAtUtc": "2026-11-05 16:03:22 UTC",
+      "runEvidence": "poll-0004/runs.raw.json",
+      "jobEvidence": "poll-0004/jobs-42058694002.raw.json",
+      "jobCountReported": 24,
+      "jobCountRetained": 24,
+      "jobStatusCounts": {
+        "queued": 19,
+        "in_progress": 5
+      },
+      "runningJobs": [
+        {
+          "id": 127354042118,
+          "name": "Tests — windows-11-arm - aarch64-pc-windows-msvc / Build nextest archive",
+          "runnerId": 1000001916,
+          "runnerName": "GitHub Actions 1000001916",
+          "labels": [
+            "windows-latest"
+          ],
+          "startedAt": "2026-11-05T16:02:47Z",
+          "currentSteps": [
+            {
+              "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 5,
+              "started_at": "2026-11-05T16:03:16Z",
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 127354042203,
+          "name": "Lint/Build — windows-11-arm - aarch64-pc-windows-msvc",
+          "runnerId": 1000001844,
+          "runnerName": "GitHub Actions 1000001844",
+          "labels": [
+            "windows-11-arm"
+          ],
+          "startedAt": "2026-11-05T15:50:59Z",
+          "currentSteps": [
+            {
+              "name": "cargo clippy",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 21,
+              "started_at": "2026-11-05T15:53:24Z",
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 127354042311,
+          "name": "Lint/Build — windows-latest - x86_64-pc-windows-msvc (release)",
+          "runnerId": 1000001846,
+          "runnerName": "GitHub Actions 1000001846",
+          "labels": [
+            "windows-latest"
+          ],
+          "startedAt": "2026-11-05T15:51:06Z",
+          "currentSteps": [
+            {
+              "name": "Pre-warm dependency cache (cargo-chef)",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 19,
+              "started_at": "2026-11-05T15:52:17Z",
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 127354042546,
+          "name": "Lint/Build — windows-11-arm - aarch64-pc-windows-msvc (release)",
+          "runnerId": 1000001849,
+          "runnerName": "GitHub Actions 1000001849",
+          "labels": [
+            "windows-11-arm"
+          ],
+          "startedAt": "2026-11-05T15:51:27Z",
+          "currentSteps": [
+            {
+              "name": "Pre-warm dependency cache (cargo-chef)",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 19,
+              "started_at": "2026-11-05T15:53:50Z",
+              "completed_at": null
+            }
+          ]
+        },
+        {
+          "id": 127354042573,
+          "name": "Lint/Build — windows-latest - x86_64-pc-windows-msvc",
+          "runnerId": 1000001862,
+          "runnerName": "GitHub Actions 1000001862",
+          "labels": [
+            "windows-latest"
+          ],
+          "startedAt": "2026-11-05T15:53:01Z",
+          "currentSteps": [
+            {
+              "name": "cargo clippy",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 21,
+              "started_at": "2026-11-05T15:53:48Z",
+              "completed_at": null
+            }
+          ]
+        }
+      ],
+      "queuedJobs": [
+        {
+          "id": 127354041622,
+          "name": "Format / etc",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354041714,
+          "name": "Tests — ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Build nextest archive",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04-arm"
+          ]
+        },
+        {
+          "id": 127354041837,
+          "name": "Argument comment lint - macOS",
+          "runnerId": 0,
+          "labels": [
+            "macos-15"
+          ]
+        },
+        {
+          "id": 127354041868,
+          "name": "Argument comment lint package",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354041882,
+          "name": "Tests — macos-15 - aarch64-apple-darwin / Build nextest archive",
+          "runnerId": 0,
+          "labels": [
+            "macos-15"
+          ]
+        },
+        {
+          "id": 127354042033,
+          "name": "Lint/Build — macos-15 - aarch64-apple-darwin",
+          "runnerId": 0,
+          "labels": [
+            "macos-15"
+          ]
+        },
+        {
+          "id": 127354042042,
+          "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-gnu",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04-arm"
+          ]
+        },
+        {
+          "id": 127354042066,
+          "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-musl",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354042081,
+          "name": "Argument comment lint - Linux",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354042136,
+          "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-gnu",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354042201,
+          "name": "cargo shear",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354042219,
+          "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-musl",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04-arm"
+          ]
+        },
+        {
+          "id": 127354042247,
+          "name": "Argument comment lint - Windows",
+          "runnerId": 0,
+          "labels": [
+            "windows-latest"
+          ]
+        },
+        {
+          "id": 127354042291,
+          "name": "Tests — ubuntu-24.04 - x86_64-unknown-linux-gnu (remote) / Build nextest archive",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        },
+        {
+          "id": 127354042307,
+          "name": "Tests — windows-latest - x86_64-pc-windows-msvc / Build nextest archive",
+          "runnerId": 0,
+          "labels": [
+            "windows-latest"
+          ]
+        },
+        {
+          "id": 127354042313,
+          "name": "Lint/Build — macos-15 - aarch64-apple-darwin (release)",
+          "runnerId": 0,
+          "labels": [
+            "macos-15"
+          ]
+        },
+        {
+          "id": 127354042320,
+          "name": "Lint/Build — macos-15 - x86_64-apple-darwin",
+          "runnerId": 0,
+          "labels": [
+            "macos-15"
+          ]
+        },
+        {
+          "id": 127354042345,
+          "name": "Lint/Build — ubuntu-24.04-arm - aarch64-unknown-linux-musl (release)",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04-arm"
+          ]
+        },
+        {
+          "id": 127354042637,
+          "name": "Lint/Build — ubuntu-24.04 - x86_64-unknown-linux-musl (release)",
+          "runnerId": 0,
+          "labels": [
+            "ubuntu-24.04"
+          ]
+        }
+      ],
+      "terminalJobs": [],
+      "executedMergeCommit": null,
+      "executedMergeTree": null
+    }
+  ],
+  "firstObservedFailedJobs": [
+    {
+      "runId": 42058691802,
+      "jobId": 127354031805,
+      "name": "Codespell / Check for spelling errors",
+      "firstObservedAtUtc": "2026-11-05 16:03:22 UTC",
+      "jobCompletedAt": "2026-11-05T16:01:50Z",
+      "failedSteps": [
+        {
+          "name": "Codespell",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-11-05T16:01:31Z",
+          "completed_at": "2026-11-05T16:01:47Z"
+        }
+      ],
+      "rawEvidence": "poll-0004/jobs-42058691802.raw.json"
+    }
+  ]
+}

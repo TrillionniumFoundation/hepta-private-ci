@@ -1,0 +1,45 @@
+{
+  "source": {
+    "commit": "f5813506b49eb05efad00f203b9362195875892c",
+    "tree": "00d62de1c2f6ac8a229d23ce9d8e1b9f34b333df",
+    "status": ""
+  },
+  "runner_exit": 100,
+  "native_summary": "     Summary [ 124.236s] 1219 tests run: 1217 passed (1 slow), 1 failed, 1 timed out, 78 skipped",
+  "packages": [
+    "codex-hepta-agent-protocol",
+    "codex-hepta-agentd",
+    "codex-hepta-infer-worker-host",
+    "codex-hepta-runtime",
+    "codex-hepta-contracts",
+    "codex-hepta-learning-ledger",
+    "codex-hepta-supervisor"
+  ],
+  "preflight_sha256": "7e2d4617dc3215742552d7f477e98272a863709965a4b34945a5f11a503fe87e",
+  "original_test_receipt_sha256": "3d0a41edc4317b21b22da300518086d6ca7df06716820300744a3f8e396fb213",
+  "junit": {
+    "path": "/home/qq/work/hepta-modules40-20261105-da8578/evidence/seven-package-run1.junit.xml",
+    "sha256": "01a496eef41379e022cb756d146af778ad47fe915ba679741f66e75002a2fd42",
+    "bytes": 283555,
+    "mtime_ns": 1793888442014059800,
+    "fresh_for_run": true
+  },
+  "junit_case_count": 1219,
+  "audit_exit": 1,
+  "qualification_checks": {
+    "maps-qualification": 0,
+    "status-facts": 0,
+    "module-registry": 0,
+    "documents-qualification": 0,
+    "chef-custody": 0,
+    "rust-ci-feedback": 0,
+    "module-docs-metadata": 0
+  },
+  "source_after": {
+    "commit": "f5813506b49eb05efad00f203b9362195875892c",
+    "tree": "00d62de1c2f6ac8a229d23ce9d8e1b9f34b333df",
+    "status": ""
+  },
+  "complete_unix_ns": 1793888448465588000,
+  "qualified_scope": "source regression and navigation only; production and external acceptance remain unchanged"
+}
