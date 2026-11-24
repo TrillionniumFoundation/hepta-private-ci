@@ -260,3 +260,30 @@ fn prepublication_decodes_exact_input_and_rejects_static_cell_input_failures() -
     }
     Ok(())
 }
+
+#[test]
+fn prepublication_rejects_an_incomplete_candidate_layout() -> anyhow::Result<()> {
+    let mut fixture = Preflight::new()?;
+    let manifest = &fixture.target.config.manifest;
+    validation::require_executable_feature(
+        &fixture.decision.bundle,
+        manifest,
+        &fixture.model,
+        &fixture.definition,
+        &fixture.source,
+    )?;
+    let before = fixture.bytes()?;
+    assert!(fixture.source.candidates.pop().is_some());
+    assert!(matches!(
+        validation::require_executable_feature(
+            &fixture.decision.bundle,
+            manifest,
+            &fixture.model,
+            &fixture.definition,
+            &fixture.source,
+        ),
+        Err(Error::Binding("C candidate mask differs from definition"))
+    ));
+    assert_eq!(fixture.bytes()?, before);
+    Ok(())
+}
