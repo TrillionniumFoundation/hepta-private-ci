@@ -39,6 +39,14 @@ const MAX_RETIRED_IDS: usize = 16_384;
 /// digested plans by the caller.
 pub const MAX_MICROBATCH_REQUESTS_V1: usize = 256;
 
+/// Named principal and scope dimensions of a shared feature snapshot.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct FeatureSnapshotScopeV1 {
+    pub scope: StableId,
+    pub workspace: StableId,
+    pub purpose: StableId,
+}
+
 /// Source and model lineage required to identify a shared feature result.
 /// Every digest is validated by the identity constructor before use.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -83,10 +91,23 @@ impl FeatureSnapshotIdentityV1 {
         purpose: StableId,
         lineage: FeatureSnapshotLineageV1,
     ) -> Result<Self, DataPlaneError> {
-        Self::new_with_question_options(
+        Self::from_scope(
+            FeatureSnapshotScopeV1 {
+                scope,
+                workspace,
+                purpose,
+            },
+            lineage,
+        )
+    }
+
+    /// Builds an identity with named scope dimensions to avoid positional mix-ups.
+    pub fn from_scope(
+        scope: FeatureSnapshotScopeV1,
+        lineage: FeatureSnapshotLineageV1,
+    ) -> Result<Self, DataPlaneError> {
+        Self::from_scope_with_question_options(
             scope,
-            workspace,
-            purpose,
             tagged_digest(b"legacy.question", lineage.source_frontier, lineage.model),
             tagged_digest(b"legacy.options", lineage.source_frontier, lineage.adapter),
             lineage,
@@ -103,10 +124,29 @@ impl FeatureSnapshotIdentityV1 {
         options: Digest32,
         lineage: FeatureSnapshotLineageV1,
     ) -> Result<Self, DataPlaneError> {
+        Self::from_scope_with_question_options(
+            FeatureSnapshotScopeV1 {
+                scope,
+                workspace,
+                purpose,
+            },
+            question,
+            options,
+            lineage,
+        )
+    }
+
+    /// Builds a fully explicit cache identity with named scope dimensions.
+    pub fn from_scope_with_question_options(
+        scope: FeatureSnapshotScopeV1,
+        question: Digest32,
+        options: Digest32,
+        lineage: FeatureSnapshotLineageV1,
+    ) -> Result<Self, DataPlaneError> {
         let identity = Self {
-            scope,
-            workspace,
-            purpose,
+            scope: scope.scope,
+            workspace: scope.workspace,
+            purpose: scope.purpose,
             question,
             options,
             source_frontier: lineage.source_frontier,
