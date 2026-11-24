@@ -123,9 +123,7 @@ async fn recovery_case_with_resume(
         ]),
     )
     .await;
-    let directory = tempfile::Builder::new()
-        .prefix("hitr-")
-        .tempdir_in("/tmp")?;
+    let directory = crate::native_app_server::test_process::host_tempdir("hitr-")?;
     let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13")?;
     let host = CognitiveTestHost::start(
         directory.path().join("host"),

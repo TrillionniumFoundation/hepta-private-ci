@@ -15,6 +15,19 @@ const HOST_CASE_ENV: &str = "HEPTA_NATIVE_ISOLATED_HOST_CASE";
 const HOST_DONE_ENV: &str = "HEPTA_NATIVE_ISOLATED_HOST_DONE";
 const HOST_TIMEOUT: Duration = Duration::from_secs(50);
 
+// Leave room for the generated fixture name and the nested Fleet sockets;
+// Darwin's default per-user temporary location can exceed sun_path.
+pub(super) fn host_tempdir(prefix: &str) -> std::io::Result<tempfile::TempDir> {
+    let configured = std::env::temp_dir();
+    let root = if configured.is_absolute() && configured.as_os_str().as_encoded_bytes().len() <= 32
+    {
+        configured.as_path()
+    } else {
+        std::path::Path::new("/tmp")
+    };
+    tempfile::Builder::new().prefix(prefix).tempdir_in(root)
+}
+
 pub(super) struct HostCompletion {
     path: PathBuf,
     test_name: &'static str,

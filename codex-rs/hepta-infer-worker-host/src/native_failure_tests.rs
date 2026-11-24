@@ -252,7 +252,7 @@ async fn worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss() -> 
         );
     }
     let response_mock = responses::mount_response_sequence(&server, sequence).await;
-    let directory = tempfile::Builder::new().prefix("hnf-").tempdir_in("/tmp")?;
+    let directory = crate::native_app_server::test_process::host_tempdir("hnf-")?;
     // One parent host serves both cases; its immutable process home is never reset.
     let host = CognitiveTestHost::start(
         directory.path().join("host"),

@@ -94,7 +94,7 @@ async fn real_agentd_reconciles_reopened_worker_without_replaying_provider() -> 
     .await;
     // Keep Unix socket paths bounded even when the platform's default temp
     // directory includes a long per-user prefix.
-    let directory = tempfile::Builder::new().prefix("hnr-").tempdir_in("/tmp")?;
+    let directory = crate::native_app_server::test_process::host_tempdir("hnr-")?;
     let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13")?;
     let host = CognitiveTestHost::start(
         directory.path().join("host"),
@@ -317,7 +317,7 @@ async fn recover_non_success_terminal(physical_status: NativeRunStatus) -> Resul
             .set_delay(Duration::from_secs(20))
     };
     let response_mock = responses::mount_response_once(&server, response).await;
-    let directory = tempfile::Builder::new().prefix("hnm-").tempdir_in("/tmp")?;
+    let directory = crate::native_app_server::test_process::host_tempdir("hnm-")?;
     let host = CognitiveTestHost::start(
         directory.path().join("host"),
         AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c15")?,

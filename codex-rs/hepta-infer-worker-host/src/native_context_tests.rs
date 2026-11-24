@@ -70,9 +70,7 @@ async fn delivery_off_withholds_physical_context_but_keeps_revalidation_and_repl
         ]))
     });
     let mock = responses::mount_response_sequence(&server, sequence.to_vec()).await;
-    let fixture = tempfile::Builder::new()
-        .prefix("hdlv-")
-        .tempdir_in("/tmp")?;
+    let fixture = crate::native_app_server::test_process::host_tempdir("hdlv-")?;
     let host = CognitiveTestHost::start_explicit_context_only(
         fixture.path().join("host"),
         std::env::current_exe()?,

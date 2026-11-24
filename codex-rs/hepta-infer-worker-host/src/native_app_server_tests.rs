@@ -537,9 +537,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let response_mock = responses::mount_sse_once(&server, response).await;
 
     // Keep the fixture control socket within Darwin's Unix-domain path bound.
-    let fixture = tempfile::Builder::new()
-        .prefix("hwkr-")
-        .tempdir_in("/tmp")?;
+    let fixture = crate::native_app_server::test_process::host_tempdir("hwkr-")?;
     let root = fixture.path().join("host");
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
     let host = CognitiveTestHost::start(
@@ -1237,9 +1235,7 @@ async fn missing_terminal_message_reads_original_rpc_without_second_dispatch() -
         responses::ev_completed("resp-terminal-content-recovery"),
     ]);
     let response_mock = responses::mount_sse_once(&server, response).await;
-    let fixture = tempfile::Builder::new()
-        .prefix("hntr-")
-        .tempdir_in("/tmp")?;
+    let fixture = crate::native_app_server::test_process::host_tempdir("hntr-")?;
     let host = CognitiveTestHost::start(
         fixture.path().join("host"),
         codex_hepta_contracts::AgentId::parse(AGENT_ID)?,
