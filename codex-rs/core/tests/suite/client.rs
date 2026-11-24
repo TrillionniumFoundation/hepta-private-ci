@@ -1,3 +1,4 @@
+use super::durable_history::persisted_response_items;
 use codex_config::test_support::CloudConfigBundleFixture;
 use codex_config::types::AuthCredentialsStoreMode;
 use codex_core::ModelClient;
@@ -107,20 +108,6 @@ const TEST_INSTALLATION_ID: &str = "11111111-1111-4111-8111-111111111111";
 
 fn rollout_response_item(item: ResponseItem) -> RolloutItem {
     RolloutItem::ResponseItem(item.into())
-}
-
-async fn persisted_response_items(test: &TestCodex) -> anyhow::Result<Vec<serde_json::Value>> {
-    test.codex.flush_rollout().await?;
-    let history = test.codex.load_history(/*include_archived*/ false).await?;
-    Ok(history
-        .items
-        .into_iter()
-        .filter_map(|item| match item {
-            RolloutItem::ResponseItem(envelope) => Some(envelope.item),
-            _ => None,
-        })
-        .map(serde_json::to_value)
-        .collect::<Result<_, _>>()?)
 }
 
 fn test_turn_responses_metadata(

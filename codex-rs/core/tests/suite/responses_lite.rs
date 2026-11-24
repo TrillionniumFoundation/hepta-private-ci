@@ -1,3 +1,4 @@
+use super::durable_history::persisted_response_items;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -272,13 +273,33 @@ async fn responses_lite_prepares_images() -> Result<()> {
 
     let request = response_mock.single_request();
     assert!(request.has_content_kinds(&["user.image", "images.preparation_error"]));
-    let user_content = request
+    let user_message = request
         .input()
         .into_iter()
         .rev()
         .find(|item| item.get("role").and_then(Value::as_str) == Some("user"))
-        .and_then(|item| item.get("content").and_then(Value::as_array).cloned())
-        .context("request should contain user content")?;
+        .context("request should contain the image user message")?;
+    let user_item_id = user_message["id"]
+        .as_str()
+        .context("image user message should retain its original item ID")?;
+    let history = persisted_response_items(&test).await?;
+    let mut matches = history
+        .into_iter()
+        .filter(|item| item["id"].as_str() == Some(user_item_id));
+    let mut persisted = matches
+        .next()
+        .context("image user message was not persisted")?;
+    assert!(matches.next().is_none());
+    assert_eq!(persisted["content"][0]["detail"], "original");
+    persisted["content"][0]
+        .as_object_mut()
+        .context("persisted image content should be an object")?
+        .remove("detail");
+    assert_eq!(persisted, user_message);
+    let user_content = user_message["content"]
+        .as_array()
+        .context("request should contain user content")?
+        .clone();
     assert_eq!(
         user_content,
         vec![

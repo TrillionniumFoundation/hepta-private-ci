@@ -587,6 +587,22 @@ fn reference_backend_binds_request_and_model_id_boundaries() {
 }
 
 #[test]
+fn reference_output_digest_v2_binds_output_shape() {
+    let request = HeadExecutionRequestV1 {
+        request_id: id("request"),
+        model_id: id("model"),
+        generation: generation(/*value*/ 1),
+        snapshot: snapshot(/*encoder_generation*/ 1),
+    };
+    let head_digest = digest("same-head");
+    let output = [Q / 2, -Q / 4];
+    let observed = digest_output(&request, head_digest, &output);
+
+    assert_eq!(observed, digest_output(&request, head_digest, &output));
+    assert_ne!(observed, digest_output(&request, head_digest, &output[..1]));
+}
+
+#[test]
 fn retirement_receipts_bind_id_boundaries_and_generations() -> Result<(), DataPlaneError> {
     // Both records are valid. Their V1 byte streams were identical because
     // the first identifier could absorb one byte of the predecessor generation.

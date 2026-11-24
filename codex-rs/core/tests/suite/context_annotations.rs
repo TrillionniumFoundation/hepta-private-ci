@@ -1,3 +1,4 @@
+use super::durable_history::persisted_response_items;
 use anyhow::Result;
 use codex_core::TurnInputRequest;
 use codex_core::config::CurrentTimeReminderConfig;
@@ -18,6 +19,7 @@ use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
 use core_test_support::responses::mount_sse_once;
 use core_test_support::responses::sse;
+use core_test_support::responses::strip_response_item_ids_from_json;
 use core_test_support::skip_if_no_network;
 use core_test_support::wait_for_event;
 use pretty_assertions::assert_eq;
@@ -141,6 +143,11 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
 
     let request = response.single_request();
     assert!(request.has_content_kinds(&["guardian.approved_action"]));
+    let history = persisted_response_items(&test).await?;
+    assert_eq!(
+        strip_response_item_ids_from_json(serde_json::Value::Array(history)),
+        strip_response_item_ids_from_json(serde_json::Value::Array(request.input()))
+    );
     let mut guardian_item = request
         .input()
         .into_iter()
