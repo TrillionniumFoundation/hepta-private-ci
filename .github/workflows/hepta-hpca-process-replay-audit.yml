@@ -7,12 +7,16 @@ on:
       - "qualification/hpca-neuroscience-20261110/test_hpca_process_replay.py"
       - ".github/workflows/hepta-hpca-process-replay-audit.yml"
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   recorded-replay-consistency:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Verify archived pair without inference claim
         run: |
           cd qualification/hpca-neuroscience-20261110
