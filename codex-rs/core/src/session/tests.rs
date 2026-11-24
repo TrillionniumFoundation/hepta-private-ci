@@ -1594,6 +1594,7 @@ async fn stale_runtime_start_transition_drop_retains_witness_for_shutdown_drain(
             transition_identity,
             Arc::clone(&completion),
             Arc::clone(&cleanup_slot),
+            crate::tasks::TerminalizationAdmission::Closed,
         ));
 
     // Build the owner in Runtime A, shut that runtime down, and then destroy
@@ -1696,6 +1697,7 @@ async fn queued_start_transition_cleanup_not_polled_before_runtime_shutdown_reta
             transition_identity,
             Arc::clone(&completion),
             Arc::clone(&cleanup_slot),
+            crate::tasks::TerminalizationAdmission::Closed,
         ));
 
     // Drop the owner while a live current-thread runtime is executing its
@@ -1842,6 +1844,7 @@ async fn cancelled_start_transition_terminalizer_retains_failed_closed_witness()
             transition_identity,
             Arc::clone(&completion),
             Arc::clone(&cleanup_slot),
+            crate::tasks::TerminalizationAdmission::Closed,
         ));
 
     // Run the detached terminalizer far enough to enter the task abort
@@ -2028,7 +2031,7 @@ fn cleanup_slot_is_populated(session: &Arc<Session>) -> bool {
         .lock()
         .expect("start transition registry mutex should be healthy")
         .iter()
-        .any(|(_, _, cleanup)| {
+        .any(|(_, _, cleanup, _admission)| {
             cleanup
                 .lock()
                 .expect("start transition cleanup slot mutex should be healthy")

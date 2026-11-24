@@ -233,6 +233,7 @@ mod rollout_reconstruction;
 #[allow(clippy::module_inception)]
 pub(crate) mod session;
 pub(crate) mod step_context;
+pub(crate) mod terminal_event;
 mod thread_settings;
 pub(crate) mod time_reminder;
 mod token_budget;
