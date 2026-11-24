@@ -27,7 +27,7 @@ fragments that were previously being interpreted as ordinary text.
 
 ## Restoration
 
-From the repository root, restore the 77 original repository-relative paths
+From the repository root, restore the 110 original repository-relative paths
 into a new directory outside the checkout:
 
 ```bash
@@ -51,3 +51,31 @@ notebook is restored by `restore_raw_evidence.py` before it is opened or rerun.
 
 Historical failures remain failures of their recorded source. This storage
 change does not confer execution, scientific or integration qualification.
+
+## Complete source53 log view
+
+The 2026-11-24 transport extension adds the remaining 33 source53 cross-platform
+readback log parts to the existing 77-member inventory. Its separate index is
+`qa/repository-consolidation/20261124/source53-log-gzip/raw-evidence-storage.json`;
+the original index and all three source53 manifests remain unchanged. One
+source53 part was already registered in the original inventory. Together the
+34 decoded parts reconstruct all nine final logs, totaling 6,954,814 bytes.
+
+Each original path in the source53 INITIAL, PROGRESS and FINAL manifests remains
+a logical data path. The restore command above recreates those paths under its
+new external destination, and `read_verified` resolves the same paths in memory
+from the checkout. The separate extension index records each exact mapping to
+`<original_path>.evidence.gz`. Existing historical document links and inventories
+retain their original identities and refer to this restored view.
+
+To verify the original part offsets, part identities and complete log identities
+without writing files, run:
+
+```bash
+python3 -B scripts/verify_source53_log_custody.py
+```
+
+The current reader pins both storage inventories and rejects truncated,
+concatenated or oversized gzip data. Its previous source and this document's
+previous bytes are preserved in the extension's `prior-controls/` directory.
+No historical log is replayed or used to grant new qualification.

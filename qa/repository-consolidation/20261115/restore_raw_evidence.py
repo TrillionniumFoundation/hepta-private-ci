@@ -1,17 +1,23 @@
 """Restore exact historical evidence from individually compressed containers."""
 
 import argparse
-import gzip
 import hashlib
-import io
 import json
 import os
 from pathlib import Path
 import re
 import stat
+import zlib
 
 
 INDEX = "qa/repository-consolidation/20261115/raw-evidence-storage.json"
+EXTENSION_INDEX = (
+    "qa/repository-consolidation/20261124/source53-log-gzip/raw-evidence-storage.json"
+)
+INDEX_SHA256 = {
+    INDEX: "72103445cd088e31ee2e6d4887b9e24638d184389226b1577ff7342ebebc44c0",
+    EXTENSION_INDEX: "9a4288af05724562b9aa4fde5782735531eeee048c3d4ce63a63f5f6b60e8b87",
+}
 MAX_BYTES = 8 * 1024 * 1024
 
 
@@ -48,34 +54,45 @@ def read_regular(repo, relative, limit):
     if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
         raise ValueError("evidence must be a regular single-link file")
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    flags |= getattr(os, "O_BINARY", 0)
     with os.fdopen(os.open(path, flags), "rb") as stream:
         opened = os.fstat(stream.fileno())
         if identity(opened) != identity(before):
             raise ValueError("evidence changed before reading")
         data = stream.read(limit + 1)
         after = os.fstat(stream.fileno())
-    if identity(after) != identity(before) or identity(path.lstat()) != identity(before) or len(data) > limit:
+    if (
+        identity(after) != identity(before)
+        or identity(path.lstat()) != identity(before)
+        or len(data) > limit
+    ):
         raise ValueError("evidence changed during reading or exceeds its bound")
     return data
 
 
 def entries(repo):
-    document = json.loads(read_regular(repo, INDEX, 1024 * 1024))
-    if document["schema"] != "hepta.raw-evidence.storage.v1":
-        raise ValueError("unsupported raw evidence storage schema")
     result = {}
-    for entry in document["files"]:
-        name = relative_path(entry["original_path"]).as_posix()
-        if name in result or entry["stored_path"] != name + ".evidence.gz":
-            raise ValueError("duplicate or inconsistent stored evidence path")
-        result[name] = entry
+    for index, expected in INDEX_SHA256.items():
+        raw = read_regular(repo, index, 1024 * 1024)
+        if hashlib.sha256(raw).hexdigest() != expected:
+            raise ValueError("registered evidence storage inventory changed")
+        document = json.loads(raw)
+        if document["schema"] != "hepta.raw-evidence.storage.v1":
+            raise ValueError("unsupported raw evidence storage schema")
+        for entry in document["files"]:
+            name = relative_path(entry["original_path"]).as_posix()
+            if name in result or entry["stored_path"] != name + ".evidence.gz":
+                raise ValueError("duplicate or inconsistent stored evidence path")
+            result[name] = entry
     return result
 
 
 def read_verified(repo, relative, expected_bytes, expected_sha256):
     if type(expected_bytes) is not int or not 0 <= expected_bytes <= MAX_BYTES:
         raise ValueError("invalid original evidence byte bound")
-    if not isinstance(expected_sha256, str) or not re.fullmatch(r"[0-9a-f]{64}", expected_sha256):
+    if not isinstance(expected_sha256, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", expected_sha256
+    ):
         raise ValueError("invalid original evidence checksum")
     relative = relative_path(str(relative)).as_posix()
     path = repo / relative
@@ -83,14 +100,30 @@ def read_verified(repo, relative, expected_bytes, expected_sha256):
         data = read_regular(repo, relative, expected_bytes)
     else:
         entry = entries(repo)[relative]
-        if entry["original_bytes"] != expected_bytes or entry["original_sha256"] != expected_sha256:
+        if (
+            entry["original_bytes"] != expected_bytes
+            or entry["original_sha256"] != expected_sha256
+        ):
             raise ValueError("storage index differs from the original manifest")
         compressed = read_regular(repo, entry["stored_path"], entry["stored_bytes"])
-        if hashlib.sha256(compressed).hexdigest() != entry["stored_sha256"]:
+        if (
+            len(compressed) != entry["stored_bytes"]
+            or hashlib.sha256(compressed).hexdigest() != entry["stored_sha256"]
+        ):
             raise ValueError("stored evidence checksum mismatch")
-        with gzip.GzipFile(fileobj=io.BytesIO(compressed), mode="rb") as stream:
-            data = stream.read(expected_bytes + 1)
-    if len(data) != expected_bytes or hashlib.sha256(data).hexdigest() != expected_sha256:
+        decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
+        data = decoder.decompress(compressed, expected_bytes + 1)
+        if (
+            not decoder.eof
+            or decoder.unused_data
+            or decoder.unconsumed_tail
+            or len(data) != expected_bytes
+        ):
+            raise ValueError("truncated, oversized or concatenated gzip evidence")
+    if (
+        len(data) != expected_bytes
+        or hashlib.sha256(data).hexdigest() != expected_sha256
+    ):
         raise ValueError("original evidence length or checksum mismatch")
     return data
 
@@ -100,14 +133,20 @@ def restore(repo, destination):
     destination = destination.absolute()
     if destination.exists() or destination.is_symlink():
         raise FileExistsError("destination must be a new directory")
-    if not destination.parent.is_dir() or any(p.is_symlink() for p in destination.parents):
+    if not destination.parent.is_dir() or any(
+        p.is_symlink() for p in destination.parents
+    ):
         raise ValueError("destination parent must be an existing regular directory")
     if destination.is_relative_to(repo):
         raise ValueError("destination must be outside the repository")
     outputs = []
     for name, entry in entries(repo).items():
-        data = read_verified(repo, name, entry["original_bytes"], entry["original_sha256"])
-        blob = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+        data = read_verified(
+            repo, name, entry["original_bytes"], entry["original_sha256"]
+        )
+        blob = hashlib.sha1(
+            b"blob " + str(len(data)).encode() + b"\0" + data
+        ).hexdigest()
         if blob != entry["original_git_blob"]:
             raise ValueError("original Git blob mismatch")
         outputs.append((name, data))
