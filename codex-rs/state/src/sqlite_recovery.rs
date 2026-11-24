@@ -446,6 +446,10 @@ fn read_exact_at(file: &File, mut bytes: &mut [u8]) -> std::io::Result<()> {
     Ok(())
 }
 
+#[cfg(all(test, windows))]
+#[path = "sqlite_recovery_windows_tests.rs"]
+mod windows_tests;
+
 #[cfg(all(test, unix))]
 #[path = "sqlite_recovery_tests.rs"]
 mod tests;
