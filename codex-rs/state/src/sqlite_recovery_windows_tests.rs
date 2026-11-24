@@ -5,7 +5,10 @@ use codex_utils_path::windows_private::Access;
 use codex_utils_path::windows_private::PrivateSqliteDirectory;
 use pretty_assertions::assert_eq;
 use std::fs;
+use std::io::Write;
 use std::process::Command;
+
+const DATABASE_NAME: &str = "recovery.sqlite3";
 
 struct Fixture {
     home: PathBuf,
@@ -17,10 +20,23 @@ impl Fixture {
     fn new() -> anyhow::Result<Self> {
         let home = unique_temp_dir();
         PrivateSqliteDirectory::prepare(&home)?;
-        let path = home.join("recovery.sqlite3");
-        fs::write(&path, b"source database bytes")?;
+        let path = home.join(DATABASE_NAME);
         let config = SqliteConfig::new_for_testing(home.as_path().abs());
-        Ok(Self { home, path, config })
+        let fixture = Self { home, path, config };
+        fixture.write_private_new(DATABASE_NAME, b"source database bytes")?;
+        Ok(fixture)
+    }
+
+    fn write_private_new(&self, name: &str, bytes: &[u8]) -> anyhow::Result<()> {
+        // These synthetic fixtures exercise retained-file recovery. Establish
+        // their required owner at creation: an inherited DACL alone does not
+        // make the default token owner equal to the token user.
+        let directory = PrivateSqliteDirectory::open_writable(&self.home)?;
+        let mut file = directory.open(name, Access::CreateNew)?;
+        file.write_all(bytes)?;
+        file.sync_all()?;
+        directory.sync_all()?;
+        Ok(())
     }
 }
 
@@ -35,10 +51,7 @@ async fn native_source_inspection_is_read_only_and_filename_writer_entries_stay_
 -> anyhow::Result<()> {
     let fixture = Fixture::new()?;
     for suffix in ["-wal", "-shm", "-journal"] {
-        fs::write(
-            sqlite_sidecar_path(&fixture.path, suffix),
-            suffix.as_bytes(),
-        )?;
+        fixture.write_private_new(&format!("{DATABASE_NAME}{suffix}"), suffix.as_bytes())?;
     }
     let directory = PrivateSqliteDirectory::inspect(&fixture.home)?;
     let before = directory.snapshot()?;
@@ -84,10 +97,10 @@ fn native_guard_rejects_replacements_links_sidecars_and_permission_drift() -> an
         match attack {
             "replacement" => {
                 fs::rename(&fixture.path, fixture.home.join("retained.sqlite3"))?;
-                fs::write(&fixture.path, b"source database bytes")?;
+                fixture.write_private_new(DATABASE_NAME, b"source database bytes")?;
             }
             "hardlink" => fs::hard_link(&fixture.path, fixture.home.join("alias.sqlite3"))?,
-            "sidecar" => fs::write(sqlite_sidecar_path(&fixture.path, "-wal"), b"")?,
+            "sidecar" => fixture.write_private_new(&format!("{DATABASE_NAME}-wal"), b"")?,
             "permission" => {
                 let output = Command::new("icacls")
                     .arg(&fixture.path)
@@ -142,10 +155,7 @@ fn native_materialization_copies_only_retained_replay_files_and_never_overwrites
 -> anyhow::Result<()> {
     let fixture = Fixture::new()?;
     for suffix in ["-wal", "-shm", "-journal"] {
-        fs::write(
-            sqlite_sidecar_path(&fixture.path, suffix),
-            suffix.as_bytes(),
-        )?;
+        fixture.write_private_new(&format!("{DATABASE_NAME}{suffix}"), suffix.as_bytes())?;
     }
     let guard = fixture
         .config
@@ -178,7 +188,7 @@ fn native_materialization_copies_only_retained_replay_files_and_never_overwrites
     assert_eq!(fs::read(&candidate)?, b"source database bytes");
     let failed = fixture.home.join("failed.sqlite3");
     let occupied_wal = sqlite_sidecar_path(&failed, "-wal");
-    fs::write(&occupied_wal, b"preexisting WAL must survive")?;
+    fixture.write_private_new("failed.sqlite3-wal", b"preexisting WAL must survive")?;
     let guard = fixture
         .config
         .bind_existing_recovery_database(&fixture.path)?;
