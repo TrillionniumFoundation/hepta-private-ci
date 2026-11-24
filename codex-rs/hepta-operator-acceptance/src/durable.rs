@@ -91,9 +91,10 @@ pub(crate) fn verify_secure_directory(path: &Path, label: &str) -> Result<(), Ac
 }
 
 pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, AcceptanceError> {
+    #[cfg(windows)]
     let (mut file, parent_pin) = open_reader(path)?;
     #[cfg(not(windows))]
-    let _ = parent_pin;
+    let (mut file, ()) = open_reader(path)?;
     let before = file.metadata()?;
     verify_regular_metadata(&before, "input artifact")?;
     #[cfg(windows)]
@@ -123,9 +124,10 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
 }
 
 pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError> {
+    #[cfg(windows)]
     let (mut file, parent_pin) = open_reader(path)?;
     #[cfg(not(windows))]
-    let _ = parent_pin;
+    let (mut file, ()) = open_reader(path)?;
     let before = file.metadata()?;
     verify_regular_metadata(&before, "manifest artifact")?;
     #[cfg(windows)]

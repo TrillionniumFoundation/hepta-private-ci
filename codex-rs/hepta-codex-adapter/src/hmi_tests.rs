@@ -3,12 +3,37 @@ use futures::SinkExt;
 use futures::StreamExt;
 use serde_json::Value;
 use serde_json::json;
+use std::future::Future;
 use tokio::net::TcpListener;
 use tokio::net::TcpStream;
 use tokio_tungstenite::WebSocketStream;
 use tokio_tungstenite::accept_async;
 use tokio_tungstenite::tungstenite::Message;
 type Socket = WebSocketStream<TcpStream>;
+
+// A stalled fixture operation must report the phase, rather than letting
+// the test runner terminate the whole binary without its assertions.
+const FIXTURE_IO_DEADLINE: Duration = Duration::from_secs(8);
+
+async fn bounded<T>(phase: &str, operation: impl Future<Output = T>) -> T {
+    tokio::time::timeout(FIXTURE_IO_DEADLINE, operation)
+        .await
+        .unwrap_or_else(|_| panic!("fixture did not complete {phase}"))
+}
+
+async fn accept(listener: &TcpListener) -> Socket {
+    let (stream, _) = bounded("loopback accept", listener.accept()).await.unwrap();
+    bounded("WebSocket upgrade", accept_async(stream))
+        .await
+        .unwrap()
+}
+
+async fn next_event(connection: &mut HmiConnectionV1, phase: &str) -> HmiEventV1 {
+    bounded(phase, connection.events.next())
+        .await
+        .expect("read HMI event")
+        .expect("an HMI event")
+}
 
 fn fixture_codex_home() -> String {
     std::env::current_dir()
@@ -49,23 +74,28 @@ fn args(url: &str) -> RemoteAppServerConnectArgs {
 }
 async fn read(socket: &mut Socket) -> Value {
     loop {
-        match socket
-            .next()
+        match bounded("read JSON RPC", socket.next())
             .await
             .expect("socket message")
             .expect("valid websocket")
         {
             Message::Text(text) => return serde_json::from_str(text.as_str()).expect("JSON RPC"),
-            Message::Ping(bytes) => socket.send(Message::Pong(bytes)).await.expect("pong"),
+            Message::Ping(bytes) => {
+                bounded("reply to WebSocket ping", socket.send(Message::Pong(bytes)))
+                    .await
+                    .expect("pong")
+            }
             other => panic!("unexpected message {other:?}"),
         }
     }
 }
 async fn send(socket: &mut Socket, value: Value) {
-    socket
-        .send(Message::Text(value.to_string().into()))
-        .await
-        .expect("send JSON RPC");
+    bounded(
+        "send JSON RPC",
+        socket.send(Message::Text(value.to_string().into())),
+    )
+    .await
+    .expect("send JSON RPC");
 }
 async fn reply(socket: &mut Socket, request: &Value, result: Value) {
     send(
@@ -153,9 +183,7 @@ async fn listener() -> (TcpListener, String) {
 async fn real_socket_stream_preserves_failure_and_reconciles_same_request() {
     let (listener, url) = listener().await;
     let peer = tokio::spawn(async move {
-        let mut socket = accept_async(listener.accept().await.unwrap().0)
-            .await
-            .unwrap();
+        let mut socket = accept(&listener).await;
         initialize(&mut socket).await;
         let first = read(&mut socket).await;
         assert_eq!(first["method"], "thread/queue/reconcile");
@@ -171,7 +199,7 @@ async fn real_socket_stream_preserves_failure_and_reconciles_same_request() {
             first["params"]["clientUserMessageId"]
         );
         reply(&mut socket, &replay, admission(&replay, true)).await;
-        let _ = socket.close(None).await;
+        let _ = bounded("send WebSocket close", socket.close(None)).await;
     });
     let mut connection =
         HmiConnectionV1::connect(args(&url), binding(), 16, Duration::from_secs(3))
@@ -189,10 +217,10 @@ async fn real_socket_stream_preserves_failure_and_reconciles_same_request() {
         .await
         .unwrap();
     assert!(matches!(
-        connection.events.next().await.unwrap().unwrap().kind,
+        next_event(&mut connection, "turn start").await.kind,
         HmiEventKindV1::TurnStarted
     ));
-    let delta = connection.events.next().await.unwrap().unwrap();
+    let delta = next_event(&mut connection, "text delta").await;
     assert_eq!(
         delta.kind,
         HmiEventKindV1::TextDelta {
@@ -213,7 +241,7 @@ async fn real_socket_stream_preserves_failure_and_reconciles_same_request() {
             .client_message_id("utterance:one")
             .unwrap()
     );
-    let terminal = connection.events.next().await.unwrap().unwrap();
+    let terminal = next_event(&mut connection, "turn terminal").await;
     assert_eq!(
         terminal.kind,
         HmiEventKindV1::Terminal {
@@ -255,7 +283,7 @@ async fn real_socket_stream_preserves_failure_and_reconciles_same_request() {
         .unwrap();
     connection.requests.stop_output(7).unwrap();
     assert!(!connection.requests.permits_output(&delta.scope).unwrap());
-    peer.await.unwrap();
+    bounded("fixture peer exit", peer).await.unwrap();
     connection.events.shutdown().await.unwrap();
 }
 
@@ -265,13 +293,11 @@ async fn cancellation_before_admission_interrupts_late_turn_without_presenting_i
     let (seen_tx, seen_rx) = tokio::sync::oneshot::channel();
     let (release_tx, release_rx) = tokio::sync::oneshot::channel();
     let peer = tokio::spawn(async move {
-        let mut socket = accept_async(listener.accept().await.unwrap().0)
-            .await
-            .unwrap();
+        let mut socket = accept(&listener).await;
         initialize(&mut socket).await;
         let admission_request = read(&mut socket).await;
         seen_tx.send(()).unwrap();
-        release_rx.await.unwrap();
+        bounded("allow late admission", release_rx).await.unwrap();
         reply(
             &mut socket,
             &admission_request,
@@ -299,7 +325,7 @@ async fn cancellation_before_admission_interrupts_late_turn_without_presenting_i
         }
         assert!(interrupted && deleted);
         completed(&mut socket, "interrupted").await;
-        let _ = socket.close(None).await;
+        let _ = bounded("send WebSocket close", socket.close(None)).await;
     });
     let mut connection =
         HmiConnectionV1::connect(args(&url), binding(), 16, Duration::from_secs(3))
@@ -317,7 +343,7 @@ async fn cancellation_before_admission_interrupts_late_turn_without_presenting_i
             )
             .await
     });
-    seen_rx.await.unwrap();
+    bounded("first admission request", seen_rx).await.unwrap();
     connection.requests.interrupt(7).await.unwrap();
     release_tx.send(()).unwrap();
     let result = tokio::time::timeout(Duration::from_secs(3), connection.events.next())
@@ -335,8 +361,11 @@ async fn cancellation_before_admission_interrupts_late_turn_without_presenting_i
         }
     ));
     assert!(!connection.requests.permits_output(&result.scope).unwrap());
-    submit.await.unwrap().unwrap();
-    peer.await.unwrap();
+    bounded("text submission exit", submit)
+        .await
+        .unwrap()
+        .unwrap();
+    bounded("fixture peer exit", peer).await.unwrap();
     connection.events.shutdown().await.unwrap();
 }
 
@@ -345,15 +374,13 @@ async fn real_socket_reconnect_resumes_exact_thread_and_revokes_old_handle() {
     let (listener, url) = listener().await;
     let peer = tokio::spawn(async move {
         for _ in 0..2 {
-            let mut socket = accept_async(listener.accept().await.unwrap().0)
-                .await
-                .unwrap();
+            let mut socket = accept(&listener).await;
             initialize(&mut socket).await;
             let request = read(&mut socket).await;
             assert_eq!(request["method"], "thread/queue/reconcile");
             assert_eq!(request["params"]["mode"], "reconcileOnly");
             reply(&mut socket, &request, admission(&request, true)).await;
-            let _ = socket.next().await;
+            let _ = bounded("old WebSocket detach", socket.next()).await;
         }
     });
     let connection = HmiConnectionV1::connect(args(&url), binding(), 16, Duration::from_secs(3))
@@ -401,5 +428,5 @@ async fn real_socket_reconnect_resumes_exact_thread_and_revokes_old_handle() {
         .await
         .unwrap();
     reattached.events.shutdown().await.unwrap();
-    peer.await.unwrap();
+    bounded("fixture peer exit", peer).await.unwrap();
 }
