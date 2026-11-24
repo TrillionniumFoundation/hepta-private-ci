@@ -490,10 +490,11 @@ def release(home, admission):
     with contextlib.closing(open_database(home)) as db:
         config = json.loads(db.execute("SELECT value FROM settings").fetchone()[0])
         require_engineering_scope(config["scope"])
-        require(
-            db.execute("SELECT 1 FROM admissions WHERE id=?", (admission,)).fetchone(),
-            "admission does not exist",
-        )
+        stored = db.execute(
+            "SELECT binding FROM admissions WHERE id=?", (admission,)
+        ).fetchone()
+        require(stored is not None, "admission does not exist")
+        require_engineering_scope(json.loads(stored[0])["release"]["scope"])
         with (home / (admission + ".lock")).open("ab") as lease:
             fcntl.flock(lease, fcntl.LOCK_EX)
             row = db.execute(
@@ -503,6 +504,11 @@ def release(home, admission):
             require(row is not None, "admission does not exist")
             request_sha, request, binding_bytes, state = row
             binding = json.loads(binding_bytes)
+            require_engineering_scope(binding["release"]["scope"])
+            require(
+                binding["release"]["scope"] == config["scope"],
+                "retained release scope differs from intake settings",
+            )
             original_request = json.loads(request)
             require(
                 data.digest(binding) == admission
@@ -571,13 +577,12 @@ def people_status(home, admission):
         require(row is not None, "admission does not exist")
         binding = json.loads(row[0])
         require(data.digest(binding) == admission, "retained admission changed")
-        checked = "enrollment" in binding
         return dict(
             admission_sha256=admission,
             state=row[1],
-            original_enrollment_bindings_checked=checked,
-            site_attested_distinct_people=checked
-            and binding["release"]["scope"] == "owner_intake",
+            retained_enrollment_binding_present="enrollment" in binding,
+            original_enrollment_bindings_checked=False,
+            site_attested_distinct_people=False,
             original_turn_consent_verified=False,
             production_authorization_available=False,
             scope=binding["release"]["scope"],

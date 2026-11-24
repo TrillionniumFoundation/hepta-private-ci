@@ -9,6 +9,15 @@ on:
       - 'scripts/cell_experiments/test_paired_loop_process.py'
       - 'scripts/cell_experiments/test_paired_consumer_fresh.py'
       - 'scripts/cell_experiments/paired_consumer.py'
+      - 'scripts/cell_experiments/paired_intake.py'
+      - 'scripts/cell_experiments/paired_source_gate.py'
+      - 'scripts/cell_experiments/paired_source_dispatch.py'
+      - 'scripts/cell_experiments/paired_source_train.py'
+      - 'scripts/cell_experiments/paired_router_source.py'
+      - 'scripts/cell_experiments/test_paired_consent_boundary.py'
+      - 'scripts/cell_experiments/test_paired_source_dispatch.py'
+      - 'scripts/cell_experiments/test_paired_source_dispatch_intake.py'
+      - 'scripts/cell_experiments/test_paired_intake.py'
       - '.github/workflows/optin-circuit-integration.yml'
 permissions:
   contents: read
@@ -23,6 +32,7 @@ jobs:
             scripts/cell_experiments
             qualification/paired-consumer-circuit-20261123
             qualification/paired-consumer-use-20261123
+            qualification/paired-source-training-20261123
             qualification/selected-session-mcp-20261123
             qualification/optin-circuit-integration-20261123
           persist-credentials: false
@@ -36,7 +46,7 @@ jobs:
       - name: Check bound identity, interrupted costs and original consumer regressions
         env:
           PYTHONPATH: ${{ github.workspace }}/scripts
-        run: python -m unittest cell_experiments.test_paired_loop cell_experiments.test_paired_loop_process cell_experiments.test_paired_consumer_fresh cell_experiments.test_paired_consumer cell_experiments.test_paired_consent_boundary cell_experiments.test_paired_source_dispatch_intake -v
+        run: python -m unittest cell_experiments.test_paired_loop cell_experiments.test_paired_loop_process cell_experiments.test_paired_consumer_fresh cell_experiments.test_paired_consumer cell_experiments.test_paired_consent_boundary cell_experiments.test_paired_source_dispatch cell_experiments.test_paired_source_dispatch_intake cell_experiments.test_paired_intake -v
       - name: Capture the actual bounded effect and exercise the declared router
         env:
           PYTHONPATH: ${{ github.workspace }}/scripts

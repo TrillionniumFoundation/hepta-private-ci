@@ -25,7 +25,10 @@ POLICY = (
 
 
 def inputs(root, operation):
+    from .paired_intake import require_engineering_scope
+
     completed = adoption.read_json(operation / "COMPLETED.json")
+    require_engineering_scope(completed["scope"])
     snapshot = paired_source.read_bound(
         operation / "FROZEN.json", completed["freeze_sha256"]
     )
@@ -56,7 +59,11 @@ def run_arm(root, operation, arm, out):
     try:
         for panel, record in records:
             visible = {"task": paired_cold.visible_task(record)}
-            raw = p.predict(visible, retain_encoding=True) if loader is coding_sft else p.predict(visible)
+            raw = (
+                p.predict(visible, retain_encoding=True)
+                if loader is coding_sft
+                else p.predict(visible)
+            )
             rows.append(
                 {
                     "panel": panel,
@@ -84,16 +91,26 @@ def read_arm(path, arm, snapshot, records, root):
     loader = paired_cold.loader_for(model)
     if loader is not coding_sft:
         from . import paired_router_source
+
         for row, (panel, record) in zip(result["rows"], records, strict=True):
             pred = row["prediction"]
             loader.check_prediction(model, pred, paired_cold.visible_task(record))
             for node in pred["circuit_trace"]["nodes"]:
-                paired_router_source.inspect_node(model["models"][node["cell_id"]], node, root)
-                require(node["output"]["pid"] == result["pid"], "Circuit node belongs to another process")
-            require(row["panel"] == panel and row["record_sha256"] == data.digest(record)
-                    and pred["loaded_model_digest"] == result["model"]
-                    and data.digest(row["outcome"]) == data.digest(data.verify_answer(record, pred["answer"])),
-                    "Circuit cold row, model or score differs")
+                paired_router_source.inspect_node(
+                    model["models"][node["cell_id"]], node, root
+                )
+                require(
+                    node["output"]["pid"] == result["pid"],
+                    "Circuit node belongs to another process",
+                )
+            require(
+                row["panel"] == panel
+                and row["record_sha256"] == data.digest(record)
+                and pred["loaded_model_digest"] == result["model"]
+                and data.digest(row["outcome"])
+                == data.digest(data.verify_answer(record, pred["answer"])),
+                "Circuit cold row, model or score differs",
+            )
         return result
     tok = paired_cold.frozen_tokenizer(model, root)
     protocol = model["runtime"].get("message_protocol", "legacy_v1")

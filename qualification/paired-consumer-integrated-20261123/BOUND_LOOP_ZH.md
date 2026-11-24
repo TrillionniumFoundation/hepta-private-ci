@@ -87,3 +87,31 @@ example 排版 postimage，其余七个当时所属文件字节未变，未把�
 不可克隆 adapter，执行有界只读请求、真实同 turn/队列/checkpoint 核验，并在返回前
 重新核验同一人类授权及存活性。独立 CLI 不能仅凭 SQLite、Root fd 和自报 route
 构造该证明。当前阶段没有启用这样的新生产 verifier，也没有产生训练、真人或付款。
+
+## 历史发布与 source 资格出口的后续封闭
+
+进一步复核发现，单独重标历史 settings 为工程 scope，仍可能让 release 出口重新输出
+owner binding；后续 consumer 会拒绝它，但出口自身也应保持一致。现在 release 在创建
+lease 之前拒绝这种历史 binding，并在锁内重新检查 release 与 settings 均为工程且相等。
+新增回归覆盖 ready、publishing、released 三种保留状态，确认原数据库和已发布文件不变。
+`people-status` 的 enrollment 字段只报告历史材料是否存在，当前授权与真人核验字段恒为 false。
+
+source cold gate 在读取冻结模型或私有 A 材料前拒绝 owner completion；source dispatch
+的两个资格入口在读取旧 report 后同样拒绝。旧 report 不能再通过 freeze observer 发布新
+资格见证。显式工程记录的质量、覆盖、原冷输出及篡改检查保留，工程报告仍不能取得生产授权。
+
+最终 Python 源实跑 **35 项回归，173.518 秒，零失败、零跳过**；
+[完整测试日志](consent-followup-20261124/PYTHON_TESTS.txt)和
+[清单](consent-followup-20261124/manifest.json)随提交保存。
+先行的 21 项针对性检查也全部通过，16.128 秒。
+本地 `just fmt` 1.51.0 对当前改动执行退出 0；这不补写前述远端 fmt 的未知状态，
+也不表示已经执行原生编译、原生 socket/pidfd 进程测试或完整 Rust CI。
+
+修正集成脚本的拒绝断言后，原 SDK stdio 会话与实际冻结 Circuit 再次实跑完成。
+错误计数经工具反馈修正；有边图和断边图仍均未答对，返回
+`no_update_no_distinct_graph_success`，没有新候选、Cell 参数更新或真人收益。
+[本次完整原件 ZIP](consent-followup-20261124/COMBINED_ORIGINALS.zip)保留输入、模型、
+原调用、实际图输出、源文件摘要及原日志。新旧实验原件各自保留，不用新源码回填旧身份。
+
+最终 CI 包含相同 35 项回归及原集成脚本；原生执行及依赖门仍必须等本提交自己的结果。
+依赖失败及缓存恢复的原件另见 [依赖门记录](DEPENDENCY_GATE_20261124_ZH.md)。

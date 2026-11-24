@@ -11,7 +11,8 @@ import unittest
 from types import SimpleNamespace
 
 from . import data, paired_consumer, paired_intake, paired_loop
-from . import paired_router_source, paired_source_train
+from . import paired_observation, paired_router_source, paired_source_dispatch
+from . import paired_source_gate, paired_source_train
 
 
 class OriginalTurnBoundaryTests(unittest.TestCase):
@@ -98,6 +99,107 @@ class OriginalTurnBoundaryTests(unittest.TestCase):
                 ):
                     action()
         self.assertEqual(list(self.root.iterdir()), [])
+
+    def test_relabelled_settings_cannot_republish_stored_owner_admissions(self):
+        for state in ("ready", "publishing", "released"):
+            with self.subTest(state=state):
+                home = self.root / state
+                home.mkdir(mode=0o700)
+                request = {"fixture": "historical owner request"}
+                binding = {
+                    "release": {
+                        "scope": "owner_intake",
+                        "request_sha256": data.digest(request),
+                    },
+                    "enrollment": {"fixture": "unverified retained metadata"},
+                }
+                admission = data.digest(binding)
+                database = home / "intake.sqlite"
+                with sqlite3.connect(database) as db:
+                    db.execute("CREATE TABLE settings(value TEXT NOT NULL)")
+                    db.execute(
+                        "INSERT INTO settings VALUES (?)",
+                        (json.dumps({"scope": "engineering_fixture"}),),
+                    )
+                    db.execute(
+                        "CREATE TABLE admissions(id TEXT PRIMARY KEY, request_sha TEXT, "
+                        "request_json BLOB, binding BLOB, state TEXT)"
+                    )
+                    db.execute(
+                        "INSERT INTO admissions VALUES (?,?,?,?,?)",
+                        (
+                            admission,
+                            data.digest(request),
+                            data.canonical(request),
+                            data.canonical(binding),
+                            state,
+                        ),
+                    )
+                database.chmod(0o600)
+                if state == "released":
+                    dest = home / admission
+                    dest.mkdir(mode=0o700)
+                    (dest / "release.json").write_bytes(b"original owner delivery")
+                before = {
+                    str(p.relative_to(home)): p.read_bytes()
+                    for p in home.rglob("*")
+                    if p.is_file()
+                }
+                with self.assertRaisesRegex(
+                    ValueError, "ORIGINAL_TURN_VERIFIER_REQUIRED"
+                ):
+                    paired_intake.release(home, admission)
+                status = paired_intake.people_status(home, admission)
+                self.assertTrue(status["retained_enrollment_binding_present"])
+                for key in (
+                    "original_enrollment_bindings_checked",
+                    "site_attested_distinct_people",
+                    "original_turn_consent_verified",
+                    "production_authorization_available",
+                ):
+                    self.assertIs(status[key], False)
+                self.assertEqual(
+                    {
+                        str(p.relative_to(home)): p.read_bytes()
+                        for p in home.rglob("*")
+                        if p.is_file()
+                    },
+                    before,
+                )
+
+    def test_owner_source_score_refuses_before_reading_training_materials(self):
+        operation = self.root / "operation"
+        operation.mkdir()
+        completed = operation / "COMPLETED.json"
+        completed.write_bytes(data.canonical({"scope": "owner_intake"}))
+        before = completed.read_bytes()
+        with self.assertRaisesRegex(ValueError, "ORIGINAL_TURN_VERIFIER_REQUIRED"):
+            paired_source_gate.gate(self.root / "unprovided-private-A", operation)
+        self.assertEqual(list(operation.iterdir()), [completed])
+        self.assertEqual(completed.read_bytes(), before)
+
+    def test_owner_retention_cannot_authorize_or_publish_a_new_freeze_witness(self):
+        report = self.root / "RETENTION.json"
+        report.write_bytes(data.canonical({"scope": "owner_intake"}))
+        inbox = self.root / "inbox"
+        inbox.mkdir(mode=0o700)
+        study, freeze = data.digest("fixture study"), data.digest("fixture freeze")
+        actions = (
+            lambda: paired_source_dispatch.authorize({}, {}, report),
+            lambda: paired_source_dispatch.verify_originals(report, study, freeze),
+            lambda: paired_observation.observe(
+                inbox, study, freeze, 2, source_retention=report
+            ),
+        )
+        before = report.read_bytes()
+        for index, action in enumerate(actions):
+            with self.subTest(entry=index):
+                with self.assertRaisesRegex(
+                    ValueError, "ORIGINAL_TURN_VERIFIER_REQUIRED"
+                ):
+                    action()
+        self.assertEqual(list(inbox.iterdir()), [])
+        self.assertEqual(report.read_bytes(), before)
 
     def test_retained_owner_readback_cannot_count_an_adopted_improvement(self):
         manifest = {"release": {"scope": "owner_intake"}}
