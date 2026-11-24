@@ -8,9 +8,9 @@
           "sha256": "b989d4599f59b06f8bb2e165acf9b94b8a4007ed2b32feb89aec8f122d63f7cd"
         },
         {
-          "bytes": 72630,
+          "bytes": 72338,
           "name": "representation_all_tasks.svg",
-          "sha256": "da1282ff670081e0053b5c89bbcbf9d85c0068bef262d82f88ac77f9f1cba01d"
+          "sha256": "8a54acdcf0bc3de3424df6540caf43c0729839695ecc0442e113ed253859c539"
         }
       ],
       "png_dpi": 170,
@@ -24,9 +24,9 @@
           "sha256": "e2b2f8d543171e6729da01e0ee535343eb463e1024599f5091b95118761ecbda"
         },
         {
-          "bytes": 28549,
+          "bytes": 28455,
           "name": "mechanism_paired_intervals.svg",
-          "sha256": "9ec60d0acbd3232620ec18468a6aac008bf24b30c1f7e4ba4469df0caf20f270"
+          "sha256": "0353f0df99eb7cf1bba01c9b0d14217113f3ebe5c054b4d1cd1d5d2f050b17c4"
         }
       ],
       "png_dpi": 170,
@@ -40,9 +40,9 @@
           "sha256": "4888bd3cb2a9451cd5d284e1df0c9fd49c874d487559925ba48c3d056276efb6"
         },
         {
-          "bytes": 133005,
+          "bytes": 132429,
           "name": "validation_cpu_all_configs.svg",
-          "sha256": "990b997a3c68e858c97f0ce46d7a6db07328f054e319eb87564aa32513ae30f5"
+          "sha256": "312e868cde174aae8f1cccbafe5cb0765726346563cc7006a5c3566ccefb89b0"
         }
       ],
       "png_dpi": 170,
@@ -2819,5 +2819,29 @@
   "runs_sha256": "536c3d0ddbe186b83fe2318b216ff0a329258eaff92451b08c0fc648e0cbf30c",
   "script_sha256": "80481b45c84c4162906aab886b0b8f10830c852b9599582b02ed09ee7803dd21",
   "selection": "Every planned representation, mechanism and scaling configuration; every scheduled validation checkpoint; no winner selection.",
-  "source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02"
+  "source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+  "original_svg_evidence": {
+    "archive": "original-svg-evidence.tar.gz",
+    "archive_sha256": "1b2477822e564c6e532edfb01ae7e42cc75082c58315eb753788ba3795be9995",
+    "original_manifest": "FIGURE_MANIFEST.json",
+    "original_manifest_sha256": "06a69dbaeff6f3c57968ed04cde84030e635c6edc9f56e8f3a038dd5d41e4c2d",
+    "original_figures": [
+      {
+        "member": "representation_all_tasks.svg",
+        "sha256": "da1282ff670081e0053b5c89bbcbf9d85c0068bef262d82f88ac77f9f1cba01d",
+        "bytes": 72630
+      },
+      {
+        "member": "mechanism_paired_intervals.svg",
+        "sha256": "9ec60d0acbd3232620ec18468a6aac008bf24b30c1f7e4ba4469df0caf20f270",
+        "bytes": 28549
+      },
+      {
+        "member": "validation_cpu_all_configs.svg",
+        "sha256": "990b997a3c68e858c97f0ce46d7a6db07328f054e319eb87564aa32513ae30f5",
+        "bytes": 133005
+      }
+    ],
+    "scope": "The archive preserves the byte-exact reviewed manifest and SVGs. The top-level digest rows specify XML presentation copies with the same figure pixels. Historical validation and reproduction statements refer to the archived originals. PNGs and measurement data are unchanged."
+  }
 }
