@@ -34,6 +34,19 @@
       "original_bytes": 818032,
       "original_sha256": "b3b1a7fc23b0c29b2c4f8c53afad80c63325a4d9791189d8d22b236aa19645d2",
       "path": "qualification/joint-generation/runs/codex-cloud-efficient-r2-shared-timing-d2/timing.json"
+    },
+    {
+      "compressed_bytes": 985887,
+      "compressed_sha256": "8b62fa08f93c2af410837c7e4b4c3dc7a8a85c0ce8548c677a9e405fd6a1d9da",
+      "original_bytes": 2775720,
+      "original_sha256": "66f2a4b68596b7a6b1138ad44def05575a21dcb91b7ffd9150c47d8bf26d32ac",
+      "path": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/paired-row.csv"
+    },
+    {
+      "original_bytes": 1850445,
+      "original_sha256": "3d93100d9c9aa56f8ee1ab5f2ca50b611e5444536288e41710046b9699b305df",
+      "path": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/paired-row.csv.partial-v1",
+      "prefix_of": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/paired-row.csv"
     }
   ],
   "markers": [
@@ -73,7 +86,7 @@
       "sha256": "ee01d445736bc5d58da6976a6e58568674823bbddb2023bfc2a707ad8d20942b"
     }
   ],
-  "schema": "joint-historical-assets-gzip-v1",
+  "schema": "joint-historical-assets-gzip-v2",
   "sidecars": [
     {
       "bytes": 12234,
@@ -119,6 +132,21 @@
       "bytes": 15936,
       "path": "qualification/joint-generation/runs/codex-cloud-efficient-r2-shared-timing-d2/protocol.json",
       "sha256": "775b30b3c71555775135b0368b782e3360b3368a04b09331332de58461dc3abf"
+    },
+    {
+      "bytes": 14555,
+      "path": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/postrun-manifest.json",
+      "sha256": "07a108071f9d437502b6871df091a665543d4bde9ff7ec26beb43e40880d47e8"
+    },
+    {
+      "bytes": 933,
+      "path": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/pairing-export-execution.json",
+      "sha256": "f74aa3b2e115b6619b84c8adbaa9f841dc8434d05a8d77835d7d38c270ffb785"
+    },
+    {
+      "bytes": 594,
+      "path": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/pairing-export-failure-v1.json",
+      "sha256": "e51dc79803776bb61987b8f1653f223883daf33617025c1ca67324958b3cdcc7"
     }
   ]
 }

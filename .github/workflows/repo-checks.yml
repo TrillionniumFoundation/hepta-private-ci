@@ -38,6 +38,8 @@ jobs:
           python3 -B -m unittest discover -s scripts/tests -p test_verify_frozen_gzip.py -v
           python3 -B -m unittest discover -s scripts/tests -p test_source53_log_custody.py -v
           python3 -B scripts/verify_source53_log_custody.py
+          python3 -B -m unittest discover -s scripts/tests -p test_source0a5_log_custody.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_source84_log_custody.py -v
           python3 -B scripts/verify_source_custody_volumes.py --all
           python3 -B library-recovery/followup-source-20261103/verify_projection.py
           python3 -B library-recovery/20261107/verify_custody.py

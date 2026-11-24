@@ -14,9 +14,17 @@ INDEX = "qa/repository-consolidation/20261115/raw-evidence-storage.json"
 EXTENSION_INDEX = (
     "qa/repository-consolidation/20261124/source53-log-gzip/raw-evidence-storage.json"
 )
+SOURCE84_INDEX = (
+    "qa/repository-consolidation/20261124/source84-log-gzip/raw-evidence-storage.json"
+)
+SOURCE0A5_INDEX = (
+    "qa/repository-consolidation/20261124/source0a5-log-gzip/raw-evidence-storage.json"
+)
 INDEX_SHA256 = {
     INDEX: "72103445cd088e31ee2e6d4887b9e24638d184389226b1577ff7342ebebc44c0",
     EXTENSION_INDEX: "9a4288af05724562b9aa4fde5782735531eeee048c3d4ce63a63f5f6b60e8b87",
+    SOURCE84_INDEX: "a4b240eef423bab829e2150c63a603a5d0c3f001220ae5616b2f87eed7ec8184",
+    SOURCE0A5_INDEX: "dde0cc0c597ed9d85d10aa68d0b4bbaaa32fd949efce445aeb1b346f08742f55",
 }
 MAX_BYTES = 8 * 1024 * 1024
 

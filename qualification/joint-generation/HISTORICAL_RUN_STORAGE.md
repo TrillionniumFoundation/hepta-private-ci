@@ -1,37 +1,33 @@
-# Five historical run assets: exact-byte inspection recovery
+# Historical run assets and exact-byte inspection
 
-This is a storage layer for five existing historical artifacts, not a new experiment,
-scientific pass, runtime reproduction or full-branch CI claim. Existing scientific
-reports, manifests, protocol/source pins and one-shot/opening markers are unchanged.
-The original five large files are stored as their same full paths plus `.gz`.
-
-Run the new stdlib-only restorer from any directory with two explicit **repository
-roots**. Replace SOURCE_ROOT with this repository's absolute path; NEW_INSPECTION_ROOT must not exist and
-must be disjoint from SOURCE_ROOT, not equal to it or inside/above it.
+The restorer recovers seven historical artifacts and seven original opening or
+declaration files. It reads the repository as its source and writes to a new,
+disjoint inspection directory.
 
 ```sh
 python -I -B SOURCE_ROOT/qualification/joint-generation/restore_historical_run_assets.py --source-root SOURCE_ROOT --out NEW_INSPECTION_ROOT
 ```
 
-This command performs storage restoration and static verification only. It never
-imports an old producer/diagnostic/model or opens a scientific test. Do not use an
-old Q1, CORE, D1 or D2 program as a restoration check, and do not remove RUNNING or
-opened-test markers to make an old program run.
+The output uses the original `qualification/joint-generation/` paths. It contains
+the CORE telemetry, Q1 diagnostic and predictions, D1 profile and D2 timing, as
+well as both row exports under `runs/codex-cloud-dynamic-train-headroom-h4/`:
 
-The five exact original files are recovered beneath NEW_INSPECTION_ROOT with the
-complete `qualification/joint-generation/...` paths:
+- `paired-row.csv` contains the header and 9,216 completed pairings.
+- `paired-row.csv.partial-v1` contains the header and 6,144 pairings retained
+  from the first, failed export. Its 1,850,445 bytes are the exact prefix of the
+  2,775,720-byte completed CSV.
 
-- `runs/codex-cloud-core-c1-t2/telemetry.json`
-- `runs/codex-cloud-efficient-r2-decision-diagnostic-q1/diagnostic.json`
-- `runs/codex-cloud-efficient-r2-decision-diagnostic-q1/predictions.npz`
-- `runs/codex-cloud-efficient-r2-shared-profile-d1/profile.json`
-- `runs/codex-cloud-efficient-r2-shared-timing-d2/timing.json`
+The H4 inputs are two numbered parts of a single gzip stream. Reassembling
+them and verifying the compressed and decompressed hashes recovers the original
+CSV, including every CRLF. The partial export is cut at its recorded byte
+length and checked against its own hash. The original postrun manifest pins
+both exports, the successful export receipt independently pins the complete
+one and the failure receipt records which partial output was retained.
 
-Seven original small opening/declaration/latch files are validated and copied
-byte-for-byte to preserve historical state. Nine original manifests/ADMIN/protocol/
-fixture sidecars are read in place from SOURCE_ROOT and checked against complete
-size/SHA256 pins in `compressed-historical-run-assets-manifest.json`. Those sidecars
-are not copied to the inspection output, and their historical pins are not rewritten.
+The five earlier assets use their original paths plus `.gz`. Seven original
+opening or declaration files are verified and copied. Twelve manifests,
+receipts, protocols and fixture sidecars are verified in place. Older v1
+source descriptors retain their twelve-file output and original receipt scope.
 
 All compressed inputs, markers, sidecars and static relations are checked before
 creating the output. The restorer rejects corrupt/truncated/multiple-member/trailing
@@ -46,12 +42,12 @@ arrays are deserialized, no ZIP content is extracted, and no prediction is compu
 The recovered Q1 diagnostic's original relative `predictions.npz` reference is
 checked against the actual recovered NPZ, with no fallback to a source-tree raw copy.
 
-The output contains twelve historical files and two clearly separate
+The v2 output contains fourteen historical files and two separate
 `inspection-metadata/` files. `RESTORATION.json` is created only after output reread
 and verification completes; without it, the overlay is incomplete. A receipt never
 excuses later missing/changed files. This is a partial inspection overlay, not a
 complete checkout: no models, native library, source modules, selection/results
-outside the five targets, pstats or `.git` are copied.
+outside these targets, pstats or `.git` are copied.
 
 CORE telemetry supports static dual-manifest/ADMIN inspection, but its old diagnostic
 still needs the large selection and has an audited historical evaluation-source SHA
