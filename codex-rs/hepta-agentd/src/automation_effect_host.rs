@@ -418,7 +418,10 @@ impl AgentdAutomationEffectHost {
         let terminal = match &self.adapter {
             EffectProvider::Http(adapter) => {
                 let provider_intent = self.provider_intent(&pending)?;
-                match adapter.lookup_for_intent(&provider_intent).await {
+                match adapter
+                    .lookup_for_reconciliation(&provider_intent, pending.wire_payload.as_deref())
+                    .await
+                {
                     ProviderEffectLookup::Ack(ack) => terminal_receipt_from_ack(&ack),
                     ProviderEffectLookup::Conflict { .. } => {
                         return Err(AgentdError::Protocol(
