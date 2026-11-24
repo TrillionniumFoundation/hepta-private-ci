@@ -10,6 +10,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import shutil
 
 
 def main():
@@ -56,6 +57,7 @@ debug = 0
 incremental = false
 """
     )
+    shutil.copyfile(Path(__file__).with_name("oracle.Cargo.lock"), output / "Cargo.lock")
     prelude = """use codex_utils_time::Timestamp;
 use time::OffsetDateTime;
 

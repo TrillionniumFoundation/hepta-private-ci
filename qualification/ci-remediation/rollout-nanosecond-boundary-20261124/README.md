@@ -19,6 +19,7 @@ compiles the actual time utility source in a small, independent Cargo graph.
 Only the unrelated thread ID is replaced with an opaque copyable fixture value.
 It compares the result against the exact previously active Chrono 0.4.43 code.
 Chrono is an oracle dependency only; neither production dependency lock changes.
+`oracle.Cargo.lock` retains the complete graph used by the executed qualification.
 
 - 1,010 valid instants, each with two ID alternatives: 2,020 matching results.
 - 197 out-of-range values exercise the original epoch fallback.
@@ -47,8 +48,8 @@ From the repository root with Rust 1.96.0, `just`, and `cargo-nextest` available
 ```sh
 TASK_NANOS_ORACLE=/tmp/rollout-nanosecond-oracle
 python qualification/ci-remediation/rollout-nanosecond-boundary-20261124/prepare_oracle.py --output "$TASK_NANOS_ORACLE"
-just test --manifest-path "$TASK_NANOS_ORACLE/Cargo.toml" --config-file "$TASK_NANOS_ORACLE/nextest.toml" --success-output immediate
-just clippy --manifest-path "$TASK_NANOS_ORACLE/Cargo.toml" -- -D warnings
+just test --manifest-path "$TASK_NANOS_ORACLE/Cargo.toml" --config-file "$TASK_NANOS_ORACLE/nextest.toml" --locked --success-output immediate
+just clippy --manifest-path "$TASK_NANOS_ORACLE/Cargo.toml" --locked -- -D warnings
 ```
 
 The source-binding receipt records hashes of the actual conversion and its
