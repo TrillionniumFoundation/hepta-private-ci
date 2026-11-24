@@ -8,6 +8,11 @@ use std::io::Read;
 use std::io::Write;
 use std::os::windows::fs::OpenOptionsExt;
 use std::process::Command;
+use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
+use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
+
+#[path = "windows_private_owner_tests.rs"]
+mod owner;
 
 #[test]
 fn writable_directory_handle_executes_the_real_flush() {
@@ -98,16 +103,58 @@ fn sqlite_inheritance_is_owner_only_and_does_not_weaken_the_default_policy() {
     let temporary = tempfile::tempdir().expect("synthetic directory");
     let root = temporary.path().join("sqlite");
     let directory = PrivateSqliteDirectory::prepare(&root).expect("private SQLite root");
-    // Ordinary filesystem creation exercises the same inherited ACL path as
-    // SQLite's CreateFile(..., lpSecurityAttributes = NULL), not our helper.
-    fs::write(root.join("database.sqlite3"), b"database").expect("native inherited file");
-    fs::write(root.join("database.sqlite3-wal"), b"wal").expect("native inherited sidecar");
-    directory
-        .open("database.sqlite3", Access::Read)
-        .expect("exact inherited owner ACE");
-    directory
-        .open("database.sqlite3-wal", Access::Read)
-        .expect("same sidecar policy");
+    let root_reader = OpenOptions::new()
+        .access_mode(windows_sys::Win32::Storage::FileSystem::READ_CONTROL)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(&root)
+        .expect("read-only fixture security handle");
+    let root_security = owner::FileSecurity::read(&root_reader).expect("validated root security");
+    // NULL SECURITY_ATTRIBUTES inherits the DACL, but its default owner need
+    // not equal TokenUser. Independently observe that owner before predicting
+    // the validator's result; neither outcome permits an ACL/owner repair.
+    for name in ["ordinary.sqlite3", "ordinary.sqlite3-wal"] {
+        fs::write(root.join(name), b"ordinary").expect("ordinary native creation");
+        let source = fs::File::open(root.join(name)).expect("fixture reader");
+        let before = owner::FileSecurity::read(&source).expect("original owner and DACL");
+        assert!(before.has_inherited_owner_ace(&root_security));
+        let owner_matches_user = before.same_owner(&root_security);
+        println!("ordinary_creation_owner_matches_effective_user={owner_matches_user}");
+        match directory.open(name, Access::Read) {
+            Ok(_) => assert!(owner_matches_user, "a foreign owner must be rejected"),
+            Err(error) => {
+                assert!(
+                    !owner_matches_user,
+                    "valid owner and inherited DACL: {error}"
+                );
+                assert_eq!(error.kind(), std::io::ErrorKind::PermissionDenied);
+            }
+        }
+        let after = owner::FileSecurity::read(&source).expect("security after inspection");
+        assert!(
+            before.unchanged(&after),
+            "inspection must not repair security"
+        );
+        assert_eq!(
+            fs::read(root.join(name)).expect("unchanged bytes"),
+            b"ordinary"
+        );
+    }
+    // Creation-time explicit owner with an absent DACL inherits the root ACE.
+    // This is a synthetic native fixture, not a claim about unmodified SQLite.
+    for name in ["explicit.sqlite3", "explicit.sqlite3-wal"] {
+        let mut file = root_security
+            .create_with_inherited_dacl(&root.join(name))
+            .expect("creation-time owner and inherited DACL");
+        file.write_all(b"explicit").expect("fixture bytes");
+        file.sync_all().expect("fixture flush");
+        let security = owner::FileSecurity::read(&file).expect("created file security");
+        assert!(security.same_owner(&root_security));
+        assert!(security.has_inherited_owner_ace(&root_security));
+        directory
+            .open(name, Access::Read)
+            .expect("private inherited file");
+        assert_eq!(fs::read(root.join(name)).expect("exact bytes"), b"explicit");
+    }
     assert!(
         PrivateDirectory::prepare(&root).is_err(),
         "strict non-inheriting policy is unchanged"

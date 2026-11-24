@@ -1,5 +1,11 @@
 # Native Windows cold recovery and private SQLite candidates
 
+Later native execution exposed a real default-owner mismatch in ordinary file
+creation. The original preparation account below is retained; the measured
+failure, revised independent owner controls, and still-required actual SQLite
+creation qualification are recorded in
+[the owner fixture contract](../windows-sqlite-owner-fixtures-20261124/CONTRACT.md).
+
 ## Scope and status
 
 This patch implements Windows retained-source inspection, bounded cold-image
