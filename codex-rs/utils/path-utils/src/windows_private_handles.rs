@@ -22,6 +22,7 @@ use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ADD_FILE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ADD_SUBDIRECTORY;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
+use windows_sys::Win32::Storage::FileSystem::FILE_DISPOSITION_INFO;
 use windows_sys::Win32::Storage::FileSystem::FILE_LIST_DIRECTORY;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_EA;
@@ -32,6 +33,7 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FILE_TRAVERSE;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_EA;
+use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
 use windows_sys::Win32::Storage::FileSystem::FileRenameInfoEx;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
@@ -46,6 +48,7 @@ use super::Access;
 const FILE_DIRECTORY_FILE: u32 = 1;
 const FILE_NON_DIRECTORY_FILE: u32 = 0x40;
 const FILE_OPEN: u32 = 1;
+const FILE_CREATE: u32 = 2;
 const FILE_OPEN_IF: u32 = 3;
 const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x20;
 const FILE_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
@@ -79,6 +82,21 @@ unsafe extern "system" {
 }
 
 pub(super) fn directory(path: &Path, descriptor: *const c_void) -> io::Result<File> {
+    directory_with(path, descriptor, DirectoryMode::Prepare)
+}
+
+#[derive(Clone, Copy)]
+pub(super) enum DirectoryMode {
+    Prepare,
+    ReadOnlyExisting,
+    WritableExisting,
+}
+
+pub(super) fn directory_with(
+    path: &Path,
+    descriptor: *const c_void,
+    mode: DirectoryMode,
+) -> io::Result<File> {
     if !path.is_absolute()
         || path
             .components()
@@ -102,21 +120,26 @@ pub(super) fn directory(path: &Path, descriptor: *const c_void) -> io::Result<Fi
             unit
         }
     }));
+    let rights =
+        FILE_LIST_DIRECTORY | FILE_TRAVERSE | FILE_READ_ATTRIBUTES | FILE_READ_EA | READ_CONTROL;
+    let (rights, disposition) = match mode {
+        DirectoryMode::ReadOnlyExisting => (rights, FILE_OPEN),
+        DirectoryMode::Prepare | DirectoryMode::WritableExisting => (
+            rights | FILE_ADD_FILE | FILE_ADD_SUBDIRECTORY | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA,
+            if matches!(mode, DirectoryMode::Prepare) {
+                FILE_OPEN_IF
+            } else {
+                FILE_OPEN
+            },
+        ),
+    };
     open(
         /*root*/ 0,
         &mut name,
         // Spell out directory-specific rights. FILE_ADD_FILE supplies the
         // directory write right required by the real flush and child creation.
-        FILE_LIST_DIRECTORY
-            | FILE_TRAVERSE
-            | FILE_ADD_FILE
-            | FILE_ADD_SUBDIRECTORY
-            | FILE_READ_ATTRIBUTES
-            | FILE_WRITE_ATTRIBUTES
-            | FILE_READ_EA
-            | FILE_WRITE_EA
-            | READ_CONTROL,
-        FILE_OPEN_IF,
+        rights,
+        disposition,
         FILE_DIRECTORY_FILE,
         descriptor,
     )
@@ -133,6 +156,7 @@ pub(super) fn child(
         Access::Read => (GENERIC_READ, FILE_OPEN),
         Access::Write => (GENERIC_READ | GENERIC_WRITE | DELETE, FILE_OPEN),
         Access::Create => (GENERIC_READ | GENERIC_WRITE | DELETE, FILE_OPEN_IF),
+        Access::CreateNew => (GENERIC_READ | GENERIC_WRITE | DELETE, FILE_CREATE),
     };
     open(
         directory.as_raw_handle() as _,
@@ -250,6 +274,24 @@ pub(super) fn replace(directory: &File, file: &File, destination: &str) -> io::R
         {
             return Err(io::Error::last_os_error());
         }
+    }
+    Ok(())
+}
+
+pub(super) fn remove(file: File) -> io::Result<()> {
+    let information = FILE_DISPOSITION_INFO { DeleteFile: 1 };
+    // SAFETY: The input matches FileDispositionInfo and the owned handle stays
+    // live until the call completes. Deletion binds this object, not a pathname.
+    if unsafe {
+        SetFileInformationByHandle(
+            file.as_raw_handle() as _,
+            FileDispositionInfo,
+            ptr::addr_of!(information).cast(),
+            size_of::<FILE_DISPOSITION_INFO>() as u32,
+        )
+    } == 0
+    {
+        return Err(io::Error::last_os_error());
     }
     Ok(())
 }

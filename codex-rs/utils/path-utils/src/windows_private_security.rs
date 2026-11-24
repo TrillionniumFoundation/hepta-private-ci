@@ -20,13 +20,16 @@ use windows_sys::Win32::Security::Authorization::ConvertStringSecurityDescriptor
 use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
 use windows_sys::Win32::Security::Authorization::SDDL_REVISION_1;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
+use windows_sys::Win32::Security::CONTAINER_INHERIT_ACE;
 use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::EqualSid;
 use windows_sys::Win32::Security::GetAce;
 use windows_sys::Win32::Security::GetSecurityDescriptorControl;
 use windows_sys::Win32::Security::GetTokenInformation;
+use windows_sys::Win32::Security::INHERITED_ACE;
 use windows_sys::Win32::Security::IsValidAcl;
 use windows_sys::Win32::Security::IsValidSid;
+use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
 use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::SE_DACL_PROTECTED;
 use windows_sys::Win32::Security::TOKEN_QUERY;
@@ -42,6 +45,14 @@ use windows_sys::Win32::System::Threading::OpenThreadToken;
 pub(super) struct Identity(Vec<usize>);
 
 pub(super) struct Descriptor(*mut c_void);
+
+#[derive(Clone, Copy)]
+pub(super) enum AclShape {
+    Strict,
+    SqliteDirectory,
+    InspectDirectory,
+    SqliteFile,
+}
 
 impl Drop for Descriptor {
     fn drop(&mut self) {
@@ -123,6 +134,14 @@ impl Identity {
     }
 
     pub(super) fn descriptor(&self) -> io::Result<Descriptor> {
+        self.descriptor_with_inheritance("")
+    }
+
+    pub(super) fn sqlite_descriptor(&self) -> io::Result<Descriptor> {
+        self.descriptor_with_inheritance("OICI")
+    }
+
+    fn descriptor_with_inheritance(&self, inheritance: &str) -> io::Result<Descriptor> {
         let mut string_sid = ptr::null_mut();
         // SAFETY: The SID is from the retained token buffer; output is live.
         if unsafe { ConvertSidToStringSidW(self.sid(), &mut string_sid) } == 0 {
@@ -139,9 +158,10 @@ impl Identity {
         let sid = String::from_utf16(unsafe { std::slice::from_raw_parts(string_sid, length) })
             .map_err(|_| super::unsafe_object())?;
         drop(allocation);
-        // No inherited grants, no broad SYSTEM/Administrators exception, no
-        // access changes to existing objects: creation is owner-only from birth.
-        let sddl: Vec<u16> = format!("O:{sid}D:P(A;;FA;;;{sid})\0")
+        // Only the current owner is granted access. The SQLite-specific
+        // directory explicitly propagates that same SID, never CREATOR_OWNER
+        // or a generic group, to files created by SQLite's own VFS.
+        let sddl: Vec<u16> = format!("O:{sid}D:P(A;{inheritance};FA;;;{sid})\0")
             .encode_utf16()
             .collect();
         let mut descriptor = ptr::null_mut();
@@ -161,6 +181,10 @@ impl Identity {
     }
 
     pub(super) fn validate(&self, file: &File) -> io::Result<()> {
+        self.validate_shape(file, AclShape::Strict)
+    }
+
+    pub(super) fn validate_shape(&self, file: &File, shape: AclShape) -> io::Result<()> {
         let mut owner = ptr::null_mut();
         let mut acl: *mut ACL = ptr::null_mut();
         let mut descriptor = ptr::null_mut();
@@ -195,7 +219,6 @@ impl Identity {
                 || IsValidAcl(acl) == 0
                 || (*acl).AceCount != 1
                 || GetSecurityDescriptorControl(descriptor.0, &mut control, &mut revision) == 0
-                || control & SE_DACL_PROTECTED == 0
             {
                 return Err(super::unsafe_object());
             }
@@ -205,10 +228,20 @@ impl Identity {
             }
             let sid_offset = offset_of!(ACCESS_ALLOWED_ACE, SidStart);
             let header = &*ace.cast::<ACE_HEADER>();
-            if header.AceType != 0
-                || header.AceFlags != 0
-                || (header.AceSize as usize) < sid_offset + 8
-            {
+            let protected = control & SE_DACL_PROTECTED != 0;
+            let inheritable = (OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE) as u8;
+            let shape_matches = match shape {
+                AclShape::Strict => protected && header.AceFlags == 0,
+                AclShape::SqliteDirectory => protected && header.AceFlags == inheritable,
+                AclShape::InspectDirectory => {
+                    protected && (header.AceFlags == 0 || header.AceFlags == inheritable)
+                }
+                AclShape::SqliteFile => {
+                    (protected && header.AceFlags == 0)
+                        || (!protected && header.AceFlags == INHERITED_ACE as u8)
+                }
+            };
+            if header.AceType != 0 || !shape_matches || (header.AceSize as usize) < sid_offset + 8 {
                 return Err(super::unsafe_object());
             }
             let ace = &*ace.cast::<ACCESS_ALLOWED_ACE>();
