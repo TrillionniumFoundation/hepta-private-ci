@@ -169,6 +169,8 @@ pub enum AckOnlyRecoveryError {
     Durable(DurableLedgerError),
     NonceStoreUnavailable,
     NonceAlreadyReservedOrIndeterminate,
+    EventAlreadyReservedOrIndeterminate,
+    LegacyNonceReservationRequiresReconciliation,
 }
 
 impl fmt::Display for AckOnlyRecoveryError {
@@ -559,8 +561,8 @@ pub fn reconcile_one_existing_ack_qualification(
     {
         return Err(AckOnlyRecoveryError::ActorControllerNotIndependent);
     }
-    // Reserve the one-use RecoveryGrant on the independently owner-pinned
-    // journal BEFORE attempting the Witness write. If storage fails, never
+    // Reserve the original event and the one-use grant on the independently
+    // owner-pinned journal BEFORE attempting the Witness write. If storage fails, never
     // advance. Crash after reservation but before Witness ACK remains
     // deliberately INDETERMINATE/HOLD, never silently reauthorized.
     let nonce_receipt = nonce_journal.reserve(grant)?;

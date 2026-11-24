@@ -640,9 +640,27 @@ fn recovery_nonce_is_durable_before_witness_advances_and_cannot_be_reused() {
         .unwrap()
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
-    assert_eq!(entries.len(), 1);
-    let reservation = fs::read(entries[0].path()).unwrap();
-    assert!(!reservation.is_empty());
+    assert_eq!(entries.len(), 3);
+    assert!(folder.join("event-reservations-v2").is_dir());
+    for (name, domain) in [
+        (
+            "target-",
+            b"hepta.ackonly-qualification-event-target-once.v1".as_slice(),
+        ),
+        (
+            "nonce-",
+            b"hepta.ackonly-qualification-reserved-once.v2".as_slice(),
+        ),
+    ] {
+        let reservation = entries
+            .iter()
+            .find(|entry| entry.file_name().to_string_lossy().starts_with(name))
+            .unwrap();
+        assert!(fs::read(reservation.path()).unwrap().starts_with(domain));
+        let mode =
+            std::os::unix::fs::PermissionsExt::mode(&reservation.metadata().unwrap().permissions());
+        assert_eq!(mode & 0o777, 0o600);
+    }
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 1);
     assert_eq!(
         f.try_repair(NOW),
@@ -664,6 +682,51 @@ fn interrupted_nonce_reservation_must_hold_instead_of_late_witness_ack() {
     );
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
     assert_eq!(f.ledger.records().unwrap().len(), 1);
+}
+
+#[test]
+fn another_signed_grant_cannot_reuse_a_reserved_event() {
+    let mut fixture = Fixture::new();
+    let folder = fixture.dir.join("owner-nonce-journal");
+    fixture.nonce_journal.reserve(&fixture.grant).unwrap();
+
+    fixture.grant.grant_nonce = dg("another-test-recovery-grant-nonce");
+    fixture.resign_grant();
+    assert_eq!(
+        fixture.try_repair(NOW),
+        Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
+    );
+    assert_eq!(fixture.witness.frontier().unwrap().anchor.sequence, 0);
+    assert_eq!(fixture.ledger.records().unwrap().len(), 1);
+    assert_eq!(fs::read_dir(folder).unwrap().count(), 3);
+}
+
+#[test]
+fn preupgrade_nonce_reservations_are_retained_without_advancing_the_witness() {
+    use std::fmt::Write as _;
+
+    let mut fixture = Fixture::new();
+    let folder = fixture.dir.join("owner-nonce-journal");
+    let mut name = String::from("nonce-");
+    for part in fixture.grant.grant_nonce.as_array() {
+        write!(&mut name, "{part:02x}").unwrap();
+    }
+    let path = folder.join(name);
+    let bytes = [
+        b"hepta.ackonly-qualification-reserved-once.v1".as_slice(),
+        fixture.grant.grant_nonce.as_array(),
+        codex_hepta_types::Digest32::of_bytes(&fixture.grant.signing_bytes()).as_array(),
+        &fixture.grant.recovery_signature,
+    ]
+    .concat();
+    fs::write(&path, &bytes).unwrap();
+    assert_eq!(
+        fixture.try_repair(NOW),
+        Err(AckOnlyRecoveryError::LegacyNonceReservationRequiresReconciliation)
+    );
+    assert_eq!(fs::read(path).unwrap(), bytes);
+    assert_eq!(fs::read_dir(folder).unwrap().count(), 1);
+    assert_eq!(fixture.witness.frontier().unwrap().anchor.sequence, 0);
 }
 
 #[test]
@@ -850,12 +913,13 @@ fn simultaneous_claims_for_same_nonce_only_one_wins_in_one_owner_directory() {
             .iter()
             .filter(|r| matches!(
                 r,
-                Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+                Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate
+                    | AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
             ))
             .count(),
         1
     );
-    assert_eq!(fs::read_dir(owner_dir).unwrap().count(), 1);
+    assert_eq!(fs::read_dir(owner_dir).unwrap().count(), 3);
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
 }
 
@@ -928,7 +992,7 @@ fn another_native_process_exits_after_nonce_fsync_then_parent_must_hold() {
         "{}",
         String::from_utf8_lossy(&report.stderr)
     );
-    assert_eq!(fs::read_dir(&dir).unwrap().count(), 1);
+    assert_eq!(fs::read_dir(&dir).unwrap().count(), 3);
     // Child died after durable grant reservation: reusing the same
     // original proof is not automatically permitted to finish an ACK.
     assert_eq!(
