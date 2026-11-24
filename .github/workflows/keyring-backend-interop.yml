@@ -1,0 +1,65 @@
+name: Keyring encrypted backend interoperability
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - "research/wsp-keyring-backend-*"
+      - "research/wsp-dependency-*"
+    paths:
+      - ".github/workflows/keyring-backend-interop.yml"
+      - "scripts/keyring-backend-interop/**"
+      - "codex-rs/keyring-store/**"
+      - "codex-rs/rmcp-client/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keyring-backend-interop-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  encrypted-interoperability:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/keyring-interop-target
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install isolated fixture prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends dbus python3-gi python3-cryptography build-essential pkg-config
+      - name: Verify encrypted migration and error semantics
+        run: /usr/bin/python3 scripts/keyring-backend-interop/run.py --output "${{ runner.temp }}/keyring-interop-evidence"
+      - name: Test the production secrets consumer
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test -p codex-secrets --lib --locked 2>&1 | tee "$RUNNER_TEMP/keyring-interop-evidence/secrets-tests.log"
+      - name: Upload exact-source evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: keyring-interop-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/keyring-interop-evidence/*.json
+            ${{ runner.temp }}/keyring-interop-evidence/*.log
+            ${{ runner.temp }}/keyring-interop-evidence/*.txt
+          if-no-files-found: error
+          retention-days: 14

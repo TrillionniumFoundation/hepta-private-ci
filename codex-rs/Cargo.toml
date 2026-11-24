@@ -433,7 +433,7 @@ lazy_static = "1"
 libc = "0.2.182"
 # Keep SQLx's bundled SQLite on a version containing the WAL-reset corruption fix:
 # https://www.sqlite.org/wal.html#the_wal_reset_bug
-libsqlite3-sys = { version = "0.37", default-features = false }
+libsqlite3-sys = { version = "0.39.1", default-features = false }
 log = "0.4"
 lru = "0.18.2"
 maplit = "1.0.2"
@@ -506,7 +506,7 @@ symphonia = { version = "0.6.0", default-features = false, features = [
 ] }
 socket2 = "0.6.1"
 # When bumping sqlx, audit the SQLite constructor deny list in clippy.toml.
-sqlx = { version = "0.9.0", default-features = false, features = [
+sqlx = { version = "0.9.1", default-features = false, features = [
     "chrono",
     "json",
     "macros",
@@ -670,11 +670,11 @@ rama-dns = { path = "third_party/rama-dns-0.3.0-alpha.4" }
 # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
 # bitmap import and patched chunk dependency without changing their public API.
 imbl = { path = "third_party/imbl-6.1.0" }
-# Matrix SDK 0.18.0 pins rusqlite 0.37/libsqlite3-sys 0.35. Hepta's SQLx 0.9
-# deliberately uses libsqlite3-sys 0.37 for the WAL-reset corruption fix, and
+# Matrix SDK 0.18.0 pins rusqlite 0.37/libsqlite3-sys 0.35. SQLx 0.9.1 and
+# rusqlite 0.41 can share libsqlite3-sys 0.39.1, whose bundled SQLite fixes
+# RUSTSEC-2026-0459 as well as the earlier WAL-reset corruption issue.
 # Cargo permits only one native SQLite `links` crate in a graph. The vendored
-# crate is upstream matrix-sdk-sqlite 0.18.0 with only its rusqlite constraint
-# advanced to 0.39, which uses the already-selected libsqlite3-sys 0.37.
+# crate keeps the upstream Matrix API and advances only the rusqlite constraint.
 matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
