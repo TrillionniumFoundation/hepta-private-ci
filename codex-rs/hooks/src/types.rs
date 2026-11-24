@@ -1,13 +1,12 @@
 use std::sync::Arc;
+use std::time::SystemTime;
 
-use chrono::DateTime;
-use chrono::SecondsFormat;
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use futures::future::BoxFuture;
 use serde::Serialize;
 use serde::Serializer;
+use time::format_description::well_known::Rfc3339;
 
 pub type HookFn = Arc<dyn for<'a> Fn(&'a HookPayload) -> BoxFuture<'a, HookResult> + Send + Sync>;
 
@@ -67,7 +66,7 @@ pub struct HookPayload {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub client: Option<String>,
     #[serde(serialize_with = "serialize_triggered_at")]
-    pub triggered_at: DateTime<Utc>,
+    pub triggered_at: SystemTime,
     pub hook_event: HookEvent,
 }
 
@@ -80,11 +79,17 @@ pub struct HookEventAfterAgent {
     pub last_assistant_message: Option<String>,
 }
 
-fn serialize_triggered_at<S>(value: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
+fn serialize_triggered_at<S>(value: &SystemTime, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
-    serializer.serialize_str(&value.to_rfc3339_opts(SecondsFormat::Secs, true))
+    let timestamp = time::OffsetDateTime::from(*value)
+        .replace_nanosecond(0)
+        .map_err(serde::ser::Error::custom)?;
+    let rendered = timestamp
+        .format(&Rfc3339)
+        .map_err(serde::ser::Error::custom)?;
+    serializer.serialize_str(&rendered)
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -98,8 +103,10 @@ pub enum HookEvent {
 
 #[cfg(test)]
 mod tests {
-    use chrono::TimeZone;
-    use chrono::Utc;
+    use std::time::Duration;
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
+
     use codex_protocol::ThreadId;
     use codex_utils_absolute_path::test_support::PathBufExt;
     use codex_utils_absolute_path::test_support::test_path_buf;
@@ -110,6 +117,23 @@ mod tests {
     use super::HookEventAfterAgent;
     use super::HookPayload;
 
+    #[derive(serde::Serialize)]
+    struct TimestampWire(#[serde(serialize_with = "super::serialize_triggered_at")] SystemTime);
+
+    #[test]
+    fn triggered_at_keeps_whole_utc_seconds_across_epoch() {
+        let before_epoch = UNIX_EPOCH - Duration::from_millis(250);
+        let after_epoch = UNIX_EPOCH + Duration::from_millis(1_500);
+        assert_eq!(
+            serde_json::to_value(TimestampWire(before_epoch)).expect("serialize before epoch"),
+            json!("1969-12-31T23:59:59Z")
+        );
+        assert_eq!(
+            serde_json::to_value(TimestampWire(after_epoch)).expect("serialize after epoch"),
+            json!("1970-01-01T00:00:01Z")
+        );
+    }
+
     #[test]
     fn hook_payload_serializes_stable_wire_shape() {
         let session_id = ThreadId::new();
@@ -119,10 +143,7 @@ mod tests {
             session_id,
             cwd: cwd.clone(),
             client: None,
-            triggered_at: Utc
-                .with_ymd_and_hms(2025, 1, 1, 0, 0, 0)
-                .single()
-                .expect("valid timestamp"),
+            triggered_at: UNIX_EPOCH + Duration::from_secs(1_735_689_600),
             hook_event: HookEvent::AfterAgent {
                 event: HookEventAfterAgent {
                     thread_id,
