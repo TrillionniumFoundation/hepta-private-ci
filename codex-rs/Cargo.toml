@@ -669,6 +669,9 @@ zip = { path = "third_party/zip-9.0.5" }
 i18n-config = { path = "third_party/i18n-config-0.4.8" }
 # Keep Rama alpha.4 while using its Hickory 0.26 DNS adapter.
 rama-dns = { path = "third_party/rama-dns-0.3.0-alpha.4" }
+# Backport upstream maintained time handling without the Rama 0.4 service rewrite.
+rama-http = { path = "third_party/rama-http-0.3.0-alpha.4" }
+rama-http-headers = { path = "third_party/rama-http-headers-0.3.0-alpha.4" }
 # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
 # bitmap import and patched chunk dependency without changing their public API.
 imbl = { path = "third_party/imbl-6.1.0" }

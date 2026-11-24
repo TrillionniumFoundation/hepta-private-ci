@@ -11,28 +11,40 @@ use crate::service::web::extract::Query;
 
 use rama_core::extensions::ExtensionsMut;
 use rama_core::telemetry::tracing;
-use rama_error::{ErrorContext, OpaqueError};
-use rama_http_headers::{
-    ContentEncoding, ContentEncodingDirective, ContentType, Cookie as RamaCookie, HeaderMapExt,
-    Location,
-};
-use rama_http_headers::{HeaderEncode, SetCookie};
+use rama_error::ErrorContext;
+use rama_error::OpaqueError;
+use rama_http_headers::ContentEncoding;
+use rama_http_headers::ContentEncodingDirective;
+use rama_http_headers::ContentType;
+use rama_http_headers::Cookie as RamaCookie;
+use rama_http_headers::HeaderEncode;
+use rama_http_headers::HeaderMapExt;
+use rama_http_headers::Location;
+use rama_http_headers::SetCookie;
+use rama_http_types::HeaderMap;
+use rama_http_types::Version as RamaHttpVersion;
 use rama_http_types::mime::Mime;
+use rama_http_types::proto::h1::Http1HeaderMap;
 use rama_http_types::proto::h1::Http1HeaderName;
-use rama_http_types::{HeaderMap, Version as RamaHttpVersion, proto::h1::Http1HeaderMap};
 use rama_net::address::SocketAddress;
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as ENGINE;
-use chrono::{DateTime, Utc};
+use codex_utils_time::Timestamp;
+use rama_utils::str::NonEmptyStr;
 use rama_utils::str::arcstr::ArcStr;
-use rama_utils::str::{NonEmptyStr, non_empty_str};
-use serde::{Deserialize, Serialize};
+use rama_utils::str::non_empty_str;
+use serde::Deserialize;
+use serde::Serialize;
 
 mod mime_serde {
     use rama_http_types::mime::Mime;
-    use serde::{Deserialize, Deserializer, Serializer, de::Error};
-    use std::{borrow::Cow, str::FromStr};
+    use serde::Deserialize;
+    use serde::Deserializer;
+    use serde::Serializer;
+    use serde::de::Error;
+    use std::borrow::Cow;
+    use std::str::FromStr;
 
     #[allow(clippy::ref_option)]
     pub(super) fn serialize<S>(mime: &Option<Mime>, serializer: S) -> Result<S::Ok, S::Error>
@@ -59,24 +71,27 @@ mod mime_serde {
     }
 }
 
-mod chrono_serializer {
-    use chrono::{DateTime, Utc};
-    use serde::{Deserialize, Deserializer, Serializer, de::Error};
+mod timestamp_serializer {
+    use codex_utils_time::Timestamp;
+    use serde::Deserialize;
+    use serde::Deserializer;
+    use serde::Serializer;
+    use serde::de::Error;
     use std::borrow::Cow;
 
-    pub(super) fn serialize<S>(dt: &DateTime<Utc>, s: S) -> Result<S::Ok, S::Error>
+    pub(super) fn serialize<S>(dt: &Timestamp, s: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        s.serialize_str(&dt.to_rfc3339())
+        s.serialize_str(&dt.rfc3339())
     }
 
-    pub(super) fn deserialize<'de, D>(d: D) -> Result<DateTime<Utc>, D::Error>
+    pub(super) fn deserialize<'de, D>(d: D) -> Result<Timestamp, D::Error>
     where
         D: Deserializer<'de>,
     {
         let s = <Cow<'de, str>>::deserialize(d)?;
-        Ok(DateTime::parse_from_rfc3339(&s)
+        Ok(codex_utils_time::OffsetTimestamp::parse_rfc3339(&s)
             .map_err(Error::custom)?
             .to_utc())
     }
@@ -232,8 +247,8 @@ pub struct Browser {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Page {
     /// Date and time stamp of the request start (ISO 8601 - YYYY-MM-DDThh:mm:ss.sTZD)
-    #[serde(with = "chrono_serializer", rename = "startedDateTime")]
-    pub started_date_time: DateTime<Utc>,
+    #[serde(with = "timestamp_serializer", rename = "startedDateTime")]
+    pub started_date_time: Timestamp,
     /// Unique identifier of a page within the [Log]. Entries use it to refer the parent page.
     pub id: String,
     /// Page title
@@ -276,8 +291,8 @@ pub struct Entry {
     #[serde(rename = "pageref")]
     pub page_ref: Option<String>,
     /// Date and time stamp of the request start (ISO 8601 - YYYY-MM-DDThh:mm:ss.sTZD)
-    #[serde(with = "chrono_serializer", rename = "startedDateTime")]
-    pub started_date_time: DateTime<Utc>,
+    #[serde(with = "timestamp_serializer", rename = "startedDateTime")]
+    pub started_date_time: Timestamp,
     /// Total elapsed time of the request in milliseconds.
     ///
     /// This is the sum of all timings available in the timings object (i.e. not including -1 values).
@@ -595,7 +610,7 @@ pub struct Cookie {
     /// Date and time stamp of the request start
     ///
     /// (ISO 8601 - YYYY-MM-DDThh:mm:ss.sTZD)
-    pub expires: Option<DateTime<Utc>>,
+    pub expires: Option<Timestamp>,
     /// Set to true if the cookie is HTTP only, false otherwise.
     #[serde(rename = "httpOnly")]
     pub http_only: Option<bool>,
@@ -721,9 +736,9 @@ pub struct CacheState {
     /// Date and time stamp of the request start
     ///
     /// (ISO 8601 - YYYY-MM-DDThh:mm:ss.sTZD)
-    #[serde(with = "chrono_serializer")]
+    #[serde(with = "timestamp_serializer")]
     /// Expiration time of the cache entry.
-    pub expires: DateTime<Utc>,
+    pub expires: Timestamp,
     /// The last time the cache entry was opened.
     #[serde(rename = "lastAccess")]
     pub last_access: Option<String>,

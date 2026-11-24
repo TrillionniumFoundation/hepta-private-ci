@@ -88,14 +88,8 @@ version = "0.22"
 [dependencies.bitflags]
 version = "2.10"
 
-[dependencies.chrono]
-version = "0.4"
-features = [
-    "serde",
-    "oldtime",
-    "clock",
-]
-default-features = false
+[dependencies.codex-utils-time]
+path = "../../utils/time"
 
 [dependencies.compression-codecs]
 version = "0.4"

@@ -1,17 +1,26 @@
+use crate::Body;
+use crate::Request;
+use crate::Response;
+use crate::StreamingBody;
 use crate::body::util::BodyExt;
 use crate::layer::har::recorder::Recorder;
-use crate::layer::har::spec::{
-    Cache, Entry, Log as HarLog, Request as HarRequest, Response as HarResponse, Timings,
-};
+use crate::layer::har::spec::Cache;
+use crate::layer::har::spec::Entry;
+use crate::layer::har::spec::Log as HarLog;
+use crate::layer::har::spec::Request as HarRequest;
+use crate::layer::har::spec::Response as HarResponse;
+use crate::layer::har::spec::Timings;
 use crate::layer::har::toggle::Toggle;
-use crate::{Body, Request, Response, StreamingBody};
 
-use chrono::{DateTime, Utc};
+use codex_utils_time::Timestamp;
 
+use rama_core::Service;
+use rama_core::bytes::Bytes;
+use rama_core::error::BoxError;
 use rama_core::extensions::ExtensionsMut;
 use rama_core::telemetry::tracing;
-use rama_core::{Service, bytes::Bytes, error::BoxError};
-use rama_error::{ErrorExt, OpaqueError};
+use rama_error::ErrorExt;
+use rama_error::OpaqueError;
 use tokio::time::Instant;
 
 pub struct HARExportService<R, S, T> {
@@ -34,13 +43,13 @@ where
 
     async fn serve(&self, req: Request<ReqBody>) -> Result<Self::Output, Self::Error> {
         struct EntryStartInfo {
-            start_time: DateTime<Utc>,
+            start_time: Timestamp,
             begin: Instant, // TODO: replace with total time
             request: HarRequest,
         }
 
         let (request, maybe_entry_start_info) = if self.toggle.status().await {
-            let start_time = Utc::now();
+            let start_time = Timestamp::now();
             // need to collect it first as bodies are (potentially) streaming
             let (req_parts, req_body) = req.into_parts();
             let req_body_bytes = req_body

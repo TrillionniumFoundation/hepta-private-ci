@@ -1,27 +1,38 @@
-use super::{
-    DirSource, DirectoryServeMode, ServeVariant,
-    headers::{IfModifiedSince, IfUnmodifiedSince, LastModified},
-};
-use crate::headers::{encoding::Encoding, specifier::QualityValue};
-use crate::{HeaderValue, Method, Request, Uri, header};
-use chrono::{DateTime, Local};
+use super::DirSource;
+use super::DirectoryServeMode;
+use super::ServeVariant;
+use super::headers::IfModifiedSince;
+use super::headers::IfUnmodifiedSince;
+use super::headers::LastModified;
+use crate::HeaderValue;
+use crate::Method;
+use crate::Request;
+use crate::Uri;
+use crate::header;
+use crate::headers::encoding::Encoding;
+use crate::headers::specifier::QualityValue;
+use codex_utils_time::Timestamp;
 use http_range_header::RangeUnsatisfiableError;
 use rama_core::combinators::Either;
 use rama_core::telemetry::tracing;
 use rama_http_types::mime::Mime;
-use rama_utils::include_dir::{self, Dir, Metadata as EmbeddedMetadata};
+use rama_utils::include_dir::Dir;
+use rama_utils::include_dir::Metadata as EmbeddedMetadata;
+use rama_utils::include_dir::{self};
+use std::ffi::OsStr;
+use std::fmt;
+use std::fs::Metadata;
 use std::io::Cursor;
-use std::{
-    ffi::OsStr,
-    fmt,
-    fs::Metadata,
-    io::{self, ErrorKind, SeekFrom},
-    ops::RangeInclusive,
-    path::{Path, PathBuf},
-    time::SystemTime,
-};
+use std::io::ErrorKind;
+use std::io::SeekFrom;
+use std::io::{self};
+use std::ops::RangeInclusive;
+use std::path::Path;
+use std::path::PathBuf;
+use std::time::SystemTime;
+use tokio::fs::File;
 use tokio::io::AsyncRead;
-use tokio::{fs::File, io::AsyncSeekExt};
+use tokio::io::AsyncSeekExt;
 
 /// Represents the outcome of attempting to open a file for serving.
 pub(super) enum OpenFileOutput {
@@ -676,7 +687,7 @@ fn generate_directory_html(entries: Vec<DirEntry>, uri: &Uri) -> String {
     let mut rows = vec![];
 
     for entry in entries {
-        let datetime: DateTime<Local> = entry.modified.into();
+        let datetime = Timestamp::from(entry.modified).to_local();
         let modified_str = datetime.format("%Y-%m-%d %H:%M:%S %:z").to_string();
 
         let mime = if entry.is_dir {
