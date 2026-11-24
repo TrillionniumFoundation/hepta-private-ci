@@ -15,6 +15,7 @@ on:
       - "codex-rs/hepta-evidence/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-operator-acceptance/**"
+      - "codex-rs/hepta-supervisor/**"
       - "codex-rs/Cargo.lock"
 
 permissions:
@@ -38,7 +39,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: just@1.51.0,nextest@0.9.103
@@ -77,6 +78,14 @@ jobs:
         run: |
           set -euo pipefail
           just test -p codex-hepta-evidence --lib --locked authbus_outbox_tests 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/authbus-outbox.log"
+      # Retain the exhausted-budget fault and verify synthetic signed decisions.
+      - name: Verify durable restart events and signed recovery quarantine
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-supervisor --test restart_budget --test restart_budget_recovery --test signed_intent_recovery --locked 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/supervisor.log"
       - name: Upload exact-source results
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f

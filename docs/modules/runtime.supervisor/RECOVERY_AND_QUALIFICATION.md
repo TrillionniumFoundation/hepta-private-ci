@@ -10,7 +10,7 @@ The native supervisor applies one bounded automatic restart policy to the main a
 - automatic restart attempt budget: 3;
 - exponential delay: 250 ms, 500 ms, 1 s for attempts 1-3;
 - the delay function is capped at 30 seconds if the fixed budget is changed in a future reviewed revision;
-- a fourth restart request inside the active window is not executed. The main agent records `AutomaticRestartBudgetExhausted`; Matrix records `MatrixRestartBudgetExhausted` and remains degraded;
+- a fourth restart request inside the active window is not executed. The main agent records `AutomaticRestartBudgetExhausted` and returns an exhausted-budget fault in the tick report; Matrix records `MatrixRestartBudgetExhausted` and remains degraded;
 - explicit operator restart/new release start resets the recovery budget for that release;
 - explicit stop/kill never schedules an automatic restart;
 - an unexpected main-process exit while Starting/AwaitingHealth or Running schedules restart; a health-deadline failure schedules restart after the failed child exits;
@@ -48,54 +48,35 @@ The signed path runs inside `with_slot()`, which temporarily removes the agent s
 
 ## 3. Explicit signed-intent recovery ceremony
 
-The supervisor deliberately does not infer success from `Running + target release`. An unresolved signed intent remains fail-closed because those observations do not independently prove that the exact grant caused the current state.
+Recovery keeps the daemon reachable while quarantining an unresolved production transition. The Agent reports `production_recovery_required`, stays fenced or absent, and ordinary daemon mutation admission remains closed. A matching terminal release-transaction journal can reconcile its own signed intent; merely observing a target release or writing an unsigned local file cannot authorize success.
 
-The repository-controlled recovery ceremony currently supports one conservative terminal action: **abort the ambiguous grant after fencing its effects**. It does not support an operator command that simply marks the target successful.
+### 3.1 Inspect the exact durable state
 
-### 3.1 Inspect
+`hepta-supervisor-intent-recovery inspect <agent-run-root>` prints the signed intent. The daemon status/recovery APIs additionally expose the current control fence and release-transaction snapshot. Record:
 
-Run while supervisord is stopped or has failed closed:
+- the exact Agent, grant, intent and release-transaction digests;
+- the transition and source/target releases;
+- lifecycle generation and current daemon authority epoch;
+- the observed current release and its immutable manifest/program digests;
+- the pinned external signer's identity, epoch and verification key.
 
-```text
-hepta-supervisor-intent-recovery inspect <agent-run-root>
-```
+Do not proceed if the run root, release binding or Agent identity is uncertain. Do not delete journals or leases to remove quarantine.
 
-Record at minimum:
+### 3.2 Obtain an independently signed recovery decision
 
-- `agent_id`;
-- `grant_sha256`;
-- `source_release` / `target_release`;
-- `expected_control_revision`;
-- `expected_lifecycle_generation`;
-- `authority_epoch`;
-- `status`;
-- `intent_sha256`.
+An external authority issues `ProductionRecoveryDecision`, binding all of the above to a bounded validity window. `H7H89ProductionGrantSigner::sign_recovery` is the signing interface; the supervisor verifies against an independently pinned `H7H89ProductionGrantVerifier`. The supervisor does not manufacture its own production authorization.
 
-Do not proceed if the run root or agent binding is uncertain.
+The decision can recognize an already observed durable outcome: an upgrade committed to its target, an upgrade rolled back to its source, or an explicit rollback reached its target. It cannot move the durable release state, accept a changed catalog binding, or mark an explicit rollback as a committed upgrade.
 
-### 3.2 Authorize abort
+The legacy `hepta-supervisor-intent-recovery abort` command writes an unsigned compatibility artifact. That artifact is **not consumed as recovery authority** and cannot clear quarantine, even when its intent digest matches exactly. Do not use it as a production recovery ceremony.
 
-Use the exact `intent_sha256` returned by the immediately preceding inspection:
+### 3.3 Submit and verify the terminal witness
 
-```text
-hepta-supervisor-intent-recovery abort <agent-run-root> <intent-sha256>
-```
+Submit the decision through `SupervisordMethod::ResolveProductionRecovery` / `SupervisordClient::resolve_production_recovery`, using the current control fence. The daemon requires its production-authority build opt-in, externally pinned verifier, current authority epoch and exact control fence. The supervisor requires a recovery-required intent and transaction bound to the same grant, and a fenced or absent ambiguous process.
 
-The tool publishes `supervisor-signed-intent-recovery.json`. The directive is digest-bound to the exact unresolved intent; if the intent changes, the stale directive does not apply.
+After signature, lifetime, generation, digest and immutable-release checks pass, the supervisor durably records the decision digest on the terminal release transaction, then persists the corresponding signed-intent status and advances the control revision. Rejected decisions preserve quarantine and the original durable transaction. A successfully applied decision cannot be replayed as another recovery operation.
 
-### 3.3 Restart supervisord and reconcile
-
-On recovery, supervisord:
-
-- refuses to infer target success;
-- fences/kills an adopted main child and Matrix companion if either is still present;
-- remains fail-closed while an ambiguous adopted process is still present;
-- only when no ambiguous process remains, persists the intent as terminal `Aborted` and clears pending automatic main restart state;
-- then permits normal supervisor recovery to continue.
-
-If startup still reports `signed_intent_recovery_required`, verify that the fenced child actually exited and start supervisord again. Do not delete the intent or lease by hand merely to make startup pass.
-
-`Aborted` means “this grant is terminal and must not be resumed or inferred successful.” It does **not** assert that the source release remained active. A subsequent desired release state must go through a fresh independently authorized transition.
+This source protocol does not establish deployment acceptance or supply an operator key. The regression fixtures use public synthetic keys and isolated temporary fleets only.
 
 ## 4. Crash-consistency qualification matrix
 
@@ -157,7 +138,7 @@ Repository-controlled verification for this change includes at least:
 - `restart_policy` unit tests for exponential delay, fixed budget and window reset;
 - `restart_journal` unit tests for durable round-trip and conservative clock rollback handling;
 - `tests/restart_budget.rs` for real supervisor crash/restart scheduling behavior inside one daemon lifetime;
-- `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and exact-digest abort terminalization;
+- `tests/signed_intent_recovery.rs` for quarantine retention despite an unsigned exact-digest abort, rejected untrusted/stale signed decisions, and exact signed recovery of an observed durable outcome;
 - the existing release-transition, Matrix companion, lease/adoption, daemon protocol and production-authority tests.
 
 These are test identities, not target-host deployment receipts. CI must pass on the final source commit, and the target-host matrix in section 4 remains required.
