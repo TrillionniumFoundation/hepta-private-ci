@@ -1,0 +1,11 @@
+load("//:defs.bzl", "codex_rust_crate")
+
+codex_rust_crate(
+    name = "matrix-sdk",
+    compile_data = glob([
+        "README.md",
+        "src/**/*.md",
+    ]),
+    crate_edition = "2024",
+    crate_name = "matrix_sdk",
+)

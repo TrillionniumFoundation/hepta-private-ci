@@ -1,0 +1,92 @@
+name: Matrix SDK store compatibility
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - "research/wsp-dependency-*"
+      - "fix/matrix-maintained-dependencies-*"
+    paths:
+      - ".github/workflows/matrix-store-compatibility.yml"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/third_party/matrix-sdk-0.19.1/**"
+      - "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matrix-store-compatibility-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  encrypted-store-upgrade:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/matrix-store-compat-target
+      COMPAT_ROOT: ${{ runner.temp }}/matrix-store-compat
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          path: current
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 07c8994f2402a58f6b59eb648c801fc40c6e2b96
+          path: baseline
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Prepare synthetic fixture and exact-source receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$COMPAT_ROOT/evidence" baseline/codex-rs/hepta-matrix-sdk/examples
+          cp current/codex-rs/hepta-matrix-sdk/examples/store_compat_probe.rs baseline/codex-rs/hepta-matrix-sdk/examples/
+          git -C baseline rev-parse HEAD > "$COMPAT_ROOT/evidence/baseline-head.txt"
+          git -C current rev-parse HEAD > "$COMPAT_ROOT/evidence/current-head.txt"
+          sha256sum baseline/codex-rs/Cargo.lock current/codex-rs/Cargo.lock current/codex-rs/hepta-matrix-sdk/examples/store_compat_probe.rs > "$COMPAT_ROOT/evidence/source-sha256.txt"
+      - name: Create and reopen the actual 0.18 encrypted store
+        working-directory: baseline/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo run --locked -p codex-hepta-matrix-sdk --example store_compat_probe -- create "$COMPAT_ROOT/baseline-store" "$COMPAT_ROOT/evidence/expected-device.json" 2>&1 | tee "$COMPAT_ROOT/evidence/baseline-create.log"
+          cargo run --locked -p codex-hepta-matrix-sdk --example store_compat_probe -- verify "$COMPAT_ROOT/baseline-store" "$COMPAT_ROOT/evidence/expected-device.json" 2>&1 | tee "$COMPAT_ROOT/evidence/baseline-reopen.log"
+          sha256sum "$CARGO_TARGET_DIR/debug/examples/store_compat_probe" > "$COMPAT_ROOT/evidence/baseline-binary-sha256.txt"
+          python3 - <<'PY'
+          import os, pathlib, shutil
+          root = pathlib.Path(os.environ['COMPAT_ROOT'])
+          shutil.copytree(root / 'baseline-store', root / 'upgrade-store')
+          shutil.copytree(root / 'baseline-store', root / 'wrong-passphrase-store')
+          PY
+      - name: Upgrade and reopen with actual 0.19 consumer dependencies
+        working-directory: current/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo run --locked -p codex-hepta-matrix-sdk --example store_compat_probe -- verify "$COMPAT_ROOT/upgrade-store" "$COMPAT_ROOT/evidence/expected-device.json" 2>&1 | tee "$COMPAT_ROOT/evidence/upgrade.log"
+          cargo run --locked -p codex-hepta-matrix-sdk --example store_compat_probe -- verify "$COMPAT_ROOT/upgrade-store" "$COMPAT_ROOT/evidence/expected-device.json" 2>&1 | tee "$COMPAT_ROOT/evidence/upgraded-reopen.log"
+          cargo run --locked -p codex-hepta-matrix-sdk --example store_compat_probe -- wrong-passphrase "$COMPAT_ROOT/wrong-passphrase-store" "$COMPAT_ROOT/evidence/expected-device.json" 2>&1 | tee "$COMPAT_ROOT/evidence/wrong-passphrase.log"
+          sha256sum "$CARGO_TARGET_DIR/debug/examples/store_compat_probe" > "$COMPAT_ROOT/evidence/current-binary-sha256.txt"
+          just test --locked -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrix-protocol 2>&1 | tee "$COMPAT_ROOT/evidence/consumer-tests.log"
+      - name: Preserve exact-source qualification evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: matrix-store-compatibility-${{ github.sha }}
+          path: ${{ runner.temp }}/matrix-store-compat/evidence/
+          if-no-files-found: error
+          retention-days: 14

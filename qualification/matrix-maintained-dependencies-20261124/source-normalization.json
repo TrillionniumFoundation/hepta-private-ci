@@ -1,0 +1,1457 @@
+{
+  "method": "official source + exact anymap3 patch + repository rustfmt, compared byte-for-byte",
+  "rustfmt_version": "rustfmt 1.9.0-stable (59807616e1 2026-04-14)",
+  "rustfmt_binary_sha256": "56b31ad3ec8fe0277a2884a189e243b8f04e9b48e5fd22e547c1516c5f8fd34c",
+  "upstream_patch": "9c5fdd2cf5be1b7b8b20541e56d7a109db968534",
+  "files": [
+    {
+      "path": "matrix-sdk-0.19.1/build.rs",
+      "upstream_sha256": "b6b40ffe56a71ec45fef7f54bc1059c0c935b8ded7458b86a193cce92e90a200",
+      "expected_patch_then_rustfmt_sha256": "520012e3a142c91f43aa32da7d43cf9263dcfcb58af6883a54ec1e0067580fb9",
+      "candidate_sha256": "520012e3a142c91f43aa32da7d43cf9263dcfcb58af6883a54ec1e0067580fb9",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-sqlite-0.19.1/src/state_store.rs",
+      "upstream_sha256": "1ff989781d3c2c95d996ce186477b5b77f7bd120c88d3b4bf46de9fb33bb5871",
+      "expected_patch_then_rustfmt_sha256": "235205d20b797777ab359d654ef34b06aa41dcb28ea06f52fb31af80060ff2b3",
+      "candidate_sha256": "235205d20b797777ab359d654ef34b06aa41dcb28ea06f52fb31af80060ff2b3",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-sqlite-0.19.1/src/media_store.rs",
+      "upstream_sha256": "d27efeb8d30cede965533dbf66242da214f944cab887379feb251bf9a9b9ee00",
+      "expected_patch_then_rustfmt_sha256": "52ebd697aa1a409fc704ce9286e388c58e32a4e699955bd7141eae586c565f3e",
+      "candidate_sha256": "52ebd697aa1a409fc704ce9286e388c58e32a4e699955bd7141eae586c565f3e",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-sqlite-0.19.1/src/lib.rs",
+      "upstream_sha256": "9666501bedcd096186b925e3365993f9276f78c278bee68f340e773cbf0d041c",
+      "expected_patch_then_rustfmt_sha256": "f09e4b8f5e3d0fc1215cdcc7e10e78c7f2b5c919ef93881b3b91fdb85e1efafc",
+      "candidate_sha256": "f09e4b8f5e3d0fc1215cdcc7e10e78c7f2b5c919ef93881b3b91fdb85e1efafc",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-sqlite-0.19.1/src/crypto_store.rs",
+      "upstream_sha256": "33f4d434c17b8da20fde72f0add8edcb37076d413bf6e7b776c715f7e6330d24",
+      "expected_patch_then_rustfmt_sha256": "5cbe3db29c628029925494e28c05bc51bee0fe02cbb517e46883f7256acb9b8a",
+      "candidate_sha256": "5cbe3db29c628029925494e28c05bc51bee0fe02cbb517e46883f7256acb9b8a",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-sqlite-0.19.1/src/utils.rs",
+      "upstream_sha256": "e450cadd34ea04129b2da35076655bcddcf15a1b7ccd6be9b8077bcd31496616",
+      "expected_patch_then_rustfmt_sha256": "4d06d1b2838e1a3d44b048d980d11328315e4d6be670f62140362a8b551fe0e7",
+      "candidate_sha256": "4d06d1b2838e1a3d44b048d980d11328315e4d6be670f62140362a8b551fe0e7",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-sqlite-0.19.1/src/connection.rs",
+      "upstream_sha256": "893957181ce82046d0375a934a2f1782c6485b447ffb281e25b964b6a0627de6",
+      "expected_patch_then_rustfmt_sha256": "3bf53ca5d57392f11971b522720ba71b21b37d121b6523d14cb0d7beefe16e3f",
+      "candidate_sha256": "3bf53ca5d57392f11971b522720ba71b21b37d121b6523d14cb0d7beefe16e3f",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-sqlite-0.19.1/src/error.rs",
+      "upstream_sha256": "751dabf38eddaae1651ba35705c349d66279d3652b929eb65cb95a434a39ab52",
+      "expected_patch_then_rustfmt_sha256": "79a91290b1341d406ad86760bb499013eddb81da21cbb2e1222902cfd5e376a9",
+      "candidate_sha256": "79a91290b1341d406ad86760bb499013eddb81da21cbb2e1222902cfd5e376a9",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-sqlite-0.19.1/src/event_cache_store.rs",
+      "upstream_sha256": "c563506ec52f1389a557d7b0fb49ab895c781f8b993e94073c6a1c0e9e2c8a1e",
+      "expected_patch_then_rustfmt_sha256": "2b1d8873675f63d9e04aef49bafaee9c68fc052c529002fdd78eef0068c59277",
+      "candidate_sha256": "2b1d8873675f63d9e04aef49bafaee9c68fc052c529002fdd78eef0068c59277",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/automatic_call_status.rs",
+      "upstream_sha256": "6a68641620d660231ff7fd0103ca80f0b252d5170b5687915fc4325cb0e20534",
+      "expected_patch_then_rustfmt_sha256": "01a4614fccee164af25878d055afac281b25683a11f8af9d4baf924053c5d361",
+      "candidate_sha256": "01a4614fccee164af25878d055afac281b25683a11f8af9d4baf924053c5d361",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room_directory_search.rs",
+      "upstream_sha256": "d746f2d5c8b184ef3eff6627d8e31f0710482d527176c8e233d0caf7e9011177",
+      "expected_patch_then_rustfmt_sha256": "35fb1bc7a72fa855f7ad40d4d868e19261cc36377455267ba2b9632dd03592bf",
+      "candidate_sha256": "35fb1bc7a72fa855f7ad40d4d868e19261cc36377455267ba2b9632dd03592bf",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/account.rs",
+      "upstream_sha256": "ab7aa16fc1360159f5cc9403b9249fc13de7bcd945de2fa5137b262c9e55a989",
+      "expected_patch_then_rustfmt_sha256": "6148e2579ee51174eb4a346ab64b7693540d389d5118db8d1da3a76c4db4df5b",
+      "candidate_sha256": "6148e2579ee51174eb4a346ab64b7693540d389d5118db8d1da3a76c4db4df5b",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/message_search.rs",
+      "upstream_sha256": "df30c5bd6db80919c61d7e6621498c5eb2e55a505cd1a0d2ebb5e5afca1fe9f5",
+      "expected_patch_then_rustfmt_sha256": "7ba1ac68af9cc78d0de833ffcdc403e50cb6da9e31a1ca18229dd1c32cfeb071",
+      "candidate_sha256": "7ba1ac68af9cc78d0de833ffcdc403e50cb6da9e31a1ca18229dd1c32cfeb071",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/lib.rs",
+      "upstream_sha256": "fa12945770e3fdb1f84c4562fc240f21e11c4dd962d059a76a7ac440ec6e3fbd",
+      "expected_patch_then_rustfmt_sha256": "4bc6e228931da8161666afa02d5d73ff39decc7a6e9051c737b894aff5d1df97",
+      "candidate_sha256": "4bc6e228931da8161666afa02d5d73ff39decc7a6e9051c737b894aff5d1df97",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/media.rs",
+      "upstream_sha256": "b93e22cf9d9c9f2d062209850e518048e40094c750921ee7e411fd840871e7c3",
+      "expected_patch_then_rustfmt_sha256": "e92120a780b1c2dc2ece22082ae9115130b50eef86547ef538a04bc91cd19efe",
+      "candidate_sha256": "e92120a780b1c2dc2ece22082ae9115130b50eef86547ef538a04bc91cd19efe",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/deduplicating_handler.rs",
+      "upstream_sha256": "656eb96c2b64c1d3352eaad9dcb1052eaeba5cac9e87a15113fb370122727cb8",
+      "expected_patch_then_rustfmt_sha256": "c31b644795d704523c92f963499dc61590b35f45db07d2e0e526ada201aef538",
+      "candidate_sha256": "c31b644795d704523c92f963499dc61590b35f45db07d2e0e526ada201aef538",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/pusher.rs",
+      "upstream_sha256": "fa444cd79d9e0948fcb26dea6cfc31b709fabedd25aeafd709eb24f30b6d6ccd",
+      "expected_patch_then_rustfmt_sha256": "963810fbe8d0a2bfd55a9e0508169020cd1b8d164a52fa410d032da970e655a8",
+      "candidate_sha256": "963810fbe8d0a2bfd55a9e0508169020cd1b8d164a52fa410d032da970e655a8",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/attachment.rs",
+      "upstream_sha256": "d9d6466b0218a6d4fcfb3140a2c6f03f64af4e64fde744b9c06fbd3ae9ea8e8b",
+      "expected_patch_then_rustfmt_sha256": "cfa713695ea83245f742b2c818cb3e315b2df35a84f6995c4d6cea37c1c4d0e3",
+      "candidate_sha256": "cfa713695ea83245f742b2c818cb3e315b2df35a84f6995c4d6cea37c1c4d0e3",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/sync.rs",
+      "upstream_sha256": "bec31b9863e701f1f1ed5058d0cb55cdaee6120f0ffe8bcdc381f01dd764ae75",
+      "expected_patch_then_rustfmt_sha256": "f01d2299d4e68f1dc625c6392a0820c7a9723fec7f43b0dc3df4bdffe0a64080",
+      "candidate_sha256": "f01d2299d4e68f1dc625c6392a0820c7a9723fec7f43b0dc3df4bdffe0a64080",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room_preview.rs",
+      "upstream_sha256": "776eec02983a96ed398c64f8fb165ab530e64a754717c87a50fb4b550cceec7a",
+      "expected_patch_then_rustfmt_sha256": "f885a8801b53496bed0198e21e2ca8fb96711294fef86b9c93ee7c98e7b08928",
+      "candidate_sha256": "f885a8801b53496bed0198e21e2ca8fb96711294fef86b9c93ee7c98e7b08928",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/live_locations_observer.rs",
+      "upstream_sha256": "2f3033f5c3756d71a636b0dc00d77a29316a8ca5e8afdb3a2fb3434662b2fa16",
+      "expected_patch_then_rustfmt_sha256": "1ff098e90eabb5d861f1e9b62946470f3484c084470d522ef0f914572f1dadeb",
+      "candidate_sha256": "1ff098e90eabb5d861f1e9b62946470f3484c084470d522ef0f914572f1dadeb",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/error.rs",
+      "upstream_sha256": "f0a7753d580a56a2209adb6a03db850ef3df8bb0b124937cc7eeac1e5f4b7d94",
+      "expected_patch_then_rustfmt_sha256": "25c2de2e76e980962ca896d23ffe8effcf929cecc1a3ea8dd8a85111277e3f74",
+      "candidate_sha256": "25c2de2e76e980962ca896d23ffe8effcf929cecc1a3ea8dd8a85111277e3f74",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/refresh_token.rs",
+      "upstream_sha256": "31b06b4d4f4f45a806ad6cf6b2c887266b64af8bbae4de69624c4138376cf7ce",
+      "expected_patch_then_rustfmt_sha256": "5ec974d534dcb9efb476956fb2e9a032511e4f402b97655d8c798ec890c7ae24",
+      "candidate_sha256": "5ec974d534dcb9efb476956fb2e9a032511e4f402b97655d8c798ec890c7ae24",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/automatic_call_status.rs",
+      "upstream_sha256": "845983d4d7633efb4c36099bc92e22070b55bfef024309d5901e9412ec412d71",
+      "expected_patch_then_rustfmt_sha256": "a156f27238dbe833f58853e6174f8f3b4f54a4f253924c951809f38e3b763695",
+      "candidate_sha256": "a156f27238dbe833f58853e6174f8f3b4f54a4f253924c951809f38e3b763695",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/client.rs",
+      "upstream_sha256": "3e5e91828b175220842aed22ed5806645bc62699f05a422b69511b3e939c94bf",
+      "expected_patch_then_rustfmt_sha256": "a0bb24e4bb1c12f146cf2bbdf7c9712f87ba73fd2e9dfa7587a2c1532e167f50",
+      "candidate_sha256": "a0bb24e4bb1c12f146cf2bbdf7c9712f87ba73fd2e9dfa7587a2c1532e167f50",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/account.rs",
+      "upstream_sha256": "5636a5df167d097e5c31ac08fd51e209bd7cbce16ab1fe9739956b90bb756318",
+      "expected_patch_then_rustfmt_sha256": "a0ee6a945b2a105f7234fb8908a877b79ade4f078933e3cfa39ce2342cb3d4f9",
+      "candidate_sha256": "a0ee6a945b2a105f7234fb8908a877b79ade4f078933e3cfa39ce2342cb3d4f9",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/matrix_auth.rs",
+      "upstream_sha256": "b44299bfcb0cadf68a01f786c897aaa3fbceb5882feedd491bfea05824ef633f",
+      "expected_patch_then_rustfmt_sha256": "10e28fa5b7f0da8cdf51f2deff1247d2971fa81543ca3768e1c18c74588d8470",
+      "candidate_sha256": "10e28fa5b7f0da8cdf51f2deff1247d2971fa81543ca3768e1c18c74588d8470",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/send_queue.rs",
+      "upstream_sha256": "c4576b11d1d0c252092559f6899824632e24323015eab1ae42f3458094b0ef3a",
+      "expected_patch_then_rustfmt_sha256": "6adcdb719b4243419c84d7e778c22f88fc051fe64c39771f677f40b7743f6867",
+      "candidate_sha256": "6adcdb719b4243419c84d7e778c22f88fc051fe64c39771f677f40b7743f6867",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/main.rs",
+      "upstream_sha256": "cba07bc0e68ecdd698308a4526f02febbdc5d20c8bd23da689ebf5708a929999",
+      "expected_patch_then_rustfmt_sha256": "c7013b5e2566b864a040590c3143264f6cbaa69cc2186495374f0cb768a11ff1",
+      "candidate_sha256": "c7013b5e2566b864a040590c3143264f6cbaa69cc2186495374f0cb768a11ff1",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/encryption.rs",
+      "upstream_sha256": "4abf9c8cde8c5e11767e37e2f8c97ef8e3b8706a18f1bbb0f465dab790bf285a",
+      "expected_patch_then_rustfmt_sha256": "e989e4a59f58244e288fca2e173edf769ad0255326011ce93bb5bbfa4d9753b2",
+      "candidate_sha256": "e989e4a59f58244e288fca2e173edf769ad0255326011ce93bb5bbfa4d9753b2",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/media.rs",
+      "upstream_sha256": "52fc6226f0136e3dce1eab63f46a889a2b2018b1345c29f44d70cae49ba9d971",
+      "expected_patch_then_rustfmt_sha256": "fafc1a3c442cd0213997a5e803d7601edbf04a284fef29c8c3b0c6018c8ce312",
+      "candidate_sha256": "fafc1a3c442cd0213997a5e803d7601edbf04a284fef29c8c3b0c6018c8ce312",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/edit_validation.rs",
+      "upstream_sha256": "5970f1d9bb834ec04c6f10e545c253eb048df7b3eeaffc9826d7a38e31897ed2",
+      "expected_patch_then_rustfmt_sha256": "159ff54f3bc330d451a0adc3a7e283125195f122edbb50a8689011022ff5107b",
+      "candidate_sha256": "159ff54f3bc330d451a0adc3a7e283125195f122edbb50a8689011022ff5107b",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/widget.rs",
+      "upstream_sha256": "395808599b87153029608367b54d4221b124641421167617a06f74fb9ac21291",
+      "expected_patch_then_rustfmt_sha256": "36754aea29be312de632f583567dfd9fca54dbcf0ffc3b3c5c45cdab9ae986f3",
+      "candidate_sha256": "36754aea29be312de632f583567dfd9fca54dbcf0ffc3b3c5c45cdab9ae986f3",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/sync.rs",
+      "upstream_sha256": "ca3ea4dea0fff1455b7988ebe806f1f613a9a8af9053decfc06d87b1d7b9688a",
+      "expected_patch_then_rustfmt_sha256": "823690c69e23b847ae7ac68f97885a5773baa7744793a7e2edae80063f5c6f97",
+      "candidate_sha256": "823690c69e23b847ae7ac68f97885a5773baa7744793a7e2edae80063f5c6f97",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room_preview.rs",
+      "upstream_sha256": "e46bb0912b9e066f1e57deeaf867dba4bab04e79123415df3b788e6328b7cbb6",
+      "expected_patch_then_rustfmt_sha256": "ac67bdf1c07bf7201a9f83707e26dfc4ed8e818caf90c3ebd5dd062eb868e655",
+      "candidate_sha256": "ac67bdf1c07bf7201a9f83707e26dfc4ed8e818caf90c3ebd5dd062eb868e655",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/notification.rs",
+      "upstream_sha256": "96ba6b4657e81a9863794a7f8cbfee43d35e88d74024d281b99d385707f9631c",
+      "expected_patch_then_rustfmt_sha256": "67dc92da45c7c0e11d6959156a61da91a13ea10468cf1f8305675ed98b1bdfc8",
+      "candidate_sha256": "67dc92da45c7c0e11d6959156a61da91a13ea10468cf1f8305675ed98b1bdfc8",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/latest_event.rs",
+      "upstream_sha256": "0682062c96b50b2fa05af8a4f7083178943d545376a1fdbe344ebf14ba920fb4",
+      "expected_patch_then_rustfmt_sha256": "52d9636adf695dd2e7161a8f28d520314ca2e850f825e50c843aa88882c54b0d",
+      "candidate_sha256": "52d9636adf695dd2e7161a8f28d520314ca2e850f825e50c843aa88882c54b0d",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/event_cache/mod.rs",
+      "upstream_sha256": "ed78f7c3c0d9f3e2dea9343522f3a7ef135c2fd152cc5d5928b77b520fde7cde",
+      "expected_patch_then_rustfmt_sha256": "f622d1e0b77ce7fd5794ef79f02cd8bbaf57e5191ef4da77b05acc03bc00c114",
+      "candidate_sha256": "f622d1e0b77ce7fd5794ef79f02cd8bbaf57e5191ef4da77b05acc03bc00c114",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/event_cache/read_receipts.rs",
+      "upstream_sha256": "fb662544a80c79f14571540b236a3d83b8ee6525bb54fa8e537470cde3c5e664",
+      "expected_patch_then_rustfmt_sha256": "92de859f593f6f5028535cbb3475e6deeaf8fce17e55a63f5503f6023eeed12c",
+      "candidate_sha256": "92de859f593f6f5028535cbb3475e6deeaf8fce17e55a63f5503f6023eeed12c",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/mod.rs",
+      "upstream_sha256": "fd14f3ef335e1d14d5b2a460a7b902849496f29ac1f963139fd29710a5d14604",
+      "expected_patch_then_rustfmt_sha256": "fd14f3ef335e1d14d5b2a460a7b902849496f29ac1f963139fd29710a5d14604",
+      "candidate_sha256": "fd14f3ef335e1d14d5b2a460a7b902849496f29ac1f963139fd29710a5d14604",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/calls.rs",
+      "upstream_sha256": "3e6519b26f4a037b7455022529da22d2cc91cf70ba28743f3b3a438b5b7008e6",
+      "expected_patch_then_rustfmt_sha256": "92e74b154b702ebfd42b7e17c3a2a662fadc853df5e97494b7856f0a9d177ec7",
+      "candidate_sha256": "92e74b154b702ebfd42b7e17c3a2a662fadc853df5e97494b7856f0a9d177ec7",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/pinned_events.rs",
+      "upstream_sha256": "28a4f2f8150294d747c27dfd4b3681b3a06d90f08174e399fb38b815fcdc4239",
+      "expected_patch_then_rustfmt_sha256": "fa709b45bb95643f55ab4eef8d7a2dd4c60ffea241ec6eec5ffdb5b94e67487b",
+      "candidate_sha256": "fa709b45bb95643f55ab4eef8d7a2dd4c60ffea241ec6eec5ffdb5b94e67487b",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/notification_mode.rs",
+      "upstream_sha256": "744dfea970b2c0c0b599f459975f786644a8cb2a0b83a8a98475de6a3dc5f6cd",
+      "expected_patch_then_rustfmt_sha256": "8931642c59d0005a4c6bf4778f4aa06c7e09f5948fe6524ea5b29c5deef8e985",
+      "candidate_sha256": "8931642c59d0005a4c6bf4778f4aa06c7e09f5948fe6524ea5b29c5deef8e985",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/common.rs",
+      "upstream_sha256": "a122f140468149f7b2b3de6206960d936f1f27507262b8775bda9c1eab903204",
+      "expected_patch_then_rustfmt_sha256": "8e19b2b5763be95f1a2443ff021854c226690d3f79290e0eefb5b203c87e5bca",
+      "candidate_sha256": "8e19b2b5763be95f1a2443ff021854c226690d3f79290e0eefb5b203c87e5bca",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/joined.rs",
+      "upstream_sha256": "ea33209b7399c26be9dce2947704b24e76cd7ca5983b01a0b980c773279c747c",
+      "expected_patch_then_rustfmt_sha256": "90fee79cc04d91894cafbab4c782fbf48d21e93770c684e8451ae90dba47bcb7",
+      "candidate_sha256": "90fee79cc04d91894cafbab4c782fbf48d21e93770c684e8451ae90dba47bcb7",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/thread.rs",
+      "upstream_sha256": "4088ac6e45dd3a8c31507d4b6dd0bfbdbd358baa7b16bde22f5337366d115436",
+      "expected_patch_then_rustfmt_sha256": "e2f108792dfcf8ddd4e474bbfedd9b5c6c9b51cc6613f7bf39b55814bc589910",
+      "candidate_sha256": "e2f108792dfcf8ddd4e474bbfedd9b5c6c9b51cc6613f7bf39b55814bc589910",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/left.rs",
+      "upstream_sha256": "53f706686a03db47c3ff3d852585d3eb6d284870bb671d3ae291ff436ca03012",
+      "expected_patch_then_rustfmt_sha256": "f264e4fd7b463ad1f41a2e1661b3529e92ab974ed6c3028063f1add2d176d85f",
+      "candidate_sha256": "f264e4fd7b463ad1f41a2e1661b3529e92ab974ed6c3028063f1add2d176d85f",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/tags.rs",
+      "upstream_sha256": "426a1ecb89af87e26e6e45018f57ced9e9140998a4d7349eb32a387a3ca27fb1",
+      "expected_patch_then_rustfmt_sha256": "3002675e8b467c76c40c26b66efcd771373cf2d82cfffc7efe15e865a7076ed1",
+      "candidate_sha256": "3002675e8b467c76c40c26b66efcd771373cf2d82cfffc7efe15e865a7076ed1",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/spaces.rs",
+      "upstream_sha256": "6f472fe0316b6caabfeaae2998b03337e29c66c96d789f995031325ebaeee73c",
+      "expected_patch_then_rustfmt_sha256": "9542563d1a36b2bbd22f1f36c052c3a0276fc8f547566229b157a438d972f21d",
+      "candidate_sha256": "9542563d1a36b2bbd22f1f36c052c3a0276fc8f547566229b157a438d972f21d",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/encryption/dehydrated_devices.rs",
+      "upstream_sha256": "dcd5f78a77c45ba123909ca8eae635037deff0dc79886004b6994756cf157504",
+      "expected_patch_then_rustfmt_sha256": "44a70449f24b1bda297fcc613a1e089faec004268ef7212cf19fea9bab8cc479",
+      "candidate_sha256": "44a70449f24b1bda297fcc613a1e089faec004268ef7212cf19fea9bab8cc479",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/encryption/secret_storage.rs",
+      "upstream_sha256": "f3f7809f5419751c3b7b1b8e1f5595bc0cac7697f6a12855f3444f97d35661ec",
+      "expected_patch_then_rustfmt_sha256": "e6494b675e8f6d3dc261cd6ebcd25d2729ea8e7e9aead3a18acbd47a59e34a34",
+      "candidate_sha256": "e6494b675e8f6d3dc261cd6ebcd25d2729ea8e7e9aead3a18acbd47a59e34a34",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/encryption/state_events.rs",
+      "upstream_sha256": "34b8ba7ef9f575fbf166fd7cabbd296b97b060cfd65ba1ec986b87d89e57d13d",
+      "expected_patch_then_rustfmt_sha256": "338947048173f997d726031042487557c63d130f296ab8835dc4488f689076fd",
+      "candidate_sha256": "338947048173f997d726031042487557c63d130f296ab8835dc4488f689076fd",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/encryption/to_device.rs",
+      "upstream_sha256": "3283087479fb988ad7b8ed03d4e88e8c0ed8f0c74cbf1d758bb81cfbad3650c9",
+      "expected_patch_then_rustfmt_sha256": "1aa61286fd2271e5cc01be6a8d18a7c59e08fb317f3ecd829a0e10f2dae93655",
+      "candidate_sha256": "1aa61286fd2271e5cc01be6a8d18a7c59e08fb317f3ecd829a0e10f2dae93655",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/encryption/cross_signing.rs",
+      "upstream_sha256": "78dfbd48dfed804668b5513ebcfeb9e2539cb601338c5c073070d725d891b8a0",
+      "expected_patch_then_rustfmt_sha256": "66b65dc1561db8192f2ad9160935ea73adfad960a47f19560e051adeb15531ef",
+      "candidate_sha256": "66b65dc1561db8192f2ad9160935ea73adfad960a47f19560e051adeb15531ef",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/encryption/recovery.rs",
+      "upstream_sha256": "93209cb5076169d20af397d006db49f85bcf92fb1b1ced5c7112eda9b696eb04",
+      "expected_patch_then_rustfmt_sha256": "6cc2daa0e63bdd41069463b4febd4cfb68cacd7f0eee398c674ced842403332a",
+      "candidate_sha256": "6cc2daa0e63bdd41069463b4febd4cfb68cacd7f0eee398c674ced842403332a",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/encryption/verification.rs",
+      "upstream_sha256": "a07940fa4f5868927f40050ca6b1f309f2b72e5cd8f97aa4ad5e49017d80bdb6",
+      "expected_patch_then_rustfmt_sha256": "23ff7021ca0eee4b6146a6ef82257ffd10dea8fa6c73b5fd54634088cc5a1ddc",
+      "candidate_sha256": "23ff7021ca0eee4b6146a6ef82257ffd10dea8fa6c73b5fd54634088cc5a1ddc",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/encryption/backups.rs",
+      "upstream_sha256": "6408f633bd4503568b616a7be031641e769375d9f362df7207a694460ec8d969",
+      "expected_patch_then_rustfmt_sha256": "7d951186151d694c9fb74308144939d7c192b0f31ed745033b26c01d746e7901",
+      "candidate_sha256": "7d951186151d694c9fb74308144939d7c192b0f31ed745033b26c01d746e7901",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/encryption/shared_history.rs",
+      "upstream_sha256": "15ad1b440af4affbbae82c04bc76343b38e9499725db91eb1fb3aa10751d074c",
+      "expected_patch_then_rustfmt_sha256": "846215c582e51e1568916d02ec13807d590bce1bddd9fb2f7c323c81b4902a8c",
+      "candidate_sha256": "846215c582e51e1568916d02ec13807d590bce1bddd9fb2f7c323c81b4902a8c",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/event_cache/threads/mod.rs",
+      "upstream_sha256": "e0fab150b39fbe07b640f4436fd4936de5d9b617794d046d15b7c7d0a6bf1b63",
+      "expected_patch_then_rustfmt_sha256": "6de1f6ec003206802eaf51cbbb4376a97226d6bd8c8593914010e9ea93dd7397",
+      "candidate_sha256": "6de1f6ec003206802eaf51cbbb4376a97226d6bd8c8593914010e9ea93dd7397",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/event_cache/threads/read_receipts.rs",
+      "upstream_sha256": "d7bd67e3b4030ef77a6bad10cf3f4187732c448f92e8b2fd94e470a137d6459b",
+      "expected_patch_then_rustfmt_sha256": "5d59c2e1a7544ccaff8fa8d5cbe0ebdab281484b9d83cc151b12b165df58207c",
+      "candidate_sha256": "5d59c2e1a7544ccaff8fa8d5cbe0ebdab281484b9d83cc151b12b165df58207c",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/attachment/mod.rs",
+      "upstream_sha256": "9b1349ea90c63dd52a81f3eaf70e5ac8dfc92af880597daac3244cbb89409b5f",
+      "expected_patch_then_rustfmt_sha256": "3b6836b5b2fb7b06a0fe888513d8fd5b137b999dcacb29cf867e0202e5144ed1",
+      "candidate_sha256": "3b6836b5b2fb7b06a0fe888513d8fd5b137b999dcacb29cf867e0202e5144ed1",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/beacon_info/mod.rs",
+      "upstream_sha256": "fc34ac9a98e818935bcf0cccd051ab0b29728bb4cc3dd56d7d9dabbbac6cd70e",
+      "expected_patch_then_rustfmt_sha256": "ca168951e670fcc36c8d6ec33aad98dd180a1391186b402f6e016a50fd5390e0",
+      "candidate_sha256": "ca168951e670fcc36c8d6ec33aad98dd180a1391186b402f6e016a50fd5390e0",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/tests/integration/room/beacon/mod.rs",
+      "upstream_sha256": "57ce845ed888bc7506130a84804842783bf796d1eb80f2d87a9d058efdc1ba3c",
+      "expected_patch_then_rustfmt_sha256": "dce56bde93c3b8c5dc8dcb3fa95373a9222a2cfdb9bc436160966f7cd0b4a76c",
+      "candidate_sha256": "dce56bde93c3b8c5dc8dcb3fa95373a9222a2cfdb9bc436160966f7cd0b4a76c",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/mod.rs",
+      "upstream_sha256": "e0e12f6a59e6ae5912c3aefe067ac048471f65dc6e10237fbdd1a75e793581b2",
+      "expected_patch_then_rustfmt_sha256": "c17cc191f9fda13c09ed7a706e3b0f477e356e991a6273d0d6a2e367815522ad",
+      "candidate_sha256": "c17cc191f9fda13c09ed7a706e3b0f477e356e991a6273d0d6a2e367815522ad",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/deduplicator.rs",
+      "upstream_sha256": "67345b06d8add8b36fad13b9051c1320e92f1f1c6d61736734848dc3fd2133fc",
+      "expected_patch_then_rustfmt_sha256": "4919fa81b6532b7c0e0d6b028f6b28ad45473c87cef29fefcb69644d3ff60e49",
+      "candidate_sha256": "4919fa81b6532b7c0e0d6b028f6b28ad45473c87cef29fefcb69644d3ff60e49",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/back_pagination_queue.rs",
+      "upstream_sha256": "f5c2be81e5625be4341e4ea9b08ac88f63d073a68aaa039b946ef65780578652",
+      "expected_patch_then_rustfmt_sha256": "ebc4f9193ca4979cd768c94b5da5f977c69728d1b8cdb2e51973403c8a0d65b0",
+      "candidate_sha256": "ebc4f9193ca4979cd768c94b5da5f977c69728d1b8cdb2e51973403c8a0d65b0",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/tasks.rs",
+      "upstream_sha256": "25e12f4b7ff4a8840008f04950d8ae60032a83dd358016c632d033f19e2e5600",
+      "expected_patch_then_rustfmt_sha256": "4d038880bf3687bf82b4ebae191ec632ce9820889da68eb133e448f115ea212e",
+      "candidate_sha256": "4d038880bf3687bf82b4ebae191ec632ce9820889da68eb133e448f115ea212e",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/persistence.rs",
+      "upstream_sha256": "f5c9247ad617fd735b80554a62fc1a2eb5c73c46057f5338552cbfa9c5dc74ac",
+      "expected_patch_then_rustfmt_sha256": "f767385117b925fbcdb6572b0b3f513a5cf7005e5d4caeb480dbcf45d00250d0",
+      "candidate_sha256": "f767385117b925fbcdb6572b0b3f513a5cf7005e5d4caeb480dbcf45d00250d0",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/redecryptor.rs",
+      "upstream_sha256": "0e8536667c9be76d4d477f2988e17891d671ceebaf236ba4fb5e4882d10dd7a2",
+      "expected_patch_then_rustfmt_sha256": "b2d6a69c54e752a5737bcab02e5e0e39fe63595c9ca35d4f9a8dfb7ce656fadd",
+      "candidate_sha256": "b2d6a69c54e752a5737bcab02e5e0e39fe63595c9ca35d4f9a8dfb7ce656fadd",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/mod.rs",
+      "upstream_sha256": "8abf6b1617ac2b1e54a8347feffba1d832a022bae8baac66ac8b21c1a90d4748",
+      "expected_patch_then_rustfmt_sha256": "cbe595012682d137b200f6643f4d0d38159df12eb799013726ad94d8ca4418f1",
+      "candidate_sha256": "cbe595012682d137b200f6643f4d0d38159df12eb799013726ad94d8ca4418f1",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/latest_events/mod.rs",
+      "upstream_sha256": "a5f5015f992737b037243488a932b866a9510d9566f4c866573fd40a7bc95f7e",
+      "expected_patch_then_rustfmt_sha256": "d4e00688c7df7133e43ba21ad189ecb500bbf8f74ddc96e977ba50da4d0fcec1",
+      "candidate_sha256": "d4e00688c7df7133e43ba21ad189ecb500bbf8f74ddc96e977ba50da4d0fcec1",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/latest_events/error.rs",
+      "upstream_sha256": "1695eddeae496322a9afc227d04728acefad0821fe3687537e318c2da9d256f6",
+      "expected_patch_then_rustfmt_sha256": "1695eddeae496322a9afc227d04728acefad0821fe3687537e318c2da9d256f6",
+      "candidate_sha256": "1695eddeae496322a9afc227d04728acefad0821fe3687537e318c2da9d256f6",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/latest_events/room_latest_events.rs",
+      "upstream_sha256": "0ace5592df93f0cf8696a82bb558d7ed472371435c2bb943e5fcaecd4a83a3ab",
+      "expected_patch_then_rustfmt_sha256": "558a05ea241e13d49278ee0118621ab065552c05c1f17328dbfbffafb609e48a",
+      "candidate_sha256": "558a05ea241e13d49278ee0118621ab065552c05c1f17328dbfbffafb609e48a",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/send_queue/mod.rs",
+      "upstream_sha256": "fd2db66a256da5bed37895177ba1e33882234abb43641de737d0097f3b439840",
+      "expected_patch_then_rustfmt_sha256": "028381461ec751839d71449d66055fda7d19b55f5d69a111e0c809469292d404",
+      "candidate_sha256": "028381461ec751839d71449d66055fda7d19b55f5d69a111e0c809469292d404",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/send_queue/upload.rs",
+      "upstream_sha256": "4bdc614aed88c1826f1209d0c629b36296e6ce0dae7f6af1f2d684d5cb06c75e",
+      "expected_patch_then_rustfmt_sha256": "84241539100ad8167bbd2e192e46efcffb6db717421ab6888b954f532ab89d0d",
+      "candidate_sha256": "84241539100ad8167bbd2e192e46efcffb6db717421ab6888b954f532ab89d0d",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/send_queue/progress.rs",
+      "upstream_sha256": "51f40299620b8501bab5b163f48356b76f3f3fae05c2e40c6eee4f2728768775",
+      "expected_patch_then_rustfmt_sha256": "2eb23d11802c83802c5bde2897292b9dfff1fb9582f79050e0fd4a5101017fcc",
+      "candidate_sha256": "2eb23d11802c83802c5bde2897292b9dfff1fb9582f79050e0fd4a5101017fcc",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/mod.rs",
+      "upstream_sha256": "81b69ba0d351f075c9014bf6ed40a9b9a8869a6086cbfbee94800b4a490c5d08",
+      "expected_patch_then_rustfmt_sha256": "dc642d9b3bd399cb13e183383a4ccf1488ca8146fce4373cb67811bf7707227b",
+      "candidate_sha256": "dc642d9b3bd399cb13e183383a4ccf1488ca8146fce4373cb67811bf7707227b",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/filter.rs",
+      "upstream_sha256": "adfb60404499a4640f6c6727ac3afd2b3621d821dd457a9bec0c248e36305ddd",
+      "expected_patch_then_rustfmt_sha256": "be9a66b4361f546a6b999c6cf14d166c752f03d4e0c10b4de728364cc37e7c68",
+      "candidate_sha256": "be9a66b4361f546a6b999c6cf14d166c752f03d4e0c10b4de728364cc37e7c68",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/matrix.rs",
+      "upstream_sha256": "bf8b8a020447714ab04b2a44fa855ac3cec6f7a7d3711e93dce31216bed38d7f",
+      "expected_patch_then_rustfmt_sha256": "463ca4f1f6ba84ed4d5a54e360d092c920a1f575387cbde1d66627dcf8d43d6a",
+      "candidate_sha256": "463ca4f1f6ba84ed4d5a54e360d092c920a1f575387cbde1d66627dcf8d43d6a",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/capabilities.rs",
+      "upstream_sha256": "ddffe2d6b1da134f2ff38d02046fe91ebe3aac75452472c03ae2c514f7ebd9e3",
+      "expected_patch_then_rustfmt_sha256": "68975e36db36a2f50a42746737d137bd6afd068b02eed76a75e2a37909be6e3a",
+      "candidate_sha256": "68975e36db36a2f50a42746737d137bd6afd068b02eed76a75e2a37909be6e3a",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/client/mod.rs",
+      "upstream_sha256": "1ce41dc51c9f6eb98e0f7464490fbe72bfb80d1ed558e3ddcc657e72e753d675",
+      "expected_patch_then_rustfmt_sha256": "1ebd680373415c6768ef3b5134c8feee4b2fbb082a416abb3a4adfbd7922f504",
+      "candidate_sha256": "1ebd680373415c6768ef3b5134c8feee4b2fbb082a416abb3a4adfbd7922f504",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/client/futures.rs",
+      "upstream_sha256": "c5766044e4855c3c5da92f2cbad8ab93f4d6ad62f440259707c57c42fe692dac",
+      "expected_patch_then_rustfmt_sha256": "4e079aa960855c38800353b5b904854f0a2dd2a9dec461256591a02816ea1a2c",
+      "candidate_sha256": "4e079aa960855c38800353b5b904854f0a2dd2a9dec461256591a02816ea1a2c",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/client/thread_subscriptions.rs",
+      "upstream_sha256": "b7f7e0a333100afd142156b0be2e7bcdb2cb59c2d5cd8edfbb88d1c14a8d10ac",
+      "expected_patch_then_rustfmt_sha256": "e394cb469f82a9da76a13091d9cc2a66ec4a3565116a6e3e7d0491f58b3f90a5",
+      "candidate_sha256": "e394cb469f82a9da76a13091d9cc2a66ec4a3565116a6e3e7d0491f58b3f90a5",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/client/homeserver_capabilities.rs",
+      "upstream_sha256": "d9719c28fafabec7773bbc114d562bfbf09c71b77df8104d2b269a7bd5abb197",
+      "expected_patch_then_rustfmt_sha256": "c22a5bacd369b2c3d05342351eca99d2d1b30625394b9a887519403c89c989eb",
+      "candidate_sha256": "c22a5bacd369b2c3d05342351eca99d2d1b30625394b9a887519403c89c989eb",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/client/caches.rs",
+      "upstream_sha256": "b07fc35dc174d58fc64fd964174517032b4481d04eda6238f485de1e72b18f0f",
+      "expected_patch_then_rustfmt_sha256": "202ac90cdb426d92179c4cc829fd792337c503ed70357c16a5d840d64778817b",
+      "candidate_sha256": "202ac90cdb426d92179c4cc829fd792337c503ed70357c16a5d840d64778817b",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/test_utils/mod.rs",
+      "upstream_sha256": "e708c1c48d19e2f8d427193ff95937ac1d597683a9d2ae7d7afc52ebba62bf5b",
+      "expected_patch_then_rustfmt_sha256": "f15cec219941af593bb755aee8231a1006ed4ae14a4b645deb4f2575e691d860",
+      "candidate_sha256": "f15cec219941af593bb755aee8231a1006ed4ae14a4b645deb4f2575e691d860",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/test_utils/client.rs",
+      "upstream_sha256": "24e1c601d7832603f1cb06cecaa451f7afb43360b4ee5f753d48170149d37796",
+      "expected_patch_then_rustfmt_sha256": "7bdd00e534e9491bb85a3531a3e3ee90450ecab699305434b1906f0d75186561",
+      "candidate_sha256": "7bdd00e534e9491bb85a3531a3e3ee90450ecab699305434b1906f0d75186561",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/mod.rs",
+      "upstream_sha256": "d492838e2da8daad8e682576803ca1a4e98e55ab838dd68e1d535fb656c36916",
+      "expected_patch_then_rustfmt_sha256": "d891ed3b8080ef07f1b426a18c14d1c649ab6e2ac858306933fea002db33d981",
+      "candidate_sha256": "d891ed3b8080ef07f1b426a18c14d1c649ab6e2ac858306933fea002db33d981",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/calls.rs",
+      "upstream_sha256": "c94b829cfcb4a9ce0a313c5a537051a5465606977971035d466c524709196259",
+      "expected_patch_then_rustfmt_sha256": "13d8bc9459c86ea2a1c8f444a9b1448265b80fc799094a41ee4f839e0615eb7d",
+      "candidate_sha256": "13d8bc9459c86ea2a1c8f444a9b1448265b80fc799094a41ee4f839e0615eb7d",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/reply.rs",
+      "upstream_sha256": "dd62dbb35ceb922a825f45395627876d02f6868701e3b09b9316a3c75d408bab",
+      "expected_patch_then_rustfmt_sha256": "693f492fc909ca91854a7b3b0412c52e3fc25c0b1b317db28fa1f4bc9bdacacc",
+      "candidate_sha256": "693f492fc909ca91854a7b3b0412c52e3fc25c0b1b317db28fa1f4bc9bdacacc",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/futures.rs",
+      "upstream_sha256": "058a0ceefc40c57eef6ec0d41dfef1e64ad4738f74e72deaec917d8b2c69ca30",
+      "expected_patch_then_rustfmt_sha256": "cbe78417dd1505249f262cf8e5e1a12d2a732754aab682a60eb45b225aa3641b",
+      "candidate_sha256": "cbe78417dd1505249f262cf8e5e1a12d2a732754aab682a60eb45b225aa3641b",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/power_levels.rs",
+      "upstream_sha256": "6d890cb06444591c7cc79d5d9d97ec4de28a21d37ab376c4beadf3e865b6314b",
+      "expected_patch_then_rustfmt_sha256": "42980a84c3a43238c0ffa5e9f5e5e04e758560972124a1a1ac530a6e19cec9f5",
+      "candidate_sha256": "42980a84c3a43238c0ffa5e9f5e5e04e758560972124a1a1ac530a6e19cec9f5",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/knock_requests.rs",
+      "upstream_sha256": "669e9c37d59907d2739c7f83c26fa9fe72574196de7d1b181b0e68fb46932330",
+      "expected_patch_then_rustfmt_sha256": "b3bae5d0084e535dd91cf55a187837cf197a0a96da0d6ec9762d58d4c11683e3",
+      "candidate_sha256": "b3bae5d0084e535dd91cf55a187837cf197a0a96da0d6ec9762d58d4c11683e3",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/messages.rs",
+      "upstream_sha256": "f9efd1445aea6cfe49dd41620c1e6e6e9db6ea30c0c5b67377f30cacf9154437",
+      "expected_patch_then_rustfmt_sha256": "34b9a342878d0b0f0d95c89358a4729f62a379d6d8e083e4f02214f909f297f3",
+      "candidate_sha256": "34b9a342878d0b0f0d95c89358a4729f62a379d6d8e083e4f02214f909f297f3",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/shared_room_history.rs",
+      "upstream_sha256": "3a506a88773dbdba549fee07024cb410fdadd2dd0cc4f2cb3d3c6776cb83b6bb",
+      "expected_patch_then_rustfmt_sha256": "d7cb911036e6613b66f0bc39d1a6e34822712597fab8bc6fb82393965d9976c3",
+      "candidate_sha256": "d7cb911036e6613b66f0bc39d1a6e34822712597fab8bc6fb82393965d9976c3",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/privacy_settings.rs",
+      "upstream_sha256": "4aab29c0808f6360e7977cbcb5800947980a1099bcc3370eb1a65be75fe4cac8",
+      "expected_patch_then_rustfmt_sha256": "112ebcf882917f59a577871b9d339710254884d9cd71962165404578bf5b4d47",
+      "candidate_sha256": "112ebcf882917f59a577871b9d339710254884d9cd71962165404578bf5b4d47",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/edit.rs",
+      "upstream_sha256": "eb17655608b7ffabd7f0cdcc99a4647d6f238ac21abf5d7490a8c5e64cd015c5",
+      "expected_patch_then_rustfmt_sha256": "615a80ef031c3cb4a0ef242cc96c191d5befb2ea63aa6548bb0bcf1f09d21903",
+      "candidate_sha256": "615a80ef031c3cb4a0ef242cc96c191d5befb2ea63aa6548bb0bcf1f09d21903",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/member.rs",
+      "upstream_sha256": "2a64b39449425d6f890bbc9f6539815548b4fd53dbd7623b5629c83c6fbb7417",
+      "expected_patch_then_rustfmt_sha256": "3464c2c0d8888b24b7131bb8a6da9758b5f3515bed4a43b2b9068f4471d04852",
+      "candidate_sha256": "3464c2c0d8888b24b7131bb8a6da9758b5f3515bed4a43b2b9068f4471d04852",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/room/identity_status_changes.rs",
+      "upstream_sha256": "8a383fc3adc5f45861f488bf39dc9079da895e9e8acfa25f0bf3e4825f984b04",
+      "expected_patch_then_rustfmt_sha256": "cea523c026ab9dff64a412c493d3d1612f205288ad1a40c21557db765a97ec03",
+      "candidate_sha256": "cea523c026ab9dff64a412c493d3d1612f205288ad1a40c21557db765a97ec03",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/mod.rs",
+      "upstream_sha256": "0531e13d1b08acf9b6a2706c4ca1784408e109486c8b9b87bb99b57b463d41fb",
+      "expected_patch_then_rustfmt_sha256": "99262002217db78e918b613e0777f7716d9be5b73fd89c01d0b0bb671af57573",
+      "candidate_sha256": "99262002217db78e918b613e0777f7716d9be5b73fd89c01d0b0bb671af57573",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/dehydrated_devices.rs",
+      "upstream_sha256": "30fb359c737434fb4e1a4e8994cb7dab3012e682b20f069099bc72ae99e23190",
+      "expected_patch_then_rustfmt_sha256": "07373f185973a265dbb5838d19cc054c338e4eb87a131a3eeeec238e98764066",
+      "candidate_sha256": "07373f185973a265dbb5838d19cc054c338e4eb87a131a3eeeec238e98764066",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/futures.rs",
+      "upstream_sha256": "7a14802a8d1a327eb05d5b56849128f5858cd49f3be662081b84d4db13487efa",
+      "expected_patch_then_rustfmt_sha256": "04def0324d98e18acf04c84755332eb52f016f66f8fe804dd38a3afbfa5934cd",
+      "candidate_sha256": "04def0324d98e18acf04c84755332eb52f016f66f8fe804dd38a3afbfa5934cd",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/tasks.rs",
+      "upstream_sha256": "0417116f4bea9fdcbcfdc5eb3c505a15d55dbbee94051c3b5f2f1bfa6432637f",
+      "expected_patch_then_rustfmt_sha256": "0fa4ba51cc8aeeca46585f70e4c2e812b57f2e306fd667d3a0ca749ed842e6f7",
+      "candidate_sha256": "0fa4ba51cc8aeeca46585f70e4c2e812b57f2e306fd667d3a0ca749ed842e6f7",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/notification_settings/mod.rs",
+      "upstream_sha256": "3812590c5777a87468078a09c5e12ab4109f24791583f7cadb7aed73fc815109",
+      "expected_patch_then_rustfmt_sha256": "e0ed0ec5eb5195c68dda8914b4bb540c3c12df46bcb9c0200daa91d44136af35",
+      "candidate_sha256": "e0ed0ec5eb5195c68dda8914b4bb540c3c12df46bcb9c0200daa91d44136af35",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/notification_settings/command.rs",
+      "upstream_sha256": "2f16fc7b407772cd21398eef71da3d77b66bf46e334309d33f11271411f920b2",
+      "expected_patch_then_rustfmt_sha256": "1477791d35b67b97c89615ee73b18b9139db3a23e3036c300816d21a2bc6bcb9",
+      "candidate_sha256": "1477791d35b67b97c89615ee73b18b9139db3a23e3036c300816d21a2bc6bcb9",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/notification_settings/rules.rs",
+      "upstream_sha256": "4d29771c6b831c18742c040e4ecb3d7931649eb8d1ab30aeda68b9afe5273136",
+      "expected_patch_then_rustfmt_sha256": "845db18b5ef8ac8b581f638c40d48be01cdd6ba4cb4d6a631722d83eb6255c57",
+      "candidate_sha256": "845db18b5ef8ac8b581f638c40d48be01cdd6ba4cb4d6a631722d83eb6255c57",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/notification_settings/rule_commands.rs",
+      "upstream_sha256": "3b6929da4fa951bd8c34ea83d6488f618a8101a6dc839e1c5aa748dc94dd9f34",
+      "expected_patch_then_rustfmt_sha256": "58b4b0a09c14b7f1735ccc0b40f8749a0e436549c729310157764052c71f8c65",
+      "candidate_sha256": "58b4b0a09c14b7f1735ccc0b40f8749a0e436549c729310157764052c71f8c65",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/utils/local_server.rs",
+      "upstream_sha256": "8a608c83f876f1bae5622a33e237af060e2e72b3469be24465cd0fbb39dae21b",
+      "expected_patch_then_rustfmt_sha256": "cffcc8e66cc1b2cfd934743528829740f1fe7fa6c28f60848619ed4d6a192a6b",
+      "candidate_sha256": "cffcc8e66cc1b2cfd934743528829740f1fe7fa6c28f60848619ed4d6a192a6b",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/utils/mod.rs",
+      "upstream_sha256": "1e9296342eb625fe48e5d4b2bce2a893994883756e128cf0d4394b6666a17ab1",
+      "expected_patch_then_rustfmt_sha256": "a1c9d820db5e60e332c4222f60e350dc58ba402fd4d2a6ac73517865219d1c77",
+      "candidate_sha256": "a1c9d820db5e60e332c4222f60e350dc58ba402fd4d2a6ac73517865219d1c77",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/search_index/mod.rs",
+      "upstream_sha256": "1c16bfbe27d5a40381cccd519b007a738ec6b6a965a7198ab1e44132e202f3f2",
+      "expected_patch_then_rustfmt_sha256": "feeeda61915c80fa21fe552fff935862d43a095f6c0dcfb08a24951f1ac40eba",
+      "candidate_sha256": "feeeda61915c80fa21fe552fff935862d43a095f6c0dcfb08a24951f1ac40eba",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/config/mod.rs",
+      "upstream_sha256": "14c4e4863df5db415075b1688763e1b99c8af2276ae438c6d37946855ad58e3e",
+      "expected_patch_then_rustfmt_sha256": "9f563a3678454811b565d8a6068932ebb14626828c0d74a7869c043272740a59",
+      "candidate_sha256": "9f563a3678454811b565d8a6068932ebb14626828c0d74a7869c043272740a59",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/config/sync.rs",
+      "upstream_sha256": "fde23efbfef27e25944bf0b1cd192bcd9658787db963c22b37a12c008b6a0e8c",
+      "expected_patch_then_rustfmt_sha256": "cde02919e5316e18bde6c5021b29341866c6edcc0844382c97537fc5a6506f15",
+      "candidate_sha256": "cde02919e5316e18bde6c5021b29341866c6edcc0844382c97537fc5a6506f15",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/config/request.rs",
+      "upstream_sha256": "19054666cf1fa3d5a0110acb632331417150ee1fa240dde4f63a04444102acaa",
+      "expected_patch_then_rustfmt_sha256": "7c1742d30164f50bd89f0a4361c7953d2a94603df67292551776ef8e78387fc1",
+      "candidate_sha256": "7c1742d30164f50bd89f0a4361c7953d2a94603df67292551776ef8e78387fc1",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_handler/mod.rs",
+      "upstream_sha256": "0c29f6941bb97fc5cc115df745888b2e36022f78c346e01cb8c74b635d1835e4",
+      "expected_patch_then_rustfmt_sha256": "c040d3acf517349d3aceb17899ae67e27e380fb9a9eb807b4c70bd1f1bfd594d",
+      "candidate_sha256": "c040d3acf517349d3aceb17899ae67e27e380fb9a9eb807b4c70bd1f1bfd594d",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_handler/static_events.rs",
+      "upstream_sha256": "d087afcaf6797a3ef89e9d9d17a710f2ad83ec9515a297eff9a61815e52c6bfe",
+      "expected_patch_then_rustfmt_sha256": "79a5a2b19b8ca495f3ba2efa9126c1ef8f95b87c39b9876e6c8d6acf01c90065",
+      "candidate_sha256": "79a5a2b19b8ca495f3ba2efa9126c1ef8f95b87c39b9876e6c8d6acf01c90065",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_handler/maps.rs",
+      "upstream_sha256": "37f9cef2fab6e80f6bf2c9ee5f4840f9ba1b741c8d0725acc1cd3152639c465e",
+      "expected_patch_then_rustfmt_sha256": "0b21fedfa732c83f27c8a723a4153e8fced3fc700af06d21813e661eee296b81",
+      "candidate_sha256": "0b21fedfa732c83f27c8a723a4153e8fced3fc700af06d21813e661eee296b81",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_handler/context.rs",
+      "upstream_sha256": "528f683d8489ef9cb13ab0572018e2d966435425c0b3e4e32630357f8e85008b",
+      "expected_patch_then_rustfmt_sha256": "e89ed2e39067b94f3ecda1ae7584b0fd6902f3cd37930fb88b8e121de09da2a3",
+      "candidate_sha256": "e89ed2e39067b94f3ecda1ae7584b0fd6902f3cd37930fb88b8e121de09da2a3",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/sliding_sync/mod.rs",
+      "upstream_sha256": "2291d7c740cfbea9763b458f502df8413c6caabc706a98f9469f286566f33ff9",
+      "expected_patch_then_rustfmt_sha256": "ff83fead6bebe292ba6a6b1fa2a3d1a03fb5694cbe2b5127eda1894ed81a6db0",
+      "candidate_sha256": "ff83fead6bebe292ba6a6b1fa2a3d1a03fb5694cbe2b5127eda1894ed81a6db0",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/sliding_sync/client.rs",
+      "upstream_sha256": "c752671bdd861f1621b56f2169ca10f19209abe2d9dd4e4f3ad45ddda62dc362",
+      "expected_patch_then_rustfmt_sha256": "45d4138dcf3e64adb4d9a4ff18229e630720e9e93e83d811f882e0f4b2acb714",
+      "candidate_sha256": "45d4138dcf3e64adb4d9a4ff18229e630720e9e93e83d811f882e0f4b2acb714",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/sliding_sync/cache.rs",
+      "upstream_sha256": "a289f971f432f29540158380a41d74626861bc9b60559c2350dd723ddf0022ac",
+      "expected_patch_then_rustfmt_sha256": "7fa5d99467556a89501eb8d813781f7ac47b33b99869ed699cd8018d36575e75",
+      "candidate_sha256": "7fa5d99467556a89501eb8d813781f7ac47b33b99869ed699cd8018d36575e75",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/sliding_sync/error.rs",
+      "upstream_sha256": "73047b01016b3a20144a20071972943b1f40c4c49805ded1edb3d30f5ae4374f",
+      "expected_patch_then_rustfmt_sha256": "73047b01016b3a20144a20071972943b1f40c4c49805ded1edb3d30f5ae4374f",
+      "candidate_sha256": "73047b01016b3a20144a20071972943b1f40c4c49805ded1edb3d30f5ae4374f",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/sliding_sync/builder.rs",
+      "upstream_sha256": "0eaf27ab1700ea8f9c71581fa440b446016c3a5b31ae6cf0eb4da8fb956e736b",
+      "expected_patch_then_rustfmt_sha256": "373e4c5f1eaf7cb14dfaaf3862e654a9c212576eecedd3be3eb7d693a7a27742",
+      "candidate_sha256": "373e4c5f1eaf7cb14dfaaf3862e654a9c212576eecedd3be3eb7d693a7a27742",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/paginators/mod.rs",
+      "upstream_sha256": "578ee5428fdd46ccdaf35000c11dff61fec985fba2b2085744489c20ee5bc66b",
+      "expected_patch_then_rustfmt_sha256": "578ee5428fdd46ccdaf35000c11dff61fec985fba2b2085744489c20ee5bc66b",
+      "candidate_sha256": "578ee5428fdd46ccdaf35000c11dff61fec985fba2b2085744489c20ee5bc66b",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/paginators/room.rs",
+      "upstream_sha256": "19a43ff0d52fc8699c346c2ceb5a6a4e5db27f3043779185d2c4dbc9255449c6",
+      "expected_patch_then_rustfmt_sha256": "c6bbf28413f77f2bc1c032673a1272ef3830a1ff76f3cbfbdd938eb032564ee5",
+      "candidate_sha256": "c6bbf28413f77f2bc1c032673a1272ef3830a1ff76f3cbfbdd938eb032564ee5",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/paginators/thread.rs",
+      "upstream_sha256": "201d60253d89f45daf9b8d0180d9287b02f8e45aff3025649e470734e74a332d",
+      "expected_patch_then_rustfmt_sha256": "17b0a4c5ca5bf0dfbe6f501bec2f8e219a2353e7326fba04ba2af95ad4a45339",
+      "candidate_sha256": "17b0a4c5ca5bf0dfbe6f501bec2f8e219a2353e7326fba04ba2af95ad4a45339",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/http_client/mod.rs",
+      "upstream_sha256": "bf478fc1d4c2531644e8753643512d0c4a1beb55f78e239bf11431cc8ade07ab",
+      "expected_patch_then_rustfmt_sha256": "8ebc1d59d2aa40d84855813ca21fcb801123fb5cbb3e109b6744ae3fbc7f651f",
+      "candidate_sha256": "8ebc1d59d2aa40d84855813ca21fcb801123fb5cbb3e109b6744ae3fbc7f651f",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/http_client/wasm.rs",
+      "upstream_sha256": "8b0ce8b9f869d46fbe7eee231d01d9546902eb59d09739cd31eb98bc8c3adf98",
+      "expected_patch_then_rustfmt_sha256": "d4c53709241d0df1f050e92e78ef302372461d3b0f50e90e41b59e8b5d492b2b",
+      "candidate_sha256": "d4c53709241d0df1f050e92e78ef302372461d3b0f50e90e41b59e8b5d492b2b",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/http_client/native.rs",
+      "upstream_sha256": "270633b06caff429f108302be6a29df5fb1637ab211f8c1cc6f0370333ab8bdc",
+      "expected_patch_then_rustfmt_sha256": "774570d26d6ecd58bd8a15bcc72b0ae5999c0e7083bdccaf8c3059fe7229df54",
+      "candidate_sha256": "774570d26d6ecd58bd8a15bcc72b0ae5999c0e7083bdccaf8c3059fe7229df54",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/states/mod.rs",
+      "upstream_sha256": "3002214b255cc7427bfa94b31fe9540b45a2b77135b99409de1cd8b9379fd976",
+      "expected_patch_then_rustfmt_sha256": "6dc14ccaa35fa88a5a3865875f029a9d8acaefdbaaf64f44585e89c5999147b9",
+      "candidate_sha256": "6dc14ccaa35fa88a5a3865875f029a9d8acaefdbaaf64f44585e89c5999147b9",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/states/selectors.rs",
+      "upstream_sha256": "c1961ba0d8f8e35ed85e7e0eacfb2aec1770aef1ef992e5ec9541e22f110d78a",
+      "expected_patch_then_rustfmt_sha256": "30e03e74c5ed2424132ec33507d83868666284c82057ec8e7ea91f45c8c25b90",
+      "candidate_sha256": "30e03e74c5ed2424132ec33507d83868666284c82057ec8e7ea91f45c8c25b90",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/event_linked_chunk.rs",
+      "upstream_sha256": "8f5f96a1bf7fa4c2af6670ed01dc28a8683920347b1136b1e8ff8dc63c22c356",
+      "expected_patch_then_rustfmt_sha256": "3a37b8f26a952999dd69019be31dd96f1c284a532b1a8a6f6ff2eae72c590363",
+      "candidate_sha256": "3a37b8f26a952999dd69019be31dd96f1c284a532b1a8a6f6ff2eae72c590363",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/mod.rs",
+      "upstream_sha256": "41cb338adca35a2c940015d46f30c1230a8658ab62a049f6a957062bb2adbc2f",
+      "expected_patch_then_rustfmt_sha256": "04c05f4d1657c5a4ee50a323aefadc43b18f7949b98196840b655369fbb57d13",
+      "candidate_sha256": "04c05f4d1657c5a4ee50a323aefadc43b18f7949b98196840b655369fbb57d13",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/aggregator.rs",
+      "upstream_sha256": "73613580baac11ea482722df9e00e0521fc2ab9703f642d1d1d44b8f94416c8b",
+      "expected_patch_then_rustfmt_sha256": "a8f24fc624300d1802f392e5e43bba67f9328379f4abdbd3fefdd12ca513ade5",
+      "candidate_sha256": "a8f24fc624300d1802f392e5e43bba67f9328379f4abdbd3fefdd12ca513ade5",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/subscriber.rs",
+      "upstream_sha256": "90d068fe75f3f20823b578f3819266617ad774562ff6133a02369ff1b3cff205",
+      "expected_patch_then_rustfmt_sha256": "9acf901cb701fb2bf4576a5094804e0c6b561096f25003a21d2da46879023b73",
+      "candidate_sha256": "9acf901cb701fb2bf4576a5094804e0c6b561096f25003a21d2da46879023b73",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/read_receipts.rs",
+      "upstream_sha256": "d29999a65ea9681ef9875525c553ef3cbecc99a05703afb3bb78094ef7202474",
+      "expected_patch_then_rustfmt_sha256": "d3e02d66c9d71452c2cc281842d092b9facec9ba5e5d21cd4d52fb81f671580a",
+      "candidate_sha256": "d3e02d66c9d71452c2cc281842d092b9facec9ba5e5d21cd4d52fb81f671580a",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/pagination.rs",
+      "upstream_sha256": "3b5ba20bef971c9c49eb263234ffb5cdca8fd7f8599361f963a594fdfbeb830e",
+      "expected_patch_then_rustfmt_sha256": "f18be67c965a60fc868caa8ad1b8478672f5e840b2bca9ed84441caf25c6d49e",
+      "candidate_sha256": "f18be67c965a60fc868caa8ad1b8478672f5e840b2bca9ed84441caf25c6d49e",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/event_focused/mod.rs",
+      "upstream_sha256": "f5e8c5e70ce486ab6ec35c8603e04d4c19d7f4bff09e6d09fac9fbdefdb4986a",
+      "expected_patch_then_rustfmt_sha256": "3ac1e346d1002108367786a30e01de0d0f4162b6c2dcaf6da248f38b8809ad34",
+      "candidate_sha256": "3ac1e346d1002108367786a30e01de0d0f4162b6c2dcaf6da248f38b8809ad34",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/room/mod.rs",
+      "upstream_sha256": "7f270d4eced429d8d7e06041727719afed23f6fc08215c9b24285f3e124d1b6c",
+      "expected_patch_then_rustfmt_sha256": "81fedd4f8d6911cbda8867bf550af0544f047a92c14653d54278057ba7a48369",
+      "candidate_sha256": "81fedd4f8d6911cbda8867bf550af0544f047a92c14653d54278057ba7a48369",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/room/state.rs",
+      "upstream_sha256": "b8c5943dcc77d9d0c288b5aa9d6c366d8319676fc2ed0e4edf1851fd27249259",
+      "expected_patch_then_rustfmt_sha256": "9d457dbf08c4b6373d1ccb987a6050ca3b59125a2373914ac25bc0db4b63cf4f",
+      "candidate_sha256": "9d457dbf08c4b6373d1ccb987a6050ca3b59125a2373914ac25bc0db4b63cf4f",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/room/updates.rs",
+      "upstream_sha256": "6c6ed27dc7e3b78560d62d2b102a2b7800249e17960b7d8a148fdbac0ecb0525",
+      "expected_patch_then_rustfmt_sha256": "de3e3af57a3288181dabbc7ce29a83b602272e31f489c684b8286666739ea5ee",
+      "candidate_sha256": "de3e3af57a3288181dabbc7ce29a83b602272e31f489c684b8286666739ea5ee",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/room/pagination.rs",
+      "upstream_sha256": "d18aa72542ee66302c36e09280c5b225541a5671d323d2c66c45f1106745c20f",
+      "expected_patch_then_rustfmt_sha256": "68e7259fd3265ff1c5c2547722f6cc172f1896ae7e1db3268dab6aa9ec1e711e",
+      "candidate_sha256": "68e7259fd3265ff1c5c2547722f6cc172f1896ae7e1db3268dab6aa9ec1e711e",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/thread/mod.rs",
+      "upstream_sha256": "92ac51534424afa51d9c0203543c3d57425ca16a4e2a4ceb293026d124b7498d",
+      "expected_patch_then_rustfmt_sha256": "3b9b9716f1860c3f27ae78ffd394ea3ffdd225af926394c753eb425e52372995",
+      "candidate_sha256": "3b9b9716f1860c3f27ae78ffd394ea3ffdd225af926394c753eb425e52372995",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/thread/state.rs",
+      "upstream_sha256": "9983803e63e9374bd231404f89d2c033b2b6868ff0bfb82d75f4a2304bd8fc6b",
+      "expected_patch_then_rustfmt_sha256": "2fb43344735bd3f892b6d6beb76ac217e3d91e3d6ff3aa23f56473ce4c35fe46",
+      "candidate_sha256": "2fb43344735bd3f892b6d6beb76ac217e3d91e3d6ff3aa23f56473ce4c35fe46",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/thread/updates.rs",
+      "upstream_sha256": "92422e1286578c2371231757ef8ec09acdb7e307cc8eafdcbf7ee0add2781bc0",
+      "expected_patch_then_rustfmt_sha256": "68be79edb99fc407c4dbcd15f9046aa2b1d1ba70c6b12814e5e819c9adff6833",
+      "candidate_sha256": "68be79edb99fc407c4dbcd15f9046aa2b1d1ba70c6b12814e5e819c9adff6833",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/thread/pagination.rs",
+      "upstream_sha256": "47443749680bdbf5665c5aa32d3c32da4ae7450c20827a232127f2f78d5543ad",
+      "expected_patch_then_rustfmt_sha256": "e8b1f8664cb497f394a97c3fa7066dddec9e03dda6c8b6a1377ff35b3619045c",
+      "candidate_sha256": "e8b1f8664cb497f394a97c3fa7066dddec9e03dda6c8b6a1377ff35b3619045c",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/pinned_events/mod.rs",
+      "upstream_sha256": "91677016d94a0cb588cb9a9fbfffff51ecf9c4286017c5ed7bdc0d40d899a586",
+      "expected_patch_then_rustfmt_sha256": "bef817117b540eed5ca64fdc838512c94426744be237943c8b72ffbf0289e1a3",
+      "candidate_sha256": "bef817117b540eed5ca64fdc838512c94426744be237943c8b72ffbf0289e1a3",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/event_cache/caches/pinned_events/updates.rs",
+      "upstream_sha256": "c8aea64f60cc218fa6206dbc9fedf2d96d6e7f6ff64d2e3becd6d1fb304ebe59",
+      "expected_patch_then_rustfmt_sha256": "adfc285a638684dd9baf210fbcca254ea4085bfcf84e59b089f6d50c8d3290f2",
+      "candidate_sha256": "adfc285a638684dd9baf210fbcca254ea4085bfcf84e59b089f6d50c8d3290f2",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/mod.rs",
+      "upstream_sha256": "1bc4d44ad0c0cd65691dab73604742cbccdedb0ace9c49313dd825d85d94dee4",
+      "expected_patch_then_rustfmt_sha256": "06901cd2ef95451d6f823141b68e1adbe66b97a8e506c25500d9cd3870a38eb8",
+      "candidate_sha256": "06901cd2ef95451d6f823141b68e1adbe66b97a8e506c25500d9cd3870a38eb8",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/registration.rs",
+      "upstream_sha256": "bd0c9003c2f7f4e322322b69ddce1fd7f6a76679e9bdc2bda17fe9c994c682a3",
+      "expected_patch_then_rustfmt_sha256": "769ee2df0ad78b601a3519d7454760baab6809728b30c88e71c12dbaf3a061d6",
+      "candidate_sha256": "769ee2df0ad78b601a3519d7454760baab6809728b30c88e71c12dbaf3a061d6",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/auth_code_builder.rs",
+      "upstream_sha256": "aa06cfc8f06012b5581a5b2269bf052351d790e4c6d9f4acf769890edadc9755",
+      "expected_patch_then_rustfmt_sha256": "c61b7cb0c16b4a47b999b2ba9df1c988b2213bb6272fc1036e0f3e94ecb360f1",
+      "candidate_sha256": "c61b7cb0c16b4a47b999b2ba9df1c988b2213bb6272fc1036e0f3e94ecb360f1",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/http_client.rs",
+      "upstream_sha256": "e667b32b158a77832b08fdbbb3e1ecc4d6b133b25ce594634ca46023358b394c",
+      "expected_patch_then_rustfmt_sha256": "6ce8fa65f5bbed4b7d659ebc4a9f00dd7b65aae678c94ba0eff8448d3ab03963",
+      "candidate_sha256": "6ce8fa65f5bbed4b7d659ebc4a9f00dd7b65aae678c94ba0eff8448d3ab03963",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/cross_process.rs",
+      "upstream_sha256": "e6b965bf367d37bbf269ecbe9a2831601fbd89a23ef05bb7031f9f01f65607ee",
+      "expected_patch_then_rustfmt_sha256": "c9d23c0c503bf15e523fa80af104bcc23d8e33b4cb561e93207e88ab3347a058",
+      "candidate_sha256": "c9d23c0c503bf15e523fa80af104bcc23d8e33b4cb561e93207e88ab3347a058",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/tests.rs",
+      "upstream_sha256": "13cc273fed16b63b9753e1882b01c0cbd564be379ecfb86f6bf48804bfe13120",
+      "expected_patch_then_rustfmt_sha256": "9b7cd3227e001a61db23ec378d9bb8a53e380e8272fad484f367dc4dceee599c",
+      "candidate_sha256": "9b7cd3227e001a61db23ec378d9bb8a53e380e8272fad484f367dc4dceee599c",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/error.rs",
+      "upstream_sha256": "fabee5487ea51dae50f01439317cfb4549d1454d35a51e1d1773d0ab49ddfe6f",
+      "expected_patch_then_rustfmt_sha256": "688e44dc51304698209ad5ab608f62fab250277caea981d95293d8d73cd765a7",
+      "candidate_sha256": "688e44dc51304698209ad5ab608f62fab250277caea981d95293d8d73cd765a7",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/matrix/mod.rs",
+      "upstream_sha256": "8f332edd90199726272d1b04b77527b7d5ce279141bbde21771a2ac276b4df47",
+      "expected_patch_then_rustfmt_sha256": "0a511e7e9f8b5f6b5b2e23acb22e12856c91e95df9e46e958b791f05ba4d4e8f",
+      "candidate_sha256": "0a511e7e9f8b5f6b5b2e23acb22e12856c91e95df9e46e958b791f05ba4d4e8f",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/matrix/login_builder.rs",
+      "upstream_sha256": "4e6835172ec3da44148321d4ff3e2ad189ec08fbbc9e13e6fe6b58da7476ce6e",
+      "expected_patch_then_rustfmt_sha256": "272344bd76b7e3e9fe9fd48e920170021476a385c3e240cbbfb82a2342ae4994",
+      "candidate_sha256": "272344bd76b7e3e9fe9fd48e920170021476a385c3e240cbbfb82a2342ae4994",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/qrcode/mod.rs",
+      "upstream_sha256": "cf295bf5f4f345145b990cd89e21bd5e37db35c1b1e2c93c554635736a349c3e",
+      "expected_patch_then_rustfmt_sha256": "34132a7dd951efa6b7280ccd0d8f944eb2fcf7656ff89d2e7fe64da647c3474b",
+      "candidate_sha256": "34132a7dd951efa6b7280ccd0d8f944eb2fcf7656ff89d2e7fe64da647c3474b",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/qrcode/grant.rs",
+      "upstream_sha256": "d75be1e4fee106fcd51ce798c6bb7fb1aa7c57f4ad27c988ca0088e0dd1acdc2",
+      "expected_patch_then_rustfmt_sha256": "548f5083c929ecd1f701d5dd54b0678ac9b89798633a5cb6a5a3c176a5d58ff6",
+      "candidate_sha256": "548f5083c929ecd1f701d5dd54b0678ac9b89798633a5cb6a5a3c176a5d58ff6",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/qrcode/login.rs",
+      "upstream_sha256": "411779eb302d6d8e1faa62f793d46274a7325f1e5b9cbcda7699bcb1f94141a2",
+      "expected_patch_then_rustfmt_sha256": "ebe63cfdd9a7a9434d0bfa35754edba2ddbc7ab0f724067757cce16e1892ee66",
+      "candidate_sha256": "ebe63cfdd9a7a9434d0bfa35754edba2ddbc7ab0f724067757cce16e1892ee66",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/qrcode/messages.rs",
+      "upstream_sha256": "bee7db488edf64f12fc1fd0d37bb340118c7465d21e4cd1f2923287d03e22e04",
+      "expected_patch_then_rustfmt_sha256": "dac30ced3c07135a9a5b7ca0d38a7c9887cc04948610a440d2e41ba4aed7b930",
+      "candidate_sha256": "dac30ced3c07135a9a5b7ca0d38a7c9887cc04948610a440d2e41ba4aed7b930",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/qrcode/secure_channel/mod.rs",
+      "upstream_sha256": "6178073af8bf097382deff2ef9833c18a0c7af9db73d2af00cfa18cb18e09914",
+      "expected_patch_then_rustfmt_sha256": "312c20ef26fc13ba97e70ddd44cb9ab88e0ed2a3cbb10bc8eec76453b419520a",
+      "candidate_sha256": "312c20ef26fc13ba97e70ddd44cb9ab88e0ed2a3cbb10bc8eec76453b419520a",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/qrcode/secure_channel/crypto_channel.rs",
+      "upstream_sha256": "e4722fe6f2334e6e8998bbdb671b1d6edcb475bea06f13789419fd8a2650fdd8",
+      "expected_patch_then_rustfmt_sha256": "9fa149760af881e0177d4fdc9a1a90d79c78234b3f1f7df37dac072b7fa194cc",
+      "candidate_sha256": "9fa149760af881e0177d4fdc9a1a90d79c78234b3f1f7df37dac072b7fa194cc",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/qrcode/rendezvous_channel/mod.rs",
+      "upstream_sha256": "f9312c96ebc607cd70bedf457807ba6a41dc1c909bfeae325ed0a7be34028823",
+      "expected_patch_then_rustfmt_sha256": "a994348e5172cb457d83dbc2ddf93bf0dec67455b9bc7de4c1b7efc7650ca6fc",
+      "candidate_sha256": "a994348e5172cb457d83dbc2ddf93bf0dec67455b9bc7de4c1b7efc7650ca6fc",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/authentication/oauth/qrcode/rendezvous_channel/msc_4108.rs",
+      "upstream_sha256": "c4d723c9a7bec8f592dbec92d5920a8a4cf6b44214d8c9e65cc80095902ec375",
+      "expected_patch_then_rustfmt_sha256": "cfacb56c9cbfada79fe34a94eccbd4ebb9406618be150204633c6811b3a42b9f",
+      "candidate_sha256": "cfacb56c9cbfada79fe34a94eccbd4ebb9406618be150204633c6811b3a42b9f",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/latest_events/latest_event/mod.rs",
+      "upstream_sha256": "073d45d1b23aa13f4d5126ea83b7d1fd45e5acccf1c2ea282215be6743d2b80e",
+      "expected_patch_then_rustfmt_sha256": "1a0e8d1ee00145e112303af2b0576189e1e8a0c2fef56d4276d3d84767fff8dc",
+      "candidate_sha256": "1a0e8d1ee00145e112303af2b0576189e1e8a0c2fef56d4276d3d84767fff8dc",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/latest_events/latest_event/builder.rs",
+      "upstream_sha256": "ad9c794bceba8a3a80fbdf2eef3ff0ddecad60c00b157ebe6ef29ad715d29f1f",
+      "expected_patch_then_rustfmt_sha256": "9ec7832c5f226279154f7713a3ca2e771279d6147a7ad53a2b3d8744c56bd1a8",
+      "candidate_sha256": "9ec7832c5f226279154f7713a3ca2e771279d6147a7ad53a2b3d8744c56bd1a8",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/settings/mod.rs",
+      "upstream_sha256": "36a1cb25e6c0b9a9b3a81e8f86309b8f6cec14f2998a3768f0ae98494321b615",
+      "expected_patch_then_rustfmt_sha256": "9f330c23d2e1b5cb41639b1fc7927ac1ebaf1394a0f483971ea5a9bd627f5d19",
+      "candidate_sha256": "9f330c23d2e1b5cb41639b1fc7927ac1ebaf1394a0f483971ea5a9bd627f5d19",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/settings/element_call.rs",
+      "upstream_sha256": "16a0f4b5d81c80a0c1cde1f6be3e34a21763a0cfc1bd7cfd1e2e5a6c62fe4c00",
+      "expected_patch_then_rustfmt_sha256": "00a1d8695591a69636f7e2e9b4be53527a867ea5f75ffd423259c5dcd0bce3dd",
+      "candidate_sha256": "00a1d8695591a69636f7e2e9b4be53527a867ea5f75ffd423259c5dcd0bce3dd",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/settings/url_params.rs",
+      "upstream_sha256": "294c4a81683243990851e0af6e3c151ff3a48dd4056ea7bb057d42b011949ee5",
+      "expected_patch_then_rustfmt_sha256": "398704741c724a47067ccdb428dc40201d4589fd6c2b064d8a609425cee5229e",
+      "candidate_sha256": "398704741c724a47067ccdb428dc40201d4589fd6c2b064d8a609425cee5229e",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/mod.rs",
+      "upstream_sha256": "2d78a04c090adbe7a7ffe058e804c0a29873cc5e4e28fad324c63bfa313a4a66",
+      "expected_patch_then_rustfmt_sha256": "69f06884dae1b37e4b767585c54d058105acc379029fa4f0ef1f98f0ba064339",
+      "candidate_sha256": "69f06884dae1b37e4b767585c54d058105acc379029fa4f0ef1f98f0ba064339",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/pending.rs",
+      "upstream_sha256": "230a2fbf3f1c9f69195c7c8d41da69aaab4cdbee982d5128437c7dbcef1917c9",
+      "expected_patch_then_rustfmt_sha256": "0c4443e7fa87066bebce9334bef4a74acd89a76096153ee20156fa38fc081ac3",
+      "candidate_sha256": "0c4443e7fa87066bebce9334bef4a74acd89a76096153ee20156fa38fc081ac3",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/driver_req.rs",
+      "upstream_sha256": "911301143c3fc5f90af7499d4baef6fc260ad65b5e4c5be4b987989c5c883c09",
+      "expected_patch_then_rustfmt_sha256": "2fcf38195b5eb8104c08468ac58ec316e7a55509e40593d55391bc95449f8959",
+      "candidate_sha256": "2fcf38195b5eb8104c08468ac58ec316e7a55509e40593d55391bc95449f8959",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/openid.rs",
+      "upstream_sha256": "e490d966ae10fd0ce6c22a499f98b7bbf7b3d1e0073621c84353955eeca8d590",
+      "expected_patch_then_rustfmt_sha256": "d5a83fe2d34eb801801ce86ebc27fbbd8334cc6a83cb3ec05cada5a68fecf455",
+      "candidate_sha256": "d5a83fe2d34eb801801ce86ebc27fbbd8334cc6a83cb3ec05cada5a68fecf455",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/from_widget.rs",
+      "upstream_sha256": "6cd1f1589e4c889d8776569f2ca1c89ba3cad3e876c6b049dfeb115c06661224",
+      "expected_patch_then_rustfmt_sha256": "15d363c97ed4855ac4c53c93ca67c59a9a01cfd047c280382a10c063990cffab",
+      "candidate_sha256": "15d363c97ed4855ac4c53c93ca67c59a9a01cfd047c280382a10c063990cffab",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/to_widget.rs",
+      "upstream_sha256": "ef770d4d45ee87feefbc2c181f43413b9af4eb5cdbb2a47ceb982cb7c194f914",
+      "expected_patch_then_rustfmt_sha256": "34eb2d65e69d165f78d4b49382bce942501864ecbe481f8be8d65cd0fbb00d19",
+      "candidate_sha256": "34eb2d65e69d165f78d4b49382bce942501864ecbe481f8be8d65cd0fbb00d19",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/incoming.rs",
+      "upstream_sha256": "fc062defaa7994fd7664286e3d91aa590cf3c1bc739a1facd0759eeffd2fb45d",
+      "expected_patch_then_rustfmt_sha256": "04be44368d04d426530590a62ed29fb984912e44df6b9fd48e3e7dfa7bc3e1ff",
+      "candidate_sha256": "04be44368d04d426530590a62ed29fb984912e44df6b9fd48e3e7dfa7bc3e1ff",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/tests/mod.rs",
+      "upstream_sha256": "274d068cff1a737d68734ef714b4e1a4ebca4dbe883a9a7bc11e81e7286778e4",
+      "expected_patch_then_rustfmt_sha256": "274d068cff1a737d68734ef714b4e1a4ebca4dbe883a9a7bc11e81e7286778e4",
+      "candidate_sha256": "274d068cff1a737d68734ef714b4e1a4ebca4dbe883a9a7bc11e81e7286778e4",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/tests/openid.rs",
+      "upstream_sha256": "938745bd7ce8a76bbf935cd69ad7275c49946de9f00fe6472298157caa65fa27",
+      "expected_patch_then_rustfmt_sha256": "8b0ee1e6b88dbee0cafcf6fd6feec868bb4bc4d24f77ea5c2427fb0b9f03c199",
+      "candidate_sha256": "8b0ee1e6b88dbee0cafcf6fd6feec868bb4bc4d24f77ea5c2427fb0b9f03c199",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/tests/send_event.rs",
+      "upstream_sha256": "38165a16aaa7e7653022df5ba0e2181b06a2bde58a4d57e0e620f71ef38ce4ec",
+      "expected_patch_then_rustfmt_sha256": "240175591ac9f9fd1c81dab2d55a8db0bde5ae6247d347687ab630a41b9646b7",
+      "candidate_sha256": "240175591ac9f9fd1c81dab2d55a8db0bde5ae6247d347687ab630a41b9646b7",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/tests/api_versions.rs",
+      "upstream_sha256": "5b52fde256cae15150da5489948e11f8521879953a33d1854c9e5f405a445e4a",
+      "expected_patch_then_rustfmt_sha256": "7eda76b05f56ffd9bc7ea1b161b3ea642198bc47b2ab2a190ce38602c1f98616",
+      "candidate_sha256": "7eda76b05f56ffd9bc7ea1b161b3ea642198bc47b2ab2a190ce38602c1f98616",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/tests/error.rs",
+      "upstream_sha256": "715416f3fa84169cbd6b60d9163486f348e40f0947ebb122f9b11c48f0089314",
+      "expected_patch_then_rustfmt_sha256": "915700055ce0b3508f36db83b5aad6387e5f68f440a68b3ce33997ed0ed29189",
+      "candidate_sha256": "915700055ce0b3508f36db83b5aad6387e5f68f440a68b3ce33997ed0ed29189",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/widget/machine/tests/capabilities.rs",
+      "upstream_sha256": "8f9b939f3e1dc677e5648dcaac1cc3ad4272be76b06e52d5d956189547b25d3f",
+      "expected_patch_then_rustfmt_sha256": "6236bdceb9b6eb27be6a4f1846d9f077b1f415820aed99d50769dc3be1f1775f",
+      "candidate_sha256": "6236bdceb9b6eb27be6a4f1846d9f077b1f415820aed99d50769dc3be1f1775f",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/client/builder/homeserver_config.rs",
+      "upstream_sha256": "6a79a3ee0490ffebe5610d2963e1267711b8fe7ba97438ce9dca7a58e3486ba9",
+      "expected_patch_then_rustfmt_sha256": "d364bf89de227b592b2a059f7ad4c199f4b78af9f3417e9000c534b3965051dd",
+      "candidate_sha256": "d364bf89de227b592b2a059f7ad4c199f4b78af9f3417e9000c534b3965051dd",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/client/builder/mod.rs",
+      "upstream_sha256": "f58934f0608c92d3263c21f45fb9642d46ffd36aba3ef9b342b68cecf4f31d08",
+      "expected_patch_then_rustfmt_sha256": "73e0252218f0c835c4612c5f5dd7e2180fec2f7918c9dc9888d475ca81f65c15",
+      "candidate_sha256": "73e0252218f0c835c4612c5f5dd7e2180fec2f7918c9dc9888d475ca81f65c15",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/test_utils/mocks/mod.rs",
+      "upstream_sha256": "bac222d8c334cd93d67a417681deae0c4bfde8ed94cf8534ad3a31cd329c7900",
+      "expected_patch_then_rustfmt_sha256": "fb30d1765a2b959064b6a792279488f5c1a481ba95cedc92743f57b2dd910b27",
+      "candidate_sha256": "fb30d1765a2b959064b6a792279488f5c1a481ba95cedc92743f57b2dd910b27",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/test_utils/mocks/encryption.rs",
+      "upstream_sha256": "728666a3cfba6f30dc36c4d33fba8e8a3831470731581348c6958ada37001286",
+      "expected_patch_then_rustfmt_sha256": "88eaf3f49829f6d08c4eb027af5fc89827e2e6c3edad3b66dc09580c1ae025c5",
+      "candidate_sha256": "88eaf3f49829f6d08c4eb027af5fc89827e2e6c3edad3b66dc09580c1ae025c5",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/test_utils/mocks/oauth.rs",
+      "upstream_sha256": "286cd6a85fd8a913a913c1a8bd5426421750709a786c730a447095f5f75956bf",
+      "expected_patch_then_rustfmt_sha256": "a991af6fbbe8b0c4033f3cd18994fcfe6330f1fa37d404d325dd3464e9e25c10",
+      "candidate_sha256": "a991af6fbbe8b0c4033f3cd18994fcfe6330f1fa37d404d325dd3464e9e25c10",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/backups/mod.rs",
+      "upstream_sha256": "eb197390f1fd30e106f3f845cf3af4162befca28cb8247be2da4b6e32410e178",
+      "expected_patch_then_rustfmt_sha256": "4872e8534416063bcb8bf62278379051a843b965aa9ffe772dacf2ddc37cdaf4",
+      "candidate_sha256": "4872e8534416063bcb8bf62278379051a843b965aa9ffe772dacf2ddc37cdaf4",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/backups/futures.rs",
+      "upstream_sha256": "b6491b0acbd39cc8847f01a9ed524838153bf37d845bd0f68893ee694d90cec3",
+      "expected_patch_then_rustfmt_sha256": "c3ff6476ae92e137238d27a6d044645dc321d61c126e66820886ec39e6bd3aca",
+      "candidate_sha256": "c3ff6476ae92e137238d27a6d044645dc321d61c126e66820886ec39e6bd3aca",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/backups/types.rs",
+      "upstream_sha256": "ba4bbcfa916e9efc22fb95be8394c36c7101f18f1a7747c1c834e6db812ce6d6",
+      "expected_patch_then_rustfmt_sha256": "685b8fe7220e96ce5ed51c6ebb3e85e14cb717a9e07b3bbc4accfa97ed06c44a",
+      "candidate_sha256": "685b8fe7220e96ce5ed51c6ebb3e85e14cb717a9e07b3bbc4accfa97ed06c44a",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/identities/mod.rs",
+      "upstream_sha256": "09270cd89db2265944223025629e66358de1683ee84f414d662d32f9be0146d3",
+      "expected_patch_then_rustfmt_sha256": "3b3b911216d62e2bb60e93152b994d7f5dbf3d4365f341f38786d35fbf9f9def",
+      "candidate_sha256": "3b3b911216d62e2bb60e93152b994d7f5dbf3d4365f341f38786d35fbf9f9def",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/identities/users.rs",
+      "upstream_sha256": "ba05b258d0c8e361a0d19c9d3f4ccbeb1e0952b45b62faa03b8bb124ce6a0370",
+      "expected_patch_then_rustfmt_sha256": "6b062fcc4149eff4961dcffbf198c90619dd566655a1c9cb9a746a3884d9aac5",
+      "candidate_sha256": "6b062fcc4149eff4961dcffbf198c90619dd566655a1c9cb9a746a3884d9aac5",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/identities/devices.rs",
+      "upstream_sha256": "682f8470734b8c68627d6365393ead8ac50332ff183890be061ff0a13cf5acf5",
+      "expected_patch_then_rustfmt_sha256": "68a1be213ee58c7cf65debd81c70e72dc3a746fc0d3c1c1ae6fc37e609dbc61c",
+      "candidate_sha256": "68a1be213ee58c7cf65debd81c70e72dc3a746fc0d3c1c1ae6fc37e609dbc61c",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/recovery/mod.rs",
+      "upstream_sha256": "5835f5f9a6fab814245a31b6061140116fa85956de4fa7a6843b36ea9bd2cb61",
+      "expected_patch_then_rustfmt_sha256": "345d86673cc5e559c969b3ecbb408664a4c032249dc244fb8bbfc30dbda571ff",
+      "candidate_sha256": "345d86673cc5e559c969b3ecbb408664a4c032249dc244fb8bbfc30dbda571ff",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/recovery/futures.rs",
+      "upstream_sha256": "ddcef057f09ed6c1265625f5b25dc9dec06f4081534cabe4d3c7056e792ef58d",
+      "expected_patch_then_rustfmt_sha256": "8db27fd2a54964c526edb799fc8a921ce9cfa2fb6445bd9c8004b59cd356514a",
+      "candidate_sha256": "8db27fd2a54964c526edb799fc8a921ce9cfa2fb6445bd9c8004b59cd356514a",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/recovery/types.rs",
+      "upstream_sha256": "61f6c3b41655e1e4a05f8c4385423f92e3fca7109255046743808d274b563bf8",
+      "expected_patch_then_rustfmt_sha256": "e56d12fe2c4757d87186085c7d00ee03a02c95936921dc12dbb3e20bdc4e3bde",
+      "candidate_sha256": "e56d12fe2c4757d87186085c7d00ee03a02c95936921dc12dbb3e20bdc4e3bde",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/secret_storage/mod.rs",
+      "upstream_sha256": "a56087751533a20da0e79e944cc2f6a1c74ceb46455bb56d3b5dba3d3ed29eec",
+      "expected_patch_then_rustfmt_sha256": "a31c610df51b204ffa1614033152398002cec7f3ce4961cbffc6e5a9db650874",
+      "candidate_sha256": "a31c610df51b204ffa1614033152398002cec7f3ce4961cbffc6e5a9db650874",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/secret_storage/futures.rs",
+      "upstream_sha256": "368a35e9695545deddef0a5d43ee3cebf390838b4b4df482848e47c83971ed13",
+      "expected_patch_then_rustfmt_sha256": "0e3f5de29f4f8162f8bffa86603e7761d86983d4934327cda9b92eb633592fb7",
+      "candidate_sha256": "0e3f5de29f4f8162f8bffa86603e7761d86983d4934327cda9b92eb633592fb7",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/secret_storage/secret_store.rs",
+      "upstream_sha256": "042ac8d6065b98d0ba8b7a0ca0ca55980b1d4478e6a261e0f2f55d58842febb1",
+      "expected_patch_then_rustfmt_sha256": "15080a81c92987961ef4014689ea7b09b3542cafc52548df37ddca7b18e69295",
+      "candidate_sha256": "15080a81c92987961ef4014689ea7b09b3542cafc52548df37ddca7b18e69295",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/verification/mod.rs",
+      "upstream_sha256": "e5161ef91312920d382c047a4e1af54f3b1f337307da70ace10c40a4be5f5df6",
+      "expected_patch_then_rustfmt_sha256": "f97060eecc8b4c62de6eb260b442ccf78f663c5557e17e7307a1e6cde69bcc72",
+      "candidate_sha256": "f97060eecc8b4c62de6eb260b442ccf78f663c5557e17e7307a1e6cde69bcc72",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/verification/requests.rs",
+      "upstream_sha256": "066329c974739bcee8074c7fd9a7e3d7d94087777c72adc6bcdf3161c68c06da",
+      "expected_patch_then_rustfmt_sha256": "24b35df00cdd4567be49e80538379abb81d348ee4efffbf3dad92325e600c417",
+      "candidate_sha256": "24b35df00cdd4567be49e80538379abb81d348ee4efffbf3dad92325e600c417",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/verification/sas.rs",
+      "upstream_sha256": "f92ae21b896bfca3a3c911d3c097f5a8ada4956369e347c5168fb75b4d8584e1",
+      "expected_patch_then_rustfmt_sha256": "5e3175e612d7e3287dc1dff3a4b92d8b2d605aff044a52ed0aac2cd9e0c7e1c4",
+      "candidate_sha256": "5e3175e612d7e3287dc1dff3a4b92d8b2d605aff044a52ed0aac2cd9e0c7e1c4",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/encryption/verification/qrcode.rs",
+      "upstream_sha256": "6713a4a0156e24e8522ebb3809a3b88b1ded740d0a097d591d620ec3f432d648",
+      "expected_patch_then_rustfmt_sha256": "bc152e2c48752b7f3906fcf5311c1efb2f5bd08fd5fa631748f02e2223c33985",
+      "candidate_sha256": "bc152e2c48752b7f3906fcf5311c1efb2f5bd08fd5fa631748f02e2223c33985",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/sliding_sync/list/mod.rs",
+      "upstream_sha256": "c039b233d6832b3baee653ac8e18366df004fcf36990e225344eed7419416461",
+      "expected_patch_then_rustfmt_sha256": "e5f09c33900793fe1bbbbef6d9259e9e000d99b33dcee7e7935c985949751a0e",
+      "candidate_sha256": "e5f09c33900793fe1bbbbef6d9259e9e000d99b33dcee7e7935c985949751a0e",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/sliding_sync/list/request_generator.rs",
+      "upstream_sha256": "f027739f130ce934a7a1a890e45d5aac677e54fc55718db6273422051b88b5ba",
+      "expected_patch_then_rustfmt_sha256": "ce5c73fa6620540180fba364e4d51bb77f2b27e112011985170271bf9bede51e",
+      "candidate_sha256": "ce5c73fa6620540180fba364e4d51bb77f2b27e112011985170271bf9bede51e",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/sliding_sync/list/builder.rs",
+      "upstream_sha256": "96e7d7039dd50b48fc436549b7d05fb4788e5f0892de8bbb657f5e0d684462db",
+      "expected_patch_then_rustfmt_sha256": "2a2a4b1a82266f64e9203fddbf5d019bdaaab0557488faf4517318b9e52c28a3",
+      "candidate_sha256": "2a2a4b1a82266f64e9203fddbf5d019bdaaab0557488faf4517318b9e52c28a3",
+      "matches": true
+    },
+    {
+      "path": "matrix-sdk-0.19.1/src/sliding_sync/list/frozen.rs",
+      "upstream_sha256": "d8bd35959235f25e17139ef5719add55fc3857ff141ce7fa1c9a8a21451b2697",
+      "expected_patch_then_rustfmt_sha256": "bd6dfaae93a1f41fe4d795c960d74754a2cfd41d9e2dd714a6ca011ad8a8c621",
+      "candidate_sha256": "bd6dfaae93a1f41fe4d795c960d74754a2cfd41d9e2dd714a6ca011ad8a8c621",
+      "matches": true
+    }
+  ]
+}

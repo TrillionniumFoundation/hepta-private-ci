@@ -25,7 +25,7 @@ class V8EnvironmentTests(unittest.TestCase):
         self.host = mock.patch.object(
             hepta_ci_v8.subprocess,
             "check_output",
-            return_value="rustc 1.95.0\nhost: aarch64-unknown-linux-gnu\n",
+            return_value="rustc 1.96.0\nhost: aarch64-unknown-linux-gnu\n",
         )
         self.host_mock = self.host.start()
         self.addCleanup(self.host.stop)
@@ -55,7 +55,7 @@ class V8EnvironmentTests(unittest.TestCase):
         )
 
     def test_unknown_missing_or_ambiguous_host_never_resolves_or_writes(self) -> None:
-        for version in ("rustc 1.95.0", "host: unsupported", "host: x\nhost: y"):
+        for version in ("rustc 1.96.0", "host: unsupported", "host: x\nhost: y"):
             with self.subTest(version=version):
                 self.host_mock.return_value = version
                 with self.assertRaisesRegex(RuntimeError, "supported Rust host"):
