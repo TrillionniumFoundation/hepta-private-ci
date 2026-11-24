@@ -444,6 +444,52 @@ fn adversarial_mixed_delta_matches_full_rebuild_canonically() {
 }
 
 #[test]
+fn bounded_query_clones_only_selected_edges_and_counts_every_omission() {
+    let graph = build_complete_generation(
+        generation(1),
+        input(
+            vec![
+                node("a", "a"),
+                node("b", "b"),
+                node("c", "c"),
+                node("d", "d"),
+            ],
+            vec![
+                edge("a", "b", KnowledgeRelationKindV2::Causes, "edge-ab"),
+                edge("a", "c", KnowledgeRelationKindV2::Causes, "edge-ac"),
+                edge("a", "d", KnowledgeRelationKindV2::Causes, "edge-ad"),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid graph: {error}"));
+    let query = KnowledgeRelationQueryV2 {
+        query_id: id("query:bounded-copy"),
+        generation_digest: graph.generation_digest,
+        seed_node_ids: vec![id("node:a")],
+        relation_kinds: vec![KnowledgeRelationKindV2::Causes],
+        valid_at_unix_seconds: None,
+        maximum_edges: 1,
+    };
+
+    let (measured, work) = query_relations_with_work(&graph, query.clone())
+        .unwrap_or_else(|error| panic!("valid measured query: {error}"));
+    let ordinary = query_relations(&graph, query)
+        .unwrap_or_else(|error| panic!("valid ordinary query: {error}"));
+
+    assert_eq!(measured, ordinary);
+    assert_eq!(measured.edges, graph.edges[..1]);
+    assert_eq!(measured.omitted_count, 2);
+    assert_eq!(work.validated_nodes, 4);
+    assert_eq!(work.validated_edges, 3);
+    assert_eq!(work.validated_supports, 7);
+    assert_eq!(work.relation_edges_scanned, 3);
+    assert_eq!(work.matching_edges, 3);
+    assert_eq!(work.selected_edges_cloned, 1);
+    assert_eq!(work.selected_supports_cloned, 1);
+    assert_eq!(work.omitted_edges, 2);
+}
+
+#[test]
 fn query_result_digest_binds_complete_request_even_when_edges_match() {
     let graph = build_complete_generation(
         generation(1),

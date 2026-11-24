@@ -77,6 +77,10 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-implementation-maps.py verify --profile development
 
+      - name: Self-test target-host evidence harness
+        shell: bash
+        run: python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
+
       - name: Observe repository-wide detailed-design health
         continue-on-error: true
         shell: bash
