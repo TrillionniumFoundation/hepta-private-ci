@@ -17,6 +17,7 @@ use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
@@ -334,6 +335,32 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     let identity_a =
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
             .expect("identity a");
+
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    let mut turn_metadata = metadata_a.clone();
+    turn_metadata.request_kind = Some(CodexResponsesRequestKind::Turn);
+    for metadata in [&prewarm_metadata, &turn_metadata] {
+        assert_eq!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), metadata)
+                .expect("prewarm and turn share a connection identity"),
+        );
+    }
+    assert_ne!(
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection())
+            .expect("prewarm recovery projection"),
+        serde_json::to_value(turn_metadata.turn_recovery_compatibility_projection())
+            .expect("turn recovery projection"),
+        "connection reuse must not collapse request identity for recovery",
+    );
+    let mut memory_metadata = metadata_a.clone();
+    memory_metadata.request_kind = Some(CodexResponsesRequestKind::Memory);
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &memory_metadata)
+            .expect("memory request identity"),
+    );
 
     let mut volatile_metadata = metadata_a.clone();
     volatile_metadata.session_id = "session-after-restart".to_string();
