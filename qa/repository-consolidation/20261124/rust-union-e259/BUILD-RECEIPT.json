@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.audit.checkpoint.build.v1",
+  "verified_utc": "2026-11-24T03:11:43.356454+00:00",
+  "source_selection_sha256": "7911f51d53ad0caa72cc6727dd54e655a996f0fd92b3654b9d4eb42aa34fd5d6",
+  "roundtrip": {
+    "verified": true,
+    "archive_sha256": "07081b139e1d271b1ad0813e47549132bce881118a0ede9cbfb76d8bfd686b6b",
+    "archive_bytes": 23638927,
+    "tar_sha256": "9c90e4fab2cf21a183edf12713ca59eb1214b22201b41a77ac8dd7a6d1b20840",
+    "tar_bytes": 73656320,
+    "verified_chunks": 263,
+    "verified_members": 467,
+    "verified_payload_bytes": 73263861,
+    "restored_to": null
+  },
+  "full_restore_roundtrip": {
+    "verified": true,
+    "archive_sha256": "07081b139e1d271b1ad0813e47549132bce881118a0ede9cbfb76d8bfd686b6b",
+    "archive_bytes": 23638927,
+    "tar_sha256": "9c90e4fab2cf21a183edf12713ca59eb1214b22201b41a77ac8dd7a6d1b20840",
+    "tar_bytes": 73656320,
+    "verified_chunks": 263,
+    "verified_members": 467,
+    "verified_payload_bytes": 73263861,
+    "restored_to": "/workspace/scratch/e259122a761b/audit-checkpoint-e259-3ria4fls/.checkpoint-build-67tfyh_l/roundtrip-restored"
+  },
+  "derived_restore_copy_removed_after_verification": true,
+  "all_original_member_bytes_and_sha256_verified": true,
+  "all_chunks_at_most_90000_bytes": true,
+  "immutable_publication_snapshot": true,
+  "remote_mutation_performed": false,
+  "note": "Archive packaging verification only. Read the root-owned STATUS.json for actual repository/test/publication state."
+}
