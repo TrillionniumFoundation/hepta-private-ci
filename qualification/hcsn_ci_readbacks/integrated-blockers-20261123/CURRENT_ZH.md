@@ -1,5 +1,10 @@
 # Hepta 研究与集成核验
 
+## 2026-11-24 UTC #7052 78c1012 限定 CI 正式终局
+
+- 原 [45272005010](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45272005010) completed/failure，24 项完整名册独立计数 12 success、8 skipped、4 failure；四个 scoped native shard 通过，source/merge 严格、learning.operator required、CI required 失败。精确源码六条 PR 工作流全部终结，五成功一失败；非全仓资格。
+- 双臂原日志仍各仅一条公开 V1 八参数构造器诊断，退出 101；原函数及守卫实际读回，未修改签名或绕开 lint。四个草案均原 head、未合并。保留此前 Laya 原生及科学局部绿门，全仓 HOLD，不重复派发。[完整名册与原日志证据](7052-78c1012-blocking-final-20261124.md)。
+
 ## 2026-11-23 22:26 UTC #7052 Laya 原生交付与有限训练闭合；严格双臂仅余一项
 
 - 精确 `78c1012` [MemoryCell 45272004826](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45272004826) 原 7/7 success。Laya 原固定权重实读 inventory 的 842609210 字节及 SHA256 与上游 LFS 一致；实际 8 步 LoRA、4100 参数、8.81636 秒；独立下载并复算原 ZIP 14866134293 摘要、CRC、两文件及 4100 个 F32。四测试对前后均 3/4，非全基准、非生产采纳。此精确源码的权重交付与有限训练原生门局部闭合，保留历史取消。Learning artifacts 原 4/4 success。
