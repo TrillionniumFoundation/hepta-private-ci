@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.sqlite-owner-build-script-native-linux-check.v1",
+  "source_head": "41af7ab4d29018d46d2052b4790dd0347e02f356",
+  "command": [
+    "cargo",
+    "check",
+    "--manifest-path",
+    "/tmp/windows-sqlite-owner-vfs-87d09924/qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/native-probe/Cargo.toml",
+    "-p",
+    "libsqlite3-sys",
+    "--lib",
+    "--locked",
+    "--offline"
+  ],
+  "started_at": "2026-11-24T18:13:45.123447+00:00",
+  "duration_seconds": 9.299,
+  "exit_code": 0,
+  "source_sha256": {
+    "codex-rs/third_party/libsqlite3-sys-0.39.1/Cargo.toml": "0df49a4834d0090ff3664e6449f26a92e0849bf752e3a1d1b57a777c0f2d4197",
+    "codex-rs/third_party/libsqlite3-sys-0.39.1/build.rs": "35850bca6fe22f37d302ca452d2cd6be3b0c175318677f1b63d96fbf5afee7fe",
+    "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.c": "372f544235a150a0baf1feff2e1d01a454e2049e6406fb37efda37fdc3faa241",
+    "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.h": "d6c84557261893439b341d2e6c35187ae3ea24fbfd843ad94616f72d89242b8c",
+    "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/hepta_owner_vfs.c": "b1bb456398c4ff52866885b0a0a6d1ef2737d40fdd43d4258580fbc3e6d4d9e8",
+    "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/bindgen_bundled_version.rs": "a25057a06d8cb5053a61c8f0ff746cc3d81b3bd778fbd3199ba12c8a6ee2945d",
+    "codex-rs/third_party/libsqlite3-sys-0.39.1/src/lib.rs": "f531a4fc506f36b7e496e7c8a8eaf12a5b6a9c94d989e0bee972b1aa2aa9fad3",
+    "codex-rs/third_party/libsqlite3-sys-0.39.1/src/hepta_owner.rs": "3ca0cd90030bb3f6200d6142fd6b84c249b6b60eb7a14c39f645ae1b5db19f36",
+    "qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/native-probe/Cargo.toml": "60b70f251a39129ab34b45e6d9e31824ff0df4fc8c7845feb047d66183afefd2",
+    "qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/native-probe/Cargo.lock": "33016574d347160178193a142d149e1fb45fb61c762f164394d3c5df935b5b87"
+  },
+  "inputs_unchanged": true,
+  "log_bytes": 325,
+  "log_sha256": "007bf597ca9edbde7788134609b79e1271675b73e8ce569e21e5ee5169072648",
+  "generated_linux_sqlite_archives": [
+    {
+      "path": "/tmp/hepta-sqlite-owner-linux-87d09924/debug/build/libsqlite3-sys-b48e98ea1764a72d/out/libsqlite3.a",
+      "bytes": 3175194,
+      "sha256": "044d1f08efa39be6930f08973d77aabe1d24441a69d2b8a3f172156401c4fcdd"
+    }
+  ],
+  "windows_c_compiled": false,
+  "windows_native_tests_executed": 0,
+  "sqlx_consumer_graph_qualified": false
+}
