@@ -39,7 +39,9 @@ class Source84LogCustodyTests(unittest.TestCase):
                     self.assertIn(name, inventory)
                     self.assertFalse((REPOSITORY / name).exists())
                     self.assertEqual(part["offset"], len(whole))
-                    data = read_verified(REPOSITORY, name, part["bytes"], part["sha256"])
+                    data = read_verified(
+                        REPOSITORY, name, part["bytes"], part["sha256"]
+                    )
                     self.assertEqual(identity(data)["oid"], part["git_blob"])
                     whole.extend(data)
                 self.assertEqual(
@@ -64,7 +66,9 @@ class Source84LogCustodyTests(unittest.TestCase):
         for sidecar in manifest["files"]:
             with self.subTest(sidecar=sidecar["path"]):
                 name = f"{directory}/{sidecar['path']}"
-                data = read_verified(REPOSITORY, name, sidecar["bytes"], sidecar["sha256"])
+                data = read_verified(
+                    REPOSITORY, name, sidecar["bytes"], sidecar["sha256"]
+                )
                 self.assertEqual(identity(data)["oid"], sidecar["git_blob"])
 
 

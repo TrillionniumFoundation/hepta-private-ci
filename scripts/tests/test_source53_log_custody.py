@@ -84,7 +84,12 @@ class Source53LogCustodyTests(unittest.TestCase):
             legacy_paths.update(entry["original_path"] for entry in document["files"])
         self.assertEqual(len(legacy_paths), 110)
         self.assertLessEqual(legacy_paths, set(inventory))
-        prior_indexes = (storage.INDEX, storage.EXTENSION_INDEX, storage.SOURCE84_INDEX, storage.SOURCE0A5_INDEX)
+        prior_indexes = (
+            storage.INDEX,
+            storage.EXTENSION_INDEX,
+            storage.SOURCE84_INDEX,
+            storage.SOURCE0A5_INDEX,
+        )
         prior_paths = {
             record["original_path"]
             for index in prior_indexes

@@ -32,11 +32,13 @@ class Mem8LogCustodyTests(unittest.TestCase):
 
     def test_original_job_logs(self):
         early = self.manifest(
-            "STORE_RECOVERY_MANIFEST", 53221,
+            "STORE_RECOVERY_MANIFEST",
+            53221,
             "fe32da678934ee4e6b29c31ad1353302f3ffde58dfb0189c1365747227eb9b0a",
         )
         terminal = self.manifest(
-            "TERMINAL_MANIFEST", 76246,
+            "TERMINAL_MANIFEST",
+            76246,
             "63d71f124cc28417b4f322c2daba571191041836344e0f11f272d29b8ed03ad9",
         )
         jobs = {job["path"]: job for job in terminal["all_original_full_raw_files"]}
@@ -68,10 +70,16 @@ class Mem8LogCustodyTests(unittest.TestCase):
                 pin = job["full_pin"]
                 self.assertEqual(
                     identity(whole),
-                    {"bytes": pin["bytes"], "sha256": pin["sha256"], "oid": pin["git_blob"]},
+                    {
+                        "bytes": pin["bytes"],
+                        "sha256": pin["sha256"],
+                        "oid": pin["git_blob"],
+                    },
                 )
                 total += len(whole)
-        stored = {path for path in entries(REPOSITORY) if path.startswith(DIRECTORY + "/")}
+        stored = {
+            path for path in entries(REPOSITORY) if path.startswith(DIRECTORY + "/")
+        }
         self.assertEqual(stored, seen)
         self.assertEqual((len(jobs), len(seen), total), (28, 64, 13751922))
         for record in terminal["original_terminal_objects"]:

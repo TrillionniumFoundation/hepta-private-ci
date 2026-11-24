@@ -14,7 +14,9 @@ from restore_raw_evidence import entries, read_regular, read_verified
 from verify_source_custody_container import identity
 
 
-DIRECTORY = "qualification/evaluated-current-read-20261112/source0a5-cross-platform-readback"
+DIRECTORY = (
+    "qualification/evaluated-current-read-20261112/source0a5-cross-platform-readback"
+)
 
 
 class Source0a5LogCustodyTests(unittest.TestCase):
@@ -32,13 +34,19 @@ class Source0a5LogCustodyTests(unittest.TestCase):
 
     def test_original_snapshots_read_back(self):
         early = self.manifest(
-            "MANIFEST_INITIAL", 8545, "00518555c90444d79cade7b93e73eed156f97d4cdec56b5a1eb7e3300d369db3"
+            "MANIFEST_INITIAL",
+            8545,
+            "00518555c90444d79cade7b93e73eed156f97d4cdec56b5a1eb7e3300d369db3",
         )
         progress = self.manifest(
-            "MANIFEST_PROGRESS", 74833, "66eeba73d8cd22eddb411205d7c865216131eec0b5a8f36374bc8663c3e3877f"
+            "MANIFEST_PROGRESS",
+            74833,
+            "66eeba73d8cd22eddb411205d7c865216131eec0b5a8f36374bc8663c3e3877f",
         )
         receipt = self.manifest(
-            "GIT_READBACK", 15201, "13d38d59e991eff0ad555c78eb4ab222c17f97daab57492c26b6b65b7e6082e3"
+            "GIT_READBACK",
+            15201,
+            "13d38d59e991eff0ad555c78eb4ab222c17f97daab57492c26b6b65b7e6082e3",
         )
         by_job = {job["job_id"]: job for job in progress["logs_retrieved"]}
         for job in early["logs_retrieved"]:
@@ -65,15 +73,25 @@ class Source0a5LogCustodyTests(unittest.TestCase):
                 original = job["log"]
                 self.assertEqual(
                     identity(whole),
-                    {"bytes": original["bytes"], "sha256": original["sha256"], "oid": original["git_blob"]},
+                    {
+                        "bytes": original["bytes"],
+                        "sha256": original["sha256"],
+                        "oid": original["git_blob"],
+                    },
                 )
                 total += len(whole)
 
         inventory = entries(REPOSITORY)
-        self.assertEqual(seen, {name for name in inventory if name.startswith(DIRECTORY + "/")})
+        self.assertEqual(
+            seen, {name for name in inventory if name.startswith(DIRECTORY + "/")}
+        )
         self.assertEqual((len(by_job), len(seen), total), (12, 50, 8072868))
         self.assertEqual(
-            (receipt["original_logs"], receipt["parts"], receipt["complete_original_log_bytes"]),
+            (
+                receipt["original_logs"],
+                receipt["parts"],
+                receipt["complete_original_log_bytes"],
+            ),
             (len(by_job), len(seen), total),
         )
         for record in receipt["files"]:

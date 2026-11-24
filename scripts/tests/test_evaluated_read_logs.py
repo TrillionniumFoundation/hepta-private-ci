@@ -58,12 +58,19 @@ class EvaluatedReadLogsTests(unittest.TestCase):
                 if path in registered:
                     record = inventory[path]
                     self.assertFalse((REPOSITORY / path).exists())
-                    self.assertEqual(record["original_source_commit"], source["source_commit"])
+                    self.assertEqual(
+                        record["original_source_commit"], source["source_commit"]
+                    )
                     self.assertEqual(record["original_mode"], "100644")
                     data = storage.read_verified(
-                        REPOSITORY, path, record["original_bytes"], record["original_sha256"]
+                        REPOSITORY,
+                        path,
+                        record["original_bytes"],
+                        record["original_sha256"],
                     )
-                    self.assertEqual(git_object_id("blob", data).hex(), record["original_git_blob"])
+                    self.assertEqual(
+                        git_object_id("blob", data).hex(), record["original_git_blob"]
+                    )
                     recovered.add(path)
                 else:
                     data = storage.read_regular(REPOSITORY, path, storage.MAX_BYTES)

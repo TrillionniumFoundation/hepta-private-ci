@@ -391,8 +391,7 @@ QUALIFICATION_SOURCE_SHA256 = {
         "evidence-07081b139e1d271b1ad0.part-00216"
     ): "6a33a77ddf7211393baf21d4fee9abad6666d8e4cd0a87ed0f4b16fef6ae2042",
     (
-        "qualification/hcsn_adaptive/evidence/20261120-1d88/"
-        "CI_FOLLOWUP.md"
+        "qualification/hcsn_adaptive/evidence/20261120-1d88/CI_FOLLOWUP.md"
     ): "a1fd4746646cb21d3e287efa0c01716affc61b05a430acd2dc8c7959517885a3",
     (
         "qualification/hcsn_adaptive/evidence/20261120-1d88/"
