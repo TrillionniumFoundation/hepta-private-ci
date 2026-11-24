@@ -1,0 +1,157 @@
+{
+  "schema": "hepta.e6.cold01.failure-publication-summary.v1",
+  "status": "ACTUAL_FAILED_COLD01_FULL_68_INVENTORY_RETAINED",
+  "candidate_reference_commit": "e03c97a5c415e008ee6b5ff4b02fe7e1921fada6",
+  "prior19_success_commit": "fc30fa8df7b72a7723c7f26ce63bcae724324853",
+  "source": "61503a7d3bc87a5584cd2f20b8b17ea3838fdcfd",
+  "tree": "a2ead7f0d3a88549cd885862ad07e434b6379f81",
+  "actual_H": {
+    "host": "rog",
+    "job_id": "1a1fdeb7f2f-ffbe-2013",
+    "state": "failed",
+    "exit_code": 1,
+    "terminal_unix_ms": 1795261554233,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "stdout_bytes": 6468,
+    "stderr_bytes": 0
+  },
+  "actual_result": {
+    "main_bytes": 56097,
+    "main_sha256": "f9a481ce70e1b84dc7354856e9d1e72496bf443760a52a928a516320ee8a21a6",
+    "completed": true,
+    "successful": false,
+    "owner_exit": 1,
+    "SSH_exit": 1,
+    "nextest_exit": 100,
+    "inner_Rust_case_exit": 101,
+    "canonical_cases": 1,
+    "passed": 0,
+    "failed": 1,
+    "current_Root_component_cases": 0,
+    "case": "neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement",
+    "inner_error": "Error: actual first publication verification fact differs",
+    "earlier_ACK_timeout_retained": true,
+    "canonical_XML_is_same_run_as_observed_copy": true,
+    "prior_XML_excluded": true,
+    "ten_stages_nine_success_one_failure": true
+  },
+  "evidence": {
+    "inventory_count": 68,
+    "inventory_bytes": 12897009,
+    "exact_wholeSHA_matches_fixed_main": true,
+    "read_methods": {
+      "fixed_version_binary_read": 24,
+      "current_fullSHA_metadata_plus_retained_identical_bytes": 22,
+      "current_fullSHA_metadata_plus_new_representative_identical_bytes": 6,
+      "current_existing_recovered": 16
+    },
+    "new_current_fileinfo_successes": 52,
+    "new_fixed_version_binary_chunks": 60,
+    "new_binary_unique_files": 24,
+    "new_binary_bytes": 2698035,
+    "new_metadata_SSH255_errors_preserved": 1,
+    "single_missing_metadata_retry_successful": true,
+    "peer_original_metadata_SSH255_preserved": true,
+    "four_local_literal_newline_wrapper_errors_preserved": true,
+    "remote_original_text_unchanged": true,
+    "new_native_or_collector_launches_by_reader": 0,
+    "protected_actual_fact_full_bytes_obtained": false,
+    "actual_fact_all_failing_predicates_located": false
+  },
+  "preexecution": {
+    "formatter_job": "1a1fde6b4af-ffbe-200a",
+    "formatter_exit": 0,
+    "actual_just_fmt_calls": 1,
+    "selected_source_paths_unchanged": 39,
+    "owner_format_original_files_fully_read": 5,
+    "other_formatter_command_output_files_fully_downloaded": false,
+    "Ruff_or_full_repository_format_coverage": false,
+    "actual_checkout": "7f790fb2f907ef9e618c3c7d233d22135ab00580",
+    "formatter_reference": "4c55d9bfe1898c0066b3ae7cb05744fe99f6b418",
+    "deployer_job": "1a1fde8fbea-ffbe-200c",
+    "deployer_exit": 0,
+    "deployed_inputs_current_fullSHA": 11,
+    "deployer_native_attempts": 0
+  },
+  "execution_binding": {
+    "actual_claims": 5,
+    "list_claims": 4,
+    "case_claims": 1,
+    "same_FD_identity_and_actual_environment_verified": true,
+    "claims_do_not_assert_test_success": true,
+    "preexisting_mode_entry": "0o555",
+    "preexisting_mode_final": "0o555",
+    "mode_operation": "verified_preexisting_entry_mode_noop",
+    "chmod": 0,
+    "retained_two_ELF_bytes_unchanged": true,
+    "ELF_bytes_downloaded_here": false,
+    "historical18_mode_skip_reclassified": false
+  },
+  "cleanup_and_physical_limits": {
+    "owner_time_mount_cleanup_commands_exit0": 2,
+    "independent_current_postterminal_group_snapshot": false,
+    "independent_current_postterminal_mount_snapshot": false,
+    "two_protected_path_reads_refused_at_ancestor_errno13": true,
+    "descendant_file_existence_from_refusal": null,
+    "physical_outputs_outside_68_inventory_included": false,
+    "static_genesis_drained_contradiction_is_exhaustive_actual_fact_proof": false
+  },
+  "cost": {
+    "owner_wall_seconds": 118.23637265292928,
+    "SSH_wall_seconds": 121.60717126599047,
+    "recorder_wall_seconds": 98.07077695569023,
+    "canonical_case_seconds": 96.739,
+    "intervals_overlap_not_additive": true,
+    "physical_energy_network_storage_charge_complete": false
+  },
+  "science": {
+    "complete_native_WholeColdNoUpdate": false,
+    "warm_Adopt": false,
+    "cold_Adopt": false,
+    "fresh_independent_task_D": false,
+    "learning_gain": false,
+    "statistical_unit_independent_task_or_source": false,
+    "model_scope": "original analytic Q24 fixture, distinct from E2 student learning",
+    "NoUpdate19_success_remains_independent": true,
+    "NoUpdate17_and18_failures_preserved": true,
+    "qualification_flags": {
+      "FinalUse": false,
+      "adoption": false,
+      "fresh_D_after_cold_recovery": false,
+      "full_system_cost_complete": false,
+      "human_independent_source_authentication": false,
+      "settlement_eligibility": false
+    }
+  },
+  "archive": {
+    "name": "cold01-originals-and-readback.tar.xz",
+    "kind": "new_local_archive",
+    "bytes": 1288000,
+    "sha256": "714e759fa022bba4deecc21ec5313199043e0f9e264fc67e1a29b51f0b5845c8",
+    "compression": "xz",
+    "member_count": 549,
+    "expanded_member_bytes": 22125976,
+    "member_index": {
+      "name": "MEMBER_INDEX.json",
+      "bytes": 232858,
+      "sha256": "8e6287de864185ac2f7a2131f9cee8b9879c6bccb8516792e2d1e105836bb0ad"
+    },
+    "every_member_sha_verified_after_packing": true,
+    "remote_archive_claimed": false
+  },
+  "independent_reconstructed_review": {
+    "member": "INDEPENDENT_FULL_FAILURE_REVIEW.json",
+    "bytes": 15855,
+    "sha256": "08c4c21160d59b460a9cf9a4cec1ee17e663e40321a7922bca9cc7878943ae7b"
+  },
+  "publication_constraints": {
+    "max_git_blob_bytes": 350000,
+    "ordinary_file_mode": "100644",
+    "new_executable_verifier": false,
+    "new_ignore_or_allowlist_rules": false,
+    "prior_paths_overwritten": false,
+    "tree_commit_ref_PR_changes_by_packager": 0
+  }
+}

@@ -1,0 +1,53 @@
+diff --git a/codex-rs/hepta-agentd/src/ordinary_q24_cold_publication_data_tests.rs b/codex-rs/hepta-agentd/src/ordinary_q24_cold_publication_data_tests.rs
+index c477886f..9944220a 100644
+--- a/codex-rs/hepta-agentd/src/ordinary_q24_cold_publication_data_tests.rs
++++ b/codex-rs/hepta-agentd/src/ordinary_q24_cold_publication_data_tests.rs
+@@ -36,8 +36,7 @@ impl OriginalAcceptedPublicationData {
+             .published
+             .as_ref()
+             .ok_or_else(|| anyhow::anyhow!("first accepted publication is absent"))?;
+-        let actual_target =
+-            Digest32::from_array(original.completed.generation.observation().digest()?);
++        let actual_target = original.completed.original_genesis_observation;
+         anyhow::ensure!(
+             self.schema == 1
+                 && self.purpose == "runtime.learning.original-publication-accepted.v1"
+@@ -53,7 +52,7 @@ impl OriginalAcceptedPublicationData {
+                 && self.previous_observation
+                     == Digest32::from_array(profile.intent.previous_observation).to_string()
+                 && self.target_observation == actual_target.to_string()
+-                && original.completed.generation.is_genesis()
++                && original.completed.generation.is_drained()
+                 && crate::neuron_generation_current::signed_grant_digest(&published.signed)?
+                     .into_array()
+                     == published.signed_grant_digest
+diff --git a/codex-rs/hepta-agentd/src/ordinary_q24_post_a_completed_data_tests.rs b/codex-rs/hepta-agentd/src/ordinary_q24_post_a_completed_data_tests.rs
+index 944495a5..3c1f86fd 100644
+--- a/codex-rs/hepta-agentd/src/ordinary_q24_post_a_completed_data_tests.rs
++++ b/codex-rs/hepta-agentd/src/ordinary_q24_post_a_completed_data_tests.rs
+@@ -53,6 +53,7 @@ pub(super) struct OriginalCompletedCData {
+     pub(super) source: CircuitTaskSourcePublicationV1,
+     pub(super) cell: CellOriginalJournalObservationV1,
+     pub(super) generation: CellGenerationJournalObservedV1,
++    pub(super) original_genesis_observation: Digest32,
+     pub(super) current: CurrentHead,
+     pub(super) terminal: LearningIterationSnapshotV1,
+ }
+@@ -220,7 +221,8 @@ impl OriginalCompletedCData {
+                 open_original(&c.generation_witness)?,
+                 target.clone(),
+             )?;
+-            let generation = generation_reader.observe()?;
++            let (generation, original_genesis_observation) =
++                generation_reader.observe_original_feature_boundary()?;
+             let observed = generation.observation();
+             anyhow::ensure!(
+                 generation.owner_binding() == &binding
+@@ -384,6 +386,7 @@ impl OriginalCompletedCData {
+                 source: publication.clone(),
+                 cell,
+                 generation,
++                original_genesis_observation: Digest32::from_array(original_genesis_observation),
+                 current,
+                 terminal: terminal.clone(),
+             })
