@@ -15,6 +15,10 @@ mod hepta_owner;
 #[cfg(windows)]
 pub use hepta_owner::hepta_win32_owner_vfs_name;
 
+#[cfg(all(test, windows, hepta_owner_vfs))]
+#[path = "hepta_owner_tests.rs"]
+mod hepta_owner_tests;
+
 #[must_use]
 pub fn SQLITE_STATIC() -> sqlite3_destructor_type {
     None
