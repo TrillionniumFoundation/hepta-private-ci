@@ -17,6 +17,10 @@ use tracing::debug;
 #[path = "terminal_event_tests.rs"]
 mod tests;
 
+#[cfg(test)]
+#[path = "terminal_event_parent_tests.rs"]
+mod parent_tests;
+
 /// A terminal record whose persistence and turn-local cleanup already ran.
 /// Its exact terminalization owner controls when clients may observe it.
 pub(crate) struct PreparedTerminalEvent {
