@@ -219,8 +219,7 @@ mod tests {
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
-            AuthorityLeaseFrontier::for_empty_epoch(7)
-                .unwrap_or_else(|error| panic!("{error:?}")),
+            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap_or_else(|error| panic!("{error:?}")),
             Arc::new(FixedClock(2_000)),
         )
         .unwrap_or_else(|error| panic!("{error:?}"));
