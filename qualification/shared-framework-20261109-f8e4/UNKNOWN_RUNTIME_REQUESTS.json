@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "task": "shared-framework-f8e4",
+  "record_kind": "exact_original_unknown_tool_requests",
+  "recovery_rule": "Reconcile only with original controller and exact request/key under the documented idempotent tool contract. UNKNOWN is neither nonexecution nor failure. This record does not authorize a new key or a second business execution.",
+  "env_parameter_note": "The env parameter was omitted in each original tool request. Inherited environment values were not captured and are not reconstructed.",
+  "requests": [
+    {
+      "tool": "mcp__codex_apps__h_pty_start",
+      "parameters": {
+        "host": "ai395",
+        "executable": "/usr/bin/python3",
+        "args": [
+          "-c",
+          "import subprocess,json\nfrom pathlib import Path\nr=Path(\"/home/qq/hepta-shared-framework-f8e4-20261109\");s=r/\"canonical-root-stage\"\ndef g(*a):return subprocess.check_output([\"/usr/bin/git\",*a],cwd=s)\nhead=g(\"rev-parse\",\"HEAD\").decode().strip();tree=g(\"rev-parse\",\"HEAD^{tree}\").decode().strip()\nassert head==\"03e60a334498446b79148285905592ffb938c59a\"\nobjects=g(\"rev-list\",\"--objects\",\"--no-object-names\",\"HEAD\")\nout=r/\"source-pack-needed-objects.txt\";out.write_bytes(objects)\nrows=subprocess.check_output([\"/usr/bin/git\",\"cat-file\",\"--batch-check=%(objectname) %(objecttype) %(objectsize)\"],cwd=s,input=objects).decode().splitlines()\ncounts={};total=0;largest=[]\nfor row in rows:\n sha,typ,size=row.split();size=int(size);counts[typ]=counts.get(typ,0)+1;total+=size;largest.append((size,sha,typ))\nshallow=g(\"rev-parse\",\"--git-path\",\"shallow\").decode().strip();shallowpath=Path(shallow)\nif not shallowpath.is_absolute():shallowpath=s/shallowpath\ninfo={\"head\":head,\"tree\":tree,\"objects\":len(rows),\"types\":counts,\"uncompressed_bytes\":total,\"largest\":sorted(largest,reverse=True)[:5],\"shallow_file\":str(shallowpath),\"shallow_heads\":shallowpath.read_text().splitlines(),\"objects_file\":str(out)}\n(r/\"source-pack-inspection.json\").write_text(json.dumps(info,indent=2)+\"\\n\");print(json.dumps(info))\n"
+        ],
+        "cwd": "/home/qq/hepta-shared-framework-f8e4-20261109",
+        "idempotency_key": "framework-f8e4-source-pack-inspection-20261110-v1"
+      },
+      "observed_result": "MCP -32603 request timed out; no session identity returned"
+    },
+    {
+      "tool": "mcp__codex_apps__h_pty_start",
+      "parameters": {
+        "host": "ai395",
+        "executable": "/usr/bin/python3",
+        "args": [
+          "-c",
+          "import os,json,hashlib,subprocess,time,threading\nfrom pathlib import Path\nr=Path(\"/home/qq/hepta-shared-framework-f8e4-20261109\");s=r/\"canonical-root-stage\";out=r/\"mac-source-pack\"\nout.mkdir(mode=0o700)\nenv=os.environ.copy();env[\"GIT_NO_LAZY_FETCH\"]=\"1\"\ndef g(*args,input=None):return subprocess.check_output([\"/usr/bin/git\",*args],cwd=s,env=env,input=input)\nhead=g(\"rev-parse\",\"HEAD\").decode().strip();tree=g(\"rev-parse\",\"HEAD^{tree}\").decode().strip()\nassert head==\"03e60a334498446b79148285905592ffb938c59a\" and tree==\"2a132e5bce1d43703aeea28f43034c41f6a23d44\"\nprefixes=[\"codex-rs/\",\"scripts/\",\"docs/\",\".github/\",\"third_party/\",\"tools/\",\"patches/\",\"qualification/neuron-v13-generation/\"]\nentries=[];prefix_sizes={}\nfor item in g(\"ls-tree\",\"-r\",\"-l\",\"-z\",\"HEAD\").split(b\"\\0\"):\n if not item:continue\n meta,path=item.split(b\"\\t\",1);mode,typ,sha,size=meta.decode().split();path=path.decode()\n if typ==\"blob\" and (\"/\" not in path or any(path.startswith(p) for p in prefixes)):\n  n=int(size);entries.append({\"path\":path,\"mode\":mode,\"blob_sha\":sha,\"bytes\":n})\n  key=next((p for p in prefixes if path.startswith(p)),\"root-files\")\n  prefix_sizes[key]=prefix_sizes.get(key,0)+n\nall_ids=g(\"rev-list\",\"--objects\",\"--no-object-names\",\"HEAD\")\ntyped=g(\"cat-file\",\"--batch-check=%(objectname) %(objecttype) %(objectsize)\",input=all_ids).decode().splitlines()\nmetadata=[row.split()[0] for row in typed if row.split()[1] in [\"commit\",\"tree\",\"tag\"]]\nselected=set(metadata)|{x[\"blob_sha\"] for x in entries}\nids=(\"\\n\".join(sorted(selected))+\"\\n\").encode();(out/\"objects.txt\").write_bytes(ids)\ninfo={\"schema\":1,\"head\":head,\"tree\":tree,\"coverage\":\"complete reachable commit/tree metadata and explicit source-path blob materialization only; not full repository blob closure\",\"source_prefixes\":prefixes,\"root_files_included\":True,\"selected_paths\":entries,\"metadata_object_count\":len(metadata),\"pack_object_count\":len(selected),\"uncompressed_selected_blob_bytes\":sum(x[\"bytes\"] for x in entries),\"bytes_by_prefix\":prefix_sizes,\"other_promised_blobs_omitted\":True,\"shallow_boundary\":head,\"cap_bytes\":104857600}\n(out/\"coverage.json\").write_text(json.dumps(info,indent=2)+\"\\n\")\nprint(json.dumps({k:v for k,v in info.items() if k!=\"selected_paths\"}),flush=True)\ncmd=[\"/usr/bin/git\",\"pack-objects\",\"--stdout\",\"--threads=4\",\"--compression=6\",\"--no-reuse-delta\",\"--delta-base-offset\"]\nstart=time.monotonic();packtmp=out/\"source-03e60.pack.tmp\";stderr=out/\"pack.stderr.log\"\nwith stderr.open(\"xb\") as er:\n p=subprocess.Popen(cmd,cwd=s,env=env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=er)\n def feed():\n  p.stdin.write(ids);p.stdin.close()\n t=threading.Thread(target=feed);t.start()\n written=0;over=False\n with packtmp.open(\"xb\") as f:\n  while True:\n   b=p.stdout.read(1024*1024)\n   if not b:break\n   f.write(b);written+=len(b)\n   if written>info[\"cap_bytes\"]:\n    over=True;p.terminate();break\n t.join();rc=p.wait()\n if over:raise SystemExit(\"source pack exceeded explicit 100MiB budget; partial retained\")\n assert rc==0,rc\npack=out/\"source-03e60.pack\";os.replace(packtmp,pack)\nidxrun=subprocess.run([\"/usr/bin/git\",\"index-pack\",str(pack)],cwd=s,env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)\n(out/\"index-pack.log\").write_bytes(idxrun.stdout+idxrun.stderr);assert idxrun.returncode==0\nidx=pack.with_suffix(\".idx\")\nverified=subprocess.check_output([\"/usr/bin/git\",\"verify-pack\",\"-v\",str(idx)],cwd=s,env=env)\n(out/\"verify-pack.log\").write_bytes(verified)\nactual={line.split()[0].decode() for line in verified.splitlines() if len(line.split())>=2 and line.split()[1] in [b\"blob\",b\"tree\",b\"commit\",b\"tag\"]}\nassert actual==selected,(\"pack object inventory mismatch\",len(actual),len(selected))\ninfo.update(pack=str(pack),bytes=pack.stat().st_size,sha256=hashlib.sha256(pack.read_bytes()).hexdigest(),pack_seconds=time.monotonic()-start,command=cmd,index_sha256=hashlib.sha256(idx.read_bytes()).hexdigest(),object_inventory_exact=True,index_pack_exit=idxrun.returncode)\n(out/\"PACK_INFO.json\").write_text(json.dumps(info,indent=2)+\"\\n\")\nprint(json.dumps({k:v for k,v in info.items() if k!=\"selected_paths\"}),flush=True)\n"
+        ],
+        "cwd": "/home/qq/hepta-shared-framework-f8e4-20261109",
+        "idempotency_key": "framework-f8e4-mac-source-materialization-pack-20261110-v1"
+      },
+      "observed_result": "MCP -32603 request timed out; no session identity returned; subsequent owned artifact file_info and coverage view also timed out; artifact existence and execution state remain UNKNOWN"
+    },
+    {
+      "tool": "mcp__codex_apps__h_pty_start",
+      "parameters": {
+        "host": "ai395",
+        "executable": "/usr/bin/python3",
+        "args": [
+          "-c",
+          "import subprocess,time,json,hashlib\nfrom pathlib import Path\nr=Path(\"/home/qq/hepta-shared-framework-f8e4-20261109\");source=r/\"source\";records=r/\"canonical-root-stage-records\"\nsha=\"83b6295394edf9d1a73f2db5bd2f5d4a22d28e36\"\nstart=time.monotonic()\nalready=subprocess.run([\"/usr/bin/git\",\"cat-file\",\"-e\",sha+\"^{commit}\"],cwd=source,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0\ncmd=[\"/usr/bin/git\",\"fetch\",\"--depth\",\"1\",\"origin\",sha]\np=None\nwith (records/\"format-base-preparation.log\").open(\"xb\") as f:\n if not already:p=subprocess.run(cmd,cwd=source,stdout=f,stderr=subprocess.STDOUT)\nout={\"already_present\":already,\"command\":cmd if not already else None,\"exit_code\":p.returncode if p else 0,\"wall_seconds\":time.monotonic()-start,\"source_code_modified\":False}\n(records/\"format-base-preparation.json\").write_text(json.dumps(out,indent=2)+\"\\n\")\nprint(json.dumps(out));raise SystemExit(out[\"exit_code\"])\n"
+        ],
+        "cwd": "/home/qq/hepta-shared-framework-f8e4-20261109",
+        "idempotency_key": "framework-f8e4-stage-format-base-20261110-v1"
+      },
+      "observed_session_id": "dpty-52b71857f16388bc0be8b0f976b38cedcc4176fd03776b037ff76c80bd746b3f",
+      "observed_result": "launch_unknown; exact same-key retry returned reused=true and launch_unknown; separate read-only Rustfmt check passed without needing this object"
+    }
+  ]
+}
