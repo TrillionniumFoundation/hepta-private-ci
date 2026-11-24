@@ -192,3 +192,34 @@ consumer tests remain unexecuted locally because the core lib-test build was
 terminated by SIGKILL before test execution. This is recorded as an
 infrastructure-limited validation, not a passing test result. Normal CI must
 qualify the exact combined source and dependency head.
+
+## Matrix 0.19.1 and Rust 1.96 integration
+
+The next measured stage integrates the maintained Matrix 0.19.1 SDK and
+SQLite store. Its vendor provenance, exact official anymap3 backport, preserved
+store directory, and encrypted-store migration gate are documented in
+`qualification/matrix-dependency-closure-20261124/README.md`. The toolchain is
+Rust/Cargo 1.96.0. The existing direct SQLite selection remains one shared
+`libsqlite3-sys` 0.39.1. Cargo selects matrix-sdk-crypto 0.19.1, vodozemac
+0.11.2 and ruma-identifiers-validation 0.14.1.
+
+Actual Cargo metadata resolution completed. Against the same fixed advisory
+database and unchanged `--locked --all-features` command, cargo-deny reports
+**one advisory error: RUSTSEC-2026-0543 (chrono)**. Bans, Cargo licenses and
+sources each report zero errors; existing warnings are retained. The command
+still exits 1. Both `just bazel-lock-update` and `just bazel-lock-check` completed
+with exit 0, using Bazel 9 and the existing system Java trust store.
+
+This lock/audit result is not a successful Matrix store migration or full
+consumer CI receipt. The new normal CI workflow must create and reopen the real
+0.18 encrypted store, migrate a copy with the actual 0.19 production consumer,
+reopen it again, reject the wrong passphrase, and pass the consumer tests. The
+chrono migration and final-head blocking CI remain outstanding.
+
+| Material | SHA-256 |
+| --- | --- |
+| Cargo lock | `f636f843d4788456ad695f3a44c9ecbbcb0b9e091008fd6e3f3e8645f974af7e` |
+| Bazel lock | `00475d06dbc1d98fffec3d36ea5c73c24593875afd21b2345af67bd711359a5f` |
+| cargo-deny JSONL | `9800ee5ec7a795031ca0cdb70ba7c9edb5645f175efd318fc377ce19f1e25470` |
+| Bazel lock-update log | `8cbd18e383d81c79e1c104f227f7f3c2b7d07a2f417abd815885ac268d394d49` |
+| Bazel lock-check log | `16f800418cab0036b47dd644dc43e8281e7c2d748e39695a5d970fd46299ab1d` |
