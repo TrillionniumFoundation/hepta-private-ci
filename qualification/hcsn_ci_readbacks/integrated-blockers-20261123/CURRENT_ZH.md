@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-24 UTC 新 WSP 条件 QVI 证据与两点保持下界
+
+- 新证据分支精确提交 [a8ab43f2](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/a8ab43f25016ebfc095a6b3ff70346a6550dc1a2/qualification/hcsn_ci_readbacks/wsp-qvi-local-replay-20261124) 的 README、MANIFEST、公式和审计报告已实读；其记录原科学源 610f9108、原协议 6df773f5，另一次单线程 CPU 三臂中位数 KEEP 0.074264405 s、DIRECT 0.079543336 s、BP 0.157437582 s。21 初态×8 臂×49 输出附加诊断记录 DIRECT 最差变化 0.007229360858953426（非新任务确认）；原独立标量验证记录 168 组最大误差 5.00e-16。此轮没有再次执行这些已完成 Torch 作业或下载验证 ZIP，以上运行数字归于该原证据包。
+- 本轮另从 [原固定科学 fixture](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/610f91087b598656f7f3913e600c705b95bf071f/qualification/hcsn_halfline_transport/verify_qvi_finite_bridge.py) 独立执行纯 Python math.erfc、100 次二分和二维标记递推，不导入 Torch/SciPy。原 A 参数 (-.15,.35,.2,1,.25,1,.4,.3)，时限 .67，标记 (.8,-.35)，重置矩阵 ((-.45,.2),(.16,.6))，投影 (.63,-.41)，直接/标记系数 .31/.48。用原残量 F(b,K) 二分原合法区间 [a-8,a-1e-4]，得原边界 .546649206678534、目标 .536649206678534，成本增量 .019345554018888933，目标残量 0；由原锚点 .72 得偏置增量 .0091952517233167。
+- 独立计算方法：设 z_j=x-b+j(a-b)，h_j=.67-j*.25，j=0,1,2；H(z,h)=0.5 erfc((z+mu*h)/(sigma*sqrt(2*h)))+exp(-2*mu*z/sigma^2)*0.5 erfc((z-mu*h)/(sigma*sqrt(2*h)))；S_b(x)=.31*b+.48*sum_j H(z_j,h_j) w^T R^j mark。用固定目标 b'，令 D(x)=S_b'(x)-S_b(x)。原锚点抵消后接收初态变化 E(x)=D(x)-D(.72)；独立算得 E(.72)=0、E(1.4)=.00585894593676245，E(infinity)=.006095251723316697。
+- **新的可行性下界（仅接收初态，不冒充49维输出下界）：** 任何同一个常数偏置 c 的两个误差之差不受 c 影响，故 max(|c+D(.72)|,|c+D(1.4)|) >= |D(1.4)-D(.72)|/2 = .002929472968381225。若保持域包含所有 x>=.72，利用无穷极限同理得 sup_x |c+D(x)| >= .0030476258616583484。这是固定目标与原两坐标支持的两点下界；不需要再训练或尝试其他常数偏置，不能推广到新增可编辑坐标或不同传播 law。原锚点输出局部资格不变；没有全模态/BP 替代、交易模型或生产采用通过。
+- main 732e934、四个 Draft c12ee03f/4de33d14/b1af67a3/78c1012d 与其 41 条关联 PR 工作流均原终态；未重跑、未修改产品或任何门槛、未合并。新证据只更新研究边界，全仓 HOLD。
+
 ## 2026-11-24 UTC Windows 175 原具名资格：四项缺例源码契约定位
 
 - #7032 base `67b04d5` 与 head `b1af67a` 的原 scope fixture、unified_exec 两测试文件各自 blob 完全相同；独立核对四个旧 exact 选择名在源码声明均为 0，四个相关新名各 1 且均未进入原 filter。第一项已从 elevated 成功转发变成拒绝，另三项实读为双入口拒绝和物理状态保持，不能视为原正例或等价改名。缺例源于既有冻结契约与源码不一致，不是双锁修补或执行超时。保留 175 原资格及负例，待审核新契约和真实生产后端；不改 fixture/PINS、不重跑、不合并。[逐项函数、blob 和语义记录](7032-windows-exact-name-contract-20261124.md)。全仓 HOLD。
