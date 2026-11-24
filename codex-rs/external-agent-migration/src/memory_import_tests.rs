@@ -1,6 +1,22 @@
 use super::*;
 use pretty_assertions::assert_eq;
+use std::time::Duration;
 use tempfile::TempDir;
+
+#[test]
+fn consolidation_timestamp_preserves_signed_whole_seconds() {
+    let cases = [
+        (UNIX_EPOCH, 0),
+        (UNIX_EPOCH + Duration::from_nanos(1), 0),
+        (UNIX_EPOCH + Duration::from_secs(5), 5),
+        (UNIX_EPOCH - Duration::from_nanos(1), -1),
+        (UNIX_EPOCH - Duration::from_secs(1), -1),
+        (UNIX_EPOCH - Duration::from_millis(1001), -2),
+    ];
+    for (time, expected) in cases {
+        assert_eq!(consolidation_unix_seconds(time), expected);
+    }
+}
 
 fn write_project_session(project_root: &Path, project_cwd: &Path) {
     fs::create_dir_all(project_cwd).expect("create project cwd");
