@@ -63,6 +63,8 @@ Scoped `just fix` on the actual-source harness completed without warnings or
 source edits. Repository `just fmt` and handwritten diff checks passed.
 
 `receipt.json` binds the source and logs. The full combined Cargo/Bazel locks
-are generated on the integration branch. The normal Windows workflow includes
+are generated on the integration branch. The normal Windows workflow must execute
 the lease lifecycle selector; its exact new-head result remains the acceptance
 gate.
+
+Native API references: [Directory handles](https://learn.microsoft.com/en-us/windows/win32/fileio/obtaining-a-handle-to-a-directory), [FlushFileBuffers](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers), and [NtCreateFile](https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntcreatefile).
