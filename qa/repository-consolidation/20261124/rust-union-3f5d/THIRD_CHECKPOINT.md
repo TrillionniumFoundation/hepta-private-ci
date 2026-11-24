@@ -46,7 +46,7 @@ An older audit still lacks the identity of one historical HIA pin.
 ## Required checks
 
 The complete, main-relative whitespace gate began with 191,045 diagnostics
-across 964 paths. After the changes it reports 16,839 across 637 paths. The three corrected line breaks in the
+across 964 paths. After the changes it reports 16,219 across 635 paths. The three corrected line breaks in the
 cognitive.types architecture guide render to the same HTML and GFM syntax tree.
 The incremental Git whitespace check is clean. The hosted [blob-size job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45349468027/job/138291997090) passed on intermediate head `71856fd9`.
 
@@ -135,3 +135,27 @@ was eliminated and the other 38 module diagnostics were byte-identical.
 The historical source, callers, authority, completion and qualification claims
 were preserved. The [source-object update](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/859093fa880c9b7b9b8bc218e8462b7091bf96b7)
 contains the one changed map.
+
+## Multimodal preflight figures and the remaining module scopes
+
+Two multimodal preflight reports retain their SVGs at the original relative
+paths. The working files omit trailing spaces inside vector path data. The
+parsed commands, XML outside that path data, and rendered pixel arrays match.
+The repository's scientific archive reader restores the original source bytes.
+Current reports display the normalized vectors directly. The two paths accounted
+for 620 further whitespace diagnostics. Both original plotting entry points
+and inputs are unchanged. Re-exporting with the historical Matplotlib program
+reproduces its whitespace. Before and after this change, the v1 generator
+already used a slightly longer seed label than the recorded historical figure.
+
+The original implementation-map verifier was also run on `ad877cecd7`.
+Thirteen of the 38 remaining modules would replace the historical source base
+under the standard migration. Two would update historical exact-source evidence.
+The other 23 would rebind navigation references over existing owners or pending
+qualification obligations. The current PR body lists the reason for each module.
+No automatic bulk migration was applied.
+
+Of 4,325 distinct pending tips, all parents of 75 are already in the candidate.
+These 75 account for 77 branch names. The 74 one-parent commits have different
+trees from their parent, and the two-parent commit differs from both parents.
+The object-level inspection found no empty commit among these tips.
