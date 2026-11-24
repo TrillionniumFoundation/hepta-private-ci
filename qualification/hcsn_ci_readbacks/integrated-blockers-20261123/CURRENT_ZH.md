@@ -1,5 +1,12 @@
 # Hepta 研究与集成核验
 
+## 2026-11-24 UTC 多 anchor 原生编辑与独立群体研究新依赖
+
+- 实读独立分支精确 [546af234](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/546af234539a406766f9269896f5a49d241d920c/qualification/hcsn_ci_readbacks/qvi-multianchor-native-20261124) 的 README、RESULTS_ZH、FORMULAE_ZH、protocol、summary、native_test_receipt 与 manifest。科学源仍为 610f9108，原两坐标之外新协议明确允许已有二维投影（总四坐标），原边界目标 −.01、每坐标 .1、49 输出保持门 1e-7 不变。先于拟合的协议 1c9762b9；F64 合成修正先于重放提交 c4f1630c。原 Rust standalone 5+3 数值测试成功、独立标量验证 9630 panel 的两项输出差 2.22e-16/6.66e-16，归于原包报告，本轮未重跑或下载原 tar。
+- 本轮直接从 summary.json（blob 6db3b8cd3481990b256c5ed4a075ad69ee1f4927）独立计数 5×6=30：8 实际 staged 均 rollback，22 未采纳，0 committed，0 full_validation_pass，30 对 before/after 摘要均相等。两个 anchor 的原生 49 输出 fit 最大 4.996e-16，但321未见初态最差 .00398909883（同支持 BP .00366234526）；九 anchor 最差 .00192629918，仍远超 1e-7。3/5/9 anchor 的原生有限接收初态 box 下界 .000627506749/.001198150372/.001115989594；原包另报告 5/9 无界左零空间下界。它们只约束记录线性子问题，不是 49 维输出或全模型的下界。本轮未独立重验 tar 内矩阵、全部权重或 Rust 原测试；不签收整网免 BP 或 Runtime 产品资格。
+- 新研究 [29870f51](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/29870f51d4bc7f30412151119f8ca19b77543f5f/qualification/hcsn_smallnet_20261124) README、三份冻结协议及 source_manifest 实读：8/32/64 独立物理群体×8 臂×3 seed=72 训练槽，9 parent×5=45 适配槽；每 fit 512 更新或180优化 CPU 秒，mixed 的物理状态仍 FP64，native32 长时守恒阴性；两个探索 smoke 均多数类，正式结果尚未提交。协议要求全部训练/适配封存才打开正式 holdout，保留旧实验不重跑；不重复派发该并行研究。此为新可执行依赖，不是学习结果。
+- main 732e934、四 Draft c12ee03f/4de33d14/b1af67a3/78c1012d 及其 41 条关联 PR 工作流仍原终态。另一个研究树的公开 V1 构造器使用 #[expect(clippy::too_many_arguments)]；不把该跨分支源或 lint 例外移植为 #7052 原严格通过。无产品改动、门槛变化或红 PR 合并。全仓 HOLD。
+
 ## 2026-11-24 UTC 新 WSP 条件 QVI 证据与两点保持下界
 
 - 新证据分支精确提交 [a8ab43f2](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/a8ab43f25016ebfc095a6b3ff70346a6550dc1a2/qualification/hcsn_ci_readbacks/wsp-qvi-local-replay-20261124) 的 README、MANIFEST、公式和审计报告已实读；其记录原科学源 610f9108、原协议 6df773f5，另一次单线程 CPU 三臂中位数 KEEP 0.074264405 s、DIRECT 0.079543336 s、BP 0.157437582 s。21 初态×8 臂×49 输出附加诊断记录 DIRECT 最差变化 0.007229360858953426（非新任务确认）；原独立标量验证记录 168 组最大误差 5.00e-16。此轮没有再次执行这些已完成 Torch 作业或下载验证 ZIP，以上运行数字归于该原证据包。
