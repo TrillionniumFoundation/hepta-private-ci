@@ -129,6 +129,24 @@ def capture(cargo, producer, env, native, commands):
     return result
 
 
+def verify_library_copy(source, staged, digest, size):
+    """Require a byte-exact snapshot with no shared inode with its producer."""
+    if (source.samefile(staged) or staged.stat().st_nlink != 1
+            or source.stat().st_size != size or staged.stat().st_size != size
+            or sha(source) != digest or sha(staged) != digest):
+        raise RuntimeError("staged library is not an independent exact copy")
+
+
+def stage_library(source, staged, digest):
+    size = source.stat().st_size
+    # Exclusive creation: never alias a mutable Cargo target inode, or
+    # overwrite an existing snapshot after a partial or concurrent attempt.
+    with source.open("rb") as inp, staged.open("xb") as out:
+        shutil.copyfileobj(inp, out)
+    verify_library_copy(source, staged, digest, size)
+    return size
+
+
 def admit(path, packages, owner, dependencies, target_dir, stage, *, native):
     messages = [json.loads(line) for line in path.read_text().splitlines()]
     endings = [m for m in messages if m.get("reason") == "build-finished"]
@@ -174,13 +192,8 @@ def admit(path, packages, owner, dependencies, target_dir, stage, *, native):
             if real.suffix == ".so" and magic[:4] != b"\x7fELF":
                 raise RuntimeError("a proc-macro library is not an actual ELF")
             link = stage / name
-            try:
-                os.link(real, link)
-            except OSError:
-                shutil.copyfile(real, link)
-            if sha(link) != digest:
-                raise RuntimeError("staged real artifact differs from its source")
-            files[name] = {"source": str(real), "path": str(link), "bytes": real.stat().st_size,
+            size = stage_library(real, link, digest)
+            files[name] = {"source": str(real), "path": str(link), "bytes": size,
                            "sha256": digest, "package_id": package["id"]}
             identities.append(name)
         primary = next((f for f in library_files if f.suffix in {".rlib", ".so"}), None)
@@ -222,8 +235,8 @@ def verify_graph(graph):
     if {p.name for p in Path(graph["stage"]).iterdir()} != set(graph["files"]):
         raise RuntimeError("the isolated complete dependency set changed")
     for record in graph["files"].values():
-        if sha(record["path"]) != record["sha256"] or sha(record["source"]) != record["sha256"]:
-            raise RuntimeError("a staged or producing dependency changed")
+        verify_library_copy(Path(record["source"]), Path(record["path"]),
+                            record["sha256"], record["bytes"])
 
 
 def flags(rustc, graph, *, original):
