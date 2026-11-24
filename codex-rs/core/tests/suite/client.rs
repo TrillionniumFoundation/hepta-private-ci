@@ -198,7 +198,7 @@ fn assert_codex_client_metadata(
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_turns() {
+async fn stateless_requests_preserve_local_item_turn_metadata_across_turns() -> anyhow::Result<()> {
     let server = MockServer::start().await;
     let assistant_create_time = 1_785_276_138.422709;
     let mut assistant_message = ev_assistant_message("msg-1", "first answer");
@@ -217,10 +217,10 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
         ],
     )
     .await;
-    let test = test_codex().build(&server).await.unwrap();
+    let test = test_codex().build(&server).await?;
 
-    test.submit_turn("turn one").await.unwrap();
-    test.submit_turn("turn two").await.unwrap();
+    test.submit_turn("turn one").await?;
+    test.submit_turn("turn two").await?;
 
     let requests = response_mock.requests();
     assert_eq!(requests.len(), 2);
@@ -234,10 +234,20 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
         .expect("second request should include turn id");
     assert_ne!(first_turn_id, second_turn_id);
 
-    let first_input = first["input"].as_array().expect("first input");
-    let second_input = second["input"].as_array().expect("second input");
+    let first_wire_input = first["input"].as_array().expect("first input");
+    let second_wire_input = second["input"].as_array().expect("second input");
+    assert_eq!(
+        &second_wire_input[..first_wire_input.len()],
+        first_wire_input.as_slice(),
+    );
+    let first_input =
+        super::local_annotations::persisted_request_items(&test.codex, &requests[0], |_| true)
+            .await?;
+    let second_input =
+        super::local_annotations::persisted_request_items(&test.codex, &requests[1], |_| true)
+            .await?;
     assert_eq!(&second_input[..first_input.len()], first_input.as_slice());
-    for item in first_input {
+    for item in &first_input {
         assert_eq!(
             item["internal_chat_message_metadata_passthrough"]["turn_id"].as_str(),
             Some(first_turn_id)
@@ -287,6 +297,7 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
         Some(assistant_create_time)
     );
     assert!(item_create_time("turn two").is_some_and(|create_time| create_time > 0.0));
+    Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -357,8 +368,8 @@ async fn non_openai_responses_requests_include_item_ids_without_passthrough_meta
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn sends_audio_urls_to_responses() {
-    skip_if_no_network!();
+async fn sends_audio_urls_to_responses() -> anyhow::Result<()> {
+    skip_if_no_network!(Ok(()));
 
     let server = MockServer::start().await;
     let response_mock = mount_sse_once(
@@ -366,26 +377,26 @@ async fn sends_audio_urls_to_responses() {
         sse(vec![ev_response_created("resp1"), ev_completed("resp1")]),
     )
     .await;
-    let codex = test_codex()
+    let test = test_codex()
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
         .build(&server)
-        .await
-        .unwrap()
-        .codex;
+        .await?;
+    let codex = &test.codex;
     let audio_url = "data:audio/wav;base64,AAAA";
 
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Audio {
             audio_url: audio_url.to_string(),
         }]))
-        .await
-        .unwrap();
-    wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
+        .await?;
+    wait_for_event(codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.audio"]));
+    let local_items =
+        super::local_annotations::persisted_request_items(codex, &request, |_| true).await?;
+    super::local_annotations::assert_local_content_kinds(&local_items, &["user.audio"]);
     let user_message = request
         .input()
         .into_iter()
@@ -399,6 +410,7 @@ async fn sends_audio_urls_to_responses() {
             "audio_url": audio_url,
         }])
     );
+    Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -411,13 +423,13 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
         sse(vec![ev_response_created("resp1"), ev_completed("resp1")]),
     )
     .await;
-    let codex = test_codex()
+    let test = test_codex()
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
         .build(&server)
-        .await?
-        .codex;
+        .await?;
+    let codex = &test.codex;
     let temp_dir = tempfile::tempdir()?;
     let audio_path = temp_dir.path().join("recording.wav");
     std::fs::write(&audio_path, b"audio")?;
@@ -427,10 +439,15 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
             path: audio_path.clone(),
         }]))
         .await?;
-    wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
+    wait_for_event(codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.text", "user.audio", "user.text"]));
+    let local_items =
+        super::local_annotations::persisted_request_items(codex, &request, |_| true).await?;
+    super::local_annotations::assert_local_content_kinds(
+        &local_items,
+        &["user.text", "user.audio", "user.text"],
+    );
     let user_message = request
         .input()
         .into_iter()

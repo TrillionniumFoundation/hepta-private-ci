@@ -284,13 +284,28 @@ async fn assert_user_turn_local_image_resizes_to(
     .await;
 
     let request = mock.single_request();
-    // Responses Lite may add request-only base instructions. The image test
-    // matches its actual user content and resize notice to retained history.
-    let local_items = persisted_request_items(codex, &request, |item| {
-        item.get("role").and_then(Value::as_str) == Some("user")
-            || message_has_text_with_prefix(item, "<image_resize_notice>")
-    })
-    .await?;
+    // Lite drops the prepared Original-detail compatibility hint and may add
+    // request-only base instructions. Verify that explicit projection separately.
+    let local_items = match image_budget_policy {
+        ImageBudgetPolicy::UnifiedResponsesLiteWithoutOriginalSupport => {
+            super::local_annotations::persisted_lite_image_items_with_original_detail(
+                codex,
+                &request,
+                |item| {
+                    item.get("role").and_then(Value::as_str) == Some("user")
+                        || message_has_text_with_prefix(item, "<image_resize_notice>")
+                },
+            )
+            .await?
+        }
+        ImageBudgetPolicy::DetailBased | ImageBudgetPolicy::Unified => {
+            persisted_request_items(codex, &request, |item| {
+                item.get("role").and_then(Value::as_str) == Some("user")
+                    || message_has_text_with_prefix(item, "<image_resize_notice>")
+            })
+            .await?
+        }
+    };
     assert_local_content_kinds(&local_items, &["user.text", "user.image", "user.text"]);
     let body = request.body_json();
     let input = body

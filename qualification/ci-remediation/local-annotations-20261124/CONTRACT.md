@@ -28,6 +28,41 @@ The local-image helper explicitly selects user content and resize notices becaus
 Responses Lite may add request-only base instructions; this is not presented as
 persisted history.
 
+The second source stage covers audio, skills, additional context, rollout-budget
+and current-time reminders, model switching, resumed images, Responses Lite,
+subagent message annotations and cross-turn local timestamps. All former
+`has_content_kinds` calls in the integration suite now observe the appropriate
+layer. This source inventory is not a test-pass claim.
+
+## Explicit transformations, without widening the generic matcher
+
+Two Lite image fixtures deliberately prepare Original-detail images. The actual
+wire must omit `detail`; an expected persisted copy adds exactly the configured
+`original` value. The ordinary strict matcher then compares that expectation to
+real stored items, still ignoring only IDs and internal metadata. URLs, prepared
+image bytes, text, roles and relative order remain exact. This does not modify a
+captured request or accept arbitrary differences in media content.
+
+The legacy-image resume fixture excludes only its named historical image message
+from exact stored matching: `apply_rollout_reconstruction` prepares that image in
+memory and intentionally leaves its old rollout unchanged. Its real request's
+decoded dimensions remain checked, while the newly recorded image and resize
+notice must match stored items.
+
+Unsupported media labels are a `ContextManager::for_prompt` projection. The
+existing `for_prompt_strips_media_when_model_does_not_support_it` unit checks the
+exact projected kinds; the model-switch integration test checks retained original
+local media, no wire metadata, no unsupported image/audio, and the exact ordered
+placeholder contents. It does not call projected labels persisted annotations.
+
+Base instructions are request-only. A request-builder unit constructs both the
+allowed OpenAI endpoint and a localhost endpoint without making a request,
+checks the entire instruction item and endpoint-specific metadata, and proves
+the original prompt input is unchanged. Lite integration tests keep the actual
+instruction text, order and tool payload checks. The Bedrock test now explicitly
+checks its instruction text instead of relying on a vacuous metadata-absence
+classification assertion.
+
 ## Attempted tool calls are a different layer
 
 `ExecutedToolCallRecorder::attach_pending_to_prompt` annotates a prompt clone in
@@ -55,10 +90,13 @@ Use the repository `just test` wrapper on the integrated source and locked graph
 ```sh
 just test -p codex-core --lib --locked attempted_mcp_metadata_is_prompt_local_even_for_a_blocked_output
 just test -p codex-core --test all --locked -E 'test(token_budget_guidance_precedes_standalone_context_window) | test(view_image::user_turn) | test(hooks_mcp::pre_tool_use) | test(context_annotations::)'
+just test -p codex-core --lib --locked -E 'test(responses_lite_base_instructions_are_request_only_and_obey_endpoint_metadata_policy) | test(for_prompt_strips_media_when_model_does_not_support_it)'
+just test -p codex-core --test all --locked -E 'test(additional_context_is_model_visible) | test(user_turn_includes_skill_instructions) | test(adds_weighted_initial_and_threshold_reminders) | test(current_time_reminder::) | test(sends_audio_urls_to_responses) | test(sends_local_audio_to_responses) | test(stateless_requests_preserve_local_item_turn_metadata_across_turns) | test(resumed_history_only_emits_resize_notices_for_new_images) | test(model_switching::) | test(responses_lite::) | test(subagent_notification_is_included_without_wait) | test(spawned_full_history_v2_child_uses_model_precedence)'
 ```
 
 The normal Linux runner must supply the real `test_stdio_server` test binary and
 ordinary test prerequisites. Do not change sandbox environment variables, skip a
-test or expand the production endpoint allowlist to obtain a pass. Further
-`has_content_kinds` and prompt-local executed-call assertions are inventoried for
-follow-up rather than declared fixed by this first group.
+test or expand the production endpoint allowlist to obtain a pass. Remaining
+`tools`/`code_mode` prompt-local executed-call assertions and remote-compaction
+communication projection timestamps are inventoried for follow-up rather than
+declared fixed by the content-kind changes.

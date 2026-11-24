@@ -384,8 +384,20 @@ async fn resumed_history_only_emits_resize_notices_for_new_images() -> anyhow::R
     .await;
 
     let request = resumed_mock.single_request();
-    assert!(request.has_content_kinds(&["images.resize_notice"]));
-    assert!(request.has_content_kinds(&["user.image"]));
+    // Replay prepares legacy media in memory without rewriting its original
+    // rollout item. Keep the resized-byte assertion below for that old message;
+    // only newly recorded image/notice items have exact persisted counterparts.
+    let local_items =
+        super::local_annotations::persisted_request_items(&resumed.codex, &request, |item| {
+            !item["content"].as_array().is_some_and(|content| {
+                content
+                    .iter()
+                    .any(|part| part["text"] == "historical image")
+            })
+        })
+        .await?;
+    super::local_annotations::assert_local_content_kinds(&local_items, &["images.resize_notice"]);
+    super::local_annotations::assert_local_content_kinds(&local_items, &["user.image"]);
     let input = request.input();
     let image_message_indices = input
         .iter()

@@ -543,6 +543,63 @@ fn test_responses_metadata_for_client(
     )
 }
 
+#[test]
+fn responses_lite_base_instructions_are_request_only_and_obey_endpoint_metadata_policy() {
+    let client = test_model_client(SessionSource::Exec);
+    let prompt = Prompt {
+        base_instructions: BaseInstructions {
+            text: "request-only instructions".to_string(),
+            provenance: None,
+        },
+        ..Default::default()
+    };
+    let original_input = prompt.input.clone();
+    let mut model_info = test_model_info();
+    model_info.use_responses_lite = true;
+    let metadata = test_responses_metadata_for_client(
+        &client,
+        /*turn_id*/ None,
+        format!("{}:0", client.state.thread_id),
+        /*parent_thread_id*/ None,
+        TestCodexResponsesRequestKind::Turn,
+    );
+    for (base_url, expected_metadata) in [
+        (
+            "https://api.openai.com/v1",
+            Some(json!({"content_item_kinds": ["model.base_instructions"]})),
+        ),
+        ("http://127.0.0.1:12345/v1", None),
+    ] {
+        let api_provider = ModelProviderInfo::create_openai_provider(Some(base_url.to_string()))
+            .to_api_provider(Some(AuthMode::ApiKey))
+            .expect("test endpoint should resolve");
+        let request = client
+            .build_responses_request(
+                &prompt,
+                &model_info,
+                /*effort*/ None,
+                codex_protocol::config_types::ReasoningSummary::None,
+                /*service_tier*/ None,
+                &metadata,
+                &api_provider,
+            )
+            .expect("request should build without sending it");
+        let input = serde_json::to_value(&request.input).expect("input should serialize");
+        let mut expected = json!({
+            "type": "message",
+            "role": "developer",
+            "content": [{"type": "input_text", "text": "request-only instructions"}],
+        });
+        if let Some(expected_metadata) = expected_metadata {
+            expected["internal_chat_message_metadata_passthrough"] = expected_metadata;
+        }
+        assert_eq!(input.as_array().expect("input array").len(), 2);
+        assert_eq!(input[0]["type"], "additional_tools");
+        assert_eq!(input[1], expected);
+        assert_eq!(prompt.input, original_input);
+    }
+}
+
 fn test_model_info() -> ModelInfo {
     serde_json::from_value(json!({
         "slug": "gpt-test",

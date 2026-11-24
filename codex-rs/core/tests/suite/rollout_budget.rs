@@ -103,7 +103,15 @@ async fn adds_weighted_initial_and_threshold_reminders(
     test.submit_turn("second turn").await?;
 
     let requests = responses.requests();
-    assert!(requests[0].has_content_kinds(&["rollout_budget.remaining_tokens"]));
+    for request in &requests {
+        let local_items =
+            super::local_annotations::persisted_request_items(&test.codex, request, |_| true)
+                .await?;
+        super::local_annotations::assert_local_content_kinds(
+            &local_items,
+            &["rollout_budget.remaining_tokens"],
+        );
+    }
     assert_eq!(
         rollout_budget_texts(&requests[0]),
         vec![rollout_budget_message(/*remaining_tokens*/ 100)]

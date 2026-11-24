@@ -115,7 +115,9 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
 
     test.submit_turn("hello").await?;
 
-    let body = response_mock.single_request().body_json();
+    let request = response_mock.single_request();
+    super::local_annotations::assert_wire_has_no_internal_metadata(&request);
+    let body = request.body_json();
     assert!(body.get("instructions").is_none());
     assert!(body.get("tools").is_none());
 
@@ -133,9 +135,6 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
                 "type": "input_text",
                 "text": "test instructions",
             }],
-            "internal_chat_message_metadata_passthrough": {
-                "content_item_kinds": ["model.base_instructions"],
-            },
         })
     );
 
@@ -271,7 +270,16 @@ async fn responses_lite_prepares_images() -> Result<()> {
     .await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.image", "images.preparation_error"]));
+    let local_items = super::local_annotations::persisted_lite_image_items_with_original_detail(
+        &test.codex,
+        &request,
+        |item| item["role"] == "user",
+    )
+    .await?;
+    super::local_annotations::assert_local_content_kinds(
+        &local_items,
+        &["user.image", "images.preparation_error"],
+    );
     let user_content = request
         .input()
         .into_iter()
@@ -449,6 +457,7 @@ async fn responses_lite_does_not_expose_standalone_web_search_for_bedrock_provid
             config.model_provider.requires_openai_auth = false;
             config.model_provider.http_headers = None;
             config.model_provider.supports_standalone_web_search = false;
+            config.base_instructions = Some("bedrock test instructions".to_string());
         });
     let test = builder.build(&server).await?;
 
@@ -461,7 +470,18 @@ async fn responses_lite_does_not_expose_standalone_web_search_for_bedrock_provid
     );
     let body = request.body_json();
     assert!(body.get("tools").is_none());
-    assert!(!request.has_content_kinds(&["model.base_instructions"]));
+    // Base instructions are request-only. Assert their actual content, and that
+    // the custom endpoint gets no internal metadata, rather than a vacuous kind check.
+    super::local_annotations::assert_wire_has_no_internal_metadata(&request);
+    assert!(body.get("instructions").is_none());
+    assert_eq!(
+        request
+            .message_input_texts("developer")
+            .iter()
+            .filter(|text| text.as_str() == "bedrock test instructions")
+            .count(),
+        1,
+    );
     let tools = additional_tools(&body)?;
     assert!(!has_namespaced_tool(tools, "web", "run"));
     assert!(!has_hosted_tool(tools, "web_search"));

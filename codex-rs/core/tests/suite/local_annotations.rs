@@ -33,6 +33,57 @@ pub(super) async fn persisted_request_items(
     select_input: impl Fn(&Value) -> bool,
 ) -> Result<Vec<Value>> {
     assert_wire_has_no_internal_metadata(request);
+    let expected = request
+        .input()
+        .into_iter()
+        .enumerate()
+        .filter(|(_, item)| select_input(item))
+        .collect();
+    persisted_items_matching_expected(thread, expected).await
+}
+
+/// These image fixtures explicitly prepare Original-detail images, whereas Lite
+/// omits detail on the wire. Build the expected stored values with that one known
+/// difference, then require the same exact matcher as ordinary requests. This
+/// never changes the captured request or accepts arbitrary media differences.
+pub(super) async fn persisted_lite_image_items_with_original_detail(
+    thread: &CodexThread,
+    request: &ResponsesRequest,
+    select_input: impl Fn(&Value) -> bool,
+) -> Result<Vec<Value>> {
+    assert_wire_has_no_internal_metadata(request);
+    let mut expected = Vec::new();
+    let mut image_count = 0;
+    for (wire_index, mut item) in request.input().into_iter().enumerate() {
+        if !select_input(&item) {
+            continue;
+        }
+        for content in item["content"]
+            .as_array_mut()
+            .context("selected image/notice message should contain content")?
+        {
+            if content["type"] == "input_image" {
+                assert!(
+                    content.get("detail").is_none(),
+                    "Lite must omit image detail"
+                );
+                content["detail"] = Value::String("original".to_string());
+                image_count += 1;
+            }
+        }
+        expected.push((wire_index, item));
+    }
+    assert!(
+        image_count > 0,
+        "image fixture must exercise the Lite projection"
+    );
+    persisted_items_matching_expected(thread, expected).await
+}
+
+async fn persisted_items_matching_expected(
+    thread: &CodexThread,
+    expected: Vec<(usize, Value)>,
+) -> Result<Vec<Value>> {
     let history = thread.load_history(/*include_archived*/ false).await?;
     let stored = history
         .items
@@ -44,11 +95,8 @@ pub(super) async fn persisted_request_items(
         .collect::<serde_json::Result<Vec<_>>>()?;
     let mut cursor = 0;
     let mut matched = Vec::new();
-    for (wire_index, wire) in request.input().into_iter().enumerate() {
-        if !select_input(&wire) {
-            continue;
-        }
-        let normalized = without_id_or_metadata(wire);
+    for (wire_index, expected_item) in expected {
+        let normalized = without_id_or_metadata(expected_item);
         let offset = stored[cursor..].iter().position(|item| {
             without_id_or_metadata(item.clone()) == normalized
         }).with_context(|| format!(

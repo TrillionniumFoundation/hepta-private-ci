@@ -884,10 +884,16 @@ async fn subagent_notification_is_included_without_wait() -> Result<()> {
     test.submit_turn(TURN_2_NO_WAIT_PROMPT).await?;
 
     let turn2_requests = wait_for_requests(&turn2).await?;
-    assert!(
-        turn2_requests
-            .iter()
-            .any(|request| request.has_content_kinds(&["multi_agent.subagent_notification"]))
+    let mut local_items = Vec::new();
+    for request in &turn2_requests {
+        local_items.extend(
+            super::local_annotations::persisted_request_items(&test.codex, request, |_| true)
+                .await?,
+        );
+    }
+    super::local_annotations::assert_local_content_kinds(
+        &local_items,
+        &["multi_agent.subagent_notification"],
     );
 
     Ok(())
@@ -1337,9 +1343,22 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
 
     let child_request = wait_for_request_with_model(&child_request_log, expected_model).await?;
     assert!(child_request.body_contains_text(TURN_0_FORK_PROMPT));
-    let misaligned_child_messages = child_request
-        .inputs_of_type("message")
-        .into_iter()
+    let child_body = child_request.body_json();
+    let child_thread_id = ThreadId::from_string(
+        child_body["client_metadata"]["thread_id"]
+            .as_str()
+            .expect("child thread id"),
+    )?;
+    let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
+    // V2 agent_message inputs project communication records. Message inputs
+    // have persisted ResponseItem counterparts and retain their local kinds.
+    let local_items =
+        super::local_annotations::persisted_request_items(&child_thread, &child_request, |item| {
+            item["type"] == "message"
+        })
+        .await?;
+    let misaligned_child_messages = local_items
+        .iter()
         .filter(|message| {
             message["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
                 .as_array()
@@ -1349,27 +1368,34 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
                         .is_none_or(|content| content.len() != kinds.len())
                 })
         })
+        .cloned()
         .collect::<Vec<_>>();
     assert_eq!(misaligned_child_messages, Vec::<Value>::new());
     let child_developer_messages = child_request.message_input_texts("developer");
     if matches!(selection, FullHistoryV2ModelSelection::ConfiguredDefault) {
+        super::local_annotations::assert_local_content_kinds(
+            &local_items,
+            &["generic.developer_instructions"],
+        );
         assert_eq!(
             (
                 parent_request.body_contains_text(FULL_HISTORY_SUBAGENT_DEVELOPER_INSTRUCTIONS),
-                child_request.has_content_kinds(&["generic.developer_instructions"]),
                 child_developer_messages
                     .iter()
                     .filter(|text| text.as_str() == FULL_HISTORY_SUBAGENT_DEVELOPER_INSTRUCTIONS)
                     .count(),
             ),
-            (false, true, 1)
+            (false, 1)
         );
     }
     if !matches!(
         selection,
         FullHistoryV2ModelSelection::MultiAgentModeTransitions
     ) {
-        assert!(child_request.has_content_kinds(&["multi_agent.role_instructions"]));
+        super::local_annotations::assert_local_content_kinds(
+            &local_items,
+            &["multi_agent.role_instructions"],
+        );
         assert_eq!(
             child_developer_messages
                 .iter()
@@ -1438,14 +1464,7 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
         assert_eq!(reminder_count(&parent_request), 2);
         assert_eq!(reminder_count(&child_request), 1);
     }
-    let child_body = child_request.body_json();
     if matches!(selection, FullHistoryV2ModelSelection::WorldStateIdentity) {
-        let child_thread_id = ThreadId::from_string(
-            child_body["client_metadata"]["thread_id"]
-                .as_str()
-                .expect("child thread id"),
-        )?;
-        let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
         child_thread.flush_rollout().await?;
         let child_rollout = codex_rollout::RolloutRecorder::get_rollout_history(
             &child_thread
