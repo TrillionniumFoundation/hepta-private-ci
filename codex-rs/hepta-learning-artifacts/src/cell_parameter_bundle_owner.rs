@@ -102,7 +102,7 @@ impl CellParameterBundleOwnerV1 {
                 request.bundle.bundle_id.to_string(),
             ));
         }
-        self.validate_successor(&request.bundle)?;
+        self.validate_next_bundle(&request.bundle)?;
         if self.records.len() >= MAX_BUNDLES {
             return Err(CellParameterBundleErrorV1::Capacity);
         }
@@ -216,7 +216,7 @@ impl CellParameterBundleOwnerV1 {
         })
     }
 
-    fn validate_successor(
+    fn validate_next_bundle(
         &self,
         bundle: &CellParameterBundleV1,
     ) -> Result<(), CellParameterBundleErrorV1> {
