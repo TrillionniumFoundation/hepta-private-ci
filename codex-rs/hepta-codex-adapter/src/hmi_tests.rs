@@ -1,9 +1,23 @@
 use super::*;
-use futures::{SinkExt, StreamExt};
-use serde_json::{Value, json};
-use tokio::net::{TcpListener, TcpStream};
-use tokio_tungstenite::{WebSocketStream, accept_async, tungstenite::Message};
+use futures::SinkExt;
+use futures::StreamExt;
+use serde_json::Value;
+use serde_json::json;
+use tokio::net::TcpListener;
+use tokio::net::TcpStream;
+use tokio_tungstenite::WebSocketStream;
+use tokio_tungstenite::accept_async;
+use tokio_tungstenite::tungstenite::Message;
 type Socket = WebSocketStream<TcpStream>;
+
+fn fixture_codex_home() -> String {
+    std::env::current_dir()
+        .expect("absolute fixture working directory")
+        .join(".codex")
+        .to_str()
+        .expect("UTF-8 fixture home")
+        .to_owned()
+}
 
 fn binding() -> HmiBindingV1 {
     HmiBindingV1 {
@@ -15,7 +29,7 @@ fn binding() -> HmiBindingV1 {
         organ_generation: 7,
         thread_id: "thread:test".into(),
         app_server_session_id: "session:test".into(),
-        codex_home: "/server/.codex".into(),
+        codex_home: fixture_codex_home(),
         app_server_version: "9.8.7-test".into(),
     }
 }
@@ -73,7 +87,7 @@ async fn initialize(socket: &mut Socket) {
     reply(
         socket,
         &request,
-        json!({"userAgent":"codex_cli_rs/9.8.7-test (test)","codexHome":"/server/.codex"}),
+        json!({"userAgent":"codex_cli_rs/9.8.7-test (test)","codexHome":fixture_codex_home()}),
     )
     .await;
     assert_eq!(read(socket).await["method"], "initialized");
@@ -81,14 +95,16 @@ async fn initialize(socket: &mut Socket) {
     assert_eq!(resume["method"], "thread/resume");
     assert_eq!(resume["params"]["threadId"], "thread:test");
     assert_eq!(resume["params"]["excludeTurns"], true);
+    // Both response cwd fields deserialize as absolute host paths.
+    let cwd = std::env::current_dir().expect("absolute fixture working directory");
     reply(
         socket,
         &resume,
         json!({"thread":{
         "id":"thread:test","sessionId":"session:test","preview":"","ephemeral":false,
         "modelProvider":"fixture","createdAt":1,"updatedAt":2,"status":{"type":"idle"},
-        "cwd":"/tmp","cliVersion":"test","source":"appServer","turns":[]},
-        "model":"fixture","modelProvider":"fixture","cwd":"/tmp","approvalPolicy":"never",
+        "cwd":cwd,"cliVersion":"test","source":"appServer","turns":[]},
+        "model":"fixture","modelProvider":"fixture","cwd":cwd,"approvalPolicy":"never",
         "approvalsReviewer":"user","sandbox":{"type":"readOnly","networkAccess":false},
         "reasoningEffort":null}),
     )
