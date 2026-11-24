@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-24 UTC 独立群体正式 72+45 评测终局与独立汇总复核
+
+- 实读研究精确 [f15a8663](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/f15a866369e4ab20224235ff5bd4293ce00c6dcd/qualification/hcsn_smallnet_20261124/evidence)，相对原协议 29870f51 ahead=7。原 finalizer exit124 后仅补齐9个缺失测试，原63对结果/预测保持不变为原回执所载；最终72/72训练评测、45/45适配评测，不能将原进程超时改写成成功。原独立 NumPy 验证报告72个唯一训练项共1440标量、45个唯一适配项共990标量，最大差均2.22e-16。本轮直接从这两份回执复算计数与最大值，从 SUMMARY.json 的72个未舍入结果按原三个门槛重算，零判定差异；未独立重放物理轨迹、下载 checkpoint 或原 tar。
+- 原学习门：N=8 个体20/24、组7/8；N=32 个体1/24、组0/8；N=64 个体0/24、组0/8。qvi_full 三宽度准确率 .900390625/.6087239583333334/.525390625，晚信息增益 .142578125/.005859375/0。512 对 226–335 对 178–253 次实际更新，不能区分宽度本身与等 CPU 条件下更新不足；仅小宽度合成任务成立，固定/学习边界等对照亦通过，不签收 HCSN 优越性或规模扩展。保留原180 CPU秒/512更新规则，不重复训练。
+- 直接由45行最终适配审计重算：BP/ANALYTIC/HYBRID 分别8/8/9个开发选择 ADOPT（各分母9），STRICT_WSP 0/9；相对 KEEP 新准确率平均增益 .0642361111/.0633680556/.0638020833；具体旧来源各有3/3/5对下降1/64。ANALYTIC 方法 body CPU均值 .03359368s 对 BP 1.31233429s（约39.1倍），计全份公共工作及最终测试则40.46235s 对41.86153s（约1.035倍），含父训练约1.006倍；新准确率、停止效用略低，不声称等质量加速或全网免BP。严格编辑全部 KEEP，非产品采纳。
+- 原 [archive manifest](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f15a866369e4ab20224235ff5bd4293ce00c6dcd/qualification/hcsn_smallnet_20261124/evidence/archives/GIT_PUBLICATION_MANIFEST.json) 与同一固定提交 GitHub contents 名录逐项比对：82个 archive 加1索引共83/83 名称、blob SHA1、长度相符，共39,976,710字节；此为独立元数据核验，不声称本轮重散列二进制或解包成员。原物理/端到端泛化门仍 HOLD；优先预先固定等更新与等CPU两轴诊断及严格保持失败机制，避免在已揭示 holdout 上再选模。
+- main 732e934，四 Draft c12ee03f/4de33d14/b1af67a3/78c1012d；41条关联 PR 工作流本轮实读全终态，25 success、5 skipped、11 failure（13/5/17/6条分别为9/3/8/5成功、2/2/6/1失败、2/0/3/0跳过）。不修改产品、冻结门或合并红草案。全仓 HOLD。
+
 ## 2026-11-24 UTC 多 anchor 原生编辑与独立群体研究新依赖
 
 - 实读独立分支精确 [546af234](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/546af234539a406766f9269896f5a49d241d920c/qualification/hcsn_ci_readbacks/qvi-multianchor-native-20261124) 的 README、RESULTS_ZH、FORMULAE_ZH、protocol、summary、native_test_receipt 与 manifest。科学源仍为 610f9108，原两坐标之外新协议明确允许已有二维投影（总四坐标），原边界目标 −.01、每坐标 .1、49 输出保持门 1e-7 不变。先于拟合的协议 1c9762b9；F64 合成修正先于重放提交 c4f1630c。原 Rust standalone 5+3 数值测试成功、独立标量验证 9630 panel 的两项输出差 2.22e-16/6.66e-16，归于原包报告，本轮未重跑或下载原 tar。
