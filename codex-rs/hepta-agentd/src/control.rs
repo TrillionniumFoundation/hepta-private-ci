@@ -81,7 +81,10 @@ impl ControlProfile for NotesControlProfile {
 
 pub(crate) struct AgentdControlServer {
     listener: ControlListener,
+    #[cfg(unix)]
     owned_socket_path: Option<PathBuf>,
+    #[cfg(unix)]
+    owned_socket_identity: Option<(u64, u64)>,
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -99,10 +102,28 @@ impl AgentdControlServer {
         let listener = ControlListener::bind(&socket_path)
             .await
             .map_err(|error| io_context("bind agentd control socket", &socket_path, error))?;
+        #[cfg(unix)]
+        let socket_identity = control_socket_identity(&socket_path)
+            .map_err(|error| {
+                io_context("inspect bound agentd control socket", &socket_path, error)
+            })?
+            .ok_or_else(|| AgentdError::Protocol("bound control socket was replaced".into()))?;
         set_owner_only(&socket_path).await?;
+        #[cfg(unix)]
+        if control_socket_identity(&socket_path).map_err(|error| {
+            io_context("recheck bound agentd control socket", &socket_path, error)
+        })? != Some(socket_identity)
+        {
+            return Err(AgentdError::Protocol(
+                "bound control socket changed during permission setup".into(),
+            ));
+        }
         Ok(Self {
             listener,
+            #[cfg(unix)]
             owned_socket_path: Some(socket_path),
+            #[cfg(unix)]
+            owned_socket_identity: Some(socket_identity),
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -123,6 +144,7 @@ impl AgentdControlServer {
         Ok(Self {
             listener,
             owned_socket_path: None,
+            owned_socket_identity: None,
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -188,7 +210,7 @@ impl AgentdControlServer {
             // A privately bound Unix socket authenticates its process owner
             // before allocating a permit. Windows has an owner-only pipe DACL;
             // its bounded handshake additionally verifies the connected token.
-            #[cfg(not(windows))]
+            #[cfg(unix)]
             if self.owned_socket_path.is_some()
                 && let Err(error) = ensure_control_peer(&stream)
             {
@@ -266,22 +288,47 @@ fn retain_connection_failure(
     }
 }
 
+#[cfg(unix)]
 impl Drop for AgentdControlServer {
     fn drop(&mut self) {
-        let Some(path) = &self.owned_socket_path else {
-            return;
-        };
-        // A Windows pipe owns a kernel namespace instance, never this path.
-        // Closing its listener releases that claim without unlinking user data.
-        if !cfg!(windows)
-            && let Err(error) = std::fs::remove_file(path)
-            && error.kind() != ErrorKind::NotFound
+        // Inherited listeners and Windows pipes do not own a filesystem entry.
+        if let (Some(path), Some(identity)) = (&self.owned_socket_path, self.owned_socket_identity)
+            && let Err(error) = remove_owned_control_socket(path, identity)
         {
             eprintln!(
                 "failed to remove agentd control socket {}: {error}",
                 path.display()
             );
         }
+    }
+}
+
+#[cfg(unix)]
+fn control_socket_identity(path: &Path) -> std::io::Result<Option<(u64, u64)>> {
+    use std::os::unix::fs::FileTypeExt;
+    use std::os::unix::fs::MetadataExt;
+
+    match std::fs::symlink_metadata(path) {
+        Ok(metadata) => Ok(metadata
+            .file_type()
+            .is_socket()
+            .then_some((metadata.dev(), metadata.ino()))),
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(None),
+        Err(error) => Err(error),
+    }
+}
+
+#[cfg(unix)]
+fn remove_owned_control_socket(path: &Path, identity: (u64, u64)) -> std::io::Result<()> {
+    // A retired listener must not unlink a successor or a replacement file.
+    // The parent directory remains private to the operator; this check does
+    // not provide atomic compare-and-unlink against hostile same-UID writers.
+    if control_socket_identity(path)? != Some(identity) {
+        return Ok(());
+    }
+    match std::fs::remove_file(path) {
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+        result => result,
     }
 }
 

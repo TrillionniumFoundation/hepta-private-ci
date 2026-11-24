@@ -144,3 +144,40 @@ fn accept_path_authenticates_before_consuming_a_permit() {
         "peer authentication must precede permit allocation"
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn retiring_control_socket_removes_only_its_original_entry() -> TestResult {
+    use std::os::unix::fs::symlink;
+    use std::os::unix::net::UnixListener as StdUnixListener;
+    use std::os::unix::net::UnixStream as StdUnixStream;
+
+    let temp = control_socket_test_directory()?;
+    let path = temp.path().join("retire.ctl");
+    let original = StdUnixListener::bind(&path)?;
+    let identity = super::control_socket_identity(&path)?.expect("owned socket identity");
+
+    super::remove_owned_control_socket(&path, identity)?;
+    assert!(!path.exists());
+    super::remove_owned_control_socket(&path, identity)?;
+
+    let successor = StdUnixListener::bind(&path)?;
+    super::remove_owned_control_socket(&path, identity)?;
+    let _client = StdUnixStream::connect(&path)?;
+    let _accepted = successor.accept()?;
+    std::fs::remove_file(&path)?;
+
+    std::fs::write(&path, b"replacement")?;
+    super::remove_owned_control_socket(&path, identity)?;
+    assert_eq!(std::fs::read(&path)?, b"replacement");
+    std::fs::remove_file(&path)?;
+
+    let target = temp.path().join("target");
+    std::fs::write(&target, b"target")?;
+    symlink(&target, &path)?;
+    super::remove_owned_control_socket(&path, identity)?;
+    assert_eq!(std::fs::read_link(&path)?, target);
+    assert_eq!(std::fs::read(&target)?, b"target");
+    drop(original);
+    Ok(())
+}
