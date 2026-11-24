@@ -406,6 +406,10 @@ impl LearningIterationCheckpointRecordV1 {
     }
 }
 
+#[cfg(all(test, unix))]
+#[path = "learning_iteration_os_process_recovery_tests.rs"]
+pub(crate) mod os_process_recovery;
+
 #[cfg(test)]
 #[path = "neuron_generation_learning_readback_test_support.rs"]
 pub(crate) mod generation_readback_test_support;
