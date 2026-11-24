@@ -25,31 +25,24 @@ class SnapshotProcessOwnerV1:
     """Retains the latest observed source frontier, including rejected requests."""
     def __init__(self, snapshot, withdrawal_provider):
         self._owner = OfflineEvolutionOwnerV1(snapshot, withdrawal_provider)
-        self._frontier = asdict(snapshot.require_current(withdrawal_provider))
 
     @property
     def current(self):
         return self._owner.current
 
-    def _observe(self, identity):
-        view = check_sources((), identity, self._owner._provider, self._frontier)
-        self._frontier = asdict(view)
-        return view
-
     def capture(self):
         with self._owner._lock:
             snapshot = self.current
-            view = self._observe(snapshot.identity)
+            view = self._owner._observe(snapshot.identity)
             snapshot.require_current(lambda: view)
             return snapshot, view
 
     def commit(self, candidate, *, expected_parent_manifest_sha256):
         with self._owner._lock:
-            view = self._observe(candidate.identity)
+            view = self._owner._observe(candidate.identity)
             candidate.require_current(lambda: view)
+            # The owner observes this same frontier again before publishing.
             self._owner.commit(candidate, expected_parent_manifest_sha256=expected_parent_manifest_sha256)
-            # Observe any change made by the external provider during admission.
-            candidate.require_current(lambda: self._observe(candidate.identity))
 
 
 def _route(snapshot, bundle, budget_units):

@@ -187,6 +187,34 @@ class CellProcessInferenceTests(unittest.TestCase):
         self.assertEqual(result["router_forward_calls"], 0)
         self.assertTrue(all(r["actual_calls"] == ["a"] for r in result["routes"]))
 
+    def test_late_withdrawal_rejects_commit_before_publishing_and_preserves_frontier(self):
+        predecessor = self.owner.current
+        observations = 0
+
+        def withdraw_at_final_admission():
+            nonlocal observations
+            observations += 1
+            if observations == 2:
+                self.withdrawals.revoke(predecessor.report["source_closure"][0])
+            return self.withdrawals()
+
+        with patch.object(self.owner._owner, "_provider", side_effect=withdraw_at_final_admission):
+            with self.assertRaisesRegex(EvolutionError, "withdrawn"):
+                self.owner.commit(
+                    self.retired,
+                    expected_parent_manifest_sha256=predecessor.manifest_sha256,
+                )
+        self.assertEqual(observations, 2)
+        self.assertIs(self.owner.current, predecessor)
+        self.assertEqual(self.owner.current.generation, 1)
+
+        with self.assertRaises(EvolutionError):
+            self.owner.capture()
+        self.withdrawals.view = WithdrawalViewV1(IDENTITY.scope_id)
+        with self.assertRaisesRegex(EvolutionError, "frontier"):
+            self.owner.capture()
+        self.assertIs(self.owner.current, predecessor)
+
     def test_wrong_feature_scope_is_rejected_before_any_worker_forward(self):
         pool = self.pool()
         bad = cohort("different-scope", identity=replace(IDENTITY, scope_id="another-owner")).bundle
