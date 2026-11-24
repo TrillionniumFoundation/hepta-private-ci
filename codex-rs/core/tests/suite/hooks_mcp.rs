@@ -42,6 +42,7 @@ use serde_json::Value;
 use serde_json::json;
 use tempfile::TempDir;
 
+use super::local_annotations::assert_wire_has_no_internal_metadata;
 use super::rmcp_client::remote_aware_environment_id;
 use super::rmcp_client::remote_aware_stdio_server_bin;
 
@@ -52,6 +53,7 @@ const RMCP_ECHO_TOOL_NAME: &str = "mcp__rmcp__echo";
 const RMCP_HOOK_MATCHER: &str = RMCP_ECHO_TOOL_NAME;
 const RMCP_ECHO_MESSAGE: &str = "hook e2e ping";
 const GOVERNED_HOOK_ERROR: &str = "MCP tool hooks are disabled in governed threads";
+const RMCP_CALL_MARKER: &str = "synthetic_mcp_call.json";
 
 struct ActiveToolPolicy;
 
@@ -319,6 +321,28 @@ fn read_hook_inputs(home: &Path, log_name: &str) -> Result<Vec<Value>> {
         .filter(|line| !line.trim().is_empty())
         .map(|line| serde_json::from_str(line).with_context(|| format!("parse {log_name} line")))
         .collect()
+}
+
+fn enable_rmcp_call_marker(config: &mut Config) {
+    let mut servers = config.mcp_servers.get().clone();
+    let server = servers
+        .get_mut(RMCP_SERVER)
+        .expect("configured synthetic MCP server");
+    let McpServerTransportConfig::Stdio { env, .. } = &mut server.transport else {
+        panic!("synthetic call marker requires the stdio test server");
+    };
+    env.get_or_insert_with(HashMap::new).insert(
+        "MCP_TEST_CALL_MARKER_FILE".to_owned(),
+        config
+            .codex_home
+            .join(RMCP_CALL_MARKER)
+            .to_string_lossy()
+            .into_owned(),
+    );
+    config
+        .mcp_servers
+        .set(servers)
+        .expect("synthetic marker configuration");
 }
 
 fn insert_rmcp_test_server(
@@ -946,6 +970,7 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
                 AppToolApproval::Approve,
                 prefix_mcp_tool_names,
             );
+            enable_rmcp_call_marker(config);
         })
         .build(&server)
         .await?;
@@ -956,15 +981,34 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
 
     let requests = responses.requests();
     assert_eq!(requests.len(), 2);
-    let output_item = requests[1].function_call_output(call_id);
+    for request in &requests {
+        assert_wire_has_no_internal_metadata(request);
+    }
+    let attempted_call = requests[1]
+        .inputs_of_type("function_call")
+        .into_iter()
+        .find(|item| item["call_id"] == call_id)
+        .expect("original attempted MCP call");
     assert_eq!(
-        output_item["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
-        json!([{
-            "name": format!("{mcp_namespace}__echo"),
+        json!({
+            "namespace": attempted_call["namespace"],
+            "name": attempted_call["name"],
+            "arguments": serde_json::from_str::<Value>(attempted_call["arguments"].as_str().expect("call arguments"))?,
+        }),
+        json!({
+            "namespace": mcp_namespace,
+            "name": "echo",
             "arguments": { "message": RMCP_ECHO_MESSAGE },
-        }]),
-        "a blocked MCP request must still retain the original model-attempted call",
+        })
     );
+    assert!(
+        !test.codex_home_path().join(RMCP_CALL_MARKER).exists(),
+        "the blocked MCP attempt must not reach the synthetic server's tools/call handler"
+    );
+    let output_item = requests[1].function_call_output(call_id);
+    // Attempt metadata belongs to the pre-transport prompt clone. The recorder
+    // unit test covers its original name/arguments and unchanged history; the
+    // actual localhost wire is required to strip it.
     let output = output_item
         .get("output")
         .and_then(Value::as_str)
@@ -1043,6 +1087,7 @@ async fn pre_tool_use_rewrites_mcp_tool_before_execution() -> Result<()> {
                 AppToolApproval::Approve,
                 /*prefix_mcp_tool_names*/ true,
             );
+            enable_rmcp_call_marker(config);
         })
         .build(&server)
         .await?;
@@ -1052,6 +1097,17 @@ async fn pre_tool_use_rewrites_mcp_tool_before_execution() -> Result<()> {
         .await?;
 
     let final_request = final_mock.single_request();
+    assert_wire_has_no_internal_metadata(&final_request);
+    let marker: Value =
+        serde_json::from_slice(&fs::read(test.codex_home_path().join(RMCP_CALL_MARKER))?)?;
+    assert_eq!(
+        marker,
+        json!({
+            "name": "echo",
+            "arguments": { "message": rewritten_message },
+        }),
+        "successful echo proves the same call marker observes real execution"
+    );
     let output_item = final_request.function_call_output(call_id);
     let output = output_item
         .get("output")

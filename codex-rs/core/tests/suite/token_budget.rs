@@ -60,6 +60,9 @@ use std::time::Duration;
 use tempfile::TempDir;
 use test_case::test_case;
 
+use super::local_annotations::assert_local_content_kinds;
+use super::local_annotations::persisted_request_items;
+
 const CONFIGURED_CONTEXT_WINDOW: i64 = 128_000;
 const AUTO_COMPACT_FALLBACK_PROMPT: &str = "Save the important state before rollover.";
 
@@ -267,11 +270,15 @@ async fn token_budget_guidance_precedes_standalone_context_window() -> Result<()
     test.submit_turn("inspect context guidance").await?;
 
     let request = response.single_request();
-    assert!(request.has_content_kinds(&[
-        "token_budget.context_window_guidance",
-        "permissions.instructions",
-    ]));
-    assert!(request.has_content_kinds(&["token_budget.context_window"]));
+    let local_items = persisted_request_items(&test.codex, &request, |_| true).await?;
+    assert_local_content_kinds(
+        &local_items,
+        &[
+            "token_budget.context_window_guidance",
+            "permissions.instructions",
+        ],
+    );
+    assert_local_content_kinds(&local_items, &["token_budget.context_window"]);
     let developer_texts = request.message_input_texts("developer");
     let context_window_index = developer_texts
         .iter()

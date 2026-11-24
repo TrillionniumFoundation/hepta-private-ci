@@ -5,6 +5,52 @@ use serde_json::json;
 use super::*;
 
 #[test]
+fn attempted_mcp_metadata_is_prompt_local_even_for_a_blocked_output() {
+    for namespace in ["mcp__rmcp", "rmcp"] {
+        let recorder = ExecutedToolCallRecorder::default();
+        let call_id = "blocked-attempt";
+        let arguments = json!({ "message": "original model attempt" });
+        recorder.record_tool_call(
+            &ToolCall {
+                tool_name: codex_tools::ToolName::namespaced(namespace, "echo"),
+                call_id: call_id.to_owned(),
+                payload: ToolPayload::Function {
+                    arguments: arguments.to_string(),
+                },
+                encrypted_function_args: None,
+            },
+            &ToolCallSource::Direct,
+            ToolMode::Direct,
+        );
+        let history = vec![ResponseItem::FunctionCallOutput {
+            id: None,
+            call_id: Some(call_id.to_owned()),
+            name: None,
+            namespace: None,
+            output: FunctionCallOutputPayload::from_text(
+                "Tool call blocked by PreToolUse hook".to_owned(),
+            ),
+            internal_chat_message_metadata_passthrough: None,
+        }];
+        let unchanged_history = history.clone();
+        let mut prompt = history.clone();
+        assert!(recorder.attach_pending_to_prompt(&mut prompt, &mut HashMap::new()));
+        let metadata = prompt[0]
+            .executed_tool_call_metadata()
+            .expect("local prompt metadata");
+        assert_eq!(
+            serde_json::to_value(&metadata.executed_tool_calls).expect("attempt metadata"),
+            json!([{ "name": format!("{namespace}__echo"), "arguments": arguments }])
+        );
+        assert_eq!(
+            history, unchanged_history,
+            "prompt-only annotations must not mutate retained input history"
+        );
+        assert!(history[0].executed_tool_call_metadata().is_none());
+    }
+}
+
+#[test]
 fn executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow() {
     let recorder = ExecutedToolCallRecorder::default();
 

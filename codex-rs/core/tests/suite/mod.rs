@@ -87,6 +87,7 @@ mod injected_models_cache;
 mod items;
 mod json_result;
 mod live_cli;
+mod local_annotations;
 mod mcp_auth_elicitation;
 mod mcp_auth_refresh;
 #[cfg(unix)]

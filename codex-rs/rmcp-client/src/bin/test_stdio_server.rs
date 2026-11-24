@@ -619,6 +619,21 @@ impl ServerHandler for TestToolServer {
         request: CallToolRequestParams,
         context: rmcp::service::RequestContext<rmcp::service::RoleServer>,
     ) -> Result<rmcp::model::CallToolResponse, McpError> {
+        // Opt-in observation for synthetic integration fixtures only. A fresh
+        // marker proves whether tools/call reached this test server; create_new
+        // prevents overwriting any existing file or concealing a second call.
+        if let Some(path) = std::env::var_os("MCP_TEST_CALL_MARKER_FILE") {
+            let marker = std::fs::File::create_new(path)
+                .map_err(|error| McpError::internal_error(error.to_string(), None))?;
+            serde_json::to_writer(
+                marker,
+                &json!({
+                    "name": &request.name,
+                    "arguments": &request.arguments,
+                }),
+            )
+            .map_err(|error| McpError::internal_error(error.to_string(), None))?;
+        }
         match request.name.as_ref() {
             "js" => {
                 let args = Self::parse_call_args::<JsArgs>(&request, "js")?;
