@@ -3,12 +3,16 @@
 //! The existing authenticated channel owner supplies CONFIG and authorizes every
 //! input. A config file is not an authentication, device grant or memory receipt.
 
-use codex_app_server_client::{RemoteAppServerConnectArgs, RemoteAppServerEndpoint};
+use codex_app_server_client::RemoteAppServerConnectArgs;
+use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_app_server_protocol::ThreadQueueReconcileMode;
-use codex_hepta_codex_adapter::hmi::{HmiBindingV1, HmiConnectionV1};
+use codex_hepta_codex_adapter::hmi::HmiBindingV1;
+use codex_hepta_codex_adapter::hmi::HmiConnectionV1;
 use serde::Deserialize;
-use serde_json::{Value, json};
-use std::io::{BufRead, Read};
+use serde_json::Value;
+use serde_json::json;
+use std::io::BufRead;
+use std::io::Read;
 use std::time::Duration;
 use tokio::io::AsyncWriteExt;
 
