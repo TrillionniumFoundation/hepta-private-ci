@@ -1,0 +1,92 @@
+{
+  "final_results_sha256": "7005267d927acd2ae8b9d5d67863aaf8e85d6323217d4a0e29827b63c677bf27",
+  "max_scalar_error": 2.220446049250313e-16,
+  "method": "independent NumPy reconstruction; no Torch/model/trainer imports",
+  "numpy": "2.5.4",
+  "rows": [
+    {
+      "attempt": "n8-qvi_signed_only-s1101",
+      "examples": 512,
+      "max_scalar_error": 1.1102230246251565e-16,
+      "predictions_sha256": "9859931fec813469c4137e45d932ae5069a83f32e135b82ba6c33869a964c9f4",
+      "prefix_steps": 12,
+      "status": "verified",
+      "verified_scalar_count": 20
+    },
+    {
+      "attempt": "n8-qvi_signed_only-s2202",
+      "examples": 512,
+      "max_scalar_error": 1.1102230246251565e-16,
+      "predictions_sha256": "20ab3c23ed1234865ffccbd59355816384ac5b1a0f3530d501a39905fbe7c096",
+      "prefix_steps": 12,
+      "status": "verified",
+      "verified_scalar_count": 20
+    },
+    {
+      "attempt": "n8-qvi_signed_only-s3303",
+      "examples": 512,
+      "max_scalar_error": 1.1102230246251565e-16,
+      "predictions_sha256": "53c5703bf1e7ee040a2297c18cf2609d208911ac290688d47083a2c1653c4289",
+      "prefix_steps": 12,
+      "status": "verified",
+      "verified_scalar_count": 20
+    },
+    {
+      "attempt": "n32-qvi_signed_only-s1101",
+      "examples": 512,
+      "max_scalar_error": 2.7755575615628914e-17,
+      "predictions_sha256": "42fff2ac15887c5b686a5c1cb370a93e8759738810dec1fb8816e7326ceae33b",
+      "prefix_steps": 12,
+      "status": "verified",
+      "verified_scalar_count": 20
+    },
+    {
+      "attempt": "n32-qvi_signed_only-s2202",
+      "examples": 512,
+      "max_scalar_error": 0.0,
+      "predictions_sha256": "aa9fc3dd41fc5a83672adda5ddcc9fa45c71bc4e25d4df7a3b1cd5dd2f03c8fa",
+      "prefix_steps": 12,
+      "status": "verified",
+      "verified_scalar_count": 20
+    },
+    {
+      "attempt": "n32-qvi_signed_only-s3303",
+      "examples": 512,
+      "max_scalar_error": 1.1102230246251565e-16,
+      "predictions_sha256": "942651f9a910b0a63f1e80678972465c9513a159bd870924d9d0e053ffe0de2e",
+      "prefix_steps": 12,
+      "status": "verified",
+      "verified_scalar_count": 20
+    },
+    {
+      "attempt": "n64-qvi_signed_only-s1101",
+      "examples": 512,
+      "max_scalar_error": 1.1102230246251565e-16,
+      "predictions_sha256": "56ba1eb7aa90a464469dda0ca1f3a31f782e6f55e95ea0c8216b42d50ebdd90d",
+      "prefix_steps": 12,
+      "status": "verified",
+      "verified_scalar_count": 20
+    },
+    {
+      "attempt": "n64-qvi_signed_only-s2202",
+      "examples": 512,
+      "max_scalar_error": 2.220446049250313e-16,
+      "predictions_sha256": "ffd96cc3580ef5bf10ef572515e4136a332b16c8334cb8eedfa47c3026a661ef",
+      "prefix_steps": 12,
+      "status": "verified",
+      "verified_scalar_count": 20
+    },
+    {
+      "attempt": "n64-qvi_signed_only-s3303",
+      "examples": 512,
+      "max_scalar_error": 1.1102230246251565e-16,
+      "predictions_sha256": "f0cb5c9c3e28419777bff869eca4de7ea1dfcde3dc7958e84e92dd5c277054a7",
+      "prefix_steps": 12,
+      "status": "verified",
+      "verified_scalar_count": 20
+    }
+  ],
+  "schema": 1,
+  "scope": "saved-logit metric consistency; physical trajectories not replayed",
+  "wall_seconds": 0.24090623494703323
+}

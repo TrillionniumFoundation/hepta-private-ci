@@ -19,6 +19,10 @@ There are 72 `training--*.tar.gz` archives, nine `adaptation--*.tar.gz` archives
 
 [preflight-evidence.tar.gz](preflight-evidence.tar.gz) separately preserves the earlier numerical failures and fixes, smoke runs, runtime diagnostics, fixed-law cache measurements, FP32 backend comparison, formatter/clone failures, and their source snapshots. Its paths are rooted at the development evidence capsule. The readable `audit/*.json` files are copies of the principal records.
 
+[PREFLIGHT_ARCHIVE_INDEX.json](PREFLIGHT_ARCHIVE_INDEX.json) binds the development archive and its members. [The publication verification](FORMAL_ARCHIVE_BLOB_VERIFICATION.json) and [transport ledger](FORMAL_ARCHIVE_BLOB_PUBLICATION.json) retain the completed main-archive transfer checks and the resolved transport interruption.
+
+The exact signed-message-only control is a separate, explicitly post-results experiment: [results and scope](../../hcsn_signed_control_20261124/evidence/RESULTS_SIGNED_ONLY.md), [raw archive manifest](../../hcsn_signed_control_20261124/evidence/archives/ARCHIVE_MANIFEST.json), and [complete supplemental archive](../../hcsn_signed_control_20261124/evidence/archives/signed-control-v1.raw.tar.gz). Its nine fits do not replace any main-study slot, and the 45 adaptation candidates still belong to the original qvi_full parents.
+
 ## Interrupted evaluation and continuation
 
 The original finalizer timed out with exit 124 after 63 complete training-test pairs and all nine adaptation-test workers. Its total CPU accounting could not be recovered. [The timeout record](audit/final_stage_timeout.json) retains that limitation.

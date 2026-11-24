@@ -1,0 +1,130 @@
+{
+  "campaign": {
+    "job_id": "1a20dfa79c9-ffbe-39f9",
+    "status": {
+      "at_unix_ms": 1795531106426,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a20dfa79c9-ffbe-39f9",
+      "launch_nonce": "82dc07af12b9967d055071ae33b6340e",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 6329,
+          "stored": 6329
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "stderr": "",
+    "stdout": "{\"prepared_protocol\": \"/home/qian-qi/hcsn-smallnet-20261124/signed-control-v1/PROTOCOL_SIGNED.json\", \"sha256\": \"368d44e6f25d61478c5a4811e5d4f23e76514ea665c9868b2a066565ef36be4b\"}\n{\"stage\": \"post_results_supplement_registered\", \"protocol_file_sha256\": \"368d44e6f25d61478c5a4811e5d4f23e76514ea665c9868b2a066565ef36be4b\", \"workers\": 9, \"main_artifacts_unchanged\": true}\n{\"stage\": \"fit-worker\", \"attempt\": \"n8-qvi_signed_only-s1101\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 169.21062243694905}\n{\"stage\": \"fit-worker\", \"attempt\": \"n8-qvi_signed_only-s2202\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 173.72362196806353}\n{\"stage\": \"fit-worker\", \"attempt\": \"n8-qvi_signed_only-s3303\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 174.32422271301039}\n{\"stage\": \"fit-worker\", \"attempt\": \"n32-qvi_signed_only-s2202\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 203.90157410199754}\n{\"stage\": \"fit-worker\", \"attempt\": \"n32-qvi_signed_only-s3303\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 204.0985741900513}\n{\"stage\": \"fit-worker\", \"attempt\": \"n32-qvi_signed_only-s1101\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 206.5072637660196}\n{\"stage\": \"fit-worker\", \"attempt\": \"n64-qvi_signed_only-s1101\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 214.22825709194876}\n{\"stage\": \"fit-worker\", \"attempt\": \"n64-qvi_signed_only-s3303\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 214.57599328097422}\n{\"stage\": \"fit-worker\", \"attempt\": \"n64-qvi_signed_only-s2202\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 215.27983470389154}\n{\"stage\": \"all_nine_selection_records_sealed\", \"seal_sha256\": \"501d95f014f7cdc57da61cca991065588cd6785de1582fecbe30d4c23161eab5\"}\n{\"stage\": \"test-worker\", \"attempt\": \"n8-qvi_signed_only-s1101\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 14.151154418941587}\n{\"stage\": \"test-worker\", \"attempt\": \"n8-qvi_signed_only-s2202\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 14.205405520042405}\n{\"stage\": \"test-worker\", \"attempt\": \"n8-qvi_signed_only-s3303\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 14.253048062091693}\n{\"stage\": \"test-worker\", \"attempt\": \"n32-qvi_signed_only-s1101\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 25.67502441094257}\n{\"stage\": \"test-worker\", \"attempt\": \"n32-qvi_signed_only-s2202\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 26.48477749689482}\n{\"stage\": \"test-worker\", \"attempt\": \"n32-qvi_signed_only-s3303\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 27.037504703970626}\n{\"stage\": \"test-worker\", \"attempt\": \"n64-qvi_signed_only-s3303\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 34.65821980196051}\n{\"stage\": \"test-worker\", \"attempt\": \"n64-qvi_signed_only-s1101\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 34.85994480003137}\n{\"stage\": \"test-worker\", \"attempt\": \"n64-qvi_signed_only-s2202\", \"returncode\": 0, \"error\": null, \"launch_through_exit_wall_seconds\": 36.062780800042674}\n{\"verified\": 9, \"max_scalar_error\": 2.220446049250313e-16}\n{\"evaluated\": 9, \"expected\": 9, \"groups\": [{\"neurons\": 8, \"expected\": 3, \"evaluated\": 3, \"passing_seeds\": 3, \"group_pass\": true, \"all_evidence_verified\": true, \"group_status\": \"PASS\", \"selected_step_zero\": 0, \"metrics\": {\"accuracy\": {\"n\": 3, \"mean\": 0.9127604166666666, \"sample_std\": 0.009230108645024626, \"min\": 0.90234375, \"max\": 0.919921875}, \"brier\": {\"n\": 3, \"mean\": 0.12562794153989987, \"sample_std\": 0.008772547980413872, \"min\": 0.11811114231282946, \"max\": 0.13526689343222648}, \"pre_late_accuracy\": {\"n\": 3, \"mean\": 0.7584635416666666, \"sample_std\": 0.00406575390520729, \"min\": 0.75390625, \"max\": 0.76171875}, \"final_over_pre_late\": {\"n\": 3, \"mean\": 0.154296875, \"sample_std\": 0.01188039556698871, \"min\": 0.140625, \"max\": 0.162109375}, \"learned_over_initial\": {\"n\": 3, \"mean\": 0.4212239583333333, \"sample_std\": 0.027918986513530687, \"min\": 0.390625, \"max\": 0.4453125}}, \"updates\": {\"n\": 3, \"mean\": 512, \"sample_std\": 0.0, \"min\": 512, \"max\": 512}, \"training_cpu_seconds\": 452.41219125900045}, {\"neurons\": 32, \"expected\": 3, \"evaluated\": 3, \"passing_seeds\": 3, \"group_pass\": true, \"all_evidence_verified\": true, \"group_status\": \"PASS\", \"selected_step_zero\": 0, \"metrics\": {\"accuracy\": {\"n\": 3, \"mean\": 0.90625, \"sample_std\": 0.019236050394133015, \"min\": 0.884765625, \"max\": 0.921875}, \"brier\": {\"n\": 3, \"mean\": 0.13557729936376042, \"sample_std\": 0.021051895541202126, \"min\": 0.1228714997537103, \"max\": 0.1598774635307885}, \"pre_late_accuracy\": {\"n\": 3, \"mean\": 0.7578125, \"sample_std\": 0.012807497117777344, \"min\": 0.74609375, \"max\": 0.771484375}, \"final_over_pre_late\": {\"n\": 3, \"mean\": 0.1484375, \"sample_std\": 0.008950343154210625, \"min\": 0.138671875, \"max\": 0.15625}, \"learned_over_initial\": {\"n\": 3, \"mean\": 0.4147135416666667, \"sample_std\": 0.0481726842023071, \"min\": 0.359375, \"max\": 0.447265625}}, \"updates\": {\"n\": 3, \"mean\": 258.6666666666667, \"sample_std\": 5.507570547286102, \"min\": 255, \"max\": 265}, \"training_cpu_seconds\": 541.4882295709999}, {\"neurons\": 64, \"expected\": 3, \"evaluated\": 3, \"passing_seeds\": 3, \"group_pass\": true, \"all_evidence_verified\": true, \"group_status\": \"PASS\", \"selected_step_zero\": 0, \"metrics\": {\"accuracy\": {\"n\": 3, \"mean\": 0.9173177083333334, \"sample_std\": 0.014396708585609362, \"min\": 0.90625, \"max\": 0.93359375}, \"brier\": {\"n\": 3, \"mean\": 0.12635972734501147, \"sample_std\": 0.01914012108412582, \"min\": 0.10430470349208437, \"max\": 0.13862262473767992}, \"pre_late_accuracy\": {\"n\": 3, \"mean\": 0.7591145833333334, \"sample_std\": 0.004915256793796061, \"min\": 0.75390625, \"max\": 0.763671875}, \"final_over_pre_late\": {\"n\": 3, \"mean\": 0.158203125, \"sample_std\": 0.013671875, \"min\": 0.1484375, \"max\": 0.173828125}, \"learned_over_initial\": {\"n\": 3, \"mean\": 0.4088541666666667, \"sample_std\": 0.02832592437214465, \"min\": 0.380859375, \"max\": 0.4375}}, \"updates\": {\"n\": 3, \"mean\": 195.66666666666666, \"sample_std\": 1.5275252316519468, \"min\": 194, \"max\": 197}, \"training_cpu_seconds\": 541.142405372}]}\n{\"stage\": \"supplement_complete\", \"output_root\": \"/home/qian-qi/hcsn-smallnet-20261124/signed-control-v1\"}\n"
+  },
+  "preflight": {
+    "job_id": "1a20df70a61-ffbe-39f1",
+    "status": {
+      "at_unix_ms": 1795530627687,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a20df70a61-ffbe-39f1",
+      "launch_nonce": "d27ae9668837ba7093dac393439b36f8",
+      "log_bytes": {
+        "stderr": {
+          "seen": 647,
+          "stored": 647
+        },
+        "stdout": {
+          "seen": 168,
+          "stored": 168
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "stderr": "test_initialization_changes_only_persistent_mask (qualification.hcsn_signed_control_20261124.tests.SignedControlTests.test_initialization_changes_only_persistent_mask) ... ok\ntest_original_core_reload_retains_mask_and_full_forward (qualification.hcsn_signed_control_20261124.tests.SignedControlTests.test_original_core_reload_retains_mask_and_full_forward) ... ok\ntest_unsigned_message_is_inert_signed_message_is_used (qualification.hcsn_signed_control_20261124.tests.SignedControlTests.test_unsigned_message_is_inert_signed_message_is_used) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.226s\n\nOK\n",
+    "stdout": "{\"installed\": \"/home/qian-qi/hcsn-smallnet-20261124/signed-control-v1\", \"frozen_base_files\": 14, \"supplement_files\": [\"tests.py\", \"model.py\", \"run.py\", \"__init__.py\"]}\n"
+  },
+  "read_only_postprocess_revision": {
+    "job_id": "1a20dfc1740-ffbe-39fd",
+    "status": {
+      "at_unix_ms": 1795530955905,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a20dfc1740-ffbe-39fd",
+      "launch_nonce": "1fd46ae0d34e917c226a530cda55e96f",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 563,
+          "stored": 563
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "stderr": "",
+    "stdout": "{\"scope\": \"read-only analysis helper; not in the four frozen supplemental training sources\", \"reason\": \"Preserve unavailable slots and render missing metrics/cost receipts without dropping the rest of the campaign.\", \"old_sha256\": \"a7e5e45722d890851e9d45158b3df4f6ce8a5a525bb3ac00804a118f3cf91815\", \"new_sha256\": \"8919d9fc907d2192173f8fbfef82fbe71e84058260fedb8f5d9d9bd4181485af\", \"old_path\": \"postprocess/summarize_before_failure_handling.py\", \"new_path\": \"qualification/hcsn_signed_control_20261124/summarize.py\", \"training_source_or_selection_changed\": false}\n"
+  },
+  "schema": 1,
+  "scope": "Independent post-results signed-only supplement; no changes to the main 72-case archive"
+}

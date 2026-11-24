@@ -1,0 +1,1161 @@
+{
+  "analysis_source_sha256": "8919d9fc907d2192173f8fbfef82fbe71e84058260fedb8f5d9d9bd4181485af",
+  "attempts": [
+    {
+      "attempt": "n8-qvi_signed_only-s1101",
+      "descriptive_learning_gate": true,
+      "evidence_verified": true,
+      "fit_body_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 165.844801369,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1287039,
+        "process_max_rss_kib": 302516,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "fit_body_including_setup_selection_checkpoint",
+        "wall_seconds": 166.18735072296113
+      },
+      "metrics": {
+        "accuracy": 0.919921875,
+        "brier": 0.11811114231282946,
+        "final_over_pre_late": 0.16015625,
+        "learned_over_initial": 0.4453125,
+        "pre_late_accuracy": 0.759765625
+      },
+      "neurons": 8,
+      "numeric_criteria_pass": true,
+      "parent_cost": {
+        "attempt": "n8-qvi_signed_only-s1101",
+        "error": null,
+        "launch_through_exit_wall_seconds": 169.21062243694905,
+        "returncode": 0
+      },
+      "seed": 1101,
+      "selected_step": 512,
+      "test_pair_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 10.052739537999999,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1301928,
+        "process_max_rss_kib": 225756,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "one_selected_and_initial_test_evaluation",
+        "wall_seconds": 11.115225065033883
+      },
+      "test_parent_cost": {
+        "attempt": "n8-qvi_signed_only-s1101",
+        "error": null,
+        "launch_through_exit_wall_seconds": 14.151154418941587,
+        "returncode": 0
+      },
+      "test_status": "evaluated",
+      "test_worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 12.220426707,
+        "process_peak_rss_bytes": 231174144,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 13.473619821015745,
+        "wrapper_error": null
+      },
+      "training_cpu_seconds": 148.02622144600008,
+      "training_status": "completed",
+      "updates": 512,
+      "worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 167.700022139,
+        "process_peak_rss_bytes": 309776384,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 168.03115846507717,
+        "wrapper_error": null
+      }
+    },
+    {
+      "attempt": "n8-qvi_signed_only-s2202",
+      "descriptive_learning_gate": true,
+      "evidence_verified": true,
+      "fit_body_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 170.352685154,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1287041,
+        "process_max_rss_kib": 301012,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "fit_body_including_setup_selection_checkpoint",
+        "wall_seconds": 170.71860974701121
+      },
+      "metrics": {
+        "accuracy": 0.90234375,
+        "brier": 0.13526689343222648,
+        "final_over_pre_late": 0.140625,
+        "learned_over_initial": 0.427734375,
+        "pre_late_accuracy": 0.76171875
+      },
+      "neurons": 8,
+      "numeric_criteria_pass": true,
+      "parent_cost": {
+        "attempt": "n8-qvi_signed_only-s2202",
+        "error": null,
+        "launch_through_exit_wall_seconds": 173.72362196806353,
+        "returncode": 0
+      },
+      "seed": 2202,
+      "selected_step": 320,
+      "test_pair_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 10.144437716999999,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1301930,
+        "process_max_rss_kib": 227072,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "one_selected_and_initial_test_evaluation",
+        "wall_seconds": 11.268709621042944
+      },
+      "test_parent_cost": {
+        "attempt": "n8-qvi_signed_only-s2202",
+        "error": null,
+        "launch_through_exit_wall_seconds": 14.205405520042405,
+        "returncode": 0
+      },
+      "test_status": "evaluated",
+      "test_worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 12.229177518,
+        "process_peak_rss_bytes": 232521728,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 13.54268840199802,
+        "wrapper_error": null
+      },
+      "training_cpu_seconds": 152.08045141500008,
+      "training_status": "completed",
+      "updates": 512,
+      "worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 172.256358567,
+        "process_peak_rss_bytes": 308236288,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 172.61061596602667,
+        "wrapper_error": null
+      }
+    },
+    {
+      "attempt": "n8-qvi_signed_only-s3303",
+      "descriptive_learning_gate": true,
+      "evidence_verified": true,
+      "fit_body_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 170.835674071,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1287043,
+        "process_max_rss_kib": 302276,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "fit_body_including_setup_selection_checkpoint",
+        "wall_seconds": 171.17027576302644
+      },
+      "metrics": {
+        "accuracy": 0.916015625,
+        "brier": 0.12350578887464367,
+        "final_over_pre_late": 0.162109375,
+        "learned_over_initial": 0.390625,
+        "pre_late_accuracy": 0.75390625
+      },
+      "neurons": 8,
+      "numeric_criteria_pass": true,
+      "parent_cost": {
+        "attempt": "n8-qvi_signed_only-s3303",
+        "error": null,
+        "launch_through_exit_wall_seconds": 174.32422271301039,
+        "returncode": 0
+      },
+      "seed": 3303,
+      "selected_step": 512,
+      "test_pair_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 10.515950715999999,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1301933,
+        "process_max_rss_kib": 225800,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "one_selected_and_initial_test_evaluation",
+        "wall_seconds": 11.3399398640031
+      },
+      "test_parent_cost": {
+        "attempt": "n8-qvi_signed_only-s3303",
+        "error": null,
+        "launch_through_exit_wall_seconds": 14.253048062091693,
+        "returncode": 0
+      },
+      "test_status": "evaluated",
+      "test_worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 12.667914634,
+        "process_peak_rss_bytes": 231219200,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 13.61331952700857,
+        "wrapper_error": null
+      },
+      "training_cpu_seconds": 152.30551839800032,
+      "training_status": "completed",
+      "updates": 512,
+      "worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 172.722592478,
+        "process_peak_rss_bytes": 309530624,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 173.04121672501788,
+        "wrapper_error": null
+      }
+    },
+    {
+      "attempt": "n32-qvi_signed_only-s1101",
+      "descriptive_learning_gate": true,
+      "evidence_verified": true,
+      "fit_body_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 203.823500204,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1287045,
+        "process_max_rss_kib": 355996,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "fit_body_including_setup_selection_checkpoint",
+        "wall_seconds": 204.05304452800192
+      },
+      "metrics": {
+        "accuracy": 0.884765625,
+        "brier": 0.1598774635307885,
+        "final_over_pre_late": 0.138671875,
+        "learned_over_initial": 0.359375,
+        "pre_late_accuracy": 0.74609375
+      },
+      "neurons": 32,
+      "numeric_criteria_pass": true,
+      "parent_cost": {
+        "attempt": "n32-qvi_signed_only-s1101",
+        "error": null,
+        "launch_through_exit_wall_seconds": 206.5072637660196,
+        "returncode": 0
+      },
+      "seed": 1101,
+      "selected_step": 265,
+      "test_pair_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 23.157770142,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1301934,
+        "process_max_rss_kib": 234772,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "one_selected_and_initial_test_evaluation",
+        "wall_seconds": 23.18483559798915
+      },
+      "test_parent_cost": {
+        "attempt": "n32-qvi_signed_only-s1101",
+        "error": null,
+        "launch_through_exit_wall_seconds": 25.67502441094257,
+        "returncode": 0
+      },
+      "test_status": "evaluated",
+      "test_worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 25.248778591,
+        "process_peak_rss_bytes": 240406528,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 25.259812603937462,
+        "wrapper_error": null
+      },
+      "training_cpu_seconds": 180.60115510899996,
+      "training_status": "completed",
+      "updates": 265,
+      "worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 205.688933864,
+        "process_peak_rss_bytes": 364539904,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 205.90540899708867,
+        "wrapper_error": null
+      }
+    },
+    {
+      "attempt": "n32-qvi_signed_only-s2202",
+      "descriptive_learning_gate": true,
+      "evidence_verified": true,
+      "fit_body_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 201.007393115,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1287048,
+        "process_max_rss_kib": 356528,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "fit_body_including_setup_selection_checkpoint",
+        "wall_seconds": 201.26602408790495
+      },
+      "metrics": {
+        "accuracy": 0.912109375,
+        "brier": 0.12398293480678245,
+        "final_over_pre_late": 0.15625,
+        "learned_over_initial": 0.4375,
+        "pre_late_accuracy": 0.755859375
+      },
+      "neurons": 32,
+      "numeric_criteria_pass": true,
+      "parent_cost": {
+        "attempt": "n32-qvi_signed_only-s2202",
+        "error": null,
+        "launch_through_exit_wall_seconds": 203.90157410199754,
+        "returncode": 0
+      },
+      "seed": 2202,
+      "selected_step": 128,
+      "test_pair_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 23.821551766000002,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1301943,
+        "process_max_rss_kib": 235072,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "one_selected_and_initial_test_evaluation",
+        "wall_seconds": 23.856372202048078
+      },
+      "test_parent_cost": {
+        "attempt": "n32-qvi_signed_only-s2202",
+        "error": null,
+        "launch_through_exit_wall_seconds": 26.48477749689482,
+        "returncode": 0
+      },
+      "test_status": "evaluated",
+      "test_worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 26.014169481,
+        "process_peak_rss_bytes": 240713728,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 26.02703533298336,
+        "wrapper_error": null
+      },
+      "training_cpu_seconds": 180.41711081399993,
+      "training_status": "completed",
+      "updates": 255,
+      "worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 202.926063177,
+        "process_peak_rss_bytes": 365084672,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 203.17808505496942,
+        "wrapper_error": null
+      }
+    },
+    {
+      "attempt": "n32-qvi_signed_only-s3303",
+      "descriptive_learning_gate": true,
+      "evidence_verified": true,
+      "fit_body_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 201.260941993,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1287050,
+        "process_max_rss_kib": 357044,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "fit_body_including_setup_selection_checkpoint",
+        "wall_seconds": 201.5333560310537
+      },
+      "metrics": {
+        "accuracy": 0.921875,
+        "brier": 0.1228714997537103,
+        "final_over_pre_late": 0.150390625,
+        "learned_over_initial": 0.447265625,
+        "pre_late_accuracy": 0.771484375
+      },
+      "neurons": 32,
+      "numeric_criteria_pass": true,
+      "parent_cost": {
+        "attempt": "n32-qvi_signed_only-s3303",
+        "error": null,
+        "launch_through_exit_wall_seconds": 204.0985741900513,
+        "returncode": 0
+      },
+      "seed": 3303,
+      "selected_step": 192,
+      "test_pair_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 24.417076285,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1301937,
+        "process_max_rss_kib": 234428,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "one_selected_and_initial_test_evaluation",
+        "wall_seconds": 24.446246881969273
+      },
+      "test_parent_cost": {
+        "attempt": "n32-qvi_signed_only-s3303",
+        "error": null,
+        "launch_through_exit_wall_seconds": 27.037504703970626,
+        "returncode": 0
+      },
+      "test_status": "evaluated",
+      "test_worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 26.586484299,
+        "process_peak_rss_bytes": 240054272,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 26.60242621600628,
+        "wrapper_error": null
+      },
+      "training_cpu_seconds": 180.469963648,
+      "training_status": "completed",
+      "updates": 256,
+      "worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 203.142492739,
+        "process_peak_rss_bytes": 365613056,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 203.4023793200031,
+        "wrapper_error": null
+      }
+    },
+    {
+      "attempt": "n64-qvi_signed_only-s1101",
+      "descriptive_learning_gate": true,
+      "evidence_verified": true,
+      "fit_body_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 211.268999535,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1287052,
+        "process_max_rss_kib": 455952,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "fit_body_including_setup_selection_checkpoint",
+        "wall_seconds": 211.535148582072
+      },
+      "metrics": {
+        "accuracy": 0.93359375,
+        "brier": 0.10430470349208437,
+        "final_over_pre_late": 0.173828125,
+        "learned_over_initial": 0.408203125,
+        "pre_late_accuracy": 0.759765625
+      },
+      "neurons": 64,
+      "numeric_criteria_pass": true,
+      "parent_cost": {
+        "attempt": "n64-qvi_signed_only-s1101",
+        "error": null,
+        "launch_through_exit_wall_seconds": 214.22825709194876,
+        "returncode": 0
+      },
+      "seed": 1101,
+      "selected_step": 192,
+      "test_pair_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 32.291418869000005,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1301942,
+        "process_max_rss_kib": 235040,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "one_selected_and_initial_test_evaluation",
+        "wall_seconds": 32.31919606693555
+      },
+      "test_parent_cost": {
+        "attempt": "n64-qvi_signed_only-s1101",
+        "error": null,
+        "launch_through_exit_wall_seconds": 34.85994480003137,
+        "returncode": 0
+      },
+      "test_status": "evaluated",
+      "test_worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 34.427232895,
+        "process_peak_rss_bytes": 240680960,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 34.44369463296607,
+        "wrapper_error": null
+      },
+      "training_cpu_seconds": 180.30781271200004,
+      "training_status": "completed",
+      "updates": 197,
+      "worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 213.33633888,
+        "process_peak_rss_bytes": 466894848,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 213.59956595709082,
+        "wrapper_error": null
+      }
+    },
+    {
+      "attempt": "n64-qvi_signed_only-s2202",
+      "descriptive_learning_gate": true,
+      "evidence_verified": true,
+      "fit_body_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 212.413138846,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1287053,
+        "process_max_rss_kib": 455196,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "fit_body_including_setup_selection_checkpoint",
+        "wall_seconds": 212.66623343608808
+      },
+      "metrics": {
+        "accuracy": 0.912109375,
+        "brier": 0.13615185380527012,
+        "final_over_pre_late": 0.1484375,
+        "learned_over_initial": 0.4375,
+        "pre_late_accuracy": 0.763671875
+      },
+      "neurons": 64,
+      "numeric_criteria_pass": true,
+      "parent_cost": {
+        "attempt": "n64-qvi_signed_only-s2202",
+        "error": null,
+        "launch_through_exit_wall_seconds": 215.27983470389154,
+        "returncode": 0
+      },
+      "seed": 2202,
+      "selected_step": 192,
+      "test_pair_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 33.621304177999995,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1301940,
+        "process_max_rss_kib": 234912,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "one_selected_and_initial_test_evaluation",
+        "wall_seconds": 33.657258123974316
+      },
+      "test_parent_cost": {
+        "attempt": "n64-qvi_signed_only-s2202",
+        "error": null,
+        "launch_through_exit_wall_seconds": 36.062780800042674,
+        "returncode": 0
+      },
+      "test_status": "evaluated",
+      "test_worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 35.692649527,
+        "process_peak_rss_bytes": 240549888,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 35.720329347997904,
+        "wrapper_error": null
+      },
+      "training_cpu_seconds": 180.56651937400008,
+      "training_status": "completed",
+      "updates": 194,
+      "worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 214.324100639,
+        "process_peak_rss_bytes": 466120704,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 214.5671591788996,
+        "wrapper_error": null
+      }
+    },
+    {
+      "attempt": "n64-qvi_signed_only-s3303",
+      "descriptive_learning_gate": true,
+      "evidence_verified": true,
+      "fit_body_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 211.832580676,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1287054,
+        "process_max_rss_kib": 455848,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "fit_body_including_setup_selection_checkpoint",
+        "wall_seconds": 212.060306002968
+      },
+      "metrics": {
+        "accuracy": 0.90625,
+        "brier": 0.13862262473767992,
+        "final_over_pre_late": 0.15234375,
+        "learned_over_initial": 0.380859375,
+        "pre_late_accuracy": 0.75390625
+      },
+      "neurons": 64,
+      "numeric_criteria_pass": true,
+      "parent_cost": {
+        "attempt": "n64-qvi_signed_only-s3303",
+        "error": null,
+        "launch_through_exit_wall_seconds": 214.57599328097422,
+        "returncode": 0
+      },
+      "seed": 3303,
+      "selected_step": 128,
+      "test_pair_cost": {
+        "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+        "complete_worker_cost": false,
+        "cpu_seconds": 32.066274629,
+        "energy_joules_process": null,
+        "energy_multiple_wraps_resolved": false,
+        "energy_scope": "no readable hardware energy counter",
+        "package_energy_joules": null,
+        "pid": 1301941,
+        "process_max_rss_kib": 234716,
+        "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+        "scope": "one_selected_and_initial_test_evaluation",
+        "wall_seconds": 32.095017074025236
+      },
+      "test_parent_cost": {
+        "attempt": "n64-qvi_signed_only-s3303",
+        "error": null,
+        "launch_through_exit_wall_seconds": 34.65821980196051,
+        "returncode": 0
+      },
+      "test_status": "evaluated",
+      "test_worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 34.250339032,
+        "process_peak_rss_bytes": 240349184,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 34.276038374053314,
+        "wrapper_error": null
+      },
+      "training_cpu_seconds": 180.26807328599983,
+      "training_status": "completed",
+      "updates": 196,
+      "worker_cost": {
+        "energy_joules": null,
+        "process_cpu_through_report_seconds": 213.698323054,
+        "process_peak_rss_bytes": 466788352,
+        "scope": "Fresh process through report; shutdown excluded.",
+        "status": "completed",
+        "wall_including_import_seconds": 213.91332726494875,
+        "wrapper_error": null
+      }
+    }
+  ],
+  "cost_note": "Training intervals are included in fit-body and worker CPU; test pairs are included in test-worker CPU. Do not add nested ledgers. Energy unknown.",
+  "execution": {
+    "campaign": {
+      "driver_cpu_through_report_seconds": 4.759715621,
+      "energy_joules": null,
+      "error": null,
+      "protocol_sha256": "15bd7fd1fc7fceca9940bb0d60ba8dc1b32132d64e19ebffc22d66a61dde38dc",
+      "source_hashes": {
+        "__init__.py": "da2afdb4fbc480d7867cd8cbf56509e7eac69f6347c632843417596f1512b4de",
+        "model.py": "ab951f34991d9eded0a4148d4f0931fe5d0e3331ff92e3d3558bb0c2ef114dac",
+        "run.py": "10223e6167a3e51ac28da28224bd5acde10c6be190c26ce8cc766f4caed708a2",
+        "tests.py": "bfe407c9eee513d40d86d28acd2612af0247ffa80b84ec3c4480ff5601dddee4"
+      },
+      "status": "completed",
+      "wall_including_import_seconds": 253.6041471050121
+    },
+    "fit": {
+      "all_child_cpu_seconds_including_shutdown": 1771.546492,
+      "attempts": [
+        {
+          "attempt": "n8-qvi_signed_only-s1101",
+          "error": null,
+          "launch_through_exit_wall_seconds": 169.21062243694905,
+          "returncode": 0
+        },
+        {
+          "attempt": "n8-qvi_signed_only-s2202",
+          "error": null,
+          "launch_through_exit_wall_seconds": 173.72362196806353,
+          "returncode": 0
+        },
+        {
+          "attempt": "n8-qvi_signed_only-s3303",
+          "error": null,
+          "launch_through_exit_wall_seconds": 174.32422271301039,
+          "returncode": 0
+        },
+        {
+          "attempt": "n32-qvi_signed_only-s1101",
+          "error": null,
+          "launch_through_exit_wall_seconds": 206.5072637660196,
+          "returncode": 0
+        },
+        {
+          "attempt": "n32-qvi_signed_only-s2202",
+          "error": null,
+          "launch_through_exit_wall_seconds": 203.90157410199754,
+          "returncode": 0
+        },
+        {
+          "attempt": "n32-qvi_signed_only-s3303",
+          "error": null,
+          "launch_through_exit_wall_seconds": 204.0985741900513,
+          "returncode": 0
+        },
+        {
+          "attempt": "n64-qvi_signed_only-s1101",
+          "error": null,
+          "launch_through_exit_wall_seconds": 214.22825709194876,
+          "returncode": 0
+        },
+        {
+          "attempt": "n64-qvi_signed_only-s2202",
+          "error": null,
+          "launch_through_exit_wall_seconds": 215.27983470389154,
+          "returncode": 0
+        },
+        {
+          "attempt": "n64-qvi_signed_only-s3303",
+          "error": null,
+          "launch_through_exit_wall_seconds": 214.57599328097422,
+          "returncode": 0
+        }
+      ],
+      "driver_cpu_through_report_seconds": 3.945673327,
+      "energy_joules": null,
+      "stage": "fit-worker",
+      "wall_seconds": 215.30453601293266,
+      "workers": 9
+    },
+    "test": {
+      "all_child_cpu_seconds_including_shutdown": 222.88571599999995,
+      "attempts": [
+        {
+          "attempt": "n8-qvi_signed_only-s1101",
+          "error": null,
+          "launch_through_exit_wall_seconds": 14.151154418941587,
+          "returncode": 0
+        },
+        {
+          "attempt": "n8-qvi_signed_only-s2202",
+          "error": null,
+          "launch_through_exit_wall_seconds": 14.205405520042405,
+          "returncode": 0
+        },
+        {
+          "attempt": "n8-qvi_signed_only-s3303",
+          "error": null,
+          "launch_through_exit_wall_seconds": 14.253048062091693,
+          "returncode": 0
+        },
+        {
+          "attempt": "n32-qvi_signed_only-s1101",
+          "error": null,
+          "launch_through_exit_wall_seconds": 25.67502441094257,
+          "returncode": 0
+        },
+        {
+          "attempt": "n32-qvi_signed_only-s2202",
+          "error": null,
+          "launch_through_exit_wall_seconds": 26.48477749689482,
+          "returncode": 0
+        },
+        {
+          "attempt": "n32-qvi_signed_only-s3303",
+          "error": null,
+          "launch_through_exit_wall_seconds": 27.037504703970626,
+          "returncode": 0
+        },
+        {
+          "attempt": "n64-qvi_signed_only-s1101",
+          "error": null,
+          "launch_through_exit_wall_seconds": 34.85994480003137,
+          "returncode": 0
+        },
+        {
+          "attempt": "n64-qvi_signed_only-s2202",
+          "error": null,
+          "launch_through_exit_wall_seconds": 36.062780800042674,
+          "returncode": 0
+        },
+        {
+          "attempt": "n64-qvi_signed_only-s3303",
+          "error": null,
+          "launch_through_exit_wall_seconds": 34.65821980196051,
+          "returncode": 0
+        }
+      ],
+      "driver_cpu_through_report_seconds": 4.751457771,
+      "energy_joules": null,
+      "stage": "test-worker",
+      "wall_seconds": 36.071472404990345,
+      "workers": 9
+    }
+  },
+  "experiment_id": "HCSN-SIGNED-ONLY-POSTRESULTS-20261124-v1",
+  "groups": [
+    {
+      "all_evidence_verified": true,
+      "evaluated": 3,
+      "expected": 3,
+      "group_pass": true,
+      "group_status": "PASS",
+      "metrics": {
+        "accuracy": {
+          "max": 0.919921875,
+          "mean": 0.9127604166666666,
+          "min": 0.90234375,
+          "n": 3,
+          "sample_std": 0.009230108645024626
+        },
+        "brier": {
+          "max": 0.13526689343222648,
+          "mean": 0.12562794153989987,
+          "min": 0.11811114231282946,
+          "n": 3,
+          "sample_std": 0.008772547980413872
+        },
+        "final_over_pre_late": {
+          "max": 0.162109375,
+          "mean": 0.154296875,
+          "min": 0.140625,
+          "n": 3,
+          "sample_std": 0.01188039556698871
+        },
+        "learned_over_initial": {
+          "max": 0.4453125,
+          "mean": 0.4212239583333333,
+          "min": 0.390625,
+          "n": 3,
+          "sample_std": 0.027918986513530687
+        },
+        "pre_late_accuracy": {
+          "max": 0.76171875,
+          "mean": 0.7584635416666666,
+          "min": 0.75390625,
+          "n": 3,
+          "sample_std": 0.00406575390520729
+        }
+      },
+      "neurons": 8,
+      "passing_seeds": 3,
+      "selected_step_zero": 0,
+      "training_cpu_seconds": 452.41219125900045,
+      "updates": {
+        "max": 512,
+        "mean": 512,
+        "min": 512,
+        "n": 3,
+        "sample_std": 0.0
+      }
+    },
+    {
+      "all_evidence_verified": true,
+      "evaluated": 3,
+      "expected": 3,
+      "group_pass": true,
+      "group_status": "PASS",
+      "metrics": {
+        "accuracy": {
+          "max": 0.921875,
+          "mean": 0.90625,
+          "min": 0.884765625,
+          "n": 3,
+          "sample_std": 0.019236050394133015
+        },
+        "brier": {
+          "max": 0.1598774635307885,
+          "mean": 0.13557729936376042,
+          "min": 0.1228714997537103,
+          "n": 3,
+          "sample_std": 0.021051895541202126
+        },
+        "final_over_pre_late": {
+          "max": 0.15625,
+          "mean": 0.1484375,
+          "min": 0.138671875,
+          "n": 3,
+          "sample_std": 0.008950343154210625
+        },
+        "learned_over_initial": {
+          "max": 0.447265625,
+          "mean": 0.4147135416666667,
+          "min": 0.359375,
+          "n": 3,
+          "sample_std": 0.0481726842023071
+        },
+        "pre_late_accuracy": {
+          "max": 0.771484375,
+          "mean": 0.7578125,
+          "min": 0.74609375,
+          "n": 3,
+          "sample_std": 0.012807497117777344
+        }
+      },
+      "neurons": 32,
+      "passing_seeds": 3,
+      "selected_step_zero": 0,
+      "training_cpu_seconds": 541.4882295709999,
+      "updates": {
+        "max": 265,
+        "mean": 258.6666666666667,
+        "min": 255,
+        "n": 3,
+        "sample_std": 5.507570547286102
+      }
+    },
+    {
+      "all_evidence_verified": true,
+      "evaluated": 3,
+      "expected": 3,
+      "group_pass": true,
+      "group_status": "PASS",
+      "metrics": {
+        "accuracy": {
+          "max": 0.93359375,
+          "mean": 0.9173177083333334,
+          "min": 0.90625,
+          "n": 3,
+          "sample_std": 0.014396708585609362
+        },
+        "brier": {
+          "max": 0.13862262473767992,
+          "mean": 0.12635972734501147,
+          "min": 0.10430470349208437,
+          "n": 3,
+          "sample_std": 0.01914012108412582
+        },
+        "final_over_pre_late": {
+          "max": 0.173828125,
+          "mean": 0.158203125,
+          "min": 0.1484375,
+          "n": 3,
+          "sample_std": 0.013671875
+        },
+        "learned_over_initial": {
+          "max": 0.4375,
+          "mean": 0.4088541666666667,
+          "min": 0.380859375,
+          "n": 3,
+          "sample_std": 0.02832592437214465
+        },
+        "pre_late_accuracy": {
+          "max": 0.763671875,
+          "mean": 0.7591145833333334,
+          "min": 0.75390625,
+          "n": 3,
+          "sample_std": 0.004915256793796061
+        }
+      },
+      "neurons": 64,
+      "passing_seeds": 3,
+      "selected_step_zero": 0,
+      "training_cpu_seconds": 541.142405372,
+      "updates": {
+        "max": 197,
+        "mean": 195.66666666666666,
+        "min": 194,
+        "n": 3,
+        "sample_std": 1.5275252316519468
+      }
+    }
+  ],
+  "independent_verification_sha256": "dc872c998c7dcdfdac7ecb95de1121994776bfdd706222322b7f29191edbc41b",
+  "main_protocol_sha256": "c259030b227f25bc72ccbab12402fbe62747df845c9dce965e795b85b1af176d",
+  "max_scalar_error": 2.220446049250313e-16,
+  "paired_comparisons": [
+    {
+      "accuracy_difference": {
+        "max": 0.0078125,
+        "mean": -0.00390625,
+        "min": -0.01953125,
+        "n": 3,
+        "sample_std": 0.014084184669781208
+      },
+      "brier_difference": {
+        "max": 0.015376809028079197,
+        "mean": 0.0007701137142784864,
+        "min": -0.010154153048512499,
+        "n": 3,
+        "sample_std": 0.013157800582318442
+      },
+      "coverage": 3,
+      "direction": "signed_only minus main reference",
+      "inference": "descriptive after main results; no p-value or fresh-holdout claim",
+      "neurons": 8,
+      "reference": "qvi_flow"
+    },
+    {
+      "accuracy_difference": {
+        "max": 0.0234375,
+        "mean": 0.012369791666666666,
+        "min": 0.005859375,
+        "n": 3,
+        "sample_std": 0.00963453684046142
+      },
+      "brier_difference": {
+        "max": -0.010228502412235801,
+        "mean": -0.023534538107418384,
+        "min": -0.04436827737222637,
+        "n": 3,
+        "sample_std": 0.01827240540689192
+      },
+      "coverage": 3,
+      "direction": "signed_only minus main reference",
+      "inference": "descriptive after main results; no p-value or fresh-holdout claim",
+      "neurons": 8,
+      "reference": "qvi_full"
+    },
+    {
+      "accuracy_difference": {
+        "max": 0.359375,
+        "mean": 0.234375,
+        "min": 0.099609375,
+        "n": 3,
+        "sample_std": 0.1301578678245792
+      },
+      "brier_difference": {
+        "max": -0.15801381540145876,
+        "mean": -0.2734693326073077,
+        "min": -0.37628379045238847,
+        "n": 3,
+        "sample_std": 0.10968269138066052
+      },
+      "coverage": 3,
+      "direction": "signed_only minus main reference",
+      "inference": "descriptive after main results; no p-value or fresh-holdout claim",
+      "neurons": 32,
+      "reference": "qvi_flow"
+    },
+    {
+      "accuracy_difference": {
+        "max": 0.38671875,
+        "mean": 0.2975260416666667,
+        "min": 0.146484375,
+        "n": 3,
+        "sample_std": 0.1315184738662176
+      },
+      "brier_difference": {
+        "max": -0.2249621274168822,
+        "mean": -0.31001091370262623,
+        "min": -0.3742314040126795,
+        "n": 3,
+        "sample_std": 0.07678341402149551
+      },
+      "coverage": 3,
+      "direction": "signed_only minus main reference",
+      "inference": "descriptive after main results; no p-value or fresh-holdout claim",
+      "neurons": 32,
+      "reference": "qvi_full"
+    },
+    {
+      "accuracy_difference": {
+        "max": 0.4375,
+        "mean": 0.3626302083333333,
+        "min": 0.26953125,
+        "n": 3,
+        "sample_std": 0.08545526392306947
+      },
+      "brier_difference": {
+        "max": -0.3640465574782326,
+        "mean": -0.36440901483771576,
+        "min": -0.3648996822325491,
+        "n": 3,
+        "sample_std": 0.00044077638489403405
+      },
+      "coverage": 3,
+      "direction": "signed_only minus main reference",
+      "inference": "descriptive after main results; no p-value or fresh-holdout claim",
+      "neurons": 64,
+      "reference": "qvi_flow"
+    },
+    {
+      "accuracy_difference": {
+        "max": 0.408203125,
+        "mean": 0.3919270833333333,
+        "min": 0.380859375,
+        "n": 3,
+        "sample_std": 0.014396708585609362
+      },
+      "brier_difference": {
+        "max": -0.3629522141762229,
+        "mean": -0.38041308254059236,
+        "min": -0.41236605431890244,
+        "n": 3,
+        "sample_std": 0.027711869215768084
+      },
+      "coverage": 3,
+      "direction": "signed_only minus main reference",
+      "inference": "descriptive after main results; no p-value or fresh-holdout claim",
+      "neurons": 64,
+      "reference": "qvi_full"
+    }
+  ],
+  "protocol_sha256": "15bd7fd1fc7fceca9940bb0d60ba8dc1b32132d64e19ebffc22d66a61dde38dc",
+  "schema": 1,
+  "scope": "Exact signed-message-only control added after the main 72 results became public; no confirmatory or untouched-holdout claim.",
+  "source_hashes": {
+    "__init__.py": "da2afdb4fbc480d7867cd8cbf56509e7eac69f6347c632843417596f1512b4de",
+    "model.py": "ab951f34991d9eded0a4148d4f0931fe5d0e3331ff92e3d3558bb0c2ef114dac",
+    "run.py": "10223e6167a3e51ac28da28224bd5acde10c6be190c26ce8cc766f4caed708a2",
+    "tests.py": "bfe407c9eee513d40d86d28acd2612af0247ffa80b84ec3c4480ff5601dddee4"
+  },
+  "test_policy": "Reuse the now-public main test family for descriptive comparison, explicitly departing from the main new-holdout policy. Seal all 9 terminal training records before constructing test data. No test-driven reselection, retries, or tuning."
+}

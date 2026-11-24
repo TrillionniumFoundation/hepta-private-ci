@@ -2,7 +2,9 @@
 
 本目录研究 **8、32、64 个独立物理群体**如何经连续边界/事件通量组成可训练网络，以及同一冻结表示上的五种 readout 适配方法。它接续上游 `hcsn_adaptive`、`hcsn_network` 的有限群体研究，不重跑原 PenDigits、169 配置、N256 或 HPCA 的封存实验。
 
-**正式配置已确定，本文尚未填入正式训练或适配结果。** 使用原始特征 `feature_normalization=none`，N=8/32 采用 dense，N=64 采用 uniformized，每个 fit 最多512次更新、180优化 CPU 秒；不再以前测选优。源文件、参数、运行环境和选模证据均须绑定到冻结 manifest，不能把可编辑的 `protocol.json` 当成已完成实验。
+当前实现的准确名称是 **QVI boundary-controlled population flow + value/risk operators**。value/risk 是同一生成元上的读出特征，尚未直接作为两项恢复/恐慌力反馈到 drift；不能声称已经逐字实现原 Core Idea 的 Call/Put 双力动力学方程。
+
+**本轮已完成主72训练槽、独立signed-only补充9槽和45个适配视图评测，结果与验证范围见 [RESULTS_ZH.md](RESULTS_ZH.md)。** 使用原始特征 `feature_normalization=none`，N=8/32 采用 dense，N=64 采用 uniformized，每个 fit 最多512次更新、180优化 CPU 秒；未以前测继续选优。主协议见 `evidence/PROTOCOL_FROZEN.json`；补充在主结果公开后独立登记，仅作描述性比较，不并入原72槽。
 
 ## 1. N 的含义、拓扑与完整状态
 
@@ -18,7 +20,7 @@
 | 消息 | `[B,3,N]`：边界、区间 event count/dt、signed event mass/dt |
 | readout | 只读 receiver 的五个特征，总维度 `5*N/2`，输出二分类 logits |
 
-每个群体各自守恒为 1；消息不是把一个群体的概率复制给另一个群体。所有耦合都读 **OLD message**，本拍的 sender 输入至少下一拍才影响 receiver。屏蔽的 recurrent 参数槽仍存在，不能把参数张量总数自动当成有效自由参数数。
+每个群体各自守恒为 1；消息不是把一个群体的概率复制给另一个群体。所有耦合都读 **OLD message**，本拍的 sender 输入至少下一拍才影响 receiver。`parameter_count` 包含冻结的 `raw_boundary`；learned mode 比 fixed/qvi 多 N 个trainable，消息mask改变有效连接，boundary-only还阻断sender mark通路。value/risk/tanh组只匹配名义参数槽与声明维度；单通道消融把部分readout列置零，不是严格等有效容量。qvi_tanh仍运行同一population流，只替换两个特征，不能当独立传统RNN基线。
 
 `PopulationState` 保存 density、boundary、drift、cost、message、绝对 step 和配置。配置、形状、dtype/device、控制域及概率/mark 界限在续算前检查。forward 状态不保存过去的 autograd tape；恢复训练还需要模型、优化器、RNG、数据游标和源身份。
 
@@ -66,7 +68,7 @@ F(b) = p(b) + A + K - eta*(p(a) + A*exp(-k*(a-b))) = 0
 
 edge-crossing 已触发的群体在 risk 中只计一次；实现检查 `0<=risk<=min(1,event_count)`。risk 不是重复事件数、当前 active probability 或 hazard。value 可为负，不等于原 He–Xiong equity call；risk 也不是原金融 put 价格。
 
-`fixed/learned/qvi`、三种消息选择、tanh/value-only/risk-only 特征在协议中分列。替换或屏蔽 value/risk 的 arm 仍支付实际核计算费用，不能把这种功能消融计作免去求解的内核加速。
+`fixed/learned/qvi`、三种消息选择、tanh/value-only/risk-only 特征在协议中分列。原 `qvi_flow` 是**无边界的 event+signed flow**，mask 为 `(0,1,1)`，并非 signed-only；补充对照见第10节。替换或屏蔽 value/risk 的 arm 仍支付实际核计算费用，不能把这种功能消融计作免去求解的内核加速。
 
 ## 4. 分段可微性与实际修复
 
@@ -81,13 +83,24 @@ unit ramp 在精确 0/1 处取左右斜率平均 0.5。这是广义导数选择�
 
 ## 5. 精度、归一化与内核费用
 
-`float64` 的参数和物理状态均为 FP64；`mixed` 的可训练层/输出为 FP32，网格、概率、phase、QVI 与线性代数仍为 FP64；`native32` 才是原生 FP32。mixed 通过不能写成 native32 通过。原生 FP32 仍须保留已观察到的长期守恒失败，不能靠概率重归一化或放宽门槛改成成功。
+`float64` 的参数和物理状态均为 FP64；`mixed` 的可训练层/输出为 FP32，网格、概率、phase、QVI 与线性代数仍为 FP64；`native32` 才是原生 FP32。mixed 通过不能写成 native32 通过。**原生 FP32 的失败必须限定为已测 dense 路径；追加 uniformized 诊断通过了下列长时守恒检查。** 正式训练仍使用冻结的 mixed 策略。
+
+| 精度/内核 | N与law日程 | forward结果 | 最大质量误差 |
+| --- | --- | --- | --- |
+| mixed / dense | N8，fixed与slow=2 | 两者512步完成 | 两者最大 `9.712e-13` |
+| mixed / uniformized | N8，fixed与slow=2 | 两者512步完成 | 两者最大 `1.482e-13` |
+| native32 / dense | N8，fixed | 第103步失败，之前完成102步 | 失败步 `3.016e-5` |
+| native32 / dense | N8，slow=2 | 第356步失败，之前完成355步 | 失败步 `3.004e-5` |
+| native32 / uniformized | N8，fixed | 512步完成 | `4.530e-6` |
+| native32 / uniformized | N8，slow=2 | 512步完成 | `2.021e-5` |
+| native32 / uniformized | N32，slow=2 | 512步完成 | `1.919e-5` |
+| native32 / uniformized | N64，slow=2 | 512步完成 | `2.414e-5` |
+
+上述长时诊断为 batch 1、关闭梯度的单轨迹，native32 保持原 `3e-5` 门槛且无概率重归一化。另在 N8/32/64、T=6、batch 4 上对照 FP64 dense：拼接全部可训练参数的单标量 loss VJP 相对 L2 最大为 `7.5201e-7`，输入为 `9.1118e-7`；逐参数张量最大相对 L2 为 `1.8650e-6`，不能把拼接值当作每个参数的上界。无缺失梯度，但不是完整 Jacobian、512步BPTT或正式 native32 训练资格。证据见 `evidence/audit/benchmark_v04.json` 与 `evidence/audit/native32_uniformized.json`；追加诊断 case 不增加单测数量。
 
 dense 路径每步计算带累计量的传播、killed first-event 传播和 continuation 线性求解。uniformized 路径用 Poisson 截断替代指数动作，但当前是 **dense batched action**，不是上游 banded kernel；生成元构造和 value solve 仍存在。
 
-设 S 为每群体状态数：动态状态约为 O(BNS)，recurrent coupling 为 O(BN²)，dense 线性代数约为 O(BNS³)；uniformized action 的有限和仍有阶数和矩阵乘法费用。BPTT tape 随序列长度增长，不能用固定 streaming tensor bytes 代替训练内存。
-
-Poisson tail bound 只约束精确算术中的截断，不涵盖 roundoff、长时累积或梯度误差。benchmark 比较一个声明组合 loss 对全部可训练参数和输入的 VJP，不能称作完整 Jacobian。512-step forward profile 也不是 512-step BPTT 训练证明。
+设 S 为每群体状态数：动态状态约为 O(BNS)，recurrent coupling 为 O(BN²)，dense 线性代数约为 O(BNS³)；uniformized action 的有限和仍有阶数和矩阵乘法费用。BPTT tape 随序列长度增长，不能用固定 streaming tensor bytes 代替训练内存。Poisson tail bound 只约束精确算术中的截断，不涵盖 roundoff、长时累积或梯度误差；VJP和512-step forward分别不等于完整Jacobian或512-step BPTT证明。
 
 保留的 `feature_normalization=population` 选项对**同一样本、同一时刻、每个特征通道的 receiver 组**去均值并除以 `sqrt(mean(square)+1e-12)`；不混合 batch，不改物理状态或守恒质量。它会丢去组内公共分量，小方差可能放大数值误差。population 的64更新 smoke 与 raw 的128更新 smoke 均停留在多数类水平；更新预算不同，这只是阴性前测，不是两者等效或归一化无效的证明。正式比较使用 `none`，保留该选项和前测原件，不据此改变默认。
 
@@ -95,7 +108,7 @@ Poisson tail bound 只约束精确算术中的截断，不涵盖 roundoff、长�
 
 任务标签为独立均匀 A、B 的 `sign(A+B)`。A 在 t=0 给出，B 在后续一步脉冲中给出；输入另含各自 arrival 标记、时间坐标及相关噪声。原始输入不含标签或未来 B。已知 A、尚未知 B 的理想 Bayes accuracy 为 3/4，看到 A+B 后为 1；这只是任务构造的性质，不是网络结果。
 
-train/dev/test、adapt-train/dev/test 使用不同生成 source ID。source 改变正增益、噪声和 cue 时刻；适配域有更强噪声及较晚 cue。这些是**模拟参数组**，不是独立真实人体或传感器数据。各方法共享同一固定数据字节、初始 margin 与目标约定。
+train/dev/test、adapt-train/dev/test 使用不同生成 source ID。source 改变正增益、噪声和 cue 时刻；适配域有更强噪声及较晚 cue。这些是**模拟参数组**，不是独立真实人体或传感器数据。网络训练各arm共享固定数据字节、初始 margin 与目标约定；编辑阶段的标签访问权限另行区分。
 
 两项限制必须保留：
 
@@ -108,7 +121,7 @@ train/dev/test、adapt-train/dev/test 使用不同生成 source ID。source 改�
 
 第一阶段训练整个小网络：3 个 N × 8 个 arm × 3 个初始化，共72个正式槽位。每 fit 上限为180优化 CPU 秒、最多512次 Adam 更新；实际完成数、原子操作越界、开发选择、失败和全 worker 费用分别保留。最大资源与最终参数以冻结 manifest 为准，不假设已充分收敛或参数/FLOPs完全匹配。N8/32 的 dense 与 N64 的 uniformized 是预声明成本选择；跨 N 时间差同时包含宽度与 backend 的影响，不能单独归因于规模。
 
-第二阶段只适配9个 `qvi_full` selected parent 的同一 readout。五臂均用同一冻结表示、同一 signed one-hot 目标和参数 mask `readout.weight/readout.bias`：
+第二阶段只适配9个 `qvi_full` selected parent 的 readout。五臂共享父状态、编辑 mask 和最终评价样本；**只有 BP/ANALYTIC/HYBRID 共享监督标签与 signed one-hot 目标**。KEEP 不优化，STRICT_WSP proposal 禁止标签拟合与梯度，因此五臂是包含不同可用信息的能力边界对照，不能称为完全同信息的性能竞赛。编辑 mask 为 `readout.weight/readout.bias`：
 
 | 方法 | 定义 |
 | --- | --- |
@@ -135,9 +148,26 @@ export HCSN_RUN_ROOT=/absolute/new/hcsn-run
 mkdir -p "$HCSN_RUN_ROOT"
 python -m unittest qualification.hcsn_smallnet_20261124.kernel_tests qualification.hcsn_smallnet_20261124.data_tests qualification.hcsn_smallnet_20261124.editing_tests qualification.hcsn_smallnet_20261124.protocol_tests qualification.hcsn_smallnet_20261124.adaptation_tests
 python -m qualification.hcsn_smallnet_20261124.benchmark --output "$HCSN_RUN_ROOT/numerical.json"
+python -m qualification.hcsn_smallnet_20261124.native32_uniformized_diagnostic --output "$HCSN_RUN_ROOT/native32-uniformized.json" --seed 4107 --budget-seconds 105
 ```
 
 benchmark 写出诊断并退出，不等于每个 native32/长时 case 都合格；逐项查看失败、censor、finite、梯度覆盖与误差。protocol tests 仅使用明确标记的 smoke 数据替身，不开正式 holdout。
+
+独立的固定 law 推理缓存实验与分析测试：
+
+```bash
+python -m unittest qualification.hcsn_smallnet_20261124.fixed_law_tests
+python -m qualification.hcsn_smallnet_20261124.fixed_law_benchmark --output "$HCSN_RUN_ROOT/fixed-law.json" --steps 64 --batch 4 --repeats 3 --seed 5117 --budget-seconds 90
+python -m unittest qualification.hcsn_smallnet_20261124.analysis_results_tests
+```
+
+`FixedLawHCSN` 只覆盖 `_flow`，强制 `no_grad`/inference mode、dense backend 和 `slow_every>=10^9`；本次序列仅在 step 0 更新 law。它缓存 augmented action、first-hit probability 和 continuation value，按 generator/event/boundary/cost 的值、形状、dtype/device 与完整 config 核验；改变 law 必须显式清缓存。完整输入写入、状态和旧消息仍逐拍推进，计时也包含这些步骤和 cache-key 检查。
+
+基准使用 CPU 单线程、FP64/mixed、64 ticks、batch 4、单个随机初始化和每项3次计时。warm 比值是该次完整 forward 的中位数比；cold 构造另列，plan tensor bytes 不是进程内存峰值。执行顺序固定，不能由此宣称总体速度优势；该缓存未验证原生 FP32/AMP、动态 law 或 BP 加速，也不能外推到正式 N64 uniformized 路径。实现和回执独立于冻结训练依赖闭包，未改变 `model.py`。
+
+测试按环境去重计数：原有37项加固定 law 3项，共 **40项 Torch runtime 测试**；另有 **4项本地 stdlib 分析测试**，合计44项不同测试，不能写成44项全在 Torch runtime 执行。分析测试使用人工可核算回执，覆盖门槛、失败分母和封存/预测完整性，不构造正式 holdout。执行证据见源胶囊 `evidence/audit/kernel_normalized_and_benchmark.json`、`evidence/audit/smoke_population_execution.json`、`evidence/audit/formal_freeze_execution.json` 与 `evidence/audit/fixed_law_job.json`。
+
+仓库级 `just fmt` 已尝试，但独立 checkout 的 clone 超时后仍无 `codex-rs` 工作目录，格式化命令未实际执行；不能记录为通过。本次未改 Rust。证据为 `evidence/audit/rust_formatter_unavailable_execution.json`，clone 原因见 `evidence/audit/git_clone_timeout_execution.json` 与 `evidence/audit/git_https_timeout_execution.json`；工具可用不等于仓库格式化已经完成。
 
 按已确定配置冻结源码后：
 
@@ -171,6 +201,10 @@ done
 
 test 前共同预检完整 roster、参数/源/协议身份、checkpoint/hash、选模历史及适配的非head保护域，然后创建一次性 claim。初始化/训练失败有原件；失败 parent 不能伪装成可适配的成功模型。test 后不得用结果改源码、重选参数或替换已选 checkpoint。
 
+**本轮测试调度发生过运行超时。** 原 finalizer（job `1a20dbaee10-ffbe-398e`）达到1800秒预算，以124退出；九个适配最终评测与训练63/72槽已完成，剩余9槽，不能称原十个工作单元一次全部成功。含等待实测wall为1811.716秒，原systemd总CPU因临时unit账本已不可用而未知，不能从wall推算；依据为 `evidence/audit/final_stage_timeout.json`。上文命令用于全新实验，不能用删除旧 claim 或重跑已完成槽位的方式恢复。
+
+独立续测预检全部训练及适配封存，使用单独 `RESUME_CLAIM`，保持相同冻结模型、数据、评价函数与阈值。9个新worker均以0退出，原63个完整 result/prediction 对字节不变，最终72槽完整；本次partial清单为空，无需转移文件。`evidence/FINAL_STAGE_RECEIPT.json` 与 `evidence/training/RESUME_RECEIPT.json` 保留原124退出和续测0退出、旧claim、SHA及费用；原总CPU未知，不把相互包含的费用重复相加。
+
 无标签迁移控制使用函数 API，例如对已选 parent 和独立人工 probe：
 
 ```bash
@@ -198,7 +232,19 @@ PY
 
 ## 9. 如何读取迭代结果
 
+完整结果见 [RESULTS_ZH.md](RESULTS_ZH.md)，逐组训练结果见 `evidence/summary/RESULTS_TRAINING.md`。检查点、预测与日志按 `evidence/archives/ARCHIVE_INDEX.json` 和 `evidence/archives/GIT_PUBLICATION_MANIFEST.json` 定位；历史smoke与source snapshots保留在 `evidence/preflight-evidence.tar.gz`。非冻结后处理helper为解释恢复成本修订，旧/新版均留存，短暂路径替换已恢复，输出只移动而未重算；详见 `evidence/POSTPROCESS_REVISION_RECEIPT.json`，14个训练模块未改。
+
 训练目录保留 started/history、initial/selected/last model、优化器与 RNG、result、worker 成本及日志；最终预测原件包含 selected/initial 全 prefix logits。适配保留公共特征、全部候选记录、KEEP/ABSTAIN、独立源冻结、父权重身份和全局 seal。body、import-inclusive worker、launch-to-exit、共享费用与能耗可用性是不同口径。
 
-正式结论须同时检查数值/梯度域、信息是否真实到达、学习是否超过初始/早期基线、独立来源表现和实际费用；缺一项就保留相应限制。如果72槽实验未通过预声明学习门槛，不能声称该网络已经具备有效学习能力或规模优势；仍可报告所测域内的数值、费用与方法比较，但解析 readout 成功不替整网补过关。当前没有全模态大模型、Transformer/SNN 主干替换、GPU吞吐、能耗或整网免 BP 的通过声明。源码或调参改变需要新的实验身份与 holdout family；旧失败和原件保持不变。
+主72/72训练评测及45/45适配评测均有独立NumPy指标重算，最大差均为 `2.22e-16`。主24组仅N8的七组通过学习门；N8 `qvi_full` 为90.04±1.88%，低于learned/fixed/tanh的观测均数，未证解析特有优势。主N32/N64各组失败，但下节signed-only补充三个宽度均达到沿用门槛；不能归因宽度本身。纯signed仍含QVI和value/risk，主full-message消融不能替代其内部比较。下一轮须在signed-only合同内匹配fixed/learned/QVI与tanh/value/risk，再用未见source family复验；本轮未追加这些实验。当前没有全模态大模型、Transformer/SNN主干优势、GPU/能耗或整网免BP证据；补充不作新holdout声明。
+
+## 10. Signed-only 事后补充对照
+
+核对原需求后，另建 `../hcsn_signed_control_20261124/`，原72槽、14个冻结训练模块和82份档案均不改。补充只在原 flow 配置上将持久 buffer `synaptic_mask[:,N:2*N]` 置零，跨神经元只剩 signed 通量；局部概率、value/risk 和 receiver readout 保留。三项独立 runtime 测试已检查初始化仅 mask 不同、原 Core 重载等价、boundary/unsigned 扰动无效而 signed 有效；不改原44项测试的统计范围。
+
+新增 N8/32/64×3 seeds 共9槽，复用原数据、mixed、每宽度backend、180优化CPU秒/512更新和dev选择。协议绑定补充源码及主协议/主结果，先封存全部9个终态与三份checkpoint mask，再统一开测试。这是在主结果公开后补登记并复用已公开test的**描述性修补**，不是预注册或新holdout；不得据此调参、重选或覆盖原结果。
+
+补充9次fit和9次test均成功退出；N8/32/64准确率分别为91.276±0.923%、90.625±1.924%、91.732±1.440%，均3/3 seed过沿用的数值门槛，全部selected step>0。实际更新数为512、255–265、194–197；同CPU上限不等于同更新数。9/9保存预测的独立NumPy指标重算最大差 `2.22e-16`，没有重跑物理轨迹。完整表与同seed差见 [补充结果](../hcsn_signed_control_20261124/evidence/RESULTS_SIGNED_ONLY.md)，复现命令见[补充README](../hcsn_signed_control_20261124/README.md)；原45适配与迁移仍对应原qvi_full父模型。
+
+补充fit/test阶段children含退出CPU分别1771.546/222.886秒；campaign wall为253.604秒，driver至回执CPU为4.760秒。优化CPU1535.043秒和worker CPU1765.795秒包含在fit children内，不相加；两个stage driver字段是累计快照。补充与主试验pair-body计时起点不同，不比较其速度；能耗未知。新证据、主/补协议绑定与后处理修订见同目录 `evidence/`，原72表和82份档案保持不变。
 

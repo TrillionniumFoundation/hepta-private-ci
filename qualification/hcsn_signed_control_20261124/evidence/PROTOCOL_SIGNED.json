@@ -1,0 +1,128 @@
+{
+  "arms": [
+    {
+      "boundary_mode": "qvi",
+      "feature_bank": "value_risk",
+      "id": "qvi_signed_only",
+      "message_mode": "flow"
+    }
+  ],
+  "backend": "uniformized",
+  "backend_by_neurons": {
+    "32": "dense",
+    "64": "uniformized",
+    "8": "dense"
+  },
+  "base_commit": "b1af67a38f8cf9cee700cc067da1e6001ce220a8",
+  "claim_scope": "Exact signed-message-only control added after the main 72 results became public; no confirmatory or untouched-holdout claim.",
+  "cost_policy": "Report actual training CPU, complete worker wall/CPU, process maximum RSS, state bytes, all selection/checkpoint/evaluation time and failures. Report energy unknown when no readable hardware counter; never infer Joules from CPU seconds.",
+  "data": {
+    "dev_per_source": 48,
+    "dev_sources": 4,
+    "input_size": 6,
+    "length": 12,
+    "test_per_source": 64,
+    "test_sources": 8,
+    "train_per_source": 48,
+    "train_sources": 12
+  },
+  "editing": {
+    "bp_steps": 96,
+    "cpu_seconds": 10.0,
+    "eligible_names": [
+      "readout.weight",
+      "readout.bias"
+    ],
+    "max_dev_old_accuracy_loss": 0.02,
+    "max_dev_old_brier_increase": 0.02,
+    "methods": [
+      "KEEP",
+      "BP",
+      "ANALYTIC",
+      "STRICT_WSP",
+      "HYBRID"
+    ],
+    "objective": "mean squared error to common signed one-hot targets plus ridge on weight",
+    "ridge": 0.01,
+    "strict_wsp_rule": null
+  },
+  "experiment_id": "HCSN-SIGNED-ONLY-POSTRESULTS-20261124-v1",
+  "feature_normalization": "none",
+  "independent_neurons": [
+    8,
+    32,
+    64
+  ],
+  "numerical_scope": "Mixed precision physical state remains FP64; native32 diagnostic failed long-horizon mass gate before campaign. QVI root differentiable; finite-grid projection is piecewise differentiable with symmetric generalized derivatives at exact knots.",
+  "precision": "mixed",
+  "preflight_decision": "Population-normalized and raw readouts both failed the exploratory pulse-learning smoke; retain the original raw feature definition. Report this negative result and run the prespecified bounded campaign without further smoke selection.",
+  "runtime": {
+    "device": "cpu",
+    "implementation": "CPython",
+    "numpy": "2.5.4",
+    "python": "3.12.3",
+    "threads": 1,
+    "torch": "2.8.0+cpu"
+  },
+  "seeds": [
+    1101,
+    2202,
+    3303
+  ],
+  "source_hashes": {
+    "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+    "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+    "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+    "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+    "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+    "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+    "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+    "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+    "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+    "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+    "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+    "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+    "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+    "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+  },
+  "stage": "post_results_descriptive_supplement",
+  "stopping_scope": "Earliest confidence >= .8; forced final at step11; pre-late metric uses each sample late_step-1, not t0 receiver with no message.",
+  "supplement": {
+    "factory_patch": "Only fit-worker replaces train.SmallHCSN with SignedOnlySmallHCSN; original 14 files remain byte-identical.",
+    "initialization": "Same seed and RNG draws as main qvi_flow; only persistent synaptic_mask differs.",
+    "main_final_results_sha256": "b20f94065148fc10302f2fc6d3e1dad8668ac2c30a29d517c90c4455c7a29e0d",
+    "main_protocol_file_sha256": "68f9a9c9e6e24d03fdd4304243ea19ad9ba9f5101201ae12fc94924481273287",
+    "main_protocol_sha256": "c259030b227f25bc72ccbab12402fbe62747df845c9dce965e795b85b1af176d",
+    "mechanism": "message_mode=flow masks boundary; synaptic_mask[:,N:2*N]=0 masks unsigned event flow; saved buffer persists in original-core reload.",
+    "registered_after_main_results": true,
+    "source_hashes": {
+      "__init__.py": "da2afdb4fbc480d7867cd8cbf56509e7eac69f6347c632843417596f1512b4de",
+      "model.py": "ab951f34991d9eded0a4148d4f0931fe5d0e3331ff92e3d3558bb0c2ef114dac",
+      "run.py": "10223e6167a3e51ac28da28224bd5acde10c6be190c26ce8cc766f4caed708a2",
+      "tests.py": "bfe407c9eee513d40d86d28acd2612af0247ffa80b84ec3c4480ff5601dddee4"
+    },
+    "test_factory": "Original SmallHCSN loads the signed-mask checkpoint, then the unchanged evaluate function.",
+    "test_family_is_new_or_unseen": false
+  },
+  "test_policy": "Reuse the now-public main test family for descriptive comparison, explicitly departing from the main new-holdout policy. Seal all 9 terminal training records before constructing test data. No test-driven reselection, retries, or tuning.",
+  "training": {
+    "batch_size": 8,
+    "development_every": 64,
+    "gradient_clip": 3.0,
+    "learning_rate": 0.01,
+    "max_updates": 512,
+    "optimizer": "Adam",
+    "selection": "development_final_cross_entropy",
+    "threads": 1,
+    "train_cpu_seconds": 180.0,
+    "train_loss": "0.8 final CE + 0.2 mean prefix CE",
+    "weight_decay": 0.0
+  },
+  "validation": {
+    "max_fp32_probability_balance_error": 3e-05,
+    "min_final_accuracy": 0.8,
+    "min_final_over_pre_late_accuracy": 0.1,
+    "min_fraction_seeds_passing_learning": 0.6666666666666666,
+    "min_learned_over_initial_accuracy": 0.1
+  }
+}

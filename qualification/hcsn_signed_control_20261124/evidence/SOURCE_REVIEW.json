@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "reviewed_at_utc": "2026-11-24T14:35:06.388971+00:00",
+  "reviewer": "hcsn_repo_audit",
+  "scope": "Independent static review of the post-results signed-only supplement; no local Torch execution. Remote three-test receipt inspected separately.",
+  "sources": {
+    "__init__.py": "da2afdb4fbc480d7867cd8cbf56509e7eac69f6347c632843417596f1512b4de",
+    "model.py": "ab951f34991d9eded0a4148d4f0931fe5d0e3331ff92e3d3558bb0c2ef114dac",
+    "run.py": "10223e6167a3e51ac28da28224bd5acde10c6be190c26ce8cc766f4caed708a2",
+    "tests.py": "bfe407c9eee513d40d86d28acd2612af0247ffa80b84ec3c4480ff5601dddee4"
+  },
+  "decision": "No launch blocker found; math agent told it may prepare and launch the authorized nine-slot supplement.",
+  "checked": [
+    "Original flow mask suppresses boundary; persistent synaptic mask additionally suppresses all unsigned event columns.",
+    "Raw input layers only target sender half; only signed old-message coupling remains across populations.",
+    "Initialization uses the original constructor and RNG draws; no pretrained checkpoint or new task information enters the wrapper.",
+    "Fresh fit worker patches train.SmallHCSN locally and restores it in finally; original-core reload retains the serialized fixed mask.",
+    "All nine immutable terminal records and checkpoint SHA identities plus initial/selected/last masks precede seals and final claim.",
+    "Every test worker repeats all-roster validation before constructing test data.",
+    "Protocol binds four supplemental sources, original fourteen-source closure, main protocol and main final results.",
+    "New protocol explicitly identifies public-test reuse after main results and forbids confirmatory or unseen-holdout claims.",
+    "Fresh directories and create-only reports preserve failures and avoid replacement or retries; process and launcher costs are distinct ledgers."
+  ],
+  "runtime_test_receipt": "audit/signed_control_preflight.json",
+  "runtime_test_receipt_sha256": "2dc22e337528796aae879e13ff1813aae4d9ed331ac3296d5d6fd17e2db1bc95",
+  "postprocess_observation": "Non-frozen summarize.py should tolerate missing/failed report fields and fewer than two valid metrics without losing the retained roster; this was sent to its author and is not a fit launch blocker."
+}
