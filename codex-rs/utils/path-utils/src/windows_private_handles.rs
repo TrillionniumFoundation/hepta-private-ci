@@ -26,7 +26,6 @@ use windows_sys::Win32::Storage::FileSystem::FILE_DISPOSITION_INFO;
 use windows_sys::Win32::Storage::FileSystem::FILE_LIST_DIRECTORY;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_EA;
-use windows_sys::Win32::Storage::FileSystem::FILE_RENAME_INFO;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
@@ -34,7 +33,6 @@ use windows_sys::Win32::Storage::FileSystem::FILE_TRAVERSE;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_EA;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
-use windows_sys::Win32::Storage::FileSystem::FileRenameInfoEx;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
@@ -53,6 +51,18 @@ const FILE_OPEN_IF: u32 = 3;
 const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x20;
 const FILE_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
 const SYNCHRONIZE: u32 = 0x0010_0000;
+// FILE_INFORMATION_CLASS, not the Win32 FILE_INFO_BY_HANDLE_CLASS value 22.
+const FILE_RENAME_INFORMATION_EX: i32 = 65;
+
+// Native FILE_RENAME_INFORMATION when the information class selects Flags.
+// The trailing array is followed by the remaining UTF-16 filename units.
+#[repr(C)]
+struct RenameInformation {
+    flags: u32,
+    root_directory: HANDLE,
+    file_name_length: u32,
+    file_name: [u16; 1],
+}
 
 #[repr(C)]
 struct ObjectAttributes {
@@ -78,6 +88,14 @@ unsafe extern "system" {
         options: u32,
         ea: *const c_void,
         ea_length: u32,
+    ) -> NTSTATUS;
+
+    fn NtSetInformationFile(
+        file: HANDLE,
+        status: *mut IO_STATUS_BLOCK,
+        information: *const c_void,
+        length: u32,
+        information_class: i32,
     ) -> NTSTATUS;
 }
 
@@ -245,35 +263,41 @@ fn open(
 pub(super) fn replace(directory: &File, file: &File, destination: &str) -> io::Result<()> {
     let name = leaf(destination)?;
     // Include the complete header even for a one-character leaf: the flexible
-    // array offset alone is smaller than sizeof(FILE_RENAME_INFO) on Win32/64.
-    let bytes = size_of::<FILE_RENAME_INFO>() + name.len() * size_of::<u16>();
-    // usize storage supplies the alignment required by FILE_RENAME_INFO. The
-    // extra trailing zero also permits APIs that inspect a UTF-16 terminator.
+    // array offset alone is smaller than sizeof(FILE_RENAME_INFORMATION).
+    let bytes = size_of::<RenameInformation>() + name.len() * size_of::<u16>();
+    // usize storage supplies the native header's alignment. The allocation is
+    // zero-filled, but FileNameLength counts only the actual UTF-16 filename.
     let mut buffer = vec![0_usize; (bytes + size_of::<u16>()).div_ceil(size_of::<usize>())];
-    let info = buffer.as_mut_ptr().cast::<FILE_RENAME_INFO>();
+    let info = buffer.as_mut_ptr().cast::<RenameInformation>();
+    // SAFETY: All-zero IO_STATUS_BLOCK is valid output storage.
+    let mut status = unsafe { std::mem::zeroed() };
     // SAFETY: The aligned allocation includes the header and complete flexible
-    // filename array; both borrowed handles remain open throughout the call.
-    unsafe {
+    // filename array; both handles remain open. This backend opened the source
+    // with FILE_SYNCHRONOUS_IO_NONALERT, so the operation completes in this call.
+    let result = unsafe {
         // Preserve Unix-style old-reader semantics explicitly. Unsupported
         // Windows/filesystem versions fail; there is no weaker rename fallback.
-        (*info).Anonymous.Flags =
-            FILE_RENAME_FLAG_REPLACE_IF_EXISTS | FILE_RENAME_FLAG_POSIX_SEMANTICS;
-        (*info).RootDirectory = directory.as_raw_handle() as _;
-        (*info).FileNameLength = (name.len() * size_of::<u16>()) as u32;
+        (*info).flags = FILE_RENAME_FLAG_REPLACE_IF_EXISTS | FILE_RENAME_FLAG_POSIX_SEMANTICS;
+        (*info).root_directory = directory.as_raw_handle() as _;
+        (*info).file_name_length = (name.len() * size_of::<u16>()) as u32;
         ptr::copy_nonoverlapping(
             name.as_ptr(),
-            ptr::addr_of_mut!((*info).FileName).cast(),
+            ptr::addr_of_mut!((*info).file_name).cast(),
             name.len(),
         );
-        if SetFileInformationByHandle(
+        NtSetInformationFile(
             file.as_raw_handle() as _,
-            FileRenameInfoEx,
+            &mut status,
             info.cast(),
             bytes as u32,
-        ) == 0
-        {
-            return Err(io::Error::last_os_error());
-        }
+            FILE_RENAME_INFORMATION_EX,
+        )
+    };
+    if result < 0 {
+        // SAFETY: The conversion accepts any NTSTATUS and owns no memory.
+        return Err(io::Error::from_raw_os_error(
+            unsafe { RtlNtStatusToDosError(result) } as i32,
+        ));
     }
     Ok(())
 }
