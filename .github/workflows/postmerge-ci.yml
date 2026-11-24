@@ -9,6 +9,10 @@ on:
 # Reusable workflows cannot elevate GITHUB_TOKEN permissions granted by their
 # caller. v8-canary's build job needs actions: read for the Bazel/BuildBuddy
 # path, so the postmerge caller must grant that read capability explicitly.
+concurrency:
+  group: postmerge-ci-main
+  cancel-in-progress: true
+
 permissions:
   actions: read
   contents: read
