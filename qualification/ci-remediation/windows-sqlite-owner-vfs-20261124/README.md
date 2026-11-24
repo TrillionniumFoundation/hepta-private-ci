@@ -64,9 +64,10 @@ That ordinary operation does not use this VFS and cannot be repaired by it. The
 strict rejection is retained as negative evidence. Positive qualification must
 create files through the actual opt-in SQLite backend.
 
-Formatting, diff checks and an independent actual-source MSVC Rust `--tests`
-typecheck passed. The typecheck found and resolved three Rust compilation errors;
-it did not compile, link or execute the Windows C backend.
+Formatting and diff checks passed. An independent actual-source MSVC Rust
+`--tests` typecheck passed for the vendored wrapper and native test modules. It
+found and resolved three Rust compilation errors; it did not compile, link or
+execute the Windows C backend or the broader SQLx consumer graph.
 
 Eight native test cases are defined for DB/WAL/SHM/temp, read-only SHM recreation, same-owner
 reuse, mixed SHM policy, unchanged stock VFS selection, and unmodified rejection
@@ -123,7 +124,10 @@ connection. It uses `SqliteConfig::with_private_creation_owner` to share the
 writer's policy while preserving its existing read-only, single-connection and
 five-second timeout settings. The helper only selects the Windows VFS; it does
 not validate a directory or claim H4 physical power-loss qualification. The
-qualification-only `product_database` importer remains outside this change: its
+normal `--lib` consumer tests do not compile the H4 example, which requires
+`qualification-cognitive-write`; the two SQLx cases exercise the shared helper's
+worker behavior separately. The qualification-only `product_database` importer
+remains outside this change: its
 Windows directory/owner checks need an independent implementation, and changing
 its VFS alone would not establish its stated private-snapshot contract.
 
