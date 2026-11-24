@@ -1,5 +1,11 @@
 # Hepta 研究与集成核验
 
+## 2026-11-24 UTC 原 detached 会话同名测试的新候选（另线，尚无原生资格）
+
+- 直接回读原 [#7021/c12 逐名历史](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/55e8fbce4faf34b33a4128717efe8317464b2c2e/docs/learning/evidence/windows-detach-resume-20261123/original-7021-shard4.md)，原同名 `exec_server_resumes_detached_session_without_killing_processes` 在 c12 失败1/1（目标5/6，6.32s），#7021 通过1/1（目标6/6，0.68s）。新 [9a44e99f](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/9a44e99fe781adb22f11506ff5db5f41290b6598) 仅改 `codex-rs/exec-server/tests/process.rs`，已包含于另线 Draft #6799 head 1caf35e10；本轮精确读三源同名函数，c12 blob 74144177、804ac018 blob 60045e8b、1caf35e blob ab98cb74。
+- 候选用 stdin 阻塞的真实子进程替代固定5秒 sleep/ping，pipeStdin=true；仅匹配请求 ID 的 -32010 已附着错误每25ms重试，在新增5秒总边界内，其他错误立即返回；保留会话一致、read failure none/exited=false/closed=false、terminate running=true。此为测试夹具/协议时序候选，不是生产修复。Windows 测试环境由 PATH 单项变为整个进程环境，尚需核对最小环境依赖与隔离边界；不能无条件移植。c12 初始化另含 process_exit_observation=true，不能跨源移植时丢失。未验证 -32010 的实测因果或原超时语义等价，不替代原四隔离正例或 Q24 500ms。
+- #6799 精确 head 的 [blocking-ci 45507428750](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45507428750) pending，尚无此用例的新原生结果。另线已在执行，不重复触发。main 732e934、原四 Draft 及 #7043/#7067/#7068/#7070 的精确 head 与返回58条 PR 工作流均复核不变。仅登记新可审候选，未改产品、未重跑、未合并；全仓 HOLD。
+
 ## 2026-11-24 22:08 UTC #7068 原仓库级终局与跨平台新阻塞
 
 - 精确 804ac018 的 [blocking-ci 45458387224](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45458387224) 已由 queued 转 completed failure。返回30项（首屏）独立加总11 success、12 failure、4 cancelled、3 skipped。原 cargo-deny、build-test、Windows/Ubuntu native paths、blob、codespell、format、python SDK 已绿；四个 Windows shard、GNU/musl/Intel 测试、GNU/Windows Clippy及release、SDK 红，macOS ARM native path/test/clippy/release 四项取消。没有把专项绿门当生产资格。
