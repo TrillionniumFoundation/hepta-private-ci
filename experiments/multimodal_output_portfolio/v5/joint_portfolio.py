@@ -378,11 +378,25 @@ def independent_path_audit(
     ):
         raise ValueError("invalid independent witness law")
     rows = []
+    # The finite scorer must not let a stateful callback secretly condition
+    # decisions on the loop's private truth or path-enumeration order. Record
+    # the choice for each actually reachable public state and fail closed on
+    # inconsistent repeated choices. This is deterministic-policy custody,
+    # NOT external evidence of factual witness independence.
+    observed_actions = {}
 
     def visit(state, truth, probability, trace):
+        # A zero-mass witness report is not an observed path. Following it
+        # overcounts support/coverage and may call the policy on impossible
+        # states under reversed or deterministic evidence laws.
+        if probability == 0:
+            return
         action = policy(state)
         if action not in legal_actions(state, cfg):
             raise ValueError("audit observed inadmissible action")
+        if state in observed_actions and observed_actions[state] != action:
+            raise ValueError("inconsistent action for identical public state")
+        observed_actions[state] = action
         if action == STOP:
             output = emission(state)
             loss = terminal_external_loss(output, truth, cfg)

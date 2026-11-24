@@ -85,6 +85,16 @@ than no query. This is a counterexample to an out-of-distribution reliability
 claim, not a measured natural-data error rate.
 
 A zero-probability hidden-truth branch cannot poison entropic risk arithmetic.
+The independent outcome enumerator also drops exactly zero-mass *witness and
+shock paths* from the reported support count. Under deterministic perfect or
+completely reversed evidence laws, nonexistent report outcomes must not
+masquerade as observed coverage. Repeated visits to exactly the same
+public state must yield exactly the same admissible action; otherwise the
+external replay fails closed. This prevents a stateful policy callback from
+quietly choosing a different action depending on private truth enumeration
+order. The check only establishes finite deterministic-policy consistency;
+it does **not** authenticate a real witness or establish source independence.
+
 No benefit is asserted for unverifiable independent evidence, and no
 assumption of independence among the four generated modalities is made.
 The toy common-shock law is an explicit modeling simplification; it is not a
@@ -100,7 +110,7 @@ python3 -m unittest discover -v -p 'test_*.py'
 python3 -m compileall -q joint_portfolio.py test_*.py
 ```
 
-The 12 focused tests include risk recursion versus independently enumerated
+The focused tests include risk recursion versus independently enumerated
 full terminal outcomes; physical emission reserve shared with paid evidence;
 legal posterior updates and no label leakage; jointly false output claims;
 actual state-feedback reallocation; query-vs-stop choice; risk numerical
