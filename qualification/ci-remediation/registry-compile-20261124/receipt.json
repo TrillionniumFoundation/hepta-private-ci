@@ -1,0 +1,70 @@
+{
+  "schema": "hepta-registry-compile-qualification-v1",
+  "source_commits": [
+    "cee599f817dbd915fec352df7acad983044da9d3",
+    "8ed54b894fb854514c48eb8dc40226aa2ba489f7"
+  ],
+  "trigger": {
+    "run": 45428341161,
+    "job": 138566424497,
+    "head": "676d59ef602e59790a58614541bfb92325bdc71f",
+    "error": "E0425 durable_payloads.rs require_header File type not imported"
+  },
+  "environment": {
+    "rust": "1.96.0",
+    "platform": "x86_64-unknown-linux-gnu",
+    "isolated_graph_packages": 82
+  },
+  "observations": {
+    "workspace_attempt": "Stopped before compilation: old transport worktree Cargo.lock required update under --locked; no workspace-pass claim",
+    "initial_actual_registry_tests": {
+      "passed": 50,
+      "skipped": 0,
+      "test_seconds": 3.695,
+      "exit_code": 0
+    },
+    "initial_strict_clippy": {
+      "exit_code": 101,
+      "errors": 10,
+      "cause": "Existing relation fixture expect calls denied by workspace lint policy"
+    },
+    "final_just_fix": {
+      "exit_code": 0,
+      "warnings": 0
+    },
+    "final_strict_clippy": {
+      "exit_code": 0,
+      "warnings": 0
+    },
+    "final_affected_relation_tests": {
+      "passed": 2,
+      "filtered_out": 48,
+      "test_seconds": 0.011,
+      "exit_code": 0
+    },
+    "native_windows_tests_executed": 0
+  },
+  "qualification_inputs_sha256": {
+    "Cargo.toml": "71846b241ee80c4e9429ce67d3cf522b5c03a8a0bb51edb377fc7f81a911f0c9",
+    "Cargo.lock": "b3bd4e85b9396cbf3cc74ef9ce7a7c47ba1e1f48077938245d89f1289aec50a6"
+  },
+  "source_sha256": {
+    "codex-rs/hepta-prompt-registry/src/lib_tests.rs": "8c279e4c1e47c5e0984b6705b772f172b502eb4201fd9ec4c4fc6e20438cda51",
+    "codex-rs/hepta-prompt-registry/src/durable.rs": "d64eee4e8bf14407343d699014cf70b9ec82a5834e8898c71687bd0b34373240",
+    "codex-rs/hepta-prompt-registry/src/durable_payloads.rs": "8f786adc5f8993322b61e7a244f99c21b5056ca8853bf5378bac74d9efc2989e",
+    "codex-rs/hepta-prompt-registry/src/durable_windows_tests.rs": "999ef5fe687bec5bf7e4aa6a60e411412207f78ce4fdb9f9d9cdb2f2308b39af",
+    "codex-rs/hepta-prompt-registry/src/protocol.rs": "2cd4b31011d9a10153baabe2373eb2c226772361571310e142ccad5a6159f397",
+    "codex-rs/hepta-prompt-registry/src/lib.rs": "de594ddee53cdd018ffeba1f762d35bb734db84a0d1dc07a844d7d1890850b2a",
+    "codex-rs/hepta-prompt-registry/src/admission.rs": "afb4d303a6ab2fe6b711ff0d4fc829297b44a545ca1e26c67075de6f5aea5bb8",
+    "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs": "c68ab51cde2a6469ef7f09bbfb7ac54ce46f2bf8782329c78b4637040c290ad8",
+    "codex-rs/hepta-prompt-registry/src/delivery.rs": "14237d986069a7b3c32ee3981bc839c6c0910ff7db2443de9113f18bcc0d53ef",
+    "codex-rs/hepta-prompt-registry/src/v2_tests.rs": "0013d5bd14833299f7dcfe2839c612de9c03c174ebfe41931fe5392d76263d1b",
+    "codex-rs/hepta-prompt-registry/src/v2.rs": "5818d08ff36379addf79d5694c0a891ad72d58eb714817200b8a949e067c4139"
+  },
+  "source_unchanged_during_final_checks": true,
+  "limits": [
+    "Separate qualification manifest points at actual full registry sources and repository contract/type dependencies. No copied source implementation or assertion changes.",
+    "Not a complete Cargo workspace build, not Windows execution, and not an assertion that downstream consumers passed.",
+    "The 50-test suite precedes the fixture-only cleanup. Both affected relation tests were executed again afterward."
+  ]
+}
