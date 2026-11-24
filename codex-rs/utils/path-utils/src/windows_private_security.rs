@@ -215,12 +215,27 @@ impl Identity {
                 || acl.is_null()
                 || descriptor.0.is_null()
                 || IsValidSid(owner) == 0
-                || EqualSid(owner, self.sid()) == 0
                 || IsValidAcl(acl) == 0
-                || (*acl).AceCount != 1
-                || GetSecurityDescriptorControl(descriptor.0, &mut control, &mut revision) == 0
             {
                 return Err(super::unsafe_object());
+            }
+            if EqualSid(owner, self.sid()) == 0 {
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    "storage object owner differs from the effective token user",
+                ));
+            }
+            if (*acl).AceCount != 1 {
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    format!(
+                        "private storage requires one owner ACE, found {}",
+                        (*acl).AceCount
+                    ),
+                ));
+            }
+            if GetSecurityDescriptorControl(descriptor.0, &mut control, &mut revision) == 0 {
+                return Err(io::Error::last_os_error());
             }
             let mut ace = ptr::null_mut();
             if GetAce(acl, /*dwaceindex*/ 0, &mut ace) == 0 || ace.is_null() {
@@ -241,18 +256,40 @@ impl Identity {
                         || (!protected && header.AceFlags == INHERITED_ACE as u8)
                 }
             };
-            if header.AceType != 0 || !shape_matches || (header.AceSize as usize) < sid_offset + 8 {
+            if header.AceType != 0 || (header.AceSize as usize) < sid_offset + 8 {
                 return Err(super::unsafe_object());
+            }
+            if !shape_matches {
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    format!(
+                        "private storage ACL shape mismatch: protected={protected}, ACE flags={:#04x}",
+                        header.AceFlags
+                    ),
+                ));
             }
             let ace = &*ace.cast::<ACCESS_ALLOWED_ACE>();
             let sid = ptr::addr_of!(ace.SidStart).cast::<u8>();
             let sid_size = 8 + usize::from(*sid.add(1)) * 4;
-            if ace.Mask != FILE_ALL_ACCESS
-                || sid_offset + sid_size > ace.Header.AceSize as usize
+            if sid_offset + sid_size > ace.Header.AceSize as usize
                 || IsValidSid(sid.cast_mut().cast()) == 0
-                || EqualSid(sid.cast_mut().cast(), self.sid()) == 0
             {
                 return Err(super::unsafe_object());
+            }
+            if EqualSid(sid.cast_mut().cast(), self.sid()) == 0 {
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    "private storage ACE trustee differs from the effective token user",
+                ));
+            }
+            if ace.Mask != FILE_ALL_ACCESS {
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    format!(
+                        "private storage owner ACE has unexpected mask {:#010x}",
+                        ace.Mask
+                    ),
+                ));
             }
         }
         Ok(())
