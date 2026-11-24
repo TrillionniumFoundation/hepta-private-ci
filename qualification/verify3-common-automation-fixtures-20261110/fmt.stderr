@@ -1,0 +1,5 @@
+==> Rust formatter failed
+$ rustfmt --edition 2021 --config imports_granularity=Item,skip_children=true -- /workspace/scratch/40a1a085876c/mac-fixture-reconciliation/codex-rs/hepta-agentd/src/circuit_cell_tests.rs
+[Errno 2] No such file or directory: 'rustfmt'
+Formatting failed: Rust
+error: Recipe `fmt` failed on line 51 with exit code 1

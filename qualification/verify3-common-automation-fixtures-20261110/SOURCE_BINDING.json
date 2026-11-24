@@ -1,0 +1,84 @@
+{
+  "scope": "Older common Automation positive fixture contract repair",
+  "base_commit": "b1de4096caa908a7c60bca889a3d29c7eda54f2c",
+  "base_tree": "355d03d077b328ee18aa350c59a84a818bc26362",
+  "original_common": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+  "files": [
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_admission_tests.rs",
+      "preimage_blob": "1a70931ea5c293b02a56d7d2000b66951b7b4ce8",
+      "postimage_blob": "ec7a8fac1a7c4a1d576f0be548f163288db6c81c"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_store_tests.rs",
+      "preimage_blob": "719c2dd9b89a7465eef4644e3d3c9ee94881582f",
+      "postimage_blob": "01496f6fc890eb879f42d4b0b2e0f421ce59e8c5"
+    }
+  ],
+  "transformation": "Four existing owned TempDir parents are canonicalized before appending automation. Existing TempDir guards, owner IDs, permissions, strict production paths, assertions and test/helper names are unchanged.",
+  "upstream_pattern": {
+    "pr": 5618,
+    "source": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+    "scope": "Equivalent minimal canonical-existing-parent pattern. Its seven file paths are absent on this older source, so no whole file or ACT lineage is imported.",
+    "actual_mac_contrast_pr": 5628,
+    "claim": "Historical pattern support only; no pass is transferred to these different helpers."
+  },
+  "unchanged_store_contract": {
+    "path": "codex-rs/hepta-automation/src/store.rs",
+    "blob": "176b5c7200bea7d07d6642440d1f03c37209cef3",
+    "entry_line": 48,
+    "check_line": 1276,
+    "check": "create_private_directory rejects supplied path when canonicalized path differs, then retains original Unix 0700 mode. No production bytes change."
+  },
+  "observed": {
+    "run_id": 42773881466,
+    "api_head": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+    "checkout": "534459a988e278a506338649977eb7f4a8b81fff",
+    "tree": "35decac9eb973c81b303911b2696433729ee1fd5",
+    "mac_arm_job": 129692220121,
+    "mac_intel_job": 129692220034,
+    "automation_original_summary": {
+      "passed": 44,
+      "failed": 17,
+      "ignored": 0
+    },
+    "message": "Invalid during AutomationStore fixture setup",
+    "causal_limit": "Original broad logs omit the failing root bytes. The existing source violates the canonical input contract on aliased temporary parents, but a unique cause of every observed failure is not claimed."
+  },
+  "expected_tests": [
+    "circuit_admission::tests::only_first_persisted_claim_returns_a_single_use_execution_admission",
+    "circuit_admission::tests::lost_claim_response_before_any_cell_contact_never_reopens_execution",
+    "circuit_admission::tests::independent_owner_connections_cannot_both_claim_the_same_computation",
+    "circuit_admission::tests::downstream_request_changes_and_command_id_reuse_cannot_rebind_the_claim",
+    "circuit_admission::tests::wrong_owner_generation_expiry_and_clock_regression_never_create_a_token",
+    "circuit_admission::tests::lease_takeover_keeps_the_original_invocation_and_only_allows_reconciliation",
+    "circuit_admission::tests::cancellation_before_a_computation_claim_never_manufactures_execution_authority",
+    "circuit_admission::tests::ready_completed_and_corrupt_activations_cannot_be_admitted_as_pending_work",
+    "circuit_admission::tests::run_deadline_rejects_new_claims_but_preserves_readback_of_existing_reservations",
+    "circuit_store_tests::durable_dispatch_is_idempotent_and_reopens_without_reissuing_work",
+    "circuit_store_tests::successor_fences_old_writer_and_reconciles_original_invocation_after_ack_loss",
+    "circuit_store_tests::concurrent_owner_connections_commit_only_one_revision_and_one_dispatch",
+    "circuit_store_tests::scope_version_and_owner_mismatch_reject_without_mutating_existing_run",
+    "circuit_store_tests::separate_agent_partitions_can_use_the_same_run_id_without_state_bleed",
+    "circuit_store_tests::corrupt_projection_and_removed_event_tail_are_never_recovered_as_success",
+    "circuit_store_tests::bounded_circuit_migration_coexists_with_existing_v1_definition",
+    "circuit_store_tests::frozen_join_reference_bytes_survive_canonical_replay_and_reopen"
+  ],
+  "local": {
+    "environment": "synthetic sparse Git replay, not full repository checkout",
+    "test_helper_names_unchanged": true,
+    "diff_check": "PASS",
+    "tests_started": 0,
+    "test_status": "NOT_RUN: cargo unavailable",
+    "format_status": "NOT_RUN: rustfmt unavailable",
+    "after_source_bytes_unchanged": true,
+    "commands": "LOCAL_COMMANDS.json"
+  },
+  "qualification_requires": [
+    "New-source complete Automation package tests including the original seventeen names",
+    "Same-source platform/full CI and formatting",
+    "All other original package failures remain separate"
+  ],
+  "scientific_admission": "HOLD",
+  "production_authority": "NONE"
+}
