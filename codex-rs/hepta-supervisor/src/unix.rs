@@ -14,6 +14,7 @@ use std::sync::mpsc::Receiver;
 use std::sync::mpsc::SyncSender;
 use std::sync::mpsc::TryRecvError;
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 use codex_hepta_agent_protocol::AgentdPayload;
@@ -47,6 +48,11 @@ use crate::ProcessState;
 use crate::ProcessStream;
 use crate::SpawnSpec;
 use crate::driver::SpawnedProcess;
+
+#[path = "unix_health_diagnostics.rs"]
+mod health_diagnostics;
+use health_diagnostics::HealthProbeDiagnostics;
+use health_diagnostics::HealthProbeFailure;
 
 #[cfg(target_os = "linux")]
 #[path = "precreated.rs"]
@@ -534,22 +540,25 @@ fn run_health_probe(
     shutdown: Arc<AtomicBool>,
 ) {
     let mut request_id = 1_u64;
+    let mut diagnostics = HealthProbeDiagnostics::default();
     while !shutdown.load(Ordering::Acquire) {
-        ready.store(
-            probe_health_once(&identity, request_id).unwrap_or(false),
-            Ordering::Release,
-        );
+        let started = Instant::now();
+        let observation = query_health_once(&identity, request_id);
+        let next_ready = observation.as_ref().is_ok_and(|value| value.ready);
+        let previous_ready = ready.load(Ordering::Acquire);
+        ready.store(next_ready, Ordering::Release);
+        if previous_ready && !next_ready {
+            diagnostics.record(
+                identity.agent_id(),
+                request_id,
+                started.elapsed(),
+                &observation,
+            );
+        }
         request_id = request_id.wrapping_add(1).max(1);
         std::thread::sleep(HEALTH_PROBE_INTERVAL);
     }
     ready.store(false, Ordering::Release);
-}
-
-fn probe_health_once(
-    identity: &HealthProbeIdentity,
-    request_id: u64,
-) -> Result<bool, ProcessDriverError> {
-    Ok(query_health_once(identity, request_id)?.ready)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -575,7 +584,7 @@ fn prove_adoption_identity(identity: &HealthProbeIdentity) -> bool {
 fn query_health_once(
     identity: &HealthProbeIdentity,
     request_id: u64,
-) -> Result<HealthProbeObservation, ProcessDriverError> {
+) -> Result<HealthProbeObservation, HealthProbeFailure> {
     match identity {
         HealthProbeIdentity::Agentd(identity) => query_agent_health_once(identity, request_id),
         HealthProbeIdentity::Matrixd(identity) => query_matrix_health_once(identity, request_id),
@@ -585,7 +594,7 @@ fn query_health_once(
 fn query_agent_health_once(
     identity: &AgentHealthProbeIdentity,
     request_id: u64,
-) -> Result<HealthProbeObservation, ProcessDriverError> {
+) -> Result<HealthProbeObservation, HealthProbeFailure> {
     let request = AgentdRequest::health(request_id, identity.spawn_generation);
     let mut bytes = serde_json::to_vec(&request)?;
     bytes.push(b'\n');
@@ -752,7 +761,7 @@ fn interpret_agent_drain_response(
 fn query_matrix_health_once(
     identity: &MatrixHealthProbeIdentity,
     request_id: u64,
-) -> Result<HealthProbeObservation, ProcessDriverError> {
+) -> Result<HealthProbeObservation, HealthProbeFailure> {
     let request = MatrixdRequest {
         schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
         request_id,
@@ -913,6 +922,10 @@ fn poll_adopted_process(process_id: u32) -> Result<Option<ProcessExit>, ProcessD
 #[cfg(test)]
 #[path = "unix_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "unix_health_diagnostics_tests.rs"]
+mod health_diagnostics_tests;
 
 #[cfg(test)]
 #[path = "unix_drain_tests.rs"]
