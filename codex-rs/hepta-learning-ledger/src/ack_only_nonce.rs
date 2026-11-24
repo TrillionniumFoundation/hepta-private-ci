@@ -65,6 +65,7 @@ impl AckOnlyGrantNonceJournalV1 {
             || live.dev() != saved.dev()
             || live.ino() != saved.ino()
             || live.uid() != saved.uid()
+            || saved.uid() != rustix::process::geteuid().as_raw()
             || live.permissions().mode() & 0o777 != 0o700
         {
             return Err(AckOnlyRecoveryError::NonceStoreUnavailable);
