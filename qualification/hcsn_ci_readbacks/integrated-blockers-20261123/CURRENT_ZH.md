@@ -1,5 +1,10 @@
 # Hepta 研究与集成核验
 
+## 2026-11-24 UTC 默认分支 59 安全告警的依赖迁移边界复算
+
+- 实读 main 派生锁与已通过 #7032 安全门候选的完整 1517/1540 package 记录，原 26 个告警 crate 中 19 个版本改变、6 个同名包不再存在、anymap2 同版本但从 registry 转为本地兼容源码。原 rmcp 精确 pin、zip/zstd、Matrix/SQLite、rama/hickory 的 manifest 约束证明不能直接移植科学候选锁。两份 deny 配置不完全相同，科学候选 ignore=[]。仅静态差异证据，main 原 59 告警不关闭。[完整逐项依赖父边与迁移约束](main-security-graph-delta-20261124.md)。
+- main 及四个 Draft head 均未变化，#7052 六条原工作流已终结状态不变。不重跑、不修改产品、不合并。全仓 HOLD。
+
 ## 2026-11-24 UTC #7052 78c1012 限定 CI 正式终局
 
 - 原 [45272005010](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45272005010) completed/failure，24 项完整名册独立计数 12 success、8 skipped、4 failure；四个 scoped native shard 通过，source/merge 严格、learning.operator required、CI required 失败。精确源码六条 PR 工作流全部终结，五成功一失败；非全仓资格。
