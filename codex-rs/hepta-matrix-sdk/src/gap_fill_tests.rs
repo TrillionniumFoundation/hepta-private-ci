@@ -397,7 +397,8 @@ fn sdk_bundled_latest_event_is_covered_by_the_raw_byte_budget() {
                 .expect("event id"),
             Some("$bundled".to_string())
         );
-        let raw_bytes = candidate.chunk[0].raw().json().get().len();
+        let raw = candidate.chunk[0].raw().json().get().to_owned();
+        let raw_bytes = raw.len();
         let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
         let before = snapshot(&accumulator);
         if body.len() > MAX_EVENT_BYTES {
@@ -413,7 +414,7 @@ fn sdk_bundled_latest_event_is_covered_by_the_raw_byte_budget() {
                 Ok(GapFillStatus::ReachedTarget)
             );
             assert_eq!(accumulator.observation.event_bytes, raw_bytes);
-            assert_eq!(accumulator.pages[0].chunk[0].json().get().len(), raw_bytes);
+            assert_eq!(accumulator.pages[0].chunk[0].json().get(), raw);
         }
     }
 }
