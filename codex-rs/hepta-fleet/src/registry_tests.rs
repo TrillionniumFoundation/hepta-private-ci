@@ -272,7 +272,10 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
         .map(|name| {
             let path = fleet._temp.path().join("sweep").join(name);
             fs::create_dir_all(&path)?;
-            WorkspaceBinding::new(&path, &fleet.root)
+            // Match the input contract on Windows, where canonical paths gain
+            // the extended-length prefix even without traversing a symlink.
+            let canonical = path.canonicalize()?;
+            WorkspaceBinding::new(&canonical, &fleet.root)
         })
         .collect::<Result<Vec<_>, FleetRegistryError>>()?;
     // Every subset and both identity orders exercise parents, descendants,

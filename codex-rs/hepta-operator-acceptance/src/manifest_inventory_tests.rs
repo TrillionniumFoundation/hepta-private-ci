@@ -1,9 +1,10 @@
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 
+use crate::test_support::PrivateTempDir;
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 
 use super::VerifiedManifest;
 use super::parse_manifest;
@@ -59,7 +60,7 @@ fn verified_manifest_rejects_symlinks() {
 }
 
 struct Fixture {
-    _temporary: TempDir,
+    _temporary: PrivateTempDir,
     root: std::path::PathBuf,
 }
 
@@ -96,6 +97,7 @@ impl Fixture {
     }
 }
 
+#[cfg(not(windows))]
 fn write_private(path: &Path, bytes: &[u8]) {
     let mut options = OpenOptions::new();
     options.create_new(true).write(true);
@@ -106,4 +108,10 @@ fn write_private(path: &Path, bytes: &[u8]) {
     }
     let mut file = options.open(path).expect("create private test file");
     file.write_all(bytes).expect("write private test file");
+}
+
+#[cfg(windows)]
+fn write_private(path: &Path, bytes: &[u8]) {
+    crate::durable::write_private_new(path, bytes)
+        .unwrap_or_else(|error| panic!("create private Windows test file: {error}"));
 }

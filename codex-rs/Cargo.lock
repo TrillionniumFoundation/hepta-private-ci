@@ -4061,6 +4061,7 @@ name = "codex-hepta-operator-acceptance"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
+ "codex-utils-path",
  "ed25519-dalek",
  "libc",
  "pretty_assertions",
@@ -4071,6 +4072,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.18",
  "winapi-util",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4118,6 +4120,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-utils-path",
  "ed25519-dalek",
  "rustix 1.1.4",
  "serde",
@@ -5548,6 +5551,8 @@ dependencies = [
  "dunce",
  "pretty_assertions",
  "tempfile",
+ "winapi-util",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]

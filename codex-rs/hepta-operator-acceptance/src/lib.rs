@@ -4,10 +4,13 @@ mod evidence;
 mod g5_trust;
 mod manifest_inventory;
 mod model;
+#[cfg(windows)]
+mod openssh_windows;
 mod preflight;
 mod qualification_evidence;
 mod qualification_runs;
 mod receipt_store;
+mod sshsig_strict;
 mod trust;
 
 use serde::Deserialize;
