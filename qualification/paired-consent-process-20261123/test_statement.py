@@ -79,12 +79,12 @@ class ParticipantStatementTests(unittest.TestCase):
             self.assertNotEqual(r.returncode,0)
             self.assertEqual(r.stdout,b"")
 
-    def test_verification_still_requires_original_descriptors(self):
+    def test_legacy_verification_requires_the_original_turn_verifier(self):
         result = run(["1", "/missing-study-home", "/missing-route"],
                      request(dict(use="train", failure=FIRST, correction=SECOND),
                              delivery_id=FIRST))
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn(b"inherited private Root socket", result.stderr)
+        self.assertIn(b"ORIGINAL_TURN_VERIFIER_REQUIRED", result.stderr)
         self.assertEqual(result.stdout, b"")
 
 

@@ -1,201 +1,79 @@
-//! Exercise the actual protected-client wire contract against a local test peer.
+//! Real child-process refusal; these inherited handles establish no human authority.
 
-use std::thread;
+use std::ffi::CString;
+use std::io::Read;
+use std::os::fd::AsRawFd;
+use std::os::fd::FromRawFd;
+use std::os::fd::OwnedFd;
+use std::os::unix::ffi::OsStrExt;
+use std::os::unix::net::UnixStream;
+use std::os::unix::process::CommandExt;
+use std::process::Command;
+use std::process::Stdio;
 use std::time::Duration;
+use std::time::Instant;
 
 use pretty_assertions::assert_eq;
-use serde_json::json;
-
-use super::fixture;
-use super::read;
-use super::send;
-use crate::AgentdFinalUseIssuerError;
-use crate::PairedLearningDataUse;
-use crate::PairedLearningDataUse::EvaluateOnlyAfterFreeze;
-use crate::PairedLearningDataUse::ReportConsumerOutcome;
-use crate::PairedLearningDataUse::RequestConsumerRun;
-use crate::PairedLearningDataUse::TrainOnFailureAndCorrection;
-use codex_hepta_types::Digest32;
-
-fn ingress(text: String) -> crate::AuthBusTextIngress {
-    crate::AuthBusTextIngress {
-        issuer_id: "fixture-issuer".into(),
-        key_epoch: 1,
-        message_id: "fixture-message".into(),
-        sequence: 2,
-        expires_at_ms: 60_000,
-        signature_hex: "11".repeat(64),
-        body: crate::AuthBusTextBody {
-            spawn_generation: 1,
-            thread_id: "fixture-thread".into(),
-            text,
-        },
-    }
-}
-
-#[tokio::test]
-async fn missing_consent_delivery_refuses_before_a_protected_owner_lookup() {
-    let root = tempfile::tempdir().unwrap();
-    let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
-        &codex_state::SqliteConfig::from_sqlite_home(
-            codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(root.path()).unwrap(),
-        ),
-    )
-    .await
-    .unwrap();
-    let (issuer, _peer) = fixture(Duration::from_secs(2));
-    let issuer = std::sync::Arc::new(issuer);
-    let route = crate::text_session::AgentdTextSessionConfig {
-        control_socket: "/fixture/socket".into(),
-        agent_id: codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2d18")
-            .unwrap(),
-        spawn_generation: 1,
-        thread_id: "fixture-thread".into(),
-        app_server_session_id: "fixture-app".into(),
-        codex_home: "/fixture/home".into(),
-    };
-    let scope = EvaluateOnlyAfterFreeze {
-        freeze: Digest32::of_bytes(b"pair"),
-        task: Digest32::of_bytes(b"task"),
-    };
-    let error = issuer
-        .verify_retained_paired_learning_consent(
-            &evidence,
-            &route,
-            Digest32::of_bytes(b"absent delivery"),
-            Digest32::of_bytes(b"study"),
-            scope,
-        )
-        .await
-        .unwrap_err();
-    assert!(
-        error
-            .to_string()
-            .contains("paired consent delivery unavailable")
-    );
-}
 
 #[test]
-fn rejects_a_different_study_scope_or_record_before_requesting_owner_evidence() {
-    let (provider, _peer) = fixture(Duration::from_secs(2));
-    let study = Digest32::of_bytes(b"study");
-    let failure = Digest32::of_bytes(b"failed");
-    let correction = Digest32::of_bytes(b"corrected");
-    let train = TrainOnFailureAndCorrection {
-        failure,
-        correction,
-    };
-    let evaluate = EvaluateOnlyAfterFreeze {
-        freeze: failure,
-        task: correction,
-    };
-    let original = ingress(train.consent_text(study));
-    let swapped = TrainOnFailureAndCorrection {
-        failure: correction,
-        correction: failure,
-    };
-    for (study, expected) in [(correction, train), (study, evaluate), (study, swapped)] {
-        assert_eq!(
-            provider.verify_paired_learning_consent(&original, study, expected),
-            Err(AgentdFinalUseIssuerError::BindingMismatch)
-        );
-    }
-    let original = ingress(evaluate.consent_text(study));
-    for expected in [
-        EvaluateOnlyAfterFreeze {
-            freeze: correction,
-            task: correction,
-        },
-        EvaluateOnlyAfterFreeze {
-            freeze: failure,
-            task: failure,
-        },
-    ] {
-        assert_eq!(
-            provider.verify_paired_learning_consent(&original, study, expected),
-            Err(AgentdFinalUseIssuerError::BindingMismatch)
-        );
-    }
-}
-
-#[test]
-fn exact_statement_uses_the_existing_protected_human_verify_operation() {
-    rejects_malformed_owner_and_recovers_original(EvaluateOnlyAfterFreeze {
-        freeze: Digest32::of_bytes(b"frozen pair"),
-        task: Digest32::of_bytes(b"future task"),
-    });
-}
-
-#[test]
-fn consumer_request_and_outcome_use_the_original_human_verifier() {
-    let operation = Digest32::of_bytes(b"operation");
-    let pair = Digest32::of_bytes(b"pair");
-    let candidate = Digest32::of_bytes(b"candidate");
-    let task = Digest32::of_bytes(b"subsequent task");
-    rejects_malformed_owner_and_recovers_original(RequestConsumerRun {
-        operation,
-        pair,
-        candidate,
-        task,
-    });
-    for accepted in [true, false] {
-        rejects_malformed_owner_and_recovers_original(ReportConsumerOutcome {
-            operation,
-            pair,
-            candidate,
-            task,
-            run_receipt: Digest32::of_bytes(b"run"),
-            output: Digest32::of_bytes(b"output"),
-            effect: Digest32::of_bytes(b"effect"),
-            accepted,
+fn inherited_handles_cannot_authorize_or_exchange_without_an_original_turn_verifier()
+-> anyhow::Result<()> {
+    let binary = codex_utils_cargo_bin::cargo_bin("hepta-paired-consent")?;
+    let temp = tempfile::tempdir()?;
+    let route = temp.path().join("unread-route");
+    let route_name = CString::new(route.as_os_str().as_bytes())?;
+    // SAFETY: the path is a live NUL-terminated string. A FIFO makes an
+    // accidental route read block, rather than merely return a parsing error.
+    assert_eq!(unsafe { libc::mkfifo(route_name.as_ptr(), 0o600) }, 0);
+    let pid = std::process::id();
+    // SAFETY: pidfd_open returns an owned descriptor for the live test process.
+    let descriptor = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
+    assert!(descriptor >= 0);
+    // SAFETY: the successful syscall transferred this descriptor's ownership.
+    let identity = unsafe { OwnedFd::from_raw_fd(descriptor as i32) };
+    let (mut observed, child_endpoint) = UnixStream::pair()?;
+    let mut command = Command::new(binary);
+    command
+        .arg(pid.to_string())
+        .arg(temp.path().join("absent-sqlite"))
+        .arg(route)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
+    // SAFETY: duplicate both held descriptors before replacing fixed child
+    // slots. Only async-signal-safe descriptor operations run after fork.
+    unsafe {
+        command.pre_exec(move || {
+            let socket = libc::fcntl(child_endpoint.as_raw_fd(), libc::F_DUPFD_CLOEXEC, 5);
+            if socket < 0 {
+                return Err(std::io::Error::last_os_error());
+            }
+            let birth = libc::fcntl(identity.as_raw_fd(), libc::F_DUPFD_CLOEXEC, 5);
+            if birth < 0 || libc::dup2(socket, 3) < 0 || libc::dup2(birth, 4) < 0 {
+                return Err(std::io::Error::last_os_error());
+            }
+            Ok(())
         });
     }
-}
-
-fn rejects_malformed_owner_and_recovers_original(expected: PairedLearningDataUse) {
-    let (provider, mut peer) = fixture(Duration::from_secs(3));
-    let study = Digest32::of_bytes(b"study");
-    let original = ingress(expected.consent_text(study));
-    let retained = original.clone();
-    let owner = json!({
-        "schema_version": 1, "protocol": "hepta.ui-chat-owner.v1",
-        "principal_id": "fixture-principal", "session_id": "fixture-session",
-        "permission_revision": 1, "expires_at_ms": 60000, "can_interrupt": false,
-        "intent_namespace": "fixture", "next_intent_sequence": 3,
-        "route": {
-            "control_socket": "/fixture/socket", "codex_home": "/fixture/home",
-            "agent_id": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2d18", "spawn_generation": 1,
-            "thread_id": "fixture-thread", "app_server_session_id": "fixture-app-server"
+    let mut child = command.spawn()?;
+    drop(command);
+    // Deliberately keep stdin open without bytes: the refusal must not read it.
+    let _held_input = child.stdin.take().expect("piped child stdin");
+    let deadline = Instant::now() + Duration::from_secs(5);
+    while child.try_wait()?.is_none() {
+        if Instant::now() >= deadline {
+            child.kill()?;
+            child.wait()?;
+            anyhow::bail!("legacy consent waited for an untrusted route, stdin or issuer");
         }
-    });
-    let expected_owner = serde_json::from_value(owner.clone()).unwrap();
-    let server = thread::spawn(move || {
-        let request = json!({
-            "schema_version": 1,
-            "operation": "runtime.authbus.human_text.verify.v1",
-            "ingress": retained
-        });
-        let digest = Digest32::of_bytes(&serde_json::to_vec(&retained).unwrap()).to_string();
-        for owner in [owner, json!({})] {
-            assert_eq!(read(&mut peer), request);
-            send(
-                &mut peer,
-                json!({
-                    "schema_version": 1,
-                    "operation": "runtime.authbus.human_text.verified.v1",
-                    "ingress_sha256": digest,
-                    "owner": owner
-                }),
-            );
-        }
-    });
-    assert_eq!(
-        provider.verify_paired_learning_consent(&original, study, expected),
-        Ok(expected_owner)
-    );
-    assert_eq!(
-        provider.verify_paired_learning_consent(&original, study, expected),
-        Err(AgentdFinalUseIssuerError::MalformedResponse)
-    );
-    server.join().unwrap();
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    let output = child.wait_with_output()?;
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(output.stdout, Vec::<u8>::new());
+    assert!(String::from_utf8(output.stderr)?.contains("ORIGINAL_TURN_VERIFIER_REQUIRED"));
+    observed.set_nonblocking(true)?;
+    assert_eq!(observed.read(&mut [0; 1])?, 0, "issuer lane received bytes");
+    assert!(!temp.path().join("absent-sqlite").exists());
+    Ok(())
 }

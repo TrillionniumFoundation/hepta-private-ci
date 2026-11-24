@@ -1,6 +1,6 @@
-//! Exercise the released consent command with a signed and acknowledged development
-//! delivery, a real Root issuer channel, and an issuer with no physical user session.
-//! Build this example on Linux and run it in the private root described in the qualification.
+//! Exercise the current fail-closed command with retained development messages
+//! and real inherited descriptors. No Root request or authorization may be emitted.
+//! Historical process archives retain their original binary identity and results.
 #[cfg(target_os = "linux")]
 mod linux {
     use anyhow::Context;
@@ -11,19 +11,12 @@ mod linux {
     use codex_hepta_agentd::AuthBusTextIngress;
     use codex_hepta_agentd::DeploymentFinalUseIssuer;
     use codex_hepta_agentd::DeploymentGrantPolicy;
-    use codex_hepta_agentd::HostAuthorityLane;
-    use codex_hepta_agentd::HostAuthorityService;
     use codex_hepta_agentd::PairedLearningDataUse;
     use codex_hepta_agentd::authbus_text_claims;
     use codex_hepta_agentd::text_session::AgentdTextSessionConfig;
     use codex_hepta_authbus::IssuerRegistration;
     use codex_hepta_authbus::SignedMessage;
     use codex_hepta_contracts::AgentId;
-    use codex_hepta_contracts::HostAuthorityClock;
-    use codex_hepta_contracts::HostAuthorityPeerPolicy;
-    use codex_hepta_contracts::HostIssuerPeer;
-    use codex_hepta_contracts::HostIssuerTransportError;
-    use codex_hepta_contracts::RootAuthorityDirectory;
     use codex_hepta_contracts::SystemAuthorityClock;
     use codex_hepta_evidence::AuthBusClaimRequest;
     use codex_hepta_evidence::AuthBusDeliveryState;
@@ -34,10 +27,9 @@ mod linux {
     use codex_state::SqliteConfig;
     use codex_utils_absolute_path::AbsolutePathBuf;
     use ed25519_dalek::VerifyingKey;
-    use serde_json::Value;
     use serde_json::json;
     use std::io;
-    use std::io::Write;
+    use std::io::Read;
     use std::os::fd::AsRawFd;
     use std::os::fd::FromRawFd;
     use std::os::fd::OwnedFd;
@@ -164,45 +156,6 @@ mod linux {
         Ok((receipt.delivery_id, ingress))
     }
 
-    fn peek_exact(stream: &UnixStream, expected: &Value) -> Result<Digest32> {
-        let until = Instant::now() + Duration::from_secs(3);
-        let read = |buf: &mut [u8]| -> Result<()> {
-            loop {
-                // SAFETY: recv writes within the supplied buffer. PEEK preserves the original frame.
-                let size = unsafe {
-                    libc::recv(
-                        stream.as_raw_fd(),
-                        buf.as_mut_ptr().cast(),
-                        buf.len(),
-                        libc::MSG_PEEK | libc::MSG_DONTWAIT,
-                    )
-                };
-                if size == buf.len() as isize {
-                    return Ok(());
-                }
-                if size < 0 && io::Error::last_os_error().kind() != io::ErrorKind::WouldBlock {
-                    return Err(io::Error::last_os_error().into());
-                }
-                ensure!(
-                    size != 0 && Instant::now() < until,
-                    "incomplete original issuer request"
-                );
-                std::thread::sleep(Duration::from_millis(2));
-            }
-        };
-        let mut prefix = [0; 4];
-        read(&mut prefix)?;
-        let len = u32::from_be_bytes(prefix) as usize;
-        ensure!((1..=32 * 1024).contains(&len));
-        let mut bytes = vec![0; len + 4];
-        read(&mut bytes)?;
-        ensure!(
-            serde_json::from_slice::<Value>(&bytes[4..])? == *expected,
-            "original signed human request differs"
-        );
-        Ok(Digest32::of_bytes(&bytes[4..]))
-    }
-
     pub fn main() -> Result<()> {
         let args = std::env::args().collect::<Vec<_>>();
         let [_, cli, root] = args.as_slice() else {
@@ -240,16 +193,6 @@ mod linux {
         std::fs::DirBuilder::new()
             .mode(0o700)
             .create(root.join("sqlite"))?;
-        let state = root.join("clock");
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&state)
-            .context("create clock dir")?;
-        let clock = HostAuthorityClock::initialize(
-            RootAuthorityDirectory::open(&state).context("open Root authority dir")?,
-            "development-clock".into(),
-        )
-        .context("initialize clock")?;
         let policy = DeploymentGrantPolicy {
             subject_id: owner.agent_id.to_string(),
             destination_id: DeploymentFinalUseIssuer::text_destination(&route.thread_id)?,
@@ -264,11 +207,6 @@ mod linux {
         )
         .context("initialize development issuer")?;
         let issuer = Arc::new(issuer);
-        let service = HostAuthorityService::from_registered_owner(
-            issuer.clone(),
-            Arc::new(clock),
-            owner.clone(),
-        )?;
         let rt = tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .build()
@@ -328,7 +266,7 @@ mod linux {
             consumer_report(4, true),
             consumer_report(5, false),
         ] {
-            let (delivery, ingress) = rt
+            let (delivery, _ingress) = rt
                 .block_on(retain(
                     root,
                     &owner,
@@ -339,40 +277,53 @@ mod linux {
                 ))
                 .context("sign admit ack and reopen original row")?;
             let root_pid = std::process::id();
-            let (stream, child_endpoint) = UnixStream::pair()?;
-            let mut child = launcher(Path::new(cli), root, root_pid, child_endpoint)?
-                .stdin(Stdio::piped())
+            let (mut stream, child_endpoint) = UnixStream::pair()?;
+            let request_file = root.join(format!("request-{seq}.json"));
+            std::fs::write(
+                &request_file,
+                serde_json::to_vec(&json!({
+                    "study_sha256":study.to_string(), "delivery_id":delivery.to_string(), "scope":scope_json
+                }))?,
+            )?;
+            let mut command = launcher(Path::new(cli), root, root_pid, child_endpoint)?;
+            let mut child = command
+                .stdin(std::fs::File::open(&request_file)?)
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
                 .spawn()
-                .context("spawn child after initial private authorization")?;
-            child.stdin.take().unwrap().write_all(&serde_json::to_vec(&json!({"study_sha256":study.to_string(),"delivery_id":delivery.to_string(),"scope":scope_json}))?)?;
-            let expected = json!({"schema_version":1,"operation":"runtime.authbus.human_text.verify.v1","ingress":ingress});
-            let received = peek_exact(&stream, &expected)?;
-            let peer = HostAuthorityPeerPolicy {
-                peer: HostIssuerPeer {
-                    uid: 0,
-                    pid: root_pid,
-                },
-                timeout: Duration::from_secs(3),
-                lifetime: Duration::from_secs(8),
-                request_bound: 65536,
-                response_bound: 65536,
-            };
-            let held = pidfd(root_pid).context("open socket-owner pidfd")?;
-            let refusal = service.serve(HostAuthorityLane::Issuer, stream, peer, held);
-            ensure!(
-                matches!(refusal, Err(HostIssuerTransportError::Unavailable)),
-                "unexpected Root result: {refusal:?}"
-            );
+                .context("spawn refusal regression with actual inherited descriptors")?;
+            drop(command);
+            let deadline = Instant::now() + Duration::from_secs(5);
+            while child.try_wait()?.is_none() {
+                if Instant::now() >= deadline {
+                    child.kill()?;
+                    child.wait()?;
+                    anyhow::bail!("legacy consent did not refuse within the process bound");
+                }
+                std::thread::sleep(Duration::from_millis(10));
+            }
             let observed = child.wait_with_output().context("wait for command")?;
             ensure!(
-                observed.status.code() == Some(1) && observed.stdout.is_empty(),
-                "unexpected consent return"
+                observed.status.code() == Some(1)
+                    && observed.stdout.is_empty()
+                    && String::from_utf8_lossy(&observed.stderr)
+                        .contains("ORIGINAL_TURN_VERIFIER_REQUIRED"),
+                "unexpected consent refusal"
+            );
+            stream.set_nonblocking(true)?;
+            ensure!(
+                stream.read(&mut [0; 1])? == 0,
+                "legacy verification contacted the issuer"
             );
             println!(
                 "{}",
-                json!({"scope":scope_json["use"],"decision":scope_json.get("outcome"),"delivery":delivery.to_string(),"study":study.to_string(),"issuer_request_sha256":received.to_string(),"acked_after_reopen":true,"exact_request_observed":true,"production_root_result":"Unavailable","stdout_bytes":observed.stdout.len(),"exit":observed.status.code(),"authenticated_humans":0})
+                json!({"schema":"hepta.paired-consent.refusal-process.v2",
+                    "scope":scope_json["use"],"decision":scope_json.get("outcome"),
+                    "delivery":delivery.to_string(),"study":study.to_string(),
+                    "fixture_acked_after_reopen":true,"issuer_request_bytes":0,
+                    "result":"ORIGINAL_TURN_VERIFIER_REQUIRED", "authorization_issued":false,
+                    "original_turn_verifier_executed":false,"stdout_bytes":observed.stdout.len(),
+                    "exit":observed.status.code(),"authenticated_humans":0})
             );
         }
         Ok(())

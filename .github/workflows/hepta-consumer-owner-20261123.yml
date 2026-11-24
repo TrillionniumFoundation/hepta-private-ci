@@ -1,11 +1,22 @@
-name: Subsequent consumer owner qualification
+name: Paired consent statement and refusal checks
 on:
   push:
-    branches: [research/paired-consumer-outcome-20261123]
+    branches: [research/paired-consumer-outcome-20261123, research/optin-cell-integrated-readout-20261123]
     paths:
       - 'codex-rs/hepta-agentd/src/bin/hepta-paired-consent.rs'
       - 'codex-rs/hepta-agentd/src/human_learning_consent.rs'
       - 'codex-rs/hepta-agentd/src/paired_learning_consent_tests.rs'
+      - 'codex-rs/hepta-agentd/src/root_issuer_client_tests.rs'
+      - 'codex-rs/hepta-agentd/examples/paired_consent_process.rs'
+      - 'qualification/paired-consent-process-20261123/test_statement.py'
+      - '.github/workflows/hepta-consumer-owner-20261123.yml'
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/src/bin/hepta-paired-consent.rs'
+      - 'codex-rs/hepta-agentd/src/human_learning_consent.rs'
+      - 'codex-rs/hepta-agentd/src/paired_learning_consent_tests.rs'
+      - 'codex-rs/hepta-agentd/src/root_issuer_client_tests.rs'
+      - 'codex-rs/hepta-agentd/examples/paired_consent_process.rs'
       - 'qualification/paired-consent-process-20261123/test_statement.py'
       - '.github/workflows/hepta-consumer-owner-20261123.yml'
   workflow_dispatch:
@@ -23,21 +34,27 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Resolve pinned native dependencies
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Build and test participant and owner paths
+      - name: Build and test statements and legacy authorization refusal
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-consumer-build
+          CARGO_BIN_EXE_hepta_paired_consent: ${{ runner.temp }}/hepta-consumer-build/debug/hepta-paired-consent
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo build --locked -p codex-hepta-agentd --bin hepta-paired-consent
+          cargo build --locked -p codex-hepta-agentd --bin hepta-paired-consent --example paired_consent_process
           python3 ../qualification/paired-consent-process-20261123/test_statement.py "$CARGO_TARGET_DIR/debug/hepta-paired-consent"
-          cargo test --locked -p codex-hepta-agentd --lib paired_learning_consent_tests -- --test-threads=1
+          just test --locked -p codex-hepta-agentd --lib -E 'test(paired_learning_consent_tests)' --no-tests fail --test-threads 1
+          sh ../qualification/paired-consent-process-20261123/run-isolated.sh "$CARGO_TARGET_DIR/debug/examples/paired_consent_process" "$CARGO_TARGET_DIR/debug/hepta-paired-consent"
       - name: Retain tested participant binary
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

@@ -157,24 +157,18 @@ rollback protection, or exactly-once external-effect guarantee.
 
 ## Private consent for paired learning
 
-The attached Linux host can look up one consent message using the private
-AuthBus delivery ID from its original Core user item (`hepta.authbus:<hex>`).
-Pass its existing evidence store, registered UI route and protected Root client.
-The call reads only that delivery and verifies the exact signed statement on
-the live Root lane. It returns the private `TextOwnerReceipt` to the caller.
+Production paired-learning authorization is currently unavailable. The old
+SQLite-only verifier was removed: an acknowledged delivery and a live Root
+signature do not establish the original Core turn, its current persisted
+queue entry, or the attached host's replay checkpoints. The complete runtime
+verifier has not been connected.
 
-```rust
-let scope = PairedLearningDataUse::EvaluateOnlyAfterFreeze { freeze, task };
-let owner = issuer
-    .verify_retained_paired_learning_consent(&evidence, &route, delivery_id, study, scope)
-    .await?;
-```
+The [historical API and process description](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9917930245b184cba7ded078221fe90a2335eab7/codex-rs/hepta-agentd/AUTHBUS_TEXT.md#private-consent-for-paired-learning)
+is retained with its original source identity. It is not a current invocation
+guide or proof that the missing turn boundary was satisfied. See the
+[current safety stage and migration limits](../../qualification/paired-consumer-integrated-20261123/BOUND_LOOP_ZH.md#原线程授权边界的安全收口).
 
-`issuer` is an `Arc<AgentdUnixFinalUseGrantProvider>` already installed by
-the trusted host. The existing bootstrap takes a connected UID-0 issuer
-stream and the launcher's held pidfd for that Root. A host that lacks the
-registered live human UI and original protected issuer cannot verify this
-consent from a copied public key or saved owner JSON.
+The commitments below still define the unsigned statement format.
 
 | Digest | Exact input |
 | --- | --- |
@@ -197,34 +191,13 @@ signed statement and owner association private. The enrollment authority must
 check distinct people. The intake log must independently witness freeze and
 arrival order, and settlement must verify the payer's order separately.
 
-### Separate host process
+### Separate host process is disabled
 
-Build the Linux executable with `cargo build -p codex-hepta-agentd --bin
-hepta-paired-consent` from `codex-rs`. The trusted launcher transfers an
-exclusive, already connected original Root issuer socket on fd 3 and its
-pre-held Root pidfd on fd 4. The request comes on stdin. The launcher must
-supply the same independently established Root PID, registered route and
-existing SQLite home it uses for this host. Keep the route and descriptor
-handoff under the registered host owner's control. A regular shell with only
-a delivery hash lacks the live Root channel required to verify it.
-
-After that handoff the launcher invokes
-`hepta-paired-consent ROOT_PID SQLITE_HOME ROUTE_JSON < private-refs.json`.
-`ROUTE_JSON` is the registered host's existing `AgentdTextSessionConfig`.
-The participant's private input contains only `delivery_id`, `study_sha256`
-and `scope`. For A the scope fields are `{"use":"train","failure":"…","correction":"…"}`.
-For B use `{"use":"evaluate_only","freeze":"…","task":"…"}`. Each digest
-field takes its actual 64 lowercase hexadecimal characters. Supply B's
-consent-message delivery ID only after the separately witnessed freeze.
-
-The executable opens the existing evidence database read-only, verifies
-one delivered consent statement and exits. Its JSON stdout contains the
-study, delivery, verified use, SHA-256 of the exact verified UTF-8 consent
-statement and a study-specific principal reference.
-The latter hashes the compact JSON tuple
-`["hepta.paired-learning.principal.v1",study_sha256,registered_principal_id]`.
-Keep that result in the private intake. The site's existing enrollment records
-must still relate the registered principal to the person.
+The legacy verification mode returns `ORIGINAL_TURN_VERIFIER_REQUIRED` before
+reading stdin, SQLite paths, routes or inherited capabilities. Even a connected
+Root socket and held pidfd cannot enable it. It emits no authorization receipt.
+Historical native binaries and receipts retain their old identities; they
+cannot reactivate production intake in this version.
 
 ### Prepare a statement on the participant's Linux machine
 
@@ -242,13 +215,11 @@ hepta-paired-consent --print-statement < scope.json
 
 The command prints the exact unsigned consent text, including its record
 identities, with no trailing newline. Review the permitted use, task and
-hashes against the material you intend to share. To grant that permission,
-submit those exact bytes through your existing enrolled human-text UI on
-the original protected route. The site custodian takes the acknowledged
-`hepta.authbus:<hex>` private delivery ID from that Core user item and
-passes the hex ID to the existing owner verifier. Merely printing, saving
-or emailing the text confers no grant. Never post the private content or
-delivery ID in a GitHub issue.
+hashes against the material you intend to share. Printing, saving or submitting
+this text does not activate the disabled paired-learning verifier or intake.
+A future implementation must verify the same original turn through the
+protected runtime before any authorization can be recognized. Never post the
+private content or delivery ID in a GitHub issue.
 
 The enrolled site supplies the actual UI and identity association. This
 command neither opens a network service nor enrolls a new identity. Sites
