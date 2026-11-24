@@ -7,6 +7,10 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+mod ack_only_nonce;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+mod ack_only_recovery;
 mod causal_v2;
 mod checkpoint;
 mod dataset_receipt_v3;
@@ -29,6 +33,26 @@ mod signed_evidence;
 mod trust_distribution;
 mod witness;
 
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_nonce::AckOnlyGrantNonceJournalV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyCurrentRevocationCutV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyRecoveryError;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyRecoveryGrantV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyRecoveryProofV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyRootDelegationV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyRootPinV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlySourceEscrowV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::AckOnlyTestReceiptV1;
+#[cfg(all(unix, feature = "qualification-ack-only-recovery"))]
+pub use ack_only_recovery::reconcile_one_existing_ack_qualification;
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
 pub use causal_v2::CandidateSetCompletenessReceiptV1;
