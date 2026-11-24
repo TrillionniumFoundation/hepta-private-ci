@@ -1,11 +1,113 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
+fn registry_path(directory: &tempfile::TempDir) -> PathBuf {
+    directory
+        .path()
+        .join("private-registry")
+        .join("lease-registry.json")
+}
+
 fn registry() -> (tempfile::TempDir, DurableLeaseRegistryV1) {
     let directory = tempfile::tempdir().unwrap();
-    let path = directory.path().join("lease-registry.json");
+    let path = registry_path(&directory);
     let registry = DurableLeaseRegistryV1::open(path).unwrap();
     (directory, registry)
+}
+
+#[test]
+fn failed_publication_fences_cached_success_until_reopen() {
+    let (directory, mut registry) = registry();
+    let prepared = registry
+        .prepare_issue("op:issue:1".into(), [3; 32])
+        .unwrap();
+    let path = registry_path(&directory);
+    let before = std::fs::read(&path).unwrap();
+    let obstruction = path.with_file_name("lease-registry.json.next");
+    std::fs::create_dir(&obstruction).unwrap();
+
+    assert_eq!(
+        registry.mark_unknown("op:issue:1"),
+        Err(LeaseRegistryErrorV1::Unavailable)
+    );
+    assert_eq!(registry.operation("op:issue:1"), None);
+    assert_eq!(
+        registry.prepare_issue("op:issue:1".into(), [3; 32]),
+        Err(LeaseRegistryErrorV1::Unavailable)
+    );
+    assert_eq!(
+        registry.expire_at(61_000),
+        Err(LeaseRegistryErrorV1::Unavailable)
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+
+    drop(registry);
+    std::fs::remove_dir(obstruction).unwrap();
+    let mut reopened = DurableLeaseRegistryV1::open(path).unwrap();
+    assert_eq!(reopened.operation("op:issue:1"), Some(&prepared));
+    assert_eq!(
+        reopened.mark_unknown("op:issue:1").unwrap().state,
+        LeaseOperationStateV1::Unknown
+    );
+}
+
+#[test]
+fn oversized_publication_cannot_create_an_unreadable_registry() {
+    let (directory, mut registry) = registry();
+    let prepared = registry
+        .prepare_issue("op:issue:1".into(), [3; 32])
+        .unwrap();
+    let path = registry_path(&directory);
+    let before = std::fs::read(&path).unwrap();
+    let mut oversized = registry.state.clone();
+    for index in 0..16_000 {
+        let operation_id = format!("op:{index}:{}", "x".repeat(240));
+        oversized.operations.insert(
+            operation_id.clone(),
+            LeaseOperationV1 {
+                operation_id,
+                kind: LeaseOperationKindV1::Issue,
+                semantic_sha256: [3; 32],
+                lease_id: None,
+                state: LeaseOperationStateV1::Prepared,
+            },
+        );
+    }
+    assert!(serde_json::to_vec(&oversized).unwrap().len() > storage::MAX_STORE_BYTES);
+    assert_eq!(
+        registry.commit(oversized),
+        Err(LeaseRegistryErrorV1::CapacityExceeded)
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    assert_eq!(registry.operation("op:issue:1"), Some(&prepared));
+    registry.mark_unknown("op:issue:1").unwrap();
+}
+
+#[cfg(windows)]
+#[test]
+fn windows_rejects_an_existing_parent_with_inherited_acl() {
+    let directory = tempfile::tempdir().unwrap();
+    assert!(matches!(
+        DurableLeaseRegistryV1::open(directory.path().join("registry.json")),
+        Err(LeaseRegistryErrorV1::Unavailable)
+    ));
+    assert!(!directory.path().join("registry.json").exists());
+}
+
+#[cfg(windows)]
+#[test]
+fn windows_rejects_a_hard_linked_staging_file_without_truncation() {
+    let (directory, mut registry) = registry();
+    let target = directory.path().join("unrelated.txt");
+    std::fs::write(&target, b"must remain unchanged").unwrap();
+    let next = registry_path(&directory).with_file_name("lease-registry.json.next");
+    std::fs::hard_link(&target, next).unwrap();
+    assert_eq!(
+        registry.prepare_issue("op:issue:1".into(), [3; 32]),
+        Err(LeaseRegistryErrorV1::Unavailable)
+    );
+    assert_eq!(std::fs::read(target).unwrap(), b"must remain unchanged");
+    assert!(!registry_path(&directory).exists());
 }
 
 fn active_lease() -> SecretLeaseMetadataV1 {
@@ -50,8 +152,7 @@ fn issue_unknown_reconciles_without_duplicate_issue() {
     assert_eq!(applied.state, LeaseOperationStateV1::Applied);
 
     drop(registry);
-    let reopened =
-        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
+    let reopened = DurableLeaseRegistryV1::open(registry_path(&directory)).unwrap();
     assert_eq!(
         reopened.lease("lease:db:1").unwrap().state,
         SecretLeaseStateV1::Active
@@ -82,7 +183,7 @@ fn issue_rejects_non_active_provider_observations_without_durable_mutation() {
         let prepared = registry
             .prepare_issue("op:issue:1".into(), [3; 32])
             .unwrap();
-        let path = directory.path().join("lease-registry.json");
+        let path = registry_path(&directory);
         let persisted = std::fs::read(&path).unwrap();
         let mut lease = active_lease();
         lease.state = state;
@@ -231,8 +332,7 @@ fn expiry_is_durable_and_terminal_for_renewal() {
     );
 
     drop(registry);
-    let reopened =
-        DurableLeaseRegistryV1::open(directory.path().join("lease-registry.json")).unwrap();
+    let reopened = DurableLeaseRegistryV1::open(registry_path(&directory)).unwrap();
     assert_eq!(
         reopened.lease("lease:db:1").unwrap().state,
         SecretLeaseStateV1::Expired

@@ -5,14 +5,13 @@
 //! trusted reconciler observes the original operation.
 
 use std::collections::BTreeMap;
-use std::fs::File;
-use std::io::Read;
-use std::io::Write;
-use std::path::Path;
 use std::path::PathBuf;
 
 use serde::Deserialize;
 use serde::Serialize;
+
+#[path = "lease_storage.rs"]
+mod storage;
 
 const SCHEMA_VERSION: u32 = 1;
 const MAX_RECORDS: usize = 65_536;
@@ -102,16 +101,18 @@ struct StoredRegistryV1 {
 }
 
 pub struct DurableLeaseRegistryV1 {
-    path: PathBuf,
+    storage: storage::LeaseStorage,
     state: StoredRegistryV1,
+    poisoned: bool,
 }
 
 impl std::fmt::Debug for DurableLeaseRegistryV1 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("DurableLeaseRegistryV1")
-            .field("path", &self.path)
+            .field("path", &self.storage.path())
             .field("operation_count", &self.state.operations.len())
             .field("lease_count", &self.state.leases.len())
+            .field("poisoned", &self.poisoned)
             .finish()
     }
 }
@@ -138,16 +139,12 @@ impl std::fmt::Display for LeaseRegistryErrorV1 {
 impl std::error::Error for LeaseRegistryErrorV1 {}
 
 impl DurableLeaseRegistryV1 {
+    /// Open the metadata registry. On Windows its parent is created privately
+    /// under an existing directory, or must already have a protected owner-only
+    /// ACL. Unsafe existing objects are rejected without changing their ACLs.
     pub fn open(path: impl Into<PathBuf>) -> Result<Self, LeaseRegistryErrorV1> {
-        let path = path.into();
-        let state = if path.exists() {
-            let mut bytes = Vec::new();
-            File::open(&path)
-                .and_then(|file| file.take(8 * 1024 * 1024 + 1).read_to_end(&mut bytes))
-                .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-            if bytes.len() > 8 * 1024 * 1024 {
-                return Err(LeaseRegistryErrorV1::CorruptState);
-            }
+        let storage = storage::LeaseStorage::open(path.into())?;
+        let state = if let Some(bytes) = storage.read()? {
             let state: StoredRegistryV1 =
                 serde_json::from_slice(&bytes).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
             validate_state(&state)?;
@@ -159,14 +156,24 @@ impl DurableLeaseRegistryV1 {
                 leases: BTreeMap::new(),
             }
         };
-        Ok(Self { path, state })
+        Ok(Self {
+            storage,
+            state,
+            poisoned: false,
+        })
     }
 
     pub fn lease(&self, lease_id: &str) -> Option<&SecretLeaseMetadataV1> {
+        if self.poisoned {
+            return None;
+        }
         self.state.leases.get(lease_id)
     }
 
     pub fn operation(&self, operation_id: &str) -> Option<&LeaseOperationV1> {
+        if self.poisoned {
+            return None;
+        }
         self.state.operations.get(operation_id)
     }
 
@@ -204,6 +211,7 @@ impl DurableLeaseRegistryV1 {
         lease_id: String,
         semantic_sha256: [u8; 32],
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let lease = self
             .state
             .leases
@@ -227,6 +235,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let mut next = self.state.clone();
         let operation = next
             .operations
@@ -259,6 +268,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         observation: ProviderLeaseObservationV1,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let current = self
             .state
             .operations
@@ -356,6 +366,7 @@ impl DurableLeaseRegistryV1 {
     }
 
     pub fn expire_at(&mut self, now_unix_ms: u64) -> Result<usize, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let mut next = self.state.clone();
         let mut changed = 0usize;
         for lease in next.leases.values_mut() {
@@ -378,6 +389,7 @@ impl DurableLeaseRegistryV1 {
         semantic_sha256: [u8; 32],
         lease_id: Option<String>,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         if !identifier(&operation_id)
             || semantic_sha256 == [0; 32]
             || lease_id.as_deref().is_some_and(|value| !identifier(value))
@@ -410,6 +422,7 @@ impl DurableLeaseRegistryV1 {
     }
 
     fn require_active(&self, lease_id: &str) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let lease = self
             .state
             .leases
@@ -422,10 +435,28 @@ impl DurableLeaseRegistryV1 {
     }
 
     fn commit(&mut self, next: StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         validate_state(&next)?;
-        persist(&self.path, &next)?;
+        let bytes = serde_json::to_vec(&next).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+        if bytes.len() > storage::MAX_STORE_BYTES {
+            return Err(LeaseRegistryErrorV1::CapacityExceeded);
+        }
+        if let Err(error) = self.storage.persist(&bytes) {
+            // A rename may have succeeded before the durability barrier failed.
+            // Reopen is required before trusting either the old or new state.
+            self.poisoned = true;
+            return Err(error);
+        }
         self.state = next;
         Ok(())
+    }
+
+    fn ensure_available(&self) -> Result<(), LeaseRegistryErrorV1> {
+        if self.poisoned {
+            Err(LeaseRegistryErrorV1::Unavailable)
+        } else {
+            Ok(())
+        }
     }
 }
 
@@ -493,25 +524,6 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
         return Err(LeaseRegistryErrorV1::InvalidInput);
     }
     Ok(())
-}
-
-fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
-    let parent = path.parent().ok_or(LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::create_dir_all(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    let bytes = serde_json::to_vec(state).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    let file_name = path
-        .file_name()
-        .and_then(|value| value.to_str())
-        .ok_or(LeaseRegistryErrorV1::Unavailable)?;
-    let next = parent.join(format!("{file_name}.next"));
-    let mut file = File::create(&next).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    file.write_all(&bytes)
-        .and_then(|()| file.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)
 }
 
 fn identifier(value: &str) -> bool {
