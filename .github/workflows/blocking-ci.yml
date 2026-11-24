@@ -751,6 +751,12 @@ jobs:
       - name: Require successful applicable dependencies
         env:
           NEEDS: ${{ toJSON(needs) }}
+          EXPECTED_NEEDS: >-
+            ["scope", "hepta-contract-gate", "bazel", "blob-size-policy",
+             "cargo-deny", "codespell", "ndu-v6", "repo-checks", "rust-ci",
+             "sdk", "learning-operator-qualification", "hepta-scoped",
+             "ledgerwriter-owner-replay", "taskflow-owner-replay",
+             "taskflow-owner-current", "lightweight"]
           LEARNING: ${{ needs.scope.outputs.learning }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
@@ -761,16 +767,28 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          export ALLOWED_SKIPPED="$(
+          # Assign before exporting so a selector rejection stops this step.
+          ALLOWED_SKIPPED="$(
             python3 - <<'PY'
           import json
           import os
-          learning = os.environ["LEARNING"] == "true"
-          native = os.environ["NATIVE"] == "true"
-          full = os.environ["FULL_REPO"] == "true"
+
+          def scope_flag(name):
+              value = os.environ.get(name)
+              if value not in {"true", "false"}:
+                  raise SystemExit(f"Blocking CI scope {name} must be true or false")
+              return value == "true"
+
+          learning = scope_flag("LEARNING")
+          native = scope_flag("NATIVE")
+          full = scope_flag("FULL_REPO")
+          ndu_v6 = scope_flag("NDU_V6")
+          if full and not native:
+              raise SystemExit("Blocking CI full repository scope requires native scope")
+
           replay_requested = os.environ["LEDGERWRITER_REPLAY_REQUESTED"] == "true"
           allowed = []
-          if os.environ["NDU_V6"] != "true":
+          if not ndu_v6:
               allowed.append("ndu-v6")
           if not replay_requested:
               allowed.append("ledgerwriter-owner-replay")
@@ -791,4 +809,5 @@ jobs:
           print(json.dumps(allowed))
           PY
           )"
+          export ALLOWED_SKIPPED
           python3 .github/scripts/check_ci_results.py
