@@ -118,10 +118,20 @@ async fn run_control_socket_acceptor(
             }
         };
 
-        #[cfg(target_os = "linux")]
-        if inherited && let Err(error) = stream.ensure_current_user_or_root_peer() {
-            warn!(%error, "refused inherited control socket peer before protocol admission");
-            continue;
+        #[cfg(unix)]
+        {
+            #[cfg(target_os = "linux")]
+            let peer = if inherited {
+                stream.ensure_current_user_or_root_peer()
+            } else {
+                stream.ensure_current_user_peer()
+            };
+            #[cfg(not(target_os = "linux"))]
+            let peer = stream.ensure_current_user_peer();
+            if let Err(error) = peer {
+                warn!(%error, inherited, "refused control socket peer before WebSocket upgrade");
+                continue;
+            }
         }
         let transport_event_tx = transport_event_tx.clone();
         let connection_shutdown = inherited.then(|| shutdown_token.clone());
