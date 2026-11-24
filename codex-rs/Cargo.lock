@@ -439,7 +439,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
- "chrono",
  "codex-app-server-protocol",
  "codex-config",
  "codex-core",
@@ -449,6 +448,7 @@ dependencies = [
  "codex-models-manager",
  "codex-protocol",
  "codex-utils-cargo-bin",
+ "codex-utils-time",
  "core_test_support",
  "pretty_assertions",
  "serde",
@@ -1741,10 +1741,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fac4744fb15ae8337dc853fee7fb3f4e48c0fbaa23d0afe49c447b4fab126118"
 dependencies = [
  "iana-time-zone",
- "js-sys",
  "num-traits",
  "serde",
- "wasm-bindgen",
  "windows-link",
 ]
 
@@ -1937,9 +1935,9 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
- "chrono",
  "codex-http-client",
  "codex-protocol",
+ "codex-utils-time",
  "crypto_box",
  "ed25519-dalek 2.2.0",
  "http 1.5.0",
@@ -1990,11 +1988,11 @@ dependencies = [
  "async-channel",
  "base64 0.22.1",
  "bytes",
- "chrono",
  "codex-client",
  "codex-http-client",
  "codex-protocol",
  "codex-utils-rustls-provider",
+ "codex-utils-time",
  "codex-websocket-client",
  "eventsource-stream",
  "futures",
@@ -2024,7 +2022,6 @@ dependencies = [
  "app_test_support",
  "axum",
  "base64 0.22.1",
- "chrono",
  "clap",
  "codex-agent-extension",
  "codex-analytics",
@@ -2089,6 +2086,7 @@ dependencies = [
  "codex-utils-json-to-toml",
  "codex-utils-path-uri",
  "codex-utils-pty",
+ "codex-utils-time",
  "codex-web-search-extension",
  "codex-windows-sandbox",
  "core_test_support",
@@ -2238,7 +2236,6 @@ dependencies = [
  "anyhow",
  "axum",
  "base64 0.22.1",
- "chrono",
  "clap",
  "codex-api",
  "codex-app-server-protocol",
@@ -2251,6 +2248,7 @@ dependencies = [
  "codex-uds",
  "codex-utils-absolute-path",
  "codex-utils-rustls-provider",
+ "codex-utils-time",
  "constant_time_eq 0.3.1",
  "futures",
  "gethostname",
@@ -2417,7 +2415,6 @@ dependencies = [
  "app_test_support",
  "assert_cmd",
  "assert_matches",
- "chrono",
  "clap",
  "clap_complete",
  "codex-api",
@@ -2469,6 +2466,7 @@ dependencies = [
  "codex-utils-cli",
  "codex-utils-home-dir",
  "codex-utils-path",
+ "codex-utils-time",
  "codex-windows-sandbox",
  "crossterm",
  "futures",
@@ -2518,7 +2516,6 @@ name = "codex-cloud-config"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
- "chrono",
  "codex-agent-identity",
  "codex-backend-client",
  "codex-config",
@@ -2527,6 +2524,7 @@ dependencies = [
  "codex-login",
  "codex-otel",
  "codex-protocol",
+ "codex-utils-time",
  "hmac 0.12.1",
  "pretty_assertions",
  "serde",
@@ -2543,7 +2541,6 @@ name = "codex-cloud-tasks"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "clap",
  "codex-cloud-tasks-client",
  "codex-cloud-tasks-mock-client",
@@ -2554,6 +2551,7 @@ dependencies = [
  "codex-model-provider",
  "codex-tui",
  "codex-utils-cli",
+ "codex-utils-time",
  "crossterm",
  "http 1.5.0",
  "insta",
@@ -2576,11 +2574,11 @@ name = "codex-cloud-tasks-client"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-api",
  "codex-backend-client",
  "codex-git-utils",
  "codex-http-client",
+ "codex-utils-time",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -2590,8 +2588,8 @@ dependencies = [
 name = "codex-cloud-tasks-mock-client"
 version = "0.0.0"
 dependencies = [
- "chrono",
  "codex-cloud-tasks-client",
+ "codex-utils-time",
  "diffy",
 ]
 
@@ -2788,7 +2786,6 @@ dependencies = [
  "async-channel",
  "base64 0.22.1",
  "bm25",
- "chrono",
  "clap",
  "codex-agent-graph-store",
  "codex-analytics",
@@ -2858,6 +2855,7 @@ dependencies = [
  "codex-utils-redacted-string",
  "codex-utils-stream-parser",
  "codex-utils-string",
+ "codex-utils-time",
  "codex-web-search-extension",
  "codex-windows-sandbox",
  "core_test_support",
@@ -2939,7 +2937,6 @@ name = "codex-core-plugins"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-analytics",
  "codex-app-server-protocol",
  "codex-config",
@@ -2962,6 +2959,7 @@ dependencies = [
  "codex-utils-path",
  "codex-utils-path-uri",
  "codex-utils-plugins",
+ "codex-utils-time",
  "dirs",
  "flate2",
  "futures",
@@ -3188,7 +3186,6 @@ dependencies = [
 name = "codex-external-agent-migration"
 version = "0.0.0"
 dependencies = [
- "chrono",
  "codex-analytics",
  "codex-app-server-protocol",
  "codex-config",
@@ -3203,6 +3200,7 @@ dependencies = [
  "codex-rollout",
  "codex-thread-store",
  "codex-utils-output-truncation",
+ "codex-utils-time",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -3302,12 +3300,12 @@ name = "codex-git-utils"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-file-system",
  "codex-protocol",
  "codex-utils-absolute-path",
  "codex-utils-path-uri",
  "codex-utils-pty",
+ "codex-utils-time",
  "futures",
  "gix",
  "once_cell",
@@ -3328,7 +3326,6 @@ name = "codex-goal-extension"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-analytics",
  "codex-core",
  "codex-extension-api",
@@ -3339,6 +3336,7 @@ dependencies = [
  "codex-tools",
  "codex-utils-absolute-path",
  "codex-utils-template",
+ "codex-utils-time",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -3504,6 +3502,7 @@ dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
  "codex-http-client",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "http 1.5.0",
  "pretty_assertions",
@@ -3591,6 +3590,7 @@ name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
  "codex-utils-cargo-bin",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "pretty_assertions",
  "rustix 1.1.6",
@@ -3892,7 +3892,6 @@ dependencies = [
 name = "codex-hepta-memory-extension"
 version = "0.0.0"
 dependencies = [
- "chrono",
  "codex-extension-api",
  "codex-hepta-contracts",
  "codex-hepta-memory",
@@ -3903,6 +3902,7 @@ dependencies = [
  "codex-utils-absolute-path",
  "codex-utils-output-truncation",
  "codex-utils-path-uri",
+ "codex-utils-time",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -4046,6 +4046,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "rustix 1.1.6",
  "serde",
@@ -4204,7 +4205,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "async-channel",
- "chrono",
  "codex-config",
  "codex-plugin",
  "codex-protocol",
@@ -4212,6 +4212,7 @@ dependencies = [
  "codex-utils-output-truncation",
  "codex-utils-path-uri",
  "codex-utils-pty",
+ "codex-utils-time",
  "futures",
  "pretty_assertions",
  "regex",
@@ -4349,7 +4350,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
- "chrono",
  "codex-agent-identity",
  "codex-config",
  "codex-http-client",
@@ -4360,6 +4360,7 @@ dependencies = [
  "codex-secrets",
  "codex-terminal-detection",
  "codex-utils-template",
+ "codex-utils-time",
  "codex-workload-identity",
  "core_test_support",
  "http 1.5.0",
@@ -4530,7 +4531,6 @@ name = "codex-memories-write"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-backend-client",
  "codex-config",
  "codex-core",
@@ -4550,6 +4550,7 @@ dependencies = [
  "codex-utils-absolute-path",
  "codex-utils-output-truncation",
  "codex-utils-template",
+ "codex-utils-time",
  "core_test_support",
  "futures",
  "pretty_assertions",
@@ -4625,7 +4626,6 @@ dependencies = [
 name = "codex-models-manager"
 version = "0.0.0"
 dependencies = [
- "chrono",
  "codex-collaboration-mode-templates",
  "codex-http-client",
  "codex-login",
@@ -4633,6 +4633,7 @@ dependencies = [
  "codex-protocol",
  "codex-utils-output-truncation",
  "codex-utils-template",
+ "codex-utils-time",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -4647,11 +4648,11 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
- "chrono",
  "clap",
  "codex-utils-absolute-path",
  "codex-utils-home-dir",
  "codex-utils-rustls-provider",
+ "codex-utils-time",
  "codex-windows-sandbox",
  "globset",
  "pretty_assertions",
@@ -4703,11 +4704,11 @@ dependencies = [
 name = "codex-otel"
 version = "0.0.0"
 dependencies = [
- "chrono",
  "codex-api",
  "codex-protocol",
  "codex-utils-absolute-path",
  "codex-utils-string",
+ "codex-utils-time",
  "eventsource-stream",
  "gethostname",
  "http 1.5.0",
@@ -4773,7 +4774,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "chardetng",
- "chrono",
  "codex-async-utils",
  "codex-execpolicy",
  "codex-extension-items",
@@ -4784,6 +4784,7 @@ dependencies = [
  "codex-utils-path-uri",
  "codex-utils-redacted-string",
  "codex-utils-string",
+ "codex-utils-time",
  "encoding_rs",
  "globset",
  "http 1.5.0",
@@ -4914,7 +4915,6 @@ name = "codex-rollout"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-extension-items",
  "codex-file-search",
  "codex-git-utils",
@@ -4924,6 +4924,7 @@ dependencies = [
  "codex-state",
  "codex-utils-absolute-path",
  "codex-utils-path",
+ "codex-utils-time",
  "pretty_assertions",
  "regex",
  "serde",
@@ -5098,11 +5099,11 @@ name = "codex-state"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-git-utils",
  "codex-history",
  "codex-protocol",
  "codex-utils-absolute-path",
+ "codex-utils-time",
  "libc",
  "libsqlite3-sys",
  "log",
@@ -5163,7 +5164,6 @@ name = "codex-thread-store"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-app-server-protocol",
  "codex-extension-items",
  "codex-git-utils",
@@ -5175,6 +5175,7 @@ dependencies = [
  "codex-utils-absolute-path",
  "codex-utils-path",
  "codex-utils-path-uri",
+ "codex-utils-time",
  "futures",
  "pretty_assertions",
  "pulldown-cmark",
@@ -5224,7 +5225,6 @@ dependencies = [
  "assert_matches",
  "axum",
  "base64 0.22.1",
- "chrono",
  "clap",
  "codex-ansi-escape",
  "codex-app-server-client",
@@ -5270,6 +5270,7 @@ dependencies = [
  "codex-utils-sandbox-summary",
  "codex-utils-sleep-inhibitor",
  "codex-utils-string",
+ "codex-utils-time",
  "codex-windows-sandbox",
  "color-eyre",
  "core_test_support",
@@ -5476,6 +5477,7 @@ dependencies = [
  "dunce",
  "pretty_assertions",
  "tempfile",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5593,6 +5595,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-utils-time"
+version = "0.0.0"
+dependencies = [
+ "jiff 1.0.3",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "time",
+]
+
+[[package]]
 name = "codex-v8-poc"
 version = "0.0.0"
 dependencies = [
@@ -5643,12 +5656,12 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
- "chrono",
  "codex-otel",
  "codex-protocol",
  "codex-utils-absolute-path",
  "codex-utils-pty",
  "codex-utils-string",
+ "codex-utils-time",
  "dirs-next",
  "dunce",
  "glob",
@@ -8122,7 +8135,7 @@ dependencies = [
  "bstr",
  "gix-error",
  "itoa",
- "jiff",
+ "jiff 0.2.23",
  "smallvec",
 ]
 
@@ -10032,13 +10045,40 @@ version = "0.2.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a3546dc96b6d42c5f24902af9e2538e82e39ad350b0c766eb3fbf2d8f3d8359"
 dependencies = [
- "jiff-static",
- "jiff-tzdb-platform",
+ "jiff-static 0.2.23",
+ "jiff-tzdb-platform 0.1.3",
  "log",
  "portable-atomic",
  "portable-atomic-util",
  "serde_core",
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "jiff"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "107f2e89536b6818514025f6787b0d94d819e54fe3b40365275fc753de485b3f"
+dependencies = [
+ "jiff-core",
+ "jiff-static 1.0.3",
+ "jiff-tzdb-platform 1.0.0",
+ "js-sys",
+ "log",
+ "portable-atomic",
+ "portable-atomic-util",
+ "serde_core",
+ "wasm-bindgen",
+ "windows-link",
+]
+
+[[package]]
+name = "jiff-core"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d44c923edf2bf456a982253f1a9ee1f6e89e421dffd0065d9b9a581da0def58f"
+dependencies = [
+ "log",
 ]
 
 [[package]]
@@ -10053,10 +10093,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "jiff-static"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4996f71e569e3a3e32b925c28ef8f0027dc30bb1d594b33eeda409eea185f5c8"
+dependencies = [
+ "jiff-core",
+ "proc-macro2",
+ "quote",
+ "syn 3.0.3",
+]
+
+[[package]]
 name = "jiff-tzdb"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c900ef84826f1338a557697dc8fc601df9ca9af4ac137c7fb61d4c6f2dfd3076"
+
+[[package]]
+name = "jiff-tzdb"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12e71a1b68a875a44a33bb7a1dd84392cb77145a3367a552a3cfe6a4f5cf3afc"
 
 [[package]]
 name = "jiff-tzdb-platform"
@@ -10064,7 +10122,16 @@ version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "875a5a69ac2bab1a891711cf5eccbec1ce0341ea805560dcd90b7a2e925132e8"
 dependencies = [
- "jiff-tzdb",
+ "jiff-tzdb 0.1.6",
+]
+
+[[package]]
+name = "jiff-tzdb-platform"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc65b284afcfa8f6cf189c7274c805505314a7ab975c60e1f548bff56525420e"
+dependencies = [
+ "jiff-tzdb 1.0.0",
 ]
 
 [[package]]
@@ -11458,11 +11525,9 @@ checksum = "6aa2c4e539b869820a2b82e1aef6ff40aa85e65decdd5185e83fb4b1249cd00f"
 [[package]]
 name = "oauth2"
 version = "5.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "51e219e79014df21a225b1860a479e2dcd7cbd9130f4defd4bd0e191ea31d67d"
 dependencies = [
- "base64 0.22.1",
- "chrono",
+ "base64 0.21.7",
+ "codex-utils-time",
  "getrandom 0.2.17",
  "http 1.5.0",
  "rand 0.8.6",
@@ -12696,7 +12761,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1ad9c5423459fa2f729b8d9235fab810aa29628b171467744fc86d21460ad70d"
 dependencies = [
  "anyhow",
- "itertools 0.14.0",
+ "itertools 0.15.0",
  "proc-macro2",
  "quote",
  "syn 2.0.117",
@@ -12998,13 +13063,11 @@ checksum = "3c452aba1beb7e29b873ff32f304536164cffcc596e786921aea64e858ff8f40"
 [[package]]
 name = "rama-http"
 version = "0.3.0-alpha.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "453d60af031e23af2d48995e41b17023f6150044738680508b63671f8d7417dd"
 dependencies = [
  "ahash",
  "base64 0.22.1",
  "bitflags 2.13.2",
- "chrono",
+ "codex-utils-time",
  "const_format",
  "csv",
  "http 1.5.0",
@@ -13078,14 +13141,13 @@ dependencies = [
 [[package]]
 name = "rama-http-headers"
 version = "0.3.0-alpha.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9d74fe0cd9bd4440827dc6dc0f504cf66065396532e798891dee2c1b740b2285"
 dependencies = [
  "ahash",
  "base64 0.22.1",
- "chrono",
+ "codex-utils-time",
  "const_format",
  "httpdate",
+ "jiff 1.0.3",
  "rama-core",
  "rama-error",
  "rama-http-types",
@@ -13760,13 +13822,11 @@ dependencies = [
 [[package]]
 name = "rmcp"
 version = "3.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d24a7e92f4bcaa36b97fa93c4fa7ca8f3e669eced949345b3462dba333c7f909"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
  "bytes",
- "chrono",
+ "codex-utils-time",
  "futures",
  "http 1.5.0",
  "http-body",
@@ -14350,7 +14410,6 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2b42f36aa1cd011945615b92222f6bf73c599a102a300334cd7f8dbeec726cc"
 dependencies = [
- "chrono",
  "dyn-clone",
  "ref-cast",
  "schemars_derive 1.2.1",
@@ -15215,7 +15274,6 @@ dependencies = [
  "base64 0.22.1",
  "bytes",
  "cfg-if",
- "chrono",
  "crc",
  "crossbeam-queue",
  "either",
@@ -15293,7 +15351,6 @@ dependencies = [
  "bitflags 2.13.2",
  "byteorder",
  "bytes",
- "chrono",
  "crc",
  "digest 0.11.3",
  "dotenvy",
@@ -15323,7 +15380,6 @@ dependencies = [
  "base64 0.22.1",
  "bitflags 2.13.2",
  "byteorder",
- "chrono",
  "crc",
  "dotenvy",
  "etcetera",
@@ -15358,7 +15414,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "88b6b78a34ddcb1db4046d462db8f79cee811019d7297b99fca8fac5de26672e"
 dependencies = [
  "atoi",
- "chrono",
  "flume",
  "form_urlencoded",
  "futures-channel",
@@ -15913,7 +15968,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.6",
  "windows-sys 0.61.2",

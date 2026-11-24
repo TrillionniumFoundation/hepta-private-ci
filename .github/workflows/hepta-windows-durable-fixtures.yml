@@ -13,6 +13,7 @@ on:
       - "codex-rs/utils/path-utils/**"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-bao-adapter/**"
       - "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs"
       - "codex-rs/hepta-authbus/src/authority_schema_tests.rs"
       - "codex-rs/Cargo.lock"
@@ -80,7 +81,7 @@ jobs:
           New-Item -ItemType Directory -Force $evidence | Out-Null
           git rev-parse HEAD | Set-Content (Join-Path $evidence 'head.txt')
           rustc -vV | Set-Content (Join-Path $evidence 'rustc.txt')
-          just test -p codex-hepta-intelligence -p codex-hepta-agentd -p codex-hepta-authbus --lib --locked -E 'test(evaluated_shadow::tests::) | test(outcome_credit_v2::tests::) | test(cognitive_retrieval_learning::tests::) | test(authority_schema::tests::)' 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'tests.log')
+          just test -p codex-hepta-intelligence -p codex-hepta-agentd -p codex-hepta-authbus -p codex-hepta-bao-adapter --lib --locked -E 'test(evaluated_shadow::tests::) | test(outcome_credit_v2::tests::) | test(cognitive_retrieval_learning::tests::) | test(authority_schema::tests::) | test(lease_lifecycle::tests::)' 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'tests.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Exercise prompt delivery and final-use owners on native storage
         if: success() || failure()
@@ -96,7 +97,7 @@ jobs:
         shell: pwsh
         run: |
           $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
-          just fix -p codex-utils-path -p codex-hepta-prompt-registry -p codex-hepta-contracts --locked 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'native-clippy.log')
+          just fix -p codex-utils-path -p codex-hepta-prompt-registry -p codex-hepta-contracts -p codex-hepta-bao-adapter --locked 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'native-clippy.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'native-clippy-diff.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

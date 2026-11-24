@@ -1,0 +1,82 @@
+{
+  "recorded_utc": "2026-11-24T15:01:35.876045+00:00",
+  "source_head_before_lock_commit": "784bb5d50b5b8168dec0dae228024f22e0b16f58",
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "cargo_deny": "0.19.0",
+  "advisory_database_commit": "1d328b6bb9f2f350bf65c1c81ab68781cb9e018a",
+  "cargo_deny_command": [
+    "cargo-deny",
+    "--locked",
+    "--all-features",
+    "--format",
+    "json",
+    "check",
+    "--hide-inclusion-graph",
+    "--show-stats",
+    "--disable-fetch"
+  ],
+  "exit_codes": {
+    "cargo_metadata": 0,
+    "cargo_deny": 0,
+    "bazel_lock_update": 0,
+    "bazel_lock_check": 0,
+    "cargo_fmt_workspace_check": 0,
+    "actionlint_four_scoped_workflows": 0
+  },
+  "audit_summary": {
+    "advisories": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 18,
+      "warnings": 3
+    },
+    "bans": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 22,
+      "warnings": 116
+    },
+    "licenses": {
+      "errors": 0,
+      "helps": 1351,
+      "notes": 0,
+      "warnings": 1
+    },
+    "sources": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 6,
+      "warnings": 1
+    }
+  },
+  "remaining_yanked_warnings": [
+    "chacha20 0.10.0",
+    "clipboard-win 5.4.1",
+    "spin 0.9.8"
+  ],
+  "cargo_lock_sha256": "b0c0a5402096b1c31942738ca5cedb8151edad137fbb2734866963350ddf1464",
+  "module_lock_sha256": "71ed10405c5f99aff2969e9c765d9682e9df2d9d27d43ef7bf2e6523b2b31a7d",
+  "policy_sha256": {
+    "codex-rs/deny.toml": "de3b77f8b4639bdd7fb188048b09757cb6dd06ae01ecb10998537424c3c240f0"
+  },
+  "logs_sha256": {
+    "cargo-deny-second-batch.jsonl": "3c103d307d55edfdd6422f6ece3a8f219d4667459774428ec9ef43859c58648e",
+    "bazel-lock-update-second-batch.log": "50e4c14c641e3a609e34a3c2439f8e529a7ce34019badf402e8c292b3009d73e",
+    "bazel-lock-check-second-batch.log": "4f864a8def315e2af12c5e145208cf41e22fd994edb5b4e4d70df8a8aeee351e",
+    "cargo-fmt-second-batch.log": "a9c355ac191e05cf051c87fc4cb2eedec943414fba51b26edfafd610bafe8230",
+    "scoped-workflow-actionlint-second-batch.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "workflow_sha256": {
+    ".github/workflows/keyring-backend-interop.yml": "92e8ab99ca5487c5c0bcd0fa00a3aa336c84b6a6d04ae1a34a2953021dd280de",
+    ".github/workflows/matrix-store-compatibility.yml": "bfe91fab2e3266be114db9c12aea6c948471e2495f3426edcef1d79933747670",
+    ".github/workflows/hepta-ci-fixtures.yml": "6b2dfbce556fc98599047792d10909c27b235045f430be378c4da453d9e256f2",
+    ".github/workflows/hepta-windows-durable-fixtures.yml": "5f954c86c536060989edbe57e10b3472fdd08273cfeb4a0c0203148e02b02dbc"
+  },
+  "actionlint": {
+    "version": "1.7.12",
+    "archive_sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+    "external_shellcheck_pyflakes": "not installed; syntax and GitHub expression/context validation only"
+  },
+  "chrono_graph": "cargo tree --locked --all-features --target all -i chrono prints nothing. Cargo metadata/lock still retain the serde_with weak optional dependency; this is not an activated production dependency.",
+  "integration_runtime_tests": "Pending exact-head normal CI. Isolated/source-stage tests have separate receipts. Local network check interrupted at temporary filesystem capacity, exit 130, no tests executed."
+}
