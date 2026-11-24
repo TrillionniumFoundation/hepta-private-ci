@@ -62,6 +62,7 @@ use crate::common::exec_server::exec_server_with_env;
 #[cfg(target_os = "linux")]
 use crate::fake_bwrap::write_fake_bwrap;
 
+use crate::support::BoundedReadSupport;
 use crate::support::FileSystemImplementation;
 use crate::support::create_file_system_context;
 use crate::support::read_only_sandbox;
@@ -1108,6 +1109,7 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
     implementation: FileSystemImplementation,
 ) -> Result<()> {
     let context = create_file_system_context(implementation).await?;
+    let bounded_read_support = context.bounded_read_support;
     let file_system = context.file_system;
 
     let tmp = TempDir::new()?;
@@ -1121,9 +1123,18 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
 
     let exact = file_system
         .read_file_bounded_authorized(&PathUri::from_host_native_path(&exact_path)?, &sandbox, 8)
-        .await
-        .with_context(|| format!("mode={implementation}, exact bound"))?;
-    assert_eq!(exact, b"12345678");
+        .await;
+    match bounded_read_support {
+        BoundedReadSupport::Available => assert_eq!(
+            exact.with_context(|| format!("mode={implementation}, exact bound"))?,
+            b"12345678"
+        ),
+        BoundedReadSupport::Unsupported => {
+            let error = exact.expect_err("unadvertised stable-handle reads must fail closed");
+            assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+            assert!(!error.to_string().contains("exact.txt"));
+        }
+    }
 
     let error = file_system
         .read_file_bounded_authorized(
@@ -1133,8 +1144,16 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
         )
         .await
         .expect_err("a file larger than the bound must fail closed");
-    assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
-    assert_eq!(error.to_string(), "authorized file read exceeds bound");
+    match bounded_read_support {
+        BoundedReadSupport::Available => {
+            assert_eq!(error.kind(), std::io::ErrorKind::InvalidData);
+            assert_eq!(error.to_string(), "authorized file read exceeds bound");
+        }
+        BoundedReadSupport::Unsupported => {
+            assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+            assert!(!error.to_string().contains("oversized.txt"));
+        }
+    }
 
     Ok(())
 }
@@ -1146,6 +1165,7 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
     implementation: FileSystemImplementation,
 ) -> Result<()> {
     let context = create_file_system_context(implementation).await?;
+    let bounded_read_support = context.bounded_read_support;
     let file_system = context.file_system;
 
     let tmp = TempDir::new()?;
@@ -1167,7 +1187,13 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a symlink escaping the readable root must fail closed");
-    assert_sandbox_denied(&error);
+    match bounded_read_support {
+        BoundedReadSupport::Available => assert_sandbox_denied(&error),
+        BoundedReadSupport::Unsupported => {
+            assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+            assert!(!error.to_string().contains("secret.txt"));
+        }
+    }
 
     let parent_escape = allowed_dir
         .join("nested")
@@ -1183,7 +1209,13 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         )
         .await
         .expect_err("a parent traversal escaping the readable root must fail closed");
-    assert_normalized_path_rejected(&error);
+    match bounded_read_support {
+        BoundedReadSupport::Available => assert_normalized_path_rejected(&error),
+        BoundedReadSupport::Unsupported => {
+            assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+            assert!(!error.to_string().contains("secret.txt"));
+        }
+    }
 
     Ok(())
 }
