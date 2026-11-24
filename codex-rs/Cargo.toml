@@ -677,9 +677,6 @@ rama-dns = { path = "third_party/rama-dns-0.3.0-alpha.4" }
 # Backport upstream maintained time handling without the Rama 0.4 service rewrite.
 rama-http = { path = "third_party/rama-http-0.3.0-alpha.4" }
 rama-http-headers = { path = "third_party/rama-http-headers-0.3.0-alpha.4" }
-# Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
-# bitmap import and patched chunk dependency without changing their public API.
-imbl = { path = "third_party/imbl-6.1.0" }
 # Backport Matrix's official anymap3 migration onto its 0.19.1 release.
 # Matrix SDK 0.19.1 pins rusqlite 0.40.2. SQLx 0.9.1 and
 # rusqlite 0.41 can share libsqlite3-sys 0.39.1, whose bundled SQLite fixes
