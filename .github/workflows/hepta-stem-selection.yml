@@ -1,0 +1,73 @@
+name: Hepta stem selection common source
+
+on:
+  push:
+    branches: [codex/stem-validation-20261112-b388]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stem-selection-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  common-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: scripts
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Install bounded CPU dependencies
+        run: python -m pip install numpy==2.3.5 ruff==0.15.13
+      - name: Check common experimental source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          files=(
+            scripts/hepta_cells/{plastic_bank,stem_contract,cfc,readout_credit}.py
+            scripts/hepta_cells/{cord_evidence,cord_replay,cfc_reference_probe}.py
+            scripts/hepta_cells/stem_{plastic_study,study_support,temporal_study,credit_study,credit_support}.py
+            scripts/test_hepta_{plastic_bank,stem_contract,readout_credit}.py
+            scripts/test_hepta_cells_{cfc,cord_replay}.py
+            scripts/test_hepta_stem_{plastic_study,study_support,temporal_study,credit_study}.py
+          )
+          ruff check "${files[@]}"
+          ruff format --check "${files[@]}"
+          mkdir -p "$RUNNER_TEMP/stem-selection"
+          python --version > "$RUNNER_TEMP/stem-selection/runtime.txt"
+          python -m pip freeze >> "$RUNNER_TEMP/stem-selection/runtime.txt"
+          python scripts/hepta_ci_exec.py --minimum-tests 69 --timeout-seconds 300 \
+            --output "$RUNNER_TEMP/stem-selection/common-source.json" \
+            -- python -B -m unittest -v \
+              test_hepta_plastic_bank test_hepta_stem_contract test_hepta_cells_cfc \
+              test_hepta_readout_credit test_hepta_cells_semantic test_hepta_cells_temporal \
+              test_hepta_cells_temporal_component test_hepta_stem_plastic_study \
+              test_hepta_stem_study_support test_hepta_stem_temporal_study \
+              test_hepta_cells_cord_replay test_hepta_stem_credit_study
+          test -z "$(git status --porcelain)"
+      - name: Retain exact source execution records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-selection-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stem-selection
+          if-no-files-found: error
+          retention-days: 14
