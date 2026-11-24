@@ -13,6 +13,9 @@ mod execution_core;
 mod wire;
 pub use execution_core::canonical_codex_intent_v1;
 
+/// Owner-bound, bounded HMI attachment to an existing App Server thread.
+pub mod hmi;
+
 use std::error::Error as StdError;
 use std::fmt;
 
