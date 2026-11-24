@@ -84,7 +84,14 @@ class Source53LogCustodyTests(unittest.TestCase):
             legacy_paths.update(entry["original_path"] for entry in document["files"])
         self.assertEqual(len(legacy_paths), 110)
         self.assertLessEqual(legacy_paths, set(inventory))
-        self.assertEqual(len(inventory), 188)
+        prior_indexes = (storage.INDEX, storage.EXTENSION_INDEX, storage.SOURCE84_INDEX, storage.SOURCE0A5_INDEX)
+        prior_paths = {
+            record["original_path"]
+            for index in prior_indexes
+            for record in json.loads((REPOSITORY / index).read_bytes())["files"]
+        }
+        self.assertEqual(len(prior_paths), 188)
+        self.assertLessEqual(prior_paths, set(inventory))
         for name, entry in inventory.items():
             data = storage.read_verified(
                 destination, name, entry["original_bytes"], entry["original_sha256"]

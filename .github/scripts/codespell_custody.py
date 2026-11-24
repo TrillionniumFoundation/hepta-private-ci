@@ -235,8 +235,8 @@ QUALIFICATION_SOURCE_SHA256 = {
     ): "b758498884d2633f93cfd0c3db8a8664eb1ebb88dffbe4dadffe147f09dfee67",
     (
         "qualification/memory-cell-mem8-ci-followup/v17/blocking-d0f-recovered/raw/"
-        "job-130668671376.log.utf8.part-005"
-    ): "05cb0e4d3e850f67e8a5989ae431f3fec7322aabdbd279cdc1d80b80dbcad077",
+        "job-130668671376.log.utf8.part-005.evidence.gz"
+    ): "2b6ccf5ff703117fcc22eec0e49211d7e76e85e17b0ba9c2e2ada3f9b4ef54c6",
     (
         "qualification/memory-cell-mem8-ci-followup/v17/windows-current-c895/"
         "verify_original.py"
