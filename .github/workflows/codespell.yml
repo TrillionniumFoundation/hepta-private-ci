@@ -26,7 +26,7 @@ jobs:
         with:
           ignore_words_file: .codespellignore
           # Preserve immutable CI/evaluation artifacts; do not spell-check binary archive shards.
-          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/cell-common-20261109-e1c98/actual-model-no-update/full/raw-all-model.tar.gz.part*
+          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/cell-common-20261109-e1c98/actual-model-no-update/full/raw-all-model.tar.gz.part*,./evidence/e6-observation-diagnostic-runtime-20261120/host/verification/transport/original-evidence.tar.xz.part-*-offset-*.json
 
       - name: Check for a clean worktree
         if: always() && !cancelled()

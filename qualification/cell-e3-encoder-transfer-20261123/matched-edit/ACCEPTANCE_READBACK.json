@@ -1,0 +1,48 @@
+{
+  "adopted_improvements_per_total_cost": null,
+  "circuit": {
+    "learned_advantage": false,
+    "missing": [
+      "edge_deleted",
+      "fixed",
+      "learned",
+      "message_shuffled",
+      "random",
+      "single_equal_budget"
+    ],
+    "status": "BLOCKED"
+  },
+  "curve_scope": "authorized-user/adopted-improvement curves; published synthetic worker throughput is separate, not zero",
+  "existing_readiness_scope": "A-only readiness for the existing cached first-attempt single-choice selector; not a general prerequisite for composed-agent capability",
+  "existing_readiness_status": "NOT_READY",
+  "growth_curves": {
+    "fixed_data_workers": {
+      "qualified_adoption_points": 0,
+      "status": "UNQUALIFIED"
+    },
+    "fixed_per_user": {
+      "qualified_adoption_points": 0,
+      "status": "UNQUALIFIED"
+    },
+    "fixed_total": {
+      "qualified_adoption_points": 0,
+      "status": "UNQUALIFIED"
+    }
+  },
+  "input_sha256": {
+    "circuit": "71ab38f3cbbfe6cb6e259f52a6db7cef564c244e9c901f64b506c2d76c22435c",
+    "controls": "1701cf5f3411583eefdd7731be4a3b3bc1b7c02b7635736e5fa93cb1f3232dc8",
+    "design": "0d302ccf6a1fe9c2b0b5c9c02465f5dbf3a73a7be8488f8f74fdefc162329037",
+    "readiness": "dcecfa9d1c13d71ddbf6d4bf20084fa64d7e2c0e71b7a02fea0017c693215f4d"
+  },
+  "learned_fixed_tie": true,
+  "readiness_applies_to_retained_circuit": false,
+  "retained_circuit_learned_successes": 1,
+  "retained_control_observations": [
+    "fixed_connected",
+    "edge_deleted"
+  ],
+  "retained_fixed_connected_successes": 1,
+  "schema": "hepta.p1.acceptance-readback.v1",
+  "scope": "retained engineering evidence and interface checks; no new experiment or authority"
+}
