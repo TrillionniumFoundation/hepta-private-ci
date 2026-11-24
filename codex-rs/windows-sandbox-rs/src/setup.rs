@@ -324,6 +324,7 @@ fn run_setup_refresh_inner(
     overrides: SetupRootOverrides,
     offline_proxy_settings_override: Option<&OfflineProxySettings>,
 ) -> Result<()> {
+    crate::ensure_windows_managed_filesystem_isolation()?;
     if !request.permissions.is_enforceable_by_windows_sandbox() {
         anyhow::bail!("unsupported filesystem permissions for Windows sandbox setup");
     }
@@ -1040,6 +1041,7 @@ fn run_elevated_setup_inner(
     overrides: SetupRootOverrides,
     offline_proxy_settings_override: Option<&OfflineProxySettings>,
 ) -> Result<()> {
+    crate::ensure_windows_managed_filesystem_isolation()?;
     if !request.permissions.is_enforceable_by_windows_sandbox() {
         anyhow::bail!("unsupported filesystem permissions for Windows sandbox setup");
     }

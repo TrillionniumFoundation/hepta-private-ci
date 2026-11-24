@@ -225,6 +225,7 @@ pub fn apply_world_writable_scan_and_denies_for_permissions(
     permissions: &ResolvedWindowsSandboxPermissions,
     logs_base_dir: Option<&Path>,
 ) -> Result<()> {
+    crate::ensure_windows_managed_filesystem_isolation()?;
     let flagged = audit_everyone_writable(cwd, env_map, logs_base_dir)?;
     if flagged.is_empty() {
         return Ok(());

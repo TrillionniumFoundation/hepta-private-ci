@@ -65,6 +65,8 @@ mod dpapi;
 #[cfg(target_os = "windows")]
 mod env;
 #[cfg(target_os = "windows")]
+mod filesystem_isolation;
+#[cfg(target_os = "windows")]
 mod helper_materialization;
 #[cfg(target_os = "windows")]
 mod hide_users;
@@ -184,6 +186,8 @@ pub use dpapi::unprotect as dpapi_unprotect;
 pub use elevated_impl::ElevatedSandboxProfileCaptureRequest;
 #[cfg(target_os = "windows")]
 pub use elevated_impl::run_windows_sandbox_capture_for_permission_profile as run_windows_sandbox_capture_for_permission_profile_elevated;
+#[cfg(target_os = "windows")]
+pub use filesystem_isolation::ensure_windows_managed_filesystem_isolation;
 #[cfg(target_os = "windows")]
 pub use helper_materialization::resolve_current_exe_for_launch;
 #[cfg(target_os = "windows")]
@@ -518,6 +522,7 @@ mod windows_impl {
         additional_deny_write_paths: &[AbsolutePathBuf],
         use_private_desktop: bool,
     ) -> Result<CaptureResult> {
+        crate::ensure_windows_managed_filesystem_isolation()?;
         let additional_deny_read_paths = additional_deny_read_paths
             .iter()
             .map(AbsolutePathBuf::to_path_buf)
@@ -739,6 +744,9 @@ mod windows_impl {
         cwd: &Path,
         env_map: &HashMap<String, String>,
     ) -> Result<()> {
+        if matches!(permission_profile, PermissionProfile::Managed { .. }) {
+            crate::ensure_windows_managed_filesystem_isolation()?;
+        }
         let Ok(permissions) = super::resolved_permissions::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
             permission_profile,
             workspace_roots,

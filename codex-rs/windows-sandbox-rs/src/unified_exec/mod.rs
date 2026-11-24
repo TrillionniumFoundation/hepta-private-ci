@@ -52,23 +52,15 @@ enum WindowsSandboxBackend {
     Elevated,
 }
 
-/// Select the only backend that can enforce the requested filesystem policy.
+/// Refuse unqualified isolation before selecting an explicitly configured backend.
 ///
-/// A `WRITE_RESTRICTED` token limits ordinary write access through restricting
-/// SIDs, but Windows can authorize deletion through a parent directory's
-/// `FILE_DELETE_CHILD` right. That alternate authorization path means the
-/// restricted-token backend cannot prove that deletion stays inside the
-/// declared writable roots. Explicit filesystem overrides have the same
-/// problem because their effective parent ACLs are not part of the token.
-///
-/// Therefore the direct token backend is intentionally limited to an
-/// unrestricted-read, no-write, no-override profile. Every write-capable or
-/// path-restricted request is delegated to the elevated broker, which owns the
-/// authoritative filesystem mediation boundary. If that broker is unavailable,
-/// launch fails closed rather than falling back to the weaker backend.
+/// Read-only and dedicated-account launches share the token deletion gap. The
+/// elevated runner only brokers process setup and I/O, not filesystem operations.
+/// It must not be selected as an automatic fallback for a restricted-token request.
 fn select_windows_sandbox_backend(
     request: &WindowsSandboxSessionRequest<'_>,
 ) -> Result<WindowsSandboxBackend> {
+    crate::ensure_windows_managed_filesystem_isolation()?;
     if matches!(request.windows_sandbox_level, WindowsSandboxLevel::Elevated) {
         return Ok(WindowsSandboxBackend::Elevated);
     }
@@ -91,11 +83,12 @@ fn select_windows_sandbox_backend(
         || !request.deny_read_paths_override.is_empty()
         || !request.deny_write_paths_override.is_empty();
 
-    Ok(if requires_elevated_filesystem {
-        WindowsSandboxBackend::Elevated
-    } else {
-        WindowsSandboxBackend::RestrictedToken
-    })
+    if requires_elevated_filesystem {
+        bail!(
+            "the configured Windows sandbox level cannot enforce the requested filesystem policy"
+        );
+    }
+    Ok(WindowsSandboxBackend::RestrictedToken)
 }
 
 pub async fn spawn_windows_sandbox_session_for_level(

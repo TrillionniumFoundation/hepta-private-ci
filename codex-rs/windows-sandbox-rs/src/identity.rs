@@ -156,6 +156,7 @@ pub fn require_logon_sandbox_creds(
     proxy_enforced: bool,
     proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,
 ) -> Result<SandboxCreds> {
+    crate::ensure_windows_managed_filesystem_isolation()?;
     let sandbox_dir = crate::setup::sandbox_dir(codex_home);
     let needed_read = read_roots_override
         .map(<[PathBuf]>::to_vec)
