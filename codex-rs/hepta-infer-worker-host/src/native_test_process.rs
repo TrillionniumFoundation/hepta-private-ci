@@ -6,6 +6,7 @@ use std::process::Command;
 use std::process::Stdio;
 use std::time::Duration;
 
+use std::os::unix::fs::PermissionsExt as _;
 use std::os::unix::process::CommandExt as _;
 use tokio::time::Instant;
 
@@ -18,14 +19,18 @@ const HOST_TIMEOUT: Duration = Duration::from_secs(50);
 // Leave room for the generated fixture name and the nested Fleet sockets;
 // Darwin's default per-user temporary location can exceed sun_path.
 pub(crate) fn host_tempdir(prefix: &str) -> std::io::Result<tempfile::TempDir> {
+    // The real authority refuses symlink ancestors. On Darwin /tmp itself
+    // is a symlink, so measure and use the physical path before binding.
     let configured = std::env::temp_dir();
-    let root = if configured.is_absolute() && configured.as_os_str().as_encoded_bytes().len() <= 32
-    {
-        configured.as_path()
-    } else {
-        std::path::Path::new("/tmp")
+    let configured = configured.is_absolute().then(|| configured.canonicalize());
+    let root = match configured {
+        Some(Ok(path)) if path.as_os_str().as_encoded_bytes().len() <= 32 => path,
+        _ => std::path::Path::new("/tmp").canonicalize()?,
     };
-    tempfile::Builder::new().prefix(prefix).tempdir_in(root)
+    tempfile::Builder::new()
+        .prefix(prefix)
+        .permissions(std::fs::Permissions::from_mode(0o700))
+        .tempdir_in(root)
 }
 
 pub(super) struct HostCompletion {

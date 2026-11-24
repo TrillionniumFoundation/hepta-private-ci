@@ -1,3 +1,4 @@
+use std::os::unix::fs::DirBuilderExt as _;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Child;
@@ -268,7 +269,7 @@ async fn worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss() -> 
         .enumerate()
     {
         let case_root = directory.path().join(format!("case-{index}"));
-        std::fs::create_dir_all(&case_root)?;
+        std::fs::DirBuilder::new().mode(0o700).create(&case_root)?;
         let mut case = FailureChildCase {
             socket: host.control_socket().to_path_buf(),
             agent: host.agent_id().to_string(),

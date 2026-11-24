@@ -57,7 +57,9 @@ async fn serve_once(
     nonce: u8,
     denial_reason: Option<&str>,
 ) -> Result<()> {
-    let (mut stream, _) = listener.accept().await?;
+    let (mut stream, _) = timeout(Duration::from_secs(5), listener.accept())
+        .await
+        .map_err(|_| "test authority did not receive a connection")??;
     let mut length = [0_u8; 4];
     stream.read_exact(&mut length).await?;
     let request_len = usize::try_from(u32::from_be_bytes(length))?;
