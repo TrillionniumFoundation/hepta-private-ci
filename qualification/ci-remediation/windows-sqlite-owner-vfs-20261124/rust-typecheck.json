@@ -1,0 +1,54 @@
+{
+  "schema": "hepta-sqlite-owner-rust-typecheck-v1",
+  "source_base": "af198edadb0f9aa3b123f9208efbaa0a033c6246",
+  "candidate": "eight native Windows test definitions, three compile fixes applied by source owner",
+  "command": [
+    "/workspace/scratch/87d09924eef9/matrix_closure_20261124/toolchain/installed/bin/cargo",
+    "check",
+    "--manifest-path",
+    "/workspace/scratch/87d09924eef9/sqlite_owner_compile_20261124/Cargo.toml",
+    "--target",
+    "x86_64-pc-windows-msvc",
+    "--tests",
+    "--locked",
+    "--offline"
+  ],
+  "exit_code": 0,
+  "seconds": 0.3541827080043731,
+  "source_before": {
+    "src/lib.rs": "f531a4fc506f36b7e496e7c8a8eaf12a5b6a9c94d989e0bee972b1aa2aa9fad3",
+    "src/error.rs": "eea43c9e7e05a58002a406ce1bf518299284798a64158a2114516c2fcc7df524",
+    "src/hepta_owner.rs": "3ca0cd90030bb3f6200d6142fd6b84c249b6b60eb7a14c39f645ae1b5db19f36",
+    "src/hepta_owner_tests.rs": "49b019c267b3d04dec8f22b15d4c11c49f423e8cf721e05337ed9ef6c3067077",
+    "src/hepta_owner_test_support.rs": "f55f1a7c2b6162254c62c9d6d6484ce908cb656ec378839a2caf7c254c2a8ee3",
+    "src/hepta_owner_thread_tests.rs": "c1da5c71c9009ff0ad90bc03f38d0dc2c5ffa83e73efde6ef9a241c296cfe19a",
+    "sqlite3/bindgen_bundled_version.rs": "a25057a06d8cb5053a61c8f0ff746cc3d81b3bd778fbd3199ba12c8a6ee2945d"
+  },
+  "source_after": {
+    "src/lib.rs": "f531a4fc506f36b7e496e7c8a8eaf12a5b6a9c94d989e0bee972b1aa2aa9fad3",
+    "src/error.rs": "eea43c9e7e05a58002a406ce1bf518299284798a64158a2114516c2fcc7df524",
+    "src/hepta_owner.rs": "3ca0cd90030bb3f6200d6142fd6b84c249b6b60eb7a14c39f645ae1b5db19f36",
+    "src/hepta_owner_tests.rs": "49b019c267b3d04dec8f22b15d4c11c49f423e8cf721e05337ed9ef6c3067077",
+    "src/hepta_owner_test_support.rs": "f55f1a7c2b6162254c62c9d6d6484ce908cb656ec378839a2caf7c254c2a8ee3",
+    "src/hepta_owner_thread_tests.rs": "c1da5c71c9009ff0ad90bc03f38d0dc2c5ffa83e73efde6ef9a241c296cfe19a",
+    "sqlite3/bindgen_bundled_version.rs": "a25057a06d8cb5053a61c8f0ff746cc3d81b3bd778fbd3199ba12c8a6ee2945d"
+  },
+  "source_unchanged": true,
+  "log_sha256": "e8a57b9b8f741dbee7298d7242c5a3e468d211bd0dcfc4cc40381166c5b8e50c",
+  "scope": "Actual vendor Rust source and eight native test definitions with actual bundled bindings. Isolated build script copies bindings and enables owner-VFS cfg; no C compilation/link or native execution or production workspace graph qualification.",
+  "native_tests_executed": 0,
+  "c_compiled": false,
+  "production_cargo_lock_changed": false,
+  "source_commit_verified_after_check": "7818bc87f8ab994171d3388988a7fe3fc25307d5",
+  "source_commit_match": "All seven qualified source files match after source-owner formatting and commit.",
+  "source_commit_observed_at_utc": "2026-11-24T17:24:33.871152+00:00",
+  "previous_check": {
+    "exit_code": 101,
+    "errors": [
+      "sqlite3_close_v2 is absent from the actual bundled Rust bindings at two call sites",
+      "SID trustee slice type requires an explicit u8 annotation"
+    ],
+    "resolution": "Source owner used exported sqlite3_close with a success assertion and explicit u8 cast; no replacement bindings or compiler ignores.",
+    "log_sha256": "c2d682dc3f5148d161d19f5c703a1c81fe653a8db4bf9fae37a441f3936b11a0"
+  }
+}
