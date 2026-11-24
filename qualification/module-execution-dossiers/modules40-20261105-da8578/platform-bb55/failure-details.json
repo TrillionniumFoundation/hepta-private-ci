@@ -12,7 +12,7 @@
       "jobConclusion": "failure",
       "runnerId": 1000001905,
       "jobCompletedAt": "2026-11-05T16:01:50Z",
-      "firstConcreteError": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs:82: hel ==> help, hell, heal",
+      "firstConcreteError": "Codespell flagged the three-character test placeholder at codex-rs/hepta-infer-worker-host/src/native_output_tests.rs:82.",
       "firstConcreteErrorLogLine": 246,
       "firstConcreteErrorAt": "2026-11-05T16:01:47.7561320Z",
       "executionBinding": {
@@ -30,7 +30,12 @@
       "excerpt": "logs/job-127354031805.excerpt.txt",
       "logManifest": "logs/job-127354031805.manifest.json",
       "logFetchedAtUtc": "2026-11-05T16:03:54.839Z",
-      "readOnly": true
+      "readOnly": true,
+      "originalFailureDetails": {
+        "archive": "failure-details.original.json.gz",
+        "sha256": "e47d33054d72307f55fc3dc35a1a1e44d0619dde4a0d9ff9bae479c8b4a2a698",
+        "bytes": 1567
+      }
     }
   ]
 }
