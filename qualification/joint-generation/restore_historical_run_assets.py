@@ -26,6 +26,12 @@ H4_PARTIAL = H4_ROWS+'.partial-v1'
 H4_SIDECARS = tuple(H4+name for name in (
     'postrun-manifest.json', 'pairing-export-execution.json', 'pairing-export-failure-v1.json',
 ))
+H4_SOURCES = H4+'paired-source.csv'
+H4_SOURCES_PARTIAL = H4_SOURCES+'.partial-v1'
+CORE_DIAGNOSTIC = BASE+'runs/codex-cloud-core-c1-training-receipt-diagnostic/'
+CORE_SAMPLES = tuple(CORE_DIAGNOSTIC+'raw-'+scope+'-samples.csv' for scope in ('batch', 'repeat', 'row'))
+CSV_ASSETS = (H4_SOURCES, H4_SOURCES_PARTIAL, *CORE_SAMPLES)
+CORE_SAMPLE_INDEX = CORE_DIAGNOSTIC+'SHA256.json'
 H4_PART_BYTES = 500_000
 H4_RAW_LIMIT = 3_000_000
 NOTE_PATH = 'inspection-metadata/INSPECTION.txt'
@@ -35,6 +41,7 @@ NOTE = (b'Historical five-artifact inspection overlay, not a complete checkout o
         b'Original scientific failures, costs, source drift, protocols and seals remain historical.\n'
         b'Never run historical producer, diagnostic, worker, evaluator or model code here.\n')
 H4_NOTE = NOTE.replace(b'five-artifact', b'seven-artifact')
+CSV_NOTE = NOTE.replace(b'five-artifact', b'twelve-artifact')
 H = lambda body: hashlib.sha256(body).hexdigest()
 
 class ContractError(ValueError):
@@ -88,10 +95,15 @@ def descriptor(source):
     value=strict_json(bounded_read(source/DESCRIPTOR,16384))
     require(type(value) is dict and set(value)=={'schema','assets','markers','sidecars'},'descriptor-fields')
     schema = value['schema']
-    require(schema in ('joint-historical-assets-gzip-v1', 'joint-historical-assets-gzip-v2'),'schema')
-    has_h4 = schema == 'joint-historical-assets-gzip-v2'
+    schemas = ('joint-historical-assets-gzip-v1', 'joint-historical-assets-gzip-v2', 'joint-historical-assets-gzip-v3')
+    require(schema in schemas, 'schema')
+    has_h4 = schema in schemas[1:]
+    has_samples = schema == schemas[2]
     asset_paths = ASSET_PATHS + ((H4_ROWS, H4_PARTIAL) if has_h4 else ())
     sidecar_paths = SIDECAR_PATHS + (H4_SIDECARS if has_h4 else ())
+    if has_samples:
+        asset_paths += CSV_ASSETS
+        sidecar_paths += (CORE_SAMPLE_INDEX,)
     for group,expected in [('assets',asset_paths),('markers',MARKER_PATHS),('sidecars',sidecar_paths)]:
         items=value[group]; require(type(items) is list and len(items)==len(expected),'entry-count')
         seen=set()
@@ -102,6 +114,11 @@ def descriptor(source):
             if path == H4_PARTIAL:
                 fields = {'path', 'prefix_of', 'original_bytes', 'original_sha256'}
                 require(entry.get('prefix_of') == H4_ROWS, 'h4-prefix-source')
+                byte_fields = (('original_bytes', 2_000_000),)
+                hashes = ('original_sha256',)
+            elif path in CSV_ASSETS:
+                fields = {'path', 'representation', 'original_bytes', 'original_sha256'}
+                require(entry['representation'] == 'crlf-csv', 'csv-representation')
                 byte_fields = (('original_bytes', 2_000_000),)
                 hashes = ('original_sha256',)
             elif group == 'assets':
@@ -165,6 +182,19 @@ def relations(raw, parsed, metadata_raw, metadata_json):
         relation(failed['exit_code'] == 1 and 'paired-row.csv.partial-v1' in failed['outputs_retained']
                  and 0 < len(raw[H4_PARTIAL]) < len(raw[H4_ROWS])
                  and raw[H4_ROWS].startswith(raw[H4_PARTIAL]), 'h4-failed-export-prefix')
+    if H4_SOURCES in raw:
+        recorded = metadata_json[H4+'postrun-manifest.json']['files']
+        for path in (H4_SOURCES, H4_SOURCES_PARTIAL):
+            relation(bytes_hash(recorded[Path(path).name], path), 'h4-source-inventory:'+Path(path).name)
+        completed = metadata_json[H4+'pairing-export-execution.json']
+        relation(completed['exit_code'] == 0 and bytes_hash(completed['outputs']['paired-source.csv'], H4_SOURCES),
+                 'h4-complete-source-export')
+        failed = metadata_json[H4+'pairing-export-failure-v1.json']
+        relation(failed['exit_code'] == 1 and 'paired-source.csv.partial-v1' in failed['outputs_retained'],
+                 'h4-retained-failed-source-export')
+        for path in CORE_SAMPLES:
+            relation(bytes_hash(metadata_json[CORE_SAMPLE_INDEX][Path(path).name], path),
+                     'core-sample-inventory:'+Path(path).name)
     return checked
 
 def verified_inputs(source):
@@ -199,8 +229,24 @@ def verified_inputs(source):
         require(len(prefix) == partial['original_bytes'] and H(prefix) == partial['original_sha256'],
                 'h4-prefix-integrity')
         raw[H4_PARTIAL] = prefix
+    if H4_SOURCES in maps['assets']:
+        for path in CSV_ASSETS:
+            entry = maps['assets'][path]
+            data = bounded_read(source/path, entry['original_bytes'])
+            # Standard Git checkouts and archives emit CRLF. A raw Git blob
+            # contains LF; reconstruct and verify the exact same scientific bytes.
+            if b'\r' not in data:
+                data = data.replace(b'\n', b'\r\n')
+            require(len(data) == entry['original_bytes'] and H(data) == entry['original_sha256'],
+                    'csv-original-integrity')
+            raw[path] = data
     checks=relations(raw,parsed,metadata_raw,metadata_json)
     return {'manifest':manifest,'maps':maps,'assets':raw,'metadata_raw':metadata_raw,'metadata_json':metadata_json,'relations':checks}
+
+def inspection_note(assets):
+    if H4_SOURCES in assets:
+        return CSV_NOTE
+    return H4_NOTE if H4_ROWS in assets else NOTE
 
 def inspect_output(source, output, prepared=None):
     source,output=roots(source,output,fresh=False)
@@ -228,7 +274,7 @@ def inspect_output(source, output, prepared=None):
     require(found_dirs==allowed_dirs,'output-directory-set')
     require(found.issubset(allowed),'extra-output')
     require((set(raw)|set(MARKER_PATHS)|{NOTE_PATH}).issubset(found),'missing-output')
-    require(bounded_read(output/NOTE_PATH,4096)==(H4_NOTE if H4_ROWS in raw else NOTE),'inspection-note')
+    require(bounded_read(output/NOTE_PATH,4096)==inspection_note(raw),'inspection-note')
     # Existing receipts never excuse absent/changed historical files.
     if RECEIPT_PATH in found:
         receipt=strict_json(bounded_read(output/RECEIPT_PATH,16384))
@@ -246,6 +292,9 @@ def completion_receipt(source, output, prepared, checked):
     if H4_ROWS in values:
         receipt['scope'] = 'seven-artifact-inspection'
         receipt['completeness'] = '14 exact historical files only, not whole manifest, checkout, experiment, source closure or branch CI.'
+    if H4_SOURCES in values:
+        receipt['scope'] = 'twelve-artifact-inspection'
+        receipt['completeness'] = '19 exact historical files only, not whole manifest, checkout, experiment, source closure or branch CI.'
     return receipt
 
 def restore(source, output):
@@ -254,7 +303,7 @@ def restore(source, output):
     # Every input and semantic relation has passed before O is created.
     output.mkdir(exist_ok=False)
     (output/'inspection-metadata').mkdir()
-    with (output/NOTE_PATH).open('xb') as stream: stream.write(H4_NOTE if H4_ROWS in prepared['assets'] else NOTE)
+    with (output/NOTE_PATH).open('xb') as stream: stream.write(inspection_note(prepared['assets']))
     values={**prepared['assets'],**{path:prepared['metadata_raw'][path] for path in MARKER_PATHS}}
     for path,body in values.items():
         target=output/path; target.parent.mkdir(parents=True,exist_ok=True)

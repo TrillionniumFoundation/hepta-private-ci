@@ -47,6 +47,36 @@
       "original_sha256": "3d93100d9c9aa56f8ee1ab5f2ca50b611e5444536288e41710046b9699b305df",
       "path": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/paired-row.csv.partial-v1",
       "prefix_of": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/paired-row.csv"
+    },
+    {
+      "original_bytes": 134465,
+      "original_sha256": "e3ebfd8e5f5c2ee6e6d9f466ab5f895e20dcce73fe733cd5dcb9aa70f7b7725f",
+      "path": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/paired-source.csv",
+      "representation": "crlf-csv"
+    },
+    {
+      "original_bytes": 89653,
+      "original_sha256": "8f00220218643d742513473def900bd2f6c8926119b091913726a7cef3a48492",
+      "path": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/paired-source.csv.partial-v1",
+      "representation": "crlf-csv"
+    },
+    {
+      "original_bytes": 1846,
+      "original_sha256": "549da14b118164a896c479a98e4016f4d02406d814fad7db14801956829cb433",
+      "path": "qualification/joint-generation/runs/codex-cloud-core-c1-training-receipt-diagnostic/raw-batch-samples.csv",
+      "representation": "crlf-csv"
+    },
+    {
+      "original_bytes": 485,
+      "original_sha256": "74865069115137844143d68c6650f31767d268d3be4007e25e5fb56d02800b1a",
+      "path": "qualification/joint-generation/runs/codex-cloud-core-c1-training-receipt-diagnostic/raw-repeat-samples.csv",
+      "representation": "crlf-csv"
+    },
+    {
+      "original_bytes": 29985,
+      "original_sha256": "20479aa604cced3b5eebbf31c1c88e888734ea2df5f6bd0c6f19fabd3a481700",
+      "path": "qualification/joint-generation/runs/codex-cloud-core-c1-training-receipt-diagnostic/raw-row-samples.csv",
+      "representation": "crlf-csv"
     }
   ],
   "markers": [
@@ -86,7 +116,7 @@
       "sha256": "ee01d445736bc5d58da6976a6e58568674823bbddb2023bfc2a707ad8d20942b"
     }
   ],
-  "schema": "joint-historical-assets-gzip-v2",
+  "schema": "joint-historical-assets-gzip-v3",
   "sidecars": [
     {
       "bytes": 12234,
@@ -147,6 +177,11 @@
       "bytes": 594,
       "path": "qualification/joint-generation/runs/codex-cloud-dynamic-train-headroom-h4/pairing-export-failure-v1.json",
       "sha256": "e51dc79803776bb61987b8f1653f223883daf33617025c1ca67324958b3cdcc7"
+    },
+    {
+      "bytes": 1588,
+      "path": "qualification/joint-generation/runs/codex-cloud-core-c1-training-receipt-diagnostic/SHA256.json",
+      "sha256": "3604046be9dd6d2c09c11cc2a867be373ce4e0c23c7f50e4ffb79dcaa369da83"
     }
   ]
 }

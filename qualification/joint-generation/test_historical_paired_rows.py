@@ -30,6 +30,7 @@ class HistoricalRowsTests(unittest.TestCase):
         self.descriptor = self.source / storage.DESCRIPTOR
         self.parts = [self.source / (storage.H4_ROWS + f".gz.part-{i:02d}") for i in range(2)]
         files = [storage.DESCRIPTOR, *(p + ".gz" for p in storage.ASSET_PATHS)]
+        files += list(storage.CSV_ASSETS)
         files += [p.relative_to(self.source) for p in self.parts]
         files += [entry["path"] for group in ("markers", "sidecars") for entry in manifest[group]]
         for name in files:
@@ -50,7 +51,7 @@ class HistoricalRowsTests(unittest.TestCase):
             self.assertEqual(body.count(b"\r\n"), rows + 1)
             self.assertEqual(body.count(b"\n"), rows + 1)
         self.assertEqual(full[:len(partial)], partial)
-        self.assertEqual(len(receipt["files"]), 14)
+        self.assertEqual(len(receipt["files"]), 19)
         self.assertIn("h4-failed-export-prefix", receipt["consumed_relations"])
         self.assertIn("h4-complete-export", receipt["consumed_relations"])
         self.assertFalse(receipt["scientific_execution_performed"])
@@ -58,6 +59,60 @@ class HistoricalRowsTests(unittest.TestCase):
         (self.output / storage.H4_PARTIAL).write_bytes(partial[:-1])
         with self.assertRaises(storage.ContractError):
             storage.inspect_output(self.source, self.output)
+
+    def test_independent_source_exports_and_core_samples_match_original_sidecars(self):
+        receipt = storage.restore(self.source, self.output)
+        h4 = json.loads((self.source / (storage.H4 + "postrun-manifest.json")).read_bytes())["files"]
+        core = json.loads((self.source / storage.CORE_SAMPLE_INDEX).read_bytes())
+        for name in storage.CSV_ASSETS:
+            data = (self.output / name).read_bytes()
+            pin = (h4 if name.startswith(storage.H4) else core)[Path(name).name]
+            self.assertEqual({"bytes": len(data), "sha256": storage.H(data)}, pin)
+            self.assertEqual(data.count(b"\n"), data.count(b"\r\n"))
+        full = (self.output / storage.H4_SOURCES).read_bytes()
+        partial = (self.output / storage.H4_SOURCES_PARTIAL).read_bytes()
+        self.assertFalse(full.startswith(partial))
+        self.assertEqual([full.count(b"\r\n"), partial.count(b"\r\n")], [577, 385])
+        self.assertEqual(receipt["scope"], "twelve-artifact-inspection")
+        self.assertFalse(receipt["scientific_execution_performed"])
+
+    def test_modified_csv_with_matching_transport_hash_fails_historical_sidecar(self):
+        manifest = json.loads(self.descriptor.read_bytes())
+        name = storage.CORE_SAMPLES[0]
+        path = self.source / name
+        original = path.read_bytes()
+        wrong = (original if b"\r" in original else original.replace(b"\n", b"\r\n")).replace(b",", b";", 1)
+        path.write_bytes(wrong)
+        entry = next(row for row in manifest["assets"] if row["path"] == name)
+        entry.update(original_bytes=len(wrong), original_sha256=storage.H(wrong))
+        self.descriptor.write_bytes(storage.canonical(manifest))
+        with self.assertRaisesRegex(storage.ContractError, "core-sample-inventory"):
+            storage.restore(self.source, self.output)
+        self.assertFalse(self.output.exists())
+
+    def test_canonical_git_blobs_and_crlf_checkouts_restore_the_same_original_bytes(self):
+        assets = storage.verified_inputs(self.source)["assets"]
+        for name in storage.CSV_ASSETS:
+            canonical = assets[name].replace(b"\r\n", b"\n")
+            (self.source / name).write_bytes(canonical)
+        self.assertEqual(storage.verified_inputs(self.source)["assets"], assets)
+        name = storage.H4_SOURCES
+        mixed = assets[name].replace(b"\r\n", b"\n", 1)
+        (self.source / name).write_bytes(mixed)
+        with self.assertRaisesRegex(storage.ContractError, "csv-original-integrity"):
+            storage.restore(self.source, self.output)
+        self.assertFalse(self.output.exists())
+
+    def test_previous_descriptor_preserves_the_fourteen_file_receipt(self):
+        manifest = json.loads(self.descriptor.read_bytes())
+        manifest["schema"] = "joint-historical-assets-gzip-v2"
+        manifest["assets"] = [r for r in manifest["assets"] if r["path"] not in storage.CSV_ASSETS]
+        manifest["sidecars"] = [r for r in manifest["sidecars"] if r["path"] != storage.CORE_SAMPLE_INDEX]
+        self.descriptor.write_bytes(storage.canonical(manifest))
+        receipt = storage.restore(self.source, self.output)
+        self.assertEqual(len(receipt["files"]), 14)
+        self.assertEqual(receipt["scope"], "seven-artifact-inspection")
+        self.assertEqual((self.output / storage.NOTE_PATH).read_bytes(), storage.H4_NOTE)
 
     def test_each_missing_or_modified_carrier_prevents_publication(self):
         for path in self.parts:
