@@ -1,8 +1,8 @@
 # cognitive.types architecture
 
-**Status:** source hardening and canonical-consumer convergence candidate  
-**Owner:** `cognitive-platform`  
-**Deputy:** `kernel-contracts`  
+**Status:** source hardening and canonical-consumer convergence candidate\
+**Owner:** `cognitive-platform`\
+**Deputy:** `kernel-contracts`\
 **Authority posture:** pure contract library; no SQL, daemon, network, model, effect, promotion or release authority
 
 ## 1. Purpose
