@@ -53,7 +53,7 @@ impl AutomationStore {
         let path = root.join(AUTOMATION_DB_FILENAME);
         let sqlite_home = AbsolutePathBuf::try_from(root).map_err(|_| AutomationError::Invalid)?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_durable_evidence_pool(&path)
+            .open_private_durable_evidence_pool(&path)
             .await
             .map_err(unavailable)?;
         if let Err(error) = reconcile_legacy_migration_ids(&pool).await {

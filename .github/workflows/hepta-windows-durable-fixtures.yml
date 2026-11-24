@@ -122,7 +122,7 @@ jobs:
         shell: pwsh
         run: |
           $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
-          just test -p codex-state --lib --locked -E 'test(sqlite_recovery::)' --success-output immediate --failure-output immediate 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'sqlite-recovery.log')
+          just test -p codex-state --lib --locked -E 'test(sqlite_recovery::) | test(sqlite_private_owner::)' --success-output immediate --failure-output immediate 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'sqlite-recovery.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify cognitive current-cut recovery and ordinary private store behavior
         if: success() || failure()

@@ -330,7 +330,7 @@ impl CognitiveStore {
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_durable_evidence_pool(&path)
+            .open_private_durable_evidence_pool(&path)
             .await
             .map_err(unavailable)?;
         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
@@ -506,7 +506,7 @@ pub(crate) async fn open_v2_test_pool(
     let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&path)
+        .open_private_durable_evidence_pool(&path)
         .await
         .map_err(unavailable)?;
     MIGRATOR

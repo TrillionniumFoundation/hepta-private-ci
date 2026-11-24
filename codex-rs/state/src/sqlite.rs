@@ -335,7 +335,9 @@ impl SqliteConfig {
             .foreign_keys(true)
             .busy_timeout(Duration::from_secs(5))
             .log_statements(LevelFilter::Off);
-        let mut connection = options.connect().await?;
+        let mut connection = super::sqlite_private_owner::with_private_owner(options)?
+            .connect()
+            .await?;
         let checkpoint = async {
             let (busy, _, _): (i32, i32, i32) = sqlx::query_as("PRAGMA wal_checkpoint(TRUNCATE)")
                 .fetch_one(&mut connection)

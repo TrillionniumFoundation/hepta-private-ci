@@ -68,7 +68,7 @@ Formatting, diff checks and an independent actual-source MSVC Rust `--tests`
 typecheck passed. The typecheck found and resolved three Rust compilation errors;
 it did not compile, link or execute the Windows C backend.
 
-Eight native tests now cover DB/WAL/SHM/temp, read-only SHM recreation, same-owner
+Eight native test cases are defined for DB/WAL/SHM/temp, read-only SHM recreation, same-owner
 reuse, mixed SHM policy, unchanged stock VFS selection, and unmodified rejection
 of existing wrong-owner/broad-ACL objects through the actual VFS functions. A
 same-user thread-token control duplicates the current token only on a dedicated
@@ -78,6 +78,11 @@ distinguish thread-versus-process SID selection from results alone; that selecti
 also depends on the source audit. Wrong-owner fixtures first observe the actual
 owner and may use an OS-authorized owner group. An unavailable attack fixture is
 an explicit qualification failure, not a skipped or weakened assertion.
+
+The read-only case opens the main database read-only and permits writable SHM
+recreation. It does not force the separate OS access-denied branch that retries
+SHM with read-only access; policy propagation through that branch is supported by
+source review, not by a claimed native branch execution.
 
 The source remains a non-workspace path dependency. Adding it as a workspace
 member would unnecessarily activate unrelated SQLCipher/bindgen features under
@@ -95,3 +100,27 @@ retry defaults, and unchanged tracked source. Existing primitive and consumer
 steps continue after a probe failure; no positive requirement is removed.
 
 No native C/VFS pass is claimed until that real Windows probe succeeds.
+
+## Explicit SQLx consumers
+
+`SqliteConfig::open_private_read_write_pool` and
+`SqliteConfig::open_private_durable_evidence_pool` select the registered VFS before
+SQLx starts any worker connection. Their ordinary state/evidence settings match
+the existing generic methods. The generic writable, durable and read-only
+methods keep the stock backend. Registration failure is propagated and never
+retried with the stock VFS.
+
+The private cognitive constructor, v2 migration fixture, recovery candidate
+creation/reopen, automation constructor and Matrix constructor opt in explicitly.
+The already-private recovery checkpoint helper selects the same VFS. Cold-image
+source fixtures also use the private API. Generic evidence/authbus/operations
+paths are not reclassified as private by this change. Existing directory, object
+identity and recovery checks remain separate requirements; in particular the
+unavailable identity-bound and immutable recovery openers remain unavailable.
+
+Two additional state tests exercise actual SQLx workers: multiple simultaneous
+private pool connections with live DB/WAL/SHM validation and close/reopen, and a
+private read-only connection with rejected writes. Both inspect the actual VFS
+pointer through a locked SQLite handle and remain part of the normal Windows
+consumer step. They are distinct from the eight-case native probe and have not
+yet been executed.
