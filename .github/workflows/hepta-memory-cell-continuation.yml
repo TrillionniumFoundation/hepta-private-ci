@@ -134,7 +134,9 @@ jobs:
         if: always()
         with:
           name: memory-cell-native-owner-evidence
-          path: /tmp/neuron-owner-evidence
+          path: |
+            /tmp/neuron-owner-evidence
+            ${{ runner.temp }}/memory-cell-native-owner-helpers/manifest.json
           if-no-files-found: warn
   training-owner:
     runs-on: ubuntu-latest
