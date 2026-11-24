@@ -1,5 +1,14 @@
 # Hepta 研究与集成核验
 
+## 2026-11-24 22:08 UTC #7068 原仓库级终局与跨平台新阻塞
+
+- 精确 804ac018 的 [blocking-ci 45458387224](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45458387224) 已由 queued 转 completed failure。返回30项（首屏）独立加总11 success、12 failure、4 cancelled、3 skipped。原 cargo-deny、build-test、Windows/Ubuntu native paths、blob、codespell、format、python SDK 已绿；四个 Windows shard、GNU/musl/Intel 测试、GNU/Windows Clippy及release、SDK 红，macOS ARM native path/test/clippy/release 四项取消。没有把专项绿门当生产资格。
+- 实读 SDK 138713957271（7156行）、GNU test 138713957872（18880行）、Windows shard4 138713957893（4663行）、GNU Clippy 138713957985（12183行）、Windows Clippy 138713957914（9833行）、Windows release 138713958036（4936行），共57651行（含末尾空行）。SDK/两端构建均报 CLI query depth overflow；SDK 原件给出 layout of async block main.rs:1091:18、query depth increased by 130。精确 main.rs blob 1bd3eb0b 无 crate recursion_limit，1091 的 Box::pin(async move { cli_main(...).await?; Ok(()) }) 实读一致；优先检查 cli_main 内 future 类型边界/boxed future 分段；编译器建议 256 仅是未试候选，不认定根因或修复通过。
+- Linux 和 Windows 原编译均复现已登记的 evaluated_shadow_segment_tests.rs 两处 fs 未导入；原 GNU/Windows Time Clippy 各目标退出含11条诊断（原日志可见10处不同 expect 源坐标），不能降级 lint。GNU 新见 exec/tests/suite/resume.rs:285/398 两处 disallowed sqlx::Connection::connect_with，queue support/mod.rs:25/43 两处 expect；Windows state tests 两处 Option expect。SQLx 必须沿已准入连接入口，不能绕过所有权、VFS 或策略。
+- GNU 原测试另有实际运行失败：Robrix tracked fixtures 缺失、exec-server response body timeout、supervisor drain ACK、remote-control transient timeout、queue deadline、infer-worker Codex path not configured、Cognitive writer immutable file identity 未建立及 cognitive product ToolRegistry/JSON/代际 fencing 失败。分别保留原始错误，不认定同根因；Windows shard4 原 helper program not found、operator acceptance、shadow qualification access denied 仍红。未调原超时、所有权或隔离断言。
+- Robrix 可执行依赖定位：精确 BUILD.bazel blob 7e0bfea1 的 codex_rust_crate 未给 test_data_extra；测试 blob 01dfc569 的 read_tracked_artifacts（351–354）从 CARGO_MANIFEST_DIR/fixtures/robrix-control-v2 枚举并与生成结果逐字对比；原日志路径为 /buildbuddy-execroot/codex-rs/hepta-supervisor/fixtures/robrix-control-v2。defs.bzl blob afaee21d 的集成测试 data 默认仅 glob tests/** 加 test_data_extra。候选应声明实际 tracked fixtures 为 runfiles、按真实 test runfiles 定位，同时保持 Cargo 路径与整个目录集合断言，不可用重新生成的 artifacts 冒充 tracked 文件。未与并行 #7068 重复提交或派发测试。
+- 实读七 PR head 与对应 PR-triggered workflow 列表，原四 Draft 41条工作流、#7067/#7070 未见新终态，#7068 仅上述仓库门变化；main 对 732e934 compare identical。只登记新证据，无产品修改、无重跑、无红门合并；HCSN 科学/保持/Windows生产隔离/Agentd strict/Q24仍 HOLD。
+
 ## 2026-11-24 20:39 UTC #7070 原仓库门终局与 #7068 canary
 
 - #7070 精确 79b1ef2a 的 [blocking-ci 45429499868](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45429499868) 由 queued 转 completed failure。本轮实读返回的30项作业（首屏）：9 success、14 failure、4 cancelled、3 skipped；原生 Ubuntu/Windows path、build-test、cargo-deny、blob size、python SDK 为绿，不等于原四隔离正例。GNU/musl/Intel/Windows 四 shard、SDK、release、clippy 仍红。未重跑。
