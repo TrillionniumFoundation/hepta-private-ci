@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "head": "ebe2737b4014c9b45ad995adccc53eb71e718f3d",
+    "tree": "992b66b378bbc9329ed418af39496eeec61fa37e",
+    "pull_request": 7068
+  },
+  "run": {
+    "id": 45445453422,
+    "job_id": 138627851875,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45445453422/job/138627851875",
+    "status": "completed",
+    "conclusion": "failure",
+    "completed_at": "2026-11-24T17:39:10Z",
+    "completed_at_source": "Independent parent-agent REST job readback; terminal status also read from GitHub connector",
+    "manually_cancelled": false
+  },
+  "artifact": {
+    "id": 14946917714,
+    "bytes": 50676,
+    "sha256": "bb5a3cc1b614a29d31ce024c7ad773cd9eeafabcbc674dc3ca8eb413dc6722ca",
+    "digest_matches_github": true,
+    "files": {
+      "cognitive-recovery.log": {
+        "bytes": 66844,
+        "sha256": "47051c8c3f7a229e119655c9da022e6f0ec3f7107d7b23ba2fc5dcf98538be0f"
+      },
+      "head.txt": {
+        "bytes": 42,
+        "sha256": "ac8c90ce1f470cfec8edfe0bf5702afaf918b13bb3421240283d8be138c8a391"
+      },
+      "native-clippy.log": {
+        "bytes": 24669,
+        "sha256": "3f3374dc9449d23129438647a56b8e6726b4119014a8accdf715f795997b6588"
+      },
+      "native-primitives.log": {
+        "bytes": 12991,
+        "sha256": "3ee49aabb9f1eb099f359aae02ca22ee6e91653b2c04a13d0b9318ca88ac339e"
+      },
+      "prompt-consumers.log": {
+        "bytes": 50598,
+        "sha256": "1e27c933bde60ae5ae0202aca661ad72b586844f791518e9f788d49dd0706448"
+      },
+      "registry-native.log": {
+        "bytes": 6831,
+        "sha256": "e69f04c5e788fecee88d51e6f4a7213d13d6655ba0ef0e90fc70626d75a15dd0"
+      },
+      "rustc.txt": {
+        "bytes": 201,
+        "sha256": "88b7810119b8cb6083d3f2835d072d7048f479595a7c152b6716f4859675be36"
+      },
+      "sqlite-recovery.log": {
+        "bytes": 52266,
+        "sha256": "09d32a927e5b6b6bca6244aaac930a1c99c3376ba7f8116db6d705a14f67dd40"
+      },
+      "tests.log": {
+        "bytes": 89291,
+        "sha256": "d124ea2153a010c753c1e9eece319aa42938ef4bd735d8f902aa7b50f1c4b577"
+      }
+    }
+  },
+  "normalized_job_log": {
+    "file": "ebe273-windows-native-138627851875.log",
+    "bytes": 671710,
+    "sha256": "d5512d7d12e083425bc640a929b695766d2e1cf1fc6780932e8985fc744dae54",
+    "provider_content_characters": 677167,
+    "stored_characters": 670598,
+    "normalization": "CRLF to LF; exactly one final newline. This is not a byte-identical GitHub log archive."
+  },
+  "toolchain": [
+    "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "binary: rustc",
+    "commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96",
+    "commit-date: 2026-05-25",
+    "host: x86_64-pc-windows-msvc",
+    "release: 1.96.0",
+    "LLVM version: 22.1.2"
+  ],
+  "selections": {
+    "native-primitives.log": {
+      "run": 14,
+      "passed_count": 13,
+      "failed_count": 1,
+      "outside_selector": 5,
+      "unique_attempts": 15,
+      "passed": [
+        "codex-utils-path windows_private::tests::broad_existing_dacl_is_rejected_without_automatic_repair",
+        "codex-utils-path windows_private::tests::hard_links_and_non_leaf_names_are_rejected_before_editing",
+        "codex-utils-path windows_private::tests::one_character_target_uses_a_complete_rename_header",
+        "codex-utils-path windows_private::tests::private_directory_preserves_exclusive_writer_locking",
+        "codex-utils-path windows_private::tests::private_state_replaces_atomically_and_reopens_with_the_same_acl",
+        "codex-utils-path windows_private::tests::reparse_child_cannot_be_opened_or_used_as_a_replacement_target",
+        "codex-utils-path windows_private::tests::reparse_root_and_reparse_ancestor_never_reach_the_target",
+        "codex-utils-path windows_private::tests::retained_directory_cannot_be_rebound_by_path_rename",
+        "codex-utils-path windows_private::tests::sqlite_canonical_name_comes_from_the_validated_handle",
+        "codex-utils-path windows_private::tests::sqlite_inspection_never_creates_repairs_or_flushes_source_objects",
+        "codex-utils-path windows_private::tests::sqlite_namespace_witness_restarts_and_covers_multiple_native_pages",
+        "codex-utils-path windows_private::tests::sqlite_snapshots_detect_drift_and_failed_candidate_cleanup_binds_the_handle",
+        "codex-utils-path windows_private::tests::writable_directory_handle_executes_the_real_flush"
+      ],
+      "failed": [
+        "codex-utils-path windows_private::tests::sqlite_inheritance_is_owner_only_and_does_not_weaken_the_default_policy"
+      ]
+    },
+    "registry-native.log": {
+      "run": 2,
+      "passed_count": 2,
+      "failed_count": 0,
+      "outside_selector": 26,
+      "unique_attempts": 2,
+      "passed": [
+        "codex-hepta-prompt-registry durable::windows_tests::native_owner_reopens_and_rejects_a_second_writer",
+        "codex-hepta-prompt-registry durable::windows_tests::native_post_rename_failure_poisoning_requires_reopen"
+      ],
+      "failed": []
+    },
+    "sqlite-recovery.log": {
+      "run": 6,
+      "passed_count": 4,
+      "failed_count": 2,
+      "outside_selector": 203,
+      "unique_attempts": 8,
+      "passed": [
+        "codex-state sqlite_recovery::windows_tests::native_guard_rejects_reparse_roots_without_creating_or_repairing_them",
+        "codex-state sqlite_recovery::windows_tests::native_guard_rejects_replacements_links_sidecars_and_permission_drift",
+        "codex-state sqlite_recovery::windows_tests::native_materialization_copies_only_retained_replay_files_and_never_overwrites_a_candidate",
+        "codex-state sqlite_recovery::windows_tests::native_source_inspection_is_read_only_and_filename_writer_entries_stay_unavailable"
+      ],
+      "failed": [
+        "codex-state sqlite_recovery::image::tests::cold_image_is_immutable_and_reconnects_to_same_copy",
+        "codex-state sqlite_recovery::image::tests::cold_image_rejects_wrong_guard_replacement_sidecars_and_size"
+      ]
+    },
+    "cognitive-recovery.log": {
+      "run": 23,
+      "passed_count": 0,
+      "failed_count": 23,
+      "outside_selector": 249,
+      "unique_attempts": 46,
+      "passed": [],
+      "failed": [
+        "codex-hepta-memory cognitive_store::recovery::tests::byte_identical_rename_replacement_can_recover_only_with_current_witness",
+        "codex-hepta-memory cognitive_store::recovery::tests::cold_read_only::cold_recovery_rejects_revision_change_and_forgetting_rollback",
+        "codex-hepta-memory cognitive_store::recovery::tests::cold_read_only::cold_reopen_reads_canonical_snapshot_without_mutating_source",
+        "codex-hepta-memory cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
+        "codex-hepta-memory cognitive_store::recovery::tests::cold_read_only::stable_inspection_metadata_cannot_authenticate_changed_content",
+        "codex-hepta-memory cognitive_store::recovery::tests::corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io",
+        "codex-hepta-memory cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation",
+        "codex-hepta-memory cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+        "codex-hepta-memory cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers",
+        "codex-hepta-memory cognitive_store::recovery::tests::recovery_bounds_large_rows_before_loading_payloads_and_rejects_unknown_tables",
+        "codex-hepta-memory cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission",
+        "codex-hepta-memory cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence",
+        "codex-hepta-memory cognitive_store_tests::competing_memory_corrections_rollback_the_losing_source",
+        "codex-hepta-memory cognitive_store_tests::concurrent_source_identity_conflict_commits_exactly_one_payload",
+        "codex-hepta-memory cognitive_store_tests::h7_trajectory_schema_is_bound_and_append_only",
+        "codex-hepta-memory cognitive_store_tests::projection_failure_rolls_back_source_memory_and_facts_before_reopen",
+        "codex-hepta-memory cognitive_store_tests::reopen_recomputes_current_projection_digests_and_exact_fts_rows",
+        "codex-hepta-memory cognitive_store_tests::reopen_rejects_0008_migration_checksum_drift_without_repair",
+        "codex-hepta-memory cognitive_store_tests::reopen_rejects_canonical_generation_and_publication_digest_tamper",
+        "codex-hepta-memory cognitive_store_tests::reopen_rejects_foreign_owned_rows_inside_agent_local_store",
+        "codex-hepta-memory cognitive_store_tests::source_acknowledgement_retry_survives_wal_reader_and_reopen",
+        "codex-hepta-memory cognitive_store_tests::stores_are_per_agent_append_only_and_scope_fail_closed",
+        "codex-hepta-memory cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection"
+      ]
+    },
+    "tests.log": {
+      "run": 30,
+      "passed_count": 26,
+      "failed_count": 4,
+      "outside_selector": 259,
+      "unique_attempts": 34,
+      "passed": [
+        "codex-hepta-agentd cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+        "codex-hepta-agentd cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+        "codex-hepta-agentd cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+        "codex-hepta-agentd cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+        "codex-hepta-agentd cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+        "codex-hepta-authbus authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen",
+        "codex-hepta-authbus authority_schema::tests::missing_tables_and_unrecognized_schema_objects_fail_closed",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::failed_publication_fences_cached_success_until_reopen",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::oversized_publication_cannot_create_an_unreadable_registry",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::windows_rejects_a_hard_linked_staging_file_without_truncation",
+        "codex-hepta-bao-adapter lease_lifecycle::tests::windows_rejects_an_existing_parent_with_inherited_acl",
+        "codex-hepta-intelligence evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+        "codex-hepta-intelligence evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+        "codex-hepta-intelligence evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+        "codex-hepta-intelligence evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+        "codex-hepta-intelligence evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports",
+        "codex-hepta-intelligence outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation",
+        "codex-hepta-intelligence outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit",
+        "codex-hepta-intelligence outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append"
+      ],
+      "failed": [
+        "codex-hepta-intelligence evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+        "codex-hepta-intelligence evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+        "codex-hepta-intelligence evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+        "codex-hepta-intelligence evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch"
+      ]
+    },
+    "prompt-consumers.log": {
+      "run": 12,
+      "passed_count": 12,
+      "failed_count": 0,
+      "outside_selector": 227,
+      "unique_attempts": 12,
+      "passed": [
+        "codex-hepta-agentd prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry",
+        "codex-hepta-agentd prompt_runtime::tests::final_delivered_terminal_releases_staged_turn",
+        "codex-hepta-agentd prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically",
+        "codex-hepta-agentd prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+        "codex-hepta-agentd prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry",
+        "codex-hepta-agentd prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement",
+        "codex-hepta-agentd prompt_runtime::tests::owner_remains_send_sync_with_fault_injection",
+        "codex-hepta-agentd prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent",
+        "codex-hepta-agentd prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn",
+        "codex-hepta-intelligence prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift",
+        "codex-hepta-intelligence prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+        "codex-hepta-intelligence prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization"
+      ],
+      "failed": []
+    }
+  },
+  "other_gates": {
+    "scoped_clippy": "success; warnings remain",
+    "git_diff_exit_code": "success; zero-output diff file absent from artifact, conclusion established by raw job step",
+    "final_artifact_upload": "success"
+  },
+  "failure_classes": [
+    {
+      "logs": [
+        "native-primitives.log",
+        "sqlite-recovery.log",
+        "cognitive-recovery.log"
+      ],
+      "unique_cases": 26,
+      "observed_error": "storage object owner differs from the effective token user",
+      "boundary": "Strict owner validation refused the object. The 23 cognitive cases stopped during store creation; their downstream assertions were not reached."
+    },
+    {
+      "logs": [
+        "tests.log"
+      ],
+      "unique_cases": 4,
+      "observed_error": "Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+      "source": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "boundary": "Independent fs::read opens attempted to observe an exclusively locked ledger. Production lock behavior remains mandatory; a test-fixture correction is pending."
+    }
+  ],
+  "qualification_limits": [
+    "Retries are attempts of the same named test, not additional cases; repeated terminal summary lines are deduplicated by package/test/attempt.",
+    "The counts of tests outside each selector must not be summed into a repository-wide skip or test count.",
+    "This is the complete result of this one native scoped workflow, not all CI workflows or all repository tests.",
+    "The owner fixture revision 640825cbfe71d978991a30959b52a0b60a509895 and new explicit-owner SQLite VFS were not in this source head.",
+    "No power-loss durability, global namespace currentness, or original-path writer-fence guarantee is inferred from these tests."
+  ]
+}

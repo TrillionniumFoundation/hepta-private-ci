@@ -86,6 +86,11 @@ selection is not yet qualified. The normal run was not cancelled.
 
 ## Primary API reference
 
+The subsequently completed run is recorded in the
+[full ebe273 receipt](../windows-native-ebe273-20261124/README_ZH.md).
+The canonical primitive passed; all 23 cognitive cases advanced to a
+creation-owner rejection, so their downstream recovery assertions remain pending.
+
 Microsoft documents that the DOS form returned by this handle query uses
 verbatim `\\?\` syntax, with success length excluding the terminating NUL:
 <https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfinalpathnamebyhandlew>.
