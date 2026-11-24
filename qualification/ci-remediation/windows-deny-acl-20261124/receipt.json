@@ -1,0 +1,93 @@
+{
+  "source_commit": "3689e8f3d7d3dfff3f9421dc35274dafd42f3e25",
+  "rustc": "1.96.0 (ac68faa20 2026-05-25)",
+  "target": "x86_64-pc-windows-msvc",
+  "scope": "Isolated actual repository ACL, token, winutil and their tests; not complete crate or native Windows execution",
+  "initial_compile": {
+    "command": [
+      "cargo",
+      "check",
+      "--offline",
+      "--manifest-path",
+      "/workspace/scratch/87d09924eef9/sandbox_acl_20261124/Cargo.toml",
+      "--tests",
+      "--target",
+      "x86_64-pc-windows-msvc"
+    ],
+    "exit_code": 0,
+    "seconds": 1.7459481050027534,
+    "source_unchanged": true,
+    "native_tests_executed": 0,
+    "scope": "Unmodified repository ACL/token/winutil source and tests; isolated manifest; compile only"
+  },
+  "final_clippy": {
+    "commands": [
+      {
+        "command": [
+          "just",
+          "fix",
+          "--offline",
+          "--manifest-path",
+          "/workspace/scratch/87d09924eef9/sandbox_acl_20261124/Cargo.toml",
+          "--target",
+          "x86_64-pc-windows-msvc",
+          "--allow-no-vcs"
+        ],
+        "exit_code": 0,
+        "seconds": 0.8234033039989299,
+        "log": "clippy-fix-final.log"
+      },
+      {
+        "command": [
+          "just",
+          "clippy",
+          "--offline",
+          "--manifest-path",
+          "/workspace/scratch/87d09924eef9/sandbox_acl_20261124/Cargo.toml",
+          "--target",
+          "x86_64-pc-windows-msvc"
+        ],
+        "exit_code": 0,
+        "seconds": 0.41180668299784884,
+        "log": "clippy-final.log"
+      }
+    ],
+    "source_unchanged": true,
+    "native_tests_executed": 0
+  },
+  "pinned_dependencies": {
+    "anyhow": [
+      "1.0.103"
+    ],
+    "tempfile": [
+      "3.27.0"
+    ],
+    "pretty_assertions": [
+      "1.4.1"
+    ],
+    "windows-sys": [
+      "0.52.0",
+      "0.61.2"
+    ]
+  },
+  "isolated_lock_sha256": "67fe092ea1dfd839b0a39bfaa9cf469564575d43c15c7e505011d4b524929846",
+  "source_sha256": {
+    "codex-rs/windows-sandbox-rs/src/acl.rs": "815df19b7fa607576e704192cef63028017b5bf4e6048bb6558a1ce248216a9f",
+    "codex-rs/windows-sandbox-rs/src/acl_deny.rs": "ac386ecc63384c4d7f14b9908a86a5c071c2362a770873c1eb5b2e176cd88cae",
+    "codex-rs/windows-sandbox-rs/src/acl_tests.rs": "c5ef6eec6810f21c38622d5bdf0967a9e66fc7b167067289f7167d7b487b576d",
+    "codex-rs/windows-sandbox-rs/src/token.rs": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs": "b9ba4c055e5a65c645ae5c2ea8c5a0e6c256718b7705f28f5274079064eb5b2f",
+    "codex-rs/windows-sandbox-rs/src/winutil.rs": "12e2413a588b62ff3cc91c70c626a20801f4f84c0f4ea858ca7eb41e83a92185"
+  },
+  "evidence_sha256": {
+    "clippy-fix.txt": "1c48a5e07fb8ac1723694fb4e8de26d787494cecdd0f19828587ec4f21351a37",
+    "clippy-check.txt": "5117d776092c5e3cb8ed41ae42f414d2233fe72a79dc9257a0e0dd6991bdbfe8",
+    "initial-compile.txt": "41338f34a3bea57f59c09115bd97cda58ee445dd28b9506df12fcd0c5339b7c3"
+  },
+  "native_tests_executed": 0,
+  "remaining": [
+    "Native Windows idempotence and object-scope tests",
+    "Full workspace integration",
+    "Separate actual DELETE and DELETE_CHILD sandbox boundary failures remain open"
+  ]
+}

@@ -1,0 +1,21 @@
+cargo clippy --tests {args}
+    Checking codex-windows-sandbox-acl-qualification v0.0.0 (/workspace/scratch/87d09924eef9/sandbox_acl_20261124)
+warning: unsafe function's docs are missing a `# Safety` section
+   --> /workspace/scratch/87d09924eef9/ci_transport_closure_20261124/codex-rs/windows-sandbox-rs/src/token.rs:109:1
+    |
+109 | pub unsafe fn world_sid() -> Result<Vec<u8>> {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#missing_safety_doc
+    = note: `#[warn(clippy::missing_safety_doc)]` on by default
+
+warning: unsafe function's docs are missing a `# Safety` section
+   --> /workspace/scratch/87d09924eef9/ci_transport_closure_20261124/codex-rs/windows-sandbox-rs/src/token.rs:194:1
+    |
+194 | pub unsafe fn get_logon_sid_bytes(h_token: HANDLE) -> Result<Vec<u8>> {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#missing_safety_doc
+
+warning: `codex-windows-sandbox-acl-qualification` (lib test) generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.34s
