@@ -88,9 +88,9 @@ source review, not by a claimed native branch execution.
 The source remains a non-workspace path dependency. Adding it as a workspace
 member would unnecessarily activate unrelated SQLCipher/bindgen features under
 workspace-wide `--all-features`. Instead, `native-probe` is an independent locked
-package that depends on the real vendored crate with `bundled` and directly
+package that depends on the real vendored crate with `default` and `bundled` and directly
 references its actual test source. It has no copy of the C implementation. Its
-15-package resolved graph uses the existing pinned versions and was checked with
+17-package lock uses the existing production-pinned versions and was checked with
 `cargo metadata --locked --offline` for the MSVC target. The production workspace
 lock and broader SQLx consumer graph remain separate qualification requirements.
 
@@ -101,6 +101,18 @@ retry defaults, and unchanged tracked source. Existing primitive and consumer
 steps continue after a probe failure; no positive requirement is removed.
 
 No native C/VFS pass is claimed until that real Windows probe succeeds.
+
+The first native attempt, run `45451454733` at source
+`051be3cda3aad7a145830884a45999f2e549278f`, failed before C compilation or test
+execution. Disabling the vendored crate's default features omitted `pkg-config`
+and `vcpkg`, although its upstream build script still typechecks code using both.
+The probe now enables the same seven SQLite features as the production graph:
+`bundled`, `bundled_bindings`, `cc`, `default`, `min_sqlite_version_3_45_3`,
+`pkg-config`, and `vcpkg`. Its independent lock retains production versions,
+including pkg-config 0.3.32 and vcpkg 0.2.15. Locked MSVC-target metadata passes;
+that metadata is not a native C pass. Artifact `14947777845` preserves the failed
+build log, false qualification receipt and exact source binding; its ZIP SHA256 is
+`58b5b9ef18ade1ad71b471f4a0836655bcddcd9244bd8bb3fc62232c08bb3e2f`.
 
 ## Explicit SQLx consumers
 

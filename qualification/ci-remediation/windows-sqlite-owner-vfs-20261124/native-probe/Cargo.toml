@@ -11,7 +11,7 @@ path = "probe.rs"
 doctest = false
 
 [dependencies]
-libsqlite3-sys = { path = "../../../../codex-rs/third_party/libsqlite3-sys-0.39.1", default-features = false, features = ["bundled"] }
+libsqlite3-sys = { path = "../../../../codex-rs/third_party/libsqlite3-sys-0.39.1", features = ["bundled"] }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "=0.52.0", features = [
