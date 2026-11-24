@@ -55,7 +55,23 @@ impl Timestamp {
     };
 
     pub fn now() -> Self {
-        SystemTime::now().into()
+        #[cfg(all(
+            any(target_arch = "wasm32", target_arch = "wasm64"),
+            target_os = "unknown"
+        ))]
+        {
+            // The prior OAuth clock enabled the browser's millisecond clock.
+            // SystemTime::now() alone panics on wasm-unknown-unknown.
+            Self::from_milliseconds(jiff::Timestamp::now().as_millisecond())
+                .expect("JavaScript clock timestamp is within the UTC boundary")
+        }
+        #[cfg(not(all(
+            any(target_arch = "wasm32", target_arch = "wasm64"),
+            target_os = "unknown"
+        )))]
+        {
+            SystemTime::now().into()
+        }
     }
 
     /// Constructs an instant with a floor-based second and a positive fraction.

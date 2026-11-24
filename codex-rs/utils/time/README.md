@@ -10,6 +10,11 @@ fractional digits. A represented leap second remains distinct from the following
 minute; the UTC calendar range is -262143 through 262142. These choices are wire
 contracts, including the bytes covered by the cloud-config cache HMAC.
 
+Native clock reads retain `SystemTime`. Browser WebAssembly uses Jiff's `js`
+clock, preserving the millisecond JavaScript clock previously enabled by OAuth's
+time dependency; a direct `SystemTime::now()` would panic on that target. The
+local qualification recorded here runs on native Linux, not in a browser.
+
 `OffsetTimestamp` records whether its offset came from the system-local zone or
 an explicit fixed offset. Arithmetic on a system-local value resolves the new
 instant through the zone rules, including DST; fixed-offset arithmetic preserves

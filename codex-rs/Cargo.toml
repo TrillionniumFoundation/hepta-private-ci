@@ -663,6 +663,9 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Retain OAuth/MCP wire timestamps while replacing the unmaintained clock.
+oauth2 = { path = "third_party/oauth2-5.0.0" }
+rmcp = { path = "third_party/rmcp-3.9.0" }
 # Keep the native BZip2 codec without enabling a second backend.
 zip = { path = "third_party/zip-9.0.5" }
 # Backport the upstream TOML parser migration for the age localization macros.

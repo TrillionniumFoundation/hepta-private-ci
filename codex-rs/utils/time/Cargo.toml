@@ -12,6 +12,9 @@ jiff = { workspace = true }
 serde = { workspace = true }
 time = { workspace = true, features = ["formatting", "parsing", "large-dates"] }
 
+[target.'cfg(all(any(target_arch = "wasm32", target_arch = "wasm64"), target_os = "unknown"))'.dependencies]
+jiff = { workspace = true, features = ["js"] }
+
 [dev-dependencies]
 pretty_assertions = { workspace = true }
 serde_json = { workspace = true }
