@@ -84,8 +84,47 @@ creation identity requires a creation-time solution, not a relaxed validator.
   and after. This used an isolated 55-package graph and compiled the new test;
   it did not execute it and is not full integrated-lock qualification.
 - Independent parser and contract review found no additional blocker.
-- New native enumeration test and refined ACL diagnostic: **pending** normal
-  Windows CI. The old failing head has not been relabeled successful.
+- At the time the source was committed, new native enumeration and refined
+  diagnostics were pending. The subsequent bounded result is recorded below;
+  the old failing head has not been relabeled successful.
+
+## Subsequent bounded native probe
+
+Normal push workflow on the independent branch
+`research/wsp-windows-fixtures-sqlite-probe-20261124-87d09924` executed source
+`db23d3a74ea0edfe31c3d4f8bd574f7df8304684`, tree
+`963bb11dfe2d46c2fba85043c9191fce9f3756d7`:
+
+- Run `45438901826`, job `138604205211`, early artifact `14941023944`.
+- Verified ZIP SHA-256:
+  `f0bc9f7a0561bb99b18d3f81ebbd807d4de096031be97b6a1b55669c55f381a2`.
+- Native primitive result: **13 executed, 12 passed, 1 failed**, 5 outside
+  the selector. The previous namespace-drift failure and new 300-long-name
+  multi-page/restart/rename case both passed. The original nine again passed.
+- Registry result: **2 executed, 2 passed**, 26 outside the selector.
+- The remaining test failed twice with the precise diagnosis:
+  `storage object owner differs from the effective token user`.
+  This establishes owner inequality on this runner. No concrete owner SID was
+  collected, so this receipt does not identify it as Administrators or any other
+  group. The exact owner requirement was not relaxed.
+- After the early ZIP and its exact head were verified, the separately
+  authorized budget stop cancelled **only this probe**. GitHub's independent
+  final readback is `completed / cancelled`, updated `2026-11-24T16:38:26Z`.
+  This is partial native evidence, not a successful complete workflow or
+  consumer qualification. The ordinary `fb00` run was left running.
+
+Primitive raw-log SHA-256 is
+`7e5e4447947aee3da4d0ecb029669a8ea25bfc26f88fb0130ff41e1387aadc35`;
+registry raw-log SHA-256 is
+`08a57112582dbe782fb2fc31558ac00e7287b2ac62d26873acc8063e5c15c736`.
+
+The namespace repair therefore has positive native evidence while the ordinary
+SQLite file creation owner remains a genuine open requirement. Windows assigns
+a new object's default owner from the effective token's `TokenOwner` when no
+explicit owner is supplied. An inheritable DACL alone is not an explicit owner
+at creation. A future creation-time solution must preserve same-user identity,
+exact owner checking and absence of repair; changing process-wide token state
+or accepting a broader owner is not qualified by these results.
 
 ## Primary API contracts
 
