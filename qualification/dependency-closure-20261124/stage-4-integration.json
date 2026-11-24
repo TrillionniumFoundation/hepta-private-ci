@@ -1,0 +1,140 @@
+{
+  "source_head": "3d2de053ceed947e0cf2bd17b7858e3be5b40bbd",
+  "source_tree": "27247d79f9fc8232d890b3ca889589551095800d",
+  "base": "fb00e4422c293ffb318c9d7535e1991a3bbac707",
+  "checks": [
+    {
+      "name": "cargo-fmt-fourth-final",
+      "exit_code": 0,
+      "seconds": 18.7556,
+      "log_sha256": "a9c355ac191e05cf051c87fc4cb2eedec943414fba51b26edfafd610bafe8230",
+      "bytes": 44414
+    },
+    {
+      "name": "source-diff-check-fourth-final",
+      "exit_code": 0,
+      "seconds": 0.0171,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "name": "blob-size-fourth-final",
+      "exit_code": 0,
+      "seconds": 0.1108,
+      "log_sha256": "7334c48dcb7452106493550f91068cd14586a1dadf2ff8a1f41b0af3d6409c67",
+      "bytes": 1594
+    },
+    {
+      "name": "just-fmt-fourth-final",
+      "exit_code": 0,
+      "log_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "scope": "Repository formatter completed after source integration; the working tree remains clean."
+    }
+  ],
+  "fingerprints": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "8e795abd7481a489d5e80bfaec1991d978e55c846c1f93032b61a184fa608c4e",
+      "unchanged_from_stage3": true
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "sha256": "71ed10405c5f99aff2969e9c765d9682e9df2d9d27d43ef7bf2e6523b2b31a7d",
+      "unchanged_from_stage3": true
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "sha256": "84917d9b817cbbf9695485895f217727086b312370e51bfd7c0e4bce4ec9c185",
+      "unchanged_from_stage3": true
+    },
+    {
+      "path": "codex-rs/deny.toml",
+      "sha256": "de3b77f8b4639bdd7fb188048b09757cb6dd06ae01ecb10998537424c3c240f0",
+      "unchanged_from_stage3": true
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "sha256": "bb867bc531c86f5341a031698e16b4e5a4a0d31f7d8f4cc5ff26e101d84f9d75",
+      "unchanged_from_stage3": true
+    }
+  ],
+  "changed_manifests_locks_policies_or_workflows": [],
+  "changed_files_count": 15,
+  "recorded_utc": "2026-11-24T17:07:02.829390+00:00",
+  "source_commits": [
+    "e7c88c83984c7992b5299b9d2fa3ef6247e7667a",
+    "db23d3a74ea0edfe31c3d4f8bd574f7df8304684",
+    "d5d05cbbb950542c3969bc977ff686d8178d31e4",
+    "796f1310e6049412b61c52dc8585470848bd14d4",
+    "b5c249004c445edaed842db4848d6916f668435e",
+    "021f41d311bf64a5b29023d613049ca6b34cbad3",
+    "3d2de053ceed947e0cf2bd17b7858e3be5b40bbd"
+  ],
+  "toolchain": "Rust and rustfmt 1.96.0",
+  "formatter_warning": "Stable rustfmt reports that the imports_granularity option is nightly-only. Warnings are retained in the log; the command exits 0.",
+  "dependency_verification_scope": {
+    "new_dependency_resolution_or_deny_run": false,
+    "reason": "No Cargo manifest, production lock, Bazel lock, deny policy, allowlist, or workflow changed from stage 3. The stage-3 dependency evidence is retained by unchanged inputs, not represented as a fresh audit.",
+    "previous_receipt": "qualification/dependency-closure-20261124/stage-3-integration.json"
+  },
+  "observed_fb00_execution": {
+    "head": "fb00e4422c293ffb318c9d7535e1991a3bbac707",
+    "windows_run": 45434906085,
+    "windows_job": 138589954514,
+    "primitive_results": {
+      "passed": 10,
+      "failed": 2,
+      "all_nine_original_cases": "passed"
+    },
+    "registry_results": {
+      "passed": 2,
+      "failed": 0
+    },
+    "state_results": {
+      "passed": 1,
+      "failed": 5
+    },
+    "cognitive_results": {
+      "passed": 0,
+      "failed": 23,
+      "observed_error": "cognitive root is redirected"
+    },
+    "later_consumer_compilation": "Two consumer steps executed no tests because the production MultiAgentMode import was test-gated.",
+    "architecture_run": 45434923531,
+    "architecture_source_job": 138608367061,
+    "architecture_result": "Failed at the same MultiAgentMode E0433 compile error; earlier executed phases are recorded separately. No browser tests executed."
+  },
+  "bounded_probe": {
+    "head": "db23d3a74ea0edfe31c3d4f8bd574f7df8304684",
+    "run": 45438901826,
+    "artifact": 14941023944,
+    "artifact_sha256": "f0bc9f7a0561bb99b18d3f81ebbd807d4de096031be97b6a1b55669c55f381a2",
+    "primitive_results": {
+      "passed": 12,
+      "failed": 1,
+      "namespace_drift_and_multipage_tests": "passed",
+      "remaining_failure": "storage object owner differs from the effective token user"
+    },
+    "registry_results": {
+      "passed": 2,
+      "failed": 0
+    },
+    "workflow_conclusion": "cancelled",
+    "scope": "Intentionally cancelled once after the early artifact was saved and head/digest verified; only the executed early tests are qualification, not a full workflow pass. No actual owner SID was recorded."
+  },
+  "source_repairs": [
+    "Retain strict owner/ACL acceptance while making contract failures specific.",
+    "Compare bounded same-handle directory-entry observations, including a multi-page restart/rename regression. This is not an atomic snapshot or an ABA-proof currentness claim.",
+    "Create synthetic recovery fixture inputs with the required owner and preserve all rejection, collision, and cleanup assertions. Actual SQLx-created owner failures remain separate.",
+    "Expose the existing MultiAgentMode import to production compilation without changing its use.",
+    "Derive cognitive storage canonical names from validated native handles while retaining no-reparse and private-owner checks."
+  ],
+  "other_actual_workspace_evidence": "The root qualification receipt records 50 existing registry tests passing with zero skipped and strict Clippy passing on the actual workspace graph. Native path MSVC checks and scoped fixes are compilation evidence; see windows-recovery-fixture-20261124 and windows-cognitive-canonical-20261124.",
+  "remaining_gates": [
+    "Final integrated head normal platform and consumer CI.",
+    "Native execution of the new canonical-path case and cognitive consumers.",
+    "Actual SQLx cold-image ownership remains unresolved; an opt-in private-owner SQLite VFS is a separate later source stage.",
+    "Encrypted Secret Service interoperability and Matrix store migration jobs have not supplied execution receipts.",
+    "The separate outside-delete sandbox containment draft #7070 is not included and does not claim restored functionality."
+  ]
+}
