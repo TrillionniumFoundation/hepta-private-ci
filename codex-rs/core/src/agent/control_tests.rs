@@ -3816,7 +3816,24 @@ async fn resume_agent_from_rollout_reads_archived_rollout_path() {
 
 #[tokio::test]
 async fn resume_agent_from_paginated_rollout_loads_model_context() {
-    let harness = AgentControlHarness::new().await;
+    use core_test_support::responses;
+
+    // Let the initial child turn finish against a local provider. The resume
+    // test should not race terminal cleanup against external request retries.
+    let server = responses::start_mock_server().await;
+    responses::mount_sse_once(
+        &server,
+        responses::sse(vec![
+            responses::ev_response_created("resume-fixture"),
+            responses::ev_assistant_message("result", "fixture turn completed"),
+            responses::ev_completed("resume-fixture"),
+        ]),
+    )
+    .await;
+    let (home, mut config) = test_config().await;
+    config.model_provider.base_url = Some(format!("{}/v1", server.uri()));
+    config.model_provider.supports_websockets = false;
+    let harness = AgentControlHarness::new_with_config(home, config).await;
     let (parent_thread_id, parent_thread) = harness.start_paginated_thread().await;
     let child_thread_id = harness
         .spawn_anonymous_child(
@@ -3836,6 +3853,15 @@ async fn resume_agent_from_paginated_rollout_loads_model_context() {
         child_thread.config_snapshot().await.history_mode,
         ThreadHistoryMode::Paginated
     );
+    timeout(
+        Duration::from_secs(15),
+        child_thread.subscribe_status().wait_for(
+            |status| matches!(status, AgentStatus::Completed(Some(message)) if message == "fixture turn completed"),
+        ),
+    )
+    .await
+    .expect("loopback child turn should finish")
+    .expect("child status channel should remain open");
     persist_thread_for_tree_resume(&child_thread, "persist before resume").await;
     let _ = harness
         .control
