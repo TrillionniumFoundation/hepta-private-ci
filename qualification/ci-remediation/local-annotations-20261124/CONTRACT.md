@@ -83,6 +83,37 @@ when its output says the attempt was blocked, while retained input history stays
 unchanged. This test is not a claim that an invocation occurred or that the
 annotation was persisted.
 
+The third source stage applies the same separation to namespaced custom tools
+and nested Code Mode errors. Real integration requests retain exact attempted
+custom-call names, namespaces and untruncated inputs, actual dispatch errors,
+and replayed prior outputs; their metadata remains absent. Real local call/output
+timestamps are read from matched persisted items. The final stored history must
+contain no temporary `executed_tool_calls` annotations.
+
+Recorder units verify three sequential prompt replays: namespaced custom input,
+JSON-escaped input exceeding the 8 KiB annotation limit, and direct `exec` outside
+Code Mode. They check exact names/arguments or truncation markers, retention of
+earlier prompt annotations, and unchanged unannotated input history. Another unit
+uses the actual nested-cell recorder for both Code Mode variants, verifies the
+failed nested `exec_command({})` attempt, and excludes the outer `exec` wrapper.
+The corresponding integration test still requires the real handler exception to
+be caught. These unit inputs do not claim to execute the handler themselves.
+
+## Compaction timestamps
+
+The remote-v2 fixture now snapshots actual recorded response items before
+compaction, and then applies its actual persisted `Compacted.replacement_history`
+plus later recorded items. It compares the original user/delegated-task timestamps
+against this new replacement boundary and checks a fresh post-compaction item.
+Selected local and actual wire objects must agree except for top-level ID and
+internal metadata, and every actual request must omit metadata. This fixture has
+one explicit compaction and no rollback; its small reader is not a replacement
+for the production history reconstruction algorithm.
+
+Current inter-agent writes persist the converted `AgentMessage` as a
+`RolloutItem::ResponseItem`; they are not treated as merely hypothetical in-memory
+projections. Legacy communication records remain outside this fixture's scope.
+
 ## Required targeted execution
 
 Use the repository `just test` wrapper on the integrated source and locked graph:
@@ -92,11 +123,12 @@ just test -p codex-core --lib --locked attempted_mcp_metadata_is_prompt_local_ev
 just test -p codex-core --test all --locked -E 'test(token_budget_guidance_precedes_standalone_context_window) | test(view_image::user_turn) | test(hooks_mcp::pre_tool_use) | test(context_annotations::)'
 just test -p codex-core --lib --locked -E 'test(responses_lite_base_instructions_are_request_only_and_obey_endpoint_metadata_policy) | test(for_prompt_strips_media_when_model_does_not_support_it)'
 just test -p codex-core --test all --locked -E 'test(additional_context_is_model_visible) | test(user_turn_includes_skill_instructions) | test(adds_weighted_initial_and_threshold_reminders) | test(current_time_reminder::) | test(sends_audio_urls_to_responses) | test(sends_local_audio_to_responses) | test(stateless_requests_preserve_local_item_turn_metadata_across_turns) | test(resumed_history_only_emits_resize_notices_for_new_images) | test(model_switching::) | test(responses_lite::) | test(subagent_notification_is_included_without_wait) | test(spawned_full_history_v2_child_uses_model_precedence)'
+just test -p codex-core --lib --locked -E 'test(custom_attempt_metadata_retains_namespaces_and_bounds_escaped_arguments_on_prompt_replay) | test(failed_nested_attempt_is_prompt_local_and_omits_the_code_mode_wrapper)'
+just test -p codex-core --test all --locked -E 'test(custom_tool_unknown_returns_custom_output_error) | test(namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay) | test(code_mode_only_can_call_nested_tools) | test(code_mode_exec_surfaces_handler_errors_as_exceptions) | test(remote_compact_v2_reuses_compaction_trigger_for_followups)'
 ```
 
 The normal Linux runner must supply the real `test_stdio_server` test binary and
 ordinary test prerequisites. Do not change sandbox environment variables, skip a
-test or expand the production endpoint allowlist to obtain a pass. Remaining
-`tools`/`code_mode` prompt-local executed-call assertions and remote-compaction
-communication projection timestamps are inventoried for follow-up rather than
-declared fixed by the content-kind changes.
+test or expand the production endpoint allowlist to obtain a pass. All three
+stages require qualification on the integrated source and lock graph. No local
+runtime execution is claimed by the source inventory, formatting or diff checks.

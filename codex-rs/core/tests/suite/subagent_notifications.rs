@@ -1350,8 +1350,8 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
             .expect("child thread id"),
     )?;
     let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
-    // V2 agent_message inputs project communication records. Message inputs
-    // have persisted ResponseItem counterparts and retain their local kinds.
+    // This assertion concerns message content kinds; the actual agent_message
+    // payload and routing remain checked by the surrounding wire assertions.
     let local_items =
         super::local_annotations::persisted_request_items(&child_thread, &child_request, |item| {
             item["type"] == "message"

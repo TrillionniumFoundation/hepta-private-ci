@@ -1628,6 +1628,31 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
         .await?;
     wait_for_turn_complete(&codex).await;
 
+    // This fixture has one explicit compaction boundary and no rollback. Read
+    // the actual stored replacement vector, not an old pre-compaction copy.
+    let recorded_response_items = |history: Vec<RolloutItem>| -> Result<Vec<Value>> {
+        let mut items = Vec::new();
+        for item in history {
+            match item {
+                RolloutItem::ResponseItem(envelope) => {
+                    items.push(serde_json::to_value(envelope.item)?);
+                }
+                RolloutItem::Compacted(compacted) => {
+                    items = compacted
+                        .replacement_history
+                        .context("v2 compaction fixture must store replacement history")?
+                        .into_iter()
+                        .map(|envelope| serde_json::to_value(envelope.item))
+                        .collect::<serde_json::Result<Vec<_>>>()?;
+                }
+                _ => {}
+            }
+        }
+        Ok(items)
+    };
+    let before_compaction_items =
+        recorded_response_items(codex.load_history(/*include_archived*/ false).await?.items)?;
+
     codex.submit(Op::Compact).await?;
     wait_for_turn_complete(&codex).await;
 
@@ -1640,28 +1665,55 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
     wait_for_turn_complete(&codex).await;
 
     let response_requests = responses_mock.requests();
+    for request in &response_requests {
+        super::local_annotations::assert_wire_has_no_internal_metadata(request);
+    }
+    let after_compaction_items =
+        recorded_response_items(codex.load_history(/*include_archived*/ false).await?.items)?;
     let compact_request = &response_requests[3];
-    let item_create_time = |request: &responses::ResponsesRequest, text: &str| {
-        request
-            .input()
-            .into_iter()
-            .find(|item| {
-                item["content"].as_array().is_some_and(|content| {
-                    content.iter().any(|part| {
-                        part["text"].as_str() == Some(text)
-                            || part["encrypted_content"].as_str() == Some(text)
-                    })
+    let item_create_time = |stored: &[Value], request: &responses::ResponsesRequest, text: &str| {
+        let matches_text = |item: &Value| {
+            item["content"].as_array().is_some_and(|content| {
+                content.iter().any(|part| {
+                    part["text"].as_str() == Some(text)
+                        || part["encrypted_content"].as_str() == Some(text)
                 })
             })
-            .and_then(|item| {
-                item.pointer("/internal_chat_message_metadata_passthrough/create_time")
-                    .cloned()
-            })
-            .expect("matching message should include a creation timestamp")
+        };
+        let local = stored
+            .iter()
+            .find(|item| matches_text(item))
+            .expect("matching local item must exist at this compaction boundary");
+        let mut wire = request
+            .input()
+            .into_iter()
+            .find(matches_text)
+            .expect("the actual request must retain the same content");
+        let mut expected = local.clone();
+        for value in [&mut expected, &mut wire] {
+            let object = value.as_object_mut().expect("response item object");
+            object.remove("id");
+            object.remove("internal_chat_message_metadata_passthrough");
+        }
+        assert_eq!(
+            wire, expected,
+            "local item and actual wire content must match"
+        );
+        local
+            .pointer("/internal_chat_message_metadata_passthrough/create_time")
+            .cloned()
+            .expect("matching local message must retain its creation timestamp")
     };
-    let original_user_create_time = item_create_time(&response_requests[0], "hello remote compact");
-    let delegated_task_create_time =
-        item_create_time(&response_requests[1], &delegated_task_ciphertext);
+    let original_user_create_time = item_create_time(
+        &before_compaction_items,
+        &response_requests[0],
+        "hello remote compact",
+    );
+    let delegated_task_create_time = item_create_time(
+        &before_compaction_items,
+        &response_requests[1],
+        &delegated_task_ciphertext,
+    );
     assert!(
         compact_request
             .inputs_of_type("agent_message")
@@ -1742,15 +1794,23 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
 
     let follow_up_request = response_requests.last().expect("follow-up request missing");
     assert_eq!(
-        item_create_time(follow_up_request, "hello remote compact"),
+        item_create_time(
+            &after_compaction_items,
+            follow_up_request,
+            "hello remote compact"
+        ),
         original_user_create_time
     );
     assert_eq!(
-        item_create_time(follow_up_request, &delegated_task_ciphertext),
+        item_create_time(
+            &after_compaction_items,
+            follow_up_request,
+            &delegated_task_ciphertext
+        ),
         delegated_task_create_time
     );
     assert!(
-        item_create_time(follow_up_request, "after compact")
+        item_create_time(&after_compaction_items, follow_up_request, "after compact")
             .as_f64()
             .is_some_and(|create_time| create_time > 0.0)
     );

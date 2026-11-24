@@ -1461,13 +1461,7 @@ text(output.output);
         "code_mode_only nested tool call failed unexpectedly: {output}"
     );
     assert_eq!(output, "code_mode_only_nested_tool_marker");
-    assert!(
-        request
-            .custom_tool_call_output("call-1")
-            .pointer("/internal_chat_message_metadata_passthrough/executed_tool_calls")
-            .is_none(),
-        "nested tool calls must not be recorded while executed-tool-call metadata is disabled",
-    );
+    super::local_annotations::assert_wire_has_no_internal_metadata(&request);
 
     Ok(())
 }
@@ -2064,13 +2058,9 @@ try {
     .await?;
 
     let request = second_mock.single_request();
-    assert_eq!(
-        request.custom_tool_call_output("call-1")["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
-        serde_json::json!([
-            {"name": "exec_command", "arguments": {}},
-        ]),
-        "failed nested tool attempts remain private request metadata",
-    );
+    // The recorder unit verifies the failed attempt's exact name/arguments on
+    // the prompt clone. This e2e observes the real handler error and wire strip.
+    super::local_annotations::assert_wire_has_no_internal_metadata(&request);
     let (output, success) = custom_tool_output_body_and_success(&request, "call-1");
     assert_ne!(
         success,

@@ -51,6 +51,150 @@ fn attempted_mcp_metadata_is_prompt_local_even_for_a_blocked_output() {
 }
 
 #[test]
+fn custom_attempt_metadata_retains_namespaces_and_bounds_escaped_arguments_on_prompt_replay() {
+    let recorder = ExecutedToolCallRecorder::default();
+    let namespace = "test_namespace::";
+    let input = "\"payload\"".to_string();
+    let escaped_input = "\\".repeat(4_096);
+    let escaped_bytes = serde_json::to_vec(&escaped_input)
+        .expect("escaped arguments should serialize")
+        .len();
+    let attempts = [
+        (
+            "custom-namespaced",
+            codex_tools::ToolName::namespaced(namespace, "unsupported_tool"),
+            input.clone(),
+            json!({"name": format!("{namespace}__unsupported_tool"), "arguments": input}),
+        ),
+        (
+            "custom-namespaced-escaped",
+            codex_tools::ToolName::namespaced(namespace, "unsupported_tool"),
+            escaped_input,
+            json!({
+                "name": format!("{namespace}__unsupported_tool"),
+                "arguments": {"_codex_executed_tool_call_truncated": {
+                    "original_bytes": escaped_bytes,
+                    "max_bytes": MAX_EXECUTED_TOOL_CALL_ARGUMENT_BYTES,
+                }},
+            }),
+        ),
+        (
+            "custom-direct-exec",
+            codex_tools::ToolName::plain(crate::tools::code_mode::PUBLIC_TOOL_NAME),
+            input.clone(),
+            json!({"name": "exec", "arguments": input}),
+        ),
+    ];
+    let mut history = Vec::new();
+    let mut expected = Vec::new();
+    for (call_id, tool_name, input, expected_call) in attempts {
+        recorder.record_tool_call(
+            &ToolCall {
+                tool_name,
+                call_id: call_id.to_string(),
+                payload: ToolPayload::Custom { input },
+                encrypted_function_args: None,
+            },
+            &ToolCallSource::Direct,
+            ToolMode::Direct,
+        );
+        history.push(ResponseItem::CustomToolCallOutput {
+            id: None,
+            call_id: call_id.to_string(),
+            name: None,
+            output: FunctionCallOutputPayload::from_text(
+                "unsupported custom tool call".to_string(),
+            ),
+            internal_chat_message_metadata_passthrough: None,
+        });
+        let unchanged_history = history.clone();
+        let mut prompt = history.clone();
+        assert!(recorder.attach_pending_to_prompt(&mut prompt, &mut HashMap::new()));
+        expected.push(json!([expected_call]));
+        let actual = prompt
+            .iter()
+            .map(|item| {
+                serde_json::to_value(
+                    &item
+                        .executed_tool_call_metadata()
+                        .expect("attempt should annotate its prompt output")
+                        .executed_tool_calls,
+                )
+                .expect("attempt annotations should serialize")
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(actual, expected);
+        assert_eq!(history, unchanged_history);
+        assert!(
+            history
+                .iter()
+                .all(|item| item.executed_tool_call_metadata().is_none())
+        );
+    }
+}
+
+#[test]
+fn failed_nested_attempt_is_prompt_local_and_omits_the_code_mode_wrapper() {
+    for tool_mode in [ToolMode::CodeMode, ToolMode::CodeModeOnly] {
+        let recorder = ExecutedToolCallRecorder::default();
+        let cell_id = CellId::new("failed-nested-cell".to_string());
+        recorder.register_cell(&cell_id, "outer-call");
+        recorder.record_tool_call(
+            &ToolCall {
+                tool_name: codex_tools::ToolName::plain(crate::tools::code_mode::PUBLIC_TOOL_NAME),
+                call_id: "outer-call".to_string(),
+                payload: ToolPayload::Custom {
+                    input: "try { await tools.exec_command({}); } catch (error) { text(error); }"
+                        .to_string(),
+                },
+                encrypted_function_args: None,
+            },
+            &ToolCallSource::Direct,
+            tool_mode,
+        );
+        recorder.record_tool_call(
+            &ToolCall {
+                tool_name: codex_tools::ToolName::plain("exec_command"),
+                call_id: "nested-call".to_string(),
+                payload: ToolPayload::Function {
+                    arguments: "{}".to_string(),
+                },
+                encrypted_function_args: None,
+            },
+            &ToolCallSource::CodeMode {
+                cell_id: "failed-nested-cell".to_string(),
+                runtime_tool_call_id: "runtime-call".to_string(),
+            },
+            tool_mode,
+        );
+        let history = vec![ResponseItem::CustomToolCallOutput {
+            id: None,
+            call_id: "outer-call".to_string(),
+            name: None,
+            output: FunctionCallOutputPayload::from_text(
+                "caught: missing command argument".to_string(),
+            ),
+            internal_chat_message_metadata_passthrough: None,
+        }];
+        let unchanged_history = history.clone();
+        let mut prompt = history.clone();
+        assert!(recorder.attach_pending_to_prompt(&mut prompt, &mut HashMap::new()));
+        assert_eq!(
+            serde_json::to_value(
+                &prompt[0]
+                    .executed_tool_call_metadata()
+                    .expect("prompt attempt")
+                    .executed_tool_calls,
+            )
+            .expect("attempt should serialize"),
+            json!([{"name": "exec_command", "arguments": {}}]),
+        );
+        assert_eq!(history, unchanged_history);
+        assert!(history[0].executed_tool_call_metadata().is_none());
+    }
+}
+
+#[test]
 fn executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow() {
     let recorder = ExecutedToolCallRecorder::default();
 
