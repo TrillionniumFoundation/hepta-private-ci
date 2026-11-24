@@ -69,6 +69,7 @@ fn copy_bindings<T: AsRef<Path>>(dir: &str, bindgen_name: &str, out_path: T) {
 }
 
 fn main() {
+    println!("cargo:rustc-check-cfg=cfg(hepta_owner_vfs)");
     let out_dir = env::var("OUT_DIR").unwrap();
     let out_path = Path::new(&out_dir).join("bindgen.rs");
     if cfg!(feature = "in_gecko") {
@@ -125,9 +126,11 @@ fn main() {
 mod build_bundled {
     use std::env;
     use std::ffi::OsString;
-    use std::path::{Path, PathBuf};
+    use std::path::Path;
+    use std::path::PathBuf;
 
-    use super::{is_compiler, win_target};
+    use super::is_compiler;
+    use super::win_target;
 
     pub fn main(out_dir: &str, out_path: &Path) {
         let lib_name = super::lib_name();
@@ -165,7 +168,13 @@ mod build_bundled {
         println!("cargo:include={}", include_dir.display());
         println!("cargo:rerun-if-changed={}", source.display());
         println!("cargo:rerun-if-changed=sqlite3/wasm32-wasi-vfs.c");
+        println!("cargo:rerun-if-changed=sqlite3/hepta_owner_vfs.c");
         let mut cfg = cc::Build::new();
+        if win_target() && !cfg!(feature = "bundled-sqlcipher") {
+            cfg.define("SQLITE_HEPTA_OWNER_VFS", None);
+            println!("cargo:rustc-cfg=hepta_owner_vfs");
+            println!("cargo:rustc-link-lib=advapi32");
+        }
         cfg.file(&source)
             .flag("-DSQLITE_CORE")
             .flag("-DSQLITE_DEFAULT_FOREIGN_KEYS=1")
@@ -434,7 +443,12 @@ mod build_linked {
     #[cfg(feature = "vcpkg")]
     extern crate vcpkg;
 
-    use super::{HeaderLocation, bindings, env_prefix, is_compiler, lib_name, win_target};
+    use super::HeaderLocation;
+    use super::bindings;
+    use super::env_prefix;
+    use super::is_compiler;
+    use super::lib_name;
+    use super::win_target;
     use std::env;
     use std::path::Path;
 
@@ -562,7 +576,8 @@ mod bindings {
 #[cfg(feature = "buildtime_bindgen")]
 mod bindings {
     use super::HeaderLocation;
-    use bindgen::callbacks::{IntKind, ParseCallbacks};
+    use bindgen::callbacks::IntKind;
+    use bindgen::callbacks::ParseCallbacks;
 
     use std::path::Path;
     #[derive(Debug)]

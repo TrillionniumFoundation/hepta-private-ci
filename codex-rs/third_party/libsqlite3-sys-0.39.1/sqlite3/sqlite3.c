@@ -49412,11 +49412,22 @@ struct winFile {
 ** Win32 VFS variants.
 */
 typedef struct winVfsAppData winVfsAppData;
+typedef struct HeptaWinOwner HeptaWinOwner;
 struct winVfsAppData {
   const sqlite3_io_methods *pMethod; /* The file I/O methods to use. */
   void *pAppData;                    /* The extra pAppData, if any. */
   BOOL bNoLock;                      /* Non-zero if locking is disabled. */
+  HeptaWinOwner *pOwner;             /* Optional immutable creation policy. */
 };
+
+#ifdef SQLITE_HEPTA_OWNER_VFS
+# include "hepta_owner_vfs.c"
+#else
+# define heptaWinOwner(pVfs) ((HeptaWinOwner*)0)
+# define heptaWinOwnerAttributes(pOwner) ((SECURITY_ATTRIBUTES*)0)
+# define heptaWinOwnerValidate(pOwner, h) 1
+# define heptaWinOwnerDelete(pOwner, zFilename) 0
+#endif
 
 /*
 ** Allowed values for winFile.ctrlFlags
@@ -52233,6 +52244,8 @@ struct winShmNode {
   sqlite3_mutex *mutex;      /* Mutex to access this object */
   char *zFilename;           /* Name of the file */
   HANDLE hSharedShm;         /* File handle open on zFilename */
+  HeptaWinOwner *pOwner;     /* Must match before a shared handle is reused. */
+  sqlite3_vfs *pPolicyVfs;   /* Retained private VFS for this node's deletion. */
   int bUseSharedLockHandle;  /* True to use hSharedShm for everything */
 
   int isUnlocked;            /* DMS lock has not yet been obtained */
@@ -52319,7 +52332,7 @@ static void winShmPurge(sqlite3_vfs *pVfs, int deleteFlag){
       if( deleteFlag ){
         SimulateIOErrorBenign(1);
         sqlite3BeginBenignMalloc();
-        winDelete(pVfs, p->zFilename, 0);
+        winDelete(p->pPolicyVfs ? p->pPolicyVfs : pVfs, p->zFilename, 0);
         sqlite3EndBenignMalloc();
         SimulateIOErrorBenign(0);
       }
@@ -52405,6 +52418,7 @@ static int winLockSharedMemory(winShmNode *pShmNode, DWORD nMs){
 ** is opened with FILE_FLAG_OVERLAPPED specified. If not, it is not.
 */
 static int winHandleOpen(
+  HeptaWinOwner *pOwner,          /* Explicit creation policy, or NULL */
   const char *zUtf8,              /* File to open */
   int *pbReadonly,                /* IN/OUT: True for readonly handle */
   HANDLE *ph                      /* OUT: New HANDLE for file */
@@ -52441,16 +52455,24 @@ static int winHandleOpen(
   h = osCreateFileW(zConverted,         /* lpFileName */
       (GENERIC_READ | (bReadonly ? 0 : GENERIC_WRITE)),  /* dwDesiredAccess */
       FILE_SHARE_READ | FILE_SHARE_WRITE,        /* dwShareMode */
-      NULL,                                      /* lpSecurityAttributes */
+      heptaWinOwnerAttributes(pOwner),            /* lpSecurityAttributes */
       OPEN_ALWAYS,                               /* dwCreationDisposition */
-      FILE_ATTRIBUTE_NORMAL|flag_overlapped,
+      FILE_ATTRIBUTE_NORMAL|flag_overlapped
+        |(pOwner ? FILE_FLAG_OPEN_REPARSE_POINT : 0),
       NULL
   );
+
+  if( h!=INVALID_HANDLE_VALUE && !heptaWinOwnerValidate(pOwner, h) ){
+    osCloseHandle(h);
+    h = INVALID_HANDLE_VALUE;
+    rc = SQLITE_CANTOPEN_BKPT;
+    goto winopenfile_out;
+  }
 
   if( h==INVALID_HANDLE_VALUE ){
     if( bReadonly==0 ){
       bReadonly = 1;
-      rc = winHandleOpen(zUtf8, &bReadonly, &h);
+      rc = winHandleOpen(pOwner, zUtf8, &bReadonly, &h);
     }else{
       rc = SQLITE_CANTOPEN_BKPT;
     }
@@ -52562,6 +52584,7 @@ static int winOpenSharedMemory(winFile *pDbFd){
   int rc = SQLITE_OK;                /* Result code */
   winShmNode *pNew;                  /* Newly allocated winShmNode */
   int nName;                         /* Size of zName in bytes */
+  HeptaWinOwner *pOwner = heptaWinOwner(pDbFd->pVfs);
 
   assert( pDbFd->pShm==0 );    /* Not previously opened */
 
@@ -52594,8 +52617,16 @@ static int winOpenSharedMemory(winFile *pDbFd){
     ** use FILE_ID_BOTH_DIR_INFO Structure.  */
     if( sqlite3StrICmp(pShmNode->zFilename, pNew->zFilename)==0 ) break;
   }
+  if( pShmNode && (pShmNode->pOwner!=pOwner
+        || !heptaWinOwnerValidate(pOwner, pShmNode->hSharedShm)) ){
+    /* Never silently share an unqualified handle or create a second lock
+    ** domain for the same file when stock and private policies are mixed. */
+    rc = SQLITE_IOERR_SHMOPEN;
+  }
   if( pShmNode==0 ){
     pShmNode = pNew;
+    pShmNode->pOwner = pOwner;
+    pShmNode->pPolicyVfs = pOwner ? pDbFd->pVfs : 0;
 
     /* Allocate a mutex for this winShmNode object, if one is required. */
     if( sqlite3GlobalConfig.bCoreMutex ){
@@ -52607,7 +52638,7 @@ static int winOpenSharedMemory(winFile *pDbFd){
     if( rc==SQLITE_OK ){
       HANDLE h = INVALID_HANDLE_VALUE;
       pShmNode->isReadonly = sqlite3_uri_boolean(pDbFd->zPath,"readonly_shm",0);
-      rc = winHandleOpen(pNew->zFilename, &pShmNode->isReadonly, &h);
+      rc = winHandleOpen(pOwner, pNew->zFilename, &pShmNode->isReadonly, &h);
       pShmNode->hSharedShm = h;
     }
 
@@ -52650,7 +52681,7 @@ static int winOpenSharedMemory(winFile *pDbFd){
   ** the shared file handle in winShmNode.hSharedShm.  */
   if( rc==SQLITE_OK && pShmNode->bUseSharedLockHandle==0 ){
     p->bReadonly = sqlite3_uri_boolean(pDbFd->zPath, "readonly_shm", 0);
-    rc = winHandleOpen(pShmNode->zFilename, &p->bReadonly, &p->hShm);
+    rc = winHandleOpen(pOwner, pShmNode->zFilename, &p->bReadonly, &p->hShm);
     if( rc!=SQLITE_OK ){
       assert( p->hShm==INVALID_HANDLE_VALUE );
       winCloseSharedMemory(pDbFd, 0);
@@ -53287,13 +53318,15 @@ static const sqlite3_io_methods winIoNolockMethod = {
 static winVfsAppData winAppData = {
   &winIoMethod,       /* pMethod */
   0,                  /* pAppData */
-  0                   /* bNoLock */
+  0,                  /* bNoLock */
+  0                   /* pOwner */
 };
 
 static winVfsAppData winNolockAppData = {
   &winIoNolockMethod, /* pMethod */
   0,                  /* pAppData */
-  1                   /* bNoLock */
+  1,                  /* bNoLock */
+  0                   /* pOwner */
 };
 
 /****************************************************************************
@@ -53595,6 +53628,7 @@ static int winOpen(
   int isCreate     = (flags & SQLITE_OPEN_CREATE);
   int isReadonly   = (flags & SQLITE_OPEN_READONLY);
   int isReadWrite  = (flags & SQLITE_OPEN_READWRITE);
+  HeptaWinOwner *pOwner = heptaWinOwner(pVfs);
 
 #ifndef NDEBUG
   int isOpenJournal = (isCreate && (
@@ -53636,6 +53670,10 @@ static int winOpen(
   assert( pFile!=0 );
   memset(pFile, 0, sizeof(winFile));
   pFile->h = INVALID_HANDLE_VALUE;
+
+  /* A private temporary open must never mark an existing, not-yet-validated
+  ** object for deletion. SQLite's temporary opens already request EXCLUSIVE. */
+  if( pOwner && isDelete && !isExclusive ) return SQLITE_CANTOPEN_BKPT;
 
   /* If the second argument to this function is NULL, generate a
   ** temporary file name to use
@@ -53707,10 +53745,11 @@ static int winOpen(
   }else{
     dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
   }
+  if( pOwner ) dwFlagsAndAttributes |= FILE_FLAG_OPEN_REPARSE_POINT;
   do{
     h = osCreateFileW(zConverted,
                       dwDesiredAccess,
-                      dwShareMode, NULL,
+                      dwShareMode, heptaWinOwnerAttributes(pOwner),
                       dwCreationDisposition,
                       dwFlagsAndAttributes,
                       NULL);
@@ -53741,6 +53780,14 @@ static int winOpen(
       winLogError(SQLITE_CANTOPEN, pFile->lastErrno, "winOpen", zUtf8Name);
       return SQLITE_CANTOPEN_BKPT;
     }
+  }
+
+  if( !heptaWinOwnerValidate(pOwner, h) ){
+    osCloseHandle(h);
+    sqlite3_free(zConverted);
+    sqlite3_free(zTmpname);
+    pFile->lastErrno = ERROR_ACCESS_DENIED;
+    return SQLITE_CANTOPEN_BKPT;
   }
 
   if( pOutFlags ){
@@ -53796,7 +53843,7 @@ static int winOpen(
 ** up and returning an error.
 */
 static int winDelete(
-  sqlite3_vfs *pVfs,          /* Not used on win32 */
+  sqlite3_vfs *pVfs,          /* Optional private ownership policy */
   const char *zFilename,      /* Name of file to delete */
   int syncDir                 /* Not used on win32 */
 ){
@@ -53805,7 +53852,7 @@ static int winDelete(
   DWORD attr;
   DWORD lastErrno = 0;
   LPWSTR zConverted;
-  UNUSED_PARAMETER(pVfs);
+  HeptaWinOwner *pOwner = heptaWinOwner(pVfs);
   UNUSED_PARAMETER(syncDir);
 
   SimulateIOError(return SQLITE_IOERR_DELETE);
@@ -53832,7 +53879,8 @@ static int winDelete(
       rc = SQLITE_ERROR; /* Files only. */
       break;
     }
-    if ( osDeleteFileW(zConverted) ){
+    if ( pOwner ? heptaWinOwnerDelete(pOwner, zConverted)
+                : osDeleteFileW(zConverted) ){
       rc = SQLITE_OK; /* Deleted OK. */
       break;
     }

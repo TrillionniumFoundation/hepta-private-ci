@@ -132,3 +132,12 @@ ref_option = "warn"
 semicolon_if_nothing_returned = "warn"
 unnecessary_semicolon = "warn"
 unused_trait_names = "warn"
+
+[target.'cfg(windows)'.dev-dependencies.windows-sys]
+version = "0.52"
+features = [
+    "Win32_Foundation",
+    "Win32_Security_Authorization",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Threading",
+]

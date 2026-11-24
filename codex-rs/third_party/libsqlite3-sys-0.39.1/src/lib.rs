@@ -10,6 +10,11 @@ use core::mem;
 
 mod error;
 
+#[cfg(windows)]
+mod hepta_owner;
+#[cfg(windows)]
+pub use hepta_owner::hepta_win32_owner_vfs_name;
+
 #[must_use]
 pub fn SQLITE_STATIC() -> sqlite3_destructor_type {
     None

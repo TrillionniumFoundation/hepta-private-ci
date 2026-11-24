@@ -663,6 +663,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Opt-in Windows creation ownership; stock SQLite VFS behavior stays unchanged.
+libsqlite3-sys = { path = "third_party/libsqlite3-sys-0.39.1" }
 # Retain OAuth/MCP wire timestamps while replacing the unmaintained clock.
 oauth2 = { path = "third_party/oauth2-5.0.0" }
 rmcp = { path = "third_party/rmcp-3.9.0" }
