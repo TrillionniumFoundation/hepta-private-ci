@@ -72,6 +72,8 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use tokio::sync::oneshot;
 
+mod support;
+
 const TINY_PNG_BYTES: &[u8] = &[
     137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0,
     0, 0, 31, 21, 196, 137, 0, 0, 0, 11, 73, 68, 65, 84, 120, 156, 99, 96, 0, 2, 0, 0, 5, 0, 1,
@@ -154,7 +156,7 @@ fn install_registered_queue(
 }
 
 fn write_rejecting_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_prompt_hook.py");
+    let script_path = home.join("queue prompt hook.py");
     let log_path = home.join("queue_prompt_hook.log");
     let script = format!(
         r#"import json
@@ -176,7 +178,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": support::python_hook_command(&script_path),
                 }]
             }]
         }
@@ -186,7 +188,7 @@ if payload["prompt"] == "blocked":
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
+    let script_path = home.join("queue blocking prompt hook.py");
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
     let script = format!(
@@ -216,7 +218,7 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": support::python_hook_command(&script_path),
                 }]
             }]
         }
