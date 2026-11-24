@@ -161,3 +161,34 @@ integration must rerun the gates against its own complete head.
 | cargo-deny JSONL | `9f1c3a96b087d80beefbdbba073e20bd0cde5df42f41b8af3658e2d8bd3ee6d3` |
 | Bazel lock-update log | `9b601e0d2d2d6b24b1c782436ce28f5d7775f2d7e725d26235403dffd6369312` |
 | AWS/HTTP consumer log | `b1638667065bbd0c27fa9ec6cec77525723bd7adb25f34cf1d23d8bdb0277d89` |
+
+## Additional failures traced to existing integration boundaries
+
+The recovered #6995 Windows logs also identify three independent causes that
+are repaired without changing the dependency policy or expected assertions:
+
+- The three `thread_read_recovery_*` adapter tests deserialized a Unix-only
+  `/tmp` string as `AbsolutePathBuf`. The fixture now serializes its native
+  absolute working directory; the exact-message/input/session-drift/duplicate
+  turn assertions are unchanged.
+- Normal turn sampling constructed Responses metadata directly from the
+  turn-local template and omitted the current `context_window_id`. It now
+  captures that UUID with the textual window id under the same state lock.
+  Remote compaction and startup prewarm use the existing Session helper that
+  supplies the same pair. Client-supplied reserved-key filtering remains in
+  force. Existing client-metadata, window-header, and compaction tests provide
+  end-to-end coverage; they must execute on the integration head.
+- The Bedrock discover/setup processors already implemented login-policy,
+  supported-region, profile, and managed/environment credential conflict
+  checks, but the dispatcher returned method-not-found unconditionally. The
+  two routes now reach those existing processors. The protocol still marks
+  both methods experimental, and the existing capability check runs before
+  dispatch. An added integration regression requires both methods to reject
+  callers without that capability, before writing configuration. Existing
+  Bedrock tests use isolated temporary AWS profiles and synthetic values.
+
+These source repairs have passed formatting and diff checks. Their full
+consumer tests remain unexecuted locally because the core lib-test build was
+terminated by SIGKILL before test execution. This is recorded as an
+infrastructure-limited validation, not a passing test result. Normal CI must
+qualify the exact combined source and dependency head.
