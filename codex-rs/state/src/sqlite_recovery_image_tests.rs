@@ -2,13 +2,41 @@ use super::*;
 use crate::runtime::test_support::unique_temp_dir;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
+
+fn prepare_home(path: &std::path::Path) -> anyhow::Result<()> {
+    #[cfg(unix)]
+    {
+        std::fs::create_dir(path)?;
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
+    }
+    #[cfg(windows)]
+    codex_utils_path::windows_private::PrivateSqliteDirectory::prepare(path)?;
+    Ok(())
+}
+
+fn verify_private_file(path: &std::path::Path) -> anyhow::Result<()> {
+    #[cfg(unix)]
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+    #[cfg(windows)]
+    {
+        use codex_utils_path::windows_private::Access;
+        use codex_utils_path::windows_private::PrivateSqliteDirectory;
+        PrivateSqliteDirectory::inspect(path.parent().expect("parent"))?.open(
+            path.file_name()
+                .and_then(|name| name.to_str())
+                .expect("leaf"),
+            Access::Read,
+        )?;
+    }
+    Ok(())
+}
 
 #[tokio::test]
 async fn cold_image_is_immutable_and_reconnects_to_same_copy() -> anyhow::Result<()> {
     let home = unique_temp_dir();
-    std::fs::create_dir(&home)?;
-    std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))?;
+    prepare_home(&home)?;
     let config = SqliteConfig::new_for_testing(home.as_path().abs());
     let path = home.join("cold.sqlite3");
     let source = config.open_durable_evidence_pool(&path).await?;
@@ -16,7 +44,7 @@ async fn cold_image_is_immutable_and_reconnects_to_same_copy() -> anyhow::Result
         .execute(&source)
         .await?;
     source.close().await;
-    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+    verify_private_file(&path)?;
     let guard = config.bind_existing_recovery_database(&path)?;
     let original = std::fs::read(&path)?;
     let pool = config.open_cold_image_read_only_pool(&guard).await?;
@@ -39,6 +67,7 @@ async fn cold_image_is_immutable_and_reconnects_to_same_copy() -> anyhow::Result
         .await?;
     assert_eq!(fact, "original");
     pool.close().await;
+    drop(guard);
     std::fs::remove_dir_all(home)?;
     Ok(())
 }
@@ -46,8 +75,7 @@ async fn cold_image_is_immutable_and_reconnects_to_same_copy() -> anyhow::Result
 #[tokio::test]
 async fn cold_image_rejects_wrong_guard_replacement_sidecars_and_size() -> anyhow::Result<()> {
     let home = unique_temp_dir();
-    std::fs::create_dir(&home)?;
-    std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))?;
+    prepare_home(&home)?;
     let config = SqliteConfig::new_for_testing(home.as_path().abs());
     let path = home.join("cold.sqlite3");
     let source = config.open_durable_evidence_pool(&path).await?;
@@ -55,7 +83,7 @@ async fn cold_image_rejects_wrong_guard_replacement_sidecars_and_size() -> anyho
         .execute(&source)
         .await?;
     source.close().await;
-    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+    verify_private_file(&path)?;
     let guard = config.bind_existing_recovery_database(&path)?;
     let wrong = SqliteConfig::new_for_testing(home.join("other").as_path().abs());
     assert!(matches!(
@@ -65,15 +93,16 @@ async fn cold_image_rejects_wrong_guard_replacement_sidecars_and_size() -> anyho
     let original = std::fs::read(&path)?;
     std::fs::rename(&path, home.join("retained.sqlite3"))?;
     std::fs::write(&path, &original)?;
-    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+    verify_private_file(&path)?;
     assert!(matches!(
         config.open_cold_image_read_only_pool(&guard).await,
         Err(SqliteRecoveryError::Indeterminate)
     ));
+    drop(guard);
     for suffix in ["-wal", "-shm", "-journal"] {
         let sidecar = super::super::sqlite_sidecar_path(&path, suffix);
         std::fs::write(&sidecar, b"")?;
-        std::fs::set_permissions(&sidecar, std::fs::Permissions::from_mode(0o600))?;
+        verify_private_file(&sidecar)?;
         let guard = config.bind_existing_recovery_database(&path)?;
         assert!(matches!(
             config.open_cold_image_read_only_pool(&guard).await,
@@ -90,6 +119,7 @@ async fn cold_image_rejects_wrong_guard_replacement_sidecars_and_size() -> anyho
         config.open_cold_image_read_only_pool(&guard).await,
         Err(SqliteRecoveryError::Indeterminate)
     ));
+    drop(guard);
     std::fs::remove_dir_all(home)?;
     Ok(())
 }
