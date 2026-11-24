@@ -204,7 +204,7 @@ pub fn accumulate_frozen_real_time_credit_q24(
     }
     let mut group_copy = groups.to_vec();
     group_copy.sort_by(|a, b| a.group_id.cmp(&b.group_id));
-    let map_digest = group_map_digest(&group_copy);
+    let map_digest = group_map_digest(group_copy.iter());
     let mut index = BTreeMap::new();
     let mut native_actions = Vec::with_capacity(actions.len());
     for item in actions {

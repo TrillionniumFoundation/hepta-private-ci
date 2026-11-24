@@ -7,6 +7,7 @@ on:
       - "codex-rs/hepta-neuron/src/lib.rs"
       - "codex-rs/hepta-neuron/src/plasticity.rs"
       - "codex-rs/hepta-neuron/src/plasticity/**"
+      - "codex-rs/hepta-neuron/tests/plasticity_allocation_probe.rs"
       - ".github/workflows/hepta-neuroscience-shadow.yml"
   push:
     branches: [main]
@@ -15,6 +16,7 @@ on:
       - "codex-rs/hepta-neuron/src/lib.rs"
       - "codex-rs/hepta-neuron/src/plasticity.rs"
       - "codex-rs/hepta-neuron/src/plasticity/**"
+      - "codex-rs/hepta-neuron/tests/plasticity_allocation_probe.rs"
       - ".github/workflows/hepta-neuroscience-shadow.yml"
 
 permissions:
@@ -70,6 +72,9 @@ jobs:
       - name: Check Q24 read-only temporal credit against native tests
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-neuron --lib
+      - name: Verify bounded Q24 comparator allocations
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-neuron --test plasticity_allocation_probe
       - name: Reverify the original helper after native tests
         if: always() && steps.q24_helpers.outcome == 'success'
         run: |

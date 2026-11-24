@@ -307,7 +307,8 @@ pub(super) fn accumulate_credit_with_decay(
         }
     }
 
-    let mut groups = parameter_groups.to_vec();
+    // Nested projection dimensions are untrusted until validation below.
+    let mut groups = parameter_groups.iter().collect::<Vec<_>>();
     groups.sort_by(|left, right| left.group_id.cmp(&right.group_id));
     let mut seen_groups = BTreeSet::new();
     for group in &groups {
@@ -321,7 +322,8 @@ pub(super) fn accumulate_credit_with_decay(
         return Err(TemporalCreditError::InvalidGroup);
     }
 
-    let mut feedback_sorted = feedback.to_vec();
+    // Sort references so an invalid modulator is rejected without copying it.
+    let mut feedback_sorted = feedback.iter().collect::<Vec<_>>();
     feedback_sorted.sort_by(|a, b| {
         a.action_id
             .cmp(&b.action_id)
@@ -464,7 +466,7 @@ pub(super) fn accumulate_credit_with_decay(
         TemporalCreditArmV1::Scalar => 2,
         TemporalCreditArmV1::NoEligibility => 3,
     });
-    canonical.extend_from_slice(group_map_digest(&groups).as_array());
+    canonical.extend_from_slice(group_map_digest(groups.iter().copied()).as_array());
     canonical.extend_from_slice(&(by_id.len() as u64).to_be_bytes());
     for action in by_id.values() {
         push_id(&mut canonical, &action.action_id);

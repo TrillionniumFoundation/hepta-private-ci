@@ -52,7 +52,7 @@ fn fixture() -> (
             }
         })
         .collect();
-    let map = group_map_digest(&groups);
+    let map = group_map_digest(groups.iter());
     let action = TemporalEligibilityActionV1 {
         action_id: good(StableId::new("action")),
         owner_scope_digest: digest,
