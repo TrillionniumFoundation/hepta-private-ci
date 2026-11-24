@@ -1,7 +1,7 @@
 use crate::agent::AgentStatus;
 use crate::agent::control::TurnStartCapacity;
 use crate::config::ConstraintResult;
-use crate::context::ContextualUserFragment;
+use crate::context::SubagentNotification;
 use crate::elicitation::ElicitationRegistration;
 use crate::session::SessionIo;
 use crate::session::SessionSettingsUpdate;
@@ -983,11 +983,8 @@ impl CodexThread {
     }
 
     /// Records a context fragment without creating a new user turn boundary.
-    pub(crate) async fn inject_fragment_without_turn(&self, fragment: impl ContextualUserFragment) {
-        let item = ContextualUserFragment::into(fragment);
-        self.session
-            .inject_no_new_turn(vec![item], /*current_turn_context*/ None)
-            .await;
+    pub(crate) async fn inject_fragment_without_turn(&self, fragment: SubagentNotification) {
+        self.session.inject_subagent_notification(fragment).await;
     }
 
     /// Record raw Responses API items without starting a new turn.
