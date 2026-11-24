@@ -256,7 +256,10 @@ mod tests {
             .expect("control listener should bind");
         let client_path = socket_path.clone();
         let client_task = tokio::spawn(async move { UnixStream::connect(client_path).await });
-        let server_stream = listener.accept().await.expect("control peer should connect");
+        let server_stream = listener
+            .accept()
+            .await
+            .expect("control peer should connect");
         ensure_control_peer(&server_stream).expect("same-UID control peer should pass");
         let _client_stream = client_task
             .await
@@ -273,6 +276,9 @@ mod tests {
         let permit = source
             .find("try_acquire_owned")
             .expect("accept path must retain the bounded permit");
-        assert!(peer_check < permit, "peer authentication must precede permit allocation");
+        assert!(
+            peer_check < permit,
+            "peer authentication must precede permit allocation"
+        );
     }
 }
