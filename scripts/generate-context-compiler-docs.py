@@ -164,8 +164,8 @@ def render_dossier(manifest: dict[str, Any]) -> str:
     return f"""{BEGIN}
 ## Generated current-state observation
 
-**Manifest:** `{manifest["provenance"]["generatedFrom"]}`  
-**Manifest SHA-256:** `{manifest_digest(manifest)}`  
+**Manifest:** `{manifest["provenance"]["generatedFrom"]}`{"  "}
+**Manifest SHA-256:** `{manifest_digest(manifest)}`{"  "}
 **Provenance base:** `{source["commit"]}` / `{source["tree"]}`
 
 {status_table(manifest)}
@@ -186,13 +186,13 @@ def replace_block(text: str, block: str, *, heading: str) -> str:
             raise ValueError(f"{heading}: malformed generated-state markers")
         start = text.index(BEGIN)
         finish = text.index(END, start) + len(END)
-        return text[:start].rstrip() + "\n\n" + block + "\n\n" + text[finish:].lstrip()
-    lines = text.splitlines()
-    if not lines:
-        return block + "\n"
-    insert_at = 1 if lines[0].startswith("#") else 0
-    lines[insert_at:insert_at] = ["", block, ""]
-    return "\n".join(lines).rstrip() + "\n"
+        before, after = text[:start], text[finish:]
+    elif text.startswith("#"):
+        before, _, after = text.partition("\n")
+    else:
+        before, after = "", text
+    parts = (before.rstrip("\n"), block, after.strip("\n"))
+    return "\n\n".join(part for part in parts if part) + "\n"
 
 
 def render_map(existing: str, manifest: dict[str, Any]) -> str:
