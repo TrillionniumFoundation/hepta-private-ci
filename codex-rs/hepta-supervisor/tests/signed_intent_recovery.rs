@@ -310,8 +310,8 @@ fn independently_signed_recovery_closes_the_exact_observed_transaction() -> anyh
         intent.intent_sha256.clone(),
         transaction.transaction_sha256.clone(),
         source_id.as_str(),
-        Sha256Digest::parse(source_binding.manifest_sha256)?,
-        Sha256Digest::parse(source_binding.agentd_program_sha256)?,
+        Sha256Digest::parse(source_binding.manifest_sha256).map_err(anyhow::Error::msg)?,
+        Sha256Digest::parse(source_binding.agentd_program_sha256).map_err(anyhow::Error::msg)?,
         /*observed_matrixd_sha256*/ None,
         ProductionRecoveryOutcome::RolledBack,
         failed.generation,
@@ -368,9 +368,20 @@ fn independently_signed_recovery_closes_the_exact_observed_transaction() -> anyh
     )?;
     assert_eq!(receipt.status, ProductionMutationStatus::RolledBack);
     assert!(!recovered.production_recovery_required(&fleet.agent_id)?);
+    let expected_terminal_intent = SignedSupervisorIntent::new(
+        intent.grant_sha256.clone(),
+        &intent.agent_id,
+        intent.transition,
+        &intent.source_release,
+        &intent.target_release,
+        intent.expected_control_revision,
+        intent.expected_lifecycle_generation,
+        intent.authority_epoch,
+        SignedIntentStatus::RolledBack,
+    )?;
     assert_eq!(
         read_signed_intent(record.layout.run_root())?.expect("terminal intent"),
-        intent.with_status(SignedIntentStatus::RolledBack)?
+        expected_terminal_intent
     );
     let terminal = recovered
         .release_selection_snapshot(&fleet.agent_id)?
