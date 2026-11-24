@@ -8,6 +8,7 @@ on:
       - codex-rs/arg0/**
       - codex-rs/cli/**
       - codex-rs/core/**
+      - codex-rs/hooks/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
       - codex-rs/utils/template/**
@@ -40,6 +41,7 @@ on:
       - codex-rs/arg0/**
       - codex-rs/cli/**
       - codex-rs/core/**
+      - codex-rs/hooks/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
       - codex-rs/utils/template/**
@@ -1347,6 +1349,17 @@ jobs:
             -E 'test(=models::tests::format_allow_prefixes_limits_output)' \
             2>&1 | tee "$RUNNER_TEMP/hia-protocol-allowed-prefixes.log"
 
+      - name: Test hooks UTC timestamp original wire and strict owner lint
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-hooks --locked \
+            -E 'test(=types::tests::hook_payload_serializes_stable_wire_shape) | test(=types::tests::triggered_at_keeps_whole_utc_seconds_across_epoch) | test(=legacy_notify::tests::legacy_notify_json_matches_historical_wire_shape)' \
+            2>&1 | tee "$RUNNER_TEMP/hia-hooks-utc-wire.log"
+          env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --locked --all-targets -p codex-hooks -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-hooks-strict-clippy.log"
+
       - name: Verify added Index and legacy raw-only archive receipts
         if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
@@ -1724,6 +1737,8 @@ jobs:
             {0}/hia-allowed-prefixes.json
             {0}/hia-allowed-prefixes.log
             {0}/hia-protocol-allowed-prefixes.log
+            {0}/hia-hooks-utc-wire.log
+            {0}/hia-hooks-strict-clippy.log
             {0}/hia-allowed-prefixes-artifacts/*.stdout
             {0}/hia-allowed-prefixes-artifacts/*.stderr
             {0}/hia-allowed-prefixes-artifacts/capture_rustc.py

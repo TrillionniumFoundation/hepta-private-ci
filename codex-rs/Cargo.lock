@@ -4265,7 +4265,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "async-channel",
- "chrono",
  "codex-config",
  "codex-plugin",
  "codex-protocol",
@@ -4280,6 +4279,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
+ "time",
  "tokio",
  "tracing",
  "uuid",
