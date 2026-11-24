@@ -1,0 +1,46 @@
+{
+  "name": "smoke_cost",
+  "job_id": "1a20d9fdae7-ffbe-3956",
+  "host": "desktop",
+  "stdout": "{\"attempt\": \"n8-dense\", \"status\": \"completed\", \"updates\": 12, \"selected_step\": 12, \"dev_accuracy\": 0.65625, \"training_cpu\": 3.534374431999999, \"error\": null}\n{\"attempt\": \"n64-dense\", \"status\": \"completed\", \"updates\": 7, \"selected_step\": 7, \"dev_accuracy\": 0.34375, \"training_cpu\": 8.069924570000001, \"error\": null}\n{\"attempt\": \"n8-uniformized\", \"status\": \"completed\", \"updates\": 12, \"selected_step\": 12, \"dev_accuracy\": 0.65625, \"training_cpu\": 3.879352407999992, \"error\": null}\n{\"attempt\": \"n64-uniformized\", \"status\": \"completed\", \"updates\": 9, \"selected_step\": 9, \"dev_accuracy\": 0.65625, \"training_cpu\": 8.077357564000003, \"error\": null}\nSMOKE_COMPLETE\n",
+  "stderr": "",
+  "stdout_complete": true,
+  "stderr_complete": true,
+  "status": {
+    "at_unix_ms": 1795524944190,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20d9fdae7-ffbe-3956",
+    "launch_nonce": "6ae835b23bf66f89e2b0c8d5b4214a29",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 657,
+        "stored": 657
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

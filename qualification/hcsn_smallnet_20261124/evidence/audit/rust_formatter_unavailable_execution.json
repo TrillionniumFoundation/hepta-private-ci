@@ -1,0 +1,46 @@
+{
+  "name": "rust_formatter_unavailable",
+  "job_id": "1a20dbf2481-ffbe-3997",
+  "host": "desktop",
+  "stdout": "{\"status\": \"unavailable\", \"reason\": \"FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/home/qian-qi/hcsn-smallnet-20261124/git-https/codex-rs')\", \"checkouts\": [{\"path\": \"/home/qian-qi/hepta-private-ci\", \"checkout_present\": false}, {\"path\": \"/home/qian-qi/Workspace/hepta-private-ci\", \"checkout_present\": false}, {\"path\": \"/home/qian-qi/workspace/hepta-private-ci\", \"checkout_present\": false}, {\"path\": \"/home/qian-qi/projects/hepta-private-ci\", \"checkout_present\": false}, {\"path\": \"/home/qian-qi/hcsn-smallnet-20261124/git-https\", \"checkout_present\": false}, {\"path\": \"/home/qian-qi/hcsn-smallnet-20261124/git-worktree\", \"checkout_present\": false}], \"wall_seconds\": 0.0005978749832138419, \"scope\": \"repository-wide Rust formatter; Python-only addition; full isolated Git checkout could not be fetched\"}\n",
+  "stderr": "",
+  "stdout_complete": true,
+  "stderr_complete": true,
+  "status": {
+    "at_unix_ms": 1795526972468,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20dbf2481-ffbe-3997",
+    "launch_nonce": "60ddf68d195ffe60eedbf8044ede7dbc",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 822,
+        "stored": 822
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

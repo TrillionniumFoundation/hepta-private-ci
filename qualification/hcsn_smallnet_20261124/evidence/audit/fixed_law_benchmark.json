@@ -1,0 +1,712 @@
+{
+  "benchmark_body_cpu_seconds": 13.108079616,
+  "cases": [
+    {
+      "batch": 4,
+      "cold_cached_full_forward_cpu_s": 0.14684719999999984,
+      "cold_cached_full_forward_s": 0.14683993498329073,
+      "cold_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.0325074129013956e-13,
+        "step_equal": true
+      },
+      "cold_plan": {
+        "cache_hits": 63,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.001833115005865693,
+        "plan_cpu_seconds": 0.001836495000000049,
+        "plan_tensor_bytes": 70784
+      },
+      "config": {
+        "backend": "dense",
+        "base_drift": -0.2,
+        "bins": 6,
+        "boundary_mode": "qvi",
+        "boundary_span": 0.1,
+        "cost": 0.15,
+        "cost_span": 0.02,
+        "discount": 0.3,
+        "drift_scale": 0.15,
+        "dt": 0.25,
+        "extent": 2.0,
+        "feature_bank": "value_risk",
+        "feature_normalization": "none",
+        "gain": 0.8,
+        "input_size": 6,
+        "maintenance": 0.25,
+        "message_mode": "full",
+        "neurons": 8,
+        "precision": "float64",
+        "refractory": 0.2,
+        "reset_absolute": 1.2,
+        "sigma": 0.55,
+        "slow_every": 1000000000,
+        "stages": 3,
+        "write_fraction": 0.5
+      },
+      "final_plan": {
+        "cache_hits": 255,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.001833115005865693,
+        "plan_cpu_seconds": 0.001836495000000049,
+        "plan_tensor_bytes": 70784
+      },
+      "final_state_elements": 832,
+      "input_sha256": "d72f6c09affe7122de238dcfef14b38f0604a67a9b91d0009db81e770738e491",
+      "model_state_sha256": "08b524c1b2d66b99df71c7a39c946f696c24130f34a6f20ff438f04627c3a197",
+      "neurons": 8,
+      "parity_absolute_tolerance": 3e-11,
+      "precision": "float64",
+      "reference_full_forward_cpu_median_s": 0.24968612300000004,
+      "reference_full_forward_cpu_samples_s": [
+        0.25234408900000016,
+        0.24938278700000005,
+        0.24968612300000004
+      ],
+      "reference_full_forward_median_s": 0.2513511050492525,
+      "reference_full_forward_samples_s": [
+        0.2536910850321874,
+        0.24938188097439706,
+        0.2513511050492525
+      ],
+      "status": "passed",
+      "steps": 64,
+      "two_model_construction_s": 0.023478128015995026,
+      "warm_cached_full_forward_cpu_median_s": 0.15527218499999984,
+      "warm_cached_full_forward_cpu_samples_s": [
+        0.1527594539999999,
+        0.15527218499999984,
+        0.15601084700000012
+      ],
+      "warm_cached_full_forward_median_s": 0.15592985600233078,
+      "warm_cached_full_forward_samples_s": [
+        0.1534315929748118,
+        0.15592985600233078,
+        0.1566711449995637
+      ],
+      "warm_cpu_ratio_reference_over_cached": 1.6080544174734213,
+      "warm_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.0325074129013956e-13,
+        "step_equal": true
+      },
+      "warm_speed_ratio_reference_over_cached": 1.6119498311182652
+    },
+    {
+      "batch": 4,
+      "cold_cached_full_forward_cpu_s": 0.1484775039999997,
+      "cold_cached_full_forward_s": 0.14914474706165493,
+      "cold_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.2456702336294256e-13,
+        "step_equal": true
+      },
+      "cold_plan": {
+        "cache_hits": 63,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.0018153549171984196,
+        "plan_cpu_seconds": 0.001817705000000558,
+        "plan_tensor_bytes": 70784
+      },
+      "config": {
+        "backend": "dense",
+        "base_drift": -0.2,
+        "bins": 6,
+        "boundary_mode": "qvi",
+        "boundary_span": 0.1,
+        "cost": 0.15,
+        "cost_span": 0.02,
+        "discount": 0.3,
+        "drift_scale": 0.15,
+        "dt": 0.25,
+        "extent": 2.0,
+        "feature_bank": "value_risk",
+        "feature_normalization": "none",
+        "gain": 0.8,
+        "input_size": 6,
+        "maintenance": 0.25,
+        "message_mode": "full",
+        "neurons": 8,
+        "precision": "mixed",
+        "refractory": 0.2,
+        "reset_absolute": 1.2,
+        "sigma": 0.55,
+        "slow_every": 1000000000,
+        "stages": 3,
+        "write_fraction": 0.5
+      },
+      "final_plan": {
+        "cache_hits": 255,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.0018153549171984196,
+        "plan_cpu_seconds": 0.001817705000000558,
+        "plan_tensor_bytes": 70784
+      },
+      "final_state_elements": 832,
+      "input_sha256": "a2eb267e063ecffcfd792967b2d8779c57094f5833d7226f3041431dbed2dec9",
+      "model_state_sha256": "7a08fc25454a24169803dc3164742140415d7adfd83702d0b2f8dc8708a9c2e8",
+      "neurons": 8,
+      "parity_absolute_tolerance": 3e-07,
+      "precision": "mixed",
+      "reference_full_forward_cpu_median_s": 0.25123495900000004,
+      "reference_full_forward_cpu_samples_s": [
+        0.2639223259999999,
+        0.25123495900000004,
+        0.2505944139999996
+      ],
+      "reference_full_forward_median_s": 0.2519086980028078,
+      "reference_full_forward_samples_s": [
+        0.26458839199040085,
+        0.2519086980028078,
+        0.250608952017501
+      ],
+      "status": "passed",
+      "steps": 64,
+      "two_model_construction_s": 0.022160104010254145,
+      "warm_cached_full_forward_cpu_median_s": 0.14703078400000003,
+      "warm_cached_full_forward_cpu_samples_s": [
+        0.14703078400000003,
+        0.14684483000000004,
+        0.1472396490000003
+      ],
+      "warm_cached_full_forward_median_s": 0.14751765201799572,
+      "warm_cached_full_forward_samples_s": [
+        0.14769071992486715,
+        0.14751765201799572,
+        0.14723266300279647
+      ],
+      "warm_cpu_ratio_reference_over_cached": 1.7087235214633691,
+      "warm_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.2456702336294256e-13,
+        "step_equal": true
+      },
+      "warm_speed_ratio_reference_over_cached": 1.7076512170358933
+    },
+    {
+      "batch": 4,
+      "cold_cached_full_forward_cpu_s": 0.17164147699999965,
+      "cold_cached_full_forward_s": 0.17230782704427838,
+      "cold_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.361133428190442e-13,
+        "step_equal": true
+      },
+      "cold_plan": {
+        "cache_hits": 63,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.005105710937641561,
+        "plan_cpu_seconds": 0.005108243000000456,
+        "plan_tensor_bytes": 282752
+      },
+      "config": {
+        "backend": "dense",
+        "base_drift": -0.2,
+        "bins": 6,
+        "boundary_mode": "qvi",
+        "boundary_span": 0.1,
+        "cost": 0.15,
+        "cost_span": 0.02,
+        "discount": 0.3,
+        "drift_scale": 0.15,
+        "dt": 0.25,
+        "extent": 2.0,
+        "feature_bank": "value_risk",
+        "feature_normalization": "none",
+        "gain": 0.8,
+        "input_size": 6,
+        "maintenance": 0.25,
+        "message_mode": "full",
+        "neurons": 32,
+        "precision": "float64",
+        "refractory": 0.2,
+        "reset_absolute": 1.2,
+        "sigma": 0.55,
+        "slow_every": 1000000000,
+        "stages": 3,
+        "write_fraction": 0.5
+      },
+      "final_plan": {
+        "cache_hits": 255,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.005105710937641561,
+        "plan_cpu_seconds": 0.005108243000000456,
+        "plan_tensor_bytes": 282752
+      },
+      "final_state_elements": 3328,
+      "input_sha256": "17ae36ab35f11a2ab686c9bdc503586fe0dcdc053a31493de6a457264cad2ee2",
+      "model_state_sha256": "c21c54a64c7c2a67a669f20207a6f0e4d3692b613f3c33466b9e0c46b9773b7a",
+      "neurons": 32,
+      "parity_absolute_tolerance": 3e-11,
+      "precision": "float64",
+      "reference_full_forward_cpu_median_s": 0.4591740799999995,
+      "reference_full_forward_cpu_samples_s": [
+        0.4591740799999995,
+        0.465851743,
+        0.411205861
+      ],
+      "reference_full_forward_median_s": 0.46119514503516257,
+      "reference_full_forward_samples_s": [
+        0.46119514503516257,
+        0.4665198229486123,
+        0.41258413600735366
+      ],
+      "status": "passed",
+      "steps": 64,
+      "two_model_construction_s": 0.021248548990115523,
+      "warm_cached_full_forward_cpu_median_s": 0.16604327499999982,
+      "warm_cached_full_forward_cpu_samples_s": [
+        0.16604327499999982,
+        0.16588987799999977,
+        0.16709520300000058
+      ],
+      "warm_cached_full_forward_median_s": 0.166036530979909,
+      "warm_cached_full_forward_samples_s": [
+        0.166036530979909,
+        0.165891521028243,
+        0.16708733700215816
+      ],
+      "warm_cpu_ratio_reference_over_cached": 2.7653879990020673,
+      "warm_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.361133428190442e-13,
+        "step_equal": true
+      },
+      "warm_speed_ratio_reference_over_cached": 2.7776727345078585
+    },
+    {
+      "batch": 4,
+      "cold_cached_full_forward_cpu_s": 0.17191492199999914,
+      "cold_cached_full_forward_s": 0.17328792298212647,
+      "cold_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.3433698597964394e-13,
+        "step_equal": true
+      },
+      "cold_plan": {
+        "cache_hits": 63,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.003987848060205579,
+        "plan_cpu_seconds": 0.003990517000000082,
+        "plan_tensor_bytes": 282752
+      },
+      "config": {
+        "backend": "dense",
+        "base_drift": -0.2,
+        "bins": 6,
+        "boundary_mode": "qvi",
+        "boundary_span": 0.1,
+        "cost": 0.15,
+        "cost_span": 0.02,
+        "discount": 0.3,
+        "drift_scale": 0.15,
+        "dt": 0.25,
+        "extent": 2.0,
+        "feature_bank": "value_risk",
+        "feature_normalization": "none",
+        "gain": 0.8,
+        "input_size": 6,
+        "maintenance": 0.25,
+        "message_mode": "full",
+        "neurons": 32,
+        "precision": "mixed",
+        "refractory": 0.2,
+        "reset_absolute": 1.2,
+        "sigma": 0.55,
+        "slow_every": 1000000000,
+        "stages": 3,
+        "write_fraction": 0.5
+      },
+      "final_plan": {
+        "cache_hits": 255,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.003987848060205579,
+        "plan_cpu_seconds": 0.003990517000000082,
+        "plan_tensor_bytes": 282752
+      },
+      "final_state_elements": 3328,
+      "input_sha256": "1459ff5de6d1d97d634bcaabf2d41a1e5b590958410a6d7e08864cc560308a62",
+      "model_state_sha256": "6b2bfc3638854940235d32c07122c79a69dede3a8e6459f881e0136b0ae2cd43",
+      "neurons": 32,
+      "parity_absolute_tolerance": 3e-07,
+      "precision": "mixed",
+      "reference_full_forward_cpu_median_s": 0.41168271899999986,
+      "reference_full_forward_cpu_samples_s": [
+        0.41168271899999986,
+        0.4122222899999999,
+        0.40781436300000085
+      ],
+      "reference_full_forward_median_s": 0.41234662698116153,
+      "reference_full_forward_samples_s": [
+        0.41234662698116153,
+        0.4135649229865521,
+        0.4084686280693859
+      ],
+      "status": "passed",
+      "steps": 64,
+      "two_model_construction_s": 0.02301826700568199,
+      "warm_cached_full_forward_cpu_median_s": 0.16741447699999945,
+      "warm_cached_full_forward_cpu_samples_s": [
+        0.1674899099999987,
+        0.1673079839999989,
+        0.16741447699999945
+      ],
+      "warm_cached_full_forward_median_s": 0.167406689026393,
+      "warm_cached_full_forward_samples_s": [
+        0.1675064410082996,
+        0.16731010098010302,
+        0.167406689026393
+      ],
+      "warm_cpu_ratio_reference_over_cached": 2.4590628383948014,
+      "warm_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.3433698597964394e-13,
+        "step_equal": true
+      },
+      "warm_speed_ratio_reference_over_cached": 2.4631430761775106
+    },
+    {
+      "batch": 4,
+      "cold_cached_full_forward_cpu_s": 0.20384911699999897,
+      "cold_cached_full_forward_s": 0.2038520110072568,
+      "cold_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.496580637194711e-13,
+        "step_equal": true
+      },
+      "cold_plan": {
+        "cache_hits": 63,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.008901502937078476,
+        "plan_cpu_seconds": 0.008905323000000465,
+        "plan_tensor_bytes": 565376
+      },
+      "config": {
+        "backend": "dense",
+        "base_drift": -0.2,
+        "bins": 6,
+        "boundary_mode": "qvi",
+        "boundary_span": 0.1,
+        "cost": 0.15,
+        "cost_span": 0.02,
+        "discount": 0.3,
+        "drift_scale": 0.15,
+        "dt": 0.25,
+        "extent": 2.0,
+        "feature_bank": "value_risk",
+        "feature_normalization": "none",
+        "gain": 0.8,
+        "input_size": 6,
+        "maintenance": 0.25,
+        "message_mode": "full",
+        "neurons": 64,
+        "precision": "float64",
+        "refractory": 0.2,
+        "reset_absolute": 1.2,
+        "sigma": 0.55,
+        "slow_every": 1000000000,
+        "stages": 3,
+        "write_fraction": 0.5
+      },
+      "final_plan": {
+        "cache_hits": 255,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.008901502937078476,
+        "plan_cpu_seconds": 0.008905323000000465,
+        "plan_tensor_bytes": 565376
+      },
+      "final_state_elements": 6656,
+      "input_sha256": "4439826d33aa5537a88214c492863007f7cb38ad95ca900060e17262a0836b3a",
+      "model_state_sha256": "1837ac16ebc187e4269d91a1e567e23fe3b5ee325b8e1c7d4d0f00b19eec292f",
+      "neurons": 64,
+      "parity_absolute_tolerance": 3e-11,
+      "precision": "float64",
+      "reference_full_forward_cpu_median_s": 0.8408805749999999,
+      "reference_full_forward_cpu_samples_s": [
+        0.8366102490000014,
+        0.8408805749999999,
+        0.8523719980000006
+      ],
+      "reference_full_forward_median_s": 0.8435634799534455,
+      "reference_full_forward_samples_s": [
+        0.8390904560219496,
+        0.8435634799534455,
+        0.8547142369206995
+      ],
+      "status": "passed",
+      "steps": 64,
+      "two_model_construction_s": 0.02225113392341882,
+      "warm_cached_full_forward_cpu_median_s": 0.19397454599999975,
+      "warm_cached_full_forward_cpu_samples_s": [
+        0.1936438650000003,
+        0.19397454599999975,
+        0.19566087799999998
+      ],
+      "warm_cached_full_forward_median_s": 0.19565212109591812,
+      "warm_cached_full_forward_samples_s": [
+        0.19365797098726034,
+        0.19629568397067487,
+        0.19565212109591812
+      ],
+      "warm_cpu_ratio_reference_over_cached": 4.33500473304369,
+      "warm_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.496580637194711e-13,
+        "step_equal": true
+      },
+      "warm_speed_ratio_reference_over_cached": 4.311547839238042
+    },
+    {
+      "batch": 4,
+      "cold_cached_full_forward_cpu_s": 0.2043688140000004,
+      "cold_cached_full_forward_s": 0.20439385494682938,
+      "cold_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.361133428190442e-13,
+        "step_equal": true
+      },
+      "cold_plan": {
+        "cache_hits": 63,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.008932795957662165,
+        "plan_cpu_seconds": 0.008936739000001026,
+        "plan_tensor_bytes": 565376
+      },
+      "config": {
+        "backend": "dense",
+        "base_drift": -0.2,
+        "bins": 6,
+        "boundary_mode": "qvi",
+        "boundary_span": 0.1,
+        "cost": 0.15,
+        "cost_span": 0.02,
+        "discount": 0.3,
+        "drift_scale": 0.15,
+        "dt": 0.25,
+        "extent": 2.0,
+        "feature_bank": "value_risk",
+        "feature_normalization": "none",
+        "gain": 0.8,
+        "input_size": 6,
+        "maintenance": 0.25,
+        "message_mode": "full",
+        "neurons": 64,
+        "precision": "mixed",
+        "refractory": 0.2,
+        "reset_absolute": 1.2,
+        "sigma": 0.55,
+        "slow_every": 1000000000,
+        "stages": 3,
+        "write_fraction": 0.5
+      },
+      "final_plan": {
+        "cache_hits": 255,
+        "cache_scope": "one exact batch and per-neuron generator/event/boundary/cost/config; no autograd graph",
+        "plan_builds": 1,
+        "plan_construction_s": 0.008932795957662165,
+        "plan_cpu_seconds": 0.008936739000001026,
+        "plan_tensor_bytes": 565376
+      },
+      "final_state_elements": 6656,
+      "input_sha256": "29bce473b5571904b384f576baaec14c0c98934bf4e22f4979d83ab10f7b4d16",
+      "model_state_sha256": "efe9b9c6f08babe409c1a8bd574763731935f724fe0e898a7058f2b4882beccf",
+      "neurons": 64,
+      "parity_absolute_tolerance": 3e-07,
+      "precision": "mixed",
+      "reference_full_forward_cpu_median_s": 0.7359535049999995,
+      "reference_full_forward_cpu_samples_s": [
+        0.7359535049999995,
+        0.7342715660000003,
+        0.7438500270000006
+      ],
+      "reference_full_forward_median_s": 0.7383112729294226,
+      "reference_full_forward_samples_s": [
+        0.7383112729294226,
+        0.7366502690128982,
+        0.7462262469343841
+      ],
+      "status": "passed",
+      "steps": 64,
+      "two_model_construction_s": 0.021729844971559942,
+      "warm_cached_full_forward_cpu_median_s": 0.1954938309999985,
+      "warm_cached_full_forward_cpu_samples_s": [
+        0.1957773859999996,
+        0.1954938309999985,
+        0.19542794300000033
+      ],
+      "warm_cached_full_forward_median_s": 0.1961602009832859,
+      "warm_cached_full_forward_samples_s": [
+        0.1974517620401457,
+        0.1961602009832859,
+        0.19541930803097785
+      ],
+      "warm_cpu_ratio_reference_over_cached": 3.764586847755851,
+      "warm_parity": {
+        "all_outputs_and_state_finite": true,
+        "config_equal": true,
+        "max_absolute_error": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "maximum_error": 0.0,
+        "probability_mass_error": 1.361133428190442e-13,
+        "step_equal": true
+      },
+      "warm_speed_ratio_reference_over_cached": 3.7638178857307114
+    }
+  ],
+  "device": "cpu",
+  "energy_joules": null,
+  "energy_reason": "No process-attributable hardware energy counter.",
+  "frozen_model_sha256": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+  "law_scope": "controls updated at step 0 then held; every later input still writes signed content and old-message coupling remains active",
+  "not_measured": "training, BP/backward reuse, changing input-driven laws, an end-to-end multimodal model",
+  "process_peak_rss_kib_linux": 226516,
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "remaining_work": "per-step generator construction and exact cache-key validation remain in the measured forward",
+  "schema": "hcsn-fixed-law-inference-cache-v1",
+  "seed": 5117,
+  "source_sha256": "a7095d340fb99f2ec3b38cf7908cdf73dbe03fe9befb2b7a3aef3a834e146af5",
+  "threads": 1,
+  "timing_scope": "complete inference forward including initial state, QVI/control edge, input writes, recurrent messages, feature/readout and invariant checks",
+  "torch": "2.8.0+cpu",
+  "worker_cpu_through_report_seconds": 15.119822219,
+  "worker_script_wall_seconds": 15.139290679013357
+}

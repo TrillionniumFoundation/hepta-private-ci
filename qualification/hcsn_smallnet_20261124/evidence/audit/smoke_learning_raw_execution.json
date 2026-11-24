@@ -1,0 +1,46 @@
+{
+  "name": "smoke_learning_raw",
+  "job_id": "1a20da3d2ba-ffbe-3967",
+  "host": "desktop",
+  "stdout": "{\"attempt\": \"n8-qvi_full-s1101\", \"status\": \"completed\", \"updates\": 1, \"selected_step\": 1, \"dev_accuracy\": 0.75, \"training_cpu\": 0.1488345459999998, \"error\": null}\n{\"attempt\": \"n8-qvi_full-s1101\", \"status\": \"completed\", \"updates\": 1, \"selected_step\": 1, \"dev_accuracy\": 0.75, \"training_cpu\": 0.14914499700000006, \"error\": null}\n{\"N\": 8, \"step\": 32, \"train_cpu\": 10.481533751999999, \"metrics\": {\"accuracy\": 0.515625, \"brier\": 0.5458193306972801, \"cross_entropy\": 0.7419754293609808, \"early_accuracy\": 0.515625, \"pre_late_accuracy\": 0.515625, \"stop_accuracy\": 0.515625, \"mean_stop_step\": 11.0, \"stopping_utility\": 0.47562499999999996, \"stop_before_late_fraction\": 0.0, \"source_accuracy\": {\"20\": 0.4375, \"21\": 0.59375}, \"worst_source_accuracy\": 0.4375, \"examples\": 64, \"sources\": 2, \"max_probability_balance_error\": 2.6645352591003757e-15, \"maximum_chunk_state_tensor_bytes\": 26624, \"state_bytes_scope\": \"all five dynamic tensor fields; model, outputs and AD tape excluded\"}, \"loss\": 0.6674684286117554}\n{\"N\": 8, \"step\": 64, \"train_cpu\": 20.864269027000013, \"metrics\": {\"accuracy\": 0.515625, \"brier\": 0.6142862861193202, \"cross_entropy\": 0.8264189598841942, \"early_accuracy\": 0.515625, \"pre_late_accuracy\": 0.515625, \"stop_accuracy\": 0.515625, \"mean_stop_step\": 11.0, \"stopping_utility\": 0.47562499999999996, \"stop_before_late_fraction\": 0.0, \"source_accuracy\": {\"20\": 0.4375, \"21\": 0.59375}, \"worst_source_accuracy\": 0.4375, \"examples\": 64, \"sources\": 2, \"max_probability_balance_error\": 2.6645352591003757e-15, \"maximum_chunk_state_tensor_bytes\": 26624, \"state_bytes_scope\": \"all five dynamic tensor fields; model, outputs and AD tape excluded\"}, \"loss\": 0.9790193438529968}\n{\"N\": 8, \"step\": 96, \"train_cpu\": 31.33363192999999, \"metrics\": {\"accuracy\": 0.515625, \"brier\": 0.5077521229074795, \"cross_entropy\": 0.7010215957157954, \"early_accuracy\": 0.515625, \"pre_late_accuracy\": 0.515625, \"stop_accuracy\": 0.515625, \"mean_stop_step\": 11.0, \"stopping_utility\": 0.47562499999999996, \"stop_before_late_fraction\": 0.0, \"source_accuracy\": {\"20\": 0.4375, \"21\": 0.59375}, \"worst_source_accuracy\": 0.4375, \"examples\": 64, \"sources\": 2, \"max_probability_balance_error\": 2.7755575615628914e-15, \"maximum_chunk_state_tensor_bytes\": 26624, \"state_bytes_scope\": \"all five dynamic tensor fields; model, outputs and AD tape excluded\"}, \"loss\": 0.6643399000167847}\n{\"N\": 8, \"step\": 128, \"train_cpu\": 41.737898174999984, \"metrics\": {\"accuracy\": 0.515625, \"brier\": 0.5301857660114471, \"cross_entropy\": 0.7246933921071111, \"early_accuracy\": 0.515625, \"pre_late_accuracy\": 0.515625, \"stop_accuracy\": 0.515625, \"mean_stop_step\": 11.0, \"stopping_utility\": 0.47562499999999996, \"stop_before_late_fraction\": 0.0, \"source_accuracy\": {\"20\": 0.4375, \"21\": 0.59375}, \"worst_source_accuracy\": 0.4375, \"examples\": 64, \"sources\": 2, \"max_probability_balance_error\": 3.1086244689504383e-15, \"maximum_chunk_state_tensor_bytes\": 26624, \"state_bytes_scope\": \"all five dynamic tensor fields; model, outputs and AD tape excluded\"}, \"loss\": 0.5887181758880615}\nLEARNING_SMOKE_COMPLETE_N8\n{\"N\": 64, \"step\": 32, \"train_cpu\": 28.601007728000013, \"metrics\": {\"accuracy\": 0.484375, \"brier\": 0.5054398569285316, \"cross_entropy\": 0.6986010486397332, \"early_accuracy\": 0.484375, \"pre_late_accuracy\": 0.484375, \"stop_accuracy\": 0.484375, \"mean_stop_step\": 11.0, \"stopping_utility\": 0.44437499999999996, \"stop_before_late_fraction\": 0.0, \"source_accuracy\": {\"20\": 0.5625, \"21\": 0.40625}, \"worst_source_accuracy\": 0.40625, \"examples\": 64, \"sources\": 2, \"max_probability_balance_error\": 4.218847493575595e-15, \"maximum_chunk_state_tensor_bytes\": 212992, \"state_bytes_scope\": \"all five dynamic tensor fields; model, outputs and AD tape excluded\"}, \"loss\": 0.7511114478111267}\n{\"N\": 64, \"step\": 64, \"train_cpu\": 57.18620721500004, \"metrics\": {\"accuracy\": 0.515625, \"brier\": 0.5123398202773762, \"cross_entropy\": 0.7057565370293485, \"early_accuracy\": 0.515625, \"pre_late_accuracy\": 0.515625, \"stop_accuracy\": 0.515625, \"mean_stop_step\": 11.0, \"stopping_utility\": 0.47562499999999996, \"stop_before_late_fraction\": 0.0, \"source_accuracy\": {\"20\": 0.4375, \"21\": 0.59375}, \"worst_source_accuracy\": 0.4375, \"examples\": 64, \"sources\": 2, \"max_probability_balance_error\": 4.107825191113079e-15, \"maximum_chunk_state_tensor_bytes\": 212992, \"state_bytes_scope\": \"all five dynamic tensor fields; model, outputs and AD tape excluded\"}, \"loss\": 0.896724283695221}\n{\"N\": 64, \"step\": 96, \"train_cpu\": 85.92591276099996, \"metrics\": {\"accuracy\": 0.515625, \"brier\": 0.5144626787211356, \"cross_entropy\": 0.7079670399921649, \"early_accuracy\": 0.515625, \"pre_late_accuracy\": 0.515625, \"stop_accuracy\": 0.515625, \"mean_stop_step\": 11.0, \"stopping_utility\": 0.47562499999999996, \"stop_before_late_fraction\": 0.0, \"source_accuracy\": {\"20\": 0.4375, \"21\": 0.59375}, \"worst_source_accuracy\": 0.4375, \"examples\": 64, \"sources\": 2, \"max_probability_balance_error\": 3.774758283725532e-15, \"maximum_chunk_state_tensor_bytes\": 212992, \"state_bytes_scope\": \"all five dynamic tensor fields; model, outputs and AD tape excluded\"}, \"loss\": 0.668266236782074}\n{\"N\": 64, \"step\": 128, \"train_cpu\": 114.55019471300001, \"metrics\": {\"accuracy\": 0.515625, \"brier\": 0.7050460022106223, \"cross_entropy\": 0.9685332800735961, \"early_accuracy\": 0.515625, \"pre_late_accuracy\": 0.515625, \"stop_accuracy\": 0.515625, \"mean_stop_step\": 0.046875, \"stopping_utility\": 0.5154545454545454, \"stop_before_late_fraction\": 1.0, \"source_accuracy\": {\"20\": 0.4375, \"21\": 0.59375}, \"worst_source_accuracy\": 0.4375, \"examples\": 64, \"sources\": 2, \"max_probability_balance_error\": 3.6637359812630166e-15, \"maximum_chunk_state_tensor_bytes\": 212992, \"state_bytes_scope\": \"all five dynamic tensor fields; model, outputs and AD tape excluded\"}, \"loss\": 0.5648332238197327}\nLEARNING_SMOKE_COMPLETE_N64\n",
+  "stderr": "test_changed_checkpoint_refused_before_any_test_data_or_claim (qualification.hcsn_smallnet_20261124.protocol_tests.ProtocolTests.test_changed_checkpoint_refused_before_any_test_data_or_claim) ... ok\ntest_dependency_byte_change_is_detected_without_touching_upstream (qualification.hcsn_smallnet_20261124.protocol_tests.ProtocolTests.test_dependency_byte_change_is_detected_without_touching_upstream) ... ok\ntest_frozen_one_slot_seals_and_reloads_before_smoke_only_test (qualification.hcsn_smallnet_20261124.protocol_tests.ProtocolTests.test_frozen_one_slot_seals_and_reloads_before_smoke_only_test) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 2.638s\n\nOK\n",
+  "stdout_complete": true,
+  "stderr_complete": true,
+  "status": {
+    "at_unix_ms": 1795525346419,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20da3d2ba-ffbe-3967",
+    "launch_nonce": "047541b88d7f5d32777b8fe8a4fc6b67",
+    "log_bytes": {
+      "stderr": {
+        "seen": 703,
+        "stored": 703
+      },
+      "stdout": {
+        "seen": 5772,
+        "stored": 5772
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

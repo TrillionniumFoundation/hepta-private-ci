@@ -1,0 +1,46 @@
+{
+  "name": "feature_probe",
+  "job_id": "1a20da74adb-ffbe-396e",
+  "host": "desktop",
+  "stdout": "{\"N\": 8, \"causal_held_content\": false, \"raw_model_dev\": 0.515625, \"frozen_standardized_ridge_dev\": 0.75, \"feature_std_min\": 0.00020701058894779053, \"feature_std_median\": 0.007230665058137527, \"feature_std_max\": 0.016522919633653398, \"center_abs_max\": 2.8293745145201683}\n{\"N\": 8, \"causal_held_content\": true, \"raw_model_dev\": 0.515625, \"frozen_standardized_ridge_dev\": 0.96875, \"feature_std_min\": 0.000728431309201168, \"feature_std_median\": 0.007230745403546157, \"feature_std_max\": 0.016600570874400526, \"center_abs_max\": 2.829583616927266}\n{\"N\": 64, \"causal_held_content\": false, \"raw_model_dev\": 0.515625, \"frozen_standardized_ridge_dev\": 0.90625, \"feature_std_min\": 0.0001007703198550842, \"feature_std_median\": 0.007146629140250776, \"feature_std_max\": 0.018095405905784904, \"center_abs_max\": 2.885633984580636}\n{\"N\": 64, \"causal_held_content\": true, \"raw_model_dev\": 0.515625, \"frozen_standardized_ridge_dev\": 0.96875, \"feature_std_min\": 0.0010696832792619507, \"feature_std_median\": 0.007153915778965432, \"feature_std_max\": 0.01838729639539201, \"center_abs_max\": 2.8854006193578243}\n",
+  "stderr": "",
+  "stdout_complete": true,
+  "stderr_complete": true,
+  "status": {
+    "at_unix_ms": 1795525420043,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20da74adb-ffbe-396e",
+    "launch_nonce": "a84c3a17d6a2fb70bce11f480ddab881",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1086,
+        "stored": 1086
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

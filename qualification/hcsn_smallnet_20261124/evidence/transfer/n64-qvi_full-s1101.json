@@ -1,0 +1,1093 @@
+{
+  "schema": "hcsn-program-transfer-controls-v1",
+  "seed": 2401124,
+  "source_digest": "4f7e0b2d1f807f6a4b99bb61dbf091561f2dff82223acbcc244360c29b001bd4",
+  "config": {
+    "input_size": 6,
+    "neurons": 64,
+    "bins": 6,
+    "stages": 3,
+    "dt": 0.25,
+    "extent": 2.0,
+    "sigma": 0.55,
+    "base_drift": -0.2,
+    "drift_scale": 0.15,
+    "discount": 0.3,
+    "refractory": 0.2,
+    "reset_absolute": 1.2,
+    "gain": 0.8,
+    "maintenance": 0.25,
+    "cost": 0.15,
+    "cost_span": 0.02,
+    "boundary_span": 0.1,
+    "write_fraction": 0.5,
+    "slow_every": 2,
+    "boundary_mode": "qvi",
+    "message_mode": "full",
+    "feature_bank": "value_risk",
+    "feature_normalization": "none",
+    "precision": "mixed",
+    "backend": "uniformized"
+  },
+  "inputs_digest": "d00626085817ddacdd3b28c1c91762db10416df6960281fa98cb8b54a69246d1",
+  "input_shape": [
+    12,
+    8,
+    6
+  ],
+  "tolerances": {
+    "atol": 3e-05,
+    "rtol": 3e-05
+  },
+  "implementation": {
+    "editing.py": "0577fea73b8678e03476082f4b4eab7623bbada47a628e6eed31b4180c7d90dc",
+    "transfer_suite.py": "1f76e411f9b22d9bd5c8f356912d0658b3df81f0c94abea8ff8f8a1ea2e85ed5",
+    "model.py": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239"
+  },
+  "classification": {
+    "independent_trained_checkpoint_count": 1,
+    "views_are_independent_training_runs": false,
+    "population_sign_symmetry_claimed": false,
+    "label_schema_rule_is_new_discrimination": false
+  },
+  "label_accesses": 0,
+  "panels": {
+    "input_interface": {
+      "passed": true,
+      "prediction_disagreements": 0,
+      "logits": {
+        "passed": true,
+        "finite": true,
+        "max_abs": 2.9802322387695312e-08,
+        "max_scaled": 0.0007231836575304199,
+        "elements": 192
+      },
+      "features": {
+        "passed": true,
+        "finite": true,
+        "max_abs": 2.384185791015625e-07,
+        "max_scaled": 0.002237329566386289,
+        "elements": 15360
+      },
+      "complete_state": {
+        "passed": true,
+        "clock_equal": true,
+        "configuration_equal": true,
+        "step": 12,
+        "tensors": {
+          "density": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 1.7391034990137805e-08,
+            "max_scaled": 0.0005777140526716655,
+            "elements": 10240
+          },
+          "boundary": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 9.597178607378964e-09,
+            "max_scaled": 0.0001944626766449848,
+            "elements": 512
+          },
+          "drift": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 2.9802322387695312e-08,
+            "max_scaled": 0.0007844657272611136,
+            "elements": 512
+          },
+          "cost": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 512
+          },
+          "message": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 3.034776040102688e-08,
+            "max_scaled": 0.0010068970212815487,
+            "elements": 1536
+          }
+        }
+      },
+      "program": {
+        "schema": "hcsn-strict-weight-program-v1",
+        "program": "affine_input_interface",
+        "status": "CANDIDATE",
+        "reason": "compiled_declared_input_interface",
+        "source_digest": "4f7e0b2d1f807f6a4b99bb61dbf091561f2dff82223acbcc244360c29b001bd4",
+        "candidate_digest": "21d130faf1a2467033450d9a8217f98f2ba65eadf894bd0cbec34d641c94a8af",
+        "allowed_support": [
+          "input_drive.bias",
+          "input_drive.weight",
+          "input_mark.bias",
+          "input_mark.weight"
+        ],
+        "changed_parameters": {
+          "input_drive.weight": 64,
+          "input_drive.bias": 32,
+          "input_mark.weight": 64,
+          "input_mark.bias": 32
+        },
+        "changed_scalar_count": 192,
+        "delta_l2": 0.8082963745364038,
+        "delta_linf": 0.13281947374343872,
+        "proposed_delta_l2": 0.8082963745364038,
+        "proposed_delta_linf": 0.13281947374343872,
+        "limits": {
+          "max_l2": null,
+          "max_linf": null
+        },
+        "adoption_decision": "not_evaluated",
+        "protocol": {
+          "label_fitting": false,
+          "label_accesses": 0,
+          "network_forward_calls": 0,
+          "backward_calls": 0,
+          "objective_finite_differences": 0,
+          "candidate_selection_queries": 0
+        },
+        "details": {
+          "paths": [
+            "input_drive",
+            "input_mark"
+          ],
+          "input_dimension": 6,
+          "condition_limit": 100000000.0,
+          "condition_number": 1.5793134867541563,
+          "input_rule": "x_new = matrix @ x_old + offset",
+          "coverage": "caller-declared direct input branches; full-model equivalence still required",
+          "retention": "under the new sensor encoding of the same semantic inputs",
+          "capability_claim": "interface migration, not new task competence"
+        },
+        "cost": {
+          "linear_system_solves": 2,
+          "input_state_bytes": 102920,
+          "output_state_bytes": 102920,
+          "boundary": "function entry through validation and hashing; caller evaluation/serialization excluded",
+          "program_discovery_cost": "not_instrumented; do not infer total learning-time speedup",
+          "wall_seconds": 0.0036666409578174353,
+          "cpu_seconds": 0.003670802999998557
+        }
+      },
+      "scope": "same task under the declared new input interface"
+    },
+    "population_permutation": {
+      "passed": true,
+      "prediction_disagreements": 0,
+      "logits": {
+        "passed": true,
+        "finite": true,
+        "max_abs": 2.384185791015625e-07,
+        "max_scaled": 0.004358237537456328,
+        "elements": 192
+      },
+      "features": {
+        "passed": true,
+        "finite": true,
+        "max_abs": 2.384185791015625e-07,
+        "max_scaled": 0.0028138845477098805,
+        "elements": 15360
+      },
+      "complete_state": {
+        "passed": true,
+        "clock_equal": true,
+        "configuration_equal": true,
+        "step": 12,
+        "tensors": {
+          "density": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 4.738456368946764e-08,
+            "max_scaled": 0.0012845062135193918,
+            "elements": 10240
+          },
+          "boundary": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 1.5759798799308555e-08,
+            "max_scaled": 0.0003202487649135692,
+            "elements": 512
+          },
+          "drift": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 3.725290298461914e-08,
+            "max_scaled": 0.001104743765753066,
+            "elements": 512
+          },
+          "cost": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 1.4901161193847656e-08,
+            "max_scaled": 0.0004368074371672922,
+            "elements": 512
+          },
+          "message": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 9.436206027668703e-08,
+            "max_scaled": 0.0022658309847999256,
+            "elements": 1536
+          }
+        }
+      },
+      "scope": "within-role population permutation; all physical and state axes mapped",
+      "interface_program_equivariance": {
+        "passed": true,
+        "tensors": {
+          "raw_cost": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 64
+          },
+          "raw_boundary": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 64
+          },
+          "reset_absolute": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 64
+          },
+          "fixed_boundary": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 64
+          },
+          "synaptic_mask": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 12288
+          },
+          "input_drive.weight": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 192
+          },
+          "input_drive.bias": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 32
+          },
+          "input_mark.weight": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 192
+          },
+          "input_mark.bias": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 32
+          },
+          "recurrent.weight": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 12288
+          },
+          "readout.weight": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 320
+          },
+          "readout.bias": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 2
+          }
+        },
+        "program": {
+          "schema": "hcsn-strict-weight-program-v1",
+          "program": "affine_input_interface",
+          "status": "CANDIDATE",
+          "reason": "compiled_declared_input_interface",
+          "source_digest": "6a967a4f9341b43f86cc93c46eb788294084903506a07331a7c7cd71bd29a0bb",
+          "candidate_digest": "5d44e6a901debcddd9c8b09953ed7050bdfe9e5b7eaf23d387aa11498b09f14b",
+          "allowed_support": [
+            "input_drive.bias",
+            "input_drive.weight",
+            "input_mark.bias",
+            "input_mark.weight"
+          ],
+          "changed_parameters": {
+            "input_drive.weight": 64,
+            "input_drive.bias": 32,
+            "input_mark.weight": 64,
+            "input_mark.bias": 32
+          },
+          "changed_scalar_count": 192,
+          "delta_l2": 0.8082963745364038,
+          "delta_linf": 0.13281947374343872,
+          "proposed_delta_l2": 0.8082963745364038,
+          "proposed_delta_linf": 0.13281947374343872,
+          "limits": {
+            "max_l2": null,
+            "max_linf": null
+          },
+          "adoption_decision": "not_evaluated",
+          "protocol": {
+            "label_fitting": false,
+            "label_accesses": 0,
+            "network_forward_calls": 0,
+            "backward_calls": 0,
+            "objective_finite_differences": 0,
+            "candidate_selection_queries": 0
+          },
+          "details": {
+            "paths": [
+              "input_drive",
+              "input_mark"
+            ],
+            "input_dimension": 6,
+            "condition_limit": 100000000.0,
+            "condition_number": 1.5793134867541563,
+            "input_rule": "x_new = matrix @ x_old + offset",
+            "coverage": "caller-declared direct input branches; full-model equivalence still required",
+            "retention": "under the new sensor encoding of the same semantic inputs",
+            "capability_claim": "interface migration, not new task competence"
+          },
+          "cost": {
+            "linear_system_solves": 2,
+            "input_state_bytes": 102920,
+            "output_state_bytes": 102920,
+            "boundary": "function entry through validation and hashing; caller evaluation/serialization excluded",
+            "program_discovery_cost": "not_instrumented; do not infer total learning-time speedup",
+            "wall_seconds": 0.003378048073500395,
+            "cpu_seconds": 0.0033793989999999496
+          }
+        }
+      }
+    },
+    "readout_basis": {
+      "passed": true,
+      "prediction_disagreements": 0,
+      "logits": {
+        "passed": true,
+        "finite": true,
+        "max_abs": 0.0,
+        "max_scaled": 0.0,
+        "elements": 192
+      },
+      "features": {
+        "passed": true,
+        "finite": true,
+        "max_abs": 0.0,
+        "max_scaled": 0.0,
+        "elements": 15360
+      },
+      "complete_state": {
+        "passed": true,
+        "clock_equal": true,
+        "configuration_equal": true,
+        "step": 12,
+        "tensors": {
+          "density": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 10240
+          },
+          "boundary": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 512
+          },
+          "drift": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 512
+          },
+          "cost": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 512
+          },
+          "message": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 1536
+          }
+        }
+      },
+      "scope": "explicit readout feature coordinates only; physical neuron signs unchanged",
+      "complete_view_digest": "2b34d647c328ad92c2fd8c0b62c2b6d4d38579a1d71d10ff49b81891d0874c57"
+    },
+    "label_schema_program": {
+      "passed": true,
+      "prediction_disagreements": 0,
+      "logits": {
+        "passed": true,
+        "finite": true,
+        "max_abs": 0.0,
+        "max_scaled": 0.0,
+        "elements": 192
+      },
+      "features": {
+        "passed": true,
+        "finite": true,
+        "max_abs": 0.0,
+        "max_scaled": 0.0,
+        "elements": 15360
+      },
+      "complete_state": {
+        "passed": true,
+        "clock_equal": true,
+        "configuration_equal": true,
+        "step": 12,
+        "tensors": {
+          "density": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 10240
+          },
+          "boundary": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 512
+          },
+          "drift": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 512
+          },
+          "cost": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 512
+          },
+          "message": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 1536
+          }
+        }
+      },
+      "program": {
+        "schema": "hcsn-strict-weight-program-v1",
+        "program": "class_permutation",
+        "status": "CANDIDATE",
+        "reason": "compiled_declared_output_schema",
+        "source_digest": "4f7e0b2d1f807f6a4b99bb61dbf091561f2dff82223acbcc244360c29b001bd4",
+        "candidate_digest": "8b25e8646662ce2719264c247eb23342e98555e03eee514244abe7781baf7d17",
+        "allowed_support": [
+          "readout.bias",
+          "readout.weight"
+        ],
+        "changed_parameters": {
+          "readout.weight": 320,
+          "readout.bias": 2
+        },
+        "changed_scalar_count": 322,
+        "delta_l2": 1.2608829072085452,
+        "delta_linf": 0.1712244302034378,
+        "proposed_delta_l2": 1.2608829072085452,
+        "proposed_delta_linf": 0.1712244302034378,
+        "limits": {
+          "max_l2": null,
+          "max_linf": null
+        },
+        "adoption_decision": "not_evaluated",
+        "protocol": {
+          "label_fitting": false,
+          "label_accesses": 0,
+          "network_forward_calls": 0,
+          "backward_calls": 0,
+          "objective_finite_differences": 0,
+          "candidate_selection_queries": 0
+        },
+        "details": {
+          "old_to_new": [
+            1,
+            0
+          ],
+          "scope": "replacement_label_schema",
+          "retention": "same semantic predictions after inverse output relabeling; not simultaneous old labels",
+          "capability_claim": "label-interface rule only; no new discrimination claimed"
+        },
+        "cost": {
+          "linear_system_solves": 0,
+          "input_state_bytes": 102920,
+          "output_state_bytes": 102920,
+          "boundary": "function entry through validation and hashing; caller evaluation/serialization excluded",
+          "program_discovery_cost": "not_instrumented; do not infer total learning-time speedup",
+          "wall_seconds": 0.002907796995714307,
+          "cpu_seconds": 0.002911032000000091
+        }
+      },
+      "scope": "replacement label schema, not simultaneous contradictory tasks"
+    },
+    "program_rerun_after_basis_change": {
+      "passed": true,
+      "prediction_disagreements": 0,
+      "logits": {
+        "passed": true,
+        "finite": true,
+        "max_abs": 0.0,
+        "max_scaled": 0.0,
+        "elements": 192
+      },
+      "features": {
+        "passed": true,
+        "finite": true,
+        "max_abs": 0.0,
+        "max_scaled": 0.0,
+        "elements": 15360
+      },
+      "complete_state": {
+        "passed": true,
+        "clock_equal": true,
+        "configuration_equal": true,
+        "step": 12,
+        "tensors": {
+          "density": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 10240
+          },
+          "boundary": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 512
+          },
+          "drift": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 512
+          },
+          "cost": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 512
+          },
+          "message": {
+            "passed": true,
+            "finite": true,
+            "max_abs": 0.0,
+            "max_scaled": 0.0,
+            "elements": 1536
+          }
+        }
+      },
+      "program": {
+        "schema": "hcsn-strict-weight-program-v1",
+        "program": "class_permutation",
+        "status": "CANDIDATE",
+        "reason": "compiled_declared_output_schema",
+        "source_digest": "a856586ff611bb32700a06f72457d93e980adaec964a483dbb9a30382b0c7d81",
+        "candidate_digest": "897185653f914d7a23530f82828ca1c6de895152b9e46da3ba4f4624a8b6180b",
+        "allowed_support": [
+          "readout.bias",
+          "readout.weight"
+        ],
+        "changed_parameters": {
+          "readout.weight": 320,
+          "readout.bias": 2
+        },
+        "changed_scalar_count": 322,
+        "delta_l2": 1.2608829072085452,
+        "delta_linf": 0.1712244302034378,
+        "proposed_delta_l2": 1.2608829072085452,
+        "proposed_delta_linf": 0.1712244302034378,
+        "limits": {
+          "max_l2": null,
+          "max_linf": null
+        },
+        "adoption_decision": "not_evaluated",
+        "protocol": {
+          "label_fitting": false,
+          "label_accesses": 0,
+          "network_forward_calls": 0,
+          "backward_calls": 0,
+          "objective_finite_differences": 0,
+          "candidate_selection_queries": 0
+        },
+        "details": {
+          "old_to_new": [
+            1,
+            0
+          ],
+          "scope": "replacement_label_schema",
+          "retention": "same semantic predictions after inverse output relabeling; not simultaneous old labels",
+          "capability_claim": "label-interface rule only; no new discrimination claimed"
+        },
+        "cost": {
+          "linear_system_solves": 0,
+          "input_state_bytes": 102920,
+          "output_state_bytes": 102920,
+          "boundary": "function entry through validation and hashing; caller evaluation/serialization excluded",
+          "program_discovery_cost": "not_instrumented; do not infer total learning-time speedup",
+          "wall_seconds": 0.0028657919028773904,
+          "cpu_seconds": 0.0028658769999978517
+        }
+      },
+      "scope": "program rereads the coordinate-transformed checkpoint",
+      "complete_view_digest": "5bd5e786d3e3cefb36f7dfe191307968da1581efb9ab4d4048499121bdfddbe6"
+    },
+    "copied_fixed_delta_control": {
+      "expected_rule_equivalence": {
+        "passed": false,
+        "finite": true,
+        "max_abs": 0.8639169931411743,
+        "max_scaled": 18929.390923176168,
+        "elements": 192
+      },
+      "prediction_disagreements": 0,
+      "scope": "negative control; a failure to differ is reported, never retried",
+      "excluded_from_positive_control_gate": true
+    }
+  },
+  "initial_state": {
+    "tensor_digest": "01da6c694b96e92433a41152f27520d0ebb6bc109950017d07b0a7b79fcd4b35",
+    "step": 0,
+    "config": {
+      "input_size": 6,
+      "neurons": 64,
+      "bins": 6,
+      "stages": 3,
+      "dt": 0.25,
+      "extent": 2.0,
+      "sigma": 0.55,
+      "base_drift": -0.2,
+      "drift_scale": 0.15,
+      "discount": 0.3,
+      "refractory": 0.2,
+      "reset_absolute": 1.2,
+      "gain": 0.8,
+      "maintenance": 0.25,
+      "cost": 0.15,
+      "cost_span": 0.02,
+      "boundary_span": 0.1,
+      "write_fraction": 0.5,
+      "slow_every": 2,
+      "boundary_mode": "qvi",
+      "message_mode": "full",
+      "feature_bank": "value_risk",
+      "feature_normalization": "none",
+      "precision": "mixed",
+      "backend": "uniformized"
+    },
+    "factory": "caller-supplied"
+  },
+  "rules": {
+    "input_matrix": [
+      [
+        1.25,
+        0.1,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.8,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "input_offset": [
+      -0.08,
+      -0.048,
+      -0.016,
+      0.016,
+      0.048,
+      0.08
+    ],
+    "direct_input_paths": [
+      "input_drive",
+      "input_mark"
+    ],
+    "population_order": [
+      7,
+      5,
+      6,
+      18,
+      25,
+      31,
+      22,
+      16,
+      11,
+      27,
+      19,
+      30,
+      20,
+      9,
+      28,
+      15,
+      26,
+      8,
+      24,
+      17,
+      2,
+      29,
+      0,
+      3,
+      14,
+      23,
+      1,
+      4,
+      10,
+      12,
+      21,
+      13,
+      44,
+      42,
+      59,
+      57,
+      49,
+      36,
+      40,
+      34,
+      61,
+      32,
+      54,
+      43,
+      62,
+      38,
+      41,
+      39,
+      35,
+      55,
+      37,
+      47,
+      33,
+      52,
+      45,
+      51,
+      53,
+      50,
+      48,
+      60,
+      56,
+      63,
+      58,
+      46
+    ],
+    "readout_basis_signs": [
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      -1.0,
+      1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      -1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      1.0,
+      -1.0,
+      1.0,
+      1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      1.0,
+      1.0,
+      1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      -1.0,
+      1.0
+    ],
+    "label_rule": {
+      "kind": "class_permutation",
+      "old_to_new": [
+        1,
+        0
+      ],
+      "scope": "replacement_label_schema"
+    }
+  },
+  "source_unchanged": true,
+  "all_positive_controls_passed": true,
+  "cost": {
+    "attempted_forward_calls": 7,
+    "attempted_forward_event_rows": 672,
+    "phases": [
+      {
+        "name": "initialization",
+        "status": "completed",
+        "wall_seconds": 0.0020259700249880552,
+        "cpu_seconds": 0.0020261459999986187,
+        "attempted_forward_calls": 0
+      },
+      {
+        "name": "reference",
+        "status": "completed",
+        "wall_seconds": 0.35117308399640024,
+        "cpu_seconds": 0.35117944499999965,
+        "attempted_forward_calls": 1
+      },
+      {
+        "name": "input_interface",
+        "status": "completed",
+        "wall_seconds": 0.3542249030433595,
+        "cpu_seconds": 0.35421821799999975,
+        "attempted_forward_calls": 1
+      },
+      {
+        "name": "population_permutation",
+        "status": "completed",
+        "wall_seconds": 0.3528481639223173,
+        "cpu_seconds": 0.35282275400000174,
+        "attempted_forward_calls": 1
+      },
+      {
+        "name": "readout_basis",
+        "status": "completed",
+        "wall_seconds": 0.3426313300151378,
+        "cpu_seconds": 0.34263878399999825,
+        "attempted_forward_calls": 1
+      },
+      {
+        "name": "label_schema_program",
+        "status": "completed",
+        "wall_seconds": 0.3297160370275378,
+        "cpu_seconds": 0.329687406999998,
+        "attempted_forward_calls": 1
+      },
+      {
+        "name": "program_rerun_after_basis_change",
+        "status": "completed",
+        "wall_seconds": 0.35493934608530253,
+        "cpu_seconds": 0.3549371509999979,
+        "attempted_forward_calls": 1
+      },
+      {
+        "name": "copied_fixed_delta_control",
+        "status": "completed",
+        "wall_seconds": 0.36350095795933157,
+        "cpu_seconds": 0.3635078980000017,
+        "attempted_forward_calls": 1
+      }
+    ],
+    "program_discovery_cost": "not instrumented; no total learning-time claim",
+    "boundary": "function entry through all proposals, clones, hashes, forwards and checks; JSON emission tail excluded",
+    "cpu_seconds": 2.4556503879999987,
+    "wall_seconds": 2.455725084990263
+  }
+}

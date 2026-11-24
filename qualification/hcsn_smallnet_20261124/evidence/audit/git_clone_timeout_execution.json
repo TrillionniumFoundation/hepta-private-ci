@@ -1,0 +1,46 @@
+{
+  "name": "git_clone_timeout",
+  "job_id": "1a20d9df6e8-ffbe-394b",
+  "host": "desktop",
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 5, in <module>\n  File \"/usr/lib/python3.12/subprocess.py\", line 550, in run\n    stdout, stderr = process.communicate(input, timeout=timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 1209, in communicate\n    stdout, stderr = self._communicate(input, endtime, timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/subprocess.py\", line 2116, in _communicate\n    self._check_timeout(endtime, orig_timeout, stdout, stderr)\n  File \"/usr/lib/python3.12/subprocess.py\", line 1253, in _check_timeout\n    raise TimeoutExpired(\nsubprocess.TimeoutExpired: Command '['gh', 'repo', 'clone', 'TrillionniumFoundation/hepta-private-ci', '/home/qian-qi/hcsn-smallnet-20261124/git-worktree', '--', '--filter=blob:none', '--no-checkout', '--single-branch', '--branch', 'research/hcsn-finite-marked-renewal-20261123']' timed out after 140 seconds\n",
+  "stdout_complete": true,
+  "stderr_complete": true,
+  "status": {
+    "at_unix_ms": 1795524930130,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a20d9df6e8-ffbe-394b",
+    "launch_nonce": "1a4c46f4478560f97fa167a825c91431",
+    "log_bytes": {
+      "stderr": {
+        "seen": 1005,
+        "stored": 1005
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

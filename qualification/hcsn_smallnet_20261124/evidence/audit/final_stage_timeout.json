@@ -1,0 +1,19 @@
+{
+  "timeout_job": "1a20dbaee10-ffbe-398e",
+  "state": "timed_out",
+  "exit_code": 124,
+  "created_unix_ms": 1795526684176,
+  "terminal_unix_ms": 1795528495892,
+  "wall_seconds_including_wait": 1811.716,
+  "both_seals_unix_time": 1795527359.56633,
+  "completed_training_test_cases": 63,
+  "remaining_training_test_cases": 9,
+  "adaptation_test_workers_completed": 9,
+  "systemd_cpu_usage": null,
+  "systemd_cpu_unavailable_reason": "Transient unit accounting was no longer available; do not infer CPU from wall time.",
+  "cost_scope": "Retain all completed per-case CPU/wall and adaptation costs. Original interrupted worker imports/preflight/unfinished case CPU is not fully measured.",
+  "pending_postprocess_jobs_cancelled": [
+    "1a20dc3d358-ffbe-399e",
+    "1a20dcc67fb-ffbe-39a2"
+  ]
+}

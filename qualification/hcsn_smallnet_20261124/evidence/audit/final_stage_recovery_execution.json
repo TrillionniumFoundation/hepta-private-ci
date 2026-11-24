@@ -1,0 +1,49 @@
+{
+  "original_finalizer": {
+    "job": "1a20dbaee10-ffbe-398e",
+    "stdout": "{\"stage\": \"both_selection_stages_sealed\", \"training_seal\": \"77530a0d7909d28ac00ec38f18dd239d05f16f47d10f4853a4c2c8a582f3bf4a\", \"adaptation_seal\": \"62f684ebd6fdfa665b2b5094e3429c11131f4f98d61f87e00a88afc69387f544\", \"unix_time\": 1795527359.56633}\n{\"name\": \"n8-qvi_full-s3303\", \"returncode\": 0, \"launch_through_exit_wall_seconds\": 49.93177247501444}\n{\"name\": \"n8-qvi_full-s2202\", \"returncode\": 0, \"launch_through_exit_wall_seconds\": 51.187214700039476}\n{\"name\": \"n8-qvi_full-s1101\", \"returncode\": 0, \"launch_through_exit_wall_seconds\": 53.46533492906019}\n{\"name\": \"n32-qvi_full-s1101\", \"returncode\": 0, \"launch_through_exit_wall_seconds\": 117.33457758405712}\n{\"name\": \"n32-qvi_full-s2202\", \"returncode\": 0, \"launch_through_exit_wall_seconds\": 118.07053423405159}\n{\"name\": \"n32-qvi_full-s3303\", \"returncode\": 0, \"launch_through_exit_wall_seconds\": 117.77090159791987}\n{\"name\": \"n64-qvi_full-s1101\", \"returncode\": 0, \"launch_through_exit_wall_seconds\": 166.98494443600066}\n{\"name\": \"n64-qvi_full-s3303\", \"returncode\": 0, \"launch_through_exit_wall_seconds\": 163.52377536392305}\n{\"name\": \"n64-qvi_full-s2202\", \"returncode\": 0, \"launch_through_exit_wall_seconds\": 169.6909906869987}\n",
+    "stderr": ""
+  },
+  "resume": {
+    "job": "1a20de2a076-ffbe-39c8",
+    "status": {
+      "at_unix_ms": 1795529395626,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a20de2a076-ffbe-39c8",
+      "launch_nonce": "a78a123590f1bbc82567ab81770d1ce1",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 1635,
+          "stored": 1635
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "stdout": "{\"path\": \"/home/qian-qi/hcsn-smallnet-20261124/formal-v1/qualification/hcsn_smallnet_20261124/resume_test_execution.py\", \"sha256\": \"58fb4877678b527e2831aff51760588ed8e044798de3e6dcdcec20b99107b749\"}\n{\"path\": \"/home/qian-qi/hcsn-smallnet-20261124/formal-v1/final_stage_timeout.json\", \"sha256\": \"12739eb55175c18d3c27ee6a85d8889f0eea46713634953ae9ac09453458a25a\"}\n{\"attempt\": \"n64-qvi_tanh-s1101\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 33.82921769306995}\n{\"attempt\": \"n64-qvi_tanh-s2202\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 34.41058574896306}\n{\"attempt\": \"n64-qvi_value_only-s1101\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 35.55195642600302}\n{\"attempt\": \"n64-qvi_tanh-s3303\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 37.23379876301624}\n{\"attempt\": \"n64-qvi_value_only-s2202\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 34.28598647704348}\n{\"attempt\": \"n64-qvi_value_only-s3303\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 35.751641880953684}\n{\"attempt\": \"n64-qvi_risk_only-s1101\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 35.560867046006024}\n{\"attempt\": \"n64-qvi_risk_only-s2202\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 34.063430804992095}\n{\"attempt\": \"n64-qvi_risk_only-s3303\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 33.64301166089717}\n{\"completed_before\": 63, \"resumed_names\": [\"n64-qvi_tanh-s1101\", \"n64-qvi_tanh-s2202\", \"n64-qvi_tanh-s3303\", \"n64-qvi_value_only-s1101\", \"n64-qvi_value_only-s2202\", \"n64-qvi_value_only-s3303\", \"n64-qvi_risk_only-s1101\", \"n64-qvi_risk_only-s2202\", \"n64-qvi_risk_only-s3303\"], \"final_rows\": 72}\n",
+    "stderr": ""
+  }
+}

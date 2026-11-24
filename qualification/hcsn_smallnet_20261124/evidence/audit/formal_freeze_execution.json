@@ -1,0 +1,46 @@
+{
+  "name": "formal_freeze",
+  "job_id": "1a20db0f92a-ffbe-397f",
+  "host": "desktop",
+  "stdout": "{\"freeze\": \"complete\", \"protocol_sha256\": \"c259030b227f25bc72ccbab12402fbe62747df845c9dce965e795b85b1af176d\", \"sources\": 14, \"runtime\": {\"python\": \"3.12.3\", \"implementation\": \"CPython\", \"numpy\": \"2.5.4\", \"torch\": \"2.8.0+cpu\", \"threads\": 1, \"device\": \"cpu\"}, \"roster\": 72, \"feature_normalization\": \"none\"}\n",
+  "stderr": "test_bp_already_optimal_head_stops_after_one_closure_and_one_query (qualification.hcsn_smallnet_20261124.adaptation_tests.AdaptationTests.test_bp_already_optimal_head_stops_after_one_closure_and_one_query) ... ok\ntest_bp_analytic_share_optimum_with_hard_gradient_budget_and_no_parent_mutation (qualification.hcsn_smallnet_20261124.adaptation_tests.AdaptationTests.test_bp_analytic_share_optimum_with_hard_gradient_budget_and_no_parent_mutation) ... ok\ntest_closed_solution_has_zero_gradient_for_identical_objective (qualification.hcsn_smallnet_20261124.adaptation_tests.AdaptationTests.test_closed_solution_has_zero_gradient_for_identical_objective) ... ok\ntest_failed_solve_retains_parent_and_records_attempt_and_cost (qualification.hcsn_smallnet_20261124.adaptation_tests.AdaptationTests.test_failed_solve_retains_parent_and_records_attempt_and_cost) ... ok\ntest_incomplete_global_roster_is_rejected_before_constructing_holdout (qualification.hcsn_smallnet_20261124.adaptation_tests.AdaptationTests.test_incomplete_global_roster_is_rejected_before_constructing_holdout) ... ok\ntest_old_retention_refuses_conflicting_new_label_schema_for_both_supervised_rules (qualification.hcsn_smallnet_20261124.adaptation_tests.AdaptationTests.test_old_retention_refuses_conflicting_new_label_schema_for_both_supervised_rules) ... ok\ntest_strict_unidentified_rule_abstains_without_solver_or_gradients (qualification.hcsn_smallnet_20261124.adaptation_tests.AdaptationTests.test_strict_unidentified_rule_abstains_without_solver_or_gradients) ... ok\ntest_unregularized_bias_fits_constant_target_without_spurious_weights (qualification.hcsn_smallnet_20261124.adaptation_tests.AdaptationTests.test_unregularized_bias_fits_constant_target_without_spurious_weights) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.912s\n\nOK\n",
+  "stdout_complete": true,
+  "stderr_complete": true,
+  "status": {
+    "at_unix_ms": 1795526036650,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20db0f92a-ffbe-397f",
+    "launch_nonce": "af5583d58700acef04f80e2e985eda93",
+    "log_bytes": {
+      "stderr": {
+        "seen": 1852,
+        "stored": 1852
+      },
+      "stdout": {
+        "seen": 305,
+        "stored": 305
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

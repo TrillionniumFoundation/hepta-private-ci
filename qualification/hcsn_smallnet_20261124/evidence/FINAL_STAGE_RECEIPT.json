@@ -1,0 +1,172 @@
+{
+  "adaptation_test_body_cpu_seconds_9_disjoint_parents": 988.528526393,
+  "all_child_cpu_seconds": null,
+  "all_child_cpu_unavailable_reason": "Transient unit accounting was no longer available; do not infer CPU from wall time.",
+  "both_sealed_unix_time": 1795527359.56633,
+  "cost_overlap_note": "Resume child CPU overlaps nine completed test-body records; do not sum nested values. Original interrupted imports/preflight/unfinished case CPU is missing.",
+  "energy_joules": null,
+  "evidence_sha256": "4bf5937a499cabd6b38b64f249642e89bec8610c2fb03376917cd78737e444b5",
+  "holdout_opened_only_after_both_seals": true,
+  "operational_attempts": [
+    {
+      "adaptation_test_workers_completed": 9,
+      "both_seals_unix_time": 1795527359.56633,
+      "completed_training_test_cases": 63,
+      "cost_scope": "Retain all completed per-case CPU/wall and adaptation costs. Original interrupted worker imports/preflight/unfinished case CPU is not fully measured.",
+      "created_unix_ms": 1795526684176,
+      "exit_code": 124,
+      "pending_postprocess_jobs_cancelled": [
+        "1a20dc3d358-ffbe-399e",
+        "1a20dcc67fb-ffbe-39a2"
+      ],
+      "remaining_training_test_cases": 9,
+      "state": "timed_out",
+      "systemd_cpu_unavailable_reason": "Transient unit accounting was no longer available; do not infer CPU from wall time.",
+      "systemd_cpu_usage": null,
+      "terminal_unix_ms": 1795528495892,
+      "timeout_job": "1a20dbaee10-ffbe-398e",
+      "wall_seconds_including_wait": 1811.716
+    },
+    {
+      "job": "1a20de2a076-ffbe-39c8",
+      "status": {
+        "at_unix_ms": 1795529395626,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a20de2a076-ffbe-39c8",
+        "launch_nonce": "a78a123590f1bbc82567ab81770d1ce1",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1635,
+            "stored": 1635
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stderr": "",
+      "stdout": "{\"path\": \"/home/qian-qi/hcsn-smallnet-20261124/formal-v1/qualification/hcsn_smallnet_20261124/resume_test_execution.py\", \"sha256\": \"58fb4877678b527e2831aff51760588ed8e044798de3e6dcdcec20b99107b749\"}\n{\"path\": \"/home/qian-qi/hcsn-smallnet-20261124/formal-v1/final_stage_timeout.json\", \"sha256\": \"12739eb55175c18d3c27ee6a85d8889f0eea46713634953ae9ac09453458a25a\"}\n{\"attempt\": \"n64-qvi_tanh-s1101\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 33.82921769306995}\n{\"attempt\": \"n64-qvi_tanh-s2202\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 34.41058574896306}\n{\"attempt\": \"n64-qvi_value_only-s1101\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 35.55195642600302}\n{\"attempt\": \"n64-qvi_tanh-s3303\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 37.23379876301624}\n{\"attempt\": \"n64-qvi_value_only-s2202\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 34.28598647704348}\n{\"attempt\": \"n64-qvi_value_only-s3303\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 35.751641880953684}\n{\"attempt\": \"n64-qvi_risk_only-s1101\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 35.560867046006024}\n{\"attempt\": \"n64-qvi_risk_only-s2202\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 34.063430804992095}\n{\"attempt\": \"n64-qvi_risk_only-s3303\", \"returncode\": 0, \"parent_launch_exit_wall_seconds\": 33.64301166089717}\n{\"completed_before\": 63, \"resumed_names\": [\"n64-qvi_tanh-s1101\", \"n64-qvi_tanh-s2202\", \"n64-qvi_tanh-s3303\", \"n64-qvi_value_only-s1101\", \"n64-qvi_value_only-s2202\", \"n64-qvi_value_only-s3303\", \"n64-qvi_risk_only-s1101\", \"n64-qvi_risk_only-s2202\", \"n64-qvi_risk_only-s3303\"], \"final_rows\": 72}\n"
+    }
+  ],
+  "original_wall_seconds_including_wait": 1811.716,
+  "resume_child_cpu_including_shutdown_seconds": 313.699357,
+  "rows": [
+    {
+      "completed_original_cases": 63,
+      "name": "training",
+      "original_process_exit_code": 124,
+      "resume_receipt_sha256": "1279b7bb38e6ebf62411b5aac008ee57f9ccb822b2f29bb3c910da7a494f36a9",
+      "resume_terminal_status": {
+        "at_unix_ms": 1795529395626,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a20de2a076-ffbe-39c8",
+        "launch_nonce": "a78a123590f1bbc82567ab81770d1ce1",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1635,
+            "stored": 1635
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "resumed_cases": 9,
+      "returncode": 0,
+      "returncode_scope": "logical completion after a timed-out original process and successful missing-slot continuation"
+    },
+    {
+      "launch_through_exit_wall_seconds": 49.93177247501444,
+      "name": "n8-qvi_full-s3303",
+      "returncode": 0
+    },
+    {
+      "launch_through_exit_wall_seconds": 51.187214700039476,
+      "name": "n8-qvi_full-s2202",
+      "returncode": 0
+    },
+    {
+      "launch_through_exit_wall_seconds": 53.46533492906019,
+      "name": "n8-qvi_full-s1101",
+      "returncode": 0
+    },
+    {
+      "launch_through_exit_wall_seconds": 117.33457758405712,
+      "name": "n32-qvi_full-s1101",
+      "returncode": 0
+    },
+    {
+      "launch_through_exit_wall_seconds": 118.07053423405159,
+      "name": "n32-qvi_full-s2202",
+      "returncode": 0
+    },
+    {
+      "launch_through_exit_wall_seconds": 117.77090159791987,
+      "name": "n32-qvi_full-s3303",
+      "returncode": 0
+    },
+    {
+      "launch_through_exit_wall_seconds": 166.98494443600066,
+      "name": "n64-qvi_full-s1101",
+      "returncode": 0
+    },
+    {
+      "launch_through_exit_wall_seconds": 163.52377536392305,
+      "name": "n64-qvi_full-s3303",
+      "returncode": 0
+    },
+    {
+      "launch_through_exit_wall_seconds": 169.6909906869987,
+      "name": "n64-qvi_full-s2202",
+      "returncode": 0
+    }
+  ],
+  "schema": 2,
+  "scope": "ten logical final evaluations completed; original coordinator did NOT exit successfully",
+  "script_sha256": "8cb6df488f863b2c79f616f87b56c1b42e9aae4d28032176a462ff8bc4b12d1b",
+  "training_test_body_cpu_seconds_72_disjoint_completed_cases": 1422.2110953120005
+}

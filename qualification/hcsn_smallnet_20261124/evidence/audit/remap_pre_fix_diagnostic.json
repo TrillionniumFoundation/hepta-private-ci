@@ -1,0 +1,46 @@
+{
+  "job_id": "1a20d9cfe2a-ffbe-3946",
+  "host": "desktop",
+  "stdout": "{\"network\": [{\"AD\": -0.006476309176271511, \"differences\": [{\"central\": -0.005531711838591136, \"epsilon\": 0.001, \"left\": -0.005089695512716652, \"right\": -0.005973728164465619}, {\"central\": -0.005531707248929152, \"epsilon\": 0.0001, \"left\": -0.005089713333017443, \"right\": -0.005973701164840861}, {\"central\": -0.005531706631645149, \"epsilon\": 1e-05, \"left\": -0.005089714960604397, \"right\": -0.005973698302685903}, {\"central\": -0.005531706204209286, \"epsilon\": 1e-06, \"left\": -0.00508971509383116, \"right\": -0.005973697314587412}], \"offset\": 0.0, \"parameter\": \"cost\"}, {\"AD\": 0.009981871160341722, \"differences\": [{\"central\": 0.009981870031317008, \"epsilon\": 0.001, \"left\": 0.009979376299873444, \"right\": 0.009984363762760573}, {\"central\": 0.009981871151309996, \"epsilon\": 0.0001, \"left\": 0.009981621764687532, \"right\": 0.00998212053793246}, {\"central\": 0.009981871085251726, \"epsilon\": 1e-05, \"left\": 0.00998184607192698, \"right\": 0.00998189609857647}, {\"central\": 0.009981872439723816, \"epsilon\": 1e-06, \"left\": 0.009981868775987834, \"right\": 0.009981876103459797}], \"offset\": 0.0, \"parameter\": \"recurrent\"}, {\"AD\": -0.005680310431650178, \"differences\": [{\"central\": -0.005680308817979096, \"epsilon\": 0.001, \"left\": -0.005681563838844106, \"right\": -0.005679053797114086}, {\"central\": -0.005680310427580437, \"epsilon\": 0.0001, \"left\": -0.005680435916088911, \"right\": -0.005680184939071964}, {\"central\": -0.005680310538602739, \"epsilon\": 1e-05, \"left\": -0.005680323078571802, \"right\": -0.005680297998633676}, {\"central\": -0.005680309778099968, \"epsilon\": 1e-06, \"left\": -0.005680310999345295, \"right\": -0.005680308556854641}], \"offset\": 0.23, \"parameter\": \"cost\"}, {\"AD\": 0.010174883558915791, \"differences\": [{\"central\": 0.010174882413227504, \"epsilon\": 0.001, \"left\": 0.010172410102038398, \"right\": 0.01017735472441661}, {\"central\": 0.010174883548486058, \"epsilon\": 0.0001, \"left\": 0.010174636330129161, \"right\": 0.010175130766842955}, {\"central\": 0.010174883674496371, \"epsilon\": 1e-05, \"left\": 0.010174859099709721, \"right\": 0.010174908249283021}, {\"central\": 0.010174883102731513, \"epsilon\": 1e-06, \"left\": 0.010174880826774313, \"right\": 0.010174885378688714}], \"offset\": 0.23, \"parameter\": \"recurrent\"}], \"zero_remap\": {\"AD\": -11.19, \"AD_between_one_sided\": false, \"left\": -8.460000001209167, \"right\": -2.7300000003949165}}\n",
+  "stderr": "",
+  "stdout_offset": 2326,
+  "stderr_offset": 0,
+  "status": {
+    "at_unix_ms": 1795524727807,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20d9cfe2a-ffbe-3946",
+    "launch_nonce": "17cabff16d1689e4d7d2ab8b48a6aa0d",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 2326,
+        "stored": 2326
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}
+

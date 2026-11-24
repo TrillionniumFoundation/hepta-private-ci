@@ -1,0 +1,1010 @@
+{
+  "continuation_policy": "run both N8 schedules; stop wider follow-up after any incomplete/failed rollout",
+  "device": "cpu",
+  "energy_joules": null,
+  "extension_status": "rollouts_completed",
+  "formal_training_precision_policy_changed": false,
+  "initial_n8_both_completed": true,
+  "initial_rollouts": [
+    {
+      "all_fields_finite": true,
+      "backend": "uniformized",
+      "backpropagation_horizon": 0,
+      "batch": 1,
+      "completed_steps": 512,
+      "control_updates": 1,
+      "elapsed_s": 2.7622254320885986,
+      "law_semantics": "new input content is written each step; controls frozen after step 0",
+      "max_mass_error": 4.5299530029296875e-06,
+      "max_upper_projection_mass": 0.0,
+      "neurons": 8,
+      "precision": "native32",
+      "requested_steps": 512,
+      "samples": [
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 2.5033950805664062e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 64,
+          "step": 64,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 4.5299530029296875e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 128,
+          "step": 128,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 4.5299530029296875e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 192,
+          "step": 192,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 4.5299530029296875e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 256,
+          "step": 256,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 4.5299530029296875e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 320,
+          "step": 320,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 4.5299530029296875e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 384,
+          "step": 384,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 4.5299530029296875e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 448,
+          "step": 448,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 4.5299530029296875e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 512,
+          "step": 512,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        }
+      ],
+      "schedule": "fixed_after_first",
+      "status": "completed"
+    },
+    {
+      "all_fields_finite": true,
+      "backend": "uniformized",
+      "backpropagation_horizon": 0,
+      "batch": 1,
+      "completed_steps": 512,
+      "control_updates": 256,
+      "elapsed_s": 4.407747620018199,
+      "law_semantics": "local law updated every two absolute state steps",
+      "max_mass_error": 2.0205974578857422e-05,
+      "max_upper_projection_mass": 0.008250223472714424,
+      "neurons": 8,
+      "precision": "native32",
+      "requested_steps": 512,
+      "samples": [
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 1.5497207641601562e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 64,
+          "step": 64,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 5.245208740234375e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 128,
+          "step": 128,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 7.62939453125e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 192,
+          "step": 192,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 1.0251998901367188e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 256,
+          "step": 256,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 1.2636184692382812e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 320,
+          "step": 320,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 1.5020370483398438e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 384,
+          "step": 384,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 1.7702579498291016e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 448,
+          "step": 448,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 2.008676528930664e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 208,
+          "state_step": 512,
+          "step": 512,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        }
+      ],
+      "schedule": "slow_every_2",
+      "status": "completed"
+    }
+  ],
+  "long_input_seed": 4608,
+  "long_model_seed": 4607,
+  "probability_balance_threshold": 3e-05,
+  "probability_renormalization": false,
+  "process_peak_rss_kib_linux": 288396,
+  "schema": "hcsn-native32-uniformized-diagnostic-v1",
+  "scope": "same original long_rollout implementation and inputs; only native32 backend changes from dense to uniformized",
+  "seed": 4107,
+  "short_vjp": [
+    {
+      "batch": 4,
+      "candidate": "native32 uniformized",
+      "candidate_cost": {
+        "all_outputs_states_gradients_finite": true,
+        "backward_s": 0.05619228398427367,
+        "capture_s": 0.00015283306129276752,
+        "diagnostics": {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 5.960464477539062e-07,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 832,
+          "state_step": 6,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.00045252838754095137
+        },
+        "forward_backward_s": 0.12138276698533446,
+        "forward_s": 0.06519048300106078,
+        "loss": 0.5147626996040344,
+        "missing_trainable_gradients": []
+      },
+      "control_schedule": "slow_every=2",
+      "errors": {
+        "all_parameter_gradients": {
+          "finite": true,
+          "max_abs": 1.500424472222761e-06,
+          "reference_abs_max": 2.1787274582949556,
+          "relative_l2": 5.553273334521284e-07
+        },
+        "features": {
+          "finite": true,
+          "max_abs": 2.850197388770681e-06,
+          "reference_abs_max": 2.852277374318173,
+          "relative_l2": 4.793038115396161e-07
+        },
+        "input_gradient": {
+          "finite": true,
+          "max_abs": 2.0935327177894723e-10,
+          "reference_abs_max": 0.0002027564262323509,
+          "relative_l2": 8.043847126005205e-07
+        },
+        "logits": {
+          "finite": true,
+          "max_abs": 6.4348864470265e-07,
+          "reference_abs_max": 0.8651433127088899,
+          "relative_l2": 3.778098255996735e-07
+        },
+        "missing_gradient_names": [],
+        "parameter_gradients": {
+          "input_drive.bias": {
+            "finite": true,
+            "max_abs": 6.07697174049085e-10,
+            "reference_abs_max": 0.0013097039013477358,
+            "relative_l2": 3.4635678489408994e-07
+          },
+          "input_drive.weight": {
+            "finite": true,
+            "max_abs": 1.5872023537328878e-10,
+            "reference_abs_max": 0.00017257925203884256,
+            "relative_l2": 8.084036004790698e-07
+          },
+          "input_mark.bias": {
+            "finite": true,
+            "max_abs": 5.601274023596392e-10,
+            "reference_abs_max": 0.006336542710076546,
+            "relative_l2": 8.669283153409024e-08
+          },
+          "input_mark.weight": {
+            "finite": true,
+            "max_abs": 7.186230455103956e-10,
+            "reference_abs_max": 0.0008276052844252695,
+            "relative_l2": 8.548253951639355e-07
+          },
+          "raw_cost": {
+            "finite": true,
+            "max_abs": 8.526209195700712e-09,
+            "reference_abs_max": 0.006170246979750394,
+            "relative_l2": 1.8542138678112807e-06
+          },
+          "readout.bias": {
+            "finite": true,
+            "max_abs": 2.52602325057083e-07,
+            "reference_abs_max": 0.7836506655968514,
+            "relative_l2": 2.932995560929466e-07
+          },
+          "readout.weight": {
+            "finite": true,
+            "max_abs": 1.500424472222761e-06,
+            "reference_abs_max": 2.1787274582949556,
+            "relative_l2": 5.62701038660573e-07
+          },
+          "recurrent.weight": {
+            "finite": true,
+            "max_abs": 2.720556881857794e-08,
+            "reference_abs_max": 0.051702047751039454,
+            "relative_l2": 2.4192498800677486e-07
+          }
+        },
+        "state": {
+          "boundary": {
+            "finite": true,
+            "max_abs": 3.49949748956746e-07,
+            "reference_abs_max": 0.6913835691483967,
+            "relative_l2": 2.757370085531061e-07
+          },
+          "cost": {
+            "finite": true,
+            "max_abs": 1.2742225052875256e-08,
+            "reference_abs_max": 0.1553444348638045,
+            "relative_l2": 4.739456088744892e-08
+          },
+          "density": {
+            "finite": true,
+            "max_abs": 2.8202056828741107e-07,
+            "reference_abs_max": 0.35646486699912017,
+            "relative_l2": 4.22180085939743e-07
+          },
+          "drift": {
+            "finite": true,
+            "max_abs": 2.0085521690305086e-08,
+            "reference_abs_max": 0.2561467931104548,
+            "relative_l2": 4.166953799174029e-08
+          },
+          "message": {
+            "finite": true,
+            "max_abs": 4.429402787886616e-07,
+            "reference_abs_max": 0.6913835691483967,
+            "relative_l2": 3.2852548433520775e-07
+          }
+        },
+        "state_step_equal": true
+      },
+      "gradient_scope": "one declared scalar-loss VJP over all trainable parameters and input coordinates; not a full Jacobian",
+      "neurons": 8,
+      "reference": "FP64 dense",
+      "reference_cost": {
+        "all_outputs_states_gradients_finite": true,
+        "backward_s": 0.450612737913616,
+        "capture_s": 0.00025603699032217264,
+        "diagnostics": {
+          "all_finite": true,
+          "independent_populations": 8,
+          "mark_excess": 0.0,
+          "mass_error": 7.549516567451064e-15,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 832,
+          "state_step": 6,
+          "transport_dtype": "torch.float64",
+          "upper_projection_mass_max": 0.000452531971948469
+        },
+        "forward_backward_s": 0.5078157449606806,
+        "forward_s": 0.0572030070470646,
+        "loss": 0.5147628977320026,
+        "missing_trainable_gradients": []
+      },
+      "status": "measured",
+      "steps": 6
+    },
+    {
+      "batch": 4,
+      "candidate": "native32 uniformized",
+      "candidate_cost": {
+        "all_outputs_states_gradients_finite": true,
+        "backward_s": 0.0924336010357365,
+        "capture_s": 0.0002873570192605257,
+        "diagnostics": {
+          "all_finite": true,
+          "independent_populations": 32,
+          "mark_excess": 0.0,
+          "mass_error": 7.152557373046875e-07,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 3328,
+          "state_step": 6,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0004717012634500861
+        },
+        "forward_backward_s": 0.1667607220588252,
+        "forward_s": 0.0743271210230887,
+        "loss": 0.2133595049381256,
+        "missing_trainable_gradients": []
+      },
+      "control_schedule": "slow_every=2",
+      "errors": {
+        "all_parameter_gradients": {
+          "finite": true,
+          "max_abs": 1.0613412919635579e-06,
+          "reference_abs_max": 1.6686017310475323,
+          "relative_l2": 5.544152117310634e-07
+        },
+        "features": {
+          "finite": true,
+          "max_abs": 3.083008936144438e-06,
+          "reference_abs_max": 2.861110496511148,
+          "relative_l2": 4.7394140765424035e-07
+        },
+        "input_gradient": {
+          "finite": true,
+          "max_abs": 1.091806130367693e-10,
+          "reference_abs_max": 0.00013121811494463628,
+          "relative_l2": 6.654563471130635e-07
+        },
+        "logits": {
+          "finite": true,
+          "max_abs": 7.421711007982168e-07,
+          "reference_abs_max": 0.6075996866556391,
+          "relative_l2": 5.170686419470158e-07
+        },
+        "missing_gradient_names": [],
+        "parameter_gradients": {
+          "input_drive.bias": {
+            "finite": true,
+            "max_abs": 2.1778242295482364e-10,
+            "reference_abs_max": 0.0003141792682404478,
+            "relative_l2": 6.274032767109766e-07
+          },
+          "input_drive.weight": {
+            "finite": true,
+            "max_abs": 4.7812669815239456e-11,
+            "reference_abs_max": 4.7754515612544865e-05,
+            "relative_l2": 1.38023366671546e-06
+          },
+          "input_mark.bias": {
+            "finite": true,
+            "max_abs": 7.16781726488769e-10,
+            "reference_abs_max": 0.0016954102768059164,
+            "relative_l2": 4.83428033119362e-07
+          },
+          "input_mark.weight": {
+            "finite": true,
+            "max_abs": 1.1912843232745961e-10,
+            "reference_abs_max": 0.00019080008012403726,
+            "relative_l2": 8.267654780498632e-07
+          },
+          "raw_cost": {
+            "finite": true,
+            "max_abs": 4.884684159760233e-09,
+            "reference_abs_max": 0.003497723718071058,
+            "relative_l2": 1.6104732305427427e-06
+          },
+          "readout.bias": {
+            "finite": true,
+            "max_abs": 1.1652778925119733e-07,
+            "reference_abs_max": 0.593510182507412,
+            "relative_l2": 1.9183636592326498e-07
+          },
+          "readout.weight": {
+            "finite": true,
+            "max_abs": 1.0613412919635579e-06,
+            "reference_abs_max": 1.6686017310475323,
+            "relative_l2": 5.568532002303381e-07
+          },
+          "recurrent.weight": {
+            "finite": true,
+            "max_abs": 1.9289509566033924e-08,
+            "reference_abs_max": 0.029970615446409693,
+            "relative_l2": 4.285752932417949e-07
+          }
+        },
+        "state": {
+          "boundary": {
+            "finite": true,
+            "max_abs": 4.95740116068788e-07,
+            "reference_abs_max": 0.694589572799633,
+            "relative_l2": 2.7944049389503934e-07
+          },
+          "cost": {
+            "finite": true,
+            "max_abs": 1.3006320631614443e-08,
+            "reference_abs_max": 0.15657792373272986,
+            "relative_l2": 4.6682024998175305e-08
+          },
+          "density": {
+            "finite": true,
+            "max_abs": 3.2856996018404416e-07,
+            "reference_abs_max": 0.35619872326675306,
+            "relative_l2": 3.7304109142965407e-07
+          },
+          "drift": {
+            "finite": true,
+            "max_abs": 1.8466249945836566e-08,
+            "reference_abs_max": 0.28644419645494323,
+            "relative_l2": 3.774926765651419e-08
+          },
+          "message": {
+            "finite": true,
+            "max_abs": 5.382897433348077e-07,
+            "reference_abs_max": 0.694589572799633,
+            "relative_l2": 3.244389162282092e-07
+          }
+        },
+        "state_step_equal": true
+      },
+      "gradient_scope": "one declared scalar-loss VJP over all trainable parameters and input coordinates; not a full Jacobian",
+      "neurons": 32,
+      "reference": "FP64 dense",
+      "reference_cost": {
+        "all_outputs_states_gradients_finite": true,
+        "backward_s": 0.11276439402718097,
+        "capture_s": 0.00025302800349891186,
+        "diagnostics": {
+          "all_finite": true,
+          "independent_populations": 32,
+          "mark_excess": 0.0,
+          "mass_error": 8.215650382226158e-15,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 3328,
+          "state_step": 6,
+          "transport_dtype": "torch.float64",
+          "upper_projection_mass_max": 0.000471708150033314
+        },
+        "forward_backward_s": 0.19121359300334007,
+        "forward_s": 0.0784491989761591,
+        "loss": 0.21335956805466424,
+        "missing_trainable_gradients": []
+      },
+      "status": "measured",
+      "steps": 6
+    },
+    {
+      "batch": 4,
+      "candidate": "native32 uniformized",
+      "candidate_cost": {
+        "all_outputs_states_gradients_finite": true,
+        "backward_s": 0.14482584095094353,
+        "capture_s": 0.0003606509417295456,
+        "diagnostics": {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0.0,
+          "mass_error": 5.960464477539062e-07,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 6656,
+          "state_step": 6,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0011907266452908516
+        },
+        "forward_backward_s": 0.23915070295333862,
+        "forward_s": 0.0943248620023951,
+        "loss": 0.0965290516614914,
+        "missing_trainable_gradients": []
+      },
+      "control_schedule": "slow_every=2",
+      "errors": {
+        "all_parameter_gradients": {
+          "finite": true,
+          "max_abs": 8.057845215514448e-07,
+          "reference_abs_max": 0.9528868601719024,
+          "relative_l2": 7.520071531206682e-07
+        },
+        "features": {
+          "finite": true,
+          "max_abs": 3.367258541775442e-06,
+          "reference_abs_max": 2.842682383684174,
+          "relative_l2": 5.49169463259881e-07
+        },
+        "input_gradient": {
+          "finite": true,
+          "max_abs": 8.578885257753575e-11,
+          "reference_abs_max": 7.773858494260616e-05,
+          "relative_l2": 9.111800817328243e-07
+        },
+        "logits": {
+          "finite": true,
+          "max_abs": 5.336615889195429e-07,
+          "reference_abs_max": 0.36463004147524647,
+          "relative_l2": 7.886217249825409e-07
+        },
+        "missing_gradient_names": [],
+        "parameter_gradients": {
+          "input_drive.bias": {
+            "finite": true,
+            "max_abs": 1.4251533056431308e-10,
+            "reference_abs_max": 0.00017744658250522423,
+            "relative_l2": 6.230405228053069e-07
+          },
+          "input_drive.weight": {
+            "finite": true,
+            "max_abs": 3.983663104386659e-11,
+            "reference_abs_max": 4.1942028735390335e-05,
+            "relative_l2": 1.0356003792209298e-06
+          },
+          "input_mark.bias": {
+            "finite": true,
+            "max_abs": 6.064515075017429e-10,
+            "reference_abs_max": 0.0007073920044952675,
+            "relative_l2": 7.144474618368665e-07
+          },
+          "input_mark.weight": {
+            "finite": true,
+            "max_abs": 1.0770219510344587e-10,
+            "reference_abs_max": 0.0001622690142898698,
+            "relative_l2": 7.859871088138592e-07
+          },
+          "raw_cost": {
+            "finite": true,
+            "max_abs": 2.34194900668519e-09,
+            "reference_abs_max": 0.0012621478081202117,
+            "relative_l2": 1.8649798296321472e-06
+          },
+          "readout.bias": {
+            "finite": true,
+            "max_abs": 1.2210026675840702e-07,
+            "reference_abs_max": 0.3387862802064153,
+            "relative_l2": 3.169356411852033e-07
+          },
+          "readout.weight": {
+            "finite": true,
+            "max_abs": 8.057845215514448e-07,
+            "reference_abs_max": 0.9528868601719024,
+            "relative_l2": 7.531967661600622e-07
+          },
+          "recurrent.weight": {
+            "finite": true,
+            "max_abs": 1.6580682715705564e-08,
+            "reference_abs_max": 0.016298623280799993,
+            "relative_l2": 7.827889595433225e-07
+          }
+        },
+        "state": {
+          "boundary": {
+            "finite": true,
+            "max_abs": 5.625831394073799e-07,
+            "reference_abs_max": 0.695388918623757,
+            "relative_l2": 2.8485562047751156e-07
+          },
+          "cost": {
+            "finite": true,
+            "max_abs": 1.3820569411127082e-08,
+            "reference_abs_max": 0.15718446145017168,
+            "relative_l2": 4.8011674163643346e-08
+          },
+          "density": {
+            "finite": true,
+            "max_abs": 3.832361895050873e-07,
+            "reference_abs_max": 0.3633945892794985,
+            "relative_l2": 3.925335717973081e-07
+          },
+          "drift": {
+            "finite": true,
+            "max_abs": 2.5858794022726173e-08,
+            "reference_abs_max": 0.30826633584799396,
+            "relative_l2": 4.435445133063441e-08
+          },
+          "message": {
+            "finite": true,
+            "max_abs": 5.678470453851503e-07,
+            "reference_abs_max": 0.695388918623757,
+            "relative_l2": 3.438307141080955e-07
+          }
+        },
+        "state_step_equal": true
+      },
+      "gradient_scope": "one declared scalar-loss VJP over all trainable parameters and input coordinates; not a full Jacobian",
+      "neurons": 64,
+      "reference": "FP64 dense",
+      "reference_cost": {
+        "all_outputs_states_gradients_finite": true,
+        "backward_s": 0.20587530499324203,
+        "capture_s": 0.00028078898321837187,
+        "diagnostics": {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0.0,
+          "mass_error": 9.325873406851315e-15,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 6656,
+          "state_step": 6,
+          "transport_dtype": "torch.float64",
+          "upper_projection_mass_max": 0.0011907266326787228
+        },
+        "forward_backward_s": 0.3073203390231356,
+        "forward_s": 0.10144503402989358,
+        "loss": 0.09652910917712768,
+        "missing_trainable_gradients": []
+      },
+      "status": "measured",
+      "steps": 6
+    }
+  ],
+  "source_sha256": {
+    "benchmark.py": "5d1e1db5515e7754eac79177bed07cb7daa9c38cf53b582ab5b68f9e75426fae",
+    "model.py": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+    "native32_uniformized_diagnostic.py": "118f2c1c57602142f4dd53073b385e6e21692f6c49c45b41039cb94ac48d47e8"
+  },
+  "threads": 1,
+  "torch": "2.8.0+cpu",
+  "training_qualification": "not established by these no-grad rollouts and short VJPs",
+  "wider_rollouts": [
+    {
+      "all_fields_finite": true,
+      "backend": "uniformized",
+      "backpropagation_horizon": 0,
+      "batch": 1,
+      "completed_steps": 512,
+      "control_updates": 256,
+      "elapsed_s": 4.815710142021999,
+      "law_semantics": "local law updated every two absolute state steps",
+      "max_mass_error": 1.919269561767578e-05,
+      "max_upper_projection_mass": 0.007692880462855101,
+      "neurons": 32,
+      "precision": "native32",
+      "requested_steps": 512,
+      "samples": [
+        {
+          "all_finite": true,
+          "independent_populations": 32,
+          "mark_excess": 0.0,
+          "mass_error": 2.0265579223632812e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 832,
+          "state_step": 64,
+          "step": 64,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 32,
+          "mark_excess": 0.0,
+          "mass_error": 5.364418029785156e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 832,
+          "state_step": 128,
+          "step": 128,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 32,
+          "mark_excess": 0.0,
+          "mass_error": 7.271766662597656e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 832,
+          "state_step": 192,
+          "step": 192,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 32,
+          "mark_excess": 0.0,
+          "mass_error": 9.059906005859375e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 832,
+          "state_step": 256,
+          "step": 256,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 32,
+          "mark_excess": 0.0,
+          "mass_error": 1.1205673217773438e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 832,
+          "state_step": 320,
+          "step": 320,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 32,
+          "mark_excess": 0.0,
+          "mass_error": 1.430511474609375e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 832,
+          "state_step": 384,
+          "step": 384,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 32,
+          "mark_excess": 0.0,
+          "mass_error": 1.6927719116210938e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 832,
+          "state_step": 448,
+          "step": 448,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 32,
+          "mark_excess": 0.0,
+          "mass_error": 1.895427703857422e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 832,
+          "state_step": 512,
+          "step": 512,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        }
+      ],
+      "schedule": "slow_every_2",
+      "status": "completed"
+    },
+    {
+      "all_fields_finite": true,
+      "backend": "uniformized",
+      "backpropagation_horizon": 0,
+      "batch": 1,
+      "completed_steps": 512,
+      "control_updates": 256,
+      "elapsed_s": 5.232063988107257,
+      "law_semantics": "local law updated every two absolute state steps",
+      "max_mass_error": 2.4139881134033203e-05,
+      "max_upper_projection_mass": 0.010356406681239605,
+      "neurons": 64,
+      "precision": "native32",
+      "requested_steps": 512,
+      "samples": [
+        {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0.0,
+          "mass_error": 2.6226043701171875e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 1664,
+          "state_step": 64,
+          "step": 64,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0.0,
+          "mass_error": 4.470348358154297e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 1664,
+          "state_step": 128,
+          "step": 128,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0.0,
+          "mass_error": 7.808208465576172e-06,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 1664,
+          "state_step": 192,
+          "step": 192,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0.0,
+          "mass_error": 1.1444091796875e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 1664,
+          "state_step": 256,
+          "step": 256,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0.0,
+          "mass_error": 1.3470649719238281e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 1664,
+          "state_step": 320,
+          "step": 320,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0.0,
+          "mass_error": 1.6689300537109375e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 1664,
+          "state_step": 384,
+          "step": 384,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0.0,
+          "mass_error": 2.1219253540039062e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 1664,
+          "state_step": 448,
+          "step": 448,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        },
+        {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0.0,
+          "mass_error": 2.4080276489257812e-05,
+          "probability_min": 0.0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 1664,
+          "state_step": 512,
+          "step": 512,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.0
+        }
+      ],
+      "schedule": "slow_every_2",
+      "status": "completed"
+    }
+  ],
+  "worker_cpu_through_report_seconds": 20.938831238,
+  "worker_script_wall_seconds": 20.99696939694695
+}
