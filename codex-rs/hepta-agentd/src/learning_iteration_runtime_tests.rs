@@ -518,6 +518,13 @@ async fn evaluated_no_update_waits_for_selection_and_cannot_resume_after_expiry(
     };
     assert_eq!(first.receipts.len(), 4);
     assert!(matches!(
+        owner.process(&state, request.clone(), || Ok(49)).await,
+        Err(LearningIterationRuntimeErrorV1::Evidence(
+            SignedEvidenceError::ContextMismatch
+        ))
+    ));
+    assert_eq!(ok(ports.checkpoint.lock()).as_ref(), Some(&first));
+    assert!(matches!(
         owner.process(&state, request.clone(), || Ok(100)).await,
         Err(LearningIterationRuntimeErrorV1::DeadlineExceeded)
     ));

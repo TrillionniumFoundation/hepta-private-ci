@@ -242,6 +242,73 @@ async fn completed_recovery_reauthenticates_all_signed_stages_without_reproposin
     Ok(())
 }
 
+#[cfg(target_os = "linux")]
+#[tokio::test]
+async fn evaluated_no_update_cold_process_recovers_without_repeating_work() -> anyhow::Result<()> {
+    use crate::learning_iteration_checkpoint::decode_original_owner_snapshot_v1;
+    use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
+    use std::io::Write as _;
+
+    const CHILD_CHECKPOINT: &str = "HEPTA_TEST_EVALUATED_COLD_CHECKPOINT";
+    let daemon = AgentdFixture::new();
+    let decision = Decision::EvaluatedNoUpdate;
+    let ports = Arc::new(recovery_ports(decision, Trust::Independent));
+    if let Some(checkpoint) = std::env::var_os(CHILD_CHECKPOINT) {
+        let snapshot = decode_original_owner_snapshot_v1(&std::fs::read(checkpoint)?)?;
+        install_checkpoint(&ports, &snapshot);
+        let owner = runtime(&daemon, &ports);
+        let recovered = owner
+            .process_readback(&daemon.state(), snapshot.request.clone(), || Ok(60))
+            .await?;
+        assert_eq!(recovered, snapshot);
+        assert_no_work_or_checkpoint(&ports, &snapshot);
+        let attested = ok(ports.attested.lock()).clone();
+        for receipt in &snapshot.receipts {
+            assert!(attested.contains(&receipt.observation.stage()));
+        }
+        assert!(matches!(
+            owner
+                .process_readback(&daemon.state(), snapshot.request.clone(), || Ok(49))
+                .await,
+            Err(LearningIterationRuntimeErrorV1::Evidence(
+                SignedEvidenceError::ContextMismatch
+            ))
+        ));
+        assert_no_work_or_checkpoint(&ports, &snapshot);
+        assert_eq!(*ok(ports.attested.lock()), attested);
+        println!("{CHILD_CHECKPOINT}: verified");
+        return Ok(());
+    }
+
+    let snapshot = completed_snapshot(iteration_request(&daemon), &ports, decision).await?;
+    let directory = tempfile::tempdir()?;
+    let checkpoint = directory.path().canonicalize()?.join("checkpoint");
+    let bytes = encode_original_owner_snapshot_v1(&snapshot)?;
+    {
+        let mut file = std::fs::File::create_new(&checkpoint)?;
+        file.write_all(&bytes)?;
+        file.sync_all()?;
+    }
+    let module = module_path!().split_once("::").context("test module")?.1;
+    let test =
+        format!("{module}::evaluated_no_update_cold_process_recovers_without_repeating_work");
+    let mut child = tokio::process::Command::new(std::env::current_exe()?);
+    child
+        .args(["--exact", &test, "--nocapture"])
+        .env(CHILD_CHECKPOINT, &checkpoint)
+        .kill_on_drop(true);
+    let output = tokio::time::timeout(std::time::Duration::from_secs(20), child.output()).await??;
+    anyhow::ensure!(
+        output.status.success()
+            && String::from_utf8_lossy(&output.stdout).contains(CHILD_CHECKPOINT),
+        "cold checkpoint reader failed: {}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(std::fs::read(checkpoint)?, bytes);
+    Ok(())
+}
+
 #[tokio::test]
 async fn completed_recovery_rejects_each_invalid_retained_signature_before_work()
 -> anyhow::Result<()> {

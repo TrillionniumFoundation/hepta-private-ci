@@ -32,10 +32,16 @@ pub(super) async fn authenticate_restored_iteration_v1(
     coordinator: &LearningIterationCoordinatorV1,
     clock: &(impl Fn() -> Result<u64, LearningIterationRuntimeErrorV1> + Send + Sync),
 ) -> Result<(), LearningIterationRuntimeErrorV1> {
+    let restored_at = clock()?;
     let snapshot = coordinator.snapshot();
     let mut predecessor =
         LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?;
     for receipt in &snapshot.receipts {
+        if receipt.observed_unix_seconds > restored_at {
+            return Err(LearningIterationRuntimeErrorV1::Evidence(
+                SignedEvidenceError::ContextMismatch,
+            ));
+        }
         if receipt.observation.stage() != LearningIterationStageV1::Proposal {
             authenticate_iteration_receipt_v1(state, ports, verifier, coordinator, receipt, clock)
                 .await?;
