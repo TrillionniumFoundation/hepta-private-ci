@@ -92,7 +92,9 @@ def validate_metrics(metrics: dict[str, Any]) -> dict[str, int | float]:
     normalized: dict[str, int | float] = {}
     for name in REQUIRED_METRICS:
         normalized[name] = _number(
-            metrics[name], name, integer=name in {"fsyncCount", "rssBytes"}
+            metrics[name],
+            name,
+            integer=name in {"fsyncCount", "rssBytes", "negativeMigrationQ32"},
         )
     if not (
         normalized["p50Micros"] <= normalized["p95Micros"] <= normalized["p99Micros"]
@@ -198,6 +200,11 @@ def verify_signed_observer_receipt(
         ) from error
 
 
+def frozen_workload_digest(path: Path) -> str:
+    with path.open("rb") as workload:
+        return hashlib.file_digest(workload, "sha256").hexdigest()
+
+
 def run_matrix(
     *,
     workload_command: str | None,
@@ -215,8 +222,25 @@ def run_matrix(
         raise ValueError("workload digest must be a lowercase sha256")
     if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
         raise ValueError("source commit must be a lowercase 40-character commit")
+    if workload_command is not None:
+        # A caller-provided SHA is not proof that the measured checkout is that SHA.
+        # Dry-run reports remain possible without a git checkout, but no real
+        # worker can be admitted without verifying the exact local source HEAD.
+        repo_root = Path(__file__).resolve().parent.parent
+        try:
+            checkout = subprocess.run(
+                ["git", "-C", str(repo_root), "rev-parse", "HEAD"],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        except (OSError, subprocess.SubprocessError) as error:
+            raise ValueError("cannot verify measured repository HEAD") from error
+        if checkout.stdout.strip() != source_commit:
+            raise ValueError("measured source commit does not match repository HEAD")
     if workload_path is not None:
-        actual_workload_digest = hashlib.sha256(workload_path.read_bytes()).hexdigest()
+        actual_workload_digest = frozen_workload_digest(workload_path)
         if actual_workload_digest != workload_digest:
             raise ValueError("workload path does not match the frozen workload digest")
     host = host_id or platform.node() or "unknown-host"
@@ -260,6 +284,8 @@ def run_matrix(
             }
         )
         try:
+            if frozen_workload_digest(workload_path) != workload_digest:
+                raise ValueError("frozen workload changed before case execution")
             result = subprocess.run(
                 _command(
                     workload_command,
@@ -275,6 +301,8 @@ def run_matrix(
                 timeout=timeout_seconds,
                 env=env,
             )
+            if frozen_workload_digest(workload_path) != workload_digest:
+                raise ValueError("frozen workload changed during case execution")
             if result.returncode != 0:
                 raise ValueError(
                     f"workload exited {result.returncode}: {result.stderr[-512:]}"
@@ -284,6 +312,8 @@ def run_matrix(
                 emitted.get("caseId") != case["caseId"]
                 or emitted.get("workloadDigest") != workload_digest
                 or emitted.get("workloadSourceDigest") != workload_digest
+                or emitted.get("sourceCommit") != source_commit
+                or any(emitted.get(name) != case[name] for name, _ in FACTORS)
             ):
                 raise ValueError("workload identity does not bind the requested case")
             metrics = validate_metrics(emitted["metrics"])
@@ -392,6 +422,8 @@ def run_matrix(
 
 
 def validate_report(report: dict[str, Any]) -> None:
+    if not isinstance(report, dict):
+        raise ValueError("report must be an object")
     if report.get("schema") != SCHEMA or report.get("authority") != AUTHORITY:
         raise ValueError("invalid report schema or authority posture")
     if report.get("reportDigest") != digest(
@@ -411,7 +443,7 @@ def validate_report(report: dict[str, Any]) -> None:
         }
     ):
         raise ValueError("report digest mismatch")
-    if report.get("status") not in {"blocked", "qualified"}:
+    if report.get("status") not in ("blocked", "qualified"):
         raise ValueError("invalid report status")
     expected_cases = {case["caseId"]: case for case in matrix_cases()}
     cases = report.get("cases")
@@ -422,8 +454,10 @@ def validate_report(report: dict[str, Any]) -> None:
     ):
         raise ValueError("report must contain exactly the sixteen matrix cases")
     case_ids = [case.get("caseId") for case in cases]
-    if len(set(case_ids)) != len(expected_cases) or set(case_ids) != set(
-        expected_cases
+    if (
+        not all(isinstance(case_id, str) for case_id in case_ids)
+        or len(set(case_ids)) != len(expected_cases)
+        or set(case_ids) != set(expected_cases)
     ):
         raise ValueError("report must contain exactly the sixteen matrix cases")
     workload = report.get("workloadDigest")
@@ -434,26 +468,33 @@ def validate_report(report: dict[str, Any]) -> None:
         raise ValueError("invalid exact source commit")
     if report.get("workloadSourceDigest") != workload:
         raise ValueError("source workload digest drift")
+    if not isinstance(report.get("host"), dict):
+        raise ValueError("host fingerprint missing")
+    unmeasured: set[str] = set()
     for case in cases:
         frozen = expected_cases[case["caseId"]]
         if any(case.get(name) != frozen[name] for name, _ in FACTORS):
             raise ValueError("matrix factor drift")
-        if case.get("status") not in {"measured", "blocked"}:
+        if case.get("status") not in ("measured", "blocked"):
             raise ValueError("invalid matrix case status")
         if case.get("workloadDigest") != workload:
             raise ValueError("case workload binding mismatch")
         if case.get("status") == "measured":
-            metrics = validate_metrics(case.get("metrics", {}))
+            raw_metrics = case.get("metrics")
+            if not isinstance(raw_metrics, dict):
+                raise ValueError("measured row lacks metrics object")
+            metrics = validate_metrics(raw_metrics)
             if case.get("metricsDigest") != digest(metrics):
                 raise ValueError("metric digest mismatch")
-    if report.get("status") == "qualified":
-        if report.get("blockingCases") != []:
-            raise ValueError("qualified report cannot retain blockers")
-        if any(case.get("status") != "measured" for case in cases):
-            raise ValueError("qualified report contains an unmeasured case")
-        observer = report.get("observer")
-        if not isinstance(observer, dict) or observer.get("verified") is not True:
-            raise ValueError("qualified report lacks an independent observer receipt")
+        else:
+            if not isinstance(case.get("reason"), str) or not case["reason"].strip():
+                raise ValueError("blocked row requires a reason")
+            unmeasured.add(case["caseId"])
+
+    observer = report.get("observer")
+    if observer is not None and not isinstance(observer, dict):
+        raise ValueError("observer receipt must be an object or null")
+    if isinstance(observer, dict) and observer.get("verified") is True:
         if (
             observer.get("sourceCommit") != source
             or observer.get("workloadDigest") != workload
@@ -496,6 +537,21 @@ def validate_report(report: dict[str, Any]) -> None:
             report_digest=digest(provisional),
             metrics_digest=metrics_digest,
         )
+
+    else:
+        unmeasured.add("independent-observer")
+
+    blocked = report.get("blockingCases")
+    if (
+        not isinstance(blocked, list)
+        or any(not isinstance(case_id, str) for case_id in blocked)
+        or blocked != sorted(unmeasured)
+    ):
+        raise ValueError("blockingCases do not match measured rows and observer")
+    if report["status"] == "qualified" and blocked:
+        raise ValueError("qualified report cannot retain blockers")
+    if report["status"] == "blocked" and not blocked:
+        raise ValueError("blocked report has no blocking evidence")
 
 
 def main() -> int:
