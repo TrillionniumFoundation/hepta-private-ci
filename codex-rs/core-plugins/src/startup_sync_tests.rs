@@ -28,7 +28,7 @@ const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567"
 fn zip_archive_never_restores_privileged_mode_bits() {
     assert_eq!(safe_zip_file_mode(0o104755), 0o755);
     assert_eq!(safe_zip_file_mode(0o102644), 0o644);
-    assert_eq!(safe_zip_file_mode(0o17777), 0o777);
+    assert_eq!(safe_zip_file_mode(0o17777), 0o755);
 }
 
 #[cfg(unix)]
@@ -1520,40 +1520,43 @@ fn extract_zipball_rejects_symlink_entries() {
 
 #[cfg(unix)]
 #[test]
-fn extract_zipball_masks_special_permission_bits() {
+fn extract_zipball_masks_special_and_shared_write_bits() {
     use std::os::unix::fs::PermissionsExt;
 
-    let cursor = std::io::Cursor::new(Vec::new());
-    let mut writer = ZipWriter::new(cursor);
-    let entry_mode = 0o107755;
-    // unix_permissions() masks special bits before the archive is written.
-    let options = SimpleFileOptions::default()
-        .system(System::Unix)
-        .external_attributes(entry_mode << 16);
-    writer
-        .start_file("root/plugin", options)
-        .expect("start executable entry");
-    writer.write_all(b"plugin").expect("write plugin");
+    let cases = [
+        ("executable", 0o107777, 0o755),
+        ("group-writable-data", 0o100660, 0o640),
+        ("private-data", 0o100600, 0o600),
+    ];
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    for (name, archive_mode, _) in cases {
+        // unix_permissions() masks special bits before the archive is written.
+        let options = SimpleFileOptions::default()
+            .system(System::Unix)
+            .external_attributes(archive_mode << 16);
+        writer
+            .start_file(format!("root/{name}"), options)
+            .expect("start permission fixture");
+        writer.write_all(name.as_bytes()).expect("write fixture");
+    }
     let bytes = writer.finish().expect("finish zip").into_inner();
-    {
-        let mut archive =
-            ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read permission fixture");
+    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read fixture");
+    for (name, archive_mode, _) in cases {
         let entry = archive
-            .by_name("root/plugin")
-            .expect("read executable entry");
-        assert_eq!(
-            entry.external_attributes() >> 16,
-            entry_mode,
-            "fixture must preserve SUID/SGID/sticky bits before extraction"
-        );
+            .by_name(&format!("root/{name}"))
+            .expect("read permission fixture");
+        assert_eq!(entry.external_attributes() >> 16, archive_mode, "{name}");
     }
     let destination = tempdir().expect("destination");
-
     extract_zipball_to_dir(&bytes, destination.path()).expect("extract archive");
-    let mode = std::fs::metadata(destination.path().join("plugin"))
-        .expect("plugin metadata")
-        .permissions()
-        .mode();
-    assert_eq!(mode & 0o7000, 0, "SUID/SGID/sticky bits must be masked");
-    assert_eq!(mode & 0o777, 0o755);
+
+    for (name, _, expected) in cases {
+        let path = destination.path().join(name);
+        let mode = std::fs::metadata(&path)
+            .expect("fixture metadata")
+            .permissions()
+            .mode();
+        assert_eq!(mode & 0o7777, expected, "{name}");
+        assert_eq!(std::fs::read(path).expect("read fixture"), name.as_bytes());
+    }
 }

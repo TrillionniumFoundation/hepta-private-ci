@@ -1151,8 +1151,8 @@ fn apply_zip_permissions(mode: Option<u32>, output_path: &Path) -> Result<(), St
     let Some(mode) = mode else {
         return Ok(());
     };
-    // Preserve only ordinary rwx permissions; never adopt SUID/SGID/sticky
-    // bits supplied by an archive.
+    // Never adopt special bits or group/world writes supplied by an archive.
+    // Preserve owner writes and the requested read and execute permissions.
     let safe_mode = safe_zip_file_mode(mode);
     std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(safe_mode)).map_err(
         |err| {
@@ -1166,7 +1166,7 @@ fn apply_zip_permissions(mode: Option<u32>, output_path: &Path) -> Result<(), St
 
 #[cfg(unix)]
 fn safe_zip_file_mode(mode: u32) -> u32 {
-    mode & 0o777
+    mode & 0o755
 }
 
 #[cfg(not(unix))]
