@@ -569,9 +569,18 @@ mod tests {
         use std::time::UNIX_EPOCH;
 
         assert_eq!(git_commit_unix_seconds(UNIX_EPOCH), 0);
-        assert_eq!(git_commit_unix_seconds(UNIX_EPOCH + Duration::from_secs(5)), 5);
-        assert_eq!(git_commit_unix_seconds(UNIX_EPOCH - Duration::from_millis(1)), -1);
-        assert_eq!(git_commit_unix_seconds(UNIX_EPOCH - Duration::from_millis(1001)), -2);
+        assert_eq!(
+            git_commit_unix_seconds(UNIX_EPOCH + Duration::from_secs(5)),
+            5
+        );
+        assert_eq!(
+            git_commit_unix_seconds(UNIX_EPOCH - Duration::from_millis(1)),
+            -1
+        );
+        assert_eq!(
+            git_commit_unix_seconds(UNIX_EPOCH - Duration::from_millis(1001)),
+            -2
+        );
     }
 
     #[test]

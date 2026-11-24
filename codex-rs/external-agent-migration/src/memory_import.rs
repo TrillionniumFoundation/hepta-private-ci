@@ -8,6 +8,8 @@ use std::fs;
 use std::io;
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 const EXTENSION_NAME: &str = "external_agent_import";
 const PROJECT_SCOPE_FILE: &str = "scope.json";
@@ -81,12 +83,23 @@ pub(super) async fn import(
     if copy_outcome.workspace_changed
         && let Err(err) = state_db
             .memories()
-            .enqueue_global_consolidation(chrono::Utc::now().timestamp())
+            .enqueue_global_consolidation(consolidation_unix_seconds(SystemTime::now()))
             .await
     {
         tracing::warn!(error = %err, "failed to enqueue imported memory consolidation");
     }
     Ok(copy_outcome)
+}
+
+fn consolidation_unix_seconds(now: SystemTime) -> i64 {
+    let seconds = match now.duration_since(UNIX_EPOCH) {
+        Ok(duration) => i128::from(duration.as_secs()),
+        Err(error) => {
+            let duration = error.duration();
+            -i128::from(duration.as_secs()) - i128::from(duration.subsec_nanos() != 0)
+        }
+    };
+    i64::try_from(seconds).expect("system time outside Unix seconds range")
 }
 
 pub(crate) fn projects_needing_import(
