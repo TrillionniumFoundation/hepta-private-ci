@@ -198,7 +198,7 @@ qualify the exact combined source and dependency head.
 The next measured stage integrates the maintained Matrix 0.19.1 SDK and
 SQLite store. Its vendor provenance, exact official anymap3 backport, preserved
 store directory, and encrypted-store migration gate are documented in
-`qualification/matrix-dependency-closure-20261124/README.md`. The toolchain is
+`qualification/matrix-maintained-dependencies-20261124/README.md`. The toolchain is
 Rust/Cargo 1.96.0. The existing direct SQLite selection remains one shared
 `libsqlite3-sys` 0.39.1. Cargo selects matrix-sdk-crypto 0.19.1, vodozemac
 0.11.2 and ruma-identifiers-validation 0.14.1.
