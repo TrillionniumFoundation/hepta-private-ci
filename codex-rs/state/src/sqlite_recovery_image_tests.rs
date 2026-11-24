@@ -2,6 +2,7 @@ use super::*;
 use crate::runtime::test_support::unique_temp_dir;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
+use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 
@@ -31,6 +32,39 @@ fn verify_private_file(path: &std::path::Path) -> anyhow::Result<()> {
         )?;
     }
     Ok(())
+}
+
+fn write_private_new(path: &std::path::Path, bytes: &[u8]) -> anyhow::Result<()> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        let mut file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(path)?;
+        file.write_all(bytes)?;
+        file.sync_all()?;
+    }
+    #[cfg(windows)]
+    {
+        use anyhow::Context;
+        use codex_utils_path::windows_private::Access;
+        use codex_utils_path::windows_private::PrivateSqliteDirectory;
+        // An inherited owner-only DACL does not determine the new file's owner.
+        // Keep each synthetic replacement valid before testing its identity.
+        let parent = path.parent().context("synthetic database parent")?;
+        let name = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .context("synthetic database leaf")?;
+        let directory = PrivateSqliteDirectory::open_writable(parent)?;
+        let mut file = directory.open(name, Access::CreateNew)?;
+        file.write_all(bytes)?;
+        file.sync_all()?;
+        directory.sync_all()?;
+    }
+    verify_private_file(path)
 }
 
 #[tokio::test]
@@ -92,8 +126,7 @@ async fn cold_image_rejects_wrong_guard_replacement_sidecars_and_size() -> anyho
     ));
     let original = std::fs::read(&path)?;
     std::fs::rename(&path, home.join("retained.sqlite3"))?;
-    std::fs::write(&path, &original)?;
-    verify_private_file(&path)?;
+    write_private_new(&path, &original)?;
     assert!(matches!(
         config.open_cold_image_read_only_pool(&guard).await,
         Err(SqliteRecoveryError::Indeterminate)
@@ -101,8 +134,7 @@ async fn cold_image_rejects_wrong_guard_replacement_sidecars_and_size() -> anyho
     drop(guard);
     for suffix in ["-wal", "-shm", "-journal"] {
         let sidecar = super::super::sqlite_sidecar_path(&path, suffix);
-        std::fs::write(&sidecar, b"")?;
-        verify_private_file(&sidecar)?;
+        write_private_new(&sidecar, b"")?;
         let guard = config.bind_existing_recovery_database(&path)?;
         assert!(matches!(
             config.open_cold_image_read_only_pool(&guard).await,
