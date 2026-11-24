@@ -447,7 +447,7 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     .fetch_one(&store.pool)
     .await
     .unwrap();
-    assert!(per_issuer_peak <= AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER);
+    assert_eq!(per_issuer_peak, AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER);
     let (issuer, message) = fixture(2, u64::MAX);
     assert!(matches!(
         store
