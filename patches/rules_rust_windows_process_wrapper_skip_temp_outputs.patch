@@ -1,15 +1,113 @@
+diff --git a/util/process_wrapper/main.rs b/util/process_wrapper/main.rs
+index 3139b45a..00666dae 100644
 --- a/util/process_wrapper/main.rs
 +++ b/util/process_wrapper/main.rs
-@@ -213,6 +213,12 @@ fn consolidate_dependency_search_paths(
+@@ -213,6 +213,16 @@ fn consolidate_dependency_search_paths(
              let file_name_lower = file_name
                  .to_string_lossy()
                  .to_ascii_lowercase();
-+            if file_name_lower.contains(".tmp") || file_name_lower.ends_with(".rcgu.o") {
-+                // Native Windows Rust link actions can leave transient `*.exe.tmp*` and
-+                // per-codegen-unit `*.rcgu.o` outputs next to the final binary.
++            if file_name_lower.contains(".tmp")
++                || file_name_lower.ends_with(".rcgu.o")
++                || (file_name_lower.contains(".temp-archive-") && file_name_lower.ends_with(".a"))
++            {
++                // Parallel Rust link actions leave temporary executables, codegen
++                // objects, and `*.lib.temp-archive-*.a` archives beside final outputs.
++                // They can disappear between read_dir and hard_link/copy.
 +                // Those are not stable linker search-path inputs.
 +                continue;
 +            }
              if !seen.insert(file_name_lower) {
                  continue;
              }
+@@ -412,6 +422,10 @@ fn main() -> Result<(), ProcessWrapperError> {
+     }
+ }
+
++#[cfg(all(test, windows))]
++#[path = "dependency_path_tests.rs"]
++mod dependency_path_tests;
++
+ #[cfg(test)]
+ mod test {
+     use super::*;
+diff --git a/util/process_wrapper/dependency_path_tests.rs b/util/process_wrapper/dependency_path_tests.rs
+new file mode 100644
+index 00000000..8759499e
+--- /dev/null
++++ b/util/process_wrapper/dependency_path_tests.rs
+@@ -0,0 +1,75 @@
++use super::*;
++
++#[test]
++fn consolidates_stable_libraries_without_transient_link_outputs() {
++    let directory = std::env::temp_dir().join(format!(
++        "process-wrapper-dependencies-{}-{}",
++        std::process::id(),
++        SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()
++    ));
++    let _input_guard = TemporaryDirectoryGuard::new(Some(directory.clone()));
++    let first = directory.join("first search path");
++    let second = directory.join("second search path");
++    fs::create_dir_all(&first).unwrap();
++    fs::create_dir_all(&second).unwrap();
++
++    fs::write(first.join("dependency.rlib"), b"first path wins").unwrap();
++    fs::write(second.join("dependency.rlib"), b"shadowed library").unwrap();
++    fs::write(first.join("dependency.rmeta"), b"metadata").unwrap();
++    fs::write(second.join("native.lib"), b"native import library").unwrap();
++    fs::write(second.join("libnative.a"), b"native archive").unwrap();
++    for name in [
++        "app-server-protocol-unit-tests-bin.lib.temp-archive-a28219a.a",
++        "libdependency.rlib.temp-archive-1234567.a",
++        "UPPER.LIB.TEMP-ARCHIVE-ABCDEF0.A",
++        "unit-tests.exe.tmp1234",
++        "dependency.1234.rcgu.o",
++    ] {
++        fs::write(first.join(name), b"incomplete concurrent link output").unwrap();
++    }
++
++    let (args, output) = consolidate_dependency_search_paths(&[
++        "--crate-type=lib".to_owned(),
++        format!("-Ldependency={}", first.display()),
++        "-L".to_owned(),
++        format!("dependency={}", second.display()),
++        "--cap-lints=warn".to_owned(),
++    ])
++    .unwrap();
++    let output = output.unwrap();
++    let _output_guard = TemporaryDirectoryGuard::new(Some(output.clone()));
++    let mut libraries = fs::read_dir(&output)
++        .unwrap()
++        .map(|entry| {
++            let entry = entry.unwrap();
++            (entry.file_name(), fs::read(entry.path()).unwrap())
++        })
++        .collect::<Vec<_>>();
++    libraries.sort();
++    assert_eq!(
++        libraries,
++        vec![
++            ("dependency.rlib".into(), b"first path wins".to_vec()),
++            ("dependency.rmeta".into(), b"metadata".to_vec()),
++            ("libnative.a".into(), b"native archive".to_vec()),
++            ("native.lib".into(), b"native import library".to_vec()),
++        ]
++    );
++    assert_eq!(
++        args,
++        vec![
++            "--crate-type=lib".to_owned(),
++            "--cap-lints=warn".to_owned(),
++            format!("-Ldependency={}", output.display()),
++        ]
++    );
++
++    // An explicitly requested missing input still fails; no broad I/O-error
++    // suppression is used to hide the concurrent transient-output race.
++    let error = get_dependency_search_paths_from_args(&[format!(
++        "@{}",
++        directory.join("missing.params").display()
++    )])
++    .unwrap_err();
++    assert!(error.to_string().contains("unable to read argfile"));
++}
