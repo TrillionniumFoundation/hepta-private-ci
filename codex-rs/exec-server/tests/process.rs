@@ -700,13 +700,21 @@ async fn exec_server_dedupes_retried_process_write_ids() -> anyhow::Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn exec_server_resumes_detached_session_without_killing_processes() -> anyhow::Result<()> {
     let mut server = exec_server().await?;
+    // Keep the child alive until the resumed session terminates it rather
+    // than having the child's lifetime depend on CI scheduling.
     let process_argv = if cfg!(windows) {
-        vec!["cmd.exe", "/D", "/C", "ping -n 6 127.0.0.1 >NUL"]
+        vec![
+            "powershell.exe",
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            "$null = [Console]::In.ReadLine()",
+        ]
     } else {
-        vec!["/bin/sh", "-c", "sleep 5"]
+        vec!["/bin/sh", "-c", "IFS= read -r unused"]
     };
     let process_env = if cfg!(windows) {
-        serde_json::json!({ "PATH": std::env::var("PATH")? })
+        serde_json::to_value(std::env::vars().collect::<HashMap<_, _>>())?
     } else {
         serde_json::json!({})
     };
@@ -746,7 +754,7 @@ async fn exec_server_resumes_detached_session_without_killing_processes() -> any
                 "cwd": PathUri::from_host_native_path(std::env::current_dir()?)?,
                 "env": process_env,
                 "tty": false,
-                "pipeStdin": false,
+                "pipeStdin": true,
                 "arg0": null
             }),
         )
@@ -763,28 +771,46 @@ async fn exec_server_resumes_detached_session_without_killing_processes() -> any
     server.disconnect_websocket().await?;
     server.reconnect_websocket().await?;
 
-    let resume_initialize_id = server
-        .send_request(
-            "initialize",
-            serde_json::to_value(InitializeParams {
-                process_exit_observation: true,
-                client_name: "exec-server-test".to_string(),
-                resume_session_id: Some(initialize_response.session_id.clone()),
-            })?,
-        )
-        .await?;
-    let response = server
-        .wait_for_event(|event| {
-            matches!(
-                event,
-                JSONRPCMessage::Response(JSONRPCResponse { id, .. }) if id == &resume_initialize_id
-            )
-        })
-        .await?;
-    let JSONRPCMessage::Response(JSONRPCResponse { result, .. }) = response else {
-        panic!("expected resume initialize response");
-    };
-    let resumed_response: InitializeResponse = serde_json::from_value(result)?;
+    // The server may not have processed the old socket's close frame yet.
+    // Retry only its explicit prior-connection-attached response, as the
+    // production reconnecting client does.
+    const SESSION_ALREADY_ATTACHED: i64 = -32010;
+    let resumed_response = tokio::time::timeout(std::time::Duration::from_secs(5), async {
+        loop {
+            let request_id = server
+                .send_request(
+                    "initialize",
+                    serde_json::to_value(InitializeParams {
+                        process_exit_observation: true,
+                        client_name: "exec-server-test".to_string(),
+                        resume_session_id: Some(initialize_response.session_id.clone()),
+                    })?,
+                )
+                .await?;
+            let response = server
+                .wait_for_event(|event| match event {
+                    JSONRPCMessage::Response(response) => response.id == request_id,
+                    JSONRPCMessage::Error(error) => error.id == request_id,
+                    _ => false,
+                })
+                .await?;
+            match response {
+                JSONRPCMessage::Response(response) => {
+                    return Ok::<InitializeResponse, anyhow::Error>(serde_json::from_value(
+                        response.result,
+                    )?);
+                }
+                JSONRPCMessage::Error(error) if error.error.code == SESSION_ALREADY_ATTACHED => {
+                    tokio::time::sleep(std::time::Duration::from_millis(25)).await;
+                }
+                JSONRPCMessage::Error(error) => {
+                    anyhow::bail!("failed to resume detached exec-server session: {error:?}");
+                }
+                _ => unreachable!("only the initialize response or error is accepted"),
+            }
+        }
+    })
+    .await??;
     assert_eq!(resumed_response, initialize_response);
 
     server
