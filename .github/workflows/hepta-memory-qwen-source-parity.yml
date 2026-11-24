@@ -1,0 +1,122 @@
+name: MemoryCell pinned Qwen2 source-loss real parity
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - scripts/memory_cell/source_completion_loss.py
+      - scripts/memory_cell/source_loss_admission.py
+      - scripts/memory_cell/source_pretrained_projection_receipt.py
+      - scripts/memory_cell/experience_memory.py
+      - scripts/memory_cell/experience_inference.py
+      - scripts/memory_cell/reader_reference.py
+      - scripts/memory_cell/test_source_completion_hf.py
+      - scripts/memory_cell/test_source_loss_admission.py
+      - scripts/memory_cell/test_source_write_schedule.py
+      - .github/workflows/hepta-memory-qwen-source-parity.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-qwen-source-parity-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  real-optimizer-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      ORIGINAL_CORPUS_SHA: 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Restore verified original source corpus and pinned environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/qwen-parity
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/qwen-parity-input.zip
+          python3 - <<'PY'
+          import hashlib
+          import stat
+          import zipfile
+          from pathlib import Path, PurePosixPath
+          source = Path('/tmp/qwen-parity-input.zip')
+          data = source.read_bytes()
+          assert 0 < len(data) <= 64 * 1024 * 1024
+          assert hashlib.sha256(data).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          target = Path('/tmp/qwen-parity-input')
+          target.mkdir()
+          with zipfile.ZipFile(source) as zipped:
+              files = zipped.infolist()
+              assert len(files) <= 512 and sum(p.file_size for p in files) <= 64 * 1024 * 1024
+              names = set()
+              for member in files:
+                  name = PurePosixPath(member.filename)
+                  assert not name.is_absolute() and '..' not in name.parts
+                  assert '\\' not in member.filename and not stat.S_ISLNK(member.external_attr >> 16)
+                  if member.is_dir():
+                      continue
+                  assert str(name) not in names
+                  names.add(str(name))
+                  destination = target / name
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  destination.write_bytes(zipped.read(member))
+          assert 'observations/sources.json' in names and 'environment.txt' in names
+          assert hashlib.sha256((target / 'observations/sources.json').read_bytes()).hexdigest() == '35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24'
+          PY
+          printf 'tested=%s\nartifact=11669174727\n' "$GITHUB_SHA" > /tmp/qwen-parity/source.txt
+      - name: Install original pinned CPU reader environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/qwen-parity-python
+          /tmp/qwen-parity-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/qwen-parity-python/bin/pip install -r /tmp/qwen-parity-input/environment.txt
+          /tmp/qwen-parity-python/bin/pip freeze > /tmp/qwen-parity/environment.txt
+          diff -u /tmp/qwen-parity-input/environment.txt /tmp/qwen-parity/environment.txt
+      - name: Check actual Qwen2 PEFT interface, loss and gradient contracts
+        run: |
+          set -euo pipefail
+          /tmp/qwen-parity-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_completion_hf.py' -v 2>&1 | tee /tmp/qwen-parity/qwen-peft-contracts.log
+          /tmp/qwen-parity-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_loss_admission.py' -v 2>&1 | tee /tmp/qwen-parity/loss-admission.log
+          /tmp/qwen-parity-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_write_schedule.py' -v 2>&1 | tee /tmp/qwen-parity/write-schedule.log
+          /tmp/qwen-parity-python/bin/python - <<'PY'
+          from pathlib import Path
+          from reader_reference_receipt import archive
+          archive(Path('/tmp/qwen-parity-input.zip'), '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b')
+          PY
+      - name: Stage unchanged Qwen2.5-3B model with publisher file hashes
+        run: |
+          set -euo pipefail
+          /tmp/qwen-parity-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/qwen-parity-model 2>&1 | tee /tmp/qwen-parity/model-stage.log
+          cp /tmp/qwen-parity-model/stage.json /tmp/qwen-parity-model/inventory.json /tmp/qwen-parity-model/publisher.json /tmp/qwen-parity/
+      - name: Compare actual BF16 pretrained LoRA optimizer updates, not task quality
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/qwen-parity/resource.txt /tmp/qwen-parity-python/bin/python scripts/memory_cell/source_pretrained_projection_receipt.py /tmp/qwen-parity-input/observations/sources.json /tmp/qwen-parity-model /tmp/qwen-parity/parity.json --source-sha "$ORIGINAL_CORPUS_SHA" --stage-sha "$(sha256sum /tmp/qwen-parity-model/stage.json | cut -d ' ' -f1)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" 2>&1 | tee /tmp/qwen-parity/parity.log
+      - name: Preserve immutable model identity, full failures and cost diagnostics
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/qwen-parity/tested-commit.txt
+          mkdir -p /tmp/qwen-parity/source
+          cp scripts/memory_cell/source_pretrained_projection_receipt.py scripts/memory_cell/source_completion_loss.py scripts/memory_cell/source_loss_admission.py scripts/memory_cell/test_source_completion_hf.py /tmp/qwen-parity/source/
+          test -z "$(find /tmp/qwen-parity -name '*.safetensors' -print -quit)"
+          (cd /tmp/qwen-parity && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-qwen-pretrained-loss-parity
+          path: /tmp/qwen-parity
+          if-no-files-found: error

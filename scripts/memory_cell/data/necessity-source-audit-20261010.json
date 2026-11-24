@@ -1,0 +1,196 @@
+{
+  "schema": "hepta.source-audit.model-assistance.v1",
+  "source_plan_sha256": "c0cedd95835540490dfb980178ce0d4c00eea52855b88163a3878be999b0ba59",
+  "source_labels_sha256": "5973e13de088b5973d045db543444ab1050dfe3ede2b843c84642781dfd6232e",
+  "source_plan_digest": "409d2b245d1c466b90148b3cc11194a9d3e48958989d4ceb100d46b12d4d13ab",
+  "source_archive_artifact_id": 11665851771,
+  "source_archive_sha256": "659977c96d3c07d1f6c693fdf7d63161adc2ef3d454ac7e73c3a1b7fd4d70479",
+  "reviewer": {
+    "id": "ChatGPT:source-only-audit:20261010",
+    "kind": "model_assisted_review",
+    "model": "GPT-6 Astra Pro",
+    "reviewed_at": "2026-10-10T09:49:39.541326+00:00",
+    "independent_of_implementation_author": false,
+    "human": false,
+    "authenticated_external_identity": false
+  },
+  "scope": {
+    "original_census": 8,
+    "questions_replaced": 0,
+    "reference_answers_changed": 0,
+    "source_text_rewritten": false,
+    "current_cohort_reader_outputs_seen_before_audit": false,
+    "public_development_not_prospective": true,
+    "background": "Ordinary language, identity and category inference only; no extra domain premise is silently supplied.",
+    "minimality": "Premise-group necessity, not a proof that every byte is minimal.",
+    "noise_review": "All six additional original candidate sentences per case were inspected for a substitute bridge; no replacement for the accepted pair requirements was identified. This is model assistance, not an independently certified non-entailment label."
+  },
+  "items": [
+    {
+      "question_id": "eobqa:1500",
+      "query_digest": "fd45d6ee94bf4ad2caf0326b6ab1464f387ebf17b55faff9f45db2df01c23e8b",
+      "source_frontier": "0b503489a192b63c0ad69897a2c14745b0842de1340f2b8a59141457e57785ce",
+      "publication_row_sha256": "2f7e5bb88d1f2ac072247dd0ec1e6feddb08102dfba14a1d5bd147ee105a2290",
+      "decision": "provisional_support",
+      "rationale": "The first premise identifies water as the leading erosion agent; the second supplies the water/H2O correspondence needed to map it to an option. Removing either leaves that chain incomplete using only the supplied sentences.",
+      "limits": "Full water-to-H2O mapping is treated as the claim of the source, not a fresh chemical measurement.",
+      "reviewed_spans": [
+        {
+          "source_id": "eobqa-sentence:808cb9ff2bc1999a986d751f43e3593807eb44125e31861eca51c307192a2ccf",
+          "source_digest": "3d0757d9453e77a1b3d1161bfcc964db5a287d291ced9c41a85e655cb500076f",
+          "start": 0,
+          "end": 43,
+          "requirement": "premise1"
+        },
+        {
+          "source_id": "eobqa-sentence:be08235773a80e5797a7ad5670f5fc77fbd1d81972d269d7671d95b45df52e10",
+          "source_digest": "54181c62a6bce97b2c6c843e6208cda85b4e4ea8224178eeaff51ad0c8744dda",
+          "start": 0,
+          "end": 21,
+          "requirement": "premise2"
+        }
+      ],
+      "independent_human_disposition": null
+    },
+    {
+      "question_id": "eobqa:597",
+      "query_digest": "81830bf93fcea16e431b5f875103fe063717d23edf4c00075189d2808319d5c4",
+      "source_frontier": "c598434779d8cc35fa4f9ec8a420de3582032da995a7ef3611d7e6f75e3a2500",
+      "publication_row_sha256": "0b2cfddbbf06beb830f3457e4b79de7ad7129730568fe91827067d5e2f350eb5",
+      "decision": "provisional_support",
+      "rationale": "The category rule protects vital organs; the second premise puts the heart in that category. Neither selected premise by itself explicitly gives both the instance and the protection rule.",
+      "limits": "The generic category rule is interpreted as stated; no independent anatomical certification is supplied.",
+      "reviewed_spans": [
+        {
+          "source_id": "eobqa-sentence:00934b7bf23ce50abd910c8bda358ec4a19ee292c58013b963481a2589e33a47",
+          "source_digest": "705be9c408824610a0694cfb0bf30d5efdef379a3f00d116ca4c3fb86737fe59",
+          "start": 0,
+          "end": 50,
+          "requirement": "premise1"
+        },
+        {
+          "source_id": "eobqa-sentence:49982a490052155f1c430a0352c187ace4860384963776fde1a55cfe63ed2a8e",
+          "source_digest": "c7c71e226a12df7cf7ccb956a7c865a155ba0a63781dcfc3f14c0a6ea738ae29",
+          "start": 20,
+          "end": 47,
+          "requirement": "premise2"
+        }
+      ],
+      "independent_human_disposition": null
+    },
+    {
+      "question_id": "eobqa:1795",
+      "query_digest": "16fae23f70db1c2b549db4a8e519b53232c60510cb0326ec66241f7cc47d596f",
+      "source_frontier": "bd9dd44df4bb19cf6d26c46c4b2314f1618b3276939a4f96b19e37716e2a29e6",
+      "publication_row_sha256": "caafd9ed1ecfdfb709b12526640ab1185eb2222651272a6fd3f819739a5c09c4",
+      "decision": "provisional_support",
+      "rationale": "One premise identifies a Jersey as a cow used for milk production; the other states that production cows are fed alfalfa hay. Together they support the likely-feed option. The retained complete sentences preserve the production qualifier.",
+      "limits": "This supports a typical feed, not a universal dietary fact for every Jersey.",
+      "reviewed_spans": [
+        {
+          "source_id": "eobqa-sentence:0d8f46b4f008d877e09b30b8670df09b169888d5ec14bc8e3012494e26c6c5c6",
+          "source_digest": "748d4b2f7bf0e583c0f6762970bfab0596dc0fc08b5af48f6ead94a4336e8b8d",
+          "start": 0,
+          "end": 51,
+          "requirement": "premise1"
+        },
+        {
+          "source_id": "eobqa-sentence:239600f25dade3f46b231a74e25e204d1124a810357f2f65228062c2ddbaa09d",
+          "source_digest": "599f4f8229eebd9aa11833e219b914327a1e0db1ea96ae87fa65a61003a817da",
+          "start": 0,
+          "end": 51,
+          "requirement": "premise2"
+        }
+      ],
+      "independent_human_disposition": null
+    },
+    {
+      "question_id": "eobqa:508",
+      "query_digest": "397df8f6b7c450c630c084be20b1153a15c535c2b2d11b97f52737696e0e4216",
+      "source_frontier": "ebdaa3b9430a7587fba26148310ff743cd0d0323107d3784aedf017a1d9ad7ed",
+      "publication_row_sha256": "5baed84a515a4d4017b4274ec691da137ff179b9833225d2f260875dbd0b7226",
+      "decision": "needs_extra_premise",
+      "rationale": "Massage being offered by a spa and described as an alternative to drugs does not, without additional premises, establish that a spa trip is a good strategy to improve health. The source does not specify an indication, outcome, or benefit. Do not treat the phrase good alternatives as a demonstrated health outcome.",
+      "limits": "No medical advice, corrected fact or new treatment evidence is introduced.",
+      "reviewed_spans": [],
+      "independent_human_disposition": null
+    },
+    {
+      "question_id": "eobqa:9-1134",
+      "query_digest": "6595b25e4eadc98126480aded43db944b73ff47ba2aa8a5f32a2d7092ca808f9",
+      "source_frontier": "0dc14ac3de3264025c2411b3e17792fe79d773a30cd49c315e4edb98abd0e39d",
+      "publication_row_sha256": "f8d50cd5edb96a6831f2547cba2d8ab8669aaadd342e91ac7e73678b5bf63297",
+      "decision": "redundant_and_questionable_target",
+      "rationale": "The first sentence already identifies carbon dioxide as a respiratory waste product; the second repeats its status as cellular waste rather than supplying a necessary bridge. Production of a waste byproduct is not the same as the purpose expressed by use respiration to. The original answer label release waste is retained but flagged for adjudication, not corrected by this review.",
+      "limits": "Do not convert a missing second premise into a semantic negative or silently replace the publisher answer.",
+      "reviewed_spans": [],
+      "independent_human_disposition": null
+    },
+    {
+      "question_id": "eobqa:1231",
+      "query_digest": "7aac6eecb7dcee810b95b66a7bc77ddfdbe5140e017d4eeff11c399bae5af8c6",
+      "source_frontier": "6d594b2adcdb92f16d2b23606ba38d022aa42214c02df8c6ab8b3458ccf0ddb0",
+      "publication_row_sha256": "2359b915acd1fb247535760a2b608d7574f4c36672a573ead4725b814653d95d",
+      "decision": "provisional_support",
+      "rationale": "The comparative Like plant cells clause attributes cell walls to plant cells. The second statement locates spice sources among plants. This supplies the source/category and cell-wall relationship rather than feathers, crystals, or craters.",
+      "limits": "The source uses a generic comparison; the intended granularity is the plant source of spices, not purified spice molecules.",
+      "reviewed_spans": [
+        {
+          "source_id": "eobqa-sentence:826531e694ea22352b7894ff2ba18932998a32ea003cd5a7e94b0bcbe9595927",
+          "source_digest": "fea757dd4f803acaede68d565171564d4d15392a31e139dac1d1124250348bc0",
+          "start": 0,
+          "end": 53,
+          "requirement": "premise1"
+        },
+        {
+          "source_id": "eobqa-sentence:3afd0a892ec60c7238db991cb1d0ae470ef125b960450ce9528a63a308dedb58",
+          "source_digest": "69c1f90ba68c813993e0e4651868026be149a0d5a528bb2d2ab52722f8d34b14",
+          "start": 0,
+          "end": 31,
+          "requirement": "premise2"
+        }
+      ],
+      "independent_human_disposition": null
+    },
+    {
+      "question_id": "eobqa:395",
+      "query_digest": "b3444b8d659b507a37d7f2696f54d7076225a0ac89d75dcb431c81a08b95df0f",
+      "source_frontier": "600853efc6236846a4df3c630a8894c10de2709b95d7ee60768cfb24cc1fff92",
+      "publication_row_sha256": "28a5ee5b40ceb583225fbfd1cd14256aa21d44d56229283c4dc008c24df0092e",
+      "decision": "provisional_support",
+      "rationale": "The class statement connects mammals to warm-bloodedness; the second sentence classifies skunks as mammals. Removing either omits a link. The non-sentence Printouts prefix is excluded by exact byte offsets; the remaining original sentence is unchanged.",
+      "limits": "Only mammal membership is used; the superlative smelliest is not endorsed or needed as a new factual finding.",
+      "reviewed_spans": [
+        {
+          "source_id": "eobqa-sentence:17e8eb53490d17258e0d5edfe8d592c00ebf3705a4bbd11901f5800a19aa4874",
+          "source_digest": "4a0f789d25817ec2a46ef4f935effb82d73bbe444703de9607996a26f29d9c5f",
+          "start": 0,
+          "end": 43,
+          "requirement": "premise1"
+        },
+        {
+          "source_id": "eobqa-sentence:2a6f873ced6cbab78fdf09f5a4b490dd628ea3364418773df4059b0d1e476ad4",
+          "source_digest": "fad1dd55642f1ad6e5aa84e94eb687db7ca0bc0b8e08e8f8bd8fc58041f76079",
+          "start": 10,
+          "end": 43,
+          "requirement": "premise2"
+        }
+      ],
+      "independent_human_disposition": null
+    },
+    {
+      "question_id": "eobqa:1954",
+      "query_digest": "f631d2612a105ba3a036704fa7184a43bd5a7f8c36bbf0dc47e8b5d0f2b65352",
+      "source_frontier": "1a3caa065fe5867ebab62d3af001f0ba37efbf1e803eb749dedbaf563a6fd10e",
+      "publication_row_sha256": "9839491fa6761f9ca969b0b39f556c89a3a925bfa720692939a76e4ed52e5808",
+      "decision": "ambiguous_relation",
+      "rationale": "The first statement describes magnets attracting iron/steel. The second says carbon steel is magnetic; it does not disambiguate magnetizable/attracted-by-a-magnet from permanently magnetized and attracting objects. Treating these directions as identical is an unprovided premise, so the claimed always answer is not certified.",
+      "limits": "The original claim and answer are preserved; no new material property or repaired premise is substituted.",
+      "reviewed_spans": [],
+      "independent_human_disposition": null
+    }
+  ],
+  "independent_sufficiency_certified": false,
+  "training_permitted": false,
+  "production_accepted": false
+}

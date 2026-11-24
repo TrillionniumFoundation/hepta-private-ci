@@ -1,0 +1,118 @@
+name: MemoryCell external source-family population preregistration
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/external_family_population.py"
+      - "scripts/memory_cell/test_external_family_population.py"
+      - ".github/workflows/hepta-memory-external-family-population.yml"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_EXTERNAL_FAMILY_POPULATION.md"
+permissions:
+  contents: read
+concurrency:
+  group: memorycell-external-native-public-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source-only-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Check that original answer fields cannot enter public source cut
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/external_family_population.py scripts/memory_cell/test_external_family_population.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_external_family_population.py' -v
+
+  pin-real-public-benchmarks:
+    needs: source-only-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Restore exact LoCoMo and LongMemEval source bytes without model weights
+        run: |
+          set -euo pipefail
+          python3 -m pip install huggingface-hub==0.35.3
+          mkdir -p /tmp/memorycell-external-inputs
+          python3 - <<'PY'
+          from pathlib import Path
+          from urllib.request import urlopen
+          from hashlib import sha256
+          from huggingface_hub import hf_hub_download
+          from external_family_population import SOURCE_PINS
+          root=Path('/tmp/memorycell-external-inputs')
+          commit='3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376'
+          url=f'https://raw.githubusercontent.com/snap-research/locomo/{commit}/data/locomo10.json'
+          with urlopen(url, timeout=90) as response:
+              data=response.read(32*1024*1024+1)
+          assert len(data) <= 32*1024*1024
+          assert sha256(data).hexdigest() == SOURCE_PINS['locomo']
+          (root/'locomo.json').write_bytes(data)
+          path=Path(hf_hub_download('xiaowu0162/longmemeval-cleaned',
+              'longmemeval_s_cleaned.json',repo_type='dataset',
+              revision='98d7416c24c778c2fee6e6f3006e7a073259d48f',token=False))
+          assert path.stat().st_size <= 512*1024*1024
+          raw=path.read_bytes()
+          assert sha256(raw).hexdigest() == SOURCE_PINS['longmemeval']
+          (root/'longmemeval.json').write_bytes(raw)
+          PY
+      - name: Freeze source-family partitions BEFORE exposing task answers
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/external_family_population.py \
+            /tmp/memorycell-external-inputs/locomo.json \
+            /tmp/memorycell-external-inputs/longmemeval.json \
+            /tmp/memorycell-external-population --source-commit "$HEPTA_MEMORY_TESTED_COMMIT"
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          root=Path('/tmp/memorycell-external-population')
+          manifest=json.loads((root/'sealed-manifest.json').read_text())
+          assert manifest['generated_answers'] == 0
+          assert manifest['production_accepted'] is False
+          for kind, path in (('public','public/population.json'),('private','targets/targets.json')):
+              digest=hashlib.sha256((root/path).read_bytes()).hexdigest()
+              pinned=manifest['public_population_sha256' if kind=='public' else 'private_target_sha256']
+              assert digest == pinned
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memorycell-external-family-public-${{ github.sha }}
+          path: /tmp/memorycell-external-population/public
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memorycell-external-family-targets-${{ github.sha }}
+          path: /tmp/memorycell-external-population/targets
+          if-no-files-found: error
+      # A genuinely undersized public source-family population is a
+      # scientific NO-GO, not a missing artifact or an implicit fallback.
+      # Preserve that negative source-only receipt even if generation is
+      # intentionally blocked before the public/private target split.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memorycell-external-family-capacity-${{ github.sha }}
+          path: /tmp/memorycell-external-population-capacity.json
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memorycell-external-family-manifest-${{ github.sha }}
+          path: /tmp/memorycell-external-population/sealed-manifest.json
+          if-no-files-found: warn

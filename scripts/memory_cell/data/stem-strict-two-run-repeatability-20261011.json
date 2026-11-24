@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.stem-strict-two-run-repeatability.v1",
+  "run_sources": [
+    "675970bb610c70bb0ec30a2dee05c025440510e6",
+    "95a20c4287bd6e9ab3fefd95774a2d9c8212d73f"
+  ],
+  "artifact_sha256": [
+    "1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8",
+    "a3322c5dec5f0d2a7453e90a97095e746e206a01c102749b458e3ed816573cc6"
+  ],
+  "verified_manifests": [
+    130,
+    133
+  ],
+  "exact_matched_source_and_answer_rows": 576,
+  "exact_reader_input_output_and_cache_receipts": 576,
+  "identical_head_checkpoints": 36,
+  "identical_lora_adapter_tensors": 3,
+  "unchanged_original_training_and_source_retrieval": true,
+  "only_new_instrumentation": "label-free zero-offset null counterfactual",
+  "learned_per_arm": {
+    "prototype": {
+      "matched": 96,
+      "changed_source": 0
+    },
+    "linear": {
+      "matched": 96,
+      "changed_source": 0
+    },
+    "gated": {
+      "matched": 96,
+      "changed_source": 0
+    },
+    "lineage_lora_gated": {
+      "matched": 96,
+      "changed_source": 1
+    },
+    "independent_lora_gated": {
+      "matched": 96,
+      "changed_source": 0
+    }
+  },
+  "matched_reader_actual_executions": 44,
+  "matched_reader_cache_hits": 543,
+  "observed_unique_adapter_pairs": {
+    "lineage": 10,
+    "independent-general": 4,
+    "independent-temporal": 6
+  },
+  "no_new_model_executions_performed": true,
+  "answer_quality_or_semantic_citation_improvement_proven": false,
+  "production_accepted": false
+}

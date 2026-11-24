@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.memory-strong-rag.partial-calibration-independent-audit.v1",
+  "generating_source_commit": "db7c31c90ad4eb7cf902c432a355c8302b0dffc2",
+  "workflow_run": 38150189865,
+  "model_revision": "82f42baa094a9600e39ccd80d34058aeeb3abbc1",
+  "model_inventory_digest": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "calibration_plan_sha256": "42417d57f72132d6403857843683f0e0497c17be5fb59c6afc2f2b25905cf031",
+  "files": [
+    {
+      "artifact_id": 11707168275,
+      "kind": "case0-part0",
+      "sha256": "6edbb96edc7b783ddf6148b0c030e7d0ad63bfe9eec273a551bf9268d6ec7f90"
+    },
+    {
+      "artifact_id": 11707620762,
+      "kind": "case2-part1",
+      "sha256": "87f0358d2845a933866fe67ca6d4a0c08043327a0cdc9b3ad7b11848f3acf040"
+    },
+    {
+      "artifact_id": 11707090232,
+      "kind": "calibration-public",
+      "sha256": "ae58c43d6b5d5a39dc428e6f22b6df925e715d44307fa407f3620bec22b97904"
+    },
+    {
+      "artifact_id": 11706825892,
+      "kind": "calibration-labels",
+      "sha256": "ea34d5dd7d900fa94d0c8a11729fabdccee57911a1f4c658d5ee2ffaf922eccf"
+    }
+  ],
+  "shards_completed": 2,
+  "calibration_shards_planned": 16,
+  "generated_observations": 5,
+  "calibration_calls_planned": 40,
+  "evaluation_calls_observed": 0,
+  "task_success_observed": 0,
+  "annotation_support_delivered": 4,
+  "annotation_support_cited": 1,
+  "input_tokens_total": 5679,
+  "generation_seconds_sum": 105.351878157,
+  "original_stage_sha256": [
+    "312b094b4c9802ac592bb82ed9e691850fc0e70bce0fd1fdb432f00b74c64205",
+    "b592c746d2b1513751d9792f59877a2e86aaf25088c3b332d2528ed23fbb0cac"
+  ],
+  "canonical_stage_sha256_if_host_seconds_detached": "3c67750e9b39ed11dc78a449861cabfd0ecabe8abc6a24891bd90971dd791bd2",
+  "canonical_stage_implemented_in_this_generating_commit": false,
+  "frozen_k": null,
+  "complete_calibration": false,
+  "qualified_model_evaluation": false,
+  "independent_human_semantic_review": false,
+  "production_accepted": false,
+  "individual_observations": [
+    {
+      "case_id": "controlled_4b61ce33",
+      "kind": "new_fact",
+      "arm": "k1",
+      "strict_task_success": false,
+      "annotated_support_in_context": true,
+      "annotated_support_cited": true,
+      "input_tokens": 504,
+      "reader_seconds": 11.38100722499999,
+      "artifact_id": 11707168275
+    },
+    {
+      "case_id": "controlled_4b61ce33",
+      "kind": "new_fact",
+      "arm": "k3",
+      "strict_task_success": false,
+      "annotated_support_in_context": true,
+      "annotated_support_cited": false,
+      "input_tokens": 1076,
+      "reader_seconds": 22.91880684099999,
+      "artifact_id": 11707168275
+    },
+    {
+      "case_id": "controlled_4b61ce33",
+      "kind": "new_fact",
+      "arm": "k6",
+      "strict_task_success": false,
+      "annotated_support_in_context": true,
+      "annotated_support_cited": false,
+      "input_tokens": 1961,
+      "reader_seconds": 42.52831219900003,
+      "artifact_id": 11707168275
+    },
+    {
+      "case_id": "controlled_bc770867",
+      "kind": "composition",
+      "arm": "k2",
+      "strict_task_success": false,
+      "annotated_support_in_context": false,
+      "annotated_support_cited": false,
+      "input_tokens": 782,
+      "reader_seconds": 12.797139067000003,
+      "artifact_id": 11707620762
+    },
+    {
+      "case_id": "controlled_bc770867",
+      "kind": "composition",
+      "arm": "k4",
+      "strict_task_success": false,
+      "annotated_support_in_context": true,
+      "annotated_support_cited": false,
+      "input_tokens": 1356,
+      "reader_seconds": 15.72661282499999,
+      "artifact_id": 11707620762
+    }
+  ]
+}

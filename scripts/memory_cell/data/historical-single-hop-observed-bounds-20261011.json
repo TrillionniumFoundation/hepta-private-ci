@@ -1,0 +1,243 @@
+{
+  "schema": "hepta.memorycell.historical-single-hop-observation.v1",
+  "source_commit": "59f9eadd5cc919359079e04442f7343838a60057",
+  "historical_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "questions": 8,
+  "model_generation_executed": false,
+  "independent_semantic_review": false,
+  "statistical_superiority": false,
+  "production_accepted": false,
+  "reused_historic_control_responses_only": true,
+  "controls": {
+    "event-reader-actual-48.zip": {
+      "zip_sha256": "831ce9658bafcbaf04f4a15879982e58317322f7cd5137724498d7d20df7bb98",
+      "verified_inner_files": 21,
+      "historic_actual_calls": 48,
+      "first_hop_observed_questions": 4,
+      "first_hop_unobserved_questions": 4,
+      "observed_successes": 4,
+      "strict_success_lower_bound": 0.5,
+      "strict_success_upper_bound": 1.0,
+      "note": "Bound is about source-matched historical answers; not a new single-hop reader evaluation",
+      "questions": [
+        {
+          "question_id": "controlled_faedc8b9",
+          "kind": "new_fact",
+          "single_hop_ids": [
+            "event_faedc8b9_1"
+          ],
+          "matched_historical_arms": [
+            "entity_time",
+            "organized",
+            "program_support"
+          ],
+          "observed": true,
+          "observed_strict_success": true,
+          "archived_input_sha256": "3888bbcc9af6c806e4d313f3c5893f9ca6e121c0b9c0cb7f3b9575c36f45db78"
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "kind": "correction",
+          "single_hop_ids": [
+            "event_cbfd4ba5_1",
+            "event_cbfd4ba5_2"
+          ],
+          "matched_historical_arms": [
+            "entity_time"
+          ],
+          "observed": true,
+          "observed_strict_success": true,
+          "archived_input_sha256": "d7e1ec7bc06d796f5b91704633d84cea1e3465d93d39cf498d7bc39c8fab7765"
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "kind": "composition",
+          "single_hop_ids": [
+            "event_c71dcd6f_1"
+          ],
+          "matched_historical_arms": [],
+          "observed": false,
+          "observed_strict_success": null,
+          "archived_input_sha256": null
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "kind": "procedure",
+          "single_hop_ids": [
+            "event_7fc7f8c2_1"
+          ],
+          "matched_historical_arms": [],
+          "observed": false,
+          "observed_strict_success": null,
+          "archived_input_sha256": null
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "kind": "new_fact",
+          "single_hop_ids": [
+            "event_7fadc16e_1"
+          ],
+          "matched_historical_arms": [
+            "entity_time",
+            "organized",
+            "program_support"
+          ],
+          "observed": true,
+          "observed_strict_success": true,
+          "archived_input_sha256": "2afad436471bd23fb782ea87338803ca9e3ba653087965a2faa854f29fe15dd0"
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "kind": "correction",
+          "single_hop_ids": [
+            "event_f0609607_2",
+            "event_f0609607_1"
+          ],
+          "matched_historical_arms": [
+            "entity_time"
+          ],
+          "observed": true,
+          "observed_strict_success": true,
+          "archived_input_sha256": "e75ca4b99a1b44f8b729e4245a3bccb8a19665f45cf26d0c69685a71e0e0ac99"
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "kind": "composition",
+          "single_hop_ids": [
+            "event_bcb9165b_1"
+          ],
+          "matched_historical_arms": [],
+          "observed": false,
+          "observed_strict_success": null,
+          "archived_input_sha256": null
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "kind": "procedure",
+          "single_hop_ids": [
+            "event_52a0bb15_1"
+          ],
+          "matched_historical_arms": [],
+          "observed": false,
+          "observed_strict_success": null,
+          "archived_input_sha256": null
+        }
+      ]
+    },
+    "event-reader-smol-48.zip": {
+      "zip_sha256": "67d46247bd1881c8fb3f73ec6122415d0d15a0ec24b02f193fb1294e7ea63bae",
+      "verified_inner_files": 21,
+      "historic_actual_calls": 48,
+      "first_hop_observed_questions": 4,
+      "first_hop_unobserved_questions": 4,
+      "observed_successes": 0,
+      "strict_success_lower_bound": 0.0,
+      "strict_success_upper_bound": 0.5,
+      "note": "Bound is about source-matched historical answers; not a new single-hop reader evaluation",
+      "questions": [
+        {
+          "question_id": "controlled_faedc8b9",
+          "kind": "new_fact",
+          "single_hop_ids": [
+            "event_faedc8b9_1"
+          ],
+          "matched_historical_arms": [
+            "entity_time",
+            "organized",
+            "program_support"
+          ],
+          "observed": true,
+          "observed_strict_success": false,
+          "archived_input_sha256": "9ad0b1abf60d0c38143ad78f48cf7b39a97765e12e4d99a8c04fae2438191ea1"
+        },
+        {
+          "question_id": "controlled_cbfd4ba5",
+          "kind": "correction",
+          "single_hop_ids": [
+            "event_cbfd4ba5_1",
+            "event_cbfd4ba5_2"
+          ],
+          "matched_historical_arms": [
+            "entity_time"
+          ],
+          "observed": true,
+          "observed_strict_success": false,
+          "archived_input_sha256": "da00e940c02310b5d05cafea94391dd37db9573e04ce3020ee17d91cc6c5ddc5"
+        },
+        {
+          "question_id": "controlled_c71dcd6f",
+          "kind": "composition",
+          "single_hop_ids": [
+            "event_c71dcd6f_1"
+          ],
+          "matched_historical_arms": [],
+          "observed": false,
+          "observed_strict_success": null,
+          "archived_input_sha256": null
+        },
+        {
+          "question_id": "controlled_7fc7f8c2",
+          "kind": "procedure",
+          "single_hop_ids": [
+            "event_7fc7f8c2_1"
+          ],
+          "matched_historical_arms": [],
+          "observed": false,
+          "observed_strict_success": null,
+          "archived_input_sha256": null
+        },
+        {
+          "question_id": "controlled_7fadc16e",
+          "kind": "new_fact",
+          "single_hop_ids": [
+            "event_7fadc16e_1"
+          ],
+          "matched_historical_arms": [
+            "entity_time",
+            "organized",
+            "program_support"
+          ],
+          "observed": true,
+          "observed_strict_success": false,
+          "archived_input_sha256": "c292e355d4d7981a38b5518993ba4014ae92eb041a711eee79677307bef5e0a8"
+        },
+        {
+          "question_id": "controlled_f0609607",
+          "kind": "correction",
+          "single_hop_ids": [
+            "event_f0609607_2",
+            "event_f0609607_1"
+          ],
+          "matched_historical_arms": [
+            "entity_time"
+          ],
+          "observed": true,
+          "observed_strict_success": false,
+          "archived_input_sha256": "6d95ce7a4b2a26f435e318a34c60dfc65e80459af76847c2cf320abc5bb2cc8d"
+        },
+        {
+          "question_id": "controlled_bcb9165b",
+          "kind": "composition",
+          "single_hop_ids": [
+            "event_bcb9165b_1"
+          ],
+          "matched_historical_arms": [],
+          "observed": false,
+          "observed_strict_success": null,
+          "archived_input_sha256": null
+        },
+        {
+          "question_id": "controlled_52a0bb15",
+          "kind": "procedure",
+          "single_hop_ids": [
+            "event_52a0bb15_1"
+          ],
+          "matched_historical_arms": [],
+          "observed": false,
+          "observed_strict_success": null,
+          "archived_input_sha256": null
+        }
+      ]
+    }
+  }
+}

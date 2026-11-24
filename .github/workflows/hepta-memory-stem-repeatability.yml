@@ -1,0 +1,92 @@
+name: MemoryCell strict two-run reproducibility
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_strict_repeatability.py"
+      - "scripts/memory_cell/test_stem_strict_repeatability.py"
+      - "scripts/memory_cell/data/stem-strict-two-run-repeatability-20261011.json"
+      - ".github/workflows/hepta-memory-stem-repeatability.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-repeatability-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  archived-two-run-repeatability:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Fail-closed standalone tamper tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-repeatability
+          git rev-parse HEAD > /tmp/stem-repeatability/auditing-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-repeatability/auditing-tree.txt
+          python3 -m compileall -q scripts/memory_cell/stem_strict_repeatability.py scripts/memory_cell/test_stem_strict_repeatability.py
+          python3 -m unittest -v test_stem_strict_repeatability 2>&1 | tee /tmp/stem-repeatability/synthetic-tests.log
+      - name: Download two fixed completed-run ZIPs and pin transport hashes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > /tmp/stem-first-strict.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11695042414/zip > /tmp/stem-second-strict.zip
+          printf '%s  %s\n' \
+            1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 /tmp/stem-first-strict.zip \
+            a3322c5dec5f0d2a7453e90a97095e746e206a01c102749b458e3ed816573cc6 /tmp/stem-second-strict.zip | sha256sum -c -
+      - name: Verify every SHA256SUMS member and all 576 original outcomes
+        env:
+          HEPTA_STEM_REPRO_EARLIER: /tmp/stem-first-strict.zip
+          HEPTA_STEM_REPRO_LATER: /tmp/stem-second-strict.zip
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v test_stem_strict_repeatability 2>&1 | tee /tmp/stem-repeatability/archive-tests.log
+          python3 scripts/memory_cell/stem_strict_repeatability.py \
+            --earlier /tmp/stem-first-strict.zip \
+            --later /tmp/stem-second-strict.zip \
+            --output /tmp/stem-repeatability/reproducibility.json \
+            2>&1 | tee /tmp/stem-repeatability/comparison.log
+      - name: Fail closed if any pinned original outcome differs from recorded receipt
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          original = json.loads(Path(
+              "scripts/memory_cell/data/stem-strict-two-run-repeatability-20261011.json"
+          ).read_text())
+          measured = json.loads(Path(
+              "/tmp/stem-repeatability/reproducibility.json"
+          ).read_text())
+          if measured != original:
+              raise ValueError("changed original model result or unaudited historical receipt")
+          print("The full pinned original 576-row receipt is unchanged.")
+          PY
+      - name: Retain audit code, complete logs and SHA-256 evidence manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-repeatability/source
+          cp scripts/memory_cell/stem_strict_repeatability.py /tmp/stem-repeatability/source/
+          cp scripts/memory_cell/test_stem_strict_repeatability.py /tmp/stem-repeatability/source/
+          cp scripts/memory_cell/data/stem-strict-two-run-repeatability-20261011.json /tmp/stem-repeatability/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-repeatability/source/
+          cp .github/workflows/hepta-memory-stem-repeatability.yml /tmp/stem-repeatability/source/
+          (cd /tmp/stem-repeatability && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-strict-repeatability
+          path: /tmp/stem-repeatability
+          if-no-files-found: error

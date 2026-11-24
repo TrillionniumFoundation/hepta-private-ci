@@ -1,0 +1,257 @@
+{
+  "artifacts": {
+    "frozen_inputs": {
+      "artifact_id": 11669174727,
+      "manifest_verified_files": 35,
+      "outer_sha256": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b"
+    },
+    "read_only_replay": {
+      "artifact_id": 11696898778,
+      "manifest_verified_files": 8,
+      "outer_sha256": "fe710be3f987e34ec3cda48be37509e20a01b48db090907c98ce33cfff198225"
+    },
+    "reader": {
+      "artifact_id": 11696514149,
+      "manifest_verified_files": 38,
+      "outer_sha256": "2d71f40e553e7d28cad9d8e16803f52b7a99e771b5bf54f55c89bc9468702107"
+    }
+  },
+  "calibration": {
+    "calibration_by_k": {
+      "k1": {
+        "input_tokens": 4045,
+        "success": 4
+      },
+      "k2": {
+        "input_tokens": 6328,
+        "success": 4
+      },
+      "k3": {
+        "input_tokens": 8698,
+        "success": 4
+      },
+      "k4": {
+        "input_tokens": 10970,
+        "success": 4
+      },
+      "k6": {
+        "input_tokens": 15708,
+        "success": 2
+      }
+    },
+    "calibration_count": 40,
+    "frozen_policy_sha256": "137342db4dbfa9721de2e18e4e5a9f4d4b97faa1fdd6d2f4309d221410829476",
+    "loo_choice_counts": {
+      "1": 7,
+      "2": 1,
+      "3": 0,
+      "4": 0,
+      "6": 0
+    },
+    "loo_selected_minus_fixed4": -1,
+    "loo_stable": false,
+    "selected_k": 1
+  },
+  "checked_at": "2026-10-11",
+  "dispositions": {
+    "additional_organized_correct_over_entity_time": 0,
+    "additional_organized_input_token_savings": 573,
+    "all_research_superiority_claims_unqualified": true,
+    "best_authored_task_score_arms": [
+      "entity_time",
+      "organized",
+      "program_support"
+    ],
+    "calibration_stable_under_leave_one_out": false,
+    "correct_full_declared_source_chain_of_entity_time": 4,
+    "human_semantic_adjudication": null,
+    "incremental_two_hop_correct_over_single_hop": 4,
+    "independent_future_source_families": 0,
+    "production_accepted": false,
+    "trained_or_parametric_memory_incremental_gain_proved": false
+  },
+  "evaluation": {
+    "arms": {
+      "empty": {
+        "complete_prompt_input_tokens": 1630,
+        "full_program_declared_citation_and_correct": 0,
+        "measured_reader_seconds": 33.5,
+        "original_support_covered": 0,
+        "public_event_chain_connected_and_correct": 0,
+        "strict_success": 0,
+        "tasks": 8
+      },
+      "entity_time": {
+        "complete_prompt_input_tokens": 5752,
+        "full_program_declared_citation_and_correct": 4,
+        "measured_reader_seconds": 74.147,
+        "original_support_covered": 8,
+        "public_event_chain_connected_and_correct": 4,
+        "strict_success": 8,
+        "tasks": 8
+      },
+      "hybrid_k4": {
+        "complete_prompt_input_tokens": 10806,
+        "full_program_declared_citation_and_correct": 1,
+        "measured_reader_seconds": 118.435,
+        "original_support_covered": 8,
+        "public_event_chain_connected_and_correct": 1,
+        "strict_success": 3,
+        "tasks": 8
+      },
+      "hybrid_k4_reversed": {
+        "complete_prompt_input_tokens": 10806,
+        "full_program_declared_citation_and_correct": 1,
+        "measured_reader_seconds": 117.895,
+        "original_support_covered": 8,
+        "public_event_chain_connected_and_correct": 1,
+        "strict_success": 3,
+        "tasks": 8
+      },
+      "hybrid_k6": {
+        "complete_prompt_input_tokens": 15463,
+        "full_program_declared_citation_and_correct": 0,
+        "measured_reader_seconds": 163.135,
+        "original_support_covered": 8,
+        "public_event_chain_connected_and_correct": 0,
+        "strict_success": 2,
+        "tasks": 8
+      },
+      "organized": {
+        "complete_prompt_input_tokens": 5179,
+        "full_program_declared_citation_and_correct": 4,
+        "measured_reader_seconds": 69.174,
+        "original_support_covered": 8,
+        "public_event_chain_connected_and_correct": 4,
+        "strict_success": 8,
+        "tasks": 8
+      },
+      "program_support": {
+        "complete_prompt_input_tokens": 5179,
+        "full_program_declared_citation_and_correct": 4,
+        "measured_reader_seconds": 69.182,
+        "original_support_covered": 8,
+        "public_event_chain_connected_and_correct": 4,
+        "strict_success": 8,
+        "tasks": 8
+      },
+      "selected_k": {
+        "complete_prompt_input_tokens": 3961,
+        "full_program_declared_citation_and_correct": 3,
+        "measured_reader_seconds": 58.962,
+        "original_support_covered": 3,
+        "public_event_chain_connected_and_correct": 3,
+        "strict_success": 5,
+        "tasks": 8
+      },
+      "single_hop": {
+        "complete_prompt_input_tokens": 4575,
+        "full_program_declared_citation_and_correct": 4,
+        "measured_reader_seconds": 61.75,
+        "original_support_covered": 4,
+        "public_event_chain_connected_and_correct": 4,
+        "strict_success": 4,
+        "tasks": 8
+      }
+    },
+    "paired_comparisons": {
+      "entity_time_minus_hybrid4": {
+        "losses": 0,
+        "net_correct_tasks": 5,
+        "ties": 3,
+        "unknown": 0,
+        "wins": 5
+      },
+      "entity_time_minus_single_hop": {
+        "losses": 0,
+        "net_correct_tasks": 4,
+        "ties": 4,
+        "unknown": 0,
+        "wins": 4
+      },
+      "hybrid6_minus_hybrid4": {
+        "losses": 1,
+        "net_correct_tasks": -1,
+        "ties": 7,
+        "unknown": 0,
+        "wins": 0
+      },
+      "organized_minus_entity_time": {
+        "losses": 0,
+        "net_correct_tasks": 0,
+        "ties": 8,
+        "unknown": 0,
+        "wins": 0
+      },
+      "organized_minus_hybrid4": {
+        "losses": 0,
+        "net_correct_tasks": 5,
+        "ties": 3,
+        "unknown": 0,
+        "wins": 5
+      },
+      "organized_minus_selected": {
+        "losses": 0,
+        "net_correct_tasks": 3,
+        "ties": 5,
+        "unknown": 0,
+        "wins": 3
+      },
+      "reversed_minus_hybrid4": {
+        "losses": 0,
+        "net_correct_tasks": 0,
+        "ties": 8,
+        "unknown": 0,
+        "wins": 0
+      },
+      "selected_minus_hybrid4": {
+        "losses": 0,
+        "net_correct_tasks": 2,
+        "ties": 6,
+        "unknown": 0,
+        "wins": 2
+      },
+      "single_hop_minus_hybrid4": {
+        "losses": 2,
+        "net_correct_tasks": 1,
+        "ties": 3,
+        "unknown": 0,
+        "wins": 3
+      }
+    },
+    "questions": 8,
+    "source_families_independently_held_out": 0,
+    "total_generated": 72
+  },
+  "generating_commit": "c24fad24b65984a6255a8854c6714c141911ff79",
+  "limitations": [
+    "Eight authored previously exposed development questions, not prospective evaluation",
+    "Original support manifest is program-authored, not human independently certified as necessary/sufficient",
+    "Separate-process replay checks mechanical evidence and task outcomes, not independent semantic entailment",
+    "Read token/time sums exclude ingestion, index maintenance, revocation, recovery and serving lifecycle",
+    "Entire Actions workflow failed an unrelated PR-wide source formatting gate; do not borrow model job success as PR-wide CI success",
+    "No source-specific trained parametric comparison or independent 99% semantic citation assessment"
+  ],
+  "original_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "reproducibility": {
+    "calibration_raw_rows": 40,
+    "evaluation_raw_rows": 72,
+    "independent_read_only_replay_recomputed_scores_citations_pairs": true,
+    "matched_prompt_answer_divergences": 0,
+    "matched_prompt_pairs": 39,
+    "raw_to_scored_unmodified": true,
+    "run_source_equal_to_auditor_source": true,
+    "source_plan_pinned": true
+  },
+  "schema": "hepta.memory-cell.actual-strong-rag-disposition.v1",
+  "source_collection_commit": "c9dd3aeff958fbdc4356a98718e96dec47f9b820",
+  "source_run_id": 38114667490,
+  "workflow": {
+    "independent_replay_job": "success",
+    "pr_merge_qualified": false,
+    "pr_wide_format_job": "failure",
+    "reader_job": "success",
+    "scoped_format_job": "success",
+    "whole_workflow": "failure"
+  }
+}
