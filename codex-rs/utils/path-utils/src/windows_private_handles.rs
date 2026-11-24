@@ -19,12 +19,21 @@ use windows_sys::Win32::Foundation::NTSTATUS;
 use windows_sys::Win32::Foundation::RtlNtStatusToDosError;
 use windows_sys::Win32::Foundation::UNICODE_STRING;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_ADD_FILE;
+use windows_sys::Win32::Storage::FileSystem::FILE_ADD_SUBDIRECTORY;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
+use windows_sys::Win32::Storage::FileSystem::FILE_LIST_DIRECTORY;
+use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
+use windows_sys::Win32::Storage::FileSystem::FILE_READ_EA;
 use windows_sys::Win32::Storage::FileSystem::FILE_RENAME_INFO;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_TRAVERSE;
+use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_ATTRIBUTES;
+use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_EA;
 use windows_sys::Win32::Storage::FileSystem::FileRenameInfoEx;
+use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
 use windows_sys::Win32::System::Kernel::OBJ_CASE_INSENSITIVE;
@@ -96,7 +105,17 @@ pub(super) fn directory(path: &Path, descriptor: *const c_void) -> io::Result<Fi
     open(
         /*root*/ 0,
         &mut name,
-        GENERIC_READ | GENERIC_WRITE,
+        // Spell out directory-specific rights. FILE_ADD_FILE supplies the
+        // directory write right required by the real flush and child creation.
+        FILE_LIST_DIRECTORY
+            | FILE_TRAVERSE
+            | FILE_ADD_FILE
+            | FILE_ADD_SUBDIRECTORY
+            | FILE_READ_ATTRIBUTES
+            | FILE_WRITE_ATTRIBUTES
+            | FILE_READ_EA
+            | FILE_WRITE_EA
+            | READ_CONTROL,
         FILE_OPEN_IF,
         FILE_DIRECTORY_FILE,
         descriptor,
@@ -159,6 +178,14 @@ fn open(
     } else {
         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE
     };
+    // NtCreateFile's closed FILE_DIRECTORY_FILE compatibility list excludes
+    // FILE_OPEN_REPARSE_POINT. OBJ_DONT_REPARSE remains set for every name
+    // lookup; the returned handle is also checked for the reparse attribute.
+    let options = if kind == FILE_DIRECTORY_FILE {
+        kind | FILE_SYNCHRONOUS_IO_NONALERT
+    } else {
+        kind | FILE_SYNCHRONOUS_IO_NONALERT | FILE_OPEN_REPARSE_POINT
+    };
     // SAFETY: All referenced buffers/descriptors stay live for this synchronous
     // call. No handle inheritance or backup/restore privilege is requested.
     let result = unsafe {
@@ -171,7 +198,7 @@ fn open(
             FILE_ATTRIBUTE_NORMAL,
             share,
             disposition,
-            kind | FILE_SYNCHRONOUS_IO_NONALERT | FILE_OPEN_REPARSE_POINT,
+            options,
             ptr::null(),
             /*ea_length*/ 0,
         )

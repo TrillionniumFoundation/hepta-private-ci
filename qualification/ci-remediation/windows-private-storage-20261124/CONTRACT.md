@@ -22,7 +22,7 @@ fixtures now request an appropriate handle and execute the real flush operation.
 | Requirement | Mechanism | Failure behavior |
 | --- | --- | --- |
 | Bound the root to an opened object | `NtCreateFile`, absolute local disk path, retained handle, no delete sharing | Reject relative, UNC and device namespaces; directory rename cannot rebind the owner |
-| Reject redirection | `OBJ_DONT_REPARSE`, `FILE_OPEN_REPARSE_POINT`, exact-handle attributes and kind check | Reject reparse roots, reparse ancestors and reparse children |
+| Reject redirection | `OBJ_DONT_REPARSE` on every lookup; file-only `FILE_OPEN_REPARSE_POINT`; exact-handle attributes and kind check | Reject reparse roots, reparse ancestors and reparse children |
 | Private owner and access | Effective token user, `GetSecurityInfo` on the same handle, protected DACL containing exactly one owner allow ACE with file-all-access | Reject null, broad, inherited or unfamiliar ACLs; never repair an existing object's ACL |
 | Safe creation | Explicit owner-only security descriptor supplied at `NtCreateFile` creation | No permissive create-then-chmod interval |
 | Bind every child lookup | Single bounded leaf name and `OBJECT_ATTRIBUTES.RootDirectory` | Reject path separators, parent traversal, alternate streams and non-regular/multi-link files |
@@ -39,6 +39,16 @@ Windows directories with conventional inherited grants to Administrators or SYST
 are deliberately not silently migrated; the preexisting implementation did not
 offer a Windows authority store. This is a narrow owner-only policy, not a general
 Windows ACL evaluator.
+
+Directory opens use explicit directory access rights and only
+`FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT`. The `NtCreateFile` reference's
+closed directory-option list does not include `FILE_OPEN_REPARSE_POINT`; that flag
+is now confined to regular-file opens. Every lookup still sets `OBJ_DONT_REPARSE`,
+and all returned handles undergo the same reparse/kind and owner/DACL checks.
+No failure is swallowed. The general `OBJECT_ATTRIBUTES` contract documents the
+no-reparse flag, while the user-mode function page lists fewer attributes; the
+actual supported composition must therefore be established by native tests on
+the runner, not by inferring a universal cross-version guarantee.
 
 ## Executable checks
 
@@ -83,6 +93,7 @@ weaken their checks, or claim a complete Windows memory-recovery implementation.
 
 - [NtCreateFile](https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntcreatefile)
 - [OBJECT_ATTRIBUTES](https://learn.microsoft.com/en-us/windows/win32/api/ntdef/ns-ntdef-_object_attributes)
+- [Directory access rights](https://learn.microsoft.com/en-us/windows/win32/fileio/file-access-rights-constants)
 - [GetSecurityInfo](https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-getsecurityinfo)
 - [FILE_RENAME_INFO](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_rename_info)
 - [FILE_RENAME_INFORMATION extended flags](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_rename_information)
