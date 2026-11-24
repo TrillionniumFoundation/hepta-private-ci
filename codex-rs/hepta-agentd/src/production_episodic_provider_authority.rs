@@ -121,6 +121,7 @@ pub(super) async fn start_config(
         revocation_revision: 1,
         revoked_grant_ids: BTreeSet::new(),
         issuer_timeout_ms: 2_000,
+        issuer_process_identity: None,
     };
     let task = tokio::spawn(async move {
         tokio::time::timeout(Duration::from_secs(30), async move {

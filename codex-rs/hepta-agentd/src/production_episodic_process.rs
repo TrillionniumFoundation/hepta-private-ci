@@ -25,6 +25,30 @@ mod child;
 
 type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
+#[cfg(target_os = "linux")]
+fn public_fixture_issuer_identity()
+-> Result<codex_hepta_infer_worker_host::final_use_authorizer::IssuerProcessIdentityConfig> {
+    use codex_hepta_contracts::Sha256Digest;
+    use codex_hepta_infer_worker_host::final_use_authorizer::IssuerProcessIdentityConfig;
+
+    let executable = child::pin(Path::new("/proc/self/exe"))?;
+    let executable_sha256 = executable["sha256"]
+        .as_str()
+        .ok_or("fixture issuer executable digest missing")?
+        .to_owned();
+    let cgroup = std::fs::read("/proc/self/cgroup")?;
+    let boot_id = std::fs::read("/proc/sys/kernel/random/boot_id")?;
+    Ok(IssuerProcessIdentityConfig {
+        executable_sha256,
+        cgroup_sha256: Sha256Digest::for_bytes(cgroup.trim_ascii_end())
+            .as_str()
+            .to_owned(),
+        boot_id_sha256: Sha256Digest::for_bytes(boot_id.trim_ascii_end())
+            .as_str()
+            .to_owned(),
+    })
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub(super) enum Mode {
@@ -162,18 +186,13 @@ pub(super) async fn run(run: Run<'_>) -> Result<()> {
     tasks.handles.push(issuer.abort_handle());
     // No verifier/state owner is opened in the parent. C opens this public config
     // itself. The fixture signing bytes are not passed through argv/env/stdin.
+    #[cfg(target_os = "linux")]
+    let config = codex_hepta_infer_worker_host::final_use_authorizer::FinalUseAuthorizerConfig {
+        issuer_process_identity: Some(public_fixture_issuer_identity()?),
+        ..config
+    };
     let config_path = output.join("FINAL_USE_PUBLIC.json");
-    write_receipt(
-        output,
-        "FINAL_USE_PUBLIC.json",
-        &serde_json::json!({
-            "issuer_socket": config.issuer_socket, "issuer_uid": config.issuer_uid,
-            "signer_id": config.signer_id, "verifying_key": config.verifying_key,
-            "authority_state_dir": config.authority_state_dir, "authority_epoch": config.authority_epoch,
-            "revocation_revision": config.revocation_revision, "revoked_grant_ids": config.revoked_grant_ids,
-            "issuer_timeout_ms": config.issuer_timeout_ms,
-        }),
-    )?;
+    write_receipt(output, "FINAL_USE_PUBLIC.json", &config)?;
     let journal = output.join("C.journal");
     let mut args = vec![
         "--profile".into(),
