@@ -26,7 +26,7 @@ use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::source;
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 #[path = "cognitive_store_recovery_read_only_tests.rs"]
 mod cold_read_only;
 
@@ -419,7 +419,7 @@ async fn hostile_file_identities_fail_closed_without_additional_mutation() {
     }
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 #[tokio::test]
 async fn byte_identical_rename_replacement_can_recover_only_with_current_witness() {
     let temp = TempDir::new().expect("temp dir");
@@ -433,8 +433,7 @@ async fn byte_identical_rename_replacement_can_recover_only_with_current_witness
     let retained = database.with_extension("retained");
     std::fs::rename(&database, &retained).expect("retain original database");
     std::fs::copy(&retained, &database).expect("install byte-identical replacement");
-    std::fs::set_permissions(&database, std::fs::Permissions::from_mode(0o600))
-        .expect("protect replacement");
+    protect_database_file(&database).expect("protect or verify private replacement");
 
     let authority = recovery_authority(&owner);
     let recovered = CognitiveStore::open_with_recovery(

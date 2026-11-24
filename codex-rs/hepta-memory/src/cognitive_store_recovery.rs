@@ -218,11 +218,17 @@ impl CognitiveStore {
             cleanup_candidate_sidecars(&candidate)?;
             protect_database_file(&candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&candidate)
-                .and_then(|file| file.sync_all())
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&canonical_root)
-                .and_then(|directory| directory.sync_all())
+            #[cfg(not(windows))]
+            {
+                std::fs::File::open(&candidate)
+                    .and_then(|file| file.sync_all())
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+                std::fs::File::open(&canonical_root)
+                    .and_then(|directory| directory.sync_all())
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            }
+            #[cfg(windows)]
+            super::windows_storage::sync_recovery_candidate(&canonical_root, &candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
             let pool = config

@@ -136,14 +136,26 @@ async fn stable_inspection_metadata_cannot_authenticate_changed_content() {
         }
     }
     assert!(changed > 0);
-    let file = std::fs::OpenOptions::new()
+    let mut file = std::fs::OpenOptions::new()
+        .read(true)
         .write(true)
         .open(store.path())
         .expect("same inode");
-    std::os::unix::fs::FileExt::write_all_at(&file, &bytes, 0).expect("inplace same-size mutation");
+    #[cfg(windows)]
+    let directory = codex_utils_path::windows_private::PrivateSqliteDirectory::inspect(
+        store.path().parent().expect("root"),
+    )
+    .expect("private root");
+    #[cfg(windows)]
+    let identity = directory
+        .file_snapshot(&file)
+        .expect("retained file identity");
+    std::io::Write::write_all(&mut file, &bytes)
+        .expect("inplace same-size mutation from offset zero");
     file.set_times(std::fs::FileTimes::new().set_modified(metadata.modified().expect("mtime")))
         .expect("restore mtime");
     let after = std::fs::metadata(store.path()).expect("metadata");
+    #[cfg(unix)]
     assert_eq!(
         (
             metadata.ino(),
@@ -152,6 +164,15 @@ async fn stable_inspection_metadata_cannot_authenticate_changed_content() {
         ),
         (after.ino(), after.len(), after.modified().expect("mtime"))
     );
+    #[cfg(windows)]
+    {
+        assert!(identity.same_object(directory.file_snapshot(&file).expect("same file identity")));
+        assert_eq!(
+            (metadata.len(), metadata.modified().expect("mtime")),
+            (after.len(), after.modified().expect("mtime"))
+        );
+    }
+    drop(file);
     // The guard is acquired AFTER tampering, so even ctime is stable throughout
     // inspection. The independent full logical hash must catch the mutation.
     let before = capture_recovery_tree(store.path().parent().expect("root"));
