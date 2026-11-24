@@ -386,19 +386,24 @@ class OfflineEvolutionOwnerV1:
 
     def _observe(self, identity):
         # Latch before source checks so rejected requests cannot erase a withdrawal.
-        view = check_sources((), identity, self._provider, self._frontier)
+        # The provider can re-enter the owner. Compare with the frontier it leaves behind.
+        observed = self._provider()
+        view = check_sources((), identity, lambda: observed, self._frontier)
         self._frontier = asdict(view)
         return view
 
     def commit(self, candidate, *, expected_parent_manifest_sha256):
         with self._lock:
-            if (self._current.manifest_sha256 != expected_parent_manifest_sha256
+            predecessor = self._current
+            if (predecessor.manifest_sha256 != expected_parent_manifest_sha256
                     or candidate.report["parent_snapshot_digest"] != expected_parent_manifest_sha256
-                    or candidate.generation != self._current.generation + 1):
+                    or candidate.generation != predecessor.generation + 1):
                 raise EvolutionError("stale snapshot compare-and-swap")
             if any(value > self._budget[key] for key, value in asdict(candidate.budget).items()):
                 raise EvolutionError("candidate raised the owner's fixed budget")
-            candidate.require_current(lambda: self._observe(self._current.identity))
+            candidate.require_current(lambda: self._observe(predecessor.identity))
+            if self._current is not predecessor:
+                raise EvolutionError("stale snapshot compare-and-swap")
             self._current = candidate
 
     def predict_task(self, bundle):

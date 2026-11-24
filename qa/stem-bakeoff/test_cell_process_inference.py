@@ -215,6 +215,53 @@ class CellProcessInferenceTests(unittest.TestCase):
             self.owner.capture()
         self.assertIs(self.owner.current, predecessor)
 
+    def test_reentrant_provider_cannot_replace_inner_successor(self):
+        owner = self.owner._owner
+        predecessor = owner.current
+        sibling = retire_snapshot(
+            predecessor, "a", self.root / "reentrant-sibling", self.budget, self.withdrawals
+        )
+        self.assertNotEqual(self.retired.manifest_sha256, sibling.manifest_sha256)
+        entered = False
+
+        def publish_sibling_on_first_observation():
+            nonlocal entered
+            if not entered:
+                entered = True
+                owner.commit(sibling, expected_parent_manifest_sha256=predecessor.manifest_sha256)
+            return self.withdrawals()
+
+        with patch.object(owner, "_provider", side_effect=publish_sibling_on_first_observation):
+            with self.assertRaisesRegex(EvolutionError, "stale snapshot compare-and-swap"):
+                owner.commit(self.retired, expected_parent_manifest_sha256=predecessor.manifest_sha256)
+        self.assertIs(owner.current, sibling)
+
+    def test_reentrant_provider_cannot_roll_back_inner_withdrawal_frontier(self):
+        owner = self.owner._owner
+        predecessor = owner.current
+        earlier_view = self.withdrawals()
+        unrelated_source = "0" * 64
+        self.assertNotIn(unrelated_source, self.retired.report["source_closure"])
+        entered = False
+
+        def return_stale_view_after_inner_publication():
+            nonlocal entered
+            if entered:
+                return self.withdrawals()
+            entered = True
+            self.withdrawals.revoke(unrelated_source)
+            owner.commit(self.retired, expected_parent_manifest_sha256=predecessor.manifest_sha256)
+            return earlier_view
+
+        with patch.object(owner, "_provider", side_effect=return_stale_view_after_inner_publication):
+            with self.assertRaisesRegex(EvolutionError, "withdrawal frontier"):
+                owner.commit(self.retired, expected_parent_manifest_sha256=predecessor.manifest_sha256)
+        self.assertIs(owner.current, self.retired)
+
+        self.withdrawals.view = earlier_view
+        with self.assertRaisesRegex(EvolutionError, "withdrawal frontier"):
+            self.owner.capture()
+
     def test_wrong_feature_scope_is_rejected_before_any_worker_forward(self):
         pool = self.pool()
         bad = cohort("different-scope", identity=replace(IDENTITY, scope_id="another-owner")).bundle
