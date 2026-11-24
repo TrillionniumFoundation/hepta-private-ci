@@ -74,6 +74,18 @@ jobs:
           $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
           just test -p codex-hepta-prompt-registry --lib --locked durable::windows_tests:: 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'registry-native.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Upload primitive evidence before consumer builds
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-windows-primitives-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-durable-evidence/head.txt
+            ${{ runner.temp }}/hepta-durable-evidence/rustc.txt
+            ${{ runner.temp }}/hepta-durable-evidence/native-primitives.log
+            ${{ runner.temp }}/hepta-durable-evidence/registry-native.log
+          if-no-files-found: error
+          retention-days: 14
       - name: Verify native SQLite source identity and immutable cold images
         if: success() || failure()
         working-directory: codex-rs
