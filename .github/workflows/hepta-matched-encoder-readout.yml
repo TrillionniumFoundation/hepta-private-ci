@@ -2,7 +2,7 @@ name: Matched direct and backprop encoder readout
 on:
   push:
     branches: [research/frozen-encoder-matched-edit-20261123]
-    paths: ['qualification/cell-e3-encoder-transfer-20261123/matched-edit/compare.py', '.github/workflows/hepta-matched-encoder-readout.yml']
+    paths: ['qualification/cell-e3-encoder-transfer-20261123/matched-edit/*.py', '.github/workflows/hepta-matched-encoder-readout.yml']
 permissions:
   contents: read
 jobs:
@@ -38,8 +38,19 @@ jobs:
         run: |
           python matched-edit/compare.py "$RUNNER_TEMP/encoder"
           sha256sum "$RUNNER_TEMP/matched-encoder.json"
+      - name: Check bounded resident updates and measure complete local episodes
+        working-directory: qualification/cell-e3-encoder-transfer-20261123
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          python -m unittest discover -s matched-edit -p 'test_resident.py' -v
+          python matched-edit/online.py "$RUNNER_TEMP/encoder" "$RUNNER_TEMP/resident-encoder.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
         with:
           name: matched-encoder-evidence
-          path: ${{ runner.temp }}/matched-encoder.json
+          path: |
+            ${{ runner.temp }}/matched-encoder.json
+            ${{ runner.temp }}/resident-encoder.json
           if-no-files-found: error
