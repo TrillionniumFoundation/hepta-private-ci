@@ -14,7 +14,11 @@ on:
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-bao-adapter/**"
-      - "codex-rs/state/src/sqlite_recovery*"
+      - "codex-rs/state/src/sqlite*"
+      - "codex-rs/third_party/libsqlite3-sys-0.39.1/**"
+      - "qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/**"
+      - "codex-rs/hepta-automation/src/store.rs"
+      - "codex-rs/hepta-matrix-store/src/store.rs"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs"
       - "codex-rs/hepta-authbus/src/authority_schema_tests.rs"
@@ -56,7 +60,33 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Qualify the actual bundled Windows SQLite owner VFS
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          $evidence = Join-Path $env:RUNNER_TEMP 'hepta-sqlite-owner-evidence'
+          New-Item -ItemType Directory -Force $evidence | Out-Null
+          $qualification = Resolve-Path '../qualification/ci-remediation/windows-sqlite-owner-vfs-20261124'
+          $probe = Join-Path $qualification 'native-probe'
+          git rev-parse HEAD | Set-Content -Encoding utf8 (Join-Path $evidence 'source-head.txt')
+          rustc -Vv | Set-Content -Encoding utf8 (Join-Path $evidence 'rustc.txt')
+          Copy-Item (Join-Path $probe 'Cargo.lock') (Join-Path $evidence 'probe-Cargo.lock')
+          cargo metadata --locked --manifest-path (Join-Path $probe 'Cargo.toml') --format-version 1 | Set-Content -Encoding utf8 (Join-Path $evidence 'dependency-metadata.json')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          just test --manifest-path (Join-Path $probe 'Cargo.toml') --config-file (Join-Path $probe 'nextest.toml') --locked --lib --success-output immediate --failure-output immediate 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'native-owner-vfs.log')
+          $nativeExit = $LASTEXITCODE
+          python (Join-Path $qualification 'probe_receipt.py') --evidence $evidence --test-exit $nativeExit
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          exit $nativeExit
+      - name: Preserve early SQLite owner VFS qualification
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: windows-sqlite-owner-vfs-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-sqlite-owner-evidence
+          if-no-files-found: error
       - name: Qualify native private handles against synthetic attacks
+        if: success() || failure()
         working-directory: codex-rs
         shell: pwsh
         run: |

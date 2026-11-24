@@ -64,7 +64,34 @@ That ordinary operation does not use this VFS and cannot be repaired by it. The
 strict rejection is retained as negative evidence. Positive qualification must
 create files through the actual opt-in SQLite backend.
 
-At this implementation stage, formatting and diff checks have run. Native tests
-for DB/WAL/SHM/temp, read-only opens, same-owner reuse, mixed SHM policy, stock VFS
-behavior, and unmodified rejection of existing wrong-owner/broad-ACL objects are
-being added as a separate stage. No native VFS pass is claimed here.
+Formatting, diff checks and an independent actual-source MSVC Rust `--tests`
+typecheck passed. The typecheck found and resolved three Rust compilation errors;
+it did not compile, link or execute the Windows C backend.
+
+Eight native tests now cover DB/WAL/SHM/temp, read-only SHM recreation, same-owner
+reuse, mixed SHM policy, unchanged stock VFS selection, and unmodified rejection
+of existing wrong-owner/broad-ACL objects through the actual VFS functions. A
+same-user thread-token control duplicates the current token only on a dedicated
+test thread, verifies registration/reuse, restores the original thread state
+with RAII and checks restoration. This does not qualify a different account or
+distinguish thread-versus-process SID selection from results alone; that selection
+also depends on the source audit. Wrong-owner fixtures first observe the actual
+owner and may use an OS-authorized owner group. An unavailable attack fixture is
+an explicit qualification failure, not a skipped or weakened assertion.
+
+The source remains a non-workspace path dependency. Adding it as a workspace
+member would unnecessarily activate unrelated SQLCipher/bindgen features under
+workspace-wide `--all-features`. Instead, `native-probe` is an independent locked
+package that depends on the real vendored crate with `bundled` and directly
+references its actual test source. It has no copy of the C implementation. Its
+15-package resolved graph uses the existing pinned versions and was checked with
+`cargo metadata --locked --offline` for the MSVC target. The production workspace
+lock and broader SQLx consumer graph remain separate qualification requirements.
+
+The Windows workflow runs this probe before heavier consumers and uploads its
+source/lock binding and complete log immediately. `probe_receipt.py` rejects a
+zero-test or partial pass and requires all eight cases, the original timeout and
+retry defaults, and unchanged tracked source. Existing primitive and consumer
+steps continue after a probe failure; no positive requirement is removed.
+
+No native C/VFS pass is claimed until that real Windows probe succeeds.
