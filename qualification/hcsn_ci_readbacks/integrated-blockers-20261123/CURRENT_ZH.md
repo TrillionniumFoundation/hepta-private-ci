@@ -1,5 +1,9 @@
 # Hepta 研究与集成核验
 
+## 2026-11-24 UTC Windows 175 原具名资格：四项缺例源码契约定位
+
+- #7032 base `67b04d5` 与 head `b1af67a` 的原 scope fixture、unified_exec 两测试文件各自 blob 完全相同；独立核对四个旧 exact 选择名在源码声明均为 0，四个相关新名各 1 且均未进入原 filter。第一项已从 elevated 成功转发变成拒绝，另三项实读为双入口拒绝和物理状态保持，不能视为原正例或等价改名。缺例源于既有冻结契约与源码不一致，不是双锁修补或执行超时。保留 175 原资格及负例，待审核新契约和真实生产后端；不改 fixture/PINS、不重跑、不合并。[逐项函数、blob 和语义记录](7032-windows-exact-name-contract-20261124.md)。全仓 HOLD。
+
 ## 2026-11-24 UTC #7032 原专项 Windows 与跨平台门补读
 
 - 固定 b1af67a 的原 Windows 19 组/175 例，实际选择 171 例且 17 组通过，两个组共缺四具名例；原 process 和 required 均失败。原 NDU Windows storage 的 AppContainer/native trace 与 ACL 冻结源身份检查拒绝，未完成相应实验；nextest.toml blob 在双锁修补前后相同。不能自动改冻结 PINS 或缩减原测试名单。
