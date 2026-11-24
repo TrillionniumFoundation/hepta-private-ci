@@ -90,7 +90,7 @@ impl Drop for ResetCounter {
 }
 
 fn measured<T>(operation: impl FnOnce() -> T) -> (T, AllocationStats) {
-    assert!(ALLOCATIONS.with(|counter| counter.get()).is_none());
+    assert!(ALLOCATIONS.with(Cell::get).is_none());
     let reset = ResetCounter;
     ALLOCATIONS.with(|counter| counter.set(Some(AllocationStats::default())));
     let result = operation();
