@@ -45,7 +45,6 @@ semver = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 serde_with = { workspace = true }
-serde_yaml = { workspace = true }
 sha2 = { workspace = true }
 tar = { workspace = true }
 tempfile = { workspace = true }
@@ -55,6 +54,7 @@ toml = { workspace = true }
 tracing = { workspace = true }
 url = { workspace = true }
 uuid = { workspace = true, features = ["v4"] }
+yaml_serde = { workspace = true }
 zip = { workspace = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]

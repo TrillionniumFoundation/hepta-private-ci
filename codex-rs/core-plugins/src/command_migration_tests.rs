@@ -3,6 +3,34 @@ use pretty_assertions::assert_eq;
 use std::fs;
 use std::path::Path;
 
+#[test]
+fn command_frontmatter_preserves_yaml_value_semantics() {
+    for (frontmatter, expected) in [
+        ("description: 1.0\n", Some("1.0")),
+        ("description: yes\n", Some("yes")),
+        ("description: 1e999\n", Some("1e999")),
+        ("description: .inf\n", Some(".inf")),
+        ("description: !custom text\n", None),
+        ("description: first\ndescription: second\n", None),
+        ("? [one, two]\n: ignored\ndescription: kept\n", Some("kept")),
+        (
+            "' description ': first\ndescription: second\n",
+            Some("first"),
+        ),
+        ("base: &base {description: inherited}\n<<: *base\n", None),
+        (
+            "base: &base anchored\ndescription: *base\n",
+            Some("anchored"),
+        ),
+    ] {
+        assert_eq!(
+            parse_command_description(frontmatter).as_deref(),
+            expected,
+            "frontmatter: {frontmatter}"
+        );
+    }
+}
+
 const TEST_REWRITE_PROFILE: RewriteProfile = RewriteProfile::new(
     "CLAUDE.md",
     &[
