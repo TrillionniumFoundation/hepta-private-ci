@@ -1,5 +1,14 @@
 # Hepta 研究与集成核验
 
+## 2026-11-24 20:39 UTC #7070 原仓库门终局与 #7068 canary
+
+- #7070 精确 79b1ef2a 的 [blocking-ci 45429499868](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45429499868) 由 queued 转 completed failure。本轮实读返回的30项作业（首屏）：9 success、14 failure、4 cancelled、3 skipped；原生 Ubuntu/Windows path、build-test、cargo-deny、blob size、python SDK 为绿，不等于原四隔离正例。GNU/musl/Intel/Windows 四 shard、SDK、release、clippy 仍红。未重跑。
+- 直读 codespell 138570541655（289行）、SDK 138609503587（7169行）、Windows release 138609508585（3814行）、GNU test 138609508677（9268行）、GNU Clippy 138609508784（9431行）、Windows Clippy 138609511482（6106行），共31067行（含末尾空行）。三种交叉编译源错误：durable_payloads.rs:250 E0425 File；rollout/src/list.rs:335 E0599 Timestamp::timestamp_nanos_opt；hepta-matrix-sdk/src/gap_fill_tests.rs:368 E0615 bundled_latest_thread_event 已为方法。不是已经运行的隔离用例失败。
+- 独立读精确 79b1ef2a 与 804ac018 的原文件：rollout 候选用 (anchor.ts - Timestamp::UNIX_EPOCH).whole_nanoseconds() 后 i64::try_from 保留原窄范围及 epoch fallback；Matrix 候选通过原始 unsigned relations 构造、读取 bundled event；codespell 唯一报告是 cache_tests.rs:220 的固定 Base64 HMAC 内 oRe，804ac018 原字符串不变并有行内注释。以上为另一候选已存在的修补路径，不把源码存在当 #7070 通过，不改 fixture 内容。
+- 原 GNU Clippy 还报 utils/time 中十个 expect 位置（codec.rs:291/302/303、offset.rs:24、lib.rs:100/220/269/277/286/297），含 Result/Option；应独立审查有效域、闰秒、时区、溢出与原 API 错误语义，不能通过全局 lint 豁免或静默 fallback 签收。该 time/lib.rs 两候选 blob e08cf58d 相同。原编译失败修复后仍须完整原门。
+- #7068 精确 804ac018 的 [v8-canary 45458387187](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45458387187) 已由 queued 转 failure；15项作业中11 success、4 cancelled（Windows x64/ARM64 ptrcomp，macOS ARM64 release/ptrcomp），无失败步骤可据以定位源码；blocking 45458387224 仍 queued。不得把取消当通过或推断源码根因。
+- main 与上轮 732e934 compare identical；原四 Draft 41条工作流、#7067 及七 PR 精确 head 均未变。本轮只记录新增终态、原始日志及可移植候选，不重复派发、不修改产品/冻结门、不合并。全仓 HOLD。
+
 ## 2026-11-24 19:28 UTC stage-5 Windows 原始终局及 #7067 仓库门
 
 - 精确 804ac018 的 [Windows 原生终局 45458365304/job 138673839972](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45458365304/job/138673839972) 已完成 failure。直接读完整 5,827 行（含末尾空行），五份 nextest 原摘要独立加总：bundled C owner VFS 8/8、private handles 14/14、registry 2/2、SQLite recovery 8/8、Cognitive 16/23，合计 48/55、7 失败（选择器外与重试不计）；原阶段 Clippy success、exact-source artifact upload success。相较 ebe273 的 Cognitive 0/23，当前同数量选择器下 16 例通过，不外推到未测消费者或生产隔离。
