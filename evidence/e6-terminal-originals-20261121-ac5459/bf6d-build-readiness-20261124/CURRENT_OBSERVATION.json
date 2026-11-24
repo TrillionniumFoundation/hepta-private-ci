@@ -1,0 +1,373 @@
+{
+  "observation": {
+    "target": "/home/qq/work/hepta-e16-ac5459-20261121/e6-bf6d-private-neuron-validation-20261123/target",
+    "target_exists": false,
+    "workspace_root": "/home/qq/work/hepta-e16-ac5459-20261121/e6-cold01-first-publication-fix-bf6d-v2-offline/source/codex-rs",
+    "matching_executables": [],
+    "head": "bf6d51904c8bcda5d50f3782c85ece84cb73a78f",
+    "status": ""
+  },
+  "job_status": {
+    "at_unix_ms": 1795524387960,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20d97df65-ffbe-3938",
+    "launch_nonce": "afa0741cca5d23a1929ccd31ffd493d0",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 347,
+        "stored": 347
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "readiness": [
+    {
+      "path": "/home/qq/work/hepta-e16-ac5459-20261121/e6-bf6d-private-neuron-validation-20261123",
+      "children": [
+        {
+          "name": "recorder.stdout",
+          "kind": "file",
+          "bytes": 5664
+        },
+        {
+          "name": "RESULT.json",
+          "kind": "file",
+          "bytes": 4059
+        },
+        {
+          "name": "collector.stdout",
+          "kind": "file",
+          "bytes": 1234
+        },
+        {
+          "name": "locked-crates.json",
+          "kind": "file",
+          "bytes": 417248
+        },
+        {
+          "name": "boundaries.json",
+          "kind": "file",
+          "bytes": 1939
+        },
+        {
+          "name": "boundaries.summary.json",
+          "kind": "file",
+          "bytes": 1354
+        },
+        {
+          "name": "boundaries.json.9576ee7eef104d6d9887a3e86e96c2ae.log",
+          "kind": "file",
+          "bytes": 3925
+        },
+        {
+          "name": "boundaries.xml",
+          "kind": "file",
+          "bytes": 821
+        },
+        {
+          "name": "tmp",
+          "kind": "dir",
+          "bytes": 4096
+        },
+        {
+          "name": "owner.lock",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "PREPARED.json",
+          "kind": "file",
+          "bytes": 2193
+        },
+        {
+          "name": "cargo-home",
+          "kind": "dir",
+          "bytes": 4096
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-e16-ac5459-20261121/e6-bf6d-private-products-20261123",
+      "children": [
+        {
+          "name": "metadata.json",
+          "kind": "file",
+          "bytes": 278
+        },
+        {
+          "name": "RESULT.json",
+          "kind": "file",
+          "bytes": 6730
+        },
+        {
+          "name": "ERROR.txt",
+          "kind": "file",
+          "bytes": 1125
+        },
+        {
+          "name": "library.json",
+          "kind": "file",
+          "bytes": 920
+        },
+        {
+          "name": "tmp",
+          "kind": "dir",
+          "bytes": 4096
+        },
+        {
+          "name": "metadata.stdout",
+          "kind": "file",
+          "bytes": 1041490
+        },
+        {
+          "name": "library.stdout",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "metadata.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "library.stderr",
+          "kind": "file",
+          "bytes": 91949
+        },
+        {
+          "name": "PREPARED.json",
+          "kind": "file",
+          "bytes": 3645
+        }
+      ]
+    },
+    {
+      "path": "/home/qq/work/hepta-e16-ac5459-20261121/e6-cold01-first-publication-fix-bf6d-v2-offline",
+      "children": [
+        {
+          "name": "02-original-tree.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "01-original-head.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "11-status.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "12-exact-source-delta.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "08-head.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "CACHE_target_BEFORE.json",
+          "kind": "file",
+          "bytes": 15292940
+        },
+        {
+          "name": "06-one-fixed-SHA-fetch.stderr",
+          "kind": "file",
+          "bytes": 171
+        },
+        {
+          "name": "RESULT.json",
+          "kind": "file",
+          "bytes": 26683
+        },
+        {
+          "name": "14-original-status-after.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "14-original-status-after.stdout",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "13-neuron-test-module-declarations.stdout",
+          "kind": "file",
+          "bytes": 236
+        },
+        {
+          "name": "PLAN.json",
+          "kind": "file",
+          "bytes": 9608
+        },
+        {
+          "name": "01-original-head.stdout",
+          "kind": "file",
+          "bytes": 41
+        },
+        {
+          "name": "CACHE_cargo-home_BEFORE.json",
+          "kind": "file",
+          "bytes": 60709570
+        },
+        {
+          "name": "07-checkout.stdout",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "source",
+          "kind": "dir",
+          "bytes": 4096
+        },
+        {
+          "name": "05-candidate-object-present.stderr",
+          "kind": "file",
+          "bytes": 81
+        },
+        {
+          "name": "07-checkout.stderr",
+          "kind": "file",
+          "bytes": 192
+        },
+        {
+          "name": "04-independent-clone.stderr",
+          "kind": "file",
+          "bytes": 113
+        },
+        {
+          "name": "10-parent.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "08-head.stdout",
+          "kind": "file",
+          "bytes": 41
+        },
+        {
+          "name": "09-tree.stdout",
+          "kind": "file",
+          "bytes": 41
+        },
+        {
+          "name": "12-exact-source-delta.stdout",
+          "kind": "file",
+          "bytes": 140
+        },
+        {
+          "name": "09-tree.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "15-new-source-status-after.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "03-original-status.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "15-new-source-status-after.stdout",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "02-original-tree.stdout",
+          "kind": "file",
+          "bytes": 41
+        },
+        {
+          "name": "06-one-fixed-SHA-fetch.stdout",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "11-status.stdout",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "cargo-home",
+          "kind": "dir",
+          "bytes": 4096
+        },
+        {
+          "name": "05-candidate-object-present.stdout",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "13-neuron-test-module-declarations.stderr",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "03-original-status.stdout",
+          "kind": "file",
+          "bytes": 0
+        },
+        {
+          "name": "10-parent.stdout",
+          "kind": "file",
+          "bytes": 41
+        },
+        {
+          "name": "04-independent-clone.stdout",
+          "kind": "file",
+          "bytes": 0
+        }
+      ]
+    },
+    {
+      "log": "/home/qq/work/hepta-e16-ac5459-20261121/e6-bf6d-private-products-20261123/library.stderr",
+      "bytes": 91949,
+      "sha256": "127bf14df7c80acde707ae45b2aa7b3b344d32599ce9a53b712358c51124219d",
+      "tail": "inalTask: Send + Sync {\n    |       ------------ method in this trait\n...\n118 |     fn read_for_historical_receipt(\n    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nwarning: associated items `capture_original` and `with_current` are never used\n  --> hepta-agentd/src/cell_q24_dataset_historical_ledger.rs:49:19\n   |\n17 | impl HistoricalDatasetLedgerV1 {\n   | ------------------------------ associated items in this implementation\n...\n49 |     pub(crate) fn capture_original(\n   |                   ^^^^^^^^^^^^^^^^\n...\n91 |     pub(crate) fn with_current<T>(\n   |                   ^^^^^^^^^^^^\n\nwarning: associated items `capture_historical` and `require_historical_receipt` are never used\n  --> hepta-agentd/src/cell_q24_dataset_historical_task.rs:55:19\n   |\n35 | impl CellQ24DatasetTaskV1 {\n   | ------------------------- associated items in this implementation\n...\n55 |     pub(crate) fn capture_historical(\n   |                   ^^^^^^^^^^^^^^^^^^\n...\n83 |     pub(crate) fn require_historical_receipt(\n   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nwarning: associated function `capture_historical` is never used\n  --> hepta-agentd/src/cell_q24_dataset_historical_preparation.rs:13:19\n   |\n12 | impl CellQ24DatasetFreezePreparationV1 {\n   | -------------------------------------- associated function in this implementation\n13 |     pub(crate) fn capture_historical(\n   |                   ^^^^^^^^^^^^^^^^^^\n\nwarning: method `require_profile` is never used\n   --> hepta-agentd/src/cell_q24_prepared_learning.rs:271:19\n    |\n  5 | impl CellQ24PreparedLearningV1 {\n    | ------------------------------ method in this implementation\n...\n271 |     pub(crate) fn require_profile(\n    |                   ^^^^^^^^^^^^^^^\n\nwarning: associated items `capture_original_historical_source` and `require_prepared_historical_source` are never used\n   --> hepta-agentd/src/learning_iteration_historical_source.rs:54:19\n    |\n 36 | impl RegisteredHistoricalLearningSourceV1 {\n    | ----------------------------------------- associated items in this implementation\n...\n 54 |     pub(crate) fn capture_original_historical_source(\n    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n...\n141 |     pub(crate) fn require_prepared_historical_source(\n    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nwarning: method `with_original_historical_source` is never used\n   --> hepta-agentd/src/learning_iteration_historical_source.rs:164:19\n    |\n163 | impl LearningIterationRuntimeBootstrapV1 {\n    | ---------------------------------------- method in this implementation\n164 |     pub(crate) fn with_original_historical_source(\n    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nwarning: method `commit_original_historical_delivery` is never used\n  --> hepta-agentd/src/learning_owner_journal_historical_delivery.rs:10:25\n   |\n 9 | impl<W: AnchorWitnessStore> LearningOwnerJournalV1<W> {\n   | ----------------------------------------------------- method in this implementation\n10 |     pub(crate) async fn commit_original_historical_delivery<F>(\n   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nwarning: field `0` is never read\n  --> hepta-agentd/src/learning_owner_journal_historical_delivery.rs:61:15\n   |\n61 |     Completed(Vec<u8>),\n   |     --------- ^^^^^^^\n   |     |\n   |     field in this variant\n   |\nhelp: consider changing the field to be of unit type to suppress this warning while preserving the field numbering, or remove the field\n   |\n61 -     Completed(Vec<u8>),\n61 +     Completed(()),\n   |\n\nwarning: method `into_original_inputs` is never used\n   --> hepta-agentd/src/production_post_a_q24_owners.rs:260:19\n    |\n201 | impl StageFilesData {\n    | ------------------- method in this implementation\n...\n260 |     pub(super) fn into_original_inputs(\n    |                   ^^^^^^^^^^^^^^^^^^^^\n\nwarning: associated function `from_stream` is never used\n  --> hepta-agentd/src/root_generation_publication_stream.rs:29:19\n   |\n28 | impl OriginalPublicationStream {\n   | ------------------------------ associated function in this implementation\n29 |     pub(crate) fn from_stream(\n   |                   ^^^^^^^^^^^\n\n   Compiling codex-hepta-infer-worker-host v0.0.0 (/home/qq/work/hepta-e16-ac5459-20261121/e6-cold01-first-publication-fix-bf6d-v2-offline/source/codex-rs/hepta-infer-worker-host)\nwarning: `codex-hepta-agentd` (lib) generated 19 warnings\nwarning: unused import: `bundle_data::decode_original_bundle_data`\n  --> hepta-agentd/src/learning_iteration_checkpoint_codec.rs:12:16\n   |\n12 | pub(crate) use bundle_data::decode_original_bundle_data;\n   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   |\n   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\nwarning: unused import: `bundle_data::encode_original_bundle_data`\n  --> hepta-agentd/src/learning_iteration_checkpoint_codec.rs:13:16\n   |\n13 | pub(crate) use bundle_data::encode_original_bundle_data;\n   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n"
+    },
+    {
+      "old_elf": "/home/qq/work/hepta-e16-ac5459-20261121/e6-lifecycle-qualification-v1/target/debug/deps/codex_hepta_agentd-d65b3583ec0783f5",
+      "present": false
+    },
+    {
+      "old_elf": "/home/qq/work/hepta-e16-ac5459-20261121/e6-lifecycle-qualification-v1/target/debug/deps/codex_hepta_agentd-ec11b7f5a2c42017",
+      "present": false
+    }
+  ],
+  "host": "ai395",
+  "readback_kind": "NEW_READ_ONLY_OBSERVATION_20261124",
+  "native_executions": 0,
+  "compile_commands": 0,
+  "budget_reset": false
+}
