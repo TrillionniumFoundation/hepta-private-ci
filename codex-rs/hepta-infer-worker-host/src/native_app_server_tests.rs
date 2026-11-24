@@ -552,7 +552,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
 
-    let authority_directory = tempfile::tempdir()?;
+    let authority_directory = crate::native_app_server::test_process::host_tempdir("hfua-")?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
         3,
@@ -1244,7 +1244,7 @@ async fn missing_terminal_message_reads_original_rpc_without_second_dispatch() -
         app_server_test_runtime_paths()?,
     )
     .await?;
-    let authority_directory = tempfile::tempdir()?;
+    let authority_directory = crate::native_app_server::test_process::host_tempdir("hfua-")?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
         1,

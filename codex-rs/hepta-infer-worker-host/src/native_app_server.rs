@@ -1374,4 +1374,4 @@ mod failure_tests;
 
 #[cfg(all(test, unix))]
 #[path = "native_test_process.rs"]
-mod test_process;
+pub(crate) mod test_process;

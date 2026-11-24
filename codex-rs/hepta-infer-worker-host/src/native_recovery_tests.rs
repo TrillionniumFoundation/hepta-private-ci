@@ -104,7 +104,7 @@ async fn real_agentd_reconciles_reopened_worker_without_replaying_provider() -> 
         crate::native_app_server::tests::app_server_test_runtime_paths()?,
     )
     .await?;
-    let authority_directory = tempfile::tempdir()?;
+    let authority_directory = crate::native_app_server::test_process::host_tempdir("hfua-")?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
         1,
@@ -326,7 +326,7 @@ async fn recover_non_success_terminal(physical_status: NativeRunStatus) -> Resul
         crate::native_app_server::tests::app_server_test_runtime_paths()?,
     )
     .await?;
-    let authority_directory = tempfile::tempdir()?;
+    let authority_directory = crate::native_app_server::test_process::host_tempdir("hfua-")?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
         1,

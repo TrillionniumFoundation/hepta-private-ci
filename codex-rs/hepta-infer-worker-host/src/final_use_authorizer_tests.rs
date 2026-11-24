@@ -109,7 +109,7 @@ async fn serve_once(
 
 #[tokio::test]
 async fn exact_signed_grant_becomes_one_entry_verified_token() -> Result<()> {
-    let directory = tempfile::tempdir()?;
+    let directory = crate::native_app_server::test_process::host_tempdir("hfua-")?;
     let (listener, socket) = listener(directory.path(), "authority.sock").await?;
     let signer = SigningKey::from_bytes(&[41; 32]);
     let authorizer = UnixFinalUseAuthorizer::from_config(config(
@@ -144,7 +144,7 @@ async fn exact_signed_grant_becomes_one_entry_verified_token() -> Result<()> {
 
 #[tokio::test]
 async fn forged_grant_never_reaches_effect_entry() -> Result<()> {
-    let directory = tempfile::tempdir()?;
+    let directory = crate::native_app_server::test_process::host_tempdir("hfua-")?;
     let (listener, socket) = listener(directory.path(), "forged.sock").await?;
     let trusted = SigningKey::from_bytes(&[42; 32]);
     let forged = SigningKey::from_bytes(&[43; 32]);
@@ -166,7 +166,7 @@ async fn forged_grant_never_reaches_effect_entry() -> Result<()> {
 
 #[tokio::test]
 async fn endpoint_denial_updates_head_and_old_head_cannot_roll_back() -> Result<()> {
-    let directory = tempfile::tempdir()?;
+    let directory = crate::native_app_server::test_process::host_tempdir("hfua-")?;
     let (listener, socket) = listener(directory.path(), "revocation.sock").await?;
     let signer = SigningKey::from_bytes(&[44; 32]);
     let authorizer = UnixFinalUseAuthorizer::from_config(config(
@@ -235,11 +235,8 @@ fn linux_issuer_process_identity_rejects_same_uid_substitution() -> Result<()> {
     let mut wrong_executable = expected.clone();
     wrong_executable.executable_sha256 = "1".repeat(64);
     assert!(
-        validate_connected_issuer_process(
-            Some(std::process::id()),
-            Some(&wrong_executable),
-        )
-        .is_err()
+        validate_connected_issuer_process(Some(std::process::id()), Some(&wrong_executable),)
+            .is_err()
     );
 
     let mut wrong_cgroup = expected.clone();
@@ -260,14 +257,10 @@ fn linux_issuer_process_identity_rejects_same_uid_substitution() -> Result<()> {
 #[cfg(target_os = "linux")]
 #[tokio::test]
 async fn linux_connected_peer_is_bound_before_and_after_grant_exchange() -> Result<()> {
-    let directory = tempfile::tempdir()?;
+    let directory = crate::native_app_server::test_process::host_tempdir("hfua-")?;
     let (listener, socket) = listener(directory.path(), "process-bound.sock").await?;
     let signer = SigningKey::from_bytes(&[45; 32]);
-    let mut authorizer_config = config(
-        directory.path(),
-        socket,
-        signer.verifying_key().to_bytes(),
-    );
+    let mut authorizer_config = config(directory.path(), socket, signer.verifying_key().to_bytes());
     authorizer_config.issuer_process_identity = Some(current_process_identity()?);
     let config_path = directory.path().join("process-bound-authority.json");
     std::fs::write(&config_path, serde_json::to_vec(&authorizer_config)?)?;

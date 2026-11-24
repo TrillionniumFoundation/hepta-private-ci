@@ -86,7 +86,7 @@ async fn delivery_off_withholds_physical_context_but_keeps_revalidation_and_repl
     let memory = host
         .seed_verified_memory("delivery-source", &marker)
         .await?;
-    let authority = tempfile::tempdir()?;
+    let authority = crate::native_app_server::test_process::host_tempdir("hfua-")?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority.path(),
         /*expected_claims*/ 3,

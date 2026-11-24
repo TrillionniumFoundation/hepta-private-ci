@@ -17,7 +17,7 @@ const HOST_TIMEOUT: Duration = Duration::from_secs(50);
 
 // Leave room for the generated fixture name and the nested Fleet sockets;
 // Darwin's default per-user temporary location can exceed sun_path.
-pub(super) fn host_tempdir(prefix: &str) -> std::io::Result<tempfile::TempDir> {
+pub(crate) fn host_tempdir(prefix: &str) -> std::io::Result<tempfile::TempDir> {
     let configured = std::env::temp_dir();
     let root = if configured.is_absolute() && configured.as_os_str().as_encoded_bytes().len() <= 32
     {
