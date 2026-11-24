@@ -99,7 +99,9 @@ pub(super) async fn submit_iteration_proposal_v1(
                 ParameterPlasticityDispositionV1::UpdateCandidates => {
                     LearningProposalDispositionV1::UpdateCandidates
                 }
-                ParameterPlasticityDispositionV1::NoAdmissibleUpdate => {
+                ParameterPlasticityDispositionV1::NoAdmissibleUpdate
+                | ParameterPlasticityDispositionV1::ZeroEligibleSignals
+                | ParameterPlasticityDispositionV1::PolicyDisabledUpdates => {
                     LearningProposalDispositionV1::NoAdmissibleUpdate
                 }
             };

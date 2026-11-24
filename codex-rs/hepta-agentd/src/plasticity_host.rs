@@ -26,9 +26,11 @@ use codex_hepta_learning_ledger::DurableLedgerError;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_plasticity::DurableRegistryAnchorV1;
 use codex_hepta_plasticity::GeneratedParameterCandidateSetV3;
+use codex_hepta_plasticity::GeneratorCoverageReceiptV1;
 use codex_hepta_plasticity::ParameterGeneratorProfileV3;
 use codex_hepta_plasticity::ParameterPlasticitySignalV3;
 use codex_hepta_plasticity::ProposalWindowV2;
+use codex_hepta_plasticity::verify_generator_coverage_receipt_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
@@ -643,12 +645,16 @@ fn owner_evidence_query(
 /// learning-ledger head, never a caller-selected opaque value.
 pub fn resolve_agentd_plasticity_admission_v1(
     input: &AgentdPlasticityAdmissionInputV1,
-    artifacts: &ArtifactRegistry,
-    ledger: &DurableLedger,
-    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
-    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
+    coverage: &GeneratorCoverageReceiptV1,
+    sources: AgentdPlasticityEvidenceSourcesV1<'_>,
     now: u64,
 ) -> Result<PlasticityAdmissionEvidenceV1, AgentdPlasticityHostErrorV1> {
+    let AgentdPlasticityEvidenceSourcesV1 {
+        artifacts,
+        ledger,
+        resolver: owner_evidence_resolver,
+        policy: owner_evidence_policy,
+    } = sources;
     let manifest = artifacts
         .manifest(&input.baseline_id)
         .ok_or(AgentdPlasticityHostErrorV1::ArtifactMissing)?;
@@ -678,6 +684,23 @@ pub fn resolve_agentd_plasticity_admission_v1(
         ledger_snapshot.head_digest,
         now,
     )?;
+    verify_generator_coverage_receipt_v1(&input.generator_profile, &input.generated, coverage)
+        .map_err(|error| {
+            AgentdPlasticityHostErrorV1::Product(ParameterPlasticityProductErrorV1::Generator(
+                error,
+            ))
+        })?;
+    if coverage.owner_frontier_digest != owner_evidence_set_digest
+        || coverage.selected_artifact_digest != input.generated.selected_artifact_digest
+        || coverage.window != input.generated.window
+        || coverage.mutation_grammar_digest
+            != input
+                .generator_profile
+                .mutation_policy
+                .mutation_grammar_digest
+    {
+        return Err(AgentdPlasticityHostErrorV1::AdmissionDrift);
+    }
     Ok(PlasticityAdmissionEvidenceV1 {
         baseline_id: input.baseline_id.clone(),
         objective_digest: input.objective_digest,
@@ -686,6 +709,7 @@ pub fn resolve_agentd_plasticity_admission_v1(
         artifact_registry_head_digest,
         qualification_evidence_head_digest: ledger_snapshot.head_digest,
         owner_evidence_set_digest,
+        generator_coverage_digest: coverage.coverage_digest,
         window: input.generated.window.clone(),
         baseline_generation: input.baseline_generation,
         candidate_generation: input.candidate_generation,
@@ -731,10 +755,8 @@ pub fn propose_agentd_plasticity_v1(
             modulator_broadcast_digest: request.admission.modulator_broadcast_digest,
             eligibility_digest: request.admission.eligibility_digest,
         },
-        sources.artifacts,
-        sources.ledger,
-        sources.resolver,
-        sources.policy,
+        &request.coverage,
+        sources,
         now,
     )?;
     if resolved != request.admission {

@@ -56,9 +56,11 @@ use codex_hepta_plasticity::ParameterPlasticitySignalV3;
 use codex_hepta_plasticity::ProposalWindowV2;
 use codex_hepta_plasticity::TopologyChangeV2;
 use codex_hepta_plasticity::TopologyOperationV2;
+use codex_hepta_plasticity::build_generator_coverage_receipt_v1;
 use codex_hepta_plasticity::build_parameter_mutation_policy_v1;
 use codex_hepta_plasticity::build_writer_handoff_plan_v1;
 use codex_hepta_plasticity::generate_parameter_candidates_v3;
+use codex_hepta_plasticity::generator_coverage_signing_payload_v1;
 use codex_hepta_plasticity::parameter_generator_signing_payload_v3;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -72,6 +74,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::AgentdIdentity;
 use crate::AgentdPlasticityAnchorStoreV1;
+use crate::AgentdPlasticityEvidenceSourcesV1;
 use crate::AgentdState;
 use crate::ConcretePlasticityOwnerEvidenceResolverV1;
 use crate::PlasticityArtifactOwnerBindingV1;
@@ -89,6 +92,7 @@ use crate::plasticity_parameter_signal_digest_v1;
 use crate::reopen_agentd_plasticity_writer_v1;
 use crate::reopen_agentd_topology_writer_v1;
 use crate::resolve_agentd_plasticity_admission_v1;
+use crate::resolve_agentd_plasticity_owner_evidence_set_v1;
 use crate::resolve_agentd_topology_admission_v1;
 
 #[path = "learning_iteration_runtime_tests.rs"]
@@ -687,24 +691,57 @@ fn signed_request(
     signing: &SigningFixture,
     verifier: &LearningEvidenceVerifierV1,
 ) -> ParameterPlasticityProductRequestV1 {
-    let admission = resolve_agentd_plasticity_admission_v1(
-        &crate::AgentdPlasticityAdmissionInputV1 {
-            baseline_id: id("artifact:baseline"),
-            objective_digest: sources.objective_digest,
-            generator_profile: sources.profile.clone(),
-            generated: sources.generated.clone(),
-            baseline_generation: generation(1),
-            candidate_generation: generation(2),
-            dataset_digest: sources.dataset_digest,
-            update_rule_digest: sources.update_rule_digest,
-            modulator_digest: sources.modulator_digest,
-            modulator_broadcast_digest: sources.broadcast_digest,
-            eligibility_digest: sources.eligibility_digest,
-        },
-        &sources.artifacts,
-        ledger,
-        &resolver(sources),
+    let input = crate::AgentdPlasticityAdmissionInputV1 {
+        baseline_id: id("artifact:baseline"),
+        objective_digest: sources.objective_digest,
+        generator_profile: sources.profile.clone(),
+        generated: sources.generated.clone(),
+        baseline_generation: generation(1),
+        candidate_generation: generation(2),
+        dataset_digest: sources.dataset_digest,
+        update_rule_digest: sources.update_rule_digest,
+        modulator_digest: sources.modulator_digest,
+        modulator_broadcast_digest: sources.broadcast_digest,
+        eligibility_digest: sources.eligibility_digest,
+    };
+    let owner_evidence_resolver = resolver(sources);
+    let artifact_head = sources.artifacts.snapshot().head_digest;
+    let ledger_head = ledger
+        .snapshot()
+        .unwrap_or_else(|error| panic!("ledger snapshot: {error:?}"))
+        .head_digest;
+    let owner_frontier = resolve_agentd_plasticity_owner_evidence_set_v1(
+        &input,
+        &owner_evidence_resolver,
         &sources.owner_policy,
+        artifact_head,
+        ledger_head,
+        50,
+    )
+    .unwrap_or_else(|error| panic!("owner frontier: {error:?}"));
+    let coverage = build_generator_coverage_receipt_v1(
+        &sources.profile,
+        &sources.generated,
+        sources
+            .profile
+            .mutation_policy
+            .rules
+            .iter()
+            .map(|rule| rule.parameter_id.clone())
+            .collect(),
+        Vec::new(),
+        owner_frontier,
+    )
+    .unwrap_or_else(|error| panic!("coverage: {error:?}"));
+    let admission = resolve_agentd_plasticity_admission_v1(
+        &input,
+        &coverage,
+        AgentdPlasticityEvidenceSourcesV1 {
+            artifacts: &sources.artifacts,
+            ledger,
+            resolver: &owner_evidence_resolver,
+            policy: &sources.owner_policy,
+        },
         50,
     )
     .unwrap_or_else(|error| panic!("resolve admission: {error:?}"));
@@ -723,9 +760,19 @@ fn signed_request(
         LearningEvidenceRoleV1::Observer,
         &plasticity_admission_signing_payload_v1(&admission),
     );
-    let no_change_payload =
-        no_change_disposition_signing_payload_v1(&sources.generated, &admission)
-            .unwrap_or_else(|error| panic!("no-change payload: {error:?}"));
+    let coverage_attestation = signing.sign(
+        verifier,
+        sources.objective_digest,
+        1,
+        LearningEvidenceRoleV1::Observer,
+        &generator_coverage_signing_payload_v1(&coverage),
+    );
+    let no_change_payload = no_change_disposition_signing_payload_v1(
+        &sources.generated,
+        &admission,
+        ParameterPlasticityDispositionV1::NoAdmissibleUpdate,
+    )
+    .unwrap_or_else(|error| panic!("no-change payload: {error:?}"));
     let no_change_attestation = signing.sign(
         verifier,
         sources.objective_digest,
@@ -738,9 +785,11 @@ fn signed_request(
         proposal_id: id("proposal:agentd-lifetime"),
         generator_profile: sources.profile.clone(),
         generated: sources.generated.clone(),
+        coverage,
         generator_attestation,
         admission,
         admission_attestation,
+        coverage_attestation,
         no_change_attestation: Some(no_change_attestation),
         evaluations: Vec::new(),
         expected_registry_predecessor: Digest32::ZERO,
