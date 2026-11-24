@@ -52,6 +52,7 @@ jobs:
             test \
             --platforms=//:windows_x86_64_msvc \
             --skip_incompatible_explicit_targets \
+            --nocache_test_results \
             --test_output=errors \
             --build_metadata=COMMIT_SHA="$(git rev-parse HEAD)" \
             -- \
