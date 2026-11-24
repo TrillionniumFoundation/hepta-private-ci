@@ -335,27 +335,6 @@
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
       "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
-    },
-    {
-      "operation": "recover_writer_handoff",
-      "nativeSymbol": "DurableWriterHandoffJournalV1::recover_at_least",
-      "sourcePath": "codex-rs/hepta-supervisor/src/writer_handoff.rs",
-      "state": "source_implemented_logical_lock_owner_lifetime",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-supervisor/src/writer_handoff_recovery_tests.rs",
-        "codex-rs/hepta-supervisor/src/writer_handoff_lock_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "recover_writer_handoff",
-      "mappingClass": "owner_native",
-      "delegatedCallees": [
-        {
-          "path": "codex-rs/hepta-supervisor/src/writer_handoff_lock.rs",
-          "symbol": "LockedHandoffFile::acquire"
-        }
-      ],
-      "sourceBlob": "9d00b02419cb76f1647ed1741981763cb78f3970"
     }
   ],
   "repositoryControlledGaps": [
@@ -372,7 +351,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -420,6 +399,27 @@
   "mappingSourceIdentityMode": "exact_blob",
   "sourceReviewAddendum": {
     "kind": "local_source_review",
+    "reviewedOperation": {
+      "operation": "recover_writer_handoff",
+      "nativeSymbol": "DurableWriterHandoffJournalV1::recover_at_least",
+      "sourcePath": "codex-rs/hepta-supervisor/src/writer_handoff.rs",
+      "state": "source_implemented_logical_lock_owner_lifetime",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-supervisor/src/writer_handoff_recovery_tests.rs",
+        "codex-rs/hepta-supervisor/src/writer_handoff_lock_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recover_writer_handoff",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/writer_handoff_lock.rs",
+          "symbol": "LockedHandoffFile::acquire"
+        }
+      ],
+      "sourceBlob": "9d00b02419cb76f1647ed1741981763cb78f3970"
+    },
     "reviewDate": "2026-11-05",
     "integrationBase": {
       "parentCommits": [
