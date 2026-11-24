@@ -188,6 +188,7 @@ pub use owner_host::encode_artifact_head_bytes_v1;
 pub use owner_service::LearningArtifactOwnerService;
 pub use owner_service::LearningArtifactOwnerServiceConfigV1;
 pub use owner_service::LearningArtifactOwnerServiceError;
+pub use owner_service::LearningArtifactOwnerServiceStatusV1;
 pub use owner_service::LearningArtifactPublishRequestV1;
 pub use owner_service::OriginalArtifactPreparationErrorV1;
 pub use owner_service::OriginalArtifactPreparedPublicationV1;

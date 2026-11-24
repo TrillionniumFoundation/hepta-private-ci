@@ -61,6 +61,7 @@ pub enum OriginalArtifactPreparationErrorV1 {
     Context,
     ChangedDuringRead,
     Fenced,
+    ShuttingDown,
     Clock,
 }
 
@@ -120,6 +121,9 @@ impl LearningArtifactOwnerService {
         payload: &[u8],
         clock: &impl Fn() -> Result<u64, OriginalArtifactPreparationErrorV1>,
     ) -> Result<OriginalArtifactPreparedPublicationV1, OriginalArtifactPreparationErrorV1> {
+        if self.draining {
+            return Err(OriginalArtifactPreparationErrorV1::ShuttingDown);
+        }
         if self.original_preparation_fenced.load(Ordering::Acquire) {
             return Err(OriginalArtifactPreparationErrorV1::Fenced);
         }
@@ -133,6 +137,9 @@ impl LearningArtifactOwnerService {
             return Err(OriginalArtifactPreparationErrorV1::ReadbackRequired);
         }
         let started = clock()?;
+        if started < self.last_admission_ms {
+            return Err(OriginalArtifactPreparationErrorV1::Clock);
+        }
         let predecessor = LearningArtifactOwnerHost::read_original_registry_predecessor(
             &self.host,
             context.expected_registry_predecessor_head,
@@ -155,6 +162,7 @@ impl LearningArtifactOwnerService {
             context.expected_registry_predecessor_head,
             fresh(clock, started)?,
         )?;
+        self.last_admission_ms = started;
         self.recovery_required = Some(context.operation_id.clone());
         self.original_preparation_active = true;
         let mut transaction = LearningArtifactOwnerHost::begin_original_registry_publication(

@@ -272,3 +272,111 @@ fn original_publication_readback_bounds_all_head_directory_entries() {
     assert_eq!(fixture.bytes(), before);
     assert!(fixture.service.recovery_required().is_none());
 }
+
+#[test]
+fn owner_drain_closes_admission_but_preserves_original_readback_and_fence() {
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
+    let before = fixture.bytes();
+    let lease = &fixture.config.writer_lease;
+    let status = fixture.service.status(fixture.config.now);
+    assert!(status.ready);
+    assert_eq!(status.successful_requests, 1);
+    assert!(!status.authority.grants_any());
+    assert!(!fixture.service.status(lease.expires_at + 1).ready);
+
+    fixture.service.begin_shutdown();
+    let status = fixture.service.status(fixture.config.now);
+    assert!(status.draining);
+    assert!(!status.ready);
+    assert!(matches!(
+        LearningArtifactOwnerService::open(fixture.config.clone()),
+        Err(LearningArtifactOwnerServiceError::Host(
+            ArtifactOwnerHostError::WriterFenceBusy
+        ))
+    ));
+    let (request, _) = fixture.pending_request();
+    let context = OriginalArtifactPublicationContextV1 {
+        operation_id: request.operation_id.clone(),
+        admission: request.admission.clone(),
+        expected_registry_predecessor_head: request.expected_registry_predecessor_head,
+    };
+    assert!(matches!(
+        fixture
+            .service
+            .prepare_original_registry(context, &request.payload),
+        Err(OriginalArtifactPreparationErrorV1::ShuttingDown)
+    ));
+    assert!(matches!(
+        fixture.service.publish(request),
+        Err(LearningArtifactOwnerServiceError::ShuttingDown)
+    ));
+    assert_eq!(
+        fixture.service.status(fixture.config.now).rejected_requests,
+        1
+    );
+    assert!(
+        fixture
+            .service
+            .read_original_publication(&fixture.baseline.operation_id)
+            .is_ok()
+    );
+    assert_eq!(fixture.bytes(), before);
+}
+
+#[test]
+fn original_terminal_retry_checks_signed_head_without_replaying_an_effect() {
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
+    let before = fixture.bytes();
+    let mut altered = fixture.baseline.clone();
+    altered.signed_current_head.signature[0] ^= 1;
+    assert!(matches!(
+        fixture.service.publish(altered),
+        Err(LearningArtifactOwnerServiceError::Host(
+            ArtifactOwnerHostError::InvalidSignature
+        ))
+    ));
+    assert!(fixture.service.recovery_required().is_none());
+    let (mut new_request, _) = fixture.pending_request();
+    new_request.now = fixture.config.now - 1;
+    assert!(matches!(
+        fixture.service.publish(new_request),
+        Err(LearningArtifactOwnerServiceError::NonMonotonicTime)
+    ));
+    let receipt = fixture
+        .service
+        .publish(fixture.baseline.clone())
+        .fixture("original exact receipt");
+    assert_eq!(
+        fixture
+            .service
+            .read_original_publication(&fixture.baseline.operation_id)
+            .fixture("read original"),
+        receipt
+    );
+    assert_eq!(
+        fixture.service.status(fixture.config.now).terminal_replays,
+        1
+    );
+    assert_eq!(fixture.bytes(), before);
+}
+
+#[test]
+fn legacy_writer_fences_after_uncertain_checkpoint_read() {
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
+    let checkpoint = fixture.checkpoint_file(&fixture.baseline.operation_id, "0");
+    let original = fs::read(&checkpoint).fixture("retained original checkpoint");
+    fs::write(&checkpoint, b"malformed checkpoint fixture").fixture("damage owned fixture");
+    assert!(fixture.service.publish(fixture.baseline.clone()).is_err());
+    assert_eq!(
+        fixture.service.recovery_required(),
+        Some(&fixture.baseline.operation_id)
+    );
+    let (another, _) = fixture.pending_request();
+    assert!(matches!(
+        fixture.service.publish(another),
+        Err(LearningArtifactOwnerServiceError::RecoveryRequired(_))
+    ));
+    fs::write(checkpoint, original).fixture("restore exact fixture");
+    assert!(fixture.service.publish(fixture.baseline.clone()).is_ok());
+    assert!(fixture.service.recovery_required().is_none());
+}

@@ -10,6 +10,7 @@ use std::fmt;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -62,6 +63,17 @@ pub struct LearningArtifactPublishRequestV1 {
     pub now: u64,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningArtifactOwnerServiceStatusV1 {
+    pub ready: bool,
+    pub draining: bool,
+    pub recovery_required: Option<StableId>,
+    pub successful_requests: u64,
+    pub rejected_requests: u64,
+    pub terminal_replays: u64,
+    pub authority: AuthorityPosture,
+}
+
 pub struct LearningArtifactOwnerService {
     host: LearningArtifactOwnerHost,
     withdrawal_registry: DatasetWithdrawalRegistry,
@@ -69,6 +81,11 @@ pub struct LearningArtifactOwnerService {
     storage_binding: Digest32,
     recovery_required: Option<StableId>,
     withdrawal_pending: bool,
+    draining: bool,
+    last_admission_ms: u64,
+    successful_requests: u64,
+    rejected_requests: u64,
+    terminal_replays: u64,
     original_preparation_instance: Arc<()>,
     original_preparation_fenced: AtomicBool,
     original_preparation_active: bool,
@@ -131,6 +148,11 @@ impl LearningArtifactOwnerService {
             storage_binding: config.storage_binding,
             recovery_required,
             withdrawal_pending: false,
+            draining: false,
+            last_admission_ms: config.now,
+            successful_requests: 0,
+            rejected_requests: 0,
+            terminal_replays: 0,
             original_preparation_instance: Arc::new(()),
             original_preparation_fenced: AtomicBool::new(false),
             original_preparation_active: false,
@@ -163,12 +185,42 @@ impl LearningArtifactOwnerService {
         self.recovery_required.as_ref()
     }
 
+    /// Readiness reflects the local writer fence only. A transport must still
+    /// verify its own authentication and independent current-head freshness.
+    /// Use the trusted host clock, never the time from a wire request.
+    #[must_use]
+    pub fn status(&self, now: u64) -> LearningArtifactOwnerServiceStatusV1 {
+        LearningArtifactOwnerServiceStatusV1 {
+            ready: !self.draining
+                && self.recovery_required.is_none()
+                && !self.original_preparation_fenced.load(Ordering::Acquire)
+                && now >= self.last_admission_ms
+                && self.host.check_current_writer(now).is_ok()
+                && self.require_original_withdrawal().is_ok(),
+            draining: self.draining,
+            recovery_required: self.recovery_required.clone(),
+            successful_requests: self.successful_requests,
+            rejected_requests: self.rejected_requests,
+            terminal_replays: self.terminal_replays,
+            authority: AuthorityPosture::DENY_ALL,
+        }
+    }
+
+    /// Refuse new writes without releasing the writer fence. A previously
+    /// admitted split publication can still finish with its exact continuation.
+    pub fn begin_shutdown(&mut self) {
+        self.draining = true;
+    }
+
     /// Install an authenticated newer withdrawal frontier. The service accepts
     /// only an exact monotonic prefix extension in the same scope.
     pub fn install_withdrawal_frontier(
         &mut self,
         next: DatasetWithdrawalRegistry,
     ) -> Result<(), LearningArtifactOwnerServiceError> {
+        if self.draining {
+            return Err(LearningArtifactOwnerServiceError::ShuttingDown);
+        }
         if next.scope_digest() != self.withdrawal_registry.scope_digest() {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
         }
@@ -199,6 +251,22 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        let result = self.publish_request(request);
+        if result.is_ok() {
+            self.successful_requests = self.successful_requests.saturating_add(1);
+        } else {
+            self.rejected_requests = self.rejected_requests.saturating_add(1);
+        }
+        result
+    }
+
+    fn publish_request(
+        &mut self,
+        request: LearningArtifactPublishRequestV1,
+    ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        if self.draining {
+            return Err(LearningArtifactOwnerServiceError::ShuttingDown);
+        }
         self.require_original_withdrawal()?;
         // The new split protocol has already consumed this instance's write
         // entrance. Only its private fresh continuation may finish it; the
@@ -225,10 +293,32 @@ impl LearningArtifactOwnerService {
                 Ok(receipt)
             }
             Err(error) => {
-                if let Some(recovery) = self.host.recover_publication(&operation_id)?
-                    && recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged
-                {
-                    self.recovery_required = Some(operation_id);
+                match self.host.recover_publication(&operation_id) {
+                    Err(recovery_error) => {
+                        self.recovery_required = Some(operation_id);
+                        return Err(recovery_error.into());
+                    }
+                    Ok(Some(recovery))
+                        if recovery.checkpoint.phase
+                            != ArtifactPublicationPhaseV1::Acknowledged =>
+                    {
+                        self.recovery_required = Some(operation_id);
+                    }
+                    Ok(_)
+                        if matches!(
+                            error,
+                            LearningArtifactOwnerServiceError::Host(
+                                ArtifactOwnerHostError::Indeterminate
+                            ) | LearningArtifactOwnerServiceError::Host(
+                                ArtifactOwnerHostError::Storage(
+                                    crate::ArtifactStorageError::Indeterminate
+                                )
+                            )
+                        ) =>
+                    {
+                        self.recovery_required = Some(operation_id);
+                    }
+                    Ok(_) => {}
                 }
                 Err(error)
             }
@@ -280,9 +370,21 @@ impl LearningArtifactOwnerService {
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
-                return receipt_from_checkpoint(&recovery.checkpoint);
+                let receipt = receipt_from_checkpoint(&recovery.checkpoint)?;
+                self.host
+                    .check_acknowledged_head(&recovery.checkpoint, &request.signed_current_head)?;
+                if self.recovery_required.is_some() {
+                    self.registry = self.host.recover_current_registry(request.now)?;
+                }
+                self.terminal_replays = self.terminal_replays.saturating_add(1);
+                return Ok(receipt);
             }
         }
+        if request.now < self.last_admission_ms {
+            return Err(LearningArtifactOwnerServiceError::NonMonotonicTime);
+        }
+        self.host.check_current_writer(request.now)?;
+        self.last_admission_ms = request.now;
 
         let predecessor = self
             .host
@@ -481,6 +583,8 @@ pub enum LearningArtifactOwnerServiceError {
     Publication(ArtifactPublicationError),
     InvalidConfiguration,
     WithdrawalFrontierConflict,
+    ShuttingDown,
+    NonMonotonicTime,
     RecoveryConflict,
     RecoveryRequired(StableId),
     RequestMismatch,

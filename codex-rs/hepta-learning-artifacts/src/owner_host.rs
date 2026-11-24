@@ -499,6 +499,44 @@ impl LearningArtifactOwnerHost {
         self.verifier.verify_writer_lease(&self.lease, now)
     }
 
+    pub(crate) fn check_current_writer(&self, now: u64) -> Result<(), ArtifactOwnerHostError> {
+        self.require_current_writer(now).map(|_| ())
+    }
+
+    pub(crate) fn check_acknowledged_head(
+        &self,
+        checkpoint: &ArtifactOwnerPublicationCheckpointV1,
+        signed: &SignedCurrentArtifactHeadV1,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        let now = checkpoint
+            .acknowledged_at
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        let witness = checkpoint
+            .witness_receipt
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        let registry = checkpoint
+            .registry_receipt
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        if signed.binding != registry.binding || signed.witness.head_digest != registry.head_digest
+        {
+            return Err(ArtifactOwnerHostError::CurrentHeadContext);
+        }
+        let requirement = RegistryHeadRequirementV1 {
+            registry_id: self.verifier.trust.registry_id.clone(),
+            minimum_generation: self.verifier.trust.minimum_registry_generation,
+            expected_predecessor_head_digest: checkpoint.expected_registry_predecessor_head,
+            minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+            now,
+        };
+        let verified = self
+            .verifier
+            .verify_signed_head(signed, &requirement, false)?;
+        if verified.witness_digest != witness.witness_digest {
+            return Err(ArtifactOwnerHostError::CurrentHeadContext);
+        }
+        Ok(())
+    }
+
     pub fn begin_publication(
         &self,
         operation_id: StableId,
