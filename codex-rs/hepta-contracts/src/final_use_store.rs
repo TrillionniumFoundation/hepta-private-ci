@@ -19,6 +19,11 @@ use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 
+#[cfg(not(windows))]
+type Directory = File;
+#[cfg(windows)]
+type Directory = codex_utils_path::windows_private::PrivateDirectory;
+
 const STATE_SCHEMA_V1: u32 = 1;
 const STATE_SCHEMA_V2: u32 = 2;
 const STATE_SCHEMA_V3: u32 = 3;
@@ -74,7 +79,7 @@ enum StoreTrust {
 }
 
 pub(super) struct Store {
-    root: File,
+    root: Directory,
     signer_id: String,
     trust: StoreTrust,
     _lock: File,
@@ -364,7 +369,11 @@ impl Store {
     }
 }
 
-fn read_bounded(directory: &File, name: &str, maximum: usize) -> Result<Vec<u8>, FinalUseError> {
+fn read_bounded(
+    directory: &Directory,
+    name: &str,
+    maximum: usize,
+) -> Result<Vec<u8>, FinalUseError> {
     let mut bytes = Vec::new();
     open_private(directory, name, Access::Read)?
         .take(u64::try_from(maximum).map_err(|_| FinalUseError::InvalidTrust)? + 1)
@@ -438,12 +447,16 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     Ok(file)
 }
 
-#[cfg(not(unix))]
-fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+fn prepare_directory(_root: &Path) -> Result<Directory, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
-fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+fn open_private(
+    _directory: &Directory,
+    _name: &str,
+    _access: Access,
+) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 
@@ -473,17 +486,56 @@ fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
     .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(not(unix))]
-fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+fn entry_exists(_directory: &Directory, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+fn replace_state(_directory: &Directory) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
-fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+fn replace_claims(_directory: &Directory) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
+}
+
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<Directory, FinalUseError> {
+    Directory::prepare(root).map_err(|_| FinalUseError::UnsafeStateDirectory)
+}
+
+#[cfg(windows)]
+fn open_private(directory: &Directory, name: &str, access: Access) -> Result<File, FinalUseError> {
+    use codex_utils_path::windows_private::Access as NativeAccess;
+    let access = match access {
+        Access::Read => NativeAccess::Read,
+        Access::Write => NativeAccess::Write,
+        Access::Create => NativeAccess::Create,
+    };
+    directory
+        .open(name, access)
+        .map_err(|_| FinalUseError::Unavailable)
+}
+
+#[cfg(windows)]
+fn entry_exists(directory: &Directory, name: &str) -> Result<bool, FinalUseError> {
+    directory
+        .contains(name)
+        .map_err(|_| FinalUseError::Unavailable)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &Directory) -> Result<(), FinalUseError> {
+    directory
+        .replace("authority.next", "authority.json")
+        .map_err(|_| FinalUseError::Unavailable)
+}
+
+#[cfg(windows)]
+fn replace_claims(directory: &Directory) -> Result<(), FinalUseError> {
+    directory
+        .replace("authority.claims.next", "authority.claims")
+        .map_err(|_| FinalUseError::Unavailable)
 }
 
 #[cfg(all(test, unix))]

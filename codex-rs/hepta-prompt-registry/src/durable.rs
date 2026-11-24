@@ -54,6 +54,11 @@ use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 #[path = "durable_payloads.rs"]
 mod payloads;
 
+#[cfg(not(windows))]
+type Directory = File;
+#[cfg(windows)]
+type Directory = codex_utils_path::windows_private::PrivateDirectory;
+
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
 const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] = b"hepta.prompt-registry.legacy-context-profile.v1";
@@ -1230,7 +1235,7 @@ enum StoredAny {
 }
 
 struct Store {
-    root: File,
+    root: Directory,
     _lock: File,
     payloads: payloads::PayloadState,
     #[cfg(test)]
@@ -1404,14 +1409,14 @@ fn open_private(
     Ok(file)
 }
 
-#[cfg(not(unix))]
-fn prepare_directory(_root: &Path) -> Result<File, DurableRegistryError> {
+#[cfg(not(any(unix, windows)))]
+fn prepare_directory(_root: &Path) -> Result<Directory, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(
-    _directory: &File,
+    _directory: &Directory,
     _name: &str,
     _access: Access,
 ) -> Result<File, DurableRegistryError> {
@@ -1427,8 +1432,8 @@ fn entry_exists(directory: &File, name: &str) -> Result<bool, DurableRegistryErr
     }
 }
 
-#[cfg(not(unix))]
-fn entry_exists(_directory: &File, _name: &str) -> Result<bool, DurableRegistryError> {
+#[cfg(not(any(unix, windows)))]
+fn entry_exists(_directory: &Directory, _name: &str) -> Result<bool, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
@@ -1438,9 +1443,40 @@ fn replace_state(directory: &File) -> Result<(), DurableRegistryError> {
         .map_err(|_| DurableRegistryError::Unavailable)
 }
 
-#[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), DurableRegistryError> {
+#[cfg(not(any(unix, windows)))]
+fn replace_state(_directory: &Directory) -> Result<(), DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
+}
+
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<Directory, DurableRegistryError> {
+    Directory::prepare(root).map_err(|_| DurableRegistryError::UnsafeStateDirectory)
+}
+
+#[cfg(windows)]
+fn open_private(
+    directory: &Directory,
+    name: &str,
+    access: Access,
+) -> Result<File, DurableRegistryError> {
+    use codex_utils_path::windows_private::Access as NativeAccess;
+    let access = match access {
+        Access::Read => NativeAccess::Read,
+        Access::Create => NativeAccess::Create,
+    };
+    directory.open(name, access).map_err(map_precommit_io)
+}
+
+#[cfg(windows)]
+fn entry_exists(directory: &Directory, name: &str) -> Result<bool, DurableRegistryError> {
+    directory.contains(name).map_err(map_precommit_io)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &Directory) -> Result<(), DurableRegistryError> {
+    directory
+        .replace("registry.next", "registry.json")
+        .map_err(map_precommit_io)
 }
 
 fn map_precommit_io(error: std::io::Error) -> DurableRegistryError {
@@ -1478,6 +1514,10 @@ impl fmt::Display for DurableRegistryError {
 }
 
 impl std::error::Error for DurableRegistryError {}
+
+#[cfg(all(test, windows))]
+#[path = "durable_windows_tests.rs"]
+mod windows_tests;
 
 #[cfg(all(test, unix))]
 mod tests {

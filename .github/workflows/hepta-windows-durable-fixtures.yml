@@ -1,4 +1,4 @@
-name: Hepta Windows durable fixture handles
+name: Hepta Windows private storage qualification
 
 on:
   workflow_call:
@@ -10,6 +10,9 @@ on:
     paths:
       - ".github/workflows/hepta-windows-durable-fixtures.yml"
       - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/utils/path-utils/**"
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs"
       - "codex-rs/hepta-authbus/src/authority_schema_tests.rs"
       - "codex-rs/Cargo.lock"
@@ -48,7 +51,26 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Qualify native private handles against synthetic attacks
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
+          New-Item -ItemType Directory -Force $evidence | Out-Null
+          git rev-parse HEAD | Set-Content (Join-Path $evidence 'head.txt')
+          rustc -vV | Set-Content (Join-Path $evidence 'rustc.txt')
+          just test -p codex-utils-path --lib --locked windows_private::tests:: --success-output immediate --failure-output immediate 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'native-primitives.log')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify private registry ownership and post-rename poisoning
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
+          just test -p codex-hepta-prompt-registry --lib --locked durable::windows_tests:: 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'registry-native.log')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Run real directory flushes and copied-file schema validation
+        if: success() || failure()
         working-directory: codex-rs
         shell: pwsh
         run: |
@@ -57,6 +79,24 @@ jobs:
           git rev-parse HEAD | Set-Content (Join-Path $evidence 'head.txt')
           rustc -vV | Set-Content (Join-Path $evidence 'rustc.txt')
           just test -p codex-hepta-intelligence -p codex-hepta-agentd -p codex-hepta-authbus --lib --locked -E 'test(evaluated_shadow::tests::) | test(outcome_credit_v2::tests::) | test(cognitive_retrieval_learning::tests::) | test(authority_schema::tests::)' 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'tests.log')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise prompt delivery and final-use owners on native storage
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
+          just test -p codex-hepta-intelligence -p codex-hepta-agentd --lib --locked -E 'test(prompt_delivery::tests::) | test(prompt_runtime::tests::)' 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'prompt-consumers.log')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Check the changed native backend with scoped Clippy fixes
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
+          just fix -p codex-utils-path -p codex-hepta-prompt-registry -p codex-hepta-contracts --locked 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'native-clippy.log')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'native-clippy-diff.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Upload exact-source results
         if: always()

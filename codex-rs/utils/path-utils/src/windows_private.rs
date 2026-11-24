@@ -14,10 +14,13 @@ use std::ptr;
 use windows_sys::Win32::Storage::FileSystem::BY_HANDLE_FILE_INFORMATION;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_DIRECTORY;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
+use windows_sys::Win32::Storage::FileSystem::FILE_NAME_OPENED;
 use windows_sys::Win32::Storage::FileSystem::FILE_TYPE_DISK;
 use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandle;
 use windows_sys::Win32::Storage::FileSystem::GetFileType;
+use windows_sys::Win32::Storage::FileSystem::GetFinalPathNameByHandleW;
 use windows_sys::Win32::Storage::FileSystem::GetVolumeInformationByHandleW;
+use windows_sys::Win32::Storage::FileSystem::VOLUME_NAME_GUID;
 use windows_sys::Win32::System::SystemServices::FILE_PERSISTENT_ACLS;
 
 #[path = "windows_private_handles.rs"]
@@ -74,6 +77,28 @@ impl PrivateDirectory {
                 "private storage requires local NTFS with persistent ACLs",
             ));
         }
+        // A drive letter may name an SMB mapping. Require a volume GUID from
+        // this exact handle: Windows does not assign volume GUIDs to shares.
+        let mut volume_path = vec![0_u16; 32_768];
+        // SAFETY: The handle and bounded output allocation remain live.
+        let length = unsafe {
+            GetFinalPathNameByHandleW(
+                file.as_raw_handle() as _,
+                volume_path.as_mut_ptr(),
+                volume_path.len() as u32,
+                FILE_NAME_OPENED | VOLUME_NAME_GUID,
+            )
+        } as usize;
+        if length == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        let prefix: Vec<u16> = r"\\?\Volume{".encode_utf16().collect();
+        if length >= volume_path.len() || !volume_path[..length].starts_with(&prefix) {
+            return Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "private storage requires a local volume GUID",
+            ));
+        }
         // Prove that the retained handle supports the real durability barrier
         // before any authoritative file is created. Never replace this with Ok.
         file.sync_all()?;
@@ -82,6 +107,7 @@ impl PrivateDirectory {
 
     /// Open a single regular file; creation never inherits a broader parent ACL.
     pub fn open(&self, name: &str, access: Access) -> io::Result<File> {
+        self.identity.validate(&self.file)?;
         let descriptor = self.identity.descriptor()?;
         let file = handles::child(&self.file, name, access, descriptor.as_ptr())?;
         validate_kind(&file, ObjectKind::File)?;
@@ -110,6 +136,7 @@ impl PrivateDirectory {
 
     /// Flush the retained directory handle, propagating the actual OS result.
     pub fn sync_all(&self) -> io::Result<()> {
+        self.identity.validate(&self.file)?;
         self.file.sync_all()
     }
 }
@@ -147,3 +174,7 @@ fn unsafe_object() -> io::Error {
         "storage object is not private, regular or free of reparse points",
     )
 }
+
+#[cfg(test)]
+#[path = "windows_private_tests.rs"]
+mod tests;
