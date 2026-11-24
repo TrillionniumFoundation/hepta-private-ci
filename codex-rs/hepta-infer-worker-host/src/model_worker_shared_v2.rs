@@ -388,6 +388,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         }
 
         let selected = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        let selected_loaded_memory_bytes = selected.handle.observed_memory_bytes;
         let first_encoder = requests[0].snapshot.identity.encoder_digest;
         let input_width = requests[0].snapshot.features_q24.len();
         let output_width = requests[0].expected_output_width;
@@ -476,6 +477,20 @@ impl<D: ModelDriver> InferenceWorker<D> {
             self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
+        // Fail the whole zero-copy cohort if backend-reported additional
+        // transient pressure exceeds the batch grant. The shared input Arc
+        // is charged physically once by the pre-dispatch floor.
+        if !super::neuron_batch_reported_memory_within_grant(
+            observed.iter().map(|item| &item.feature),
+            minimum_bytes,
+            selected_loaded_memory_bytes,
+            input_width,
+            output_width,
+            self.grant.maximum_memory_bytes,
+        ) {
+            self.poisoned = true;
+            return Err(Error::ModelCapacity);
+        }
         let mut outputs = Vec::with_capacity(requests.len());
         for (request, batch_result) in requests.iter().zip(observed) {
             if batch_result.request_id != request.authorization.request_id
@@ -485,8 +500,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 return Err(Error::PayloadMismatch);
             }
             let features = batch_result.feature;
-            if features.observed_memory_bytes > self.grant.maximum_memory_bytes
-                || features.encoder_digest != request.snapshot.identity.encoder_digest.to_string()
+            if !super::neuron_feature_memory_within_grant(
+                &features,
+                self.grant.maximum_memory_bytes,
+            ) {
+                self.poisoned = true;
+                return Err(Error::ModelCapacity);
+            }
+            if features.encoder_digest != request.snapshot.identity.encoder_digest.to_string()
                 || features.head_digest != request.head_digest
             {
                 self.poisoned = true;
@@ -956,6 +977,202 @@ mod tests {
             assert_ne!(
                 canonical_shared_neuron_payload_digest_v3(&changed).expect("admission field"),
                 a.authorization.payload_digest
+            );
+        }
+    }
+
+    #[derive(Debug)]
+    struct OverreportedSharedTransient {
+        transient: u64,
+        calls: usize,
+    }
+
+    impl ModelDriver for OverreportedSharedTransient {
+        fn load(&mut self, _: &super::super::ModelManifest) -> Result<DriverModelHandle, Error> {
+            Ok(DriverModelHandle {
+                opaque_id: "handle.shared".into(),
+                observed_memory_bytes: 1024,
+            })
+        }
+
+        fn run(
+            &mut self,
+            _: &DriverModelHandle,
+            _: &WorkerRequest,
+        ) -> Result<super::super::DriverRunObservation, Error> {
+            Err(Error::FeatureContract)
+        }
+
+        fn unload(&mut self, _: DriverModelHandle) -> Result<(), Error> {
+            Ok(())
+        }
+    }
+
+    impl NeuronSharedFeatureBatchDriverV2 for OverreportedSharedTransient {
+        fn run_shared_neuron_features_batch_v2(
+            &mut self,
+            _: &DriverModelHandle,
+            requests: &[SharedNeuronFeatureRequestV2],
+        ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
+            self.calls += 1;
+            Ok(requests
+                .iter()
+                .map(|request| NeuronFeatureBatchItemObservationV2 {
+                    request_id: request.authorization.request_id.clone(),
+                    payload_digest: request.authorization.payload_digest.clone(),
+                    feature: DriverNeuronFeatureObservation {
+                        terminal_observed: true,
+                        succeeded: true,
+                        encoder_digest: request.snapshot.identity.encoder_digest.to_string(),
+                        head_digest: request.head_digest.clone(),
+                        drive_q24: vec![0; request.expected_output_width],
+                        prediction_q24: vec![0; request.expected_output_width],
+                        observed_memory_bytes: 1024,
+                        transient_allocation_bytes: self.transient,
+                        queue_age_micros: 0,
+                        latency_micros: 0,
+                    },
+                })
+                .collect())
+        }
+    }
+
+    #[test]
+    fn shared_arc_cohort_memory_fences_without_double_charging_input() {
+        let shared = frame(2);
+        let requests = vec![
+            req("cell.a", "request.cohort.a", Arc::clone(&shared)),
+            req("cell.b", "request.cohort.b", Arc::clone(&shared)),
+        ];
+        assert!(Arc::ptr_eq(
+            &requests[0].snapshot.features_q24,
+            &requests[1].snapshot.features_q24
+        ));
+        let identity = &shared.identity;
+        let manifest = super::super::ModelManifest {
+            model_id: "model.shared".into(),
+            model_digest: "b".repeat(64),
+            weights_digest: "e".repeat(64),
+            tokenizer_digest: identity.tokenizer_digest.to_string(),
+            preprocessor_digest: identity.preprocessor_digest.to_string(),
+            normalizer_digest: identity.normalizer_digest.to_string(),
+            quantization_digest: identity.quantization_digest.to_string(),
+            runtime_digest: "1".repeat(64),
+            device_digest: "2".repeat(64),
+            maximum_tokens: 128,
+        };
+        // 1024 resident + 16 physical shared input + 64 retained outputs
+        // + 2 * (1544 - 48 per-row input/output) = exactly 4096 bytes.
+        // 1545 per row breaches the cohort budget, though each row fits.
+        // A 47-byte report cannot cover the 48-byte logical Cell row.
+        for (transient, permitted) in [(1544_u64, true), (1545_u64, false), (47, false)] {
+            let grant = super::super::ResourceGrant {
+                grant_id: "grant.shared".into(),
+                authority_epoch: 2,
+                generation: 3,
+                expires_at_ms: 10_000,
+                revoked: false,
+                maximum_models: 1,
+                maximum_active_requests: 4,
+                maximum_memory_bytes: 4096,
+                semantic_digest: "1".repeat(64),
+            };
+            let mut worker = InferenceWorker::new(
+                1,
+                "worker.shared".into(),
+                3,
+                grant,
+                OverreportedSharedTransient {
+                    transient,
+                    calls: 0,
+                },
+            )
+            .expect("worker");
+            worker.load_model(1, manifest.clone()).expect("load");
+            let result =
+                worker.run_shared_neuron_features_batch_v2(100, "model.shared", requests.clone());
+            assert_eq!(worker.driver.calls, 1);
+            assert!(worker.active_requests.is_empty());
+            assert_eq!(worker.models["model.shared"].active_requests, 0);
+            if permitted {
+                assert_eq!(result.expect("one physical Arc under grant").len(), 2);
+                assert!(!worker.poisoned);
+            } else {
+                assert_eq!(result, Err(Error::ModelCapacity));
+                assert!(worker.poisoned);
+                assert_eq!(
+                    worker.run_shared_neuron_features_batch_v2(
+                        100,
+                        "model.shared",
+                        requests.clone(),
+                    ),
+                    Err(Error::IndeterminateLifecycle)
+                );
+                assert_eq!(worker.driver.calls, 1);
+            }
+        }
+    }
+
+    #[test]
+    fn post_dispatch_shared_transient_overgrant_or_overflow_poison_worker() {
+        let snapshot = frame(2);
+        let request = req("cell.a", "request.overgrant", snapshot);
+        let identity = &request.snapshot.identity;
+        let manifest = super::super::ModelManifest {
+            model_id: "model.shared".into(),
+            model_digest: "b".repeat(64),
+            weights_digest: "e".repeat(64),
+            tokenizer_digest: identity.tokenizer_digest.to_string(),
+            preprocessor_digest: identity.preprocessor_digest.to_string(),
+            normalizer_digest: identity.normalizer_digest.to_string(),
+            quantization_digest: identity.quantization_digest.to_string(),
+            runtime_digest: "1".repeat(64),
+            device_digest: "2".repeat(64),
+            maximum_tokens: 128,
+        };
+        for transient in [3073_u64, u64::MAX] {
+            let grant = super::super::ResourceGrant {
+                grant_id: "grant.shared".into(),
+                authority_epoch: 2,
+                generation: 3,
+                expires_at_ms: 10_000,
+                revoked: false,
+                maximum_models: 1,
+                maximum_active_requests: 4,
+                maximum_memory_bytes: 4096,
+                semantic_digest: "1".repeat(64),
+            };
+            let mut worker = InferenceWorker::new(
+                1,
+                "worker.shared".into(),
+                3,
+                grant,
+                OverreportedSharedTransient {
+                    transient,
+                    calls: 0,
+                },
+            )
+            .expect("worker");
+            worker.load_model(1, manifest.clone()).expect("load");
+            assert_eq!(
+                worker.run_shared_neuron_features_batch_v2(
+                    100,
+                    "model.shared",
+                    vec![request.clone()],
+                ),
+                Err(Error::ModelCapacity)
+            );
+            assert_eq!(worker.driver.calls, 1);
+            assert!(worker.poisoned);
+            assert!(worker.active_requests.is_empty());
+            assert_eq!(worker.models["model.shared"].active_requests, 0);
+            assert_eq!(
+                worker.run_shared_neuron_features_batch_v2(
+                    100,
+                    "model.shared",
+                    vec![request.clone()],
+                ),
+                Err(Error::IndeterminateLifecycle)
             );
         }
     }

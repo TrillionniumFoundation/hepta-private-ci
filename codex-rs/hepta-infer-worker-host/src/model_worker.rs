@@ -495,6 +495,10 @@ pub struct DriverNeuronFeatureObservation {
     pub drive_q24: Vec<i64>,
     pub prediction_q24: Vec<i64>,
     pub observed_memory_bytes: u64,
+    /// For a native Cell batch this report must cover at least the logical
+    /// Q24 input and both output buffers of this row. Shared physical inputs
+    /// are charged only once by the cohort admission floor. Extra scratch
+    /// is conservatively additive across rows; this is not measured peak RSS.
     pub transient_allocation_bytes: u64,
     pub queue_age_micros: u64,
     pub latency_micros: u64,
@@ -528,6 +532,70 @@ pub trait NeuronFeatureDriver: ModelDriver {
         handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error>;
+}
+
+/// Fail closed when a backend reports disjoint resident and transient Q24
+/// allocations above its resource grant. The backend's reported numbers are
+/// not an independently measured peak RSS or a production qualification.
+fn neuron_feature_memory_within_grant(
+    observed: &DriverNeuronFeatureObservation,
+    maximum_memory_bytes: u64,
+) -> bool {
+    observed
+        .observed_memory_bytes
+        .checked_add(observed.transient_allocation_bytes)
+        .is_some_and(|total| total <= maximum_memory_bytes)
+}
+
+/// Conservative reported *cohort* envelope, not actual peak RSS.
+///
+/// The admission floor already counts every physical input allocation (one
+/// shared Arc for V2) and all simultaneously retained output vectors. Each
+/// row's transient report MUST include those logical input/output bytes,
+/// so subtract the row's input+output floor before charging its additional
+/// scratch to the cohort. This avoids multiplying a shared Arc by Cell count.
+/// Charge a higher reported selected-model resident peak above the loaded
+/// model's baseline; keep other loaded models in the pre-dispatch floor.
+/// Backend telemetry is not independently attested production metering.
+#[cfg(test)]
+fn neuron_batch_reported_memory_within_grant<'a>(
+    observations: impl IntoIterator<Item = &'a DriverNeuronFeatureObservation>,
+    pre_dispatch_floor_bytes: u64,
+    selected_loaded_memory_bytes: u64,
+    input_width: usize,
+    output_width: usize,
+    maximum_memory_bytes: u64,
+) -> bool {
+    let Some(row_floor_bytes) = output_width
+        .checked_mul(2)
+        .and_then(|outputs| input_width.checked_add(outputs))
+        .and_then(|elements| elements.checked_mul(std::mem::size_of::<i64>()))
+        .and_then(|bytes| u64::try_from(bytes).ok())
+    else {
+        return false;
+    };
+    let mut peak_reported_resident_bytes = selected_loaded_memory_bytes;
+    let mut additional_transient_bytes = 0_u64;
+    let mut observed_any = false;
+    for item in observations {
+        observed_any = true;
+        peak_reported_resident_bytes = peak_reported_resident_bytes.max(item.observed_memory_bytes);
+        // A driver reporting scratch-only bytes or an impossible Q24 floor
+        // cannot silently understate the physical cohort. Such telemetry
+        // must be corrected or rejected before returning a success.
+        let Some(extra) = item.transient_allocation_bytes.checked_sub(row_floor_bytes) else {
+            return false;
+        };
+        let Some(total) = additional_transient_bytes.checked_add(extra) else {
+            return false;
+        };
+        additional_transient_bytes = total;
+    }
+    observed_any
+        && pre_dispatch_floor_bytes
+            .checked_add(peak_reported_resident_bytes - selected_loaded_memory_bytes)
+            .and_then(|bytes| bytes.checked_add(additional_transient_bytes))
+            .is_some_and(|bytes| bytes <= maximum_memory_bytes)
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
@@ -611,14 +679,27 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // A post-dispatch error cannot prove that the backend never ran.
+        // Fence this generation until the owning control lane reconciles it.
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
+        if !neuron_feature_memory_within_grant(&observed, self.grant.maximum_memory_bytes) {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
+            self.poisoned = true;
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(request, &observed) {
+                self.poisoned = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
@@ -626,6 +707,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if status != ExecutionStatus::Succeeded
             && (!observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty())
         {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
         Ok(NeuronFeatureExecutionObservation {
@@ -658,7 +740,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let observed = self.run_neuron_features_borrowed(now_ms, model_id, &request)?;
-        project_neuron_feature_receipt_v1(request, observed)
+        let receipt = project_neuron_feature_receipt_v1(request, observed);
+        if receipt.is_err() {
+            // A syntactically invalid receipt after execution cannot be
+            // dismissed as if no physical dispatch took place.
+            self.poisoned = true;
+        }
+        receipt
     }
 }
 
@@ -804,6 +892,10 @@ pub use shared_v2::SharedNeuronFeatureResultV3;
 )]
 pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
 pub use shared_v2::canonical_shared_neuron_payload_digest_v3;
+
+#[cfg(test)]
+#[path = "model_worker_public_q24_tests.rs"]
+mod public_q24_tests;
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]

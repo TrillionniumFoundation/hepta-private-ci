@@ -5,6 +5,8 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    fail_feature_driver: bool,
+    reported_feature_transient_bytes: Option<u64>,
     invalid_handle: bool,
     fail_unload: bool,
     loaded: usize,
@@ -61,6 +63,11 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        if self.fail_feature_driver {
+            return Err(Error::DriverFailure(
+                "feature backend indeterminate".to_string(),
+            ));
+        }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -70,7 +77,7 @@ impl NeuronFeatureDriver for Driver {
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
                 observed_memory_bytes: 1_024,
-                transient_allocation_bytes: 2_048,
+                transient_allocation_bytes: self.reported_feature_transient_bytes.unwrap_or(2_048),
                 queue_age_micros: 11,
                 latency_micros: 17,
             });
@@ -87,7 +94,7 @@ impl NeuronFeatureDriver for Driver {
             drive_q24: vec![1 << 24; request.expected_output_width],
             prediction_q24: vec![0; request.expected_output_width],
             observed_memory_bytes: 1_024,
-            transient_allocation_bytes: 2_048,
+            transient_allocation_bytes: self.reported_feature_transient_bytes.unwrap_or(2_048),
             queue_age_micros: 11,
             latency_micros: 17,
         })
@@ -399,6 +406,95 @@ fn multi_model_resident_memory_cannot_exceed_total_worker_grant() {
 }
 
 #[test]
+fn postdispatch_feature_errors_fence_worker_before_retry() {
+    for driver in [
+        Driver {
+            fail_feature_driver: true,
+            ..Driver::default()
+        },
+        Driver {
+            corrupt_neuron_head: true,
+            ..Driver::default()
+        },
+        Driver {
+            fail_terminal: true,
+            ..Driver::default()
+        },
+    ] {
+        let mut worker =
+            InferenceWorker::new(100, "worker.postdispatch".to_string(), 3, grant(), driver)
+                .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        assert!(
+            worker
+                .run_neuron_features(100, "model.1", neuron_feature_request())
+                .is_err()
+        );
+        assert!(worker.poisoned);
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert_eq!(
+            worker.unload_model(100, "model.1"),
+            Err(Error::IndeterminateLifecycle)
+        );
+    }
+}
+
+#[test]
+fn indeterminate_feature_observation_is_returned_once_and_fences_worker() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.indeterminate-feature".to_string(),
+        3,
+        grant(),
+        Driver {
+            indeterminate: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let observed = worker
+        .run_neuron_features(100, "model.1", neuron_feature_request())
+        .expect("nonterminal observation must remain truthful");
+    assert_eq!(observed.status, ExecutionStatus::Indeterminate);
+    assert!(!observed.terminal_observed);
+    assert!(observed.drive_q24.is_empty());
+    assert!(observed.prediction_q24.is_empty());
+    assert!(worker.poisoned);
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+}
+
+#[test]
+fn predispatch_feature_rejection_does_not_poison_worker() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.predispatch".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let mut altered = neuron_feature_request();
+    altered.feature_vector_q24[0] += 1;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", altered),
+        Err(Error::PayloadMismatch)
+    );
+    assert!(!worker.poisoned);
+    let observed = worker
+        .run_neuron_features(100, "model.1", neuron_feature_request())
+        .expect("unpoisoned worker should accept correct request");
+    assert_eq!(observed.status, ExecutionStatus::Succeeded);
+}
+
+#[test]
 fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     let mut worker =
         InferenceWorker::new(100, "worker.3".to_string(), 3, grant(), Driver::default())
@@ -458,4 +554,55 @@ fn bounded_512d_neuron_request_retains_exact_receipt_semantics_after_move() {
         worker.run_neuron_features_receipt(100, "model.1", tampered),
         Err(Error::PayloadMismatch)
     );
+}
+
+#[test]
+fn reported_neuron_transient_overgrant_and_overflow_fence_worker_after_dispatch() {
+    // 1024 resident + 3072 transient exactly meets the 4096-byte grant.
+    let mut exact = InferenceWorker::new(
+        100,
+        "worker.exact-budget".into(),
+        3,
+        grant(),
+        Driver {
+            reported_feature_transient_bytes: Some(3_072),
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    exact.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        exact
+            .run_neuron_features(100, "model.1", neuron_feature_request())
+            .expect("exact budget")
+            .status,
+        ExecutionStatus::Succeeded
+    );
+    assert!(!exact.poisoned);
+
+    for transient in [3_073, u64::MAX] {
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.over-budget".into(),
+            3,
+            grant(),
+            Driver {
+                reported_feature_transient_bytes: Some(transient),
+                ..Driver::default()
+            },
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::ModelCapacity)
+        );
+        assert!(worker.poisoned);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.1"].active_requests, 0);
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::IndeterminateLifecycle)
+        );
+    }
 }
