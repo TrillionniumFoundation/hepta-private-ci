@@ -150,6 +150,14 @@ impl PrivateSqliteDirectory {
         Self::open_directory(path, DirectoryMode::WritableExisting)
     }
 
+    /// Get the OS-normalized DOS spelling from this already validated handle.
+    /// Case, short names and verbatim prefixes do not weaken no-reparse checks.
+    /// The returned path is a name, not a replacement for retaining the handle.
+    pub fn canonical_path(&self) -> io::Result<PathBuf> {
+        self.validate()?;
+        handles::canonical_path(&self.file)
+    }
+
     fn open_directory(path: &Path, mode: DirectoryMode) -> io::Result<Self> {
         let identity = security::Identity::current()?;
         let descriptor = if matches!(mode, DirectoryMode::Prepare) {

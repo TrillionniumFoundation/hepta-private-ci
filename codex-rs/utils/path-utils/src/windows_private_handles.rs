@@ -1,13 +1,16 @@
+use std::ffi::OsString;
 use std::ffi::c_void;
 use std::fs::File;
 use std::io;
 use std::mem::size_of;
 use std::os::windows::ffi::OsStrExt;
+use std::os::windows::ffi::OsStringExt;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::FromRawHandle;
 use std::os::windows::io::OwnedHandle;
 use std::path::Component;
 use std::path::Path;
+use std::path::PathBuf;
 use std::path::Prefix;
 use std::ptr;
 
@@ -24,6 +27,7 @@ use windows_sys::Win32::Storage::FileSystem::FILE_ADD_SUBDIRECTORY;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
 use windows_sys::Win32::Storage::FileSystem::FILE_DISPOSITION_INFO;
 use windows_sys::Win32::Storage::FileSystem::FILE_LIST_DIRECTORY;
+use windows_sys::Win32::Storage::FileSystem::FILE_NAME_NORMALIZED;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_EA;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
@@ -33,8 +37,10 @@ use windows_sys::Win32::Storage::FileSystem::FILE_TRAVERSE;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_EA;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
+use windows_sys::Win32::Storage::FileSystem::GetFinalPathNameByHandleW;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
+use windows_sys::Win32::Storage::FileSystem::VOLUME_NAME_DOS;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
 use windows_sys::Win32::System::Kernel::OBJ_CASE_INSENSITIVE;
 use windows_sys::Win32::System::Kernel::OBJ_DONT_REPARSE;
@@ -101,6 +107,34 @@ unsafe extern "system" {
 
 pub(super) fn directory(path: &Path, descriptor: *const c_void) -> io::Result<File> {
     directory_with(path, descriptor, DirectoryMode::Prepare)
+}
+
+pub(super) fn canonical_path(file: &File) -> io::Result<PathBuf> {
+    let mut name = vec![0_u16; 32_768];
+    // SAFETY: The live, already validated handle is queried directly. The
+    // initialized UTF-16 allocation is writable for its advertised length.
+    let length = unsafe {
+        GetFinalPathNameByHandleW(
+            file.as_raw_handle() as _,
+            name.as_mut_ptr(),
+            name.len() as u32,
+            FILE_NAME_NORMALIZED | VOLUME_NAME_DOS,
+        )
+    } as usize;
+    if length == 0 {
+        return Err(io::Error::last_os_error());
+    }
+    if length >= name.len() {
+        return Err(invalid_name());
+    }
+    let path = PathBuf::from(OsString::from_wide(&name[..length]));
+    if !matches!(
+        path.components().next(),
+        Some(Component::Prefix(prefix)) if matches!(prefix.kind(), Prefix::VerbatimDisk(_))
+    ) {
+        return Err(invalid_name());
+    }
+    Ok(path)
 }
 
 #[derive(Clone, Copy)]

@@ -225,6 +225,30 @@ fn sqlite_namespace_witness_restarts_and_covers_multiple_native_pages() {
 }
 
 #[test]
+fn sqlite_canonical_name_comes_from_the_validated_handle() {
+    let temporary = tempfile::tempdir().expect("synthetic directory");
+    let root = temporary.path().join("MiXeD-private");
+    let directory = PrivateSqliteDirectory::prepare(&root).expect("private root");
+    let canonical = directory
+        .canonical_path()
+        .expect("same-handle canonical name");
+    assert_eq!(canonical, root.canonicalize().expect("OS canonical name"));
+    let before = directory.snapshot().expect("private identity");
+    for spelling in [
+        root,
+        canonical.clone(),
+        temporary.path().join("mixed-private"),
+    ] {
+        let reopened = PrivateSqliteDirectory::inspect(&spelling).expect("same native directory");
+        assert_eq!(
+            reopened.canonical_path().expect("canonical name"),
+            canonical
+        );
+        assert_eq!(reopened.snapshot().expect("same identity"), before);
+    }
+}
+
+#[test]
 fn one_character_target_uses_a_complete_rename_header() {
     let temporary = tempfile::tempdir().expect("synthetic directory");
     let directory =
@@ -263,6 +287,8 @@ fn reparse_root_and_reparse_ancestor_never_reach_the_target() {
     assert!(output.status.success(), "junction creation: {output:?}");
     assert!(PrivateDirectory::prepare(&junction).is_err());
     assert!(PrivateDirectory::prepare(&junction.join("child")).is_err());
+    assert!(PrivateSqliteDirectory::inspect(&junction).is_err());
+    assert!(PrivateSqliteDirectory::inspect(&junction.join("child")).is_err());
     assert!(!target.join("child").exists());
     assert_eq!(
         fs::read(target.join("marker")).expect("unchanged target"),

@@ -7,6 +7,7 @@
 use std::fs;
 use std::fs::File;
 use std::io::Write;
+use std::os::windows::fs::MetadataExt;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -18,9 +19,24 @@ use super::COGNITIVE_RECOVERED_DB_PREFIX;
 use super::COGNITIVE_STORE_LOCK_FILENAME;
 use super::CognitiveStoreError;
 use super::unavailable;
-use crate::cognitive_path::canonical_path_without_redirection;
 
 pub(super) fn prepare_root(path: &Path) -> Result<PathBuf, CognitiveStoreError> {
+    // Classify an existing redirected ancestor before creating any descendants.
+    // The native opens below remain the authoritative no-reparse boundary,
+    // including if the pathname changes after this diagnostic inspection.
+    const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0400;
+    for ancestor in path.ancestors() {
+        match fs::symlink_metadata(ancestor) {
+            Ok(metadata) if metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 => {
+                return Err(CognitiveStoreError::Invalid(
+                    "cognitive root is redirected".to_string(),
+                ));
+            }
+            Ok(_) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(unavailable(error)),
+        }
+    }
     // Create only missing ancestors, each with an atomic owner-only descriptor
     // and a no-reparse native open. Never create a broad root then tighten it.
     let mut missing = Vec::new();
@@ -42,10 +58,11 @@ pub(super) fn prepare_root(path: &Path) -> Result<PathBuf, CognitiveStoreError> 
     for directory in missing.into_iter().rev() {
         PrivateSqliteDirectory::prepare(directory).map_err(unavailable)?;
     }
-    let _directory = PrivateSqliteDirectory::prepare(path).map_err(unavailable)?;
-    canonical_path_without_redirection(path)
-        .map_err(unavailable)?
-        .ok_or_else(|| CognitiveStoreError::Invalid("cognitive root is redirected".to_string()))
+    let directory = PrivateSqliteDirectory::prepare(path).map_err(unavailable)?;
+    // The owner, ACL and every no-reparse lookup have already been checked on
+    // this retained handle. A second textual component comparison mistakes
+    // ordinary Windows namespace spelling differences for redirection.
+    directory.canonical_path().map_err(unavailable)
 }
 
 pub(super) fn open_lock(
