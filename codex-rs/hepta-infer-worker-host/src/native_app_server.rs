@@ -701,7 +701,7 @@ impl AppServerModelDriver {
         .await;
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
-            output.stop_reason = Some(reason.clone());
+            output.stop_reason = Some(truncate_utf8(&reason, MAX_STOP_REASON_BYTES).to_string());
             // Preserve the classified boundary, usage and owner loss before
             // any cleanup await, including the Agentd cancellation RPC.
             let observation_recorded = control
