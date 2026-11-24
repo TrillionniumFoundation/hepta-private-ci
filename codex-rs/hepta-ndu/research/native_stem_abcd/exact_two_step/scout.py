@@ -5,7 +5,7 @@ from problem import XS,PS,EPS,GAMMA,RHO,leaves
 mp.mp.dps=65
 
 def mpf(q):
-    
+
     if isinstance(q,mp.mpf):return q
     q=Q(q);return mp.mpf(q.numerator)/q.denominator
 

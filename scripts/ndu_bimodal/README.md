@@ -225,4 +225,3 @@ BINARY_SHA256="$(sha256sum "$BINARY" | cut -d ' ' -f 1)"
 | [Guo et al., 2017, *On Calibration of Modern Neural Networks*](https://proceedings.mlr.press/v70/guo17a.html) | 区分置信概率与经验正确率；残差区间不能冒充概率校准 |
 | [Callaway et al., UAI 2018, *Learning to Select Computations*](https://www.auai.org/uai2018/proceedings/papers/269.pdf) | 计算选择需要比较续行信息价值和计算代价，并保留轻量元推理对照 |
 | [*When Does Learning to Stop Help?*, arXiv:2606.30852v2](https://arxiv.org/abs/2606.30852v2) | 冻结校准选点、比较强固定/标量规则、计算探测与重算成本，并接受没有可认证收益的结果 |
-
