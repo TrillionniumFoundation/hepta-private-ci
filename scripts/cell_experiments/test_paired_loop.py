@@ -216,7 +216,7 @@ class PairedLoopTests(unittest.TestCase):
             result = loop.operate(args)["result"]
         dispatch.assert_not_called()
         self.assertEqual(
-            result["authority_observation"], "retained_original_verification"
+            result["authority_observation"], "retained_engineering_fixture_verification"
         )
         self.assertEqual(
             before,

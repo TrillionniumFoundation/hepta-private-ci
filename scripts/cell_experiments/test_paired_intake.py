@@ -389,7 +389,8 @@ lib.release(Path(sys.argv[1]),sys.argv[2])
         program = (
             "import sys,json; from cell_experiments.paired_intake import verify_live;"
             "native,sha,study,delivery,scope,route=sys.argv[1:];"
-            "print(json.dumps(verify_live(native,sha,study,delivery,json.loads(scope),['1','unused',route])))"
+            "print(json.dumps(verify_live(native,sha,study,delivery,json.loads(scope),"
+            "['1','unused',route],evidence_scope='engineering_fixture')))"
         )
         run = subprocess.run(
             [

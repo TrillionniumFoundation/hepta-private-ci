@@ -1,4 +1,4 @@
-"""Operate a subsequent consenting B use from the original protected paired intake."""
+"""Exercise subsequent engineering use; legacy owner authorization is unavailable."""
 
 import argparse
 from contextlib import closing, contextmanager
@@ -25,6 +25,8 @@ def put(path, value):
 def context(home, admission):
     field(admission)
     with closing(intake.open_database(home)) as db:
+        cfg = json.loads(db.execute("SELECT value FROM settings").fetchone()[0])
+        intake.require_engineering_scope(cfg["scope"])
         row = db.execute(
             "SELECT binding,request_sha,state FROM admissions WHERE id=?", (admission,)
         ).fetchone()
@@ -32,7 +34,6 @@ def context(home, admission):
             row is not None and row[2] == "released",
             "original published admission required",
         )
-        cfg = json.loads(db.execute("SELECT value FROM settings").fetchone()[0])
     binding = json.loads(row[0])
     release = binding["release"]
     require(
@@ -142,6 +143,7 @@ def outcome_scope(request, receipt, effect, outcome):
 
 
 def native(cfg, binding, scope, delivery, launch):
+    intake.require_engineering_scope(cfg["scope"])
     for fd in (3, 4):
         os.fstat(fd)
     field(delivery)

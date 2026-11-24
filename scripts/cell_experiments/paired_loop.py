@@ -1,7 +1,8 @@
 """Bind the existing protected paired consumer to one executable identity.
 
-This wrapper retains the original enrollment, consent, cold selection and use
-checks. Its new sidecar domains do not change any original signed v1 message.
+Production owner intake is unavailable until the protected original-turn verifier
+is connected. Engineering fixtures retain cold selection and use checks, and
+never qualify an independent human adoption. No original signed message changes.
 Run ``identity`` first, retain its digest independently, then supply that digest
 to every command. A started command is never redispatched by this wrapper.
 """
@@ -16,7 +17,7 @@ import resource
 import sys
 import time
 
-from . import data, paired_consumer as consumer
+from . import data, paired_consumer as consumer, paired_intake as intake
 
 require = consumer.require
 field = consumer.field
@@ -191,9 +192,10 @@ def read_stage(path, expected_subject):
 
 
 def readback(folder, expected_identity, task, binding, verified, *, retained=False):
-    """Called only after live original verification; retain the site-attestation limit."""
+    """Read engineering stages; historical v1 owner receipts cannot qualify adoption."""
     manifest = json.loads((folder / "IDENTITY.json").read_bytes())
     require(data.digest(manifest) == expected_identity, "loop identity differs")
+    intake.require_engineering_scope(manifest["release"]["scope"])
     require(
         data.digest(binding) == manifest["release"]["admission_sha256"],
         "original admission binding differs",
@@ -244,13 +246,14 @@ def readback(folder, expected_identity, task, binding, verified, *, retained=Fal
         loop_identity=manifest,
         loop_sha256=expected_identity,
         stages=stages,
-        authority_observation="retained_original_verification"
+        authority_observation="retained_engineering_fixture_verification"
         if retained
-        else "live_original_verification",
+        else "live_engineering_fixture_verification",
         consumer_outcome_sha256=data.digest(verified),
         improvement_id=improvement,
         site_attested_independent_adopted_improvements=int(accepted),
-        identity_basis="original enrollment and live original B consent; no global Sybil proof",
+        identity_basis="engineering fixture; protected original-turn owner verifier unavailable",
+        production_authorization_available=False,
         improvement_deduplication_scope="one study principal and parent/candidate; not cross-account human identity",
         observed_stage_cpu_ns=sum(item["cpu_ns"] for item in stages.values()),
         summed_stage_wall_ns=sum(item["wall_ns"] for item in stages.values()),

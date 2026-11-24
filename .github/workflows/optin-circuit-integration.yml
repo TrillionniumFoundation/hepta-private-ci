@@ -36,7 +36,7 @@ jobs:
       - name: Check bound identity, interrupted costs and original consumer regressions
         env:
           PYTHONPATH: ${{ github.workspace }}/scripts
-        run: python -m unittest cell_experiments.test_paired_loop cell_experiments.test_paired_loop_process cell_experiments.test_paired_consumer_fresh cell_experiments.test_paired_consumer -v
+        run: python -m unittest cell_experiments.test_paired_loop cell_experiments.test_paired_loop_process cell_experiments.test_paired_consumer_fresh cell_experiments.test_paired_consumer cell_experiments.test_paired_consent_boundary cell_experiments.test_paired_source_dispatch_intake -v
       - name: Capture the actual bounded effect and exercise the declared router
         env:
           PYTHONPATH: ${{ github.workspace }}/scripts

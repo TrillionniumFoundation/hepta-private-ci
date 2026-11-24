@@ -80,7 +80,7 @@ class BoundLoopProcessTests(unittest.TestCase):
         self.assertFalse(readback["complete_total_cost"])
         self.assertFalse(readback["settlement_authorized"])
         self.assertEqual(
-            readback["authority_observation"], "live_original_verification"
+            readback["authority_observation"], "live_engineering_fixture_verification"
         )
         self.assertIn(
             "already started",
@@ -89,7 +89,8 @@ class BoundLoopProcessTests(unittest.TestCase):
         recovered = self.bound("readback", task=task_pin)
         self.assertEqual(recovered["stages"], readback["stages"])
         self.assertEqual(
-            recovered["authority_observation"], "retained_original_verification"
+            recovered["authority_observation"],
+            "retained_engineering_fixture_verification",
         )
 
 
