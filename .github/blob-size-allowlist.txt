@@ -8,3 +8,8 @@ codex-rs/app-server-protocol/schema/json/codex_app_server_protocol.v2.schemas.js
 codex-rs/tui/tests/fixtures/oss-story.jsonl
 codex-rs/tui_app_server/tests/fixtures/oss-story.jsonl
 codex-rs/tui/src/app.rs
+
+# Exact upstream SQLite amalgamation assets required by the opt-in owner VFS.
+# Source pins and rationale: qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/large-assets.json
+codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.c
+codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.h
