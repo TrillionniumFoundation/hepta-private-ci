@@ -4335,22 +4335,30 @@ async fn thread_resume_rejects_history_when_thread_is_running() -> Result<()> {
 
 #[tokio::test]
 async fn thread_resume_rejects_mismatched_path_for_running_thread_id() -> Result<()> {
-    let server = responses::start_mock_server().await;
-    let first_body = responses::sse(vec![
-        responses::ev_response_created("resp-1"),
-        responses::ev_assistant_message("msg-1", "Done"),
-        responses::ev_completed("resp-1"),
-    ]);
-    let second_response = responses::sse_response(responses::sse(vec![
-        responses::ev_response_created("resp-2"),
-        responses::ev_assistant_message("msg-2", "Done"),
-        responses::ev_completed("resp-2"),
-    ]))
-    .set_delay(std::time::Duration::from_millis(500));
-    let _first_response_mock = responses::mount_sse_once(&server, first_body).await;
-    let _second_response_mock = responses::mount_response_once(&server, second_response).await;
+    let (release_running_turn, running_turn_gate) = oneshot::channel();
+    let (server, _response_completions) = start_streaming_sse_server(vec![
+        vec![StreamingSseChunk {
+            gate: None,
+            body: responses::sse(vec![
+                responses::ev_response_created("resp-1"),
+                responses::ev_assistant_message("msg-1", "Done"),
+                responses::ev_completed("resp-1"),
+            ]),
+        }],
+        // Keep the second turn active until the stale-path check and interrupt
+        // finish, regardless of how slowly the Windows runner processes them.
+        vec![StreamingSseChunk {
+            gate: Some(running_turn_gate),
+            body: responses::sse(vec![
+                responses::ev_response_created("resp-2"),
+                responses::ev_assistant_message("msg-2", "Done"),
+                responses::ev_completed("resp-2"),
+            ]),
+        }],
+    ])
+    .await;
     let codex_home = TempDir::new()?;
-    mock_responses_config(&server.uri()).write(codex_home.path())?;
+    mock_responses_config(server.uri()).write(codex_home.path())?;
 
     let mut primary = TestAppServer::builder()
         .with_codex_home(codex_home.path())
@@ -4496,6 +4504,7 @@ async fn thread_resume_rejects_mismatched_path_for_running_thread_id() -> Result
     primary
         .interrupt_turn_and_wait_for_aborted(thread_id, running_turn.id, DEFAULT_READ_TIMEOUT)
         .await?;
+    drop(release_running_turn);
 
     Ok(())
 }
