@@ -1,0 +1,9 @@
+{
+  "schema": "hepta-qvi-serialization-correction-v1",
+  "original_protocol_sha256": "95f4a84dca76839e1a71f6a4428dbf382589386e142f8cd6cca89099adb5c8ed",
+  "original_result_sha256": "16581f32f0bdd2d66316af68bcfd5eacb9c7a47e614c66c95907a3e45c85475b",
+  "cause": "FP64 base + delta at +/-0.1 can reopen at absolute delta 0.10000000000000003. The first harness allowed a 1e-15 guard, whereas the frozen scientific gate is the original 0.1 box.",
+  "correction": "Native compiler moves only outward-rounded boundary compositions toward the original weight until an outward exact-difference upper bound is <= unchanged 0.1. No refit, no new optimizer call, no anchor or validation selection.",
+  "raw_solver_delta_policy": "Use saved native planned deltas. For BP/constant arms restore saved differences to the same already-declared box by deterministic clipping before composition; this only corrects representational one-ULP overshoot.",
+  "validation": "Reopen corrected candidates; repeat all original fit and held-out forward checks at unchanged gates; exact rational checks of actual reopened parameter difference. Retain complete attempt001 and attempt002."
+}
