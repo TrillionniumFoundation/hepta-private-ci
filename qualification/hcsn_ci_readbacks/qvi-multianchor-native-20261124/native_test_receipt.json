@@ -1,0 +1,22 @@
+{
+  "schema": "native-numerical-test-receipt-v1",
+  "toolchain": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "planner_tests": {
+    "command": "rustc --edition 2024 --test native/planner.rs -o build/planner_tests; ./build/planner_tests",
+    "passed": 5,
+    "failed": 0
+  },
+  "compiler_tests": {
+    "command": "rustc --edition 2024 --test native/compiler.rs -o build/compiler_tests; ./build/compiler_tests",
+    "passed": 3,
+    "failed": 0
+  },
+  "qualification": "Observed local rustc test execution. These are standalone scientific sources, not Cargo workspace or repository CI qualification. Rustfmt applied to all authored Rust sources. No Cargo manifests or dependency locks changed.",
+  "source_sha256": {
+    "native/compiler.rs": "c938e635041069a1714c83cc11f84ee998a52761267e3d6c6cb70c98bd0a19bb",
+    "native/compiler_tests.rs": "71a8b78638002a367a5e2001338e1d7b56b6fc168ccbc4876bed3ffad65f4080",
+    "native/main.rs": "2ed954c07c57cb1cb7f5ab16634614c98d4892380cfb4660960fd181bcdadc56",
+    "native/planner.rs": "5665991732a6107857a3500a9b681d2bf78a69cfa378c01df8fabe01a1909e0c",
+    "native/planner_tests.rs": "87afa6038e12013a3e1255655bbad5e858a3b4aad20d2d5b4ea8b0d5c8e07098"
+  }
+}
