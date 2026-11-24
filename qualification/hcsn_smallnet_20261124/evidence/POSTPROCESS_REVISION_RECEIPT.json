@@ -1,0 +1,69 @@
+{
+  "created_utc": "2026-11-24T14:20:18.484543+00:00",
+  "execution": {
+    "executed_analysis_sha256": "f085ed1137d2c8f093525011d7742aeedb9f84c17c519bc89588ce6d9c87cda6",
+    "executed_path_at_time": "postprocess/analysis_results.py",
+    "exit_code": 0,
+    "job_id": "1a20de7a764-ffbe-39cf",
+    "max_scalar_metric_error": 2.220446049250313e-16,
+    "note": "The post-freeze recovery helper briefly occupied the original path. Both exact versions are now preserved; analysis output bytes are unchanged.",
+    "state": "succeeded",
+    "verified_predictions": 72
+  },
+  "final_stage_receipt_sha256_unchanged": "1d1d3f767bfcb37c5023139069c3481369067318b73519ff22bd03831d948405",
+  "frozen_source_hashes_verified": {
+    "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+    "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+    "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+    "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+    "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+    "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+    "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+    "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+    "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+    "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+    "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+    "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+    "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+    "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+  },
+  "original_helper": {
+    "git_blob_sha": "6fa942c93dbbf7c0584b954ac284ee3a48738a24",
+    "git_ref": "03c41a3",
+    "path": "postprocess/analysis_results.py",
+    "restored_exact": true,
+    "sha256": "da459be89ba9cfa44ba26da88ef925513fd02ad3bec2ac7c3cdf0ebe141ef52d",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/03c41a3/qualification/hcsn_smallnet_20261124/analysis_results.py"
+  },
+  "output_moves": [
+    {
+      "bytes": 541130,
+      "from": "SUMMARY.json",
+      "recomputed": false,
+      "sha256": "059354c4003e553a0fa09bcb597dc4a1280149259960a124034986f9a82cc774",
+      "to": "summary/SUMMARY.json"
+    },
+    {
+      "bytes": 18028,
+      "from": "RESULTS_TRAINING.md",
+      "recomputed": false,
+      "sha256": "35eaf378fbc50a20b889bf7581596d589a0df66754578bf2b07f9ab880e02d25",
+      "to": "summary/RESULTS_TRAINING.md"
+    },
+    {
+      "bytes": 22677,
+      "from": "INDEPENDENT_PREDICTION_VERIFICATION.json",
+      "recomputed": false,
+      "sha256": "65e21c485d995662569bb37b7b54d2930bf1159d887b577a8e8c061ded095dda",
+      "to": "INDEPENDENT_METRICS_VERIFICATION.json"
+    }
+  ],
+  "recovery_helper": {
+    "is_frozen_training_source": false,
+    "path": "postprocess/analysis_results_recovery.py",
+    "revision_reason": "Handle explicitly scoped test-execution recovery costs and immutable 63+9 result provenance.",
+    "sha256": "f085ed1137d2c8f093525011d7742aeedb9f84c17c519bc89588ce6d9c87cda6"
+  },
+  "schema": 1,
+  "scope": "post-freeze analysis helper revision and output-path correction; no model evaluation or metric recomputation in this operation"
+}

@@ -1,0 +1,87 @@
+{
+  "original_postprocess": {
+    "job_id": "1a20de7a764-ffbe-39cf",
+    "status": {
+      "at_unix_ms": 1795529629516,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a20de7a764-ffbe-39cf",
+      "launch_nonce": "9e096c5270980736ab296a5f65c71f4c",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 1058,
+          "stored": 1058
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "stderr": "",
+    "stdout": "{\"training_sources_verified\": 14, \"analysis_source_sha256\": \"f085ed1137d2c8f093525011d7742aeedb9f84c17c519bc89588ce6d9c87cda6\", \"prior_postprocess_analysis_sha256\": \"da459be89ba9cfa44ba26da88ef925513fd02ad3bec2ac7c3cdf0ebe141ef52d\", \"verify_source_sha256\": \"55a6279d728f08872c091434b57a9a2943fd90cbdcb81d9d1966cfd0e1711f34\"}\n{\"evaluated\": 72, \"expected\": 72, \"groups_passing\": 7, \"outputs\": [\"/home/qian-qi/hcsn-smallnet-20261124/formal-v1/SUMMARY.json\", \"/home/qian-qi/hcsn-smallnet-20261124/formal-v1/RESULTS_TRAINING.md\"], \"warnings\": 0}\n{\"verified\": 72, \"max_scalar_error\": 2.220446049250313e-16}\n{\"pure_postprocessing_wall_s\": 2.335229631047696, \"files\": [{\"name\": \"SUMMARY.json\", \"bytes\": 541130, \"sha256\": \"059354c4003e553a0fa09bcb597dc4a1280149259960a124034986f9a82cc774\"}, {\"name\": \"RESULTS_TRAINING.md\", \"bytes\": 18028, \"sha256\": \"35eaf378fbc50a20b889bf7581596d589a0df66754578bf2b07f9ab880e02d25\"}, {\"name\": \"INDEPENDENT_PREDICTION_VERIFICATION.json\", \"bytes\": 22677, \"sha256\": \"65e21c485d995662569bb37b7b54d2930bf1159d887b577a8e8c061ded095dda\"}]}\n"
+  },
+  "path_and_source_preservation": {
+    "job_id": "1a20deda37f-ffbe-39d9",
+    "status": {
+      "at_unix_ms": 1795530018507,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a20deda37f-ffbe-39d9",
+      "launch_nonce": "6b009a3a3515a1bf1a5c54078b0c6e3b",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 1002,
+          "stored": 1002
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "stderr": "",
+    "stdout": "{\"new_helper_sha256\": \"f085ed1137d2c8f093525011d7742aeedb9f84c17c519bc89588ce6d9c87cda6\", \"old_helper_sha256\": \"da459be89ba9cfa44ba26da88ef925513fd02ad3bec2ac7c3cdf0ebe141ef52d\", \"output_moves\": [{\"bytes\": 541130, \"from\": \"SUMMARY.json\", \"recomputed\": false, \"sha256\": \"059354c4003e553a0fa09bcb597dc4a1280149259960a124034986f9a82cc774\", \"to\": \"summary/SUMMARY.json\"}, {\"bytes\": 18028, \"from\": \"RESULTS_TRAINING.md\", \"recomputed\": false, \"sha256\": \"35eaf378fbc50a20b889bf7581596d589a0df66754578bf2b07f9ab880e02d25\", \"to\": \"summary/RESULTS_TRAINING.md\"}, {\"bytes\": 22677, \"from\": \"INDEPENDENT_PREDICTION_VERIFICATION.json\", \"recomputed\": false, \"sha256\": \"65e21c485d995662569bb37b7b54d2930bf1159d887b577a8e8c061ded095dda\", \"to\": \"INDEPENDENT_METRICS_VERIFICATION.json\"}], \"ready_to_archive\": true, \"receipt\": \"/home/qian-qi/hcsn-smallnet-20261124/formal-v1/POSTPROCESS_REVISION_RECEIPT.json\", \"sha256\": \"bc9dae35042e0efff079013b0d70fd56736bcf901da9b2038b73ee74e0648b4f\", \"training_sources_verified\": 14}\n"
+  },
+  "schema": 1
+}

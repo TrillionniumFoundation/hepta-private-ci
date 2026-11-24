@@ -206,6 +206,49 @@ def paired(rows, protocol):
     return output
 
 
+def recovery_summary(final, reader, training, protocol, seal, rows):
+    binding = final.get("resume_receipt")
+    if binding is None:
+        return None
+    if binding.get("path") != "RESUME_RECEIPT.json":
+        raise ValueError("unexpected recovery receipt path")
+    path = training/"RESUME_RECEIPT.json"
+    receipt = reader.read(path)
+    if (reader.files[str(path.resolve())]["sha256"] != binding["sha256"]
+            or receipt["protocol_sha256"] != canonical_digest(protocol)
+            or receipt["source_hashes"] != protocol["source_hashes"]
+            or receipt["training_records"] != seal["attempts"]
+            or receipt["training_seal_sha256"] != final["seal_sha256"]):
+        raise ValueError("recovery receipt binding mismatch")
+    before, resumed = receipt["completed_before"], receipt["resumed_names"]
+    expected = {row["attempt"] for row in rows if row["training_status"] == "completed"}
+    if (set(before) & set(resumed) or set(before) | set(resumed) != expected
+            or len(resumed) != len(set(resumed)) or len(before) != receipt["completed_before_count"]
+            or len(resumed) != receipt["resumed_count"]):
+        raise ValueError("recovery attempt partition mismatch")
+    for name, files in before.items():
+        if set(files) != {"test_result.json", "test_predictions.json"}:
+            raise ValueError("unexpected preserved artifact identity")
+        for file, expected_sha in files.items():
+            actual = reader.files.get(str((training/name/file).resolve()))
+            if actual is not None and actual["sha256"] != expected_sha:
+                raise ValueError("previously completed test changed during recovery: "+name)
+    workers = [reader.read(training/name/"resume_worker_cost.json", required=False) for name in resumed]
+    available = [worker for worker in workers if worker is not None]
+    previous_cpu = sum(numeric(row["costs"]["test_pair_cpu_seconds"]) for row in rows if row["attempt"] in before)
+    resumed_cpu = sum(numeric(row["costs"]["test_pair_cpu_seconds"]) for row in rows if row["attempt"] in resumed)
+    return {"completed_before_count": len(before), "resumed_count": len(resumed), "resumed_names": resumed,
+        "prior_timeout": receipt["prior_timeout"], "prior_complete_process_cpu_seconds": None,
+        "previous_completed_test_pair_cpu_seconds": previous_cpu, "resumed_test_pair_cpu_seconds": resumed_cpu,
+        "resume_driver_cost": receipt["resume_driver_cost"],
+        "resume_driver_cpu_through_report_seconds": receipt["driver_cpu_through_report_seconds"],
+        "resume_children_cpu_including_shutdown_seconds": receipt["child_cpu_including_shutdown_seconds"],
+        "resume_driver_wall_including_import_seconds": receipt["driver_wall_including_import_seconds"],
+        "resume_worker_cost_receipts": len(available), "resume_worker_costs": available,
+        "resume_worker_parent_costs": receipt["workers_finished"], "resume_source_sha256": receipt["resume_source_sha256"],
+        "scope": "prior test-pair and resumed test-pair CPU are subsets, not additions to worker CPU; original finalizer total CPU remains unknown"}
+
+
 def build_summary(protocol_path, training):
     training, reader = Path(training), Receipts()
     protocol = reader.read(protocol_path)
@@ -311,6 +354,7 @@ def build_summary(protocol_path, training):
             "seal_binding_verified": True, "all_attempt_evidence_verified": all(row["evidence_verified"] for row in rows),
             "checks": "required seal binding, frozen identities, result hashes, test_result equality, prediction SHA256",
             "checkpoint_or_prediction_metrics_recomputed": False},
+        "execution_recovery": recovery_summary(final, reader, training, protocol, seal, rows),
         "inference": "sample SD across training seeds; descriptive source and seed pairing only; no p-values or confidence intervals"}
     return summary
 
@@ -389,6 +433,15 @@ def render(summary):
             failure_notes.append(f'- `{row["attempt"]}`：{error}')
     if failure_notes:
         lines += ["", "### 失败详情", "", *failure_notes, ""]
+    recovery = summary.get("execution_recovery")
+    if recovery is not None:
+        prior = recovery["prior_timeout"]
+        lines += ["", "## 中断后的执行恢复", "",
+            f'原 finalizer `{prior.get("timeout_job", "unknown")}` 为 timed_out / exit 124；含封存等待的 wall 为 {prior.get("wall_seconds_including_wait", "unknown")} 秒。完整原进程 CPU 未测到，保持 unknown。', "",
+            f'原已完成 {recovery["completed_before_count"]} 个评测的 result/prediction SHA 保持一致；仅恢复缺失的 {recovery["resumed_count"]} 个槽位，没有重新训练、选模或更改评测定义。', "",
+            f'恢复 driver CPU（至回执）{recovery["resume_driver_cpu_through_report_seconds"]:.3f} 秒；恢复 children CPU（含退出）{recovery["resume_children_cpu_including_shutdown_seconds"]:.3f} 秒；恢复 driver wall（含导入）{recovery["resume_driver_wall_including_import_seconds"]:.3f} 秒。', "",
+            f'原已完成测试 pair CPU 之和为 {recovery["previous_completed_test_pair_cpu_seconds"]:.3f} 秒；新完成测试 pair CPU 之和为 {recovery["resumed_test_pair_cpu_seconds"]:.3f} 秒。这些是相应 worker CPU 的子集，不再重复相加。', "",
+            "FINAL_RESULTS.cost 仅是恢复 driver body 的账本，不代表全部 72 项最终测试 CPU。原 timeout、原已完成行成本和本次恢复成本分列；适配测试成本也不与包含它的原 finalizer 时间重复相加。", ""]
     lines += ["", "## 可复核性", "",
         "本汇总只读已写出的回执，不导入训练代码、Torch，不读取标签重新拟合模型，不更改选择或门槛。SEAL.json 必须存在且与 FINAL_RESULTS 哈希匹配；逐项校验冻结身份、source-hash 回执、统一测试数据身份、sealed result 哈希、test_result.json 等值及 test_predictions.json SHA256。此处没有独立重算 checkpoint 或预测指标。全部输入回执 SHA256 和分析源码 SHA256 在 SUMMARY.json。", ""]
     if summary["integrity"]["warnings"]:
