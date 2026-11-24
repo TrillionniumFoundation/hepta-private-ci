@@ -1,0 +1,16 @@
+{
+  "experiment_id": "HCSN-ADAPTIVE-SMOKE-20261121-v1",
+  "stage": "smoke",
+  "data_dir": "/tmp/adaptive-smoke-data",
+  "device": "cpu",
+  "dtype": "float64",
+  "seeds": [11],
+  "variants": [
+    {"id": "fixed-input-all-four", "boundary": "fixed", "drift": "input", "channels": "all_four"}
+  ],
+  "methods": ["frozen", "ridge", "bp", "zeroth_order", "programmatic_edit", "edit_then_bp"],
+  "flow": {"bins": 4, "stages": 2, "content_size": 2, "upper_mode": "reflecting"},
+  "learner": {"steps": 16, "batch_size": 16, "evaluate_every": 4, "ridge": 0.001},
+  "budget": {"wall_seconds": 60.0, "development_queries": 8},
+  "feature_budget": {"wall_seconds": 120.0}
+}
