@@ -132,6 +132,18 @@ jobs:
           $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
           just test -p codex-hepta-memory --lib --locked -E 'test(cognitive_store::recovery::) | test(cognitive_store_tests::)' --success-output immediate --failure-output immediate 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'cognitive-recovery.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Upload recovery evidence before application consumer builds
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-windows-recovery-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-durable-evidence/head.txt
+            ${{ runner.temp }}/hepta-durable-evidence/rustc.txt
+            ${{ runner.temp }}/hepta-durable-evidence/sqlite-recovery.log
+            ${{ runner.temp }}/hepta-durable-evidence/cognitive-recovery.log
+          if-no-files-found: error
+          retention-days: 14
       - name: Run real directory flushes and copied-file schema validation
         if: success() || failure()
         working-directory: codex-rs
