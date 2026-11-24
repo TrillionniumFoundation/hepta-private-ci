@@ -70,6 +70,40 @@ Before integration on 2026-11-24:
 - Native execution for these revised controls is pending. No failure count is
   retroactively changed, and no SQLite functionality is declared closed.
 
+## Subsequent native owner-control qualification
+
+The bounded Windows probe at source
+`051be3cda3aad7a145830884a45999f2e549278f` executed all 14 selected private
+path cases successfully; 5 other cases were outside the selector. Registry
+ownership and post-rename poisoning separately passed 2/2, with 26 other
+cases outside that selector. The two test-source files in this source are
+byte-identical to fixture commit
+`640825cbfe71d978991a30959b52a0b60a509895`; blob IDs and SHA-256 values are
+recorded in `native-probe051-receipt.json`.
+
+The ordinary database-shaped and WAL-shaped files each independently reported
+`ordinary_creation_owner_matches_effective_user=false`. Thus this runner
+executed the wrong-owner rejection, unchanged security descriptor/contents,
+and explicit-owner inherited-DACL positive controls. The ordinary-creation
+matching-owner branch did not execute in this runner; a test that handles both
+contexts is not evidence that both environments were exercised.
+
+The probe's overall conclusion was **cancelled**, after its early evidence was
+preserved and a separate C-VFS build step failed. The state consumer step was
+cancelled, and cognitive and later consumer selections were skipped. These
+primitive successes do not qualify the C-VFS or SQLite consumers and do not
+turn the complete probe into a successful workflow. No assertions, production
+owner checks, or security descriptors were relaxed to produce these results.
+
+- [Probe run and job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45451454733/job/138649381190)
+- Public early artifact: `14947368172`, 4,418 bytes, included unchanged as
+  `native-probe051-artifact.zip`.
+- ZIP SHA-256, verified against GitHub's digest:
+  `617b71211f66981e583f7b0e5ea48c28f52eb4eb8da6cd21771ad16cbf21bffc`.
+- The receipt records all member hashes, unique test names, source pins, and
+  the observed owner booleans. Repeated nextest summary output is not counted
+  as additional execution.
+
 ## Primary references
 
 - [Owner of a new object](https://learn.microsoft.com/en-us/windows/win32/secauthz/owner-of-a-new-object)
