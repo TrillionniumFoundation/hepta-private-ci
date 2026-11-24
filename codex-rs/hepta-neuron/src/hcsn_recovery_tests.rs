@@ -78,7 +78,8 @@ impl HcsnResearchStateCodecV2 for Codec {
             return Err(HcsnRecoveryErrorV2::Backend);
         }
         let mut backend = [0; 5];
-        for (value, bytes) in backend.iter_mut().zip(snapshot.backend.chunks_exact(8)) {
+        let (chunks, _) = snapshot.backend.as_chunks::<8>();
+        for (value, bytes) in backend.iter_mut().zip(chunks) {
             *value = number(bytes)?;
         }
         if backend[4] != clock.last_micros() || (backend[2] > 0 && backend[3] <= backend[4]) {

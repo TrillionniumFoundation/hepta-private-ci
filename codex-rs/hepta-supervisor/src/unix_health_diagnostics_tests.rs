@@ -134,7 +134,12 @@ fn full_diagnostic_queue_drops_reports_and_consumes_attempts() -> TestResult {
         )
     );
     assert!(matches!(receiver.try_recv(), Err(TryRecvError::Empty)));
-    queue_loss_report(&mut diagnostics, &agent_id, /*request_id*/ 9, Some(&sender));
+    queue_loss_report(
+        &mut diagnostics,
+        &agent_id,
+        /*request_id*/ 9,
+        Some(&sender),
+    );
     assert!(matches!(receiver.try_recv(), Err(TryRecvError::Empty)));
     Ok(())
 }
@@ -173,10 +178,20 @@ fn disconnected_or_unavailable_diagnostics_are_dropped() -> TestResult {
     for request_id in 5..=8 {
         // None is also the permanently cached result of a failed reporter
         // thread creation; it must not cause output on the health caller.
-        queue_loss_report(&mut diagnostics, &agent_id, request_id, /*sender*/ None);
+        queue_loss_report(
+            &mut diagnostics,
+            &agent_id,
+            request_id,
+            /*sender*/ None,
+        );
     }
     let (available_sender, available_receiver) = sync_channel(/*bound*/ 1);
-    queue_loss_report(&mut diagnostics, &agent_id, /*request_id*/ 9, Some(&available_sender));
+    queue_loss_report(
+        &mut diagnostics,
+        &agent_id,
+        /*request_id*/ 9,
+        Some(&available_sender),
+    );
     assert!(matches!(
         available_receiver.try_recv(),
         Err(TryRecvError::Empty)
@@ -188,10 +203,8 @@ fn disconnected_or_unavailable_diagnostics_are_dropped() -> TestResult {
 fn queued_diagnostics_retain_only_local_fields_and_fixed_categories() -> TestResult {
     let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
     let private_marker = "health-private-error-must-not-be-emitted";
-    let io_failure = HealthProbeFailure::from(std::io::Error::new(
-        ErrorKind::TimedOut,
-        private_marker,
-    ));
+    let io_failure =
+        HealthProbeFailure::from(std::io::Error::new(ErrorKind::TimedOut, private_marker));
     assert!(format!("{io_failure:?}").contains(private_marker));
     let json_failure = serde_json::from_slice::<serde_json::Value>(b"{invalid-json}\n")
         .expect_err("fixture must be malformed JSON");

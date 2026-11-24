@@ -167,4 +167,3 @@ def summarize_journal(path):
     except (ValueError, KeyError) as exc:
         return {"status": "corrupt", "known_reserved_cost": totals,
                 "accounted_wall_seconds": None, "reason": str(exc)}
-

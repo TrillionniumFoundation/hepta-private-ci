@@ -358,6 +358,50 @@ QUALIFICATION_SOURCE_SHA256 = {
         "qa/repository-consolidation/20261119/windows-c52-cmd-entry-7246/"
         "root-source-review.json"
     ): "5cf0439b71255c31fc5dd9dda9e36e56dcd2211f73e26a7fd8824bba0f1d12e8",
+    (
+        "qa/repository-consolidation/20261124/rust-union-e259/"
+        "evidence-07081b139e1d271b1ad0.part-00027"
+    ): "be269ffc0c2ef4c0527131207f8ee654053cfc10069b99ea6669008d52c5c703",
+    (
+        "qa/repository-consolidation/20261124/rust-union-e259/"
+        "evidence-07081b139e1d271b1ad0.part-00055"
+    ): "6d6931aafe1b48a179d8544dffa007f4c5aec03c8713bfd06b60447f01ea1b73",
+    (
+        "qa/repository-consolidation/20261124/rust-union-e259/"
+        "evidence-07081b139e1d271b1ad0.part-00059"
+    ): "39c92f61d37f46b0b36627a9c7243919e813d9bf4874a89a270969c57f9968c6",
+    (
+        "qa/repository-consolidation/20261124/rust-union-e259/"
+        "evidence-07081b139e1d271b1ad0.part-00087"
+    ): "a0547abc92648f0356b71641d83e0684f05f750612f48fc60576a288899d71bd",
+    (
+        "qa/repository-consolidation/20261124/rust-union-e259/"
+        "evidence-07081b139e1d271b1ad0.part-00091"
+    ): "37c2b35f2bdbf693eee741523ab5c45336e1e55a73ac2dc0f9204ff4d2db4218",
+    (
+        "qa/repository-consolidation/20261124/rust-union-e259/"
+        "evidence-07081b139e1d271b1ad0.part-00157"
+    ): "50f9b4093fd6f1ed0d7e7d46617bbf9231df8db61a88393d8b3ee713def3402f",
+    (
+        "qa/repository-consolidation/20261124/rust-union-e259/"
+        "evidence-07081b139e1d271b1ad0.part-00187"
+    ): "af9e81d7cdb4358fc93b00f50988b614002470707a576a0324933dc114a2f80a",
+    (
+        "qa/repository-consolidation/20261124/rust-union-e259/"
+        "evidence-07081b139e1d271b1ad0.part-00216"
+    ): "6a33a77ddf7211393baf21d4fee9abad6666d8e4cd0a87ed0f4b16fef6ae2042",
+    (
+        "qualification/hcsn_adaptive/evidence/20261120-1d88/"
+        "CI_FOLLOWUP.md"
+    ): "a1fd4746646cb21d3e287efa0c01716affc61b05a430acd2dc8c7959517885a3",
+    (
+        "qualification/hcsn_adaptive/evidence/20261120-1d88/"
+        "ci-followup-v1.tar.gz.part-04"
+    ): "db5a6f99b0bda8547be7e3dd96a6b7c7ae6ad2715f5b18af36bb0efdb7e4ed06",
+    (
+        "qualification/hcsn_adaptive/evidence/20261120-1d88/"
+        "runtime-evidence-v1.tar.gz.part-19"
+    ): "92fb400c2a1dcca404838e21db387a86b3357c286c40ba4b90e036fab31edfb4",
 }
 
 
