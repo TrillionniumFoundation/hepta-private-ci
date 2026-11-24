@@ -1,0 +1,138 @@
+{
+  "schema": "cell127-qualification-recovery-evidence-v1",
+  "parent_commit": "a5bdfb5b7fbe4558fff7d8ad1ea85d3b33e21946",
+  "source_commit": "a194098c99e785d05a90e5e9f5a9de53df23ba96",
+  "source_tree": "803b72533dd7157acc707503bdac8405df19c910",
+  "source_validation": {
+    "scope": "102 Python engineering regressions on retained pre-format source; exact bytes archived",
+    "tests": 102,
+    "returncode": 0,
+    "skips": 0,
+    "source_unchanged": true,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "format_command": "UV_OFFLINE=1 just fmt",
+    "format_returncode": 0,
+    "normalized_python_ast_unchanged": true,
+    "tests_reexecuted_after_format": false,
+    "hosted_exact_final_head": "pending; do not infer from parent or local AST equivalence"
+  },
+  "red_controls": {
+    "original_81_tests": "pass on exact original source",
+    "bounded_json": {
+      "tests": 7,
+      "failures": 4,
+      "parent": "a5bdfb5b"
+    },
+    "lost_population_tables": {
+      "failing_subtests": 2,
+      "parent": "a5bdfb5b"
+    },
+    "partial_checkpoint_marker_loss": {
+      "failures": 1,
+      "source": "intermediate LIMIT 1 repair; distinct from original parent"
+    },
+    "qualification_values": {
+      "tests": 12,
+      "failures": 9,
+      "errors": 0,
+      "parent": "a5bdfb5b"
+    }
+  },
+  "qualification": "DRAFT / RESEARCH_ONLY / HOLD / NoUpdate",
+  "independent_real_confirmation_tasks_added": 0,
+  "native_daemon_runs_added": 0,
+  "authenticated_evaluation_authority_added": false,
+  "automatic_split_merge_added": false,
+  "archive": {
+    "file": "ORIGINAL_EVIDENCE.zip",
+    "bytes": 110743,
+    "sha256": "e210786c531aa60b5a448540070e34dd2a3e618165ac33b46143c6fe4fcb1cff",
+    "members": {
+      "cell127-eval-independent-review.log": {
+        "bytes": 2113,
+        "sha256": "7a06b5dafda4b9d5a61e136f18308bd571f10dde71dad3cc86f2e0e1d3e1f71a"
+      },
+      "cell127-json-red.log": {
+        "bytes": 3688,
+        "sha256": "35e5d7f55b656cfa5aef4ab6de449280e528ea37063ab96e89d7788da3ac9cc6"
+      },
+      "cell127-materialization-manifest.json": {
+        "bytes": 8251,
+        "sha256": "af4e7392e9dc41b04f1754d496720490e781219445905fb249b134ad1f546e95"
+      },
+      "cell127-parent-tests.log": {
+        "bytes": 14555,
+        "sha256": "67adaa1c03829bdb6adb478cba36b493fb4217c51de9531ef8d4dc8ae52231e7"
+      },
+      "cell127-recovery-red-probe.json": {
+        "bytes": 823,
+        "sha256": "b3a631e008b604f6d477179605cb8a432b08e8c93ccdebf1e5de3a8d33f919e6"
+      },
+      "cell127-recovery-red.log": {
+        "bytes": 2348,
+        "sha256": "eee146c71b0fb4a1e670e55d2303afce84921bfab10ff941e31573de034ff85e"
+      },
+      "cell127-recovery-v2-green.log": {
+        "bytes": 7050,
+        "sha256": "7276496a99fe11926723f90987407f00c185e7850c4afc7ea4946850c2c04eec"
+      },
+      "cell127-recovery-v2-red.log": {
+        "bytes": 1086,
+        "sha256": "2fb62a5277252085159af69e821f0bbd0bf7205813c4aebe3955c327642ae77f"
+      },
+      "cell127-repair-source-bindings.json": {
+        "bytes": 2793,
+        "sha256": "71db8ce5e8ee0b9fbc30def363773e6d91768cfb7c8356a6c540699bbfe63fc0"
+      },
+      "cell127-repair-v1-source-bindings.json": {
+        "bytes": 1955,
+        "sha256": "4927f0933451f8a755cb89190b6d23d3568bb5242a3459879b67714e3a4540f7"
+      },
+      "cell127-repaired-tests.log": {
+        "bytes": 15880,
+        "sha256": "d4f1241faa4c080f6d5185efe939713f8adee5db0630661958ad73a795d1acdc"
+      },
+      "validate_cell127.py": {
+        "bytes": 2903,
+        "sha256": "a6e005ae56e783c9b5f995e0405e5f7505ecb5cee3e60f92b015cf2953280331"
+      },
+      "validation-eval/SUMMARY.json": {
+        "bytes": 1895,
+        "sha256": "3931579385be9d40157611b454e615a410f03d8396a196e34eb28d90cd9bc9e1"
+      },
+      "validation-eval/baseline-red.log": {
+        "bytes": 9089,
+        "sha256": "57aa85f140e07e0e2746184a8a0d908b92bdb40486d988287e131c64e6f62040"
+      },
+      "validation-eval/exact-baseline-red.log": {
+        "bytes": 8940,
+        "sha256": "aef02b6c82604a577c177d40bf7b6795a37223e217e86652906bc28cda276ef6"
+      },
+      "validation-eval/owner-regression-green.log": {
+        "bytes": 7945,
+        "sha256": "379ecd107007551aee0e2c82ae50336b0f2b88af34c436c73c2e0c7d643009e8"
+      },
+      "validation-eval/qualification-green.log": {
+        "bytes": 2113,
+        "sha256": "7302346714e809e0ccb6e95a3063a19ea80a2a9e4e17e4b2cafbdbe7cb2fddfa"
+      },
+      "validation-repair-final/FORMAT.json": {
+        "bytes": 7316,
+        "sha256": "9df66fcaff61eb9b2b987a351b00d5afe66448da22ae83bedcf1b244f9d4d76c"
+      },
+      "validation-repair-final/VALIDATION.json": {
+        "bytes": 7488,
+        "sha256": "edf0514ad3e4bf609279d09af93b850cabd5bc56e53848bd8d7bc5cc6c745053"
+      },
+      "validation-repair-final/tested-source.zip": {
+        "bytes": 82509,
+        "sha256": "5f4d9e967287eeb2c8852b3f736ca84a24ee45f3ed5dae24a86725a3b342f0b3"
+      },
+      "validation-repair-final/unittest.log": {
+        "bytes": 18105,
+        "sha256": "7aab25e6fb7a1a744327a622e37f34fcf9b7f6bd05bc2802d8d488a4930c74b7"
+      }
+    }
+  }
+}

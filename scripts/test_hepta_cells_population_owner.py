@@ -563,6 +563,94 @@ class PopulationOwnerTests(unittest.TestCase):
                             0,
                         )
 
+    def test_reopen_refuses_erased_population_tables_with_retained_checkpoints(self):
+        tables = (
+            "population_plan",
+            "population_current",
+            "population_partitions",
+            "population_consumed",
+        )
+        for operation in ("DELETE FROM", "DROP TABLE"):
+            with self.subTest(operation=operation):
+                database = Path(self.temporary.name) / (operation + ".sqlite")
+                with sqlite3.connect(database) as corrupted:
+                    self.owner.db.backup(corrupted)
+                    for table in tables:
+                        corrupted.execute(f"{operation} {table}")
+                    before = {
+                        table: corrupted.execute(
+                            f"SELECT * FROM {table} ORDER BY 1"
+                        ).fetchall()
+                        for table in ("cells", "checkpoints")
+                    }
+                    schema = corrupted.execute(
+                        "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+                    ).fetchall()
+                with self.assertRaisesRegex(CellError, "lost their original policy"):
+                    reopened = CellOwner(database, qualify=lambda qualification: True)
+                    reopened.close()
+                with sqlite3.connect(database) as retained:
+                    after = {
+                        table: retained.execute(
+                            f"SELECT * FROM {table} ORDER BY 1"
+                        ).fetchall()
+                        for table in ("cells", "checkpoints")
+                    }
+                    self.assertEqual(after, before)
+                    self.assertEqual(
+                        retained.execute(
+                            "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+                        ).fetchall(),
+                        schema,
+                    )
+
+    def test_reopen_checks_later_population_checkpoint_when_first_marker_is_lost(self):
+        database = Path(self.temporary.name) / "partial-checkpoint-marker.sqlite"
+        with sqlite3.connect(database) as corrupted:
+            self.owner.db.backup(corrupted)
+            for table in (
+                "population_plan",
+                "population_current",
+                "population_partitions",
+                "population_consumed",
+            ):
+                corrupted.execute(f"DELETE FROM {table}")
+            original = corrupted.execute(
+                "SELECT digest,snapshot FROM checkpoints ORDER BY rowid"
+            ).fetchall()
+            self.assertGreater(len(original), 1)
+            saved = json.loads(original[0][1])
+            saved.pop("population")
+            encoded = json.dumps(saved, sort_keys=True, separators=(",", ":"))
+            corrupted.execute(
+                "UPDATE checkpoints SET digest=?,snapshot=? WHERE digest=?",
+                (
+                    hashlib.sha256(encoded.encode()).hexdigest(),
+                    encoded,
+                    original[0][0],
+                ),
+            )
+            first = corrupted.execute(
+                "SELECT snapshot FROM checkpoints LIMIT 1"
+            ).fetchone()[0]
+            self.assertNotIn("population", json.loads(first))
+            self.assertTrue(
+                all("population" in json.loads(row[1]) for row in original[1:])
+            )
+            before = corrupted.execute(
+                "SELECT * FROM checkpoints ORDER BY digest"
+            ).fetchall()
+        with self.assertRaisesRegex(CellError, "lost their original policy"):
+            reopened = CellOwner(database)
+            reopened.close()
+        with sqlite3.connect(database) as retained:
+            self.assertEqual(
+                retained.execute(
+                    "SELECT * FROM checkpoints ORDER BY digest"
+                ).fetchall(),
+                before,
+            )
+
     def test_fresh_process_loads_adopted_parameters_but_resets_new_run_hidden_state(
         self,
     ):

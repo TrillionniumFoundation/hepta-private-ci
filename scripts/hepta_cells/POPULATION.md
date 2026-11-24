@@ -7,6 +7,22 @@ lifecycle. The **two trainable families** reuse `SemanticComponent` and
 functional lineages organize those components. A lineage label describes an
 assigned responsibility; it does not establish that a component has learned it.
 
+## Four separate levels
+
+| Level | Existing meaning | What a change requires |
+| --- | --- | --- |
+| Dynamics kernel | GRU or diagonal recurrence inside a temporal component | Numerical, state, recovery and resource comparisons under the same interface |
+| Computation template | `SemanticComponent` or `TemporalComponent`, including its pinned representation, private parameters and update rule | A compatible bundle and explicit allowed parameter scope |
+| Functional lineage | One of the seven stable responsibilities below | A declared objective and auditable state, learning and permission boundaries |
+| Circuit / Organ | A task composition of Cell instances and deterministic services | Routing, complete costs, external-effect ownership and task-level evaluation |
+
+These levels do not each require another neural-network architecture. The frozen
+semantic provider supplies the actual features; a private head supplies its
+declared logits, association or ranking output. A head alone is not a text/image
+generator. Any content-generating circuit must bind its real base model and
+decoder. Tool hosts, transactions, authorization, signatures, schemas and meters
+keep their own deterministic mechanisms and authority boundaries.
+
 | Lineage | Initial route | Initial local plasticity |
 | --- | --- | --- |
 | PERC | Shared features and private head | Frozen |
@@ -15,13 +31,22 @@ assigned responsibility; it does not establish that a component has learned it.
 | CTRL | GRU policy/decision component | Frozen |
 | VERIFY | Shared features and private assessment head, with deterministic checks | Frozen |
 | ACT | GRU skill component, with separately injected host tool capability | Frozen |
-| LEARN | Deterministic host workflow through `ToolCell` | Frozen; organizes other Cells' training and evaluation |
+| LEARN | Deterministic host workflow through `ToolCell` | Frozen; organizes training and requests independent evaluation |
 
 This is an initial allocation for experiments, not an architecture ranking. The
 plan accepts the implemented diagonal recurrence as a temporal control. HCSN
 remains outside this admitted registry and is not a prerequisite for the seven
 lineages. Existing deterministic retrieval, rule, numerical and tool components
 can support any lineage without acquiring neural update privileges.
+
+**EVAL is a separate evaluation authority, not an eighth trainable lineage.**
+LEARN may produce a candidate and request evaluation. It must not issue its own
+qualification or replace the frozen evaluator, cohort or thresholds. The Python
+owner's explicit host callback is an experimental consistency port; it does not
+implement independent evaluator custody or a native signed Qualification owner.
+Canonical qualification values and callback consistency checks preserve that
+port's declared identity. They do not turn a trusted Python callback into an
+authentication boundary or authorize product adoption.
 
 ## What is frozen
 
@@ -153,3 +178,43 @@ instances that learn the same function when sharing preserves retained ability.
 Instance count should follow workload, state isolation and measured parallelism.
 This version performs no automatic split, merge or population search; a changed
 plan is a new reviewed experimental configuration with its own evidence.
+
+## A strong reference before structural search
+
+Run the bounded reference from the repository root:
+
+```sh
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=scripts \
+  python3 -m hepta_cells.differentiation_reference --output /new/attempt-directory
+```
+
+The frozen, task-conditioned shared-bank and separately stored-head arms receive
+the same task IDs, numeric inputs, initial weights and evaluation rows. Both
+trained arms actually use `SemanticComponent.propose` and the SQLite owner for
+inference. They have the same total private parameters and the same selected-head
+training arithmetic and input exposures. The shared bank uses disjoint readout
+blocks: it has the same hypothesis class as the separately stored heads. This
+checks parameter-layout equivalence, not negative transfer or a learned router.
+The old task is read again after training the new task; a separate dense-serving
+control executes every head on the same routed parameters and is charged for it.
+
+Each attempt retains its protocol and source hashes, input/parameter arrays,
+training receipts, SQLite journals, immediate fit checkpoints, original outputs
+and a failed-attempt event when an exception occurs. A completed fit receipt is
+retained before its checkpoint is written, so a checkpoint failure does not erase
+the recorded optimizer work. A used output directory cannot be overwritten.
+
+MAC counts and updated-scalar counts are explicit algebraic work measures, not
+hardware instruction counts. Provider and routing counts, explicit bank copies,
+wall/CPU observations and unknown physical costs are reported separately. Dense
+serving time is included in its arm's measured wall/CPU time, so that timing must
+not be compared directly with the selected-only control as a speedup estimate.
+Resident-byte integrals, energy, allocations and full dependency costs remain
+unqualified. `total_physical_compute_matched` therefore stays false.
+
+Even an exact equality result remains `HOLD / NoUpdate`: it creates no automatic
+split/merge, independent real confirmation task, native Population adoption or
+claim that adding Cell types improves task quality. A genuine differentiation
+experiment must next identify repeatable interference in the shared computation,
+offer all arms the same information and tuning opportunities, and meet the
+existing task, retention and full-cost gates.
