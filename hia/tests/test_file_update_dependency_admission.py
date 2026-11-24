@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Pure-data admission regressions; no Git, Cargo, Wine, sockets or processes."""
+"""Admission regressions with local fixtures; no Git, Cargo, Wine, sockets or processes."""
+from pathlib import Path
+import tempfile
 import unittest
 
-from file_update_oracle import identity
+from file_update_oracle import cargo, identity
 
 # Complete immutable 094/e5 exec-server leaf vector, not a filesystem scan.
 # Canonical tree: 040d2b09f7f1ed6dcf930c0c6032868e32b52764 (143 leaves).
@@ -247,6 +249,53 @@ class DependencyProjectionTests(unittest.TestCase):
             self.assertNotEqual(listing, PINNED_LISTING)
             with self.subTest(record=changed), self.assertRaises(RuntimeError):
                 self.project(listing)
+
+
+class IndependentLibraryCopyTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name)
+        self.source = root / "producer.rlib"
+        self.source.write_bytes(b"!<arch>\nfixture")
+        self.stage = root / "stage"
+        self.stage.mkdir()
+        self.staged = self.stage / "snapshot.rlib"
+        self.digest = identity.sha(self.source)
+        self.size = self.source.stat().st_size
+
+    def graph(self):
+        return {"stage": str(self.stage), "files": {
+            self.staged.name: {"source": str(self.source), "path": str(self.staged),
+                               "bytes": self.size, "sha256": self.digest},
+        }}
+
+    def test_copy_is_independent_and_later_producer_mutation_is_detected(self):
+        original = self.source.read_bytes()
+        self.assertEqual(cargo.stage_library(self.source, self.staged, self.digest), self.size)
+        self.assertEqual(self.staged.read_bytes(), original)
+        self.assertFalse(self.source.samefile(self.staged))
+        cargo.verify_graph(self.graph())
+        self.source.write_bytes(b"x" * self.size)
+        self.assertEqual(self.staged.read_bytes(), original)
+        with self.assertRaises(RuntimeError):
+            cargo.verify_graph(self.graph())
+
+    def test_matching_hardlink_is_rejected_even_with_exact_bytes(self):
+        self.staged.hardlink_to(self.source)
+        with self.assertRaises(RuntimeError):
+            cargo.verify_graph(self.graph())
+
+    def test_existing_snapshot_is_not_overwritten(self):
+        self.staged.write_bytes(b"retained evidence")
+        with self.assertRaises(FileExistsError):
+            cargo.stage_library(self.source, self.staged, self.digest)
+        self.assertEqual(self.staged.read_bytes(), b"retained evidence")
+
+    def test_source_digest_mismatch_is_rejected(self):
+        self.source.write_bytes(b"x" * self.size)
+        with self.assertRaises(RuntimeError):
+            cargo.stage_library(self.source, self.staged, self.digest)
 
 
 if __name__ == "__main__":
