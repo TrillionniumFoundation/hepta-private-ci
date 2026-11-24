@@ -12,9 +12,7 @@ keyring = { workspace = true, features = ["crypto-rust"] }
 tracing = { workspace = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-# Keep the persistent Secret Service store while avoiding the retired zbus 4 crates.
-# Vendor libdbus so Linux builds and releases need no additional system library.
-keyring = { workspace = true, features = ["linux-native-sync-persistent", "vendored"] }
+keyring = { workspace = true, features = ["linux-native-async-persistent"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 keyring = { workspace = true, features = ["apple-native"] }

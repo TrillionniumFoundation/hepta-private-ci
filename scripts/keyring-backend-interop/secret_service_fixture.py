@@ -60,6 +60,7 @@ XML = """<node>
 class Fixture:
     def __init__(self, receipt_path):
         self.receipt_path = Path(receipt_path)
+        self.account = os.environ["HEPTA_KEYRING_TEST_ACCOUNT"]
         self.connection = Gio.bus_get_sync(Gio.BusType.SESSION, None)
         self.interfaces = {
             i.name: i for i in Gio.DBusNodeInfo.new_for_xml(XML).interfaces
@@ -80,7 +81,7 @@ class Fixture:
             "delete_failure",
         ]:
             self.add_item(
-                self.attributes(service, "fixture"),
+                self.attributes(service, self.account),
                 (service + "-synthetic").encode(),
                 service == "locked",
             )
@@ -249,7 +250,7 @@ class Fixture:
                     attrs = props[ITEM + ".Attributes"]
                     assert attrs["application"] == "rust-keyring"
                     assert attrs["service"] == "wsp-synthetic"
-                    assert attrs["username"] == "alice"
+                    assert attrs["username"] == self.account
                     assert attrs["target"] == "default"
                     new_path = self.add_item(attrs, self.decrypt(secret))
                     self.event(operation="create", attributes=attrs, replace=replace)

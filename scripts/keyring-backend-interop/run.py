@@ -12,6 +12,7 @@ import subprocess
 import sys
 import time
 import tomllib
+import uuid
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
@@ -84,6 +85,7 @@ def session(output):
             ("candidate", "read_updated"),
             ("baseline", "delete"),
             ("candidate", "missing"),
+            ("candidate", "keyutils_cycle"),
         ]
         for backend, mode in sequence:
             command = [str(output / f"{backend}-probe"), mode]
@@ -114,12 +116,12 @@ def session(output):
             row["algorithm"] == "dh-ietf1024-sha256-aes128-cbc-pkcs7"
             for row in sessions
         )
-        assert len([row for row in events if row["operation"] == "create"]) == 2
+        assert len([row for row in events if row["operation"] == "create"]) == 3
         assert (
-            len([row for row in events if row["operation"] == "injected_failure"]) == 6
+            len([row for row in events if row["operation"] == "injected_failure"]) == 7
         )
         assert len([row for row in events if row["operation"] == "unlock"]) == 1
-        assert len([row for row in events if row["operation"] == "decrypt"]) == 4
+        assert len([row for row in events if row["operation"] == "decrypt"]) == 5
         assert receipt["remaining_items"] == 6
         assert receipt["synthetic_only"]
     finally:
@@ -144,27 +146,43 @@ def run(output):
     # reader/writer. Require each shared package to match the production lock.
     production = tomllib.loads((REPO / "codex-rs/Cargo.lock").read_text())["package"]
     probe = tomllib.loads((HERE / "Cargo.lock").read_text())["package"]
-    pin_names = {"keyring", "dbus-secret-service", "libdbus-sys", "tracing"}
-    expected = {
-        row["name"]: (row["version"], row.get("checksum"))
+    pin_names = {"keyring", "secret-service", "zbus", "tracing"}
+    expected = [
+        {
+            "name": row["name"],
+            "version": row["version"],
+            "checksum": row.get("checksum"),
+        }
         for row in production
         if row["name"] in pin_names
-    }
-    observed = {
-        row["name"]: (row["version"], row.get("checksum"))
+    ]
+    observed = [
+        {
+            "name": row["name"],
+            "version": row["version"],
+            "checksum": row.get("checksum"),
+        }
         for row in probe
         if row["name"] in pin_names
+    ]
+    assert expected and all(row in observed for row in expected), (expected, observed)
+    assert {row["name"] for row in expected} == pin_names
+    assert {row["version"] for row in expected if row["name"] == "secret-service"} == {
+        "6.0.0"
     }
-    assert expected == observed and len(expected) == len(pin_names), (
-        expected,
-        observed,
-    )
+    assert {row["checksum"] for row in expected if row["name"] == "keyring"} == {None}
+    assert {
+        "name": "keyring",
+        "version": "3.6.3",
+        "checksum": "eebcc3aff044e5944a8fbaf69eb277d11986064cba30c468730e8b9909fb551c",
+    } in observed
     environment = os.environ.copy()
     environment.update(
         {
             "CARGO_INCREMENTAL": "0",
             "CARGO_BUILD_JOBS": "2",
             "CARGO_PROFILE_DEV_DEBUG": "0",
+            "HEPTA_KEYRING_TEST_ACCOUNT": "hepta-ci-" + uuid.uuid4().hex,
         }
     )
     environment.setdefault("CARGO_TARGET_DIR", str(output / "target"))
@@ -192,7 +210,7 @@ def run(output):
     )
     (output / "candidate-ldd.txt").write_text(linked)
     assert "libdbus-1.so" not in linked, (
-        "vendored transport must not require a system libdbus"
+        "pure Rust transport must not require a system libdbus"
     )
     command = [
         "dbus-run-session",
@@ -203,7 +221,9 @@ def run(output):
         "--output",
         str(output),
     ]
-    result = subprocess.run(command, capture_output=True, text=True, timeout=120)
+    result = subprocess.run(
+        command, capture_output=True, text=True, env=environment, timeout=120
+    )
     receipt = {
         "source_sha": identity["source_sha"],
         "builds": builds,

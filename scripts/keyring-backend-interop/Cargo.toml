@@ -7,11 +7,12 @@ edition = "2024"
 resolver = "2"
 
 [features]
-baseline = ["keyring/linux-native-async-persistent"]
-candidate = ["dep:codex-keyring-store"]
+baseline = ["dep:keyring-baseline"]
+candidate = ["dep:codex-keyring-store", "dep:keyring-candidate"]
 
 [dependencies]
-keyring = { version = "=3.6.3", default-features = false, features = ["crypto-rust"] }
+keyring-baseline = { package = "keyring", version = "=3.6.3", optional = true, default-features = false, features = ["crypto-rust", "linux-native-async-persistent"] }
+keyring-candidate = { package = "keyring", version = "=3.6.3", path = "../../codex-rs/third_party/keyring-3.6.3", optional = true, default-features = false, features = ["crypto-rust", "linux-native-async-persistent"] }
 codex-keyring-store = { path = "../../codex-rs/keyring-store", optional = true }
 
 [profile.dev]

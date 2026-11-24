@@ -77,8 +77,7 @@ wiremock = { workspace = true }
 libc = { workspace = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-# Match codex-keyring-store: enabling the async backend here would reintroduce zbus.
-keyring = { workspace = true, features = ["linux-native-sync-persistent", "vendored"] }
+keyring = { workspace = true, features = ["linux-native-async-persistent"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 keyring = { workspace = true, features = ["apple-native"] }
