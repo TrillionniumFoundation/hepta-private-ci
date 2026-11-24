@@ -1,5 +1,7 @@
 use super::Access;
 use super::PrivateDirectory;
+use super::PrivateSqliteDirectory;
+use pretty_assertions::assert_eq;
 use std::fs;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -89,6 +91,110 @@ fn private_directory_preserves_exclusive_writer_locking() {
     assert!(second.try_lock().is_err());
     drop(first);
     second.try_lock().expect("released writer lock");
+}
+
+#[test]
+fn sqlite_inheritance_is_owner_only_and_does_not_weaken_the_default_policy() {
+    let temporary = tempfile::tempdir().expect("synthetic directory");
+    let root = temporary.path().join("sqlite");
+    let directory = PrivateSqliteDirectory::prepare(&root).expect("private SQLite root");
+    // Ordinary filesystem creation exercises the same inherited ACL path as
+    // SQLite's CreateFile(..., lpSecurityAttributes = NULL), not our helper.
+    fs::write(root.join("database.sqlite3"), b"database").expect("native inherited file");
+    fs::write(root.join("database.sqlite3-wal"), b"wal").expect("native inherited sidecar");
+    directory
+        .open("database.sqlite3", Access::Read)
+        .expect("exact inherited owner ACE");
+    directory
+        .open("database.sqlite3-wal", Access::Read)
+        .expect("same sidecar policy");
+    assert!(
+        PrivateDirectory::prepare(&root).is_err(),
+        "strict non-inheriting policy is unchanged"
+    );
+    let strict_root = temporary.path().join("strict");
+    let strict = PrivateDirectory::prepare(&strict_root).expect("strict directory");
+    strict
+        .open("database.sqlite3", Access::CreateNew)
+        .expect("explicit private file");
+    PrivateSqliteDirectory::inspect(&strict_root)
+        .expect("read-only strict root inspection")
+        .open("database.sqlite3", Access::Read)
+        .expect("explicit private file inspection");
+    assert!(
+        PrivateSqliteDirectory::open_writable(&strict_root).is_err(),
+        "writing sidecars requires explicit inheritance policy"
+    );
+}
+
+#[test]
+fn sqlite_inspection_never_creates_repairs_or_flushes_source_objects() {
+    let temporary = tempfile::tempdir().expect("synthetic directory");
+    let root = temporary.path().join("sqlite");
+    let writer = PrivateSqliteDirectory::prepare(&root).expect("private root");
+    fs::write(root.join("database.sqlite3"), b"original").expect("source");
+    let before = writer.snapshot().expect("before");
+    let inspected = PrivateSqliteDirectory::inspect(&root).expect("read-only inspection");
+    assert_eq!(inspected.snapshot().expect("after"), before);
+    assert!(inspected.open("must-not-exist", Access::CreateNew).is_err());
+    assert!(
+        inspected.sync_all().is_err(),
+        "inspection is never a write-flush capability"
+    );
+    assert!(!root.join("must-not-exist").exists());
+    assert!(PrivateSqliteDirectory::inspect(&temporary.path().join("missing")).is_err());
+    assert!(!temporary.path().join("missing").exists());
+    let broad = temporary.path().join("ordinary");
+    fs::create_dir(&broad).expect("ordinary inherited root");
+    assert!(PrivateSqliteDirectory::inspect(&broad).is_err());
+    assert!(
+        PrivateSqliteDirectory::prepare(&broad).is_err(),
+        "existing ACL is not repaired"
+    );
+    assert_eq!(
+        fs::read(root.join("database.sqlite3")).expect("source bytes"),
+        b"original"
+    );
+}
+
+#[test]
+fn sqlite_snapshots_detect_drift_and_failed_candidate_cleanup_binds_the_handle() {
+    let temporary = tempfile::tempdir().expect("synthetic directory");
+    let root = temporary.path().join("sqlite");
+    let directory = PrivateSqliteDirectory::prepare(&root).expect("private root");
+    let mut original = directory
+        .open("candidate", Access::CreateNew)
+        .expect("candidate");
+    original.write_all(b"old").expect("old bytes");
+    original.sync_all().expect("flush");
+    let snapshot = directory
+        .file_snapshot(&original)
+        .expect("original snapshot");
+    fs::write(root.join("candidate"), b"changed length").expect("source drift");
+    assert!(
+        directory
+            .verify_file("candidate", &original, snapshot)
+            .is_err()
+    );
+    directory
+        .replace("candidate", "retained")
+        .expect("move original");
+    directory
+        .open("candidate", Access::CreateNew)
+        .expect("replacement")
+        .write_all(b"replacement")
+        .expect("replacement bytes");
+    directory
+        .remove_created(original)
+        .expect("remove the actual original by handle");
+    assert!(!root.join("retained").exists());
+    assert_eq!(
+        fs::read(root.join("candidate")).expect("replacement survives"),
+        b"replacement"
+    );
+    let before = directory.snapshot().expect("root snapshot");
+    fs::write(root.join("sidecar"), b"new namespace entry").expect("sidecar");
+    assert!(directory.verify_unchanged(before).is_err());
 }
 
 #[test]
