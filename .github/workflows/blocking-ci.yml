@@ -216,10 +216,17 @@ jobs:
           persist-credentials: false
 
       - name: Reclaim unused hosted-runner disk for exhaustive Rust reverse-consumer tests
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
         run: |
           set -euo pipefail
           : "${GITHUB_WORKSPACE:?checkout root required}"
+          checkout_sha="$(git -C "$GITHUB_WORKSPACE" rev-parse --verify HEAD)"
+          if [[ ! "${SOURCE_SHA:-}" =~ ^[0-9a-f]{40}$ || "$checkout_sha" != "$SOURCE_SHA" ]]; then
+            echo '::error::Disk admission checkout differs from the bound exact source SHA'
+            exit 1
+          fi
           # Reclaim only fixed SDK paths on the ephemeral hosted Linux runner.
           # Preserve the checkout, Cargo/V8 artifacts, and exhaustive test selection.
           printf '%s\n' 'Runner disk before native prerequisites:'
@@ -237,10 +244,29 @@ jobs:
               /opt/hostedtoolcache/CodeQL \
               /usr/local/share/powershell
             do
-              if [[ -d "$unused" && ! -L "$unused" ]]; then
-                echo "Removing unused preinstalled non-Rust toolchain: $unused"
-                sudo du -sh "$unused"
-                sudo rm -rf -- "$unused"
+              if [[ ! -e "$unused" && ! -L "$unused" ]]; then
+                continue
+              fi
+              if [[ ! -d "$unused" || "$(realpath -e -- "$unused")" != "$unused" ]]; then
+                echo "::error::Refusing noncanonical hosted SDK path: $unused"
+                exit 1
+              fi
+              if mountpoint -q -- "$unused"; then
+                echo "::error::Refusing mounted hosted SDK root: $unused"
+                exit 1
+              else
+                mount_status=$?
+                if (( mount_status != 32 )); then
+                  echo "::error::Cannot determine mount status for hosted SDK root: $unused"
+                  exit 1
+                fi
+              fi
+              echo "Removing unused preinstalled non-Rust toolchain: $unused"
+              sudo du -xsh -- "$unused"
+              sudo rm -rf --one-file-system -- "$unused"
+              if [[ -e "$unused" || -L "$unused" ]]; then
+                echo "::error::Hosted SDK root remains after cleanup: $unused"
+                exit 1
               fi
             done
             sudo apt-get clean
@@ -254,7 +280,7 @@ jobs:
             exit 1
           fi
           printf 'source=%s\nfree_before_bytes=%s\nfree_after_bytes=%s\ntemp_free_after_bytes=%s\nminimum_required_bytes=%s\n' \
-            "$(git rev-parse HEAD)" "$((workspace_before_kib * 1024))" \
+            "$checkout_sha" "$((workspace_before_kib * 1024))" \
             "$((workspace_free_kib * 1024))" "$((free_kib * 1024))" \
             "$((minimum_free_kib * 1024))" > "$RUNNER_TEMP/hepta-scoped-disk.txt"
           if (( workspace_free_kib < minimum_free_kib || free_kib < minimum_free_kib )); then
