@@ -1,7 +1,6 @@
 use std::ffi::c_void;
 use std::fs::File;
 use std::io;
-use std::mem::offset_of;
 use std::mem::size_of;
 use std::os::windows::ffi::OsStrExt;
 use std::os::windows::io::AsRawHandle;
@@ -25,11 +24,13 @@ use windows_sys::Win32::Storage::FileSystem::FILE_RENAME_INFO;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
-use windows_sys::Win32::Storage::FileSystem::FileRenameInfo;
+use windows_sys::Win32::Storage::FileSystem::FileRenameInfoEx;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
 use windows_sys::Win32::System::Kernel::OBJ_CASE_INSENSITIVE;
 use windows_sys::Win32::System::Kernel::OBJ_DONT_REPARSE;
+use windows_sys::Win32::System::WindowsProgramming::FILE_RENAME_FLAG_POSIX_SEMANTICS;
+use windows_sys::Win32::System::WindowsProgramming::FILE_RENAME_FLAG_REPLACE_IF_EXISTS;
 
 use super::Access;
 
@@ -192,7 +193,9 @@ fn open(
 
 pub(super) fn replace(directory: &File, file: &File, destination: &str) -> io::Result<()> {
     let name = leaf(destination)?;
-    let bytes = offset_of!(FILE_RENAME_INFO, FileName) + name.len() * size_of::<u16>();
+    // Include the complete header even for a one-character leaf: the flexible
+    // array offset alone is smaller than sizeof(FILE_RENAME_INFO) on Win32/64.
+    let bytes = size_of::<FILE_RENAME_INFO>() + name.len() * size_of::<u16>();
     // usize storage supplies the alignment required by FILE_RENAME_INFO. The
     // extra trailing zero also permits APIs that inspect a UTF-16 terminator.
     let mut buffer = vec![0_usize; (bytes + size_of::<u16>()).div_ceil(size_of::<usize>())];
@@ -200,7 +203,10 @@ pub(super) fn replace(directory: &File, file: &File, destination: &str) -> io::R
     // SAFETY: The aligned allocation includes the header and complete flexible
     // filename array; both borrowed handles remain open throughout the call.
     unsafe {
-        (*info).Anonymous.ReplaceIfExists = 1;
+        // Preserve Unix-style old-reader semantics explicitly. Unsupported
+        // Windows/filesystem versions fail; there is no weaker rename fallback.
+        (*info).Anonymous.Flags =
+            FILE_RENAME_FLAG_REPLACE_IF_EXISTS | FILE_RENAME_FLAG_POSIX_SEMANTICS;
         (*info).RootDirectory = directory.as_raw_handle() as _;
         (*info).FileNameLength = (name.len() * size_of::<u16>()) as u32;
         ptr::copy_nonoverlapping(
@@ -210,7 +216,7 @@ pub(super) fn replace(directory: &File, file: &File, destination: &str) -> io::R
         );
         if SetFileInformationByHandle(
             file.as_raw_handle() as _,
-            FileRenameInfo,
+            FileRenameInfoEx,
             info.cast(),
             bytes as u32,
         ) == 0

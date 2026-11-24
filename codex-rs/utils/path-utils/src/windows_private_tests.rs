@@ -92,6 +92,29 @@ fn private_directory_preserves_exclusive_writer_locking() {
 }
 
 #[test]
+fn one_character_target_uses_a_complete_rename_header() {
+    let temporary = tempfile::tempdir().expect("synthetic directory");
+    let directory =
+        PrivateDirectory::prepare(&temporary.path().join("private")).expect("private directory");
+    let mut source = directory
+        .open("n", Access::Create)
+        .expect("one-character source");
+    source.write_all(b"short leaf").expect("candidate bytes");
+    source.sync_all().expect("candidate flush");
+    directory
+        .replace("n", "x")
+        .expect("one-character target rename");
+    directory.sync_all().expect("namespace flush");
+    let mut bytes = Vec::new();
+    directory
+        .open("x", Access::Read)
+        .expect("renamed file")
+        .read_to_end(&mut bytes)
+        .expect("renamed bytes");
+    assert_eq!(bytes, b"short leaf");
+}
+
+#[test]
 fn reparse_root_and_reparse_ancestor_never_reach_the_target() {
     let temporary = tempfile::tempdir().expect("synthetic directory");
     let target = temporary.path().join("target");

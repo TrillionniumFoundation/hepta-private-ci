@@ -26,7 +26,7 @@ fixtures now request an appropriate handle and execute the real flush operation.
 | Private owner and access | Effective token user, `GetSecurityInfo` on the same handle, protected DACL containing exactly one owner allow ACE with file-all-access | Reject null, broad, inherited or unfamiliar ACLs; never repair an existing object's ACL |
 | Safe creation | Explicit owner-only security descriptor supplied at `NtCreateFile` creation | No permissive create-then-chmod interval |
 | Bind every child lookup | Single bounded leaf name and `OBJECT_ATTRIBUTES.RootDirectory` | Reject path separators, parent traversal, alternate streams and non-regular/multi-link files |
-| Atomic replacement | `SetFileInformationByHandle(FileRenameInfo)` on a validated source, relative destination under the retained root | Propagate the native error; no path-copy or delete fallback |
+| Atomic replacement | `SetFileInformationByHandle(FileRenameInfoEx)` with `REPLACE_IF_EXISTS` and `POSIX_SEMANTICS` on a validated source, relative destination under the retained root | Propagate unsupported-version and native errors; no classic-rename, path-copy or delete fallback |
 | Real persistence barrier | File `sync_all`, then the retained directory's actual `sync_all` | Never substitute success or a no-op; the prompt owner retains post-rename poisoning |
 | Exclusive ownership | Existing OS `File::try_lock` on the private lock file | A concurrent writer is rejected; kernel releases the lock on process exit |
 
@@ -45,11 +45,12 @@ Windows ACL evaluator.
 The normal GitHub Actions workflow
 `.github/workflows/hepta-windows-durable-fixtures.yml` runs:
 
-1. Eight `codex-utils-path` native tests: real writable-directory flush; atomic
+1. Nine `codex-utils-path` native tests: real writable-directory flush; atomic
    replacement with an old reader still seeing old bytes; reopen and ACL checks;
    exclusive writer lock; root/ancestor and child junction rejection; hard-link,
    traversal and alternate-stream rejection; broad-DACL rejection without repair;
-   retained-root rename rejection.
+   retained-root rename rejection; a one-character rename target with a complete
+   native information-buffer header.
 2. Two private-registry tests: reopen with the same snapshot and writer exclusion;
    a fault injected after a real rename must poison the owner and force reopen.
 3. The existing intelligence/agentd/authbus directory and schema fixtures.
@@ -84,6 +85,7 @@ weaken their checks, or claim a complete Windows memory-recovery implementation.
 - [OBJECT_ATTRIBUTES](https://learn.microsoft.com/en-us/windows/win32/api/ntdef/ns-ntdef-_object_attributes)
 - [GetSecurityInfo](https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-getsecurityinfo)
 - [FILE_RENAME_INFO](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_rename_info)
+- [FILE_RENAME_INFORMATION extended flags](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_rename_information)
 - [FlushFileBuffers](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers)
 - [Directory handles](https://learn.microsoft.com/en-us/windows/win32/fileio/obtaining-a-handle-to-a-directory)
 - [GetFinalPathNameByHandleW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfinalpathnamebyhandlew)
