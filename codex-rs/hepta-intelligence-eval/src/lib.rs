@@ -15,6 +15,7 @@ mod durable_holdout;
 mod fenced_holdout;
 mod fenced_holdout_file;
 mod holdout_envelope;
+mod holdout_file_lock;
 mod holdout_journal;
 mod ndu_convergence;
 mod ndu_well_posedness;

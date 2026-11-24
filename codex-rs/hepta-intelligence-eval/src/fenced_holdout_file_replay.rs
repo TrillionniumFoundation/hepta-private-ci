@@ -3,7 +3,7 @@
 
 use super::*;
 
-pub(super) fn read_stable_image(file: &mut HeldFile) -> Result<Vec<u8>, LockedFileCasErrorV1> {
+pub(super) fn read_stable_image(file: &mut AcquiredFile) -> Result<Vec<u8>, LockedFileCasErrorV1> {
     let position = file.stream_position().map_err(io_error)?;
     let observed = (|| {
         let first = read_image(file)?;
@@ -18,7 +18,7 @@ pub(super) fn read_stable_image(file: &mut HeldFile) -> Result<Vec<u8>, LockedFi
     observed
 }
 
-fn read_image(file: &mut HeldFile) -> Result<Vec<u8>, LockedFileCasErrorV1> {
+fn read_image(file: &mut AcquiredFile) -> Result<Vec<u8>, LockedFileCasErrorV1> {
     let length = file.metadata().map_err(io_error)?.len();
     if length > MAX_BYTES {
         return Err(LockedFileCasErrorV1::Capacity);

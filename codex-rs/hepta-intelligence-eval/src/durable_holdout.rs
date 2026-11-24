@@ -15,8 +15,6 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
 use std::io::{self};
-use std::ops::Deref;
-use std::ops::DerefMut;
 
 use crate::CrossFoldPlanReceiptV1;
 use crate::FinalHoldoutJournalReceiptV1;
@@ -24,6 +22,7 @@ use crate::FinalHoldoutJournalV1;
 use crate::HoldoutUseDispositionV1;
 use crate::closure::decode_holdout_plan;
 use crate::closure::encode_holdout_plan;
+use crate::holdout_file_lock::AcquiredFile;
 use codex_hepta_types::Digest32;
 
 const MAGIC: &[u8; 8] = b"HEPTHO01";
@@ -87,36 +86,11 @@ impl From<io::Error> for DurableHoldoutError {
 }
 
 pub struct DurableFinalHoldoutJournalV1 {
-    file: HeldFile,
+    file: AcquiredFile,
     journal: FinalHoldoutJournalV1,
     binding: Digest32,
     length: u64,
     poisoned: bool,
-}
-
-// Own the acquired lock through fallible construction and the journal lifetime.
-// Closing one handle does not release locks retained by an inherited duplicate.
-struct HeldFile(File);
-
-impl Deref for HeldFile {
-    type Target = File;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for HeldFile {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Drop for HeldFile {
-    fn drop(&mut self) {
-        // This releases ownership, not durability. File close remains the fallback.
-        let _ = self.0.unlock();
-    }
 }
 
 impl DurableFinalHoldoutJournalV1 {
@@ -237,6 +211,9 @@ impl DurableFinalHoldoutJournalV1 {
         expected: HoldoutAnchorV1,
         plan: &CrossFoldPlanReceiptV1,
     ) -> Result<FinalHoldoutJournalReceiptV1, DurableHoldoutError> {
+        self.file
+            .check_process()
+            .map_err(|_| DurableHoldoutError::Indeterminate)?;
         if self.poisoned {
             return Err(DurableHoldoutError::Poisoned);
         }
@@ -288,6 +265,9 @@ impl DurableFinalHoldoutJournalV1 {
         expected: HoldoutAnchorV1,
         plan: &CrossFoldPlanReceiptV1,
     ) -> Result<FinalHoldoutJournalReceiptV1, DurableHoldoutError> {
+        self.file
+            .check_process()
+            .map_err(|_| DurableHoldoutError::Indeterminate)?;
         if self.poisoned {
             return Err(DurableHoldoutError::Poisoned);
         }
@@ -349,18 +329,17 @@ impl DurableFinalHoldoutJournalV1 {
     }
 }
 
-fn acquire(file: File, binding: Digest32) -> Result<HeldFile, DurableHoldoutError> {
+fn acquire(file: File, binding: Digest32) -> Result<AcquiredFile, DurableHoldoutError> {
     if binding.is_zero() {
         return Err(DurableHoldoutError::Binding);
     }
     if !file.metadata()?.is_file() {
         return Err(DurableHoldoutError::NotRegular);
     }
-    file.try_lock().map_err(|error| match error {
+    AcquiredFile::acquire(file).map_err(|error| match error {
         TryLockError::WouldBlock => DurableHoldoutError::Busy,
         TryLockError::Error(error) => DurableHoldoutError::Io(error.kind()),
-    })?;
-    Ok(HeldFile(file))
+    })
 }
 
 #[cfg(test)]

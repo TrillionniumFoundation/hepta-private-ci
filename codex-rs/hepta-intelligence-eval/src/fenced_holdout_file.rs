@@ -16,8 +16,6 @@ use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
-use std::ops::Deref;
-use std::ops::DerefMut;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -31,6 +29,7 @@ use crate::closure::decode_holdout_plan;
 use crate::closure::encode_holdout_plan;
 use crate::holdout_envelope::HoldoutJournalV2;
 use crate::holdout_envelope::HoldoutPlanEnvelopeV2;
+use crate::holdout_file_lock::AcquiredFile;
 use crate::paired_plan::decode_paired_plan;
 use crate::paired_plan::encode_paired_plan;
 
@@ -75,37 +74,13 @@ impl fmt::Display for LockedFileCasErrorV1 {
 impl StdError for LockedFileCasErrorV1 {}
 
 pub struct LockedFileFinalHoldoutCasStoreV1 {
-    file: HeldFile,
+    file: AcquiredFile,
     binding: Digest32,
     state: Option<FinalHoldoutCasRecordV1>,
     length: u64,
     image_digest: Digest32,
     history_digest: Digest32,
     poisoned: bool,
-}
-
-// Own the acquisition, including fallible constructor validation. Closing one
-// fd alone does not release a lock retained by a fork's open description.
-struct HeldFile(File);
-
-impl Deref for HeldFile {
-    type Target = File;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for HeldFile {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Drop for HeldFile {
-    fn drop(&mut self) {
-        let _ = self.0.unlock();
-    }
 }
 
 impl LockedFileFinalHoldoutCasStoreV1 {
@@ -174,6 +149,9 @@ impl LockedFileFinalHoldoutCasStoreV1 {
     }
 
     fn require_physical_current(&mut self) -> Result<Vec<u8>, FinalHoldoutCasStoreError> {
+        self.file
+            .check_process()
+            .map_err(|_| FinalHoldoutCasStoreError::Indeterminate)?;
         if self.poisoned {
             return Err(FinalHoldoutCasStoreError::Indeterminate);
         }
@@ -202,6 +180,9 @@ impl LockedFileFinalHoldoutCasStoreV1 {
     ) -> Result<Vec<u8>, LockedFileCasErrorV1> {
         use crate::qualification_file_observation::ObservationError;
 
+        self.file
+            .check_process()
+            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
         if self.poisoned {
             return Err(LockedFileCasErrorV1::Indeterminate);
         }
@@ -536,18 +517,17 @@ fn record_anchor(record: &FinalHoldoutCasRecordV1) -> FinalHoldoutCasAnchorV1 {
     }
 }
 
-fn acquire(file: File, binding: Digest32) -> Result<HeldFile, LockedFileCasErrorV1> {
+fn acquire(file: File, binding: Digest32) -> Result<AcquiredFile, LockedFileCasErrorV1> {
     if binding.is_zero() {
         return Err(LockedFileCasErrorV1::Binding);
     }
     if !file.metadata().map_err(io_error)?.is_file() {
         return Err(LockedFileCasErrorV1::NotRegular);
     }
-    file.try_lock().map_err(|error| match error {
+    AcquiredFile::acquire(file).map_err(|error| match error {
         TryLockError::WouldBlock => LockedFileCasErrorV1::Busy,
         TryLockError::Error(error) => LockedFileCasErrorV1::Io(error.kind()),
-    })?;
-    Ok(HeldFile(file))
+    })
 }
 
 fn io_error(error: io::Error) -> LockedFileCasErrorV1 {

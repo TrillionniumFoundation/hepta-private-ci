@@ -11,7 +11,7 @@ pub(super) struct PhysicalCurrent {
 }
 
 pub(super) fn read_physical(
-    file: &mut HeldFile,
+    file: &mut AcquiredFile,
     binding: Digest32,
     minimum: Option<FinalHoldoutCasAnchorV1>,
 ) -> Result<PhysicalCurrent, LockedFileCasErrorV1> {
