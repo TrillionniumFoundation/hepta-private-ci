@@ -1,0 +1,100 @@
+{
+  "algorithms": {
+    "ANALYTIC": {
+      "condition_number": "2-norm of regularized normal matrix; full SVD charged",
+      "solver": "full augmented normal matrix, Cholesky solve"
+    },
+    "BP": {
+      "candidate_steps": [
+        24,
+        48,
+        72,
+        96
+      ],
+      "early_stop": "pre-update gradient infinity norm <= 1e-7; L-BFGS returns without an update at that point",
+      "history_size": 10,
+      "line_search_fn": null,
+      "lr": 1.0,
+      "max_eval": 1,
+      "max_iter": 1,
+      "optimizer": "L-BFGS",
+      "tolerance_change": 0.0,
+      "tolerance_grad": 1e-07
+    },
+    "HYBRID": {
+      "parent_to_ridge_blends": [
+        0.125,
+        0.25,
+        0.5,
+        1.0
+      ],
+      "solver": "independent same ridge solve followed by supervised development selection"
+    },
+    "STRICT_WSP": {
+      "capability_rule": null,
+      "unidentified_construction": "ABSTAIN"
+    },
+    "bias_penalty": 0.0,
+    "budget": "per-arm CPU for construction, optimizer setup, all attempted updates and cached-development checks; atomic overrun is reported",
+    "data": {
+      "new_dev": "adapt_dev",
+      "new_test": "adapt_test",
+      "old_dev": "dev",
+      "old_test": "test",
+      "train": "adapt_train"
+    },
+    "max_nonparent_development_candidates": 4,
+    "minimum_selection_improvement": 1e-12,
+    "objective": "mean over examples AND classes of squared signed-onehot error + ridge * sum(weight**2)",
+    "old_retention": "aggregate old-development accuracy and Brier gates; worst-source accuracy is reported, not guaranteed",
+    "selection": "lowest new-development unregularized signed-target MSE among old-retention-eligible candidates and KEEP",
+    "shared_cost": "checkpoint loading, data generation, complete frozen feature extraction and cache IO are charged equally to all five arms",
+    "targets": "2 * one_hot(label, 2) - 1",
+    "working_dtype": "float64; each evaluated/saved candidate is cast to parent parameter dtype"
+  },
+  "claim_scope": "Five head-only adaptation arms with sealed, separately executed final tests.\n\nAll methods start from the same selected, independently trained checkpoint.\nThey receive identical frozen final features and target conventions. Supervised\nridge and its development-selected blends are explicitly not strict WSP.\nThis experiment tests readout adaptation, not replacement of representation\nlearning or end-to-end pretraining by a weight program.",
+  "editing": {
+    "bp_steps": 96,
+    "cpu_seconds": 10.0,
+    "eligible_names": [
+      "readout.weight",
+      "readout.bias"
+    ],
+    "max_dev_old_accuracy_loss": 0.02,
+    "max_dev_old_brier_increase": 0.02,
+    "methods": [
+      "KEEP",
+      "BP",
+      "ANALYTIC",
+      "STRICT_WSP",
+      "HYBRID"
+    ],
+    "objective": "mean squared error to common signed one-hot targets plus ridge on weight",
+    "ridge": 0.01,
+    "strict_wsp_rule": null
+  },
+  "schema": "hcsn-head-adaptation-protocol-v1",
+  "source_hashes": {
+    "adaptation": {
+      "adaptation_suite.py": "8f1f0619fcb5aa4354f151534f7164c5f1cba867eee8e58fd66ea1b3e210920c",
+      "editing.py": "0577fea73b8678e03476082f4b4eab7623bbada47a628e6eed31b4180c7d90dc"
+    },
+    "training_closure": {
+      "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+      "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+      "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+      "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+      "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+      "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+      "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+      "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+      "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+      "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+      "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+      "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+      "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+      "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+    }
+  },
+  "training_protocol_sha256": "c259030b227f25bc72ccbab12402fbe62747df845c9dce965e795b85b1af176d"
+}
