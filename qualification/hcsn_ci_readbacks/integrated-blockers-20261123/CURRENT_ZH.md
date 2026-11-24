@@ -1,5 +1,12 @@
 # Hepta 研究与集成核验
 
+## 2026-11-24 UTC 新跨分支 Windows 原生存储阻塞与依赖候选（独立于原隔离正例）
+
+- 实读另线精确 [fb00e442](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/fb00e4422c293ffb318c9d7535e1991a3bbac707/qualification/dependency-closure-20261124/stage-3-integration.json) 的第三阶段回执：原 cargo-deny --locked --all-features 等8个 exit code 均0，advisory errors=0、warnings=3（yanked chacha20/clipboard-win/spin），原既有9个例外保持。此为该候选图，非 main 59 告警的闭合；完整 blocking CI、加密 keyring/Matrix、原生存储与消费者仍缺资格。
+- 直接读取新 [45434906085/job 138589954514](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45434906085/job/138589954514) 完整日志5818行及正式步骤，原生 Windows job 终态 failure。四个实际选择的 nextest summary 分别为路径原语10/12、registry 2/2、SQLite recovery 1/6、cognitive store 0/23；合计13/43，30失败（不计选择器外项目），两原语、五 recovery、23 cognitive 失败均在日志各有重复失败；非完整仓库测试。原语两红为普通新文件的同句柄私有 owner/ACL 检查拒绝及目录新增子项未触发原 verify_unchanged。cognitive 原例见 Invalid("cognitive root is redirected")，不能未经进一步证据归因全部失败。后两消费者阶段都在 thread_summary.rs:190 因 MultiAgentMode 未声明 E0433 编译失败，原测试未执行。scoped Clippy、归档步骤成功不能替代上述失败。
+- 新 [db23d3a7](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/db23d3a74ea0edfe31c3d4f8bd574f7df8304684/qualification/ci-remediation/windows-sqlite-native-20261124/CONTRACT.md) 合同记录目录保留句柄双次全量枚举、4,096 entries/128 pages 有界、细化 owner/ACL 诊断且保持 TokenUser 严格相等。仅原独立 MSVC cargo check --tests 通过，未执行新原生例；端点观测不是原子快照/ABA 防护。另 [#7070](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7070) 精确 79b1ef2a 为未合并 fail-closed draft，明确拒绝两类未资格 managed execution，不恢复生产 backend；其原34调用+6 token 路径新回归尚未原生运行，不能作为原四个 Windows 隔离正例通过。
+- main 732e934、原四 Draft c12ee03f/4de33d14/b1af67a3/78c1012d 与41条关联PR工作流仍无变化（25成功5跳过11失败）；Signed-only 研究分支仍14cfd44a。另线正在修复，不重复派发，不改产品、安全门或合并草案。全仓 HOLD。
+
 ## 2026-11-24 UTC Signed-only 补充对照：宽度退化的可执行新线索
 
 - 研究分支相对 f15a8663 新增一提交 [14cfd44a](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/14cfd44ab6d9da581bad5363495266424c661eb4/qualification/hcsn_signed_control_20261124)。原72项结果公开后才登记补充9槽，复用同一已公开合成测试族，非新盲测；沿用180 CPU秒/512更新、相同seed和原14源文件。原 flow 已屏蔽边界消息，再屏蔽 unsigned event rate 列，仅跨群体传播 signed flow；局部概率/value/risk 及读出仍在。原 SOURCE_REVIEW 和 SIGNED_SEAL 实读，原回执记录先封存九槽训练后构造测试，非本轮重跑。
