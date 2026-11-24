@@ -3,10 +3,10 @@ name: Hepta Final-use revocation capacity qualification
 on:
   pull_request:
     paths:
-      - 'codex-rs/hepta-contracts/src/final_use.rs'
-      - 'codex-rs/hepta-contracts/src/final_use_tests.rs'
-      - 'qualification/final-use-revocation-capacity-20261015.md'
-      - '.github/workflows/hepta-final-use-revocation-capacity.yml'
+      - "codex-rs/hepta-contracts/src/final_use.rs"
+      - "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      - "qualification/final-use-revocation-capacity-20261015.md"
+      - ".github/workflows/hepta-final-use-revocation-capacity.yml"
   workflow_dispatch:
 
 permissions:
@@ -28,10 +28,10 @@ jobs:
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-      CARGO_INCREMENTAL: '0'
-      CARGO_BUILD_JOBS: '2'
-      CARGO_PROFILE_DEV_DEBUG: '0'
-      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact source without persisted credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
