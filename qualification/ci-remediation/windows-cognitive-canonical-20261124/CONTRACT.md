@@ -58,6 +58,32 @@ native execution or complete consumer qualification. The normal Windows
 workflow still runs the full primitive, registry, state, cognitive,
 directory/schema, prompt-consumer, and scoped Clippy gates.
 
+## Subsequent native execution of the canonical primitive
+
+The normal Windows workflow at integrated source
+`ebe2737b4014c9b45ad995adccc53eb71e718f3d` executed the new case:
+`sqlite_canonical_name_comes_from_the_validated_handle` **passed** in 0.020
+seconds. All 14 selected primitive cases ran: 13 passed, 1 failed, with 5 other
+tests outside this selector. The unchanged ordinary-file inheritance case
+failed on both attempts because its owner differed from the effective token
+user. That source does not yet include the independent owner fixture revision
+`640825cbfe71d978991a30959b52a0b60a509895`.
+
+The registry selection separately passed 2/2, with 26 other tests outside its
+selector. These results qualify the canonical-name primitive and preserve the
+adverse creation-owner result. At this receipt, the normal state/cognitive and
+other consumer gates remain in progress; in particular, the cognitive 23-case
+selection is not yet qualified. The normal run was not cancelled.
+
+- [Normal native run and job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45445453422/job/138627851875)
+- Early artifact: `14945209118`, 5,158 bytes; downloaded ZIP SHA-256
+  `129a6da326193ef756605fb7d399235fa5d54995e89b1ed6dec9ea53879f68e0`
+  matches GitHub's artifact digest. The contained head matches the source above.
+- Primitive log SHA-256:
+  `3ee49aabb9f1eb099f359aae02ca22ee6e91653b2c04a13d0b9318ca88ac339e`.
+- Registry log SHA-256:
+  `e69f04c5e788fecee88d51e6f4a7213d13d6655ba0ef0e90fc70626d75a15dd0`.
+
 ## Primary API reference
 
 Microsoft documents that the DOS form returned by this handle query uses
