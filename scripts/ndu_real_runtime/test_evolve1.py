@@ -93,6 +93,28 @@ def transfer_fixture(lineage="lineage-0"):
     }, evaluations
 
 
+def remap_identifiers(value, aliases):
+    """Rename exact fixture identities, including run-keyed registries."""
+    if isinstance(value, dict):
+        return {
+            aliases.get(key, key): remap_identifiers(item, aliases)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [remap_identifiers(item, aliases) for item in value]
+    return aliases.get(value, value) if isinstance(value, str) else value
+
+
+def retained_fixture():
+    block, records = transfer_fixture()
+    final = block["registry"]["finals"]["lineage-0/S0/parent"]
+    final.update(attempt_id=None, candidate_bundle=pin("S0"))
+    records[("heldout_final", final["evaluation_reference"])]["candidate_bundle"] = pin(
+        "S0"
+    )
+    return block, records
+
+
 class EvolveTransferChecks(unittest.TestCase):
     def assess(self, block, records, **options):
         return summarize_transfer(
@@ -176,15 +198,118 @@ class EvolveTransferChecks(unittest.TestCase):
                         self.assess(block, records)
 
     def test_noupdate_never_becomes_improvement_from_noisy_positive_score(self):
-        block, records = transfer_fixture()
-        final = block["registry"]["finals"]["lineage-0/S0/parent"]
-        final.update(attempt_id=None, candidate_bundle=pin("S0"))
-        records[("heldout_final", final["evaluation_reference"])][
-            "candidate_bundle"
-        ] = pin("S0")
+        block, records = retained_fixture()
         cell = self.assess(block, records)["cells"]["S0-I0"]
-        self.assertEqual((cell["registered_runs"], cell["qualified_runs"]), (1, 0))
+        self.assertEqual(
+            (cell["registered_runs"], cell["qualified_runs"], cell["unresolved_runs"]),
+            (1, 0, 0),
+        )
         self.assertEqual(cell["effect_criterion_not_met_runs"], 1)
+
+    def test_unconfirmed_retained_final_remains_unresolved(self):
+        for missing in (
+            "final",
+            "acceptance",
+            "sealed",
+            "attempt",
+            "terminal",
+            "rollback",
+            "validity_unknown",
+            "all_attempts",
+        ):
+            with self.subTest(missing=missing):
+                block, records = retained_fixture()
+                run_id = "lineage-0/S0/parent"
+                final = block["registry"]["finals"][run_id]
+                if missing == "final":
+                    del records[("heldout_final", final["evaluation_reference"])]
+                elif missing == "acceptance":
+                    del records[
+                        ("acceptance", block["attempts"][0]["evaluation_reference"])
+                    ]
+                elif missing == "sealed":
+                    block["registry"]["sealed"] = False
+                elif missing == "attempt":
+                    block["attempts"].pop(0)
+                elif missing == "terminal":
+                    block["attempts"][0]["terminal_status"] = "UNKNOWN"
+                elif missing == "rollback":
+                    block["attempts"][0]["rolled_back"] = None
+                elif missing == "validity_unknown":
+                    block["attempts"][0].update(
+                        validity="UNKNOWN", evaluation_reference=None
+                    )
+                else:
+                    block["registry"]["entries"] = [
+                        row
+                        for row in block["registry"]["entries"]
+                        if row["run_id"] != run_id
+                    ]
+                    block["attempts"] = [
+                        row for row in block["attempts"] if row["run_id"] != run_id
+                    ]
+                report = self.assess(block, records)
+                observed = report["lineages"]["lineage-0"]["observed_runs"][run_id]
+                self.assertEqual(
+                    (
+                        observed["qualified"],
+                        observed["effect_criterion_met"],
+                        observed["reason"],
+                    ),
+                    (None, None, "UNRESOLVED_EVIDENCE"),
+                )
+                cell = report["cells"]["S0-I0"]
+                self.assertEqual(
+                    (
+                        cell["registered_runs"],
+                        cell["unresolved_runs"],
+                        cell["improvement_probability_bounds"],
+                    ),
+                    (1, 1, [0.0, 1.0]),
+                )
+                self.assertEqual(report["status"], "HOLD_INCOMPLETE_EVIDENCE")
+
+    def test_retained_final_requires_both_original_evaluation_ports(self):
+        block, records = retained_fixture()
+        for ports in (
+            {},
+            {"read_evaluation": lambda kind, ref: records.get((kind, ref))},
+            {
+                "verify_evaluation": lambda _kind, record, owner: (
+                    record["actor_id"] == owner
+                )
+            },
+        ):
+            with self.subTest(ports=list(ports)):
+                report = summarize_transfer(
+                    [block], minimum_gain=0.1, maximum_retention_loss=0.05, **ports
+                )
+                cell = report["cells"]["S0-I0"]
+                self.assertEqual(
+                    (cell["unresolved_runs"], cell["effect_criterion_unknown_runs"]),
+                    (1, 1),
+                )
+
+    def test_retained_final_rejects_unauthenticated_or_misbound_receipts(self):
+        for field, value, code in (
+            ("actor_id", "not-the-evaluator", "E_EVALUATION_AUTHENTICATION_REJECTED"),
+            (
+                "selection_digest",
+                pin("unrelated-selection"),
+                "E_HOLDOUT_BEFORE_SELECTION_OR_LEAKAGE",
+            ),
+            (
+                "selection_committed_unix_seconds",
+                20,
+                "E_HOLDOUT_BEFORE_SELECTION_OR_LEAKAGE",
+            ),
+        ):
+            with self.subTest(field=field):
+                block, records = retained_fixture()
+                final = block["registry"]["finals"]["lineage-0/S0/parent"]
+                records[("heldout_final", final["evaluation_reference"])][field] = value
+                with self.assertRaisesRegex(ACEValidationError, code):
+                    self.assess(block, records)
 
     def test_zero_success_has_no_zero_or_finite_cost_per_improvement(self):
         block, records = transfer_fixture()
@@ -286,6 +411,89 @@ class EvolveTransferChecks(unittest.TestCase):
             run["common_start"]["holdout_data"] = pin("different-holdout-data")
         with self.assertRaisesRegex(ACEValidationError, "EVOLVE_DATA_DIGEST_LEAKAGE"):
             self.assess([first, second], {})
+
+    def test_relabelled_lineage_cannot_recount_original_runs(self):
+        first, records = transfer_fixture()
+        second, other_records = transfer_fixture("lineage-1")
+        aliases = {
+            new["run_id"]: old["run_id"]
+            for old, new in zip(first["plan"]["runs"], second["plan"]["runs"])
+        }
+        second = remap_identifiers(second, aliases)
+        records.update(remap_identifiers(other_records, aliases))
+        for changed_owner in (None, "producer_owner", "evaluator_owner"):
+            with self.subTest(changed_owner=changed_owner):
+                renamed = deepcopy(second)
+                if changed_owner is not None:
+                    for run in renamed["plan"]["runs"]:
+                        run[changed_owner] = "other/" + run[changed_owner]
+                with self.assertRaisesRegex(
+                    ACEValidationError, "EVOLVE_REUSED_ORIGINAL_RUN"
+                ):
+                    self.assess([first, renamed], records)
+
+    def test_original_attempt_and_operation_cannot_be_reused_with_new_run_ids(self):
+        for key, code in (
+            ("attempt_id", "EVOLVE_REUSED_ORIGINAL_ATTEMPT"),
+            ("operation_id", "EVOLVE_REUSED_ORIGINAL_OPERATION"),
+        ):
+            with self.subTest(identity=key):
+                first, records = transfer_fixture()
+                second, other_records = transfer_fixture("lineage-1")
+                aliases = {
+                    second["registry"]["entries"][0][key]: first["registry"]["entries"][
+                        0
+                    ][key]
+                }
+                second = remap_identifiers(second, aliases)
+                records.update(remap_identifiers(other_records, aliases))
+                with self.assertRaisesRegex(ACEValidationError, code):
+                    self.assess([first, second], records)
+
+    def test_unresolved_registered_operation_remains_an_original_identity(self):
+        first, records = transfer_fixture()
+        second, other_records = transfer_fixture("lineage-1")
+        original = first["registry"]["entries"][2]
+        first["attempts"] = [
+            row
+            for row in first["attempts"]
+            if row["attempt_id"] != original["attempt_id"]
+        ]
+        aliases = {
+            second["registry"]["entries"][0]["operation_id"]: original["operation_id"]
+        }
+        second = remap_identifiers(second, aliases)
+        records.update(remap_identifiers(other_records, aliases))
+        with self.assertRaisesRegex(
+            ACEValidationError, "EVOLVE_REUSED_ORIGINAL_OPERATION"
+        ):
+            self.assess([first, second], records)
+
+    def test_independent_owner_namespaces_can_reuse_local_identifiers(self):
+        first, records = transfer_fixture()
+        second, other_records = transfer_fixture("lineage-1")
+        aliases = {
+            new["run_id"]: old["run_id"]
+            for old, new in zip(first["plan"]["runs"], second["plan"]["runs"])
+        }
+        for old, new in zip(
+            first["registry"]["entries"], second["registry"]["entries"]
+        ):
+            aliases.update(
+                {new[key]: old[key] for key in ("attempt_id", "operation_id")}
+            )
+        for run in second["plan"]["runs"]:
+            for key in ("producer_owner", "evaluator_owner"):
+                aliases[run[key]] = "independent/" + run[key]
+        second = remap_identifiers(second, aliases)
+        records.update(remap_identifiers(other_records, aliases))
+        report = self.assess([first, second], records)
+        self.assertEqual(report["status"], "DESCRIPTIVE_PILOT_COMPLETE")
+        self.assertTrue(
+            all(cell["qualified_runs"] == 2 for cell in report["cells"].values())
+        )
+        self.assertFalse(report["independent_lineage_provenance_verified"])
+        self.assertFalse(report["scientific_efficacy_qualified"])
 
 
 if __name__ == "__main__":

@@ -1,0 +1,282 @@
+{
+  "schema": "cell-stage-development-publication-v1",
+  "scope": "one composed development source lineage; not scientific admission",
+  "baseline_commit": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+  "source_commit": "62a8c50ec81a0027621d75156a9b56b23edd977c",
+  "source_tree": "7f2acc200e960278dbf135e90bd24416f8d35c7e",
+  "source_branch": "codex/cell-mem-format-20261108-d882",
+  "review_stages": [
+    {
+      "id": "s0",
+      "stage": "S0",
+      "branch": "codex/cell-s0-checkpoint-ports-20261108-d882",
+      "commit": "dafa66841cbcda56dcbab7f1a737514ec7e7fe4f",
+      "tree": "3a411e6197eb4f138a6742ecfbd6a174ca6b54f4",
+      "pr": 5409,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5409",
+      "parent": "6462854e289a405b2981fa67b77b1cb51a155326",
+      "changed_text_lines_since_previous": 104,
+      "review_base_commit": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+      "review_changed_text_lines": 478,
+      "review_numstat": "2\t0\tcodex-rs/hepta-agentd/src/learning_iteration.rs\n5\t2\tcodex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs\n125\t0\tcodex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs\n301\t0\tcodex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs\n3\t0\tcodex-rs/hepta-agentd/src/learning_iteration_checkpoint_tests.rs\n39\t0\tcodex-rs/hepta-agentd/src/learning_iteration_ports.rs\n1\t0\tcodex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "id": "s5",
+      "stage": "S5",
+      "branch": "codex/cell-s5-original-identities-20261108-d882",
+      "commit": "4d5ffd79302da50ca2de87ec203905f7b4683de6",
+      "tree": "8fb46bb725eeac65575275bbce15d2150fd73e53",
+      "pr": 5411,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5411",
+      "parent": "dafa66841cbcda56dcbab7f1a737514ec7e7fe4f",
+      "changed_text_lines": 122,
+      "review_base_commit": "dafa66841cbcda56dcbab7f1a737514ec7e7fe4f",
+      "review_changed_text_lines": 122,
+      "review_numstat": "1\t1\t.github/workflows/hepta-evolve1.yml\n25\t0\tscripts/ndu_real_runtime/evolve1.py\n95\t0\tscripts/ndu_real_runtime/test_evolve1.py"
+    },
+    {
+      "id": "s2",
+      "stage": "S2",
+      "branch": "codex/cell-s2-preparation-choice-20261108-d882",
+      "commit": "b9008edb2bea8b8dc3a9d347100667a8d62e7978",
+      "tree": "32927893efb9e51c57806b4bebd20934f57f1b90",
+      "pr": 5412,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5412",
+      "parent": "4d5ffd79302da50ca2de87ec203905f7b4683de6",
+      "changed_text_lines": 549,
+      "review_base_commit": "4d5ffd79302da50ca2de87ec203905f7b4683de6",
+      "review_changed_text_lines": 549,
+      "review_numstat": "299\t0\tscripts/hepta_pred1/preparation.py\n250\t0\tscripts/hepta_pred1/test_preparation.py"
+    },
+    {
+      "id": "s3",
+      "stage": "S3",
+      "branch": "codex/cell-s3-gradient-observation-20261108-d882",
+      "commit": "1582b1c7bf35402b6e93cd06f9b587a7035bbbff",
+      "tree": "9e366c398c0975dcccd1a5828c68f436109fb4a3",
+      "pr": 5413,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5413",
+      "parent": "b9008edb2bea8b8dc3a9d347100667a8d62e7978",
+      "changed_text_lines": 470,
+      "review_base_commit": "b9008edb2bea8b8dc3a9d347100667a8d62e7978",
+      "review_changed_text_lines": 470,
+      "review_numstat": "112\t0\t.github/workflows/hepta-training-state-development.yml\n50\t0\tproposals/localization-v2/gradient_diagnostics.py\n12\t1\tproposals/localization-v2/models.py\n286\t0\tproposals/localization-v2/test_training_diagnostics.py\n9\t0\tproposals/localization-v2/train_development.py"
+    },
+    {
+      "id": "s4",
+      "stage": "S4",
+      "branch": "codex/cell-s4-trained-state-transfer-20261108-d882",
+      "commit": "c5cc14d76fbfc484af9f0088d4897fb27f6419fc",
+      "tree": "e692a5cc80dda94be1442813f850d0739dbd792f",
+      "pr": 5414,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5414",
+      "parent": "1582b1c7bf35402b6e93cd06f9b587a7035bbbff",
+      "changed_text_lines": 604,
+      "review_base_commit": "1582b1c7bf35402b6e93cd06f9b587a7035bbbff",
+      "review_changed_text_lines": 604,
+      "review_numstat": "8\t0\t.github/workflows/hepta-training-state-development.yml\n342\t0\tproposals/localization-v2/structural_state.py\n254\t0\tproposals/localization-v2/test_structural_state.py"
+    },
+    {
+      "id": "s1-core",
+      "stage": "S1",
+      "branch": "codex/cell-s1-observation-diagnosis-20261108-d882",
+      "commit": "b92523d13f8e0efb7bef948d4038c1129b574e3d",
+      "tree": "edab706dc42b8c1bc2017a3954d654e743ee2f8e",
+      "pr": 5415,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5415",
+      "parent": "c5cc14d76fbfc484af9f0088d4897fb27f6419fc",
+      "changed_text_lines": 560,
+      "review_base_commit": "c5cc14d76fbfc484af9f0088d4897fb27f6419fc",
+      "review_changed_text_lines": 560,
+      "review_numstat": "13\t0\t.github/workflows/hepta-evolve1.yml\n255\t0\tscripts/ndu_real_runtime/candidate_diagnostic.py\n292\t0\tscripts/ndu_real_runtime/test_candidate_diagnostic.py"
+    },
+    {
+      "id": "s1-io",
+      "stage": "S1",
+      "branch": "codex/cell-s1-original-attempt-diagnosis-20261108-d882",
+      "commit": "042362f2c91da56380a6f581fa471dcd04077dd3",
+      "tree": "1072ef06280c92bc77f5e5507d7298f34e3077dc",
+      "pr": 5416,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5416",
+      "parent": "b92523d13f8e0efb7bef948d4038c1129b574e3d",
+      "changed_text_lines": 522,
+      "review_base_commit": "b92523d13f8e0efb7bef948d4038c1129b574e3d",
+      "review_changed_text_lines": 522,
+      "review_numstat": "1\t1\t.github/workflows/hepta-evolve1.yml\n339\t0\tscripts/ndu_real_runtime/candidate_diagnostic.py\n180\t1\tscripts/ndu_real_runtime/test_candidate_diagnostic.py"
+    },
+    {
+      "id": "s1-memory",
+      "stage": "S1",
+      "branch": "codex/cell-s1-bounded-candidate-memory-20261108-d882",
+      "commit": "30fbc990d2834655443840bfc98c606d21116410",
+      "tree": "85dad1a4974948661b286fdb0e28f98d17281df4",
+      "pr": 5417,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5417",
+      "parent": "042362f2c91da56380a6f581fa471dcd04077dd3",
+      "changed_text_lines": 414,
+      "review_base_commit": "042362f2c91da56380a6f581fa471dcd04077dd3",
+      "review_changed_text_lines": 414,
+      "review_numstat": "8\t0\t.github/workflows/hepta-evolve1.yml\n244\t0\tscripts/ndu_real_runtime/candidate_memory.py\n162\t0\tscripts/ndu_real_runtime/test_candidate_memory.py"
+    },
+    {
+      "id": "mem-format",
+      "stage": "mechanical",
+      "branch": "codex/cell-mem-format-20261108-d882",
+      "commit": "62a8c50ec81a0027621d75156a9b56b23edd977c",
+      "tree": "7f2acc200e960278dbf135e90bd24416f8d35c7e",
+      "parent": "30fbc990d2834655443840bfc98c606d21116410",
+      "changed_text_lines": 496,
+      "pr": 5418,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5418",
+      "review_base_commit": "30fbc990d2834655443840bfc98c606d21116410",
+      "review_changed_text_lines": 496,
+      "review_numstat": "41\t10\tscripts/memory_cell_mem1/environment.py\n30\t9\tscripts/memory_cell_mem1/native.py\n303\t92\tscripts/memory_cell_mem1/run.py\n10\t1\tscripts/memory_cell_mem1/test_environment.py"
+    }
+  ],
+  "source_files": [
+    {
+      "path": ".github/workflows/hepta-evolve1.yml",
+      "mode": "100644",
+      "git_blob": "2eaf2b4fd3207db488da11a9d31043e41a41d8bc"
+    },
+    {
+      "path": ".github/workflows/hepta-training-state-development.yml",
+      "mode": "100644",
+      "git_blob": "97c219d93f3a29ee50155d3d091dc04d6846f367"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "mode": "100644",
+      "git_blob": "bf927ee8c96baf65fe701ccae683174f92b95964"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "mode": "100644",
+      "git_blob": "41dfb963e8356e1040db8044e971b6bd629af104"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs",
+      "mode": "100644",
+      "git_blob": "a6aec3b7e8fc67a01a22330bbd1a46644f33ae77"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs",
+      "mode": "100644",
+      "git_blob": "298cfb98331a227b194fc45d2ebb33871d589ce4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_tests.rs",
+      "mode": "100644",
+      "git_blob": "f3c4af8439802e4e42749ce3a38addde593fff64"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+      "mode": "100644",
+      "git_blob": "94c039f9afcbee134985b54044fed8c775bd31e9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "git_blob": "86789180629f9806d7be5a53dce8c6cab2869801"
+    },
+    {
+      "path": "proposals/localization-v2/gradient_diagnostics.py",
+      "mode": "100644",
+      "git_blob": "9a89e4fc7baabcbc391391cf54c1da1183f41e8a"
+    },
+    {
+      "path": "proposals/localization-v2/models.py",
+      "mode": "100644",
+      "git_blob": "5f23d2e941195e63d9266835d710d86192da8b86"
+    },
+    {
+      "path": "proposals/localization-v2/structural_state.py",
+      "mode": "100644",
+      "git_blob": "30a62b72ebe582f8ccec08da2a49e745d3d9ebf2"
+    },
+    {
+      "path": "proposals/localization-v2/test_structural_state.py",
+      "mode": "100644",
+      "git_blob": "bc0c3179e13cb95da08e3e889233db4c034c010f"
+    },
+    {
+      "path": "proposals/localization-v2/test_training_diagnostics.py",
+      "mode": "100644",
+      "git_blob": "14ac1a4f2b8a5b3965b71091fcb2670b451d201c"
+    },
+    {
+      "path": "proposals/localization-v2/train_development.py",
+      "mode": "100644",
+      "git_blob": "a4bbddeb61ed7a530e917d5f41f17af91d8ff9aa"
+    },
+    {
+      "path": "scripts/hepta_pred1/preparation.py",
+      "mode": "100644",
+      "git_blob": "637de9d6eb6b0331f5e2b33389c2143f58bb4364"
+    },
+    {
+      "path": "scripts/hepta_pred1/test_preparation.py",
+      "mode": "100644",
+      "git_blob": "1c8907af54c11185cf8f445d6d036f5a58e894d5"
+    },
+    {
+      "path": "scripts/memory_cell_mem1/environment.py",
+      "mode": "100644",
+      "git_blob": "411a7f5cece0d9b58b9d19fcd788a0de61d8dc40"
+    },
+    {
+      "path": "scripts/memory_cell_mem1/native.py",
+      "mode": "100644",
+      "git_blob": "fe58e9d8ffb27ead999e2555ed2e684ef19acf27"
+    },
+    {
+      "path": "scripts/memory_cell_mem1/run.py",
+      "mode": "100644",
+      "git_blob": "5496ac8c66cf75673417e0c32d4db1e60262856a"
+    },
+    {
+      "path": "scripts/memory_cell_mem1/test_environment.py",
+      "mode": "100644",
+      "git_blob": "2aad4aad158519dbd8b2fa449c558e2c00723420"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/candidate_diagnostic.py",
+      "mode": "100644",
+      "git_blob": "4f39e8eecbadb62ca9c353f5e8aab56a5d91ebf2"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/candidate_memory.py",
+      "mode": "100644",
+      "git_blob": "18db6132680e7f5f5ac2fad9c343eefc9cab75cc"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/evolve1.py",
+      "mode": "100644",
+      "git_blob": "b967054d6f0e290ca03d60ac392af1195033c7f2"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_candidate_diagnostic.py",
+      "mode": "100644",
+      "git_blob": "3c25753a64eabdd330640f5e3de065760f6ddeba"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_candidate_memory.py",
+      "mode": "100644",
+      "git_blob": "b341e81ae4cd61895deae56e6abe323a3e435fad"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_evolve1.py",
+      "mode": "100644",
+      "git_blob": "86eddef857eca613cb50c3ab61802615b6bcb06b"
+    }
+  ],
+  "scientific_stage_decisions": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD"
+  },
+  "evidence_commit_note": "This ledger binds source commits. The enclosing evidence-only commit and its PR are identified by the Git ref and PR, avoiding a self-referential file hash."
+}

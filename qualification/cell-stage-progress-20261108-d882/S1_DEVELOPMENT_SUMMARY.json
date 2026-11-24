@@ -1,0 +1,243 @@
+{
+  "automatic_retry": false,
+  "costs": {
+    "accounting": "Action spans are included in attempt envelopes; phase elapsed wall overlaps both. Never add these levels.",
+    "energy_joules": null,
+    "observed_action_seconds": 11.546084600966424,
+    "provider_charges": null,
+    "sum_known_attempt_wall_seconds": 53.7504813966807,
+    "unknown_attempt_wall_count": 0
+  },
+  "counts": {
+    "candidate_status_counts": {
+      "covered": 21,
+      "missing_correct_candidate": 29
+    },
+    "decision_counts": {
+      "other_action": 8,
+      "prepare_roi": 7,
+      "ranking_error": 2,
+      "read_roi": 7,
+      "stop_after_reconstructed_text_success": 10,
+      "stop_with_unmet_reconstructed_text": 10,
+      "write_correct": 2,
+      "write_without_correct_candidate": 4
+    },
+    "observed_rows": 50,
+    "registered_attempts": 20,
+    "roi_outcome_counts": {
+      "coverage_gained": 2,
+      "coverage_lost": 2,
+      "coverage_retained": 1,
+      "still_missing": 2
+    },
+    "terminal_status_counts": {
+      "Completed": 20
+    }
+  },
+  "exit_code": 0,
+  "interpretation": [
+    "Coverage changes describe original forced exploration, not a causal policy improvement.",
+    "The 50 rows and 20 attempts are not independent training repeats.",
+    "A correct final inherited handoff is not newly learned delivery quality.",
+    "ROI preparation/read action durations exclude work charged to a later successor decision; all action durations remain included once in full attempt envelopes.",
+    "Retain every attempted ROI, including two coverage losses and two still-missing outcomes.",
+    "Before altering actor candidate retention or ranking, use a separate prospective train/development plan and matched information/cost budgets; do not fit observed retention labels or date patterns."
+  ],
+  "native_job_id": "1a1be4c758c-5e21-29",
+  "native_state": "succeeded",
+  "new_diagnostic_wrapper": {
+    "cost_scope": "diagnostic wrapper process after Python startup; includes imports/preparation/diagnostic, excludes transport and native supervisor",
+    "energy_joules": null,
+    "error": null,
+    "full_physical_cost_complete": false,
+    "module_sha256": "c1263f2af0ee3c61bfe69c81aa7559819159811c142d0d4af79c435069fa8b25",
+    "new_actor_runs": 0,
+    "new_ocr_runs": 0,
+    "new_training_runs": 0,
+    "plan_sha256": "14b820a9dcf17561cbfb4ee15598cbae7993a3b1cd7c7fbf5a407f33f266add7",
+    "process_cpu_seconds": 0.10421364699999999,
+    "provider_charges": null,
+    "schema": "hepta.candidate-diagnostic-execution.v1",
+    "status": "completed",
+    "wall_seconds": 0.15416816994547844
+  },
+  "observed_final_text": {
+    "agrees_with_original_evaluator": 20,
+    "correct": 10,
+    "correct_without_any_write_action": 8,
+    "incorrect": 10,
+    "unknown": 0
+  },
+  "phase_envelopes": [
+    {
+      "elapsed_wall_seconds": 12.422789033036679,
+      "phase": "collection-content",
+      "planned": 10
+    },
+    {
+      "elapsed_wall_seconds": 15.902201131917536,
+      "phase": "collection-transitions",
+      "planned": 10
+    }
+  ],
+  "plan_binding": {
+    "path": "development-plan-v1.json",
+    "sha256": "14b820a9dcf17561cbfb4ee15598cbae7993a3b1cd7c7fbf5a407f33f266add7"
+  },
+  "publication": "Aggregate metadata only; original invoice pixels, prompts, labels and raw trajectories stay outside the public repository.",
+  "report_binding": {
+    "bytes": 98862,
+    "path": "development-report.json",
+    "sha256": "47fd3000e6fab847df9e55ecad6eac67c81c8e7714a759961da88550291ac347"
+  },
+  "roi_reads": [
+    {
+      "after_covered": false,
+      "before_covered": true,
+      "case_id": "case-a9172a7230b7609f37d58da9",
+      "cost_scope": "observed actions; already included in attempt envelope",
+      "observed_final_text_correct": false,
+      "operation_id": "collect-transitions-69f5b2243077ad936b262be8c6677513",
+      "outcome": "coverage_lost",
+      "preparation_record_ids": [
+        "collect-transitions-69f5b2243077ad936b262be8c6677513/transition/00"
+      ],
+      "preparation_seconds": 0.37034581997431815,
+      "read_seconds": 0.02716299914754927,
+      "record_id": "collect-transitions-69f5b2243077ad936b262be8c6677513/transition/01",
+      "step": 1,
+      "successor_record_sha256": "22a12aad14dafec0d4ace1696a95dcdda32a7ed104c7a250eea584ea7f1ff9c0",
+      "task_family": "text_image_complementary",
+      "write_decisions": [
+        "write_without_correct_candidate"
+      ]
+    },
+    {
+      "after_covered": false,
+      "before_covered": true,
+      "case_id": "case-cd1d40781908c33c241d662c",
+      "cost_scope": "observed actions; already included in attempt envelope",
+      "observed_final_text_correct": true,
+      "operation_id": "collect-transitions-76ac53bb2122ce0c3295fcb7a2215986",
+      "outcome": "coverage_lost",
+      "preparation_record_ids": [
+        "collect-transitions-76ac53bb2122ce0c3295fcb7a2215986/transition/00"
+      ],
+      "preparation_seconds": 0.32194106886163354,
+      "read_seconds": 0.028875260148197412,
+      "record_id": "collect-transitions-76ac53bb2122ce0c3295fcb7a2215986/transition/01",
+      "step": 1,
+      "successor_record_sha256": "c7ba96d5890a7f3a564ad091da7f1028c0a078412116588df0999df0e569d54e",
+      "task_family": "selective_refinement",
+      "write_decisions": []
+    },
+    {
+      "after_covered": false,
+      "before_covered": false,
+      "case_id": "case-9036a12ff75fcc481646e835",
+      "cost_scope": "observed actions; already included in attempt envelope",
+      "observed_final_text_correct": false,
+      "operation_id": "collect-transitions-dc69092977b5b8a80a3d0c240ac11fcd",
+      "outcome": "still_missing",
+      "preparation_record_ids": [
+        "collect-transitions-dc69092977b5b8a80a3d0c240ac11fcd/transition/02"
+      ],
+      "preparation_seconds": 0.009852343006059527,
+      "read_seconds": 0.024439311819151044,
+      "record_id": "collect-transitions-dc69092977b5b8a80a3d0c240ac11fcd/transition/03",
+      "step": 3,
+      "successor_record_sha256": "1224eca4158418c158e63c7559d886bfdcce5cbbeb8df75285a74d7b3ef28eac",
+      "task_family": "preparation_required",
+      "write_decisions": [
+        "write_without_correct_candidate",
+        "write_without_correct_candidate"
+      ]
+    },
+    {
+      "after_covered": true,
+      "before_covered": true,
+      "case_id": "case-fad4394de93653c07120c0fe",
+      "cost_scope": "observed actions; already included in attempt envelope",
+      "observed_final_text_correct": false,
+      "operation_id": "collect-transitions-7bce9a2c243b34f5f5b10a8e265829a7",
+      "outcome": "coverage_retained",
+      "preparation_record_ids": [
+        "collect-transitions-7bce9a2c243b34f5f5b10a8e265829a7/transition/01"
+      ],
+      "preparation_seconds": 0.014493353897705674,
+      "read_seconds": 0.13922637910582125,
+      "record_id": "collect-transitions-7bce9a2c243b34f5f5b10a8e265829a7/transition/02",
+      "step": 2,
+      "successor_record_sha256": "44eadeba6a5bcdb4736f03d0a8412fb5c650a07651156254f9d3fa5e4ce0d48d",
+      "task_family": "text_sufficient",
+      "write_decisions": [
+        "ranking_error",
+        "ranking_error"
+      ]
+    },
+    {
+      "after_covered": true,
+      "before_covered": false,
+      "case_id": "case-390f0b994f5782f56effce9b",
+      "cost_scope": "observed actions; already included in attempt envelope",
+      "observed_final_text_correct": true,
+      "operation_id": "collect-transitions-05380bcca5cbf77d4b2a0d2816fe912a",
+      "outcome": "coverage_gained",
+      "preparation_record_ids": [
+        "collect-transitions-05380bcca5cbf77d4b2a0d2816fe912a/transition/00"
+      ],
+      "preparation_seconds": 0.40610936493612826,
+      "read_seconds": 0.03213252895511687,
+      "record_id": "collect-transitions-05380bcca5cbf77d4b2a0d2816fe912a/transition/01",
+      "step": 1,
+      "successor_record_sha256": "af8139bc0a588f0bbfe28fccc8e974930934baced96811142ea9608b92b7384f",
+      "task_family": "continuation_not_worthwhile",
+      "write_decisions": []
+    },
+    {
+      "after_covered": false,
+      "before_covered": false,
+      "case_id": "case-aa3ddf64b0fd8df25ae842cc",
+      "cost_scope": "observed actions; already included in attempt envelope",
+      "observed_final_text_correct": true,
+      "operation_id": "collect-transitions-07845478043f43d36b59fc4bc551d05b",
+      "outcome": "still_missing",
+      "preparation_record_ids": [
+        "collect-transitions-07845478043f43d36b59fc4bc551d05b/transition/01"
+      ],
+      "preparation_seconds": 0.017136103007942438,
+      "read_seconds": 0.032239384949207306,
+      "record_id": "collect-transitions-07845478043f43d36b59fc4bc551d05b/transition/02",
+      "step": 2,
+      "successor_record_sha256": "67f4d434f4a99d276ca7a70bda5e4027e4a155181a0ae83d09405462bebd6147",
+      "task_family": "selective_refinement",
+      "write_decisions": []
+    },
+    {
+      "after_covered": true,
+      "before_covered": false,
+      "case_id": "case-589e5d5e14d601595e242787",
+      "cost_scope": "observed actions; already included in attempt envelope",
+      "observed_final_text_correct": true,
+      "operation_id": "collect-transitions-bc4b065e25853567e4d1d96c1be3ea40",
+      "outcome": "coverage_gained",
+      "preparation_record_ids": [
+        "collect-transitions-bc4b065e25853567e4d1d96c1be3ea40/transition/00"
+      ],
+      "preparation_seconds": 0.38512904313392937,
+      "read_seconds": 0.017884026980027556,
+      "record_id": "collect-transitions-bc4b065e25853567e4d1d96c1be3ea40/transition/01",
+      "step": 1,
+      "successor_record_sha256": "75b5736ff044907e8a42206e5dfedbdaa8ae80d09e96244e73c4988909fb2e06",
+      "task_family": "text_image_complementary",
+      "write_decisions": [
+        "write_correct"
+      ]
+    }
+  ],
+  "schema": "hepta.candidate-diagnostic.development-summary.v1",
+  "scientific_admission": "HOLD",
+  "scope": "Only original train collector observations; no new actor/OCR/training run and no confirmation or retention inputs",
+  "source_groups": 2
+}

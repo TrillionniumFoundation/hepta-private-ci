@@ -1,0 +1,32 @@
+{
+  "scope": "read-only retained report compatibility; no new training, selection or evaluation",
+  "base_commit": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+  "base_code_sha256": "29b00f3f913787f12a7915f5a4d7728ccb2a149c7d17b4a39c25cd02daeed0f6",
+  "current_code_sha256": "707b5b379782441f0503b9ce9e14caac2250160553317c97ba426a6aa30e9adc",
+  "report_comparisons": [
+    {
+      "input": "qualification/evolve-1-20261108/campaign-development-01.json",
+      "input_sha256": "20dfb245d2de12b6dd94cc07f35f714c240c98d215c4166ea6c5cb03f2b8ca7d",
+      "equal_to_unmodified_base": true,
+      "equal_to_old_stored_report": false,
+      "current_report_sha256": "765ec612a679b2e57dd9545c099d2b305d09613ab97d33b8e5e0dc0c522cda55",
+      "baseline_report_sha256": "765ec612a679b2e57dd9545c099d2b305d09613ab97d33b8e5e0dc0c522cda55",
+      "old_stored_report_sha256": "3e59be715c2f9d4ee4bde169c37d24dbe300663f61e32bbfb74d163a0f5b934f",
+      "status": "HOLD_INCOMPLETE_EVIDENCE"
+    },
+    {
+      "input": "qualification/evolve-1-20261108/campaign-final.json",
+      "input_sha256": "890dd536c7b34d44eb4dbb6beba00b1ddad03cd82b36ffabf16ece116fd9832f",
+      "equal_to_unmodified_base": true,
+      "equal_to_old_stored_report": true,
+      "current_report_sha256": "863e713285d41e67d5197c1b8523ca45b90ef9742ac05d6e68e30dfff1f35ba9",
+      "baseline_report_sha256": "863e713285d41e67d5197c1b8523ca45b90ef9742ac05d6e68e30dfff1f35ba9",
+      "old_stored_report_sha256": "863e713285d41e67d5197c1b8523ca45b90ef9742ac05d6e68e30dfff1f35ba9",
+      "status": "HOLD_INCOMPLETE_EVIDENCE"
+    }
+  ],
+  "wall_seconds": 0.0649942690001808,
+  "readback_time": "source snapshots retained after behavioral tests and this compatibility check",
+  "scientific_admission": "HOLD",
+  "historical_development_report_note": "Archived development report predates fields already present at base81da; its mismatch is retained, not attributed to this patch or overwritten."
+}

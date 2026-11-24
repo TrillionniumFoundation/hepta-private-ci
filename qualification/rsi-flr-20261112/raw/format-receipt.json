@@ -1,0 +1,50 @@
+{
+  "tested_commit": "326a7df9073945c3dc682a96733b92c5c04096ab",
+  "tested_tree": "c757193f2339bca634b8a038a0ac526621c7456e",
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "4d5ffd79302da50ca2de87ec203905f7b4683de6"
+  ],
+  "exit_code": 0,
+  "ruff_version": "0.15.13",
+  "tests_rerun_after_format": false,
+  "files": {
+    "scripts/ndu_real_runtime/evolve1.py": {
+      "tested_sha256": "2f9ee8fc6be8c08364ec2d019b4d6eb897945cb8b7c843d0d44929c26819e37c",
+      "formatted_sha256": "2f9ee8fc6be8c08364ec2d019b4d6eb897945cb8b7c843d0d44929c26819e37c",
+      "normalized_ast_identical": true
+    },
+    "scripts/ndu_real_runtime/test_evolve1.py": {
+      "tested_sha256": "f926f9868aad6f1deb57258d336bbab6b0deb87e188fb3dcbc2348e1dd7ee442",
+      "formatted_sha256": "7433c21b315f34c885251f36623dca7a7f89856cb61320ca6f7cdf3fcc46d56b",
+      "normalized_ast_identical": true
+    },
+    "scripts/ndu_real_runtime/flr_plan.py": {
+      "tested_sha256": "23d927c08d7ce3aeccb1053355bcc5da62d80266af44fbfb5d22e26fa74a768d",
+      "formatted_sha256": "49bd8be670bdf36cdbeea61be1b3568a29024ea2757f120ced1690dccb960ddb",
+      "normalized_ast_identical": true
+    },
+    "scripts/ndu_real_runtime/flr_contract.py": {
+      "tested_sha256": "e3b30d269d047758e6d878f6d0bb3f4c45628d93b02a4d4d6dae28d62845316b",
+      "formatted_sha256": "c2180d122e2a825df25344815f789c248c04c6fb77c877ac86dd08fe86adbf2c",
+      "normalized_ast_identical": true
+    },
+    "scripts/ndu_real_runtime/flr_reference.py": {
+      "tested_sha256": "59d1b035b7f319b5b9487b849eab97401b70c5882a3e97deba448f9e60db758d",
+      "formatted_sha256": "7978ffc7ae95ce20e5a493797e6ee48b387e7269d0f77efbd2eb8445ff3aae8e",
+      "normalized_ast_identical": true
+    },
+    "scripts/ndu_real_runtime/test_flr_contract.py": {
+      "tested_sha256": "6d31cfb650c4568e8a30741c20e02326f49987b68f4cf6158f2c3c83497b540d",
+      "formatted_sha256": "cb578884f3771f4587fb143f7916f7a294d8e1abebc66d79ae3050cee340f40f",
+      "normalized_ast_identical": true
+    },
+    "scripts/ndu_real_runtime/test_flr_reference.py": {
+      "tested_sha256": "229e720e3f2107d2f217e3ff2bac08819500d1fcbea022612a047f650538a857",
+      "formatted_sha256": "3873295ab7f8db49ba6772f13a2642f085e046e9edd605a77393696d89d56699",
+      "normalized_ast_identical": true
+    }
+  }
+}

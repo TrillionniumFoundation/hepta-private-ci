@@ -1,0 +1,481 @@
+{
+  "schema": "hepta.native-chain-readonly-audit.v1",
+  "observed_utc": "2026-11-12T06:14:17Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "Live GitHub plugin GETs, exact commit file reads and original decoded Actions job logs; PR prose is explicitly distinguished from raw execution evidence.",
+  "default_branch_head": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "pull_requests": [
+    {
+      "number": 5788,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5788",
+      "head": "f46a1371baafc6bec536729b03cbed82b5aa98f1",
+      "tree": "bbdf8e7cf3e350c7d4fd954ebd3bf3eeb035f544",
+      "branch": "codex/cell-127-population-20261110-30a5",
+      "base": "codex/shared-cell-framework-followup-20261109-a60a",
+      "state": "open",
+      "draft": true,
+      "updated_utc": "2026-11-12T03:15:02Z"
+    },
+    {
+      "number": 6006,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6006",
+      "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+      "tree": "6fe2c2426f22383416697016445cf444aafdd2ff",
+      "branch": "codex/ordinary-owner-assembly-20261111-af52",
+      "base": "codex/ordinary-learning-closure-20261111-af52",
+      "state": "open",
+      "draft": true,
+      "updated_utc": "2026-11-11T22:40:10Z"
+    },
+    {
+      "number": 6118,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6118",
+      "head": "62ef235c8c871f256891fe6a053c9f5ee7919c8b",
+      "tree": "076f875954f896c21d0a0bfb85da7f20f940f7d4",
+      "branch": "codex/learn-signed-experience-20261112-34f833",
+      "base": "codex/learn-owner-convergence-20261111-ce434",
+      "state": "open",
+      "draft": true,
+      "updated_utc": "2026-11-12T05:50:23Z",
+      "selected_actions": [
+        {
+          "run": 43163982066,
+          "name": "Hepta daemon learning native",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "run": 43163981813,
+          "name": "Hepta shared Cell framework",
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "run": 43163981905,
+          "name": "blocking-ci",
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "run": 43163981701,
+          "name": "Hepta architecture convergence",
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "run": 43163981700,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "status": "completed",
+          "conclusion": "failure"
+        }
+      ]
+    },
+    {
+      "number": 5981,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5981",
+      "head": "4ceb2fa080c52e5d23ee3a7428c65515418745fd",
+      "tree": "0c1d60e30f9b5f2ccfce799caeca437a10d471bb",
+      "branch": "codex/learn-owner-convergence-20261111-ce434",
+      "base": "codex/cell-p0-training-snapshot-20261111-f7c0",
+      "state": "open",
+      "draft": true,
+      "updated_utc": "2026-11-12T05:33:29Z",
+      "selected_actions": [
+        {
+          "run": 43160755904,
+          "name": "blocking-ci",
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "run": 43160755786,
+          "name": "Hepta daemon learning native",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "run": 43160755789,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "run": 43160755829,
+          "name": "Hepta shared Cell framework",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "run": 43160755838,
+          "name": "Hepta architecture convergence",
+          "status": "queued",
+          "conclusion": null
+        }
+      ]
+    },
+    {
+      "number": 6057,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6057",
+      "head": "4f7f0f4ef686e71353a5a3a9725c01f3dbffbc50",
+      "tree": "d9bed510c731b3afa501daf666b55106b8fb6136",
+      "branch": "codex/framework-convergence-20261112-8166",
+      "base": "codex/ordinary-owner-assembly-20261111-af52",
+      "state": "open",
+      "draft": true,
+      "updated_utc": "2026-11-12T01:22:29Z",
+      "selected_actions": [
+        {
+          "run": 43132900195,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "run": 43132900164,
+          "name": "Hepta daemon learning native",
+          "status": "completed",
+          "conclusion": "failure"
+        },
+        {
+          "run": 43132900445,
+          "name": "blocking-ci",
+          "status": "queued",
+          "conclusion": null
+        },
+        {
+          "run": 43132900167,
+          "name": "Hepta shared Cell framework",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "run": 43132900168,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "run": 43132893253,
+          "name": "Hepta Cell framework native validation",
+          "status": "completed",
+          "conclusion": "failure"
+        }
+      ]
+    },
+    {
+      "number": 6036,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6036",
+      "head": "4453ce7089168c583553c434ce1bee92e209f8dd",
+      "tree": "28269245f5ef63c5395143b2aa1a63c184676c33",
+      "branch": "codex/p0-evidence-decision-20261111-8cec",
+      "base": "codex/p0-evidence-base-3c8dabe-20261111-8cec",
+      "state": "open",
+      "draft": true,
+      "updated_utc": "2026-11-12T02:40:04Z",
+      "selected_actions": [
+        {
+          "run": 43131262029,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "run": 43131262049,
+          "name": "Hepta daemon learning native",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "run": 43131261958,
+          "name": "Hepta shared Cell framework",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "run": 43131261968,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "run": 43131262075,
+          "name": "blocking-ci",
+          "status": "queued",
+          "conclusion": null
+        }
+      ]
+    },
+    {
+      "number": 6081,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6081",
+      "head": "106f5e41f2ff8421c5aad10eeb746d453ed00563",
+      "tree": "23cfee51a9031ab64aade9649f630bcb29e09f44",
+      "branch": "codex/learn-root-source-pin-20261112-ff41",
+      "base": "codex/learn-eval-recovery-20261112-ff41",
+      "state": "open",
+      "draft": true,
+      "updated_utc": "2026-11-12T05:01:38Z"
+    }
+  ],
+  "ordinary_entry": {
+    "source_head": "62ef235c8c871f256891fe6a053c9f5ee7919c8b",
+    "path": "codex-rs/hepta-agentd/src/main.rs",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/62ef235c8c871f256891fe6a053c9f5ee7919c8b/codex-rs/hepta-agentd/src/main.rs",
+    "line": 33,
+    "call": "startup.receive().await?",
+    "observation": "No receive_q24_learning call in this ordinary main. The intake/exported assembly APIs do not establish a product caller or a completed learning chain."
+  },
+  "native_interfaces": [
+    {
+      "source_pr": 6118,
+      "path": "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+      "api": "append_original_circuit_experience_v1",
+      "inputs": [
+        "CircuitTaskSourceReadbackV1",
+        "AgentdIdentity",
+        "LedgerWriter",
+        "OriginalCircuitExperienceRequestV1"
+      ],
+      "requires": [
+        "completed original Source publication",
+        "already signed Decision and terminal measured Outcome",
+        "independent enrolled Generator and Observer",
+        "original reconciled Ledger and witness"
+      ],
+      "scope": "Authenticates and appends an existing signed pair; does not create signer, measurement, production caller or adoption authority.",
+      "critical_profile": "Decision.run_snapshot_digest == input.ndu_snapshot_digest. Incompatible with #6006 full-RunStart-snapshot Q24 Dataset profile; do not relabel or splice."
+    },
+    {
+      "source_pr": 6006,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "api": "OriginalCellQ24LearningStageOwnersV1::from_original_owners / install_independent_evaluation / install_generation",
+      "scope": "Concrete Experience, Dataset, native Training, original Root factory and local decision owners exist. Constructor retains evaluation=None and generation=None; missing B/C returns OwnerUnavailable."
+    },
+    {
+      "source_pr": 6118,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs",
+      "api": "OriginalCircuitEvaluationCohortV1::read_original / into_final_holdout_provider / into_readback_only",
+      "scope": "Consumes independently owned B Ledger and concrete Source views, preserves preregistered cohort/time/unit membership; readback cannot release data or prove a completed evaluation.",
+      "authority": "DENY_ALL"
+    },
+    {
+      "source_pr": 6118,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+      "api": "OriginalCircuitRetainedTaskInputsV1::install_original",
+      "scope": "Installs the existing ordinary Q24 task factory after retained publication and original A checks; actual authenticated RunStart must subsequently arrive and committed C use must be observed."
+    },
+    {
+      "source_pr": 6118,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "api": "OriginalCircuitNextUseCommandClientV1::attest_completed_task / readback",
+      "scope": "Purpose-bound original Observer commands for TrainingNoUpdate; authenticates original Trainer/Selector cuts. Not a generic successful-NoUpdate attestation API."
+    }
+  ],
+  "raw_job_observations": [
+    {
+      "pr": 6118,
+      "head": "62ef235c8c871f256891fe6a053c9f5ee7919c8b",
+      "run": 43163981700,
+      "job": 131001481637,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43163981700/job/131001481637",
+      "conclusion": "failure",
+      "failure_step": "Enforce source-level Rust formatting for durable owners",
+      "native_results": [
+        {
+          "scope": "five Windows private-state selections",
+          "passed_by_invocation": [
+            15,
+            2,
+            3,
+            2,
+            12
+          ],
+          "skipped_by_invocation": [
+            5,
+            26,
+            147,
+            148,
+            336
+          ]
+        },
+        {
+          "scope": "separate Windows LEARN regression selection",
+          "passed": 36,
+          "skipped": 593
+        }
+      ],
+      "format_drift_paths": [
+        "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+        "codex-rs/hepta-agentd/src/circuit_experience_intake_tests.rs",
+        "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+        "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+        "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+      ],
+      "boundary": "Executed Windows mechanism counts are real; failed formatting keeps the workflow failed and does not qualify Linux-only intake or ordinary A/B/C."
+    },
+    {
+      "pr": 5981,
+      "head": "4ceb2fa080c52e5d23ee3a7428c65515418745fd",
+      "run": 43160755789,
+      "job": 130991087573,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43160755789/job/130991087573",
+      "conclusion": "failure",
+      "failure_step": "Enforce source-level Rust formatting for durable owners",
+      "format_drift_paths": [
+        "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs"
+      ],
+      "native_results": [
+        {
+          "scope": "five Windows private-state selections",
+          "passed_by_invocation": [
+            15,
+            2,
+            3,
+            2,
+            12
+          ]
+        },
+        {
+          "scope": "separate Windows LEARN regression selection",
+          "passed": 36,
+          "skipped": 593
+        }
+      ]
+    },
+    {
+      "pr": 6057,
+      "head": "4f7f0f4ef686e71353a5a3a9725c01f3dbffbc50",
+      "run": 43132900164,
+      "job": 130901130969,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43132900164/job/130901130969",
+      "conclusion": "failure",
+      "native_results": [
+        {
+          "scope": "ordinary native libraries",
+          "passed": 1238,
+          "failed": 0,
+          "skipped": 78
+        },
+        {
+          "scope": "actual UID0 selected Root parents",
+          "passed": 12,
+          "failed": 0,
+          "skipped": 1037
+        }
+      ],
+      "source_before_after_behavior": "Same clean source/tree and 14518-file inventory before and after behavior tests.",
+      "after_maintenance": "Dirty source in five files; unchanged-source/final workflow gate failed.",
+      "maintenance_paths": [
+        "codex-rs/hepta-agentd/src/neuron_generation_process_bootstrap_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/joint_generation/resident_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_joint_observed_process_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_joint_resident.rs",
+        "codex-rs/hepta-neuron/src/cell_joint_resident_tests.rs"
+      ],
+      "boundary": "Native behavior results belong to the clean pre-maintenance 4f7f source. They are not a fully clean maintenance or product acceptance PASS."
+    },
+    {
+      "pr": 6057,
+      "head": "4f7f0f4ef686e71353a5a3a9725c01f3dbffbc50",
+      "run": 43132893253,
+      "job": 130901111095,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43132893253/job/130901111095",
+      "conclusion": "failure",
+      "failure_step": "Strict lint of the changed owners and dependencies",
+      "cause": "Seven deprecated rmcp::model::ClientInfo references under -D warnings; compiler recommends ClientConfig.",
+      "paths": [
+        "codex-rs/rmcp-client/src/elicitation_client_service.rs",
+        "codex-rs/rmcp-client/src/logging_client_handler.rs"
+      ],
+      "exit_code": 101
+    }
+  ],
+  "reported_ordinary_acceptance": {
+    "source": "Current #6006, #5981, #6081 and #6118 explicit qualification disclosures, supported by inspected absence of ordinary entry connection; not an exhaustive execution census.",
+    "adopt": 0,
+    "complete_no_update": 0,
+    "whole_daemon_and_root_cold_recovery": 0,
+    "established_by_this_audit": false
+  },
+  "required_originals_and_gaps": [
+    "One fixed compatible source/profile for original ordinary A, signed Decision+independent terminal Outcome, Dataset cut and Training.",
+    "Actual production main/bootstrap caller with original Source/Cell/Generator/Ledger/Root capability handoff; no inferred authority from output success.",
+    "Independent B source groups, adjudication/custody, preregistered query/candidate budgets, nonempty old-capability retention panel and complete evaluation.",
+    "Actual owner-verified Selection, CURRENT/FinalUse publication and distinct ordinary C committed-use receipts.",
+    "Whole daemon plus original Root process stop/restart on the same candidate with original witnesses and current revocation/deletion checks.",
+    "Full meter profile including preparation, discovery/search, training, all failed/unknown attempts, evaluation, waiting, publication, migration and recovery.",
+    "Fixed F/L/R comparison, learner-version inheritance and later-learning gain or efficiency; no conversion of component tests or synthetic lineages to independent real tasks.",
+    "D custody whose unobserved external outcomes cannot feed this campaign search; no native D endpoint was established by this audit.",
+    "Exact source native/format/caller/blocking gates; original failed attempts and UNKNOWN must remain."
+  ],
+  "multigeneration_search": {
+    "scope": {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "code_index_head": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "code_queries": [
+        "F/L/R",
+        "fixed learner",
+        "multi_generation",
+        "evolve1",
+        "causal_improver"
+      ],
+      "code_topn": 12,
+      "pr_queries": [
+        "RSI",
+        "Q24",
+        "learner",
+        "EVOLVE-1",
+        "\"F/L/R\"",
+        "\"multi-generation\"",
+        "recursive",
+        "\"fixed learner\"",
+        "\"ABCD\""
+      ],
+      "pr_topn": "10-20 per query sorted updated descending; bounded search, not all PRs",
+      "inspected_candidates": [
+        5348,
+        5411,
+        5418,
+        5421,
+        5788,
+        6006,
+        5981,
+        6057,
+        6081,
+        6118
+      ],
+      "inspected_runtime_directory": {
+        "ref": "4b6d35455bf42b081b61c3dd3c9883fa826b8b73",
+        "path": "scripts/ndu_real_runtime"
+      }
+    },
+    "finding": "No executable F/L/R multi-generation runner was found within this scope. This is not a claim that no such file exists in any unsearched branch.",
+    "reusable": {
+      "pr": 5348,
+      "head": "c600204c6095b438746e7efd8a098bc38e1d8613",
+      "files": [
+        "scripts/ndu_real_runtime/evolve1.py",
+        "scripts/ndu_real_runtime/evolve1_pilot.py",
+        "scripts/ndu_real_runtime/evolve1_reference.py"
+      ],
+      "scope": "Existing frozen initial/descendant solver x initial/descendant improver component-transfer pilot; synthetic, not repeated-generation F/L/R ordinary learning."
+    },
+    "later_existing_hardening": {
+      "pr": 5411,
+      "head": "4d5ffd79302da50ca2de87ec203905f7b4683de6",
+      "tree": "8fb46bb725eeac65575275bbce15d2150fd73e53",
+      "paths": [
+        "scripts/ndu_real_runtime/evolve1.py",
+        "scripts/ndu_real_runtime/test_evolve1.py",
+        ".github/workflows/hepta-evolve1.yml"
+      ],
+      "change": "Deduplicate original run IDs under producer/evaluator ownership and attempt/operation IDs under producer ownership across renamed lineage blocks, including registered missing results. Preserve owner-local IDs and legitimate shared comparison data.",
+      "recommendation": "Carry this existing hardening when extending #5348 instead of reverting to pre-fix independence semantics."
+    }
+  },
+  "recommendations": [
+    "Extend existing EVOLVE-1 for a research-only F/L/R multigeneration supervisor; preserve its component-transfer comparison.",
+    "Keep native acceptance UNKNOWN/HOLD until original compatible owner receipts exist; JSON declarations or synthetic tests cannot create native qualification.",
+    "Do not combine the #6118 NDU-snapshot intake with #6006 full-RunStart Dataset projection without an explicit compatible production implementation and tests."
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "base_commit": "6900fdd5eb02fcfe74469e2cf471a300551d988e",
+  "committed": false,
+  "confirmation_access": false,
+  "environment": {
+    "previous_environment_readback": "/workspace/scratch/d882890e1711/s3-training-diagnostics/VALIDATION.json",
+    "previous_environment_readback_sha256": "183a5ea8d68ca64af6aaa88786b3aff51e3e8c4b3b57b8ce37df55a9e82f2e96",
+    "python": "3.12.14",
+    "threads": 1,
+    "torch": "2.8.0+cpu",
+    "torch_cuda_version": null,
+    "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+    "venv": "/workspace/scratch/d882890e1711/s3-torch-env"
+  },
+  "extra_gradient_only_calls_per_run": 1,
+  "formatted": false,
+  "limitations": [
+    "State partition changes logical owners, not neuron count or tensor shape",
+    "Materialization recombines one module; no distributed successor inference is qualified",
+    "RNG, LR scheduler and live hidden state are excluded; fresh-episode templates required",
+    "CPU/wall include work inside each adapter attempt; full process, reporting and dependency costs remain outside this qualification",
+    "Byte counters distinguish tensor payload, Torch archives and complete in-memory JSON serializations; none are measured physical traffic",
+    "The 64 MiB cap is per encoded object and checked after encoding, not a process or aggregate memory budget; retained traces grow with transfers",
+    "No independent owner authentication or prospective efficacy registration is established",
+    "Local test evidence is not proof that hosted CI has already run"
+  ],
+  "local_unit_optimizer_steps_total": 18,
+  "net_benefit_established": false,
+  "new_scientific_dataset_fits": 0,
+  "old_evidence_modified": false,
+  "original_baseline_audit": {
+    "all_scores_equal": true,
+    "arm_task_executions": 198,
+    "net_gain": null,
+    "pairs": 99,
+    "path": "EXISTING_BASELINE_AUDIT.json",
+    "rewire_messages_fixed_dynamic": [
+      36,
+      69
+    ],
+    "sha256": "da5348707e168a03a184ce64957e253412340b225e6ae962072b8ce1bf14846c"
+  },
+  "physical_migration_qualified": false,
+  "schema": "s4-trained-state-development-validation-v1",
+  "scientific_admission": "HOLD",
+  "source": {
+    "structural_state.py": {
+      "bytes": 13117,
+      "lines": 240,
+      "python_ast_sha256": "32c2df8b37efb26e6f7c41d037cac830e55a54dc16e98daf0f924347e5920500",
+      "sha256": "7fd9e065472a66f8fd309106058b3254ef8153e4a5459c923d4433261e20195f"
+    },
+    "test_structural_state.py": {
+      "bytes": 9794,
+      "lines": 173,
+      "python_ast_sha256": "2aaf6e2eae7b6828df4de597a760d5114c9e76dfb936c4e1e39f79520a3c1afe",
+      "sha256": "bf0f6892bc4addd49d4ffe43c663f623d59971deb42931ed898b7f770e28b5c3"
+    }
+  },
+  "source_snapshot_timing": "Each version was copied and hashed before its corresponding tests; current source matches final pre-test snapshot.",
+  "strong_fixed_scheduler_qualified": false,
+  "test_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /workspace/scratch/d882890e1711/s3-torch-env/bin/python -m unittest discover -s proposals/localization-v2 -p test_structural_state.py -v",
+  "test_runs": [
+    {
+      "failed": 0,
+      "kind": "first implementation",
+      "passed": 5,
+      "path": "tests-first.log",
+      "sha256": "7882654a0104ca51a87070d23d8d486d83086b2ca8a579b873995e3b7c38cc3a",
+      "test_runner_seconds": 0.946,
+      "unit_optimizer_steps": 9
+    },
+    {
+      "failed": 0,
+      "kind": "after orphan-state rejection",
+      "passed": 5,
+      "path": "tests-final.log",
+      "sha256": "7617c550fa2ae838592d4bf19949544f6baf49d5945a610d44d0e86e7c930c07",
+      "test_runner_seconds": 0.659,
+      "unit_optimizer_steps": 9
+    }
+  ],
+  "unit_optimizer_steps_per_run": {
+    "common_GRU_warmup": 2,
+    "empty_state_control_and_candidate": 2,
+    "fixed_next_update": 1,
+    "four_structural_next_updates": 4
+  },
+  "validation_scope": [
+    "Actual existing GRUModel, CPU FP64 and AdamW after two warmup steps",
+    "Whole named parameter and buffer records, with moments, step counts and exact group settings",
+    "Target parameter order and optimizer-group order are both reversed",
+    "Exact logits, loss, named gradients, parameters and named optimizer state after the next update",
+    "Split, merge, rewire and no_change; rewire preserves state and consumes graph change only at checkpoint level",
+    "Injected first-persist interruption retains unique records and raw in-memory checkpoint strings; original is untouched",
+    "Uninitialized optimizer state, persistent buffer, pending-gradient, alias and orphan-state boundaries"
+  ]
+}

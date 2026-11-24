@@ -1,0 +1,102 @@
+{
+  "base_commit": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+  "complete_physical_cost_known": false,
+  "confirmation_access": false,
+  "dependency_contract_sha256": "e1c30b2349dac31be5b13a76eb1115911088acdc76903858bbf67f4f2480726f",
+  "energy_joules": null,
+  "environment": {
+    "cpu_path_imports_verified": true,
+    "environment_disk_usage_bytes": 815805140,
+    "full_spikingjelly_declared_environment_verified": false,
+    "installed_packages": {
+      "Jinja2": "3.1.6",
+      "MarkupSafe": "3.0.4",
+      "filelock": "4.2.9",
+      "fsspec": "2026.9.0",
+      "mpmath": "1.3.0",
+      "networkx": "3.7",
+      "numpy": "2.3.5",
+      "setuptools": "84.2.1",
+      "spikingjelly": "0.0.0.0.14",
+      "sympy": "1.14.0",
+      "torch": "2.8.0+cpu",
+      "typing_extensions": "4.16.0"
+    },
+    "metadata_probe_peak_rss_bytes": 180645888,
+    "observed_model_metadata": {
+      "arm": "snn_plif",
+      "claim_boundary": "Adapter identity and parameter counts do not establish adequate training or comparative efficacy.",
+      "configuration": {
+        "width": 4
+      },
+      "device": "cpu",
+      "dtype": "float64",
+      "episode_state": "fresh for every forward",
+      "last_forward_spike_fraction": null,
+      "learned_tau": 2.0,
+      "packages": {
+        "spikingjelly": "0.0.0.0.14",
+        "torch": "2.8.0+cpu"
+      },
+      "parameter_bytes": 1408,
+      "source_files_sha256": {
+        "/workspace/scratch/d882890e1711/hepta-stage/proposals/localization-v2/models.py": "039aa1575bb236da5b7be98e1410fa6ef93430b243f716f160db67db92d34d53",
+        "/workspace/scratch/d882890e1711/s3-torch-env/lib/python3.12/site-packages/spikingjelly/activation_based/functional.py": "cb16b4d0f77e156ee55b8b590c8d9432b070fead5ac614c5c6adb84753f41793",
+        "/workspace/scratch/d882890e1711/s3-torch-env/lib/python3.12/site-packages/spikingjelly/activation_based/neuron.py": "a6ca9213da5ab5897fadeea305b45bc4a1868d206aad1579bb88637b47397816",
+        "/workspace/scratch/d882890e1711/s3-torch-env/lib/python3.12/site-packages/spikingjelly/activation_based/surrogate.py": "c95f5501bb0583025be9ab0e4524a7f215ab25980f5867628a7d700d9e488fbf",
+        "/workspace/scratch/d882890e1711/s3-torch-env/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f"
+      },
+      "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+      "time_semantics": "event-indexed PLIF; log1p(real dt) input; no variable-dt decay claim",
+      "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+      "trainable_parameters": 176
+    },
+    "optional_distribution_dependencies": {
+      "matplotlib": null,
+      "scipy": null,
+      "torchvision": null,
+      "tqdm": null
+    },
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14",
+    "torch_cuda_version": null,
+    "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7"
+  },
+  "new_dataset_fits": 0,
+  "old_evidence_modified": false,
+  "readback_scope": "source snapshot recorded after first successful behavioral run; files not formatted since that run",
+  "schema": "s3-training-diagnostics-validation-v1",
+  "scientific_admission": "HOLD",
+  "source_readback": {
+    "gradient_diagnostics.py": {
+      "python_ast_sha256": "363b54b45c5c4a24696d8cf7baa3096ee34c470c4121fd5bc09bab638ff02939",
+      "sha256": "8c4a43b8ab4aaa10023deb9306fbd8089ed654fc1d6e0637fc9de7cba9b4aede"
+    },
+    "models.py": {
+      "python_ast_sha256": "dd1f7eea67a1c7b020ca34f06c78661fa98aa3a7c34656e47d55c89d9a93e47c",
+      "sha256": "039aa1575bb236da5b7be98e1410fa6ef93430b243f716f160db67db92d34d53"
+    },
+    "test_training_diagnostics.py": {
+      "python_ast_sha256": "4340abf20bb72a9f80e54b0325949f594d1fb01ab3772b432723100b798c3285",
+      "sha256": "957def977f55f655921d5bc031cbb705d512b98516129592c77ac13e487d9b4e"
+    },
+    "train_development.py": {
+      "python_ast_sha256": "6f297a7da5e2578c9f8bebe10df92f21c5f02035aa5ee3e905a4a738fe58f73e",
+      "sha256": "00d94fcb6eda76d2892fd84e4fe973f7eaf6b61b83a36a562b4a35510450f0d7"
+    }
+  },
+  "test": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /workspace/scratch/d882890e1711/s3-torch-env/bin/python -m unittest discover -s proposals/localization-v2 -p test_training_diagnostics.py -v",
+    "failed": 0,
+    "log": "tests-first.log",
+    "log_sha256": "0597f805bead2de0f1fe1a2725bddfd079c1c3001a6e2fbe839c5a220f4808a3",
+    "other_unit_test_optimizer_steps": "two paired reference/instrumented steps plus one zero-gradient weight-decay step",
+    "passed": 5,
+    "test_runner_seconds": 12.194,
+    "trainer_fixture_optimizer_updates": {
+      "diagnostic": 1,
+      "main": 2
+    }
+  },
+  "training_adequacy_established": false
+}

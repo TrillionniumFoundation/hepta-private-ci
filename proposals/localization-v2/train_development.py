@@ -84,6 +84,7 @@ def metrics(logits, labels):
 def fit(args):
     import torch
     from capacity import adamw, parameter_audit
+    from gradient_diagnostics import gradient_activity
     from models import build_model, metadata
 
     if (
@@ -213,6 +214,14 @@ def fit(args):
                 raise FloatingPointError("invalid training logits")
             loss = torch.nn.functional.cross_entropy(logits[0], y, weight=weights)
             loss.backward()
+            event(
+                "gradient_observed",
+                phase=phase,
+                number=number,
+                episode=entry["id"],
+                gradient_activity=gradient_activity(model),
+                diagnostics=getattr(model, "last_diagnostics", {}),
+            )
             active = [p for p in model.parameters() if p.requires_grad]
             if any(
                 p.grad is None or not bool(torch.isfinite(p.grad).all()) for p in active

@@ -151,9 +151,20 @@ class RecurrentPLIF(nn.Module):
             current = self.node(self.input(observation) + self.recurrent(current))
             spikes.append(current)
             outputs.append(self.head(current))
-        self.last_spike_fraction = float(torch.stack(spikes).detach().mean())
+        observed_spikes = torch.stack(spikes).detach()
+        spike_counts = observed_spikes.ne(0).sum(dim=(0, 1))
+        opportunities = x.shape[0] * x.shape[1]
+        self.last_spike_fraction = float(observed_spikes.mean())
         self.last_diagnostics = {
             "spike_fraction": self.last_spike_fraction,
+            "spikes_per_neuron": spike_counts.tolist(),
+            "spike_fraction_per_neuron": (
+                spike_counts.to(dtype=observed_spikes.dtype) / opportunities
+            ).tolist(),
+            "per_neuron_event_opportunities": opportunities,
+            "total_event_opportunities": opportunities * self.input.out_features,
+            "silent_neuron_indices": torch.where(spike_counts == 0)[0].tolist(),
+            "spike_observation_scope": "current forward; batch and time axes only",
             "learned_tau": float((1.0 / self.node.w.detach().sigmoid()).cpu()),
         }
         return torch.stack(outputs, dim=1)

@@ -1,0 +1,87 @@
+{
+  "scope": "preserved execution evidence; not stage admission",
+  "archives": [
+    {
+      "file": "s0-local-validation.tar.gz",
+      "bytes": 288370,
+      "sha256": "6c21f57f2c227dcb7e794261f0b5104799d298ed4330ae6df93442a7532a6a73"
+    },
+    {
+      "file": "s2-development.tar.gz",
+      "bytes": 99862,
+      "sha256": "44d22901152e0d92b15c748b7c4bf578fb6e17e315dab89d34c9e3e41a30464e"
+    },
+    {
+      "file": "s3-diagnostics.tar.gz",
+      "bytes": 13640,
+      "sha256": "3867758292d7432c5bb01004ded8ef49a58708e8d4472083d30ebd844ab2e213"
+    },
+    {
+      "file": "s5-integrity.tar.gz",
+      "bytes": 11875,
+      "sha256": "94f5ac2b9a22d13d46188e9d7dd69a1f53e09b8d1959565f9757388ae77a6a6a"
+    },
+    {
+      "file": "initial-checks.tar.gz",
+      "bytes": 1093,
+      "sha256": "710c571ab483823a9a5a62ed4cfe063cea414c08e2f76a48856b9692fe203211"
+    },
+    {
+      "file": "s4-trained-state.tar.gz",
+      "bytes": 46786,
+      "sha256": "1d31e95f5c071fb143844390d16029117830e1e00e0a4735f4236a35b8fb7a47"
+    },
+    {
+      "file": "s1-retention-diagnosis.tar.gz",
+      "bytes": 5011,
+      "sha256": "1a6d1e58553788924fbe2f6901d784a72806f09641b112b33caa6d9e4198a754"
+    },
+    {
+      "file": "s0-desktop-validation.tar.gz",
+      "bytes": 19938,
+      "sha256": "9e54a8330c0d88b400e632f477dbc1bdb48906ddedf763a2eff105bd1dc312ed"
+    },
+    {
+      "file": "s1-development-diagnosis.tar.gz",
+      "bytes": 44981,
+      "sha256": "4a99ed3fbe5cbdff57dfc1e347fb6c1bbc367c472ab44a2f1b888b9a70334589"
+    },
+    {
+      "file": "s0-windows-format-failure.tar.gz",
+      "bytes": 54253,
+      "sha256": "6f39afd6870db0cc9ea00afe9bc466c381c9f25b05547df567439b9dc1564b3c"
+    },
+    {
+      "file": "s0-final-lint.tar.gz",
+      "bytes": 11710,
+      "sha256": "611b1c3d121b0b5ac2ceaac904656e66ce9c7e7d094c78f4475fd8dee3f4f9eb"
+    },
+    {
+      "file": "s1-candidate-memory.tar.gz",
+      "bytes": 6020,
+      "sha256": "eb803400089b5a4ffa74a8bc8feb4b64c145e5e31339418b7053d33dc9f666a2"
+    },
+    {
+      "file": "final-formatting.tar.gz",
+      "bytes": 149972,
+      "sha256": "6d1105d6bd12ea8897bd39f8c5f878e537dc7d60736118e7958425662a7dd63b"
+    },
+    {
+      "file": "final-source-checks.tar.gz",
+      "bytes": 15611,
+      "sha256": "fb2323345cb32fb729bddea8209f870e74ee21addf61c318b4c2bbf6376e9f56"
+    },
+    {
+      "file": "final-ci-observation.tar.gz",
+      "bytes": 4622,
+      "sha256": "d71dc8f1bdf66b638de53015e712af34e37cffc18c7c5b150caea352366fc47e"
+    }
+  ],
+  "omitted_large_rebuildable_binary": {
+    "path": "contracts-toolchain-baseline-binary.gz",
+    "raw_binary_sha256": "703811090eee016d9db71feeab4159a810e6420b8cd88ad9a6c9570c1c8d01d7",
+    "reason": "rebuildable executable retained in task scratch; execution log/JUnit/receipt archived"
+  },
+  "private_raw_inputs_included": false,
+  "s1_retention_archive_scope": "Only aggregate diagnosis, commands, original paths and hashes; raw documents, OCR, delivery and full original results remain on their original configured host and in private task intermediates."
+}
