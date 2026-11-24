@@ -194,7 +194,6 @@ impl FinalHoldoutProviderV1 for OriginalProvider {
     ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
         self.calls += 1;
         if matches!(self.mode, ReleaseMode::CorruptWithoutBorrow) {
-            drop(consumed);
             self.corrupt();
             return self.inputs.take().ok_or(ProductProviderErrorV1::Rejected);
         }
@@ -250,11 +249,11 @@ fn original_holdout_release_corruption_then_restore_never_reaches_fit() {
     let mut provider = case.provider(ReleaseMode::CorruptInside);
     assert_eq!(
         case.run(&mut provider).err(),
-        Some(ProductEvaluationError::Holdout(FencedHoldoutError::Store(
-            crate::FinalHoldoutCasStoreError::Indeterminate
-        )))
+        Some(ProductEvaluationError::Holdout(
+            FencedHoldoutError::Poisoned
+        ))
     );
-    // The borrowed postcheck latches the original store error before restoration.
+    // The borrowed check detects uncertainty before the outer check sees a poisoned owner.
     assert!(case.runner.holdout.is_poisoned());
     assert_eq!((provider.calls, provider.callbacks), (1, 1));
     assert!(
@@ -265,7 +264,7 @@ fn original_holdout_release_corruption_then_restore_never_reaches_fit() {
     assert_eq!(
         case.run(&mut provider).err(),
         Some(ProductEvaluationError::Holdout(
-            FencedHoldoutError::Indeterminate
+            FencedHoldoutError::Poisoned
         ))
     );
     assert_eq!((provider.calls, provider.callbacks), (1, 1));
@@ -284,18 +283,18 @@ fn original_holdout_release_postcheck_survives_provider_ignoring_borrow() {
     let mut provider = case.provider(ReleaseMode::CorruptWithoutBorrow);
     assert_eq!(
         case.run(&mut provider).err(),
-        Some(ProductEvaluationError::Holdout(FencedHoldoutError::Store(
-            crate::FinalHoldoutCasStoreError::Indeterminate
-        )))
+        Some(ProductEvaluationError::Holdout(
+            FencedHoldoutError::Indeterminate
+        ))
     );
-    // Physical uncertainty closes reads; execution then reports it before poisoning.
+    // The outer check is the first to detect uncertainty; later calls observe the poisoned owner.
     assert!(case.runner.holdout.is_poisoned());
     assert_eq!((provider.calls, provider.callbacks), (1, 0));
     provider.restore();
     assert_eq!(
         case.run(&mut provider).err(),
         Some(ProductEvaluationError::Holdout(
-            FencedHoldoutError::Indeterminate
+            FencedHoldoutError::Poisoned
         ))
     );
     assert_eq!((provider.calls, provider.callbacks), (1, 0));
