@@ -202,20 +202,40 @@ async fn subagent_usage_draws_from_the_shared_budget() -> Result<()> {
         ]),
     )
     .await;
-    mount_sse_once_match(
+    let child_response = mount_sse_once_match(
         &server,
-        |request: &wiremock::Request| wire_request_contains(request, "\"type\":\"agent_message\""),
+        |request: &wiremock::Request| {
+            request.body_json::<serde_json::Value>().is_ok_and(|body| {
+                body["input"].as_array().is_some_and(|items| {
+                    items.iter().any(|item| {
+                        item["type"] == "agent_message"
+                            && item["content"].as_array().is_some_and(|content| {
+                                content
+                                    .iter()
+                                    .any(|part| part["encrypted_content"] == CHILD_PROMPT)
+                            })
+                    })
+                })
+            })
+        },
         sse(vec![
             ev_response_created("child-1"),
             ev_completed_with_tokens("child-1", /*total_tokens*/ 30),
         ]),
     )
     .await;
-    mount_sse_once_match(
+    // The parent can receive a child completion notice before issuing this
+    // request. Match the parent tool result, not the absence of agent messages.
+    let parent_continuation = mount_sse_once_match(
         &server,
         |request: &wiremock::Request| {
-            wire_request_contains(request, SPAWN_CALL_ID)
-                && !wire_request_contains(request, "\"type\":\"agent_message\"")
+            request.body_json::<serde_json::Value>().is_ok_and(|body| {
+                body["input"].as_array().is_some_and(|items| {
+                    items.iter().any(|item| {
+                        item["type"] == "function_call_output" && item["call_id"] == SPAWN_CALL_ID
+                    })
+                })
+            })
         },
         sse(vec![
             ev_response_created("root-2"),
@@ -255,6 +275,8 @@ async fn subagent_usage_draws_from_the_shared_budget() -> Result<()> {
     .await;
     test.submit_turn(FOLLOW_UP_PROMPT).await?;
 
+    assert_eq!(child_response.requests().len(), 1);
+    assert_eq!(parent_continuation.requests().len(), 1);
     let requests = follow_up
         .requests()
         .into_iter()
