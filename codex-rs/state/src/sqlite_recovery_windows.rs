@@ -5,6 +5,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 use codex_utils_path::windows_private::Access;
+use codex_utils_path::windows_private::DirectorySnapshot;
 use codex_utils_path::windows_private::PrivateSqliteDirectory;
 use codex_utils_path::windows_private::Snapshot;
 
@@ -15,13 +16,13 @@ use super::indeterminate;
 #[derive(Debug)]
 pub(super) struct RetainedParent {
     pub(super) directory: Arc<PrivateSqliteDirectory>,
-    pub(super) snapshot: Snapshot,
+    pub(super) snapshot: DirectorySnapshot,
 }
 
 impl RetainedParent {
     pub(super) fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
         self.directory
-            .verify_unchanged(self.snapshot)
+            .verify_unchanged(&self.snapshot)
             .map_err(indeterminate)
     }
 }

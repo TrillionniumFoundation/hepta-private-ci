@@ -13,6 +13,7 @@ use std::os::windows::io::AsRawHandle;
 use std::path::Path;
 use std::path::PathBuf;
 use std::ptr;
+use std::sync::Mutex;
 
 use windows_sys::Win32::Storage::FileSystem::BY_HANDLE_FILE_INFORMATION;
 use windows_sys::Win32::Storage::FileSystem::FILE_BASIC_INFO;
@@ -24,6 +25,7 @@ use super::Access;
 use super::ObjectKind;
 use super::handles;
 use super::handles::DirectoryMode;
+use super::namespace;
 use super::security;
 use super::security::AclShape;
 use super::unsafe_object;
@@ -96,6 +98,15 @@ impl Snapshot {
     }
 }
 
+/// Directory identity plus two equal, bounded observations of its child names
+/// and file IDs. This does not authenticate currentness or fence an ABA writer.
+/// File content stability requires its own retained-object checks and writer fence.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DirectorySnapshot {
+    metadata: Snapshot,
+    entries: Vec<namespace::Entry>,
+}
+
 /// Retains a local NTFS directory under the SQLite-specific private ACL policy.
 ///
 /// `inspect` opens existing objects read-only without creating or flushing them.
@@ -106,6 +117,7 @@ pub struct PrivateSqliteDirectory {
     identity: security::Identity,
     path: PathBuf,
     writable: bool,
+    enumeration: Mutex<()>,
 }
 
 impl fmt::Debug for PrivateSqliteDirectory {
@@ -157,6 +169,7 @@ impl PrivateSqliteDirectory {
             identity,
             path: path.to_path_buf(),
             writable: !matches!(mode, DirectoryMode::ReadOnlyExisting),
+            enumeration: Mutex::new(()),
         };
         directory.validate()?;
         validate_volume(&directory.file)?;
@@ -178,15 +191,26 @@ impl PrivateSqliteDirectory {
         )
     }
 
-    /// Read a complete same-handle identity after checking the directory ACL.
-    pub fn snapshot(&self) -> io::Result<Snapshot> {
+    /// Observe directory identity and names without relying on cached timestamps.
+    /// Oversized, malformed or concurrently changing observations fail closed.
+    pub fn snapshot(&self) -> io::Result<DirectorySnapshot> {
+        let _enumeration = self
+            .enumeration
+            .lock()
+            .map_err(|_| io::Error::other("private directory enumeration state is poisoned"))?;
         self.validate()?;
-        Snapshot::capture(&self.file)
+        let metadata = Snapshot::capture(&self.file)?;
+        let entries = namespace::capture(&self.file)?;
+        if namespace::capture(&self.file)? != entries || Snapshot::capture(&self.file)? != metadata
+        {
+            return Err(unsafe_object());
+        }
+        Ok(DirectorySnapshot { metadata, entries })
     }
 
     /// Recheck the retained handle and its original absolute namespace binding.
-    pub fn verify_unchanged(&self, expected: Snapshot) -> io::Result<()> {
-        if self.snapshot()? != expected || Self::inspect(&self.path)?.snapshot()? != expected {
+    pub fn verify_unchanged(&self, expected: &DirectorySnapshot) -> io::Result<()> {
+        if &self.snapshot()? != expected || &Self::inspect(&self.path)?.snapshot()? != expected {
             return Err(unsafe_object());
         }
         Ok(())

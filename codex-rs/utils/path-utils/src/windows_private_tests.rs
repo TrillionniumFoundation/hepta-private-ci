@@ -194,7 +194,34 @@ fn sqlite_snapshots_detect_drift_and_failed_candidate_cleanup_binds_the_handle()
     );
     let before = directory.snapshot().expect("root snapshot");
     fs::write(root.join("sidecar"), b"new namespace entry").expect("sidecar");
-    assert!(directory.verify_unchanged(before).is_err());
+    assert!(directory.verify_unchanged(&before).is_err());
+}
+
+#[test]
+fn sqlite_namespace_witness_restarts_and_covers_multiple_native_pages() {
+    let temporary = tempfile::tempdir().expect("synthetic directory");
+    let root = temporary.path().join("sqlite");
+    let directory = PrivateSqliteDirectory::prepare(&root).expect("private root");
+    // More than 64 KiB of native directory records; every capture must restart
+    // and continue enumeration, without changing the current directory or using paths.
+    for index in 0..300 {
+        let name = format!("entry-{index:03}-{}", "x".repeat(180));
+        directory
+            .open(&name, Access::CreateNew)
+            .expect("private entry");
+    }
+    let first = directory.snapshot().expect("complete namespace");
+    assert_eq!(directory.snapshot().expect("restarted namespace"), first);
+    let name = format!("entry-299-{}", "x".repeat(180));
+    directory
+        .replace(&name, "last-entry-renamed")
+        .expect("rename last entry");
+    assert!(directory.verify_unchanged(&first).is_err());
+    let renamed = directory.snapshot().expect("new namespace");
+    assert_eq!(
+        directory.snapshot().expect("stable renamed namespace"),
+        renamed
+    );
 }
 
 #[test]

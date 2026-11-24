@@ -25,10 +25,13 @@ use windows_sys::Win32::System::SystemServices::FILE_PERSISTENT_ACLS;
 
 #[path = "windows_private_handles.rs"]
 mod handles;
+#[path = "windows_private_namespace.rs"]
+mod namespace;
 #[path = "windows_private_security.rs"]
 mod security;
 #[path = "windows_private_sqlite.rs"]
 mod sqlite;
+pub use sqlite::DirectorySnapshot;
 pub use sqlite::PrivateSqliteDirectory;
 pub use sqlite::Snapshot;
 
