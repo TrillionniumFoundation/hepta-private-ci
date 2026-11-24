@@ -3,6 +3,9 @@
 pub(crate) mod env;
 pub use env::is_wsl;
 
+#[cfg(windows)]
+pub mod windows_private;
+
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::collections::HashSet;
 use std::io;

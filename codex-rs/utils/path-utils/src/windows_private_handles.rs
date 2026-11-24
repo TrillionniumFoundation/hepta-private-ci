@@ -1,0 +1,243 @@
+use std::ffi::c_void;
+use std::fs::File;
+use std::io;
+use std::mem::offset_of;
+use std::mem::size_of;
+use std::os::windows::ffi::OsStrExt;
+use std::os::windows::io::AsRawHandle;
+use std::os::windows::io::FromRawHandle;
+use std::os::windows::io::OwnedHandle;
+use std::path::Component;
+use std::path::Path;
+use std::path::Prefix;
+use std::ptr;
+
+use windows_sys::Win32::Foundation::GENERIC_READ;
+use windows_sys::Win32::Foundation::GENERIC_WRITE;
+use windows_sys::Win32::Foundation::HANDLE;
+use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
+use windows_sys::Win32::Foundation::NTSTATUS;
+use windows_sys::Win32::Foundation::RtlNtStatusToDosError;
+use windows_sys::Win32::Foundation::UNICODE_STRING;
+use windows_sys::Win32::Storage::FileSystem::DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
+use windows_sys::Win32::Storage::FileSystem::FILE_RENAME_INFO;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FileRenameInfo;
+use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
+use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
+use windows_sys::Win32::System::Kernel::OBJ_CASE_INSENSITIVE;
+use windows_sys::Win32::System::Kernel::OBJ_DONT_REPARSE;
+
+use super::Access;
+
+const FILE_DIRECTORY_FILE: u32 = 1;
+const FILE_NON_DIRECTORY_FILE: u32 = 0x40;
+const FILE_OPEN: u32 = 1;
+const FILE_OPEN_IF: u32 = 3;
+const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x20;
+const FILE_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+const SYNCHRONIZE: u32 = 0x0010_0000;
+
+#[repr(C)]
+struct ObjectAttributes {
+    length: u32,
+    root_directory: HANDLE,
+    object_name: *const UNICODE_STRING,
+    attributes: u32,
+    security_descriptor: *const c_void,
+    security_quality_of_service: *const c_void,
+}
+
+#[link(name = "ntdll")]
+unsafe extern "system" {
+    fn NtCreateFile(
+        handle: *mut HANDLE,
+        desired_access: u32,
+        attributes: *const ObjectAttributes,
+        status: *mut IO_STATUS_BLOCK,
+        allocation_size: *const i64,
+        file_attributes: u32,
+        share_access: u32,
+        disposition: u32,
+        options: u32,
+        ea: *const c_void,
+        ea_length: u32,
+    ) -> NTSTATUS;
+}
+
+pub(super) fn directory(path: &Path, descriptor: *const c_void) -> io::Result<File> {
+    if !path.is_absolute()
+        || path
+            .components()
+            .any(|item| matches!(item, Component::ParentDir))
+    {
+        return Err(invalid_name());
+    }
+    let skip = match path.components().next() {
+        Some(Component::Prefix(prefix)) => match prefix.kind() {
+            Prefix::Disk(_) => 0,
+            Prefix::VerbatimDisk(_) => 4,
+            _ => return Err(invalid_name()),
+        },
+        _ => return Err(invalid_name()),
+    };
+    let mut name: Vec<u16> = "\\??\\".encode_utf16().collect();
+    name.extend(path.as_os_str().encode_wide().skip(skip).map(|unit| {
+        if unit == b'/' as u16 {
+            b'\\' as u16
+        } else {
+            unit
+        }
+    }));
+    open(
+        /*root*/ 0,
+        &mut name,
+        GENERIC_READ | GENERIC_WRITE,
+        FILE_OPEN_IF,
+        FILE_DIRECTORY_FILE,
+        descriptor,
+    )
+}
+
+pub(super) fn child(
+    directory: &File,
+    name: &str,
+    access: Access,
+    descriptor: *const c_void,
+) -> io::Result<File> {
+    let mut name = leaf(name)?;
+    let (rights, disposition) = match access {
+        Access::Read => (GENERIC_READ, FILE_OPEN),
+        Access::Write => (GENERIC_READ | GENERIC_WRITE | DELETE, FILE_OPEN),
+        Access::Create => (GENERIC_READ | GENERIC_WRITE | DELETE, FILE_OPEN_IF),
+    };
+    open(
+        directory.as_raw_handle() as _,
+        &mut name,
+        rights,
+        disposition,
+        FILE_NON_DIRECTORY_FILE,
+        descriptor,
+    )
+}
+
+fn open(
+    root: HANDLE,
+    name: &mut [u16],
+    rights: u32,
+    disposition: u32,
+    kind: u32,
+    descriptor: *const c_void,
+) -> io::Result<File> {
+    if name.contains(&0) {
+        return Err(invalid_name());
+    }
+    let length = u16::try_from(std::mem::size_of_val(name)).map_err(|_| invalid_name())?;
+    let unicode = UNICODE_STRING {
+        Length: length,
+        MaximumLength: length,
+        Buffer: name.as_mut_ptr(),
+    };
+    let attributes = ObjectAttributes {
+        length: size_of::<ObjectAttributes>() as u32,
+        root_directory: root,
+        object_name: &unicode,
+        attributes: OBJ_CASE_INSENSITIVE as u32 | OBJ_DONT_REPARSE as u32,
+        security_descriptor: descriptor,
+        security_quality_of_service: ptr::null(),
+    };
+    // SAFETY: All-zero IO_STATUS_BLOCK is valid output storage.
+    let mut status = unsafe { std::mem::zeroed() };
+    let mut handle = 0;
+    let share = if kind == FILE_DIRECTORY_FILE {
+        // Retain the directory's namespace binding as well as its handle.
+        FILE_SHARE_READ | FILE_SHARE_WRITE
+    } else {
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE
+    };
+    // SAFETY: All referenced buffers/descriptors stay live for this synchronous
+    // call. No handle inheritance or backup/restore privilege is requested.
+    let result = unsafe {
+        NtCreateFile(
+            &mut handle,
+            rights | SYNCHRONIZE,
+            &attributes,
+            &mut status,
+            ptr::null(),
+            FILE_ATTRIBUTE_NORMAL,
+            share,
+            disposition,
+            kind | FILE_SYNCHRONOUS_IO_NONALERT | FILE_OPEN_REPARSE_POINT,
+            ptr::null(),
+            /*ea_length*/ 0,
+        )
+    };
+    if result < 0 {
+        // SAFETY: The conversion accepts any NTSTATUS and owns no memory.
+        return Err(io::Error::from_raw_os_error(
+            unsafe { RtlNtStatusToDosError(result) } as i32,
+        ));
+    }
+    if handle == 0 || handle == INVALID_HANDLE_VALUE {
+        return Err(io::Error::other("NtCreateFile returned an invalid handle"));
+    }
+    // SAFETY: This successful call returned a fresh owned, non-null handle.
+    Ok(File::from(unsafe {
+        OwnedHandle::from_raw_handle(handle as _)
+    }))
+}
+
+pub(super) fn replace(directory: &File, file: &File, destination: &str) -> io::Result<()> {
+    let name = leaf(destination)?;
+    let bytes = offset_of!(FILE_RENAME_INFO, FileName) + name.len() * size_of::<u16>();
+    // usize storage supplies the alignment required by FILE_RENAME_INFO. The
+    // extra trailing zero also permits APIs that inspect a UTF-16 terminator.
+    let mut buffer = vec![0_usize; (bytes + size_of::<u16>()).div_ceil(size_of::<usize>())];
+    let info = buffer.as_mut_ptr().cast::<FILE_RENAME_INFO>();
+    // SAFETY: The aligned allocation includes the header and complete flexible
+    // filename array; both borrowed handles remain open throughout the call.
+    unsafe {
+        (*info).Anonymous.ReplaceIfExists = 1;
+        (*info).RootDirectory = directory.as_raw_handle() as _;
+        (*info).FileNameLength = (name.len() * size_of::<u16>()) as u32;
+        ptr::copy_nonoverlapping(
+            name.as_ptr(),
+            ptr::addr_of_mut!((*info).FileName).cast(),
+            name.len(),
+        );
+        if SetFileInformationByHandle(
+            file.as_raw_handle() as _,
+            FileRenameInfo,
+            info.cast(),
+            bytes as u32,
+        ) == 0
+        {
+            return Err(io::Error::last_os_error());
+        }
+    }
+    Ok(())
+}
+
+fn leaf(name: &str) -> io::Result<Vec<u16>> {
+    if name.is_empty()
+        || name == "."
+        || name == ".."
+        || name.len() > 255
+        || !name
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-'))
+    {
+        return Err(invalid_name());
+    }
+    Ok(name.encode_utf16().collect())
+}
+
+fn invalid_name() -> io::Error {
+    io::Error::new(
+        io::ErrorKind::InvalidInput,
+        "private storage requires a local absolute root and a bounded single-component child name",
+    )
+}

@@ -1,0 +1,149 @@
+//! Handle-bound private storage on local NTFS volumes.
+//!
+//! Existing objects are never chmod-ed or repaired. They must have the current
+//! token user as owner and a protected, owner-only DACL. Every child is opened
+//! relative to the retained directory handle without following reparse points.
+//! Directory flush failures remain errors; this is not a power-loss simulator.
+
+use std::fs::File;
+use std::io;
+use std::os::windows::io::AsRawHandle;
+use std::path::Path;
+use std::ptr;
+
+use windows_sys::Win32::Storage::FileSystem::BY_HANDLE_FILE_INFORMATION;
+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_DIRECTORY;
+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
+use windows_sys::Win32::Storage::FileSystem::FILE_TYPE_DISK;
+use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandle;
+use windows_sys::Win32::Storage::FileSystem::GetFileType;
+use windows_sys::Win32::Storage::FileSystem::GetVolumeInformationByHandleW;
+use windows_sys::Win32::System::SystemServices::FILE_PERSISTENT_ACLS;
+
+#[path = "windows_private_handles.rs"]
+mod handles;
+#[path = "windows_private_security.rs"]
+mod security;
+
+/// File access within an already validated private directory.
+#[derive(Clone, Copy)]
+pub enum Access {
+    Read,
+    Write,
+    Create,
+}
+
+/// A private, non-reparse local NTFS directory held open for its lifetime.
+pub struct PrivateDirectory {
+    file: File,
+    identity: security::Identity,
+}
+
+impl PrivateDirectory {
+    /// Create a private directory atomically, or validate an existing one.
+    ///
+    /// The parent must exist. Relative, UNC, device and redirected paths are
+    /// rejected. Existing ACLs are inspected on the opened handle, never changed.
+    pub fn prepare(path: &Path) -> io::Result<Self> {
+        let identity = security::Identity::current()?;
+        let descriptor = identity.descriptor()?;
+        let file = handles::directory(path, descriptor.as_ptr())?;
+        validate_kind(&file, ObjectKind::Directory)?;
+        identity.validate(&file)?;
+        let mut filesystem = [0_u16; 32];
+        let mut flags = 0;
+        // SAFETY: The handle and output buffers remain live for the call.
+        let success = unsafe {
+            GetVolumeInformationByHandleW(
+                file.as_raw_handle() as _,
+                ptr::null_mut(),
+                /*nvolumenamesize*/ 0,
+                ptr::null_mut(),
+                ptr::null_mut(),
+                &mut flags,
+                filesystem.as_mut_ptr(),
+                filesystem.len() as u32,
+            )
+        };
+        if success == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        if filesystem[..5] != [78, 84, 70, 83, 0] || flags & FILE_PERSISTENT_ACLS == 0 {
+            return Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "private storage requires local NTFS with persistent ACLs",
+            ));
+        }
+        // Prove that the retained handle supports the real durability barrier
+        // before any authoritative file is created. Never replace this with Ok.
+        file.sync_all()?;
+        Ok(Self { file, identity })
+    }
+
+    /// Open a single regular file; creation never inherits a broader parent ACL.
+    pub fn open(&self, name: &str, access: Access) -> io::Result<File> {
+        let descriptor = self.identity.descriptor()?;
+        let file = handles::child(&self.file, name, access, descriptor.as_ptr())?;
+        validate_kind(&file, ObjectKind::File)?;
+        self.identity.validate(&file)?;
+        Ok(file)
+    }
+
+    /// Test for a valid private regular file, rejecting unsafe existing entries.
+    pub fn contains(&self, name: &str) -> io::Result<bool> {
+        match self.open(name, Access::Read) {
+            Ok(_) => Ok(true),
+            Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(false),
+            Err(error) => Err(error),
+        }
+    }
+
+    /// Atomically replace a same-directory name with an already flushed file.
+    ///
+    /// The caller must subsequently call `sync_all`. Failure after a successful
+    /// rename is an indeterminate commit and must poison the authoritative owner.
+    pub fn replace(&self, source: &str, destination: &str) -> io::Result<()> {
+        let file = self.open(source, Access::Write)?;
+        self.contains(destination)?;
+        handles::replace(&self.file, &file, destination)
+    }
+
+    /// Flush the retained directory handle, propagating the actual OS result.
+    pub fn sync_all(&self) -> io::Result<()> {
+        self.file.sync_all()
+    }
+}
+
+enum ObjectKind {
+    Directory,
+    File,
+}
+
+fn validate_kind(file: &File, expected: ObjectKind) -> io::Result<()> {
+    // SAFETY: Zero is a valid initial representation and the API fills it.
+    let mut information: BY_HANDLE_FILE_INFORMATION = unsafe { std::mem::zeroed() };
+    let handle = file.as_raw_handle() as _;
+    // SAFETY: Both the borrowed handle and output buffer remain live.
+    if unsafe { GetFileInformationByHandle(handle, &mut information) } == 0 {
+        return Err(io::Error::last_os_error());
+    }
+    let directory = information.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY != 0;
+    // SAFETY: This is the same live filesystem handle that was inspected above.
+    if unsafe { GetFileType(handle) } != FILE_TYPE_DISK
+        || information.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT != 0
+        || match expected {
+            ObjectKind::Directory => !directory,
+            ObjectKind::File => directory || information.nNumberOfLinks != 1,
+        }
+    {
+        return Err(unsafe_object());
+    }
+    Ok(())
+}
+
+fn unsafe_object() -> io::Error {
+    io::Error::new(
+        io::ErrorKind::PermissionDenied,
+        "storage object is not private, regular or free of reparse points",
+    )
+}
