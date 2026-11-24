@@ -73,7 +73,7 @@ async fn cold_image_is_immutable_and_reconnects_to_same_copy() -> anyhow::Result
     prepare_home(&home)?;
     let config = SqliteConfig::new_for_testing(home.as_path().abs());
     let path = home.join("cold.sqlite3");
-    let source = config.open_durable_evidence_pool(&path).await?;
+    let source = config.open_private_durable_evidence_pool(&path).await?;
     sqlx::query("CREATE TABLE fact(value TEXT); INSERT INTO fact VALUES ('original')")
         .execute(&source)
         .await?;
@@ -112,7 +112,7 @@ async fn cold_image_rejects_wrong_guard_replacement_sidecars_and_size() -> anyho
     prepare_home(&home)?;
     let config = SqliteConfig::new_for_testing(home.as_path().abs());
     let path = home.join("cold.sqlite3");
-    let source = config.open_durable_evidence_pool(&path).await?;
+    let source = config.open_private_durable_evidence_pool(&path).await?;
     sqlx::query("CREATE TABLE fact(value TEXT)")
         .execute(&source)
         .await?;
