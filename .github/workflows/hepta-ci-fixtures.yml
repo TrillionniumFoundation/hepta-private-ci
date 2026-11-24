@@ -12,6 +12,7 @@ on:
       - ".github/actions/setup-bazel-ci/**"
       - ".github/workflows/hepta-ci-fixtures.yml"
       - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-evidence/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-operator-acceptance/**"
       - "codex-rs/Cargo.lock"
@@ -69,6 +70,13 @@ jobs:
         run: |
           set -euo pipefail
           just test -p codex-hepta-memory --lib --locked v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/memory.log"
+      - name: Verify AuthBus global and issuer capacity boundaries
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-evidence --lib --locked authbus_outbox_tests 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/authbus-outbox.log"
       - name: Upload exact-source results
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
