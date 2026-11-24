@@ -700,7 +700,8 @@ fn invalid_signature_cannot_consume_an_owner_held_nonce_or_write_witness() {
 #[cfg(unix)]
 #[test]
 fn nonce_directory_must_preexist_be_owner_private_and_not_symlink() {
-    use std::os::unix::fs::{PermissionsExt, symlink};
+    use std::os::unix::fs::PermissionsExt;
+    use std::os::unix::fs::symlink;
     let f = Fixture::new();
     let path = f.dir.join("too-open-dir");
     fs::create_dir(&path).unwrap();
