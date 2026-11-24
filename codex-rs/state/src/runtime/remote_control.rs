@@ -96,7 +96,7 @@ ON CONFLICT(websocket_url, account_id, app_server_client_name) DO UPDATE SET
         .bind(&enrollment.environment_id)
         .bind(&enrollment.server_name)
         .bind(enrollment.remote_control_enabled)
-        .bind(Utc::now().timestamp())
+        .bind(codex_utils_time::Timestamp::now().epoch_seconds())
         .execute(self.pool.as_ref())
         .await?;
         Ok(())
@@ -117,7 +117,7 @@ WHERE websocket_url = ? AND account_id = ? AND app_server_client_name = ?
             "#,
         )
         .bind(remote_control_enabled)
-        .bind(Utc::now().timestamp())
+        .bind(codex_utils_time::Timestamp::now().epoch_seconds())
         .bind(websocket_url)
         .bind(account_id)
         .bind(remote_control_app_server_client_name_key(

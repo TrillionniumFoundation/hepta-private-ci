@@ -461,7 +461,7 @@ fn port_range_string(start: u32, end: u32) -> String {
 }
 
 fn log_line(log: &mut dyn Write, msg: &str) -> Result<()> {
-    let ts = chrono::Utc::now().to_rfc3339();
+    let ts = codex_utils_time::Timestamp::now().rfc3339();
     writeln!(log, "[{ts}] {msg}")?;
     Ok(())
 }

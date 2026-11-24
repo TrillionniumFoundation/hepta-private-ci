@@ -477,8 +477,8 @@ pub(crate) fn protocol_goal_from_state(goal: codex_state::ThreadGoal) -> ThreadG
         token_budget: goal.token_budget,
         tokens_used: goal.tokens_used,
         time_used_seconds: goal.time_used_seconds,
-        created_at: goal.created_at.timestamp(),
-        updated_at: goal.updated_at.timestamp(),
+        created_at: goal.created_at.epoch_seconds(),
+        updated_at: goal.updated_at.epoch_seconds(),
     }
 }
 

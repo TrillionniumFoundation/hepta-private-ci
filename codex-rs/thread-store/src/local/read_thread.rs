@@ -1,5 +1,3 @@
-use chrono::DateTime;
-use chrono::Utc;
 use codex_protocol::models::PermissionProfile;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::SessionMetaLine;
@@ -452,11 +450,12 @@ fn stored_thread_from_meta_line(
     path: std::path::PathBuf,
     archived: bool,
 ) -> StoredThread {
-    let created_at = parse_rfc3339_non_optional(&meta_line.meta.timestamp).unwrap_or_else(Utc::now);
+    let created_at = parse_rfc3339_non_optional(&meta_line.meta.timestamp)
+        .unwrap_or_else(codex_utils_time::Timestamp::now);
     let updated_at = std::fs::metadata(path.as_path())
         .ok()
         .and_then(|meta| meta.modified().ok())
-        .map(DateTime::<Utc>::from)
+        .map(codex_utils_time::Timestamp::from)
         .unwrap_or(created_at);
     let rollout_path = codex_rollout::plain_rollout_path(path.as_path());
     StoredThread {
@@ -514,10 +513,10 @@ where
         .unwrap_or(default)
 }
 
-fn parse_rfc3339_non_optional(value: &str) -> Option<DateTime<Utc>> {
-    DateTime::parse_from_rfc3339(value)
+fn parse_rfc3339_non_optional(value: &str) -> Option<codex_utils_time::Timestamp> {
+    codex_utils_time::OffsetTimestamp::parse_rfc3339(value)
         .ok()
-        .map(|dt| dt.with_timezone(&Utc))
+        .map(|dt| dt.to_utc())
 }
 
 #[cfg(test)]
@@ -525,7 +524,6 @@ mod tests {
     use std::io::Write;
     use std::path::PathBuf;
 
-    use chrono::Utc;
     use codex_protocol::ThreadId;
     use codex_protocol::items::TurnItem;
     use codex_protocol::items::UserMessageItem;
@@ -626,14 +624,14 @@ mod tests {
         let mut builder = ThreadMetadataBuilder::new(
             thread_id,
             active_path.clone(),
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.model_provider = Some(config.default_model_provider_id.clone());
         builder.git_branch = Some("sqlite-branch".to_string());
-        let recency_at = chrono::DateTime::parse_from_rfc3339("2026-01-03T12:00:00Z")
+        let recency_at = codex_utils_time::OffsetTimestamp::parse_rfc3339("2026-01-03T12:00:00Z")
             .expect("timestamp should parse")
-            .with_timezone(&Utc);
+            .to_utc();
         builder.recency_at = Some(recency_at);
         let mut metadata = builder.build(config.default_model_provider_id.as_str());
         metadata.title = "Stale SQLite name".to_string();
@@ -795,8 +793,12 @@ mod tests {
         .await
         .expect("state db should initialize");
         let store = LocalThreadStore::new(config.clone(), Some(runtime.clone()));
-        let mut builder =
-            ThreadMetadataBuilder::new(thread_id, rollout_path, Utc::now(), SessionSource::Cli);
+        let mut builder = ThreadMetadataBuilder::new(
+            thread_id,
+            rollout_path,
+            codex_utils_time::Timestamp::now(),
+            SessionSource::Cli,
+        );
         builder.model_provider = Some(config.default_model_provider_id.clone());
         builder.cwd = home.path().to_path_buf();
         builder.cli_version = Some("test_version".to_string());
@@ -858,7 +860,7 @@ mod tests {
         let mut builder = ThreadMetadataBuilder::new(
             thread_id,
             rollout_path.clone(),
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.history_mode = ThreadHistoryMode::Paginated;
@@ -930,8 +932,12 @@ mod tests {
         .await
         .expect("state db should initialize");
         let store = LocalThreadStore::new(config.clone(), Some(runtime.clone()));
-        let mut builder =
-            ThreadMetadataBuilder::new(thread_id, rollout_path, Utc::now(), SessionSource::Cli);
+        let mut builder = ThreadMetadataBuilder::new(
+            thread_id,
+            rollout_path,
+            codex_utils_time::Timestamp::now(),
+            SessionSource::Cli,
+        );
         builder.model_provider = Some(config.default_model_provider_id.clone());
         builder.cwd = home.path().to_path_buf();
         let mut metadata = builder.build(config.default_model_provider_id.as_str());
@@ -971,8 +977,12 @@ mod tests {
         .await
         .expect("state db should initialize");
         let store = LocalThreadStore::new(config.clone(), Some(runtime.clone()));
-        let mut builder =
-            ThreadMetadataBuilder::new(thread_id, rollout_path, Utc::now(), SessionSource::Cli);
+        let mut builder = ThreadMetadataBuilder::new(
+            thread_id,
+            rollout_path,
+            codex_utils_time::Timestamp::now(),
+            SessionSource::Cli,
+        );
         builder.model_provider = Some(config.default_model_provider_id.clone());
         builder.cwd = home.path().to_path_buf();
         let mut metadata = builder.build(config.default_model_provider_id.as_str());
@@ -1041,7 +1051,7 @@ mod tests {
         let mut builder = ThreadMetadataBuilder::new(
             thread_id,
             rollout_path.clone(),
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.model_provider = Some(config.default_model_provider_id.clone());
@@ -1206,7 +1216,7 @@ mod tests {
         let mut builder = ThreadMetadataBuilder::new(
             thread_id,
             rollout_path.clone(),
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.model_provider = Some("sqlite-provider".to_string());
@@ -1260,7 +1270,7 @@ mod tests {
         let mut builder = ThreadMetadataBuilder::new(
             thread_id,
             stale_path.clone(),
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.model_provider = Some("stale-sqlite-provider".to_string());
@@ -1308,8 +1318,12 @@ mod tests {
         .await
         .expect("state db should initialize");
         let store = LocalThreadStore::new(config.clone(), Some(runtime.clone()));
-        let mut builder =
-            ThreadMetadataBuilder::new(thread_id, stale_path, Utc::now(), SessionSource::Cli);
+        let mut builder = ThreadMetadataBuilder::new(
+            thread_id,
+            stale_path,
+            codex_utils_time::Timestamp::now(),
+            SessionSource::Cli,
+        );
         builder.model_provider = Some("wrong-sqlite-provider".to_string());
         let mut metadata = builder.build(config.default_model_provider_id.as_str());
         metadata.first_user_message = Some("wrong sqlite preview".to_string());
@@ -1410,7 +1424,7 @@ mod tests {
         let mut builder = ThreadMetadataBuilder::new(
             thread_id,
             rollout_path.clone(),
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Exec,
         );
         builder.model_provider = Some("sqlite-provider".to_string());
@@ -1468,10 +1482,14 @@ mod tests {
         )
         .await
         .expect("state db should initialize");
-        let mut builder =
-            ThreadMetadataBuilder::new(thread_id, rollout_path, Utc::now(), SessionSource::Cli);
+        let mut builder = ThreadMetadataBuilder::new(
+            thread_id,
+            rollout_path,
+            codex_utils_time::Timestamp::now(),
+            SessionSource::Cli,
+        );
         let store = LocalThreadStore::new(config.clone(), Some(runtime.clone()));
-        builder.archived_at = Some(Utc::now());
+        builder.archived_at = Some(codex_utils_time::Timestamp::now());
         let mut metadata = builder.build(config.default_model_provider_id.as_str());
         metadata.first_user_message = Some("Archived SQLite preview".to_string());
         runtime
@@ -1527,10 +1545,10 @@ mod tests {
         let mut builder = ThreadMetadataBuilder::new(
             thread_id,
             archived_path.clone(),
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
-        builder.archived_at = Some(Utc::now());
+        builder.archived_at = Some(codex_utils_time::Timestamp::now());
         let mut metadata = builder.build(config.default_model_provider_id.as_str());
         metadata.first_user_message = Some("Archived SQLite preview".to_string());
         runtime

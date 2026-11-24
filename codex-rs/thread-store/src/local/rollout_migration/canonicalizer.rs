@@ -9,7 +9,6 @@
 //! byte-for-byte. Filesystem publishing and SQLite projection intentionally live outside this
 //! module.
 
-use chrono::DateTime;
 use codex_protocol::ThreadId;
 use codex_protocol::items::ReasoningItem;
 use codex_protocol::items::TurnItem;
@@ -338,9 +337,9 @@ impl LegacyRolloutCanonicalizer {
         });
         self.known_turn_ids.insert(turn_id.clone());
         self.reasoning = None;
-        let started_at = DateTime::parse_from_rfc3339(timestamp)
+        let started_at = codex_utils_time::OffsetTimestamp::parse_rfc3339(timestamp)
             .map_err(migration_error)?
-            .timestamp();
+            .epoch_seconds();
         self.write_item(
             writer,
             timestamp,
@@ -378,9 +377,9 @@ impl LegacyRolloutCanonicalizer {
                 error: None,
                 started_at: None,
                 completed_at: Some(
-                    DateTime::parse_from_rfc3339(timestamp)
+                    codex_utils_time::OffsetTimestamp::parse_rfc3339(timestamp)
                         .map_err(migration_error)?
-                        .timestamp(),
+                        .epoch_seconds(),
                 ),
                 duration_ms: None,
                 time_to_first_token_ms: None,
@@ -411,9 +410,9 @@ impl LegacyRolloutCanonicalizer {
         turn_id: String,
         item: TurnItem,
     ) -> ThreadStoreResult<()> {
-        let completed_at_ms = DateTime::parse_from_rfc3339(timestamp)
+        let completed_at_ms = codex_utils_time::OffsetTimestamp::parse_rfc3339(timestamp)
             .map_err(migration_error)?
-            .timestamp_millis();
+            .epoch_milliseconds();
         self.write_item(
             writer,
             timestamp,

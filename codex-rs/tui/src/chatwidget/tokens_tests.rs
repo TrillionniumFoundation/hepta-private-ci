@@ -9,7 +9,7 @@ fn loaded_state_freezes_chart_anchor_date_at_completion() {
         state: Arc::clone(&state),
     };
     let today =
-        NaiveDate::from_ymd_opt(/*year*/ 2026, /*month*/ 5, /*day*/ 29).expect("valid date");
+        codex_utils_time::civil_date(/*year*/ 2026, /*month*/ 5, /*day*/ 29).expect("valid date");
 
     handle.finish_with_today(
         Ok(GetAccountTokenUsageResponse {

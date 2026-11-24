@@ -14,7 +14,6 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
 
-use chrono::DateTime;
 use codex_app_server_protocol::project_rollout_line;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::InternalSessionSource;
@@ -1096,9 +1095,10 @@ impl LocalThreadStore {
             let ordinal = line
                 .ordinal
                 .ok_or_else(|| migration_error("staged rollout line is missing its ordinal"))?;
-            let fallback_created_at_ms = DateTime::parse_from_rfc3339(&line.timestamp)
-                .map_err(migration_error)?
-                .timestamp_millis();
+            let fallback_created_at_ms =
+                codex_utils_time::OffsetTimestamp::parse_rfc3339(&line.timestamp)
+                    .map_err(migration_error)?
+                    .epoch_milliseconds();
             batch.push(RolloutProjectionStep::Line(ProjectedRolloutLine {
                 ordinal,
                 start_byte_offset: offset,

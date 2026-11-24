@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-use chrono::DateTime;
-use chrono::Utc;
 use codex_rollout::RolloutConfig;
 use codex_rollout::RolloutRecorder;
 use codex_rollout::parse_cursor;
@@ -149,7 +147,7 @@ async fn list_section_threads(
             let timestamp = position
                 .parse::<i64>()
                 .ok()
-                .and_then(DateTime::<Utc>::from_timestamp_millis)
+                .and_then(codex_utils_time::Timestamp::from_milliseconds)
                 .ok_or_else(|| ThreadStoreError::InvalidRequest {
                     message: format!("invalid cursor: {cursor}"),
                 })?;
@@ -237,7 +235,7 @@ async fn list_section_threads(
         .collect();
     let next_cursor = next_anchor.and_then(|anchor| {
         anchor.id.map(|thread_id| {
-            let position = anchor.ts.timestamp_millis();
+            let position = anchor.ts.epoch_milliseconds();
             format!("{position}|{thread_id}")
         })
     });
@@ -355,7 +353,6 @@ pub(super) async fn list_rollout_threads(
 
 #[cfg(test)]
 mod tests {
-    use chrono::Utc;
     use codex_protocol::ThreadId;
     use codex_protocol::protocol::SessionSource;
     use codex_protocol::protocol::ThreadHistoryMode;
@@ -433,7 +430,7 @@ mod tests {
             .mark_backfill_complete(/*last_watermark*/ None)
             .await
             .expect("backfill should be complete");
-        let created_at = Utc::now();
+        let created_at = codex_utils_time::Timestamp::now();
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             rollout_path,
@@ -506,7 +503,7 @@ mod tests {
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             rollout_path,
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.history_mode = ThreadHistoryMode::Paginated;

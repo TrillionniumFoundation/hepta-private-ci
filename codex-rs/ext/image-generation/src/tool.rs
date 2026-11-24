@@ -242,7 +242,7 @@ fn usage_limit_failure(error: &CodexErr) -> Option<ImageGenerationFailure> {
     }
 
     let resets_at = if let Some(reset_at) = usage_limit.resets_at.as_ref() {
-        Some(reset_at.timestamp())
+        Some(reset_at.epoch_seconds())
     } else {
         [rate_limits.primary.as_ref(), rate_limits.secondary.as_ref()]
             .into_iter()

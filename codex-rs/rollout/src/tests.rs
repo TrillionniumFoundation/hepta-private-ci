@@ -9,7 +9,6 @@ use std::fs::FileTimes;
 use std::io::Write;
 use std::path::Path;
 
-use chrono::TimeZone;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use time::Duration;
@@ -100,10 +99,8 @@ async fn insert_state_db_thread(
         .mark_backfill_complete(/*last_watermark*/ None)
         .await
         .expect("backfill should be complete");
-    let created_at = chrono::Utc
-        .with_ymd_and_hms(2025, 1, 3, 12, 0, 0)
-        .single()
-        .expect("valid datetime");
+    let created_at =
+        codex_utils_time::Timestamp::from_ymd_hms(2025, 1, 3, 12, 0, 0).expect("valid datetime");
     let mut builder = codex_state::ThreadMetadataBuilder::new(
         thread_id,
         rollout_path.to_path_buf(),
@@ -1530,12 +1527,12 @@ async fn test_updated_at_uses_file_mtime() -> Result<()> {
     let updated = item
         .updated_at
         .as_deref()
-        .and_then(|s| chrono::DateTime::parse_from_rfc3339(s).ok())
-        .map(|dt| dt.with_timezone(&chrono::Utc))
+        .and_then(|s| codex_utils_time::OffsetTimestamp::parse_rfc3339(s).ok())
+        .map(|dt| dt.to_utc())
         .expect("updated_at set from file mtime");
-    let now = chrono::Utc::now();
+    let now = codex_utils_time::Timestamp::now();
     let age = now - updated;
-    assert!(age.num_seconds().abs() < 30);
+    assert!(age.whole_seconds().abs() < 30);
 
     Ok(())
 }

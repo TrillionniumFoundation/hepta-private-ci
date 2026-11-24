@@ -1,8 +1,6 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use chrono::DateTime;
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::SessionMeta;
 use codex_protocol::protocol::SessionMetaLine;
@@ -128,9 +126,9 @@ fn thread_metadata(
     name: &str,
     archived: bool,
 ) -> codex_state::ThreadMetadata {
-    let created_at = DateTime::parse_from_rfc3339("2025-02-01T10:00:00Z")
+    let created_at = codex_utils_time::OffsetTimestamp::parse_rfc3339("2025-02-01T10:00:00Z")
         .expect("timestamp should parse")
-        .with_timezone(&Utc);
+        .to_utc();
     let mut builder = ThreadMetadataBuilder::new(
         thread_id,
         rollout_path,
@@ -460,8 +458,8 @@ async fn queues_non_interactive_and_custom_sessions_without_scanning_rollouts()
         /*archived*/ false,
     );
     custom_metadata.source = serde_json::to_string(&custom_source)?;
-    custom_metadata.recency_at += chrono::Duration::hours(/*hours*/ 1);
-    custom_metadata.updated_at += chrono::Duration::hours(/*hours*/ 1);
+    custom_metadata.recency_at += codex_utils_time::SignedDuration::hours(/*hours*/ 1);
+    custom_metadata.updated_at += codex_utils_time::SignedDuration::hours(/*hours*/ 1);
     runtime
         .upsert_thread(&custom_metadata)
         .await

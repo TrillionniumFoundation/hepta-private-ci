@@ -353,7 +353,6 @@ pub enum AppEvent {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use chrono::Utc;
     use codex_cloud_tasks_client::CloudBackendFuture;
     use codex_cloud_tasks_client::CloudTaskError;
 
@@ -381,7 +380,7 @@ mod tests {
                     id: TaskId(format!("T-{i}")),
                     title: t.to_string(),
                     status: codex_cloud_tasks_client::TaskStatus::Ready,
-                    updated_at: Utc::now(),
+                    updated_at: codex_utils_time::Timestamp::now(),
                     environment_id: env.map(str::to_string),
                     environment_label: None,
                     summary: codex_cloud_tasks_client::DiffSummary::default(),

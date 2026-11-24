@@ -18,8 +18,6 @@ mod chart;
 use std::sync::Arc;
 use std::sync::RwLock;
 
-use chrono::NaiveDate;
-use chrono::Utc;
 use codex_app_server_protocol::GetAccountTokenUsageResponse;
 use ratatui::style::Stylize;
 use ratatui::text::Line;
@@ -39,7 +37,7 @@ enum TokenActivityState {
     Loading,
     Loaded {
         response: GetAccountTokenUsageResponse,
-        today: NaiveDate,
+        today: codex_utils_time::CivilDate,
     },
     Error,
 }
@@ -72,13 +70,13 @@ impl TokenActivityHandle {
     /// one stable unavailable message. Calling it more than once replaces the prior
     /// terminal state, so request-ID matching should happen before completion.
     pub(super) fn finish(&self, result: Result<GetAccountTokenUsageResponse, String>) {
-        self.finish_with_today(result, Utc::now().date_naive());
+        self.finish_with_today(result, codex_utils_time::Timestamp::now().date());
     }
 
     fn finish_with_today(
         &self,
         result: Result<GetAccountTokenUsageResponse, String>,
-        today: NaiveDate,
+        today: codex_utils_time::CivilDate,
     ) {
         let state = match result {
             Ok(response) => TokenActivityState::Loaded { response, today },

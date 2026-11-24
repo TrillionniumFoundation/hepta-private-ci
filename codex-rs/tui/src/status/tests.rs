@@ -23,10 +23,6 @@ use crate::token_usage::TokenUsageInfo;
 use app_test_support::ChatGptAuthFixture;
 use app_test_support::write_chatgpt_auth;
 use app_test_support::write_models_cache;
-use chrono::Duration as ChronoDuration;
-use chrono::Local;
-use chrono::TimeZone;
-use chrono::Utc;
 use codex_app_server_protocol::AskForApproval;
 use codex_app_server_protocol::CreditsSnapshot;
 use codex_app_server_protocol::RateLimitSnapshot;
@@ -61,7 +57,7 @@ use unicode_width::UnicodeWidthStr;
 
 #[test]
 fn stale_monthly_limit_marks_fresh_rolling_snapshot_stale() {
-    let now = Local::now();
+    let now = codex_utils_time::OffsetTimestamp::now_local();
     let snapshot = RateLimitSnapshotDisplay {
         limit_name: "codex".to_string(),
         captured_at: now,
@@ -73,7 +69,7 @@ fn stale_monthly_limit_marks_fresh_rolling_snapshot_stale() {
         secondary: None,
         credits: None,
         individual_limit: Some(SpendControlLimitSnapshotDisplay {
-            captured_at: now - ChronoDuration::minutes(20),
+            captured_at: now - codex_utils_time::SignedDuration::minutes(20),
             percent_remaining: 68.0,
             used: "8,000".to_string(),
             limit: "25,000".to_string(),
@@ -236,17 +232,15 @@ fn buffer_to_text(buffer: &Buffer, width: u16) -> String {
     sanitize_directory(lines).join("\n")
 }
 
-fn reset_at_from(captured_at: &chrono::DateTime<chrono::Local>, seconds: i64) -> i64 {
-    (*captured_at + ChronoDuration::seconds(seconds))
-        .with_timezone(&Utc)
-        .timestamp()
+fn reset_at_from(captured_at: &codex_utils_time::OffsetTimestamp, seconds: i64) -> i64 {
+    (*captured_at + codex_utils_time::SignedDuration::seconds(seconds))
+        .to_utc()
+        .epoch_seconds()
 }
 
 fn permissions_text_for(config: &Config) -> Option<String> {
     let usage = TokenUsage::default();
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 1, 2, 3, 4, 5)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 1, 2, 3, 4, 5)
         .expect("timestamp");
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
     let composite = new_status_output(
@@ -299,9 +293,7 @@ async fn status_snapshot_includes_reasoning_details() {
         total_tokens: 2_250,
     };
 
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 1, 2, 3, 4, 5)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 1, 2, 3, 4, 5)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -388,9 +380,7 @@ async fn status_snapshot_shows_chatgpt_plan_without_email() {
         }
     );
     let usage = TokenUsage::default();
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 1, 2, 3, 4, 5)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 1, 2, 3, 4, 5)
         .expect("timestamp");
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
 
@@ -697,9 +687,7 @@ async fn status_snapshot_shows_active_user_defined_profile() {
         .expect("set permission profile");
 
     let usage = TokenUsage::default();
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 1, 2, 3, 4, 5)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 1, 2, 3, 4, 5)
         .expect("timestamp");
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
     let token_info = token_info_for(&model_slug, &config, &usage);
@@ -743,9 +731,7 @@ async fn status_model_provider_uses_bedrock_runtime_base_url_and_gates_usage_lin
     config.model_provider.base_url =
         Some("https://bedrock-mantle.us-east-1.api.aws/openai/v1".to_string());
     let usage = TokenUsage::default();
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 1, 2, 3, 4, 5)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 1, 2, 3, 4, 5)
         .expect("timestamp");
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
     let runtime_base_url = "https://bedrock-mantle.eu-west-1.api.aws/openai/v1";
@@ -853,9 +839,7 @@ async fn status_snapshot_shows_auto_review_permissions() {
         .expect("set permission profile");
 
     let usage = TokenUsage::default();
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 1, 2, 3, 4, 5)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 1, 2, 3, 4, 5)
         .expect("timestamp");
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
     let token_info = token_info_for(&model_slug, &config, &usage);
@@ -948,9 +932,7 @@ async fn status_snapshot_includes_forked_from() {
         total_tokens: 1_200,
     };
 
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 8, 9, 10, 11, 12)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 8, 9, 10, 11, 12)
         .expect("valid time");
 
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
@@ -1002,9 +984,7 @@ async fn status_snapshot_includes_monthly_limit() {
         total_tokens: 1_200,
     };
 
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 5, 6, 7, 8, 9)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 5, 6, 7, 8, 9)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -1066,9 +1046,7 @@ async fn status_snapshot_includes_enterprise_monthly_credit_limit() {
         reasoning_output_tokens: 0,
         total_tokens: 1_200,
     };
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 5, 6, 7, 8, 9)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 5, 6, 7, 8, 9)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -1144,9 +1122,7 @@ async fn status_snapshot_uses_generic_limit_labels_for_unsupported_windows() {
         total_tokens: 1_200,
     };
 
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 5, 6, 7, 8, 9)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 5, 6, 7, 8, 9)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -1202,9 +1178,7 @@ async fn status_snapshot_shows_unlimited_credits() {
     let config = test_config(&temp_home).await;
     let account_display = test_status_account_display();
     let usage = TokenUsage::default();
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 2, 3, 4, 5, 6)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 2, 3, 4, 5, 6)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -1254,9 +1228,7 @@ async fn status_snapshot_shows_positive_credits() {
     let config = test_config(&temp_home).await;
     let account_display = test_status_account_display();
     let usage = TokenUsage::default();
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 3, 4, 5, 6, 7)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 3, 4, 5, 6, 7)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -1306,9 +1278,7 @@ async fn status_snapshot_shows_available_credits_without_display_balance() {
     let config = test_config(&temp_home).await;
     let account_display = test_status_account_display();
     let usage = TokenUsage::default();
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 4, 5, 6, 7, 8)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 4, 5, 6, 7, 8)
         .expect("timestamp");
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
     let token_info = token_info_for(&model_slug, &config, &usage);
@@ -1366,9 +1336,7 @@ async fn status_snapshot_respects_unlimited_without_has_credits_flag() {
     let config = test_config(&temp_home).await;
     let account_display = test_status_account_display();
     let usage = TokenUsage::default();
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 5, 6, 7, 8, 9)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 5, 6, 7, 8, 9)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -1428,9 +1396,7 @@ async fn status_card_token_usage_excludes_cached_tokens() {
         total_tokens: 2_100,
     };
 
-    let now = chrono::Local
-        .with_ymd_and_hms(2024, 1, 1, 0, 0, 0)
-        .single()
+    let now = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 1, 1, 0, 0, 0)
         .expect("timestamp");
 
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
@@ -1476,9 +1442,7 @@ async fn status_snapshot_truncates_in_narrow_terminal() {
         total_tokens: 2_250,
     };
 
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 1, 2, 3, 4, 5)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 1, 2, 3, 4, 5)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -1537,9 +1501,7 @@ async fn status_snapshot_truncates_halfwidth_kana_in_narrow_terminal() {
         plan: Some("ｶﾞﾊﾟ plan".to_string()),
     };
     let usage = TokenUsage::default();
-    let now = chrono::Local
-        .with_ymd_and_hms(2024, 1, 2, 3, 4, 5)
-        .single()
+    let now = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 1, 2, 3, 4, 5)
         .expect("timestamp");
     let composite = new_status_output(
         &config,
@@ -1578,9 +1540,7 @@ async fn status_snapshot_shows_missing_limits_message() {
         total_tokens: 750,
     };
 
-    let now = chrono::Local
-        .with_ymd_and_hms(2024, 2, 3, 4, 5, 6)
-        .single()
+    let now = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 2, 3, 4, 5, 6)
         .expect("timestamp");
 
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
@@ -1626,9 +1586,7 @@ async fn status_snapshot_uses_default_reasoning_when_config_empty() {
         total_tokens: 750,
     };
 
-    let now = chrono::Local
-        .with_ymd_and_hms(2024, 2, 3, 4, 5, 6)
-        .single()
+    let now = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 2, 3, 4, 5, 6)
         .expect("timestamp");
     let remote_connection = RemoteConnectionStatus {
         address: "unix:///tmp/codex-home/app-server-control/app-server-control.sock".to_string(),
@@ -1680,9 +1638,7 @@ async fn status_snapshot_shows_refreshing_limits_notice() {
         reasoning_output_tokens: 0,
         total_tokens: 750,
     };
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 6, 7, 8, 9, 10)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 6, 7, 8, 9, 10)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -1740,9 +1696,7 @@ async fn transcript_overlay_remeasures_status_after_rate_limit_refresh() {
     config.model = Some("gpt-5.1-codex-max".to_string());
     set_workspace_cwd(&mut config, test_path_buf("/workspace/tests").abs());
     let usage = TokenUsage::default();
-    let now = Local
-        .with_ymd_and_hms(2024, 6, 7, 8, 9, 10)
-        .single()
+    let now = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 6, 7, 8, 9, 10)
         .expect("timestamp");
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
 
@@ -1832,9 +1786,7 @@ async fn status_snapshot_includes_credits_and_limits() {
         total_tokens: 2_200,
     };
 
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 7, 8, 9, 10, 11)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 7, 8, 9, 10, 11)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -1915,9 +1867,7 @@ async fn status_snapshot_shows_unavailable_limits_message() {
         plan_type: None,
         rate_limit_reached_type: None,
     };
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 6, 7, 8, 9, 10)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 6, 7, 8, 9, 10)
         .expect("timestamp");
     let rate_display = rate_limit_snapshot_display(&snapshot, captured_at);
 
@@ -1974,9 +1924,7 @@ async fn status_snapshot_treats_refreshing_empty_limits_as_unavailable() {
         plan_type: None,
         rate_limit_reached_type: None,
     };
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 6, 7, 8, 9, 10)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 6, 7, 8, 9, 10)
         .expect("timestamp");
     let rate_display = rate_limit_snapshot_display(&snapshot, captured_at);
 
@@ -2024,9 +1972,7 @@ async fn status_snapshot_shows_stale_limits_message() {
         total_tokens: 2_250,
     };
 
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 1, 2, 3, 4, 5)
-        .single()
+    let captured_at = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 1, 2, 3, 4, 5)
         .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
@@ -2048,7 +1994,7 @@ async fn status_snapshot_shows_stale_limits_message() {
         rate_limit_reached_type: None,
     };
     let rate_display = rate_limit_snapshot_display(&snapshot, captured_at);
-    let now = captured_at + ChronoDuration::minutes(20);
+    let now = captured_at + codex_utils_time::SignedDuration::minutes(20);
 
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
     let token_info = token_info_for(&model_slug, &config, &usage);
@@ -2093,10 +2039,9 @@ async fn status_snapshot_cached_limits_hide_credits_without_flag() {
         total_tokens: 1_450,
     };
 
-    let captured_at = chrono::Local
-        .with_ymd_and_hms(2024, 9, 10, 11, 12, 13)
-        .single()
-        .expect("timestamp");
+    let captured_at =
+        codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 9, 10, 11, 12, 13)
+            .expect("timestamp");
     let snapshot = RateLimitSnapshot {
         limit_id: None,
         limit_name: None,
@@ -2121,7 +2066,7 @@ async fn status_snapshot_cached_limits_hide_credits_without_flag() {
         rate_limit_reached_type: None,
     };
     let rate_display = rate_limit_snapshot_display(&snapshot, captured_at);
-    let now = captured_at + ChronoDuration::minutes(20);
+    let now = captured_at + codex_utils_time::SignedDuration::minutes(20);
 
     let model_slug = get_model_offline_for_tests(config.model.as_deref());
     let token_info = token_info_for(&model_slug, &config, &usage);
@@ -2172,9 +2117,7 @@ async fn status_context_window_uses_last_usage() {
         total_tokens: 13_679,
     };
 
-    let now = chrono::Local
-        .with_ymd_and_hms(2024, 6, 1, 12, 0, 0)
-        .single()
+    let now = codex_utils_time::OffsetTimestamp::from_local_ymd_hms(2024, 6, 1, 12, 0, 0)
         .expect("timestamp");
 
     let model_slug = get_model_offline_for_tests(config.model.as_deref());

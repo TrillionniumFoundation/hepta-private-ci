@@ -1,8 +1,6 @@
 use super::*;
 #[cfg(test)]
-use chrono::DateTime;
 #[cfg(test)]
-use chrono::Utc;
 use codex_protocol::config_types::MultiAgentMode;
 
 #[cfg(test)]
@@ -195,11 +193,11 @@ pub(crate) fn thread_settings_from_config_snapshot(
 }
 
 #[cfg(test)]
-fn parse_datetime(timestamp: Option<&str>) -> Option<DateTime<Utc>> {
+fn parse_datetime(timestamp: Option<&str>) -> Option<codex_utils_time::Timestamp> {
     timestamp.and_then(|ts| {
-        chrono::DateTime::parse_from_rfc3339(ts)
+        codex_utils_time::OffsetTimestamp::parse_rfc3339(ts)
             .ok()
-            .map(|dt| dt.with_timezone(&chrono::Utc))
+            .map(|dt| dt.to_utc())
     })
 }
 
@@ -210,8 +208,8 @@ async fn read_updated_at(path: &Path, created_at: Option<&str>) -> Option<String
         .ok()
         .and_then(|meta| meta.modified().ok())
         .map(|modified| {
-            let updated_at: DateTime<Utc> = modified.into();
-            updated_at.to_rfc3339_opts(SecondsFormat::Millis, true)
+            let updated_at: codex_utils_time::Timestamp = modified.into();
+            updated_at.rfc3339_utc(codex_utils_time::Precision::Milliseconds)
         });
     updated_at.or_else(|| created_at.map(str::to_string))
 }
@@ -271,9 +269,9 @@ pub(crate) fn summary_to_thread(
         project_id: None,
         history_mode: ThreadHistoryMode::Legacy,
         model_provider,
-        created_at: created_at.map(|dt| dt.timestamp()).unwrap_or(0),
-        updated_at: updated_at.map(|dt| dt.timestamp()).unwrap_or(0),
-        recency_at: updated_at.map(|dt| dt.timestamp()),
+        created_at: created_at.map(|dt| dt.epoch_seconds()).unwrap_or(0),
+        updated_at: updated_at.map(|dt| dt.epoch_seconds()).unwrap_or(0),
+        recency_at: updated_at.map(|dt| dt.epoch_seconds()),
         status: ThreadStatus::NotLoaded,
         path: (!path.as_os_str().is_empty()).then_some(path),
         cwd,

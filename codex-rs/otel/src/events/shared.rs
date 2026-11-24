@@ -1,5 +1,3 @@
-use chrono::SecondsFormat;
-use chrono::Utc;
 use codex_protocol::DEFAULT_FUNCTION_NAMESPACE;
 use codex_protocol::ToolName;
 
@@ -66,5 +64,5 @@ pub(crate) use log_event;
 pub(crate) use trace_event;
 
 pub(crate) fn timestamp() -> String {
-    Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)
+    codex_utils_time::Timestamp::now().rfc3339_utc(codex_utils_time::Precision::Milliseconds)
 }

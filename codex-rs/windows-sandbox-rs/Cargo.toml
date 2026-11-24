@@ -24,10 +24,7 @@ workspace = true
 [dependencies]
 anyhow = "1.0"
 base64 = { workspace = true }
-chrono = { version = "0.4.42", default-features = false, features = [
-    "clock",
-    "std",
-] }
+codex-utils-time = { workspace = true }
 codex-utils-pty = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 codex-utils-string = { workspace = true }

@@ -5,9 +5,6 @@
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
-use chrono::DateTime;
-use chrono::Duration as ChronoDuration;
-use chrono::Utc;
 use codex_config::AbsolutePathBuf;
 use codex_config::CloudConfigBundle;
 use hmac::Hmac;
@@ -99,7 +96,7 @@ impl CloudConfigBundleCache {
             return Err(CacheLoadStatus::CacheIdentityMismatch);
         }
 
-        if cache_file.signed_payload.expires_at <= Utc::now() {
+        if cache_file.signed_payload.expires_at <= codex_utils_time::Timestamp::now() {
             return Err(CacheLoadStatus::CacheExpired);
         }
 
@@ -131,10 +128,10 @@ impl CloudConfigBundleCache {
         account_id: Option<String>,
         bundle: CloudConfigBundle,
     ) -> Result<(), CloudConfigBundleCacheError> {
-        let now = Utc::now();
+        let now = codex_utils_time::Timestamp::now();
         let expires_at = now
-            .checked_add_signed(
-                ChronoDuration::from_std(CLOUD_CONFIG_BUNDLE_CACHE_TTL)
+            .checked_add(
+                codex_utils_time::SignedDuration::try_from(CLOUD_CONFIG_BUNDLE_CACHE_TTL)
                     .map_err(|_| CloudConfigBundleCacheError)?,
             )
             .ok_or(CloudConfigBundleCacheError)?;
@@ -204,8 +201,8 @@ pub(super) struct CloudConfigBundleCacheFile {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub(super) struct CloudConfigBundleCacheSignedPayload {
     pub(super) version: u32,
-    pub(super) cached_at: DateTime<Utc>,
-    pub(super) expires_at: DateTime<Utc>,
+    pub(super) cached_at: codex_utils_time::Timestamp,
+    pub(super) expires_at: codex_utils_time::Timestamp,
     pub(super) chatgpt_user_id: Option<String>,
     pub(super) account_id: Option<String>,
     pub(super) bundle: CloudConfigBundle,

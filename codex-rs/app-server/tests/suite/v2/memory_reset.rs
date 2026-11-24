@@ -1,7 +1,6 @@
 use anyhow::Result;
 use app_test_support::MockResponsesConfig;
 use app_test_support::TestAppServer;
-use chrono::Utc;
 use codex_app_server_protocol::MemoryResetResponse;
 use codex_features::Feature;
 use codex_protocol::ThreadId;
@@ -71,7 +70,7 @@ async fn memory_reset_clears_memory_files_and_rows_preserves_threads() -> Result
 }
 
 async fn seed_stage1_output(state_db: &Arc<StateRuntime>, codex_home: &Path) -> Result<ThreadId> {
-    let now = Utc::now();
+    let now = codex_utils_time::Timestamp::now();
     let thread_id = ThreadId::from_string(&Uuid::new_v4().to_string())?;
     let worker_id = ThreadId::from_string(&Uuid::new_v4().to_string())?;
     let mut builder = ThreadMetadataBuilder::new(
@@ -90,7 +89,7 @@ async fn seed_stage1_output(state_db: &Arc<StateRuntime>, codex_home: &Path) -> 
         .try_claim_stage1_job(
             thread_id,
             worker_id,
-            now.timestamp(),
+            now.epoch_seconds(),
             /*lease_seconds*/ 3600,
             /*max_running_jobs*/ 64,
         )
@@ -104,7 +103,7 @@ async fn seed_stage1_output(state_db: &Arc<StateRuntime>, codex_home: &Path) -> 
             .mark_stage1_job_succeeded(
                 thread_id,
                 ownership_token.as_str(),
-                now.timestamp(),
+                now.epoch_seconds(),
                 "raw memory",
                 "rollout summary",
                 /*rollout_slug*/ None,
@@ -114,7 +113,7 @@ async fn seed_stage1_output(state_db: &Arc<StateRuntime>, codex_home: &Path) -> 
     );
     state_db
         .memories()
-        .enqueue_global_consolidation(now.timestamp())
+        .enqueue_global_consolidation(now.epoch_seconds())
         .await?;
 
     Ok(thread_id)

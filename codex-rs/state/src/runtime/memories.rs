@@ -9,8 +9,6 @@ use crate::model::Stage1Output;
 use crate::model::Stage1RecallCandidate;
 use crate::model::Stage1StartupClaimParams;
 use crate::model::ThreadRow;
-use chrono::DateTime;
-use chrono::Duration;
 use sqlx::Executor;
 use sqlx::QueryBuilder;
 use sqlx::Sqlite;
@@ -63,7 +61,7 @@ impl MemoryStore {
             return Ok(0);
         }
 
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let mut tx = self.pool.begin().await?;
         let mut updated_rows = 0;
 
@@ -146,7 +144,7 @@ WHERE kind = ? AND job_key = ?
     ///   state-DB work before probing the memories DB
     ///
     /// For each selected thread, this function calls [`Self::try_claim_stage1_job`]
-    /// with `source_updated_at = thread.updated_at.timestamp()` and returns up to
+    /// with `source_updated_at = thread.updated_at.epoch_seconds()` and returns up to
     /// `max_claimed` successful claims.
     pub async fn claim_stage1_jobs_for_startup(
         &self,
@@ -167,9 +165,12 @@ WHERE kind = ? AND job_key = ?
 
         let worker_id = current_thread_id;
         let current_thread_id = worker_id.to_string();
-        let max_age_cutoff = (Utc::now() - Duration::days(max_age_days.max(0))).timestamp_millis();
-        let idle_cutoff =
-            (Utc::now() - Duration::hours(min_rollout_idle_hours.max(0))).timestamp_millis();
+        let max_age_cutoff = (codex_utils_time::Timestamp::now()
+            - codex_utils_time::SignedDuration::days(max_age_days.max(0)))
+        .epoch_milliseconds();
+        let idle_cutoff = (codex_utils_time::Timestamp::now()
+            - codex_utils_time::SignedDuration::hours(min_rollout_idle_hours.max(0)))
+        .epoch_milliseconds();
 
         let mut builder = QueryBuilder::<Sqlite>::new(
             r#"
@@ -266,7 +267,7 @@ FROM threads
                 break;
             }
             if !self
-                .stage1_source_needs_update(item.id, item.updated_at.timestamp())
+                .stage1_source_needs_update(item.id, item.updated_at.epoch_seconds())
                 .await?
             {
                 continue;
@@ -276,7 +277,7 @@ FROM threads
                 .try_claim_stage1_job(
                     item.id,
                     worker_id,
-                    item.updated_at.timestamp(),
+                    item.updated_at.epoch_seconds(),
                     lease_seconds,
                     max_claimed,
                 )
@@ -293,7 +294,7 @@ FROM threads
     }
 
     pub(super) async fn delete_thread_memory(&self, thread_id: ThreadId) -> anyhow::Result<()> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let thread_id = thread_id.to_string();
         let mut tx = self.pool.begin().await?;
 
@@ -523,7 +524,9 @@ WHERE threads.id = ? AND threads.memory_mode = 'enabled'
             return Ok(0);
         }
 
-        let cutoff = (Utc::now() - Duration::days(max_unused_days.max(0))).timestamp();
+        let cutoff = (codex_utils_time::Timestamp::now()
+            - codex_utils_time::SignedDuration::days(max_unused_days.max(0)))
+        .epoch_seconds();
         let rows_affected = sqlx::query(
             r#"
 DELETE FROM stage1_outputs
@@ -572,7 +575,9 @@ WHERE thread_id IN (
         if n == 0 {
             return Ok(Vec::new());
         }
-        let cutoff = (Utc::now() - Duration::days(max_unused_days.max(0))).timestamp();
+        let cutoff = (codex_utils_time::Timestamp::now()
+            - codex_utils_time::SignedDuration::days(max_unused_days.max(0)))
+        .epoch_seconds();
 
         let page_size = n.clamp(1, PHASE2_INPUT_SELECTION_PAGE_SIZE);
         let page_size_i64 = i64::try_from(page_size).unwrap_or(i64::MAX);
@@ -741,7 +746,7 @@ WHERE threads.id = ? AND threads.memory_mode = 'enabled'
         &self,
         thread_id: ThreadId,
     ) -> anyhow::Result<bool> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let thread_id = thread_id.to_string();
         let selected_for_phase2 = sqlx::query_scalar::<_, i64>(
             r#"
@@ -797,7 +802,7 @@ WHERE id = ? AND memory_mode != 'polluted'
         lease_seconds: i64,
         max_running_jobs: usize,
     ) -> anyhow::Result<Stage1JobClaimOutcome> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let lease_until = now.saturating_add(lease_seconds.max(0));
         let max_running_jobs = max_running_jobs as i64;
         let ownership_token = Uuid::new_v4().to_string();
@@ -985,7 +990,7 @@ WHERE kind = ? AND job_key = ?
         rollout_summary: &str,
         rollout_slug: Option<&str>,
     ) -> anyhow::Result<bool> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let thread_id = thread_id.to_string();
 
         let mut tx = self.pool.begin().await?;
@@ -1062,7 +1067,7 @@ WHERE excluded.source_updated_at >= stage1_outputs.source_updated_at
         thread_id: ThreadId,
         ownership_token: &str,
     ) -> anyhow::Result<bool> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let thread_id = thread_id.to_string();
 
         let mut tx = self.pool.begin().await?;
@@ -1139,7 +1144,7 @@ WHERE thread_id = ?
         failure_reason: &str,
         retry_delay_seconds: i64,
     ) -> anyhow::Result<bool> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let retry_at = now.saturating_add(retry_delay_seconds.max(0));
         let thread_id = thread_id.to_string();
 
@@ -1199,7 +1204,7 @@ WHERE kind = ? AND job_key = ?
         worker_id: ThreadId,
         lease_seconds: i64,
     ) -> anyhow::Result<Phase2JobClaimOutcome> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let lease_until = now.saturating_add(lease_seconds.max(0));
         let cooldown_cutoff = now.saturating_sub(PHASE2_SUCCESS_COOLDOWN_SECONDS);
         let ownership_token = Uuid::new_v4().to_string();
@@ -1336,7 +1341,7 @@ WHERE kind = ? AND job_key = ?
         ownership_token: &str,
         lease_seconds: i64,
     ) -> anyhow::Result<bool> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let lease_until = now.saturating_add(lease_seconds.max(0));
         let rows_affected = sqlx::query(
             r#"
@@ -1405,9 +1410,9 @@ SET
 WHERE thread_id = ? AND source_updated_at = ?
                 "#,
             )
-            .bind(output.source_updated_at.timestamp())
+            .bind(output.source_updated_at.epoch_seconds())
             .bind(output.thread_id.to_string())
-            .bind(output.source_updated_at.timestamp())
+            .bind(output.source_updated_at.epoch_seconds())
             .execute(&mut *tx)
             .await?;
         }
@@ -1429,7 +1434,7 @@ WHERE thread_id = ? AND source_updated_at = ?
         failure_reason: &str,
         retry_delay_seconds: i64,
     ) -> anyhow::Result<bool> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let retry_at = now.saturating_add(retry_delay_seconds.max(0));
         let rows_affected = sqlx::query(
             r#"
@@ -1470,7 +1475,7 @@ WHERE kind = ? AND job_key = ?
         failure_reason: &str,
         retry_delay_seconds: i64,
     ) -> anyhow::Result<bool> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         let retry_at = now.saturating_add(retry_delay_seconds.max(0));
         let rows_affected = sqlx::query(
             r#"
@@ -1509,7 +1514,7 @@ async fn mark_global_phase2_job_succeeded_row<'e, E>(
 where
     E: Executor<'e, Database = Sqlite>,
 {
-    let now = Utc::now().timestamp();
+    let now = codex_utils_time::Timestamp::now().epoch_seconds();
     let rows_affected = sqlx::query(
         r#"
 UPDATE jobs
@@ -1582,8 +1587,8 @@ fn stage1_output_from_row_and_thread(
     })
 }
 
-fn datetime_from_epoch_seconds(secs: i64) -> anyhow::Result<DateTime<Utc>> {
-    DateTime::<Utc>::from_timestamp(secs, 0)
+fn datetime_from_epoch_seconds(secs: i64) -> anyhow::Result<codex_utils_time::Timestamp> {
+    codex_utils_time::Timestamp::from_parts(secs, 0)
         .ok_or_else(|| anyhow::anyhow!("invalid unix timestamp: {secs}"))
 }
 
@@ -1826,8 +1831,6 @@ mod tests {
     use crate::model::Phase2JobClaimOutcome;
     use crate::model::Stage1JobClaimOutcome;
     use crate::model::Stage1StartupClaimParams;
-    use chrono::Duration;
-    use chrono::Utc;
     use codex_protocol::ThreadId;
     use codex_protocol::protocol::ThreadHistoryMode;
     use codex_utils_absolute_path::test_support::PathExt;
@@ -1846,7 +1849,11 @@ mod tests {
 
     async fn age_phase2_success_beyond_cooldown(runtime: &StateRuntime) {
         sqlx::query("UPDATE jobs SET finished_at = ? WHERE kind = ? AND job_key = ?")
-            .bind(Utc::now().timestamp() - PHASE2_SUCCESS_COOLDOWN_SECONDS - 1)
+            .bind(
+                codex_utils_time::Timestamp::now().epoch_seconds()
+                    - PHASE2_SUCCESS_COOLDOWN_SECONDS
+                    - 1,
+            )
             .bind(JOB_KIND_MEMORY_CONSOLIDATE_GLOBAL)
             .bind(MEMORY_CONSOLIDATION_JOB_KEY)
             .execute(memory_pool(runtime))
@@ -2135,11 +2142,14 @@ mod tests {
         .await
         .expect("initialize runtime");
 
-        let now = Utc::now();
-        let fresh_at = now - Duration::hours(1);
-        let just_under_idle_at = now - Duration::hours(12) + Duration::minutes(1);
-        let eligible_idle_at = now - Duration::hours(12) - Duration::minutes(1);
-        let old_at = now - Duration::days(31);
+        let now = codex_utils_time::Timestamp::now();
+        let fresh_at = now - codex_utils_time::SignedDuration::hours(1);
+        let just_under_idle_at = now - codex_utils_time::SignedDuration::hours(12)
+            + codex_utils_time::SignedDuration::minutes(1);
+        let eligible_idle_at = now
+            - codex_utils_time::SignedDuration::hours(12)
+            - codex_utils_time::SignedDuration::minutes(1);
+        let old_at = now - codex_utils_time::SignedDuration::days(31);
 
         let current_thread_id =
             ThreadId::from_string(&Uuid::new_v4().to_string()).expect("current thread id");
@@ -2228,9 +2238,9 @@ mod tests {
         .await
         .expect("initialize runtime");
 
-        let now = Utc::now();
-        let eligible_newer_at = now - Duration::hours(13);
-        let eligible_older_at = now - Duration::hours(14);
+        let now = codex_utils_time::Timestamp::now();
+        let eligible_newer_at = now - codex_utils_time::SignedDuration::hours(13);
+        let eligible_older_at = now - codex_utils_time::SignedDuration::hours(14);
 
         let current_thread_id =
             ThreadId::from_string(&Uuid::new_v4().to_string()).expect("current thread id");
@@ -2265,7 +2275,7 @@ mod tests {
             .try_claim_stage1_job(
                 up_to_date_thread_id,
                 worker_id,
-                up_to_date.updated_at.timestamp(),
+                up_to_date.updated_at.epoch_seconds(),
                 /*lease_seconds*/ 3600,
                 /*max_running_jobs*/ 64,
             )
@@ -2280,7 +2290,7 @@ mod tests {
                 .mark_stage1_job_succeeded(
                     up_to_date_thread_id,
                     up_to_date_token.as_str(),
-                    up_to_date.updated_at.timestamp(),
+                    up_to_date.updated_at.epoch_seconds(),
                     "raw",
                     "summary",
                     /*rollout_slug*/ None,
@@ -2346,8 +2356,8 @@ mod tests {
         .await
         .expect("initialize runtime");
 
-        let now = Utc::now();
-        let eligible_at = now - Duration::hours(13);
+        let now = codex_utils_time::Timestamp::now();
+        let eligible_at = now - codex_utils_time::SignedDuration::hours(13);
 
         let current_thread_id =
             ThreadId::from_string(&Uuid::new_v4().to_string()).expect("current thread id");
@@ -2445,7 +2455,7 @@ mod tests {
         .await
         .expect("initialize runtime");
 
-        let now = Utc::now() - Duration::hours(13);
+        let now = codex_utils_time::Timestamp::now() - codex_utils_time::SignedDuration::hours(13);
         let worker_id = ThreadId::from_string(&Uuid::new_v4().to_string()).expect("worker id");
         let enabled_thread_id =
             ThreadId::from_string(&Uuid::new_v4().to_string()).expect("enabled thread id");
@@ -2465,7 +2475,7 @@ mod tests {
             .try_claim_stage1_job(
                 enabled_thread_id,
                 worker_id,
-                enabled.updated_at.timestamp(),
+                enabled.updated_at.epoch_seconds(),
                 /*lease_seconds*/ 3600,
                 /*max_running_jobs*/ 64,
             )
@@ -2480,7 +2490,7 @@ mod tests {
                 .mark_stage1_job_succeeded(
                     enabled_thread_id,
                     ownership_token.as_str(),
-                    enabled.updated_at.timestamp(),
+                    enabled.updated_at.epoch_seconds(),
                     "raw",
                     "summary",
                     /*rollout_slug*/ None,
@@ -2490,7 +2500,7 @@ mod tests {
             "stage1 success should be recorded"
         );
         runtime
-            .enqueue_global_consolidation(enabled.updated_at.timestamp())
+            .enqueue_global_consolidation(enabled.updated_at.epoch_seconds())
             .await
             .expect("enqueue global consolidation");
 
@@ -2568,10 +2578,10 @@ mod tests {
             .await
             .expect("upsert current");
 
-        let now = Utc::now();
-        let started_at = now.timestamp();
+        let now = codex_utils_time::Timestamp::now();
+        let started_at = now.epoch_seconds();
         let lease_until = started_at + 3600;
-        let eligible_at = now - Duration::hours(13);
+        let eligible_at = now - codex_utils_time::SignedDuration::hours(13);
         let existing_running = 10usize;
         let total_candidates = 80usize;
 
@@ -2582,8 +2592,10 @@ mod tests {
                 thread_id,
                 codex_home.join(format!("thread-{idx}")),
             );
-            metadata.created_at = eligible_at - Duration::seconds(idx as i64);
-            metadata.updated_at = eligible_at - Duration::seconds(idx as i64);
+            metadata.created_at =
+                eligible_at - codex_utils_time::SignedDuration::seconds(idx as i64);
+            metadata.updated_at =
+                eligible_at - codex_utils_time::SignedDuration::seconds(idx as i64);
             runtime
                 .upsert_thread(&metadata)
                 .await
@@ -2616,7 +2628,7 @@ INSERT INTO jobs (
                 .bind(started_at)
                 .bind(lease_until)
                 .bind(3)
-                .bind(metadata.updated_at.timestamp())
+                .bind(metadata.updated_at.epoch_seconds())
                 .execute(memory_pool(&runtime))
                 .await
                 .expect("seed running stage1 job");
@@ -2650,7 +2662,7 @@ WHERE kind = 'memory_stage1'
   AND lease_until > ?
             "#,
         )
-        .bind(Utc::now().timestamp())
+        .bind(codex_utils_time::Timestamp::now().epoch_seconds())
         .fetch_one(memory_pool(&runtime))
         .await
         .expect("count running stage1 jobs")
@@ -2691,14 +2703,15 @@ WHERE kind = 'memory_stage1'
             ThreadId::from_string(&Uuid::new_v4().to_string()).expect("current thread id");
         let mut current =
             test_thread_metadata(&codex_home, current_thread_id, codex_home.join("current"));
-        current.created_at = Utc::now();
-        current.updated_at = Utc::now();
+        current.created_at = codex_utils_time::Timestamp::now();
+        current.updated_at = codex_utils_time::Timestamp::now();
         runtime
             .upsert_thread(&current)
             .await
             .expect("upsert current");
 
-        let eligible_at = Utc::now() - Duration::hours(13);
+        let eligible_at =
+            codex_utils_time::Timestamp::now() - codex_utils_time::SignedDuration::hours(13);
         for idx in 0..200 {
             let thread_id = ThreadId::from_string(&Uuid::new_v4().to_string()).expect("thread id");
             let mut metadata = test_thread_metadata(
@@ -2706,8 +2719,10 @@ WHERE kind = 'memory_stage1'
                 thread_id,
                 codex_home.join(format!("thread-{idx}")),
             );
-            metadata.created_at = eligible_at - Duration::seconds(idx as i64);
-            metadata.updated_at = eligible_at - Duration::seconds(idx as i64);
+            metadata.created_at =
+                eligible_at - codex_utils_time::SignedDuration::seconds(idx as i64);
+            metadata.updated_at =
+                eligible_at - codex_utils_time::SignedDuration::seconds(idx as i64);
             runtime
                 .upsert_thread(&metadata)
                 .await
@@ -2737,7 +2752,7 @@ WHERE kind = 'memory_stage1'
                     .mark_stage1_job_succeeded(
                         claim.thread.id,
                         claim.ownership_token.as_str(),
-                        claim.thread.updated_at.timestamp(),
+                        claim.thread.updated_at.epoch_seconds(),
                         "raw",
                         "summary",
                         /*rollout_slug*/ None,
@@ -2848,7 +2863,7 @@ WHERE kind = 'memory_stage1'
             "phase2 success should mark selected stage1 output"
         );
 
-        let before_delete = Utc::now().timestamp();
+        let before_delete = codex_utils_time::Timestamp::now().epoch_seconds();
         assert_eq!(
             runtime
                 .delete_thread(thread_id)
@@ -4198,7 +4213,7 @@ VALUES (?, ?, ?, ?, ?)
             .expect("load phase2 input selection");
         assert_eq!(selection.len(), 1);
         assert_eq!(selection[0].thread_id, thread_id);
-        assert_eq!(selection[0].source_updated_at.timestamp(), 101);
+        assert_eq!(selection[0].source_updated_at.epoch_seconds(), 101);
 
         let (selected_for_phase2, selected_for_phase2_source_updated_at) =
             sqlx::query_as::<_, (i64, Option<i64>)>(
@@ -4477,7 +4492,7 @@ VALUES (?, ?, ?, ?, ?)
             .await
             .expect("list second selected outputs");
         assert_eq!(
-            second_selected_outputs[0].source_updated_at.timestamp(),
+            second_selected_outputs[0].source_updated_at.epoch_seconds(),
             101
         );
         assert!(
@@ -4575,7 +4590,7 @@ VALUES (?, ?, ?, ?, ?)
             .list_stage1_outputs_for_global(/*n*/ 1)
             .await
             .expect("list selected outputs");
-        assert_eq!(selected_outputs[0].source_updated_at.timestamp(), 100);
+        assert_eq!(selected_outputs[0].source_updated_at.epoch_seconds(), 100);
 
         let refreshed_claim = runtime
             .try_claim_stage1_job(
@@ -4631,7 +4646,7 @@ VALUES (?, ?, ?, ?, ?)
             .await
             .expect("load phase2 input selection");
         assert_eq!(selection.len(), 1);
-        assert_eq!(selection[0].source_updated_at.timestamp(), 101);
+        assert_eq!(selection[0].source_updated_at.epoch_seconds(), 101);
 
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
@@ -4768,7 +4783,7 @@ VALUES (?, ?, ?, ?, ?)
         .await
         .expect("initialize runtime");
 
-        let now = Utc::now();
+        let now = codex_utils_time::Timestamp::now();
         let owner = ThreadId::from_string(&Uuid::new_v4().to_string()).expect("owner id");
         let thread_a = stable_thread_id("00000000-0000-4000-8000-000000000001");
         let thread_b = stable_thread_id("00000000-0000-4000-8000-000000000002");
@@ -4790,11 +4805,23 @@ VALUES (?, ?, ?, ?, ?)
         }
 
         for (thread_id, generated_at, summary) in [
-            (thread_a, now - Duration::days(3), "summary-a"),
-            (thread_b, now - Duration::days(2), "summary-b"),
-            (thread_c, now - Duration::days(1), "summary-c"),
+            (
+                thread_a,
+                now - codex_utils_time::SignedDuration::days(3),
+                "summary-a",
+            ),
+            (
+                thread_b,
+                now - codex_utils_time::SignedDuration::days(2),
+                "summary-b",
+            ),
+            (
+                thread_c,
+                now - codex_utils_time::SignedDuration::days(1),
+                "summary-c",
+            ),
         ] {
-            let source_updated_at = generated_at.timestamp();
+            let source_updated_at = generated_at.epoch_seconds();
             let claim = runtime
                 .try_claim_stage1_job(
                     thread_id,
@@ -4826,15 +4853,27 @@ VALUES (?, ?, ?, ?, ?)
         }
 
         for (thread_id, usage_count, last_usage) in [
-            (thread_a, 5_i64, now - Duration::days(10)),
-            (thread_b, 5_i64, now - Duration::days(1)),
-            (thread_c, 1_i64, now - Duration::hours(1)),
+            (
+                thread_a,
+                5_i64,
+                now - codex_utils_time::SignedDuration::days(10),
+            ),
+            (
+                thread_b,
+                5_i64,
+                now - codex_utils_time::SignedDuration::days(1),
+            ),
+            (
+                thread_c,
+                1_i64,
+                now - codex_utils_time::SignedDuration::hours(1),
+            ),
         ] {
             sqlx::query(
                 "UPDATE stage1_outputs SET usage_count = ?, last_usage = ? WHERE thread_id = ?",
             )
             .bind(usage_count)
-            .bind(last_usage.timestamp())
+            .bind(last_usage.epoch_seconds())
             .bind(thread_id.to_string())
             .execute(memory_pool(&runtime))
             .await
@@ -4867,7 +4906,7 @@ VALUES (?, ?, ?, ?, ?)
         .await
         .expect("initialize runtime");
 
-        let now = Utc::now();
+        let now = codex_utils_time::Timestamp::now();
         let owner = ThreadId::from_string(&Uuid::new_v4().to_string()).expect("owner id");
         let thread_a = stable_thread_id("00000000-0000-4000-8000-000000000001");
         let thread_b = stable_thread_id("00000000-0000-4000-8000-000000000002");
@@ -4889,11 +4928,23 @@ VALUES (?, ?, ?, ?, ?)
         }
 
         for (thread_id, generated_at, summary) in [
-            (thread_a, now - Duration::days(40), "summary-a"),
-            (thread_b, now - Duration::days(2), "summary-b"),
-            (thread_c, now - Duration::days(50), "summary-c"),
+            (
+                thread_a,
+                now - codex_utils_time::SignedDuration::days(40),
+                "summary-a",
+            ),
+            (
+                thread_b,
+                now - codex_utils_time::SignedDuration::days(2),
+                "summary-b",
+            ),
+            (
+                thread_c,
+                now - codex_utils_time::SignedDuration::days(50),
+                "summary-c",
+            ),
         ] {
-            let source_updated_at = generated_at.timestamp();
+            let source_updated_at = generated_at.epoch_seconds();
             let claim = runtime
                 .try_claim_stage1_job(
                     thread_id,
@@ -4925,15 +4976,23 @@ VALUES (?, ?, ?, ?, ?)
         }
 
         for (thread_id, usage_count, last_usage) in [
-            (thread_a, Some(9_i64), Some(now - Duration::days(31))),
+            (
+                thread_a,
+                Some(9_i64),
+                Some(now - codex_utils_time::SignedDuration::days(31)),
+            ),
             (thread_b, None, None),
-            (thread_c, Some(1_i64), Some(now - Duration::days(1))),
+            (
+                thread_c,
+                Some(1_i64),
+                Some(now - codex_utils_time::SignedDuration::days(1)),
+            ),
         ] {
             sqlx::query(
                 "UPDATE stage1_outputs SET usage_count = ?, last_usage = ? WHERE thread_id = ?",
             )
             .bind(usage_count)
-            .bind(last_usage.map(|value| value.timestamp()))
+            .bind(last_usage.map(|value| value.epoch_seconds()))
             .bind(thread_id.to_string())
             .execute(memory_pool(&runtime))
             .await
@@ -5040,7 +5099,7 @@ VALUES (?, ?, ?, ?, ?)
 
         assert_eq!(selection.len(), 1);
         assert_eq!(selection[0].thread_id, newer_thread);
-        assert_eq!(selection[0].source_updated_at.timestamp(), 200);
+        assert_eq!(selection[0].source_updated_at.epoch_seconds(), 200);
 
         let _ = tokio::fs::remove_dir_all(codex_home).await;
     }
@@ -5079,26 +5138,26 @@ VALUES (?, ?, ?, ?, ?)
                 .expect("upsert thread");
         }
 
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         for (thread_id, source_updated_at, summary) in [
             (
                 stale_unused,
-                now - Duration::days(60).num_seconds(),
+                now - codex_utils_time::SignedDuration::days(60).whole_seconds(),
                 "stale-unused",
             ),
             (
                 stale_used,
-                now - Duration::days(50).num_seconds(),
+                now - codex_utils_time::SignedDuration::days(50).whole_seconds(),
                 "stale-used",
             ),
             (
                 stale_selected,
-                now - Duration::days(45).num_seconds(),
+                now - codex_utils_time::SignedDuration::days(45).whole_seconds(),
                 "stale-selected",
             ),
             (
                 fresh_used,
-                now - Duration::days(10).num_seconds(),
+                now - codex_utils_time::SignedDuration::days(10).whole_seconds(),
                 "fresh-used",
             ),
         ] {
@@ -5136,7 +5195,7 @@ VALUES (?, ?, ?, ?, ?)
             "UPDATE stage1_outputs SET usage_count = ?, last_usage = ? WHERE thread_id = ?",
         )
         .bind(3_i64)
-        .bind(now - Duration::days(40).num_seconds())
+        .bind(now - codex_utils_time::SignedDuration::days(40).whole_seconds())
         .bind(stale_used.to_string())
         .execute(memory_pool(&runtime))
         .await
@@ -5152,7 +5211,7 @@ VALUES (?, ?, ?, ?, ?)
             "UPDATE stage1_outputs SET usage_count = ?, last_usage = ? WHERE thread_id = ?",
         )
         .bind(8_i64)
-        .bind(now - Duration::days(2).num_seconds())
+        .bind(now - codex_utils_time::SignedDuration::days(2).whole_seconds())
         .bind(fresh_used.to_string())
         .execute(memory_pool(&runtime))
         .await
@@ -5220,11 +5279,23 @@ VALUES (?, ?, ?, ?, ?)
                 .expect("upsert thread");
         }
 
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().epoch_seconds();
         for (thread_id, source_updated_at, summary) in [
-            (thread_a, now - Duration::days(60).num_seconds(), "stale-a"),
-            (thread_b, now - Duration::days(50).num_seconds(), "stale-b"),
-            (thread_c, now - Duration::days(40).num_seconds(), "stale-c"),
+            (
+                thread_a,
+                now - codex_utils_time::SignedDuration::days(60).whole_seconds(),
+                "stale-a",
+            ),
+            (
+                thread_b,
+                now - codex_utils_time::SignedDuration::days(50).whole_seconds(),
+                "stale-b",
+            ),
+            (
+                thread_c,
+                now - codex_utils_time::SignedDuration::days(40).whole_seconds(),
+                "stale-c",
+            ),
         ] {
             let claim = runtime
                 .try_claim_stage1_job(
@@ -5488,7 +5559,7 @@ VALUES (?, ?, ?, ?, ?)
         };
 
         sqlx::query("UPDATE jobs SET lease_until = ? WHERE kind = ? AND job_key = ?")
-            .bind(Utc::now().timestamp() - 1)
+            .bind(codex_utils_time::Timestamp::now().epoch_seconds() - 1)
             .bind("memory_consolidate_global")
             .bind("global")
             .execute(memory_pool(&runtime))

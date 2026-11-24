@@ -7,8 +7,6 @@ use crate::list::ThreadSortKey;
 use crate::metadata;
 use crate::sqlite_metrics;
 use anyhow::Context;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::ThreadHistoryMode;
@@ -280,7 +278,7 @@ fn cursor_to_anchor(cursor: Option<&Cursor>) -> Option<codex_state::Anchor> {
     let cursor = cursor?;
     let millis = cursor.timestamp().unix_timestamp_nanos() / 1_000_000;
     let millis = i64::try_from(millis).ok()?;
-    let ts = chrono::DateTime::<Utc>::from_timestamp_millis(millis)?;
+    let ts = codex_utils_time::Timestamp::from_milliseconds(millis)?;
     Some(codex_state::Anchor {
         ts,
         id: cursor.thread_id(),
@@ -684,7 +682,7 @@ pub async fn apply_rollout_items(
     items: &[RolloutItem],
     stage: &str,
     new_thread_memory_mode: Option<&str>,
-    updated_at_override: Option<DateTime<Utc>>,
+    updated_at_override: Option<codex_utils_time::Timestamp>,
 ) {
     let Some(ctx) = context else {
         return;
@@ -722,7 +720,7 @@ pub async fn apply_rollout_items(
 pub async fn touch_thread_updated_at(
     context: Option<&codex_state::StateRuntime>,
     thread_id: Option<ThreadId>,
-    updated_at: DateTime<Utc>,
+    updated_at: codex_utils_time::Timestamp,
     stage: &str,
 ) -> bool {
     let Some(ctx) = context else {

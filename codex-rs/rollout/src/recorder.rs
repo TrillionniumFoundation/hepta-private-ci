@@ -13,7 +13,6 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use chrono::SecondsFormat;
 use codex_protocol::RolloutId;
 use codex_protocol::SessionId;
 use codex_protocol::ThreadId;
@@ -2024,9 +2023,18 @@ fn thread_item_from_state_metadata(
         agent_role: item.agent_role,
         model_provider: Some(item.model_provider),
         cli_version: Some(item.cli_version),
-        created_at: Some(item.created_at.to_rfc3339_opts(SecondsFormat::Secs, true)),
-        updated_at: Some(item.updated_at.to_rfc3339_opts(SecondsFormat::Millis, true)),
-        recency_at: Some(item.recency_at.to_rfc3339_opts(SecondsFormat::Millis, true)),
+        created_at: Some(
+            item.created_at
+                .rfc3339_utc(codex_utils_time::Precision::Seconds),
+        ),
+        updated_at: Some(
+            item.updated_at
+                .rfc3339_utc(codex_utils_time::Precision::Milliseconds),
+        ),
+        recency_at: Some(
+            item.recency_at
+                .rfc3339_utc(codex_utils_time::Precision::Milliseconds),
+        ),
     }
 }
 

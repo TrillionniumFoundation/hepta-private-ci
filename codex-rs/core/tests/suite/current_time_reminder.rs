@@ -6,9 +6,6 @@ use std::time::Duration;
 
 use anyhow::Result;
 use anyhow::anyhow;
-use chrono::DateTime;
-use chrono::Local;
-use chrono::Utc;
 use codex_core::SleepFuture;
 use codex_core::TimeFuture;
 use codex_core::TimeProvider;
@@ -69,7 +66,7 @@ impl TimeProvider for TestTimeProvider {
     fn current_time(&self, _thread_id: ThreadId) -> TimeFuture<'_> {
         let timestamp = self.current_time.fetch_add(60, Ordering::Relaxed);
         Box::pin(async move {
-            Ok(DateTime::<Utc>::from_timestamp(timestamp, 0)
+            Ok(codex_utils_time::Timestamp::from_parts(timestamp, 0)
                 .expect("test timestamp should be valid"))
         })
     }
@@ -154,9 +151,9 @@ async fn environment_context_uses_external_current_time_on_each_turn() -> Result
         .zip([FIRST_TIME_UNIX_SECONDS, FIRST_TIME_UNIX_SECONDS + 86_400])
     {
         assert!(request.has_content_kinds(&["environments.environment_context"]));
-        let current_date = DateTime::<Utc>::from_timestamp(timestamp, 0)
+        let current_date = codex_utils_time::Timestamp::from_parts(timestamp, 0)
             .expect("test timestamp should be valid")
-            .with_timezone(&Local)
+            .to_local()
             .format("%Y-%m-%d")
             .to_string();
         assert!(request.message_input_texts("user").iter().any(|text| {

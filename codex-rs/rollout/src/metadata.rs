@@ -5,10 +5,6 @@ use crate::compression;
 use crate::recorder::RolloutRecorder;
 use crate::rollout_file_name::RolloutFileName;
 use crate::state_db::normalize_cwd_for_state_db;
-use chrono::DateTime;
-use chrono::NaiveDateTime;
-use chrono::Timelike;
-use chrono::Utc;
 use codex_protocol::RolloutId;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::SandboxPolicy;
@@ -86,8 +82,8 @@ pub fn builder_from_items(
     let file_name = rollout_path.file_name()?.to_str()?;
     let file_name = RolloutFileName::parse(file_name)?;
     let created_ts = file_name.timestamp();
-    let created_at =
-        DateTime::<Utc>::from_timestamp(created_ts.unix_timestamp(), 0)?.with_nanosecond(0)?;
+    let created_at = codex_utils_time::Timestamp::from_parts(created_ts.unix_timestamp(), 0)?
+        .with_nanoseconds(0)?;
     Some(ThreadMetadataBuilder::new(
         file_name.thread_id(),
         rollout_path.to_path_buf(),
@@ -392,19 +388,19 @@ fn backfill_watermark_for_path(codex_home: &Path, path: &Path) -> String {
         .replace('\\', "/")
 }
 
-async fn file_modified_time_utc(path: &Path) -> Option<DateTime<Utc>> {
+async fn file_modified_time_utc(path: &Path) -> Option<codex_utils_time::Timestamp> {
     let modified = compression::file_modified_time(path).await.ok()??;
-    DateTime::<Utc>::from_timestamp(modified.unix_timestamp(), modified.nanosecond())
+    codex_utils_time::Timestamp::from_parts(modified.unix_timestamp(), modified.nanosecond())
 }
 
-fn parse_timestamp_to_utc(ts: &str) -> Option<DateTime<Utc>> {
+fn parse_timestamp_to_utc(ts: &str) -> Option<codex_utils_time::Timestamp> {
     const FILENAME_TS_FORMAT: &str = "%Y-%m-%dT%H-%M-%S";
-    if let Ok(naive) = NaiveDateTime::parse_from_str(ts, FILENAME_TS_FORMAT) {
-        let dt = DateTime::<Utc>::from_naive_utc_and_offset(naive, Utc);
-        return dt.with_nanosecond(0);
+    if let Ok(naive) = codex_utils_time::parse_utc(ts, FILENAME_TS_FORMAT) {
+        let dt = naive;
+        return dt.with_nanoseconds(0);
     }
-    if let Ok(dt) = DateTime::parse_from_rfc3339(ts) {
-        return Some(dt.with_timezone(&Utc));
+    if let Ok(dt) = codex_utils_time::OffsetTimestamp::parse_rfc3339(ts) {
+        return Some(dt.to_utc());
     }
     None
 }

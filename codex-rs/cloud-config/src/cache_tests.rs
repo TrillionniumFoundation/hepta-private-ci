@@ -38,11 +38,11 @@ fn signed_cache_file(
 }
 
 fn valid_signed_payload() -> CloudConfigBundleCacheSignedPayload {
-    let cached_at = Utc::now();
+    let cached_at = codex_utils_time::Timestamp::now();
     CloudConfigBundleCacheSignedPayload {
         version: CLOUD_CONFIG_BUNDLE_CACHE_VERSION,
         cached_at,
-        expires_at: cached_at + ChronoDuration::minutes(30),
+        expires_at: cached_at + codex_utils_time::SignedDuration::minutes(30),
         chatgpt_user_id: Some("user-12345".to_string()),
         account_id: Some("account-12345".to_string()),
         bundle: test_bundle(),
@@ -81,7 +81,7 @@ async fn save_writes_signed_payload_and_loads_for_matching_identity() {
             .expect("parse cache");
     assert!(
         cache_file.signed_payload.expires_at
-            <= cache_file.signed_payload.cached_at + ChronoDuration::minutes(60)
+            <= cache_file.signed_payload.cached_at + codex_utils_time::SignedDuration::minutes(60)
     );
     assert!(cache_file.signed_payload.expires_at > cache_file.signed_payload.cached_at);
     assert_eq!(
@@ -182,7 +182,8 @@ async fn load_rejects_expired_cache() {
     let codex_home = tempdir().expect("tempdir");
     let cache = create_test_cache(codex_home.path());
     let mut signed_payload = valid_signed_payload();
-    signed_payload.expires_at = Utc::now() - ChronoDuration::seconds(1);
+    signed_payload.expires_at =
+        codex_utils_time::Timestamp::now() - codex_utils_time::SignedDuration::seconds(1);
     write_cache_file(&cache, &signed_cache_file(signed_payload));
 
     assert_eq!(
@@ -203,4 +204,43 @@ async fn load_rejects_unsupported_cache_version() {
         cache.load(Some("user-12345"), Some("account-12345")).await,
         Err(CacheLoadStatus::CacheVersionUnsupported(2))
     );
+}
+
+#[test]
+fn persisted_timestamp_migration_preserves_legacy_cache_bytes_and_signatures() {
+    // Golden payload bytes came from the previous serializer, including its
+    // 0/3/6/9-digit fractions, negative epoch, leap second, and expanded year.
+    for (encoded, signature) in [
+        (
+            r#"{"version":1,"cached_at":"1970-01-01T00:00:00Z","expires_at":"1970-01-01T01:00:00Z","chatgpt_user_id":"user-fixture","account_id":"account-fixture","bundle":{"config_toml":{"enterprise_managed":[]},"requirements_toml":{"enterprise_managed":[]}}}"#,
+            "3MM+HwZ32ttT12OFbedIt6YZTGs6fHWn3/xPf3HYPHE=",
+        ),
+        (
+            r#"{"version":1,"cached_at":"2026-01-01T00:00:00.100Z","expires_at":"2026-01-01T01:00:00.100Z","chatgpt_user_id":"user-fixture","account_id":"account-fixture","bundle":{"config_toml":{"enterprise_managed":[]},"requirements_toml":{"enterprise_managed":[]}}}"#,
+            "8l5a+46KNHyfcvcMSS6tu7FjZ+JuzGaTYDOQs/oRe+s=",
+        ),
+        (
+            r#"{"version":1,"cached_at":"2026-01-01T00:00:00.000100Z","expires_at":"2026-01-01T01:00:00.000100Z","chatgpt_user_id":"user-fixture","account_id":"account-fixture","bundle":{"config_toml":{"enterprise_managed":[]},"requirements_toml":{"enterprise_managed":[]}}}"#,
+            "MJMof8Xgn0rzGp5wMl0l4pKRh1WlQt4uPJ7S6pS6eXQ=",
+        ),
+        (
+            r#"{"version":1,"cached_at":"1969-12-31T23:59:59.999999999Z","expires_at":"1970-01-01T00:59:59.999999999Z","chatgpt_user_id":"user-fixture","account_id":"account-fixture","bundle":{"config_toml":{"enterprise_managed":[]},"requirements_toml":{"enterprise_managed":[]}}}"#,
+            "SQKps0vSIv6V6eUJy6Vz+b/dNJrt0THHbR3OVCRi4u8=",
+        ),
+        (
+            r#"{"version":1,"cached_at":"2016-12-31T23:59:60.123456789Z","expires_at":"2017-01-01T00:59:59.123456789Z","chatgpt_user_id":"user-fixture","account_id":"account-fixture","bundle":{"config_toml":{"enterprise_managed":[]},"requirements_toml":{"enterprise_managed":[]}}}"#,
+            "Vry5fP/TFxuYiqj99gN0CYCafyI3/qu7EkpK88KX60U=",
+        ),
+        (
+            r#"{"version":1,"cached_at":"+10000-01-01T00:00:00Z","expires_at":"+10000-01-01T01:00:00Z","chatgpt_user_id":"user-fixture","account_id":"account-fixture","bundle":{"config_toml":{"enterprise_managed":[]},"requirements_toml":{"enterprise_managed":[]}}}"#,
+            "tahjiczSHpEqDEqygDsX6OE53NzlV3rmXorv8BZzbZ8=",
+        ),
+    ] {
+        let payload: CloudConfigBundleCacheSignedPayload =
+            serde_json::from_str(encoded).expect("legacy payload");
+        let bytes = cache_payload_bytes(&payload).expect("payload bytes");
+        assert_eq!(bytes, encoded.as_bytes());
+        assert_eq!(sign_cache_payload(&bytes).as_deref(), Some(signature));
+        assert!(verify_cache_signature(&bytes, signature));
+    }
 }

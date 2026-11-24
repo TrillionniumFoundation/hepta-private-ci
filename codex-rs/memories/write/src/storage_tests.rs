@@ -4,8 +4,6 @@ use crate::raw_memories_file;
 use crate::rebuild_raw_memories_file_from_memories;
 use crate::rollout_summaries_dir;
 use crate::sync_rollout_summaries_from_memories;
-use chrono::TimeZone;
-use chrono::Utc;
 use codex_config::types::DEFAULT_MEMORIES_MAX_RAW_MEMORIES_FOR_CONSOLIDATION;
 use codex_protocol::ThreadId;
 use codex_state::Stage1Output;
@@ -18,14 +16,14 @@ const FIXED_PREFIX: &str = "2025-02-11T15-35-19-jqmb";
 fn stage1_output_with_slug(thread_id: ThreadId, rollout_slug: Option<&str>) -> Stage1Output {
     Stage1Output {
         thread_id,
-        source_updated_at: Utc.timestamp_opt(123, 0).single().expect("timestamp"),
+        source_updated_at: codex_utils_time::Timestamp::from_parts(123, 0).expect("timestamp"),
         raw_memory: "raw memory".to_string(),
         rollout_summary: "summary".to_string(),
         rollout_slug: rollout_slug.map(ToString::to_string),
         rollout_path: PathBuf::from("/tmp/rollout.jsonl"),
         cwd: PathBuf::from("/tmp/workspace"),
         git_branch: None,
-        generated_at: Utc.timestamp_opt(124, 0).single().expect("timestamp"),
+        generated_at: codex_utils_time::Timestamp::from_parts(124, 0).expect("timestamp"),
     }
 }
 
@@ -87,14 +85,14 @@ async fn sync_rollout_summaries_and_raw_memories_file_keeps_latest_memories_only
 
     let memories = vec![Stage1Output {
         thread_id: ThreadId::try_from(keep_id.clone()).expect("thread id"),
-        source_updated_at: Utc.timestamp_opt(100, 0).single().expect("timestamp"),
+        source_updated_at: codex_utils_time::Timestamp::from_parts(100, 0).expect("timestamp"),
         raw_memory: "raw memory".to_string(),
         rollout_summary: "short summary".to_string(),
         rollout_slug: None,
         rollout_path: PathBuf::from("/tmp/rollout-100.jsonl"),
         cwd: PathBuf::from("/tmp/workspace"),
         git_branch: None,
-        generated_at: Utc.timestamp_opt(101, 0).single().expect("timestamp"),
+        generated_at: codex_utils_time::Timestamp::from_parts(101, 0).expect("timestamp"),
     }];
 
     sync_rollout_summaries_from_memories(

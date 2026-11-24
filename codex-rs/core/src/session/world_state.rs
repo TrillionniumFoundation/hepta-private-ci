@@ -196,7 +196,7 @@ impl Session {
                 .current_time(self.thread_id())
                 .await
                 .map_err(|err| CodexErr::Fatal(format!("failed to read current time: {err:#}")))?
-                .with_timezone(&chrono::Local)
+                .to_local()
                 .format("%Y-%m-%d")
                 .to_string();
             world_state.add_section(

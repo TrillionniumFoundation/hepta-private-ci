@@ -2,9 +2,6 @@ use anyhow::Result;
 use app_test_support::MockResponsesConfig;
 use app_test_support::TestAppServer;
 use app_test_support::create_final_assistant_message_sse_response;
-use chrono::DateTime;
-use chrono::Local;
-use chrono::Utc;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::CurrentTimeReadResponse;
 use codex_app_server_protocol::JSONRPCMessage;
@@ -113,9 +110,9 @@ clock_source = "external"
             .iter()
             .any(|text| text == CURRENT_TIME_REMINDER)
     );
-    let current_date = DateTime::<Utc>::from_timestamp(CURRENT_TIME_AT, 0)
+    let current_date = codex_utils_time::Timestamp::from_parts(CURRENT_TIME_AT, 0)
         .expect("test timestamp should be valid")
-        .with_timezone(&Local)
+        .to_local()
         .format("%Y-%m-%d")
         .to_string();
     assert!(request.message_input_texts("user").iter().any(|text| {

@@ -4288,12 +4288,12 @@ mod tests {
         // Seed the RNG based on the current day in Pacific Time (PST/PDT). This
         // keeps the fuzz test deterministic within a day while still varying
         // day-to-day to improve coverage.
-        let pst_today_seed: u64 = (chrono::Utc::now() - chrono::Duration::hours(8))
-            .date_naive()
-            .and_hms_opt(0, 0, 0)
-            .unwrap()
-            .and_utc()
-            .timestamp() as u64;
+        let pst_today_seed: u64 = codex_utils_time::Timestamp::from_civil(
+            (codex_utils_time::Timestamp::now() - codex_utils_time::SignedDuration::hours(8))
+                .date()
+                .midnight(),
+        )
+        .epoch_seconds() as u64;
         let mut rng = rand::rngs::StdRng::seed_from_u64(pst_today_seed);
 
         for _case in 0..500 {

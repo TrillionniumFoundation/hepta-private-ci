@@ -2,7 +2,6 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use anyhow::Context;
-use chrono::DateTime;
 use clap::Parser;
 use clap::ValueEnum;
 use codex_core::config::ConfigBuilder;
@@ -200,9 +199,9 @@ fn parse_timestamp(value: &str) -> anyhow::Result<i64> {
         return Ok(secs);
     }
 
-    let dt = DateTime::parse_from_rfc3339(value)
+    let dt = codex_utils_time::OffsetTimestamp::parse_rfc3339(value)
         .with_context(|| format!("expected RFC3339 or unix seconds, got {value}"))?;
-    Ok(dt.timestamp())
+    Ok(dt.epoch_seconds())
 }
 
 async fn print_backfill(
@@ -326,9 +325,6 @@ mod matcher {
 }
 
 mod formatter {
-    use chrono::DateTime;
-    use chrono::SecondsFormat;
-    use chrono::Utc;
     use owo_colors::OwoColorize;
 
     pub(super) fn apply_patch(message: &str) -> String {
@@ -349,9 +345,9 @@ mod formatter {
 
     pub(super) fn ts(ts: i64, ts_nanos: i64, compact: bool) -> String {
         let nanos = u32::try_from(ts_nanos).unwrap_or(0);
-        match DateTime::<Utc>::from_timestamp(ts, nanos) {
+        match codex_utils_time::Timestamp::from_parts(ts, nanos) {
             Some(dt) if compact => dt.format("%H:%M:%S").to_string(),
-            Some(dt) => dt.to_rfc3339_opts(SecondsFormat::Millis, true),
+            Some(dt) => dt.rfc3339_utc(codex_utils_time::Precision::Milliseconds),
             None => format!("{ts}.{ts_nanos:09}Z"),
         }
     }

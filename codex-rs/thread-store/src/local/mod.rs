@@ -879,7 +879,7 @@ mod tests {
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             stale_rollout_path,
-            chrono::Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.history_mode = ThreadHistoryMode::Paginated;
@@ -1265,10 +1265,7 @@ mod tests {
             .await
             .expect("sqlite metadata read")
             .expect("sqlite metadata");
-        assert_eq!(
-            metadata.created_at.to_rfc3339(),
-            "2025-01-03T17:00:00+00:00"
-        );
+        assert_eq!(metadata.created_at.rfc3339(), "2025-01-03T17:00:00+00:00");
         assert_eq!(metadata.model_provider, "test-provider");
         assert_eq!(
             metadata.first_user_message.as_deref(),
@@ -1320,10 +1317,7 @@ mod tests {
             .await
             .expect("sqlite metadata read")
             .expect("sqlite metadata");
-        assert_eq!(
-            metadata.created_at.to_rfc3339(),
-            "2025-01-03T17:30:00+00:00"
-        );
+        assert_eq!(metadata.created_at.rfc3339(), "2025-01-03T17:30:00+00:00");
         assert_eq!(metadata.model_provider, "test-provider");
         assert_eq!(
             metadata.first_user_message.as_deref(),

@@ -1,5 +1,3 @@
-use chrono::DateTime;
-use chrono::Utc;
 use codex_features::CurrentTimeReminderDeliveryMode;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::Result as CodexResult;
@@ -12,7 +10,7 @@ use crate::context_manager::is_user_turn_boundary;
 
 #[derive(Default)]
 pub(crate) struct CurrentTimeReminderState {
-    last_delivery_time: Option<DateTime<Utc>>,
+    last_delivery_time: Option<codex_utils_time::Timestamp>,
     last_window_id: Option<String>,
     pending_user_or_tool_output_boundary: bool,
 }
@@ -35,7 +33,7 @@ impl CurrentTimeReminderState {
     fn take_reminder_due(
         &mut self,
         window_id: &str,
-        current_time: DateTime<Utc>,
+        current_time: codex_utils_time::Timestamp,
         interval_seconds: u64,
         delivery_mode: CurrentTimeReminderDeliveryMode,
     ) -> bool {
@@ -54,8 +52,8 @@ impl CurrentTimeReminderState {
             || interval_seconds == 0
             || self.last_delivery_time.is_none_or(|last_delivery_time| {
                 current_time
-                    .signed_duration_since(last_delivery_time)
-                    .num_seconds()
+                    .duration_since(last_delivery_time)
+                    .whole_seconds()
                     >= i64::try_from(interval_seconds).unwrap_or(i64::MAX)
             });
 

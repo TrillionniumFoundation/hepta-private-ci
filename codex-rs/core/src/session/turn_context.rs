@@ -550,9 +550,16 @@ impl TurnContext {
 
 fn local_time_context() -> (String, String) {
     match iana_time_zone::get_timezone() {
-        Ok(timezone) => (Local::now().format("%Y-%m-%d").to_string(), timezone),
+        Ok(timezone) => (
+            codex_utils_time::OffsetTimestamp::now_local()
+                .format("%Y-%m-%d")
+                .to_string(),
+            timezone,
+        ),
         Err(_) => (
-            Utc::now().format("%Y-%m-%d").to_string(),
+            codex_utils_time::Timestamp::now()
+                .format("%Y-%m-%d")
+                .to_string(),
             "Etc/UTC".to_string(),
         ),
     }

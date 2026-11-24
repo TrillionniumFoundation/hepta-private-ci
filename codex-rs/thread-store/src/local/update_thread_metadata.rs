@@ -1,7 +1,6 @@
 use std::path::Path;
 use std::path::PathBuf;
 
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::GitInfo;
 use codex_protocol::protocol::SessionSource;
@@ -579,7 +578,7 @@ async fn metadata_for_missing_sqlite_row(
     let created_at = patch
         .created_at
         .or(patch.updated_at)
-        .unwrap_or_else(Utc::now);
+        .unwrap_or_else(codex_utils_time::Timestamp::now);
     let mut builder = ThreadMetadataBuilder::new(
         thread_id,
         rollout_path.to_path_buf(),
@@ -1847,7 +1846,7 @@ mod tests {
     #[test]
     fn sqlite_failures_are_best_effort_for_observed_metadata_updates() {
         assert!(!sqlite_write_failure_should_block(&ThreadMetadataPatch {
-            updated_at: Some(Utc::now()),
+            updated_at: Some(codex_utils_time::Timestamp::now()),
             ..Default::default()
         }));
         assert!(!sqlite_write_failure_should_block(&ThreadMetadataPatch {

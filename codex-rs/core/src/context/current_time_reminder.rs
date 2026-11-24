@@ -1,15 +1,12 @@
-use chrono::DateTime;
-use chrono::Utc;
-
 use super::ContextualUserFragment;
 use codex_protocol::models::ContentItemKind;
 
 pub(crate) struct CurrentTimeReminder {
-    current_time: DateTime<Utc>,
+    current_time: codex_utils_time::Timestamp,
 }
 
 impl CurrentTimeReminder {
-    pub(crate) fn new(current_time: DateTime<Utc>) -> Self {
+    pub(crate) fn new(current_time: codex_utils_time::Timestamp) -> Self {
         Self { current_time }
     }
 

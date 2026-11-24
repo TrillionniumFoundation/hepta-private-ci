@@ -3,8 +3,6 @@ use crate::legacy_core::config::Config;
 use crate::status::StatusAccountDisplay;
 use crate::text_formatting;
 use crate::width::display_width;
-use chrono::DateTime;
-use chrono::Local;
 use codex_protocol::account::PlanType;
 use codex_utils_path_uri::PathConvention;
 use codex_utils_path_uri::PathUri;
@@ -180,9 +178,12 @@ pub(crate) fn format_directory_display(directory: &Path, max_width: Option<usize
     formatted
 }
 
-pub(crate) fn format_reset_timestamp(dt: DateTime<Local>, captured_at: DateTime<Local>) -> String {
+pub(crate) fn format_reset_timestamp(
+    dt: codex_utils_time::OffsetTimestamp,
+    captured_at: codex_utils_time::OffsetTimestamp,
+) -> String {
     let time = dt.format("%H:%M").to_string();
-    if dt.date_naive() == captured_at.date_naive() {
+    if dt.date() == captured_at.date() {
         time
     } else {
         format!("{time} on {}", dt.format("%-d %b"))

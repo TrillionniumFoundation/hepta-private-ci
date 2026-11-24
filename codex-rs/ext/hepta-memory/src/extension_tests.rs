@@ -8,8 +8,6 @@ use std::sync::PoisonError;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
-use chrono::DateTime;
-use chrono::Utc;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS;
 use codex_extension_api::EphemeralModelInputContributor;
@@ -134,8 +132,8 @@ fn extension(backend: Arc<FakeBackend>) -> TestExtension {
     )
 }
 
-fn timestamp(seconds: i64) -> DateTime<Utc> {
-    DateTime::from_timestamp(seconds, 0).expect("valid timestamp")
+fn timestamp(seconds: i64) -> codex_utils_time::Timestamp {
+    codex_utils_time::Timestamp::from_parts(seconds, 0).expect("valid timestamp")
 }
 
 fn candidate(thread_id: &str, summary: &str) -> Stage1RecallCandidate {
