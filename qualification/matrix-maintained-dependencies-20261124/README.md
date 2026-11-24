@@ -27,7 +27,11 @@ private operational store are used or uploaded.
 - Official crate archive checksums verified.
 - Exact upstream patch provenance verified.
 - All 207 imported Rust files match the independently formatted reference.
-- Repository `just fmt` and `git diff --check` passed.
+- Repository `just fmt` passed. The source-stage working-tree `git diff --check`
+  passed for tracked author changes; it did not cover the then-untracked
+  upstream import. The complete base-to-integration diff reports original
+  upstream Markdown/SQL trailing whitespace. Those non-Rust files remain
+  byte-preserved and are outside the 207-file Rust normalization claim.
 - Workflow YAML and changed TOML parse checks passed.
 - Actual locked dependency resolution, Rust 1.96 consumer compilation,
   encrypted-store migration and complete CI remain required on the final
