@@ -48,3 +48,13 @@ pub(crate) fn ssh_keygen() -> std::path::PathBuf {
         std::path::PathBuf::from("/usr/bin/ssh-keygen")
     }
 }
+
+pub(crate) fn assert_ssh_keygen_success(action: &str, output: &std::process::Output) {
+    assert!(
+        output.status.success(),
+        "{action}: status={}, stdout={:?}, stderr={:?}",
+        output.status,
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr),
+    );
+}

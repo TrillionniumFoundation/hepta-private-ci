@@ -17,6 +17,7 @@ use super::validate_ed25519_blob;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::test_support::PrivateTempDir;
+use crate::test_support::assert_ssh_keygen_success;
 use crate::test_support::private_tempdir;
 use crate::test_support::ssh_keygen;
 
@@ -131,9 +132,9 @@ impl TrustFixture {
         let generated = Command::new(ssh_keygen())
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
-            .status()
+            .output()
             .expect("start ssh-keygen");
-        assert!(generated.success(), "generate test-only Ed25519 key");
+        assert_ssh_keygen_success("generate test-only Ed25519 key", &generated);
 
         let public =
             std::fs::read_to_string(key.with_extension("pub")).expect("read generated public key");
@@ -150,7 +151,7 @@ impl TrustFixture {
             .arg(key.with_extension("pub"))
             .output()
             .expect("fingerprint generated public key");
-        assert!(fingerprint_output.status.success());
+        assert_ssh_keygen_success("fingerprint test-only Ed25519 key", &fingerprint_output);
         let fingerprint_line =
             std::str::from_utf8(&fingerprint_output.stdout).expect("UTF-8 fingerprint output");
         let fingerprint = fingerprint_line
@@ -215,9 +216,9 @@ impl TrustFixture {
             .arg(&self.key)
             .args(["-n", namespace])
             .arg(&statement_path)
-            .status()
+            .output()
             .expect("start SSHSIG signer for test fixture");
-        assert!(signed.success(), "create test-only SSHSIG");
+        assert_ssh_keygen_success("create test-only SSHSIG", &signed);
         let signature = PathBuf::from(format!("{}.sig", statement_path.display()));
         set_private_permissions(&signature);
         signature

@@ -34,6 +34,9 @@ common:macos --test_env=PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr
 common:windows --test_env=SYSTEMROOT
 common:windows --test_env=COMSPEC
 common:windows --test_env=WINDIR
+# Win32 OpenSSH resolves its shared data directory before entering main.
+# Inherit the host value; do not substitute a guessed system-drive path.
+common:windows --test_env=PROGRAMDATA
 # Rust's libtest harness runs test bodies on std-spawned threads. The default
 # 2 MiB stack can be too small for large async test futures on Windows CI; see
 # https://github.com/openai/codex/pull/19067 for the motivating failure.

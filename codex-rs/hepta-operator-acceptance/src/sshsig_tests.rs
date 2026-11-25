@@ -8,6 +8,7 @@ use base64::engine::general_purpose::STANDARD;
 use tempfile::TempDir;
 
 use super::verify;
+use crate::test_support::assert_ssh_keygen_success;
 use crate::test_support::ssh_keygen;
 
 const PRINCIPAL: &str = "operator@example";
@@ -183,11 +184,7 @@ impl Fixture {
             .stdin(Stdio::null())
             .output()
             .expect("generate synthetic OpenSSH key");
-        assert!(
-            output.status.success(),
-            "{}",
-            String::from_utf8_lossy(&output.stderr)
-        );
+        assert_ssh_keygen_success("generate synthetic OpenSSH key", &output);
         let public = std::fs::read_to_string(key.with_extension("pub")).unwrap();
         let key_blob = public.split_ascii_whitespace().nth(1).unwrap();
         let allowed = format!("{PRINCIPAL} ssh-ed25519 {key_blob}\n").into_bytes();
@@ -211,11 +208,7 @@ impl Fixture {
             .stdin(Stdio::null())
             .output()
             .expect("sign fixture using actual OpenSSH");
-        assert!(
-            output.status.success(),
-            "{}",
-            String::from_utf8_lossy(&output.stderr)
-        );
+        assert_ssh_keygen_success("sign fixture using actual OpenSSH", &output);
         std::fs::read(statement.with_extension("sig")).unwrap()
     }
 
