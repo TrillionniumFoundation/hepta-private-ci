@@ -27,19 +27,35 @@ class RingTests(unittest.TestCase):
                 xs.append(x)
                 ys.append(y)
             x, y = np.vstack(xs), np.vstack(ys)
-            expected = np.linalg.solve(x.T @ x + .2 * np.eye(5), x.T @ y)
+            expected = np.linalg.solve(x.T @ x + 0.2 * np.eye(5), x.T @ y)
             receipt = run_ring(shards, {"purpose": "integration-only"}, root / "ring")
             self.assertEqual(receipt["exits"], [0, 0, 0])
             self.assertEqual(len(set(receipt["peer_pids"])), 3)
             for index in range(3):
                 with np.load(root / "ring" / f"peer{index}" / "candidate.npz") as z:
-                    np.testing.assert_allclose(z["weight"], expected, atol=1e-12, rtol=1e-12)
+                    np.testing.assert_allclose(
+                        z["weight"], expected, atol=1e-12, rtol=1e-12
+                    )
             observations = root / "observations.npz"
             np.savez_compressed(observations, x=x)
             candidate = root / "ring" / "peer0" / "candidate.npz"
-            result = subprocess.run([sys.executable, "-m", "qualification.hcsn_closure_20261124.pft_peer",
-                "replay", "--candidate", str(candidate), "--observations", str(observations),
-                "--output", str(root / "cold.json")], capture_output=True, text=True, timeout=30)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "qualification.hcsn_closure_20261124.pft_peer",
+                    "replay",
+                    "--candidate",
+                    str(candidate),
+                    "--observations",
+                    str(observations),
+                    "--output",
+                    str(root / "cold.json"),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
             self.assertEqual(result.returncode, 0, result.stderr)
             cold = json.loads((root / "cold.json").read_text())
             self.assertNotIn(cold["pid"], receipt["peer_pids"])

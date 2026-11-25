@@ -23,8 +23,9 @@ from .pft_linear import solve_normal
 
 
 def canonical(value):
-    return json.dumps(value, sort_keys=True, separators=(",", ":"),
-                      allow_nan=False).encode()
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), allow_nan=False
+    ).encode()
 
 
 def sha(path):
@@ -38,22 +39,38 @@ def create_json(path, value):
 
 
 def envelope(origin, gram, rhs, count, binding):
-    body = dict(schema="pft-ring-contribution-v1", origin=origin, gram=gram.tolist(),
-                rhs=rhs.tolist(), count=int(count), binding=binding)
+    body = dict(
+        schema="pft-ring-contribution-v1",
+        origin=origin,
+        gram=gram.tolist(),
+        rhs=rhs.tolist(),
+        count=int(count),
+        binding=binding,
+    )
     return dict(body=body, sha256=hashlib.sha256(canonical(body)).hexdigest())
 
 
 def validate(packet, expected, binding, dimension, outputs):
     body = packet["body"]
-    if (packet["sha256"] != hashlib.sha256(canonical(body)).hexdigest()
-            or body["schema"] != "pft-ring-contribution-v1"
-            or body["binding"] != binding or body["origin"] != expected
-            or not isinstance(body["count"], int) or body["count"] < 1):
-        raise ValueError("changed, duplicate, out-of-order, or incompatible contribution")
+    if (
+        packet["sha256"] != hashlib.sha256(canonical(body)).hexdigest()
+        or body["schema"] != "pft-ring-contribution-v1"
+        or body["binding"] != binding
+        or body["origin"] != expected
+        or not isinstance(body["count"], int)
+        or body["count"] < 1
+    ):
+        raise ValueError(
+            "changed, duplicate, out-of-order, or incompatible contribution"
+        )
     gram, rhs = np.asarray(body["gram"]), np.asarray(body["rhs"])
-    if (gram.shape != (dimension, dimension) or rhs.shape != (dimension, outputs)
-            or not np.isfinite(gram).all() or not np.isfinite(rhs).all()
-            or not np.allclose(gram, gram.T, rtol=1e-11, atol=1e-11)):
+    if (
+        gram.shape != (dimension, dimension)
+        or rhs.shape != (dimension, outputs)
+        or not np.isfinite(gram).all()
+        or not np.isfinite(rhs).all()
+        or not np.allclose(gram, gram.T, rtol=1e-11, atol=1e-11)
+    ):
         raise ValueError("invalid sufficient-statistic geometry")
     return gram, rhs
 
@@ -111,7 +128,10 @@ def worker(manifest_path, peer, listener_fd):
     communication_started = time.perf_counter()
     listener = socket.socket(fileno=listener_fd)
     listener.settimeout(30)
-    outbound = socket.create_connection(("127.0.0.1", manifest["ports"][(peer + 1) % len(manifest["peers"])]), timeout=30)
+    outbound = socket.create_connection(
+        ("127.0.0.1", manifest["ports"][(peer + 1) % len(manifest["peers"])]),
+        timeout=30,
+    )
     inbound, _ = listener.accept()
     inbound.settimeout(30)
     listener.close()
@@ -124,15 +144,24 @@ def worker(manifest_path, peer, listener_fd):
             if origin in received:
                 raise ValueError("duplicate contributor")
             received[origin] = packet
-            traffic.append(dict(round=step, origin=origin, bytes_sent=sent, bytes_received=read,
-                                contribution_sha256=packet["sha256"]))
+            traffic.append(
+                dict(
+                    round=step,
+                    origin=origin,
+                    bytes_sent=sent,
+                    bytes_received=read,
+                    contribution_sha256=packet["sha256"],
+                )
+            )
     finally:
         outbound.close()
         inbound.close()
     communication_seconds = time.perf_counter() - communication_started
     solved = time.perf_counter()
-    contributions = [validate(received[k], k, binding, dimension, outputs)
-                     for k in range(len(manifest["peers"]))]
+    contributions = [
+        validate(received[k], k, binding, dimension, outputs)
+        for k in range(len(manifest["peers"]))
+    ]
     gram = sum((g for g, _ in contributions), np.zeros((dimension, dimension)))
     rhs = sum((h for _, h in contributions), np.zeros((dimension, outputs)))
     weight = solve_normal(gram, rhs, manifest["regularizer"])
@@ -141,13 +170,22 @@ def worker(manifest_path, peer, listener_fd):
     output.mkdir()
     with (output / "candidate.npz").open("xb") as stream:
         np.savez_compressed(stream, weight=weight)
-    create_json(output / "RECEIPT.json", dict(peer=peer, pid=os.getpid(),
-                binding=binding, origins=sorted(received), traffic=traffic,
-                candidate_sha256=sha(output / "candidate.npz"),
-                n=sum(v["body"]["count"] for v in received.values()),
-                feature_response_seconds=feature_seconds,
-                communication_seconds=communication_seconds, solve_seconds=solve_seconds,
-                worker_wall_seconds=time.perf_counter() - started))
+    create_json(
+        output / "RECEIPT.json",
+        dict(
+            peer=peer,
+            pid=os.getpid(),
+            binding=binding,
+            origins=sorted(received),
+            traffic=traffic,
+            candidate_sha256=sha(output / "candidate.npz"),
+            n=sum(v["body"]["count"] for v in received.values()),
+            feature_response_seconds=feature_seconds,
+            communication_seconds=communication_seconds,
+            solve_seconds=solve_seconds,
+            worker_wall_seconds=time.perf_counter() - started,
+        ),
+    )
 
 
 def run_ring(shards, binding, output, regularizer=0.2):
@@ -171,20 +209,42 @@ def run_ring(shards, binding, output, regularizer=0.2):
         listener.bind(("127.0.0.1", 0))
         listener.listen(1)
         listeners.append(listener)
-    manifest = dict(schema="pft-ring-session-v1", scope="same-host-independent-processes",
-                    dimension=dimension, outputs=outputs, regularizer=regularizer,
-                    output=str(output), peers=peers, objective_binding=binding,
-                    ports=[s.getsockname()[1] for s in listeners])
+    manifest = dict(
+        schema="pft-ring-session-v1",
+        scope="same-host-independent-processes",
+        dimension=dimension,
+        outputs=outputs,
+        regularizer=regularizer,
+        output=str(output),
+        peers=peers,
+        objective_binding=binding,
+        ports=[s.getsockname()[1] for s in listeners],
+    )
     create_json(output / "MANIFEST.json", manifest)
     processes, logs = [], []
     try:
         for peer, listener in enumerate(listeners):
             log = (output / f"peer{peer}.log").open("xb")
             logs.append(log)
-            processes.append(subprocess.Popen([sys.executable, "-m", __name__, "worker",
-                "--manifest", str(output / "MANIFEST.json"), "--peer", str(peer),
-                "--listener-fd", str(listener.fileno())], pass_fds=(listener.fileno(),),
-                stdout=log, stderr=subprocess.STDOUT))
+            processes.append(
+                subprocess.Popen(
+                    [
+                        sys.executable,
+                        "-m",
+                        __name__,
+                        "worker",
+                        "--manifest",
+                        str(output / "MANIFEST.json"),
+                        "--peer",
+                        str(peer),
+                        "--listener-fd",
+                        str(listener.fileno()),
+                    ],
+                    pass_fds=(listener.fileno(),),
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                )
+            )
         for listener in listeners:
             listener.close()
         exits = [process.wait(timeout=60) for process in processes]
@@ -197,9 +257,14 @@ def run_ring(shards, binding, output, regularizer=0.2):
             listener.close()
         for log in logs:
             log.close()
-    receipt = dict(exits=exits, launch_to_exit_seconds=time.perf_counter() - start,
-                   peer_pids=[p.pid for p in processes], central_aggregation=False,
-                   independent_hosts=False, authenticated_users=False)
+    receipt = dict(
+        exits=exits,
+        launch_to_exit_seconds=time.perf_counter() - start,
+        peer_pids=[p.pid for p in processes],
+        central_aggregation=False,
+        independent_hosts=False,
+        authenticated_users=False,
+    )
     create_json(output / "TERMINAL.json", receipt)
     if any(exits):
         raise RuntimeError("ring worker failed; preserved exit and process logs")
@@ -213,10 +278,18 @@ def replay(candidate, observations, output):
         weight = z["weight"]
     with np.load(observations, allow_pickle=False) as z:
         predictions = z["x"] @ weight
-    create_json(output, dict(pid=os.getpid(), candidate_sha256=sha(candidate),
-                            observations_sha256=sha(observations),
-                            predictions=predictions.tolist(), wall_seconds=time.perf_counter() - started,
-                            optimizer_steps=0, real_user_adoption=False))
+    create_json(
+        output,
+        dict(
+            pid=os.getpid(),
+            candidate_sha256=sha(candidate),
+            observations_sha256=sha(observations),
+            predictions=predictions.tolist(),
+            wall_seconds=time.perf_counter() - started,
+            optimizer_steps=0,
+            real_user_adoption=False,
+        ),
+    )
 
 
 def main():

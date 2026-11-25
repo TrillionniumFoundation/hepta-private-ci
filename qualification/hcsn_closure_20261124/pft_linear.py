@@ -21,8 +21,11 @@ def _finite(value):
 
 def _positive(matrix):
     matrix = _finite(matrix)
-    if (matrix.ndim != 2 or matrix.shape[0] != matrix.shape[1]
-            or not np.allclose(matrix, matrix.T, atol=1e-12, rtol=1e-12)):
+    if (
+        matrix.ndim != 2
+        or matrix.shape[0] != matrix.shape[1]
+        or not np.allclose(matrix, matrix.T, atol=1e-12, rtol=1e-12)
+    ):
         raise ValueError("symmetric square cost required")
     try:
         factor = np.linalg.cholesky(matrix)
@@ -32,23 +35,32 @@ def _positive(matrix):
 
 
 def _system(A, E, L, targets, costs):
-    A, E, L, targets, costs = ([_finite(x) for x in group]
-                               for group in (A, E, L, targets, costs))
+    A, E, L, targets, costs = (
+        [_finite(x) for x in group] for group in (A, E, L, targets, costs)
+    )
     horizon = len(A)
     if not horizon or A[0].ndim != 2:
         raise ValueError("nonempty finite horizon required")
     dim = A[0].shape[0]
-    if (len(E) != horizon or len(costs) != horizon
-            or len(L) != horizon + 1 or len(targets) != horizon + 1):
-        raise ValueError("one transition/action cost per step and terminal charge required")
+    if (
+        len(E) != horizon
+        or len(costs) != horizon
+        or len(L) != horizon + 1
+        or len(targets) != horizon + 1
+    ):
+        raise ValueError(
+            "one transition/action cost per step and terminal charge required"
+        )
     for k, (a, e, cost) in enumerate(zip(A, E, costs, strict=True)):
         if a.shape != (dim, dim) or e.ndim != 2 or e.shape[0] != dim:
             raise ValueError("state and action dimensions differ")
         if cost.shape != (e.shape[1], e.shape[1]):
             raise ValueError("action cost dimension differs")
         costs[k] = _positive(cost)[0]
-    if any(l.ndim != 2 or l.shape[1] != dim or r.shape != (len(l),)
-           for l, r in zip(L, targets, strict=True)):
+    if any(
+        l.ndim != 2 or l.shape[1] != dim or r.shape != (len(l),)
+        for l, r in zip(L, targets, strict=True)
+    ):
         raise ValueError("charged observations and targets differ")
     return A, E, L, targets, costs
 
@@ -59,14 +71,20 @@ def augment_terminal(charges, targets, blocks):
     These are quadratic penalties, not hard feasibility or nonlinear retention.
     Original arrays remain unchanged; rebuilding the action basis is necessary.
     """
-    charges, targets = ([_finite(x).copy() for x in group]
-                        for group in (charges, targets))
+    charges, targets = (
+        [_finite(x).copy() for x in group] for group in (charges, targets)
+    )
     if not charges or len(charges) != len(targets) or charges[-1].ndim != 2:
         raise ValueError("terminal observation and target required")
     for rows, target, weight in blocks:
         rows, target = _finite(rows), _finite(target)
-        if (rows.ndim != 2 or rows.shape[1] != charges[-1].shape[1]
-                or target.shape != (len(rows),) or not np.isfinite(weight) or weight <= 0):
+        if (
+            rows.ndim != 2
+            or rows.shape[1] != charges[-1].shape[1]
+            or target.shape != (len(rows),)
+            or not np.isfinite(weight)
+            or weight <= 0
+        ):
             raise ValueError("compatible terminal block and positive weight required")
         charges[-1] = np.vstack((charges[-1], np.sqrt(weight) * rows))
         targets[-1] = np.r_[targets[-1], np.sqrt(weight) * target]
@@ -95,8 +113,18 @@ def solve_lq(A, E, L, targets, costs):
         P = (new_P + new_P.T) / 2
         constant += float(0.5 * r @ r - 0.5 * offset @ W @ offset)
         gains[k], offsets[k] = gain, offset
-    return dict(A=A, E=E, L=L, targets=targets, costs=costs,
-                gains=gains, offsets=offsets, P=P, ell=ell, constant=constant)
+    return dict(
+        A=A,
+        E=E,
+        L=L,
+        targets=targets,
+        costs=costs,
+        gains=gains,
+        offsets=offsets,
+        P=P,
+        ell=ell,
+        constant=constant,
+    )
 
 
 def effective_action_bases(A, E, L, costs, rtol=1e-12):
@@ -125,10 +153,19 @@ def effective_action_bases(A, E, L, costs, rtol=1e-12):
         Q = right[:rank].T
         basis = whiten @ Q
         dropped = D - D @ Q @ Q.T
-        records.append(dict(rank=rank, original_dim=len(cost), rows=len(D),
-                            singular_values=singular.tolist(), cutoff=float(cutoff),
-                            dropped_norm=float(np.linalg.norm(dropped)) if dropped.size else 0.0,
-                            metric_error=float(np.linalg.norm(basis.T @ cost @ basis - np.eye(rank)))))
+        records.append(
+            dict(
+                rank=rank,
+                original_dim=len(cost),
+                rows=len(D),
+                singular_values=singular.tolist(),
+                cutoff=float(cutoff),
+                dropped_norm=float(np.linalg.norm(dropped)) if dropped.size else 0.0,
+                metric_error=float(
+                    np.linalg.norm(basis.T @ cost @ basis - np.eye(rank))
+                ),
+            )
+        )
         bases.append(basis)
     return bases, records
 
@@ -138,8 +175,13 @@ def reduce_actions(A, E, L, targets, costs, bases=None):
         bases, _ = effective_action_bases(A, E, L, costs)
     if len(bases) != len(E):
         raise ValueError("one action basis per step required")
-    policy = solve_lq(A, [e @ b for e, b in zip(E, bases, strict=True)], L, targets,
-                      [b.T @ r @ b for b, r in zip(bases, costs, strict=True)])
+    policy = solve_lq(
+        A,
+        [e @ b for e, b in zip(E, bases, strict=True)],
+        L,
+        targets,
+        [b.T @ r @ b for b, r in zip(bases, costs, strict=True)],
+    )
     return policy, bases
 
 
@@ -147,7 +189,9 @@ def rollout(policy, initial, innovations=None):
     """Execute a causal policy; sampled future innovations are never exposed."""
     state = _finite(initial).copy()
     horizon, dim = len(policy["A"]), policy["A"][0].shape[0]
-    innovations = np.zeros((horizon, dim)) if innovations is None else _finite(innovations)
+    innovations = (
+        np.zeros((horizon, dim)) if innovations is None else _finite(innovations)
+    )
     if state.shape != (dim,) or innovations.shape != (horizon, dim):
         raise ValueError("initial state or innovation path has a wrong dimension")
     states, actions, objective = [state.copy()], [], 0.0
@@ -187,9 +231,13 @@ def condensed_kkt(A, E, L, targets, costs, initial):
     H, g = matrix.T @ matrix + penalty, matrix.T @ offset
     action = -np.linalg.solve(H, g)
     residual = matrix @ action + offset
-    return dict(actions=[action[cuts[k]:cuts[k + 1]] for k in range(len(A))],
-                objective=float(0.5 * (residual @ residual + action @ penalty @ action)),
-                stationarity=float(np.linalg.norm(H @ action + g, ord=np.inf)) if len(action) else 0.0)
+    return dict(
+        actions=[action[cuts[k] : cuts[k + 1]] for k in range(len(A))],
+        objective=float(0.5 * (residual @ residual + action @ penalty @ action)),
+        stationarity=float(np.linalg.norm(H @ action + g, ord=np.inf))
+        if len(action)
+        else 0.0,
+    )
 
 
 def solve_normal(gram, rhs, regularizer=0.2):
@@ -199,10 +247,16 @@ def solve_normal(gram, rhs, regularizer=0.2):
     These sums must share the feature, target, model and objective identities.
     """
     gram, rhs = _finite(gram), _finite(rhs)
-    if (gram.ndim != 2 or gram.shape[0] != gram.shape[1] or not len(gram)
-            or rhs.ndim not in (1, 2) or rhs.shape[0] != len(gram)
-            or not np.isfinite(regularizer) or regularizer <= 0
-            or not np.allclose(gram, gram.T, atol=1e-11, rtol=1e-11)):
+    if (
+        gram.ndim != 2
+        or gram.shape[0] != gram.shape[1]
+        or not len(gram)
+        or rhs.ndim not in (1, 2)
+        or rhs.shape[0] != len(gram)
+        or not np.isfinite(regularizer)
+        or regularizer <= 0
+        or not np.allclose(gram, gram.T, atol=1e-11, rtol=1e-11)
+    ):
         raise ValueError("compatible positive-regularized normal statistics required")
     if np.linalg.eigvalsh(gram).min() < -1e-10 * max(1.0, np.linalg.norm(gram, 2)):
         raise ValueError("Gram statistics must be positive semidefinite")
@@ -221,8 +275,15 @@ def recursive_ridge(batches, regularizer=0.2):
     weight = np.zeros((dim, *first_y.shape[1:]))
     for x, y in batches:
         x, y = _finite(x), _finite(y)
-        if x.ndim != 2 or x.shape[1] != dim or not len(x) or y.shape != (len(x), *weight.shape[1:]):
-            raise ValueError("fixed feature/target dimensions and nonempty batches required")
+        if (
+            x.ndim != 2
+            or x.shape[1] != dim
+            or not len(x)
+            or y.shape != (len(x), *weight.shape[1:])
+        ):
+            raise ValueError(
+                "fixed feature/target dimensions and nonempty batches required"
+            )
         cross = inverse @ x.T
         gain = np.linalg.solve(np.eye(len(x)) + x @ cross, cross.T).T
         weight = weight + gain @ (y - x @ weight)
@@ -233,4 +294,5 @@ def recursive_ridge(batches, regularizer=0.2):
 
 if __name__ == "__main__":
     from qualification.hcsn_closure_20261124.pft_linear_tests import main
+
     main()

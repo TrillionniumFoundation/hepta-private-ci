@@ -38,8 +38,13 @@ OWNER_BLOBS = {
 
 
 def identity(value):
-    raw = json.dumps(value, sort_keys=True, separators=(",", ":"),
-                     ensure_ascii=False, allow_nan=False).encode()
+    raw = json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    ).encode()
     return hashlib.sha256(raw).hexdigest()
 
 
@@ -50,8 +55,10 @@ def require(condition, reason):
 
 def bound_file(root, relative):
     path = Path(relative)
-    require(not path.is_absolute() and ".." not in path.parts and path.parts,
-            "artifact path must remain inside its root")
+    require(
+        not path.is_absolute() and ".." not in path.parts and path.parts,
+        "artifact path must remain inside its root",
+    )
     current = Path(root)
     for part in path.parts:
         current = current / part
@@ -62,12 +69,23 @@ def bound_file(root, relative):
 
 def descriptor(root, relative, role):
     raw = bound_file(root, relative).read_bytes()
-    return dict(role=role, path=str(relative), bytes=len(raw),
-                sha256=hashlib.sha256(raw).hexdigest())
+    return dict(
+        role=role,
+        path=str(relative),
+        bytes=len(raw),
+        sha256=hashlib.sha256(raw).hexdigest(),
+    )
 
 
-def make_handoff(root, parent_checkpoint, candidate_checkpoint, features, runtime,
-                 *, family="synthetic_frozen_readout"):
+def make_handoff(
+    root,
+    parent_checkpoint,
+    candidate_checkpoint,
+    features,
+    runtime,
+    *,
+    family="synthetic_frozen_readout",
+):
     """Return declarations for the original freeze SPEC; no freeze is claimed."""
     require(family in FAMILIES, "unsupported declared family")
     parent_file = descriptor(root, parent_checkpoint, "base")
@@ -75,10 +93,20 @@ def make_handoff(root, parent_checkpoint, candidate_checkpoint, features, runtim
     feature_file = descriptor(root, features, "features")
     require(parent_file["sha256"] != child_file["sha256"], "unchanged checkpoint")
     runtime = {**runtime, "feature_sha256": feature_file["sha256"]}
-    parent = dict(schema=MODEL_SCHEMA, family=family, parent=None,
-                  runtime=runtime, files=[parent_file, feature_file])
-    child = dict(schema=MODEL_SCHEMA, family=family, parent=identity(parent),
-                 runtime=dict(runtime), files=[parent_file, child_file, feature_file])
+    parent = dict(
+        schema=MODEL_SCHEMA,
+        family=family,
+        parent=None,
+        runtime=runtime,
+        files=[parent_file, feature_file],
+    )
+    child = dict(
+        schema=MODEL_SCHEMA,
+        family=family,
+        parent=identity(parent),
+        runtime=dict(runtime),
+        files=[parent_file, child_file, feature_file],
+    )
     return {"parent": parent, "candidate": child}
 
 
@@ -86,66 +114,102 @@ def audit_handoff(root, pair, expected_digest, expected_parent, expected_feature
     """Detect altered artifacts or coordinates against separately retained hashes."""
     require(identity(pair) == expected_digest, "handoff changed after binding")
     parent, child = pair["parent"], pair["candidate"]
-    require(identity(parent) == expected_parent and child["parent"] == expected_parent,
-            "candidate parent differs from the bound parent")
-    require(parent["family"] == child["family"] and child["family"] in FAMILIES
-            and parent["runtime"] == child["runtime"], "model family/runtime mismatch")
-    require(parent["runtime"]["feature_sha256"] == expected_feature,
-            "feature coordinates differ from the bound feature")
+    require(
+        identity(parent) == expected_parent and child["parent"] == expected_parent,
+        "candidate parent differs from the bound parent",
+    )
+    require(
+        parent["family"] == child["family"]
+        and child["family"] in FAMILIES
+        and parent["runtime"] == child["runtime"],
+        "model family/runtime mismatch",
+    )
+    require(
+        parent["runtime"]["feature_sha256"] == expected_feature,
+        "feature coordinates differ from the bound feature",
+    )
     for model in (parent, child):
         require(model["schema"] == MODEL_SCHEMA, "unsupported model declaration")
         seen = set()
         for item in model["files"]:
             require(item["path"] not in seen, "duplicate artifact path")
             seen.add(item["path"])
-            require(descriptor(root, item["path"], item["role"]) == item,
-                    "artifact bytes changed: " + item["path"])
+            require(
+                descriptor(root, item["path"], item["role"]) == item,
+                "artifact bytes changed: " + item["path"],
+            )
         feature_files = [f for f in model["files"] if f["role"] == "features"]
-        require(len(feature_files) == 1 and feature_files[0]["sha256"] == expected_feature,
-                "feature artifact is not bound to runtime")
+        require(
+            len(feature_files) == 1 and feature_files[0]["sha256"] == expected_feature,
+            "feature artifact is not bound to runtime",
+        )
     base = [f for f in parent["files"] if f["role"] == "base"]
     weights = [f for f in child["files"] if f["role"] == "weights"]
-    require(len(base) == len(weights) == 1 and base[0]["sha256"] != weights[0]["sha256"],
-            "one changed candidate checkpoint is required")
-    require([f for f in child["files"] if f["role"] == "base"] == base,
-            "candidate base artifact differs")
-    return dict(status="ARTIFACTS_VERIFIED", parent_sha256=expected_parent,
-                candidate_sha256=identity(child), feature_sha256=expected_feature,
-                handoff_sha256=expected_digest, loader_status="ORIGINAL_LOADER_REQUIRED",
-                stages={"provenance": "ORIGINAL_SOURCE_OWNER_REQUIRED",
-                        "freeze": "ORIGINAL_PRE_ARRIVAL_FREEZE_REQUIRED",
-                        "retention": "ORIGINAL_COLD_RETENTION_REQUIRED",
-                        "adoption": "NATIVE_E6_ORIGINALS_REQUIRED",
-                        "restart": "NATIVE_E6_COLD_ORIGINALS_REQUIRED"},
-                next_entrypoint="cell_experiments.paired_freeze.freeze",
-                unresolved=["declared family loader in original paired_cold owner",
-                            "authorized source training and original cold retention",
-                            "original A/B enrollment and post-freeze arrival",
-                            "native E6 adoption, restart, fresh task and FinalUse"])
+    require(
+        len(base) == len(weights) == 1 and base[0]["sha256"] != weights[0]["sha256"],
+        "one changed candidate checkpoint is required",
+    )
+    require(
+        [f for f in child["files"] if f["role"] == "base"] == base,
+        "candidate base artifact differs",
+    )
+    return dict(
+        status="ARTIFACTS_VERIFIED",
+        parent_sha256=expected_parent,
+        candidate_sha256=identity(child),
+        feature_sha256=expected_feature,
+        handoff_sha256=expected_digest,
+        loader_status="ORIGINAL_LOADER_REQUIRED",
+        stages={
+            "provenance": "ORIGINAL_SOURCE_OWNER_REQUIRED",
+            "freeze": "ORIGINAL_PRE_ARRIVAL_FREEZE_REQUIRED",
+            "retention": "ORIGINAL_COLD_RETENTION_REQUIRED",
+            "adoption": "NATIVE_E6_ORIGINALS_REQUIRED",
+            "restart": "NATIVE_E6_COLD_ORIGINALS_REQUIRED",
+        },
+        next_entrypoint="cell_experiments.paired_freeze.freeze",
+        unresolved=[
+            "declared family loader in original paired_cold owner",
+            "authorized source training and original cold retention",
+            "original A/B enrollment and post-freeze arrival",
+            "native E6 adoption, restart, fresh task and FinalUse",
+        ],
+    )
 
 
 def reject_future_contradictions(record, freeze, arrival):
     """Reject contradictions in original schemas; this never admits a future task."""
-    require(record["schema"] == "hepta.cell-experiments.record.v1",
-            "original record schema required")
-    require(record["origin_kind"] == "authorized_agent_run"
-            and record["exposure"] == "unexposed"
-            and record["split"] == "confirmation"
-            and record["authorization"]["training_allowed"] is False
-            and record["authorization"]["evaluation_allowed"] is True,
-            "synthetic, exposed or training-permitted data cannot establish real B")
-    require(freeze["schema"] == "hepta.paired-intake.freeze-observation.v1"
-            and arrival["schema"] == "hepta.paired-intake.first-observation.v1",
-            "original source observations required")
+    require(
+        record["schema"] == "hepta.cell-experiments.record.v1",
+        "original record schema required",
+    )
+    require(
+        record["origin_kind"] == "authorized_agent_run"
+        and record["exposure"] == "unexposed"
+        and record["split"] == "confirmation"
+        and record["authorization"]["training_allowed"] is False
+        and record["authorization"]["evaluation_allowed"] is True,
+        "synthetic, exposed or training-permitted data cannot establish real B",
+    )
+    require(
+        freeze["schema"] == "hepta.paired-intake.freeze-observation.v1"
+        and arrival["schema"] == "hepta.paired-intake.first-observation.v1",
+        "original source observations required",
+    )
     for key in ("study_sha256", "freeze_sha256"):
         require(arrival[key] == freeze[key], "arrival belongs to another " + key)
-    require(type(freeze["sequence"]) is int and type(arrival["sequence"]) is int
-            and 0 < freeze["sequence"] < arrival["sequence"] < 2**63,
-            "B arrival does not follow the original freeze")
+    require(
+        type(freeze["sequence"]) is int
+        and type(arrival["sequence"]) is int
+        and 0 < freeze["sequence"] < arrival["sequence"] < 2**63,
+        "B arrival does not follow the original freeze",
+    )
     require(arrival["record_sha256"] == identity(record), "arrival record changed")
-    return dict(status="ORIGINAL_INTAKE_REQUIRED",
-                next_entrypoint="cell_experiments.paired_intake.admit",
-                reason="structural checks do not authenticate people, consent or arrival")
+    return dict(
+        status="ORIGINAL_INTAKE_REQUIRED",
+        next_entrypoint="cell_experiments.paired_intake.admit",
+        reason="structural checks do not authenticate people, consent or arrival",
+    )
 
 
 def audit_original_retention(reference_root, operation, expected_candidate=None):
@@ -156,25 +220,43 @@ def audit_original_retention(reference_root, operation, expected_candidate=None)
     for name, expected in OWNER_BLOBS.items():
         path = source_dir / name
         raw = path.read_bytes() if path.is_file() else b""
-        actual = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+        actual = hashlib.sha1(
+            b"blob " + str(len(raw)).encode() + b"\0" + raw
+        ).hexdigest()
         if actual != expected:
             mismatches.append(name)
     if mismatches:
-        return dict(status="CHECKER_SOURCE_UNAVAILABLE", owner_commit=OWNER_COMMIT,
-                    mismatched_or_missing=mismatches)
-    needed = ("FROZEN.json", "COMPLETED.json", "OWNER.json", "RETENTION.json",
-              "cold-retention/parent.json", "cold-retention/candidate.json")
+        return dict(
+            status="CHECKER_SOURCE_UNAVAILABLE",
+            owner_commit=OWNER_COMMIT,
+            mismatched_or_missing=mismatches,
+        )
+    needed = (
+        "FROZEN.json",
+        "COMPLETED.json",
+        "OWNER.json",
+        "RETENTION.json",
+        "cold-retention/parent.json",
+        "cold-retention/candidate.json",
+    )
     missing = [name for name in needed if not (operation / name).is_file()]
     if missing:
-        return dict(status="ORIGINALS_MISSING", owner_commit=OWNER_COMMIT, missing=missing)
+        return dict(
+            status="ORIGINALS_MISSING", owner_commit=OWNER_COMMIT, missing=missing
+        )
     try:
         completed = json.loads((operation / "COMPLETED.json").read_text())
         candidate = completed["candidate_sha256"]
     except (ValueError, KeyError, OSError) as error:
-        return dict(status="ORIGINALS_INVALID", owner_commit=OWNER_COMMIT, reason=str(error))
+        return dict(
+            status="ORIGINALS_INVALID", owner_commit=OWNER_COMMIT, reason=str(error)
+        )
     if expected_candidate is not None and candidate != expected_candidate:
-        return dict(status="CANDIDATE_MISMATCH", observed_candidate=candidate,
-                    expected_candidate=expected_candidate)
+        return dict(
+            status="CANDIDATE_MISMATCH",
+            observed_candidate=candidate,
+            expected_candidate=expected_candidate,
+        )
     code = """
 import json,sys
 from pathlib import Path
@@ -188,19 +270,36 @@ except Exception as error:
     sys.exit(2)
 print(json.dumps(dict(status='ORIGINAL_RETENTION_CHECK_PASSED',retention_sha256=digest)))
 """
-    result = subprocess.run([sys.executable, "-I", "-B", "-c", code,
-                             str(reference_root / "scripts"), str(operation)],
-                            capture_output=True, text=True, timeout=30, check=False)
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-B",
+            "-c",
+            code,
+            str(reference_root / "scripts"),
+            str(operation),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
     try:
         observed = json.loads(result.stdout)
         require(result.returncode in (0, 2), "checker did not terminate normally")
     except (ValueError, TypeError):
         observed = dict(status="CHECKER_EXECUTION_FAILED", stderr=result.stderr[-4096:])
-    return {**observed, "owner_commit": OWNER_COMMIT, "candidate_sha256": candidate,
-            "source_scope": completed["scope"], "freeze_sha256": completed["freeze_sha256"],
-            "returncode": result.returncode,
-            "checker": "cell_experiments.paired_source_dispatch.verify_originals",
-            "remaining_owner": "paired_intake.admit and native E6 lifecycle"}
+    return {
+        **observed,
+        "owner_commit": OWNER_COMMIT,
+        "candidate_sha256": candidate,
+        "source_scope": completed["scope"],
+        "freeze_sha256": completed["freeze_sha256"],
+        "returncode": result.returncode,
+        "checker": "cell_experiments.paired_source_dispatch.verify_originals",
+        "remaining_owner": "paired_intake.admit and native E6 lifecycle",
+    }
 
 
 def main():
@@ -215,12 +314,26 @@ def main():
     original.add_argument("--candidate")
     args = parser.parse_args()
     if args.command == "handoff":
-        result = audit_handoff(args.root, json.loads(Path(args.pair).read_text()),
-                               args.digest, args.parent, args.feature)
+        result = audit_handoff(
+            args.root,
+            json.loads(Path(args.pair).read_text()),
+            args.digest,
+            args.parent,
+            args.feature,
+        )
     else:
-        result = audit_original_retention(args.reference_root, args.operation, args.candidate)
-    print(json.dumps(result, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False))
-    if result["status"] not in ("ARTIFACTS_VERIFIED", "ORIGINAL_RETENTION_CHECK_PASSED"):
+        result = audit_original_retention(
+            args.reference_root, args.operation, args.candidate
+        )
+    print(
+        json.dumps(
+            result, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False
+        )
+    )
+    if result["status"] not in (
+        "ARTIFACTS_VERIFIED",
+        "ORIGINAL_RETENTION_CHECK_PASSED",
+    ):
         raise SystemExit(2)
 
 

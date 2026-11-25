@@ -32,8 +32,11 @@ def digest(path):
 
 
 def identity(value):
-    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
-                                     allow_nan=False).encode()).hexdigest()
+    return hashlib.sha256(
+        json.dumps(
+            value, sort_keys=True, separators=(",", ":"), allow_nan=False
+        ).encode()
+    ).hexdigest()
 
 
 def create(path, value):
@@ -52,8 +55,12 @@ def tensors_identity(values):
 
 
 def population_identity(state):
-    return tensors_identity({k: getattr(state, k) for k in
-                             ("density", "boundary", "drift", "cost", "message")})
+    return tensors_identity(
+        {
+            k: getattr(state, k)
+            for k in ("density", "boundary", "drift", "cost", "message")
+        }
+    )
 
 
 def permutation(neurons, seed):
@@ -87,24 +94,33 @@ def forward_interventions(model, batch, order, *, chunk=64, deadline=None):
     if not 1 <= chunk <= 85 or model.config.message_mode != "flow":
         raise ValueError("bounded three-arm batch and original signed flow required")
     n = model.config.neurons
-    if (tuple(order.shape) != (n,) or sorted(order.tolist()) != list(range(n))
-            or not bool((order[:n//2] < n//2).all())
-            or not bool((order[n//2:] >= n//2).all())):
+    if (
+        tuple(order.shape) != (n,)
+        or sorted(order.tolist()) != list(range(n))
+        or not bool((order[: n // 2] < n // 2).all())
+        or not bool((order[n // 2 :] >= n // 2).all())
+    ):
         raise ValueError("message permutation must preserve sender/receiver roles")
     before = tensors_identity(model.state_dict())
     model.eval()
     outputs = {arm: [] for arm in ARMS}
     diagnostics, initial_hashes, terminal_hashes = [], [], []
-    energy = {arm: [0.] * batch.x.shape[0] for arm in ARMS}
+    energy = {arm: [0.0] * batch.x.shape[0] for arm in ARMS}
     for start in range(0, len(batch.y), chunk):
         part = batch.select(torch.arange(start, min(start + chunk, len(batch.y))))
         width = len(part.y)
         x = part.x.repeat(1, len(ARMS), 1)
-        state = model.initial_state(width * len(ARMS),
-                                    initial_margin=part.initial_margin.repeat(len(ARMS))[:, None])
+        state = model.initial_state(
+            width * len(ARMS),
+            initial_margin=part.initial_margin.repeat(len(ARMS))[:, None],
+        )
         field_names = ("density", "boundary", "drift", "cost", "message")
-        initial = [tensors_identity({k: getattr(state, k)[i*width:(i+1)*width]
-                                    for k in field_names}) for i in range(len(ARMS))]
+        initial = [
+            tensors_identity(
+                {k: getattr(state, k)[i * width : (i + 1) * width] for k in field_names}
+            )
+            for i in range(len(ARMS))
+        ]
         if len(set(initial)) != 1:
             raise ValueError("initial physical states differ across arms")
         initial_hashes.append(initial)
@@ -114,25 +130,39 @@ def forward_interventions(model, batch, order, *, chunk=64, deadline=None):
                 raise TimeoutError("frozen parent inference safety budget exhausted")
             forwarded = []
             for i, arm in enumerate(ARMS):
-                value = route_messages(state.message[i*width:(i+1)*width], arm, order)
+                value = route_messages(
+                    state.message[i * width : (i + 1) * width], arm, order
+                )
                 forwarded.append(value)
                 energy[arm][tick] += float(value[:, 2].square().sum())
             state = replace(state, message=torch.cat(forwarded, 0))
-            logits, _, state = model(x[tick:tick+1], return_features=True, state=state)
+            logits, _, state = model(
+                x[tick : tick + 1], return_features=True, state=state
+            )
             diagnostics.append(dict(model.last_diagnostics))
             for i, arm in enumerate(ARMS):
-                per_arm[arm].append(logits[:, i*width:(i+1)*width].cpu())
+                per_arm[arm].append(logits[:, i * width : (i + 1) * width].cpu())
         for arm in ARMS:
             outputs[arm].append(torch.cat(per_arm[arm], 0))
-        terminal_hashes.append([tensors_identity({k: getattr(state, k)[i*width:(i+1)*width]
-                                                  for k in field_names}) for i in range(len(ARMS))])
+        terminal_hashes.append(
+            [
+                tensors_identity(
+                    {
+                        k: getattr(state, k)[i * width : (i + 1) * width]
+                        for k in field_names
+                    }
+                )
+                for i in range(len(ARMS))
+            ]
+        )
         if state.step != len(batch.x):
             raise ValueError("intervention changed the clock budget")
     after = tensors_identity(model.state_dict())
     if before != after:
         raise ValueError("frozen parent weights or buffers changed")
     return {arm: torch.cat(outputs[arm], 1) for arm in ARMS}, {
-        "parent_before_sha256": before, "parent_after_sha256": after,
+        "parent_before_sha256": before,
+        "parent_after_sha256": after,
         "initial_state_sha256_by_chunk_arm": initial_hashes,
         "terminal_state_sha256_by_chunk_arm": terminal_hashes,
         "forwarded_signed_message_squared_norm_by_tick": energy,
@@ -142,7 +172,9 @@ def forward_interventions(model, batch, order, *, chunk=64, deadline=None):
         "all_finite": all(d["all_finite"] for d in diagnostics),
         "original_forward_calls": len(diagnostics),
         "example_ticks_per_arm": len(batch.y) * len(batch.x),
-        "initial_and_final_clock": [0, len(batch.x)], "updates": 0}
+        "initial_and_final_clock": [0, len(batch.x)],
+        "updates": 0,
+    }
 
 
 def source_manifest():
@@ -157,13 +189,22 @@ def source_manifest():
 
 def original_source_key(name):
     prefix = "qualification.hcsn_closure_20261124"
-    return prefix + ".__init__.py" if name == prefix else name + ".py" if name.startswith(prefix + ".") else name
+    return (
+        prefix + ".__init__.py"
+        if name == prefix
+        else name + ".py"
+        if name.startswith(prefix + ".")
+        else name
+    )
 
 
 def freeze(parents_root, output, expected_seal, *, per_source=64):
     """Seal operators, parent bytes and source IDs before generating any data."""
     parents_root, output = Path(parents_root), Path(output)
-    if per_source not in (64, 128) or digest(parents_root / "SEAL.json") != expected_seal:
+    if (
+        per_source not in (64, 128)
+        or digest(parents_root / "SEAL.json") != expected_seal
+    ):
         raise ValueError("parent seal or requested sample budget differs")
     original = json.loads((parents_root / "PROTOCOL.json").read_text())
     seal = json.loads((parents_root / "SEAL.json").read_text())
@@ -171,7 +212,10 @@ def freeze(parents_root, output, expected_seal, *, per_source=64):
         raise ValueError("original parent protocol changed")
     sources = source_manifest()
     for name, sha in sources.items():
-        if name != "experiment" and original["source_hashes"].get(original_source_key(name)) != sha:
+        if (
+            name != "experiment"
+            and original["source_hashes"].get(original_source_key(name)) != sha
+        ):
             raise ValueError("original executable differs: " + name)
     selected = []
     for n in WIDTHS:
@@ -182,26 +226,55 @@ def freeze(parents_root, output, expected_seal, *, per_source=64):
             expected = seal["attempts"][name]["checkpoint.pt"]
             if digest(path) != expected:
                 raise ValueError("parent checkpoint differs: " + name)
-            selected.append(dict(slot=slot, checkpoint=str(path), sha256=expected,
-                                 permutation=permutation(n, seed).tolist()))
-    used = {s for k, values in original["data"].items() if k.endswith("_sources") for s in values}
+            selected.append(
+                dict(
+                    slot=slot,
+                    checkpoint=str(path),
+                    sha256=expected,
+                    permutation=permutation(n, seed).tolist(),
+                )
+            )
+    used = {
+        s
+        for k, values in original["data"].items()
+        if k.endswith("_sources")
+        for s in values
+    }
     if used.intersection(SOURCES):
         raise ValueError("intervention sources overlap original data")
-    protocol = dict(schema="hcsn-pft-message-intervention-v1", parents=selected,
-        original_seal_sha256=expected_seal, original_protocol_sha256=seal["protocol_sha256"],
-        source_sha256=sources, source_ids=list(SOURCES), per_source=per_source,
-        length=12, chunk=64, arms=list(ARMS), selected_state="selected_model",
+    protocol = dict(
+        schema="hcsn-pft-message-intervention-v1",
+        parents=selected,
+        original_seal_sha256=expected_seal,
+        original_protocol_sha256=seal["protocol_sha256"],
+        source_sha256=sources,
+        source_ids=list(SOURCES),
+        per_source=per_source,
+        length=12,
+        chunk=64,
+        arms=list(ARMS),
+        selected_state="selected_model",
         intervention="route old messages before original masked recurrent forwarding at every clock",
         deletion="all channels zero; only signed flow is enabled by original mask",
         shuffle="fixed seed derangement within sender and receiver halves; weights and mask unchanged",
-        budgets={"updates_per_arm": 0, "ticks_per_example_arm": 12,
-                 "examples_per_arm_parent": per_source * len(SOURCES), "safety_wall_seconds_per_parent": 600},
-        runtime={"torch": torch.__version__, "numpy": np.__version__, "python": platform.python_version(),
-                 "threads": torch.get_num_threads(), "device": "cpu"},
+        budgets={
+            "updates_per_arm": 0,
+            "ticks_per_example_arm": 12,
+            "examples_per_arm_parent": per_source * len(SOURCES),
+            "safety_wall_seconds_per_parent": 600,
+        },
+        runtime={
+            "torch": torch.__version__,
+            "numpy": np.__version__,
+            "python": platform.python_version(),
+            "threads": torch.get_num_threads(),
+            "device": "cpu",
+        },
         primary="paired final accuracy and cross-entropy differences by parent and source; descriptive",
         scope="new independent synthetic source laws, same frozen trained parents; communication necessity only",
         interpretation="no learned topology superiority, complete Circuit comparator, real user or native E6 claim",
-        selection="none; every frozen parent and intervention retained, failures retained, no retry on outcomes")
+        selection="none; every frozen parent and intervention retained, failures retained, no retry on outcomes",
+    )
     output.mkdir(parents=True, exist_ok=False)
     create(output / "PROTOCOL_FROZEN.json", protocol)
     return protocol
@@ -212,8 +285,11 @@ def run_parent(item, batch, output, protocol):
     if digest(item["checkpoint"]) != item["sha256"]:
         raise ValueError("parent bytes changed after freeze")
     saved = torch.load(item["checkpoint"], weights_only=True, map_location="cpu")
-    if (saved["slot"] != item["slot"] or saved["smoke"] is not False
-            or saved["protocol_sha256"] != protocol["original_protocol_sha256"]):
+    if (
+        saved["slot"] != item["slot"]
+        or saved["smoke"] is not False
+        or saved["protocol_sha256"] != protocol["original_protocol_sha256"]
+    ):
         raise ValueError("original checkpoint header differs")
     model = make_model(item["slot"])
     expected = model.state_dict()
@@ -224,38 +300,77 @@ def run_parent(item, batch, output, protocol):
     model.load_state_dict(selected, strict=True)
     for parameter in model.parameters():
         parameter.requires_grad_(False)
-    logits, audit = forward_interventions(model, batch, torch.tensor(item["permutation"]), chunk=protocol["chunk"],
-        deadline=started + protocol["budgets"]["safety_wall_seconds_per_parent"])
+    logits, audit = forward_interventions(
+        model,
+        batch,
+        torch.tensor(item["permutation"]),
+        chunk=protocol["chunk"],
+        deadline=started + protocol["budgets"]["safety_wall_seconds_per_parent"],
+    )
     scores = {arm: probability_metrics(logits[arm], batch) for arm in ARMS}
-    differences = {arm: {
-        "accuracy_intact_minus_arm": scores["intact"]["accuracy"] - scores[arm]["accuracy"],
-        "cross_entropy_arm_minus_intact": scores[arm]["cross_entropy"] - scores["intact"]["cross_entropy"],
-        "source_accuracy_intact_minus_arm": {source: scores["intact"]["source_accuracy"][source] - value
-            for source, value in scores[arm]["source_accuracy"].items()}}
-        for arm in ARMS[1:]}
+    differences = {
+        arm: {
+            "accuracy_intact_minus_arm": scores["intact"]["accuracy"]
+            - scores[arm]["accuracy"],
+            "cross_entropy_arm_minus_intact": scores[arm]["cross_entropy"]
+            - scores["intact"]["cross_entropy"],
+            "source_accuracy_intact_minus_arm": {
+                source: scores["intact"]["source_accuracy"][source] - value
+                for source, value in scores[arm]["source_accuracy"].items()
+            },
+        }
+        for arm in ARMS[1:]
+    }
     path = output / (item["slot"]["id"] + ".npz")
     with path.open("xb") as stream:
-        np.savez_compressed(stream, **{arm: value.numpy() for arm, value in logits.items()},
-                            labels=batch.y.numpy(), source=batch.source.numpy())
+        np.savez_compressed(
+            stream,
+            **{arm: value.numpy() for arm, value in logits.items()},
+            labels=batch.y.numpy(),
+            source=batch.source.numpy(),
+        )
     if digest(item["checkpoint"]) != item["sha256"]:
         raise ValueError("parent file changed during inference")
-    return dict(status="completed", parent=item["slot"], checkpoint_sha256=item["sha256"],
-        original_selected_step=saved["selected_step"], original_updates=saved["updates"],
-        metrics=scores, paired_differences=differences, audit=audit, prediction_sha256=digest(path),
-        wall_seconds=time.perf_counter()-started, cpu_seconds=time.process_time()-cpu)
+    return dict(
+        status="completed",
+        parent=item["slot"],
+        checkpoint_sha256=item["sha256"],
+        original_selected_step=saved["selected_step"],
+        original_updates=saved["updates"],
+        metrics=scores,
+        paired_differences=differences,
+        audit=audit,
+        prediction_sha256=digest(path),
+        wall_seconds=time.perf_counter() - started,
+        cpu_seconds=time.process_time() - cpu,
+    )
 
 
 def evaluate_frozen(output, expected_protocol):
     output = Path(output)
     protocol = json.loads((output / "PROTOCOL_FROZEN.json").read_text())
-    if identity(protocol) != expected_protocol or protocol["source_sha256"] != source_manifest():
+    if (
+        identity(protocol) != expected_protocol
+        or protocol["source_sha256"] != source_manifest()
+    ):
         raise ValueError("frozen protocol or executable changed")
     create(output / "EVALUATION_CLAIM.json", {"protocol_sha256": expected_protocol})
     wall, cpu = time.perf_counter(), time.process_time()
-    batch = generate_sources(protocol["source_ids"], per_source=protocol["per_source"],
-        length=protocol["length"], namespace="pft-intervention-20261125-v1")
-    create(output / "DATA_BINDING.json", {"sha256": batch.digest(), "ids": list(batch.ids),
-        "source_ids": protocol["source_ids"], "examples": len(batch.y)})
+    batch = generate_sources(
+        protocol["source_ids"],
+        per_source=protocol["per_source"],
+        length=protocol["length"],
+        namespace="pft-intervention-20261125-v1",
+    )
+    create(
+        output / "DATA_BINDING.json",
+        {
+            "sha256": batch.digest(),
+            "ids": list(batch.ids),
+            "source_ids": protocol["source_ids"],
+            "examples": len(batch.y),
+        },
+    )
     rows = []
     for item in protocol["parents"]:
         try:
@@ -264,13 +379,28 @@ def evaluate_frozen(output, expected_protocol):
             result = dict(status="failed", parent=item["slot"], error=repr(error))
         rows.append(result)
         create(output / (item["slot"]["id"] + ".json"), result)
-        print(json.dumps({"parent": item["slot"]["id"], "status": result["status"],
-                          "differences": result.get("paired_differences"), "error": result.get("error")}), flush=True)
-    summary = dict(protocol_sha256=expected_protocol, data_sha256=batch.digest(), rows=rows,
-        expected=9, completed=sum(row["status"] == "completed" for row in rows),
-        wall_seconds=time.perf_counter()-wall, cpu_seconds=time.process_time()-cpu,
+        print(
+            json.dumps(
+                {
+                    "parent": item["slot"]["id"],
+                    "status": result["status"],
+                    "differences": result.get("paired_differences"),
+                    "error": result.get("error"),
+                }
+            ),
+            flush=True,
+        )
+    summary = dict(
+        protocol_sha256=expected_protocol,
+        data_sha256=batch.digest(),
+        rows=rows,
+        expected=9,
+        completed=sum(row["status"] == "completed" for row in rows),
+        wall_seconds=time.perf_counter() - wall,
+        cpu_seconds=time.process_time() - cpu,
         cost_scope="body includes data generation, all arms, audits and raw prediction writes; outer launcher adds imports and shutdown",
-        inference="descriptive paired effects within frozen HCSN; seeds and source laws are synthetic, not users")
+        inference="descriptive paired effects within frozen HCSN; seeds and source laws are synthetic, not users",
+    )
     create(output / "RESULTS.json", summary)
     return summary
 
@@ -283,7 +413,9 @@ def main():
     parser.add_argument("--per-source", type=int, choices=(64, 128), default=64)
     args = parser.parse_args()
     torch.set_num_threads(1)
-    protocol = freeze(args.parents_root, args.output, args.original_seal, per_source=args.per_source)
+    protocol = freeze(
+        args.parents_root, args.output, args.original_seal, per_source=args.per_source
+    )
     result = evaluate_frozen(args.output, identity(protocol))
     raise SystemExit(0 if result["completed"] == result["expected"] else 1)
 
