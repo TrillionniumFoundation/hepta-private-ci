@@ -254,3 +254,100 @@ fn partial_stage_and_post_rename_lost_ack_require_the_original_writer() {
         assert_eq!(service.withdrawal_registry().snapshot(), next.snapshot());
     }
 }
+
+#[test]
+fn original_read_view_does_not_create_or_enroll_an_absent_owner() {
+    let (directory, service, request) = published();
+    let absent = directory.0.join("absent-owner");
+    let uid = fs::metadata(&directory.0).fixture("fixture owner").uid();
+    let scope = service
+        .withdrawal_registry()
+        .scope_digest()
+        .fixture("scope");
+
+    assert!(
+        LearningArtifactReadViewV1::open_original(
+            absent.clone(),
+            uid,
+            trust(&key(), scope),
+            request.signed_current_head,
+            /*now*/ 21,
+        )
+        .is_err()
+    );
+    assert!(!absent.exists());
+}
+
+#[test]
+fn original_read_view_refuses_a_revoked_signer_and_expired_current() {
+    let (directory, service, request) = published();
+    let uid = fs::metadata(&directory.0).fixture("fixture owner").uid();
+    let scope = service
+        .withdrawal_registry()
+        .scope_digest()
+        .fixture("scope");
+    let mut revoked = trust(&key(), scope);
+    revoked.head_signers[0].revoked_at = Some(25);
+    assert!(matches!(
+        LearningArtifactReadViewV1::open_original(
+            directory.0.clone(),
+            uid,
+            revoked,
+            request.signed_current_head.clone(),
+            /*now*/ 30,
+        ),
+        Err(ArtifactOwnerHostError::SignerRevoked)
+    ));
+
+    let view = reader(
+        &directory,
+        &request.signed_current_head,
+        service.withdrawal_registry().clone(),
+    );
+    let expired = request.signed_current_head.witness.expires_at + 1;
+    assert!(matches!(
+        view.read_original_registry(expired),
+        Err(ArtifactOwnerHostError::CurrentHeadExpired)
+    ));
+    assert!(matches!(
+        view.read_original_registry(21),
+        Err(ArtifactOwnerHostError::Indeterminate)
+    ));
+}
+
+#[test]
+fn original_read_view_never_keeps_the_writer_fence() {
+    let (directory, service, request) = published();
+    let scope = service
+        .withdrawal_registry()
+        .scope_digest()
+        .fixture("scope");
+    let view = reader(
+        &directory,
+        &request.signed_current_head,
+        service.withdrawal_registry().clone(),
+    );
+    let before = view.read_original_registry(21).fixture("original view");
+    drop(service);
+
+    let host = LearningArtifactOwnerHost::open_with_required_current_head(
+        &directory.0,
+        trust(&key(), scope),
+        lease(&key(), scope),
+        request.signed_current_head,
+        /*now*/ 21,
+    )
+    .fixture("reopen writer while original reader is live");
+    assert_eq!(
+        host.current_registry_view(21)
+            .fixture("reopened owner")
+            .receipt(),
+        before.receipt()
+    );
+    assert_eq!(
+        view.read_original_registry(21)
+            .fixture("coexisting read")
+            .receipt(),
+        before.receipt()
+    );
+}
