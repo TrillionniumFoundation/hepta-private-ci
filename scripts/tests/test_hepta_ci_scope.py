@@ -146,6 +146,23 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["native"])
         self.assertFalse(scope["full_repo"])
 
+    def test_dossier_detail_only_trusts_markdown_as_prose(self):
+        prose = select(
+            ["qualification/module-execution-dossiers/detail/owner.md"]
+        )
+        self.assertTrue(prose["derived"])
+        self.assertFalse(prose["native"])
+        self.assertFalse(prose["full_repo"])
+
+        for suffix in (".py", ".rs", ".sh", ".json", ".yaml", ".txt"):
+            path = "qualification/module-execution-dossiers/detail/unsafe" + suffix
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["derived"])
+                self.assertTrue(scope["full_repo"])
+                self.assertTrue(scope["native"])
+                self.assertTrue(all(scope[group] for group in GROUPS))
+
     def test_bad_paths_fail_instead_of_selecting_nothing(self):
         for path in [
             "",
