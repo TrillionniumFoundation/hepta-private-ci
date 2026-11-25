@@ -1,0 +1,23 @@
+# PR7067 integration scope
+
+The original head `14cfd44ab6d9da581bad5363495266424c661eb4` had 46 jobs in [blocking-ci 45418757405](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45418757405): **23 success, 9 failure, 10 skipped, 4 cancelled**. [CI_SOURCE_AUDIT.json](CI_SOURCE_AUDIT.json) preserves the complete job roster and hashes of the six inspected raw logs. These are the original head's results, not the later transport candidate's qualification.
+
+| Failure | Direct evidence | Scope and action |
+|---|---|---|
+| Blob size, job 138532139823 | Eleven added evidence objects exceed 512000 bytes | Replaced in the live tree by verified byte parts at most 480000 bytes; original commit and exact reassembly preserved. No allowlist or policy change. |
+| Deterministic merge, job 138534357536 | Merge succeeded; `git diff --cached --check` then found nine new blank lines at EOF | Normalized live display/test copies, preserving JSON values and Python AST. Historical source/archives remain byte authoritative. |
+| SDK, job 138534355190 | `sdk/typescript/tests/run.test.ts:538`, `passes additionalDirectories as repeated flags`, exceeded 5000ms; build/lint succeeded | SDK source is outside this qualification-only PR delta. Timing root cause is not established; do not raise the timeout or call it fixed because unrelated checks pass. Await exact-current-head evidence and targeted triage if it recurs. |
+| Exact source qualification, job 138534357310 | Eighteen strict Clippy diagnostics in `hepta-bellman-operator/examples/qualification_performance.rs`; control-plane dead `cns_route_digest_v1` and eight-argument constructor | Rust sources are unchanged by this PR. No lint exemption or unrelated Rust edit is introduced. Existing integration work has separate ownership and remains a dependency. |
+| Windows shard 3, job 138534358152 | Queue target 36 pass / 3 fail; started-dispatch durability tests timed out waiting for the blocking prompt hook/deadline | Preserve those failures and test semantics. No queue, isolation, or timeout changes in this evidence transport patch. |
+| Windows shard 4, job 138534357874 | Isolation capability/private desktop failures; restricted token routing and rollout shared-budget failures also observed in the log | Exact failure scope retained; do not infer a single common cause or bypass fail-closed isolation. |
+| Windows, learning, and final required fan-ins | Jobs 138550637513, 138615850670, 138653103839 fail | Aggregate dependency results; not three additional independent source defects. |
+
+The three named queue failures were `caller_abort_after_core_started_keeps_exact_authority_until_persistence`, `core_error_after_started_never_releases_ambiguous_dispatch`, and `explicitly_started_rejected_queue_messages_remain_durable`. Source equality to the PR base does not prove a failure is permanently pre-existing or harmless; it bounds this patch's ownership.
+
+The independently maintained [integrated registry](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/evidence/hcsn-qualification-blocker-audit-20261123/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/CURRENT_ZH.md) was read at blob `e12a83702bd0aec492e25872c5b4ae84f88ae273`. It already tracks separate #6799 Windows/session work and #7068/#7070 Rust/Windows integration. This patch does not modify those refs, duplicate their running jobs, or claim their candidates fix this PR's exact failures. It also does not modify the registry thread's files.
+
+The transport helper passed six standard-library tests, and the isolated original-display-to-patch fixture passed the exact `git diff --cached --check` command. The repository's blob-policy implementation compares final base-to-head added/modified objects, so keeping the original evidence in history does not require policy relaxation. These scoped checks do not replace complete current-head hosted CI or establish repository-wide closure. No Rust file was edited; no new `just fmt` execution is claimed by this patch.
+
+## Follow-up: valid compressed containers
+
+At the first transport commit `b1cc060d`, Codespell job 138892629213 emitted 48 word diagnostics from four raw compressed-stream fragments. All research bytes had already verified, but those fragments lacked a standalone file container. The v2 transport uses genuine independent gzip members with decoded pieces capped at 479000 bytes and encoded blobs capped at 480000 bytes; both identities are checked. The original failure log and format remain in `versions/raw-v1/` and `FORMAT_HISTORY.json`. No spelling exclusion, fabricated header, or policy relaxation is used. Nine distinct standard-library transport tests pass; complete current-head CI remains a separate gate.

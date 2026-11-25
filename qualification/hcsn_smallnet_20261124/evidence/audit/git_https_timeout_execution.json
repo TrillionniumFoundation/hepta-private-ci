@@ -1,0 +1,46 @@
+{
+  "name": "git_https_timeout",
+  "job_id": "1a20da42523-ffbe-3968",
+  "host": "desktop",
+  "stdout": "{\"tools\": {\"gh\": \"/usr/bin/gh\", \"git\": \"/usr/bin/git\", \"just\": \"/home/qian-qi/.cargo/bin/just\", \"cargo\": \"/home/qian-qi/.cargo/bin/cargo\", \"rustfmt\": \"/home/qian-qi/.cargo/bin/rustfmt\"}, \"clone\": {\"status\": \"timeout\", \"seconds\": 200.10335278697312, \"output\": \"b\\\"\\\\xe6\\\\xad\\\\xa3\\\\xe5\\\\x85\\\\x8b\\\\xe9\\\\x9a\\\\x86\\\\xe5\\\\x88\\\\xb0 '/home/qian-qi/hcsn-smallnet-20261124/git-https'...\\\\n\\\"\"}}\n",
+  "stderr": "",
+  "stdout_complete": true,
+  "stderr_complete": true,
+  "status": {
+    "at_unix_ms": 1795525392244,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20da42523-ffbe-3968",
+    "launch_nonce": "8b7cf6d04863dd3849ac5afe563c2d49",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 384,
+        "stored": 384
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

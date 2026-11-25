@@ -1,0 +1,43 @@
+{
+  "job_id": "1a20dabd010-ffbe-3975",
+  "host": "desktop",
+  "stdout": "{\"errors\": 0, \"failures\": 0, \"sha256\": {\"benchmark.py\": \"5d1e1db5515e7754eac79177bed07cb7daa9c38cf53b582ab5b68f9e75426fae\", \"editing_tests.py\": \"bc18d5b89b27b709e65ec96e62e605e016c2546ce160e579f6afb3a6fa384345\", \"kernel_tests.py\": \"ec16913e3ea76e0c845e9becbc47f94e2fc5c7f3c7148f2a6344deb36b93764e\", \"model.py\": \"d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239\"}, \"snapshot\": \"/home/qian-qi/hcsn-smallnet-20261124/v05-normalized-kernel\", \"tests\": 26, \"tests_elapsed_s\": 1.8065742099424824, \"torch\": \"2.8.0+cpu\"}\n{\"cold_continuation\": \"passed\", \"long_rollouts\": [{\"backend\": \"dense\", \"completed_steps\": 512, \"precision\": \"mixed\", \"schedule\": \"fixed_after_first\", \"status\": \"completed\"}, {\"backend\": \"uniformized\", \"completed_steps\": 512, \"precision\": \"mixed\", \"schedule\": \"fixed_after_first\", \"status\": \"completed\"}, {\"backend\": \"dense\", \"completed_steps\": 102, \"precision\": \"native32\", \"schedule\": \"fixed_after_first\", \"status\": \"failed\"}, {\"backend\": \"dense\", \"completed_steps\": 512, \"precision\": \"mixed\", \"schedule\": \"slow_every_2\", \"status\": \"completed\"}, {\"backend\": \"uniformized\", \"completed_steps\": 512, \"precision\": \"mixed\", \"schedule\": \"slow_every_2\", \"status\": \"completed\"}, {\"backend\": \"dense\", \"completed_steps\": 355, \"precision\": \"native32\", \"schedule\": \"slow_every_2\", \"status\": \"failed\"}], \"output\": \"/home/qian-qi/hcsn-smallnet-20261124/v05-normalized-kernel/benchmark_population.json\", \"width_arms\": [[\"measured\", \"measured\", \"measured\", \"measured\"], [\"measured\", \"measured\", \"measured\", \"measured\"], [\"measured\", \"measured\", \"measured\", \"measured\"]], \"worker_script_s\": 30.157733076019213}\n",
+  "stderr": "test_actual_recurrent_and_boundary_gradients_against_fd (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_actual_recurrent_and_boundary_gradients_against_fd) ... ok\ntest_batching_and_complete_detached_continuation (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_batching_and_complete_detached_continuation) ... ok\ntest_coincident_grid_remap_generalized_derivative_and_mass (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_coincident_grid_remap_generalized_derivative_and_mass) ... ok\ntest_frozen_semigroup_and_multiple_event_accounting (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_frozen_semigroup_and_multiple_event_accounting) ... ok\ntest_mixed_precision_keeps_physical_state_double (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_mixed_precision_keeps_physical_state_double) ... ok\ntest_point_projection_center_first_moment_derivative (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_point_projection_center_first_moment_derivative) ... ok\ntest_receiver_has_no_direct_input_and_late_input_is_causal (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_receiver_has_no_direct_input_and_late_input_is_causal) ... /home/qian-qi/hcsn-smallnet-20261124/v05-normalized-kernel/qualification/hcsn_smallnet_20261124/kernel_tests.py:58: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  self.assertGreater(float((original[4:]-altered[4:]).abs().max()), 1e-8)\nok\ntest_true_population_axes_and_absolute_reset (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_true_population_axes_and_absolute_reset) ... ok\ntest_uniformization_forward_and_vjp (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_uniformization_forward_and_vjp) ... ok\ntest_future_signal_never_in_prefix (qualification.hcsn_smallnet_20261124.data_tests.DataTests.test_future_signal_never_in_prefix) ... ok\ntest_reproducible_multi_initial_states (qualification.hcsn_smallnet_20261124.data_tests.DataTests.test_reproducible_multi_initial_states) ... ok\ntest_source_partitions (qualification.hcsn_smallnet_20261124.data_tests.DataTests.test_source_partitions) ... ok\ntest_affine_input_program_preserves_complete_nonlinear_function (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_affine_input_program_preserves_complete_nonlinear_function) ... ok\ntest_class_mask_and_norm_bounds_refuse_atomically (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_class_mask_and_norm_bounds_refuse_atomically) ... ok\ntest_class_rule_matches_exact_declared_output_permutation (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_class_rule_matches_exact_declared_output_permutation) ... ok\ntest_identity_class_rule_is_keep (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_identity_class_rule_is_keep) ... ok\ntest_input_domain_failures_return_original_without_partial_writes (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_input_domain_failures_return_original_without_partial_writes) ... ok\ntest_malformed_contracts_raise_before_mutation (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_malformed_contracts_raise_before_mutation) ... ok\ntest_missing_bias_refuses_nonzero_offset_but_accepts_linear_map (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_missing_bias_refuses_nonzero_offset_but_accepts_linear_map) ... ok\ntest_missing_controller_branch_is_detectable_by_required_function_check (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_missing_controller_branch_is_detectable_by_required_function_check) ... ok\ntest_nonfinite_constructed_candidate_refuses_with_json_safe_receipt (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_nonfinite_constructed_candidate_refuses_with_json_safe_receipt) ... ok\ntest_old_and_new_unobserved_label_schemas_are_refused (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_old_and_new_unobserved_label_schemas_are_refused) ... ok\ntest_program_reruns_on_distinct_checkpoints_not_a_copied_delta (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_program_reruns_on_distinct_checkpoints_not_a_copied_delta) ... ok\ntest_unidentified_capability_abstains_and_preserves_complete_bytes (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_unidentified_capability_abstains_and_preserves_complete_bytes) ... ok\ntest_complete_transfer_suite_on_real_population_state (qualification.hcsn_smallnet_20261124.editing_tests.RealModelTransferTests.test_complete_transfer_suite_on_real_population_state) ... ok\ntest_population_mapping_refuses_unknown_fields_and_cross_role_orders (qualification.hcsn_smallnet_20261124.editing_tests.RealModelTransferTests.test_population_mapping_refuses_unknown_fields_and_cross_role_orders) ... ok\n\n----------------------------------------------------------------------\nRan 26 tests in 1.745s\n\nOK\n",
+  "status": {
+    "at_unix_ms": 1795525729640,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20dabd010-ffbe-3975",
+    "launch_nonce": "2a4cf7d1804ac39b85ce247a98bfeaf8",
+    "log_bytes": {
+      "stderr": {
+        "seen": 5177,
+        "stored": 5177
+      },
+      "stdout": {
+        "seen": 1623,
+        "stored": 1623
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "kernel_initial",
+  "job_id": "1a20d99cd42-ffbe-393a",
+  "host": "desktop",
+  "stdout": "{\"tests\": 24, \"failures\": 1, \"errors\": 0, \"seconds\": 2.2480232870439067, \"torch\": \"2.8.0+cpu\"}\n",
+  "stderr": "test_actual_recurrent_and_boundary_gradients_against_fd (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_actual_recurrent_and_boundary_gradients_against_fd) ... FAIL\ntest_batching_and_complete_detached_continuation (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_batching_and_complete_detached_continuation) ... ok\ntest_frozen_semigroup_and_multiple_event_accounting (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_frozen_semigroup_and_multiple_event_accounting) ... ok\ntest_mixed_precision_keeps_physical_state_double (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_mixed_precision_keeps_physical_state_double) ... ok\ntest_receiver_has_no_direct_input_and_late_input_is_causal (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_receiver_has_no_direct_input_and_late_input_is_causal) ... /home/qian-qi/hcsn-smallnet-20261124/v00/qualification/hcsn_smallnet_20261124/kernel_tests.py:51: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\n  self.assertGreater(float((original[4:]-altered[4:]).abs().max()), 1e-8)\nok\ntest_true_population_axes_and_absolute_reset (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_true_population_axes_and_absolute_reset) ... ok\ntest_uniformization_forward_and_vjp (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_uniformization_forward_and_vjp) ... ok\ntest_future_signal_never_in_prefix (qualification.hcsn_smallnet_20261124.data_tests.DataTests.test_future_signal_never_in_prefix) ... ok\ntest_reproducible_multi_initial_states (qualification.hcsn_smallnet_20261124.data_tests.DataTests.test_reproducible_multi_initial_states) ... ok\ntest_source_partitions (qualification.hcsn_smallnet_20261124.data_tests.DataTests.test_source_partitions) ... ok\ntest_affine_input_program_preserves_complete_nonlinear_function (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_affine_input_program_preserves_complete_nonlinear_function) ... ok\ntest_class_mask_and_norm_bounds_refuse_atomically (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_class_mask_and_norm_bounds_refuse_atomically) ... ok\ntest_class_rule_matches_exact_declared_output_permutation (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_class_rule_matches_exact_declared_output_permutation) ... ok\ntest_identity_class_rule_is_keep (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_identity_class_rule_is_keep) ... ok\ntest_input_domain_failures_return_original_without_partial_writes (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_input_domain_failures_return_original_without_partial_writes) ... ok\ntest_malformed_contracts_raise_before_mutation (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_malformed_contracts_raise_before_mutation) ... ok\ntest_missing_bias_refuses_nonzero_offset_but_accepts_linear_map (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_missing_bias_refuses_nonzero_offset_but_accepts_linear_map) ... ok\ntest_missing_controller_branch_is_detectable_by_required_function_check (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_missing_controller_branch_is_detectable_by_required_function_check) ... ok\ntest_nonfinite_constructed_candidate_refuses_with_json_safe_receipt (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_nonfinite_constructed_candidate_refuses_with_json_safe_receipt) ... ok\ntest_old_and_new_unobserved_label_schemas_are_refused (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_old_and_new_unobserved_label_schemas_are_refused) ... ok\ntest_program_reruns_on_distinct_checkpoints_not_a_copied_delta (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_program_reruns_on_distinct_checkpoints_not_a_copied_delta) ... ok\ntest_unidentified_capability_abstains_and_preserves_complete_bytes (qualification.hcsn_smallnet_20261124.editing_tests.EditingTests.test_unidentified_capability_abstains_and_preserves_complete_bytes) ... ok\ntest_complete_transfer_suite_on_real_population_state (qualification.hcsn_smallnet_20261124.editing_tests.RealModelTransferTests.test_complete_transfer_suite_on_real_population_state) ... ok\ntest_population_mapping_refuses_unknown_fields_and_cross_role_orders (qualification.hcsn_smallnet_20261124.editing_tests.RealModelTransferTests.test_population_mapping_refuses_unknown_fields_and_cross_role_orders) ... ok\n\n======================================================================\nFAIL: test_actual_recurrent_and_boundary_gradients_against_fd (qualification.hcsn_smallnet_20261124.kernel_tests.KernelTests.test_actual_recurrent_and_boundary_gradients_against_fd)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/qian-qi/hcsn-smallnet-20261124/v00/qualification/hcsn_smallnet_20261124/kernel_tests.py\", line 101, in test_actual_recurrent_and_boundary_gradients_against_fd\n    self.assertLess(abs(fd-float(derivative)), 2e-6*max(1., abs(fd)))\nAssertionError: 0.0009446025446263615 not less than 2e-06\n\n----------------------------------------------------------------------\nRan 24 tests in 2.182s\n\nFAILED (failures=1)\n",
+  "stdout_complete": true,
+  "stderr_complete": true,
+  "status": {
+    "at_unix_ms": 1795524529550,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a20d99cd42-ffbe-393a",
+    "launch_nonce": "c0e0e0d6acd2c8bb9d3f83db7c09c4b1",
+    "log_bytes": {
+      "stderr": {
+        "seen": 5473,
+        "stored": 5473
+      },
+      "stdout": {
+        "seen": 95,
+        "stored": 95
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

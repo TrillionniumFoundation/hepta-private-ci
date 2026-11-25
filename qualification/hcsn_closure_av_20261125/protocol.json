@@ -1,0 +1,135 @@
+{
+  "analysis_policy": "3 training seeds and8 test actors are distinct axes; descriptive means/SD and paired per-seed differences, no iid clip p-values or general multimodal-model superiority. All test metrics reported; no post-test best-arm adoption.",
+  "cohort": {
+    "dev": {
+      "actors": [
+        "1038",
+        "1032",
+        "1083",
+        "1008",
+        "1065",
+        "1024"
+      ],
+      "examples": 144
+    },
+    "test": {
+      "actors": [
+        "1074",
+        "1021",
+        "1007",
+        "1075",
+        "1018",
+        "1009",
+        "1030",
+        "1006"
+      ],
+      "examples": 192
+    },
+    "train": {
+      "actors": [
+        "1080",
+        "1067",
+        "1052",
+        "1002",
+        "1059",
+        "1084",
+        "1022",
+        "1048",
+        "1035",
+        "1014",
+        "1073",
+        "1044",
+        "1057",
+        "1086",
+        "1091",
+        "1010"
+      ],
+      "examples": 384
+    }
+  },
+  "cost_policy": "Equal256 updates;600 attempted-update CPU cap yields censoring. Report active parameters, logical/physical state bytes, peakprocessRSS, all dev/setup/import/shutdown/failures separately. Body/worker/stage are nested and never added twice; joules unknown.",
+  "experiment_id": "HCSN-REAL-AV-CLOSURE-20261125-v2",
+  "holdout_policy": "8 actors outside three inspected prior actor manifests; official192 clip roster fixed before download. All9 terminal fits and checkpoints globally sealed before any test scoring. No test-driven selection/retry. Data decoded offline before fitting; all source/cache hashes bound. Failed/censored attempts remain denominators.",
+  "model": {
+    "classes": 6,
+    "embedding": 32,
+    "frontend": "independent modality Linear(130,8) + tanh; same seeded frontend across arms",
+    "hcsn": "qualified FastSignedHCSN a92d7cc45af0ccf1e1c2629ee9fe8ef1d4b0bc6dba335bbdc53cd909c42d80b3; QVI/value-risk, signed-only, mixed, uniformized, scripted action, interval cache, no core classifier",
+    "lif": "binary threshold/reset, .9 leak, recurrent width8; fast-sigmoid surrogate, detached reset; mean pool",
+    "projection": "time mean -> modality Linear to32; shared6-class classifier; fused mean logits",
+    "time": "32 normalized offline positions; dt=.25; final two input channels t/31 and1/32 identical across clips; real elapsed/dt never read by model",
+    "transformer": "one causal 8-wide 2-head block, FF16, dropout0; mean pool",
+    "width": 8
+  },
+  "negative_control": "Duration-only nearest neighbor after all9 seal; metadata are excluded from every learned model input.",
+  "numerical_gate": {
+    "all_outputs_and_gradients_finite": true,
+    "hcsn_max_mass_error": 2e-09
+  },
+  "primary_metrics": [
+    "fused/audio/video six-class accuracy, macroF1,CE,Brier,ECE10",
+    "paired recording retrieval R@1,R@5,MRR both directions, all and withinactor",
+    "cross-actor emotion retrieval classR@1 and mAP, same actor removed from entire gallery",
+    "initial vs selected differences"
+  ],
+  "revision": "Before any AV fitting/test scoring, discarded real-duration inputs that could directly identify pairs; originalproposal/data/source/error receipts retained.",
+  "scope": "Genuine paired audiovisual low-level offline encoder on acted-emotion clips. Not a foundation model, online timing benchmark, raw-media end-to-end encoder, or generative all-modality training claim.",
+  "slots": [
+    {
+      "arm": "hcsn",
+      "id": "hcsn-s31011",
+      "seed": 31011
+    },
+    {
+      "arm": "hcsn",
+      "id": "hcsn-s41011",
+      "seed": 41011
+    },
+    {
+      "arm": "hcsn",
+      "id": "hcsn-s51011",
+      "seed": 51011
+    },
+    {
+      "arm": "transformer",
+      "id": "transformer-s31011",
+      "seed": 31011
+    },
+    {
+      "arm": "transformer",
+      "id": "transformer-s41011",
+      "seed": 41011
+    },
+    {
+      "arm": "transformer",
+      "id": "transformer-s51011",
+      "seed": 51011
+    },
+    {
+      "arm": "lif",
+      "id": "lif-s31011",
+      "seed": 31011
+    },
+    {
+      "arm": "lif",
+      "id": "lif-s41011",
+      "seed": 41011
+    },
+    {
+      "arm": "lif",
+      "id": "lif-s51011",
+      "seed": 51011
+    }
+  ],
+  "training": {
+    "batch_size": 16,
+    "development_every": 64,
+    "gradient_clip": 2.0,
+    "learning_rate": 0.003,
+    "loss": "fused CE + .25(audio CE + video CE) + .5 symmetric InfoNCE, temperature .1",
+    "max_updates": 256,
+    "selection": "minimum development fused CE, including initialization step0; first occurrence wins ties",
+    "threads": 1,
+    "train_cpu_limit": 600.0
+  }
+}

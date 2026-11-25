@@ -1,0 +1,43 @@
+{
+  "job_id": "1a20dd2273b-ffbe-39ae",
+  "host": "desktop",
+  "stdout": "{\"snapshot\": \"/home/qian-qi/hcsn-smallnet-20261124/v07-native32-uniformized\", \"source_sha256\": \"118f2c1c57602142f4dd53073b385e6e21692f6c49c45b41039cb94ac48d47e8\"}\n{\"extension_status\": \"rollouts_completed\", \"initial_n8_both_completed\": true, \"initial_rollouts\": [{\"completed_steps\": 512, \"failed_attempted_step\": null, \"max_mass_error\": 4.5299530029296875e-06, \"schedule\": \"fixed_after_first\", \"status\": \"completed\"}, {\"completed_steps\": 512, \"failed_attempted_step\": null, \"max_mass_error\": 2.0205974578857422e-05, \"schedule\": \"slow_every_2\", \"status\": \"completed\"}], \"output\": \"/home/qian-qi/hcsn-smallnet-20261124/v07-native32-uniformized/native32_uniformized.json\", \"worker_cpu_seconds\": 20.938831238}\n",
+  "stderr": "",
+  "status": {
+    "at_unix_ms": 1795528228940,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20dd2273b-ffbe-39ae",
+    "launch_nonce": "f668e8afefdcef89f1c911af43421ec7",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 705,
+        "stored": 705
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

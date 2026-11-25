@@ -519,6 +519,9 @@ fn run_restricted_child_blocking(
         "--test-threads=1".to_string(),
     ];
     let cwd = std::env::current_dir()?;
+    // The diagnostic token has no logon SID among its restricting SIDs.
+    // Give this owned route-test child its own desktop; production admission
+    // remains refused above, and the original route assertions stay unchanged.
     let spawned = unsafe {
         create_process_as_user(
             restricted_token.as_raw_handle() as isize,
@@ -528,7 +531,7 @@ fn run_restricted_child_blocking(
             /*logs_base_dir*/ None,
             /*stdio*/ None,
             /*console_mode*/ ConsoleMode::Inherit,
-            /*use_private_desktop*/ false,
+            /*use_private_desktop*/ true,
         )?
     };
     let process = unsafe {

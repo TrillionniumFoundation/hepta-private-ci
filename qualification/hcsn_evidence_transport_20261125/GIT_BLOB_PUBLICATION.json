@@ -1,0 +1,2216 @@
+{
+  "schema": "hcsn-gzip-blob-publication-v2",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "14cfd44ab6d9da581bad5363495266424c661eb4",
+  "previous_transport_commit": "b1cc060d617735628eab5bc396d3b829bf6f22bc",
+  "part_count": 44,
+  "complete": true,
+  "scope": "Each genuine gzip blob matches its independently computed encoded Git SHA1. Decoded hashes, lengths and whole originals are independently verified by VERIFICATION.json.",
+  "read_retries": [],
+  "records": [
+    {
+      "bytes": 475509,
+      "git_blob_sha1": "e146ee9c58bee02bf69e190bbf4d570c6eb34640",
+      "path": "qualification/hcsn_signed_control_20261124/evidence/archives/signed-control-v1.raw.tar.gz.parts/00000.bin.gz",
+      "sha256": "41cdb043aa040bff985118a74add48da59a4aad0111e0459830cb00f314d5763",
+      "sha": "e146ee9c58bee02bf69e190bbf4d570c6eb34640",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521328:475509:1795568215333002553:1795568215333002553",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 14773,
+      "verified_at": "2026-11-25T00:58:40.329Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "6d654a73bd3e6b79177ef25fb2910d6c66414036696366465dffb3df833dd3c2"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "c489d6300a85b2dec9d882ef87af7a7c7a9d522ddf325db4f1ef7cdf696a52bb"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "d8d5379d54c6e4c1749db30fa27d75a445d8033abadf341120d72b02795b2dd8"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "78ff71238be7ad993aa7975d6be2e286cc47597b8ce6f6ef7d946457c3e2d408"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "cccbc84b92a29daef022ffce3c5eb22a25496934fe5a846921e62d7beefcc318"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "06b0cbdbe6f98dd8ac1977c0db870e6162b3b4b79bb3e7c664b64824d6c05db7"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "9ecb6209cbe6d4d7043f06649677d6aae7495edf606d3de33a12a067f1ebcf54"
+        },
+        {
+          "offset": 458745,
+          "bytes": 16764,
+          "sha256": "13fa05b0814200e45189e8925c9f5d1bf13400e1e2f2622fc9f2f2252f2706fe"
+        }
+      ]
+    },
+    {
+      "bytes": 477448,
+      "git_blob_sha1": "fa03962d5277d919c6b3c7693c290eab0b85b71d",
+      "path": "qualification/hcsn_signed_control_20261124/evidence/archives/signed-control-v1.raw.tar.gz.parts/00001.bin.gz",
+      "sha256": "301459a112c7202ea011285b3061423903673b005520575f0868d500d003d53d",
+      "sha": "fa03962d5277d919c6b3c7693c290eab0b85b71d",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521329:477448:1795568215367650264:1795568215367650264",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 16356,
+      "verified_at": "2026-11-25T00:58:41.913Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "a1c3c460c22c822b49ee0a8198080140d552d054b68075c01469ff078113a275"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "3a8981799176bc29dd0c54f54edbc174bae6174500f7f314bece492380b6c017"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "1c982cd078c0ef0997298cbdcbd5cd4c108c04239bc05dd74d14f377183e0d75"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "aa1744aa5823b63b7ddf17087caf8651d4881a4581db6c38af7a945e0c52f9af"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "714aae79bd2ca47906d530cb8f0fb49ca7bfec90c815cab2f206572b30692e5d"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "8624ea102f0e81c6269189dc057e332395ca59fe7e5ec5d568061e20637796e1"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "bfaff7b1a1321e35c5d0ecdc95f3b2b9aa9666ea76b435d11e872e23bd19e959"
+        },
+        {
+          "offset": 458745,
+          "bytes": 18703,
+          "sha256": "676c82107c17283fe49cf94abc100c59ecb7b21ffb799267ed83ed9de62864cb"
+        }
+      ]
+    },
+    {
+      "bytes": 476463,
+      "git_blob_sha1": "ea0ee982e8a2a9f40e6372fd6ffccfdf967f3bcb",
+      "path": "qualification/hcsn_signed_control_20261124/evidence/archives/signed-control-v1.raw.tar.gz.parts/00002.bin.gz",
+      "sha256": "8a1f82ef52089f61f832eb51cdb0f694407ea92d09d9bff732bc8c769267f8f6",
+      "sha": "ea0ee982e8a2a9f40e6372fd6ffccfdf967f3bcb",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521331:476463:1795568215402280758:1795568215402280758",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 17313,
+      "verified_at": "2026-11-25T00:58:57.642Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "261849213b9a6dfd83e6904313bc694978ee92fbf02e2b5ee23e1ffa454b423a"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "f902ca5a358b3e4527de232f9b4e17fb5829d16641c267e99664d26420a8507b"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "21056dd1a1768ed881b943fbab5dcab3e340c59d91e3654527a1b2288f2d213e"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "109973e7e11f1a13e5e4d7b509a3d9dcf045e41a4dcac501914d54815882dcfd"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "15bb210a92ed180b3a667d722a4c101df54350a1d47701fa1e0e7948bcd11bff"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "832ecff97712009edbfbde8ecdfde83b60c9f40c0a5f1a5296106c601550005f"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "2cd234500d185526f039cf465c18aa3bd834e3aa4632c541158b7523f3b0aacb"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17718,
+          "sha256": "70022af2e2a5afe4d0d52008e268587bef4081ba4bc24ced611131865b294372"
+        }
+      ]
+    },
+    {
+      "bytes": 476491,
+      "git_blob_sha1": "0bb2d785de272e7cf01f7f2fe25ccebf22a57524",
+      "path": "qualification/hcsn_signed_control_20261124/evidence/archives/signed-control-v1.raw.tar.gz.parts/00003.bin.gz",
+      "sha256": "7892c5c4837dc6cba7f02c62034add2ef174bf881da525eb7dab30ab1113c9bc",
+      "sha": "0bb2d785de272e7cf01f7f2fe25ccebf22a57524",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521313:476491:1795568215437016963:1795568215437016963",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 14492,
+      "verified_at": "2026-11-25T00:58:56.405Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "e1c9f6441caabb74e4a2aea62597e573cb59ba3420fe4c28dbacb32ab93e4448"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "9bc7a3e3b63a13332182457af99cba3ed43dea9309a36ad7557b02207129d06f"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "da93eeb8a4efe4a30f253d77efe6815c908359e249b4f6cd081cc4e40b6e5a57"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "7dd8d4c77239a533693f9602999c0cc7ebe22f8c0dced3ac106deea95021d20e"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "380635bcf3c921a2f41881ee6296f0e7e39e5aab452e604bf20982501bac574a"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "566a75b5b7bc72ac6aed754c4ca565d2808d934c28ca0c2fee2c9eafe90e7e21"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "1d97647a5cbecae5cfea9e6a6428e1a8af2b915d9f97e9d39f8eff615d78d86b"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17746,
+          "sha256": "3b98629f2aa45ae094a99e7400f43b9a898825d03b78701ef97b46769e6f8e8f"
+        }
+      ]
+    },
+    {
+      "bytes": 476227,
+      "git_blob_sha1": "ccbdcda98de07a27a9bcf96202ddee746172bcc2",
+      "path": "qualification/hcsn_signed_control_20261124/evidence/archives/signed-control-v1.raw.tar.gz.parts/00004.bin.gz",
+      "sha256": "fa643e8278bafb5f428b4668f8e91bc86100c17b4a967d761b7a2dbdb9704cf5",
+      "sha": "ccbdcda98de07a27a9bcf96202ddee746172bcc2",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521330:476227:1795568215470910154:1795568215470910154",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 20053,
+      "verified_at": "2026-11-25T00:59:16.459Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "2c4852989990209eb41348644f4f81e920f97ac208ea79d8f56288ccd218605d"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "e3b1855f02fc4a597d4ef63769d218b6c025badd50f202bde499dd7a301539fe"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "4b78367ee2909a66fe5d5fba1387a30c397ee58da62c72c6b1d34ecead0f2aec"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "4bd085901cb4b1fe5cfb96dfd55f9cc8cb4f1d9d4483299814b801ce1cbb61a5"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "661b6ab2a5ddcf4c2cf613b2a45114738fb2272c8b56df4d3182591150b3589f"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "aab96200ebf69f423797207cdf8e52ad61d597d0c91146242e39115c45d56da1"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "dc34debc3302371c55d1646e45e9982e5f0fef3acff7e388a362651dc3f1e8bb"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17482,
+          "sha256": "d2f99ee6f50842b2cdedcc0183c646db91ccb4a2a52faf12c89a529abf26d7bf"
+        }
+      ]
+    },
+    {
+      "bytes": 476801,
+      "git_blob_sha1": "69b46e11bab2f36c05c9ed5a7c4efc4bf47878f3",
+      "path": "qualification/hcsn_signed_control_20261124/evidence/archives/signed-control-v1.raw.tar.gz.parts/00005.bin.gz",
+      "sha256": "2b2f407b80e74afca30ffcbf6523589b2ed22bf360aa1d6a1e1ff32d1297a824",
+      "sha": "69b46e11bab2f36c05c9ed5a7c4efc4bf47878f3",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521333:476801:1795568215505949951:1795568215505949951",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 20241,
+      "verified_at": "2026-11-25T00:59:17.883Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "a368497356d4ac446d515252f6a436920cb0cef554e8a92039c2036356ffb651"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "842a621a392e113113cbcfad037e988dabe4ecb5c697160b596b1643f24ab680"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "3baaf4e6412be5f6930887dd4b3eb4a3eb1a6ea3575321e747fe41e95d9e5d71"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "f6167c52df90c2eff07c46c80417b18fbdc3991f10c11f89773d7b5b20761ffb"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "4b1f6422db8667ca33226220bced6f1585fb3d0232a6b63440232d30390ab793"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "88e81e1741299224471f9b628db7c6b41b7607d0251b322b7d7c20636ef18545"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "12827ec87f0edc3c26aad739a6588474c2a50aab17c3cef5cc2b056619a05006"
+        },
+        {
+          "offset": 458745,
+          "bytes": 18056,
+          "sha256": "e171eb7e0fb473dcbe3e4f8477c60b54e0a91565b17bf516af6ad28369f5efea"
+        }
+      ]
+    },
+    {
+      "bytes": 447450,
+      "git_blob_sha1": "8d26757e27ce3638218024e7702e4f7ab0834246",
+      "path": "qualification/hcsn_signed_control_20261124/evidence/archives/signed-control-v1.raw.tar.gz.parts/00006.bin.gz",
+      "sha256": "2f7401e176e5fe0fc6d57c6f9ca224c8d9139bdb4a708de242af1db90c5bd089",
+      "sha": "8d26757e27ce3638218024e7702e4f7ab0834246",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521339:447450:1795568215538475691:1795568215538475691",
+      "chunk_count": 7,
+      "read_and_upload_wall_ms": 15177,
+      "verified_at": "2026-11-25T00:59:31.636Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "741a1be386e62bc3d21c1ea765b700ae797e346ad282f107053c0985a04f80fd"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "3805393a74c17cf242f64419f7c2fb7056ba8721e87452ce2dd63148e402eabc"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "6192ac08685e7473228562ad12949c4a2a83e3c3f19556c4cb07c605b9d440ca"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "236b96ce464bb311f1f328a1ba7af545b5dbe560453a8a8b0a108b522864d1ba"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "9da4df9e6a2e7e5674a5ad0f5ea24a96cfaae3487054a51dfa07fd665ecdb6b7"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "ba7d41cf44ff638f5fd989f13b0890cc74732642d09ba8a7766248372932c09a"
+        },
+        {
+          "offset": 393210,
+          "bytes": 54240,
+          "sha256": "10adb906ab768304e6970b189b822ce8e9fdf5e078999171a4934631411a5376"
+        }
+      ]
+    },
+    {
+      "bytes": 476149,
+      "git_blob_sha1": "333b89992f4e5cf5e9a1b1f360fbc417484c19b0",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s1101.tar.gz.parts/00000.bin.gz",
+      "sha256": "7b739f13f76c027c92c918c195319a1b50250168ad134673a93c83d83c29adff",
+      "sha": "333b89992f4e5cf5e9a1b1f360fbc417484c19b0",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521350:476149:1795568215573979787:1795568215573979787",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 15188,
+      "verified_at": "2026-11-25T00:59:33.071Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "7aec844dfff6d8216584cc55e6befe3a0e41f196adb8ad3e0ca0ea5b12d8e77e"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "c2298b18b7a7062d8b41c73ab3062642ff792040a0c66deeb1cd34451b0aa8a9"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "101d05ea6128933b5d711de7ba7acfa39f3213bf0eb19f1ca652a521aff18648"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "c52318030b6d9cc2426009120191c592d50c0d3fdda7f40065e61a7b8d62bfac"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "8181ad62f59fa2f57977c981c97a62eab70828ed48f5529c9d71fc61011d5d1c"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "7b99f9e4f2deeb1c8a38cf91725345c66fc0eab251264738109d02d142894275"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "90fbeade0c6c60547c45387077c66c8d4288c7377098118983f5586780d6416b"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17404,
+          "sha256": "f77d760698520677972d6632f9b3feb3c66538a7eb78578d6af0d4e3436d0027"
+        }
+      ]
+    },
+    {
+      "bytes": 475705,
+      "git_blob_sha1": "6c770e1addf2db9003913188dcee6736a3aec15b",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s1101.tar.gz.parts/00001.bin.gz",
+      "sha256": "dec245e802db0756520c7f468cc6dd64dc53c78634ee28ceee17bfb46386cf9b",
+      "sha": "6c770e1addf2db9003913188dcee6736a3aec15b",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521355:475705:1795568215609900054:1795568215609900054",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 20510,
+      "verified_at": "2026-11-25T00:59:52.146Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "ede9310e308a63d941e629082db17376050c4a77a1c0fdbf77b584a322db4223"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "5a20e3334cb94e5fcf58f001af846534dac4479c4905f6008c4bd737c0941cc6"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "4fb96abc4a4432f2923b46e438733ae51e022a80c75f098ad0c0cb7dd4467eaa"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "dbbd4c2ffdd121cfefbe0c4e66ae8fa8a5c57cb29de033c98de3124a5effe285"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "5bad343b1f0772b37496de76dccadfc2b6811eee91e3a6ec0adb9106ef9b219d"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "9dda37811f8970316c203f995598b69994cd4d29f5f59a3ad711589565d3636b"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "a0d5d8a2abc652eb65841f52c6e3fe56e9d0344ae26adcdb87f031386c805475"
+        },
+        {
+          "offset": 458745,
+          "bytes": 16960,
+          "sha256": "837ba339279ca57a0f9645402db07ccc33767038a59f1187d4c53f70b6216c14"
+        }
+      ]
+    },
+    {
+      "bytes": 477053,
+      "git_blob_sha1": "65fdc8a35311b72dee71e4653a0aa82778c107d1",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s1101.tar.gz.parts/00002.bin.gz",
+      "sha256": "47ac3d5b9ebc0545412b0550e314fbcbca013f789552a5f9d237ae265b2ca452",
+      "sha": "65fdc8a35311b72dee71e4653a0aa82778c107d1",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521356:477053:1795568215643382005:1795568215643382005",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 17430,
+      "verified_at": "2026-11-25T00:59:50.501Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "2ad7a0cfb0eae443736830c104eff12e819d6a4dc90a7bc04c0cf53205adc5f1"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "98e90ec537ebfa4e1862ebe9d0433e33ac9101593553582c009ad385c0201a24"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "f87e52e5c552d00312bd1d3f71469efbdd3eb493a298ad820b34b31bb91c5afc"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "c18576289d6d5a33aecc1f020f28cf667c93c596e4f890d6153fc64f8c652b74"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "1f26a43a49313255eef4d65925a0d329519dc92d0a108b6d1eeab2aee8f6bd8f"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "d917c8a8b011ffd5c55c18f2860efb340e8d0e3f496b5ecbac8bbbb152a9d658"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "099b1cfb450269d81e370f7c957cda2c8b80cae85c64335d43a47c843aa7ceaf"
+        },
+        {
+          "offset": 458745,
+          "bytes": 18308,
+          "sha256": "6b979046e6fef0e2ff7cab6bf58d3d330cf75e969b28a28bee4658a0a206d8ee"
+        }
+      ]
+    },
+    {
+      "bytes": 27482,
+      "git_blob_sha1": "452dd2edd21ed5a49d64dd7b007137fd28989824",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s1101.tar.gz.parts/00003.bin.gz",
+      "sha256": "60fac29f00d9fc730eb73e1cff67cddc26089a1b46c52763f4dea4a9e32ae153",
+      "sha": "452dd2edd21ed5a49d64dd7b007137fd28989824",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521357:27482:1795568215651332021:1795568215651332021",
+      "chunk_count": 1,
+      "read_and_upload_wall_ms": 6865,
+      "verified_at": "2026-11-25T00:59:57.366Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 27482,
+          "sha256": "60fac29f00d9fc730eb73e1cff67cddc26089a1b46c52763f4dea4a9e32ae153"
+        }
+      ]
+    },
+    {
+      "bytes": 476787,
+      "git_blob_sha1": "cf41272bf11640e894ab05ff91a70e67f2d43d45",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s2202.tar.gz.parts/00000.bin.gz",
+      "sha256": "f58dd835f63e9056a00ed6fc46295cc0db36a01b8e8b08fc6ab70ee73a3b1158",
+      "sha": "cf41272bf11640e894ab05ff91a70e67f2d43d45",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521360:476787:1795568215679721283:1795568215679721283",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 20036,
+      "verified_at": "2026-11-25T01:00:12.182Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "31f2915647b3ba5e85c5d60fa73eea0a6e0d74467694060511e6f4c6fc1a5eb5"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "3412395a3226f43caa3a488404dfa4b9b9d19e8972332f5b9a6a4c1ae868ed70"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "2aaec67239270cdadc542b089b4ef947dcf33e342765e90346462f4f77a9f287"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "d37748f314dd066ffedd9ff13cad0a6d1a766fe0ac2c0fa0d192970a37164ec8"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "e0b7d573eac8fb69c8204eef9d6b4ff770576b1c1f65710926ec369c5623cc84"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "49ebf80e3beea3a2ef83451f43cc8ebf73df4e16a26707e3645318be20bbdd91"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "f54ca462100b16b8d9f46e304b776fd302777698db05af9c4579b3e505026167"
+        },
+        {
+          "offset": 458745,
+          "bytes": 18042,
+          "sha256": "e33c42d2be61354eb5a79b6f61e42d0c926f18d2d69ddd8a5a00fff0d75ebe6b"
+        }
+      ]
+    },
+    {
+      "bytes": 475348,
+      "git_blob_sha1": "d7c5f4bf1f2a7eb40e05447909f89d648d394912",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s2202.tar.gz.parts/00001.bin.gz",
+      "sha256": "dd60742d2acf8e9039a0fdafaf941503b457525c8bae63e19bf736424078285a",
+      "sha": "d7c5f4bf1f2a7eb40e05447909f89d648d394912",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521368:475348:1795568215715687223:1795568215715687223",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 18615,
+      "verified_at": "2026-11-25T01:00:15.981Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "df61c21427f9ed0390c8dda47e00f51f2402cf7917ea1114031f352755e600fc"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "63578382ecfac47d8cd9d365f369e8d09f2569dc11fc3fdd461a71ee0312cf78"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "94364265d235c4e1dfdde1329cee673a383cc139ecfaac0bf9c9dbf90a38ab80"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "0d2db4f92bc7035463d633975c6ee02b486c5b1dfcdeb2553f68209ca1cae8ba"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "50bf7e27bc2d7cc506e59962ece2bbc83f7e0265b85068ad30f9a6239a267f7f"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "c0b9b82a803807bade43a9787f7698932f3f0c9bcdd91c9192429844622f2704"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "a5174a4f7967578f59db4b6565f9280ea95fdf766a575fc72f1876ebf016b8c4"
+        },
+        {
+          "offset": 458745,
+          "bytes": 16603,
+          "sha256": "dcc6412209fe9b7dfa9c1b39e80b951751e5239f051b3a25844386637b331af2"
+        }
+      ]
+    },
+    {
+      "bytes": 475153,
+      "git_blob_sha1": "c45a2e7e0a1abbea124431793f345eb1ab064c8e",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s2202.tar.gz.parts/00002.bin.gz",
+      "sha256": "c04b1cd5d8f3d9154ba1cedc050df81cdbb7a305887e451af629abbb1b0cb788",
+      "sha": "c45a2e7e0a1abbea124431793f345eb1ab064c8e",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521369:475153:1795568215750007616:1795568215750007616",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 16504,
+      "verified_at": "2026-11-25T01:00:28.686Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "c1603198ead25cbfd60b70e30a184c54183a14508e587d6ad09f5de7814c8efb"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "44c7415b96fb4f9591b0205559274921800d25cd99a1fd32120124912945bf1b"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "168d57008d0efcc4e4396573164b970dc713a5c47b4180a9b5c87cf467e94e38"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "cdb891cf1ab2c65be51aeb3ad58a8baef306374aa5b09f794dd0a0c4547dbd8c"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "037f0c33b88fbf7e9f5d3b16d1d1ac1a76a606e89b2a295c3e96342310cea973"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "17533560feb469503a1bd8e4e69e815ba22165a3771a304b9f763e532c7641aa"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "4d14adf7c62ed0d7d8760e992efee16b5817a2792a634fa813f930ba647239e1"
+        },
+        {
+          "offset": 458745,
+          "bytes": 16408,
+          "sha256": "096a4ef3cc4a97233f313ca755441e78bd7f15ea7599493669167e9f5116fea8"
+        }
+      ]
+    },
+    {
+      "bytes": 476619,
+      "git_blob_sha1": "b13152d66dd63692bef30b89a6a678fe66f0abe1",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s3303.tar.gz.parts/00000.bin.gz",
+      "sha256": "68f7d82c9daecb065b68e8672281827a7a21f51515f9fe641a3a10940b8381db",
+      "sha": "b13152d66dd63692bef30b89a6a678fe66f0abe1",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521376:476619:1795568215785744364:1795568215785744364",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 16223,
+      "verified_at": "2026-11-25T01:00:32.204Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "f7bc85219f921459b253fcdb6ac9eaa7a45c7d890baec6ea4d597c763ebafa3a"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "6af8e4fb92bb066d322b4a0493c751181cc61a61ca60356853ad23b259679e6b"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "c3cddee579ff4cc8248331eccf1197a00afbc7ceebcfcbfd7a670bc2cf3c45f1"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "6ce40d9a88de212edb025f25fbb27f3e428ffd5b89505f00d879a9ce41b9441a"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "8d5051ebf1525fea26542319413cef92caba6eb28753f49940939b8d53b67dad"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "00cca4269097a248f71b2b26fc121907b5c27825027e167945fa11aa93daa279"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "3dd6f41998aff97194ea72410b1cd8bb724cdf9e3be3d5802f5fea87f75d1708"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17874,
+          "sha256": "b5557f0494d59346b6ad4185f6d10943e56a02ce45a11f150228292b231d7501"
+        }
+      ]
+    },
+    {
+      "bytes": 475682,
+      "git_blob_sha1": "bb7402c75d7f0424795c18151c1cab098a1bea84",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s3303.tar.gz.parts/00001.bin.gz",
+      "sha256": "79e25f734a252461f10f191675d209efdf397d8f43ff06e1855e136346625fe0",
+      "sha": "bb7402c75d7f0424795c18151c1cab098a1bea84",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521377:475682:1795568215820276065:1795568215820276065",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 16675,
+      "verified_at": "2026-11-25T01:00:45.362Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "9a8add901406a4981ee02b5cb34a6de3a9c7126d26cce96ab18094c839e7b8cf"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "5627e73c80f453322f36f0f4437c6b022ee5374709be786475f8649daabc9dbe"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "b3e95ffb353d7778392a30e009fcab0d4bbc4b0c76f2fd51c09fa77d8b290f6b"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "87f8e5fb48de3287aba1a5cc1cf51acfb458c617d548f0194a07bcc249ea5354"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "45d3dd8108d276ee30ae4d38addcf82f59e1ccfa05e93a220542d2d00012af2b"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "86104de0bab44c4004f2e2b72e119e5f5fe68db978c7551265396e34eb4d034f"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "45c9bb5e18a840c90aa79ae6142e8de315860cf91585f186198bd9c21ba59cd7"
+        },
+        {
+          "offset": 458745,
+          "bytes": 16937,
+          "sha256": "fabcba196f16f7a375abec24b15d892efb84c8db9d0724cdfd4ccb69a539ff9a"
+        }
+      ]
+    },
+    {
+      "bytes": 476554,
+      "git_blob_sha1": "65a1a69ab40720543d85aa19cb5392d2bf6fd9f7",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s3303.tar.gz.parts/00002.bin.gz",
+      "sha256": "053583ca2056723c301eeb248098413f28f78d1341f8e9eb4f60ad5bb0991cbd",
+      "sha": "65a1a69ab40720543d85aa19cb5392d2bf6fd9f7",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521305:476554:1795568215854233477:1795568215854233477",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 17739,
+      "verified_at": "2026-11-25T01:00:49.943Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "af80fbfbea4410c9309786d8681417898d8876c2417c7186bde061851668c06d"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "ce06996bc9117b848b74edea8e61246a1cb99fd7ed51fb8f7fa502e436cfe206"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "5ddd491c9a293a9c53a06ae823e9cd0a8720240f9f94127ef331721269029175"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "5abba43c93d292a1e4549b1b79bd13749eb0a1ceb7ef15bc35acadc71eaebcd6"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "b0664752d9562782da50abbf61500b06b475e8b5675d07e4482046e1c07a3bcb"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "7b6376bcc54d47e1802839bd2d3d51d0e94c7e47c0a16017c1e1ee08713d7ae6"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "276b9984e5275e340c5ce4b97f9d1a1d0bbeede71d2563dd3977525b459c36d4"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17809,
+          "sha256": "0b8956c07702cc36ee171cf809c7fd58c3cd94aa0b24924a56b8dfb595d428c4"
+        }
+      ]
+    },
+    {
+      "bytes": 39667,
+      "git_blob_sha1": "a67d148f9c98a745875d98968d3ac20e806d3329",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n32-qvi_full-s3303.tar.gz.parts/00003.bin.gz",
+      "sha256": "e4a01ec0168d9093c8d64025cd888c3162acffc717f7bc2b6bbae99712e9d537",
+      "sha": "a67d148f9c98a745875d98968d3ac20e806d3329",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521378:39667:1795568215863471438:1795568215863471438",
+      "chunk_count": 1,
+      "read_and_upload_wall_ms": 6027,
+      "verified_at": "2026-11-25T01:00:51.389Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 39667,
+          "sha256": "e4a01ec0168d9093c8d64025cd888c3162acffc717f7bc2b6bbae99712e9d537"
+        }
+      ]
+    },
+    {
+      "bytes": 476532,
+      "git_blob_sha1": "c378b2101ec6dd6a9c276f1df273e3ae327c3618",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s1101.tar.gz.parts/00000.bin.gz",
+      "sha256": "595967c52553e4684928d72945e25010dca51da5263df67d123dad461280c5af",
+      "sha": "c378b2101ec6dd6a9c276f1df273e3ae327c3618",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521381:476532:1795568215894630144:1795568215894630144",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 19866,
+      "verified_at": "2026-11-25T01:01:09.809Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "65cfb56c12c1bf41d198950f54ae25a832268e99bdccb6f2a5412fcfc3300ede"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "114dd8c29436b8169d366a725ef0845ce57d43921716cfcc2e1bada671d40a09"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "0ae9a886d49bebe48aeadd7396a967c2736c2824b8657e571b5fb63400e72599"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "56649ddaaf0399a0187c6b3f09c566759ffcdf5319bcccfd7db642be5c49211b"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "47fe29b43f7942944b03351f1e4c0e6ed9ccf357199cc114f7998204a315dac9"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "9b357d3c38d8eca989d2be77ed1ffa432503d7e960c81d4a3405484a209353ff"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "1679391ff48a53c1f2f6d2b46462f83ca0d520837c64a5fff7762cd001bd0754"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17787,
+          "sha256": "7d62ac959a70755fb052bb12ca1fedb314d9d33e811216a241c029ad766303da"
+        }
+      ]
+    },
+    {
+      "bytes": 475701,
+      "git_blob_sha1": "8df0c51de0dbcf6a3ad476f8f6f0b437bf57ac08",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s1101.tar.gz.parts/00001.bin.gz",
+      "sha256": "f335098b16d6e7562b851cf963a17baa3ef8a319492e5e587bfeedfe6269a934",
+      "sha": "8df0c51de0dbcf6a3ad476f8f6f0b437bf57ac08",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521387:475701:1795568215928841057:1795568215928841057",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 16250,
+      "verified_at": "2026-11-25T01:01:07.639Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "c718ab086730f8dcce98a2e777dbc29749d8a78d90aad0f2591370abaa9243de"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "e103e3678ef0c01278e47fc00ec040c5fd39af3f64a22bf3834f69923b7e1c29"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "4081be0d9d080c7b542e944dff5361927357e4dbd8723b7a3bd2b42a477297d3"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "a755a4b1a5105c15c07e1df2432ffe30a1786a10355e9bec4cc141b3db7ffb2c"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "f2ce196952bf54f368f46b3f4a75be3ba4d90d8658fa5782d75535e02ddaa1e0"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "14227b491de2b766da2792e9445184920827c3b839133a72ac3bafbd6fa3e427"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "c8ed075c99693cff575106f42fa293ba768fdbd0578e8a79d2d3866aff8e125d"
+        },
+        {
+          "offset": 458745,
+          "bytes": 16956,
+          "sha256": "fcf8aff8c537cceb2930f6ba00795d09d72a581ff272c9616231ca495ed57b4d"
+        }
+      ]
+    },
+    {
+      "bytes": 476042,
+      "git_blob_sha1": "230accb04100a83c933161de95faf465b17fbeff",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s1101.tar.gz.parts/00002.bin.gz",
+      "sha256": "0e88015c2e4217c387d8251cf7309b21e0dd9a5bd0896a7200eebba96f6cfca4",
+      "sha": "230accb04100a83c933161de95faf465b17fbeff",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521388:476042:1795568215962967121:1795568215962967121",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 18620,
+      "verified_at": "2026-11-25T01:01:26.259Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "e6ce44193e98a42fcded4ce4de9523574b240621f36ce55041c6f06ca114fc8a"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "9d6fac88d9651bb9e6d5bf9e733df49dabb9e4bd19b521efb3fe09ceec338578"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "47b42e0f3951a305a0b4d179554a0ad11d0d5f847fb498acb0a7db2b81b80f3c"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "67789eec50e4baed5e84f4d47148a8ce9e051463b7722f7f7a8edbe2bc0a8bc8"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "5d108a218eb562cee2636250f2db56e0fabde0938cd94b9952f907566f3d5e52"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "0ac05674aaabf906a2d4cdb46de9d2aafb36b993da48ee2403d265a1e380710a"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "ddfe3c32931edb0a1d00bc01cd0e9be5107d32995fa515dd6ebe5bdab450e6ca"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17297,
+          "sha256": "d259ae4798aea5825b37489099b11cb70f68979c9a0ede8303303cf4d7ad3f20"
+        }
+      ]
+    },
+    {
+      "bytes": 477382,
+      "git_blob_sha1": "39bcfbc8a53f6753f77eb40e285439cf4f10ba1c",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s1101.tar.gz.parts/00003.bin.gz",
+      "sha256": "b3f7f604403466cce0b3ef97ccaa8cd3f7fbe84c7ea6cb89f9769d6eaa6d42e1",
+      "sha": "39bcfbc8a53f6753f77eb40e285439cf4f10ba1c",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521389:477382:1795568215997521252:1795568215997521252",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 15093,
+      "verified_at": "2026-11-25T01:01:24.902Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "8e586cb867dc1b7ad12066df535a672e37b2764944cb9d4f738450f9d4cf37b4"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "99aafcf1a4c7f658d8c530626ec0be7d4a99d33f812eab0fa3a9c97a5352f482"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "405288f4bda1110ab561c70ec5eefea78aeba701bb965249b6f4161bc845e2cd"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "129fb406aeec785714ef392adf819436bcb413abfd782901935ed23271163c3a"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "afc515d10958a31960c5160a35613fc6ec9e1ed7a5d33cfa9a15649ca61e25e1"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "8df652ebd0fd16656fb983c5d13f8ac70ea44a99ea3f7c2788f1d53e6415c30f"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "3da76af890754c7056377b7b85e8345bc98806e3b7f1e76544e196d39266cf97"
+        },
+        {
+          "offset": 458745,
+          "bytes": 18637,
+          "sha256": "5d72330e00cac0f2d7b20248b817f65b35f2edced407917e362f5c9e7ab0b387"
+        }
+      ]
+    },
+    {
+      "bytes": 184705,
+      "git_blob_sha1": "533d2b0fa36a1e7c55f534fab98c72a8842e6de7",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s1101.tar.gz.parts/00004.bin.gz",
+      "sha256": "266ad28d26e74c2ea126996c07635389cc38838b956f9f46586acc870a30ade7",
+      "sha": "533d2b0fa36a1e7c55f534fab98c72a8842e6de7",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521390:184705:1795568216014567423:1795568216014567423",
+      "chunk_count": 3,
+      "read_and_upload_wall_ms": 11891,
+      "verified_at": "2026-11-25T01:01:36.793Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "51754fd9c75b5f8210b31a1387e7a6f0d40a9deb53545d777525be7a48aab292"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "8cba06ac10f0a328751ce684821954d98f06da2f169073c88a380af6d6955142"
+        },
+        {
+          "offset": 131070,
+          "bytes": 53635,
+          "sha256": "db8c096d7f2bf8a2d8348566c12f070f9d4511f532c11a61e1f88a4f6fbd88f5"
+        }
+      ]
+    },
+    {
+      "bytes": 476120,
+      "git_blob_sha1": "b9b4da23c75854b8a4f72db7b4dc7cf2d7e77a63",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s2202.tar.gz.parts/00000.bin.gz",
+      "sha256": "380720783a6678d9ef965a686753970c8c1eed9a4f27efff6dbdf5760f56bab2",
+      "sha": "b9b4da23c75854b8a4f72db7b4dc7cf2d7e77a63",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521393:476120:1795568216045783758:1795568216045783758",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 16965,
+      "verified_at": "2026-11-25T01:01:43.225Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "f0a77aaaed51b839f019a9d89ccbd5ea7e4724ef17514489ca33748ef06f8422"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "7af77b11bc7f3afff581e2c3754c8ac3fc8cda4d45c7e00086ac2332b81359fb"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "16f1daf46c3d0befc2c005990c379d28db97aaead63032df0170cf0e38a2cd31"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "77996d8c1e9ba5e67808af5217a4136e634ab265961a44bd1e8be0e71ccbfeba"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "63c8d9cfdb501dd5148d19f0221893f5875a405dcb89d5313870620a789fc106"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "e478b1f058502f787c698c768d436063fa5807ecc34a3691c308b701eef1c1a2"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "7840be94c3802d414a98c8b5006a401bed476d028cca2ea7ed09f2e95493d7c6"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17375,
+          "sha256": "f06d8163d2a239709e1354390a85a0328dbb18942c59df42362c7f16b218d774"
+        }
+      ]
+    },
+    {
+      "bytes": 476369,
+      "git_blob_sha1": "260795d42e308a981a35416de0f4cda8719d9575",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s2202.tar.gz.parts/00001.bin.gz",
+      "sha256": "479fdc2d3b317d1cdb79b88257ad07837a2ff6bc23e6f9d5b56d026856f5657e",
+      "sha": "260795d42e308a981a35416de0f4cda8719d9575",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521395:476369:1795568216080957299:1795568216080957299",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 17988,
+      "verified_at": "2026-11-25T01:01:54.781Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "88f08f5d097da7facb18377ab1f3b4ec218015b3d4823b487ba1c8e6eb1670dd"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "962a1dfcf443879354842dd59bbc94d602175e5f7d924b0419c832ce05e442b4"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "665a5b6c8a86ec204ca331c5803149e96b2aa3895341643a004090bffaf1348f"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "5772bf87b394725d51dac06063433f521b5e9084c3d8e165879a96224ac203cc"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "8c9e3a569a3d864930fa94a4a4f2a10887d5aaeedd785100172c9e658d0440a3"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "ed754d652d249dc521fe6b34843346b9924f716824239b51feb9da5d26ce32e7"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "ef29fcab06fcc8cdcc10d79415a6e2e3b98e1af4c3ac11ba76921ccea5ef53ac"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17624,
+          "sha256": "a160b431fabaaedefe35b5e18648743854e5bb3ca337bc9b58f88d2bebcadf47"
+        }
+      ]
+    },
+    {
+      "bytes": 476223,
+      "git_blob_sha1": "81c08e4cb94b9a99da174fc0fe72922309d8dc13",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s2202.tar.gz.parts/00002.bin.gz",
+      "sha256": "036df8defa6eda52ba5816fdcd7611595990b68ec8b7c0e7c0075ecda7b5a0b6",
+      "sha": "81c08e4cb94b9a99da174fc0fe72922309d8dc13",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521396:476223:1795568216115767652:1795568216115767652",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 14973,
+      "verified_at": "2026-11-25T01:01:58.199Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "038990e3eafa2ea89a3eadb23d926766d6ea411d116ed9fe53da5ce51623ebd7"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "7391e94ab2fc76878d4dd2bfe86df1ffa43a7065ff9bcd8d60cfa3f94fb48d5d"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "2c892a7e881504bca8cdd0c334c7cd0f361529d26d5e62c9e86025b643bfe39b"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "0f251d3a9e73f320a9aa6b3c63973fc4527a5f4635d907db80ab9110ffc63da1"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "61db4de51429d1acc97b0214ca6961231c5f6b9bbdc960cbac5224663aa61ef4"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "76ba59aca600d6a7a789009a4d37ada50b603b65d2130fb91cd0b9711d9c7f50"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "d2f90347954e31e058b3efcb2a57479514318d8e647477487a91055bb20b0bb6"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17478,
+          "sha256": "5784ec2254fef72c271473599910f5d4d56164e786e716ceb06a869d7cbb2534"
+        }
+      ]
+    },
+    {
+      "bytes": 477486,
+      "git_blob_sha1": "1fd0eb3d90e738890c843fe33963af65d16c6b5b",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s2202.tar.gz.parts/00003.bin.gz",
+      "sha256": "10291b8090641798b55c76e7946671744cdf402beac64774764616d16e8a788e",
+      "sha": "1fd0eb3d90e738890c843fe33963af65d16c6b5b",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521397:477486:1795568216149637406:1795568216149637406",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 19173,
+      "verified_at": "2026-11-25T01:02:13.954Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "247f55a662e2cb687827b927ae770428f4a22bd327d622f1434f0c8daa956636"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "a1059838b583c83a3db9368184f3598bea1f0841b20bd10262a24a8e5be46ce8"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "a9188ea0bace1f531c283fac228bf72da3f47a9f9d7af3a0aa16859736149738"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "3e512ef4d171e810360f739d4ae37621529aa96b66feba387c78e82d193d4849"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "6f582eae777e260599d410a59024e8b01ce6638df9bc0fad870536dd2a7ec077"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "b055273801c6ba9bd3d8a39796e560d1a485db6a3ac026d9eb93d23af6307114"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "6284b71920dfb13bb6d1b81ca057d33b164ae9b1adf1473ff22d25842ad9b162"
+        },
+        {
+          "offset": 458745,
+          "bytes": 18741,
+          "sha256": "e8700f610a871e332387b195a9008f6ff25a46f412f9427a1cf5ddb1bb27f491"
+        }
+      ]
+    },
+    {
+      "bytes": 171175,
+      "git_blob_sha1": "0c670808fad81f90bb2dcda05b4ffa1802d96aee",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s2202.tar.gz.parts/00004.bin.gz",
+      "sha256": "961849d71636d8d20f2dba8e81e1d3caa637dc32fabae5d912ef9faaab7088f8",
+      "sha": "0c670808fad81f90bb2dcda05b4ffa1802d96aee",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521398:171175:1795568216166834983:1795568216166834983",
+      "chunk_count": 3,
+      "read_and_upload_wall_ms": 7791,
+      "verified_at": "2026-11-25T01:02:05.990Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "dec4459e5edf662c52fb06d3f053a8d8bf4e24fafd6de69c92d2d5456fc49d8b"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "991a59c33284c45332e41fb927d67a2ee9cce6ebe3cf216cc06627ca8f761851"
+        },
+        {
+          "offset": 131070,
+          "bytes": 40105,
+          "sha256": "c607ed96eeffa379665854bb5a79e752db09c0c4f1009c20fad158cb31357bab"
+        }
+      ]
+    },
+    {
+      "bytes": 476235,
+      "git_blob_sha1": "b9c0ec40abbb90e4ca2b96f34709179acc7119ad",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s3303.tar.gz.parts/00000.bin.gz",
+      "sha256": "ab2092c614d85410dddd658b5f18067eac339eca7514d979b5eb260e3dd94237",
+      "sha": "b9c0ec40abbb90e4ca2b96f34709179acc7119ad",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521401:476235:1795568216197375369:1795568216197375369",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 19585,
+      "verified_at": "2026-11-25T01:02:25.576Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "5e9b2776d888a17752227981521ab5ad9f599e0d314addac542933e94b147481"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "78d84de8e48b30972e596ae4ac198e3671060d997255c378bf0dfaa4fefa8880"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "42652a71987cd69102d9fccf07a7767f71e3d7716ad0decd53089d98c53e4b59"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "f1e06276f60bd1a757b120ace8f83aad1488b2c57310dfee6a63c6bb06106c98"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "c8c769acf335ccfbd9fd70f34c50a8a85f69e5f794f4d9acd348b516798fa698"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "4690c07e4f0a857435f560ace2915687aee4a3d7a01807a130545ecce6938ef2"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "9b4927798a0515bfc640596030381a486fd693665a3f7fde099eacc5260a4c11"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17490,
+          "sha256": "d535f0bcf38ba53cf972a2b57a3f1acc93039e49b3562e3ae0a59c803737942f"
+        }
+      ]
+    },
+    {
+      "bytes": 475088,
+      "git_blob_sha1": "e583a3fc1c48c752f8963fa43c26ba92c9bf7e8e",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s3303.tar.gz.parts/00001.bin.gz",
+      "sha256": "9164cfca70773a5219ec063d9795344433b8ad04b1710f7236a0066529becc19",
+      "sha": "e583a3fc1c48c752f8963fa43c26ba92c9bf7e8e",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521404:475088:1795568216231532456:1795568216231532456",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 22527,
+      "verified_at": "2026-11-25T01:02:36.481Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "9655b1913d76a2161dbe444fbbd4fbd7b7d41f9f522b8aa50dc14a870c655b60"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "f62a145803e435aecee9d5320a787783e9ed1220975aa93424a2b1b25f0e5b0f"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "bbcb1b6796777a4eb3a0166b3bf51e099d2c37744aee4579bdf8633ef5b0324c"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "f866cd87322558883f5d10c3971c8e87d8d24b382753236766e665e6e7e0d00b"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "cba828220910501508a456e68960608c073dd53296b2373a28a9a9c97e98d317"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "d0c130e75c49f886f6489ccad83bb9a2cac555c7f2f4ec94930bdfc7429e6e16"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "1d5a3c1d5bcb1293c2e73e097109b97d036b19758c3403ab97fe47b24cffea07"
+        },
+        {
+          "offset": 458745,
+          "bytes": 16343,
+          "sha256": "c744b853967457dfba7f25bd0d8bd1474947a60e1012626fa7ea8b31a0a35ee9"
+        }
+      ]
+    },
+    {
+      "bytes": 476848,
+      "git_blob_sha1": "ce9f1f8d8f8a13debfa1711b631732a8b950a19b",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s3303.tar.gz.parts/00002.bin.gz",
+      "sha256": "cd0c1646f9b9295a75366d76820184544a31322418b67ec119ef733ffe574abf",
+      "sha": "ce9f1f8d8f8a13debfa1711b631732a8b950a19b",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521402:476848:1795568216266948196:1795568216266948196",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 22383,
+      "verified_at": "2026-11-25T01:02:47.960Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "6a3114a544a24ecf4dd11370d1feea6ad6f998c46f226ee96de088bb885774b1"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "6b73c9a53e321a256ae72da96bf4ba64c108436658cc105180ad05b454410947"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "a2b795706b9fa744a96ae16decdc0242f75ca9d9a1485e6e07fa3f2a6554768b"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "1764eb6421de4dc238f7eea1cca04c0a205326f9051fcf4fc3d2924e05604f32"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "f3d9d8553b3c97bcd2fa3ccb7f18b9bf077116c1614126abfa41f61396f4ff10"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "9f138791f7b83b740074d7e7a5b24876ed6763ff4fc3639edb454441e3260982"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "666d86b1eb81be1aa5f5d16ba30be84c7c612d46ae806a1e81daa15719206ed7"
+        },
+        {
+          "offset": 458745,
+          "bytes": 18103,
+          "sha256": "fc93fb17ab364d59c6a2e5ebd7e7c0ad51cdb745f2cc55aa81428ff9597465b5"
+        }
+      ]
+    },
+    {
+      "bytes": 478141,
+      "git_blob_sha1": "d8750a3c138bef19553ed6d8be45ef2b83c18d38",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s3303.tar.gz.parts/00003.bin.gz",
+      "sha256": "1d0f75136b8810be2a3c2cfc1297c398710820f12a3be0b111085c694990d362",
+      "sha": "d8750a3c138bef19553ed6d8be45ef2b83c18d38",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521409:478141:1795568216300838439:1795568216300838439",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 16044,
+      "verified_at": "2026-11-25T01:02:52.525Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "bf35c2446e051a61ce03391e0ccc1ea5b57c44389eb1f1d0232eb674fd951bae"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "5e1473058845b3792626e69446a5b23459e361707d87d86800b0b52752e1d525"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "3bc22089b2ea519bb1100b121c49ddd203d2aef2ff6b2e23edfa928c7191db3b"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "7f9ee1412cbb934fe54038b40f0dd8bcbf759c182d99ca8a18d5f15a96f4d699"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "68520965b1d06f5869330120ad94f8df95225f0192482fabe11dc01c451b0bdb"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "12ae1062859e4695419701f3f1b895276b9746b2bc3237522e4fd8190d80286c"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "fcd51eb21c814a00943b1f701f7931c96321d65e3ff075d741c7310842dd9c3e"
+        },
+        {
+          "offset": 458745,
+          "bytes": 19396,
+          "sha256": "b771f0ced63a9bf5adc1dcd514fd940ce52f0a61f4da561a8fe73a2f5205adf6"
+        }
+      ]
+    },
+    {
+      "bytes": 129418,
+      "git_blob_sha1": "2b819ef1dde5eb61ad7bd3dfa4d4535bd4428759",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n64-qvi_full-s3303.tar.gz.parts/00004.bin.gz",
+      "sha256": "cb055b56706b138d7d4ed5e17719ba126e13481e037d3fdb25c74bbfa4a01e3b",
+      "sha": "2b819ef1dde5eb61ad7bd3dfa4d4535bd4428759",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521410:129418:1795568216314467590:1795568216314467590",
+      "chunk_count": 2,
+      "read_and_upload_wall_ms": 10319,
+      "verified_at": "2026-11-25T01:02:58.280Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "27e30da6802b722b764c9eb3abcfbdc0fb0c3945534d3b5396b75a849f89ec1f"
+        },
+        {
+          "offset": 65535,
+          "bytes": 63883,
+          "sha256": "8f2b4a487eb1e83db7bfa119bd4a92007e4860f92b77e19d55c581328cf40835"
+        }
+      ]
+    },
+    {
+      "bytes": 477154,
+      "git_blob_sha1": "e3543cd4dd5ada58365ed2d37b47ea896de2cc92",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s1101.tar.gz.parts/00000.bin.gz",
+      "sha256": "6efd2ca1682436b940384bbc3d6eb713e4d0b41908be1943c36868f25e30bad0",
+      "sha": "e3543cd4dd5ada58365ed2d37b47ea896de2cc92",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521413:477154:1795568216344580989:1795568216344580989",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 15764,
+      "verified_at": "2026-11-25T01:03:08.289Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "c4a99c9e34fdb80948d8d173264d2123bb27f233cb8e64d11a407b3718430097"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "e481ec88e7c5d4c138e70eb3434b8d1a1c93bca79edab4eee328dc48196c4da3"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "74c11d45473438edb7bf863ead0622dc68c3d8263d173caa27e0c1f5b30c2054"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "28df2681899a2c215b5f91b5ecd30cb86b87b3962437b8186f5de4eee3f3c565"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "2739cf2f805f141a5ee1788f9c9a89059fe1322f56637f688ba089bb231bbdf6"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "bf3ed3dc351f7331358bfdc97b22c6f94c7ca7c6e343f71d321cbb45ff54ebbd"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "56372f80de24c43c432028973adaf4ea9177bea6e7e1276c75efbbd59be9e16d"
+        },
+        {
+          "offset": 458745,
+          "bytes": 18409,
+          "sha256": "4aeb94e1a020bad1d55893d2fd15502cefac0872ae7c09b57410e2eba0192fe3"
+        }
+      ]
+    },
+    {
+      "bytes": 475516,
+      "git_blob_sha1": "f24d5aac88a98b4d4b752a1bcd5be4fdaf2c2956",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s1101.tar.gz.parts/00001.bin.gz",
+      "sha256": "9b11cb50370f89c4b5f23793e9c15d8b9b294f3c88ecf318606a861d1098ab9c",
+      "sha": "f24d5aac88a98b4d4b752a1bcd5be4fdaf2c2956",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521418:475516:1795568216378462224:1795568216378462224",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 19154,
+      "verified_at": "2026-11-25T01:03:17.435Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "9ed03671eaba53a47b428a639e1825f6f2419ac998a417fc621505269245cb9a"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "c68abc996aa044b5f623b274a53eba2dc24791aa5a9f8813ff3f4e305ca2d956"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "4c657def34c790fe1319f41e793ff33b83c5c8fba3523812266da08b1e2e5c07"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "dacd010b4b74803ba0d01703858a34a120f7a93fc71cba615800e3906a0cd152"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "b02aa198e9af0f1f8946b384d166a5e4fca544d42fc768aef8bfb5bd0a59869d"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "cc28de72a3bebc575b9739150ee2d24ea0269cbafa8507649124d7797a826af4"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "f6db00ab0283ba1c5ac29d5d93f2b5af661dbb6a0d770a738be9f9f9f127392f"
+        },
+        {
+          "offset": 458745,
+          "bytes": 16771,
+          "sha256": "8103b15748a137af5415d218b37ef68a4dc96ad635b8e92eb98a5e733108562a"
+        }
+      ]
+    },
+    {
+      "bytes": 449940,
+      "git_blob_sha1": "d0a3b2cc98c68584ac387efed44d57f90463363f",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s1101.tar.gz.parts/00002.bin.gz",
+      "sha256": "3c0ba4aaac0399cfb19e714aefa010f1867b9033c97ee09157565e6c6ec909c8",
+      "sha": "d0a3b2cc98c68584ac387efed44d57f90463363f",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521419:449940:1795568216410903696:1795568216410903696",
+      "chunk_count": 7,
+      "read_and_upload_wall_ms": 13317,
+      "verified_at": "2026-11-25T01:03:21.606Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "c95fba6d68e984ef40a1104f7712882cbbbec683fc79b37d3ae730868136161d"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "cb0789f2ce761728ec008f6aa332a484a2e28e5591e694a25f32a8e10881302e"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "64ad984d686e5aaba1731abaef468b49cf1d4a6991f968e50e12174464bd3a56"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "bd796d4033c2791c5fb2fcb263864cfbf8d7479ae69410171b9aaa2308d9a9b8"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "8f59474fa3d63df0e11e4cae742050767e54be106f731f679351837f5ee7fb5e"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "9a80ec105ef7e226a7c66a939575e2db94ac2385d0cd033f1281b99833040d11"
+        },
+        {
+          "offset": 393210,
+          "bytes": 56730,
+          "sha256": "9dce18328ac8e0d73fe36571cd8da5ef2d2f1cf0760fb787a324db571b1ecbbd"
+        }
+      ]
+    },
+    {
+      "bytes": 476160,
+      "git_blob_sha1": "f014954b76d74bfbb44ba6ddf8855df6b2bcfa94",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s2202.tar.gz.parts/00000.bin.gz",
+      "sha256": "d8f729657fd8c9a6c382d767096afbccfc14cd1ec5eece7a18bd96d51fd6ba69",
+      "sha": "f014954b76d74bfbb44ba6ddf8855df6b2bcfa94",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521422:476160:1795568216445969319:1795568216445969319",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 17809,
+      "verified_at": "2026-11-25T01:03:35.245Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "53c77d89057c2abd6160d319bb207ff82e37d9e1a6a4e8e4382f4706cec97d76"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "8af288c249d701f5456c4d5566860ae20bb94654943aa2c43d7a01539d8b7d46"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "5023566e7603cc41a38a99d9ef87ed0b3efa2c7e564118803270f969affbd7af"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "d4a73725b4d7965a1633ef6f2726bc51dcfb3cbd5fe6ce3b353d974b05bbff19"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "afc107fb67ddffb4c6ee55f15fdbc1b7592a4b40646f178779896c5df69ca7e8"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "75b5dcb73d3bb8b3ab170295e60df65ab0a73272bc2d7f97c3194a510af3e02c"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "fdc1c7cf3de1b06801a80ec9a02743baefda3f5c81762967a8751e4ab5212107"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17415,
+          "sha256": "0402209ea890743bf55f8ee8cef66eb27bea3d98209901d12779ab09256fb235"
+        }
+      ]
+    },
+    {
+      "bytes": 476101,
+      "git_blob_sha1": "2c4b29bde140eede98aae20070938eeb90a34227",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s2202.tar.gz.parts/00001.bin.gz",
+      "sha256": "285b80c41968d8aee25bddf931da0a910f2a3a472bdfa01e21db485c1ca2fa5f",
+      "sha": "2c4b29bde140eede98aae20070938eeb90a34227",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521423:476101:1795568216479020601:1795568216479020601",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 15103,
+      "verified_at": "2026-11-25T01:03:36.709Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "2327c34cc8fa42717c09e80cbc28d4510bd813b4ea04387a48afff63d9b466e8"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "525680f9be75b9bd2b1cc62a1022602ca7c6d9cd7919364dc77757483d685a51"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "5e3d296030f484a680dcc4da13355e1740455461d44ce9a74b12a29d4773561b"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "e47640ff6caac99c057e673339f9ad37c5c5c35686b8d1dcaa03a2895ded9d93"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "e9a3769488613017ba0930276ae142d4cf88aa4dd89f8419b57b86408c44abb3"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "129d320bcca8ede28dbea2099f94e50ee497c6284b3f5ac9a23615435e80f747"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "ef273cdebae841404ea8a7fa017b5b03f873b3aee81e7e67513adf4348840a69"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17356,
+          "sha256": "e71a9350d3d408cbb33c5772db94fbf26f3d1a8306b3b6a9b81f4294b35fb232"
+        }
+      ]
+    },
+    {
+      "bytes": 294987,
+      "git_blob_sha1": "9b52a94cbecf7ac2d1eb2b3de5b522889f4dc6cd",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s2202.tar.gz.parts/00002.bin.gz",
+      "sha256": "cb29b6166f29ab2f0dcdc474884b778fefc64645a0c4c494fa48eaedb5e52967",
+      "sha": "9b52a94cbecf7ac2d1eb2b3de5b522889f4dc6cd",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521424:294987:1795568216501958156:1795568216501958156",
+      "chunk_count": 5,
+      "read_and_upload_wall_ms": 11373,
+      "verified_at": "2026-11-25T01:03:46.618Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "62f6ebd34f71e7a194045a74ddb93568dd0569c4c60afd3a709e4cfc2e3d58c4"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "91433ab470007fc4bb09c2f2495b1ba186b4f517abe7245d7a4b2d25a21460bc"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "ad36ddf4f30b2280a3a3965af3ada9e1d8eabaf90921702a3097c761e0705068"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "a307d119a589824e2548dc39d9a5506abe29eeac03197790b924cdbcf6902cf2"
+        },
+        {
+          "offset": 262140,
+          "bytes": 32847,
+          "sha256": "ae0177e9d33ca7669e9e49d028dc3a1d9a4ff7f0077223d42a14997380087141"
+        }
+      ]
+    },
+    {
+      "bytes": 475884,
+      "git_blob_sha1": "63f38c400d87507a86060091386ede4c45017da8",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s3303.tar.gz.parts/00000.bin.gz",
+      "sha256": "c02b4f58f73a33f65299db70cb8a57b99d3502c62357793deeac92ecbc9f6847",
+      "sha": "63f38c400d87507a86060091386ede4c45017da8",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521427:475884:1795568216535143344:1795568216535143344",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 17000,
+      "verified_at": "2026-11-25T01:03:53.710Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "b3856879f5da956a7e505dd96bb4d745c7d36966b5e3754c0f3fbe3b690e3c1f"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "0ff04527596bc83c876ddb377e3ec6ad6515d5fb159f13545abcdbc2cd4d14b6"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "83f971784a9a17b0354aa4a6f742bc56f1a1acf981413c35fa33b1f16045c9d5"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "a52da828625b9ce9e71b5c57f2a12153c2d48599ad2f50313120d76d470ab6fc"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "e2c6786de14ff8bc8d0abd27e1bcb4b4cedcc1c3928b94617eaa85fc0ff100e5"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "22e14b1a053ad1b9d9a4fd4538a7c707ecd6e171d415b4e8d9f0d8500fe690eb"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "1b8cc087edab179d5a2186a18914c250b25acc436797d1d086df7243a8a24334"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17139,
+          "sha256": "f607981bc7da8e7ea2bbe76eef352c0190e2a564207e92455a126a17cc681648"
+        }
+      ]
+    },
+    {
+      "bytes": 476411,
+      "git_blob_sha1": "7e1b1838d27662f5215a8bcef0d0006419494abf",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s3303.tar.gz.parts/00001.bin.gz",
+      "sha256": "36de42b77d24b450bf50896d879fb6201b07aae338aa6dc34d889fc95910841d",
+      "sha": "7e1b1838d27662f5215a8bcef0d0006419494abf",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521432:476411:1795568216568983945:1795568216568983945",
+      "chunk_count": 8,
+      "read_and_upload_wall_ms": 16473,
+      "verified_at": "2026-11-25T01:04:03.092Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "9fb7bcbb8a094aaa28199e2aef6cb7b5467c1ce9056e05bd20ff791322b534be"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "da622234242bfd844e13512eecca339a39881520b30008f27b76f50116e184d4"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "408d563e4f26161021026dff767d74bc59a6315f154b41cde8f4573d7463feb2"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "bdc477298103fff9a5d2a9f7d6f1ffa3960bf01b49da746f894e07ec2655123e"
+        },
+        {
+          "offset": 262140,
+          "bytes": 65535,
+          "sha256": "4be0a1335931e329422ddcaa7125b875a961d721a81f16bf24744ad4838a6799"
+        },
+        {
+          "offset": 327675,
+          "bytes": 65535,
+          "sha256": "6d93fbd974cb5b56419b063fcd3eab3c2db6e02aae7020aa24a0a0399602944f"
+        },
+        {
+          "offset": 393210,
+          "bytes": 65535,
+          "sha256": "b2886dc17def191599d05a9102fb37cb923ca83c325bc9528922440292fc16b3"
+        },
+        {
+          "offset": 458745,
+          "bytes": 17666,
+          "sha256": "8f377c21ee366c0f16967dc03b84ddb1f6bae6a9241498908bb1073905cc2917"
+        }
+      ]
+    },
+    {
+      "bytes": 292701,
+      "git_blob_sha1": "b835811d2ad6e6219e9d0bd961bba6612e569b65",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s3303.tar.gz.parts/00002.bin.gz",
+      "sha256": "e92280c4c51f3d8a569272d1d980a879a6abeafa1715054ff293ab1ca9ce7aaa",
+      "sha": "b835811d2ad6e6219e9d0bd961bba6612e569b65",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521433:292701:1795568216591899586:1795568216591899586",
+      "chunk_count": 5,
+      "read_and_upload_wall_ms": 10634,
+      "verified_at": "2026-11-25T01:04:04.345Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 65535,
+          "sha256": "c49a780d748c4909f717346062da8af9109a4c96c68d7fa117d72417d8d6fce2"
+        },
+        {
+          "offset": 65535,
+          "bytes": 65535,
+          "sha256": "9020925534c7b9f6dd81423b366292eefd22a3ba05024cd6176a25ddf676c38f"
+        },
+        {
+          "offset": 131070,
+          "bytes": 65535,
+          "sha256": "c6b7f9748e247a32320377a2d591ed01f84a3d6219a318347d08775ea3277d58"
+        },
+        {
+          "offset": 196605,
+          "bytes": 65535,
+          "sha256": "a1ca2684f6361054a4c602f3d367c8db246ce9efb8eea2d1e8d3773c1265c090"
+        },
+        {
+          "offset": 262140,
+          "bytes": 30561,
+          "sha256": "660691fdffba46db445f646fc90d94e672dd79165eaaee7d2c94cd61ab363e05"
+        }
+      ]
+    },
+    {
+      "bytes": 49826,
+      "git_blob_sha1": "81a353dd3517283d4bd95968fc7efda9a55f3741",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/summary/SUMMARY.json.parts/00000.bin.gz",
+      "sha256": "66ebc34cd3810f1931349070ec2f620c650629468b2fa730fa924674ece48cd7",
+      "sha": "81a353dd3517283d4bd95968fc7efda9a55f3741",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521441:49826:1795568216629906740:1795568216629906740",
+      "chunk_count": 1,
+      "read_and_upload_wall_ms": 5756,
+      "verified_at": "2026-11-25T01:04:08.849Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 49826,
+          "sha256": "66ebc34cd3810f1931349070ec2f620c650629468b2fa730fa924674ece48cd7"
+        }
+      ]
+    },
+    {
+      "bytes": 7288,
+      "git_blob_sha1": "5a21d7b57cd87019b59b9331452c3c08d443b484",
+      "path": "qualification/hcsn_smallnet_20261124/evidence/summary/SUMMARY.json.parts/00001.bin.gz",
+      "sha256": "e2f72c16ad1f8e6246ddfbf6595a6c3ac724681990a9e303c7e2694fdfc34ee2",
+      "sha": "5a21d7b57cd87019b59b9331452c3c08d443b484",
+      "type": "blob",
+      "mode": "100644",
+      "status": "verified_blob_created",
+      "version": "2050:59521442:7288:1795568216637666927:1795568216637666927",
+      "chunk_count": 1,
+      "read_and_upload_wall_ms": 3436,
+      "verified_at": "2026-11-25T01:04:07.781Z",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 7288,
+          "sha256": "e2f72c16ad1f8e6246ddfbf6595a6c3ac724681990a9e303c7e2694fdfc34ee2"
+        }
+      ]
+    }
+  ]
+}

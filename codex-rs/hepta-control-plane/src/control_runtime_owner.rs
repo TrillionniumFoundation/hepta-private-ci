@@ -10,6 +10,7 @@ use crate::ControlRuntimeDecisionPublisherV1;
 use crate::ControlRuntimePublicationErrorV1;
 use crate::ControlRuntimePublicationHeadV1;
 use crate::ControlRuntimePublicationKindV1;
+use crate::ControlRuntimePublicationPayloadV1;
 use crate::ControlRuntimePublicationReceiptV1;
 use crate::ControlRuntimePublicationV1;
 use crate::DurablePlannerJournalError;
@@ -709,8 +710,10 @@ where
             expected,
             self.policy_epoch,
             kind,
-            Digest32::of_bytes(&payload),
-            payload,
+            ControlRuntimePublicationPayloadV1 {
+                subject_digest: Digest32::of_bytes(&payload),
+                bytes: payload,
+            },
             self.journal.head(),
             occurred_at_micros,
         )?;

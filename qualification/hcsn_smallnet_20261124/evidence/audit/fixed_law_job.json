@@ -1,0 +1,43 @@
+{
+  "job_id": "1a20dc7656d-ffbe-39a0",
+  "host": "desktop",
+  "stdout": "{\"errors\": 0, \"failures\": 0, \"sha256\": {\"fixed_law_benchmark.py\": \"a7095d340fb99f2ec3b38cf7908cdf73dbe03fe9befb2b7a3aef3a834e146af5\", \"fixed_law_tests.py\": \"756a7a256aa9e2393d89b8f1e67f80e81eca73b05298968b582211764a89a7d5\"}, \"snapshot\": \"/home/qian-qi/hcsn-smallnet-20261124/v06-fixed-law-cache\", \"tests\": 3, \"tests_elapsed_s\": 0.626011086977087, \"torch\": \"2.8.0+cpu\"}\n{\"cases\": [{\"max_error\": 0.0, \"neurons\": 8, \"precision\": \"float64\", \"speed_ratio\": 1.6119498311182652, \"status\": \"passed\"}, {\"max_error\": 0.0, \"neurons\": 8, \"precision\": \"mixed\", \"speed_ratio\": 1.7076512170358933, \"status\": \"passed\"}, {\"max_error\": 0.0, \"neurons\": 32, \"precision\": \"float64\", \"speed_ratio\": 2.7776727345078585, \"status\": \"passed\"}, {\"max_error\": 0.0, \"neurons\": 32, \"precision\": \"mixed\", \"speed_ratio\": 2.4631430761775106, \"status\": \"passed\"}, {\"max_error\": 0.0, \"neurons\": 64, \"precision\": \"float64\", \"speed_ratio\": 4.311547839238042, \"status\": \"passed\"}, {\"max_error\": 0.0, \"neurons\": 64, \"precision\": \"mixed\", \"speed_ratio\": 3.7638178857307114, \"status\": \"passed\"}], \"output\": \"/home/qian-qi/hcsn-smallnet-20261124/v06-fixed-law-cache/fixed_law_benchmark.json\", \"worker_script_wall_seconds\": 15.139290679013357}\n{\"test_and_benchmark_wall_s\": 16.2164917049231, \"wrapper_cpu_through_report_s\": 2.619150304, \"benchmark_child_cpu_through_exit_s\": 15.524678, \"benchmark_returncode\": 0}\n",
+  "stderr": "test_changing_law_and_enabled_autograd_are_refused (qualification.hcsn_smallnet_20261124.fixed_law_tests.FixedLawTests.test_changing_law_and_enabled_autograd_are_refused) ... ok\ntest_full_population_output_and_all_state_parity_three_widths (qualification.hcsn_smallnet_20261124.fixed_law_tests.FixedLawTests.test_full_population_output_and_all_state_parity_three_widths) ... ok\ntest_new_content_and_continued_state_are_not_cached_outputs (qualification.hcsn_smallnet_20261124.fixed_law_tests.FixedLawTests.test_new_content_and_continued_state_are_not_cached_outputs) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.568s\n\nOK\n",
+  "status": {
+    "at_unix_ms": 1795527520989,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a20dc7656d-ffbe-39a0",
+    "launch_nonce": "3e7e71926f6f932c80f5e6c2105aed49",
+    "log_bytes": {
+      "stderr": {
+        "seen": 672,
+        "stored": 672
+      },
+      "stdout": {
+        "seen": 1370,
+        "stored": 1370
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

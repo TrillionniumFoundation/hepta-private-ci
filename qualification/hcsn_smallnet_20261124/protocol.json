@@ -1,0 +1,129 @@
+{
+  "experiment_id": "HCSN-INDEPENDENT-POPULATIONS-20261124-v1",
+  "stage": "controlled_delayed_evidence",
+  "base_commit": "b1af67a38f8cf9cee700cc067da1e6001ce220a8",
+  "independent_neurons": [
+    8,
+    32,
+    64
+  ],
+  "seeds": [
+    1101,
+    2202,
+    3303
+  ],
+  "arms": [
+    {
+      "id": "qvi_full",
+      "boundary_mode": "qvi",
+      "message_mode": "full",
+      "feature_bank": "value_risk"
+    },
+    {
+      "id": "qvi_boundary",
+      "boundary_mode": "qvi",
+      "message_mode": "boundary",
+      "feature_bank": "value_risk"
+    },
+    {
+      "id": "qvi_flow",
+      "boundary_mode": "qvi",
+      "message_mode": "flow",
+      "feature_bank": "value_risk"
+    },
+    {
+      "id": "fixed_full",
+      "boundary_mode": "fixed",
+      "message_mode": "full",
+      "feature_bank": "value_risk"
+    },
+    {
+      "id": "learned_full",
+      "boundary_mode": "learned",
+      "message_mode": "full",
+      "feature_bank": "value_risk"
+    },
+    {
+      "id": "qvi_tanh",
+      "boundary_mode": "qvi",
+      "message_mode": "full",
+      "feature_bank": "tanh"
+    },
+    {
+      "id": "qvi_value_only",
+      "boundary_mode": "qvi",
+      "message_mode": "full",
+      "feature_bank": "value_only"
+    },
+    {
+      "id": "qvi_risk_only",
+      "boundary_mode": "qvi",
+      "message_mode": "full",
+      "feature_bank": "risk_only"
+    }
+  ],
+  "data": {
+    "length": 12,
+    "input_size": 6,
+    "train_per_source": 48,
+    "dev_per_source": 48,
+    "test_per_source": 64,
+    "train_sources": 12,
+    "dev_sources": 4,
+    "test_sources": 8
+  },
+  "training": {
+    "batch_size": 8,
+    "max_updates": 512,
+    "optimizer": "Adam",
+    "learning_rate": 0.01,
+    "weight_decay": 0.0,
+    "gradient_clip": 3.0,
+    "train_cpu_seconds": 180.0,
+    "development_every": 64,
+    "selection": "development_final_cross_entropy",
+    "train_loss": "0.8 final CE + 0.2 mean prefix CE",
+    "threads": 1
+  },
+  "precision": "mixed",
+  "backend": "uniformized",
+  "validation": {
+    "min_learned_over_initial_accuracy": 0.1,
+    "min_final_accuracy": 0.8,
+    "max_fp32_probability_balance_error": 3e-05,
+    "min_fraction_seeds_passing_learning": 0.6666666666666666,
+    "min_final_over_pre_late_accuracy": 0.1
+  },
+  "editing": {
+    "methods": [
+      "KEEP",
+      "BP",
+      "ANALYTIC",
+      "STRICT_WSP",
+      "HYBRID"
+    ],
+    "eligible_names": [
+      "readout.weight",
+      "readout.bias"
+    ],
+    "objective": "mean squared error to common signed one-hot targets plus ridge on weight",
+    "ridge": 0.01,
+    "bp_steps": 96,
+    "cpu_seconds": 10.0,
+    "max_dev_old_accuracy_loss": 0.02,
+    "max_dev_old_brier_increase": 0.02,
+    "strict_wsp_rule": null
+  },
+  "test_policy": "Training never constructs test data. Seal all expected training artifacts before test evaluation. Final testing cannot change source, hyperparameters or selection. New revisions require a new experiment and holdout family.",
+  "cost_policy": "Report actual training CPU, complete worker wall/CPU, process maximum RSS, state bytes, all selection/checkpoint/evaluation time and failures. Report energy unknown when no readable hardware counter; never infer Joules from CPU seconds.",
+  "claim_scope": "Independent finite-state probability populations with learned intercell messages; synthetic disjoint source families. Finite-volume spatial and Erlang refractory approximations remain explicit. No multimodal-foundation-model claim. Width is population count, not signed-content width.",
+  "backend_by_neurons": {
+    "8": "dense",
+    "32": "dense",
+    "64": "uniformized"
+  },
+  "feature_normalization": "none",
+  "numerical_scope": "Mixed precision physical state remains FP64; native32 diagnostic failed long-horizon mass gate before campaign. QVI root differentiable; finite-grid projection is piecewise differentiable with symmetric generalized derivatives at exact knots.",
+  "stopping_scope": "Earliest confidence >= .8; forced final at step11; pre-late metric uses each sample late_step-1, not t0 receiver with no message.",
+  "preflight_decision": "Population-normalized and raw readouts both failed the exploratory pulse-learning smoke; retain the original raw feature definition. Report this negative result and run the prespecified bounded campaign without further smoke selection."
+}

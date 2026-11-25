@@ -1,0 +1,1370 @@
+{
+  "adaptation_seal_sha256": "62f684ebd6fdfa665b2b5094e3429c11131f4f98d61f87e00a88afc69387f544",
+  "adaptation_source_hashes": {
+    "adaptation": {
+      "adaptation_suite.py": "8f1f0619fcb5aa4354f151534f7164c5f1cba867eee8e58fd66ea1b3e210920c",
+      "editing.py": "0577fea73b8678e03476082f4b4eab7623bbada47a628e6eed31b4180c7d90dc"
+    },
+    "training_closure": {
+      "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+      "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+      "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+      "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+      "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+      "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+      "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+      "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+      "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+      "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+      "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+      "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+      "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+      "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+    }
+  },
+  "child_cpu_including_shutdown_seconds": 313.699357,
+  "completed_before": {
+    "n32-fixed_full-s1101": {
+      "test_predictions.json": "4b1ce83830cc342101779acaef76587b3a61228955093d9723056ff13688d636",
+      "test_result.json": "a0463484571283732d9b5d2b65b8ae672fd43c307df13d250106031a9fe55cf9"
+    },
+    "n32-fixed_full-s2202": {
+      "test_predictions.json": "2ae3ab70029c375b52a42b141b78887d6deb133d2dffcccfbfc7deaaaa0964c8",
+      "test_result.json": "2929eb7943f669a5a9152e7d9dd287e8796acfc70f3d7db9d2dd4616d746d098"
+    },
+    "n32-fixed_full-s3303": {
+      "test_predictions.json": "ba59693a69fea0bd30a27d2f7b2c1d96255d26de0abc3ce65142d1e2263e65c3",
+      "test_result.json": "67b49c6183ff920171a253cba60655e6329ec121c97ab76eeec28b97789f7988"
+    },
+    "n32-learned_full-s1101": {
+      "test_predictions.json": "826c65e325ee7d22d72ee7b599ef8153dea92f69ab27d8e18ae76a9eabd8707b",
+      "test_result.json": "0132be49a9755a9437453ed20e2c6d4d51bca6fab1e3990410c2df3657f045a9"
+    },
+    "n32-learned_full-s2202": {
+      "test_predictions.json": "35afa384438c4f517dbaf9b22f962ddd4f0cbb9422e4ccf1dbf7d482755220b2",
+      "test_result.json": "d318198c4705352dd1d33f0549da838e340cb8daeb4624c6c9a77194ffd13207"
+    },
+    "n32-learned_full-s3303": {
+      "test_predictions.json": "6ac3ff2caf5a9b9a67c188fd00ed4b0a6103fe8802a42f23e01aa9f49e121c42",
+      "test_result.json": "4842bf9c407451cf193de4da2cc639e0aa221a29b3cde198659cd6813e248b22"
+    },
+    "n32-qvi_boundary-s1101": {
+      "test_predictions.json": "bba924d931146e6b9afe81a7b3ee8122f2cbced40d00caa7c1f653377b40a1d9",
+      "test_result.json": "8e27f818be13316398005b8277f00a2bfc7e3119e13c0965bfa57fea506339ea"
+    },
+    "n32-qvi_boundary-s2202": {
+      "test_predictions.json": "b09916e83ea2ea379f4d99968bb1898b759f452fe33f59ea4c55d17599f76cb3",
+      "test_result.json": "286267812bf4673f8e4dd21f6223b9f8f2de824dd13c7d22ff7ee9e73a4bf4c8"
+    },
+    "n32-qvi_boundary-s3303": {
+      "test_predictions.json": "ac9c141706d920c343466abef3730b723a2750877d94c910d08081f1ca837bc7",
+      "test_result.json": "3f901c725ebec009bf5c3ad93030ff29e11bbb0fb5f1d46529213dcc8fecc41b"
+    },
+    "n32-qvi_flow-s1101": {
+      "test_predictions.json": "5a44e392a0f9ddbdcf820908e0d0e9fb6962b586fd4a88868893bcc1f24a373c",
+      "test_result.json": "f2b336e2300e58b4f7ccd49c2fd5dcf3ca2e6501fd01440295e2b60d18d8ff19"
+    },
+    "n32-qvi_flow-s2202": {
+      "test_predictions.json": "35922d70b765127d3cd165636464610e798f850eb27bda1ded1f6e972c8d49c4",
+      "test_result.json": "4b49a3ca5b3e64c1b36b2790a89adf9d8db03e3a85bbb3d137192f901dc1d726"
+    },
+    "n32-qvi_flow-s3303": {
+      "test_predictions.json": "a6c0f19a039ca899416bbe9a4807485925a1768d9b351d88cafb0c930d01cc96",
+      "test_result.json": "8ada34d21694ab92508748e60a392a8dfeee436f2ed4a96e994bcb210eefa201"
+    },
+    "n32-qvi_full-s1101": {
+      "test_predictions.json": "2dcfa75740d1d17bb5acac3cd5def92d44401b745de8ac0a4f9f3762fb366177",
+      "test_result.json": "bc0dccf7eb7c9ef5d19a6491e94824baee0fedbc33c1348bfc1a7e8b5dfc0a4e"
+    },
+    "n32-qvi_full-s2202": {
+      "test_predictions.json": "90c1d502485d569e30f82494a29ba399a3a7f5d745db94f4d81b9a5a8d86199f",
+      "test_result.json": "d891eeb2a102f0ba46af847ae8c7ea19d13c4ec52b57444d92a7e8d1b9a562ba"
+    },
+    "n32-qvi_full-s3303": {
+      "test_predictions.json": "4af6df9abaa3b85c831c95a87b467bed73a09d9314c8fd8f857d4180e8130d77",
+      "test_result.json": "4cdcce180c68e10dc373e8c379e13fd00a9171c30146b5fee11f2e393fc2eb85"
+    },
+    "n32-qvi_risk_only-s1101": {
+      "test_predictions.json": "aad9cac779c22c673eb65eeb4423f68cb1be701fd7c54bd158906235e5b92509",
+      "test_result.json": "bd6658f7215b689af65e9f1f4446409617db3329780357b490a97acfa3699aa3"
+    },
+    "n32-qvi_risk_only-s2202": {
+      "test_predictions.json": "b870cb1c8796d3ab19054bf39ddc52196172a4bbf31efc342cecf7d370bb9f63",
+      "test_result.json": "70eeaa3e4dc414f15095f5e433002536110b3cfddd18bdfa896e6e892db8ba88"
+    },
+    "n32-qvi_risk_only-s3303": {
+      "test_predictions.json": "e80dd71db7431d1f337d1a4a731194b203e384d9f72ac7436e0d2f6f24779cf6",
+      "test_result.json": "e8242f881a284b7fdfd0b6dc9ed50590a9d3ec514e5a2a932400ffbe8d6f79db"
+    },
+    "n32-qvi_tanh-s1101": {
+      "test_predictions.json": "d33d88a6864591fcdd2f0544eb06fc003c02a3388475ad66b7b04b209724e980",
+      "test_result.json": "428de651c644f4edbf1b721f5e6f739219faf6f70cfc99856d491925cc9ebd25"
+    },
+    "n32-qvi_tanh-s2202": {
+      "test_predictions.json": "60daec38e45c024cabd91eb4cc0e4bbada4031b6f24d141d07c9317a003c4d8b",
+      "test_result.json": "89975c6f9e0023b346651017ece4f3869d5986901a9850dc15b54e66580706a6"
+    },
+    "n32-qvi_tanh-s3303": {
+      "test_predictions.json": "4b145bc7520d14071b47ed227e4f80c84ff33ba96bfeb51df729310d2e289d1d",
+      "test_result.json": "493e2d266a10f2d8834194aa79ebddad102c263d17e51fa6875b1921b84e772c"
+    },
+    "n32-qvi_value_only-s1101": {
+      "test_predictions.json": "26356168c93cbb2820821843b655c972d76cc97af0ec3d4875755c587fd1058b",
+      "test_result.json": "fec220c65520c89b6fddf3e3d46cadfbf0ac28c222b9fd104a9a37aa70c3392d"
+    },
+    "n32-qvi_value_only-s2202": {
+      "test_predictions.json": "5f5b16fa3108328b711500de486ebd56564d7a6145a97ff4f2c40367c5866973",
+      "test_result.json": "815e5732bef94240e8c055150d20bfd1f5f0d8b8c1447fa7e6244d0a33b9181e"
+    },
+    "n32-qvi_value_only-s3303": {
+      "test_predictions.json": "9f518406b048978526d84ba0cc397f82a80e8b5b2a55afb05df67b7fd3321c14",
+      "test_result.json": "53124bd4ead4e54ec600173dd11b3b34dc89df13c300eee5be283b39642c6488"
+    },
+    "n64-fixed_full-s1101": {
+      "test_predictions.json": "c64cad11ebf362e4f7acf228dda005dc309353ab65e2ff60fa01f2a945948cac",
+      "test_result.json": "9185a2f2c19ae74920845e4f7c5b534c5019daec32b43c75455b5d837c5c303e"
+    },
+    "n64-fixed_full-s2202": {
+      "test_predictions.json": "c1cecc75b3b162b63ebcbf0308ab414a0cc5fa76be5e0ce65d7e6d4937f8c0ad",
+      "test_result.json": "b8e009f2dda2e9f89543cb267f619c974292c3f731c068b90cae8f38412552b6"
+    },
+    "n64-fixed_full-s3303": {
+      "test_predictions.json": "4e133d0779785df69875398a306cd6dc63d76dd9a3b03227d09ae87e081c7b20",
+      "test_result.json": "26fcab322845bb6946ebf3f179e85d182d38505281499fee8c354d9c2f980896"
+    },
+    "n64-learned_full-s1101": {
+      "test_predictions.json": "09e0b4616dcdf0250047629a450bb038fa9507a76a70762b907a7196fe53af51",
+      "test_result.json": "fba9014766ebfb264d0ea313278528343888c0f22918ac004e2832712d850700"
+    },
+    "n64-learned_full-s2202": {
+      "test_predictions.json": "bd580be1b8cc7112cb90727a68032ea79ef9285af893a82d0a0cf23be8370197",
+      "test_result.json": "17c8b002665bcdfa01d860bcc8d6b64275bf6b92952da6b96251ed1cce5f5bf9"
+    },
+    "n64-learned_full-s3303": {
+      "test_predictions.json": "e4b0ef4c8d4ff72795c9c43566c2a4b3d3ff6276ffde8db94a237a2665ea3b91",
+      "test_result.json": "329f8cef9440e0b6c25e530b409700d4cdad46e39f09b6782d982319971db625"
+    },
+    "n64-qvi_boundary-s1101": {
+      "test_predictions.json": "7fa5ef8cf26ce454fbbaef22fd3bf4f8eab9e2d1922c676e5c8c84c34e1c7f54",
+      "test_result.json": "a2783b0644ce4c1467315c6777e6c3b01b6fffd1cc5fc6e3af4aeb04faea1d60"
+    },
+    "n64-qvi_boundary-s2202": {
+      "test_predictions.json": "1b78cb7b105256651e38c4b2f53408e3d703569eaaf472a4a809010c646b24df",
+      "test_result.json": "5046cf08d9f36dff01fa605501107715a17b2709ed22e3a3fcbdef78729aa62b"
+    },
+    "n64-qvi_boundary-s3303": {
+      "test_predictions.json": "4a6120b7378c7ade89e8cdf88d88b230673d003a124b8ff1b69ab2829f557ce6",
+      "test_result.json": "118e1b5befbd3ec281e3a3d3269aecdf41338924cb8632a4f2b2afc341ca132b"
+    },
+    "n64-qvi_flow-s1101": {
+      "test_predictions.json": "d756f3b8c5ad5d75ac547c480da92efd75e3fd5af24a1b9da003ee420f226363",
+      "test_result.json": "b6e96872861189669fc8ae894f546a44d484f719ffc20c92207e2ea474efe007"
+    },
+    "n64-qvi_flow-s2202": {
+      "test_predictions.json": "63a5ede59959e70c82984474464672d1cc9f8d480b94a9dad50551f0bb4b8bfb",
+      "test_result.json": "7419905f7cdb17388639946db39a45c918e1fa6899b442c4bc708e3ceb314a07"
+    },
+    "n64-qvi_flow-s3303": {
+      "test_predictions.json": "c7cd4482855ab9aa7002ec9f535304316ae552a79643378fdf0a556bf3c37404",
+      "test_result.json": "31c1fd435cf2ef5fe33b528ad8b77a66c0f5796ef5b7eda99b5a0f73f94f471b"
+    },
+    "n64-qvi_full-s1101": {
+      "test_predictions.json": "5dd3164e8d3419a7f842a6614a4759e61b8c0ce88147d31ee62a4f26e449141f",
+      "test_result.json": "ad4343ad1d75fce488b16ae5101f5112eb0f718cb01693f11682f89871a55a99"
+    },
+    "n64-qvi_full-s2202": {
+      "test_predictions.json": "1371a3b7d534d31b52730e479c494a800c9bb51c1f8d3a393eb8b446c6778619",
+      "test_result.json": "49191145e494f0c5e0d3a6c9e0583d9dc0e8e9ec40d5420dfdbd611ebe950bf4"
+    },
+    "n64-qvi_full-s3303": {
+      "test_predictions.json": "a8a2c796179e0a9d4755aedd8bb5e9e62ab4b76d44d2f6d8befc890b161953c1",
+      "test_result.json": "277a668e191b5a1e652f42c78911815fbcf8b484c2c8867767127e858a7a50e6"
+    },
+    "n8-fixed_full-s1101": {
+      "test_predictions.json": "25e9212183e03b8685f13bd7606d9a1d6ec308366675a85ec0db62a213cb146b",
+      "test_result.json": "59290d8d6c0950877ca39b2f9f9f6e81409056e01f6b524ebf8d4d0717ff2deb"
+    },
+    "n8-fixed_full-s2202": {
+      "test_predictions.json": "f638118caea0382356b810bdec9e40d4af6aa252a2b23e47c04eaf8138763a46",
+      "test_result.json": "e20cd3010a9cc074e77dc2bf86908b5bd5b680a4423a515cc98de7bedd68c90d"
+    },
+    "n8-fixed_full-s3303": {
+      "test_predictions.json": "c644da2284207896093fe76883f0f1d18e1690002545d2908832f7eeca78e3c5",
+      "test_result.json": "9ee899846feced13445c3e9540a4951414500b35049f71f86af16522c8a8e50e"
+    },
+    "n8-learned_full-s1101": {
+      "test_predictions.json": "db3d5630a6473c155199d92cde122f4058cab25d61784da0307f64ed5117ed7f",
+      "test_result.json": "b8cecade0c515b4caa3dfd6545757c3a1e022b12aec4841d40e5d3d6586a5cee"
+    },
+    "n8-learned_full-s2202": {
+      "test_predictions.json": "3ccb85e822d5aa65507a8b613ced59e0a989bb34ac205e31451f3e2830ed5cf4",
+      "test_result.json": "ccd2ecc0662578651b1d39c8e92d628ebaa7a6d28f5d735e2380580682650c50"
+    },
+    "n8-learned_full-s3303": {
+      "test_predictions.json": "7df95c0c8f64208dc9faa635f395fb4cd04dc41c9408eea4cdd1d4622cbf9373",
+      "test_result.json": "165cdcd8c5c358ad8fa4e932aa2e36e1d11c477002020d0bd143701b2496f2e7"
+    },
+    "n8-qvi_boundary-s1101": {
+      "test_predictions.json": "4e238da61f6d1dc500b7f8dedfdec81e2cd358a97ea3edaeb04e3d15e8a343a2",
+      "test_result.json": "9bb2a15046078b936822c1da452461c33413cf250c2381ef9a991b59b7a82775"
+    },
+    "n8-qvi_boundary-s2202": {
+      "test_predictions.json": "f964009061b5d503498fe709508badacf2a84a05065d8b32e3b100f2cbd4149a",
+      "test_result.json": "34f47f5c969a78074b74e1661d1f9e9fcb8cec3fbff45ade53ac28248079d0f4"
+    },
+    "n8-qvi_boundary-s3303": {
+      "test_predictions.json": "f31704d4396da2717bc48b0d82dbab582799387ca7429dfeb153569801d092e4",
+      "test_result.json": "7a1351d2ffa2c1e0cec68e3a1987d20e17bdf57cdd088bced81250853a240835"
+    },
+    "n8-qvi_flow-s1101": {
+      "test_predictions.json": "b12f4df4b57dcac0bf6562d71655fd69455c9f6c93496f3c5068546a3a71ae50",
+      "test_result.json": "a09c6a2e6073b3bb96f80540d7b36cee2c8ae3308a3e44444ba6e1a74e4f22fb"
+    },
+    "n8-qvi_flow-s2202": {
+      "test_predictions.json": "5f4ac306c878629f1d1ae66da76421205bf6d0df27cde43cbfc5da2c19a6d454",
+      "test_result.json": "0662940ad9485046bd6884d55635c8caaddb0c1543381b9d9dc6a71947feb6ef"
+    },
+    "n8-qvi_flow-s3303": {
+      "test_predictions.json": "e358c26cd01cf7a78db8ccf199fbd77429f667ec82aa0c4a21917f479b5da065",
+      "test_result.json": "9a43a9b52e191631ad0a76c3af0fa5275b291ebead22aef82153e27350fff8f2"
+    },
+    "n8-qvi_full-s1101": {
+      "test_predictions.json": "a2bcd1762e64e8aa6c55e485da8a42105d25643553c99d1989bef90e1e06fb7b",
+      "test_result.json": "af4e0cc3a979e845f562f814cfdc008d8e0d8d590c0e3026af07b5675dbbe31a"
+    },
+    "n8-qvi_full-s2202": {
+      "test_predictions.json": "6b1029577bb9ab7fe21020b2b72e8a234002147bfaa5ae0db7e6cc3ae4b9be25",
+      "test_result.json": "453af4cf726dce2d9b13cf7aca43316d8bb09bdb2948d5f69453f9f8a11e25b8"
+    },
+    "n8-qvi_full-s3303": {
+      "test_predictions.json": "14e7bbfca8ddd122d128031e8d9b5e81488e1afc831ccdca2479905bd6651fd2",
+      "test_result.json": "774f65df09291e9671419894eead8f12b6a2dc50dab73c231b999382e67e518d"
+    },
+    "n8-qvi_risk_only-s1101": {
+      "test_predictions.json": "db38135b9e882e945334f8c318f03894f42ab558eb7c2161f0a1b610a40885e0",
+      "test_result.json": "6baf20a5fe727f8a13d022ade5f225d347500846ec63e940dda7442f4b194eca"
+    },
+    "n8-qvi_risk_only-s2202": {
+      "test_predictions.json": "38712ed2114f5b220f09e55623bef3bae6587dd34a423df296bc3fc5d4cfd53a",
+      "test_result.json": "ea477a6805b5af40795fd400d209c2e5e995407b2b97bd5d78e5e788c5c80b26"
+    },
+    "n8-qvi_risk_only-s3303": {
+      "test_predictions.json": "d11c7738d4fb9c67ce95e1dd47193dae7bdc7f01e3ab92c000508a3eaee32c1c",
+      "test_result.json": "eac029104ceb4ee1df39ae69f22fdfa760ae020ca41b59246c3432fbcb63f095"
+    },
+    "n8-qvi_tanh-s1101": {
+      "test_predictions.json": "32fc1970ec3c42a9869b479f2a9b1733fefed69b6701844ec72732c75b7f6f93",
+      "test_result.json": "cf1ce4297ddc992f88a587d43166e783e49de7d6ca11dedf1cdb266c23861e1d"
+    },
+    "n8-qvi_tanh-s2202": {
+      "test_predictions.json": "f975b0c589e59d6138bc09fecdfc3f2c9d433cc1cfd4c231feb72d50bf95ce27",
+      "test_result.json": "a5c721e3de6f0a864a1db5a42111e825ae8ebe1c00669fdd834782ed0728e10d"
+    },
+    "n8-qvi_tanh-s3303": {
+      "test_predictions.json": "a6c68160417335078b50ed7ee41bb211d23862aca4dd62bc9e24a17eba21973a",
+      "test_result.json": "00ab2d7284e31414ff69764125922c3be1fe06f288ae5bcaf830df81d6e73fc6"
+    },
+    "n8-qvi_value_only-s1101": {
+      "test_predictions.json": "2fbe31ed80cf2cb44dff44834d30e3ecd73b71940b41ad09dbb82757efde68de",
+      "test_result.json": "f059f3fe8295488bf4aa596cb9372fcaa5cc3e911b95909ef352e6503ecd64aa"
+    },
+    "n8-qvi_value_only-s2202": {
+      "test_predictions.json": "9de74996b6ffa6f3ae183c5b6c3e6bb1b4eecfb75fc3efe68b33569af6632674",
+      "test_result.json": "7fde73635d2648e388af5ad97c47ae0eefe4501bfb0c51d7af3bfe0dbba8cb83"
+    },
+    "n8-qvi_value_only-s3303": {
+      "test_predictions.json": "23e605c22095141c1c9046abbaab56ee06010bb22b9b9bbe0aca9463459285c7",
+      "test_result.json": "55dedad8f12c40cc870a614246ab95675e7988fb5231950d6402ca05d23723fe"
+    }
+  },
+  "completed_before_count": 63,
+  "driver_cpu_through_report_seconds": 5.228410534,
+  "driver_wall_including_import_seconds": 106.96990369900595,
+  "energy_joules": null,
+  "original_final_claim_sha256": "f5b540b27cf7ad4cb0df0174f8c43c6afea007ce37eb105376cea0ebab1fc5d3",
+  "prior_completed_case_costs": {
+    "n32-fixed_full-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 17.63796114300004,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 17.641763795050792
+    },
+    "n32-fixed_full-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 17.09775754100002,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 17.100702916970477
+    },
+    "n32-fixed_full-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 17.589932191000003,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 17.591583253000863
+    },
+    "n32-learned_full-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 17.45483253399999,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 17.457531881984323
+    },
+    "n32-learned_full-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 17.67043215299998,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 17.67330587503966
+    },
+    "n32-learned_full-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 17.027418493000027,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 17.031790266977623
+    },
+    "n32-qvi_boundary-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.279431836000015,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 238452,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.282089983928017
+    },
+    "n32-qvi_boundary-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.356383384000026,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 238780,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.360338282887824
+    },
+    "n32-qvi_boundary-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.286375309999983,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239240,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.28855448390823
+    },
+    "n32-qvi_flow-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 21.11137000599996,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239268,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 21.117235045996495
+    },
+    "n32-qvi_flow-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 21.08245578599997,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239424,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 21.08834294497501
+    },
+    "n32-qvi_flow-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 21.20725031500001,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 21.213658215943724
+    },
+    "n32-qvi_full-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.32903838599998,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 238308,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.333332814043388
+    },
+    "n32-qvi_full-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.277811025000005,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 238308,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.281284158001654
+    },
+    "n32-qvi_full-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.437082672999992,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 238308,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.439927455969155
+    },
+    "n32-qvi_risk_only-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.611496554999917,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.615327924955636
+    },
+    "n32-qvi_risk_only-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.705689495,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.70650321606081
+    },
+    "n32-qvi_risk_only-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.106506731999957,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.107589307939634
+    },
+    "n32-qvi_tanh-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.733438801000034,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.73946379905101
+    },
+    "n32-qvi_tanh-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 21.943661033000012,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 21.950721350032836
+    },
+    "n32-qvi_tanh-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.42807017100006,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.43344693304971
+    },
+    "n32-qvi_value_only-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 21.80359032800004,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 21.80876003904268
+    },
+    "n32-qvi_value_only-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 21.87291982299996,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 21.875021105981432
+    },
+    "n32-qvi_value_only-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 22.47849169899996,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 22.484473453019746
+    },
+    "n64-fixed_full-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 25.986803697000028,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 25.991426513064653
+    },
+    "n64-fixed_full-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 25.173580366000124,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 25.18182009505108
+    },
+    "n64-fixed_full-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 25.80150783499994,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 25.812880556099117
+    },
+    "n64-learned_full-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 23.97809101200005,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 23.993262686999515
+    },
+    "n64-learned_full-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 24.623083005000126,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 24.630149191012606
+    },
+    "n64-learned_full-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 24.184713285000043,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 24.193122367025353
+    },
+    "n64-qvi_boundary-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 30.35610237100002,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 30.363419495057315
+    },
+    "n64-qvi_boundary-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 30.58143281599996,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 30.59057014202699
+    },
+    "n64-qvi_boundary-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 32.002083708999976,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 32.010221161996014
+    },
+    "n64-qvi_flow-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 29.633770115999937,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 29.645017757080495
+    },
+    "n64-qvi_flow-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 29.544259979000003,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 29.55537825904321
+    },
+    "n64-qvi_flow-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 30.14910502600003,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 30.154819375951774
+    },
+    "n64-qvi_full-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 29.991774655000086,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 29.994599933968857
+    },
+    "n64-qvi_full-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 29.91374144300005,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 29.924042968079448
+    },
+    "n64-qvi_full-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 30.982275080000022,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 239440,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 30.99187772697769
+    },
+    "n8-fixed_full-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 5.481595482000003,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231152,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 5.482279886025935
+    },
+    "n8-fixed_full-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 5.539318941999994,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231152,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 5.5397463670233265
+    },
+    "n8-fixed_full-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 5.447579446000006,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231396,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 5.448285340098664
+    },
+    "n8-learned_full-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 5.368481678000009,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 5.368774415925145
+    },
+    "n8-learned_full-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 5.48133378,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 5.481259532971308
+    },
+    "n8-learned_full-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 5.511186322,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 5.5119420000119135
+    },
+    "n8-qvi_boundary-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.461978357000003,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 230880,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.462911664973944
+    },
+    "n8-qvi_boundary-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.210451698999996,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 230880,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.211106920032762
+    },
+    "n8-qvi_boundary-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.323674590000003,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231152,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.324745627003722
+    },
+    "n8-qvi_flow-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.499843507999998,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231152,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.501328080892563
+    },
+    "n8-qvi_flow-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.506628126999999,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231152,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.507788395043463
+    },
+    "n8-qvi_flow-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.471143850999994,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231152,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.472490974003449
+    },
+    "n8-qvi_full-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.468418945,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 229308,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.468597371014766
+    },
+    "n8-qvi_full-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.247647352,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 230644,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.24849682895001
+    },
+    "n8-qvi_full-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.328303043000002,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 230804,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.329185357084498
+    },
+    "n8-qvi_risk_only-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.368793309000012,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.370679676998407
+    },
+    "n8-qvi_risk_only-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.348037840999979,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.349781366996467
+    },
+    "n8-qvi_risk_only-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.170430250999999,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.172226194990799
+    },
+    "n8-qvi_tanh-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.915580081000002,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.91695229895413
+    },
+    "n8-qvi_tanh-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.322177851999982,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.322028969996609
+    },
+    "n8-qvi_tanh-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.396007860999987,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.396379504003562
+    },
+    "n8-qvi_value_only-s1101": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.396003757000017,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.396538121975027
+    },
+    "n8-qvi_value_only-s2202": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.46842996700002,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.468699288903736
+    },
+    "n8-qvi_value_only-s3303": {
+      "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+      "complete_worker_cost": false,
+      "cpu_seconds": 9.425969546000005,
+      "energy_joules_process": null,
+      "energy_multiple_wraps_resolved": false,
+      "energy_scope": "no readable hardware energy counter",
+      "package_energy_joules": null,
+      "pid": 1151268,
+      "process_max_rss_kib": 231596,
+      "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+      "scope": "one_selected_and_initial_test_evaluation",
+      "wall_seconds": 9.426768525969237
+    }
+  },
+  "prior_cpu_note": "Original timeout CPU is incomplete; do not infer from wall or add overlapping adaptation costs.",
+  "prior_interrupted_worker_complete_cpu_seconds": null,
+  "prior_timeout": {
+    "adaptation_test_workers_completed": 9,
+    "both_seals_unix_time": 1795527359.56633,
+    "completed_training_test_cases": 63,
+    "cost_scope": "Retain all completed per-case CPU/wall and adaptation costs. Original interrupted worker imports/preflight/unfinished case CPU is not fully measured.",
+    "created_unix_ms": 1795526684176,
+    "exit_code": 124,
+    "pending_postprocess_jobs_cancelled": [
+      "1a20dc3d358-ffbe-399e",
+      "1a20dcc67fb-ffbe-39a2"
+    ],
+    "remaining_training_test_cases": 9,
+    "state": "timed_out",
+    "systemd_cpu_unavailable_reason": "Transient unit accounting was no longer available; do not infer CPU from wall time.",
+    "systemd_cpu_usage": null,
+    "terminal_unix_ms": 1795528495892,
+    "timeout_job": "1a20dbaee10-ffbe-398e",
+    "wall_seconds_including_wait": 1811.716
+  },
+  "protocol_sha256": "c259030b227f25bc72ccbab12402fbe62747df845c9dce965e795b85b1af176d",
+  "resume_driver_cost": {
+    "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+    "complete_worker_cost": false,
+    "cpu_seconds": 3.4991939100000002,
+    "energy_joules_process": null,
+    "energy_multiple_wraps_resolved": false,
+    "energy_scope": "no readable hardware energy counter",
+    "package_energy_joules": null,
+    "pid": 1223271,
+    "process_max_rss_kib": 219432,
+    "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+    "scope": "resume_driver_body_only; child CPU and prior timeout are separate",
+    "wall_seconds": 105.30907206400298
+  },
+  "resume_source_sha256": "58fb4877678b527e2831aff51760588ed8e044798de3e6dcdcec20b99107b749",
+  "resumed_count": 9,
+  "resumed_names": [
+    "n64-qvi_tanh-s1101",
+    "n64-qvi_tanh-s2202",
+    "n64-qvi_tanh-s3303",
+    "n64-qvi_value_only-s1101",
+    "n64-qvi_value_only-s2202",
+    "n64-qvi_value_only-s3303",
+    "n64-qvi_risk_only-s1101",
+    "n64-qvi_risk_only-s2202",
+    "n64-qvi_risk_only-s3303"
+  ],
+  "source_hashes": {
+    "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+    "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+    "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+    "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+    "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+    "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+    "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+    "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+    "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+    "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+    "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+    "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+    "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+    "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+  },
+  "test_data_sha256": "2da70fb6bb6f18cc955bcd11a50cd9cb2ebe837f7e8fbeca3238e39f0905a746",
+  "timeout_receipt_sha256": "12739eb55175c18d3c27ee6a85d8889f0eea46713634953ae9ac09453458a25a",
+  "training_records": {
+    "n32-fixed_full-s1101": "af8234fdddda72493c18a7b420f861b3c4030c770ef8dea427f49b34391dc540",
+    "n32-fixed_full-s2202": "1a6178f1081a2314646a1b1fea6d979b1668ddbbf22bb2fed464f31dc3cee5ea",
+    "n32-fixed_full-s3303": "1e5096e837c9d2d5701112f25e2506ecd1979135e27bce05bd2152aa78599dcd",
+    "n32-learned_full-s1101": "86429c9e3326c3f61a2c3a3dc68bcd2b3570c329e06ced9581c060ae11f090a9",
+    "n32-learned_full-s2202": "58d4594e9621b4eef3641c98ecbf3f2c7b4a9bc895396fdb3eeedfd4157b27a4",
+    "n32-learned_full-s3303": "9b1f1da6aecb896688c515dd7b902e789aa5b0a8b8b3bc9c8afc7078dd01293d",
+    "n32-qvi_boundary-s1101": "c29ec3f31468f07302ac8dd793252e2ded48ad97fc688762d614e2922d089617",
+    "n32-qvi_boundary-s2202": "5cd05374a8e71f179e41f743a53836e44bf0d820cf1ac27dee77107ba052e0dd",
+    "n32-qvi_boundary-s3303": "020231e2a6b5f4454bca9b3fb80cbe1c0a6042d485266411f1adcee0c1730189",
+    "n32-qvi_flow-s1101": "d179cf834a661a76eb3d913501009e87c195588b10685aba1ca5e553e450ed2e",
+    "n32-qvi_flow-s2202": "89aa2ce6ec482c93a187623abc8d1bdf01d94508ba62b1b9e4001b732167f5df",
+    "n32-qvi_flow-s3303": "eb8cc1d208cdc8c764602a3dae4db73e4e46d2fff1be6e24b3e08fb6e35ef396",
+    "n32-qvi_full-s1101": "f7d6238c71ae67c6a08506ba7c5413189d35d8a589cda1c432961b02cbd68d78",
+    "n32-qvi_full-s2202": "ffa3de377a9105d3e75188a4ee26e49725f8d955d2bd6a00dad3f9f351fad8e2",
+    "n32-qvi_full-s3303": "2136d50d603b12a2d736d792be27d44761cbaac7c007fd64e5f40d016e0e6589",
+    "n32-qvi_risk_only-s1101": "490accd25939edbd252c3e1dc9359c4eea4f58f991f7eedcaf3aead213017cbd",
+    "n32-qvi_risk_only-s2202": "374033c6b8a7d534e5d09b13343abe547dddabfa266658ed82089a00371f5ec4",
+    "n32-qvi_risk_only-s3303": "f9da855fe1223d85e877a4b509a63f6a9b66194291f0776f627987fb0ee008bb",
+    "n32-qvi_tanh-s1101": "822094b52e9f2e098eb1644210262312729faa47ced5fc4fdbb399d0ea9e47b2",
+    "n32-qvi_tanh-s2202": "74afb2bee86c5fd1e3338d830aa732df18eb2e183e673de7587d06ecb8a1d238",
+    "n32-qvi_tanh-s3303": "c205094dc935aeea680a77fc6669c8896bb04f429dd1fa6b4c55b3cca5a77d98",
+    "n32-qvi_value_only-s1101": "3e3d6b6c3ac9fe7dcb89d301dff06772b5c4eef9b160ff44b3e2b85095170833",
+    "n32-qvi_value_only-s2202": "3624216ea421c746e90001277b6b744afeca3e078fbf9355bccf7f859faa34f6",
+    "n32-qvi_value_only-s3303": "b160ddf49572d173010ef765e9d3e2cb1f0773effb339d652e79a82a798dbdf2",
+    "n64-fixed_full-s1101": "cb1cad81e170fc4b41c0d47e3969fe80151793e15ab42909b5a4226a19a8c825",
+    "n64-fixed_full-s2202": "5b942f70bb7964cc68902399fe0e5b45665e3ce5338c0512eeaaa06d0a35687f",
+    "n64-fixed_full-s3303": "7fb374da1ea5b6415926976d175e2fa9d22fd16986e6fa74dd2bfca11954ea4c",
+    "n64-learned_full-s1101": "9d8f7d0f0a44ef949055df1dc502c2ee77c3827f24056a2fd87c76a01baa2d35",
+    "n64-learned_full-s2202": "2a09f5c4840b299982ee3db73a5572d9c359ce39cb9bbf554576ece076a94850",
+    "n64-learned_full-s3303": "877ee28797f42d75b0b72fe81a1bcb16b032ace6cb8b55fa4870c5455cabad5a",
+    "n64-qvi_boundary-s1101": "81a66fe1f5517d226c91e96b3bf01af73ed78cdef340999babb89c543be8e466",
+    "n64-qvi_boundary-s2202": "3b95743da93518cfdeedd8b5b0b53ec8292f4fab6ba21846c6b202787cf768df",
+    "n64-qvi_boundary-s3303": "dcaf53b8bd111e884cd6dcabbb443d58013dc8c220fe8c190e9861e781b4a062",
+    "n64-qvi_flow-s1101": "e26e9c675cf96f2667089b93c9659cc72d09770ae8b43b664140c68b22086d7b",
+    "n64-qvi_flow-s2202": "1f4f0013aba6d47076298c6c48d73b3f2e84cb80a64263793ab7246c64b47311",
+    "n64-qvi_flow-s3303": "ca2e5b0c4f671fd9e8416c79b452d7f7f1d0a60d9da22333339c8c4318eda705",
+    "n64-qvi_full-s1101": "57b0b11b6cd7d87efee3d43b5164cee8b2b351cfb68a6347f3b94d462178a16b",
+    "n64-qvi_full-s2202": "955812823ae60322bf2533099e40f6ec997239cdbdae86189197bef2b658ccc5",
+    "n64-qvi_full-s3303": "bf65f6cc6d46a01b8f85e650e64d278381e266baa1fbbb26c3363dc51e86659d",
+    "n64-qvi_risk_only-s1101": "e423a7a71541e10eba01b82082c3a8984e0f810a713a8f21b57113f093172973",
+    "n64-qvi_risk_only-s2202": "2775be21abe24375608364d114e0af316d6dded464a284edba8b5882becafd47",
+    "n64-qvi_risk_only-s3303": "2299bea112d0f783f10f397051afb5ff406850e31acc89d570ca61885b79906c",
+    "n64-qvi_tanh-s1101": "3d86c7adeeabbef633b88c81c09b7823d33a9c0c7e7d194e904914a64acf4c7b",
+    "n64-qvi_tanh-s2202": "9ffdb5592794c18da9e17baef65eed58405f7b654461aa6c2233e7603b977728",
+    "n64-qvi_tanh-s3303": "10c93703541e5032d4c0d21f71aa62d02aece48914b83912cb24c217cdbf402a",
+    "n64-qvi_value_only-s1101": "7f08f6a7d311e6774a98935996a9c15c7b57454719c2eed00c4500fce0f0100a",
+    "n64-qvi_value_only-s2202": "f0a756926c3b82a1f6a5211a72cf431a7f614fd9b109e6610ab023eeff1ec900",
+    "n64-qvi_value_only-s3303": "ab8cf7e86833425442fe893388cc2d7be08cdb2bdb7b77807d1be6b8251b7aef",
+    "n8-fixed_full-s1101": "af22419893e5fb5b3f0f8edcd50d00d98565c27657cd0ddf3922824b68e3f9fa",
+    "n8-fixed_full-s2202": "792f5ff77484855345b24a82acec986b51e7575afbc50d79c759cdec5ee8352e",
+    "n8-fixed_full-s3303": "2d145dac71964bdc3d8ebf20aec670a6e2ab358e92b602fd657f8708c49dfb62",
+    "n8-learned_full-s1101": "d33e32167f24b78a7facc230b2105c487ae17e629dd41d69e107f70a527063f4",
+    "n8-learned_full-s2202": "457b76b0d54ab02cbb5d2037f1cd9d80b7e267892ad5a07dfde40649f3bfc577",
+    "n8-learned_full-s3303": "5e2e4420dea6ac6df20b6856575f1b6826852094862904d6f53a00d4dc18e893",
+    "n8-qvi_boundary-s1101": "de42ef4ee8d6a2933752e009a62e5ca9fcd968866ef62d2bde4e9a624d342e3e",
+    "n8-qvi_boundary-s2202": "ff7a904767ccad0d9d8ff8119ab5c8a3bf57c293fe8b121f01bb2698f8ddd151",
+    "n8-qvi_boundary-s3303": "be0afc312fd88d518fe4762638c9e16cfe51cf933b366e5745755331266a359a",
+    "n8-qvi_flow-s1101": "c19d007d277a0d67542cfef516a008ba0f05aa1759fe2b939c7a20847ee5e60a",
+    "n8-qvi_flow-s2202": "fddcb1c81b71bceeeb6a2997d1863b321d74c4cfa487c86c87f63f370b580163",
+    "n8-qvi_flow-s3303": "e4ce724838b6e9128a6bda85064e3f45d4f305e015d76eb1383cd60a1dd7c47a",
+    "n8-qvi_full-s1101": "a40be7e0a44e1c05fafec95801459e20f59bc7cc2b89da444640f52dafc2a743",
+    "n8-qvi_full-s2202": "823c4eac3c8f9e24bb76d05f0abc2cd4a2433866a9ed65ccc88518913da30229",
+    "n8-qvi_full-s3303": "8ae7b0d3e2d0715134b81ae1a9c12986838956845baf0c41dcef27401f7b3edb",
+    "n8-qvi_risk_only-s1101": "aa87a3948527a4b15ba8e1327f84530c1cda143dd8d99ef692c396721702dda5",
+    "n8-qvi_risk_only-s2202": "b1820b62eb57966b5971c6ee8950110dc96319ad5056adfe56895bc5c2740d64",
+    "n8-qvi_risk_only-s3303": "b1afdb18f5f64ff499c1dab20ff3461e219c462f7f1475f6cd5463b025377150",
+    "n8-qvi_tanh-s1101": "5d3c657fc42b96a91d9b2176e24084b0ff1eb15e043695e487a2f404fc3642cd",
+    "n8-qvi_tanh-s2202": "55be73f053ae3b22294236edde23f40c9520d1d4451aa00398a23bb688953c79",
+    "n8-qvi_tanh-s3303": "4bc48a1403067dfbf5817889c725b8dbeb09ef2ed2b7e150105520810775b1f2",
+    "n8-qvi_value_only-s1101": "85719c46b671d7bb122e6fdad5d24f37bd28609911fad28d16561a8dc5d61598",
+    "n8-qvi_value_only-s2202": "0895449d960c4785d4518b8aef8b012ef910a4d58de804e067522893d075fb46",
+    "n8-qvi_value_only-s3303": "8b8f2b59aa3b111908f64f82fb36896dfa7d966880a6cd42b7082bcabdf39594"
+  },
+  "training_seal_sha256": "77530a0d7909d28ac00ec38f18dd239d05f16f47d10f4853a4c2c8a582f3bf4a",
+  "unsealed_partial_sha256": {
+    "n64-qvi_risk_only-s1101": {},
+    "n64-qvi_risk_only-s2202": {},
+    "n64-qvi_risk_only-s3303": {},
+    "n64-qvi_tanh-s1101": {},
+    "n64-qvi_tanh-s2202": {},
+    "n64-qvi_tanh-s3303": {},
+    "n64-qvi_value_only-s1101": {},
+    "n64-qvi_value_only-s2202": {},
+    "n64-qvi_value_only-s3303": {}
+  },
+  "workers": 4,
+  "workers_finished": [
+    {
+      "attempt": "n64-qvi_tanh-s1101",
+      "parent_launch_exit_wall_seconds": 33.82921769306995,
+      "returncode": 0
+    },
+    {
+      "attempt": "n64-qvi_tanh-s2202",
+      "parent_launch_exit_wall_seconds": 34.41058574896306,
+      "returncode": 0
+    },
+    {
+      "attempt": "n64-qvi_tanh-s3303",
+      "parent_launch_exit_wall_seconds": 37.23379876301624,
+      "returncode": 0
+    },
+    {
+      "attempt": "n64-qvi_value_only-s1101",
+      "parent_launch_exit_wall_seconds": 35.55195642600302,
+      "returncode": 0
+    },
+    {
+      "attempt": "n64-qvi_value_only-s2202",
+      "parent_launch_exit_wall_seconds": 34.28598647704348,
+      "returncode": 0
+    },
+    {
+      "attempt": "n64-qvi_value_only-s3303",
+      "parent_launch_exit_wall_seconds": 35.751641880953684,
+      "returncode": 0
+    },
+    {
+      "attempt": "n64-qvi_risk_only-s1101",
+      "parent_launch_exit_wall_seconds": 35.560867046006024,
+      "returncode": 0
+    },
+    {
+      "attempt": "n64-qvi_risk_only-s2202",
+      "parent_launch_exit_wall_seconds": 34.063430804992095,
+      "returncode": 0
+    },
+    {
+      "attempt": "n64-qvi_risk_only-s3303",
+      "parent_launch_exit_wall_seconds": 33.64301166089717,
+      "returncode": 0
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "base": "b1af67a38f8cf9cee700cc067da1e6001ce220a8",
+  "source_head": "c4ae70d44613434aaf165529a6076fa3400ca431",
+  "base_subtrees_identical_to_source": {
+    "codex-rs/windows-sandbox-rs": "1a34e44cc44b6f840334369a9ef419b1b7c40a95",
+    "codex-rs/network-proxy": "f2b024c85993d0f3a553d6cac32c78dc8e1dc9b7"
+  },
+  "steps": [
+    {
+      "name": "fmt_v2",
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.3905732550192624
+    },
+    {
+      "name": "diff_check_v2",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.04476379102561623
+    },
+    {
+      "name": "changed_v2",
+      "argv": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.04374865093268454
+    }
+  ],
+  "hydrated_original_formatter_evidence": [
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/pending-model-wire-cache/model_list.rs",
+      "sha256": "1136589db852ba45ce9bee975dd10fcf7a48a24c832aca5c0b8019db5a987177"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/memory-coverage-diagnostic-preparation/cognitive_runtime_tests.rs",
+      "sha256": "5ecb8bce0adb6d0151eb1ed23405489757354482f70b1b33d1232b35afc85d3c"
+    }
+  ],
+  "changed": [
+    "codex-rs/network-proxy/tests/windows_stable_ingress.rs"
+  ],
+  "candidate_sha256": "a6d72b112d4e9986b99b30616bf397018725cdca58ca0d4ee64f38b6ddcb32a9",
+  "native_windows_execution": false,
+  "native_scope_required": "network-proxy-windows_stable_ingress-test"
+}

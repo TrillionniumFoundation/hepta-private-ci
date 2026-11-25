@@ -1,0 +1,12 @@
+{
+  "byte_transport_completed_before_failure": true,
+  "cause": "The additional audit wrapper assumed 150 unprefixed signed archive members; the immutable archive has 151 prefixed members including its manifest.",
+  "exit_code": 1,
+  "failure": "prepare_remote_transport.py line 61: archive-member count assertion",
+  "followup": "Verify all unchanged retained parts, all original/restored bytes, and the exact 403-member roster including the signed manifest; no repack or experiment rerun.",
+  "idempotency_key": "hcsn7067-transport-pack-verify-20261125-v1",
+  "job_id": "1a2101b858c-ffbe-3b41",
+  "original_restore_receipt_sha256": "3d9023b83bbcb9fb1c6099dbf1c839c0b6708c9acbb1668578e703aca7dd1460",
+  "schema": "hcsn-transport-preparation-failure-v1",
+  "state": "failed"
+}

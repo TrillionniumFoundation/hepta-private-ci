@@ -1,0 +1,44 @@
+{
+  "attempts": {
+    "n32-qvi_signed_only-s1101": "3a5d94a6db3cf1ef1b187c3341b69492cd1c0adf181b692576266e4c7e43b520",
+    "n32-qvi_signed_only-s2202": "df3424648ff86694265dd8caf8179b493eb98601e5ad5a09ba6d7046ca2fa680",
+    "n32-qvi_signed_only-s3303": "c78f95966f70ac761814f8c68cab4df8a068b932ffeba1c33c35439545d8ce0c",
+    "n64-qvi_signed_only-s1101": "1b492b3725c6764bef84b7b1edaa2dd9bedb65975bee0dac1bf7144b557a0704",
+    "n64-qvi_signed_only-s2202": "430e171adc478d04281fe706c4a73d2039860d0f030f3aed21a30c4587d25f60",
+    "n64-qvi_signed_only-s3303": "2e55dfd2da7b10fdb0c6ddab029ab17bb1ce4a0fea26b714b9a322610a992c83",
+    "n8-qvi_signed_only-s1101": "4b475f680adfc949e576a334b7de5cd7b39453e4771a1cc4be05df456171209f",
+    "n8-qvi_signed_only-s2202": "d82e3ca12a006ed38fec33252b3fd2671c7408deaba86c423d177ebbb2ee39ab",
+    "n8-qvi_signed_only-s3303": "97c225c3ab4353db8358018284a2981506fffb64c68f7258bb0222da4736c792"
+  },
+  "cost": {
+    "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+    "complete_worker_cost": false,
+    "cpu_seconds": 0.18608518899999993,
+    "energy_joules_process": null,
+    "energy_multiple_wraps_resolved": false,
+    "energy_scope": "no readable hardware energy counter",
+    "package_energy_joules": null,
+    "pid": 1286910,
+    "process_max_rss_kib": 212272,
+    "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+    "scope": "common_selection_seal_preflight",
+    "wall_seconds": 0.18607981503009796
+  },
+  "protocol_sha256": "15bd7fd1fc7fceca9940bb0d60ba8dc1b32132d64e19ebffc22d66a61dde38dc",
+  "source_hashes": {
+    "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+    "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+    "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+    "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+    "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+    "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+    "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+    "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+    "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+    "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+    "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+    "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+    "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+    "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+  }
+}

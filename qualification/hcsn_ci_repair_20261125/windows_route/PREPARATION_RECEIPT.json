@@ -1,0 +1,54 @@
+{
+  "steps": [
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "--no-checkout",
+        "/home/qian-qi/hcsn7067-windows-route-20261125-v1/repo",
+        "b1af67a38f8cf9cee700cc067da1e6001ce220a8"
+      ],
+      "cwd": "/home/qian-qi/hcsn7067-strict-source-20261125-v1/repo",
+      "exit_code": 0,
+      "wall_seconds": 0.00970238703303039
+    },
+    {
+      "argv": [
+        "git",
+        "sparse-checkout",
+        "set",
+        "--no-cone",
+        "/codex-rs/",
+        "/scripts/",
+        "/justfile",
+        "/AGENTS.md"
+      ],
+      "cwd": "/home/qian-qi/hcsn7067-windows-route-20261125-v1/repo",
+      "exit_code": 0,
+      "wall_seconds": 0.003867501043714583
+    },
+    {
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "b1af67a38f8cf9cee700cc067da1e6001ce220a8"
+      ],
+      "cwd": "/home/qian-qi/hcsn7067-windows-route-20261125-v1/repo",
+      "exit_code": 0,
+      "wall_seconds": 2.5708240009844303
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/home/qian-qi/hcsn7067-windows-route-20261125-v1/repo/codex-rs",
+      "exit_code": 2,
+      "wall_seconds": 0.6189612110611051
+    }
+  ],
+  "native_windows_execution": false
+}

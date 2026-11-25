@@ -1,0 +1,87 @@
+{
+  "archive": {
+    "job_id": "1a20e02fae9-ffbe-3a08",
+    "status": {
+      "at_unix_ms": 1795531407760,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a20e02fae9-ffbe-3a08",
+      "launch_nonce": "33da1b01be8eb14c09a5db8197447eab",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 395,
+          "stored": 395
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "stderr": "",
+    "stdout": "{\"schema\": 1, \"archive\": \"/home/qian-qi/hcsn-smallnet-20261124/signed-control-v1.raw.tar.gz\", \"bytes\": 3322605, \"sha256\": \"0cad16587590a17fbdd646c313be8c7d0e64446caa7ee6d6296b771cb6da08d3\", \"archive_members\": 151, \"manifest_sha256\": \"5b852e06cba72ea56ce764eaea7db0b43646482cd11b0f186a93492e3c9fae7d\", \"receipt_in_archive\": false, \"note\": \"Receipt is separate to avoid a circular archive hash.\"}\n"
+  },
+  "independent_git_identities": {
+    "job_id": "1a20e04fd2f-ffbe-3a09",
+    "status": {
+      "at_unix_ms": 1795531563019,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a20e04fd2f-ffbe-3a09",
+      "launch_nonce": "2accae3f750da6822dd10492fb330d55",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 960,
+          "stored": 960
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "stderr": "",
+    "stdout": "{\"path\": \"/home/qian-qi/hcsn-smallnet-20261124/signed-control-v1.raw.tar.gz\", \"bytes\": 3322605, \"sha256\": \"0cad16587590a17fbdd646c313be8c7d0e64446caa7ee6d6296b771cb6da08d3\", \"git_blob_sha1\": \"fe3514dfbeb717217799d6829062cd4ea23f4a70\"}\n{\"path\": \"/home/qian-qi/hcsn-smallnet-20261124/signed-control-v1/ARCHIVE_MANIFEST.json\", \"bytes\": 27276, \"sha256\": \"5b852e06cba72ea56ce764eaea7db0b43646482cd11b0f186a93492e3c9fae7d\", \"git_blob_sha1\": \"444f3cdd8ce53f473bfb71cc63684a3f1b1218da\"}\n{\"path\": \"/home/qian-qi/hcsn-smallnet-20261124/signed-control-v1/ARCHIVE_RECEIPT.json\", \"bytes\": 413, \"sha256\": \"a7b2498636c751302ea34bbffdaccbe162e70cb307427d88f53a0b0b06360859\", \"git_blob_sha1\": \"b675b3dc4811920ded642ccb87d14d66e1b05c42\"}\n{\"path\": \"/home/qian-qi/hcsn-smallnet-20261124/signed-control-v1/RUN_PROVENANCE.json\", \"bytes\": 959, \"sha256\": \"25bb2cc724e36c837758a9a24b49360518e80b73a4012936c7c415b22f76b881\", \"git_blob_sha1\": \"1534b798b34b70e2330429e4b2d5c464861e8618\"}\n"
+  },
+  "schema": 1
+}

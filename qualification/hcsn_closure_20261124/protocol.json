@@ -1,0 +1,644 @@
+{
+  "experiment_id": "HCSN-PROSPECTIVE-CLOSURE-20261124-v1",
+  "base_commit": "14cfd44ab6d9da581bad5363495266424c661eb4",
+  "slots": [
+    {
+      "id": "n8-fixed-value_risk-mixed-s17011",
+      "neurons": 8,
+      "boundary": "fixed",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-fixed-value_risk-mixed-s27011",
+      "neurons": 8,
+      "boundary": "fixed",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-fixed-value_risk-mixed-s37011",
+      "neurons": 8,
+      "boundary": "fixed",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-fixed-tanh-mixed-s17011",
+      "neurons": 8,
+      "boundary": "fixed",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-fixed-tanh-mixed-s27011",
+      "neurons": 8,
+      "boundary": "fixed",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-fixed-tanh-mixed-s37011",
+      "neurons": 8,
+      "boundary": "fixed",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-learned-value_risk-mixed-s17011",
+      "neurons": 8,
+      "boundary": "learned",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-learned-value_risk-mixed-s27011",
+      "neurons": 8,
+      "boundary": "learned",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-learned-value_risk-mixed-s37011",
+      "neurons": 8,
+      "boundary": "learned",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-learned-tanh-mixed-s17011",
+      "neurons": 8,
+      "boundary": "learned",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-learned-tanh-mixed-s27011",
+      "neurons": 8,
+      "boundary": "learned",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-learned-tanh-mixed-s37011",
+      "neurons": 8,
+      "boundary": "learned",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-qvi-value_risk-mixed-s17011",
+      "neurons": 8,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-qvi-value_risk-mixed-s27011",
+      "neurons": 8,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-qvi-value_risk-mixed-s37011",
+      "neurons": 8,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-qvi-tanh-mixed-s17011",
+      "neurons": 8,
+      "boundary": "qvi",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-qvi-tanh-mixed-s27011",
+      "neurons": 8,
+      "boundary": "qvi",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-qvi-tanh-mixed-s37011",
+      "neurons": 8,
+      "boundary": "qvi",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n8-qvi-value_risk-native32-s17011",
+      "neurons": 8,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "native32",
+      "seed": 17011,
+      "family": "native32_training"
+    },
+    {
+      "id": "n8-qvi-value_risk-native32-s27011",
+      "neurons": 8,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "native32",
+      "seed": 27011,
+      "family": "native32_training"
+    },
+    {
+      "id": "n8-qvi-value_risk-native32-s37011",
+      "neurons": 8,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "native32",
+      "seed": 37011,
+      "family": "native32_training"
+    },
+    {
+      "id": "n32-fixed-value_risk-mixed-s17011",
+      "neurons": 32,
+      "boundary": "fixed",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-fixed-value_risk-mixed-s27011",
+      "neurons": 32,
+      "boundary": "fixed",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-fixed-value_risk-mixed-s37011",
+      "neurons": 32,
+      "boundary": "fixed",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-fixed-tanh-mixed-s17011",
+      "neurons": 32,
+      "boundary": "fixed",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-fixed-tanh-mixed-s27011",
+      "neurons": 32,
+      "boundary": "fixed",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-fixed-tanh-mixed-s37011",
+      "neurons": 32,
+      "boundary": "fixed",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-learned-value_risk-mixed-s17011",
+      "neurons": 32,
+      "boundary": "learned",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-learned-value_risk-mixed-s27011",
+      "neurons": 32,
+      "boundary": "learned",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-learned-value_risk-mixed-s37011",
+      "neurons": 32,
+      "boundary": "learned",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-learned-tanh-mixed-s17011",
+      "neurons": 32,
+      "boundary": "learned",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-learned-tanh-mixed-s27011",
+      "neurons": 32,
+      "boundary": "learned",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-learned-tanh-mixed-s37011",
+      "neurons": 32,
+      "boundary": "learned",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-qvi-value_risk-mixed-s17011",
+      "neurons": 32,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-qvi-value_risk-mixed-s27011",
+      "neurons": 32,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-qvi-value_risk-mixed-s37011",
+      "neurons": 32,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-qvi-tanh-mixed-s17011",
+      "neurons": 32,
+      "boundary": "qvi",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-qvi-tanh-mixed-s27011",
+      "neurons": 32,
+      "boundary": "qvi",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-qvi-tanh-mixed-s37011",
+      "neurons": 32,
+      "boundary": "qvi",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n32-qvi-value_risk-native32-s17011",
+      "neurons": 32,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "native32",
+      "seed": 17011,
+      "family": "native32_training"
+    },
+    {
+      "id": "n32-qvi-value_risk-native32-s27011",
+      "neurons": 32,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "native32",
+      "seed": 27011,
+      "family": "native32_training"
+    },
+    {
+      "id": "n32-qvi-value_risk-native32-s37011",
+      "neurons": 32,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "native32",
+      "seed": 37011,
+      "family": "native32_training"
+    },
+    {
+      "id": "n64-fixed-value_risk-mixed-s17011",
+      "neurons": 64,
+      "boundary": "fixed",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-fixed-value_risk-mixed-s27011",
+      "neurons": 64,
+      "boundary": "fixed",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-fixed-value_risk-mixed-s37011",
+      "neurons": 64,
+      "boundary": "fixed",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-fixed-tanh-mixed-s17011",
+      "neurons": 64,
+      "boundary": "fixed",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-fixed-tanh-mixed-s27011",
+      "neurons": 64,
+      "boundary": "fixed",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-fixed-tanh-mixed-s37011",
+      "neurons": 64,
+      "boundary": "fixed",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-learned-value_risk-mixed-s17011",
+      "neurons": 64,
+      "boundary": "learned",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-learned-value_risk-mixed-s27011",
+      "neurons": 64,
+      "boundary": "learned",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-learned-value_risk-mixed-s37011",
+      "neurons": 64,
+      "boundary": "learned",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-learned-tanh-mixed-s17011",
+      "neurons": 64,
+      "boundary": "learned",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-learned-tanh-mixed-s27011",
+      "neurons": 64,
+      "boundary": "learned",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-learned-tanh-mixed-s37011",
+      "neurons": 64,
+      "boundary": "learned",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-qvi-value_risk-mixed-s17011",
+      "neurons": 64,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-qvi-value_risk-mixed-s27011",
+      "neurons": 64,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-qvi-value_risk-mixed-s37011",
+      "neurons": 64,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-qvi-tanh-mixed-s17011",
+      "neurons": 64,
+      "boundary": "qvi",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 17011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-qvi-tanh-mixed-s27011",
+      "neurons": 64,
+      "boundary": "qvi",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 27011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-qvi-tanh-mixed-s37011",
+      "neurons": 64,
+      "boundary": "qvi",
+      "features": "tanh",
+      "precision": "mixed",
+      "seed": 37011,
+      "family": "signed_factorial"
+    },
+    {
+      "id": "n64-qvi-value_risk-native32-s17011",
+      "neurons": 64,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "native32",
+      "seed": 17011,
+      "family": "native32_training"
+    },
+    {
+      "id": "n64-qvi-value_risk-native32-s27011",
+      "neurons": 64,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "native32",
+      "seed": 27011,
+      "family": "native32_training"
+    },
+    {
+      "id": "n64-qvi-value_risk-native32-s37011",
+      "neurons": 64,
+      "boundary": "qvi",
+      "features": "value_risk",
+      "precision": "native32",
+      "seed": 37011,
+      "family": "native32_training"
+    }
+  ],
+  "data": {
+    "train_sources": [
+      10000,
+      10001,
+      10002,
+      10003,
+      10004,
+      10005,
+      10006,
+      10007,
+      10008,
+      10009,
+      10010,
+      10011
+    ],
+    "dev_sources": [
+      11000,
+      11001,
+      11002,
+      11003
+    ],
+    "test_sources": [
+      12000,
+      12001,
+      12002,
+      12003,
+      12004,
+      12005,
+      12006,
+      12007,
+      12008,
+      12009,
+      12010,
+      12011,
+      12012,
+      12013,
+      12014,
+      12015
+    ],
+    "train_per_source": 48,
+    "dev_per_source": 48,
+    "test_per_source": 64,
+    "length": 12
+  },
+  "training": {
+    "max_updates": 512,
+    "train_cpu_limit": 900.0,
+    "cpu_prefix": 180.0,
+    "learning_rate": 0.01,
+    "batch_size": 8,
+    "gradient_clip": 3.0,
+    "development_every": 64,
+    "threads": 1,
+    "loss": "0.8 final CE + 0.2 mean prefix CE",
+    "selection": "minimum development final CE including initial"
+  },
+  "validation": {
+    "min_final_accuracy": 0.8,
+    "min_gain_over_initial": 0.1,
+    "min_gain_over_prelate": 0.1,
+    "min_seed_fraction": 0.6666666666666666,
+    "max_native32_mass_error": 3e-05,
+    "max_mixed_mass_error": 2e-09,
+    "fp32_accuracy_noninferiority_margin": 0.02,
+    "fp32_brier_noninferiority_margin": 0.02,
+    "fp32_pairing": "Per same seed/width: native32 accuracy >= mixed-0.02 and Brier <= mixed+0.02, plus numerical/learning gates. At least 2/3 seeds to pass a width. This is a prospective engineering tolerance, not statistical noninferiority."
+  },
+  "holdout_policy": "All 63 terminal train records and selected checkpoints sealed before any test construction. No tuning, reselection or retry using test. All failures remain denominator. New sources are independent identities in the same synthetic generator family.",
+  "cost_policy": "512 equal updates primary; 900 CPU-second safety cap yields censored record. Preserve last pre-180-CPU checkpoint for an equal CPU prefix. Count setup, all development, checkpoint IO, process imports/shutdown, test and failures. Joules unknown if not measured. The 180-second prefix is attempted-update CPU only, not full end-to-end time; complete time is reported separately. Every sub-512 run is censored for equal-update analysis.",
+  "baseline_scope": "This factorial identifies effects inside signed HCSN only; tanh replaces two readout features and is not a conventional RNN baseline.",
+  "capacity_policy": "Report total, requires_grad, exact recurrent mask counts, and first-minibatch None/zero gradients. Learned boundary adds N parameters; no exact effective-capacity equality claim."
+}

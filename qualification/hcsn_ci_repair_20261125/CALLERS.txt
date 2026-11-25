@@ -1,0 +1,27 @@
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_owner.rs:14:use crate::ControlRuntimePublicationV1;
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_owner.rs:361:    record: ControlRuntimePublicationV1,
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_owner.rs:413:            ControlRuntimePublicationV1::head,
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_owner.rs:707:        let record = ControlRuntimePublicationV1::new(
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_owner.rs:738:        record: &ControlRuntimePublicationV1,
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_owner.rs:854:    record: &ControlRuntimePublicationV1,
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:74:pub struct ControlRuntimePublicationV1 {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:87:impl ControlRuntimePublicationV1 {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:212:    ) -> Result<Vec<ControlRuntimePublicationV1>, ControlRuntimePublicationErrorV1>;
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:217:        record: &ControlRuntimePublicationV1,
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:223:    records: Vec<ControlRuntimePublicationV1>,
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:228:    pub fn records(&self) -> &[ControlRuntimePublicationV1] {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:237:    ) -> Result<Vec<ControlRuntimePublicationV1>, ControlRuntimePublicationErrorV1> {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:245:        record: &ControlRuntimePublicationV1,
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:307:    ) -> Result<Vec<ControlRuntimePublicationV1>, ControlRuntimePublicationErrorV1> {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:322:        record: &ControlRuntimePublicationV1,
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:383:    records: &[ControlRuntimePublicationV1],
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:399:fn publication_head(records: &[ControlRuntimePublicationV1]) -> ControlRuntimePublicationHeadV1 {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:402:        ControlRuntimePublicationV1::head,
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:406:fn receipt(records: &[ControlRuntimePublicationV1]) -> ControlRuntimePublicationReceiptV1 {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:414:fn digest_publication(record: &ControlRuntimePublicationV1) -> Digest32 {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:431:    records: &[ControlRuntimePublicationV1],
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:477:) -> Result<Vec<ControlRuntimePublicationV1>, ControlRuntimePublicationErrorV1> {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:539:        records.push(ControlRuntimePublicationV1 {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:733:    ) -> ControlRuntimePublicationV1 {
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/control_runtime_publication.rs:734:        ControlRuntimePublicationV1::new(
+b1af67a38f8cf9cee700cc067da1e6001ce220a8:codex-rs/hepta-control-plane/src/lib.rs:80:pub use control_runtime_publication::ControlRuntimePublicationV1;
