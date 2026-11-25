@@ -255,6 +255,9 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
+        #[cfg(unix)]
+        crate::registry::create_private_directory(&staging)?;
+        #[cfg(not(unix))]
         std::fs::create_dir(&staging)?;
         let result = (|| {
             let bin_root = staging.join("bin");

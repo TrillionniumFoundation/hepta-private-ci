@@ -606,7 +606,7 @@ fn migrate_private_directory(parent: &Path, name: &str) -> Result<(), FleetRegis
 }
 
 #[cfg(unix)]
-fn create_private_directory(path: &Path) -> std::io::Result<()> {
+pub(crate) fn create_private_directory(path: &Path) -> std::io::Result<()> {
     use std::os::unix::fs::DirBuilderExt;
 
     let mut builder = std::fs::DirBuilder::new();

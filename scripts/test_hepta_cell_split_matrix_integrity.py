@@ -146,6 +146,30 @@ class MatrixIntegrityTests(unittest.TestCase):
         MATRIX.validate_report(self.report)
         self.assertEqual(self.report["authority"], "DENY_ALL")
 
+    def test_signed_fixture_without_separately_pinned_key_is_denied(self) -> None:
+        with patch.dict(MATRIX.os.environ, {MATRIX.TRUSTED_OBSERVER_PUBKEY_ENV: ""}):
+            with self.assertRaisesRegex(ValueError, "independently provisioned"):
+                MATRIX.validate_report(self.report)
+        self.assertEqual(self.report["authority"], "DENY_ALL")
+
+    def test_large_workload_hash_does_not_copy_the_entire_file(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "large-frozen-workload.bin"
+            chunk = b"x" * (1024 * 1024)
+            expected = MATRIX.hashlib.sha256()
+            with path.open("wb") as stream:
+                for _ in range(12):
+                    stream.write(chunk)
+                    expected.update(chunk)
+            with patch.object(
+                Path,
+                "read_bytes",
+                side_effect=AssertionError("whole-file copy forbidden"),
+            ):
+                self.assertEqual(
+                    MATRIX.frozen_workload_digest(path), expected.hexdigest()
+                )
+
     def test_repeated_case_with_same_sixteen_id_set_fails(self) -> None:
         self.report["cases"].append(copy.deepcopy(self.report["cases"][0]))
         reseal_fixture(self.report, self.key)
