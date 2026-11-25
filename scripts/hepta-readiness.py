@@ -983,8 +983,9 @@ def verify() -> int:
         ),
         "readiness README discovery/commands",
     )
+    # The public repository homepage is intentionally empty. Readiness is
+    # discoverable through the canonical development and module guides.
     for discovery_path in [
-        "README.md",
         "docs/DEVELOPMENT.md",
         "docs/modules/README.md",
         "docs/learning/README.md",
