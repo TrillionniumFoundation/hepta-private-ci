@@ -49,7 +49,9 @@ OCT21_HISTORY_INDEX = "qa/repository-consolidation/20261125/oct21-historical-cus
 MEM8_STATIC_SOURCE_INDEX = "qa/repository-consolidation/20261125/mem8-static-source-custody/raw-evidence-storage.json"
 MEM8_LEASE_REVIEW_INDEX = "qa/repository-consolidation/20261125/mem8-lease-review-custody/raw-evidence-storage.json"
 SYNTECT_FIXTURE_INDEX = "codex-rs/third_party/syntect-5.3.0-maintained-codec/fixture-custody/raw-evidence-storage.json"
+HISTORICAL_RESEARCH_CONSOLE_INDEX = "qa/repository-consolidation/20261125/historical-hosted-research-console/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    HISTORICAL_RESEARCH_CONSOLE_INDEX: "877a50679f8f95964de2b81fee72520e71d9cf5fbb4d3820e28f45a70d8fd1a5",
     SYNTECT_FIXTURE_INDEX: "9eb3bbf2be6f8f76490906c7e98aae0334d4e7aa7eac13ec216c5f9a0936cbdc",
     MEM8_LEASE_REVIEW_INDEX: "23d1cbd5a5609c78fae6cb398676bfb5d26b51d0c3c7c97e8b287a9fa1575987",
     MEM8_STATIC_SOURCE_INDEX: "5d344321dd99a447b53fc7887414d4df4e08727507b644f9256ded6be61f253d",
