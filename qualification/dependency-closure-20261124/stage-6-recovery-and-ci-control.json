@@ -1,0 +1,376 @@
+{
+  "schema": "hepta.dependency-closure-stage-6.v1",
+  "base_source_head": "804ac018433ff08dfd195e93eed936394baf5053",
+  "reviewed_source_head_before_this_receipt": "3cf42ab0af2ef73c6554b407d40ac34c15c4ce0b",
+  "reviewed_tree_before_this_receipt": "07716d9568e3c12fb8c5ecf21b92136cfc29b506",
+  "scope": "Correct observed Windows recovery and test compilation failures, and move five pure CI control/result jobs to Arm runners without changing their gate semantics.",
+  "source_commits": [
+    {
+      "commit": "556e28764c07ad3a00c66a5bde06930eb5875df4",
+      "scope": "Retained native Windows recovery root; correct two private-copy fixtures and cleanup lifetime; retain expected rejection variants."
+    },
+    {
+      "commit": "15bc7c5a237e6f8b39a56a3eafd7a14a091cda68",
+      "scope": "One explicit std::fs test-module import; all original test assertions retained."
+    },
+    {
+      "upstream_review_commit": "6d33ff119110ffce92edaccf2de5f61c5fa72d4f",
+      "integration_commit": "4a0bee8e5070f1058df9ff3606a1b5b1b5cb3714",
+      "scope": "Exactly five runs-on values in four workflows; all other parsed workflow values and script commands unchanged."
+    },
+    {
+      "upstream_review_commit": "31f4731ea3e66a7183683e55fed64b0600fc46d4",
+      "integration_commit": "3cf42ab0af2ef73c6554b407d40ac34c15c4ce0b",
+      "scope": "Source-bound eight-case Windows C qualification record and precise Matrix business-store scope."
+    }
+  ],
+  "reviewed_source_blob_equivalence": [
+    {
+      "path": ".github/workflows/bazel.yml",
+      "reviewed_source_commit": "6d33ff119110ffce92edaccf2de5f61c5fa72d4f",
+      "same_git_blob": "e3b1455649b2d64c3e409a6b732a8d75ca2d22d5"
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "reviewed_source_commit": "6d33ff119110ffce92edaccf2de5f61c5fa72d4f",
+      "same_git_blob": "ebbc75777b973022b382bbfbdb82866ab6f5c619"
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "reviewed_source_commit": "6d33ff119110ffce92edaccf2de5f61c5fa72d4f",
+      "same_git_blob": "88dcd78dc91b3ef6154b974d27fa99b2998d2f1b"
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "reviewed_source_commit": "6d33ff119110ffce92edaccf2de5f61c5fa72d4f",
+      "same_git_blob": "31f50bdfdf4250283d9bedb30194455ed36a3077"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+      "reviewed_source_commit": "15bc7c5a237e6f8b39a56a3eafd7a14a091cda68",
+      "same_git_blob": "67daf53a0ead197ed0f5515748fe636174d4d525"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "reviewed_source_commit": "556e28764c07ad3a00c66a5bde06930eb5875df4",
+      "same_git_blob": "87a89efbd409a9941d5aba17b20194efb80aa638"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "reviewed_source_commit": "556e28764c07ad3a00c66a5bde06930eb5875df4",
+      "same_git_blob": "82bfd5f96f8024047986e76d6923814252615298"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "reviewed_source_commit": "556e28764c07ad3a00c66a5bde06930eb5875df4",
+      "same_git_blob": "e69d1289d90984ea92305243ff74fc810492aac4"
+    },
+    {
+      "path": "qualification/ci-remediation/ci-control-workers-20261124/README.md",
+      "reviewed_source_commit": "6d33ff119110ffce92edaccf2de5f61c5fa72d4f",
+      "same_git_blob": "a7c22988b0dce40d705ec86a3e6a6a0c04f9e642"
+    },
+    {
+      "path": "qualification/ci-remediation/ci-control-workers-20261124/actionlint-baseline-and-candidate.txt",
+      "reviewed_source_commit": "6d33ff119110ffce92edaccf2de5f61c5fa72d4f",
+      "same_git_blob": "a442e2772e9cefdb1f9d4c3f46dc53e1446cb1a7"
+    },
+    {
+      "path": "qualification/ci-remediation/ci-control-workers-20261124/existing-control-tests.txt",
+      "reviewed_source_commit": "6d33ff119110ffce92edaccf2de5f61c5fa72d4f",
+      "same_git_blob": "8fea370b482769e7f59e3a97253094fd5af1bf4b"
+    },
+    {
+      "path": "qualification/ci-remediation/ci-control-workers-20261124/receipt.json",
+      "reviewed_source_commit": "6d33ff119110ffce92edaccf2de5f61c5fa72d4f",
+      "same_git_blob": "743b85a84bec85a31d9e03f279340e9e134e41ce"
+    },
+    {
+      "path": "qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/README.md",
+      "reviewed_source_commit": "31f4731ea3e66a7183683e55fed64b0600fc46d4",
+      "same_git_blob": "fb5260adf5f40dffceaedbbb4d61dc733958b720"
+    },
+    {
+      "path": "qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/native-804ac0-receipt.json",
+      "reviewed_source_commit": "31f4731ea3e66a7183683e55fed64b0600fc46d4",
+      "same_git_blob": "e25cb62c600dfe75ae8bec44eb7a54729d24be28"
+    }
+  ],
+  "locks_and_advisory_policy": {
+    "codex-rs/Cargo.lock": {
+      "unchanged_from_804": true,
+      "sha256": "0596dc4ca12f87645a6ca9893686e9fe82075b2a256eef2a05c4bb2e1d377622"
+    },
+    "MODULE.bazel.lock": {
+      "unchanged_from_804": true,
+      "sha256": "68c55ec19a77ed3009cae644780c9e1cd448cf0ca7ebc14515f0d05a74a62325"
+    },
+    "codex-rs/deny.toml": {
+      "unchanged_from_804": true,
+      "sha256": "de3b77f8b4639bdd7fb188048b09757cb6dd06ae01ecb10998537424c3c240f0"
+    }
+  },
+  "local_validation": {
+    "source_diff_check_exit": 0,
+    "source_formatting": "Each authored candidate was formatted by its owner; all integrated file blobs exactly match the reviewed candidates.",
+    "five_runs_on_only_AST_check": true,
+    "unchanged_control_regression_tests": {
+      "executed": 78,
+      "passed": 78,
+      "log_sha256": "498c8bea2647e9e67fef0236c5994437b217163f729217bc9afc96c05ac624dd"
+    },
+    "unchanged_fan_in_gate_cases": {
+      "executed": 7,
+      "all_expected_exit_codes_observed": true
+    },
+    "actionlint": {
+      "version": "1.7.12",
+      "shellcheck_pyflakes": "disabled for both baseline and candidate",
+      "blocking_architecture_rust_exit": 0,
+      "bazel_baseline_exit": 1,
+      "bazel_candidate_exit": 1,
+      "baseline_and_candidate_diagnostics_byte_identical": true,
+      "new_diagnostics": 0,
+      "existing_diagnostics": 2,
+      "all_four_files_lint_green": false
+    },
+    "codespell_changed_files": {
+      "version": "2.4.3",
+      "exit": 0,
+      "path_count": 14,
+      "output_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "scope": "Exact changed files only; no global ignore changes",
+      "initial_invocation": "Plain Python lacked the already installed codespell module search path; version lookup failed before any file check. This invocation uses the existing fixed 2.4.3 tool directory."
+    },
+    "new_source_native_tests_executed": false,
+    "new_large_local_build_attempted": false,
+    "dependency_audit_and_Bazel_lock_gate": "Production dependency manifests, Cargo.lock, MODULE.bazel.lock and deny policy are unchanged from source804. The previous exact-graph successful gates are not misreported as new executions."
+  },
+  "observed_normal_windows_run_804": {
+    "head": "804ac018433ff08dfd195e93eed936394baf5053",
+    "tree": "a7c03f0857f64d3644c019113ab9c37ae7e7d644",
+    "run": {
+      "id": 45458365304,
+      "job_id": 138673839972,
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at_utc": "2026-11-24T18:50:10Z",
+      "normal_run": true,
+      "cancelled": false,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45458365304/job/138673839972"
+    },
+    "final_artifact": {
+      "id": 14954596695,
+      "bytes": 44139,
+      "sha256": "1b382103ecd366fd27e61025d9ec3a19f53350c9b62e104380eb1e4af18d8bfc"
+    },
+    "executed_without_separate_C_probe": {
+      "unique_cases": 47,
+      "passed": 40,
+      "failed": 7,
+      "attempts": 54
+    },
+    "executed_including_separate_C_probe": {
+      "unique_cases": 55,
+      "passed": 48,
+      "failed": 7,
+      "attempts": 62,
+      "interpretation": "C probe and production consumers remain distinct qualification scopes; all test identities are distinct"
+    },
+    "component_counts": {
+      "native-primitives.log": {
+        "run": 14,
+        "passed_count": 14,
+        "failed_count": 0,
+        "unique_attempts": 14
+      },
+      "registry-native.log": {
+        "run": 2,
+        "passed_count": 2,
+        "failed_count": 0,
+        "unique_attempts": 2
+      },
+      "sqlite-recovery.log": {
+        "run": 8,
+        "passed_count": 8,
+        "failed_count": 0,
+        "unique_attempts": 8
+      },
+      "cognitive-recovery.log": {
+        "run": 23,
+        "passed_count": 16,
+        "failed_count": 7,
+        "unique_attempts": 30
+      }
+    },
+    "separate_C_probe": {
+      "executed": 8,
+      "passed": 8,
+      "failed": 0,
+      "outside_selector": 0,
+      "receipt": "../ci-remediation/windows-sqlite-owner-vfs-20261124/native-804ac0-receipt.json"
+    },
+    "compile_blocked_steps": {
+      "15_directory_and_schema": {
+        "log": "tests.log",
+        "executed_cases": 0,
+        "previous_selection_size_not_executed": 30,
+        "first_errors": [
+          "E0433 evaluated_shadow_segment_tests.rs:104:18 fs",
+          "E0433 evaluated_shadow_segment_tests.rs:138:16 fs"
+        ],
+        "cargo_build_exit_code": 101,
+        "step_exit_code": 1,
+        "behavior_qualification": "No newly executed cases; previous OS33 behavior cannot be judged from this compile failure"
+      },
+      "16_prompt_and_final_use": {
+        "log": "prompt-consumers.log",
+        "executed_cases": 0,
+        "previous_selection_size_not_executed": 12,
+        "first_errors": [
+          "E0433 evaluated_shadow_segment_tests.rs:104:18 fs",
+          "E0433 evaluated_shadow_segment_tests.rs:138:16 fs"
+        ],
+        "cargo_build_exit_code": 101,
+        "step_exit_code": 1,
+        "behavior_qualification": "No newly executed cases; previous OS33 behavior cannot be judged from this compile failure"
+      }
+    },
+    "Clippy_and_source_drift": {
+      "step": 17,
+      "conclusion": "success",
+      "packages": [
+        "codex-utils-path",
+        "codex-hepta-prompt-registry",
+        "codex-hepta-contracts",
+        "codex-hepta-bao-adapter",
+        "codex-state",
+        "codex-hepta-memory"
+      ],
+      "command": "just fix -p codex-utils-path -p codex-hepta-prompt-registry -p codex-hepta-contracts -p codex-hepta-bao-adapter -p codex-state -p codex-hepta-memory --locked",
+      "git_diff_exit_code": 0,
+      "warnings_present": true,
+      "intelligence_test_module_not_in_this_selection": true,
+      "no_diff_output_file_in_artifact": true
+    },
+    "failed_cognitive_cases_requiring_new_native_validation": [
+      "codex-hepta-memory cognitive_store::recovery::tests::byte_identical_rename_replacement_can_recover_only_with_current_witness",
+      "codex-hepta-memory cognitive_store::recovery::tests::cold_read_only::cold_recovery_rejects_revision_change_and_forgetting_rollback",
+      "codex-hepta-memory cognitive_store::recovery::tests::corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io",
+      "codex-hepta-memory cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation",
+      "codex-hepta-memory cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+      "codex-hepta-memory cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers",
+      "codex-hepta-memory cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission"
+    ]
+  },
+  "scoped_push_trigger_audit": {
+    "matrix-store-compatibility.yml": {
+      "push_paths": [
+        ".github/workflows/matrix-store-compatibility.yml",
+        "codex-rs/hepta-matrix-sdk/**",
+        "codex-rs/third_party/matrix-sdk-0.19.1/**",
+        "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/**",
+        "codex-rs/Cargo.toml",
+        "codex-rs/Cargo.lock"
+      ],
+      "matching_changed_paths": [],
+      "cancel_in_progress": "false",
+      "preserve_existing_804_run": true
+    },
+    "keyring-backend-interop.yml": {
+      "push_paths": [
+        ".github/workflows/keyring-backend-interop.yml",
+        "scripts/keyring-backend-interop/**",
+        "codex-rs/keyring-store/**",
+        "codex-rs/rmcp-client/Cargo.toml",
+        "codex-rs/Cargo.lock"
+      ],
+      "matching_changed_paths": [],
+      "cancel_in_progress": "false",
+      "preserve_existing_804_run": true
+    }
+  },
+  "old_ebe_queue_closure": {
+    "old_runs": [
+      {
+        "receipt": "cancel-obsolete-ebe-architecture-v1.json",
+        "sha256": "12cef47b179677aabc10763321e3dd9d06069e0dd7885009bb6f623466105d5f",
+        "bytes": 1378,
+        "run": 45445479938,
+        "operation": "ordinary cancellation",
+        "mutation_attempted_utc": "2026-11-24T18:21:22.337229+00:00",
+        "http_status": "HTTP/2.0 202 Accepted",
+        "readback": {
+          "id": 45445479938,
+          "head_sha": "ebe2737b4014c9b45ad995adccc53eb71e718f3d",
+          "status": "queued",
+          "conclusion": null,
+          "updated_at": "2026-11-24T18:21:24Z"
+        }
+      },
+      {
+        "receipt": "force-cancel-obsolete-ebe-architecture-v1.json",
+        "sha256": "e594559f15d07cbd7cfe5c89d6abafd2120ae59a495055000dc0dea53f23ac04",
+        "bytes": 1600,
+        "run": 45445479938,
+        "operation": "force-cancel after recorded ordinary cancellation did not terminate the queued always aggregator",
+        "mutation_attempted_utc": "2026-11-24T18:38:39.856001+00:00",
+        "http_status": "HTTP/2.0 202 Accepted",
+        "readback": {
+          "id": 45445479938,
+          "head_sha": "ebe2737b4014c9b45ad995adccc53eb71e718f3d",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "updated_at": "2026-11-24T18:38:42Z"
+        }
+      },
+      {
+        "receipt": "cancel-obsolete-ebe-blocking-v1.json",
+        "sha256": "dbf4c0f0e880749249069c587328ea291c76854d2051f6b7524a3ad07de4ca67",
+        "bytes": 1666,
+        "run": 45445480207,
+        "operation": "ordinary cancellation",
+        "mutation_attempted_utc": "2026-11-24T18:39:09.615857+00:00",
+        "http_status": "HTTP/2.0 202 Accepted",
+        "readback": {
+          "id": 45445480207,
+          "head_sha": "ebe2737b4014c9b45ad995adccc53eb71e718f3d",
+          "status": "queued",
+          "conclusion": null,
+          "updated_at": "2026-11-24T18:39:11Z"
+        }
+      },
+      {
+        "receipt": "force-cancel-obsolete-ebe-blocking-v1.json",
+        "sha256": "45ffbfad01c5f89455b5cc9ed1f2d69db70389d3f07fe57b000a0c3b3d67bff4",
+        "bytes": 1888,
+        "run": 45445480207,
+        "operation": "force-cancel after recorded ordinary cancellation did not terminate the queued always aggregator",
+        "mutation_attempted_utc": "2026-11-24T18:41:00.903058+00:00",
+        "http_status": "HTTP/2.0 202 Accepted",
+        "readback": {
+          "id": 45445480207,
+          "head_sha": "ebe2737b4014c9b45ad995adccc53eb71e718f3d",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "updated_at": "2026-11-24T18:41:03Z"
+        }
+      }
+    ],
+    "interpretation": "Both old runs finally cancelled after an ordinary 202 left queued always aggregators; prior source-job successes, failures and cancellations remain distinct. Cancelled is not a passing CI result.",
+    "replacement_run_jobs_created": [
+      45458387224,
+      45458388978
+    ]
+  },
+  "validation_limits": [
+    "The 804 normal Windows run failed. Its 7 cognitive failures remain failed; two later groups compiled zero tests because of the missing import.",
+    "The 30 directory/schema and 12 prompt/final-use cases are prior selection sizes, not newly executed or newly passing cases.",
+    "The C probe, production SQLx/state tests, and cognitive tests are distinct scopes; retries are not extra unique cases.",
+    "The new recovery and import candidates, and the five edited control jobs, still require actual new-head CI.",
+    "The private VFS is selected by hepta-matrix-store business SQLite. Matrix SDK encrypted caches and their existing Windows directory policy are not qualified by these results.",
+    "The existing 804 Matrix and Keyring push runs are preserved because this source path set matches neither workflow filter. Their execution results must be read separately.",
+    "The separate Windows execution DELETE containment draft is not included; no sandbox or authorization gate is weakened.",
+    "This receipt changes no source, dependency, runtime setting or workflow command."
+  ]
+}

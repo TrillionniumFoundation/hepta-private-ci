@@ -38,6 +38,7 @@ use super::unavailable;
 use super::verify_store;
 use crate::ProductionAuthorityLease;
 use crate::ProductionAuthorityVerifier;
+#[cfg(not(windows))]
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
@@ -139,6 +140,15 @@ impl CognitiveStore {
             .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
 
         let root = layout.cognitive_root();
+        #[cfg(windows)]
+        let retained_root =
+            codex_utils_path::windows_private::PrivateSqliteDirectory::inspect(root)
+                .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        #[cfg(windows)]
+        let canonical_root = retained_root
+            .canonical_path()
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        #[cfg(not(windows))]
         let canonical_root = canonical_path_without_redirection(root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
             .ok_or_else(|| {
@@ -146,9 +156,10 @@ impl CognitiveStore {
                     "cognitive recovery root does not exist".to_string(),
                 )
             })?;
-        // The helper has already rejected redirection, including every
-        // Windows reparse ancestor. Ordinary and verbatim drive/UNC prefixes
-        // may differ textually while naming the same accepted root.
+        // Windows inspection rejects every reparse ancestor and verifies the
+        // local-drive root's owner/ACL before deriving its name from that handle.
+        // Keep the no-delete-sharing root handle through this recovery ceremony;
+        // a lexical spelling comparison is not the native redirection boundary.
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)

@@ -1,0 +1,199 @@
+{
+  "schema": "hepta.sqlite-owner-native-independent-binding.v1",
+  "source_head": "804ac018433ff08dfd195e93eed936394baf5053",
+  "run_id": 45458365304,
+  "job_id": 138673839972,
+  "artifact_id": 14952131334,
+  "artifact_bytes": 10212,
+  "artifact_sha256": "5ebc0adf80f4f06d0a475fe444762e587e6ae05704fa1243aea28e700006b8b0",
+  "native_log_sha256": "bc19dac031430d96c619644f80c7570df7901ffd6f85dbe725554a86164b543c",
+  "actual_test_build_seconds": 10.42,
+  "actual_native_test_seconds": 1.542,
+  "test_exit": 0,
+  "selected_tests": 8,
+  "unique_passed_tests": [
+    "hepta_owner_tests::owner_registration_reuses_policy_without_changing_default_vfs",
+    "hepta_owner_tests::readonly_wal_reader_recreates_private_shm_without_writing_db",
+    "hepta_owner_tests::cached_private_shm_rejects_stock_policy_without_poisoning_private_readers",
+    "hepta_owner_tests::temporary_open_creates_private_noninheritable_handle_and_deletes_on_close",
+    "hepta_owner_tests::thread_token::same_user_thread_token_reuses_policy_and_restores_thread_state",
+    "hepta_owner_tests::worker_creates_private_db_wal_and_shm_then_reopens",
+    "hepta_owner_tests::existing_wrong_owner_is_rejected_without_data_or_acl_changes",
+    "hepta_owner_tests::existing_broad_acl_is_rejected_without_data_or_acl_changes"
+  ],
+  "skipped_tests": 0,
+  "retried_tests_observed": 0,
+  "source_clean": true,
+  "source_inputs_matched": 16,
+  "source_binding_method": "git show exact 804 blob; normalize LF then Windows CRLF; compare every actual receipt SHA",
+  "source_bindings": [
+    {
+      "path": ".github/workflows/hepta-windows-durable-fixtures.yml",
+      "git_blob_bytes": 10132,
+      "git_blob_sha256": "8893299ecbc6f4fa8b45bfaee6a4407d77747feeb91de5ea8a1d87f1b1b3dd53",
+      "windows_checkout_bytes": 10316,
+      "windows_checkout_sha256": "168f6180fec304bd7aac885f14bf3ed8f5ec8bf6dd780a514d76d28bbbd098da",
+      "native_receipt_sha256": "168f6180fec304bd7aac885f14bf3ed8f5ec8bf6dd780a514d76d28bbbd098da",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/Cargo.toml",
+      "git_blob_bytes": 2884,
+      "git_blob_sha256": "0df49a4834d0090ff3664e6449f26a92e0849bf752e3a1d1b57a777c0f2d4197",
+      "windows_checkout_bytes": 3028,
+      "windows_checkout_sha256": "1c46f4cb05a48401dbf70bd8d9e61d5a8118495993adc8aade1852261d2adf29",
+      "native_receipt_sha256": "1c46f4cb05a48401dbf70bd8d9e61d5a8118495993adc8aade1852261d2adf29",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/build.rs",
+      "git_blob_bytes": 35916,
+      "git_blob_sha256": "35850bca6fe22f37d302ca452d2cd6be3b0c175318677f1b63d96fbf5afee7fe",
+      "windows_checkout_bytes": 36814,
+      "windows_checkout_sha256": "584162390ce81e498759b781630e78fdbf51348d2faaa83ee44af5161cb7669e",
+      "native_receipt_sha256": "584162390ce81e498759b781630e78fdbf51348d2faaa83ee44af5161cb7669e",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.c",
+      "git_blob_bytes": 9584648,
+      "git_blob_sha256": "372f544235a150a0baf1feff2e1d01a454e2049e6406fb37efda37fdc3faa241",
+      "windows_checkout_bytes": 9855827,
+      "windows_checkout_sha256": "224fdc7ba9c5569ba067a88dd88c2bc51ea7d6086d2c4579897568e78e8e81b4",
+      "native_receipt_sha256": "224fdc7ba9c5569ba067a88dd88c2bc51ea7d6086d2c4579897568e78e8e81b4",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.h",
+      "git_blob_bytes": 695729,
+      "git_blob_sha256": "d6c84557261893439b341d2e6c35187ae3ea24fbfd843ad94616f72d89242b8c",
+      "windows_checkout_bytes": 710176,
+      "windows_checkout_sha256": "68db6b97962922fdca7b6603fef7257e59fa86a513be4d0a9776868c14d663fb",
+      "native_receipt_sha256": "68db6b97962922fdca7b6603fef7257e59fa86a513be4d0a9776868c14d663fb",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/hepta_owner_vfs.c",
+      "git_blob_bytes": 8560,
+      "git_blob_sha256": "b1bb456398c4ff52866885b0a0a6d1ef2737d40fdd43d4258580fbc3e6d4d9e8",
+      "windows_checkout_bytes": 8792,
+      "windows_checkout_sha256": "fc77dade50be50bec6aeca1963f31391c4f328bf3472143fabb391639be766da",
+      "native_receipt_sha256": "fc77dade50be50bec6aeca1963f31391c4f328bf3472143fabb391639be766da",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/bindgen_bundled_version.rs",
+      "git_blob_bytes": 126710,
+      "git_blob_sha256": "a25057a06d8cb5053a61c8f0ff746cc3d81b3bd778fbd3199ba12c8a6ee2945d",
+      "windows_checkout_bytes": 130401,
+      "windows_checkout_sha256": "a77110c757da28f843eb3d1fa0d1035ddf4aff4045c5e553414ed5544eddadf8",
+      "native_receipt_sha256": "a77110c757da28f843eb3d1fa0d1035ddf4aff4045c5e553414ed5544eddadf8",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/src/hepta_owner.rs",
+      "git_blob_bytes": 1617,
+      "git_blob_sha256": "3ca0cd90030bb3f6200d6142fd6b84c249b6b60eb7a14c39f645ae1b5db19f36",
+      "windows_checkout_bytes": 1658,
+      "windows_checkout_sha256": "67001f3b5fc42168d39a19ef4db60bf2c1f26b0a3a8340eb221a9f6491a1cd85",
+      "native_receipt_sha256": "67001f3b5fc42168d39a19ef4db60bf2c1f26b0a3a8340eb221a9f6491a1cd85",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/src/hepta_owner_test_support.rs",
+      "git_blob_bytes": 16261,
+      "git_blob_sha256": "f55f1a7c2b6162254c62c9d6d6484ce908cb656ec378839a2caf7c254c2a8ee3",
+      "windows_checkout_bytes": 16733,
+      "windows_checkout_sha256": "53631aad9ea418a14cf2d781bb2acb1f65980972f306d4d7a0b89d268bdeabfd",
+      "native_receipt_sha256": "53631aad9ea418a14cf2d781bb2acb1f65980972f306d4d7a0b89d268bdeabfd",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/src/hepta_owner_tests.rs",
+      "git_blob_bytes": 8816,
+      "git_blob_sha256": "49b019c267b3d04dec8f22b15d4c11c49f423e8cf721e05337ed9ef6c3067077",
+      "windows_checkout_bytes": 9043,
+      "windows_checkout_sha256": "1dbc77a2c4e72530ccb45f8d60f4f5b43f0bdc44e706baf518fd29b3396c1cf8",
+      "native_receipt_sha256": "1dbc77a2c4e72530ccb45f8d60f4f5b43f0bdc44e706baf518fd29b3396c1cf8",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/src/hepta_owner_thread_tests.rs",
+      "git_blob_bytes": 4958,
+      "git_blob_sha256": "c1da5c71c9009ff0ad90bc03f38d0dc2c5ffa83e73efde6ef9a241c296cfe19a",
+      "windows_checkout_bytes": 5097,
+      "windows_checkout_sha256": "4e2897a6eb262cae25d0d5fa25ec4055583777d51fe773b7448f105c3b3c5b21",
+      "native_receipt_sha256": "4e2897a6eb262cae25d0d5fa25ec4055583777d51fe773b7448f105c3b3c5b21",
+      "match": true
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/src/lib.rs",
+      "git_blob_bytes": 1026,
+      "git_blob_sha256": "f531a4fc506f36b7e496e7c8a8eaf12a5b6a9c94d989e0bee972b1aa2aa9fad3",
+      "windows_checkout_bytes": 1074,
+      "windows_checkout_sha256": "3dd9bf4b35ab549dd7db5c6c77a623f2dcc131b58a911e66b31044a46dc1cd61",
+      "native_receipt_sha256": "3dd9bf4b35ab549dd7db5c6c77a623f2dcc131b58a911e66b31044a46dc1cd61",
+      "match": true
+    },
+    {
+      "path": "qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/native-probe/Cargo.toml",
+      "git_blob_bytes": 534,
+      "git_blob_sha256": "60b70f251a39129ab34b45e6d9e31824ff0df4fc8c7845feb047d66183afefd2",
+      "windows_checkout_bytes": 557,
+      "windows_checkout_sha256": "b8f603468da35391d4ee84b2fcadc83b62c80901c975bd16e546354746f50493",
+      "native_receipt_sha256": "b8f603468da35391d4ee84b2fcadc83b62c80901c975bd16e546354746f50493",
+      "match": true
+    },
+    {
+      "path": "qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/native-probe/Cargo.lock",
+      "git_blob_bytes": 3633,
+      "git_blob_sha256": "33016574d347160178193a142d149e1fb45fb61c762f164394d3c5df935b5b87",
+      "windows_checkout_bytes": 3760,
+      "windows_checkout_sha256": "f505335dc32c4b63d74ba52bee2515b0bd517ab72cc96865d7533fafa95a19d0",
+      "native_receipt_sha256": "f505335dc32c4b63d74ba52bee2515b0bd517ab72cc96865d7533fafa95a19d0",
+      "match": true
+    },
+    {
+      "path": "qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/native-probe/probe.rs",
+      "git_blob_bytes": 430,
+      "git_blob_sha256": "1572bb45364b3121e6cbd2628e58b0bbb77fc542abb9d02863e31455d91335f3",
+      "windows_checkout_bytes": 441,
+      "windows_checkout_sha256": "cef57e301d3aabcadf2860a906ae6b679ca34f0b74e85308334291c32b4739cd",
+      "native_receipt_sha256": "cef57e301d3aabcadf2860a906ae6b679ca34f0b74e85308334291c32b4739cd",
+      "match": true
+    },
+    {
+      "path": "qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/native-probe/nextest.toml",
+      "git_blob_bytes": 330,
+      "git_blob_sha256": "ef1624f4835da9163208c0a49eef290cf1f5f80d1c0792725f1646e7d83e9c33",
+      "windows_checkout_bytes": 341,
+      "windows_checkout_sha256": "a60363df3d3df50d8a96049fee94a535b6affaeb1793be8c820aab140f30ee1a",
+      "native_receipt_sha256": "a60363df3d3df50d8a96049fee94a535b6affaeb1793be8c820aab140f30ee1a",
+      "match": true
+    }
+  ],
+  "actual_sqlite_features": [
+    "bundled",
+    "bundled_bindings",
+    "cc",
+    "default",
+    "min_sqlite_version_3_45_3",
+    "pkg-config",
+    "vcpkg"
+  ],
+  "scope": "isolated actual Windows bundled C and eight-case VFS probe only",
+  "sqlx_consumer_graph_qualified_by_this_artifact": false,
+  "different_account_impersonation_qualified": false,
+  "forced_os_access_denied_readonly_shm_fallback_executed": false,
+  "ancestor_confinement_or_current_cut_fence_qualified": false,
+  "root_independent_verification_reported": {
+    "zip_and_log_sha256": true,
+    "source_inputs_matched": 16,
+    "same_git_to_crlf_method": true
+  },
+  "source_tree": "a7c03f0857f64d3644c019113ab9c37ae7e7d644",
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45458365304",
+  "artifact_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/14952131334/zip",
+  "matrix_sdk_encrypted_cache_qualified_by_this_artifact": false,
+  "h4_power_loss_qualified_by_this_artifact": false
+}

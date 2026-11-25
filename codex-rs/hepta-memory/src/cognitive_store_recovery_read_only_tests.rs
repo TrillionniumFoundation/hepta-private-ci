@@ -105,8 +105,12 @@ async fn cold_recovery_rejects_revision_change_and_forgetting_rollback() {
         .await,
         Err(CognitiveRecoveryError::AccessDenied(_))
     ));
-    let root = store.path().parent().expect("root");
-    std::fs::remove_dir_all(root).expect("remove source");
+    let root = store.path().parent().expect("root").to_path_buf();
+    // All current-cut and rollback assertions above run with the original
+    // owner alive. Release its no-delete-sharing directory guard only before
+    // deliberately removing the source for the revoked-before-I/O check.
+    drop(store);
+    std::fs::remove_dir_all(&root).expect("remove source");
     assert!(matches!(
         CognitiveStore::open_read_only_recovery(
             &layout(&temp, &owner),
