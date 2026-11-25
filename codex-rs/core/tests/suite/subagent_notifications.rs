@@ -1350,13 +1350,18 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
             .expect("child thread id"),
     )?;
     let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
-    // This assertion concerns message content kinds; the actual agent_message
-    // payload and routing remain checked by the surrounding wire assertions.
+    tokio::time::timeout(Duration::from_secs(2), async {
+        while !matches!(child_thread.agent_status().await, AgentStatus::Completed(_)) {
+            sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await?;
+    // Forking rewrites inherited instructions in the active context; the raw
+    // rollout retains the old items, and paginated threads reject legacy full
+    // history reads. Match every wire item against the completed child's
+    // actual context, preserving the full ordered content and annotations.
     let local_items =
-        super::local_annotations::persisted_request_items(&child_thread, &child_request, |item| {
-            item["type"] == "message"
-        })
-        .await?;
+        super::local_annotations::active_request_items(&child_thread, &child_request).await?;
     let misaligned_child_messages = local_items
         .iter()
         .filter(|message| {
