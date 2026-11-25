@@ -25,7 +25,9 @@ HOSTED_QUALIFICATION_INDEX = "qa/repository-consolidation/20261124/hosted-qualif
 MEM8_INDEX = "qa/repository-consolidation/20261124/mem8-log-gzip/raw-evidence-storage.json"
 HOSTED_1026_WINDOWS_INDEX = "qa/repository-consolidation/20261124/hosted-1026-windows-learn/raw-evidence-storage.json"
 HISTORICAL_CARGO_DENY_INDEX = "qa/repository-consolidation/20261124/historical-cargo-deny-logs/raw-evidence-storage.json"
+PAIRED_DIAGNOSTIC_INDEX = "qa/repository-consolidation/20261124/paired-diagnostic-logs/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    PAIRED_DIAGNOSTIC_INDEX: "01d68c678f8f5fddb3ed685bdf6604da7639d740faddeda6a5fc723cf89ed7cf",
     HISTORICAL_CARGO_DENY_INDEX: "afd074a431b6cec896c4f4d8ce93a8edefd6b9641149a76bbf7c9b4d53aa30fd",
     HOSTED_1026_WINDOWS_INDEX: "528efff62065e0265093b041f0f1643f8170d3602b36b4feb3a244c9eb3636e5",
     MEM8_INDEX: "e9211b1fd070df8b4f8f622ef915171c5a7918279c07672ef8d637bbb41680c5",
