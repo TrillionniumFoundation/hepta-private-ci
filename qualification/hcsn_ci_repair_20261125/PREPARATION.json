@@ -1,0 +1,72 @@
+{
+  "schema": "hcsn-rust-isolated-preparation.v1",
+  "isolated_directory": "/home/qian-qi/hcsn7067-strict-source-20261125-v1",
+  "events": [
+    {
+      "event": "initial_exact_fetch",
+      "status": "passed",
+      "wall_seconds": 6.0302119120024145
+    },
+    {
+      "event": "full_checkout",
+      "status": "bounded_timeout",
+      "wall_seconds": 50.053872463991866,
+      "effect": "private index.lock retained; no files edited; no other worktree touched"
+    },
+    {
+      "event": "first_sparse_checkout",
+      "status": "failed_due_to_own_stale_index_lock",
+      "effect": "no active process in private repo confirmed, then lock preserved as index.lock.after_timeout"
+    },
+    {
+      "event": "sparse_checkout_retry",
+      "status": "passed",
+      "wall_seconds": 34.00241181999445
+    },
+    {
+      "event": "first_repository_rust_grep",
+      "status": "bounded_timeout",
+      "seconds": 50,
+      "effect": "no patch applied; outside-sparse blobs fetched sequentially"
+    },
+    {
+      "event": "initial_missing_blob_probe",
+      "status": "rejected",
+      "returncode": 128,
+      "effect": "zero missing count was not accepted as complete inventory"
+    },
+    {
+      "event": "bulk_rust_inventory",
+      "status": "passed",
+      "tracked_files": 9311,
+      "unique_blobs": 9296,
+      "missing_blobs": 149,
+      "fetch_exit": 0,
+      "fetch_wall_seconds": 5.580254510976374
+    },
+    {
+      "event": "full_rust_grep_retry",
+      "status": "passed",
+      "returncode": 0,
+      "wall_seconds": 2.772538613062352
+    },
+    {
+      "event": "status_lazy_fetch_disabled",
+      "status": "failed",
+      "returncode": 128,
+      "effect": "no patch applied; read receipt retained in RUST_VALIDATION_PREPARATION_V2.json"
+    },
+    {
+      "event": "initial_just_fmt",
+      "status": "failed",
+      "returncode": 2,
+      "reason": "two exact original evidence Rust files required by existing formatter were outside sparse checkout",
+      "effect": "hydrated exact base bytes, no formatter policy change"
+    },
+    {
+      "event": "just_fmt_and_diff_check_retry",
+      "status": "passed",
+      "evidence": "LOCAL_VALIDATION.json"
+    }
+  ]
+}

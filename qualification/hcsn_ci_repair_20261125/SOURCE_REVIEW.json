@@ -1,0 +1,172 @@
+{
+  "base": "b1af67a38f8cf9cee700cc067da1e6001ce220a8",
+  "constructor_validation_and_record_statements_unchanged": true,
+  "constructor_body_sha256": "ea0d4073d1a39ca74e881c62fbaa49be32507e6b517ec3c4d822eb8022f619c0",
+  "top_level_encoding_and_io_functions_byte_identical": [
+    {
+      "name": "validate_records",
+      "ordinal": 0,
+      "sha256": "5af260bfe2f8fcb853b770d0812af0db5304fe0f9c188202e5820517ab417bb3"
+    },
+    {
+      "name": "publication_head",
+      "ordinal": 1,
+      "sha256": "a8bf4aba7fc9715c55f16d1e7ab0071710b2dc2d7afaaecb8312f11e740b2f39"
+    },
+    {
+      "name": "receipt",
+      "ordinal": 2,
+      "sha256": "e856c4623b8850b22c8d88e189523517127745e6781e9ddbc63d33e54576f252"
+    },
+    {
+      "name": "digest_publication",
+      "ordinal": 3,
+      "sha256": "c692ac70347f4efa486dc0302368f2375f4b3b3b5632e7029ad2264a79225a52"
+    },
+    {
+      "name": "encode_records",
+      "ordinal": 4,
+      "sha256": "2ddcf8f8934c034a612f10015bcdedcf61af8d5341165ddda22c2aa3aadc8103"
+    },
+    {
+      "name": "decode_records",
+      "ordinal": 5,
+      "sha256": "b529fdd3b89f1e78fdaabd38121fd6ed4a8273c7b429b917e1f125d61b34d7f3"
+    },
+    {
+      "name": "push_text",
+      "ordinal": 6,
+      "sha256": "95e5d3f2decfd3026419922ff695b4e0982bab9e32a7bea70641d4fbac20ad94"
+    },
+    {
+      "name": "read_u8",
+      "ordinal": 7,
+      "sha256": "35ff61ac73fa76ad09e758f9000cd392e76bf7ad10e6b211c0dc35468e827b67"
+    },
+    {
+      "name": "read_u16",
+      "ordinal": 8,
+      "sha256": "ec018b23abd1b9bfa228831881ab8cc473f77774cbca3eae871404795b9f374d"
+    },
+    {
+      "name": "read_u32",
+      "ordinal": 9,
+      "sha256": "029f0ddc93b4eec387bc71d2648038d0a485e206e08ac9b64cdb920f01f8b554"
+    },
+    {
+      "name": "read_u64",
+      "ordinal": 10,
+      "sha256": "75cf214b275d5bc4813ee624f947e4e45655118b81a66fd83e9dc3aa8fba4676"
+    },
+    {
+      "name": "read_digest",
+      "ordinal": 11,
+      "sha256": "53cdac5519c6a1afee1a34fc6609b30da6f6efea8f05a5f47f3b43c40fb7496e"
+    },
+    {
+      "name": "read_optional",
+      "ordinal": 12,
+      "sha256": "ae9fb28b6df312dbcfa21cc1131fa91ab5bb986cd86e9c4adcc0c9ca1f9608bc"
+    },
+    {
+      "name": "ensure_parent",
+      "ordinal": 13,
+      "sha256": "4f91645c897fc241d75f84ccbd0520bc13ae41f2d6edd726fb3ed8c1fdde5313"
+    },
+    {
+      "name": "atomic_replace",
+      "ordinal": 14,
+      "sha256": "2aba77fc845fae00940876c5aaf24cbf7f0babc128266695b0748697dd982c94"
+    },
+    {
+      "name": "sync_parent",
+      "ordinal": 15,
+      "sha256": "464cf888f24f89e2db9211356eec5c480a46c031a2bdd01ebdb30fba7faccfcb"
+    },
+    {
+      "name": "sync_parent",
+      "ordinal": 16,
+      "sha256": "617e4c6496c87486430fcee10627bcdc4d064b2309d0dd540df9767eed6e799e"
+    },
+    {
+      "name": "io_error",
+      "ordinal": 17,
+      "sha256": "fc0c78b15e25adf09c9939226f01e26b848f3fce3c9c5cffde17f77c4b4879a4"
+    }
+  ],
+  "new_payload_type_is_not_serialized": true,
+  "rust_source_signature_changed": "8 positional arguments to 7, grouping existing digest and bytes; this is not an unchanged Rust source API.",
+  "route_digest_and_identity_encoding_equal_after_private_helper_and_local_variable_rename": true,
+  "schema": "hcsn-scoped-rust-ci-repair.v1",
+  "prior_head": "da73c392456f307796821740f476c22e227ba473",
+  "source_provenance": {
+    "two_files_pr7052": "78c1012d1b6d63a2cd3d67e2534ba8b8d62e34b6",
+    "three_files_pr6799": "8ca01613a91ddf310fad6decaba7452d46df519e",
+    "constructor_origin_commit": "26d69b8be62a4102e4aa01fb5311af7629ca709c"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+      "sha256": "76794bc6f6b61c8756aafa767a014c0b4d743b621a1c7574dc87ad4eba8c37ca",
+      "git_blob_sha1": "40ae2bfe9de093e3f3193f0f4901beecae3a1719"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/cell_split_route_digest.rs",
+      "sha256": "776adfe4bc02ca9f2b598f8c468d5600417cdc5ac8dde49e8bdaa2b7d30fa99b",
+      "git_blob_sha1": "900784c81894e9231b904892894e540fbe051c5f"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/control_runtime_owner.rs",
+      "sha256": "470f66b8ee0595076a3477ec3de7e16a232c4e62555da70d52c1bb635b19ee25",
+      "git_blob_sha1": "e7d55adc73c93593167193175ce4b3f00a7ed60c"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/control_runtime_publication.rs",
+      "sha256": "929e31df89c61fac714cdaa77b1d85f86d50358f9867bb76c954cb08a32f38ab",
+      "git_blob_sha1": "161409863e568404b6bcadffb62dbf5fe249f54a"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/lib.rs",
+      "sha256": "a75349c671219426de44161e85177f6916874f44ddd00da2e8e7a772a0ebbb00",
+      "git_blob_sha1": "101960a7d950322f9a544515a66ef2d1cb5d5023"
+    }
+  ],
+  "caller_scan": {
+    "tracked_rust_files": 9311,
+    "unique_rust_blobs": 9296,
+    "returncode": 0,
+    "all_identifier_matches_file": "CALLERS.txt",
+    "all_identifier_matches_sha256": "bc4c05e93d646f0c59efc763da2a1425324701556773df32ef304d2b037a8b40",
+    "constructor_calls": [
+      "codex-rs/hepta-control-plane/src/control_runtime_owner.rs:707",
+      "codex-rs/hepta-control-plane/src/control_runtime_publication.rs:734"
+    ]
+  },
+  "peer_review": "Independent read-only review confirmed no wire or authorization change; public Rust source signature migration is explicit.",
+  "previous_run": {
+    "id": 45272005010,
+    "source_sha": "78c1012d1b6d63a2cd3d67e2534ba8b8d62e34b6",
+    "base_sha": "b1af67a38f8cf9cee700cc067da1e6001ce220a8",
+    "workflow_merge_ref_sha": "39801d9ac2e75569e08f0ac3774b7b33045d6b5b",
+    "exact_source_job": 138035883196,
+    "deterministic_merge_job": 138035883092,
+    "conclusion": "both failed with the remaining constructor too_many_arguments (8/7); not whole-gate passes",
+    "logs": [
+      {
+        "path": "PR7052_SOURCE.log.gz",
+        "decoded_bytes": 2389124,
+        "decoded_sha256": "c9a263308da0b2a1d63a189946f01f700139b935981669fd464094dc0284a929",
+        "encoded_bytes": 302993,
+        "encoded_sha256": "71ff49265ab6a6e535c66fcb762a588fa50e1d15776e52fe72d8763a6b40cbcd"
+      },
+      {
+        "path": "PR7052_MERGE.log.gz",
+        "decoded_bytes": 2314952,
+        "decoded_sha256": "ed65d260f3dde518e8058342dfb8729e0d1126af8e225b515f4919b445fbd703",
+        "encoded_bytes": 289777,
+        "encoded_sha256": "c2277ec35036ca95a87ef4a4b7699f276642259c3ba4be26f64c5b4e0c72f0d4"
+      }
+    ],
+    "tested_deterministic_merge_sha": "524d739d7e13d2907ba1722509d29c71adc5a263"
+  }
+}

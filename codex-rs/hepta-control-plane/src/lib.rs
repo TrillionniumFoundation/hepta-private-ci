@@ -76,6 +76,7 @@ pub use control_runtime_publication::ControlRuntimeDecisionPublisherV1;
 pub use control_runtime_publication::ControlRuntimePublicationErrorV1;
 pub use control_runtime_publication::ControlRuntimePublicationHeadV1;
 pub use control_runtime_publication::ControlRuntimePublicationKindV1;
+pub use control_runtime_publication::ControlRuntimePublicationPayloadV1;
 pub use control_runtime_publication::ControlRuntimePublicationReceiptV1;
 pub use control_runtime_publication::ControlRuntimePublicationV1;
 pub use control_runtime_publication::FileControlRuntimeDecisionPublisherV1;
