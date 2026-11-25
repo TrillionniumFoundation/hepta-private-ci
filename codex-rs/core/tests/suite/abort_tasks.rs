@@ -151,6 +151,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
 
     // A previously admitted descendant no longer blocks handoff once it is stopped
     // and removed; suspension only consults the current live subtree.
+    let original_environments = codex.environment_selections().await;
     assert_eq!(
         codex
             .suspend_turn_and_shutdown()
@@ -198,11 +199,20 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     let original_config = test.config.clone();
     let resumed = test_codex()
         .with_config(move |config| *config = original_config)
-        .resume_with_auto_env(&server, Arc::clone(&test.home), rollout_path)
+        .resume_with_auto_env(
+            &server,
+            Arc::clone(&test.home),
+            rollout_path,
+            original_environments.clone(),
+        )
         .await
         .expect("resume the suspended root on a replacement runtime");
     assert!(!Arc::ptr_eq(&test.thread_manager, &resumed.thread_manager));
     assert!(!Arc::ptr_eq(&codex, &resumed.codex));
+    assert_eq!(
+        resumed.codex.environment_selections().await,
+        original_environments,
+    );
     let recovery_diagnostics =
         codex_core::test_support::RecoveryDiagnostics::capture(&resumed.codex, &turn_id);
     let before_recovery = recovery_diagnostics.snapshot(&resumed.codex);

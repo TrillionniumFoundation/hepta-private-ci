@@ -32,6 +32,8 @@ use codex_extension_api::LoadUserInstructionsFuture;
 use codex_extension_api::UserInstructionsProvider;
 use codex_extension_api::empty_extension_registry;
 use codex_features::Feature;
+use codex_history::InitialHistory;
+use codex_history::ResumedHistory;
 use codex_home::CodexHomeUserInstructionsProvider;
 use codex_login::CodexAuth;
 use codex_model_provider_info::ModelProviderInfo;
@@ -58,6 +60,7 @@ use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::protocol::TurnEnvironmentSelection;
 use codex_protocol::protocol::TurnEnvironmentSelections;
 use codex_protocol::user_input::UserInput;
+use codex_thread_store::ReadThreadByRolloutPathParams;
 use codex_thread_store::ThreadStore;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::LegacyAppPathString;
@@ -338,6 +341,7 @@ pub struct TestCodexBuilder {
     code_mode_host_program: Option<PathBuf>,
     history_mode: Option<ThreadHistoryMode>,
     models_manager: Option<SharedModelsManager>,
+    resume_environments: Option<Vec<TurnEnvironmentSelection>>,
 }
 
 impl TestCodexBuilder {
@@ -586,24 +590,34 @@ impl TestCodexBuilder {
         .await
     }
 
-    /// Rebuilds an independent runtime with the same executor selection as
-    /// `build_with_auto_env`; callers can retain the original configuration.
+    /// Rebuilds an independent runtime with the original thread's complete
+    /// executor selections, including target-native paths for foreign executors.
+    /// The caller also retains the original configuration. Shell overrides are
+    /// unsupported by this explicit-environment resume fixture.
     pub async fn resume_with_auto_env(
         &mut self,
         server: &wiremock::MockServer,
         home: Arc<TempDir>,
         rollout_path: PathBuf,
+        environments: Vec<TurnEnvironmentSelection>,
     ) -> anyhow::Result<TestCodex> {
+        anyhow::ensure!(
+            self.user_shell_override.is_none(),
+            "explicit-environment resume does not support a shell override"
+        );
         let base_url = format!("{}/v1", server.uri());
         let test_env = test_env().await?;
-        Box::pin(self.build_with_home_and_base_url(
+        self.resume_environments = Some(environments);
+        let resumed = Box::pin(self.build_with_home_and_base_url(
             base_url,
             home,
             Some(rollout_path),
             test_env,
             /*include_local_environment*/ false,
         ))
-        .await
+        .await;
+        self.resume_environments = None;
+        resumed
     }
 
     pub async fn restart(
@@ -774,14 +788,39 @@ impl TestCodexBuilder {
                     auth,
                     config.codex_home.to_path_buf(),
                 );
-                Box::pin(thread_manager.resume_thread_from_rollout(
-                    config.clone(),
-                    path,
-                    auth_manager,
-                    /*parent_trace*/ None,
-                    client_mcp_extensions(),
-                ))
-                .await?
+                if let Some(environments) = self.resume_environments.take() {
+                    let stored = thread_store
+                        .read_thread_by_rollout_path(ReadThreadByRolloutPathParams {
+                            rollout_path: path.clone(),
+                            include_archived: true,
+                            include_history: true,
+                        })
+                        .await?;
+                    let history = stored.history.context("persisted resume history")?;
+                    let initial_history = InitialHistory::Resumed(ResumedHistory {
+                        conversation_id: stored.thread_id,
+                        history: Arc::new(history.items),
+                        rollout_path: Some(path),
+                    });
+                    Box::pin(thread_manager.resume_thread_with_history_and_environments(
+                        config.clone(),
+                        initial_history,
+                        auth_manager,
+                        /*parent_trace*/ None,
+                        client_mcp_extensions(),
+                        Some(environments),
+                    ))
+                    .await?
+                } else {
+                    Box::pin(thread_manager.resume_thread_from_rollout(
+                        config.clone(),
+                        path,
+                        auth_manager,
+                        /*parent_trace*/ None,
+                        client_mcp_extensions(),
+                    ))
+                    .await?
+                }
             }
             (None, Some(user_shell_override)) => {
                 Box::pin(
@@ -1401,6 +1440,7 @@ pub fn test_codex() -> TestCodexBuilder {
         code_mode_host_program: None,
         history_mode: None,
         models_manager: None,
+        resume_environments: None,
     }
 }
 
