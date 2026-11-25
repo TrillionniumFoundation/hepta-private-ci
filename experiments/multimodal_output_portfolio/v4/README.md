@@ -297,3 +297,25 @@ four-modality generation, verified evidence independence, real physical
 resource metering, P0–P5 scientific closure, or NeuronRuntime admission.
 Preserve all adverse experiments, required CI gates, and
 **DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO**.
+
+## Matched 2×2 learning-versus-control scientific admission
+
+`factorial_admission.py` introduces a deliberately **non-authorizing** score
+receipt for the same seed × original source × world × draw across four arms:
+`base_static`, `base_ndu`, `trained_static`, and `trained_ndu`.
+All arms must share the same input, actual stochastic draw-plan identity,
+Decoder checkpoint digest, independent scoring revision, and measured
+physical cost unit; every failure remains counted. The gate rejects
+incomplete 2×2 panels, duplicate arms, seed collapse, forged/unregistered
+source IDs, invalid losses, fabricated MAC-as-physical units, and changed
+scoring rules. Only an externally fixed evaluator can establish the
+authenticity of caller-supplied hashes and physical measurements.
+
+The resulting contrasts decompose base-model inference-control benefit,
+NDU-training benefit with static inference, post-training inference
+benefit, and the difference-in-differences interaction. These are
+**descriptive** without randomized assignment, matched real model
+executions, source-group statistical intervals and independent terminal
+outcomes. The helper explicitly returns
+`causal_or_statistical_superiority_established=false`. The synthetic
+regression tests are not a natural model execution or a closed P3 gate.
