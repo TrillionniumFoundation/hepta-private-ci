@@ -282,6 +282,18 @@ async fn writable_recovery_requires_exclusive_store_fence() {
         .await,
         Err(CognitiveRecoveryError::Unavailable(_))
     ));
+    // Closing a shared pool cannot release the still-live owner's store fence.
+    store.clone().close().await;
+    assert!(matches!(
+        CognitiveStore::open_with_recovery(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &authority,
+            &RecoveryVerifier,
+        )
+        .await,
+        Err(CognitiveRecoveryError::Unavailable(_))
+    ));
 }
 
 #[tokio::test]

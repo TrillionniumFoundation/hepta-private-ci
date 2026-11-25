@@ -357,6 +357,16 @@ impl CognitiveStore {
         &self.path
     }
 
+    /// Close the shared SQLite pool and await its workers before dropping this
+    /// handle's retained storage identities and open fence.
+    ///
+    /// All clones share that pool, so they can no longer issue queries after
+    /// this returns. Other clones still retain their own storage guards: every
+    /// such handle must be dropped before exclusive recovery can be admitted.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+
     pub fn owner_agent_id(&self) -> &AgentId {
         &self.owner_agent_id
     }
