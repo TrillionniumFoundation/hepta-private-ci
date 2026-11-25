@@ -108,9 +108,14 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
     def run_wrapper(
         self, *args: str
     ) -> tuple[subprocess.CompletedProcess[str], list[list[str]]]:
+        env = self.env.copy()
+        if os.name == "nt" and env.get("RUNNER_OS") != "Windows":
+            # A simulated Unix runner has no MSYS argument conversion. Native
+            # Windows cases still exercise the production NUL-file transport.
+            env["MSYS2_ARG_CONV_EXCL"] = "*"
         result = subprocess.run(
             [self.bash, str(SCRIPTS / "run-bazel-ci.sh"), *args],
-            env=self.env,
+            env=env,
             check=False,
             capture_output=True,
             text=True,
