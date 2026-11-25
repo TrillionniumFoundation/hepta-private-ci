@@ -829,6 +829,20 @@ mod tests {
                 base_digest
             );
         }
+        let mut changed_normalizer = base.clone();
+        Arc::make_mut(&mut changed_normalizer.snapshot)
+            .identity
+            .normalizer_digest = Digest32::of_bytes(b"other normalizer");
+        assert_ne!(
+            observation_digest_v3(
+                &changed_normalizer,
+                &observation,
+                ExecutionStatus::Succeeded,
+                3,
+                identity_digest,
+            ),
+            base_digest
+        );
     }
 
     #[test]
