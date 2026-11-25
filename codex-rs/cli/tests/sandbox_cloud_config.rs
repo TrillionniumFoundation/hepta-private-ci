@@ -114,7 +114,10 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         staged
     };
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
-    let output = Command::new(&codex)
+    let mut command = Command::new(&codex);
+    #[cfg(windows)]
+    command.args(["-c", "windows.sandbox=\"elevated\""]);
+    let output = command
         .current_dir(codex_home.path())
         .env("CODEX_HOME", codex_home.path())
         .env("NO_PROXY", "127.0.0.1,localhost")
@@ -158,6 +161,11 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
             "expected the sandboxed Codex version command to run",
         );
     }
+    #[cfg(windows)]
+    assert!(
+        codex_core::windows_sandbox::sandbox_setup_is_complete(codex_home.path()),
+        "the explicitly selected elevated backend must complete its original setup",
+    );
 
     let cache: Value = serde_json::from_slice(&std::fs::read(
         codex_home.path().join("cloud-config-bundle-cache.json"),

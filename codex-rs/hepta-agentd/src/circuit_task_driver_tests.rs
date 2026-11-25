@@ -277,16 +277,39 @@ async fn delayed_feedback_waits_without_appending_empty_scheduling_events() {
     definition.programs[0].edges[0].feedback_delay_ms = Some(30);
     let (_directory, mut driver, request, calls) = fixture(definition, bindings).await;
     let started = Instant::now();
-    let receipt = checked(
-        driver
-            .execute(&request, CircuitTaskModeV1::Drive, || {
-                Ok(CircuitCellTimeV1 {
-                    circuit_millis: 20 + started.elapsed().as_millis() as u64,
-                    cell_micros: 20,
-                })
-            })
-            .await,
-    );
+    let clock = Arc::new(AtomicU64::new(20));
+    let store = driver.store.clone();
+    let advance_clock = async {
+        let waiting = loop {
+            if let Some(trace) = checked(store.bounded_circuit_committed_trace("run-1").await)
+                && !trace.completions().is_empty()
+            {
+                break trace;
+            }
+            tokio::time::sleep(Duration::from_millis(1)).await;
+        };
+        assert_eq!(waiting.run().outcome(), None);
+        // Hold the injected Circuit clock at t=20 after the actual completion.
+        // Real host storage latency must not consume this fixture's authority.
+        tokio::time::sleep(Duration::from_millis(30)).await;
+        assert_eq!(
+            checked(store.bounded_circuit_committed_trace("run-1").await),
+            Some(waiting)
+        );
+        clock.store(50, Ordering::SeqCst);
+    };
+    let drive = driver.execute(&request, CircuitTaskModeV1::Drive, || {
+        Ok(CircuitCellTimeV1 {
+            circuit_millis: clock.load(Ordering::SeqCst),
+            cell_micros: 20,
+        })
+    });
+    let (result, ()) = tokio::time::timeout(Duration::from_secs(2), async {
+        tokio::join!(drive, advance_clock)
+    })
+    .await
+    .expect("the original completion must wait for its delayed feedback");
+    let receipt = checked(result);
     assert_eq!(
         receipt.trace().run().outcome(),
         Some(CircuitExitV2::Succeeded)
