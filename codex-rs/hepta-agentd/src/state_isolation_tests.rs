@@ -175,6 +175,60 @@ async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress
 }
 
 #[cfg(any(unix, windows))]
+struct RejectingIntelligenceInvocationProvider;
+
+#[cfg(any(unix, windows))]
+impl crate::AgentdIntelligenceInvocationProviderV1 for RejectingIntelligenceInvocationProvider {
+    fn build(
+        &self,
+        _identity: &crate::AgentdIdentity,
+        _record: &RunStartRecordV1,
+    ) -> Result<crate::AgentdIntelligenceInvocationV1, AgentdError> {
+        Err(AgentdError::Protocol(
+            "test provider is not invoked by capability discovery".to_string(),
+        ))
+    }
+}
+
+#[cfg(any(unix, windows))]
+#[tokio::test]
+async fn canonical_intelligence_is_advertised_only_with_runner_and_host_provider() {
+    let (temp, _registry, state) = fixture().expect("runtime fixture");
+    let signer = ed25519_dalek::SigningKey::from_bytes(&[42; 32]);
+    let runner = crate::AgentdIntelligenceProductRunnerV1::new(
+        temp.path().join("intelligence-authority.json"),
+        crate::IntelligenceAuthorityVerifierV1 {
+            signer_id: "authority.owner".to_string(),
+            verifying_key: signer.verifying_key().to_bytes(),
+        },
+    )
+    .expect("valid runner");
+    assert!(state.intelligence_product.set(Arc::new(runner)).is_ok());
+    assert!(
+        state
+            .intelligence_invocation
+            .set(Arc::new(RejectingIntelligenceInvocationProvider))
+            .is_ok()
+    );
+    let response = state
+        .response(
+            /*request_id*/ 3,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Capabilities,
+        )
+        .await
+        .expect("capabilities response");
+    let AgentdPayload::Capabilities(capabilities) = response.payload else {
+        panic!("capabilities payload");
+    };
+    assert!(capabilities.capabilities.iter().any(|capability| {
+        capability.id == crate::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1
+            && capability.major == 1
+            && capability.minor == 0
+    }));
+}
+
+#[cfg(any(unix, windows))]
 #[test]
 fn missing_local_record_immediately_fences_the_serving_agent() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
