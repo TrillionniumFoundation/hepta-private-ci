@@ -28,7 +28,6 @@ workspace = true
 
 [dependencies]
 anyhow = { workspace = true }
-chrono = { workspace = true }
 clap = { workspace = true, features = ["derive", "env"] }
 clap_complete = { workspace = true }
 codex-app-server = { workspace = true }
@@ -89,6 +88,7 @@ serde_json = { workspace = true }
 supports-color = { workspace = true }
 sys-locale = { workspace = true }
 tempfile = { workspace = true }
+time = { workspace = true, features = ["wasm-bindgen"] }
 tokio = { workspace = true, features = [
     "io-std",
     "macros",
@@ -114,6 +114,9 @@ windows-sys = { version = "0.52", features = [
     "Win32_System_Console",
     "Win32_System_Threading",
 ] }
+
+[target.'cfg(all(target_arch = "wasm32", not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))))'.dependencies]
+js-sys = "=0.3.106"
 
 [dev-dependencies]
 app_test_support = { workspace = true }

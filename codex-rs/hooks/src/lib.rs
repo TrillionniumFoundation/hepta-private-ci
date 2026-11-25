@@ -87,6 +87,7 @@ pub use types::HookEventAfterAgent;
 pub use types::HookPayload;
 pub use types::HookResponse;
 pub use types::HookResult;
+pub use types::HookTimestamp;
 
 /// Returns the hook event label used in persisted hook-state keys.
 pub fn hook_event_key_label(event_name: HookEventName) -> &'static str {

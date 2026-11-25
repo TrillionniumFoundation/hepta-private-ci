@@ -2,7 +2,6 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use anyhow::Context;
-use chrono::DateTime;
 use clap::Parser;
 use clap::ValueEnum;
 use codex_core::config::ConfigBuilder;
@@ -12,6 +11,13 @@ use codex_state::SqliteConfig;
 use codex_state::StateRuntime;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use owo_colors::OwoColorize;
+
+#[path = "../timestamp.rs"]
+mod timestamp;
+
+#[cfg(test)]
+#[path = "../logs_client_timestamp_tests.rs"]
+mod timestamp_tests;
 
 #[derive(Debug, Parser)]
 #[command(name = "codex-state-logs")]
@@ -200,9 +206,9 @@ fn parse_timestamp(value: &str) -> anyhow::Result<i64> {
         return Ok(secs);
     }
 
-    let dt = DateTime::parse_from_rfc3339(value)
+    let (seconds, _) = timestamp::parse_rfc3339(value)
         .with_context(|| format!("expected RFC3339 or unix seconds, got {value}"))?;
-    Ok(dt.timestamp())
+    Ok(seconds)
 }
 
 async fn print_backfill(
@@ -326,9 +332,6 @@ mod matcher {
 }
 
 mod formatter {
-    use chrono::DateTime;
-    use chrono::SecondsFormat;
-    use chrono::Utc;
     use owo_colors::OwoColorize;
 
     pub(super) fn apply_patch(message: &str) -> String {
@@ -349,11 +352,22 @@ mod formatter {
 
     pub(super) fn ts(ts: i64, ts_nanos: i64, compact: bool) -> String {
         let nanos = u32::try_from(ts_nanos).unwrap_or(0);
-        match DateTime::<Utc>::from_timestamp(ts, nanos) {
-            Some(dt) if compact => dt.format("%H:%M:%S").to_string(),
-            Some(dt) => dt.to_rfc3339_opts(SecondsFormat::Millis, true),
-            None => format!("{ts}.{ts_nanos:09}Z"),
+        let Some(dt) = super::timestamp::checked_utc(ts).filter(|_| {
+            nanos < 2_000_000_000 && (nanos < 1_000_000_000 || ts.rem_euclid(60) == 59)
+        }) else {
+            return format!("{ts}.{ts_nanos:09}Z");
+        };
+        let hour = dt.within_cycle.hour();
+        let minute = dt.within_cycle.minute();
+        let second = u32::from(dt.within_cycle.second()) + nanos / 1_000_000_000;
+        if compact {
+            return format!("{hour:02}:{minute:02}:{second:02}");
         }
+        let year = super::timestamp::format_year(dt.year);
+        let month = u8::from(dt.within_cycle.month());
+        let day = dt.within_cycle.day();
+        let millis = (nanos % 1_000_000_000) / 1_000_000;
+        format!("{year}-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}.{millis:03}Z")
     }
 
     pub(super) fn level(level: &str) -> String {

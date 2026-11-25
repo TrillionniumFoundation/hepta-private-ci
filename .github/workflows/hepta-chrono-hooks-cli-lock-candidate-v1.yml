@@ -1,0 +1,169 @@
+name: Hooks and CLI Chrono lock candidate (review only)
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - ".github/workflows/hepta-chrono-hooks-cli-lock-candidate-v1.yml"
+      - "scripts/run_chrono_hooks_cli_lock_scope_v1.py"
+      - "scripts/hepta_chrono_hooks_cli_lock_inputs_v1.json"
+      - "scripts/hepta_chrono_hooks_cli_lock_contract_v1.py"
+      - "scripts/test_hepta_chrono_hooks_cli_lock_contract_v1.py"
+
+permissions:
+  contents: read
+
+jobs:
+  lock-candidate:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'ProfHepta' &&
+      github.event.pull_request.draft == true &&
+      github.event.pull_request.head.ref == 'fix/hepta-chrono-hooks-cli-lock-20261125-7c9e' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      LOCK_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      LOCK_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+      LOCK_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+      LOCK_PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+      LOCK_PR_DRAFT: ${{ github.event.pull_request.draft }}
+      LOCK_EVENT_ACTION: ${{ github.event.action }}
+    steps:
+      - name: Retain this one job identity before source acquisition
+        id: job_scope
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, time
+          head = os.environ['LOCK_EXPECTED_HEAD']
+          run_id, attempt = os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT']
+          stage = pathlib.Path(os.environ['RUNNER_TEMP']) / f'chrono-hooks-cli-lock-{head}-{run_id}-{attempt}'
+          stage.mkdir()
+          evidence = stage / 'evidence'
+          evidence.mkdir()
+          record = {'head': head, 'run_id': run_id, 'run_attempt': attempt,
+                    'monotonic_seconds': time.monotonic(), 'unix_seconds': time.time(),
+                    'repository': os.environ['GITHUB_REPOSITORY'],
+                    'checkout_step_cap_seconds': 120, 'tool_preparation_cap_seconds': 180,
+                    'resolver_cap_seconds': 300, 'whole_job_cap_seconds': 720,
+                    'no_old_host_or_scientific_budget_reset': True}
+          (evidence / 'job-start.json').write_text(json.dumps(record, indent=2) + '\n')
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write(f'LOCK_STAGE={stage}\n')
+          PY
+
+      - name: Check out the complete exact source candidate
+        id: checkout
+        timeout-minutes: 2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.LOCK_EXPECTED_HEAD }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind approved combined inputs and start tool preparation
+        id: begin
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/run_chrono_hooks_cli_lock_scope_v1.py prepare-start
+
+      - name: Install the exact original Rust toolchain
+        id: rust
+        if: steps.begin.outcome == 'success'
+        timeout-minutes: 1
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+
+      - name: Install the exact original just version
+        id: just
+        if: steps.rust.outcome == 'success'
+        timeout-minutes: 1
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Retain tool outcomes and verify the official Bazel payload once
+        id: tools
+        if: always() && steps.begin.outcome == 'success'
+        timeout-minutes: 3
+        shell: bash
+        env:
+          LOCK_TOOL_STEPS: ${{ toJSON(steps) }}
+        run: |
+          set -euo pipefail
+          python3 scripts/run_chrono_hooks_cli_lock_scope_v1.py prepare-finish
+
+      - name: Generate only the two reviewable locks in an isolated complete copy
+        id: generate
+        if: steps.tools.outcome == 'success'
+        timeout-minutes: 6
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/run_chrono_hooks_cli_lock_scope_v1.py generate
+
+      - name: Require actual terminal observations without granting qualification
+        id: readback
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 1
+        shell: bash
+        env:
+          LOCK_ALL_STEPS: ${{ toJSON(steps) }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, time
+          evidence = pathlib.Path(os.environ['LOCK_STAGE']) / 'evidence'
+          steps = json.loads(os.environ['LOCK_ALL_STEPS'])
+          required = ('job_scope', 'checkout', 'begin', 'rust', 'just', 'tools', 'generate')
+          passed = all(steps.get(name, {}).get('outcome') == 'success' for name in required)
+          scope = evidence / 'generate.RESULT.json'
+          actual = json.loads(scope.read_bytes()) if scope.is_file() else None
+          start = json.loads((evidence / 'job-start.json').read_bytes())
+          valid = bool(passed and actual
+                       and actual['status'] == 'GENERATED_LOCK_CANDIDATE_REQUIRES_ROOT_REVIEW'
+                       and actual['source']['head'] == os.environ['LOCK_EXPECTED_HEAD']
+                       and actual['original_checkout_unchanged'] is True
+                       and actual['elapsed_seconds'] <= 300
+                       and actual['advisory_qualification'] is False
+                       and actual['cargo_update_selection'] == 'workspace-only'
+                       and actual['workspace_update_attempts'] == 1
+                       and actual['selected_registry_update_attempts'] == 0
+                       and actual['prior_chrono_generation_scope_reopened'] is False
+                       and actual['bazel_postimage_byte_identical'] is True
+                       and actual['actual_chrono_inverse_edges'] == 29
+                       and actual['unapproved_registry_version_or_checksum_drift'] is False
+                       and actual['original_security_lock_scope_reopened'] is False)
+          record = {'status': 'CANDIDATE_REQUIRES_ROOT_REVIEW' if valid else 'FAIL',
+                    'head': os.environ['LOCK_EXPECTED_HEAD'], 'steps': steps,
+                    'whole_job_elapsed_seconds_so_far': time.monotonic() - start['monotonic_seconds'],
+                    'tool_installation_raw_logs': 'Retain the original complete GitHub job logs',
+                    'all_package_delta_explanations_pending_root_review': True,
+                    'chrono_remediation_qualified': False, 'cargo_deny_qualified': False,
+                    'native_tests_qualified': False, 'production_activation': False}
+          with (evidence / 'workflow-readback.json').open('x') as stream:
+              json.dump(record, stream, indent=2)
+              stream.write('\n')
+          if not valid:
+              raise SystemExit('the original terminal lock-generation evidence did not succeed')
+          print('Two lock candidates retained for independent source review; ordinary locked CI remains required.')
+          PY
+
+      - name: Retain original logs, failed attempts and exact two-lock postimages
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: chrono-hooks-cli-lock-candidate-${{ env.LOCK_EXPECTED_HEAD }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.LOCK_STAGE }}/evidence/
+          if-no-files-found: error
+          retention-days: 30
