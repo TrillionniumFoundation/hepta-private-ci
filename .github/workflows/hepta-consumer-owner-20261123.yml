@@ -9,6 +9,8 @@ on:
       - 'codex-rs/hepta-agentd/src/root_issuer_client_tests.rs'
       - 'codex-rs/hepta-agentd/examples/paired_consent_process.rs'
       - 'qualification/paired-consent-process-20261123/test_statement.py'
+      - 'qualification/paired-consent-process-20261123/run-isolated.sh'
+      - 'qualification/paired-consent-process-20261123/run-on-ubuntu.sh'
       - '.github/workflows/hepta-consumer-owner-20261123.yml'
   pull_request:
     paths:
@@ -18,6 +20,8 @@ on:
       - 'codex-rs/hepta-agentd/src/root_issuer_client_tests.rs'
       - 'codex-rs/hepta-agentd/examples/paired_consent_process.rs'
       - 'qualification/paired-consent-process-20261123/test_statement.py'
+      - 'qualification/paired-consent-process-20261123/run-isolated.sh'
+      - 'qualification/paired-consent-process-20261123/run-on-ubuntu.sh'
       - '.github/workflows/hepta-consumer-owner-20261123.yml'
   workflow_dispatch:
 permissions:
@@ -44,6 +48,8 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Verify actual namespace isolation before the native build
+        run: sh qualification/paired-consent-process-20261123/run-on-ubuntu.sh /usr/bin/true /usr/bin/true
       - name: Build and test statements and legacy authorization refusal
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-consumer-build
@@ -54,7 +60,7 @@ jobs:
           cargo build --locked -p codex-hepta-agentd --bin hepta-paired-consent --example paired_consent_process
           python3 ../qualification/paired-consent-process-20261123/test_statement.py "$CARGO_TARGET_DIR/debug/hepta-paired-consent"
           just test --locked -p codex-hepta-agentd --lib -E 'test(paired_learning_consent_tests)' --no-tests fail --test-threads 1
-          sh ../qualification/paired-consent-process-20261123/run-isolated.sh "$CARGO_TARGET_DIR/debug/examples/paired_consent_process" "$CARGO_TARGET_DIR/debug/hepta-paired-consent"
+          sh ../qualification/paired-consent-process-20261123/run-on-ubuntu.sh "$CARGO_TARGET_DIR/debug/examples/paired_consent_process" "$CARGO_TARGET_DIR/debug/hepta-paired-consent"
       - name: Retain tested participant binary
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

@@ -3,21 +3,13 @@ on:
   push:
     branches: [research/optin-cell-integrated-readout-20261123]
     paths:
-      - 'qualification/optin-circuit-integration-20261123/check.py'
-      - 'scripts/cell_experiments/paired_loop.py'
-      - 'scripts/cell_experiments/test_paired_loop.py'
-      - 'scripts/cell_experiments/test_paired_loop_process.py'
-      - 'scripts/cell_experiments/test_paired_consumer_fresh.py'
-      - 'scripts/cell_experiments/paired_consumer.py'
-      - 'scripts/cell_experiments/paired_intake.py'
-      - 'scripts/cell_experiments/paired_source_gate.py'
-      - 'scripts/cell_experiments/paired_source_dispatch.py'
-      - 'scripts/cell_experiments/paired_source_train.py'
-      - 'scripts/cell_experiments/paired_router_source.py'
-      - 'scripts/cell_experiments/test_paired_consent_boundary.py'
-      - 'scripts/cell_experiments/test_paired_source_dispatch.py'
-      - 'scripts/cell_experiments/test_paired_source_dispatch_intake.py'
-      - 'scripts/cell_experiments/test_paired_intake.py'
+      - 'scripts/cell_experiments/**'
+      - 'qualification/paired-consumer-circuit-20261123/**'
+      - 'qualification/paired-consumer-use-20261123/**'
+      - 'qualification/paired-source-training-20261123/**'
+      - 'qualification/public-historical-a-qwen2-052-20261123/**'
+      - 'qualification/selected-session-mcp-20261123/**'
+      - 'qualification/optin-circuit-integration-20261123/**'
       - '.github/workflows/optin-circuit-integration.yml'
 permissions:
   contents: read
@@ -33,6 +25,7 @@ jobs:
             qualification/paired-consumer-circuit-20261123
             qualification/paired-consumer-use-20261123
             qualification/paired-source-training-20261123
+            qualification/public-historical-a-qwen2-052-20261123
             qualification/selected-session-mcp-20261123
             qualification/optin-circuit-integration-20261123
           persist-credentials: false
