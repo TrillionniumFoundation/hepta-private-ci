@@ -55,8 +55,9 @@ lock: this review does not count that as a second executed delete exploit.
 
 The [DeleteFile contract](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew)
 permits deletion through either the file's DELETE right or its parent's
-DELETE_CHILD right. The observed negative test exercises the latter alternative.
-Fixing idempotent deny-ACE installation does not remove that independent path.
+DELETE_CHILD right. The broad-ACL fixture grants both rights; its log does not
+isolate which authorization branch served each successful deletion. Both paths
+must be covered. Fixing idempotent deny-ACE installation alone is insufficient.
 
 [CreateRestrictedToken](https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken)
 documents that WRITE_RESTRICTED applies restricting SIDs only to write checks;
@@ -111,3 +112,7 @@ transactional candidate publication, verification and rollback. That useful
 contract does not require granting an AI-provided arbitrary command host-wide
 filesystem access. It remains separate from the OPEN legacy shell confinement
 contract, and its evidence must not be used to claim the latter is closed.
+
+The [b9 recheck](B9_RECHECK.md) adds a later actual execution of both original
+DELETE cases, distinguishes that result from the earlier poisoned-lock case,
+and records why no legitimate fixture correction closes the current contract.
