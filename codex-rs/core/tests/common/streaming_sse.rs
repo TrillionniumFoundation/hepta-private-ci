@@ -769,17 +769,20 @@ data: {"type":"response.completed","response":{"id":"resp-1"}}
                 }],
             ]),
             completions: VecDeque::from(vec![first_tx, second_tx]),
+            first_headers_gate: None,
         });
 
-        let (first_chunks, first_completion) =
+        let (first_chunks, first_completion, first_headers_gate) =
             take_next_stream(&state).await.expect("first stream");
         assert_eq!(first_chunks[0].body, "first");
+        assert!(first_headers_gate.is_none());
         let _ = first_completion.send(11);
         assert_eq!(first_rx.await.expect("first completion"), 11);
 
-        let (second_chunks, second_completion) =
+        let (second_chunks, second_completion, second_headers_gate) =
             take_next_stream(&state).await.expect("second stream");
         assert_eq!(second_chunks[0].body, "second");
+        assert!(second_headers_gate.is_none());
         let _ = second_completion.send(22);
         assert_eq!(second_rx.await.expect("second completion"), 22);
 
