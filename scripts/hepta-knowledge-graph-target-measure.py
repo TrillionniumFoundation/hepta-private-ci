@@ -59,7 +59,10 @@ def positive_int(value: Any, field: str, *, allow_zero: bool = False) -> int:
 def latency_distribution(value: Any, field: str) -> dict[str, int]:
     if not isinstance(value, dict):
         fail(f"{field} must be an object")
-    ordered = [positive_int(value.get(key), f"{field}.{key}", allow_zero=True) for key in ("p50", "p95", "p99")]
+    ordered = [
+        positive_int(value.get(key), f"{field}.{key}", allow_zero=True)
+        for key in ("p50", "p95", "p99")
+    ]
     if ordered != sorted(ordered):
         fail(f"{field} percentiles are not monotone")
     return {"p50": ordered[0], "p95": ordered[1], "p99": ordered[2]}
@@ -91,12 +94,22 @@ def parse_receipt(output: str, expected_profile_id: str) -> dict[str, Any]:
         fail("missing bounded-query work receipt")
     returned = positive_int(work.get("returnedEdges"), "boundedQueryWork.returnedEdges")
     omitted = positive_int(work.get("omittedEdges"), "boundedQueryWork.omittedEdges")
-    cloned = positive_int(work.get("selectedEdgesCloned"), "boundedQueryWork.selectedEdgesCloned")
+    cloned = positive_int(
+        work.get("selectedEdgesCloned"), "boundedQueryWork.selectedEdgesCloned"
+    )
     if returned != 1 or cloned != 1:
         fail("bounded query must return and clone exactly one edge")
-    if positive_int(work.get("matchingEdges"), "boundedQueryWork.matchingEdges") != returned + omitted:
+    if (
+        positive_int(work.get("matchingEdges"), "boundedQueryWork.matchingEdges")
+        != returned + omitted
+    ):
         fail("bounded query matching-edge accounting is inconsistent")
-    if positive_int(work.get("relationEdgesScanned"), "boundedQueryWork.relationEdgesScanned") < returned + omitted:
+    if (
+        positive_int(
+            work.get("relationEdgesScanned"), "boundedQueryWork.relationEdgesScanned"
+        )
+        < returned + omitted
+    ):
         fail("bounded query edge scan count is smaller than its match count")
 
     storage = receipt.get("storage")
@@ -204,7 +217,9 @@ def measure(args: argparse.Namespace) -> int:
     source_sha = git("rev-parse", "HEAD")
     source_tree = git("rev-parse", "HEAD^{tree}")
     if source_sha != args.expected_sha:
-        fail(f"source identity mismatch: expected {args.expected_sha}, observed {source_sha}")
+        fail(
+            f"source identity mismatch: expected {args.expected_sha}, observed {source_sha}"
+        )
     if git("status", "--porcelain"):
         fail("working tree is not clean")
 
@@ -249,7 +264,9 @@ def measure(args: argparse.Namespace) -> int:
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(output.suffix + ".tmp")
-    temporary.write_text(json.dumps(evidence, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    temporary.write_text(
+        json.dumps(evidence, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
     os.replace(temporary, output)
     if args.raw_output:
         raw = Path(args.raw_output)
@@ -259,7 +276,9 @@ def measure(args: argparse.Namespace) -> int:
     return 0
 
 
-def bounded(parser: argparse.ArgumentParser, name: str, value: int, lower: int, upper: int) -> None:
+def bounded(
+    parser: argparse.ArgumentParser, name: str, value: int, lower: int, upper: int
+) -> None:
     if not lower <= value <= upper:
         parser.error(f"--{name.replace('_', '-')} must be in {lower}..={upper}")
 

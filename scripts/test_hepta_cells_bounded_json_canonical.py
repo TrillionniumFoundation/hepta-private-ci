@@ -32,7 +32,9 @@ class BoundedCanonicalJsonTests(unittest.TestCase):
 
     def test_builtin_receipt_keeps_exact_encoding_and_digest(self):
         value = {"b": [True, None, 3, -0.5, "x"], "a": {"key": "value"}}
-        expected = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        expected = json.dumps(
+            value, sort_keys=True, separators=(",", ":"), allow_nan=False
+        )
         self.assertEqual(_bounded_json(value), expected)
         self.assertEqual(digest(value), digest(json.loads(expected)))
 

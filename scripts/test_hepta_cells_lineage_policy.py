@@ -23,28 +23,51 @@ def pin(number):
 
 
 def components():
-    return ComponentPins(**{
-        name: pin(i + 1) for i, name in enumerate((
-            "base", "heads", "composition", "encoder", "tokenizer",
-            "normalizer", "calibration", "numeric_profile", "output_schema",
-            "state_schema", "state_semantics",
-        ))
-    })
+    return ComponentPins(
+        **{
+            name: pin(i + 1)
+            for i, name in enumerate(
+                (
+                    "base",
+                    "heads",
+                    "composition",
+                    "encoder",
+                    "tokenizer",
+                    "normalizer",
+                    "calibration",
+                    "numeric_profile",
+                    "output_schema",
+                    "state_schema",
+                    "state_semantics",
+                )
+            )
+        }
+    )
 
 
 def enrollment(lineage, *, scope=None, kernel=None, name=None, **overrides):
     default_kernels = {
-        "PERC": "shared_semantic", "MEM": "shared_semantic",
-        "PRED": "stateful_temporal", "CTRL": "stateful_temporal",
-        "VERIFY": "shared_semantic", "ACT": "stateful_temporal",
+        "PERC": "shared_semantic",
+        "MEM": "shared_semantic",
+        "PRED": "stateful_temporal",
+        "CTRL": "stateful_temporal",
+        "VERIFY": "shared_semantic",
+        "ACT": "stateful_temporal",
         "LEARN": "deterministic",
     }
     kernel = kernel or default_kernels[lineage]
     c = dict(
-        lineage=lineage, kernel=kernel, principal_id="principal-a",
-        agent_id="agent-a", cell_id=name or lineage.lower(), run_id="run-a",
-        state_owner="original-cell-owner", bundle_digest=pin(120),
-        generation=7, components=components(), data_scope="data-allowed",
+        lineage=lineage,
+        kernel=kernel,
+        principal_id="principal-a",
+        agent_id="agent-a",
+        cell_id=name or lineage.lower(),
+        run_id="run-a",
+        state_owner="original-cell-owner",
+        bundle_digest=pin(120),
+        generation=7,
+        components=components(),
+        data_scope="data-allowed",
         feature_share_group="shared-perception" if lineage in {"PERC", "MEM"} else None,
         feature_abi=pin(230) if lineage in {"PERC", "MEM"} else None,
         trainable_scope=scope,
@@ -57,20 +80,36 @@ def enrollment(lineage, *, scope=None, kernel=None, name=None, **overrides):
 
 
 def roster():
-    return CellRoster(tuple(enrollment(lineage, scope=(
-        "kernel_and_heads" if lineage == "PRED" else
-        "heads" if lineage == "VERIFY" else None
-    )) for lineage in sorted(LINEAGES)))
+    return CellRoster(
+        tuple(
+            enrollment(
+                lineage,
+                scope=(
+                    "kernel_and_heads"
+                    if lineage == "PRED"
+                    else "heads"
+                    if lineage == "VERIFY"
+                    else None
+                ),
+            )
+            for lineage in sorted(LINEAGES)
+        )
+    )
 
 
 def evidence(cell, **overrides):
     c = dict(
-        partition=cell.partition, source_bundle=cell.bundle_digest,
-        candidate_bundle=pin(121), candidate_generation=cell.generation + 1,
+        partition=cell.partition,
+        source_bundle=cell.bundle_digest,
+        candidate_bundle=pin(121),
+        candidate_generation=cell.generation + 1,
         candidate_components=replace(cell.components, heads=pin(333)),
-        training_source=cell.bundle_digest, dataset_digest=pin(201),
-        update_rule=cell.update_rule, evaluation_profile=cell.evaluation_profile,
-        evaluation_receipt_digest=pin(222), completed_training_steps=4,
+        training_source=cell.bundle_digest,
+        dataset_digest=pin(201),
+        update_rule=cell.update_rule,
+        evaluation_profile=cell.evaluation_profile,
+        evaluation_receipt_digest=pin(222),
+        completed_training_steps=4,
         costs={axis: 0.0 for axis in COST_AXES},
     )
     c.update(overrides)
@@ -83,7 +122,9 @@ class LineagePolicyTests(unittest.TestCase):
         self.assertEqual({c.lineage for c in r.cells}, LINEAGES)
         self.assertEqual(sum(c.trainable_scope is not None for c in r.cells), 2)
         for lineage in ("PRED", "VERIFY"):
-            decision = review_update(r, evidence(next(c for c in r.cells if c.lineage == lineage)))
+            decision = review_update(
+                r, evidence(next(c for c in r.cells if c.lineage == lineage))
+            )
             self.assertEqual(decision.status, "REVIEW_ONLY")
             self.assertFalse(decision.adoption_authorized)
             self.assertTrue(decision.native_validation_required)
@@ -104,8 +145,10 @@ class LineagePolicyTests(unittest.TestCase):
     def test_same_lineage_multiple_isolated_instances_allowed(self):
         all_cells = roster().cells
         extension = replace(
-            all_cells[1], cell_id="different-mem-instance",
-            feature_share_group=None, feature_abi=None,
+            all_cells[1],
+            cell_id="different-mem-instance",
+            feature_share_group=None,
+            feature_abi=None,
         )
         out = CellRoster(all_cells + (extension,))
         self.assertEqual(len(out.cells), 8)
@@ -115,15 +158,21 @@ class LineagePolicyTests(unittest.TestCase):
         base = roster().cells
         candidate = replace(
             next(c for c in base if c.lineage == "PERC"),
-            trainable_scope="heads", max_training_steps=8,
-            evaluation_profile=pin(220), update_rule=pin(221),
+            trainable_scope="heads",
+            max_training_steps=8,
+            evaluation_profile=pin(220),
+            update_rule=pin(221),
         )
         mixed = tuple(candidate if c.lineage == "PERC" else c for c in base)
-        self.assertEqual(sum(c.trainable_scope is not None for c in CellRoster(mixed).cells), 3)
+        self.assertEqual(
+            sum(c.trainable_scope is not None for c in CellRoster(mixed).cells), 3
+        )
         extra = replace(
             next(c for c in base if c.lineage == "MEM"),
-            trainable_scope="heads", max_training_steps=8,
-            evaluation_profile=pin(220), update_rule=pin(221),
+            trainable_scope="heads",
+            max_training_steps=8,
+            evaluation_profile=pin(220),
+            update_rule=pin(221),
         )
         with self.assertRaisesRegex(LineagePolicyError, "trainable"):
             CellRoster(tuple(extra if c.lineage == "MEM" else c for c in mixed))
@@ -199,7 +248,13 @@ class LineagePolicyTests(unittest.TestCase):
     def test_head_update_cannot_change_encoder_or_numeric_domain(self):
         r = roster()
         c = next(c for c in r.cells if c.lineage == "VERIFY")
-        for field in ("encoder", "numeric_profile", "state_semantics", "base", "organ_adapter"):
+        for field in (
+            "encoder",
+            "numeric_profile",
+            "state_semantics",
+            "base",
+            "organ_adapter",
+        ):
             with self.subTest(field=field):
                 changed = replace(evidence(c).candidate_components, **{field: pin(400)})
                 with self.assertRaisesRegex(LineagePolicyError, "frozen"):
@@ -236,17 +291,25 @@ class LineagePolicyTests(unittest.TestCase):
         c = next(c for c in r.cells if c.lineage == "VERIFY")
         costs = evidence(c).costs
         costs["resident_byte_seconds"] = None
-        result = review_update(r, evidence(c, costs=costs, evaluation_receipt_digest=None))
+        result = review_update(
+            r, evidence(c, costs=costs, evaluation_receipt_digest=None)
+        )
         self.assertEqual(result.status, "HOLD")
-        self.assertEqual(set(result.reasons), {
-            "resident_byte_seconds", "original_signed_evaluation",
-        })
+        self.assertEqual(
+            set(result.reasons),
+            {
+                "resident_byte_seconds",
+                "original_signed_evaluation",
+            },
+        )
         self.assertFalse(result.adoption_authorized)
 
     def test_maximum_generation_cannot_propose_an_unrepresentable_successor(self):
         current = roster()
         last = enrollment("PRED", scope="kernel_and_heads", generation=2**64 - 1)
-        current = CellRoster(tuple(last if c.lineage == "PRED" else c for c in current.cells))
+        current = CellRoster(
+            tuple(last if c.lineage == "PRED" else c for c in current.cells)
+        )
         with self.assertRaisesRegex(LineagePolicyError, "frozen lineage"):
             review_update(current, evidence(last))
         with self.assertRaisesRegex(LineagePolicyError, "frozen lineage"):
