@@ -80,13 +80,38 @@ use tokio::time::timeout;
 use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
+#[path = "native_output.rs"]
+mod native_output;
+use native_output::AgentMessageOutput;
+
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
+const MAX_STOP_REASON_BYTES: usize = 4096;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 const LOCAL_CANCELLED: &str = "cancelled";
 const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
+
+fn truncate_utf8(value: &str, maximum_bytes: usize) -> &str {
+    let mut end = value.len().min(maximum_bytes);
+    while !value.is_char_boundary(end) {
+        end -= 1;
+    }
+    &value[..end]
+}
+
+fn append_stop_reason(existing: Option<String>, note: String) -> String {
+    let Some(existing) = existing.filter(|reason| !reason.is_empty()) else {
+        return truncate_utf8(&note, MAX_STOP_REASON_BYTES).to_string();
+    };
+    let note = truncate_utf8(&note, MAX_STOP_REASON_BYTES.saturating_sub(2));
+    let existing = truncate_utf8(
+        &existing,
+        MAX_STOP_REASON_BYTES.saturating_sub(note.len() + 2),
+    );
+    format!("{existing}; {note}")
+}
 
 #[cfg(test)]
 struct FinalRevalidationTestHook {
@@ -788,6 +813,7 @@ impl AppServerModelDriver {
         // From here on, a missing acknowledgement is reconcile-only. Recovery
         // cannot recreate the local pre-effect proof that is deliberately lost.
         drop(pre_effect_abort);
+        let expected_turn_input = turn_params.input.clone();
         let response = timeout(
             send_budget,
             send_authorized_turn_start(&mut client, entered_use, turn_params),
@@ -900,19 +926,20 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
-        let result = self
-            .observe(
-                &mut client,
-                &mut output,
-                deadline,
-                cancellation,
-                Some(&owner),
-                &binding,
-            )
-            .await;
+        let mut messages = AgentMessageOutput::default();
+        let result = Self::observe(
+            &mut client,
+            &mut output,
+            &mut messages,
+            deadline,
+            cancellation,
+            Some(&owner),
+            &binding,
+        )
+        .await;
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
-            output.stop_reason = Some(reason.clone());
+            output.stop_reason = Some(truncate_utf8(&reason, MAX_STOP_REASON_BYTES).to_string());
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
                 if let Ok(cancelled) = owner
                     .run_cancel(
@@ -940,16 +967,16 @@ impl AppServerModelDriver {
             let cancel_recorded = control.cancel_native(request_id);
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
-            let _ = self
-                .observe(
-                    &mut client,
-                    &mut output,
-                    Instant::now() + INTERRUPT_GRACE,
-                    &grace,
-                    /*owner*/ None,
-                    &binding,
-                )
-                .await;
+            let _ = Self::observe(
+                &mut client,
+                &mut output,
+                &mut messages,
+                Instant::now() + INTERRUPT_GRACE,
+                &grace,
+                /*owner*/ None,
+                &binding,
+            )
+            .await;
             loss_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
@@ -964,11 +991,18 @@ impl AppServerModelDriver {
                     .await
             {
                 let note = format!("Agentd indeterminate reconciliation required: {error}");
-                output.stop_reason = Some(match output.stop_reason.take() {
-                    Some(existing) => format!("{existing}; {note}"),
-                    None => note,
-                });
+                output.stop_reason = Some(append_stop_reason(output.stop_reason.take(), note));
             }
+        }
+        // Fresh requests use ephemeral threads: their completed items must
+        // arrive on the original session because history cannot replay them.
+        if output.terminal_observed
+            && output.boundary_status == NativeBoundaryStatus::Succeeded
+            && output.output.trim().is_empty()
+        {
+            output.boundary_status = NativeBoundaryStatus::Quarantined;
+            output.stop_reason =
+                Some("no verifiable assistant message on the original turn".to_string());
         }
         if output.terminal_observed {
             let _ = timeout(
@@ -995,19 +1029,16 @@ impl AppServerModelDriver {
                     commit_intelligence_terminal(&owner, binding, revision, &output).await
             {
                 let note = format!("Agentd terminal reconciliation required: {error}");
-                output.stop_reason = Some(match output.stop_reason.take() {
-                    Some(existing) => format!("{existing}; {note}"),
-                    None => note,
-                });
+                output.stop_reason = Some(append_stop_reason(output.stop_reason.take(), note));
             }
         }
         Ok(output)
     }
 
     async fn observe(
-        &self,
         client: &mut RemoteAppServerClient,
         output: &mut NativeRunOutput,
+        messages: &mut AgentMessageOutput,
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
@@ -1029,7 +1060,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, messages, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1290,12 +1321,10 @@ async fn reconcile_intelligence_start_unknown(
             .await
     {
         let reason = output.stop_reason.take().unwrap_or_default();
-        output.stop_reason = Some(
-            format!("{reason}; Agentd reconciliation remains required: {error}")
-                .chars()
-                .take(1024)
-                .collect(),
-        );
+        output.stop_reason = Some(append_stop_reason(
+            Some(reason),
+            format!("Agentd reconciliation remains required: {error}"),
+        ));
     }
     output
 }
@@ -1419,21 +1448,37 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    messages: &mut AgentMessageOutput,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
     let AppServerEvent::ServerNotification(notification) = observed.event() else {
         return Ok(false);
     };
-    match notification.as_ref() {
-        ServerNotification::AgentMessageDelta(delta)
-            if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
-        {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
-            }
-            output.output.push_str(&delta.delta);
+    let matches_message = match notification.as_ref() {
+        ServerNotification::AgentMessageDelta(delta) => {
+            delta.thread_id == output.thread_id && delta.turn_id == output.turn_id
         }
+        ServerNotification::ItemStarted(started) => {
+            started.thread_id == output.thread_id
+                && started.turn_id == output.turn_id
+                && matches!(&started.item, ThreadItem::AgentMessage { .. })
+        }
+        ServerNotification::ItemCompleted(completed) => {
+            completed.thread_id == output.thread_id
+                && completed.turn_id == output.turn_id
+                && matches!(&completed.item, ThreadItem::AgentMessage { .. })
+        }
+        _ => false,
+    };
+    if matches_message {
+        // Validate the actual connection/version/home before retaining text.
+        // Terminal receipt validation remains in its exact thread/turn branch.
+        adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+            .map_err(|error| format!("invalid App Server message witness: {error}"))?;
+        messages.observe(notification, output)?;
+    }
+    match notification.as_ref() {
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
@@ -1453,6 +1498,7 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            messages.complete_turn(&completed.turn.items, output)?;
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;

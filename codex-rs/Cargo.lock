@@ -3411,6 +3411,7 @@ dependencies = [
  "codex-utils-absolute-path",
  "codex-utils-template",
  "codex-utils-time",
+ "core_test_support",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -4198,6 +4199,7 @@ dependencies = [
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-uds",
+ "codex-utils-cargo-bin",
  "constant_time_eq 0.3.1",
  "ed25519-dalek 2.2.0",
  "jsonschema",
@@ -5424,10 +5426,12 @@ dependencies = [
  "async-io",
  "libc",
  "pretty_assertions",
+ "sha2 0.10.9",
  "tempfile",
  "tokio",
  "tokio-util",
  "uds_windows",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

@@ -57,7 +57,7 @@ if [[ $windows_cross_compile -eq 0 ]]; then
     # _COGNITIVE_E2E_COMPATIBILITY in codex-rs/hepta-agentd/BUILD.bazel permits
     # only Linux/macOS. Keep it in those native lint jobs; retain every other
     # native manual test here, including sharded *-test-bin helpers.
-    manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -Fvx -e '//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin' -- || true)"
+    manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -Fvx -e '//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin' -e '//codex-rs/hepta-agentd:hepta-agentd-cognitive-readonly-product-test-bin' -- || true)"
   fi
 elif [[ $windows_cross_compile -eq 1 ]]; then
   # `bazel query` is intentionally pre-analysis and does not remove targets
