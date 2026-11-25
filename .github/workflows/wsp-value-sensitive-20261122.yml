@@ -1,0 +1,46 @@
+name: WSP value-sensitive mathematical admission
+
+on:
+  pull_request:
+    paths:
+      - "tools/hcsn/wsp_20261122_next/**"
+      - ".github/workflows/wsp-value-sensitive-20261122.yml"
+  push:
+    paths:
+      - "tools/hcsn/wsp_20261122_next/**"
+      - ".github/workflows/wsp-value-sensitive-20261122.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-math:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check numpy==2.3.5
+      - name: Check source syntax
+        run: |
+          python -B - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in Path('tools/hcsn/wsp_20261122_next').rglob('*.py'):
+              ast.parse(path.read_text(), filename=str(path))
+          PY
+      - name: Enumerate synthetic paths and verify gradient/accounting
+        run: python -B tools/hcsn/wsp_20261122_next/check_soft_math.py "$RUNNER_TEMP/wsp-value-sensitive-math"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wsp-value-sensitive-synthetic-math
+          path: ${{ runner.temp }}/wsp-value-sensitive-math
+          if-no-files-found: warn
