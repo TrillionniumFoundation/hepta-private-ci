@@ -258,7 +258,7 @@ def verify_fingerprints(receipt):
         require(identity.sha(path) == digest, "a selected Cargo dependency identity changed")
 
 
-def build_owners(rustc, producer, snapshot, support, default, native, serde,
+def build_owners(rustc, producer, snapshot, support, original, default, native, serde,
                  env, commands, output):
     for name in identity.REQUIRED:
         for field in ("package_id", "target", "features", "profile"):
@@ -268,11 +268,11 @@ def build_owners(rustc, producer, snapshot, support, default, native, serde,
     for field in ("package_id", "target", "features", "profile"):
         require(serde["default"]["unit"][field] == serde["native"]["unit"][field],
                 "default/native selected serde_json differs: " + field)
-    child = env.copy()
-    child.pop("CODEX_HIA_NATIVE_LIB_DIR", None)
+    child = cargo.reference_environment(producer, env)
+    child["CARGO_TARGET_DIR"] = original["lane"]["target"]
     child["CARGO_MANIFEST_DIR"] = str(snapshot / identity.CRATE)
     original_source = snapshot / identity.CRATE / "src/lib.rs"
-    flags = cargo.flags(rustc, default, original=True)
+    flags = cargo.flags(rustc, original, original=True)
     reference = output / "libcodex_apply_patch_original.rlib"
     commands.run("effects-compile-complete-original-lib", flags + [
         "--crate-name", "codex_apply_patch_original", "--crate-type", "rlib",
@@ -298,9 +298,8 @@ def build_owners(rustc, producer, snapshot, support, default, native, serde,
     binaries = {"original": output / "effects-original-observer",
                 "native": output / "effects-native-observer"}
     for side, binary in binaries.items():
-        graph = default if side == "original" else native
-        extra = ["--extern", "serde_json=" + serde[
-            "default" if side == "original" else "native"]["library"]["path"]]
+        graph = original if side == "original" else native
+        extra = ["--extern", "serde_json=" + serde[side]["library"]["path"]]
         if side == "original":
             extra += ["--extern", "codex_apply_patch=" + str(reference)]
         commands.run("effects-compile-public-" + side,
@@ -325,3 +324,110 @@ def build_owners(rustc, producer, snapshot, support, default, native, serde,
     require(identity.sha(reference) == reference_hash and identity.sha(tests) == tests_hash,
             "the original library/test executable changed during compilation or execution")
     return binaries, receipts
+
+
+def verify_parent_lanes(parent, parent_work, producer, graphs, bind):
+    """Require exact three-lane receipts; a two-lane report cannot qualify a child."""
+    sides = {"original", "default", "native"}
+    for name in ("actual_cargo_graph_manifests", "actual_cargo_builds",
+                 "three_way_cargo_metadata", "three_way_cargo_graphs",
+                 "actual_serde_identity"):
+        require(set(parent.get(name, {})) == sides, "incomplete prerequisite lane inventory: " + name)
+    require(set(graphs) == sides, "missing original/default/native prerequisite graph")
+    metadata = parent["three_way_cargo_metadata"]
+    require(metadata["default"] == parent["cargo_metadata_inputs"],
+            "legacy metadata view differs from the actual default lane")
+    original = Path(graphs["original"]["lane"]["source"]).resolve(strict=True)
+    require(original != producer and not original.is_relative_to(producer)
+            and not producer.is_relative_to(original),
+            "original and candidate source checkouts must be disjoint")
+    identity.outside(parent_work, (original, producer))
+    for side, graph in graphs.items():
+        require(graph["lane"] == parent["three_way_cargo_graphs"][side],
+                "prerequisite Cargo lane binding differs: " + side)
+        path = bind(parent_work / (side + "-metadata-source-inputs.json"))
+        require(json.loads(path.read_text()) == metadata[side],
+                "prerequisite Cargo metadata receipt differs: " + side)
+        selected = parent["actual_serde_identity"][side]
+        verify_fingerprints(selected)
+        require(graph["files"].get(Path(selected["library"]["path"]).name) == selected["library"]
+                and selected["unit"] in graph["units"],
+                "prerequisite serde unit escaped its Cargo lane")
+        bind(selected["library"]["path"], selected["library"]["sha256"])
+        for filename, digest in selected["fingerprint_inputs"].items():
+            bind(filename, digest)
+        unit = graph["direct"]["codex_apply_patch"]["unit"]
+        require(unit["features"] == (["hia-native"] if side == "native" else [])
+                and unit["profile"] == PROFILE,
+                "prerequisite Cargo lane owner profile differs: " + side)
+    cargo.verify_three_graphs(graphs, metadata, original, producer)
+    command_path = bind(parent["commands_file"])
+    require(command_path == parent_work / "commands/commands.json",
+            "prerequisite command log escaped its work directory")
+    commands_log = json.loads(command_path.read_text())
+    for side, graph in graphs.items():
+        label = "cargo-" + side
+        captured = [record for record in commands_log if record["label"] == label]
+        require(len(captured) == 1 and captured[0]["returncode"] == 0,
+                "missing actual prerequisite Cargo build: " + side)
+        record = captured[0]
+        log = bind(record["stdout"], graph["artifact_jsonl_sha256"])
+        require(log.is_relative_to(parent_work)
+                and log.stat().st_size == record["stdout_bytes"]
+                and record["stdout_sha256"] == graph["artifact_jsonl_sha256"],
+                "prerequisite Cargo artifact log binding differs: " + side)
+        require(record["cwd"] == str(Path(graph["lane"]["source"]) / "codex-rs"),
+                "prerequisite Cargo build ran in the wrong source lane")
+        metadata_label = "cargo-metadata" if side == "default" else label + "-metadata"
+        observed = [record for record in commands_log if record["label"] == metadata_label]
+        require(len(observed) == 1 and observed[0]["returncode"] == 0,
+                "missing actual prerequisite metadata command: " + side)
+        observed = observed[0]
+        metadata_log = bind(observed["stdout"], metadata[side]["metadata_sha256"])
+        require(metadata_log.is_relative_to(parent_work)
+                and observed["stdout_sha256"] == metadata[side]["metadata_sha256"]
+                and metadata_log.stat().st_size == observed["stdout_bytes"]
+                and observed["cwd"] == record["cwd"],
+                "prerequisite metadata log binding differs: " + side)
+        resolved = json.loads(metadata_log.read_text())
+        require(Path(resolved["workspace_root"]).resolve(strict=True) ==
+                Path(graph["lane"]["source"]) / "codex-rs"
+                and Path(resolved["target_directory"]).resolve(strict=True) ==
+                Path(graph["lane"]["target"]),
+                "prerequisite metadata source or target lane differs: " + side)
+    compiled = [record for record in commands_log
+                if record["label"] == "effects-compile-complete-original-lib"]
+    require(len(compiled) == 1 and compiled[0]["returncode"] == 0,
+            "missing prerequisite original library compile")
+    argv = compiled[0]["argv"]
+    flags = [str(value) for value in cargo.flags(argv[0], graphs["original"], original=True)]
+    reference = bind(parent["original_library"]["path"], parent["original_library"]["sha256"])
+    require(reference.parent == parent_work,
+            "original library escaped its qualified work directory")
+    expected = flags + ["--crate-name", "codex_apply_patch_original", "--crate-type", "rlib",
+                        str(parent_work / "original" / identity.CRATE / "src/lib.rs"),
+                        "-o", str(reference)]
+    require(argv == expected and compiled[0]["cwd"] == str(producer),
+            "original library was not compiled exclusively with the original Cargo graph")
+    return original, metadata
+
+
+def original_compile_environment(producer, env, graph):
+    child = cargo.reference_environment(producer, env)
+    child["CARGO_TARGET_DIR"] = graph["lane"]["target"]
+    return child
+
+
+def parent_original_checkout(parent_path, producer):
+    """Read the original source boundary before creating any child work files."""
+    parent = json.loads(parent_path.read_text())
+    lanes = parent.get("three_way_cargo_graphs", {})
+    require(set(lanes) == {"original", "default", "native"},
+            "prerequisite lacks the three source lanes")
+    original = Path(lanes["original"]["source"]).resolve(strict=True)
+    require(original != producer and not original.is_relative_to(producer)
+            and not producer.is_relative_to(original),
+            "original and candidate source checkouts must be disjoint")
+    require(identity.clean_identity(original)["commit"] == identity.BASE,
+            "prerequisite original checkout is not the pinned commit")
+    return original

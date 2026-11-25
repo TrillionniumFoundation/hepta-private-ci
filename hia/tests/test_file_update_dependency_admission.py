@@ -2,12 +2,14 @@
 """Admission regressions with local fixtures; no Git, Cargo, Wine, sockets or processes."""
 from pathlib import Path
 import hashlib
+import json
 import tempfile
 import unittest
 
 from unittest.mock import patch
 
 from file_update_oracle import cargo, identity
+from patch_effects_oracle import admission
 
 # Complete immutable 094/e5 exec-server leaf vector, not a filesystem scan.
 # Canonical tree: 040d2b09f7f1ed6dcf930c0c6032868e32b52764 (143 leaves).
@@ -427,6 +429,46 @@ class SeparateGraphInputTests(unittest.TestCase):
                 original.write_bytes(new)
                 with self.assertRaises(RuntimeError):
                     identity.distinct_lock_inputs(original, candidate)
+
+
+
+class EffectsLaneAdmissionTests(unittest.TestCase):
+    def test_two_lane_parent_is_rejected_before_child_source_admission(self):
+        parent = {"actual_cargo_graph_manifests": {"default": {}, "native": {}}}
+        with self.assertRaisesRegex(RuntimeError, "incomplete prerequisite lane inventory"):
+            admission.verify_parent_lanes(parent, None, None, {}, None)
+
+    def test_parent_original_boundary_rejects_two_lanes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            parent = root / "report.json"
+            parent.write_text(json.dumps({"three_way_cargo_graphs": {
+                "default": {}, "native": {}}}))
+            with self.assertRaisesRegex(RuntimeError, "three source lanes"):
+                admission.parent_original_checkout(parent, root)
+
+    def test_parent_original_boundary_requires_disjoint_pinned_checkout(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            producer = root / "producer"
+            original = root / "original"
+            producer.mkdir()
+            original.mkdir()
+            parent = root / "report.json"
+
+            def record(path):
+                parent.write_text(json.dumps({"three_way_cargo_graphs": {
+                    "original": {"source": str(path)}, "default": {}, "native": {}}}))
+
+            record(producer)
+            with self.assertRaisesRegex(RuntimeError, "disjoint"):
+                admission.parent_original_checkout(parent, producer)
+            record(original)
+            with patch.object(identity, "clean_identity", return_value={"commit": "wrong"}):
+                with self.assertRaisesRegex(RuntimeError, "pinned commit"):
+                    admission.parent_original_checkout(parent, producer)
+            with patch.object(identity, "clean_identity", return_value={"commit": identity.BASE}):
+                self.assertEqual(admission.parent_original_checkout(parent, producer), original)
 
 
 if __name__ == "__main__":

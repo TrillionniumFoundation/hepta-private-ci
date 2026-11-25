@@ -30,7 +30,8 @@ def verify(args, report):
     require(support == producer / "hia/tests/patch_summary_oracle" and
             Path(__file__).resolve() == producer / "hia/tests/test_native_patch_summary_caller.py",
             "public writer helpers must come from the actual producing checkout")
-    roots = (producer, library)
+    original_boundary = admission.parent_original_checkout(parent_path, producer)
+    roots = (producer, library, original_boundary)
     work = identity.outside(args.work_dir, roots)
     identity.outside(args.report, roots)
     identity.outside(parent_path, roots)
@@ -61,7 +62,7 @@ def verify(args, report):
             "the prerequisite original is not the complete pinned crate")
     identity.verify_sources(snapshot, manifest)
     admission.original_lib(snapshot, manifest)
-    producing = identity.producer_inputs(producer, snapshot, manifest)
+    producing = identity.producer_inputs(producer, snapshot, manifest, separate_lock=True)
     producing["complete_lib_inverse"] = admission.recover_lib(producer)
     require(producing == parent["producer"], "the producing source changed after the effects gate")
     binding = admission.native_inputs(producer, library)
@@ -81,7 +82,7 @@ def verify(args, report):
                     parent["original_library"]["sha256"])
     require(original.parent == parent_work, "whole original library escaped its qualified workdir")
     graphs = {}
-    for side in ("default", "native"):
+    for side in ("original", "default", "native"):
         manifest_record = parent["actual_cargo_graph_manifests"][side]
         graph_path = parent_work / (side + "-dependency-manifest.json")
         require(manifest_record["path"] == str(graph_path) and
@@ -98,6 +99,10 @@ def verify(args, report):
                 actual["actual_library_files"] == len(graph["files"]),
                 "prerequisite Cargo graph or actual owner unit differs")
         graphs[side] = graph
+    original_checkout, metadata = admission.verify_parent_lanes(
+        parent, parent_work, producer, graphs, bind)
+    require(original_checkout == original_boundary,
+            "prerequisite original checkout changed during admission")
     native = Path(graphs["native"]["direct"]["codex_apply_patch"]["path"])
     bind(native, graphs["native"]["files"][native.name]["sha256"])
     rustc, _, env, compiler = cargo.compiler(args.rustc, commands, producer)
@@ -105,7 +110,7 @@ def verify(args, report):
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     binaries = {side: work / ("summary-" + side) for side in ("original", "native")}
     for side, owner in (("original", original), ("native", native)):
-        graph = graphs["default" if side == "original" else "native"]
+        graph = graphs[side]
         flags = cargo.flags(rustc, graph, original=True)
         flags += ["--check-cfg", "cfg(native_summary)"]
         if side == "native":
@@ -117,7 +122,8 @@ def verify(args, report):
         commands.run("compile-summary-" + side, flags + [
             "--crate-name", "patch_summary_" + side + "_observer", "--extern",
             "codex_apply_patch=" + str(owner), support / "driver.rs", "-o", binaries[side]],
-            cwd=producer, env=env)
+            cwd=producer, env=(admission.original_compile_environment(
+                producer, env, graph) if side == "original" else env))
         symbols = commands.run("summary-symbols-" + side,
             ["nm", "--defined-only", binaries[side]], cwd=producer, env=env).read_text()
         for symbol in ("codex_hia_patch_summary", "__wrap_codex_hia_patch_summary"):
@@ -138,10 +144,9 @@ def verify(args, report):
     require(public["passed"] and public["compared_pairs"] == 1002 and
             public["actual_processes"] == 2004 and public["skipped"] == public["mismatches"] == 0,
             "the complete public writer corpus did not pass")
-    for graph in graphs.values():
-        cargo.verify_graph(graph)
+    cargo.verify_three_graphs(graphs, metadata, original_checkout, producer)
     identity.verify_sources(snapshot, manifest)
-    final = identity.producer_inputs(producer, snapshot, manifest)
+    final = identity.producer_inputs(producer, snapshot, manifest, separate_lock=True)
     final["complete_lib_inverse"] = admission.recover_lib(producer)
     require(final == producing and admission.native_inputs(producer, library) == binding,
             "production sources or native artifacts changed during writer qualification")
@@ -157,7 +162,12 @@ def main():
     for name in ("producer", "library-dir", "effects-report", "rustc", "work-dir", "report"):
         parser.add_argument("--" + name, required=True, type=Path)
     args = parser.parse_args()
+    # A failure report must not write into the pinned original checkout either.
+    from patch_effects_oracle import admission
+    original = admission.parent_original_checkout(
+        args.effects_report.resolve(strict=True), args.producer.resolve(strict=True))
     path = args.report.resolve()
+    admission.identity.outside(path, (original,))
     if path.exists() or any(path.is_relative_to(root.resolve())
                             for root in (args.producer, args.library_dir)):
         raise RuntimeError("report must be new and outside source/artifact directories")
