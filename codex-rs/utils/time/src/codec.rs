@@ -288,7 +288,7 @@ pub(crate) fn format(
     // Mapping into a Gregorian 400-year cycle lets Jiff format even the
     // expanded years supported by our persisted format. %Y and %s above retain
     // the original year/instant; month, weekday and leap-day layout are identical.
-    let civil = jiff::civil::DateTime::new(
+    let Ok(civil) = jiff::civil::DateTime::new(
         (2000 + local.year().rem_euclid(400)) as i16,
         local.month() as i8,
         local.day() as i8,
@@ -296,13 +296,17 @@ pub(crate) fn format(
         local.minute() as i8,
         local.second() as i8,
         nanos as i32,
-    )
-    .expect("validated calendar fields");
-    let zone_offset =
-        jiff::tz::Offset::from_seconds(offset.whole_seconds()).expect("validated offset");
-    let zoned = zone_offset
-        .to_timestamp(civil)
-        .expect("cycle date in range")
-        .to_zoned_datetime(jiff::tz::TimeZone::fixed(zone_offset));
+    ) else {
+        unreachable!("validated calendar fields");
+    };
+    // A validated time offset fits Jiff's wider offset range. The mapped civil
+    // year is 2000..2400, so applying it cannot overflow Jiff's timestamp range.
+    let Ok(zone_offset) = jiff::tz::Offset::from_seconds(offset.whole_seconds()) else {
+        unreachable!("validated offset");
+    };
+    let Ok(timestamp) = zone_offset.to_timestamp(civil) else {
+        unreachable!("cycle date in range");
+    };
+    let zoned = timestamp.to_zoned_datetime(jiff::tz::TimeZone::fixed(zone_offset));
     zoned.strftime(&adapted).to_string()
 }

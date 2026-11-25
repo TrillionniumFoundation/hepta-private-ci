@@ -62,8 +62,11 @@ impl Timestamp {
         {
             // The prior OAuth clock enabled the browser's millisecond clock.
             // SystemTime::now() alone panics on wasm-unknown-unknown.
-            Self::from_milliseconds(jiff::Timestamp::now().as_millisecond())
-                .expect("JavaScript clock timestamp is within the UTC boundary")
+            let Some(timestamp) = Self::from_milliseconds(jiff::Timestamp::now().as_millisecond())
+            else {
+                panic!("JavaScript clock timestamp is within the UTC boundary");
+            };
+            timestamp
         }
         #[cfg(not(all(
             any(target_arch = "wasm32", target_arch = "wasm64"),
@@ -95,9 +98,16 @@ impl Timestamp {
         )
     }
 
+    /// Converts a civil UTC value within the persisted timestamp range.
+    ///
+    /// # Panics
+    /// Panics if the civil year is outside -262143 through 262142.
     pub fn from_civil(datetime: CivilDateTime) -> Self {
         let utc = datetime.assume_utc();
-        Self::from_parts(utc.unix_timestamp(), utc.nanosecond()).expect("validated civil time")
+        let Some(timestamp) = Self::from_parts(utc.unix_timestamp(), utc.nanosecond()) else {
+            panic!("validated civil time");
+        };
+        timestamp
     }
 
     pub fn from_ymd_hms(
@@ -217,10 +227,14 @@ impl Timestamp {
     }
 
     fn calendar(self) -> time::OffsetDateTime {
-        time::OffsetDateTime::from_unix_timestamp(self.seconds)
-            .expect("validated timestamp")
-            .replace_nanosecond(self.nanoseconds % 1_000_000_000)
-            .expect("normalized nanosecond")
+        // All constructors validate seconds; the remainder is in 0..1e9.
+        let Ok(datetime) = time::OffsetDateTime::from_unix_timestamp(self.seconds) else {
+            unreachable!("validated timestamp");
+        };
+        let Ok(datetime) = datetime.replace_nanosecond(self.nanoseconds % 1_000_000_000) else {
+            unreachable!("normalized nanosecond");
+        };
+        datetime
     }
 }
 
@@ -266,24 +280,31 @@ impl fmt::Display for Timestamp {
 impl From<SystemTime> for Timestamp {
     fn from(value: SystemTime) -> Self {
         let value = time::OffsetDateTime::from(value);
-        Self::from_parts(value.unix_timestamp(), value.nanosecond())
-            .expect("system time in supported range")
+        let Some(timestamp) = Self::from_parts(value.unix_timestamp(), value.nanosecond()) else {
+            panic!("system time in supported range");
+        };
+        timestamp
     }
 }
 
 impl From<Timestamp> for SystemTime {
     fn from(value: Timestamp) -> Self {
         let epoch_nanos = i128::from(value.seconds) * 1_000_000_000 + i128::from(value.nanoseconds);
-        time::OffsetDateTime::from_unix_timestamp_nanos(epoch_nanos)
-            .expect("validated instant")
-            .into()
+        let Ok(datetime) = time::OffsetDateTime::from_unix_timestamp_nanos(epoch_nanos) else {
+            unreachable!("validated instant");
+        };
+        datetime.into()
     }
 }
 
 impl Add<SignedDuration> for Timestamp {
     type Output = Self;
+    /// Panics on overflow; use `checked_add` when the range is not known.
     fn add(self, rhs: SignedDuration) -> Self {
-        self.checked_add(rhs).expect("timestamp addition in range")
+        let Some(timestamp) = self.checked_add(rhs) else {
+            panic!("timestamp addition in range");
+        };
+        timestamp
     }
 }
 impl AddAssign<SignedDuration> for Timestamp {
@@ -293,9 +314,12 @@ impl AddAssign<SignedDuration> for Timestamp {
 }
 impl Sub<SignedDuration> for Timestamp {
     type Output = Self;
+    /// Panics on overflow; use `checked_sub` when the range is not known.
     fn sub(self, rhs: SignedDuration) -> Self {
-        self.checked_sub(rhs)
-            .expect("timestamp subtraction in range")
+        let Some(timestamp) = self.checked_sub(rhs) else {
+            panic!("timestamp subtraction in range");
+        };
+        timestamp
     }
 }
 impl Sub<Timestamp> for Timestamp {

@@ -251,3 +251,24 @@ fn local_display_preserves_expanded_years_without_jiff_range_panics() {
         );
     }
 }
+
+#[test]
+fn timestamp_range_overflow_keeps_checked_and_infallible_contracts()
+-> Result<(), Box<dyn std::error::Error>> {
+    let maximum: Timestamp = "+262142-12-31T23:59:59.999999999Z".parse()?;
+    let minimum: Timestamp = "-262143-01-01T00:00:00Z".parse()?;
+    let nanosecond = SignedDuration::nanoseconds(1);
+    assert_eq!(maximum.checked_add(nanosecond), None);
+    assert_eq!(minimum.checked_sub(nanosecond), None);
+    assert!(std::panic::catch_unwind(|| maximum + nanosecond).is_err());
+    assert!(std::panic::catch_unwind(|| minimum - nanosecond).is_err());
+
+    let outside = time::Date::from_calendar_date(
+        /*year*/ 262_143,
+        time::Month::January,
+        /*day*/ 1,
+    )?
+    .midnight();
+    assert!(std::panic::catch_unwind(|| Timestamp::from_civil(outside)).is_err());
+    Ok(())
+}
