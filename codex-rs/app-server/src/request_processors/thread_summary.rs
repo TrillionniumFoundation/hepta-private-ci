@@ -195,7 +195,7 @@ fn parse_datetime(timestamp: Option<&str>) -> Option<codex_utils_time::Timestamp
     timestamp.and_then(|ts| {
         codex_utils_time::OffsetTimestamp::parse_rfc3339(ts)
             .ok()
-            .map(|dt| dt.to_utc())
+            .map(codex_utils_time::OffsetTimestamp::to_utc)
     })
 }
 

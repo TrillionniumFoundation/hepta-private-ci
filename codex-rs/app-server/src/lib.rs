@@ -1742,7 +1742,6 @@ mod tests {
     use codex_utils_absolute_path::AbsolutePathBuf;
     use pretty_assertions::assert_eq;
     use std::io::ErrorKind;
-    use std::path::Path;
 
     #[test]
     fn ordinary_codex_runtime_does_not_enable_a_database_wide_queue_capacity() {
