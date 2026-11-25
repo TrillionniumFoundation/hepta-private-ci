@@ -1,0 +1,102 @@
+{
+  "schema": "hcsn-final-report-publication-readback-v1",
+  "evidence_ref": {
+    "ref": "refs/heads/evidence/hcsn-closure-results-20261125",
+    "node_id": "REF_kwDOTrgxoNoAMXJlZnMvaGVhZHMvZXZpZGVuY2UvaGNzbi1jbG9zdXJlLXJlc3VsdHMtMjAyNjExMjU",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/evidence/hcsn-closure-results-20261125",
+    "object": {
+      "sha": "3492e35a40737512760409452ac461de5d84465b",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/3492e35a40737512760409452ac461de5d84465b"
+    }
+  },
+  "evidence_commit": {
+    "sha": "3492e35a40737512760409452ac461de5d84465b",
+    "node_id": "C_kwDOTrgxoNoAKDM0OTJlMzVhNDA3Mzc1MTI3NjA0MDk0NTJhYzQ2MWRlNWQ4NDQ2NWI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/3492e35a40737512760409452ac461de5d84465b",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/3492e35a40737512760409452ac461de5d84465b",
+    "author": {
+      "name": "ChatGPT",
+      "email": "noreply@openai.com",
+      "date": "2026-11-25T02:46:45Z"
+    },
+    "committer": {
+      "name": "ChatGPT",
+      "email": "noreply@openai.com",
+      "date": "2026-11-25T02:46:45Z"
+    },
+    "tree": {
+      "sha": "39569e659e254f036815073153fef750ca179f5a",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/39569e659e254f036815073153fef750ca179f5a"
+    },
+    "message": "Publish audited HCSN research results and reproducibility evidence (3/3)",
+    "parents": [
+      {
+        "sha": "ffae72693fceffdd2acd1eb243db4fc120f16b2d",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/ffae72693fceffdd2acd1eb243db4fc120f16b2d",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ffae72693fceffdd2acd1eb243db4fc120f16b2d"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "publication_receipt": {
+    "status": "pushed_readback_pending",
+    "parent": "84d554300002f802e98d30ef0552ab008c2b0241",
+    "commit": "3492e35a40737512760409452ac461de5d84465b",
+    "chain": [
+      {
+        "parent": "84d554300002f802e98d30ef0552ab008c2b0241",
+        "commit": "c76a50ad43a8f019286bb7a4bed36a7b08c01dde",
+        "tree": "b096fbab3fc37defed661216695394ad0f9b175c",
+        "files": 12,
+        "source_and_document_lines": 641
+      },
+      {
+        "parent": "c76a50ad43a8f019286bb7a4bed36a7b08c01dde",
+        "commit": "ffae72693fceffdd2acd1eb243db4fc120f16b2d",
+        "tree": "d54532112b34f51fd47a03d786d75b433acd806b",
+        "files": 125,
+        "source_and_document_lines": 769
+      },
+      {
+        "parent": "ffae72693fceffdd2acd1eb243db4fc120f16b2d",
+        "commit": "3492e35a40737512760409452ac461de5d84465b",
+        "tree": "39569e659e254f036815073153fef750ca179f5a",
+        "files": 28,
+        "source_and_document_lines": 249
+      }
+    ],
+    "files_verified": 167,
+    "new_or_updated_files": 165,
+    "ordinary_non_force_push": true,
+    "original_failures_preserved": [
+      "/home/qian-qi/hcsn7067-publication-20261125-v1/small-artifacts-publication-v1/RECEIPT.json",
+      "/home/qian-qi/hcsn7067-publication-20261125-v1/small-artifacts-publication-resume1/RECEIPT.json"
+    ],
+    "correction": {
+      "kind": "SVG trailing horizontal whitespace only",
+      "source": "SVG_FORMATTING_PUBLICATION.json.gz",
+      "sha256": "d2050ce14f522937546a53599d968518b0d1417d0737472a94927329a29d322e",
+      "old_original_svg_preserved_as_valid_gzip": true,
+      "scientific_data_or_runtime_source_changed": false
+    },
+    "error": null,
+    "wall_seconds": 40.44522740202956,
+    "cpu_seconds": 0.731082982
+  },
+  "source_integration_head": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+  "measured_research_source": "c4ae70d44613434aaf165529a6076fa3400ca431",
+  "pull_request": {
+    "number": 7067,
+    "draft": true,
+    "updated_at": "2026-11-25T02:49:31Z",
+    "body_exact_readback": true
+  },
+  "scientific_gate_pass_not_implied_by_publication": true
+}

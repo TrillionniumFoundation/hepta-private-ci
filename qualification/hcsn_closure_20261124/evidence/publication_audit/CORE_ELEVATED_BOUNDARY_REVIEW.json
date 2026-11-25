@@ -1,0 +1,148 @@
+{
+  "schema": "hcsn-core-elevated-boundary-review-v1",
+  "review_date_utc": "2026-11-25",
+  "reviewer": "hcsn_mathematics",
+  "scope": "Read-only source, original CI log, live PR metadata and Microsoft documentation review. No guard, test assertion, production source or Git ref changed. No native experiment executed.",
+  "source_head": "c4ae70d44613434aaf165529a6076fa3400ca431",
+  "decision": "NO-GO for a fixture-only Core repair. The unchanged three positive cases remain functional failures; keep their denominator. A newly qualified production isolation-and-launch path is required before admission can succeed.",
+  "evidence": {
+    "log": {
+      "path": "next_hcsn/audit_current/C4_WINDOWS_SHARD4_138926075596.log.gz",
+      "compressed_sha256": "20e8a55af9afad0f206d9af0f97943f99eaa30162446e8acb9d918fc44cdabd8",
+      "raw_sha256": "d9a1c6354f051ab858cac7e1a12986faf72e88b6cdcee5d819249d0e91b749c6",
+      "raw_bytes": 594079
+    },
+    "local_sources": [
+      {
+        "path": "codex-rs/core/tests/suite/windows_sandbox.rs",
+        "sha256": "80c3bcc94b53e7c7f28172416148a519cbadb8a7240eeb4e9d4f66eb869172f6",
+        "git_blob_sha1": "a4971534be4a41244b6740a12b9c5539724a3bc1"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/elevated_admission.rs",
+        "sha256": "fafe8cf67b02f02a61bbd56f225825a6c48722d3a9806ad6041f6e5c96fc6d7f",
+        "git_blob_sha1": "dab5c85fff38ca88517e555ba2afc9fcbf43d2f3"
+      }
+    ]
+  },
+  "source_snapshots": [
+    {
+      "ref": "79b1ef2a39ea587247f593c4f44d6d7e9b9dd5f2",
+      "path": "codex-rs/windows-sandbox-rs/src/filesystem_isolation.rs",
+      "git_blob_sha1": "5d92ba75c5aee9d482619e1f1d5983374dcd4c1f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/79b1ef2a39ea587247f593c4f44d6d7e9b9dd5f2/codex-rs/windows-sandbox-rs/src/filesystem_isolation.rs"
+    },
+    {
+      "ref": "c4ae70d44613434aaf165529a6076fa3400ca431",
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "git_blob_sha1": "64f1cc5fb31a8d42a46e837a2c3fb7d8770d829c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c4ae70d44613434aaf165529a6076fa3400ca431/codex-rs/windows-sandbox-rs/src/token.rs"
+    },
+    {
+      "ref": "c4ae70d44613434aaf165529a6076fa3400ca431",
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "git_blob_sha1": "2e25639e9c0e04a574a1ab8c321f7f9b5af32c48",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c4ae70d44613434aaf165529a6076fa3400ca431/codex-rs/windows-sandbox-rs/src/elevated_impl.rs"
+    },
+    {
+      "ref": "c4ae70d44613434aaf165529a6076fa3400ca431",
+      "path": "codex-rs/windows-sandbox-rs/src/token_full_restriction.rs",
+      "git_blob_sha1": "5fc6ad4be63d05b39be279b78ea56d1e3dbf0bc9",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c4ae70d44613434aaf165529a6076fa3400ca431/codex-rs/windows-sandbox-rs/src/token_full_restriction.rs"
+    },
+    {
+      "ref": "c4ae70d44613434aaf165529a6076fa3400ca431",
+      "path": "codex-rs/windows-sandbox-rs/src/token_prepared_filesystem.rs",
+      "git_blob_sha1": "9ab1b9d538e8de3c0aa3c0ffdd8e71780f0b6957",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c4ae70d44613434aaf165529a6076fa3400ca431/codex-rs/windows-sandbox-rs/src/token_prepared_filesystem.rs"
+    },
+    {
+      "ref": "c4ae70d44613434aaf165529a6076fa3400ca431",
+      "path": "codex-rs/windows-sandbox-rs/src/fresh_managed_base.rs",
+      "git_blob_sha1": "181b55bce07407590711efb825ef1ac3daf04024",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c4ae70d44613434aaf165529a6076fa3400ca431/codex-rs/windows-sandbox-rs/src/fresh_managed_base.rs"
+    },
+    {
+      "ref": "c4ae70d44613434aaf165529a6076fa3400ca431",
+      "path": "codex-rs/windows-sandbox-rs/src/legacy_admission.rs",
+      "git_blob_sha1": "f1fc37fc9ef53244773504746482a0a77027daaf",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c4ae70d44613434aaf165529a6076fa3400ca431/codex-rs/windows-sandbox-rs/src/legacy_admission.rs"
+    },
+    {
+      "ref": "c4ae70d44613434aaf165529a6076fa3400ca431",
+      "path": "codex-rs/windows-sandbox-rs/src/prepared_filesystem.rs",
+      "git_blob_sha1": "5abbe8d9b95a5509443e64e71eb787939f643053",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c4ae70d44613434aaf165529a6076fa3400ca431/codex-rs/windows-sandbox-rs/src/prepared_filesystem.rs"
+    }
+  ],
+  "live_pr_state": [
+    {
+      "number": 6799,
+      "head": "f1a9306a1e01954a8d13c376df3a29f97ace98f4",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "scope": "Integration draft explicitly retains the elevated refusal and original positive Windows obligations."
+    },
+    {
+      "number": 7068,
+      "head": "804ac018433ff08dfd195e93eed936394baf5053",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "scope": "Private-storage, ACL and dependency remediation explicitly does not restore outside-delete sandbox isolation."
+    },
+    {
+      "number": 7070,
+      "head": "79b1ef2a39ea587247f593c4f44d6d7e9b9dd5f2",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "scope": "Separate Unsupported containment draft. Its description reports no execution of its new native regressions and no restored sandbox functionality. It must not be cherry-picked as a functional repair."
+    }
+  ],
+  "original_positive_cases": [
+    "windows_elevated_does_not_create_missing_workspace_metadata",
+    "windows_elevated_enforces_deny_read_and_protects_setup_marker",
+    "windows_elevated_unified_exec_enforces_managed_deny_reads"
+  ],
+  "control_flow_findings": [
+    "require_elevated_filesystem_isolation() takes no configuration, root, token or ACL arguments and unconditionally returns ElevatedWindowsSandboxIsolationUnavailable.",
+    "elevated_impl::run_windows_sandbox_capture_for_permission_profile invokes this guard before permission resolution, Codex-home creation, capability setup, ACL mutation and runner transport.",
+    "The first two original Core positives explicitly select WindowsSandboxLevel::Elevated and require a real successful child. The third selects the elevated UnifiedExec path; the original failure occurs during its filesystem-helper session initialization.",
+    "Creating a better test directory or modifying only fixture ACLs cannot change this unconditional control flow. Replacing Elevated, expecting refusal, skipping, filtering or granting an environment/test bypass would change the acceptance contract.",
+    "Current c4ae source already contains full-restriction candidates and role separation. It is inaccurate to describe every c4ae token path as still using WRITE_RESTRICTED. Nevertheless their existence is not production qualification, and the unchanged admission guard is decisive."
+  ],
+  "candidate_component_limits": [
+    "UnqualifiedFullRestrictionToken exposes a native mechanism, not a filesystem launch qualification.",
+    "PreparedFilesystemAclContext explicitly bounds root preparation and states that it does not prove descendant ACLs, full-disk-read semantics, PE/DLL loading, registry or object-namespace confinement.",
+    "PreparedFilesystemToken binds token and root-ACL readback but explicitly does not prove image loading, private desktop, inherited handles or suspended Job containment.",
+    "FreshManagedRunnerBase observes a same-object managed base; it declares no conversion into filesystem or child-launch authority.",
+    "A controlled fixture can test these components using self-owned objects. It cannot by itself satisfy a Root=Read production profile, arbitrary outside-parent deletion boundaries or the original complete Core positive contract."
+  ],
+  "microsoft_sources": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew",
+      "finding": "Deletion or rename may be authorized by DELETE on the child or DELETE_CHILD on its parent. Both authorization routes matter; restricting only the protected child's ACL is insufficient."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+      "finding": "WRITE_RESTRICTED applies the restricting SID set to write access. Ordinary full restriction requires both the enabled-SID and restricting-SID access checks; restricted applications also need an appropriate desktop boundary."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens",
+      "finding": "The ordinary and restricting SID passes must both grant access. A restricting SID list is not an assertion that each role independently granted an operation."
+    }
+  ],
+  "minimum_safe_closure_contract": [
+    "Coordinate with the existing Windows owner on one source-bound production replacement. Do not treat the private SQLite branch, an ACL-idempotence repair or the separate refusal draft as a qualified sandbox implementation.",
+    "Preserve the requested read/write/deny profile and cover both child DELETE and parent DELETE_CHILD under the real effective token. Include protected descendants, arbitrary ambient grants, already-low-integrity owned outside fixtures, namespace/reparse/hard-link and ownership changes; retain original attack assertions.",
+    "Complete the permitted read/execute dependency closure and dedicated-account provenance, keeping filesystem, desktop, IPC and network roles separate. Validate same objects and token at final use, with bounded plan, explicit inherited handles and process-tree lifetime containment.",
+    "Use a source-bound, owner-created admission value only after its actual native prerequisites are satisfied. A pathname, user-writable marker, serialized receipt or test-only branch must not manufacture launch authority.",
+    "Run the unchanged original three Core positives and original negative matrix on native Windows, including cold setup, allowed reads, denied exact/glob reads, setup-marker preservation, absent metadata and UnifiedExec. Retain all failures and exact source/runtime/exit receipts.",
+    "Only after that source-bound qualification may the production guard be replaced by the proven admission path. No minimal fixture-only patch currently meets these requirements."
+  ],
+  "validation_limit": "Available operator hosts reported by the repository audit owner are Linux/macOS, not native Windows. This review neither emulates Windows ACLs nor claims a native qualification. Hosted native verification is still required.",
+  "patch_proposed": false,
+  "patch_reason": "Any currently available change making these original positives pass without implementing and qualifying a replacement would bypass or weaken their declared production boundary."
+}

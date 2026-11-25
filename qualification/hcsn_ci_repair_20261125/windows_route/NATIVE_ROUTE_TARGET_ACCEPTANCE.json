@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "status": "ROUTE_DIAGNOSTIC_TARGET_PASSED_CORE_AND_REPOSITORY_NOT_CLOSED",
+  "observed_utc": "2026-11-25T03:00:33Z",
+  "previous": {
+    "source": "c4ae70d44613434aaf165529a6076fa3400ca431",
+    "tested_merge": "09f976880ecc82a55a94d691c145b8437664de1a",
+    "tree": "2334492b52c8578f9dfcc5ae5f9304e389149c9b",
+    "run": 45530774175,
+    "job": 138926075596,
+    "route_target": "FAILED",
+    "route_failure": "capability-only workspace tokens require a private desktop",
+    "final_failed_targets": 2
+  },
+  "current": {
+    "source": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+    "tested_merge": "92b4e21db61532622d39a14f29e01bfe81a6e715",
+    "tree": "4963be2d879bf1a91eac3567e20e10bf30e92147",
+    "tested_merge_tree_equals_reviewed_source": true,
+    "run": 45534615882,
+    "job": 138938834123,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45534615882/job/138938834123",
+    "os": "Microsoft Windows Server 2025",
+    "image": "windows-2025-vs2026",
+    "route_target": "//codex-rs/network-proxy:network-proxy-windows_stable_ingress-test",
+    "route_result": "PASSED",
+    "route_seconds": 0.8,
+    "success_line": "2026-11-25T02:58:41.9285963Z //codex-rs/network-proxy:network-proxy-windows_stable_ingress-test       PASSED in 0.8s",
+    "job_conclusion": "failure",
+    "command_exit_code": 3,
+    "final_failed_target": "//codex-rs/core:core-all-test",
+    "final_failed_targets": 1,
+    "distinct_failed_tests": [
+      "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+    ],
+    "bazel_summary": "Executed 62 out of 171 tests: 123 tests pass, 1 fails locally, and 47 were skipped.",
+    "core_failure": "unchanged unqualified elevated FILE_DELETE_CHILD isolation refusal"
+  },
+  "scope": {
+    "change": "one route-only fixture requests owned dedicated desktop; all original route assertions, production refusal, token semantics, cleanup and timeout retained",
+    "not_a_retry": true,
+    "production_admission_changed": false,
+    "scientific_modules_changed": false,
+    "native_evidence": "full original job log and exact tested merge tree; no per-test JUnit archive independently opened",
+    "does_not_prove": [
+      "production filesystem isolation",
+      "independent DesktopCapability isolation",
+      "whole Windows shard success",
+      "repository CI success",
+      "all historical blockers closed"
+    ]
+  },
+  "log": {
+    "path": "A638_WINDOWS_SHARD4_138938834123.log.gz",
+    "raw_bytes": 595158,
+    "raw_sha256": "5c65a1f357f12b2e837aea0ed22ae4360be79cfccb9ef0f00e13b10b33c60159",
+    "gzip_bytes": 78344,
+    "gzip_sha256": "07f6760d8edb11987fa1f04f5be0f6402c4e22980410f867c3c160a09d41f3eb"
+  }
+}
