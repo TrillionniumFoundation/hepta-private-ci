@@ -1079,6 +1079,17 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
             ));
         }
 
+        if let Some(mode) = entry.unix_mode() {
+            let file_type = mode & 0o170000;
+            let expected_type = if entry.is_dir() { 0o040000 } else { 0o100000 };
+            if file_type != 0 && file_type != expected_type {
+                return Err(format!(
+                    "curated plugins zip entry '{}' has an unsafe Unix file type",
+                    relative_path.display()
+                ));
+            }
+        }
+
         let mut components = relative_path.components();
         let Some(std::path::Component::Normal(_)) = components.next() else {
             continue;
@@ -1126,12 +1137,18 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 )
             })?;
         }
-        let mut output = std::fs::File::create(&output_path).map_err(|err| {
-            format!(
-                "failed to create curated plugins file {}: {err}",
-                output_path.display()
-            )
-        })?;
+        // Exclusive creation preserves existing staging contents and rejects
+        // duplicate normalized output paths.
+        let mut output = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&output_path)
+            .map_err(|err| {
+                format!(
+                    "failed to create curated plugins file {}: {err}",
+                    output_path.display()
+                )
+            })?;
         std::io::copy(&mut entry, &mut output).map_err(|err| {
             format!(
                 "failed to write curated plugins file {}: {err}",

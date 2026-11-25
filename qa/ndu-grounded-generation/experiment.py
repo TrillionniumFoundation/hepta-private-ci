@@ -16,11 +16,12 @@ import time
 import numpy as np
 import torch
 
-from backend import FlorenceBackend
+from backend import MODEL_REVISION, FlorenceBackend
 from cells import FourCells
 from cohort import iter_pairs, validate_splits
 from evaluate import METHODS, cvar, evaluate, score_episode
 from generation import run_episode
+from hard_budget import HardBudgetPool, interrupted_episode
 from policies import Policies
 from verification import Verifier
 
@@ -261,6 +262,12 @@ def execute(args, phase, split, combinations):
             )
         },
     }
+    hard_budget = getattr(args, "hard_budget", False)
+    if hard_budget:
+        identity["supervision"] = "externally-killed-resident-v2"
+        identity["implementation_sha256"]["hard_budget.py"] = sha(
+            Path(__file__).parent / "hard_budget.py"
+        )
     if manifest_path.exists():
         existing = json.loads(manifest_path.read_text())
         if existing["identity"] != identity:
@@ -306,14 +313,9 @@ def execute(args, phase, split, combinations):
                     )
                 )
     started, rows = time.perf_counter(), list(previous)
-    with ProcessPoolExecutor(
-        max_workers=args.workers,
-        mp_context=multiprocessing.get_context("spawn"),
-        initializer=initialize_worker,
-        initargs=(args.model, str(training), str(output / "artifacts"), phase),
-    ) as executor:
+    def record_episodes(episodes):
         with journal.open("a") as stream:
-            for episode in executor.map(execute_job, jobs, chunksize=1):
+            for episode in episodes:
                 episode["split"] = split
                 episode["score"] = score_episode(
                     episode, references[episode["task_id"]]
@@ -333,6 +335,32 @@ def execute(args, phase, split, combinations):
                         ),
                         flush=True,
                     )
+    initargs = (args.model, str(training), str(output / "artifacts"), phase)
+    supervisor_initializations = []
+    if hard_budget:
+        with HardBudgetPool(
+            initialize_worker, initargs, execute_job, workers=args.workers
+        ) as supervisor:
+            def supervised_episodes():
+                for index, result, receipt in supervisor.run(jobs, args.budget):
+                    if result is None:
+                        yield interrupted_episode(
+                            jobs[index], receipt, identity["checkpoint_sha256"], MODEL_REVISION
+                        )
+                    else:
+                        result["supervisor"] = receipt
+                        yield result
+
+            record_episodes(supervised_episodes())
+            supervisor_initializations = list(supervisor.initializations)
+    else:
+        with ProcessPoolExecutor(
+            max_workers=args.workers,
+            mp_context=multiprocessing.get_context("spawn"),
+            initializer=initialize_worker,
+            initargs=initargs,
+        ) as executor:
+            record_episodes(executor.map(execute_job, jobs, chunksize=1))
     resident = {
         r["resident_initialization"]["worker_pid"]: r["resident_initialization"]
         for r in rows
@@ -348,7 +376,7 @@ def execute(args, phase, split, combinations):
             "this_execution_seconds": time.perf_counter() - started,
             "journal_sha256": sha(journal),
             "actual_episode_seconds": sum(r["actual_wall_seconds"] for r in rows),
-            "worker_initializations": list(resident.values()),
+            "worker_initializations": supervisor_initializations or list(resident.values()),
             "timing_scope": "parallel worker online wall sum is not batch elapsed; initialization, IPC scheduling and independent scoring are in batch elapsed",
         },
     )
@@ -529,6 +557,11 @@ def main():
     parser.add_argument("--work", required=True)
     parser.add_argument("--budget", type=float, default=10.0)
     parser.add_argument("--workers", type=int, default=2)
+    parser.add_argument(
+        "--hard-budget",
+        action="store_true",
+        help="opt into supervised resident workers; use a new work directory",
+    )
     args = parser.parse_args()
     if not 1 <= args.workers <= 2 or args.budget <= 0:
         parser.error("one or two workers and a positive budget are required")
