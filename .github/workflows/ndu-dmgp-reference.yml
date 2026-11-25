@@ -1,0 +1,27 @@
+name: NDU DMGP reference qualification
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/ndu-dmgp-reference/**'
+      - '.github/workflows/ndu-dmgp-reference.yml'
+  push:
+    paths:
+      - 'qualification/ndu-dmgp-reference/**'
+      - '.github/workflows/ndu-dmgp-reference.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reference-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python syntax validation
+        run: python3 -m py_compile qualification/ndu-dmgp-reference/*.py
+      - name: A0-A5 scientific qualification reference tests
+        working-directory: qualification/ndu-dmgp-reference
+        run: python3 -m unittest -v test_ndu_dmgp test_portfolio_policy
