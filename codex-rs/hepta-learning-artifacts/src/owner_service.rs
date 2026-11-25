@@ -715,6 +715,94 @@ mod tests {
         );
     }
 
+
+    // Exercise the service restart path, not just the host snapshot API.
+    // Each cut uses an isolated durable store and a fixture trust domain.
+    #[test]
+    fn pending_publication_exact_retry_across_four_durable_cuts() {
+        for cut in [
+            ArtifactPublicationPhaseV1::Prepared,
+            ArtifactPublicationPhaseV1::PayloadDurable,
+            ArtifactPublicationPhaseV1::RegistryDurable,
+            ArtifactPublicationPhaseV1::WitnessDurable,
+        ] {
+            let directory = TestDir::new();
+            let key = key();
+            let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+            let scope_digest = withdrawals.scope_digest().unwrap();
+            let config = LearningArtifactOwnerServiceConfigV1 {
+                root: directory.0.clone(),
+                trust: trust(&key, scope_digest),
+                writer_lease: lease(&key, scope_digest),
+                required_current_head: None,
+                withdrawal_registry: withdrawals.clone(),
+                storage_binding: digest("binding"),
+                now: 20,
+            };
+            let service = LearningArtifactOwnerService::open(config.clone()).unwrap();
+            let predecessor = service.registry().snapshot().head_digest;
+            let admission = admit_manifest_at_withdrawal_head_v3(
+                &withdrawals, withdrawals.head_digest(), manifest(), 20,
+            ).unwrap();
+            let mut staged = service.registry().clone();
+            let mut transaction = service.host.begin_publication(
+                id("operation"), admission, &withdrawals, service.registry(), predecessor, 20,
+            ).unwrap();
+            service.host.stage_compatibility_registration(&transaction, &mut staged, 20).unwrap();
+            let request = publish_request(&key, &withdrawals, predecessor, staged.snapshot().head_digest);
+            if phase_at_least(cut, ArtifactPublicationPhaseV1::PayloadDurable) {
+                service.host.ensure_payload_durable(&mut transaction, &staged, &request.payload, 20).unwrap();
+            }
+            if phase_at_least(cut, ArtifactPublicationPhaseV1::RegistryDurable) {
+                service.host.ensure_registry_durable(&mut transaction, &staged, &withdrawals, digest("binding"), 20).unwrap();
+            }
+            if phase_at_least(cut, ArtifactPublicationPhaseV1::WitnessDurable) {
+                service.host.ensure_witness_durable(&mut transaction, &request.signed_current_head, &withdrawals, 20).unwrap();
+            }
+            assert_eq!(transaction.phase(), cut);
+            drop(transaction);
+            drop(service);
+            let mut reopened = LearningArtifactOwnerService::open(
+                LearningArtifactOwnerServiceConfigV1 { now: 21, ..config.clone() }
+            ).unwrap();
+            assert_eq!(reopened.recovery_required(), Some(&request.operation_id));
+            let mut unrelated = request.clone();
+            unrelated.operation_id = id("unrelated");
+            assert!(matches!(reopened.publish(unrelated), Err(LearningArtifactOwnerServiceError::RecoveryRequired(_))));
+            let mut changed = request.clone();
+            changed.payload[0] ^= 1;
+            assert!(reopened.publish(changed).is_err());
+            let mut changed = request.clone();
+            changed.admission.validated_manifest.manifest.objective_class_digest = digest("changed");
+            assert!(reopened.publish(changed).is_err());
+            if cut == ArtifactPublicationPhaseV1::WitnessDurable {
+                let mut changed = request.clone();
+                changed.signed_current_head.signature[0] ^= 1;
+                assert!(reopened.publish(changed).is_err());
+                let mut changed = request.clone();
+                changed.signed_current_head.witness.generation = Generation::new(99).unwrap();
+                assert!(reopened.publish(changed).is_err());
+            }
+            assert_eq!(reopened.recovery_required(), Some(&request.operation_id));
+            let checkpoint = reopened.host.recover_publication(&request.operation_id).unwrap().unwrap();
+            assert_eq!(checkpoint.checkpoint.phase, cut);
+            let receipt = reopened.publish(request.clone()).unwrap();
+            assert!(reopened.recovery_required().is_none());
+            assert_eq!(reopened.publish(request.clone()).unwrap(), receipt);
+            assert_eq!(reopened.current_registry_view(21).unwrap().receipt().head_digest, receipt.registry_head_digest);
+            drop(reopened);
+            let mut terminal = LearningArtifactOwnerService::open(
+                LearningArtifactOwnerServiceConfigV1 {
+                    now: 21, required_current_head: Some(request.signed_current_head.clone()), ..config
+                }
+            ).unwrap();
+            assert!(terminal.recovery_required().is_none());
+            assert_eq!(terminal.publish(request).unwrap(), receipt);
+            println!("PENDING_CUT {:?} exact recovery and durable terminal replay; unrelated/drift rejected", cut);
+        }
+    }
+
+
 // Append within owner_service::tests. Explicit opt-in archived-data qualification.
 // This is a disposable research registry; metadata and local trust are test-scoped.
 // No evaluation signature or activation is created.
