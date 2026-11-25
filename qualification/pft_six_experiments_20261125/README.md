@@ -17,7 +17,7 @@
 | PFT5 | 24 个有利/冲突合成 case，四种泄漏或篡改负例 | B 标签只在候选冻结后的独立 evaluator 中读取；真实 A→B 未达成 |
 | PFT6 | 120 行五方法、等预算/同质量成本比较 | 真实本地计算计时；原矩阵的网络、能耗及 Hepta runtime 采用未测 |
 
-完整源码、逐 case 收据、失败结果、冻结候选和合成数据均保留。大体积原始证据以无损 archive 提交；manifest 列出每个原始文件的 SHA256。
+完整源码、逐 case 收据、失败结果、冻结候选和合成数据均保留。原始证据按独立实验、输入 fixture、冻结候选分别无损归档，每个 archive 符合仓库 512000 字节限制；manifest 列出每个原始文件的 SHA256。没有修改大小策略或 allowlist。
 
 ## 主要发现
 
@@ -138,7 +138,9 @@ python3 run_suite.py --profile smoke --output /absolute/new/smoke-output
 
 ```bash
 mkdir /absolute/new/evidence-view
-tar -xzf evidence/raw_evidence.tar.gz -C /absolute/new/evidence-view
+for archive in evidence/archives/*.tar.xz; do
+  tar -xJf "$archive" -C /absolute/new/evidence-view
+done
 python3 verify_receipts.py --results /absolute/new/evidence-view/results
 ```
 

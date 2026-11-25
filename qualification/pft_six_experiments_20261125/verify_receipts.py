@@ -122,7 +122,7 @@ def verify(results, source):
             "pft6_candidate_files_verified": candidates,
             "maximum_ridge_rls_parameter_relative_error": max(rls_errors) if rls_errors else None,
             "artifact_presence": "local candidates available" if candidates else
-            "published summary-only audit; extract raw_evidence.tar.gz to verify candidate bytes",
+            "published summary-only audit; extract evidence archives to verify candidate bytes",
             "input_sha256": {name + ".json": sha(results / (name + ".json")) for name in names},
             "source_sha256": sha(__file__)}
 
