@@ -22,12 +22,13 @@ fn verify_private_file(path: &std::path::Path) -> anyhow::Result<()> {
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
     #[cfg(windows)]
     {
+        use anyhow::Context;
         use codex_utils_path::windows_private::Access;
         use codex_utils_path::windows_private::PrivateSqliteDirectory;
-        PrivateSqliteDirectory::inspect(path.parent().expect("parent"))?.open(
+        PrivateSqliteDirectory::inspect(path.parent().context("private database parent")?)?.open(
             path.file_name()
                 .and_then(|name| name.to_str())
-                .expect("leaf"),
+                .context("private database leaf")?,
             Access::Read,
         )?;
     }
