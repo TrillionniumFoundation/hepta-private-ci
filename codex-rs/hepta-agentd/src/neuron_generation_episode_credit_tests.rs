@@ -15,7 +15,8 @@ async fn actor_terminal_credit_recovers_partial_commit_without_executing_again()
     let ledger_fixture = LedgerFixture::new();
     let mut writer = ledger_fixture.writer(/*reopen*/ false);
     let decision = append_decision(&mut writer, &frozen);
-    let before = ledger_fixture.bytes();
+    let (reopened_writer, before) = ledger_fixture.close_read_and_reopen(writer);
+    writer = reopened_writer;
     let (handle, bootstrap) = checked(neuron_generation_channel_v2(
         &fixture.identity,
         fixture.journal(),
@@ -54,7 +55,9 @@ async fn actor_terminal_credit_recovers_partial_commit_without_executing_again()
             "generation not settled and delivered"
         ))
     ));
-    assert_eq!(ledger_fixture.bytes(), before);
+    let (reopened_writer, after_bytes) = ledger_fixture.close_read_and_reopen(writer);
+    writer = reopened_writer;
+    assert_eq!(after_bytes, before);
     let chunk = checked(undelivered.pending_output().cloned().ok_or("outbox"));
     checked(
         handle
@@ -86,7 +89,9 @@ async fn actor_terminal_credit_recovers_partial_commit_without_executing_again()
             OutcomeCreditClosureErrorV2::InvalidCredit(CausalV2Error::CreditConservation)
         ))
     ));
-    assert_eq!(ledger_fixture.bytes(), before);
+    let (reopened_writer, after_bytes) = ledger_fixture.close_read_and_reopen(writer);
+    writer = reopened_writer;
+    assert_eq!(after_bytes, before);
 
     let mut bad_signature = original.clone();
     bad_signature.credit_evidence.signature[0] ^= 1;
@@ -107,12 +112,14 @@ async fn actor_terminal_credit_recovers_partial_commit_without_executing_again()
     };
     assert_eq!(partial.disposition, AppendDisposition::Appended);
     assert_eq!(checked(writer.records()).len(), 2);
-    let generation_after = checked(std::fs::read(
-        fixture.directory.path().join("generation-journal"),
-    ));
+    // Parent shutdown joins the service and only releases its journal locks;
+    // it does not perform the explicit-retirement Drain transition.
     tasks.shutdown().await;
     drop(handle);
     drop(writer);
+    let generation_after = checked(std::fs::read(
+        fixture.directory.path().join("generation-journal"),
+    ));
     fixture.reopen_state().await;
     let (handle, bootstrap) = checked(neuron_generation_channel_v2(
         &fixture.identity,
@@ -148,8 +155,19 @@ async fn actor_terminal_credit_recovers_partial_commit_without_executing_again()
     assert_eq!(recovered.credit.disposition, AppendDisposition::Appended);
     assert!(!recovered.authority.grants_any());
     assert_eq!(checked(writer.records()).len(), 3);
-    let after = ledger_fixture.bytes();
+    let (reopened_writer, after) = ledger_fixture.close_read_and_reopen(writer);
+    writer = reopened_writer;
     let replay = checked(
+        append_neuron_generation_outcome_credit_v1(
+            &handle,
+            &mut writer,
+            &frozen,
+            original.clone(),
+            /*now*/ 50,
+        )
+        .await,
+    );
+    let warm_replay = checked(
         append_neuron_generation_outcome_credit_v1(
             &handle,
             &mut writer,
@@ -159,20 +177,25 @@ async fn actor_terminal_credit_recovers_partial_commit_without_executing_again()
         )
         .await,
     );
+    assert_eq!(warm_replay, replay);
     assert_eq!(
         replay.credit.disposition,
         AppendDisposition::IdempotentReplay
     );
     assert_eq!(replay.closure_digest, recovered.closure_digest);
-    assert_eq!(ledger_fixture.bytes(), after);
+    let (reopened_writer, after_bytes) = ledger_fixture.close_read_and_reopen(writer);
+    writer = reopened_writer;
+    assert_eq!(after_bytes, after);
+    drop(writer);
+    assert_eq!(control.calls.load(Ordering::SeqCst), 1);
+    tasks.shutdown().await;
+    drop(handle);
     assert_eq!(
         checked(std::fs::read(
             fixture.directory.path().join("generation-journal")
         )),
         generation_after
     );
-    assert_eq!(control.calls.load(Ordering::SeqCst), 1);
-    tasks.shutdown().await;
 }
 
 #[tokio::test]
@@ -225,7 +248,8 @@ async fn actor_terminal_credit_rejects_stale_owner_cut_before_both_appends() {
             })
             .await,
     );
-    let before = ledger_fixture.bytes();
+    let (reopened_writer, before) = ledger_fixture.close_read_and_reopen(writer);
+    writer = reopened_writer;
     assert!(matches!(
         append_neuron_generation_outcome_credit_v1(
             &handle,
@@ -239,7 +263,9 @@ async fn actor_terminal_credit_rejects_stale_owner_cut_before_both_appends() {
             "generation outcome identity"
         ))
     ));
-    assert_eq!(ledger_fixture.bytes(), before);
+    let (reopened_writer, after_bytes) = ledger_fixture.close_read_and_reopen(writer);
+    writer = reopened_writer;
+    assert_eq!(after_bytes, before);
     let current = checked(handle.observe_generation().await);
     let fresh = signed_closure(
         &writer,

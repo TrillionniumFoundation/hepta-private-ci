@@ -79,6 +79,15 @@ impl Serving {
         self.tasks.shutdown().await;
         Ok(())
     }
+
+    async fn close_read_and_reopen(self, fixture: &mut Fixture) -> TestResult<(Self, Vec<u8>)> {
+        // Every command above has returned. Parent shutdown joins the owner
+        // without the durable Drain written by explicit service retirement.
+        self.finish().await?;
+        let bytes = fs::read(fixture.directory.path().join("generation-journal"))?;
+        fixture.reopen_state().await;
+        Ok((Self::start(fixture).await?, bytes))
+    }
 }
 
 async fn status(client: &AgentdClient) -> TestResult<GenerationStatusV1> {
@@ -175,13 +184,16 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
         serving.client.generation(acknowledgement.clone()).await?,
         Response::Acknowledged {}
     );
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let durable = fs::read(&journal_path)?;
-    assert_eq!(
-        serving.client.generation(acknowledgement.clone()).await?,
-        Response::Acknowledged {}
-    );
-    assert_eq!(fs::read(&journal_path)?, durable);
+    let (serving, durable) = serving.close_read_and_reopen(&mut fixture).await?;
+    // Exercise cold replay and then warm replay on the same still-live owner.
+    for _ in 0..2 {
+        assert_eq!(
+            serving.client.generation(acknowledgement.clone()).await?,
+            Response::Acknowledged {}
+        );
+    }
+    let (serving, after_bytes) = serving.close_read_and_reopen(&mut fixture).await?;
+    assert_eq!(after_bytes, durable);
     assert!(status(&serving.client).await?.drained);
 
     fixture.ticks.store(20_000, Ordering::SeqCst);
@@ -195,7 +207,8 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
         reopened.client.generation(acknowledgement).await?,
         Response::Acknowledged {}
     );
-    assert_eq!(fs::read(&journal_path)?, durable);
+    let (reopened, after_bytes) = reopened.close_read_and_reopen(&mut fixture).await?;
+    assert_eq!(after_bytes, durable);
     let Response::Cost(cost) = reopened.client.generation(Request::Cost {}).await? else {
         return Err(std::io::Error::other("expected task cost").into());
     };
@@ -213,18 +226,20 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
 
 #[tokio::test]
 async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owner() -> TestResult {
-    let fixture = Fixture::new().await;
+    let mut fixture = Fixture::new().await;
     let serving = Serving::start(&fixture).await?;
     let initial = status(&serving.client).await?;
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let pristine = fs::read(&journal_path)?;
+    let (serving, pristine) = serving.close_read_and_reopen(&mut fixture).await?;
     let mut oversized = step(&fixture, &initial, "oversized");
     let Request::Step { request } = &mut oversized else {
         unreachable!()
     };
     request.input = vec![1; MAX_GENERATION_CONTROL_INPUT_BYTES + 1];
-    assert!(serving.client.generation(oversized).await.is_err());
-    assert_eq!(fs::read(&journal_path)?, pristine);
+    for _ in 0..2 {
+        assert!(serving.client.generation(oversized.clone()).await.is_err());
+    }
+    let (serving, after_bytes) = serving.close_read_and_reopen(&mut fixture).await?;
+    assert_eq!(after_bytes, pristine);
     let stale_client = AgentdClient::new(
         fixture.directory.path().join("generation.ctl"),
         fixture.identity.agent_id.clone(),
@@ -236,16 +251,19 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
             .await
             .is_err()
     );
-    assert_eq!(fs::read(&journal_path)?, pristine);
+    let (serving, after_bytes) = serving.close_read_and_reopen(&mut fixture).await?;
+    assert_eq!(after_bytes, pristine);
     let original = step(&fixture, &initial, "same-client-key");
     serving.client.generation(original.clone()).await?;
-    let committed = fs::read(&journal_path)?;
+    let (serving, committed) = serving.close_read_and_reopen(&mut fixture).await?;
     let mut changed = original;
     let Request::Step { request } = &mut changed else {
         unreachable!()
     };
     request.input.push(4);
-    assert!(serving.client.generation(changed).await.is_err());
+    for _ in 0..2 {
+        assert!(serving.client.generation(changed.clone()).await.is_err());
+    }
     for request in [
         Request::Output {
             expected_chunk_digest: [0; 32],
@@ -260,9 +278,13 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
     ] {
         assert!(serving.client.generation(request).await.is_err());
     }
-    assert_eq!(fs::read(&journal_path)?, committed);
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
-    serving.finish().await
+    serving.finish().await?;
+    assert_eq!(
+        fs::read(fixture.directory.path().join("generation-journal"))?,
+        committed
+    );
+    Ok(())
 }
 
 #[tokio::test]
@@ -429,18 +451,19 @@ async fn typed_operation_with_same_derived_id_cannot_impersonate_control_intent(
             .await
             .is_err()
     );
+    assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
+    serving.finish().await?;
     assert_eq!(
         fs::read(fixture.directory.path().join("generation-journal"))?,
         before
     );
-    assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
-    serving.finish().await
+    Ok(())
 }
 
 #[tokio::test]
 async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback()
 -> TestResult {
-    let fixture = Fixture::new().await;
+    let mut fixture = Fixture::new().await;
     fixture
         .control
         .signals
@@ -503,12 +526,47 @@ async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_wit
         serving
             .client
             .generation(Request::Step {
-                request: Box::new(compact)
+                request: Box::new(compact.clone())
             })
             .await
             .is_err()
     );
-    assert_eq!(fs::read(&journal_path)?, before);
+    // Check the owner that actually rejected this request before recovery can
+    // replace any in-memory state. All original no-readback counters remain.
+    assert_eq!(
+        status(&serving.client).await?.pending,
+        Some(pending.clone())
+    );
+    assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
+    assert_eq!(fixture.control.signals.reads.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        fixture.control.signals.cancellations.load(Ordering::SeqCst),
+        0
+    );
+    let (serving, after_bytes) = serving.close_read_and_reopen(&mut fixture).await?;
+    assert_eq!(after_bytes, before);
+    assert_eq!(
+        status(&serving.client).await?.pending,
+        Some(pending.clone())
+    );
+    assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
+    assert_eq!(fixture.control.signals.reads.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        fixture.control.signals.cancellations.load(Ordering::SeqCst),
+        0
+    );
+
+    // Repeat the rejected intent on the recovered live owner, then reconcile
+    // on that same owner without a close/reopen between refusal and readback.
+    assert!(
+        serving
+            .client
+            .generation(Request::Step {
+                request: Box::new(compact),
+            })
+            .await
+            .is_err()
+    );
     assert_eq!(
         status(&serving.client).await?.pending,
         Some(pending.clone())

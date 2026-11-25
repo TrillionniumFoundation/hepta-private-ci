@@ -306,25 +306,52 @@ fn expiration_during_admission_settles_known_no_contact_without_calling_model() 
     );
     assert_eq!(checked(receipt.cost.summary()).complete_metrics(), None);
     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
+    // There is no pending write after the synchronous step returned. Dropping
+    // this owner releases locks only; do not drain and append a new state here.
+    let checkpoint = checked(owner.journal().continuity_checkpoint());
+    drop(owner);
     let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    let mut owner = fixture.owner(model.clone());
+    assert_eq!(checked(owner.journal().continuity_checkpoint()), checkpoint);
     assert_eq!(
         checked(owner.step(req.clone(), || panic!(
-            "exact replay must not sample a clock"
+            "cold receipt must not sample a clock"
         ))),
         receipt
     );
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
-    assert!(checked(owner.drain()));
-    drop(owner);
-    let mut owner = fixture.owner(model.clone());
-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
     assert_eq!(
-        checked(owner.step(req, || panic!("cold receipt must not sample a clock"))),
+        checked(owner.step(req.clone(), || panic!(
+            "warm replay must not sample a clock"
+        ))),
         receipt
     );
     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    assert_eq!(checked(owner.journal().continuity_checkpoint()), checkpoint);
     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
+    drop(owner);
+    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    // Drain only after the physical-byte comparison, so cleanup cannot hide a
+    // write by either replay above.
+    let mut owner = fixture.owner(model.clone());
+    assert!(checked(owner.drain()));
+    let drained_checkpoint = checked(owner.journal().continuity_checkpoint());
+    drop(owner);
+    let drained_bytes = checked(fs::read(fixture.0.join("journal")));
+    let mut owner = fixture.owner(model.clone());
+    assert_eq!(
+        checked(owner.step(req, || panic!(
+            "drained cold receipt must not sample a clock"
+        ))),
+        receipt
+    );
+    assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
+    assert_eq!(
+        checked(owner.journal().continuity_checkpoint()),
+        drained_checkpoint
+    );
+    assert_eq!(model.calls.load(Ordering::SeqCst), 0);
+    drop(owner);
+    assert_eq!(checked(fs::read(fixture.0.join("journal"))), drained_bytes);
 }
 
 #[test]

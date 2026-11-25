@@ -43,10 +43,10 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
         plan.record().candidate.manifest.source_digest,
         plan.record().fixed_expert.manifest.source_digest
     );
-    let before = fixture.holdout_bytes();
+    let before = fixture.close_read_and_reopen_holdout();
     let inputs = fixture.provider.inputs.clone();
     let receipt = checked(fixture.run(&plan));
-    assert_ne!(fixture.holdout_bytes(), before);
+    assert_ne!(fixture.close_read_and_reopen_holdout(), before);
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (1, 1));
     let summary = checked(receipt.plan().record().candidate.cost.summary());
     assert_eq!(
@@ -64,7 +64,7 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
         receipt.temporal().candidate.estimate,
         receipt.temporal().baseline.estimate
     );
-    let (context, evidence, verifier) = signed(&fixture.runner, &receipt);
+    let (context, evidence, verifier) = signed(fixture.runner(), &receipt);
     let mut sink = FileSink {
         file: file(&fixture.directory.path().join("publication")),
         publications: 0,
@@ -73,7 +73,7 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
     bad.generator_plan.signature[0] ^= 1;
     assert!(
         fixture
-            .runner
+            .runner()
             .qualify_and_persist(
                 &receipt,
                 CellEvaluationQualificationRequestV1 {
@@ -91,7 +91,7 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
         (sink.publications, checked(sink.file.metadata()).len()),
         (0, 0)
     );
-    let qualified = checked(fixture.runner.qualify_and_persist(
+    let qualified = checked(fixture.runner().qualify_and_persist(
         &receipt,
         CellEvaluationQualificationRequestV1 {
             context: &context,
@@ -107,9 +107,9 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
     assert_eq!(qualified.authority(), AuthorityPosture::DENY_ALL);
     assert_eq!(sink.publications, 1);
 
-    let anchor = fixture.runner.product.holdout_anchor();
-    let consumed = fixture.holdout_bytes();
-    drop(fixture.runner);
+    let anchor = fixture.runner().product.holdout_anchor();
+    let consumed = fixture.close_read_and_reopen_holdout();
+    drop(fixture.runner.take());
     let store = checked(LockedFileFinalHoldoutCasStoreV1::recover(
         file(&fixture.directory.path().join("holdout")),
         digest("binding"),
@@ -120,7 +120,9 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
         digest("binding"),
         fence(),
     ));
-    fixture.runner = CellEvaluationRunnerV1::new(ProductEvaluationRunnerV1::new(owner));
+    fixture.runner = Some(CellEvaluationRunnerV1::new(ProductEvaluationRunnerV1::new(
+        owner,
+    )));
     // A replenished provider must not make a recovered consumption reusable.
     fixture.provider.inputs = inputs;
     assert!(matches!(
@@ -130,15 +132,24 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
         ))
     ));
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (2, 1));
+    // Keep a second rejection on this same live owner: byte inspection must
+    // not replace all warm retries with recovery-only coverage.
+    assert!(matches!(
+        fixture.run(&plan),
+        Err(CellEvaluationErrorV1::Product(
+            ProductEvaluationError::Binding("final holdout already consumed")
+        ))
+    ));
+    assert_eq!((fixture.provider.calls, fixture.provider.releases), (3, 1));
     assert!(fixture.provider.inputs.is_some());
-    assert_eq!(fixture.runner.product.holdout_anchor(), anchor);
-    assert_eq!(fixture.holdout_bytes(), consumed);
+    assert_eq!(fixture.runner().product.holdout_anchor(), anchor);
+    assert_eq!(fixture.close_read_and_reopen_holdout(), consumed);
 }
 
 #[test]
 fn unfair_or_missing_training_declarations_never_consume_holdout() {
-    let fixture = Fixture::new(Costs::Complete);
-    let before = fixture.holdout_bytes();
+    let mut fixture = Fixture::new(Costs::Complete);
+    let before = fixture.close_read_and_reopen_holdout();
     for mutation in 0..9 {
         let mut registration = fixture.registration.clone();
         let fixed = &mut registration.comparison.fixed_expert;
@@ -163,7 +174,7 @@ fn unfair_or_missing_training_declarations_never_consume_holdout() {
             )
             .is_err()
         );
-        assert_eq!(fixture.holdout_bytes(), before);
+        assert_eq!(fixture.close_read_and_reopen_holdout(), before);
     }
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (0, 0));
 }
@@ -177,10 +188,10 @@ fn missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown()
         Costs::UnknownOutcome,
         Costs::UnknownEnvelope,
     ] {
-        let fixture = Fixture::new(profile);
-        let before = fixture.holdout_bytes();
+        let mut fixture = Fixture::new(profile);
+        let before = fixture.close_read_and_reopen_holdout();
         assert!(fixture.freeze().is_err());
-        assert_eq!(fixture.holdout_bytes(), before);
+        assert_eq!(fixture.close_read_and_reopen_holdout(), before);
         assert_eq!((fixture.provider.calls, fixture.provider.releases), (0, 0));
     }
     let mut fixture = Fixture::new(Costs::Complete);
@@ -205,7 +216,7 @@ fn same_snapshot_but_changed_journal_cut_is_rejected_before_provider() {
     let mut fixture = Fixture::new(Costs::Complete);
     let plan = checked(fixture.freeze());
     let snapshot = checked(fixture.candidate.snapshot()).clone();
-    let before = fixture.holdout_bytes();
+    let before = fixture.close_read_and_reopen_holdout();
     checked(fixture.candidate.resume());
     checked(fixture.candidate.drain());
     assert_eq!(fixture.candidate.snapshot(), Ok(&snapshot));
@@ -215,7 +226,7 @@ fn same_snapshot_but_changed_journal_cut_is_rejected_before_provider() {
             "Cell journal changed after registration"
         ))
     ));
-    assert_eq!(fixture.holdout_bytes(), before);
+    assert_eq!(fixture.close_read_and_reopen_holdout(), before);
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (0, 0));
 }
 
@@ -235,11 +246,11 @@ fn changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison() {
             ..CellCostMetricsV2::default()
         },
     }));
-    let before = fixture.holdout_bytes();
+    let before = fixture.close_read_and_reopen_holdout();
     assert!(fixture.run(&plan).is_err());
     checked(fixture.candidate.resume());
     assert!(fixture.freeze().is_err());
-    assert_eq!(fixture.holdout_bytes(), before);
+    assert_eq!(fixture.close_read_and_reopen_holdout(), before);
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (0, 0));
 }
 
@@ -252,7 +263,7 @@ fn different_task_and_unknown_holdout_release_remain_fail_closed() {
         Costs::Complete,
         [18; 32],
     );
-    let before = fixture.holdout_bytes();
+    let before = fixture.close_read_and_reopen_holdout();
     assert!(
         freeze_cell_evaluation_plan_v1(
             fixture.registration.clone(),
@@ -277,14 +288,14 @@ fn different_task_and_unknown_holdout_release_remain_fail_closed() {
         )
         .is_err()
     );
-    assert_eq!(fixture.holdout_bytes(), before);
+    assert_eq!(fixture.close_read_and_reopen_holdout(), before);
     let plan = checked(fixture.freeze());
     let inputs = fixture.provider.inputs.take();
     assert!(fixture.run(&plan).is_err());
-    let consumed = fixture.holdout_bytes();
+    let consumed = fixture.close_read_and_reopen_holdout();
     assert_ne!(consumed, before);
     assert_eq!(fixture.provider.releases, 1);
-    let anchor = fixture.runner.product.holdout_anchor();
+    let anchor = fixture.runner().product.holdout_anchor();
     // Unknown release outcome stays consumed even if data becomes available.
     fixture.provider.inputs = inputs;
     assert!(matches!(
@@ -294,9 +305,18 @@ fn different_task_and_unknown_holdout_release_remain_fail_closed() {
         ))
     ));
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (2, 1));
+    // Keep a second rejection on this same live owner: byte inspection must
+    // not replace all warm retries with recovery-only coverage.
+    assert!(matches!(
+        fixture.run(&plan),
+        Err(CellEvaluationErrorV1::Product(
+            ProductEvaluationError::Binding("final holdout already consumed")
+        ))
+    ));
+    assert_eq!((fixture.provider.calls, fixture.provider.releases), (3, 1));
     assert!(fixture.provider.inputs.is_some());
-    assert_eq!(fixture.runner.product.holdout_anchor(), anchor);
-    assert_eq!(fixture.holdout_bytes(), consumed);
+    assert_eq!(fixture.runner().product.holdout_anchor(), anchor);
+    assert_eq!(fixture.close_read_and_reopen_holdout(), consumed);
 }
 
 #[test]
@@ -304,7 +324,7 @@ fn signatures_for_another_fair_budget_cannot_publish_this_result() {
     let mut original = Fixture::new(Costs::Complete);
     let plan = checked(original.freeze());
     let receipt = checked(original.run(&plan));
-    let (context, evidence, verifier) = signed(&original.runner, &receipt);
+    let (context, evidence, verifier) = signed(original.runner(), &receipt);
     let mut changed = Fixture::new(Costs::Complete);
     changed
         .registration
@@ -330,7 +350,7 @@ fn signatures_for_another_fair_budget_cannot_publish_this_result() {
     };
     assert!(
         changed
-            .runner
+            .runner()
             .qualify_and_persist(
                 &other,
                 CellEvaluationQualificationRequestV1 {

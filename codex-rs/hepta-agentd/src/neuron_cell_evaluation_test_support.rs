@@ -12,6 +12,7 @@ use codex_hepta_intelligence_eval::*;
 use codex_hepta_neuron::*;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use pretty_assertions::assert_eq;
 
 use super::*;
 
@@ -260,7 +261,7 @@ impl FinalHoldoutProviderV1 for Provider {
 pub(super) struct Fixture {
     pub(super) candidate: Journal,
     pub(super) fixed: Journal,
-    pub(super) runner: CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>,
+    pub(super) runner: Option<CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>>,
     pub(super) registration: CellEvaluationRegistrationV1,
     pub(super) candidate_temporal: TemporalEvaluationPlan,
     pub(super) baseline_temporal: TemporalEvaluationPlan,
@@ -289,7 +290,7 @@ impl Fixture {
         Self {
             candidate,
             fixed,
-            runner,
+            runner: Some(runner),
             registration,
             candidate_temporal,
             baseline_temporal,
@@ -323,7 +324,7 @@ impl Fixture {
         &mut self,
         plan: &CellEvaluationPlanV1,
     ) -> Result<CellEvaluationReceiptV1, CellEvaluationErrorV1> {
-        self.runner.evaluate(
+        self.runner.as_mut().expect("live holdout owner").evaluate(
             plan,
             CellEvaluationJournalsV1 {
                 candidate: &self.candidate,
@@ -334,7 +335,31 @@ impl Fixture {
             &mut self.provider,
         )
     }
-    pub(super) fn holdout_bytes(&self) -> Vec<u8> {
-        checked(fs::read(self.directory.path().join("holdout")))
+    pub(super) fn runner(&self) -> &CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1> {
+        self.runner.as_ref().expect("live holdout owner")
+    }
+
+    pub(super) fn close_read_and_reopen_holdout(&mut self) -> Vec<u8> {
+        let runner = self.runner.take().expect("live holdout owner");
+        let anchor = runner.product.holdout_anchor();
+        // Evaluation is synchronous, so no request is outstanding here. Drop
+        // releases the CAS lock without another mutation or durability claim.
+        drop(runner);
+        let path = self.directory.path().join("holdout");
+        let bytes = checked(fs::read(&path));
+        let store = checked(LockedFileFinalHoldoutCasStoreV1::recover(
+            checked(OpenOptions::new().read(true).write(true).open(&path)),
+            digest("binding"),
+            Some(anchor),
+        ));
+        let owner = checked(FencedFinalHoldoutOwnerV1::recover(
+            store,
+            digest("binding"),
+            fence(),
+        ));
+        let runner = CellEvaluationRunnerV1::new(ProductEvaluationRunnerV1::new(owner));
+        assert_eq!(runner.product.holdout_anchor(), anchor);
+        self.runner = Some(runner);
+        bytes
     }
 }
