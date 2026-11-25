@@ -37,7 +37,9 @@ HCSN_HOSTED_CONSOLE_INDEX = "qa/repository-consolidation/20261125/hcsn-hosted-co
 CLOSED_RESULTS_INDEX = "qa/repository-consolidation/20261125/closed-public-results/raw-evidence-storage.json"
 EXEC_ACCEPTANCE_DIFF_INDEX = "qa/repository-consolidation/20261125/exec-acceptance-diff-custody/raw-evidence-storage.json"
 AFTER_ACTION_LOG_INDEX = "qa/repository-consolidation/20261125/after-action-log-custody/raw-evidence-storage.json"
+CALLER_REVIEW_DIFF_INDEX = "qa/repository-consolidation/20261125/caller-review-diff-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    CALLER_REVIEW_DIFF_INDEX: "a56e025fc409a3cdc9376096ce9cf5908132531511ce9a4ed5fa97c155863a33",
     AFTER_ACTION_LOG_INDEX: "b88ee4c1373e6b1624b0172b6a4da96a0a024260c0c41b0cfd3f87d7fe0a16b6",
     EXEC_ACCEPTANCE_DIFF_INDEX: "17e0b6fe9aba3b7911da12302107b3324038aefbcec27d4375887b976751b678",
     CLOSED_RESULTS_INDEX: "c776af0182349d8ea398fb3356491fe1140ac49d1f483eeadca0c12406367865",
