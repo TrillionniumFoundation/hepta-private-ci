@@ -1,0 +1,69 @@
+{
+  "record_kind": "actual_hcsn_cold_replay_execution_receipt",
+  "schema_version": 1,
+  "configured_host": "pocket4",
+  "job_id": "1a21278e3f4-ffbe-3fb0",
+  "idempotency_key": "pft-hcsn-p2p-v2-cold-replay-20261125-source-7640a060-v1",
+  "source_sha256": "7640a060361fbdfde6b65d0836e81531c47e9a80da5e2b3e11a032cba2e7d764",
+  "source_freeze_commit": "2a03928bf93bc10d3db2a9afec9915a1eff9c35d",
+  "stdin_sha256": "1e65824ce6da4461348b1c5d6490d55ba2e439bc58785f4fd8f2d3aa9e2ac21c",
+  "request_digest": "ba75b1a46029bf84c67b8dc0d3007b433d4aebe392a983b638cfc6070b2c427d",
+  "status": {
+    "at_unix_ms": 1795606276576,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a21278e3f4-ffbe-3fb0",
+    "launch_nonce": "7276f19becaa18d7ee9dada46cf6a91e",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 3496,
+        "stored": 3496
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "streams": {
+    "stdout": {
+      "eof": true,
+      "size": 3496,
+      "next_offset": 3496
+    },
+    "stderr": {
+      "eof": true,
+      "size": 0,
+      "next_offset": 0
+    }
+  },
+  "stdout": "{\"width\": 8, \"seed\": 271901, \"pid\": 2170713, \"receipt_sha256\": \"3eb99be6a93709a795208bf0782e13c88c4698a9cfe3df0b8104c1787c0539c8\", \"receipt_bytes\": 2625, \"exit_code\": 0, \"complete_process_wall_seconds\": 2.656615420943126, \"complete_process_cpu_seconds\": 2.368066}\n{\"width\": 8, \"seed\": 271902, \"pid\": 2170896, \"receipt_sha256\": \"073ccdcc46540b9589a6c6aa822272e63588104eae0bd675366aab3e806c9cf2\", \"receipt_bytes\": 2612, \"exit_code\": 0, \"complete_process_wall_seconds\": 1.7382726900978014, \"complete_process_cpu_seconds\": 1.695432}\n{\"width\": 8, \"seed\": 271903, \"pid\": 2171029, \"receipt_sha256\": \"9a7999457ae0c022b2a5ff54618b86c8d94b7101c1a9ee4a67ece22ffc38292e\", \"receipt_bytes\": 2609, \"exit_code\": 0, \"complete_process_wall_seconds\": 1.5490495519479737, \"complete_process_cpu_seconds\": 1.521211}\n{\"width\": 16, \"seed\": 271901, \"pid\": 2171085, \"receipt_sha256\": \"05c1140225202ff5abfe7bb2d2024179614cebb5f633c1d84e7afc296ad3d667\", \"receipt_bytes\": 2601, \"exit_code\": 0, \"complete_process_wall_seconds\": 2.01604433497414, \"complete_process_cpu_seconds\": 2.0003479999999993}\n{\"width\": 16, \"seed\": 271902, \"pid\": 2171109, \"receipt_sha256\": \"afb9d04142cf7149218353caa95aa14fc90ca35a227c81b16941bb096d8f47bd\", \"receipt_bytes\": 2628, \"exit_code\": 0, \"complete_process_wall_seconds\": 2.1865913529181853, \"complete_process_cpu_seconds\": 2.1630759999999993}\n{\"width\": 16, \"seed\": 271903, \"pid\": 2171217, \"receipt_sha256\": \"73550460d65b889d48cf5c987f7031071d6932467ff21d79d8a587c80a553d30\", \"receipt_bytes\": 2620, \"exit_code\": 0, \"complete_process_wall_seconds\": 1.9845956079661846, \"complete_process_cpu_seconds\": 1.9791540000000007}\n{\"width\": 32, \"seed\": 271901, \"pid\": 2171233, \"receipt_sha256\": \"d8573e71b6f212766d02e6ffe02ccc4215b330801e25e6f4d04c9c1aaae13d1c\", \"receipt_bytes\": 2611, \"exit_code\": 0, \"complete_process_wall_seconds\": 2.614238947047852, \"complete_process_cpu_seconds\": 2.608951}\n{\"width\": 32, \"seed\": 271902, \"pid\": 2171299, \"receipt_sha256\": \"3466c5c05790a51275646df9a260b6de1431e70833e26fe39a46fc9de9565079\", \"receipt_bytes\": 2629, \"exit_code\": 0, \"complete_process_wall_seconds\": 2.51499800698366, \"complete_process_cpu_seconds\": 2.5094890000000003}\n{\"width\": 32, \"seed\": 271903, \"pid\": 2171408, \"receipt_sha256\": \"4f916a12a1b8d0a22dcbbe9ef335c753499d0a7d5d6499c30509855ca1733626\", \"receipt_bytes\": 2600, \"exit_code\": 0, \"complete_process_wall_seconds\": 2.649685960030183, \"complete_process_cpu_seconds\": 2.6357209999999998}\n{\"width\": 64, \"seed\": 271901, \"pid\": 2171537, \"receipt_sha256\": \"971893b1bab1d42e5485cddd4fdd17657680bb4d2bb3713e1f3f23c026586d24\", \"receipt_bytes\": 2610, \"exit_code\": 0, \"complete_process_wall_seconds\": 4.330474530928768, \"complete_process_cpu_seconds\": 4.319761}\n{\"width\": 64, \"seed\": 271902, \"pid\": 2171612, \"receipt_sha256\": \"9dab1d0ffbc0ce9bbdf8ab1e994460b0efed76bac3893c7ff89f143e34ba6ee9\", \"receipt_bytes\": 2594, \"exit_code\": 0, \"complete_process_wall_seconds\": 4.408663094975054, \"complete_process_cpu_seconds\": 4.399643000000002}\n{\"width\": 64, \"seed\": 271903, \"pid\": 2171881, \"receipt_sha256\": \"b771b42b3a1572baf827d3e49266f52586259ebbc4ab5d397fb5f8deb6b19403\", \"receipt_bytes\": 2610, \"exit_code\": 0, \"complete_process_wall_seconds\": 4.410296896006912, \"complete_process_cpu_seconds\": 4.402738999999993}\n{\"fresh_processes\": 12, \"all_passed\": true, \"total_wall_seconds\": 33.0805228180252, \"result_sha256\": \"f00f0de9b43410c4bdbd44e6414ed8f6514ca6e12269c8fcdcef3bd2ac18aab1\"}\n{\"cold_launcher_exit_code\": 0, \"cold_launcher_wall_seconds\": 33.15569242404308}\n",
+  "stderr": "",
+  "control_plane": {
+    "original_start_response": "MCP request timed out",
+    "one_exact_idempotency_reconcile_response": "MCP request timed out",
+    "new_experiment_key_created": false,
+    "original_job_found_by_exact_metadata": true,
+    "experiment_result": "Original durable task completed successfully; no model or protocol changes were made."
+  }
+}
