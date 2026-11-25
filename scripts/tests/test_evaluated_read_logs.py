@@ -55,13 +55,17 @@ class EvaluatedReadLogsTests(unittest.TestCase):
             members = {}
             for name in expected["files"]:
                 path = f"{directory}/{name}"
+                record = inventory.get(path)
                 if path in registered:
-                    record = inventory[path]
+                    self.assertIsNotNone(record)
                     self.assertFalse((REPOSITORY / path).exists())
                     self.assertEqual(
                         record["original_source_commit"], source["source_commit"]
                     )
                     self.assertEqual(record["original_mode"], "100644")
+                    recovered.add(path)
+                # A later sealed index can transport a member of this original tree.
+                if record is not None:
                     data = storage.read_verified(
                         REPOSITORY,
                         path,
@@ -71,7 +75,6 @@ class EvaluatedReadLogsTests(unittest.TestCase):
                     self.assertEqual(
                         git_object_id("blob", data).hex(), record["original_git_blob"]
                     )
-                    recovered.add(path)
                 else:
                     data = storage.read_regular(REPOSITORY, path, storage.MAX_BYTES)
                 members[name] = git_object_id("blob", data)
