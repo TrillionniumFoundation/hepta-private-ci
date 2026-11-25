@@ -360,6 +360,8 @@ fn paired_actual_root_service_refuses_configured_policy_without_minting() {
     use std::io::Read;
     use std::io::Write;
     use std::net::Shutdown;
+    use std::os::fd::FromRawFd;
+    use std::os::fd::OwnedFd;
     use std::os::unix::fs::PermissionsExt;
     use std::os::unix::net::UnixStream;
     use std::time::Duration;
@@ -490,16 +492,21 @@ fn paired_actual_root_service_refuses_configured_policy_without_minting() {
         .unwrap();
     client.write_all(&request).unwrap();
     client.shutdown(Shutdown::Write).unwrap();
-    let pid = rustix::process::getpid();
-    let owner = rustix::process::pidfd_open(pid, rustix::process::PidfdFlags::empty()).unwrap();
+    let pid = std::process::id();
+    // SAFETY: pidfd_open takes this live process PID, zero flags and no pointers.
+    let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
+    assert!(
+        raw >= 0,
+        "pidfd_open failed: {}",
+        io::Error::last_os_error()
+    );
+    // SAFETY: a successful pidfd_open returns precisely one fresh owned descriptor.
+    let owner = unsafe { OwnedFd::from_raw_fd(raw as i32) };
     let result = service.serve(
         crate::HostAuthorityLane::Issuer,
         server,
         HostAuthorityPeerPolicy {
-            peer: HostIssuerPeer {
-                uid: 0,
-                pid: pid.as_raw_nonzero().get() as u32,
-            },
+            peer: HostIssuerPeer { uid: 0, pid },
             timeout: Duration::from_secs(2),
             lifetime: Duration::from_secs(3),
             request_bound: 16 * 1024,
