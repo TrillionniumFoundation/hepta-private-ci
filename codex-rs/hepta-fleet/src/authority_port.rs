@@ -276,6 +276,46 @@ mod tests {
     }
 
     #[test]
+    fn caller_clock_cannot_backdate_an_expired_allocation() {
+        let directory = tempfile::tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("private authority directory");
+        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
+            directory.path(),
+            "security-authority".into(),
+            AuthorityLeaseFrontier::for_empty_epoch(7).expect("empty authority frontier"),
+            Arc::new(FixedClock(9_500)),
+        )
+        .expect("trusted authority registry");
+        let grant = grant();
+        let binding = FleetAuthorityPort::binding_for_issue(&grant).expect("exact fleet binding");
+        registry
+            .put_lease(
+                AuthorityLease {
+                    schema_version: 1,
+                    lease_id: "fleet-expired-allocation".into(),
+                    authority_epoch: 7,
+                    revision: 1,
+                    binding,
+                    issued_at_unix_ms: 1_000,
+                    expires_at_unix_ms: 9_800,
+                },
+                0,
+            )
+            .expect("live lease beyond allocation expiration");
+
+        let port = FleetAuthorityPort::new(registry.verifier());
+        let mut ledger = ledger();
+        let error = port
+            .issue(&mut ledger, "fleet-expired-allocation", 1, 2_000, grant)
+            .expect_err("untrusted caller time cannot revive an expired allocation");
+        assert_eq!(
+            error,
+            FleetAuthorityError::Fleet(LeaseLedgerError::InvalidTime)
+        );
+    }
+
+    #[test]
     fn allocation_binding_changes_when_owner_mutation_semantics_change() {
         let first = grant();
         let first_binding = FleetAuthorityPort::binding_for_issue(&first)
