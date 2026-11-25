@@ -117,14 +117,20 @@ async fn hook_metadata_reaches_prepared_client_without_overriding_thread_identit
         .filter(|request| request["method"] == "tools/call")
         .map(|request| request["params"]["_meta"].clone())
         .collect::<Vec<_>>();
+    // This fixture's tools/list consumes progress token 0. Each call gets the
+    // next transport token after RMCP merges its application metadata.
     assert_eq!(
         metadata,
         vec![
-            json!({ "threadId": session.thread_id.to_string() }),
+            json!({
+                "threadId": session.thread_id.to_string(),
+                "progressToken": 1,
+            }),
             json!({
                 "threadId": session.thread_id.to_string(),
                 "x-codex-turn-metadata": turn_metadata,
                 "extension": { "typed": [false, 7, null] },
+                "progressToken": 2,
             }),
         ]
     );
