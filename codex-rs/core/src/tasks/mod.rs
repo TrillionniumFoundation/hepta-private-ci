@@ -3518,11 +3518,6 @@ impl Session {
         .await;
         handoff.phase = TaskFinishHandoffPhase::PendingWorkStarting;
         if let Some(completion) = cleared_completion.as_ref() {
-            self.emit_thread_idle_lifecycle_if_idle_for_terminalization(
-                idle_cause,
-                Some(&handoff.terminalization_identity),
-            )
-            .await;
             // Release task execution guards before announcing readiness.
             // The registry still fences admission if publication fails.
             handoff.task.take();
@@ -3541,6 +3536,12 @@ impl Session {
             }
             self.notify_parent_of_prepared_terminal_event(&turn_context, &terminal_event)
                 .await;
+            // Idle contributors admit follow-up turns through the ordinary
+            // start API. Publish readiness first so they do not lose their
+            // only wakeup to this owner's Closed admission fence. Keep the
+            // completion registered until every callback and mailbox wake
+            // finishes, so shutdown still joins the entire terminalizer.
+            self.emit_thread_idle_lifecycle_if_idle(idle_cause).await;
             self.maybe_start_turn_for_pending_work_after_terminalization(Arc::clone(
                 &handoff.terminalization_identity,
             ))
