@@ -8,6 +8,8 @@ Chromium license texts remain here. `HEPTA_UPSTREAM.json` records every retained
 original file hash and the changed/new source file list. `HEPTA_PATCH.diff`
 contains the source changes against that exact upstream commit. The enclosing
 workspace retains only these four crates; no renderer is included or replaced.
+The common crate README uses LF line endings; its text and rendered content
+are unchanged, and both upstream and vendored hashes are in the manifest.
 
 The patch adds the standard `org.a11y.atspi.EditableText` interface to the
 original AccessKit Unix D-Bus connection. It is advertised only when a text
