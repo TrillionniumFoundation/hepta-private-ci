@@ -152,3 +152,5 @@ pub use storage::write_registry_snapshot;
 pub use storage::write_registry_snapshot_beneath;
 pub use storage_hygiene::OrphanCleanupDispositionV1;
 pub use storage_hygiene::cleanup_zero_length_orphan_beneath;
+
+pub use pinned::ParameterFamilyGuardV1;
