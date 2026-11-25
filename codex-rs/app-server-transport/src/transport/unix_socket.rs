@@ -74,6 +74,12 @@ async fn run_control_socket_acceptor(
             }
         };
 
+        #[cfg(unix)]
+        if let Err(error) = stream.ensure_current_user_peer() {
+            warn!(%error, "refused control socket peer before WebSocket upgrade");
+            continue;
+        }
+
         let transport_event_tx = transport_event_tx.clone();
         tokio::spawn(async move {
             let websocket_stream = match accept_async(stream).await {
