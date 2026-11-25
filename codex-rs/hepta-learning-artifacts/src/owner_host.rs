@@ -15,6 +15,8 @@ use std::fs::TryLockError;
 use std::io::Read;
 use std::io::Write;
 #[cfg(unix)]
+use std::os::unix::fs::DirBuilderExt;
+#[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -442,7 +444,10 @@ impl LearningArtifactOwnerHost {
         required_current_head: Option<SignedCurrentArtifactHeadV1>,
         now: u64,
     ) -> Result<Self, ArtifactOwnerHostError> {
-        fs::create_dir_all(root.as_ref())?;
+        let mut root_builder = fs::DirBuilder::new();
+        #[cfg(unix)]
+        root_builder.mode(0o755);
+        root_builder.recursive(true).create(root.as_ref())?;
         let root = fs::canonicalize(root)?;
         for directory in [
             "writer",
@@ -1282,7 +1287,10 @@ fn ensure_real_directory(root: &Path, name: &str) -> Result<(), ArtifactOwnerHos
             }
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            fs::create_dir(&path)?;
+            let builder = &mut fs::DirBuilder::new();
+            #[cfg(unix)]
+            builder.mode(0o755);
+            builder.create(&path)?;
         }
         Err(error) => return Err(error.into()),
     }

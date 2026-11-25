@@ -654,7 +654,13 @@ mod tests {
                 std::process::id()
             ));
             let _ = fs::remove_dir_all(&path);
-            fs::create_dir_all(&path).fixture("create service test dir");
+            let builder = &mut fs::DirBuilder::new();
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::DirBuilderExt;
+                builder.mode(0o700);
+            }
+            builder.create(&path).fixture("create service test dir");
             Self(path)
         }
     }
