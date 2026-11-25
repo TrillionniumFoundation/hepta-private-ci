@@ -7,6 +7,8 @@ The upstream license, original manifest, tests and examples remain intact.
 README, change log, contributing, security and Grafana notes have local
 whitespace edits checked to preserve CommonMark output. The archive above
 retains the exact original bytes, including all fenced example whitespace.
+Four Rust doc-comment hard breaks use backslash notation rather than trailing
+spaces; their original lines in the same archive render identically.
 
 The added `hepta-legacy-scalars` feature is disabled by default. The first-party
 `codex-utils-yaml` dependency and this candidate's Bazel library explicitly enable
