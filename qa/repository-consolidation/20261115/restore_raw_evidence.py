@@ -44,7 +44,9 @@ NATIVE_NOTICE_BYTE_INDEX = "qa/repository-consolidation/20261125/native-notice-b
 HISTORICAL_READBACK_INDEX = "qa/repository-consolidation/20261125/historical-readback-custody/raw-evidence-storage.json"
 TERMINAL_DIFF_INDEX = "qa/repository-consolidation/20261125/terminal-and-diff-custody/raw-evidence-storage.json"
 SOURCE_LIBRARY_INDEX = "qa/repository-consolidation/20261125/source-library-custody/raw-evidence-storage.json"
+PRED_AND_HPCA_HOSTED_INDEX = "qa/repository-consolidation/20261125/pred-and-hpca-hosted-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    PRED_AND_HPCA_HOSTED_INDEX: "3c54780e43565c9e399e0ef64fb912d401a5fd641ed64a5e3a4ef78d166eaddc",
     SOURCE_LIBRARY_INDEX: "a82ad25d244cba971b573e640c373a05f3b3ffbccf5673a878c439ff572c310c",
     TERMINAL_DIFF_INDEX: "0cd34337c9529303071017c0ef80d7f4c053364ec4aecb8ab65d6ba692c5c15c",
     HISTORICAL_READBACK_INDEX: "4c9ac6db51751049cff2cdbcf060b35e53c50c1ce0ce83ba2c0dc05bd765963a",
