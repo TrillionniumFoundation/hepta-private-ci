@@ -98,6 +98,36 @@ async fn source_capture_control_waits_for_accepted_connection_before_join_receip
 }
 
 #[tokio::test]
+async fn source_capture_control_drains_after_a_health_reader_disconnects() -> anyhow::Result<()> {
+    let fixture = runtime_fixture();
+    let cancellation = CancellationToken::new();
+    let mut server = AgentdControlServer::bind(
+        fixture.identity.control_socket.clone(),
+        Arc::clone(&fixture.state),
+        cancellation.clone(),
+    )
+    .await
+    .context("bind control")?;
+    let receipt = server.original_source_capture_join()?;
+    // Queue a valid probe then drop the reader before the server starts.
+    // This exercises a real disconnected peer without a timing assumption.
+    let mut disconnected = UnixStream::connect(&fixture.identity.control_socket).await?;
+    let mut request = serde_json::to_vec(&AgentdRequest::health(90, 1))?;
+    request.push(b'\n');
+    disconnected.write_all(&request).await?;
+    drop(disconnected);
+
+    let running = tokio::spawn(server.run());
+    let mut connected = UnixStream::connect(&fixture.identity.control_socket).await?;
+    finish_health(&mut connected).await?;
+    cancellation.cancel();
+    running.await??;
+    receipt.require_original_control_join()?;
+    assert_eq!(Arc::strong_count(&fixture.state), 1);
+    Ok(())
+}
+
+#[tokio::test]
 async fn source_capture_control_retains_connection_error_without_stopping_other_requests()
 -> anyhow::Result<()> {
     let fixture = runtime_fixture();

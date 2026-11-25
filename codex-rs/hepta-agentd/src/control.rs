@@ -392,12 +392,14 @@ impl<P: ControlProfile> ControlConnection<P> {
         let completed_circuit = circuit_admission
             && matches!(&response.payload, AgentdPayload::ObjectiveRun(receipt)
                 if receipt.disposition.eq("circuit_succeeded"));
+        let health_snapshot = matches!(&response.payload, AgentdPayload::Health(_));
         match frames::write_frame(&mut writer, &bytes).await {
-            // The original owner and all task postchecks already returned.
-            // Losing only its terminal transport ACK cannot undo that work or
-            // poison the joined control owner. No task is submitted again.
+            // The caller owns delivery of a read-only health probe and may
+            // drop it at its own deadline. Its disconnect cannot fail the
+            // joined control owner. The existing completed-Circuit exception
+            // still applies only after its original owner and postchecks return.
             Err(AgentdError::Io(error))
-                if completed_circuit
+                if (health_snapshot || completed_circuit)
                     && matches!(
                         error.kind(),
                         ErrorKind::BrokenPipe | ErrorKind::ConnectionReset
