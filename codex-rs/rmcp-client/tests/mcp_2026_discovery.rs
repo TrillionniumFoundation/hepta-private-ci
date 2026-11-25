@@ -33,6 +33,8 @@ use wiremock::matchers::path;
 const MODERN_VERSION: &str = "2026-07-28";
 const LEGACY_VERSION: &str = "2025-06-18";
 const MAX_MCP_MESSAGE_BYTES: usize = 8 * 1024 * 1024;
+const MAX_LEGACY_MCP_MESSAGE_BYTES: usize = 16 * 1024 * 1024;
+const MAX_MCP_HTTP_ERROR_BODY_BYTES: usize = 64 * 1024;
 
 fn initialize_params() -> InitializeRequestParams {
     InitializeRequestParams::new(
@@ -441,7 +443,12 @@ async fn modern_discovery_accepts_metadata_namespaced_server_identity_over_sse()
 async fn modern_http_rejects_oversized_discovery_and_tool_json_responses() -> anyhow::Result<()> {
     for oversized_method in ["server/discover", "tools/list", "tools/list:error"] {
         let server = MockServer::start().await;
-        let padding = Arc::new("x".repeat(MAX_MCP_MESSAGE_BYTES + 1));
+        let maximum_bytes = if oversized_method == "tools/list:error" {
+            MAX_MCP_HTTP_ERROR_BODY_BYTES
+        } else {
+            MAX_MCP_MESSAGE_BYTES
+        };
+        let padding = Arc::new("x".repeat(maximum_bytes + 1));
         Mock::given(method("POST"))
             .and(path("/mcp"))
             .respond_with(move |request: &Request| {
@@ -492,7 +499,7 @@ async fn modern_http_rejects_oversized_discovery_and_tool_json_responses() -> an
                 .expect_err("oversized tools response must be rejected")
         };
         assert!(
-            format!("{error:#}").contains("8388608 bytes"),
+            format!("{error:#}").contains(&format!("{maximum_bytes} bytes")),
             "expected bounded {oversized_method} response, got {error:#}"
         );
         client.shutdown().await;
@@ -538,6 +545,75 @@ async fn legacy_http_keeps_existing_large_json_response_behavior() -> anyhow::Re
         Some(MAX_MCP_MESSAGE_BYTES + 1)
     );
     client.shutdown().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn legacy_http_rejects_oversized_json_error_and_sse_responses() -> anyhow::Result<()> {
+    for (response_kind, status, maximum_bytes) in [
+        ("json", 200, MAX_LEGACY_MCP_MESSAGE_BYTES),
+        ("http-error", 500, MAX_MCP_HTTP_ERROR_BODY_BYTES),
+        ("wrong-type", 200, MAX_MCP_HTTP_ERROR_BODY_BYTES),
+        ("sse", 200, MAX_LEGACY_MCP_MESSAGE_BYTES),
+    ] {
+        let server = MockServer::start().await;
+        let padding = Arc::new("x".repeat(maximum_bytes + 1));
+        Mock::given(method("POST"))
+            .and(path("/mcp"))
+            .respond_with(move |request: &Request| {
+                let body: Value = request.body_json().expect("valid JSON-RPC request");
+                match body["method"].as_str() {
+                    Some("initialize") => legacy_initialize_response(&body),
+                    Some("notifications/initialized") => ResponseTemplate::new(202),
+                    Some("tools/list") => {
+                        let response = if status == 500 {
+                            json!({
+                                "jsonrpc": "2.0",
+                                "id": body["id"],
+                                "error": {"code": -32603, "message": padding.as_str()},
+                            })
+                        } else {
+                            json!({
+                                "jsonrpc": "2.0",
+                                "id": body["id"],
+                                "result": {
+                                    "tools": [{
+                                        "name": "legacy_oversized_tool",
+                                        "description": padding.as_str(),
+                                        "inputSchema": {"type": "object"},
+                                    }],
+                                },
+                            })
+                        };
+                        match response_kind {
+                            "wrong-type" => ResponseTemplate::new(status)
+                                .set_body_raw(padding.as_str(), "text/plain"),
+                            "sse" => ResponseTemplate::new(status).set_body_raw(
+                                format!("event: message\ndata: {response}\n\n"),
+                                "text/event-stream",
+                            ),
+                            _ => ResponseTemplate::new(status).set_body_json(response),
+                        }
+                    }
+                    other => panic!("unexpected legacy MCP method {other:?}"),
+                }
+            })
+            .mount(&server)
+            .await;
+
+        let client = create_client(&server, McpProtocolMode::Legacy).await?;
+        initialize_client(&client).await?;
+        let error = client
+            .list_tools(/*params*/ None, Some(Duration::from_secs(15)))
+            .await
+            .expect_err("oversized legacy response must be rejected before parsing");
+        assert!(
+            format!("{error:#}")
+                .contains(&format!("MCP response body exceeds {maximum_bytes} bytes")),
+            "expected bounded {response_kind} response, got {error:#}"
+        );
+        client.shutdown().await;
+    }
     Ok(())
 }
 

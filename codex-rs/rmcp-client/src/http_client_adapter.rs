@@ -69,6 +69,10 @@ const EVENT_STREAM_MIME_TYPE: &str = "text/event-stream";
 const JSON_MIME_TYPE: &str = "application/json";
 const HEADER_SESSION_ID: &str = "Mcp-Session-Id";
 const NON_JSON_RESPONSE_BODY_PREVIEW_BYTES: usize = 8_192;
+// Keep legacy replies above the modern 8 MiB limit usable without unbounded buffering.
+// These limits apply to bytes delivered by the HTTP capability, after any decoding.
+const MAX_LEGACY_MCP_MESSAGE_BYTES: usize = 16 * 1024 * 1024;
+const MAX_MCP_HTTP_ERROR_BODY_BYTES: usize = 64 * 1024;
 const LEGACY_HTTP_PREVALIDATION_ERROR_CODE: ErrorCode = ErrorCode(-32000);
 const EVENT_STREAM_RESPONSE_TIMEOUT: Duration = Duration::from_secs(30);
 
@@ -158,6 +162,26 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
         auth_token: Option<String>,
         custom_headers: HashMap<HeaderName, HeaderValue>,
     ) -> std::result::Result<StreamableHttpPostResponse, StreamableHttpError<Self::Error>> {
+        self.post_message_with_max_sse_event_size(
+            uri,
+            message,
+            session_id,
+            auth_token,
+            custom_headers,
+            MAX_LEGACY_MCP_MESSAGE_BYTES,
+        )
+        .await
+    }
+
+    async fn post_message_with_max_sse_event_size(
+        &self,
+        uri: Arc<str>,
+        message: ClientJsonRpcMessage,
+        session_id: Option<Arc<str>>,
+        auth_token: Option<String>,
+        custom_headers: HashMap<HeaderName, HeaderValue>,
+        max_sse_event_size: usize,
+    ) -> std::result::Result<StreamableHttpPostResponse, StreamableHttpError<Self::Error>> {
         let (mcp_method, mcp_request_id) = client_jsonrpc_message_fields(&message);
         let has_session_id = session_id.is_some();
         let mut headers = self.default_headers.clone();
@@ -199,9 +223,11 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
             .and_then(|value| value.to_str().ok())
             == Some(ProtocolVersion::V_2026_07_28.as_str());
         let maximum_response_bytes = if is_event_stream_request {
-            Some(MAX_EVENT_NOTIFICATION_BYTES)
+            MAX_EVENT_NOTIFICATION_BYTES
+        } else if is_discovery_request || uses_modern_protocol {
+            MAX_MCP_STDIO_LINE_BYTES
         } else {
-            (is_discovery_request || uses_modern_protocol).then_some(MAX_MCP_STDIO_LINE_BYTES)
+            MAX_LEGACY_MCP_MESSAGE_BYTES
         };
         let single_attempt = self.single_attempt_requests.load(Ordering::Acquire);
         let redirect_policy = if single_attempt || is_discovery_request {
@@ -319,7 +345,7 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
         let content_type = response_header(&response.headers, CONTENT_TYPE);
         let session_id = response_header(&response.headers, HEADER_SESSION_ID);
         if !status_is_success(response.status) {
-            let body = collect_body(&mut body_stream, maximum_response_bytes).await?;
+            let body = collect_body(&mut body_stream, MAX_MCP_HTTP_ERROR_BODY_BYTES).await?;
             if !retryable_post_response_status(mcp_method.as_deref(), response.status)
                 && (content_type
                     .as_deref()
@@ -370,7 +396,10 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
         }
         match content_type.as_deref() {
             Some(content_type) if content_type.starts_with(EVENT_STREAM_MIME_TYPE) => {
-                let mut event_stream = sse_stream_from_body(body_stream, maximum_response_bytes);
+                let mut event_stream = sse_stream_from_body(
+                    body_stream,
+                    maximum_response_bytes.min(max_sse_event_size),
+                );
                 if mcp_method.as_deref() == Some(DiscoverRequestMethod::VALUE) {
                     while let Some(event) = event_stream.next().await {
                         let event = event.map_err(StreamableHttpError::Sse)?;
@@ -446,7 +475,7 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
                 ))
             }
             _ => {
-                let body = collect_body(&mut body_stream, maximum_response_bytes).await?;
+                let body = collect_body(&mut body_stream, MAX_MCP_HTTP_ERROR_BODY_BYTES).await?;
                 let content_type = content_type.unwrap_or_else(|| "missing-content-type".into());
                 Err(StreamableHttpError::UnexpectedContentType(Some(format!(
                     "{content_type}; body: {}",
@@ -482,9 +511,9 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
         )?;
         let redirect_policy = self.redirect_policy(&headers);
 
-        let response = self
+        let (response, body_stream) = self
             .http_client
-            .http_request(HttpRequestParams {
+            .http_request_stream(HttpRequestParams {
                 method: "DELETE".to_string(),
                 url: uri.to_string(),
                 headers: protocol_headers(&headers),
@@ -492,11 +521,13 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
                 timeout_ms: None,
                 redirect_policy,
                 request_id: "buffered-request".to_string(),
-                stream_response: false,
+                stream_response: true,
             })
             .await
             .map_err(StreamableHttpClientAdapterError::from)
             .map_err(StreamableHttpError::Client)?;
+        // Session deletion uses only the status; never buffer an unused response body.
+        drop(body_stream);
 
         if response.status == StatusCode::METHOD_NOT_ALLOWED.as_u16() {
             return Ok(());
@@ -516,6 +547,29 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
         last_event_id: Option<String>,
         auth_token: Option<String>,
         custom_headers: HashMap<HeaderName, HeaderValue>,
+    ) -> std::result::Result<
+        BoxStream<'static, std::result::Result<Sse, sse_stream::Error>>,
+        StreamableHttpError<Self::Error>,
+    > {
+        self.get_stream_with_max_sse_event_size(
+            uri,
+            session_id,
+            last_event_id,
+            auth_token,
+            custom_headers,
+            MAX_LEGACY_MCP_MESSAGE_BYTES,
+        )
+        .await
+    }
+
+    async fn get_stream_with_max_sse_event_size(
+        &self,
+        uri: Arc<str>,
+        session_id: Option<Arc<str>>,
+        last_event_id: Option<String>,
+        auth_token: Option<String>,
+        custom_headers: HashMap<HeaderName, HeaderValue>,
+        max_sse_event_size: usize,
     ) -> std::result::Result<
         BoxStream<'static, std::result::Result<Sse, sse_stream::Error>>,
         StreamableHttpError<Self::Error>,
@@ -601,8 +655,15 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
             .get(HEADER_MCP_PROTOCOL_VERSION)
             .and_then(|value| value.to_str().ok())
             .is_some_and(|version| version == ProtocolVersion::V_2026_07_28.as_str());
-        let maximum_response_bytes = uses_modern_protocol.then_some(MAX_MCP_STDIO_LINE_BYTES);
-        Ok(sse_stream_from_body(body_stream, maximum_response_bytes))
+        let maximum_event_bytes = if uses_modern_protocol {
+            MAX_MCP_STDIO_LINE_BYTES
+        } else {
+            MAX_LEGACY_MCP_MESSAGE_BYTES
+        };
+        Ok(sse_stream_from_body(
+            body_stream,
+            maximum_event_bytes.min(max_sse_event_size),
+        ))
     }
 }
 
@@ -944,7 +1005,7 @@ fn has_legacy_fallback_evidence(message: &str) -> bool {
 
 async fn collect_body(
     body_stream: &mut HttpResponseBodyStream,
-    maximum_bytes: Option<usize>,
+    maximum_bytes: usize,
 ) -> std::result::Result<Vec<u8>, StreamableHttpError<StreamableHttpClientAdapterError>> {
     let mut body = Vec::new();
     while let Some(chunk) = body_stream
@@ -953,9 +1014,7 @@ async fn collect_body(
         .map_err(StreamableHttpClientAdapterError::from)
         .map_err(StreamableHttpError::Client)?
     {
-        if let Some(maximum_bytes) = maximum_bytes
-            && chunk.len() > maximum_bytes.saturating_sub(body.len())
-        {
+        if chunk.len() > maximum_bytes.saturating_sub(body.len()) {
             return Err(StreamableHttpError::Client(
                 StreamableHttpClientAdapterError::ResponseTooLarge { maximum_bytes },
             ));
@@ -967,7 +1026,7 @@ async fn collect_body(
 
 fn sse_stream_from_body(
     body_stream: HttpResponseBodyStream,
-    maximum_event_bytes: Option<usize>,
+    maximum_event_bytes: usize,
 ) -> BoxStream<'static, std::result::Result<Sse, sse_stream::Error>> {
     SseStream::from_bytes_stream(stream::unfold(
         (body_stream, SseEventSizeLimit::new(maximum_event_bytes)),
@@ -989,7 +1048,7 @@ fn sse_stream_from_body(
 }
 
 struct SseEventSizeLimit {
-    maximum_bytes: Option<usize>,
+    maximum_bytes: usize,
     retained_bytes: usize,
     line_bytes: usize,
     line_is_comment: bool,
@@ -998,7 +1057,7 @@ struct SseEventSizeLimit {
 }
 
 impl SseEventSizeLimit {
-    fn new(maximum_bytes: Option<usize>) -> Self {
+    fn new(maximum_bytes: usize) -> Self {
         Self {
             maximum_bytes,
             retained_bytes: 0,
@@ -1016,9 +1075,7 @@ impl SseEventSizeLimit {
                 "oversized MCP SSE event was already rejected",
             ));
         }
-        let Some(maximum_bytes) = self.maximum_bytes else {
-            return Ok(());
-        };
+        let maximum_bytes = self.maximum_bytes;
 
         for &byte in bytes {
             if self.previous_was_carriage_return {
