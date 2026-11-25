@@ -21,6 +21,17 @@ mod windows;
 pub(crate) const MAX_SMALL_FILE_BYTES: usize = 1024 * 1024;
 pub(crate) const MAX_ARTIFACT_BYTES: u64 = 2 * 1024 * 1024 * 1024;
 
+#[cfg(windows)]
+fn sync_parent_directory(parent: &Path) -> Result<(), AcceptanceError> {
+    windows::sync_directory(parent)
+}
+
+#[cfg(not(windows))]
+fn sync_parent_directory(parent: &Path) -> Result<(), AcceptanceError> {
+    File::open(parent)?.sync_all()?;
+    Ok(())
+}
+
 pub(crate) fn canonical_json<T: Serialize>(value: &T) -> Result<Vec<u8>, AcceptanceError> {
     let mut value = serde_json::to_value(value)
         .map_err(|error| AcceptanceError::Serialization(error.to_string()))?;
@@ -200,7 +211,7 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during durable write"));
     }
-    File::open(parent)?.sync_all()?;
+    sync_parent_directory(parent)?;
     Ok(())
 }
 
@@ -238,7 +249,7 @@ pub(crate) fn write_private_atomic_replace(
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
-    File::open(parent)?.sync_all()?;
+    sync_parent_directory(parent)?;
     Ok(())
 }
 
@@ -300,6 +311,9 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
             ));
         }
     }
+    #[cfg(windows)]
+    file.try_lock()
+        .map_err(|_| invalid("another operator-acceptance process holds the sidecar lock"))?;
     Ok(SidecarLock { _file: file })
 }
 

@@ -101,6 +101,14 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
         };
         assert_eq!(*code, -32600);
         assert_eq!(message, "Permission denied");
+    } else {
+        // Unsupported executors must reject before generic filesystem
+        // fallback, even for an outside-root path.
+        let ExecServerError::Server { code, message } = &denied else {
+            bail!("expected unsupported authorized-read rejection, got {denied:?}");
+        };
+        assert_eq!(*code, -32603);
+        assert_eq!(message, "bounded authorized file reads are unsupported");
     }
     assert!(!denied.to_string().contains("secret.txt"));
 

@@ -1,0 +1,61 @@
+# Cell scale and topology lifecycle benchmark
+
+This is the executable qualification contract for the six cell scales in
+`CELL_EXECUTION_BENCHMARK_MATRIX.json`. Run the plan/manifest validator with:
+
+```bash
+python3 qa/meta-network-scale/scale_matrix.py plan
+python3 qa/meta-network-scale/scale_matrix.py validate result.json
+python3 qa/meta-network-scale/scale_matrix.py validate-matrix matrix.json
+python3 -m unittest qa/meta-network-scale/test_scale_matrix.py
+```
+
+The single-result validator checks the evidence, metrics and digest shape for
+one size/arm. The matrix validator additionally requires exactly 36 records
+(one per size and comparison arm), rejects duplicates, and enforces one
+source commit, source tree and target-host cohort across comparisons.
+The matrix also rejects one measurement or metering receipt reused for distinct
+size/arm pairs, or an identical per-execution future-window, fault, rollback,
+negative-transfer or resource evidence receipt recycled across those pairs.
+A common held-out dataset identity may be shared across arms; the digest of
+each independently observed arm's evidence must remain distinct. The single-result validator requires all 15 benchmark metrics,
+monotonic p50/p95/p99 percentiles and integral byte/event counts. These are
+record-consistency checks, not target-host authentication.
+Both paths check future-window and negative-transfer evidence, lesion/ablation,
+crash/reopen, stale-generation rejection, rollback and resource metrics. It does not calculate
+utility, prove a scaling law, or admit a production topology.
+
+Each result also carries immutable provenance (`source_commit`, `source_tree`,
+target-host and runtime digests), one receipt digest for every required evidence
+item, and a digest for the metric record. The validator checks only the digest
+shape; the exact-head workflow and approved target host must independently
+authenticate and retain those receipts. This prevents a boolean fixture from
+being accepted as a performance observation while keeping the manifest
+authority at `qualification_only`.
+
+## P4 lifecycle mapping
+
+| Required step | Existing owner to exercise | Failure disposition |
+| --- | --- | --- |
+| candidate | `hepta-plasticity::TopologyProposalV2` | reject proposal |
+| independent evaluation | `TopologyProposalV2.evaluator_id` plus evaluation digest | reject self-evaluation |
+| selector | external selector/acceptance boundary | no signed snapshot |
+| signed successor snapshot | `DurableTopologyProposalRegistryV1` | preserve predecessor |
+| state migration | `WriterHandoffPlanV1` and runtime migration owner | reconcile then rollback |
+| old writer fence | supervisor writer-handoff journal | never allow dual writer |
+| route cutover | `hepta-runtime::topology_execution` | rollback predecessor |
+| canary | `StructuralCanaryControllerV1` | abort or quarantine |
+| rollback rehearsal | canary rollback witness | quarantine if witness fails |
+| production admission | external operator/release boundary | no automatic admission |
+
+The fault matrix in `hepta-plasticity::topology_fault_scenarios_v1` covers
+split, merge, rewire and retire at every step. The external scale harness uses
+those scenarios as required labels; it does not replace the runtime owners.
+
+## Interpretation
+
+Compare no-change and fixed-routing baselines before interpreting learned routing.
+Compare shared and duplicated encoders at equal resource budgets. Report
+expressivity, learnability, unseen-task adaptation and resource scaling as
+separate claims with uncertainty intervals. Cell count alone is not evidence of
+a general-purpose agent.
