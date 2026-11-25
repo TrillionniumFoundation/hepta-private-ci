@@ -43,6 +43,9 @@ elif command == 'query':
         sys.stdout.buffer.write(b'//codex-rs/fake:library\\r\\n')
     else:
         print('//codex-rs/fake:library')
+    if os.environ.get('BAZEL_PROBE_QUERY_FAIL') == '1':
+        print('recorded query failure after partial output', file=sys.stderr)
+        sys.exit(37)
 elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('ERROR: fake/BUILD.bazel:1:1: Linking //fake:target failed: (Exit 37)')
     print('error: linking with rust-lld failed: exit code: 37')
@@ -126,6 +129,68 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             for line in self.log.read_text(encoding="utf-8").splitlines()
         ]
         return result, calls
+
+    def test_clippy_roster_preserves_native_sources_on_each_platform(self) -> None:
+        unit = "//codex-rs/core:core-unit-tests-bin"
+        native = "//codex-rs/core:core-all-test-bin"
+        cross = "//codex-rs/core:core-all-test-windows-cross-bin"
+        unit_cross = "//codex-rs/core:core-unit-tests-windows-cross-bin"
+        write_qualification = "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin"
+        unix_product = "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
+        roster = self.root / "manual query labels.txt"
+        roster.write_text(
+            "\n".join(
+                [unit, native, cross, unit_cross, write_qualification, unix_product]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        self.env["BAZEL_PROBE_QUERY_FILE"] = str(roster)
+        cases = [
+            ("Linux", [], [unit, native, write_qualification, unix_product]),
+            ("macOS", [], [unit, native, write_qualification, unix_product]),
+            ("Windows", [], [unit, native, write_qualification]),
+            ("Windows", ["--windows-cross-compile"], [unit, cross, unit_cross]),
+        ]
+        for runner_os, arguments, expected in cases:
+            with self.subTest(runner_os=runner_os, arguments=arguments):
+                self.env["RUNNER_OS"] = runner_os
+                result = subprocess.run(
+                    [
+                        self.bash,
+                        str(
+                            SCRIPTS.parents[1] / "scripts/list-bazel-clippy-targets.sh"
+                        ),
+                        *arguments,
+                    ],
+                    env=self.env,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(
+                    result.stdout.splitlines(),
+                    ["//codex-rs/...", "-//codex-rs/v8-poc:all", *expected],
+                )
+
+    def test_clippy_roster_query_failure_never_emits_partial_targets(self) -> None:
+        self.env["BAZEL_PROBE_QUERY_FAIL"] = "1"
+        result = subprocess.run(
+            [
+                self.bash,
+                str(SCRIPTS.parents[1] / "scripts/list-bazel-clippy-targets.sh"),
+            ],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 37)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("recorded query failure after partial output", result.stderr)
 
     def test_keyless_cross_uses_msvc_exec_and_gnullvm_target(self) -> None:
         result, calls = self.run_wrapper(
