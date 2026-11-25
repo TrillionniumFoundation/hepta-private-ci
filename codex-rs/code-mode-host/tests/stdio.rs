@@ -5,9 +5,6 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-#[cfg(unix)]
-use std::os::unix::fs::PermissionsExt;
-
 use codex_code_mode::CellId;
 use codex_code_mode::CodeModeNestedToolCall;
 use codex_code_mode::CodeModeSession;
@@ -712,20 +709,19 @@ async fn child_process_loss_cleans_up_and_rebuilds_the_shared_host() {
     let proxy_dir = tempfile::tempdir().expect("create host proxy directory");
     let proxy_program = proxy_dir.path().join("host-proxy.sh");
     let pid_path = proxy_dir.path().join("host.pid");
+    let proxy_fixture = codex_utils_cargo_bin::find_resource!("tests/support/host_proxy.sh")
+        .expect("immutable host proxy fixture")
+        .canonicalize()
+        .expect("absolute host proxy fixture");
+    // Only the data file is created at runtime. Executing a just-written
+    // script can race unrelated forked children retaining its writer and fail
+    // with ETXTBSY before the process-loss behavior is exercised.
     std::fs::write(
-        &proxy_program,
-        format!(
-            "#!/bin/sh\nprintf '%s\\n' \"$$\" > '{}'\nexec '{}'\n",
-            pid_path.display(),
-            host_program.display()
-        ),
+        proxy_dir.path().join("host.program"),
+        format!("{}\n", host_program.display()),
     )
-    .expect("write host proxy");
-    let mut permissions = std::fs::metadata(&proxy_program)
-        .expect("host proxy metadata")
-        .permissions();
-    permissions.set_mode(/*mode*/ 0o700);
-    std::fs::set_permissions(&proxy_program, permissions).expect("make host proxy executable");
+    .expect("write host program path");
+    std::os::unix::fs::symlink(proxy_fixture, &proxy_program).expect("link immutable host proxy");
 
     let provider = ProcessOwnedCodeModeSessionProvider::with_host_program(proxy_program);
     let (delegate_a, mut events_a) = CancellationDelegate::new();
