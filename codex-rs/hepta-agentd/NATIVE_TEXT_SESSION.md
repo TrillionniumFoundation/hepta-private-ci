@@ -123,6 +123,22 @@ hepta-authority-host launch-native --config ORIGINAL_ROOT_CONFIG \
   --owner-pidfd-stdin
 ```
 
+An existing Root package launcher can additionally transfer
+`--deployment-lock-fd INHERITED_FD`. The descriptor must be a read/write, singly
+linked, Root-owned mode0600 regular file. `launch-native` retains its exclusive
+nonblocking flock for the entire original Root session and makes the descriptor
+close-on-exec before starting the unprivileged UI. All other inherited descriptor
+aliases at fd 3 and above are also marked close-on-exec in the UI child; the
+required `close_range(CLOSE_RANGE_CLOEXEC)` failure refuses startup. The UI
+therefore cannot change the lock or release it to allow a concurrent upgrade.
+For a managed `/prefix/releases/<12hex>-<12hex>/bin/trill-shell` program, the
+descriptor is mandatory and its device/inode must match that prefix's protected
+`.native-deployment.lock`. This also applies to the generic legacy entry;
+unmanaged program paths retain backwards-compatible optional locking. The
+mechanism neither replaces the pre-held owner pidfd on stdin nor changes any
+human, writer, route or lease check. The descriptor option is refused by
+`diagnose-native`, which does not own a serving lifecycle.
+
 Both consume the original daemon pidfd on stdin. The Root0600 native profile
 contains `schema_version: 1`, the absolute installed UI `program`, its trusted
 `program_sha256`, `arguments`,
