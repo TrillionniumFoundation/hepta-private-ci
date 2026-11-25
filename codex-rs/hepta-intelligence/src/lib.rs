@@ -39,8 +39,6 @@ pub use canonical::decide_boundary;
 pub use canonical::prepare_intelligence_run;
 pub use canonical::validate_current_snapshot;
 
-#[cfg(test)]
-mod directory_test_support;
 mod evaluated_shadow;
 mod ndu_stochastic_admission;
 mod neuron_runtime;
@@ -329,6 +327,9 @@ mod tests;
 #[cfg(test)]
 #[path = "vertical_tests.rs"]
 mod vertical_tests;
+
+#[cfg(test)]
+mod directory_test_support;
 
 #[cfg(test)]
 #[path = "plasticity_product_tests.rs"]
