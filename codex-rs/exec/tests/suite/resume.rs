@@ -9,7 +9,6 @@ use core_test_support::test_codex_exec::test_codex_exec;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
 use sqlx::Connection;
-use sqlx::sqlite::SqliteConnectOptions;
 use std::process::Stdio;
 use std::string::ToString;
 use std::time::Duration;
@@ -278,11 +277,10 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     // Simulate loss of only the rebuildable index row. The public delete
     // operation intentionally seals durable queue authority and cannot model
     // this fixture: hard-deleted threads must never be resurrected by repair.
-    let options = SqliteConnectOptions::new()
-        .filename(state_db.sqlite().state_db_path())
-        .create_if_missing(false)
-        .foreign_keys(true);
-    let mut index = sqlx::SqliteConnection::connect_with(&options).await?;
+    let mut index = state_db
+        .sqlite()
+        .open_existing_state_db_connection()
+        .await?;
     assert_eq!(
         sqlx::query("DELETE FROM threads WHERE id = ?")
             .bind(thread_id.to_string())
@@ -391,11 +389,10 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     // Simulate loss of only the rebuildable index row. The public delete
     // operation intentionally seals durable queue authority and cannot model
     // this fixture: hard-deleted threads must never be resurrected by repair.
-    let options = SqliteConnectOptions::new()
-        .filename(state_db.sqlite().state_db_path())
-        .create_if_missing(false)
-        .foreign_keys(true);
-    let mut index = sqlx::SqliteConnection::connect_with(&options).await?;
+    let mut index = state_db
+        .sqlite()
+        .open_existing_state_db_connection()
+        .await?;
     assert_eq!(
         sqlx::query("DELETE FROM threads WHERE id = ?")
             .bind(newer_thread_id.to_string())
