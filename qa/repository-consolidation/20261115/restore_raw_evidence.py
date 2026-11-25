@@ -54,7 +54,9 @@ SYNTECT_UPSTREAM_GRAMMAR_INDEX = "codex-rs/third_party/syntect-5.3.0-maintained-
 FROZEN_CREDIT_RAW_BUDGET_INDEX = "qa/repository-consolidation/20261125/frozen-credit-raw-budget-custody/raw-evidence-storage.json"
 ORDINARY_HISTORICAL_REVIEW_INDEX = "qa/repository-consolidation/20261125/ordinary-historical-review-custody/raw-evidence-storage.json"
 VERIFY2_IMAGE_LOG_INDEX = "qa/repository-consolidation/20261125/verify2-image-log-custody/raw-evidence-storage.json"
+ORDINARY_REVIEWED_PATCH_CONTINUATION_INDEX = "qa/repository-consolidation/20261125/ordinary-reviewed-patch-continuation/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    ORDINARY_REVIEWED_PATCH_CONTINUATION_INDEX: "40a153c55cf813e57a1a7a0ffc9e8f2e589781da048ba012b6828cf41474c3a4",
     VERIFY2_IMAGE_LOG_INDEX: "4a9fb5de9eeddd2f1375434e14d8d8a7815e9f61913da12bb6f29890321d76db",
     ORDINARY_HISTORICAL_REVIEW_INDEX: "b5b5874d3ff8fc5865a49a9b835a4dc76dc2a321da05d1770af7d5db708e01b7",
     FROZEN_CREDIT_RAW_BUDGET_INDEX: "3bd3218803ed7d02e28206c49865f31dd9bf43c26da87de33f81e3fcb5fe1084",
