@@ -813,7 +813,6 @@ impl AppServerModelDriver {
         // From here on, a missing acknowledgement is reconcile-only. Recovery
         // cannot recreate the local pre-effect proof that is deliberately lost.
         drop(pre_effect_abort);
-        let expected_turn_input = turn_params.input.clone();
         let response = timeout(
             send_budget,
             send_authorized_turn_start(&mut client, entered_use, turn_params),
