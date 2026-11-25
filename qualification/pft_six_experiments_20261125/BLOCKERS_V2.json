@@ -1,0 +1,185 @@
+{
+  "all_requested_claims_closed": false,
+  "original_E1_E6_reopened": false,
+  "repo_wide_ci": {
+    "claimed_green": false,
+    "scope": "The task-specific readiness failure is fixed. GitHub checks are separately observed; no full Rust/Bazel/platform pass is inherited."
+  },
+  "rows": [
+    {
+      "evidence": [
+        "results/pft1.json"
+      ],
+      "finding": "Endpoint-only observations do not identify an arbitrary parameter field; null-space alternatives are preserved. No new PFT1 run was performed.",
+      "id": "PFT1_ENDPOINT_IDENTIFICATION",
+      "positive_claim_admitted": false,
+      "status": "RESOLVED_NEGATIVE_UNDER_STATED_OBSERVATIONS"
+    },
+    {
+      "evidence": [
+        "p2p_closure_v2/results/pft2_direct_peer_ssh.json"
+      ],
+      "finding": "12 two-host direct USB4/SSH cases, actual exit/recovery and matching central quadratic solutions; fixed authenticated participants.",
+      "id": "PFT2_PHYSICAL_DIRECT_PEERS",
+      "positive_claim_admitted": true,
+      "status": "PASSED_WITH_STATED_SCOPE"
+    },
+    {
+      "evidence": [
+        "p2p_closure_v2/results/pft2_real_hcsn_pretest_audit.json",
+        "actual_p2p_v2/evaluation/RESULT.json"
+      ],
+      "finding": "12 peer-trained readout candidates on frozen SmallHCSN physical features. Common coordinates are prepared centrally from public unlabeled synthetic calibration.",
+      "id": "PFT2_REAL_HCSN_PROVIDER",
+      "positive_claim_admitted": true,
+      "status": "PASSED_WITH_STATED_SCOPE"
+    },
+    {
+      "evidence": [
+        "actual_hcsn_v2/GLOBAL_CANDIDATE_SEAL.json",
+        "actual_p2p_v2/CANDIDATE_SEAL.json",
+        "adoption_closure_v2/receipts/HCSN_V2_ARTIFACT_BYTES_AUDIT.json"
+      ],
+      "finding": "Both complete candidate sets were externally published before their held-out test generation. No test-based retraining was performed.",
+      "id": "FROZEN_CANDIDATES_BEFORE_TEST",
+      "positive_claim_admitted": true,
+      "status": "PASSED_WITH_STATED_SCOPE"
+    },
+    {
+      "evidence": [
+        "actual_hcsn_v2/FORMAL_PROTOCOL_v2.json",
+        "actual_hcsn_v2/TRAINING_SUMMARY.json"
+      ],
+      "finding": "168 runs, 96 actual updates each, same physical backend and three initialization seeds; no failed or budget-censored run. Fixed topology and raw_boundary excluded from training.",
+      "id": "REAL_HCSN_FAIR_TRAINING_EXECUTION",
+      "positive_claim_admitted": true,
+      "status": "PASSED_WITH_STATED_SCOPE"
+    },
+    {
+      "evidence": [
+        "p2p_closure_v2/evidence/cold_replay_v1/RESULT.json"
+      ],
+      "finding": "12 fresh processes and 24 already-opened test partitions; exact predictions and protected physical parameters. This is file-model reuse, not native daemon or real-user adoption.",
+      "id": "REAL_HCSN_COLD_FORWARD_REUSE",
+      "positive_claim_admitted": true,
+      "status": "PASSED_WITH_STATED_SCOPE"
+    },
+    {
+      "evidence": [
+        "actual_hcsn_v2/FINAL_SUMMARY.json",
+        "actual_hcsn_v2/ANALYSIS.json"
+      ],
+      "finding": "Descriptive value/risk-minus-tanh mean +1.931 percentage points with 22 negative pairs; shared data and three initialization seeds do not establish a universal architecture advantage.",
+      "id": "HCSN_STRUCTURE_ADVANTAGE",
+      "positive_claim_admitted": false,
+      "status": "MEASURED_MIXED"
+    },
+    {
+      "evidence": [
+        "actual_hcsn_v2/FINAL_SUMMARY.json"
+      ],
+      "finding": "Learned-minus-fixed recurrent weights mean -0.087 percentage points. The structural mask is not learned.",
+      "id": "LEARNED_CONNECTION_ADVANTAGE",
+      "positive_claim_admitted": false,
+      "status": "NOT_SUPPORTED_BY_THIS_STUDY"
+    },
+    {
+      "evidence": [
+        "actual_hcsn_v2/ANALYSIS.json"
+      ],
+      "finding": "Dev-selected BP versus supervised ridge warm-start mean -0.206 percentage points; all training costs retained even when step0 was selected.",
+      "id": "BP_INCREMENTAL_ADVANTAGE",
+      "positive_claim_admitted": false,
+      "status": "NOT_SUPPORTED_BY_THIS_STUDY"
+    },
+    {
+      "evidence": [
+        "README.md",
+        "CLOSURE_V2.md"
+      ],
+      "finding": "The earlier Riccati control probe is a separate known-dynamics problem; no integrated HCSN task-level PFT planning superiority claim is made.",
+      "id": "INTEGRATED_PFT_TASK_PLANNING",
+      "positive_claim_admitted": false,
+      "status": "NOT_ESTABLISHED"
+    },
+    {
+      "evidence": [
+        "actual_p2p_v2/SUMMARY.json",
+        "actual_hcsn_v2/ANALYSIS.json"
+      ],
+      "finding": "Measured complete stages and original microbenchmarks are retained. No same-task, full native system BP/adapter/RLS speedup or energy claim follows from these different experiments.",
+      "id": "FULL_SYSTEM_SAME_QUALITY_SPEEDUP",
+      "positive_claim_admitted": false,
+      "status": "NOT_ESTABLISHED"
+    },
+    {
+      "evidence": [
+        "adoption_closure_v2/receipts/NATIVE_v4_RESULT.json"
+      ],
+      "finding": "One actual native control test passed, one dispatch and one nonce consumption; engineering identities and fixture model, no actual model inference or real B.",
+      "id": "NATIVE_COLD_REVOCATION_ENGINEERING",
+      "positive_claim_admitted": true,
+      "status": "PASSED_WITH_STATED_SCOPE"
+    },
+    {
+      "evidence": [
+        "adoption_closure_v2/RESULTS.json",
+        "adoption_closure_v2/intake_contract.py"
+      ],
+      "finding": "Four append-only phases and 12 engineering controls; protected owner scope refuses before opening private objects.",
+      "id": "PRIVATE_PROSPECTIVE_INTAKE_CONTRACT",
+      "positive_claim_admitted": true,
+      "status": "PASSED_WITH_STATED_SCOPE"
+    },
+    {
+      "evidence": [
+        "adoption_closure_v2/receipts/NATIVE_STATEMENT_INTERFACE.json"
+      ],
+      "finding": "Current pinned CLI built and rendered four scope types; original-turn authorization remains unavailable.",
+      "id": "CURRENT_NATIVE_STATEMENT_INTERFACE",
+      "positive_claim_admitted": true,
+      "status": "PASSED_WITH_STATED_SCOPE"
+    },
+    {
+      "evidence": [
+        "ci_navigation_v2/VERIFICATION.json"
+      ],
+      "finding": "Intentionally empty public homepage no longer required to contain navigation; four internal entrypoints and original authority rules remain enforced. Full docs verifier, existing 11 semantic tests and official formatter passed.",
+      "id": "READINESS_HOMEPAGE_CI",
+      "positive_claim_admitted": true,
+      "status": "PASSED_WITH_STATED_SCOPE"
+    },
+    {
+      "evidence": [
+        "adoption_closure_v2/SOURCE_AUDIT.json",
+        "adoption_closure_v2/RESULTS.json"
+      ],
+      "id": "ORIGINAL_TURN_AUTHORIZATION",
+      "positive_claim_admitted": false,
+      "required": "A protected verifier from the original site binding original Core turn, checkpoint/queue, exact scope and live revocation. Current source reports ORIGINAL_TURN_VERIFIER_REQUIRED.",
+      "status": "BLOCKED_UNAVAILABLE_ORIGINAL_AUTHORITY"
+    },
+    {
+      "evidence": [
+        "adoption_closure_v2/RESULTS.json"
+      ],
+      "id": "INDEPENDENT_REAL_A_TO_B",
+      "positive_claim_admitted": false,
+      "required": "Original authorized A success material, authority-backed distinct human B, a frozen candidate before B first arrives, private held-out B and keep evaluations. Synthetic actors and two hosts do not satisfy this gate.",
+      "status": "BLOCKED_MISSING_REAL_INPUTS"
+    },
+    {
+      "evidence": [
+        "adoption_closure_v2/SOURCE_AUDIT.json",
+        "adoption_closure_v2/README.md"
+      ],
+      "id": "NATIVE_REAL_MODEL_ADOPTION_AND_REUSE",
+      "positive_claim_admitted": false,
+      "required": "Original owner and ordinary-runtime stage-owner/Circuit/Root-lane assembly, actual frozen-model adoption, two distinct later task deliveries/outcomes, and valid issuer forward authorization after revocation.",
+      "status": "BLOCKED_MISSING_PRODUCT_CAPABILITY_AND_EVENTS"
+    }
+  ],
+  "schema": "pft-six.closure-ledger.v2",
+  "scientific_scope": "Completed controlled research and bounded engineering validation; positive scientific and production claims require their own evidence.",
+  "statuses_are_not_interchangeable": true
+}

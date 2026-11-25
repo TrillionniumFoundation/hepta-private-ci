@@ -6,7 +6,17 @@
 **核心矩阵已经实跑。结果支持特定线性问题的可识别性及充分统计量聚合，尚未建立 Hepta 解析结构、学习连接或端到端 PFT 训练的普遍优势。**
 真实跨用户 A→B 与生产运行时采用仍需要真实授权数据及采用证据。
 
-## 执行范围
+## 第二轮闭合记录
+
+新增实证已完成真实双机 USB4/SSH 训练与中断恢复、真实 SmallHCSN 的 12 个解析读出候选、168 个受约束 BP 配置及冻结后的独立测试、12 个新进程中的预测复现，并实际运行原生冷恢复/撤销控制测试。完整结果、负结果、成本和仍未通过的真实授权/独立 B/原生复用门见 [CLOSURE_V2.md](CLOSURE_V2.md)，机器可读状态见 [BLOCKERS_V2.json](BLOCKERS_V2.json)。
+
+- [真实 HCSN 双机训练和独立测试](actual_p2p_v2/README.md)
+- [168 配置的公平训练、消融和成本](actual_hcsn_v2/README.md)
+- [原生接入、私有输入契约和真实门槛](adoption_closure_v2/README.md)
+
+下文保留第一轮记录，不能用第二轮的新范围追认第一轮未测得的能力。
+
+## 第一轮执行范围（保留）
 
 | 实验 | 本轮执行 | 结论边界 |
 |---|---|---|
@@ -122,9 +132,9 @@ BP/RLS 比中位数 0.546×，RLS 在这 12 个 case 全部更慢。未以失败
 PFT6 的测试数组在加载阶段已进入进程，但不用于训练或早停；其隔离弱于 PFT5。
 原矩阵 `remote_transfer_s`、能耗均为 null，Hepta runtime adoption 为 false。另行跨宿主探针不能补成这一完整成本链的采用证据。
 
-## 追加：真实多宿主计算与真实 SmallHCSN
+## 第一轮追加记录：真实多宿主计算与真实 SmallHCSN
 
-### 两台主机实际计算，直接 P2P 仍未连通
+### 当时的双机计算与直接 TCP 阻塞
 
 `results/pft2_multihost.json` 保存两项独立结论。pocket4 与 ai395 各自实际生成本地非 IID 数据并计算充分统计量，共 24 次本地计算；控制端读取两端真实结果后汇总，12/12 组与独立 NumPy 集中解一致，最大相对差 **2.35e-15**。这是 controller 聚合，不能作为 peer-to-peer 成功证据。
 
@@ -181,6 +191,6 @@ ridge 与 RLS 候选的最大相对差为 **4.33e-14**。禁止 `python -O` 关�
 - 原四步研究来源：`88414dda04443897def179754779aecdca6f0296`；关联说明在 `results/pft34_prior_evidence.json`。
 - coupled-field admission 来源：`149a5c883ad91800a5f05c60569209d4ce580636`；该分支提供 admission seam，不是本轮实验结果。
 - PFT3/PFT4 NumPy 代理不代替旧 HCSN 的概率质量、marked-content、移动边界或完整 QVI 资格。
-- 已追加真实 SmallHCSN 的固定父模型读出及完整状态冷回放。全网 PFT 控制、真实跨用户授权数据、B 运行时采用及完整多机成本链仍各自需要独立证据。
+- 第一轮已追加真实 SmallHCSN 固定父模型读出及状态回放；第二轮另行补上公平配置、实机直连和冷启动预测复现。全网 PFT 任务规划、真实跨用户授权、原生采用和完整系统同质量优势仍分别核验。
 
-本目录为独立 Python 研究与证据，未修改 Rust 生产模块。没有把全仓 Rust CI、旧 HCSN gate 或生产验收宣称为通过。
+本目录包含独立研究、证据和原生测试 overlay；未修改 Rust 生产模块。没有把全仓 Rust CI、旧 HCSN gate 或生产验收宣称为通过。
