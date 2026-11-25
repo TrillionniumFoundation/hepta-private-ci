@@ -194,6 +194,16 @@ async fn executor_stop_hook_rejects_mismatched_environment() -> Result<()> {
         .into_iter()
         .next()
         .context("attached executor environment should remain selected")?;
+    let EnvironmentConfigState::Ready(mut mismatched_environment_config) =
+        attached_selection.config.clone()
+    else {
+        anyhow::bail!("attached executor environment must be ready");
+    };
+    // The second executor provides the MCP transport, but does not own the
+    // first executor's plugin. FromThread would discover that plugin again.
+    mismatched_environment_config
+        .selected_capability_roots
+        .clear();
     submit_thread_settings(
         &fixture.test.codex,
         ThreadSettingsOverrides {
@@ -203,7 +213,7 @@ async fn executor_stop_hook_rejects_mismatched_environment() -> Result<()> {
                     attached_selection,
                     TurnEnvironmentSelection {
                         environment_id: mismatched_environment_id.to_string(),
-                        config: EnvironmentConfigState::FromThread,
+                        config: EnvironmentConfigState::Ready(mismatched_environment_config),
                         ..selection.clone()
                     },
                 ],
