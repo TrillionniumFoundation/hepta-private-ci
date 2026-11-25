@@ -59,7 +59,11 @@ N128_ORIGINAL_HOSTED_LOG_INDEX = "qa/repository-consolidation/20261125/hosted-n1
 OWNER_QUALIFICATION_LOG_INDEX = "qa/repository-consolidation/20261125/owner-qualification-log-custody/raw-evidence-storage.json"
 HISTORICAL_REVIEW_READBACK_INDEX = "qa/repository-consolidation/20261125/historical-review-readback-custody/raw-evidence-storage.json"
 HISTORICAL_HOSTED_READBACK_INDEX = "qa/repository-consolidation/20261125/historical-hosted-readback-custody/raw-evidence-storage.json"
+PEER_REVIEWED_DIFF_INDEX = "qa/repository-consolidation/20261125/reviewed-diff-custody/raw-evidence-storage.json"
+STANDALONE_QUALIFICATION_LOG_INDEX = "qa/repository-consolidation/20261125/standalone-qualification-log-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    PEER_REVIEWED_DIFF_INDEX: "5060f74c596e407a8f6157079c89e0458b15363724204129f16a9beef032866b",
+    STANDALONE_QUALIFICATION_LOG_INDEX: "ed2ead4783a4bc1bca1baf1ca46e6e38d11dc7dcef8df92cbf36e3b03b1a7d48",
     HISTORICAL_HOSTED_READBACK_INDEX: "8084bd1978e88798fbdb0f99ba4d7d46b591e195c3211b2bbc4b1f0dd6b713e0",
     HISTORICAL_REVIEW_READBACK_INDEX: "cfe5d3a4a7566d4aa3304c35401a286debd7ee1190ea4add1b0a0576b19bcf87",
     OWNER_QUALIFICATION_LOG_INDEX: "537852f987f9fb7d45347cf24a8923fa682925be0e616d27f56d912edfcd9c55",
