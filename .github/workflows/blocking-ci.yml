@@ -53,6 +53,10 @@ jobs:
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}"
 
+      - name: Test NEU-1 model-bakeoff evidence gates (no weights)
+        shell: bash
+        run: python3 -m unittest discover -v -s qualification/neuron-model-bakeoff -p 'test_*.py'
+
       - name: Regression-test scoped fan-in policy
         shell: bash
         run: |
