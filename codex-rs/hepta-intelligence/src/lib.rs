@@ -39,6 +39,8 @@ pub use canonical::decide_boundary;
 pub use canonical::prepare_intelligence_run;
 pub use canonical::validate_current_snapshot;
 
+#[cfg(test)]
+mod directory_test_support;
 mod evaluated_shadow;
 mod ndu_stochastic_admission;
 mod neuron_runtime;
