@@ -1123,10 +1123,10 @@ mod tests {
 
     #[test]
     fn native_64_256_1024_4096_cell_gated_cpu_batches_preserve_isolation() {
-        use codex_hepta_infer_core::shared_feature_v2::{
-            SharedFeatureCacheV2, SharedFeatureIdentityV2,
-        };
-        use codex_hepta_types::{Generation, StableId};
+        use codex_hepta_infer_core::shared_feature_v2::SharedFeatureCacheV2;
+        use codex_hepta_infer_core::shared_feature_v2::SharedFeatureIdentityV2;
+        use codex_hepta_types::Generation;
+        use codex_hepta_types::StableId;
         use std::sync::Arc;
 
         let id = |value: &str| StableId::new(value.to_string()).expect("stable id");
