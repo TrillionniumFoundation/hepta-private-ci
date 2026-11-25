@@ -112,31 +112,46 @@ impl Fixture {
     }
 }
 
-fn assert_unavailable<T>(result: Result<T>) -> Result<()> {
-    let Err(error) = result else {
-        anyhow::bail!("unqualified isolation must reject launch");
-    };
-    let Some(error) = error.downcast_ref::<std::io::Error>() else {
-        anyhow::bail!("isolation unavailability must remain a launch I/O error: {error:#}");
-    };
-    assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
-    assert!(
-        error
-            .to_string()
-            .contains("cannot enforce deletion restrictions")
-    );
-    Ok(())
+#[derive(Default)]
+struct RefusalAttempts(usize);
+
+impl RefusalAttempts {
+    fn assert_unavailable<T>(&mut self, result: Result<T>) -> Result<()> {
+        let Err(error) = result else {
+            anyhow::bail!("unqualified isolation must reject launch");
+        };
+        let Some(error) = error.downcast_ref::<std::io::Error>() else {
+            anyhow::bail!("isolation unavailability must remain a launch I/O error: {error:#}");
+        };
+        assert_eq!(error.kind(), std::io::ErrorKind::Unsupported);
+        assert!(
+            error
+                .to_string()
+                .contains("cannot enforce deletion restrictions")
+        );
+        self.0 += 1;
+        Ok(())
+    }
+
+    fn assert_complete(self, expected: usize) {
+        assert_eq!(self.0, expected);
+        eprintln!(
+            "HEPTA_WINDOWS_REFUSAL_COVERAGE completed_attempts={} expected={expected}",
+            self.0
+        );
+    }
 }
 
 #[test]
 fn managed_capture_and_preflight_refuse_before_acl_setup_or_child_launch() -> Result<()> {
+    let mut attempts = RefusalAttempts::default();
     for profile in [
         PermissionProfile::read_only(),
         PermissionProfile::workspace_write(),
     ] {
         let fixture = Fixture::new()?;
         let roots = fixture.roots()?;
-        assert_unavailable(crate::run_windows_sandbox_legacy_preflight(
+        attempts.assert_unavailable(crate::run_windows_sandbox_legacy_preflight(
             &profile,
             &roots,
             &fixture.codex_home,
@@ -144,7 +159,7 @@ fn managed_capture_and_preflight_refuse_before_acl_setup_or_child_launch() -> Re
             &HashMap::new(),
         ))?;
         fixture.assert_unchanged()?;
-        assert_unavailable(crate::run_windows_sandbox_capture(
+        attempts.assert_unavailable(crate::run_windows_sandbox_capture(
             &profile,
             &roots,
             &fixture.codex_home,
@@ -156,7 +171,7 @@ fn managed_capture_and_preflight_refuse_before_acl_setup_or_child_launch() -> Re
             /*use_private_desktop*/ true,
         ))?;
         fixture.assert_unchanged()?;
-        assert_unavailable(
+        attempts.assert_unavailable(
             crate::run_windows_sandbox_capture_with_filesystem_overrides(
                 &profile,
                 &roots,
@@ -172,7 +187,7 @@ fn managed_capture_and_preflight_refuse_before_acl_setup_or_child_launch() -> Re
             ),
         )?;
         fixture.assert_unchanged()?;
-        assert_unavailable(
+        attempts.assert_unavailable(
             crate::run_windows_sandbox_capture_for_permission_profile_elevated(
                 crate::ElevatedSandboxProfileCaptureRequest {
                     permission_profile: &profile,
@@ -196,11 +211,13 @@ fn managed_capture_and_preflight_refuse_before_acl_setup_or_child_launch() -> Re
         )?;
         fixture.assert_unchanged()?;
     }
+    attempts.assert_complete(/*expected*/ 8);
     Ok(())
 }
 
 #[tokio::test]
 async fn managed_session_entrypoints_refuse_without_backend_fallback_or_mutation() -> Result<()> {
+    let mut attempts = RefusalAttempts::default();
     for profile in [
         PermissionProfile::read_only(),
         PermissionProfile::workspace_write(),
@@ -212,7 +229,7 @@ async fn managed_session_entrypoints_refuse_without_backend_fallback_or_mutation
                 WindowsSandboxLevel::RestrictedToken,
                 WindowsSandboxLevel::Elevated,
             ] {
-                assert_unavailable(
+                attempts.assert_unavailable(
                     crate::spawn_windows_sandbox_session_for_level(
                         crate::WindowsSandboxSessionRequest {
                             permission_profile: &profile,
@@ -240,7 +257,7 @@ async fn managed_session_entrypoints_refuse_without_backend_fallback_or_mutation
                 )?;
                 fixture.assert_unchanged()?;
             }
-            assert_unavailable(
+            attempts.assert_unavailable(
                 crate::spawn_windows_sandbox_session_legacy(
                     &profile,
                     &roots,
@@ -258,7 +275,7 @@ async fn managed_session_entrypoints_refuse_without_backend_fallback_or_mutation
                 .await,
             )?;
             fixture.assert_unchanged()?;
-            assert_unavailable(
+            attempts.assert_unavailable(
                 crate::spawn_windows_sandbox_session_elevated_for_permission_profile(
                     &profile,
                     &roots,
@@ -283,11 +300,13 @@ async fn managed_session_entrypoints_refuse_without_backend_fallback_or_mutation
             fixture.assert_unchanged()?;
         }
     }
+    attempts.assert_complete(/*expected*/ 16);
     Ok(())
 }
 
 #[test]
 fn automatic_preparation_refuses_before_acl_or_account_setup() -> Result<()> {
+    let mut attempts = RefusalAttempts::default();
     for profile in [
         PermissionProfile::read_only(),
         PermissionProfile::workspace_write(),
@@ -296,7 +315,7 @@ fn automatic_preparation_refuses_before_acl_or_account_setup() -> Result<()> {
         let roots = fixture.roots()?;
         let env_map = HashMap::new();
         let permissions = crate::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(&profile, &roots)?;
-        assert_unavailable(crate::run_setup_refresh(
+        attempts.assert_unavailable(crate::run_setup_refresh(
             &profile,
             &roots,
             &fixture.cwd,
@@ -305,7 +324,7 @@ fn automatic_preparation_refuses_before_acl_or_account_setup() -> Result<()> {
             /*proxy_enforced*/ false,
         ))?;
         fixture.assert_unchanged()?;
-        assert_unavailable(crate::run_setup_refresh_with_extra_read_roots(
+        attempts.assert_unavailable(crate::run_setup_refresh_with_extra_read_roots(
             &profile,
             &roots,
             &fixture.cwd,
@@ -315,7 +334,7 @@ fn automatic_preparation_refuses_before_acl_or_account_setup() -> Result<()> {
             /*proxy_enforced*/ false,
         ))?;
         fixture.assert_unchanged()?;
-        assert_unavailable(crate::run_elevated_setup(
+        attempts.assert_unavailable(crate::run_elevated_setup(
             crate::SandboxSetupRequest {
                 permissions: &permissions,
                 command_cwd: &fixture.cwd,
@@ -326,7 +345,7 @@ fn automatic_preparation_refuses_before_acl_or_account_setup() -> Result<()> {
             crate::SetupRootOverrides::default(),
         ))?;
         fixture.assert_unchanged()?;
-        assert_unavailable(crate::require_logon_sandbox_creds(
+        attempts.assert_unavailable(crate::require_logon_sandbox_creds(
             &permissions,
             &fixture.cwd,
             &env_map,
@@ -340,15 +359,18 @@ fn automatic_preparation_refuses_before_acl_or_account_setup() -> Result<()> {
             crate::WindowsSandboxProxySettingsMode::Reconcile,
         ))?;
         fixture.assert_unchanged()?;
-        assert_unavailable(crate::apply_world_writable_scan_and_denies_for_permissions(
-            &fixture.codex_home,
-            &fixture.cwd,
-            &env_map,
-            &permissions,
-            /*logs_base_dir*/ None,
-        ))?;
+        attempts.assert_unavailable(
+            crate::apply_world_writable_scan_and_denies_for_permissions(
+                &fixture.codex_home,
+                &fixture.cwd,
+                &env_map,
+                &permissions,
+                /*logs_base_dir*/ None,
+            ),
+        )?;
         fixture.assert_unchanged()?;
     }
+    attempts.assert_complete(/*expected*/ 10);
     Ok(())
 }
 
@@ -363,6 +385,7 @@ impl Drop for OwnedToken {
 
 #[test]
 fn public_token_factories_cannot_bypass_managed_execution_refusal() -> Result<()> {
+    let mut attempts = RefusalAttempts::default();
     // SAFETY: the base token is immediately owned and all SID allocations stay
     // live throughout the attempted factory calls.
     let base = OwnedToken(unsafe { crate::get_current_token_for_restriction()? });
@@ -371,28 +394,29 @@ fn public_token_factories_cannot_bypass_managed_execution_refusal() -> Result<()
     let caps = [capability.as_ptr()];
     let additional = [network_identity.as_ptr()];
     unsafe {
-        assert_unavailable(
+        attempts.assert_unavailable(
             crate::token::create_readonly_token_with_cap(capability.as_ptr())
                 .map(|(token, _)| OwnedToken(token)),
         )?;
-        assert_unavailable(
+        attempts.assert_unavailable(
             crate::create_readonly_token_with_cap_from(base.0, capability.as_ptr())
                 .map(|(token, _)| OwnedToken(token)),
         )?;
-        assert_unavailable(
+        attempts.assert_unavailable(
             crate::create_readonly_token_with_caps_from(base.0, &caps).map(OwnedToken),
         )?;
-        assert_unavailable(
+        attempts.assert_unavailable(
             crate::create_workspace_write_token_with_caps_from(base.0, &caps).map(OwnedToken),
         )?;
-        assert_unavailable(
+        attempts.assert_unavailable(
             crate::create_readonly_token_with_caps_and_user_from(base.0, &caps, &additional)
                 .map(OwnedToken),
         )?;
-        assert_unavailable(
+        attempts.assert_unavailable(
             crate::create_workspace_write_token_with_caps_and_user_from(base.0, &caps, &additional)
                 .map(OwnedToken),
         )?;
     }
+    attempts.assert_complete(/*expected*/ 6);
     Ok(())
 }

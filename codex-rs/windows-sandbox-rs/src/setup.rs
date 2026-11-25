@@ -234,6 +234,7 @@ pub fn run_setup_refresh(
     else {
         return Ok(());
     };
+    crate::ensure_windows_managed_filesystem_isolation()?;
     let deny_read_paths =
         setup_refresh_deny_read_paths(permission_profile, workspace_roots, command_cwd)?;
     run_setup_refresh_inner(
@@ -277,6 +278,7 @@ pub fn run_setup_refresh_with_extra_read_roots(
     else {
         return Ok(());
     };
+    crate::ensure_windows_managed_filesystem_isolation()?;
     let deny_read_paths =
         setup_refresh_deny_read_paths(permission_profile, workspace_roots, command_cwd)?;
     let mut read_roots = gather_read_roots(command_cwd, &permissions, env_map, codex_home);
