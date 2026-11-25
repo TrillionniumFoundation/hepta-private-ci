@@ -65,7 +65,7 @@ def prepare(args, report):
     require(original_tests["passed"] == 13 and original_tests["skipped"] == 0 and
             set(original_tests["names"]) == {"tests::" + name for name in admission.ORIGINAL_TESTS},
             "the prerequisite did not execute the 13 unchanged original root tests")
-    producing = identity.producer_inputs(producer, snapshot, manifest)
+    producing = identity.producer_inputs(producer, snapshot, manifest, separate_lock=True)
     producing["complete_lib_inverse"] = admission.recover_lib(producer)
     require(producing["complete_lib_inverse"]["exact_routing_rewrites"] == 33,
             "standalone requires the complete reviewed 33-rewrite lib inverse")
@@ -107,7 +107,7 @@ def prepare(args, report):
             require(logged.is_relative_to(parent_work) and logged.stat().st_size == record[stream + "_bytes"],
                     "a prerequisite command output changed")
     graphs = {}
-    for side in ("default", "native"):
+    for side in ("original", "default", "native"):
         record = parent["actual_cargo_graph_manifests"][side]
         path = parent_work / (side + "-dependency-manifest.json")
         require(record["path"] == str(path) and record["bytes"] == path.stat().st_size,
@@ -128,7 +128,7 @@ def prepare(args, report):
                 actual["actual_library_files"] == len(graph["files"]),
                 "the actual complete Cargo unit/feature/profile/artifact graph differs")
         graphs[side] = graph
-    for side in ("default", "native"):
+    for side in ("original", "default", "native"):
         receipt = parent["actual_serde_identity"][side]
         admission.verify_fingerprints(receipt)
         selected = receipt["library"]
@@ -137,6 +137,10 @@ def prepare(args, report):
         bind(selected["path"], selected["sha256"])
         for path, digest in receipt["fingerprint_inputs"].items():
             bind(path, digest)
+    original_checkout, metadata = admission.verify_parent_lanes(
+        parent, parent_work, producer, graphs, bind)
+    identity.outside(work, (original_checkout,))
+    identity.outside(args.report, (original_checkout,))
     native = Path(graphs["native"]["direct"]["codex_apply_patch"]["path"])
     bind(native, graphs["native"]["files"][native.name]["sha256"])
     rustc, _, env, compiler = cargo.compiler(args.rustc, commands, producer)
@@ -144,7 +148,7 @@ def prepare(args, report):
     env.update(PYTHONDONTWRITEBYTECODE="1", RUST_BACKTRACE="0")
     binaries = {side: work / ("standalone-" + side) for side in ("original", "native")}
     for side, owner in (("original", original), ("native", native)):
-        graph = graphs["default" if side == "original" else "native"]
+        graph = graphs[side]
         flags = cargo.flags(rustc, graph, original=True)
         if side == "native":
             flags += ["-L", "native=" + str(library)]
@@ -153,7 +157,8 @@ def prepare(args, report):
         main = (snapshot if side == "original" else producer) / identity.CRATE / "src/main.rs"
         commands.run("compile-complete-standalone-" + side, flags + [
             "--crate-name", "standalone_" + side + "_process", "--extern",
-            "codex_apply_patch=" + str(owner), main, "-o", binaries[side]], cwd=producer, env=env)
+            "codex_apply_patch=" + str(owner), main, "-o", binaries[side]], cwd=producer, env=(admission.original_compile_environment(
+                producer, env, graph) if side == "original" else env))
         symbols = commands.run("standalone-symbols-" + side,
             ["nm", "--defined-only", binaries[side]], cwd=producer, env=env).read_text()
         count = len(re.findall(r"\b[Tt] codex_hia_patch_standalone$", symbols, re.MULTILINE))
@@ -169,16 +174,17 @@ def prepare(args, report):
         commands_file=str(logs / "commands.json"))
     return {"producer": producer, "library": library, "work": work, "binaries": binaries,
             "bound": bound, "graphs": graphs, "serde": parent["actual_serde_identity"],
-            "snapshot": snapshot, "manifest": manifest, "producing": producing, "binding": binding}
+            "snapshot": snapshot, "manifest": manifest, "producing": producing, "binding": binding,
+            "original_checkout": original_checkout, "metadata": metadata}
 
 
 def unchanged(context):
-    for graph in context["graphs"].values():
-        cargo.verify_graph(graph)
+    cargo.verify_three_graphs(context["graphs"], context["metadata"],
+                              context["original_checkout"], context["producer"])
     for receipt in context["serde"].values():
         admission.verify_fingerprints(receipt)
     identity.verify_sources(context["snapshot"], context["manifest"])
-    current = identity.producer_inputs(context["producer"], context["snapshot"], context["manifest"])
+    current = identity.producer_inputs(context["producer"], context["snapshot"], context["manifest"], separate_lock=True)
     current["complete_lib_inverse"] = admission.recover_lib(context["producer"])
     require(current == context["producing"] and
             admission.native_inputs(context["producer"], context["library"]) == context["binding"],

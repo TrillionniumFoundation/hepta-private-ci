@@ -66,7 +66,7 @@ def verify(args, report):
     require(original_tests["passed"] == 13 and original_tests["skipped"] == 0 and
             set(original_tests["names"]) == {"tests::" + name for name in admission.ORIGINAL_TESTS},
             "the complete-original prerequisite did not run the exact 13 root tests")
-    producing = identity.producer_inputs(producer, snapshot, manifest)
+    producing = identity.producer_inputs(producer, snapshot, manifest, separate_lock=True)
     producing["complete_lib_inverse"] = admission.recover_lib(producer)
     require(producing == parent["producer"], "the producing source changed after the effects gate")
     binding = admission.native_inputs(producer, library)
@@ -109,7 +109,7 @@ def verify(args, report):
             require(logged.is_relative_to(parent_work) and
                     logged.stat().st_size == record[stream + "_bytes"], "command log identity differs")
     graphs = {}
-    for side in ("default", "native"):
+    for side in ("original", "default", "native"):
         manifest_record = parent["actual_cargo_graph_manifests"][side]
         graph_path = parent_work / (side + "-dependency-manifest.json")
         require(manifest_record["path"] == str(graph_path) and
@@ -127,7 +127,7 @@ def verify(args, report):
                 "prerequisite Cargo graph or actual owner unit differs")
         graphs[side] = graph
     serde = parent["actual_serde_identity"]
-    for side in ("default", "native"):
+    for side in ("original", "default", "native"):
         admission.verify_fingerprints(serde[side])
         selected = serde[side]["library"]
         actual = graphs[side]["files"].get(Path(selected["path"]).name)
@@ -136,6 +136,10 @@ def verify(args, report):
         bind(selected["path"], selected["sha256"])
         for path, digest in serde[side]["fingerprint_inputs"].items():
             bind(path, digest)
+    original_checkout, metadata = admission.verify_parent_lanes(
+        parent, parent_work, producer, graphs, bind)
+    identity.outside(work, (original_checkout,))
+    identity.outside(args.report, (original_checkout,))
     native = Path(graphs["native"]["direct"]["codex_apply_patch"]["path"])
     bind(native, graphs["native"]["files"][native.name]["sha256"])
     rustc, _, env, compiler = cargo.compiler(args.rustc, commands, producer)
@@ -143,11 +147,11 @@ def verify(args, report):
     env.update(PYTHONDONTWRITEBYTECODE="1", RUST_BACKTRACE="0")
     binaries = {side: work / ("application-" + side) for side in ("original", "native")}
     for side, owner in (("original", original), ("native", native)):
-        graph = graphs["default" if side == "original" else "native"]
+        graph = graphs[side]
         flags = cargo.flags(rustc, graph, original=True)
         flags += ["--check-cfg", "cfg(native_application)"]
         flags += ["--extern", "serde_json=" +
-                  serde["default" if side == "original" else "native"]["library"]["path"]]
+                  serde[side]["library"]["path"]]
         if side == "native":
             flags += ["--cfg", "native_application", "-C",
                       "link-arg=-Wl,--wrap=codex_hia_patch_application",
@@ -157,7 +161,8 @@ def verify(args, report):
         commands.run("compile-application-" + side, flags + [
             "--crate-name", "patch_application_" + side + "_observer", "--extern",
             "codex_apply_patch=" + str(owner), support / "driver.rs", "-o", binaries[side]],
-            cwd=producer, env=env)
+            cwd=producer, env=(admission.original_compile_environment(
+                producer, env, graph) if side == "original" else env))
         symbols = commands.run("application-symbols-" + side,
             ["nm", "--defined-only", binaries[side]], cwd=producer, env=env).read_text()
         for symbol in ("codex_hia_patch_application", "__wrap_codex_hia_patch_application"):
@@ -178,12 +183,11 @@ def verify(args, report):
     require(public["passed"] and public["compared_pairs"] == 1470 and
             public["actual_processes"] == 2940 and public["skipped"] == public["mismatches"] == 0,
             "the complete public writer corpus did not pass")
-    for graph in graphs.values():
-        cargo.verify_graph(graph)
+    cargo.verify_three_graphs(graphs, metadata, original_checkout, producer)
     for receipt in serde.values():
         admission.verify_fingerprints(receipt)
     identity.verify_sources(snapshot, manifest)
-    final = identity.producer_inputs(producer, snapshot, manifest)
+    final = identity.producer_inputs(producer, snapshot, manifest, separate_lock=True)
     final["complete_lib_inverse"] = admission.recover_lib(producer)
     require(final == producing and admission.native_inputs(producer, library) == binding,
             "production sources or native artifacts changed during writer qualification")

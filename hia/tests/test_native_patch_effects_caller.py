@@ -79,7 +79,7 @@ def verify(args, report):
     original_manifest = identity.snapshot(original, snapshot)
     admission.original_lib(snapshot, original_manifest)
     write_json(work / "original-source-manifest.json", original_manifest)
-    producing = identity.producer_inputs(producer, snapshot, original_manifest)
+    producing = identity.producer_inputs(producer, snapshot, original_manifest, separate_lock=True)
     producing["complete_lib_inverse"] = admission.recover_lib(producer)
     native_binding = admission.native_inputs(producer, library)
     report.update(original_inputs=original_manifest, producer=producing,
@@ -96,19 +96,15 @@ def verify(args, report):
             "BINDGEN_EXTRA_CLANG_ARGS", "LIBCLANG_PATH", "TMPDIR",
         )
     }
-    _, packages, owner, dependencies, metadata = cargo.metadata(
-        real_cargo, producer, env, commands)
-    report["cargo_metadata_inputs"] = metadata
-    write_json(work / "metadata-source-inputs.json", metadata)
-    graphs = {}
+    graphs, metadata = cargo.capture_three_graphs(
+        real_cargo, producer, original, env, commands, work, target)
+    report["cargo_metadata_inputs"] = metadata["default"]
+    report["three_way_cargo_metadata"] = metadata
+    report["three_way_cargo_graphs"] = {side: graph["lane"] for side, graph in graphs.items()}
+    write_json(work / "metadata-source-inputs.json", metadata["default"])
     graph_manifests = {}
-    for side, enabled in (("default", False), ("native", True)):
-        captured = cargo.capture(real_cargo, producer, env, enabled, commands)
-        graph = cargo.admit(captured, packages, owner, dependencies, target,
-                            work / (side + "-deps"), native=enabled)
-        graphs[side] = graph
+    for side, graph in graphs.items():
         graph_path = work / (side + "-dependency-manifest.json")
-        write_json(graph_path, graph)
         graph_manifests[side] = {"path": str(graph_path), "bytes": graph_path.stat().st_size,
                                  "sha256": identity.sha(graph_path)}
     report["actual_cargo_graph_manifests"] = graph_manifests
@@ -120,13 +116,13 @@ def verify(args, report):
                "owner_unit": graph["direct"]["codex_apply_patch"]["unit"]}
         for side, graph in graphs.items()
     }
-    serde = {side: admission.shared_serde(graph, packages)
+    serde = {side: admission.shared_serde(graph, metadata[side]["packages"])
              for side, graph in graphs.items()}
     report["actual_serde_identity"] = serde
     write_json(work / "actual-serde-identity.json", serde)
     binaries, owner_receipts = admission.build_owners(
-        rustc, producer, snapshot, support, graphs["default"], graphs["native"],
-        serde, env, commands, work)
+        rustc, producer, snapshot, support, graphs["original"], graphs["default"],
+        graphs["native"], serde, env, commands, work)
     report.update(owner_receipts)
     public = observations.run(binaries, producer, env, work / "public-observations")
     report["public_observations"] = {
@@ -162,16 +158,17 @@ def verify(args, report):
                 manifest_path.stat().st_size == manifest_record["bytes"],
                 "an admitted actual Cargo graph manifest changed")
     identity.verify_sources(snapshot, original_manifest)
-    final_producer = identity.producer_inputs(producer, snapshot, original_manifest)
+    final_producer = identity.producer_inputs(producer, snapshot, original_manifest, separate_lock=True)
     final_producer["complete_lib_inverse"] = admission.recover_lib(producer)
     require(final_producer == producing, "the actual producing source changed")
     require(admission.native_inputs(producer, library) == native_binding,
             "native source/archive/build binding changed")
     require(identity.clean_identity(original) == original_identity,
             "the separate immutable original checkout changed")
-    for package in metadata["packages"].values():
-        require(identity.sha(package["manifest_path"]) == package["manifest_sha256"],
-                "an actual Cargo package manifest changed")
+    cargo.verify_three_graphs(graphs, metadata, original, producer)
+    for side, receipt in metadata.items():
+        require(json.loads((work / (side + "-metadata-source-inputs.json")).read_text()) == receipt,
+                "an actual Cargo lane metadata receipt changed")
     for path, digest in input_hashes.items():
         require(identity.sha(path) == digest, "a qualification source input changed")
     report["source_and_artifacts_unchanged"] = True

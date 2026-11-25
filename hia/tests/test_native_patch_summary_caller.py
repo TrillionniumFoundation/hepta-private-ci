@@ -61,7 +61,7 @@ def verify(args, report):
             "the prerequisite original is not the complete pinned crate")
     identity.verify_sources(snapshot, manifest)
     admission.original_lib(snapshot, manifest)
-    producing = identity.producer_inputs(producer, snapshot, manifest)
+    producing = identity.producer_inputs(producer, snapshot, manifest, separate_lock=True)
     producing["complete_lib_inverse"] = admission.recover_lib(producer)
     require(producing == parent["producer"], "the producing source changed after the effects gate")
     binding = admission.native_inputs(producer, library)
@@ -81,7 +81,7 @@ def verify(args, report):
                     parent["original_library"]["sha256"])
     require(original.parent == parent_work, "whole original library escaped its qualified workdir")
     graphs = {}
-    for side in ("default", "native"):
+    for side in ("original", "default", "native"):
         manifest_record = parent["actual_cargo_graph_manifests"][side]
         graph_path = parent_work / (side + "-dependency-manifest.json")
         require(manifest_record["path"] == str(graph_path) and
@@ -98,6 +98,10 @@ def verify(args, report):
                 actual["actual_library_files"] == len(graph["files"]),
                 "prerequisite Cargo graph or actual owner unit differs")
         graphs[side] = graph
+    original_checkout, metadata = admission.verify_parent_lanes(
+        parent, parent_work, producer, graphs, bind)
+    identity.outside(work, (original_checkout,))
+    identity.outside(args.report, (original_checkout,))
     native = Path(graphs["native"]["direct"]["codex_apply_patch"]["path"])
     bind(native, graphs["native"]["files"][native.name]["sha256"])
     rustc, _, env, compiler = cargo.compiler(args.rustc, commands, producer)
@@ -105,7 +109,7 @@ def verify(args, report):
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     binaries = {side: work / ("summary-" + side) for side in ("original", "native")}
     for side, owner in (("original", original), ("native", native)):
-        graph = graphs["default" if side == "original" else "native"]
+        graph = graphs[side]
         flags = cargo.flags(rustc, graph, original=True)
         flags += ["--check-cfg", "cfg(native_summary)"]
         if side == "native":
@@ -117,7 +121,8 @@ def verify(args, report):
         commands.run("compile-summary-" + side, flags + [
             "--crate-name", "patch_summary_" + side + "_observer", "--extern",
             "codex_apply_patch=" + str(owner), support / "driver.rs", "-o", binaries[side]],
-            cwd=producer, env=env)
+            cwd=producer, env=(admission.original_compile_environment(
+                producer, env, graph) if side == "original" else env))
         symbols = commands.run("summary-symbols-" + side,
             ["nm", "--defined-only", binaries[side]], cwd=producer, env=env).read_text()
         for symbol in ("codex_hia_patch_summary", "__wrap_codex_hia_patch_summary"):
@@ -138,10 +143,9 @@ def verify(args, report):
     require(public["passed"] and public["compared_pairs"] == 1002 and
             public["actual_processes"] == 2004 and public["skipped"] == public["mismatches"] == 0,
             "the complete public writer corpus did not pass")
-    for graph in graphs.values():
-        cargo.verify_graph(graph)
+    cargo.verify_three_graphs(graphs, metadata, original_checkout, producer)
     identity.verify_sources(snapshot, manifest)
-    final = identity.producer_inputs(producer, snapshot, manifest)
+    final = identity.producer_inputs(producer, snapshot, manifest, separate_lock=True)
     final["complete_lib_inverse"] = admission.recover_lib(producer)
     require(final == producing and admission.native_inputs(producer, library) == binding,
             "production sources or native artifacts changed during writer qualification")
