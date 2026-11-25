@@ -242,12 +242,11 @@ def read_run(path, scope, selection, req, materials):
         / ("request-delivery-" + field(started["grant"]["delivery_id"]) + ".json"),
         scope["operation"],
     )
-    _, _, input_ids = cold.encoding(req, task, materials)
+    output, input_ids = cold._inspect_with_encoding(req, task, materials, pred)
     require_reservation(
         path.parent / ("tokens-" + data.digest(input_ids) + ".json"),
         scope["operation"],
     )
-    output = cold.inspect(req, task, materials, pred)
     require(
         (path / "answer.utf8").read_bytes() == output, "original delivered bytes differ"
     )
