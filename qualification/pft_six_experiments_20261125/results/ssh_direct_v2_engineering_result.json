@@ -1,0 +1,288 @@
+{
+  "application_rounds": 1,
+  "costs": {
+    "ai395_collection_wall_seconds": 0.005296656861901283,
+    "ai395_deployment_wall_seconds": 0.004807973746210337,
+    "ai395_preflight_wall_seconds": 0.18501172866672277,
+    "initiator_child_cpu_seconds": 0.129667,
+    "initiator_outer_wall_seconds": 0.5762224920326844,
+    "pocket4_collection_wall_seconds": 0.003631992032751441,
+    "pocket4_deployment_wall_seconds": 0.002490434912033379,
+    "pocket4_preflight_wall_seconds": 0.08094364404678345
+  },
+  "exact_execution_started_unix_ns": 1795608506179094451,
+  "historical_tcp_erratum_sha256": "e358020cabb65b9724c8eb3b467c4e4cb19c40a869b8d8c2441e7df698cd49ad",
+  "initiator_job_id": "1a2129b6b21-ffbe-3fce",
+  "limitations": [
+    "One archived 8-dimensional seed731 case; no new data generation or parameter training",
+    "Rank 8 of 8; this case demonstrates no dimensional reduction advantage",
+    "Raw peer float weights have different byte hashes; explicitly registered 1e-10 canonical weights match exactly",
+    "Original direct TCP failure remains failed; SSH succeeds over an already configured trusted port22 path",
+    "No end-to-end adopted-update time or foundation-model qualification follows from this engineering exchange"
+  ],
+  "metadata_projection_erratum_sha256": "434da193a60139bdf61d7a0ff36247f25711fb4ff2797a93bcd13f668484d400",
+  "native_terminal_status": {
+    "at_unix_ms": 1795608506761,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a2129b6b21-ffbe-3fce",
+    "launch_nonce": "50ec62d790821e64ce15c8c30aeba73d",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 2541,
+        "stored": 2541
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "original_scientific_panels_repeated": 0,
+  "per_host": {
+    "ai395": {
+      "application_wall_seconds": 0.02386181615293026,
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "central_reference_relative_error_including_quantization": 9.202831776360674e-11,
+      "discarded_target_relative_norm": 0.0,
+      "effective_direction_relative_error": 1.3530918937163655e-15,
+      "effective_rank": 8,
+      "evidence_sha256": "da35df030ecdbd27b59b11d80f3d43693931215a0e3026f310f9d7a95395d505",
+      "feature_dimension": 8,
+      "normal_residual_relative": 1.1110712752220766e-16,
+      "original_files": 19,
+      "original_pid_absent": true,
+      "peer_full_precision_relative_error": 1.1775485418441104e-16,
+      "pid": 812910,
+      "raw_candidate_sha256": "aea189e9a69014267ce38c6b50dd99556dec28f524a0e56b3058980329f9da8a",
+      "status": "COMPLETE",
+      "teardown_seconds": 5.169771611690521e-06
+    },
+    "pocket4": {
+      "application_wall_seconds": 0.44037207297515124,
+      "boot": "7b39f717-0e21-4bbe-8365-b0d4f6fe04d3",
+      "central_reference_relative_error_including_quantization": 9.202825484677152e-11,
+      "discarded_target_relative_norm": 0.0,
+      "effective_direction_relative_error": 1.6751814929245216e-15,
+      "effective_rank": 8,
+      "evidence_sha256": "9be8920d0215545e12851a9a9b83304b09a8b812df45a1c804dc1a6905376427",
+      "feature_dimension": 8,
+      "normal_residual_relative": 9.003464877369777e-17,
+      "original_files": 26,
+      "original_pid_absent": true,
+      "peer_full_precision_relative_error": 1.17754854184411e-16,
+      "pid": 2263090,
+      "raw_candidate_sha256": "cbda3c4b6d56270053c461e78c962f41e05ac6c95555ee57b2e9b523c42af19b",
+      "status": "COMPLETE",
+      "teardown_seconds": 0.0001321430318057537
+    }
+  },
+  "registration_sha256": "98478f2b2c3ce2429d5b8e0e25f77cdd84a12e3fc4036071009115bd8fac79ca",
+  "round_id": "pft-direct-ssh-20261125-7c9e-v2",
+  "route": {
+    "client_public_key": "SHA256:gG+GKpJKCSMPfe90FMeKigkNhwY+28e/iUXb9QKdz+o",
+    "controller_statistic_relay": false,
+    "guard": {
+      "attempts": [
+        {
+          "address": "10.77.0.2",
+          "check_ssh_banner": true,
+          "elapsed_ms": 7.788,
+          "interface": "thunderbolt0",
+          "interface_bound": true,
+          "interface_policy": "required",
+          "local_address": [
+            "10.77.0.4",
+            51217
+          ],
+          "port": 22,
+          "remote_address": [
+            "10.77.0.2",
+            22
+          ],
+          "source": "10.77.0.4",
+          "ssh_banner": "SSH-2.0-OpenSSH_10.2p1 Ubuntu-2ubuntu3.8",
+          "status": "connected",
+          "timeout": 0.85,
+          "transport": "usb4"
+        }
+      ],
+      "elapsed_ms": 7.796,
+      "peer": "ai395",
+      "selected": {
+        "address": "10.77.0.2",
+        "check_ssh_banner": true,
+        "elapsed_ms": 7.788,
+        "interface": "thunderbolt0",
+        "interface_bound": true,
+        "interface_policy": "required",
+        "local_address": [
+          "10.77.0.4",
+          51217
+        ],
+        "port": 22,
+        "remote_address": [
+          "10.77.0.2",
+          22
+        ],
+        "source": "10.77.0.4",
+        "ssh_banner": "SSH-2.0-OpenSSH_10.2p1 Ubuntu-2ubuntu3.8",
+        "status": "connected",
+        "timeout": 0.85,
+        "transport": "usb4"
+      }
+    },
+    "server_host_key": "SHA256:OV62pY7IlflyYy/H6NKIaCI7qDEzDk/rzRCV2qQ34hU",
+    "ssh_connection": {
+      "client": [
+        "10.77.0.4",
+        51217
+      ],
+      "server": [
+        "10.77.0.2",
+        22
+      ]
+    }
+  },
+  "schema": "pft-direct-ssh-engineering-result-v2",
+  "shared": {
+    "accepted_ids": [
+      "48d84f237acf8f23a689f3cd3937ae955672dc43ee1bee9a3f7304f3a8bca1cc",
+      "b25aa7b8b7b6a05baeae1591be331fac6f67b73bd0e0a5c11ce41fa2361c4fcb"
+    ],
+    "candidate": [
+      -0.2513573058,
+      -0.164558654,
+      0.3737977534,
+      0.5200016296,
+      0.1473707131,
+      0.0316503714,
+      0.2713977994,
+      0.1198731121
+    ],
+    "candidate_integer_grid": [
+      -2513573058,
+      -1645586540,
+      3737977534,
+      5200016296,
+      1473707131,
+      316503714,
+      2713977994,
+      1198731121
+    ],
+    "candidate_sha256": "349d7a3a871462bd9a0a9f8986fa436e702bd93f3d131d8ec880eb9f3580c624",
+    "central_reference_artifact_sha256": "10db4af87950b614d174593bfbf5d8b652e785cd7aef54294490d9cbafd83666",
+    "central_reference_grid_sha256": "daad53b8cbdc710cecd9ad0dce8b43b77bb30cf1d4d6118da17a944840cd825b",
+    "ledger_sha256": "b9f3f2a3f19a4e1b87350b6ff2658ba347502dcfe2ad6a317f02417d0fa825c2",
+    "quantization_step": 1e-10,
+    "statistics_snapshot_id": "d7548bbbc2a519c7a1596fed1324ea9b0019176f2e35113bf7ac4ba42dee0526"
+  },
+  "source_commit": "6e4af27a18b9dd2252713623bff07bdce1ef2cba",
+  "source_tree": "835727e6aebde67c52fe8a54e2c273747b214c4f",
+  "status": "PASS_ENGINEERING_FROZEN_STATISTICS",
+  "transport": {
+    "ai395_to_pocket4_bytes": 4871,
+    "all_sender_receiver_original_bytes_identical": true,
+    "bytes_exclude_ssh_handshake_encryption_and_transport_overhead": true,
+    "failed_frames": 0,
+    "frames": [
+      {
+        "bytes": 624,
+        "direction": "send",
+        "kind": "hello",
+        "sender": 0,
+        "sequence": 0,
+        "sha256": "1e8f18f1fb21dda14d3c73bac6797f579a9a15d8c4f9e473a914052d7ed512d8"
+      },
+      {
+        "bytes": 713,
+        "direction": "receive",
+        "kind": "hello",
+        "sender": 1,
+        "sequence": 0,
+        "sha256": "746872c483729fd98fd871f784ba8b3bc61deff4a8098efb61498ac643d0989a"
+      },
+      {
+        "bytes": 2196,
+        "direction": "send",
+        "kind": "contribution",
+        "sender": 0,
+        "sequence": 1,
+        "sha256": "d5dfab10cfaab90487b4466f3198dc2c8457769945d5a1366aaede7075fb5eb5"
+      },
+      {
+        "bytes": 2194,
+        "direction": "receive",
+        "kind": "contribution",
+        "sender": 1,
+        "sequence": 1,
+        "sha256": "deaf03b1860e3b0da48d34dd2196bd5189372e6140037bc5e26914222deeb51c"
+      },
+      {
+        "bytes": 1640,
+        "direction": "send",
+        "kind": "summary",
+        "sender": 0,
+        "sequence": 2,
+        "sha256": "c2d9baa30fd1536fc443407e6ace223c25e0f3b50efe5a3e84b672a81e632ad0"
+      },
+      {
+        "bytes": 1646,
+        "direction": "receive",
+        "kind": "summary",
+        "sender": 1,
+        "sequence": 2,
+        "sha256": "783b652994fb365fe61a6516f0a113351582d931c3cd99290866d33cfc0f764d"
+      },
+      {
+        "bytes": 421,
+        "direction": "send",
+        "kind": "commit",
+        "sender": 0,
+        "sequence": 3,
+        "sha256": "8bd6107234e9d55e4005244983150ce1be751aad290a9f954e9aad344f5fd68f"
+      },
+      {
+        "bytes": 318,
+        "direction": "receive",
+        "kind": "complete",
+        "sender": 1,
+        "sequence": 3,
+        "sha256": "b338127ec28ab5ca59f2ecaeab80c3a35ecee2804dbfe567ba138d86fd369b44"
+      }
+    ],
+    "pocket4_to_ai395_bytes": 4881,
+    "unique_framed_application_bytes": 9752,
+    "unique_frames": 8
+  },
+  "unqualified_claims": [
+    "original TCP delivery",
+    "new training evidence",
+    "task improvement",
+    "adoption",
+    "settlement",
+    "WAN consensus",
+    "system time benefit",
+    "foundation model"
+  ]
+}
