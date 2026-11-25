@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.e1e6.pft-horizon-protocol.v1",
+  "specification": {
+    "widths": [
+      8,
+      32,
+      64
+    ],
+    "seeds": [
+      113,
+      271,
+      419
+    ],
+    "initial_states": 3,
+    "innovation_paths": 4,
+    "horizon": 6,
+    "reveal_transition": 3,
+    "innovation_sigma": 0.5,
+    "gd_iterations": 32,
+    "stage_task": 0.04,
+    "terminal_task": 1.0,
+    "stage_retention": 0.08,
+    "terminal_retention": 0.4,
+    "initial_theta_sigma": 0.4
+  },
+  "source_sha256": {
+    "pft_horizon.py": "09a0c5ee846a6108ec2372ebd5fc3d8c66990e18f02ed572b937135d4674fbff",
+    "pft_linear.py": "5c98e86379d53c2df06f684d729300b403b730073c4f21baeb9e6f12e4d00a66",
+    "pft_horizon_tests.py": "7fa3a06e0da6170a4614b703cf1fe35dee771e73e42d36ea838da3bcb998e124"
+  },
+  "methods": [
+    "full_riccati",
+    "pft_compressed",
+    "single_action_ridge",
+    "full_horizon_gd",
+    "blind_belief_ablation"
+  ],
+  "frozen_at": "2026-11-25T02:51:04.458183+00:00",
+  "target_law": "belief martingale; one independent N(0,sigma^2 I) increment after transition 3",
+  "information": "action k observes x_k only; increment k is applied after action k",
+  "rls_scope": "independent arithmetic check of the same single-action remaining-horizon ridge problem",
+  "gd_rule": "32 zero-start gradient steps; step=1/lambda_max of complete remaining-horizon Hessian",
+  "acceptance": "all registered episodes retained; numerical parity and causality only; no win threshold",
+  "cost": "same stage/terminal task readout, old-output retention and action effort for every method",
+  "data_scope": "fresh synthetic mechanism arrays, no inherited final panels or model calls"
+}

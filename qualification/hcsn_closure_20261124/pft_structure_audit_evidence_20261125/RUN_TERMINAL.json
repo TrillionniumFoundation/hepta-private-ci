@@ -1,0 +1,55 @@
+{
+  "returncode": 0,
+  "wall_seconds": 21.822783573996276,
+  "child_user_cpu_seconds": 16.710828,
+  "child_system_cpu_seconds": 0.48917,
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "python_executable": "/usr/bin/python3",
+  "request": {
+    "argv": [
+      "/usr/bin/python3",
+      "/home/qian-qi/hepta-pft-fourstep-20261125-structure/pft_structure_audit.py",
+      "audit",
+      "--input",
+      "main=/home/qian-qi/hcsn-smallnet-20261124/closure-v1",
+      "--input",
+      "baselines=/home/qian-qi/hcsn-smallnet-20261124/baselines-v1",
+      "--input",
+      "joint=/home/qian-qi/hcsn-smallnet-20261124/joint-training-v1",
+      "--input",
+      "communication=/home/qian-qi/hcsn-smallnet-20261124/communication-training-v1",
+      "--output",
+      "/home/qian-qi/hepta-pft-fourstep-20261125-structure/audit.json"
+    ],
+    "source_sha256": "f242410a81e6c76807e2b7750df58d1a8d46059f9900e242596d87ffbe4745f0",
+    "inputs": {
+      "main": "/home/qian-qi/hcsn-smallnet-20261124/closure-v1",
+      "baselines": "/home/qian-qi/hcsn-smallnet-20261124/baselines-v1",
+      "joint": "/home/qian-qi/hcsn-smallnet-20261124/joint-training-v1",
+      "communication": "/home/qian-qi/hcsn-smallnet-20261124/communication-training-v1"
+    },
+    "scope": "read saved originals only; independent output; no training or model deserialization"
+  },
+  "files": {
+    "pft_structure_audit.py": {
+      "bytes": 21574,
+      "sha256": "f242410a81e6c76807e2b7750df58d1a8d46059f9900e242596d87ffbe4745f0"
+    },
+    "audit.json": {
+      "bytes": 1052649,
+      "sha256": "47e37ca4e356f8adf06e7926c96247ea9906b7478808992b8a6d2d9d45b537ba"
+    },
+    "audit.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "audit.stdout.log": {
+      "bytes": 173,
+      "sha256": "23567830def77a141cac6a55fc2fba3bae5652becaaec3cbc818d0bffe133976"
+    },
+    "RUN_REQUEST.json": {
+      "bytes": 1056,
+      "sha256": "74dc33fc472f53247db43e8f4f6f0f93ffb4b3f56f94865b436141b5f9dce752"
+    }
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "max_blob_bytes": 480000,
+  "schema": "hepta.pft.structure-delivery-manifest.v1",
+  "source_files": {
+    "pft_structure_audit.py": {
+      "bytes": 21574,
+      "sha256": "f242410a81e6c76807e2b7750df58d1a8d46059f9900e242596d87ffbe4745f0"
+    },
+    "pft_structure_audit_tests.py": {
+      "bytes": 5681,
+      "sha256": "ec6a3716ef32a64bdf6249ecb6c38b297906d85f1b86dea043985e0cf87f9c10"
+    }
+  },
+  "transport_files": {
+    "RUN_REQUEST.json": {
+      "bytes": 1056,
+      "sha256": "74dc33fc472f53247db43e8f4f6f0f93ffb4b3f56f94865b436141b5f9dce752"
+    },
+    "RUN_TERMINAL.json": {
+      "bytes": 2066,
+      "sha256": "83e1b64641b6782c82bddbbc1c46d273f9ff8340def055077735984cf2cae359"
+    },
+    "SUMMARY_ZH.md": {
+      "bytes": 14524,
+      "sha256": "50244c02d33b4783aadefb9097ab80fb02b53c922197edf7c28c17065fa26d00"
+    },
+    "TRANSPORT_VERIFICATION.json": {
+      "bytes": 1038,
+      "sha256": "520367b140c10ae3e57913e8c311295c9121c43c0e31d37110b5e05f7a7e7f00"
+    },
+    "audit.json.gz": {
+      "bytes": 99725,
+      "sha256": "803695070236fe831f122a4bec2b5088ae3fa1fb9bd701621b5c66d7a1bd25ed"
+    },
+    "audit.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "audit.stdout.log": {
+      "bytes": 173,
+      "sha256": "23567830def77a141cac6a55fc2fba3bae5652becaaec3cbc818d0bffe133976"
+    },
+    "extra_stage_receipts.json": {
+      "bytes": 2398,
+      "sha256": "5ae6439e118fc01665a6dc3c8c3b52f4420c77ba36ea09b9fc6dd7e07f47c694"
+    },
+    "remote_logs.json": {
+      "bytes": 7027,
+      "sha256": "329507683ce7153c15735e86892828b2b434cc674d28177a8983a5fad6f164f9"
+    },
+    "remote_status.json": {
+      "bytes": 732,
+      "sha256": "c769072ecaf636ef01214b9cd5cf6019a47dfe236500536a0bb21e195d60799b"
+    },
+    "remote_transfer_manifest.json": {
+      "bytes": 5812,
+      "sha256": "c7e471595fc651319274ad9e5395067fc9ce02c209bf8f62ad144871faa0471a"
+    },
+    "runtime_logs.json": {
+      "bytes": 944,
+      "sha256": "bead24bbc75eabe9d9bb29daa552ac9b88f657e8d8204083aaeae44249910418"
+    },
+    "runtime_status.json": {
+      "bytes": 730,
+      "sha256": "b2ddcb38bbacfd817f5ade5830621fc53b0dd40653b59c462e4b499bde852c64"
+    },
+    "source_schema.json": {
+      "bytes": 130856,
+      "sha256": "81e18b5efb16759092c0a10f4672d0cbec0c4629c478b9da5c0db3a58e7dcc34"
+    },
+    "summary.json": {
+      "bytes": 226266,
+      "sha256": "0b4ec847211451e00970050f977c28e46b409e58eb231b000d5bd866b73bca1c"
+    },
+    "supplement.json": {
+      "bytes": 238817,
+      "sha256": "3796889829af79b16377c6725401d78013139d1f6c1c61b417ea87557c54b4cd"
+    },
+    "supplement_remote_status.json": {
+      "bytes": 736,
+      "sha256": "5d7f9b8d4ee09050cbb4e0b0b4533a872cc719b649798b229c1388994677e18d"
+    },
+    "unit.stderr.log": {
+      "bytes": 886,
+      "sha256": "f70b012f4cb28ca58a8e5c9dd73520f2f014da1987df5be8cdf785b3d0d3e942"
+    },
+    "unit.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "unit_receipt.json": {
+      "bytes": 436,
+      "sha256": "03a9170dbe723bd5bf7587cb3f5ba991ef3f1d55c6cea0681c5615c360a81dec"
+    }
+  },
+  "uncompressed_audit_local_only": {
+    "bytes": 1052649,
+    "file": "audit.json",
+    "sha256": "47e37ca4e356f8adf06e7926c96247ea9906b7478808992b8a6d2d9d45b537ba",
+    "transport": "Use audit.json.gz; do not upload this duplicate over-size JSON as one blob"
+  }
+}

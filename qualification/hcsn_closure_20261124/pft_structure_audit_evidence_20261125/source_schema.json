@@ -1,0 +1,3424 @@
+{
+  "baselines-v1": {
+    "JOINT_TEST_SEAL.json": {
+      "baseline_seal_sha256": "9251e5cdca12e3fbcb3c78133edeee4561cded9437a3ec2742559f48b350bd43",
+      "main_seal_sha256": "920712b8ad5d7bff0c6556873acf7a3fb978bd8dff6be75fdcc75436fffd104f",
+      "protocol_sha256": "0585b2c786c697bc9c47ab07f928633f167f1b8a81f5886cd39b29cfcd63cbcc"
+    },
+    "PROTOCOL.json": {
+      "capacity_scope": "approximate parameter matching; zero initial state and architecture/dtype/operation differences retained",
+      "data": {
+        "dev_per_source": 48,
+        "dev_sources": [
+          11000,
+          11001,
+          11002,
+          11003
+        ],
+        "length": 12,
+        "test_per_source": 64,
+        "test_sources": [
+          12000,
+          12001,
+          12002,
+          12003,
+          12004,
+          12005,
+          12006,
+          12007,
+          12008,
+          12009,
+          12010,
+          12011,
+          12012,
+          12013,
+          12014,
+          12015
+        ],
+        "train_per_source": 48,
+        "train_sources": [
+          10000,
+          10001,
+          10002,
+          10003,
+          10004,
+          10005,
+          10006,
+          10007,
+          10008,
+          10009,
+          10010,
+          10011
+        ]
+      },
+      "holdout": "all 27 baseline candidates and all 63 HCSN candidates sealed before construction",
+      "implementation": {
+        "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+        "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+        "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+        "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+        "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+        "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+        "qualification.hcsn_closure_20261124.__init__.py": "aa3a0c1117ab5a880ec632c13c2c026719d1feeb772d967182a73c34f207b4c9",
+        "qualification.hcsn_closure_20261124.baselines": "5d553d59de68068dbd737dd78e5247a018c721df35d317345b2e50d09c17c891",
+        "qualification.hcsn_closure_20261124.baselines_run": "2521d8d6bd4211f42512d87fe6dcbfbe6e154ae634b54d1e9c734f5566e144c4",
+        "qualification.hcsn_closure_20261124.campaign.py": "d253c81a801e57d7aa9590f57a2d3f796adaf171af4db743e5f3a3bf684c8ef8",
+        "qualification.hcsn_closure_20261124.data.py": "b29f20dd3db66284d492e4dbd22bdcadbb288d02effa8c198cbffe9128cafea1",
+        "qualification.hcsn_closure_20261124.models.py": "84340ea2367b9ccdeec3a68d2726e66549680334ea2fc4de3e501b46eef7dde8",
+        "qualification.hcsn_closure_20261124.old_editing": "0577fea73b8678e03476082f4b4eab7623bbada47a628e6eed31b4180c7d90dc",
+        "qualification.hcsn_closure_20261124.old_transfer_suite": "1f76e411f9b22d9bd5c8f356912d0658b3df81f0c94abea8ff8f8a1ea2e85ed5",
+        "qualification.hcsn_closure_20261124.programs": "b0520c6e776af18cabc06a4597ca82fc94580684c2ceb74d5488ace11ad460d3",
+        "qualification.hcsn_closure_20261124.provenance.py": "a635b5a0a8edadbce6266ba5d8336cc27030c155992e40a8aaf3d3353ac034a6",
+        "qualification.hcsn_closure_20261124.runner.py": "ab72b5c4b0dc77b304dc0aeecfc5a9100e674102efc41a3a268872e47f5feed2",
+        "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+        "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+        "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+        "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+        "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+        "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+        "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+        "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+      },
+      "long_delay_stress": {
+        "gate": "both training seals and all main/baseline short-test terminal records before construction",
+        "min_final_accuracy": 0.8,
+        "min_gain_over_prelate": 0.1,
+        "panels": [
+          {
+            "delay": 64,
+            "length": 76,
+            "sources": [
+              30000,
+              30001,
+              30002,
+              30003,
+              30004,
+              30005,
+              30006,
+              30007
+            ]
+          },
+          {
+            "delay": 128,
+            "length": 140,
+            "sources": [
+              31000,
+              31001,
+              31002,
+              31003,
+              31004,
+              31005,
+              31006,
+              31007
+            ]
+          }
+        ],
+        "parents": [
+          "n8-s17011",
+          "n8-s27011",
+          "n8-s37011",
+          "n32-s17011",
+          "n32-s27011",
+          "n32-s37011",
+          "n64-s17011",
+          "n64-s27011",
+          "n64-s37011"
+        ],
+        "per_source": 16,
+        "scope": "fixed T12-trained selected models; new delay/clock distribution; no training or selection"
+      },
+      "parent_protocol_sha256": "a010e62089bb34c6c22bd67a6854ffa288c5b5bf5429b74dc658de730f85ef9a",
+      "parents_root": "/home/qian-qi/hcsn-smallnet-20261124/closure-v1",
+      "runtime": {
+        "device": "cpu",
+        "implementation": "CPython",
+        "numpy": "2.5.4",
+        "python": "3.12.3",
+        "threads": 1,
+        "torch": "2.8.0+cpu"
+      },
+      "schema": "hcsn-conventional-baselines-v1",
+      "slots": [
+        {
+          "id": "GRU-n8-s17011",
+          "kind": "GRU",
+          "reference_neurons": 8,
+          "seed": 17011,
+          "target_parameters": 154,
+          "width": 4
+        },
+        {
+          "id": "GRU-n8-s27011",
+          "kind": "GRU",
+          "reference_neurons": 8,
+          "seed": 27011,
+          "target_parameters": 154,
+          "width": 4
+        },
+        {
+          "id": "GRU-n8-s37011",
+          "kind": "GRU",
+          "reference_neurons": 8,
+          "seed": 37011,
+          "target_parameters": 154,
+          "width": 4
+        },
+        {
+          "id": "GRU-n32-s17011",
+          "kind": "GRU",
+          "reference_neurons": 32,
+          "seed": 17011,
+          "target_parameters": 1186,
+          "width": 16
+        },
+        {
+          "id": "GRU-n32-s27011",
+          "kind": "GRU",
+          "reference_neurons": 32,
+          "seed": 27011,
+          "target_parameters": 1186,
+          "width": 16
+        },
+        {
+          "id": "GRU-n32-s37011",
+          "kind": "GRU",
+          "reference_neurons": 32,
+          "seed": 37011,
+          "target_parameters": 1186,
+          "width": 16
+        },
+        {
+          "id": "GRU-n64-s17011",
+          "kind": "GRU",
+          "reference_neurons": 64,
+          "seed": 17011,
+          "target_parameters": 3906,
+          "width": 32
+        },
+        {
+          "id": "GRU-n64-s27011",
+          "kind": "GRU",
+          "reference_neurons": 64,
+          "seed": 27011,
+          "target_parameters": 3906,
+          "width": 32
+        },
+        {
+          "id": "GRU-n64-s37011",
+          "kind": "GRU",
+          "reference_neurons": 64,
+          "seed": 37011,
+          "target_parameters": 3906,
+          "width": 32
+        },
+        {
+          "id": "surrogate_LIF-n8-s17011",
+          "kind": "surrogate_LIF",
+          "reference_neurons": 8,
+          "seed": 17011,
+          "target_parameters": 154,
+          "width": 9
+        },
+        {
+          "id": "surrogate_LIF-n8-s27011",
+          "kind": "surrogate_LIF",
+          "reference_neurons": 8,
+          "seed": 27011,
+          "target_parameters": 154,
+          "width": 9
+        },
+        {
+          "id": "surrogate_LIF-n8-s37011",
+          "kind": "surrogate_LIF",
+          "reference_neurons": 8,
+          "seed": 37011,
+          "target_parameters": 154,
+          "width": 9
+        },
+        {
+          "id": "surrogate_LIF-n32-s17011",
+          "kind": "surrogate_LIF",
+          "reference_neurons": 32,
+          "seed": 17011,
+          "target_parameters": 1186,
+          "width": 30
+        },
+        {
+          "id": "surrogate_LIF-n32-s27011",
+          "kind": "surrogate_LIF",
+          "reference_neurons": 32,
+          "seed": 27011,
+          "target_parameters": 1186,
+          "width": 30
+        },
+        {
+          "id": "surrogate_LIF-n32-s37011",
+          "kind": "surrogate_LIF",
+          "reference_neurons": 32,
+          "seed": 37011,
+          "target_parameters": 1186,
+          "width": 30
+        },
+        {
+          "id": "surrogate_LIF-n64-s17011",
+          "kind": "surrogate_LIF",
+          "reference_neurons": 64,
+          "seed": 17011,
+          "target_parameters": 3906,
+          "width": 58
+        },
+        {
+          "id": "surrogate_LIF-n64-s27011",
+          "kind": "surrogate_LIF",
+          "reference_neurons": 64,
+          "seed": 27011,
+          "target_parameters": 3906,
+          "width": 58
+        },
+        {
+          "id": "surrogate_LIF-n64-s37011",
+          "kind": "surrogate_LIF",
+          "reference_neurons": 64,
+          "seed": 37011,
+          "target_parameters": 3906,
+          "width": 58
+        },
+        {
+          "id": "causal_Transformer-n8-s17011",
+          "kind": "causal_Transformer",
+          "reference_neurons": 8,
+          "seed": 17011,
+          "target_parameters": 154,
+          "width": 3
+        },
+        {
+          "id": "causal_Transformer-n8-s27011",
+          "kind": "causal_Transformer",
+          "reference_neurons": 8,
+          "seed": 27011,
+          "target_parameters": 154,
+          "width": 3
+        },
+        {
+          "id": "causal_Transformer-n8-s37011",
+          "kind": "causal_Transformer",
+          "reference_neurons": 8,
+          "seed": 37011,
+          "target_parameters": 154,
+          "width": 3
+        },
+        {
+          "id": "causal_Transformer-n32-s17011",
+          "kind": "causal_Transformer",
+          "reference_neurons": 32,
+          "seed": 17011,
+          "target_parameters": 1186,
+          "width": 11
+        },
+        {
+          "id": "causal_Transformer-n32-s27011",
+          "kind": "causal_Transformer",
+          "reference_neurons": 32,
+          "seed": 27011,
+          "target_parameters": 1186,
+          "width": 11
+        },
+        {
+          "id": "causal_Transformer-n32-s37011",
+          "kind": "causal_Transformer",
+          "reference_neurons": 32,
+          "seed": 37011,
+          "target_parameters": 1186,
+          "width": 11
+        },
+        {
+          "id": "causal_Transformer-n64-s17011",
+          "kind": "causal_Transformer",
+          "reference_neurons": 64,
+          "seed": 17011,
+          "target_parameters": 3906,
+          "width": 21
+        },
+        {
+          "id": "causal_Transformer-n64-s27011",
+          "kind": "causal_Transformer",
+          "reference_neurons": 64,
+          "seed": 27011,
+          "target_parameters": 3906,
+          "width": 21
+        },
+        {
+          "id": "causal_Transformer-n64-s37011",
+          "kind": "causal_Transformer",
+          "reference_neurons": 64,
+          "seed": 37011,
+          "target_parameters": 3906,
+          "width": 21
+        }
+      ],
+      "suite": "baselines",
+      "training": {
+        "batch_size": 8,
+        "cpu_prefix": 180,
+        "development_every": 64,
+        "gradient_clip": 3,
+        "learning_rate": 0.01,
+        "loss": "0.8 final CE + 0.2 mean prefix CE",
+        "max_updates": 512,
+        "selection": "minimum development final CE including initial",
+        "threads": 1,
+        "train_cpu_limit": 900
+      },
+      "training_adapter": [
+        "runner.make_model=baselines.make_model",
+        "runner.parameter_accounting=baselines.parameter_accounting",
+        "runner.evaluate=baselines.evaluate"
+      ],
+      "validation": {
+        "fp32_accuracy_noninferiority_margin": 0.02,
+        "fp32_brier_noninferiority_margin": 0.02,
+        "fp32_pairing": "Per same seed/width: native32 accuracy >= mixed-0.02 and Brier <= mixed+0.02, plus numerical/learning gates. At least 2/3 seeds to pass a width. This is a prospective engineering tolerance, not statistical noninferiority.",
+        "max_mixed_mass_error": 2e-9,
+        "max_native32_mass_error": 0.00003,
+        "min_final_accuracy": 0.8,
+        "min_gain_over_initial": 0.1,
+        "min_gain_over_prelate": 0.1,
+        "min_seed_fraction": 0.6666666666666666
+      }
+    },
+    "SEAL.json": {
+      "attempts": {
+        "GRU-n32-s17011": {
+          "STARTED.json": "85960108e5f01cd27f24a33d99196f7d83dfb52e93623e700e66cfe1990a496c",
+          "checkpoint.pt": "366352cddcb603f56ecdd71dc147d678b17c17612cccf7efefd10524cd601285",
+          "fit_launch_cost.json": "515f22cd0f105a516f76e247d6e16828ffa358c5c0953af12975fefcb0223f83",
+          "fit_worker_cost.json": "0eb0e1228fe06b6ef4eec50815e3ec3fd13780c68aa986b29c7a75066d1fb702",
+          "history.json": "6fe27cd1744159eeb510bff7139e08ffe718bf59bcbc59c537b807be42fadac2",
+          "result.json": "60022c41d47089024c2f81afd701ae87d3c98e15dfdb2bed66c83f1792adbf6a"
+        }
+      },
+      "protocol_sha256": "0585b2c786c697bc9c47ab07f928633f167f1b8a81f5886cd39b29cfcd63cbcc"
+    },
+    "TEST_CLAIM.json": {
+      "protocol_sha256": "0585b2c786c697bc9c47ab07f928633f167f1b8a81f5886cd39b29cfcd63cbcc",
+      "seal_sha256": "9251e5cdca12e3fbcb3c78133edeee4561cded9437a3ec2742559f48b350bd43"
+    },
+    "exists": true,
+    "files": [
+      "CAMPAIGN_CLAIM.json",
+      "CAMPAIGN_TERMINAL.json",
+      "JOINT_TEST_SEAL.json",
+      "PROTOCOL.json",
+      "SEAL.json",
+      "TEST_CLAIM.json",
+      "TRAINING_TERMINAL.json"
+    ],
+    "first_slot": {
+      "fit_launch_cost.json": {
+        "action": "fit",
+        "child_system_cpu_seconds": 0.316933,
+        "child_user_cpu_seconds": 7.016502,
+        "launch_to_exit_wall_seconds": 7.599113257019781,
+        "protocol_sha256": "0585b2c786c697bc9c47ab07f928633f167f1b8a81f5886cd39b29cfcd63cbcc",
+        "returncode": 0,
+        "scope": "one child, sequential launch; includes interpreter startup and shutdown",
+        "slot_id": "GRU-n8-s17011",
+        "timed_out": false
+      },
+      "fit_worker_cost.json": {
+        "energy_joules": null,
+        "error": null,
+        "peak_rss_bytes": 284160000,
+        "process_cpu_through_receipt": 6.405409002,
+        "protocol_sha256": "0585b2c786c697bc9c47ab07f928633f167f1b8a81f5886cd39b29cfcd63cbcc",
+        "scope": "fresh worker includes imports, parent load, validation and body; shutdown excluded",
+        "status": "completed",
+        "wall_from_first_module_statement": 6.615691061946563
+      },
+      "result.json": {
+        "attempted_updates": 512,
+        "checkpoint_sha256": "2977758cc85b208b73e9694e35cd1fe07d84a79a1a5024d396b3c9de5cd39ffb",
+        "cost": {
+          "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+          "complete_worker_cost": false,
+          "cpu_seconds": 4.369237006,
+          "energy_joules_process": null,
+          "energy_multiple_wraps_resolved": false,
+          "energy_scope": "no readable hardware energy counter",
+          "package_energy_joules": null,
+          "pid": 2238056,
+          "process_max_rss_kib": 277500,
+          "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+          "scope": "fit_setup_all_updates_all_development_checkpoint",
+          "wall_seconds": 4.586663475027308
+        },
+        "cpu_prefix_checkpoint_rule": "last post-update state whose attempted-update CPU total <=180; excludes setup, dev and snapshot copies, all of which are in complete cost; no holdout or development selection",
+        "cpu_prefix_step": 512,
+        "cpu_prefix_training_cpu_seconds": 2.9576612200000048,
+        "dev_data_sha256": "68836def0f6d86bc93cb2e1123ce4ecd2664cfc8df8bba146a9b026e8f7a34d8",
+        "error": null,
+        "first_update_all_zero_gradient_parameters": [],
+        "first_update_none_gradient_parameters": [],
+        "gradient_scope": "First minibatch observation, not a global functional rank proof.",
+        "initial_development": {
+          "accuracy": 0.5052083333333334,
+          "brier": 0.5285867463538196,
+          "cross_entropy": 0.7226985011099947,
+          "early_accuracy": 0.5052083333333334,
+          "examples": 192,
+          "maximum_chunk_state_tensor_bytes": 256,
+          "mean_stop_step": 11,
+          "pre_late_accuracy": 0.5052083333333334,
+          "recorded_prefix_length": 12,
+          "source_accuracy": {
+            "11000": 0.5208333333333334,
+            "11001": 0.5208333333333334,
+            "11002": 0.375,
+            "11003": 0.6041666666666666
+          },
+          "sources": 4,
+          "state_bytes_scope": "all persistent hidden/trace/KV tensors; excludes weights, transient attention and AD tape",
+          "state_growth": "constant in prefix length",
+          "stop_accuracy": 0.5052083333333334,
+          "stop_before_late_fraction": 0,
+          "stopping_utility": 0.4652083333333333,
+          "worst_source_accuracy": 0.375
+        },
+        "parameter_accounting": {
+          "architecture": {
+            "kind": "GRU",
+            "width": 4
+          },
+          "initial_state": "zero; physical initial_margin is unused",
+          "lif_rule": null,
+          "requires_grad_parameters": 154,
+          "scope": "All parameter tensors present; not an equality of functional capacity or training cost.",
+          "total_parameters": 154
+        },
+        "protocol_sha256": "0585b2c786c697bc9c47ab07f928633f167f1b8a81f5886cd39b29cfcd63cbcc",
+        "selected_development": {
+          "accuracy": 0.9583333333333334,
+          "brier": 0.05055795876437375,
+          "cross_entropy": 0.08610874054665403,
+          "early_accuracy": 0.6927083333333334,
+          "examples": 192,
+          "maximum_chunk_state_tensor_bytes": 256,
+          "mean_stop_step": 1.609375,
+          "pre_late_accuracy": 0.7083333333333334,
+          "recorded_prefix_length": 12,
+          "source_accuracy": {
+            "11000": 0.9791666666666666,
+            "11001": 0.9791666666666666,
+            "11002": 0.9166666666666666,
+            "11003": 0.9583333333333334
+          },
+          "sources": 4,
+          "state_bytes_scope": "all persistent hidden/trace/KV tensors; excludes weights, transient attention and AD tape",
+          "state_growth": "constant in prefix length",
+          "stop_accuracy": 0.796875,
+          "stop_before_late_fraction": 0.8072916666666666,
+          "stopping_utility": 0.7910227272727273,
+          "worst_source_accuracy": 0.9166666666666666
+        },
+        "selected_step": 512,
+        "slot": {
+          "id": "GRU-n8-s17011",
+          "kind": "GRU",
+          "reference_neurons": 8,
+          "seed": 17011,
+          "target_parameters": 154,
+          "width": 4
+        },
+        "smoke": false,
+        "status": "completed",
+        "train_data_sha256": "caa27564e017b65750c984dc5e69db950cc057b85445995f5b21f2f030a6319b",
+        "training_cpu_seconds": 2.9576612200000048,
+        "updates": 512
+      },
+      "test_launch_cost.json": {
+        "action": "test",
+        "child_system_cpu_seconds": 0.31730899999999984,
+        "child_user_cpu_seconds": 6.431251000000003,
+        "launch_to_exit_wall_seconds": 6.956129070022143,
+        "protocol_sha256": "0585b2c786c697bc9c47ab07f928633f167f1b8a81f5886cd39b29cfcd63cbcc",
+        "returncode": 0,
+        "scope": "one child, sequential launch; includes interpreter startup and shutdown",
+        "slot_id": "GRU-n8-s17011",
+        "timed_out": false
+      },
+      "test_result.json": {
+        "cost": {
+          "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+          "complete_worker_cost": false,
+          "cpu_seconds": 0.8459204309999997,
+          "energy_joules_process": null,
+          "energy_multiple_wraps_resolved": false,
+          "energy_scope": "no readable hardware energy counter",
+          "package_energy_joules": null,
+          "pid": 2426449,
+          "process_max_rss_kib": 232260,
+          "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+          "scope": "data_construction_model_load_three_holdout_evaluations_prediction_write",
+          "wall_seconds": 0.93341696402058
+        },
+        "cpu_prefix_step": 512,
+        "data_sha256": "d3976f031aebd3c6ad44cce2204ec2f726a47024ac9a8e9b23c60f1a743c4c1b",
+        "learning_gate": true,
+        "metrics": {
+          "cpu_prefix": {
+            "accuracy": 0.96875,
+            "brier": 0.04869040155595344,
+            "cross_entropy": 0.0855269162761793,
+            "early_accuracy": 0.7568359375,
+            "examples": 1024,
+            "maximum_chunk_state_tensor_bytes": 256,
+            "mean_stop_step": 1.6025390625,
+            "pre_late_accuracy": 0.751953125,
+            "recorded_prefix_length": 12,
+            "source_accuracy": {
+              "12000": 0.984375,
+              "12001": 0.953125,
+              "12002": 0.953125,
+              "12003": 0.9375,
+              "12004": 0.953125,
+              "12005": 0.984375,
+              "12006": 0.953125,
+              "12007": 0.96875,
+              "12008": 0.984375,
+              "12009": 0.96875,
+              "12010": 0.9375,
+              "12011": 0.984375,
+              "12012": 1,
+              "12013": 0.96875,
+              "12014": 0.984375,
+              "12015": 0.984375
+            },
+            "sources": 16,
+            "state_bytes_scope": "all persistent hidden/trace/KV tensors; excludes weights, transient attention and AD tape",
+            "state_growth": "constant in prefix length",
+            "stop_accuracy": 0.849609375,
+            "stop_before_late_fraction": 0.7802734375,
+            "stopping_utility": 0.8437819602272728,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.984375,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.97265625,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.95703125,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.9609375,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.9708454810495627,
+                "examples": 686
+              },
+              "late_parity_1": {
+                "accuracy": 0.9644970414201184,
+                "examples": 338
+              }
+            },
+            "worst_source_accuracy": 0.9375
+          },
+          "initial": {
+            "accuracy": 0.494140625,
+            "brier": 0.5346376139873371,
+            "cross_entropy": 0.7289030283794319,
+            "early_accuracy": 0.494140625,
+            "examples": 1024,
+            "maximum_chunk_state_tensor_bytes": 256,
+            "mean_stop_step": 11,
+            "pre_late_accuracy": 0.494140625,
+            "recorded_prefix_length": 12,
+            "source_accuracy": {
+              "12000": 0.5,
+              "12001": 0.484375,
+              "12002": 0.46875,
+              "12003": 0.5,
+              "12004": 0.46875,
+              "12005": 0.484375,
+              "12006": 0.4375,
+              "12007": 0.5,
+              "12008": 0.5625,
+              "12009": 0.578125,
+              "12010": 0.5,
+              "12011": 0.359375,
+              "12012": 0.53125,
+              "12013": 0.4375,
+              "12014": 0.546875,
+              "12015": 0.546875
+            },
+            "sources": 16,
+            "state_bytes_scope": "all persistent hidden/trace/KV tensors; excludes weights, transient attention and AD tape",
+            "state_growth": "constant in prefix length",
+            "stop_accuracy": 0.494140625,
+            "stop_before_late_fraction": 0,
+            "stopping_utility": 0.45414062499999996,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.53125,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.5078125,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.49609375,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.44140625,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.48542274052478135,
+                "examples": 686
+              },
+              "late_parity_1": {
+                "accuracy": 0.5118343195266272,
+                "examples": 338
+              }
+            },
+            "worst_source_accuracy": 0.359375
+          },
+          "selected": {
+            "accuracy": 0.96875,
+            "brier": 0.04869040155595344,
+            "cross_entropy": 0.0855269162761793,
+            "early_accuracy": 0.7568359375,
+            "examples": 1024,
+            "maximum_chunk_state_tensor_bytes": 256,
+            "mean_stop_step": 1.6025390625,
+            "pre_late_accuracy": 0.751953125,
+            "recorded_prefix_length": 12,
+            "source_accuracy": {
+              "12000": 0.984375,
+              "12001": 0.953125,
+              "12002": 0.953125,
+              "12003": 0.9375,
+              "12004": 0.953125,
+              "12005": 0.984375,
+              "12006": 0.953125,
+              "12007": 0.96875,
+              "12008": 0.984375,
+              "12009": 0.96875,
+              "12010": 0.9375,
+              "12011": 0.984375,
+              "12012": 1,
+              "12013": 0.96875,
+              "12014": 0.984375,
+              "12015": 0.984375
+            },
+            "sources": 16,
+            "state_bytes_scope": "all persistent hidden/trace/KV tensors; excludes weights, transient attention and AD tape",
+            "state_growth": "constant in prefix length",
+            "stop_accuracy": 0.849609375,
+            "stop_before_late_fraction": 0.7802734375,
+            "stopping_utility": 0.8437819602272728,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.984375,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.97265625,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.95703125,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.9609375,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.9708454810495627,
+                "examples": 686
+              },
+              "late_parity_1": {
+                "accuracy": 0.9644970414201184,
+                "examples": 338
+              }
+            },
+            "worst_source_accuracy": 0.9375
+          }
+        },
+        "predictions_sha256": "87e9ae0a0321f075a73e34e2207f4cdd3196daa10659e00dcb7dfb8fdde9c82f",
+        "selected_step": 512,
+        "slot": {
+          "id": "GRU-n8-s17011",
+          "kind": "GRU",
+          "reference_neurons": 8,
+          "seed": 17011,
+          "target_parameters": 154,
+          "width": 4
+        },
+        "status": "evaluated",
+        "training_status": "completed",
+        "updates": 512
+      },
+      "test_worker_cost.json": {
+        "energy_joules": null,
+        "error": null,
+        "peak_rss_bytes": 237834240,
+        "process_cpu_through_receipt": 6.08714013,
+        "protocol_sha256": "0585b2c786c697bc9c47ab07f928633f167f1b8a81f5886cd39b29cfcd63cbcc",
+        "scope": "fresh worker includes imports, parent load, validation and body; shutdown excluded",
+        "status": "evaluated",
+        "wall_from_first_module_statement": 6.195345649961382
+      }
+    },
+    "first_slot_files": [
+      "STARTED.json",
+      "TEST_WORKER_CLAIM.json",
+      "checkpoint.pt",
+      "fit_launch_cost.json",
+      "fit_worker_cost.json",
+      "history.json",
+      "result.json",
+      "test_launch_cost.json",
+      "test_predictions.json.gz",
+      "test_result.json",
+      "test_worker_cost.json"
+    ]
+  },
+  "closure-v1": {
+    "PROTOCOL.json": {
+      "base_commit": "14cfd44ab6d9da581bad5363495266424c661eb4",
+      "baseline_scope": "This factorial identifies effects inside signed HCSN only; tanh replaces two readout features and is not a conventional RNN baseline.",
+      "capacity_policy": "Report total, requires_grad, exact recurrent mask counts, and first-minibatch None/zero gradients. Learned boundary adds N parameters; no exact effective-capacity equality claim.",
+      "cost_policy": "512 equal updates primary; 900 CPU-second safety cap yields censored record. Preserve last pre-180-CPU checkpoint for an equal CPU prefix. Count setup, all development, checkpoint IO, process imports/shutdown, test and failures. Joules unknown if not measured. The 180-second prefix is attempted-update CPU only, not full end-to-end time; complete time is reported separately. Every sub-512 run is censored for equal-update analysis.",
+      "data": {
+        "dev_per_source": 48,
+        "dev_sources": [
+          11000,
+          11001,
+          11002,
+          11003
+        ],
+        "length": 12,
+        "test_per_source": 64,
+        "test_sources": [
+          12000,
+          12001,
+          12002,
+          12003,
+          12004,
+          12005,
+          12006,
+          12007,
+          12008,
+          12009,
+          12010,
+          12011,
+          12012,
+          12013,
+          12014,
+          12015
+        ],
+        "train_per_source": 48,
+        "train_sources": [
+          10000,
+          10001,
+          10002,
+          10003,
+          10004,
+          10005,
+          10006,
+          10007,
+          10008,
+          10009,
+          10010,
+          10011
+        ]
+      },
+      "experiment_id": "HCSN-PROSPECTIVE-CLOSURE-20261124-v1",
+      "holdout_policy": "All 63 terminal train records and selected checkpoints sealed before any test construction. No tuning, reselection or retry using test. All failures remain denominator. New sources are independent identities in the same synthetic generator family.",
+      "runtime": {
+        "device": "cpu",
+        "implementation": "CPython",
+        "numpy": "2.5.4",
+        "python": "3.12.3",
+        "threads": 1,
+        "torch": "2.8.0+cpu"
+      },
+      "slots": [
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-fixed-value_risk-mixed-s17011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-fixed-value_risk-mixed-s27011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-fixed-value_risk-mixed-s37011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n8-fixed-tanh-mixed-s17011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n8-fixed-tanh-mixed-s27011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n8-fixed-tanh-mixed-s37011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-learned-value_risk-mixed-s17011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-learned-value_risk-mixed-s27011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-learned-value_risk-mixed-s37011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n8-learned-tanh-mixed-s17011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n8-learned-tanh-mixed-s27011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n8-learned-tanh-mixed-s37011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-qvi-value_risk-mixed-s17011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-qvi-value_risk-mixed-s27011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-qvi-value_risk-mixed-s37011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n8-qvi-tanh-mixed-s17011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n8-qvi-tanh-mixed-s27011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n8-qvi-tanh-mixed-s37011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "qvi",
+          "family": "native32_training",
+          "features": "value_risk",
+          "id": "n8-qvi-value_risk-native32-s17011",
+          "neurons": 8,
+          "precision": "native32",
+          "seed": 17011
+        },
+        {
+          "boundary": "qvi",
+          "family": "native32_training",
+          "features": "value_risk",
+          "id": "n8-qvi-value_risk-native32-s27011",
+          "neurons": 8,
+          "precision": "native32",
+          "seed": 27011
+        },
+        {
+          "boundary": "qvi",
+          "family": "native32_training",
+          "features": "value_risk",
+          "id": "n8-qvi-value_risk-native32-s37011",
+          "neurons": 8,
+          "precision": "native32",
+          "seed": 37011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n32-fixed-value_risk-mixed-s17011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n32-fixed-value_risk-mixed-s27011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n32-fixed-value_risk-mixed-s37011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n32-fixed-tanh-mixed-s17011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n32-fixed-tanh-mixed-s27011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n32-fixed-tanh-mixed-s37011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n32-learned-value_risk-mixed-s17011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n32-learned-value_risk-mixed-s27011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n32-learned-value_risk-mixed-s37011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n32-learned-tanh-mixed-s17011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n32-learned-tanh-mixed-s27011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n32-learned-tanh-mixed-s37011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n32-qvi-value_risk-mixed-s17011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n32-qvi-value_risk-mixed-s27011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n32-qvi-value_risk-mixed-s37011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n32-qvi-tanh-mixed-s17011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n32-qvi-tanh-mixed-s27011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n32-qvi-tanh-mixed-s37011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "qvi",
+          "family": "native32_training",
+          "features": "value_risk",
+          "id": "n32-qvi-value_risk-native32-s17011",
+          "neurons": 32,
+          "precision": "native32",
+          "seed": 17011
+        },
+        {
+          "boundary": "qvi",
+          "family": "native32_training",
+          "features": "value_risk",
+          "id": "n32-qvi-value_risk-native32-s27011",
+          "neurons": 32,
+          "precision": "native32",
+          "seed": 27011
+        },
+        {
+          "boundary": "qvi",
+          "family": "native32_training",
+          "features": "value_risk",
+          "id": "n32-qvi-value_risk-native32-s37011",
+          "neurons": 32,
+          "precision": "native32",
+          "seed": 37011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n64-fixed-value_risk-mixed-s17011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n64-fixed-value_risk-mixed-s27011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n64-fixed-value_risk-mixed-s37011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n64-fixed-tanh-mixed-s17011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n64-fixed-tanh-mixed-s27011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n64-fixed-tanh-mixed-s37011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n64-learned-value_risk-mixed-s17011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n64-learned-value_risk-mixed-s27011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n64-learned-value_risk-mixed-s37011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n64-learned-tanh-mixed-s17011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n64-learned-tanh-mixed-s27011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "learned",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n64-learned-tanh-mixed-s37011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n64-qvi-value_risk-mixed-s17011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n64-qvi-value_risk-mixed-s27011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n64-qvi-value_risk-mixed-s37011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n64-qvi-tanh-mixed-s17011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n64-qvi-tanh-mixed-s27011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 27011
+        },
+        {
+          "boundary": "qvi",
+          "family": "signed_factorial",
+          "features": "tanh",
+          "id": "n64-qvi-tanh-mixed-s37011",
+          "neurons": 64,
+          "precision": "mixed",
+          "seed": 37011
+        },
+        {
+          "boundary": "qvi",
+          "family": "native32_training",
+          "features": "value_risk",
+          "id": "n64-qvi-value_risk-native32-s17011",
+          "neurons": 64,
+          "precision": "native32",
+          "seed": 17011
+        },
+        {
+          "boundary": "qvi",
+          "family": "native32_training",
+          "features": "value_risk",
+          "id": "n64-qvi-value_risk-native32-s27011",
+          "neurons": 64,
+          "precision": "native32",
+          "seed": 27011
+        },
+        {
+          "boundary": "qvi",
+          "family": "native32_training",
+          "features": "value_risk",
+          "id": "n64-qvi-value_risk-native32-s37011",
+          "neurons": 64,
+          "precision": "native32",
+          "seed": 37011
+        }
+      ],
+      "source_hashes": {
+        "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+        "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+        "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+        "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+        "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+        "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+        "qualification.hcsn_closure_20261124.__init__.py": "aa3a0c1117ab5a880ec632c13c2c026719d1feeb772d967182a73c34f207b4c9",
+        "qualification.hcsn_closure_20261124.campaign.py": "d253c81a801e57d7aa9590f57a2d3f796adaf171af4db743e5f3a3bf684c8ef8",
+        "qualification.hcsn_closure_20261124.data.py": "b29f20dd3db66284d492e4dbd22bdcadbb288d02effa8c198cbffe9128cafea1",
+        "qualification.hcsn_closure_20261124.models.py": "84340ea2367b9ccdeec3a68d2726e66549680334ea2fc4de3e501b46eef7dde8",
+        "qualification.hcsn_closure_20261124.provenance.py": "a635b5a0a8edadbce6266ba5d8336cc27030c155992e40a8aaf3d3353ac034a6",
+        "qualification.hcsn_closure_20261124.runner.py": "ab72b5c4b0dc77b304dc0aeecfc5a9100e674102efc41a3a268872e47f5feed2",
+        "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+        "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+        "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+        "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+        "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+        "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+        "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+        "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+      },
+      "training": {
+        "batch_size": 8,
+        "cpu_prefix": 180,
+        "development_every": 64,
+        "gradient_clip": 3,
+        "learning_rate": 0.01,
+        "loss": "0.8 final CE + 0.2 mean prefix CE",
+        "max_updates": 512,
+        "selection": "minimum development final CE including initial",
+        "threads": 1,
+        "train_cpu_limit": 900
+      },
+      "validation": {
+        "fp32_accuracy_noninferiority_margin": 0.02,
+        "fp32_brier_noninferiority_margin": 0.02,
+        "fp32_pairing": "Per same seed/width: native32 accuracy >= mixed-0.02 and Brier <= mixed+0.02, plus numerical/learning gates. At least 2/3 seeds to pass a width. This is a prospective engineering tolerance, not statistical noninferiority.",
+        "max_mixed_mass_error": 2e-9,
+        "max_native32_mass_error": 0.00003,
+        "min_final_accuracy": 0.8,
+        "min_gain_over_initial": 0.1,
+        "min_gain_over_prelate": 0.1,
+        "min_seed_fraction": 0.6666666666666666
+      }
+    },
+    "SEAL.json": {
+      "attempts": {
+        "n32-fixed-tanh-mixed-s17011": {
+          "checkpoint.pt": "4f731867bdf46c202a2c47aa286aa8402baf295e09f2d6f298fc8411d122c1e6",
+          "history.json": "3feb282e492eb3c1d62770e7083d535a90430560cc029a03eda2994458eac8e7",
+          "parent_cost.json": "5f2aabb6aa70344a1e3ea2f2d44719bbc7456d56e0814395cc1146e4c9902b8e",
+          "result.json": "1799cb831578a64c937a873b382948e8526f3da44873823f3d33bff97e0f39f0",
+          "worker_cost.json": "1dd7d23d1993601bf21c2d3962e751c8a3841e28a3081c4695747f579e7f9221"
+        }
+      },
+      "protocol_sha256": "a010e62089bb34c6c22bd67a6854ffa288c5b5bf5429b74dc658de730f85ef9a",
+      "schema": "hcsn-prospective-seal-v1"
+    },
+    "TEST_CLAIM.json": {
+      "protocol_sha256": "a010e62089bb34c6c22bd67a6854ffa288c5b5bf5429b74dc658de730f85ef9a",
+      "seal_sha256": "920712b8ad5d7bff0c6556873acf7a3fb978bd8dff6be75fdcc75436fffd104f"
+    },
+    "exists": true,
+    "files": [
+      "CAMPAIGN_RECEIPT.json",
+      "FIT_EXECUTION.json",
+      "FORMAL_LOG.txt",
+      "OUTER_RECEIPT.json",
+      "PROTOCOL.json",
+      "RUN_CLAIM.json",
+      "SEAL.json",
+      "TEST_CLAIM.json",
+      "TEST_EXECUTION.json",
+      "n32-fixed-tanh-mixed-s17011.fit.log",
+      "n32-fixed-tanh-mixed-s17011.test.log",
+      "n32-fixed-tanh-mixed-s27011.fit.log",
+      "n32-fixed-tanh-mixed-s27011.test.log",
+      "n32-fixed-tanh-mixed-s37011.fit.log",
+      "n32-fixed-tanh-mixed-s37011.test.log",
+      "n32-fixed-value_risk-mixed-s17011.fit.log",
+      "n32-fixed-value_risk-mixed-s17011.test.log",
+      "n32-fixed-value_risk-mixed-s27011.fit.log",
+      "n32-fixed-value_risk-mixed-s27011.test.log",
+      "n32-fixed-value_risk-mixed-s37011.fit.log",
+      "n32-fixed-value_risk-mixed-s37011.test.log",
+      "n32-learned-tanh-mixed-s17011.fit.log",
+      "n32-learned-tanh-mixed-s17011.test.log",
+      "n32-learned-tanh-mixed-s27011.fit.log",
+      "n32-learned-tanh-mixed-s27011.test.log",
+      "n32-learned-tanh-mixed-s37011.fit.log",
+      "n32-learned-tanh-mixed-s37011.test.log",
+      "n32-learned-value_risk-mixed-s17011.fit.log",
+      "n32-learned-value_risk-mixed-s17011.test.log",
+      "n32-learned-value_risk-mixed-s27011.fit.log",
+      "n32-learned-value_risk-mixed-s27011.test.log",
+      "n32-learned-value_risk-mixed-s37011.fit.log",
+      "n32-learned-value_risk-mixed-s37011.test.log",
+      "n32-qvi-tanh-mixed-s17011.fit.log",
+      "n32-qvi-tanh-mixed-s17011.test.log",
+      "n32-qvi-tanh-mixed-s27011.fit.log",
+      "n32-qvi-tanh-mixed-s27011.test.log",
+      "n32-qvi-tanh-mixed-s37011.fit.log",
+      "n32-qvi-tanh-mixed-s37011.test.log",
+      "n32-qvi-value_risk-mixed-s17011.fit.log",
+      "n32-qvi-value_risk-mixed-s17011.test.log",
+      "n32-qvi-value_risk-mixed-s27011.fit.log",
+      "n32-qvi-value_risk-mixed-s27011.test.log",
+      "n32-qvi-value_risk-mixed-s37011.fit.log",
+      "n32-qvi-value_risk-mixed-s37011.test.log",
+      "n32-qvi-value_risk-native32-s17011.fit.log",
+      "n32-qvi-value_risk-native32-s17011.test.log",
+      "n32-qvi-value_risk-native32-s27011.fit.log",
+      "n32-qvi-value_risk-native32-s27011.test.log",
+      "n32-qvi-value_risk-native32-s37011.fit.log",
+      "n32-qvi-value_risk-native32-s37011.test.log",
+      "n64-fixed-tanh-mixed-s17011.fit.log",
+      "n64-fixed-tanh-mixed-s17011.test.log",
+      "n64-fixed-tanh-mixed-s27011.fit.log",
+      "n64-fixed-tanh-mixed-s27011.test.log",
+      "n64-fixed-tanh-mixed-s37011.fit.log",
+      "n64-fixed-tanh-mixed-s37011.test.log",
+      "n64-fixed-value_risk-mixed-s17011.fit.log",
+      "n64-fixed-value_risk-mixed-s17011.test.log",
+      "n64-fixed-value_risk-mixed-s27011.fit.log",
+      "n64-fixed-value_risk-mixed-s27011.test.log",
+      "n64-fixed-value_risk-mixed-s37011.fit.log",
+      "n64-fixed-value_risk-mixed-s37011.test.log",
+      "n64-learned-tanh-mixed-s17011.fit.log",
+      "n64-learned-tanh-mixed-s17011.test.log",
+      "n64-learned-tanh-mixed-s27011.fit.log",
+      "n64-learned-tanh-mixed-s27011.test.log",
+      "n64-learned-tanh-mixed-s37011.fit.log",
+      "n64-learned-tanh-mixed-s37011.test.log",
+      "n64-learned-value_risk-mixed-s17011.fit.log",
+      "n64-learned-value_risk-mixed-s17011.test.log",
+      "n64-learned-value_risk-mixed-s27011.fit.log",
+      "n64-learned-value_risk-mixed-s27011.test.log",
+      "n64-learned-value_risk-mixed-s37011.fit.log",
+      "n64-learned-value_risk-mixed-s37011.test.log",
+      "n64-qvi-tanh-mixed-s17011.fit.log",
+      "n64-qvi-tanh-mixed-s17011.test.log",
+      "n64-qvi-tanh-mixed-s27011.fit.log",
+      "n64-qvi-tanh-mixed-s27011.test.log",
+      "n64-qvi-tanh-mixed-s37011.fit.log",
+      "n64-qvi-tanh-mixed-s37011.test.log",
+      "n64-qvi-value_risk-mixed-s17011.fit.log",
+      "n64-qvi-value_risk-mixed-s17011.test.log",
+      "n64-qvi-value_risk-mixed-s27011.fit.log",
+      "n64-qvi-value_risk-mixed-s27011.test.log",
+      "n64-qvi-value_risk-mixed-s37011.fit.log",
+      "n64-qvi-value_risk-mixed-s37011.test.log",
+      "n64-qvi-value_risk-native32-s17011.fit.log",
+      "n64-qvi-value_risk-native32-s17011.test.log",
+      "n64-qvi-value_risk-native32-s27011.fit.log",
+      "n64-qvi-value_risk-native32-s27011.test.log",
+      "n64-qvi-value_risk-native32-s37011.fit.log",
+      "n64-qvi-value_risk-native32-s37011.test.log",
+      "n8-fixed-tanh-mixed-s17011.fit.log",
+      "n8-fixed-tanh-mixed-s17011.test.log",
+      "n8-fixed-tanh-mixed-s27011.fit.log",
+      "n8-fixed-tanh-mixed-s27011.test.log",
+      "n8-fixed-tanh-mixed-s37011.fit.log",
+      "n8-fixed-tanh-mixed-s37011.test.log",
+      "n8-fixed-value_risk-mixed-s17011.fit.log",
+      "n8-fixed-value_risk-mixed-s17011.test.log",
+      "n8-fixed-value_risk-mixed-s27011.fit.log",
+      "n8-fixed-value_risk-mixed-s27011.test.log",
+      "n8-fixed-value_risk-mixed-s37011.fit.log",
+      "n8-fixed-value_risk-mixed-s37011.test.log",
+      "n8-learned-tanh-mixed-s17011.fit.log",
+      "n8-learned-tanh-mixed-s17011.test.log",
+      "n8-learned-tanh-mixed-s27011.fit.log",
+      "n8-learned-tanh-mixed-s27011.test.log",
+      "n8-learned-tanh-mixed-s37011.fit.log",
+      "n8-learned-tanh-mixed-s37011.test.log",
+      "n8-learned-value_risk-mixed-s17011.fit.log",
+      "n8-learned-value_risk-mixed-s17011.test.log",
+      "n8-learned-value_risk-mixed-s27011.fit.log",
+      "n8-learned-value_risk-mixed-s27011.test.log",
+      "n8-learned-value_risk-mixed-s37011.fit.log",
+      "n8-learned-value_risk-mixed-s37011.test.log",
+      "n8-qvi-tanh-mixed-s17011.fit.log",
+      "n8-qvi-tanh-mixed-s17011.test.log",
+      "n8-qvi-tanh-mixed-s27011.fit.log",
+      "n8-qvi-tanh-mixed-s27011.test.log",
+      "n8-qvi-tanh-mixed-s37011.fit.log",
+      "n8-qvi-tanh-mixed-s37011.test.log",
+      "n8-qvi-value_risk-mixed-s17011.fit.log",
+      "n8-qvi-value_risk-mixed-s17011.test.log",
+      "n8-qvi-value_risk-mixed-s27011.fit.log",
+      "n8-qvi-value_risk-mixed-s27011.test.log",
+      "n8-qvi-value_risk-mixed-s37011.fit.log",
+      "n8-qvi-value_risk-mixed-s37011.test.log",
+      "n8-qvi-value_risk-native32-s17011.fit.log",
+      "n8-qvi-value_risk-native32-s17011.test.log",
+      "n8-qvi-value_risk-native32-s27011.fit.log",
+      "n8-qvi-value_risk-native32-s27011.test.log",
+      "n8-qvi-value_risk-native32-s37011.fit.log",
+      "n8-qvi-value_risk-native32-s37011.test.log"
+    ],
+    "first_slot": {
+      "parent_cost.json": {
+        "error": null,
+        "launch_through_exit_wall_seconds": 144.22508799703792,
+        "returncode": 0,
+        "slot": "n8-fixed-value_risk-mixed-s17011"
+      },
+      "result.json": {
+        "attempted_updates": 512,
+        "checkpoint_sha256": "b642e6e09bd5c0f5037a10543a732ac10eae57ec0e57a8d0e920d7c7f4fe08f1",
+        "cost": {
+          "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+          "complete_worker_cost": false,
+          "cpu_seconds": 141.36568116400002,
+          "energy_joules_process": null,
+          "energy_multiple_wraps_resolved": false,
+          "energy_scope": "no readable hardware energy counter",
+          "package_energy_joules": null,
+          "pid": 2123192,
+          "process_max_rss_kib": 309704,
+          "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+          "scope": "fit_setup_all_updates_all_development_checkpoint",
+          "wall_seconds": 141.57845617597923
+        },
+        "cpu_prefix_checkpoint_rule": "last post-update state whose attempted-update CPU total <=180; excludes setup, dev and snapshot copies, all of which are in complete cost; no holdout or development selection",
+        "cpu_prefix_step": 512,
+        "cpu_prefix_training_cpu_seconds": 129.38227731300003,
+        "dev_data_sha256": "68836def0f6d86bc93cb2e1123ce4ecd2664cfc8df8bba146a9b026e8f7a34d8",
+        "error": null,
+        "first_update_all_zero_gradient_parameters": [],
+        "first_update_none_gradient_parameters": [],
+        "gradient_scope": "First minibatch observation, not a global functional rank proof.",
+        "initial_development": {
+          "accuracy": 0.5052083333333334,
+          "brier": 0.6584704477693324,
+          "cross_entropy": 0.8857590223163528,
+          "early_accuracy": 0.5052083333333334,
+          "examples": 192,
+          "max_probability_balance_error": 3.4416913763379853e-15,
+          "maximum_chunk_state_tensor_bytes": 26624,
+          "mean_stop_step": 8.947916666666666,
+          "pre_late_accuracy": 0.5052083333333334,
+          "source_accuracy": {
+            "11000": 0.5208333333333334,
+            "11001": 0.5208333333333334,
+            "11002": 0.375,
+            "11003": 0.6041666666666666
+          },
+          "sources": 4,
+          "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+          "stop_accuracy": 0.5052083333333334,
+          "stop_before_late_fraction": 0.203125,
+          "stopping_utility": 0.4726704545454545,
+          "worst_source_accuracy": 0.375
+        },
+        "parameter_accounting": {
+          "requires_grad_parameters": 298,
+          "scope": "Masks accounted exactly; this is not a functional rank or identifiability claim.",
+          "structurally_active_recurrent_parameters": 48,
+          "total_parameters": 306,
+          "trainable_minus_masked_recurrent": 154
+        },
+        "protocol_sha256": "a010e62089bb34c6c22bd67a6854ffa288c5b5bf5429b74dc658de730f85ef9a",
+        "selected_development": {
+          "accuracy": 0.9427083333333334,
+          "brier": 0.10472751594320318,
+          "cross_entropy": 0.1827145015802344,
+          "early_accuracy": 0.4947916666666667,
+          "examples": 192,
+          "max_probability_balance_error": 3.3306690738754696e-15,
+          "maximum_chunk_state_tensor_bytes": 26624,
+          "mean_stop_step": 3.953125,
+          "pre_late_accuracy": 0.703125,
+          "source_accuracy": {
+            "11000": 1,
+            "11001": 0.9166666666666666,
+            "11002": 0.9166666666666666,
+            "11003": 0.9375
+          },
+          "sources": 4,
+          "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+          "stop_accuracy": 0.8020833333333334,
+          "stop_before_late_fraction": 0.6770833333333334,
+          "stopping_utility": 0.7877083333333332,
+          "worst_source_accuracy": 0.9166666666666666
+        },
+        "selected_step": 448,
+        "slot": {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-fixed-value_risk-mixed-s17011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        "smoke": false,
+        "status": "completed",
+        "train_data_sha256": "caa27564e017b65750c984dc5e69db950cc057b85445995f5b21f2f030a6319b",
+        "training_cpu_seconds": 129.38227731300003,
+        "updates": 512
+      },
+      "test_parent_cost.json": {
+        "error": null,
+        "launch_through_exit_wall_seconds": 35.99560141004622,
+        "returncode": 0,
+        "slot": "n8-fixed-value_risk-mixed-s17011"
+      },
+      "test_result.json": {
+        "cost": {
+          "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+          "complete_worker_cost": false,
+          "cpu_seconds": 29.993569952999998,
+          "energy_joules_process": null,
+          "energy_multiple_wraps_resolved": false,
+          "energy_scope": "no readable hardware energy counter",
+          "package_energy_joules": null,
+          "pid": 2425748,
+          "process_max_rss_kib": 230312,
+          "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+          "scope": "data_construction_model_load_three_holdout_evaluations_prediction_write",
+          "wall_seconds": 30.062934828922153
+        },
+        "cpu_prefix_step": 512,
+        "data_sha256": "d3976f031aebd3c6ad44cce2204ec2f726a47024ac9a8e9b23c60f1a743c4c1b",
+        "learning_gate": true,
+        "metrics": {
+          "cpu_prefix": {
+            "accuracy": 0.8994140625,
+            "brier": 0.14425454842052648,
+            "cross_entropy": 0.23338690410279053,
+            "early_accuracy": 0.533203125,
+            "examples": 1024,
+            "max_probability_balance_error": 3.6637359812630166e-15,
+            "maximum_chunk_state_tensor_bytes": 26624,
+            "mean_stop_step": 3.9013671875,
+            "pre_late_accuracy": 0.755859375,
+            "source_accuracy": {
+              "12000": 0.890625,
+              "12001": 0.90625,
+              "12002": 0.875,
+              "12003": 0.84375,
+              "12004": 0.890625,
+              "12005": 0.921875,
+              "12006": 0.84375,
+              "12007": 0.96875,
+              "12008": 0.90625,
+              "12009": 0.90625,
+              "12010": 0.84375,
+              "12011": 0.875,
+              "12012": 0.953125,
+              "12013": 0.890625,
+              "12014": 0.921875,
+              "12015": 0.953125
+            },
+            "sources": 16,
+            "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+            "stop_accuracy": 0.8349609375,
+            "stop_before_late_fraction": 0.646484375,
+            "stopping_utility": 0.8207741477272725,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.9296875,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.91796875,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.90625,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.84375,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.8979591836734694,
+                "examples": 686
+              },
+              "late_parity_1": {
+                "accuracy": 0.9023668639053254,
+                "examples": 338
+              }
+            },
+            "worst_source_accuracy": 0.84375
+          },
+          "initial": {
+            "accuracy": 0.494140625,
+            "brier": 0.6710972779862303,
+            "cross_entropy": 0.9001064861381647,
+            "early_accuracy": 0.494140625,
+            "examples": 1024,
+            "max_probability_balance_error": 3.774758283725532e-15,
+            "maximum_chunk_state_tensor_bytes": 26624,
+            "mean_stop_step": 8.958984375,
+            "pre_late_accuracy": 0.494140625,
+            "source_accuracy": {
+              "12000": 0.5,
+              "12001": 0.484375,
+              "12002": 0.46875,
+              "12003": 0.5,
+              "12004": 0.46875,
+              "12005": 0.484375,
+              "12006": 0.4375,
+              "12007": 0.5,
+              "12008": 0.5625,
+              "12009": 0.578125,
+              "12010": 0.5,
+              "12011": 0.359375,
+              "12012": 0.53125,
+              "12013": 0.4375,
+              "12014": 0.546875,
+              "12015": 0.546875
+            },
+            "sources": 16,
+            "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+            "stop_accuracy": 0.494140625,
+            "stop_before_late_fraction": 0.2021484375,
+            "stopping_utility": 0.4615625,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.53125,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.5078125,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.49609375,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.44140625,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.48542274052478135,
+                "examples": 686
+              },
+              "late_parity_1": {
+                "accuracy": 0.5118343195266272,
+                "examples": 338
+              }
+            },
+            "worst_source_accuracy": 0.359375
+          },
+          "selected": {
+            "accuracy": 0.9091796875,
+            "brier": 0.12780898973457483,
+            "cross_entropy": 0.20819272206607078,
+            "early_accuracy": 0.505859375,
+            "examples": 1024,
+            "max_probability_balance_error": 3.552713678800501e-15,
+            "maximum_chunk_state_tensor_bytes": 26624,
+            "mean_stop_step": 3.9189453125,
+            "pre_late_accuracy": 0.7578125,
+            "source_accuracy": {
+              "12000": 0.890625,
+              "12001": 0.9375,
+              "12002": 0.859375,
+              "12003": 0.890625,
+              "12004": 0.875,
+              "12005": 0.921875,
+              "12006": 0.859375,
+              "12007": 0.953125,
+              "12008": 0.90625,
+              "12009": 0.921875,
+              "12010": 0.859375,
+              "12011": 0.875,
+              "12012": 0.96875,
+              "12013": 0.890625,
+              "12014": 0.953125,
+              "12015": 0.984375
+            },
+            "sources": 16,
+            "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+            "stop_accuracy": 0.8447265625,
+            "stop_before_late_fraction": 0.6484375,
+            "stopping_utility": 0.8304758522727272,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.9296875,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.953125,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.90625,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.84765625,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.9081632653061225,
+                "examples": 686
+              },
+              "late_parity_1": {
+                "accuracy": 0.9112426035502958,
+                "examples": 338
+              }
+            },
+            "worst_source_accuracy": 0.859375
+          }
+        },
+        "predictions_sha256": "d10e0fb3c861d2f96da150df28ac83b004d690d7ca61472bde19b564f748b3eb",
+        "selected_step": 448,
+        "slot": {
+          "boundary": "fixed",
+          "family": "signed_factorial",
+          "features": "value_risk",
+          "id": "n8-fixed-value_risk-mixed-s17011",
+          "neurons": 8,
+          "precision": "mixed",
+          "seed": 17011
+        },
+        "status": "evaluated",
+        "training_status": "completed",
+        "updates": 512
+      },
+      "test_worker_cost.json": {
+        "energy_joules_process": null,
+        "error": null,
+        "process_cpu_through_receipt": 34.872103055,
+        "process_peak_rss_bytes": 235839488,
+        "scope": "fresh child; imports included, interpreter shutdown excluded",
+        "status": "evaluated",
+        "wall_from_first_module_statement": 35.183819497935474
+      },
+      "worker_cost.json": {
+        "energy_joules_process": null,
+        "error": null,
+        "process_cpu_through_receipt": 143.32569954,
+        "process_peak_rss_bytes": 317136896,
+        "scope": "fresh child; imports included, interpreter shutdown excluded",
+        "status": "completed",
+        "wall_from_first_module_statement": 143.5266290619038
+      }
+    },
+    "first_slot_files": [
+      "STARTED.json",
+      "TEST_WORKER_CLAIM.json",
+      "checkpoint.pt",
+      "history.json",
+      "parent_cost.json",
+      "result.json",
+      "test_parent_cost.json",
+      "test_predictions.json.gz",
+      "test_result.json",
+      "test_worker_cost.json",
+      "worker_cost.json"
+    ]
+  },
+  "communication-training-v1": {
+    "PROTOCOL.json": {
+      "arms": {
+        "boundary_accumulate": {
+          "control_mode": "accumulate",
+          "message_mode": "boundary",
+          "signed_only": false,
+          "unsigned_mode": "raw"
+        },
+        "boundary_hold": {
+          "control_mode": "hold",
+          "message_mode": "boundary",
+          "signed_only": false,
+          "unsigned_mode": "raw"
+        },
+        "boundary_raw": {
+          "control_mode": "raw",
+          "message_mode": "boundary",
+          "signed_only": false,
+          "unsigned_mode": "raw"
+        },
+        "signed_only": {
+          "control_mode": "raw",
+          "message_mode": "flow",
+          "signed_only": true,
+          "unsigned_mode": "raw"
+        },
+        "unsigned_signed_centered": {
+          "control_mode": "raw",
+          "message_mode": "flow",
+          "signed_only": false,
+          "unsigned_mode": "centered"
+        },
+        "unsigned_signed_centered_bounded": {
+          "control_mode": "raw",
+          "message_mode": "flow",
+          "signed_only": false,
+          "unsigned_mode": "centered_bounded"
+        },
+        "unsigned_signed_raw": {
+          "control_mode": "raw",
+          "message_mode": "flow",
+          "signed_only": false,
+          "unsigned_mode": "raw"
+        }
+      },
+      "base_commit": "14cfd44ab6d9da581bad5363495266424c661eb4",
+      "base_protocol_sha256": "6bf3e662037da59d8da0c8a355439809d9b4b735831b3c6d5d521df2c8c3b8cd",
+      "capacity_policy": "Report exact active mask counts. Unsigned adds parameters; held/accumulated inputs add explicit memory. No equality of functional capacity or deployment time is assumed.",
+      "comparison": "First four arms have boundary communication disabled; unsigned addition/centering/bounding are prespecified contrasts. Last three are boundary-only and compare causal raw/accumulate/hold input-drive paths. input_mark always reads raw observed input. Extra control state is explicit and retained across continuation.",
+      "cost_policy": "512 equal updates primary; 900 CPU-second safety cap yields censored record. Preserve last pre-180-CPU checkpoint for an equal CPU prefix. Count setup, all development, checkpoint IO, process imports/shutdown, test and failures. Joules unknown if not measured. The 180-second prefix is attempted-update CPU only, not full end-to-end time; complete time is reported separately. Every sub-512 run is censored for equal-update analysis.",
+      "data": {
+        "dev_per_source": 48,
+        "dev_sources": [
+          14000,
+          14001,
+          14002,
+          14003
+        ],
+        "length": 12,
+        "smoke_dev_sources": [
+          12600,
+          12601
+        ],
+        "smoke_train_sources": [
+          12500,
+          12501
+        ],
+        "test_per_source": 64,
+        "test_sources": [
+          15000,
+          15001,
+          15002,
+          15003,
+          15004,
+          15005,
+          15006,
+          15007,
+          15008,
+          15009,
+          15010,
+          15011,
+          15012,
+          15013,
+          15014,
+          15015
+        ],
+        "train_per_source": 48,
+        "train_sources": [
+          13000,
+          13001,
+          13002,
+          13003,
+          13004,
+          13005,
+          13006,
+          13007,
+          13008,
+          13009,
+          13010,
+          13011
+        ]
+      },
+      "experiment_id": "HCSN-COMMUNICATION-PROSPECTIVE-20261125-v1",
+      "factory_patch": "Fresh worker context replaces runner.make_model, make_data, parameter_accounting, forward_batch, evaluate and check_seal; original runner.fit/test bodies remain byte-identical. No train/test labels enter preprocessing or detached observers.",
+      "holdout_policy": "All 21 terminal attempts and complete checkpoint states are globally sealed before any test construction. All failures remain in the three-seed denominator. New source identities in the existing synthetic generator family; no new real-world domain claim. No test tuning, retries or best-arm selection.",
+      "measurement": "Detached per-channel moments, preactivation saturation and preclip recurrent gradient norms. Observer CPU is included in every update and complete worker cost. Reference centering is the nominal single-neuron stationary event rate, with no data-fitted mean.",
+      "runtime": {
+        "device": "cpu",
+        "implementation": "CPython",
+        "numpy": "2.5.4",
+        "python": "3.12.3",
+        "threads": 1,
+        "torch": "2.8.0+cpu"
+      },
+      "slots": [
+        {
+          "arm": "signed_only",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-signed_only-s18011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 18011
+        },
+        {
+          "arm": "signed_only",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-signed_only-s28011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 28011
+        },
+        {
+          "arm": "signed_only",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-signed_only-s38011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 38011
+        },
+        {
+          "arm": "unsigned_signed_raw",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-unsigned_signed_raw-s18011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 18011
+        },
+        {
+          "arm": "unsigned_signed_raw",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-unsigned_signed_raw-s28011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 28011
+        },
+        {
+          "arm": "unsigned_signed_raw",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-unsigned_signed_raw-s38011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 38011
+        },
+        {
+          "arm": "unsigned_signed_centered",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-unsigned_signed_centered-s18011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 18011
+        },
+        {
+          "arm": "unsigned_signed_centered",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-unsigned_signed_centered-s28011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 28011
+        },
+        {
+          "arm": "unsigned_signed_centered",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-unsigned_signed_centered-s38011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 38011
+        },
+        {
+          "arm": "unsigned_signed_centered_bounded",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-unsigned_signed_centered_bounded-s18011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 18011
+        },
+        {
+          "arm": "unsigned_signed_centered_bounded",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-unsigned_signed_centered_bounded-s28011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 28011
+        },
+        {
+          "arm": "unsigned_signed_centered_bounded",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-unsigned_signed_centered_bounded-s38011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 38011
+        },
+        {
+          "arm": "boundary_raw",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-boundary_raw-s18011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 18011
+        },
+        {
+          "arm": "boundary_raw",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-boundary_raw-s28011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 28011
+        },
+        {
+          "arm": "boundary_raw",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-boundary_raw-s38011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 38011
+        },
+        {
+          "arm": "boundary_accumulate",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-boundary_accumulate-s18011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 18011
+        },
+        {
+          "arm": "boundary_accumulate",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-boundary_accumulate-s28011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 28011
+        },
+        {
+          "arm": "boundary_accumulate",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-boundary_accumulate-s38011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 38011
+        },
+        {
+          "arm": "boundary_hold",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-boundary_hold-s18011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 18011
+        },
+        {
+          "arm": "boundary_hold",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-boundary_hold-s28011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 28011
+        },
+        {
+          "arm": "boundary_hold",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-boundary_hold-s38011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 38011
+        }
+      ],
+      "source_hashes": {
+        "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+        "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+        "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+        "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+        "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+        "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+        "qualification.hcsn_closure_20261124.__init__.py": "aa3a0c1117ab5a880ec632c13c2c026719d1feeb772d967182a73c34f207b4c9",
+        "qualification.hcsn_closure_20261124.campaign.py": "d253c81a801e57d7aa9590f57a2d3f796adaf171af4db743e5f3a3bf684c8ef8",
+        "qualification.hcsn_closure_20261124.communication.py": "b80113495c6caf9b6dd07eae292ce1e6301141a3ce8399423150dd118d9da420",
+        "qualification.hcsn_closure_20261124.communication_observe.py": "60a392367812e48d6e9560c6c2d2305e47eef8c1d46b3cfee392698ac051d314",
+        "qualification.hcsn_closure_20261124.communication_run.py": "9ab02bd115ce288238573853459bca7f12c8ad3f07427aa9efe10e0cd625bdae",
+        "qualification.hcsn_closure_20261124.communication_tests.py": "c0af37f7ffe612b0b03f1e3e010eee4755e60536b03ae9456a5999ecf59f1948",
+        "qualification.hcsn_closure_20261124.data.py": "b29f20dd3db66284d492e4dbd22bdcadbb288d02effa8c198cbffe9128cafea1",
+        "qualification.hcsn_closure_20261124.models.py": "84340ea2367b9ccdeec3a68d2726e66549680334ea2fc4de3e501b46eef7dde8",
+        "qualification.hcsn_closure_20261124.provenance.py": "a635b5a0a8edadbce6266ba5d8336cc27030c155992e40a8aaf3d3353ac034a6",
+        "qualification.hcsn_closure_20261124.runner.py": "ab72b5c4b0dc77b304dc0aeecfc5a9100e674102efc41a3a268872e47f5feed2",
+        "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+        "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+        "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+        "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+        "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+        "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+        "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+        "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+      },
+      "training": {
+        "batch_size": 8,
+        "cpu_prefix": 180,
+        "development_every": 64,
+        "gradient_clip": 3,
+        "learning_rate": 0.01,
+        "loss": "0.8 final CE + 0.2 mean prefix CE",
+        "max_updates": 512,
+        "selection": "minimum development final CE including initial",
+        "threads": 1,
+        "train_cpu_limit": 900
+      },
+      "unsigned_scale": 1,
+      "validation": {
+        "max_mixed_mass_error": 2e-9,
+        "min_final_accuracy": 0.8,
+        "min_gain_over_initial": 0.1,
+        "min_gain_over_prelate": 0.1,
+        "min_seed_fraction": 0.6666666666666666
+      }
+    },
+    "SEAL.json": {
+      "attempts": {
+        "n32-boundary_accumulate-s18011": {
+          "MECHANISM_FIT.json": "5e3622069669a3ccf3fb702176f1d8f3835d8f7936b11c7e65a9729d27fe9eb6",
+          "checkpoint.pt": "fa961ba5d12edec6f217072d434b9d0f0ab8550261edadadd128216c90142312",
+          "history.json": "7ec08561aad56453d0aabd52b22d71fa728addacf69cba2af13c6ccde16db7e6",
+          "parent_cost.json": "6b5c6319433fa3c4a3ac81d9d88cee107a80bd9bc5835e03f956b6233e4b6352",
+          "result.json": "4a6edd83e1f2f8d6ea50ade0284d87a1a8b0a8f9d7ff9575b24e7ae3bc6df635",
+          "worker_cost.json": "12b11457f34d20960700112254d073c84832ca7275dc6eeb236f28be8264680c"
+        }
+      },
+      "protocol_sha256": "640b8eec53b684100142ab2ffeeb5861c7ce43f467914af87d8be2b9275a3f55",
+      "schema": "hcsn-communication-seal-v1"
+    },
+    "TEST_CLAIM.json": {
+      "protocol_sha256": "640b8eec53b684100142ab2ffeeb5861c7ce43f467914af87d8be2b9275a3f55",
+      "seal_sha256": "e77b8bacaa0d30be04791fc15cc83077a699a7f003709995e1ae2d045e338a06"
+    },
+    "exists": true,
+    "files": [
+      "CAMPAIGN_RECEIPT.json",
+      "FINAL_RESULTS.json",
+      "FIT_EXECUTION.json",
+      "OPERATOR_TERMINAL_RECEIPT.json",
+      "PROTOCOL.json",
+      "RUN_CLAIM.json",
+      "SEAL.json",
+      "TEST_CLAIM.json",
+      "TEST_EXECUTION.json",
+      "n32-boundary_accumulate-s18011.fit.log",
+      "n32-boundary_accumulate-s18011.test.log",
+      "n32-boundary_accumulate-s28011.fit.log",
+      "n32-boundary_accumulate-s28011.test.log",
+      "n32-boundary_accumulate-s38011.fit.log",
+      "n32-boundary_accumulate-s38011.test.log",
+      "n32-boundary_hold-s18011.fit.log",
+      "n32-boundary_hold-s18011.test.log",
+      "n32-boundary_hold-s28011.fit.log",
+      "n32-boundary_hold-s28011.test.log",
+      "n32-boundary_hold-s38011.fit.log",
+      "n32-boundary_hold-s38011.test.log",
+      "n32-boundary_raw-s18011.fit.log",
+      "n32-boundary_raw-s18011.test.log",
+      "n32-boundary_raw-s28011.fit.log",
+      "n32-boundary_raw-s28011.test.log",
+      "n32-boundary_raw-s38011.fit.log",
+      "n32-boundary_raw-s38011.test.log",
+      "n32-signed_only-s18011.fit.log",
+      "n32-signed_only-s18011.test.log",
+      "n32-signed_only-s28011.fit.log",
+      "n32-signed_only-s28011.test.log",
+      "n32-signed_only-s38011.fit.log",
+      "n32-signed_only-s38011.test.log",
+      "n32-unsigned_signed_centered-s18011.fit.log",
+      "n32-unsigned_signed_centered-s18011.test.log",
+      "n32-unsigned_signed_centered-s28011.fit.log",
+      "n32-unsigned_signed_centered-s28011.test.log",
+      "n32-unsigned_signed_centered-s38011.fit.log",
+      "n32-unsigned_signed_centered-s38011.test.log",
+      "n32-unsigned_signed_centered_bounded-s18011.fit.log",
+      "n32-unsigned_signed_centered_bounded-s18011.test.log",
+      "n32-unsigned_signed_centered_bounded-s28011.fit.log",
+      "n32-unsigned_signed_centered_bounded-s28011.test.log",
+      "n32-unsigned_signed_centered_bounded-s38011.fit.log",
+      "n32-unsigned_signed_centered_bounded-s38011.test.log",
+      "n32-unsigned_signed_raw-s18011.fit.log",
+      "n32-unsigned_signed_raw-s18011.test.log",
+      "n32-unsigned_signed_raw-s28011.fit.log",
+      "n32-unsigned_signed_raw-s28011.test.log",
+      "n32-unsigned_signed_raw-s38011.fit.log",
+      "n32-unsigned_signed_raw-s38011.test.log"
+    ],
+    "first_slot": {
+      "parent_cost.json": {
+        "error": null,
+        "launch_through_exit_wall_seconds": 441.64162462495733,
+        "returncode": 0,
+        "slot": "n32-signed_only-s18011"
+      },
+      "result.json": {
+        "attempted_updates": 512,
+        "checkpoint_sha256": "ed3b283be4339b513bd017bbafc1c3859d02a3b5513d01bca5351c105327f911",
+        "cost": {
+          "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+          "complete_worker_cost": false,
+          "cpu_seconds": 437.246153874,
+          "energy_joules_process": null,
+          "energy_multiple_wraps_resolved": false,
+          "energy_scope": "no readable hardware energy counter",
+          "package_energy_joules": null,
+          "pid": 2263702,
+          "process_max_rss_kib": 372724,
+          "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+          "scope": "fit_setup_all_updates_all_development_checkpoint",
+          "wall_seconds": 438.1381787660066
+        },
+        "cpu_prefix_checkpoint_rule": "last post-update state whose attempted-update CPU total <=180; excludes setup, dev and snapshot copies, all of which are in complete cost; no holdout or development selection",
+        "cpu_prefix_step": 230,
+        "cpu_prefix_training_cpu_seconds": 179.4088526870001,
+        "dev_data_sha256": "cefe72a67e22c7f0a2ca59c730ad0a0aff6d789c1e0af255c91421b0678a5ee4",
+        "error": null,
+        "first_update_all_zero_gradient_parameters": [],
+        "first_update_none_gradient_parameters": [],
+        "gradient_scope": "First minibatch observation, not a global functional rank proof.",
+        "initial_development": {
+          "accuracy": 0.4427083333333333,
+          "additional_control_state_tensor_bytes": 768,
+          "brier": 0.5134963233994246,
+          "complete_state_bytes_scope": "five physical fields plus pending and held input tensors; AD tape and model excluded",
+          "cross_entropy": 0.7066816538117934,
+          "early_accuracy": 0.453125,
+          "examples": 192,
+          "max_probability_balance_error": 3.552713678800501e-15,
+          "maximum_chunk_state_tensor_bytes": 106496,
+          "maximum_complete_chunk_state_tensor_bytes": 107264,
+          "mean_stop_step": 11,
+          "pre_late_accuracy": 0.4427083333333333,
+          "source_accuracy": {
+            "14000": 0.3958333333333333,
+            "14001": 0.4791666666666667,
+            "14002": 0.4791666666666667,
+            "14003": 0.4166666666666667
+          },
+          "sources": 4,
+          "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+          "stop_accuracy": 0.4427083333333333,
+          "stop_before_late_fraction": 0,
+          "stopping_utility": 0.4027083333333333,
+          "worst_source_accuracy": 0.3958333333333333
+        },
+        "parameter_accounting": {
+          "requires_grad_parameters": 3490,
+          "scope": "Exact structural masks; adding unsigned also adds an active trainable branch. No equal effective-capacity claim.",
+          "structurally_active_recurrent_parameters": 768,
+          "total_parameters": 3522,
+          "trainable_minus_masked_recurrent": 1186
+        },
+        "protocol_sha256": "640b8eec53b684100142ab2ffeeb5861c7ce43f467914af87d8be2b9275a3f55",
+        "selected_development": {
+          "accuracy": 0.9322916666666666,
+          "additional_control_state_tensor_bytes": 768,
+          "brier": 0.09794009794701543,
+          "complete_state_bytes_scope": "five physical fields plus pending and held input tensors; AD tape and model excluded",
+          "cross_entropy": 0.17036300417338848,
+          "early_accuracy": 0.4427083333333333,
+          "examples": 192,
+          "max_probability_balance_error": 3.552713678800501e-15,
+          "maximum_chunk_state_tensor_bytes": 106496,
+          "maximum_complete_chunk_state_tensor_bytes": 107264,
+          "mean_stop_step": 2.4895833333333335,
+          "pre_late_accuracy": 0.75,
+          "source_accuracy": {
+            "14000": 0.9166666666666666,
+            "14001": 0.9583333333333334,
+            "14002": 0.9375,
+            "14003": 0.9166666666666666
+          },
+          "sources": 4,
+          "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+          "stop_accuracy": 0.8229166666666666,
+          "stop_before_late_fraction": 0.8489583333333334,
+          "stopping_utility": 0.8138636363636363,
+          "worst_source_accuracy": 0.9166666666666666
+        },
+        "selected_step": 512,
+        "slot": {
+          "arm": "signed_only",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-signed_only-s18011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 18011
+        },
+        "smoke": false,
+        "status": "completed",
+        "train_data_sha256": "944bb7f9a71bfd4a4a48a8fe82234d94da63347ea95fca4ad76b49748aac765b",
+        "training_cpu_seconds": 387.9221323869998,
+        "updates": 512
+      },
+      "test_parent_cost.json": {
+        "error": null,
+        "launch_through_exit_wall_seconds": 71.9472854329506,
+        "returncode": 0,
+        "slot": "n32-signed_only-s18011"
+      },
+      "test_result.json": {
+        "cost": {
+          "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+          "complete_worker_cost": false,
+          "cpu_seconds": 68.25115267,
+          "energy_joules_process": null,
+          "energy_multiple_wraps_resolved": false,
+          "energy_scope": "no readable hardware energy counter",
+          "package_energy_joules": null,
+          "pid": 2508124,
+          "process_max_rss_kib": 232900,
+          "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+          "scope": "data_construction_model_load_three_holdout_evaluations_prediction_write",
+          "wall_seconds": 68.46473333600443
+        },
+        "cpu_prefix_step": 230,
+        "data_sha256": "e19fae253b1172ae52fa83c7bdd1e028aa00deae0000eabdb849019024b53f26",
+        "learning_gate": true,
+        "metrics": {
+          "cpu_prefix": {
+            "accuracy": 0.9140625,
+            "additional_control_state_tensor_bytes": 768,
+            "brier": 0.1183968372267013,
+            "complete_state_bytes_scope": "five physical fields plus pending and held input tensors; AD tape and model excluded",
+            "cross_entropy": 0.19126102512312348,
+            "early_accuracy": 0.4970703125,
+            "examples": 1024,
+            "max_probability_balance_error": 3.9968028886505635e-15,
+            "maximum_chunk_state_tensor_bytes": 106496,
+            "maximum_complete_chunk_state_tensor_bytes": 107264,
+            "mean_stop_step": 3.15625,
+            "pre_late_accuracy": 0.765625,
+            "source_accuracy": {
+              "15000": 0.90625,
+              "15001": 0.9375,
+              "15002": 0.953125,
+              "15003": 0.953125,
+              "15004": 0.90625,
+              "15005": 0.984375,
+              "15006": 0.875,
+              "15007": 0.875,
+              "15008": 0.90625,
+              "15009": 0.9375,
+              "15010": 0.921875,
+              "15011": 0.875,
+              "15012": 0.96875,
+              "15013": 0.859375,
+              "15014": 0.859375,
+              "15015": 0.90625
+            },
+            "sources": 16,
+            "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+            "stop_accuracy": 0.8203125,
+            "stop_before_late_fraction": 0.77734375,
+            "stopping_utility": 0.8088352272727272,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.88671875,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.95703125,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.94140625,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.87109375,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.9273255813953488,
+                "examples": 688
+              },
+              "late_parity_1": {
+                "accuracy": 0.8869047619047619,
+                "examples": 336
+              }
+            },
+            "worst_source_accuracy": 0.859375
+          },
+          "initial": {
+            "accuracy": 0.4970703125,
+            "additional_control_state_tensor_bytes": 768,
+            "brier": 0.5039747293491176,
+            "complete_state_bytes_scope": "five physical fields plus pending and held input tensors; AD tape and model excluded",
+            "cross_entropy": 0.6971354881019409,
+            "early_accuracy": 0.5029296875,
+            "examples": 1024,
+            "max_probability_balance_error": 4.3298697960381105e-15,
+            "maximum_chunk_state_tensor_bytes": 106496,
+            "maximum_complete_chunk_state_tensor_bytes": 107264,
+            "mean_stop_step": 11,
+            "pre_late_accuracy": 0.4970703125,
+            "source_accuracy": {
+              "15000": 0.546875,
+              "15001": 0.484375,
+              "15002": 0.453125,
+              "15003": 0.5625,
+              "15004": 0.53125,
+              "15005": 0.578125,
+              "15006": 0.515625,
+              "15007": 0.390625,
+              "15008": 0.515625,
+              "15009": 0.5,
+              "15010": 0.546875,
+              "15011": 0.484375,
+              "15012": 0.46875,
+              "15013": 0.46875,
+              "15014": 0.53125,
+              "15015": 0.375
+            },
+            "sources": 16,
+            "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+            "stop_accuracy": 0.4970703125,
+            "stop_before_late_fraction": 0,
+            "stopping_utility": 0.45707031249999996,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.4375,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.51953125,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.55859375,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.47265625,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.501453488372093,
+                "examples": 688
+              },
+              "late_parity_1": {
+                "accuracy": 0.4880952380952381,
+                "examples": 336
+              }
+            },
+            "worst_source_accuracy": 0.375
+          },
+          "selected": {
+            "accuracy": 0.9248046875,
+            "additional_control_state_tensor_bytes": 768,
+            "brier": 0.11205221903343215,
+            "complete_state_bytes_scope": "five physical fields plus pending and held input tensors; AD tape and model excluded",
+            "cross_entropy": 0.1868443744938756,
+            "early_accuracy": 0.4970703125,
+            "examples": 1024,
+            "max_probability_balance_error": 3.9968028886505635e-15,
+            "maximum_chunk_state_tensor_bytes": 106496,
+            "maximum_complete_chunk_state_tensor_bytes": 107264,
+            "mean_stop_step": 2.451171875,
+            "pre_late_accuracy": 0.7587890625,
+            "source_accuracy": {
+              "15000": 0.90625,
+              "15001": 0.96875,
+              "15002": 0.921875,
+              "15003": 0.953125,
+              "15004": 0.96875,
+              "15005": 0.984375,
+              "15006": 0.859375,
+              "15007": 0.859375,
+              "15008": 0.953125,
+              "15009": 0.875,
+              "15010": 0.953125,
+              "15011": 0.90625,
+              "15012": 0.96875,
+              "15013": 0.90625,
+              "15014": 0.890625,
+              "15015": 0.921875
+            },
+            "sources": 16,
+            "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+            "stop_accuracy": 0.8037109375,
+            "stop_before_late_fraction": 0.85546875,
+            "stopping_utility": 0.7947975852272726,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.92578125,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.96484375,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.9453125,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.86328125,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.9316860465116279,
+                "examples": 688
+              },
+              "late_parity_1": {
+                "accuracy": 0.9107142857142857,
+                "examples": 336
+              }
+            },
+            "worst_source_accuracy": 0.859375
+          }
+        },
+        "predictions_sha256": "ff01a2884461b42aaaeee158220074f60bc040d9b360f52834d147992ea6a3ac",
+        "selected_step": 512,
+        "slot": {
+          "arm": "signed_only",
+          "boundary": "qvi",
+          "family": "communication",
+          "features": "value_risk",
+          "id": "n32-signed_only-s18011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 18011
+        },
+        "status": "evaluated",
+        "training_status": "completed",
+        "updates": 512
+      },
+      "test_worker_cost.json": {
+        "energy_joules_process": null,
+        "error": null,
+        "process_cpu_through_receipt": 71.082065344,
+        "process_peak_rss_bytes": 238489600,
+        "scope": "Linux fresh worker, imports and observers included, shutdown excluded",
+        "status": "evaluated",
+        "wall_from_first_module_statement": 71.38236685807351
+      },
+      "worker_cost.json": {
+        "energy_joules_process": null,
+        "error": null,
+        "process_cpu_through_receipt": 439.847161964,
+        "process_peak_rss_bytes": 381669376,
+        "scope": "Linux fresh worker, imports and observers included, shutdown excluded",
+        "status": "completed",
+        "wall_from_first_module_statement": 440.7638562199427
+      }
+    },
+    "first_slot_files": [
+      "MECHANISM_FIT.json",
+      "MECHANISM_TEST.json",
+      "STARTED.json",
+      "TEST_WORKER_CLAIM.json",
+      "checkpoint.pt",
+      "history.json",
+      "parent_cost.json",
+      "result.json",
+      "test_parent_cost.json",
+      "test_predictions.json.gz",
+      "test_result.json",
+      "test_worker_cost.json",
+      "worker_cost.json"
+    ]
+  },
+  "joint-training-v1": {
+    "PROTOCOL.json": {
+      "base_commit": "14cfd44ab6d9da581bad5363495266424c661eb4",
+      "baseline_scope": "This factorial identifies effects inside signed HCSN only; tanh replaces two readout features and is not a conventional RNN baseline.",
+      "capacity_policy": "Same allocated tensors/initialization and scalar task, but joint has twice the active recurrent entries of either single channel. Report exact mask counts and actual gradients; no effective-capacity equality.",
+      "claim_scope": "Three within-family communication masks on N32 mixed QVI/value-risk raw features; unsigned always disabled; no overwrite or pooling of earlier failed boundary tests.",
+      "comparison_gates": {
+        "accuracy_margin": 0.02,
+        "brier_margin": 0.02,
+        "reference": "signed_only",
+        "rule": "Paired seed accuracy>=signed-.02 and Brier<=signed+.02; at least2/3. Descriptive engineering tolerance, not superiority or statistical equivalence."
+      },
+      "cost_policy": "512 equal updates primary; 900 CPU-second safety cap yields censored record. Preserve last pre-180-CPU checkpoint for an equal CPU prefix. Count setup, all development, checkpoint IO, process imports/shutdown, test and failures. Joules unknown if not measured. The 180-second prefix is attempted-update CPU only, not full end-to-end time; complete time is reported separately. Every sub-512 run is censored for equal-update analysis.",
+      "data": {
+        "dev_per_source": 48,
+        "dev_sources": [
+          34000,
+          34001,
+          34002,
+          34003
+        ],
+        "length": 12,
+        "test_per_source": 64,
+        "test_sources": [
+          35000,
+          35001,
+          35002,
+          35003,
+          35004,
+          35005,
+          35006,
+          35007,
+          35008,
+          35009,
+          35010,
+          35011,
+          35012,
+          35013,
+          35014,
+          35015
+        ],
+        "train_per_source": 48,
+        "train_sources": [
+          33000,
+          33001,
+          33002,
+          33003,
+          33004,
+          33005,
+          33006,
+          33007,
+          33008,
+          33009,
+          33010,
+          33011
+        ]
+      },
+      "experiment_id": "HCSN-BOUNDARY-SIGNED-JOINT-PROSPECTIVE-20261125-v1",
+      "factory_binding": "Fresh process binds runner.make_model, make_data, parameter_accounting and provenance.make_model; unchanged training/evaluation source.",
+      "holdout_policy": "All nine terminal attempts, four states per checkpoint and exact masks validated and sealed before any test construction; once-only test claims; all failures retained.",
+      "resource_policy": {
+        "aggregate_cpu_percent_cap": 600,
+        "aggregate_memory_limit_bytes": 6442450944,
+        "stage_child_wall_timeout_seconds": 2400,
+        "threads_per_worker": 1,
+        "workers": 6
+      },
+      "runtime": {
+        "device": "cpu",
+        "implementation": "CPython",
+        "numpy": "2.5.4",
+        "python": "3.12.3",
+        "threads": 1,
+        "torch": "2.8.0+cpu"
+      },
+      "slots": [
+        {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-boundary_only-s22011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 22011,
+          "variant": "boundary_only"
+        },
+        {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-boundary_only-s32011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 32011,
+          "variant": "boundary_only"
+        },
+        {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-boundary_only-s42011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 42011,
+          "variant": "boundary_only"
+        },
+        {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-signed_only-s22011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 22011,
+          "variant": "signed_only"
+        },
+        {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-signed_only-s32011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 32011,
+          "variant": "signed_only"
+        },
+        {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-signed_only-s42011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 42011,
+          "variant": "signed_only"
+        },
+        {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-boundary_signed-s22011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 22011,
+          "variant": "boundary_signed"
+        },
+        {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-boundary_signed-s32011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 32011,
+          "variant": "boundary_signed"
+        },
+        {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-boundary_signed-s42011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 42011,
+          "variant": "boundary_signed"
+        }
+      ],
+      "source_hashes": {
+        "qualification/hcsn_adaptive/__init__.py": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+        "qualification/hcsn_adaptive/batched_flow.py": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+        "qualification/hcsn_adaptive/finite_control.py": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+        "qualification/hcsn_adaptive/flow_semantics.py": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+        "qualification/hcsn_adaptive/impulse_execution.py": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+        "qualification/hcsn_adaptive/uniformized_flow.py": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+        "qualification/hcsn_closure_20261124/__init__.py": "aa3a0c1117ab5a880ec632c13c2c026719d1feeb772d967182a73c34f207b4c9",
+        "qualification/hcsn_closure_20261124/campaign.py": "d253c81a801e57d7aa9590f57a2d3f796adaf171af4db743e5f3a3bf684c8ef8",
+        "qualification/hcsn_closure_20261124/data.py": "b29f20dd3db66284d492e4dbd22bdcadbb288d02effa8c198cbffe9128cafea1",
+        "qualification/hcsn_closure_20261124/fast_kernel.py": "a92d7cc45af0ccf1e1c2629ee9fe8ef1d4b0bc6dba335bbdc53cd909c42d80b3",
+        "qualification/hcsn_closure_20261124/joint_run.py": "07fc5b9e96dbbdc50b99716329f8e9498ac23eb75137c07f6de90123c9f0dc0e",
+        "qualification/hcsn_closure_20261124/joint_tests.py": "97be1cf250ad8c24e8000e3db4c35404c08463d34aa6458c2a6b8ac3f05b8f17",
+        "qualification/hcsn_closure_20261124/models.py": "84340ea2367b9ccdeec3a68d2726e66549680334ea2fc4de3e501b46eef7dde8",
+        "qualification/hcsn_closure_20261124/protocol.json": "6bf3e662037da59d8da0c8a355439809d9b4b735831b3c6d5d521df2c8c3b8cd",
+        "qualification/hcsn_closure_20261124/provenance.py": "a635b5a0a8edadbce6266ba5d8336cc27030c155992e40a8aaf3d3353ac034a6",
+        "qualification/hcsn_closure_20261124/runner.py": "ab72b5c4b0dc77b304dc0aeecfc5a9100e674102efc41a3a268872e47f5feed2",
+        "qualification/hcsn_smallnet_20261124/__init__.py": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+        "qualification/hcsn_smallnet_20261124/campaign.py": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+        "qualification/hcsn_smallnet_20261124/cost.py": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+        "qualification/hcsn_smallnet_20261124/data.py": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+        "qualification/hcsn_smallnet_20261124/model.py": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+        "qualification/hcsn_smallnet_20261124/train.py": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+        "qualification/hcsn_training/__init__.py": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+        "qualification/hcsn_training/population_generator.py": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+      },
+      "suite": "boundary_signed_joint",
+      "training": {
+        "batch_size": 8,
+        "cpu_prefix": 180,
+        "development_every": 64,
+        "gradient_clip": 3,
+        "learning_rate": 0.01,
+        "loss": "0.8 final CE + 0.2 mean prefix CE",
+        "max_updates": 512,
+        "selection": "minimum development final CE including initial",
+        "threads": 1,
+        "train_cpu_limit": 900
+      },
+      "validation": {
+        "fp32_accuracy_noninferiority_margin": 0.02,
+        "fp32_brier_noninferiority_margin": 0.02,
+        "fp32_pairing": "Per same seed/width: native32 accuracy >= mixed-0.02 and Brier <= mixed+0.02, plus numerical/learning gates. At least 2/3 seeds to pass a width. This is a prospective engineering tolerance, not statistical noninferiority.",
+        "max_mixed_mass_error": 2e-9,
+        "max_native32_mass_error": 0.00003,
+        "min_final_accuracy": 0.8,
+        "min_gain_over_initial": 0.1,
+        "min_gain_over_prelate": 0.1,
+        "min_seed_fraction": 0.6666666666666666
+      }
+    },
+    "SEAL.json": {
+      "attempts": {
+        "n32-boundary_only-s22011": {
+          "checkpoint.pt": "f9f98343a1b081dd6c609cf018392d10ea3640b8f3ac92eca7e002c4d4e23a09",
+          "history.json": "10edb74f6ad45134d4822c1ad4d44ef042f7a4d8d6acaecf13de140e8a424508",
+          "parent_cost.json": "a8d030681cab6636127caddbc50ce2df3b33db9ecb76544dd059d2a5f0ade8ff",
+          "result.json": "9c128aba7b9aa81acdd1b79243ec24d9de9f82681dc4d62f23c89dad24f96e2a",
+          "worker_cost.json": "558ac1ad6b902f116af21851988b7da97d86da1816e7b09b8f437e5bbc381c86"
+        }
+      },
+      "protocol_sha256": "7fe035a053286e59bed7123665f3f82807c645df7dc1886573fe0eb4cbaf70b2",
+      "schema": "hcsn-prospective-seal-v1"
+    },
+    "TEST_CLAIM.json": {
+      "protocol_sha256": "7fe035a053286e59bed7123665f3f82807c645df7dc1886573fe0eb4cbaf70b2",
+      "seal_sha256": "ed6783037c58398706e1435698189fa92c59ad0da1ccfd1afecab3c9aefeec34"
+    },
+    "exists": true,
+    "files": [
+      "CAMPAIGN_RECEIPT.json",
+      "FIT_EXECUTION.json",
+      "OUTER_RECEIPT.json",
+      "PROTOCOL.json",
+      "RUN_CLAIM.json",
+      "SEAL.json",
+      "TEST_CLAIM.json",
+      "TEST_EXECUTION.json",
+      "n32-boundary_only-s22011.fit.log",
+      "n32-boundary_only-s22011.test.log",
+      "n32-boundary_only-s32011.fit.log",
+      "n32-boundary_only-s32011.test.log",
+      "n32-boundary_only-s42011.fit.log",
+      "n32-boundary_only-s42011.test.log",
+      "n32-boundary_signed-s22011.fit.log",
+      "n32-boundary_signed-s22011.test.log",
+      "n32-boundary_signed-s32011.fit.log",
+      "n32-boundary_signed-s32011.test.log",
+      "n32-boundary_signed-s42011.fit.log",
+      "n32-boundary_signed-s42011.test.log",
+      "n32-signed_only-s22011.fit.log",
+      "n32-signed_only-s22011.test.log",
+      "n32-signed_only-s32011.fit.log",
+      "n32-signed_only-s32011.test.log",
+      "n32-signed_only-s42011.fit.log",
+      "n32-signed_only-s42011.test.log"
+    ],
+    "first_slot": {
+      "parent_cost.json": {
+        "error": null,
+        "launch_through_exit_wall_seconds": 253.15005547192413,
+        "returncode": 0,
+        "slot": "n32-boundary_only-s22011"
+      },
+      "result.json": {
+        "attempted_updates": 512,
+        "checkpoint_sha256": "f9f98343a1b081dd6c609cf018392d10ea3640b8f3ac92eca7e002c4d4e23a09",
+        "cost": {
+          "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+          "complete_worker_cost": false,
+          "cpu_seconds": 249.338940253,
+          "energy_joules_process": null,
+          "energy_multiple_wraps_resolved": false,
+          "energy_scope": "no readable hardware energy counter",
+          "package_energy_joules": null,
+          "pid": 2662561,
+          "process_max_rss_kib": 360052,
+          "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+          "scope": "fit_setup_all_updates_all_development_checkpoint",
+          "wall_seconds": 250.484034613939
+        },
+        "cpu_prefix_checkpoint_rule": "last post-update state whose attempted-update CPU total <=180; excludes setup, dev and snapshot copies, all of which are in complete cost; no holdout or development selection",
+        "cpu_prefix_step": 409,
+        "cpu_prefix_training_cpu_seconds": 179.61459991,
+        "dev_data_sha256": "daa8c00f252f06796055118b80b4536611040666205b48e8f02a9f2c4c6fba45",
+        "error": null,
+        "first_update_all_zero_gradient_parameters": [
+          "input_mark.weight",
+          "input_mark.bias"
+        ],
+        "first_update_none_gradient_parameters": [],
+        "gradient_scope": "First minibatch observation, not a global functional rank proof.",
+        "initial_development": {
+          "accuracy": 0.5052083333333334,
+          "brier": 0.5058467441739886,
+          "cross_entropy": 0.6990390131651267,
+          "early_accuracy": 0.5052083333333334,
+          "examples": 192,
+          "max_probability_balance_error": 3.6637359812630166e-15,
+          "maximum_chunk_state_tensor_bytes": 106496,
+          "mean_stop_step": 11,
+          "pre_late_accuracy": 0.5052083333333334,
+          "source_accuracy": {
+            "34000": 0.5833333333333334,
+            "34001": 0.4166666666666667,
+            "34002": 0.4583333333333333,
+            "34003": 0.5625
+          },
+          "sources": 4,
+          "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+          "stop_accuracy": 0.5052083333333334,
+          "stop_before_late_fraction": 0,
+          "stopping_utility": 0.4652083333333333,
+          "worst_source_accuracy": 0.4166666666666667
+        },
+        "parameter_accounting": {
+          "requires_grad_parameters": 3490,
+          "scope": "Exact full-mode channel mask count; joint has more active recurrent parameters, not an equal effective-capacity claim.",
+          "structurally_active_recurrent_parameters": 768,
+          "total_parameters": 3522,
+          "trainable_minus_masked_recurrent": 1186
+        },
+        "protocol_sha256": "7fe035a053286e59bed7123665f3f82807c645df7dc1886573fe0eb4cbaf70b2",
+        "selected_development": {
+          "accuracy": 0.5052083333333334,
+          "brier": 0.5033822410497045,
+          "cross_entropy": 0.6965458695803105,
+          "early_accuracy": 0.5,
+          "examples": 192,
+          "max_probability_balance_error": 3.4416913763379853e-15,
+          "maximum_chunk_state_tensor_bytes": 106496,
+          "mean_stop_step": 11,
+          "pre_late_accuracy": 0.5052083333333334,
+          "source_accuracy": {
+            "34000": 0.5833333333333334,
+            "34001": 0.4166666666666667,
+            "34002": 0.4583333333333333,
+            "34003": 0.5625
+          },
+          "sources": 4,
+          "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+          "stop_accuracy": 0.5052083333333334,
+          "stop_before_late_fraction": 0,
+          "stopping_utility": 0.4652083333333333,
+          "worst_source_accuracy": 0.4166666666666667
+        },
+        "selected_step": 512,
+        "slot": {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-boundary_only-s22011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 22011,
+          "variant": "boundary_only"
+        },
+        "smoke": false,
+        "status": "completed",
+        "train_data_sha256": "be30d648aa5044a072f253205d5d237b2da4ddafb79bd47d03a3e1902eff6014",
+        "training_cpu_seconds": 224.8261839449999,
+        "updates": 512
+      },
+      "test_parent_cost.json": {
+        "error": null,
+        "launch_through_exit_wall_seconds": 50.48947601299733,
+        "returncode": 0,
+        "slot": "n32-boundary_only-s22011"
+      },
+      "test_result.json": {
+        "cost": {
+          "clock_boundary": "meter construction through snapshot; imports before construction and final receipt serialization excluded",
+          "complete_worker_cost": false,
+          "cpu_seconds": 47.086007593999994,
+          "energy_joules_process": null,
+          "energy_multiple_wraps_resolved": false,
+          "energy_scope": "no readable hardware energy counter",
+          "package_energy_joules": null,
+          "pid": 2690786,
+          "process_max_rss_kib": 241032,
+          "rss_scope": "process lifetime peak, including imports; unavailable on platforms without resource",
+          "scope": "data_construction_model_load_three_holdout_evaluations_prediction_write",
+          "wall_seconds": 47.21786603005603
+        },
+        "cpu_prefix_step": 409,
+        "data_sha256": "7356e1bf3c84afbb7452c729894297f0d464b7172baa21e990b627123acea3ae",
+        "learning_gate": false,
+        "metrics": {
+          "cpu_prefix": {
+            "accuracy": 0.51171875,
+            "brier": 0.49976303204073347,
+            "cross_entropy": 0.6929101583089621,
+            "early_accuracy": 0.5234375,
+            "examples": 1024,
+            "max_probability_balance_error": 3.552713678800501e-15,
+            "maximum_chunk_state_tensor_bytes": 106496,
+            "mean_stop_step": 11,
+            "pre_late_accuracy": 0.51171875,
+            "source_accuracy": {
+              "35000": 0.578125,
+              "35001": 0.609375,
+              "35002": 0.4375,
+              "35003": 0.46875,
+              "35004": 0.546875,
+              "35005": 0.53125,
+              "35006": 0.53125,
+              "35007": 0.515625,
+              "35008": 0.546875,
+              "35009": 0.421875,
+              "35010": 0.515625,
+              "35011": 0.5,
+              "35012": 0.46875,
+              "35013": 0.53125,
+              "35014": 0.59375,
+              "35015": 0.390625
+            },
+            "sources": 16,
+            "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+            "stop_accuracy": 0.51171875,
+            "stop_before_late_fraction": 0,
+            "stopping_utility": 0.47171874999999996,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.5546875,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.52734375,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.4921875,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.47265625,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.5113960113960114,
+                "examples": 702
+              },
+              "late_parity_1": {
+                "accuracy": 0.5124223602484472,
+                "examples": 322
+              }
+            },
+            "worst_source_accuracy": 0.390625
+          },
+          "initial": {
+            "accuracy": 0.51171875,
+            "brier": 0.5040219394219488,
+            "cross_entropy": 0.6972027982809366,
+            "early_accuracy": 0.51171875,
+            "examples": 1024,
+            "max_probability_balance_error": 3.885780586188048e-15,
+            "maximum_chunk_state_tensor_bytes": 106496,
+            "mean_stop_step": 11,
+            "pre_late_accuracy": 0.51171875,
+            "source_accuracy": {
+              "35000": 0.578125,
+              "35001": 0.609375,
+              "35002": 0.4375,
+              "35003": 0.46875,
+              "35004": 0.546875,
+              "35005": 0.53125,
+              "35006": 0.53125,
+              "35007": 0.515625,
+              "35008": 0.546875,
+              "35009": 0.421875,
+              "35010": 0.515625,
+              "35011": 0.5,
+              "35012": 0.46875,
+              "35013": 0.53125,
+              "35014": 0.59375,
+              "35015": 0.390625
+            },
+            "sources": 16,
+            "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+            "stop_accuracy": 0.51171875,
+            "stop_before_late_fraction": 0,
+            "stopping_utility": 0.47171874999999996,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.5546875,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.52734375,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.4921875,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.47265625,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.5113960113960114,
+                "examples": 702
+              },
+              "late_parity_1": {
+                "accuracy": 0.5124223602484472,
+                "examples": 322
+              }
+            },
+            "worst_source_accuracy": 0.390625
+          },
+          "selected": {
+            "accuracy": 0.51171875,
+            "brier": 0.5018635888501759,
+            "cross_entropy": 0.6950209511495328,
+            "early_accuracy": 0.5146484375,
+            "examples": 1024,
+            "max_probability_balance_error": 3.774758283725532e-15,
+            "maximum_chunk_state_tensor_bytes": 106496,
+            "mean_stop_step": 11,
+            "pre_late_accuracy": 0.51171875,
+            "source_accuracy": {
+              "35000": 0.578125,
+              "35001": 0.609375,
+              "35002": 0.4375,
+              "35003": 0.46875,
+              "35004": 0.546875,
+              "35005": 0.53125,
+              "35006": 0.53125,
+              "35007": 0.515625,
+              "35008": 0.546875,
+              "35009": 0.421875,
+              "35010": 0.515625,
+              "35011": 0.5,
+              "35012": 0.46875,
+              "35013": 0.53125,
+              "35014": 0.59375,
+              "35015": 0.390625
+            },
+            "sources": 16,
+            "state_bytes_scope": "all five dynamic tensor fields; model, outputs and AD tape excluded",
+            "stop_accuracy": 0.51171875,
+            "stop_before_late_fraction": 0,
+            "stopping_utility": 0.47171874999999996,
+            "subgroups": {
+              "initial_margin_quartile_0": {
+                "accuracy": 0.5546875,
+                "examples": 256
+              },
+              "initial_margin_quartile_1": {
+                "accuracy": 0.52734375,
+                "examples": 256
+              },
+              "initial_margin_quartile_2": {
+                "accuracy": 0.4921875,
+                "examples": 256
+              },
+              "initial_margin_quartile_3": {
+                "accuracy": 0.47265625,
+                "examples": 256
+              },
+              "late_parity_0": {
+                "accuracy": 0.5113960113960114,
+                "examples": 702
+              },
+              "late_parity_1": {
+                "accuracy": 0.5124223602484472,
+                "examples": 322
+              }
+            },
+            "worst_source_accuracy": 0.390625
+          }
+        },
+        "predictions_sha256": "8dc9ac694e0a791090a034979e22857ba161b720894c2df4ee322c7a84d0d0dc",
+        "selected_step": 512,
+        "slot": {
+          "boundary": "qvi",
+          "features": "value_risk",
+          "id": "n32-boundary_only-s22011",
+          "neurons": 32,
+          "precision": "mixed",
+          "seed": 22011,
+          "variant": "boundary_only"
+        },
+        "status": "evaluated",
+        "training_status": "completed",
+        "updates": 512
+      },
+      "test_worker_cost.json": {
+        "energy_joules_process": null,
+        "error": null,
+        "process_cpu_through_receipt": 49.208040151,
+        "process_peak_rss_bytes": 246816768,
+        "scope": "fresh Linux child through receipt; imports included, shutdown excluded",
+        "status": "evaluated",
+        "wall_from_first_module_statement": 49.65840105502866
+      },
+      "worker_cost.json": {
+        "energy_joules_process": null,
+        "error": null,
+        "process_cpu_through_receipt": 251.222671181,
+        "process_peak_rss_bytes": 368693248,
+        "scope": "fresh Linux child through receipt; imports included, shutdown excluded",
+        "status": "completed",
+        "wall_from_first_module_statement": 252.4238231140189
+      }
+    },
+    "first_slot_files": [
+      "STARTED.json",
+      "TEST_WORKER_CLAIM.json",
+      "checkpoint.pt",
+      "history.json",
+      "parent_cost.json",
+      "result.json",
+      "test_parent_cost.json",
+      "test_predictions.json.gz",
+      "test_result.json",
+      "test_worker_cost.json",
+      "worker_cost.json"
+    ]
+  }
+}
