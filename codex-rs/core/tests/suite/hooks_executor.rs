@@ -44,7 +44,7 @@ use super::rmcp_client::remote_aware_environment_id;
 async fn executor_stop_hook_runs_after_attachment() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let fixture = executor_stop_hook_fixture().await?;
+    let fixture = executor_stop_hook_fixture(&["first-turn", "second-turn"]).await?;
     fixture
         .test
         .submit_text_turn("before the executor plugin attaches")
@@ -101,7 +101,7 @@ async fn executor_stop_hook_runs_after_attachment() -> Result<()> {
 async fn executor_stop_hook_stops_after_disconnection() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let fixture = executor_stop_hook_fixture().await?;
+    let fixture = executor_stop_hook_fixture(&["first-turn", "second-turn"]).await?;
     let selection = fixture.attach().await?;
     fixture
         .test
@@ -128,7 +128,8 @@ async fn executor_stop_hook_stops_after_disconnection() -> Result<()> {
 async fn executor_stop_hook_rejects_mismatched_environment() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let fixture = executor_stop_hook_fixture().await?;
+    let fixture =
+        executor_stop_hook_fixture(&["first-turn", "mismatched-turn", "restored-turn"]).await?;
     let selection = fixture.attach().await?;
     fixture
         .test
@@ -255,16 +256,40 @@ async fn executor_stop_hook_rejects_mismatched_environment() -> Result<()> {
         .test
         .submit_text_turn("when Node REPL belongs to a different executor")
         .await?;
+    assert_eq!(fixture.calls().await?.len(), 1);
+
+    // The hook and its capability root are still attached. Rebinding the same
+    // server to their original environment must admit a new, real MCP call.
+    fixture
+        .test
+        .codex
+        .refresh_mcp_config(fixture.test.config.clone())
+        .await;
+    wait_for_mcp_server(&fixture.test.codex, "node_repl").await?;
+    fixture
+        .test
+        .submit_text_turn("when Node REPL returns to the original executor")
+        .await?;
+    fixture.wait_for_hook_call().await?;
     if let Some(executor) = executor {
         executor.abort();
     }
 
-    assert_eq!(fixture.calls().await?.len(), 1);
+    let calls = fixture.calls().await?;
+    assert_eq!(calls.len(), 2);
+    assert_eq!(
+        calls[1]["params"]["arguments"],
+        json!({
+            "hook_event_name": "Stop",
+            "session_id": fixture.test.session_configured.thread_id.to_string(),
+            "turn_id": fixture.responses.requests()[2].body_json()["client_metadata"]["turn_id"],
+        })
+    );
 
     Ok(())
 }
 
-async fn executor_stop_hook_fixture() -> Result<ExecutorStopHookFixture> {
+async fn executor_stop_hook_fixture(response_ids: &[&str]) -> Result<ExecutorStopHookFixture> {
     let server = start_mock_server().await;
     let hook_called = Arc::new(Notify::new());
     let hook_called_for_server = Arc::clone(&hook_called);
@@ -363,7 +388,8 @@ async fn executor_stop_hook_fixture() -> Result<ExecutorStopHookFixture> {
 
     let responses = mount_sse_sequence(
         &server,
-        ["first-turn", "second-turn"]
+        response_ids
+            .iter()
             .map(|id| {
                 sse(vec![
                     ev_response_created(id),
@@ -371,7 +397,7 @@ async fn executor_stop_hook_fixture() -> Result<ExecutorStopHookFixture> {
                     ev_completed(id),
                 ])
             })
-            .to_vec(),
+            .collect(),
     )
     .await;
 

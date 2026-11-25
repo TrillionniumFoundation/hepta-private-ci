@@ -53,6 +53,15 @@ impl HookMcpExecutor for CoreHookMcpExecutor {
                     call.tool
                 )
             })?;
+            if let Some(environment_id) = call.environment_id.as_deref()
+                && prepared_call.server_environment_id() != environment_id
+            {
+                bail!(
+                    "MCP hook for environment `{environment_id}` cannot call server `{}` bound to environment `{}`",
+                    call.server,
+                    prepared_call.server_environment_id()
+                );
+            }
 
             let result = prepared_call
                 .call(
