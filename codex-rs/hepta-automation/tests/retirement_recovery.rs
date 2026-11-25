@@ -303,7 +303,7 @@ async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
         let pool = SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(
             layout.automation_root().to_path_buf(),
         )?)
-        .open_durable_evidence_pool(&path)
+        .open_private_durable_evidence_pool(&path)
         .await?;
         sqlx::query(statement).execute(&pool).await?;
         pool.close().await;

@@ -1335,7 +1335,7 @@ mod tests {
         )
         .expect("absolute sqlite home");
         let blocker_pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_durable_evidence_pool(store.path())
+            .open_private_durable_evidence_pool(store.path())
             .await
             .expect("open lock pool");
         let blocker = blocker_pool

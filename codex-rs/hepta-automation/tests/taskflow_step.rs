@@ -381,7 +381,7 @@ async fn step_outbox_rejects_wrong_order_and_append_only_tamper() {
     let sqlite_home =
         AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root()).expect("sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(store.path())
+        .open_private_durable_evidence_pool(store.path())
         .await
         .expect("inspection pool");
     assert!(

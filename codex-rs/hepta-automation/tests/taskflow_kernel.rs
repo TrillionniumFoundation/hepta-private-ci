@@ -364,7 +364,7 @@ async fn structural_replay_rejects_hash_valid_taskflow_event_fence_tamper() {
     let sqlite_home = AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(store.path())
+        .open_private_durable_evidence_pool(store.path())
         .await
         .expect("open inspection pool");
     sqlx::query("DROP TRIGGER taskflow_events_no_update")
@@ -434,7 +434,7 @@ async fn structural_replay_binds_generation_scoped_claim_identity_to_event_fence
     let sqlite_home = AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(store.path())
+        .open_private_durable_evidence_pool(store.path())
         .await
         .expect("open inspection pool");
     sqlx::query("DROP TRIGGER taskflow_events_no_update")

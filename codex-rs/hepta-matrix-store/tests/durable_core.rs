@@ -229,13 +229,21 @@ async fn two_agents_never_share_stream_or_owner_database() -> TestResult {
     second_store.close().await;
     let third = agent(THIRD_AGENT)?;
     let third_layout = layout(&temp, &third)?;
-    fs::create_dir_all(third_layout.matrix_root())?;
-    fs::copy(
-        first_layout.matrix_root().join("matrix_1.sqlite3"),
-        third_layout.matrix_root().join("matrix_1.sqlite3"),
-    )?;
+    // Overwrite a real, closed private destination so the assertion exercises
+    // the Agent owner boundary after the operating system's file policy.
+    let third_store =
+        MatrixDurableStore::open(&third_layout, MatrixDurableConfig::default()).await?;
+    let third_path = third_store.path().to_path_buf();
+    third_store.close().await;
+    let source_bytes = fs::read(first_layout.matrix_root().join("matrix_1.sqlite3"))?;
+    fs::write(&third_path, &source_bytes)?;
+    assert_eq!(fs::read(&third_path)?, source_bytes);
     let foreign = MatrixDurableStore::open(&third_layout, MatrixDurableConfig::default()).await;
-    assert!(matches!(foreign, Err(MatrixDurableError::AccessDenied)));
+    assert!(
+        matches!(&foreign, Err(MatrixDurableError::AccessDenied)),
+        "foreign database error: {:?}",
+        foreign.as_ref().err()
+    );
     Ok(())
 }
 

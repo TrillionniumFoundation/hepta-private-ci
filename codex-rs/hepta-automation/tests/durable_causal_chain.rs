@@ -840,7 +840,7 @@ async fn reopen_rejects_tampered_canonical_occurrence_identity() {
     let sqlite_home =
         AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root()).expect("sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&database_path)
+        .open_private_durable_evidence_pool(&database_path)
         .await
         .expect("inspection pool");
     sqlx::query("DROP TRIGGER automation_occurrence_identity_no_update")

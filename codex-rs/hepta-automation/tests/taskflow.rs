@@ -99,7 +99,7 @@ async fn inspection_pool(fixture: &Fixture, store: &AutomationStore) -> sqlx::Sq
     let sqlite_home = AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root())
         .expect("absolute sqlite home");
     SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(store.path())
+        .open_private_durable_evidence_pool(store.path())
         .await
         .expect("open inspection pool")
 }
@@ -616,7 +616,7 @@ async fn taskflow_mutations_reject_corrupt_event_chain_before_replay_or_append()
     let sqlite_home = AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&database_path)
+        .open_private_durable_evidence_pool(&database_path)
         .await
         .expect("open inspection pool");
     sqlx::query("DROP TRIGGER taskflow_events_no_update")
@@ -679,7 +679,7 @@ async fn taskflow_mutations_reject_corrupt_event_chain_before_replay_or_append()
     let sqlite_home = AbsolutePathBuf::from_absolute_path(fixture.layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&database_path)
+        .open_private_durable_evidence_pool(&database_path)
         .await
         .expect("reopen inspection pool");
     let event_count: i64 = sqlx::query_scalar(
