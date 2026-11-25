@@ -57,6 +57,8 @@ mod logind;
 pub(crate) use logind::paired_human_tests::SyntheticOriginalHuman;
 #[path = "authority_host_notes_successor.rs"]
 mod notes_successor;
+#[path = "authority_host_paired_material.rs"]
+mod paired_material;
 
 /// A lane is fixed by its private listener, never selected by a wire request.
 #[derive(Clone, Copy, Debug)]
@@ -79,6 +81,7 @@ pub struct HostAuthorityService {
     notes: Option<crate::RootNotesGrantAdmission>,
     calculator: Option<crate::deployment_issuer::RootCalculatorGrantAdmission>,
     paired: Option<crate::deployment_issuer::RegisteredRootPaired>,
+    paired_training: Option<paired_material::InstalledPairedTraining>,
     // The exact Registry object opened by the original Root factory. Its Arc
     // shares the existing lock/owner; Notes registration must never reopen it.
     root_registry: Option<Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>>,
@@ -105,6 +108,7 @@ impl HostAuthorityService {
             notes: None,
             calculator: None,
             paired: None,
+            paired_training: None,
             root_registry: None,
             checkpoint: None,
             consumers: None,

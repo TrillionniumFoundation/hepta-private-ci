@@ -597,6 +597,32 @@ impl AgentdConfig {
         Ok((self, preparation))
     }
 
+    /// Explicit trusted composition of the already pinned one-use Root channel
+    /// and the original required turn/journal owner. No listener or grant route
+    /// is installed, and the legacy Python intake remains unavailable.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_paired_training(
+        mut self,
+        client: crate::AgentdPairedMaterialClient,
+    ) -> Result<(Self, crate::AgentdPairedTraining), AgentdError> {
+        let host = self
+            .production_writer_host()
+            .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?;
+        if host.has_registered_destination(crate::paired_preparation::DESTINATION) {
+            return Err(AgentdError::Invalid(
+                "fixed paired read cannot attach to an effect dispatcher".into(),
+            ));
+        }
+        let handle = self
+            .notes_thread_tools
+            .as_mut()
+            .ok_or_else(|| {
+                AgentdError::Invalid("original protected owner is not installed".into())
+            })?
+            .install_paired_training(client)?;
+        Ok((self, handle))
+    }
+
     /// Explicit old-incarnation recovery from the trusted sealed deployment.
     /// The actual current target is taken from the already installed Session
     /// observer; no UI command supplies either target or a helper path.

@@ -1,4 +1,5 @@
-//! Open-only paired registration on the original Root owner. No grant or read.
+//! Original paired registration and optional fixed material custody.
+//! Opening observes records only; the dedicated read has its own live boundary.
 use super::*;
 use crate::AgentdIdentity;
 use crate::AuthBusTextIngress;
@@ -10,6 +11,17 @@ use codex_hepta_types::Digest32;
 #[path = "deployment_paired_live.rs"]
 mod live;
 use live::PairedRootInspection;
+
+#[path = "deployment_paired_entry.rs"]
+mod entry;
+pub(super) use entry::PairedMaterialEntriesV1;
+use entry::PreparedMaterialEntry;
+#[path = "deployment_paired_material.rs"]
+mod material;
+use material::FixedTrainingMaterials;
+pub use material::PairedTrainingMaterialManifestV1;
+#[path = "deployment_paired_consumer.rs"]
+mod consumer;
 
 /// Trusted launcher metadata, not proof of a human turn or material custody.
 /// The original Registry must already contain the exact enrollment and effect.
@@ -45,6 +57,7 @@ pub(crate) struct RegisteredRootPaired {
     enrollment: AuthorityLease,
     effect: AuthorityLease,
     policy: DeploymentGrantPolicy,
+    training_materials: Option<FixedTrainingMaterials>,
 }
 
 impl HostAuthorityPairedRegistration {
@@ -226,6 +239,7 @@ impl RegisteredRootPaired {
             enrollment,
             effect,
             policy,
+            training_materials: None,
         };
         owner.observe()?;
         Ok(owner)

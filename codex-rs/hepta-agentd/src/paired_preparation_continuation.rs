@@ -84,6 +84,45 @@ pub(crate) struct OriginalPairedContinuation<'a> {
 }
 
 impl OriginalPairedContinuation<'_> {
+    /// Consume the original private owner. The result is request correlation,
+    /// not permission: only the fixed Root consumer can enter an actual read.
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn into_training_request(
+        self,
+    ) -> Result<
+        (
+            super::material_protocol::PairedTrainingReadRequest,
+            Digest32,
+        ),
+        AgentdError,
+    > {
+        self.verified.original_ingress()?;
+        let payload: PreparationPayload =
+            serde_json::from_str(&self.prepared.receipt.payload_json)?;
+        if self.prepared.request.original != *self.verified.request()
+            || payload.original_route != *self.verified.route()
+            || payload.permission_revision != self.verified.permission_revision()
+            || payload.expires_at_ms != self.verified.expires_at_ms()
+            || payload.statement_sha256 != self.verified.statement_sha256().to_string()
+        {
+            return Err(invalid(
+                "original training continuation lost its human binding",
+            ));
+        }
+        let binding = self
+            .prepared
+            .writer
+            .final_use_binding(&self.prepared.receipt, DESTINATION)
+            .await?;
+        let delivery = self.verified.request().delivery_id;
+        let request = super::material_protocol::PairedTrainingReadRequest::from_original(
+            self.verified,
+            self.prepared.receipt.payload_json,
+            binding,
+        )?;
+        Ok((request, delivery))
+    }
+
     /// Consume the private result for the existing preparation-only API. The
     /// actual receipt is checked and discarded here; returning its observation
     /// cannot arm a later consumer or recreate the private continuation.
