@@ -1086,7 +1086,10 @@ mod thread_processor_behavior_tests {
 
         fs::write(&path, format!("{}\n", serde_json::to_string(&line)?))?;
         let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(&timestamp)?;
-        let times = FileTimes::new().set_modified(parsed.into());
+        let modified = parsed.to_system_time().ok_or_else(|| {
+            anyhow::anyhow!("rollout timestamp is outside the platform file-time range")
+        })?;
+        let times = FileTimes::new().set_modified(modified);
         std::fs::OpenOptions::new()
             .append(true)
             .open(&path)?
