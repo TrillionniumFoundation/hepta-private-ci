@@ -49,7 +49,11 @@ elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('  = note: rust-lld: warning: ignoring unknown argument')
     print('          rust-lld: error: undefined symbol: __stack_chk_fail')
     print('          >>> referenced by native-archive.o')
-    print('FAIL: //fake:target')
+    reported_logs = json.loads(os.environ.get('BAZEL_PROBE_REPORTED_TEST_LOGS', '[]'))
+    for reported_log in reported_logs:
+        print(f'FAIL: //fake:target (see {reported_log})')
+    if not reported_logs:
+        print('FAIL: //fake:target')
     sys.exit(37)
 """
 
@@ -408,6 +412,63 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn("undefined symbol: __stack_chk_fail", summary)
         self.assertIn(">>> referenced by native-archive.o", summary)
         self.assertIn("actual failing test diagnostic", result.stdout)
+
+    def test_full_failure_artifact_preserves_early_diagnostic_and_bytes(self) -> None:
+        archive = self.root / "execution logs"
+        # Real Bazel failures report separate shard and retry-attempt paths.
+        first = self.root / "shard one" / "test_attempts" / "attempt_1.log"
+        second = first.with_name("attempt_2.log")
+        reported_log = self.root / "shard two" / "test.log"
+        first.parent.mkdir(parents=True)
+        reported_log.parent.mkdir()
+        content = (
+            b"early panic absent from the console tail\r\n" + b"later output\r\n" * 250
+        )
+        first.write_bytes(b"first failed attempt before the final tail\r\n")
+        second.write_bytes(b"second failed attempt before the final tail\r\n")
+        reported_log.write_bytes(content)
+        self.env.update(
+            BAZEL_PROBE_FAIL="1",
+            BAZEL_PROBE_REPORTED_TEST_LOGS=json.dumps(
+                [str(first).replace("/", "\\"), str(second), str(reported_log)]
+            ),
+            CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(archive),
+        )
+        result, calls = self.run_wrapper(
+            "--print-failed-test-logs", "--", "test", "--", "//fake:target"
+        )
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2, "archiving must not rerun a test")
+        self.assertNotIn("early panic", result.stdout)
+        self.assertEqual(result.stdout.count("later output"), 200)
+        logs = list(archive.glob("failed-test-logs-*/fake/target/*/*.log"))
+        self.assertEqual(len(logs), 3)
+        expected = {
+            str(path).replace("\\", "/"): path.read_bytes()
+            for path in (first, second, reported_log)
+        }
+        actual = {
+            (path.parent / "source-path.txt")
+            .read_text(encoding="utf-8")
+            .strip(): path.read_bytes()
+            for path in logs
+        }
+        self.assertEqual(actual, expected)
+
+    def test_artifact_copy_failure_keeps_bazel_status_and_console_tail(self) -> None:
+        blocked = self.root / "blocked artifact directory"
+        blocked.write_bytes(b"existing file must not be replaced")
+        self.env.update(
+            BAZEL_PROBE_FAIL="1",
+            CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(blocked),
+        )
+        result, _ = self.run_wrapper(
+            "--print-failed-test-logs", "--", "test", "--", "//fake:target"
+        )
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertIn("actual failing test diagnostic", result.stdout)
+        self.assertIn("Could not preserve full Bazel test log", result.stderr)
+        self.assertEqual(blocked.read_bytes(), b"existing file must not be replaced")
 
 
 if __name__ == "__main__":

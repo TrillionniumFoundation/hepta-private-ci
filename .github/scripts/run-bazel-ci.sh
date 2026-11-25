@@ -155,6 +155,33 @@ print_bazel_test_log_tails() {
       test_log="$reported_test_log"
     fi
 
+    if [[ -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ]]; then
+      # Preserve every reported shard/attempt in the existing execution-log
+      # artifact. The console tail and original Bazel exit status stay unchanged.
+      local artifact_root="${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR}"
+      if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
+        artifact_root="${artifact_root//\\//}"
+      fi
+      local log_index=0
+      local full_test_log
+      while IFS= read -r full_test_log; do
+        if [[ ! -f "$full_test_log" ]]; then
+          continue
+        fi
+        log_index=$((log_index + 1))
+        local archived_dir="${artifact_root}/failed-test-logs-$$/${rel_path}/${log_index}"
+        if ! mkdir -p "$archived_dir" || ! cp "$full_test_log" "$archived_dir/$(basename "$full_test_log")" || ! printf '%s\n' "$full_test_log" > "$archived_dir/source-path.txt"; then
+          echo "::warning::Could not preserve full Bazel test log for ${target}" >&2
+        fi
+      done < <(
+        {
+          printf '%s\n' "$test_log"
+          grep -F "FAIL: ${target} " "$console_log" \
+            | sed -nE 's#.* \(see (.*[\\/](test|attempt_[0-9]+)\.log)\).*#\1#p' || true
+        } | sed 's#\\#/#g' | sort -u
+      )
+    fi
+
     echo "::group::Bazel test log tail for ${target}"
     if [[ -f "$test_log" ]]; then
       tail -n 200 "$test_log"
