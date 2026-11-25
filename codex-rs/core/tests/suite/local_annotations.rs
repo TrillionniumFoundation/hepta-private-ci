@@ -99,9 +99,21 @@ async fn persisted_items_matching_expected(
         let normalized = without_id_or_metadata(expected_item);
         let offset = stored[cursor..].iter().position(|item| {
             without_id_or_metadata(item.clone()) == normalized
-        }).with_context(|| format!(
-            "wire input {wire_index} has no exact ordered persisted match after history item {cursor}"
-        ))?;
+        }).with_context(|| {
+            let expected = normalized.to_string();
+            let closest = stored[cursor..].iter().enumerate().map(|(offset, item)| {
+                let actual = without_id_or_metadata(item.clone()).to_string();
+                let prefix = expected.chars().zip(actual.chars()).take_while(|(left, right)| left == right).count();
+                (cursor + offset, prefix, actual)
+            }).max_by_key(|(_, prefix, _)| *prefix);
+            let detail = closest.map(|(index, prefix, actual)| {
+                let start = prefix.saturating_sub(40);
+                let expected = expected.chars().skip(start).take(240).collect::<String>();
+                let actual = actual.chars().skip(start).take(240).collect::<String>();
+                format!("; closest history item {index} differs at character {prefix}: expected={expected:?}, stored={actual:?}")
+            }).unwrap_or_else(|| "; no remaining persisted response items".to_string());
+            format!("wire input {wire_index} has no exact ordered persisted match after history item {cursor}{detail}")
+        })?;
         cursor += offset + 1;
         matched.push(stored[cursor - 1].clone());
     }
