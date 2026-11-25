@@ -1,6 +1,4 @@
-use chrono::DateTime;
-use chrono::Local;
-use chrono::Utc;
+use codex_utils_time::Timestamp;
 use http::header::HeaderMap;
 
 use codex_core::config::Config;
@@ -16,7 +14,7 @@ pub fn set_user_agent_suffix(suffix: &str) {
 }
 
 pub fn append_error_log(message: impl AsRef<str>) {
-    let ts = Utc::now().to_rfc3339();
+    let ts = Timestamp::now().to_rfc3339();
     if let Ok(mut f) = std::fs::OpenOptions::new()
         .create(true)
         .append(true)
@@ -113,8 +111,8 @@ pub fn task_url(base_url: &str, task_id: &str) -> String {
     format!("{normalized}/codex/tasks/{task_id}")
 }
 
-pub fn format_relative_time(reference: DateTime<Utc>, ts: DateTime<Utc>) -> String {
-    let mut secs = (reference - ts).num_seconds();
+pub fn format_relative_time(reference: Timestamp, ts: Timestamp) -> String {
+    let mut secs = (reference - ts).whole_seconds();
     if secs < 0 {
         secs = 0;
     }
@@ -129,10 +127,9 @@ pub fn format_relative_time(reference: DateTime<Utc>, ts: DateTime<Utc>) -> Stri
     if hours < 24 {
         return format!("{hours}h ago");
     }
-    let local = ts.with_timezone(&Local);
-    local.format("%b %e %H:%M").to_string()
+    ts.format_local(codex_utils_time::LocalFormat::MonthDayTime)
 }
 
-pub fn format_relative_time_now(ts: DateTime<Utc>) -> String {
-    format_relative_time(Utc::now(), ts)
+pub fn format_relative_time_now(ts: Timestamp) -> String {
+    format_relative_time(Timestamp::now(), ts)
 }
