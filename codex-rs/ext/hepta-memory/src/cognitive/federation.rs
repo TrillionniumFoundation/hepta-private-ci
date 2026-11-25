@@ -1213,7 +1213,9 @@ mod tests {
     async fn revoke_removes_prepared_federated_context_from_next_physical_send() {
         let temp = tempfile::tempdir().expect("tempdir");
         let fleet_root = temp.path().join("fleet");
-        std::fs::create_dir_all(&fleet_root).expect("fleet root");
+        let fleet_root = std::fs::create_dir_all(&fleet_root)
+            .and_then(|()| fleet_root.canonicalize())
+            .expect("fleet root");
         let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet").layout();
         let owner_id = AgentId::parse(OWNER_ID).expect("owner id");
         let consumer_id = AgentId::parse(CONSUMER_ID).expect("consumer id");
@@ -1260,7 +1262,22 @@ mod tests {
             .expect("memory");
         let workspace = temp.path().join("consumer-workspace");
         std::fs::create_dir_all(&workspace).expect("consumer workspace");
-        let workspace = workspace.canonicalize().expect("canonical workspace");
+        let canonical_workspace = workspace.canonicalize().expect("canonical workspace");
+        let workspace_uri =
+            PathUri::from_host_native_path(&canonical_workspace).expect("workspace uri");
+        // Grant and physical send use the same native path carried by the turn URI.
+        let workspace = workspace_uri.to_path_buf();
+        assert!(
+            workspace.is_absolute() && workspace.is_dir(),
+            "provider workspace must identify an absolute directory"
+        );
+        assert!(
+            workspace
+                .canonicalize()
+                .expect("round-trip canonical workspace")
+                == canonical_workspace,
+            "provider workspace URI must preserve the canonical path"
+        );
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
@@ -1294,7 +1311,7 @@ mod tests {
                 }],
                 environments: vec![TurnInputEnvironment {
                     environment_id: "primary".to_string(),
-                    cwd: PathUri::from_host_native_path(&workspace).expect("workspace uri"),
+                    cwd: workspace_uri,
                     is_primary: true,
                 }],
             },
