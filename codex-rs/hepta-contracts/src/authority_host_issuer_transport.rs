@@ -22,7 +22,9 @@ pub(crate) mod channel;
 #[path = "authority_host_peer.rs"]
 mod peer;
 pub use peer::HostAuthorityPeerChannel;
+pub use peer::HostAuthorityPeerCurrent;
 pub use peer::HostAuthorityPeerPolicy;
+pub use peer::HostAuthorityPeerResponse;
 
 const OPERATION: &str = "runtime.agentd.production_operation";
 const MAX_REQUEST: usize = 16 * 1024;

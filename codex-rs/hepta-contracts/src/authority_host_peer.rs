@@ -4,13 +4,21 @@ use super::HostIssuerPeer;
 use super::HostIssuerTransportError;
 use super::channel::OwnerChannel;
 use super::io_error;
+use rustix::event::PollFd;
+use rustix::event::PollFlags;
+use rustix::event::Timespec;
+use rustix::event::poll;
 use std::net::Shutdown;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::time::Duration;
+use std::time::Instant;
 
 #[path = "authority_host_descriptor.rs"]
 mod descriptor;
+#[path = "authority_host_peer_response.rs"]
+mod response;
+pub use response::HostAuthorityPeerResponse;
 
 /// Limits and exact owner identity installed by the trusted root launcher.
 /// A peer request cannot change these limits, extend its lifetime or reconnect.
@@ -29,6 +37,37 @@ pub struct HostAuthorityPeerChannel {
     stream: Option<UnixStream>,
     policy: HostAuthorityPeerPolicy,
     owner: OwnerChannel,
+}
+
+/// A borrowed current-frame observation of the original channel and pidfd.
+/// This cannot be cloned, deserialized, renewed or used as a read permit. A
+/// synchronous effect owner must recheck it at its own actual entry boundary.
+pub struct HostAuthorityPeerCurrent<'a> {
+    owner: &'a OwnerChannel,
+    stream: &'a UnixStream,
+    deadline: Instant,
+}
+
+impl HostAuthorityPeerCurrent<'_> {
+    pub fn deadline(&self) -> Instant {
+        self.deadline
+    }
+
+    /// Dedicated one-request handlers reject EOF or additional pipelined input
+    /// before releasing a result. The old multi-frame exchange does not opt in
+    /// to this stricter predicate merely by borrowing the observation.
+    pub fn recheck_original_exchange(&self) -> Result<(), HostIssuerTransportError> {
+        self.owner.check(self.deadline)?;
+        let mut descriptors = [PollFd::new(self.stream, PollFlags::IN)];
+        loop {
+            match poll(&mut descriptors, Some(&Timespec::default())) {
+                Ok(_) if descriptors[0].revents().is_empty() => return Ok(()),
+                Ok(_) => return Err(HostIssuerTransportError::PeerDenied),
+                Err(rustix::io::Errno::INTR) => self.owner.check(self.deadline)?,
+                Err(error) => return Err(io_error(error)),
+            }
+        }
+    }
 }
 
 impl HostAuthorityPeerChannel {
@@ -115,6 +154,24 @@ impl HostAuthorityPeerChannel {
         &mut self,
         handle: impl FnOnce(&[u8]) -> Result<Vec<u8>, HostIssuerTransportError>,
     ) -> Result<bool, HostIssuerTransportError> {
+        self.exchange_with_original_response(|bytes, response| {
+            let bytes = handle(bytes)?;
+            response.write_response(&bytes, || Ok(()))
+        })
+    }
+
+    /// Serve one original frame with a synchronous, single-response writer.
+    /// A handler may keep its own authority locks through every actual write;
+    /// obtaining this borrowed transport does not authorize any effect itself.
+    /// A handler that sends nothing, fails, or sends only a prefix closes this
+    /// channel permanently. No response is written after the handler returns.
+    pub fn exchange_with_original_response(
+        &mut self,
+        handle: impl FnOnce(
+            &[u8],
+            &HostAuthorityPeerResponse<'_>,
+        ) -> Result<(), HostIssuerTransportError>,
+    ) -> Result<bool, HostIssuerTransportError> {
         let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
         let result = self.exchange_inner(&mut stream, handle);
         match result {
@@ -133,7 +190,10 @@ impl HostAuthorityPeerChannel {
     fn exchange_inner(
         &self,
         stream: &mut UnixStream,
-        handle: impl FnOnce(&[u8]) -> Result<Vec<u8>, HostIssuerTransportError>,
+        handle: impl FnOnce(
+            &[u8],
+            &HostAuthorityPeerResponse<'_>,
+        ) -> Result<(), HostIssuerTransportError>,
     ) -> Result<bool, HostIssuerTransportError> {
         let mut length = [0; 4];
         if self
@@ -152,15 +212,16 @@ impl HostAuthorityPeerChannel {
         let mut bytes = vec![0; length];
         self.owner.read_until(stream, &mut bytes, deadline)?;
         self.owner.check(deadline)?;
-        let response = handle(&bytes)?;
-        self.owner.check(deadline)?;
-        if response.is_empty() || response.len() > self.policy.response_bound {
-            return Err(HostIssuerTransportError::Unavailable);
-        }
-        self.owner
-            .write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?;
-        self.owner.write_until(stream, &response, deadline)?;
-        self.owner.check(deadline)?;
+        let response = HostAuthorityPeerResponse::new(
+            HostAuthorityPeerCurrent {
+                owner: &self.owner,
+                stream,
+                deadline,
+            },
+            self.policy.response_bound,
+        );
+        handle(&bytes, &response)?;
+        response.finish()?;
         Ok(true)
     }
 }
