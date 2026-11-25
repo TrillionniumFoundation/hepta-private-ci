@@ -1,5 +1,15 @@
 # Hepta 研究与集成核验
 
+## 2026-11-25 18:02 UTC 后：NDU 格式独立修补及新源码原生读回
+
+- #6799 精确 18fbe3ab0c4918ed8626f87800da3cbccc802e52 相比 abfe8a7e ahead29/behind0，base 732e934，仍 open draft。该 head 的 PR workflow 首屏100条：54 success、21 failure、2 queued、11 in_progress、12 skipped；非分页终局。#7068、#7070、#7074、#7016、#7021、#7032 head 未变，仍 open draft。
+- [Windows Git Process Tree 45667298800](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45667298800) 的 Windows 原生作业 139392798934：四个具名进程生命周期用例4/4，31 filtered/skipped；Linux 139392799497 在完整 Rust fmt 步骤失败，原日志仅两个 diff hunk（projection_journal_tests.rs:94/107）。按原 formatter 输出只改两次 select_projection 调用的换行与末尾逗号，保留断言、参数、撤销/重放语义。独立 [41e9338efde34cb48d6901cb92a78cd2f54f077f](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/41e9338efde34cb48d6901cb92a78cd2f54f077f) repair/hcsn-projection-journal-fmt-20261125，ahead1/behind0，唯一文件 +4/-12，回读逐字相同；独立 Mac 原生 rustfmt 1.9.0-stable --check（仓内 edition2024/imports_granularity 配置）退出0，git hash-object=d3ae3a63e620ba883b13f680c7751e3bc352b00b 与提交一致，原生回执 1a213dfb822-ffbe-4118，只有原配置允许的 stable warning。仅单文件格式局部闭合，Linux 完整 fmt 与后续测试未执行，不签收整工作流。
+- [有限均匀网格 Torch cascade](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45667297364/job/139392794356) 原6项无跳过通过，6个源码前后 SHA256 完全相同；Python3.12.16/Torch2.10.0+cpu/NumPy2.3.5/SciPy1.17.0，wall3.0241s、child CPU2.63046s、peak RSS418188KiB。限有限均匀网格 FP64 autograd oracle，graded_mesh_gradients=false、network_training=false、independent_future=0、production_qualified=false；非历史 frozen adjoint 资格。
+- [N256 retained evidence](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45667298518/job/139392797675) 只读原12文件、8 phase packets、1542坐标字节比较、5个精确守恒恒等式，解码 NPZ 12671B，dynamic_calls=0、global_HOLD=true。未新增动态模型资格。
+- [2x2 isolated OS processes](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45667293770/job/139392784540) 原生6测试通过（日志重复显示同一组结果，仅计6），1.355s；actual-pretrained-four-process-arm job139401238274 skipped，不能认定真实预训练四进程闭环。 
+- [Split mesh](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45667297534/job/139392794414) 仍在 dedicated manifest 检查失败；[real checkpoint CPU recovery](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45667297569/job/139392796072) 新确认同一 Ubuntu26.04 x64 Python3.12.3 缺失，真实 recovery job139403480247 skipped。没有换版本、修改冻结 hash 或盲重试。
+- 七份主要原始日志合计4720行（含尾空行），本轮仅新 head 取证与独立格式修补，没有重复派发既有研究或在途作业；没有合并红门。全仓 HOLD。
+
 ## 2026-11-25 16:54 UTC 后：Torch 冻结清单全量复算及五模型真实执行阻塞
 
 - #6799 精确 abfe8a7ef20a4bdc55a1d0626d621156984e5bb2（base 732e934ba496d90fbe042b8d41d479ef901643e5，open draft）较上次 8b37f459 ahead48/behind0。PR workflow 首屏100条：72 success、15 failure、7 skipped、6 in_progress；不是全仓分页终局。
