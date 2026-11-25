@@ -19,7 +19,7 @@
     "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
     "url": "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64"
   },
-  "branch": "fix/hepta-chrono-hooks-cli-lock-20261125-7c9e",
+  "branch": "fix/hepta-chrono-contract-isolation-20261125-7c9e",
   "expected_graph": {
     "all_package_targets_sha256": "59eb2fc3a2e574b8e2c2499495b816daadbbcf9b8f288330e0d04e44c1ecda61",
     "cargo_target_count": 6033,
@@ -2175,7 +2175,7 @@
       "path": "codex-rs/hooks/Cargo.toml"
     }
   ],
-  "parent": "2fd85fd8276a14b3166a4175009c84fb4f36cd73",
+  "parent": "5a047e7ac8669860d60584f2319db9519ed00244",
   "qualification": {
     "chrono_remediated": false,
     "native_compatibility_proven": false,
@@ -2208,11 +2208,11 @@
       "sha256": "182d9c13a747806ee4eeab7d9a49f368e09eabaf174f393be09ce14519f83396"
     },
     {
-      "bytes": 7918,
-      "git_blob": "f3ace57fd6f1f79eb08a7ed8ccf2ea8a6244dc22",
+      "bytes": 7934,
+      "git_blob": "066539046337a986e60dadf82a119aa6794ee467",
       "mode": "100644",
       "path": ".github/workflows/hepta-chrono-hooks-cli-lock-candidate-v1.yml",
-      "sha256": "a4465cdcb5cfc0322ed8e039f0d64938f70a7c1de3603d1ccca1e51baf9a4eb9"
+      "sha256": "e18e65ee676346f988c44a52dca9243322d114e11942a9c8dc263e9b1e1f234b"
     },
     {
       "bytes": 7666,
@@ -4504,11 +4504,11 @@
       "sha256": "a6e69676dd9738d94312224d0578c99e8c0e1338159111a86da74e2179b4f936"
     },
     {
-      "bytes": 18941,
-      "git_blob": "2d4043c7d8c9f550cf6c0c297652cf1688383ac6",
+      "bytes": 21114,
+      "git_blob": "d3b9717f305b6f69600726314c5da755eb703c10",
       "mode": "100644",
       "path": "scripts/test_hepta_chrono_hooks_cli_lock_contract_v1.py",
-      "sha256": "0ae6c4aeac33d14a1483224ce95163d362b85f4e8d515b1c2dd9f3aa91415310"
+      "sha256": "5244761257645be24e623dd74339ecd671d52f116665dc7abb4c3211a2c40694"
     },
     {
       "bytes": 13553,
@@ -4535,169 +4535,320 @@
   "schema": "hepta.chrono-hooks-cli-lock-approved-inputs.v1",
   "source_review": {
     "all_features_edges_are_not_default_or_runtime_activity": true,
-    "baseline_lock_acceptance": {
-      "bytes": 3278,
-      "git_blob": "7c1c29d0c5b6777df23995ac3474903e41a190cd",
-      "path": "chrono7105_current_ci/ROOT_LOCK_ACCEPTANCE.json",
-      "sha256": "0864360fbc9130625fd45133442bc9fbe355a88f1076eeb8e7f79324e3e6768e"
+    "complete_predicted_graph_unchanged": true,
+    "current_fixture_repair": {
+      "all_nine_names_and_old_thirteen_mutations_preserved": true,
+      "candidate_execution_count": 0,
+      "format_ast_and_comments_unchanged": true,
+      "formatted_test": {
+        "bytes": 21114,
+        "git_blob": "d3b9717f305b6f69600726314c5da755eb703c10",
+        "sha256": "5244761257645be24e623dd74339ecd671d52f116665dc7abb4c3211a2c40694"
+      },
+      "independent_source_review": {
+        "bytes": 7948,
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7108-contract-fixture-authorization-review-v1.json",
+        "sha256": "68d46e50101354bef4dcbc9141cd3061e631d10e1d322bc432eb643a31e27a73"
+      },
+      "manifest_path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7108-contract-fixture-fix-v2/SOURCE_CANDIDATE.json",
+      "manifest_sha256": "f0ec6ec950fed9c12c5e2c4be9b72cf5cfad386752a00ab81fdd6925f2b0f869",
+      "unformatted_test_sha256": "fa47464cd4064ed8d630745a0988f82a5c259c957f9d584348cf2d697e2ade5d"
     },
-    "exact_actual_parent": "2fd85fd8276a14b3166a4175009c84fb4f36cd73",
-    "exact_actual_parent_tree": "d1952cd358bebcbf65c2d8c80c91e7c69ec52908",
-    "existing_time_consumers_before": 33,
-    "expected_graph_inverse_edges": 29,
+    "exact_actual_parent": "5a047e7ac8669860d60584f2319db9519ed00244",
+    "exact_actual_parent_tree": "56cf52fb7ab732f12fae75e98c03cbfc892c51fc",
     "final_formatting": {
-      "historical_formatted_manifests_apply_unchanged_to_seven_remaining_rust_files": [
-        "codex-rs/cli/src/timestamp_tests.rs",
-        "codex-rs/core/src/hook_runtime.rs",
-        "codex-rs/hooks/src/engine/command_runner.rs",
-        "codex-rs/hooks/src/engine/dispatcher.rs",
-        "codex-rs/hooks/src/engine/mcp_runner.rs",
-        "codex-rs/hooks/src/legacy_notify.rs",
-        "codex-rs/hooks/src/lib.rs"
-      ],
-      "original_cost": {
-        "bytes": 1110,
-        "git_blob": "b6390de75cc9ee1b6bbe7df7e89033556d279ddc",
-        "path": "chrono_hooks_cli_final_source_v1/ORIGINAL_FORMAT_COST.json",
-        "sha256": "30e6a1564c785552eb12827ddf4e44716d4e28039533c34d5ea7da3588113bed"
-      },
-      "python_three": {
-        "bytes": 3009,
-        "git_blob": "0506d06f40a8ecec368a94d72c131a24e3c40896",
-        "path": "chrono_hooks_cli_python_format_actual_v1/RESULT.json",
-        "sha256": "c524d9b563fa4e9d16e66147e13fdc7131695d85b13765e12ed019fbb2fd5f51"
-      },
-      "rust_six": {
-        "bytes": 16801,
-        "git_blob": "a9ba3db72494ee19b1c802e69b9d2e43e9d0a1e7",
-        "path": "chrono_private_cycle_format_v1/SOURCE_AFTER_FORMAT.json",
-        "sha256": "60791db33e085fa00ad8fb4aec0e835b38db33ca94058ebcadda3411aceef488"
-      }
+      "bytes": 5863,
+      "git_blob": "037145032d9eff4bbffeed0aa5eadcc49f0c695d",
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/chrono-contract-isolation-format-v1/RESULT.json",
+      "sha256": "5e3c4e004b48ceaba85c14a38e1502c96fc5d02fc44745fd3df0ff5a7851c7c6"
     },
-    "final_frozen_v3_source": {
-      "bytes": 27616,
-      "git_blob": "8ca331ed708843ec471bc2b4ac90cf06cdb0b962",
-      "path": "chrono_hooks_cli_generation_v3_final/SOURCE_CANDIDATE.json",
-      "sha256": "75618b8cb6b9620258fe0c28856a1faba2d7f9ec9d1745199244a6888310fac2"
-    },
-    "final_independent_reviews": [
-      {
-        "bytes": 7146,
-        "git_blob": "ff90fc506a009c93ca4ab1491c799668bcb18535",
-        "path": "chrono_hooks_cli_authorization_final_review_v1/REVIEW.json",
-        "sha256": "7283ef306c569f346e289d25b9c12c47e42deee31ec72138ea82ad21249732f7"
-      },
-      {
-        "bytes": 120248,
-        "git_blob": "304fa91a21b35da0e3eea8ba51fe169683fbec10",
-        "path": "chrono_hooks_cli_authorization_final_review_v1/INDEPENDENT_V3_SOURCE_REVIEW.json",
-        "sha256": "55cfe71ad92011fbc598e0845662469115f1970af40046f722375bc389a68420"
-      },
-      {
-        "bytes": 122818,
-        "git_blob": "483405fc602bff13c11f3696f7533287cb641e56",
-        "path": "chrono_hooks_cli_authorization_final_review_v1/INDEPENDENT_GRAPH_REVIEW.json",
-        "sha256": "e717d018f160ea6594f02bc511579c79a2a1f6176b5af684835a81c7c5219749"
-      },
-      {
-        "bytes": 12851,
-        "git_blob": "13c37c7b5dbc509868b0727c7f8e1a50313b07c7",
-        "path": "chrono_hooks_cli_v2_native_readonly_review_v1/FINAL_V3_SIX_RUST_REVIEW.json",
-        "sha256": "fb4373ed05baabe37e9795f5f4808fb7c0090d2692e3ca95b4b7b02e294f5c53"
-      },
-      {
-        "bytes": 2495,
-        "git_blob": "3bd78f33d24ec0973c05b38df13513a0e8866bd2",
-        "path": "chrono_hooks_cli_generation_v3_final/FORMAT_INPUT_READONLY_REVIEW.json",
-        "sha256": "ff05f22801f0be535f3835fdd50bedd5678754d28f411c7cfdae1bd187b30bec"
-      },
-      {
-        "bytes": 14174,
-        "git_blob": "a0187bd9b2a7023647d090ce94061d0bdeb3121f",
-        "path": "chrono_hooks_cli_authorization_format_review_v1/REVIEW_V2.json",
-        "sha256": "2fe23afc7f62811142d752c809d1909fa11de7c9f2645c7982dd2cabb8c13659"
-      },
-      {
-        "bytes": 2185,
-        "git_blob": "839545187c8b15dc8d63417bedd62bfdacdd89f8",
-        "path": "chrono7106_current_ci/ROOT_NATIVE_ACCEPTANCE.json",
-        "sha256": "5f24262c0a7d2837258b603ce0455eb6a163015f995374f9f5189fb074f8d186"
-      }
-    ],
-    "formatted_manifests": [
-      {
-        "bytes": 13875,
-        "git_blob": "609b662d93860c89cf33654d984ea439b5e28238",
-        "path": "chrono_hooks_format_v1/SOURCE_AFTER_FORMAT_V3.json",
-        "sha256": "088ca46ff9067f758bf84aa2c6492b32835b3653850af9a5e3ba59f2a9600da0"
-      },
-      {
-        "bytes": 13365,
-        "git_blob": "151c3abfadebf8cfddcf6be7ec169a0b1819595b",
-        "path": "chrono_cli_format_v1/SOURCE_AFTER_FORMAT_V3.json",
-        "sha256": "5a9261469c310f5b62fa62762c7723114f24fccecb0216fb8fa0bfff3427a104"
-      }
-    ],
-    "independent_cycle_math_review": {
-      "bytes": 22935,
-      "git_blob": "1986ce96e751cb9c8b98b28f1585f71e9b60f8f4",
-      "path": "chrono_hooks_cli_authorization_design_review_v1/PRIVATE_CYCLE_MATHEMATICAL_REVIEW.json",
-      "sha256": "ec78ed82005c611c8661b13972a9fb188a39f92c62742d870b70873a2f8ba302"
-    },
+    "historical_review_scope_does_not_qualify_current_execution": true,
     "old_security_lock_scope_reopened": false,
-    "original_full_normalized_graph_sha256": "fbc63bf748845939f06f06e963c8dc48f4c5950a5f2222735566123b7a03ee86",
-    "original_graph_inverse_edges": 31,
-    "original_graph_sha256": "b9f6eb3cb782256174a63d7c9523317e773f11dae61b2e3f93467358097a17a9",
-    "original_native25_acceptance": {
-      "bytes": 2185,
-      "git_blob": "839545187c8b15dc8d63417bedd62bfdacdd89f8",
-      "path": "chrono7106_current_ci/ROOT_NATIVE_ACCEPTANCE.json",
-      "sha256": "5f24262c0a7d2837258b603ce0455eb6a163015f995374f9f5189fb074f8d186"
-    },
     "original_native25_qualification_transferred": false,
-    "original_native25_run": 45703918191,
     "original_scientific_budgets_unchanged": true,
+    "previous_failed_scope": {
+      "analyst_failure_readback": {
+        "bytes": 4953,
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7108-original-failure-2238/independent-readback-v1/FAILURE_REVIEW.json",
+        "sha256": "8cd1a9d93e546a53e200ce5ff4a436356879d1e29336600a4bdca4886a864045"
+      },
+      "artifact": {
+        "bytes": 6482510,
+        "id": 15069120732,
+        "sha256": "25f238b526a4081a6a0bf4b23988373c1c2a94ecaa38d972926ee376b8c2221f"
+      },
+      "bazel_lock_generation_attempts": 0,
+      "branch": "fix/hepta-chrono-hooks-cli-lock-20261125-7c9e",
+      "cost": {
+        "full_job_cpu_seconds": null,
+        "generation_process_cpu_seconds": 5.042093,
+        "generation_reaped_child_cpu_seconds": 2.014031,
+        "generation_scope_seconds": 9.214673911000006,
+        "job_wall_seconds": 46.0,
+        "old_E1_E6_used": 0,
+        "timings_are_nested_do_not_sum": true,
+        "tool_preparation_inclusive_seconds": 18.02412765199999,
+        "whole_elapsed_at_generation_result": 40.687347749,
+        "whole_elapsed_at_readback_gate": 40.731709030999994
+      },
+      "exact_original_control_results": [
+        {
+          "name": "test_bazel_duplicate_keys_and_nonfinite_values_are_rejected",
+          "raw_line": 1,
+          "status": "ok"
+        },
+        {
+          "name": "test_bazel_original_full_bytes_must_remain_unchanged",
+          "raw_line": 2,
+          "status": "ok"
+        },
+        {
+          "name": "test_full_graph_gate_rejects_roster_target_kind_feature_checksum_drift",
+          "raw_line": 3,
+          "status": "ok"
+        },
+        {
+          "name": "test_missing_duplicate_extra_and_reintroduced_chrono_are_rejected",
+          "raw_line": 4,
+          "status": "ok"
+        },
+        {
+          "name": "test_normalizer_keeps_target_paths_and_edge_conditions",
+          "raw_line": 5,
+          "status": "ok"
+        },
+        {
+          "name": "test_original_time_features_and_exact_wasm_clock_closure_are_required",
+          "raw_line": 6,
+          "status": "ok"
+        },
+        {
+          "name": "test_registry_and_old_prettyplease_alignment_cannot_drift",
+          "raw_line": 7,
+          "status": "ok"
+        },
+        {
+          "name": "test_source_hash_cannot_authorize_unrelated_manifest_or_feature_changes",
+          "raw_line": 8,
+          "status": "ok"
+        },
+        {
+          "name": "test_two_source_manifests_bind_exact_lock_replacements",
+          "raw_line": 9,
+          "status": "ERROR"
+        }
+      ],
+      "failed_partial_locks": [
+        {
+          "accepted_candidate": false,
+          "byte_identical_to_original": true,
+          "bytes": 1792663,
+          "path": "MODULE.bazel.lock",
+          "sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892"
+        },
+        {
+          "accepted_candidate": false,
+          "byte_identical_to_original": true,
+          "bytes": 421782,
+          "path": "codex-rs/Cargo.lock",
+          "sha256": "74f3c2c1ab1c9a42ce79e32a8fb9b49f790f3f596cc84d6724265b618e95005c"
+        }
+      ],
+      "head": "5a047e7ac8669860d60584f2319db9519ed00244",
+      "job_id": 139549462061,
+      "locked_metadata_attempts": 0,
+      "negative_specific_gate_qualification_after_alias_mutation": false,
+      "parent": "2fd85fd8276a14b3166a4175009c84fb4f36cd73",
+      "resolver_update_attempts": 0,
+      "root_failure_acceptance": {
+        "bytes": 3766,
+        "git_blob": "020971b78231c3744de3b8631f2bb8f1c14a36d8",
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/ROOT_7108_ORIGINAL_FAILURE_READBACK.json",
+        "sha256": "942e37db01f0f9bebf47f5dabd505e12cbbac30879fcf4541eeddca6acacf690"
+      },
+      "run_attempt": 1,
+      "run_id": 45712281533,
+      "source_review": {
+        "all_features_edges_are_not_default_or_runtime_activity": true,
+        "baseline_lock_acceptance": {
+          "bytes": 3278,
+          "git_blob": "7c1c29d0c5b6777df23995ac3474903e41a190cd",
+          "path": "chrono7105_current_ci/ROOT_LOCK_ACCEPTANCE.json",
+          "sha256": "0864360fbc9130625fd45133442bc9fbe355a88f1076eeb8e7f79324e3e6768e"
+        },
+        "exact_actual_parent": "2fd85fd8276a14b3166a4175009c84fb4f36cd73",
+        "exact_actual_parent_tree": "d1952cd358bebcbf65c2d8c80c91e7c69ec52908",
+        "existing_time_consumers_before": 33,
+        "expected_graph_inverse_edges": 29,
+        "final_formatting": {
+          "historical_formatted_manifests_apply_unchanged_to_seven_remaining_rust_files": [
+            "codex-rs/cli/src/timestamp_tests.rs",
+            "codex-rs/core/src/hook_runtime.rs",
+            "codex-rs/hooks/src/engine/command_runner.rs",
+            "codex-rs/hooks/src/engine/dispatcher.rs",
+            "codex-rs/hooks/src/engine/mcp_runner.rs",
+            "codex-rs/hooks/src/legacy_notify.rs",
+            "codex-rs/hooks/src/lib.rs"
+          ],
+          "original_cost": {
+            "bytes": 1110,
+            "git_blob": "b6390de75cc9ee1b6bbe7df7e89033556d279ddc",
+            "path": "chrono_hooks_cli_final_source_v1/ORIGINAL_FORMAT_COST.json",
+            "sha256": "30e6a1564c785552eb12827ddf4e44716d4e28039533c34d5ea7da3588113bed"
+          },
+          "python_three": {
+            "bytes": 3009,
+            "git_blob": "0506d06f40a8ecec368a94d72c131a24e3c40896",
+            "path": "chrono_hooks_cli_python_format_actual_v1/RESULT.json",
+            "sha256": "c524d9b563fa4e9d16e66147e13fdc7131695d85b13765e12ed019fbb2fd5f51"
+          },
+          "rust_six": {
+            "bytes": 16801,
+            "git_blob": "a9ba3db72494ee19b1c802e69b9d2e43e9d0a1e7",
+            "path": "chrono_private_cycle_format_v1/SOURCE_AFTER_FORMAT.json",
+            "sha256": "60791db33e085fa00ad8fb4aec0e835b38db33ca94058ebcadda3411aceef488"
+          }
+        },
+        "final_frozen_v3_source": {
+          "bytes": 27616,
+          "git_blob": "8ca331ed708843ec471bc2b4ac90cf06cdb0b962",
+          "path": "chrono_hooks_cli_generation_v3_final/SOURCE_CANDIDATE.json",
+          "sha256": "75618b8cb6b9620258fe0c28856a1faba2d7f9ec9d1745199244a6888310fac2"
+        },
+        "final_independent_reviews": [
+          {
+            "bytes": 7146,
+            "git_blob": "ff90fc506a009c93ca4ab1491c799668bcb18535",
+            "path": "chrono_hooks_cli_authorization_final_review_v1/REVIEW.json",
+            "sha256": "7283ef306c569f346e289d25b9c12c47e42deee31ec72138ea82ad21249732f7"
+          },
+          {
+            "bytes": 120248,
+            "git_blob": "304fa91a21b35da0e3eea8ba51fe169683fbec10",
+            "path": "chrono_hooks_cli_authorization_final_review_v1/INDEPENDENT_V3_SOURCE_REVIEW.json",
+            "sha256": "55cfe71ad92011fbc598e0845662469115f1970af40046f722375bc389a68420"
+          },
+          {
+            "bytes": 122818,
+            "git_blob": "483405fc602bff13c11f3696f7533287cb641e56",
+            "path": "chrono_hooks_cli_authorization_final_review_v1/INDEPENDENT_GRAPH_REVIEW.json",
+            "sha256": "e717d018f160ea6594f02bc511579c79a2a1f6176b5af684835a81c7c5219749"
+          },
+          {
+            "bytes": 12851,
+            "git_blob": "13c37c7b5dbc509868b0727c7f8e1a50313b07c7",
+            "path": "chrono_hooks_cli_v2_native_readonly_review_v1/FINAL_V3_SIX_RUST_REVIEW.json",
+            "sha256": "fb4373ed05baabe37e9795f5f4808fb7c0090d2692e3ca95b4b7b02e294f5c53"
+          },
+          {
+            "bytes": 2495,
+            "git_blob": "3bd78f33d24ec0973c05b38df13513a0e8866bd2",
+            "path": "chrono_hooks_cli_generation_v3_final/FORMAT_INPUT_READONLY_REVIEW.json",
+            "sha256": "ff05f22801f0be535f3835fdd50bedd5678754d28f411c7cfdae1bd187b30bec"
+          },
+          {
+            "bytes": 14174,
+            "git_blob": "a0187bd9b2a7023647d090ce94061d0bdeb3121f",
+            "path": "chrono_hooks_cli_authorization_format_review_v1/REVIEW_V2.json",
+            "sha256": "2fe23afc7f62811142d752c809d1909fa11de7c9f2645c7982dd2cabb8c13659"
+          },
+          {
+            "bytes": 2185,
+            "git_blob": "839545187c8b15dc8d63417bedd62bfdacdd89f8",
+            "path": "chrono7106_current_ci/ROOT_NATIVE_ACCEPTANCE.json",
+            "sha256": "5f24262c0a7d2837258b603ce0455eb6a163015f995374f9f5189fb074f8d186"
+          }
+        ],
+        "formatted_manifests": [
+          {
+            "bytes": 13875,
+            "git_blob": "609b662d93860c89cf33654d984ea439b5e28238",
+            "path": "chrono_hooks_format_v1/SOURCE_AFTER_FORMAT_V3.json",
+            "sha256": "088ca46ff9067f758bf84aa2c6492b32835b3653850af9a5e3ba59f2a9600da0"
+          },
+          {
+            "bytes": 13365,
+            "git_blob": "151c3abfadebf8cfddcf6be7ec169a0b1819595b",
+            "path": "chrono_cli_format_v1/SOURCE_AFTER_FORMAT_V3.json",
+            "sha256": "5a9261469c310f5b62fa62762c7723114f24fccecb0216fb8fa0bfff3427a104"
+          }
+        ],
+        "independent_cycle_math_review": {
+          "bytes": 22935,
+          "git_blob": "1986ce96e751cb9c8b98b28f1585f71e9b60f8f4",
+          "path": "chrono_hooks_cli_authorization_design_review_v1/PRIVATE_CYCLE_MATHEMATICAL_REVIEW.json",
+          "sha256": "ec78ed82005c611c8661b13972a9fb188a39f92c62742d870b70873a2f8ba302"
+        },
+        "old_security_lock_scope_reopened": false,
+        "original_full_normalized_graph_sha256": "fbc63bf748845939f06f06e963c8dc48f4c5950a5f2222735566123b7a03ee86",
+        "original_graph_inverse_edges": 31,
+        "original_graph_sha256": "b9f6eb3cb782256174a63d7c9523317e773f11dae61b2e3f93467358097a17a9",
+        "original_native25_acceptance": {
+          "bytes": 2185,
+          "git_blob": "839545187c8b15dc8d63417bedd62bfdacdd89f8",
+          "path": "chrono7106_current_ci/ROOT_NATIVE_ACCEPTANCE.json",
+          "sha256": "5f24262c0a7d2837258b603ce0455eb6a163015f995374f9f5189fb074f8d186"
+        },
+        "original_native25_qualification_transferred": false,
+        "original_native25_run": 45703918191,
+        "original_scientific_budgets_unchanged": true,
+        "prior_chrono_generation_scope_reopened": false,
+        "prior_large_dates_plan_replaced_before_any_activation": true,
+        "private_cycle_source_and_wasm_target_edges_require_review": false,
+        "private_cycle_source_and_wasm_target_edges_review_completed": true,
+        "root_generation_scope_admission": {
+          "bytes": 4397,
+          "git_blob": "c2023593811457541bfb16f976d200794367130b",
+          "path": "chrono_hooks_cli_final_source_v1/ROOT_GENERATION_ADMISSION.json",
+          "sha256": "2e4568fc19e58a213acf0810b1c197e99952194cd8914b2aec05e9bc3bcc1a25"
+        },
+        "source_design": {
+          "bytes": 11877,
+          "git_blob": "e3f9fbb11a103184a1318cf934eae95948142bdf",
+          "path": "chrono_hooks_cli_scope_design_v1/SOURCE_AND_SCOPE_REVIEW.json",
+          "sha256": "05409019755f391b58444b94280aa43dd72fc021644f801d188e666ecb5a2ac9"
+        },
+        "v1_global_feature_risk_review": {
+          "bytes": 65249,
+          "git_blob": "668ed0c8f66c932088e64ccee2c4aa2c4dd4e5f2",
+          "path": "chrono_hooks_cli_authorization_design_review_v1/CONSUMER_REVIEW.json",
+          "sha256": "13146e9c470e6da83bfaa8b3397cfd3625837f70c5862280c19e6f293e24ba90"
+        },
+        "v1_inactive_source": {
+          "bytes": 12500,
+          "git_blob": "7140e864a97d159575866cf3876b74d9cdb7895f",
+          "path": "chrono_hooks_cli_generation_v1/SOURCE_CANDIDATE.json",
+          "sha256": "3c96f0060b87dbdc21d9482f57ee51e1cffdab47c838e5ea3396935b345ed338"
+        },
+        "v2_golden_literals": {
+          "bytes": 3886,
+          "git_blob": "c52d62d11cd6a07f2720c6eaa053acddb38afe6c",
+          "path": "chrono_hooks_cli_generation_v2/ORIGINAL_CALENDAR_GOLDENS.json",
+          "sha256": "aae542acd2c832b03cd7d4070aed900207f4d0c9019364600d77996948eee0a9"
+        },
+        "v2_graph_derivation": {
+          "bytes": 142944,
+          "git_blob": "75157c12de2289ffee1f0d0e4929bc8e19609f52",
+          "path": "chrono_hooks_cli_generation_v2/EXPECTED_GRAPH_DERIVATION.json",
+          "sha256": "5bfc18ac941454a875aab607de0de571349e6d302831836d6bf140b84cd1bd22"
+        },
+        "wasm_clock_target_edges_added": 2
+      },
+      "spec_sha256": "193c3352619d95c0ba0c0145b588508454473eff6f7d18a041cc8c871a093445",
+      "status": "FAIL",
+      "tree": "56cf52fb7ab732f12fae75e98c03cbfc892c51fc"
+    },
     "prior_chrono_generation_scope_reopened": false,
-    "prior_large_dates_plan_replaced_before_any_activation": true,
-    "private_cycle_source_and_wasm_target_edges_require_review": false,
-    "private_cycle_source_and_wasm_target_edges_review_completed": true,
+    "production_contract_and_runner_unchanged": true,
     "root_generation_scope_admission": {
-      "bytes": 4397,
-      "git_blob": "c2023593811457541bfb16f976d200794367130b",
-      "path": "chrono_hooks_cli_final_source_v1/ROOT_GENERATION_ADMISSION.json",
-      "sha256": "2e4568fc19e58a213acf0810b1c197e99952194cd8914b2aec05e9bc3bcc1a25"
+      "bytes": 5076,
+      "git_blob": "9a7fe8795697ca4e939e7a75fdc04b64ba3d7d99",
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/chrono-contract-isolation-final-v1/ROOT_GENERATION_ADMISSION.json",
+      "sha256": "d3a8941fa80245593d602b2281274a54b43a48f28db9904273f781e6494b9f7b"
     },
-    "source_design": {
-      "bytes": 11877,
-      "git_blob": "e3f9fbb11a103184a1318cf934eae95948142bdf",
-      "path": "chrono_hooks_cli_scope_design_v1/SOURCE_AND_SCOPE_REVIEW.json",
-      "sha256": "05409019755f391b58444b94280aa43dd72fc021644f801d188e666ecb5a2ac9"
-    },
-    "v1_global_feature_risk_review": {
-      "bytes": 65249,
-      "git_blob": "668ed0c8f66c932088e64ccee2c4aa2c4dd4e5f2",
-      "path": "chrono_hooks_cli_authorization_design_review_v1/CONSUMER_REVIEW.json",
-      "sha256": "13146e9c470e6da83bfaa8b3397cfd3625837f70c5862280c19e6f293e24ba90"
-    },
-    "v1_inactive_source": {
-      "bytes": 12500,
-      "git_blob": "7140e864a97d159575866cf3876b74d9cdb7895f",
-      "path": "chrono_hooks_cli_generation_v1/SOURCE_CANDIDATE.json",
-      "sha256": "3c96f0060b87dbdc21d9482f57ee51e1cffdab47c838e5ea3396935b345ed338"
-    },
-    "v2_golden_literals": {
-      "bytes": 3886,
-      "git_blob": "c52d62d11cd6a07f2720c6eaa053acddb38afe6c",
-      "path": "chrono_hooks_cli_generation_v2/ORIGINAL_CALENDAR_GOLDENS.json",
-      "sha256": "aae542acd2c832b03cd7d4070aed900207f4d0c9019364600d77996948eee0a9"
-    },
-    "v2_graph_derivation": {
-      "bytes": 142944,
-      "git_blob": "75157c12de2289ffee1f0d0e4929bc8e19609f52",
-      "path": "chrono_hooks_cli_generation_v2/EXPECTED_GRAPH_DERIVATION.json",
-      "sha256": "5bfc18ac941454a875aab607de0de571349e6d302831836d6bf140b84cd1bd22"
-    },
-    "wasm_clock_target_edges_added": 2
+    "source_pin_path_roster_unchanged": true,
+    "status": "ROOT_BOUND_NEW_SOURCE_REQUIRES_ORIGINAL_GENERATION_AND_ROOT_ACCEPTANCE",
+    "thirteen_rust_and_two_manifest_sources_unchanged": true
   },
   "synthetic_contract_controls": [
     "test_bazel_duplicate_keys_and_nonfinite_values_are_rejected",

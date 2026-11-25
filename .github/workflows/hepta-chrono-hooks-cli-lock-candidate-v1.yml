@@ -1,4 +1,4 @@
-name: Hooks and CLI Chrono lock candidate (review only)
+name: Hooks and CLI Chrono contract isolation (review only)
 
 on:
   pull_request:
@@ -20,7 +20,7 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.user.login == 'ProfHepta' &&
       github.event.pull_request.draft == true &&
-      github.event.pull_request.head.ref == 'fix/hepta-chrono-hooks-cli-lock-20261125-7c9e' &&
+      github.event.pull_request.head.ref == 'fix/hepta-chrono-contract-isolation-20261125-7c9e' &&
       github.run_attempt == 1
     runs-on: ubuntu-24.04
     timeout-minutes: 12
@@ -43,7 +43,7 @@ jobs:
           import json, os, pathlib, time
           head = os.environ['LOCK_EXPECTED_HEAD']
           run_id, attempt = os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT']
-          stage = pathlib.Path(os.environ['RUNNER_TEMP']) / f'chrono-hooks-cli-lock-{head}-{run_id}-{attempt}'
+          stage = pathlib.Path(os.environ['RUNNER_TEMP']) / f'chrono-contract-isolation-{head}-{run_id}-{attempt}'
           stage.mkdir()
           evidence = stage / 'evidence'
           evidence.mkdir()
@@ -163,7 +163,7 @@ jobs:
         timeout-minutes: 2
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: chrono-hooks-cli-lock-candidate-${{ env.LOCK_EXPECTED_HEAD }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: chrono-contract-isolation-candidate-${{ env.LOCK_EXPECTED_HEAD }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ env.LOCK_STAGE }}/evidence/
           if-no-files-found: error
           retention-days: 30
