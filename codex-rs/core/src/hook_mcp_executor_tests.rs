@@ -117,14 +117,32 @@ async fn hook_metadata_reaches_prepared_client_without_overriding_thread_identit
         .filter(|request| request["method"] == "tools/call")
         .map(|request| request["params"]["_meta"].clone())
         .collect::<Vec<_>>();
+    // The prepared transport adds its own progress token to each call.
+    // Check that field separately without relaxing the exact metadata check.
+    let [first, second] = metadata.as_slice() else {
+        anyhow::bail!("expected exactly two prepared-client tool calls");
+    };
+    let first_token = first
+        .get("progressToken")
+        .and_then(Value::as_u64)
+        .context("first prepared-client call must carry a numeric progress token")?;
+    let second_token = second
+        .get("progressToken")
+        .and_then(Value::as_u64)
+        .context("second prepared-client call must carry a numeric progress token")?;
+    assert_ne!(first_token, second_token);
     assert_eq!(
         metadata,
         vec![
-            json!({ "threadId": session.thread_id.to_string() }),
+            json!({
+                "threadId": session.thread_id.to_string(),
+                "progressToken": first_token,
+            }),
             json!({
                 "threadId": session.thread_id.to_string(),
                 "x-codex-turn-metadata": turn_metadata,
                 "extension": { "typed": [false, 7, null] },
+                "progressToken": second_token,
             }),
         ]
     );
