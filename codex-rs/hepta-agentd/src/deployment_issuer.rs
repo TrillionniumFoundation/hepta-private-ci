@@ -71,6 +71,7 @@ pub use notes::RootNotesGrantAdmission;
 mod paired;
 pub use paired::HostAuthorityPairedRegistration;
 pub use paired::PairedRootObservation;
+pub use paired::PairedTrainingMaterialManifestV1;
 pub(crate) use paired::RegisteredRootPaired;
 
 const STATE_OWNER: &str = "local-final-use-issuer";
@@ -112,6 +113,11 @@ struct IssuerState {
     /// number can never be signed again, even when its signature slot is freed.
     #[serde(default)]
     text_intent_sequence: u64,
+    // Omitted only for legacy states that have never entered a paired read.
+    // Once nonempty, the old strict issuer decoder refuses this new field,
+    // preventing a compatibility downgrade from silently erasing tombstones.
+    #[serde(default, skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    paired_material_entries_v1: paired::PairedMaterialEntriesV1,
 }
 
 /// Independent signer; private key bytes are neither serialized nor logged.
@@ -246,6 +252,7 @@ impl DeploymentFinalUseIssuer {
                 writer_authorization: None,
                 text_signatures: Vec::new(),
                 text_intent_sequence: 0,
+                paired_material_entries_v1: std::collections::BTreeMap::new(),
             },
         )?;
         File::open(directory)?.sync_all()?;

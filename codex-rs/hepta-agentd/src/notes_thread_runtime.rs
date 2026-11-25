@@ -405,6 +405,36 @@ impl AgentdNotesThreadToolRuntime {
                     }).await;
                     continue;
                 }
+                pending = async {
+                    match self.paired_training.as_mut() {
+                        Some(lane) => lane.receiver.recv().await,
+                        None => std::future::pending().await,
+                    }
+                } => {
+                    let Some(pending) = pending else {
+                        self.paired_training = None;
+                        continue;
+                    };
+                    let request = pending.request.clone();
+                    let preparing = Arc::clone(&pending.preparing);
+                    let lane = self.paired_training.as_ref()
+                        .ok_or_else(|| invalid("original paired training owner absent"))?;
+                    pending.complete_on_owner(&cancellation, async {
+                        if lane.journal.retained(&request).await?.is_some() {
+                            return Ok(crate::PairedTrainingReadResult::RetainedReadOnly {
+                                original_delivery: request.original.delivery_id,
+                            });
+                        }
+                        let verified = connection.verify_paired_turn(
+                            &state, &self.adapter, request.original.clone(),
+                        ).await?;
+                        self.adapter.check_paired_preparation_lifetime(&verified)?;
+                        let result = lane.read_verified(&request, &verified, &preparing).await?;
+                        self.adapter.check_paired_preparation_lifetime(&verified)?;
+                        Ok(result)
+                    }).await;
+                    continue;
+                }
                 event = connection.client.next_observed_event() => event.ok_or_else(|| invalid("original Notes thread disconnected; retained operations cannot resend"))?,
             };
             if event.connection_id() != connection.client.connection_id() {

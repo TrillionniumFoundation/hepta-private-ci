@@ -6,7 +6,7 @@ use crate::authority_host_service::SyntheticOriginalHuman;
 use crate::deployment_issuer::RootHumanTextRequest;
 use pretty_assertions::assert_eq;
 
-fn original() -> (
+pub(super) fn original() -> (
     Fixture,
     AgentdIdentity,
     SyntheticOriginalHuman,
