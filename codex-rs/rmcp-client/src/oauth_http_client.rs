@@ -8,6 +8,7 @@ use codex_exec_server::HttpClient;
 use codex_exec_server::HttpHeader;
 use codex_exec_server::HttpRedirectPolicy;
 use codex_exec_server::HttpRequestParams;
+use codex_exec_server::HttpRequestRestrictedParams;
 use http::HeaderMap;
 use http::HeaderValue;
 use http::Method;
@@ -208,7 +209,10 @@ impl OAuthHttpClientAdapter {
             params.request_id = format!("oauth-request-{request_id}");
             let (response, mut body_stream) = self
                 .http_client
-                .http_request_stream(params.clone())
+                .http_request_stream_restricted(HttpRequestRestrictedParams {
+                    request: params.clone(),
+                    configured_resource_origin: self.resource_origin.ascii_serialization(),
+                })
                 .await
                 .map_err(oauth_http_client_error)?;
             let mut body = Vec::new();
@@ -331,6 +335,10 @@ impl OAuthHttpClient for OAuthHttpClientAdapter {
 #[cfg(test)]
 #[path = "oauth_http_client_security_tests.rs"]
 mod security_tests;
+
+#[cfg(test)]
+#[path = "oauth_address_capability_tests.rs"]
+mod address_capability_tests;
 
 #[cfg(test)]
 mod tests {

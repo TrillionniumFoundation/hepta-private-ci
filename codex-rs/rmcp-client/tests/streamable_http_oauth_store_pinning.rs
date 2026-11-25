@@ -15,6 +15,7 @@ use codex_exec_server::HttpClient;
 use codex_exec_server::HttpRedirectPolicy;
 use codex_exec_server::HttpRequestParams;
 use codex_exec_server::HttpRequestResponse;
+use codex_exec_server::HttpRequestRestrictedParams;
 use codex_exec_server::HttpResponseBodyStream;
 use codex_rmcp_client::McpProtocolMode;
 use codex_rmcp_client::RmcpClient;
@@ -94,6 +95,14 @@ impl RecordingHttpClient {
 }
 
 impl HttpClient for RecordingHttpClient {
+    fn http_request_stream_restricted(
+        &self,
+        params: HttpRequestRestrictedParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        self.record_request(&params.request);
+        self.inner.http_request_stream_restricted(params)
+    }
+
     fn http_request(
         &self,
         params: HttpRequestParams,

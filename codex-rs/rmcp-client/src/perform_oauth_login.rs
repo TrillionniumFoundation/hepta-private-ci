@@ -802,6 +802,15 @@ mod tests {
     }
 
     impl HttpClient for RecordingHttpClient {
+        fn http_request_stream_restricted(
+            &self,
+            params: codex_exec_server::HttpRequestRestrictedParams,
+        ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>>
+        {
+            assert!(!params.configured_resource_origin.is_empty());
+            self.http_request_stream(params.request)
+        }
+
         fn http_request(
             &self,
             _params: HttpRequestParams,

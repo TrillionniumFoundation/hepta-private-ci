@@ -609,6 +609,22 @@ impl LazyRemoteExecServerClient {
 }
 
 impl HttpClient for LazyRemoteExecServerClient {
+    fn http_request_stream_restricted(
+        &self,
+        params: crate::HttpRequestRestrictedParams,
+    ) -> BoxFuture<
+        '_,
+        Result<(crate::HttpRequestResponse, crate::HttpResponseBodyStream), ExecServerError>,
+    > {
+        async move {
+            self.get()
+                .await?
+                .http_request_stream_restricted(params)
+                .await
+        }
+        .boxed()
+    }
+
     fn http_request(
         &self,
         params: crate::HttpRequestParams,

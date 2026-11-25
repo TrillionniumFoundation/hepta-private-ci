@@ -16,6 +16,7 @@ use codex_exec_server::HttpHeader;
 use codex_exec_server::HttpRedirectPolicy;
 use codex_exec_server::HttpRequestParams;
 use codex_exec_server::HttpRequestResponse;
+use codex_exec_server::HttpRequestRestrictedParams;
 use codex_exec_server::HttpResponseBodyStream;
 #[cfg(all(unix, not(target_os = "macos")))]
 use codex_utils_pty::process_group::kill_process_group;
@@ -218,6 +219,36 @@ impl HttpHeadersClient {
 }
 
 impl HttpClient for HttpHeadersClient {
+    fn http_request_stream_restricted(
+        &self,
+        params: HttpRequestRestrictedParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        async move {
+            let mcp_redirect_was_stopped = params.request.redirect_policy
+                == HttpRedirectPolicy::Stop
+                && !params.request.request_id.starts_with("oauth-request-");
+            let request = self.prepare_request(params.request).await?;
+            let prevent_proxy_authorization_redirect = mcp_redirect_was_stopped
+                && Url::parse(&request.url).is_ok_and(|url| url.scheme() == "http")
+                && request
+                    .headers
+                    .iter()
+                    .any(|header| header.name.eq_ignore_ascii_case("proxy-authorization"));
+            let (response, stream) = self
+                .inner
+                .http_request_stream_restricted(HttpRequestRestrictedParams {
+                    request,
+                    configured_resource_origin: params.configured_resource_origin,
+                })
+                .await?;
+            if prevent_proxy_authorization_redirect {
+                Self::reject_proxy_authorization_redirect(&response)?;
+            }
+            Ok((response, stream))
+        }
+        .boxed()
+    }
+
     fn http_request(
         &self,
         params: HttpRequestParams,

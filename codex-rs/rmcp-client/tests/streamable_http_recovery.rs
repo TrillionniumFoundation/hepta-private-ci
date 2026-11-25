@@ -10,6 +10,7 @@ use codex_exec_server::ExecServerError;
 use codex_exec_server::HttpClient;
 use codex_exec_server::HttpRequestParams;
 use codex_exec_server::HttpRequestResponse;
+use codex_exec_server::HttpRequestRestrictedParams;
 use codex_exec_server::HttpResponseBodyStream;
 use futures::FutureExt as _;
 use futures::future::BoxFuture;
@@ -57,6 +58,13 @@ impl FailFirstInitializeHttpClient {
 }
 
 impl HttpClient for FailFirstInitializeHttpClient {
+    fn http_request_stream_restricted(
+        &self,
+        params: HttpRequestRestrictedParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        self.inner.http_request_stream_restricted(params)
+    }
+
     fn http_request(
         &self,
         params: HttpRequestParams,

@@ -168,6 +168,21 @@ impl ExecServerTransportParams {
 /// use it when they need environment-owned network requests but should not
 /// depend on the concrete connection type or how that connection is established.
 pub trait HttpClient: Send + Sync {
+    /// Enforces the original configured resource's address capability on the
+    /// actual connector and every redirect, with request-scoped cancellation.
+    /// An implementation that lacks this capability rejects before HTTP I/O;
+    /// ordinary HTTP support must never be used as a fallback.
+    fn http_request_stream_restricted(
+        &self,
+        _params: crate::HttpRequestRestrictedParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        Box::pin(async {
+            Err(ExecServerError::Protocol(
+                "HTTP transport does not support restricted destination requests".to_string(),
+            ))
+        })
+    }
+
     /// Whether this exact transport implements the single-attempt contract
     /// below. Opaque wrappers and remote executors fail closed by default;
     /// support must not be inferred from ordinary HTTP request availability.

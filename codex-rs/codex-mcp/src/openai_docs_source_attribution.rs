@@ -4,6 +4,7 @@ use codex_exec_server::ExecServerError;
 use codex_exec_server::HttpClient;
 use codex_exec_server::HttpRequestParams;
 use codex_exec_server::HttpRequestResponse;
+use codex_exec_server::HttpRequestRestrictedParams;
 use codex_exec_server::HttpResponseBodyStream;
 use futures::future::BoxFuture;
 
@@ -34,6 +35,14 @@ impl OpenAiDocsHttpClient {
 }
 
 impl HttpClient for OpenAiDocsHttpClient {
+    fn http_request_stream_restricted(
+        &self,
+        mut params: HttpRequestRestrictedParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        self.attribute_mcp_request(&mut params.request);
+        self.http_client.http_request_stream_restricted(params)
+    }
+
     fn http_request(
         &self,
         mut params: HttpRequestParams,

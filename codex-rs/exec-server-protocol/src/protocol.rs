@@ -57,6 +57,8 @@ pub const DISCOVERABLE_PLUGIN_MANIFEST_PATHS: &[&str] = &[
 pub const HTTP_REQUEST_METHOD: &str = "http/request";
 /// Streaming HTTP with executor-owned, connection-scoped cancellation.
 pub const HTTP_REQUEST_CANCELLABLE_METHOD: &str = "http/requestCancellableV1";
+/// Streaming HTTP with mandatory original-resource address enforcement.
+pub const HTTP_REQUEST_RESTRICTED_METHOD: &str = "http/requestRestrictedV1";
 /// Cancels one original request and waits for its network owner to finish.
 pub const HTTP_REQUEST_CANCEL_METHOD: &str = "http/cancelRequestV1";
 /// JSON-RPC notification method for streamed executor HTTP response bodies.
@@ -773,6 +775,16 @@ pub struct HttpRequestParams {
     /// Return after response headers and stream the response body as deltas.
     #[serde(default)]
     pub stream_response: bool,
+}
+
+/// A mandatory address capability on a separate method that older executors
+/// reject. The origin must come from the original configured resource, never
+/// from discovery metadata or the current request/redirect URL.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct HttpRequestRestrictedParams {
+    pub request: HttpRequestParams,
+    pub configured_resource_origin: String,
 }
 
 /// HTTP response envelope returned from an executor `http/request` call.
