@@ -1011,6 +1011,22 @@ mod tests {
                 .accept()
                 .await
                 .expect("registry request should connect");
+            // Do not send a response before Hyper has an outstanding request.
+            // The test still exercises the same 50 ms whole-request deadline.
+            let mut request = [0_u8; 4096];
+            let mut received = 0;
+            while !request[..received]
+                .windows(/*size*/ 4)
+                .any(|bytes| bytes == b"\r\n\r\n")
+            {
+                assert!(received < request.len(), "bounded registry request headers");
+                let count = stream
+                    .read(&mut request[received..])
+                    .await
+                    .expect("registry request should precede the response");
+                assert_ne!(count, 0, "registry request must not be empty");
+                received += count;
+            }
             stream
                 .write_all(
                     b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 256\r\n\r\n{",
@@ -1035,10 +1051,13 @@ mod tests {
             Err(error) => error,
         };
 
-        assert!(matches!(
-            error,
-            ExecServerError::EnvironmentRegistryRequest(error) if error.is_timeout()
-        ));
+        assert!(
+            matches!(
+                &error,
+                ExecServerError::EnvironmentRegistryRequest(error) if error.is_timeout()
+            ),
+            "actual registry failure: {error:?}"
+        );
     }
 
     #[tokio::test]
