@@ -1,0 +1,99 @@
+{
+  "schema": "hcsn-live-display-eof-normalization-v1",
+  "source_commit": "14cfd44ab6d9da581bad5363495266424c661eb4",
+  "reason": "The deterministic merge qualification ran git diff --cached --check and found nine new blank lines at EOF.",
+  "scope": "Normalize live presentation/test copies only. Original bytes remain in the source commit and original archives; no model, metric, threshold, recorded execution, or frozen training dependency changes.",
+  "note": "README receives an additional separately reviewable transport-link update; normalized_sha256 records the EOF-only intermediate, not that final documentation byte stream.",
+  "changes": [
+    {
+      "path": "qualification/hcsn_smallnet_20261124/README.md",
+      "original_bytes": 26607,
+      "original_sha256": "84789328fb5c516b7bc6017a50f2e1bb9dab1975d9ef3da9f60829605ebd679b",
+      "original_git_blob_sha1": "ed0359d358f0e0d75b2202049702c8942065dc99",
+      "normalized_bytes": 26606,
+      "normalized_sha256": "5d822c878029b9ad134defd4f051cd33886cdc977e5818138f1d9440529985a3",
+      "normalized_git_blob_sha1": "d0ae8db402a6e4b07f3c34d3a5d9e0ebf079ae4f",
+      "semantic_check": "Documentation; only final blank lines removed by this normalization"
+    },
+    {
+      "path": "qualification/hcsn_smallnet_20261124/protocol_tests.py",
+      "original_bytes": 5792,
+      "original_sha256": "638d977d0a7f065bdbec3681c3e0dc8ca71d3a42f8535c7a7a2922999bd89b52",
+      "original_git_blob_sha1": "f4375cc0e346d3c1993eddfb17605aa459db2b0a",
+      "normalized_bytes": 5791,
+      "normalized_sha256": "54d5b724e098fab8b19e0ec396f92e223a91ca7f385d69b72848a41ac3393047",
+      "normalized_git_blob_sha1": "79b98471c56b6b28adc526cda3e245b8970b87cb",
+      "semantic_check": "Python AST identical; not in the fourteen frozen training dependencies"
+    },
+    {
+      "path": "qualification/hcsn_smallnet_20261124/evidence/audit/fixed_law_job.json",
+      "original_bytes": 3094,
+      "original_sha256": "c8a8829171b62069a6c379c95e5be74b9be4e9696aed22b6585c714b2278247d",
+      "original_git_blob_sha1": "336eb6623d09d40297795e152af1891380e38537",
+      "normalized_bytes": 3093,
+      "normalized_sha256": "bd64425b571f72cc6bcd68170214e0eaf3b53ece13384adaf9b84730c3c7ec6d",
+      "normalized_git_blob_sha1": "08b85392ad1339b32a5b0779d5d02cd5e1c13551",
+      "semantic_check": "JSON parsed values identical"
+    },
+    {
+      "path": "qualification/hcsn_smallnet_20261124/evidence/audit/kernel_cdf_fix.json",
+      "original_bytes": 6364,
+      "original_sha256": "7f78453fbf31de61a4ac5114c6abb157a71be701b76ff2bd657846470553d89d",
+      "original_git_blob_sha1": "0d763fd22bc04ef6efa09b56783181fd87e168ac",
+      "normalized_bytes": 6363,
+      "normalized_sha256": "9181d209c856249225fb854c31e4f81851591a7ffbe0418f8fdfaf2605556714",
+      "normalized_git_blob_sha1": "8368f8e9a0c39d38516b6d8389bfe533a9eb3686",
+      "semantic_check": "JSON parsed values identical"
+    },
+    {
+      "path": "qualification/hcsn_smallnet_20261124/evidence/audit/kernel_initial_failure.json",
+      "original_bytes": 6581,
+      "original_sha256": "1d1b8558c2555578d8b4dcb14544f43754125fe02927b03e4b2a58cb4fbed785",
+      "original_git_blob_sha1": "11eec6e636305e941a6a896ed3858b7cd7c167c5",
+      "normalized_bytes": 6580,
+      "normalized_sha256": "dbe003a7dc43ae0c5d3d720b1f98e151753e44b3d349f75e73e63ee1f55d11a9",
+      "normalized_git_blob_sha1": "f763748241e37f0acbdb7dcbb46ee24a741bce75",
+      "semantic_check": "JSON parsed values identical"
+    },
+    {
+      "path": "qualification/hcsn_smallnet_20261124/evidence/audit/kernel_normalized_and_benchmark.json",
+      "original_bytes": 7933,
+      "original_sha256": "ca8eb6dc53ae036a25b53d2ddfbf92f4e212322866bb0e80137f6f860c18dd6a",
+      "original_git_blob_sha1": "a7d93c011b08df24099baae15c2bc3498a777cae",
+      "normalized_bytes": 7932,
+      "normalized_sha256": "661d7978600580535884038ae66bad6175706fe6dbd6f8c08c1f259bc006de4a",
+      "normalized_git_blob_sha1": "d5c521a329d2347b76628cef4187e01741f090d8",
+      "semantic_check": "JSON parsed values identical"
+    },
+    {
+      "path": "qualification/hcsn_smallnet_20261124/evidence/audit/kernel_pointfix_and_benchmark.json",
+      "original_bytes": 7822,
+      "original_sha256": "1bcae8dca21f2efa465f3cc94dd9ba810e8382290dd6583911289daa84896754",
+      "original_git_blob_sha1": "8e068e75e0b5bfb6b81682cb02fe150fde640c91",
+      "normalized_bytes": 7821,
+      "normalized_sha256": "9ccc3c5d589a68db736d54a10e89211a45da85f9398d01ee2d2c4b63ece5fea0",
+      "normalized_git_blob_sha1": "e48e77421e83bc1fc2d77b444e8383c6dca7a075",
+      "semantic_check": "JSON parsed values identical"
+    },
+    {
+      "path": "qualification/hcsn_smallnet_20261124/evidence/audit/native32_uniformized_job.json",
+      "original_bytes": 1666,
+      "original_sha256": "a1e16c7e77a917709700c42949cbc2a78478692dd8ec57f11b44254ce4e8a8ee",
+      "original_git_blob_sha1": "90de6e9268ac2dbb70655267c267b8f5e70029d8",
+      "normalized_bytes": 1665,
+      "normalized_sha256": "9dff628a4980d44d59f7cb5e55f8327267d573ea97feadae8dff78ee7a223229",
+      "normalized_git_blob_sha1": "46981f20716b89569ba726475b8d0eb2ef61b5ad",
+      "semantic_check": "JSON parsed values identical"
+    },
+    {
+      "path": "qualification/hcsn_smallnet_20261124/evidence/audit/remap_pre_fix_diagnostic.json",
+      "original_bytes": 3465,
+      "original_sha256": "277773e36c21270991768ff7626f0fcd10c7466fd1a1edfe1c68b10da01ca755",
+      "original_git_blob_sha1": "2c093573d6322dfa24063393ad8b86d07143c8d5",
+      "normalized_bytes": 3464,
+      "normalized_sha256": "b892267711c051f8eab90ffb58c71067ac1516e88508a87e3826119d3e161292",
+      "normalized_git_blob_sha1": "567c803ba63635bbc0aa9f5cc16577e5f47d328f",
+      "semantic_check": "JSON parsed values identical"
+    }
+  ]
+}

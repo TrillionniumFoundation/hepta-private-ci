@@ -247,4 +247,3 @@ PY
 补充9次fit和9次test均成功退出；N8/32/64准确率分别为91.276±0.923%、90.625±1.924%、91.732±1.440%，均3/3 seed过沿用的数值门槛，全部selected step>0。实际更新数为512、255–265、194–197；同CPU上限不等于同更新数。9/9保存预测的独立NumPy指标重算最大差 `2.22e-16`，没有重跑物理轨迹。完整表与同seed差见 [补充结果](../hcsn_signed_control_20261124/evidence/RESULTS_SIGNED_ONLY.md)，复现命令见[补充README](../hcsn_signed_control_20261124/README.md)；原45适配与迁移仍对应原qvi_full父模型。
 
 补充fit/test阶段children含退出CPU分别1771.546/222.886秒；campaign wall为253.604秒，driver至回执CPU为4.760秒。优化CPU1535.043秒和worker CPU1765.795秒包含在fit children内，不相加；两个stage driver字段是累计快照。补充与主试验pair-body计时起点不同，不比较其速度；能耗未知。新证据、主/补协议绑定与后处理修订见同目录 `evidence/`，原72表和82份档案保持不变。
-
