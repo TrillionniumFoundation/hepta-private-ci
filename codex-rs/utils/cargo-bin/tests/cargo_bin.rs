@@ -212,6 +212,9 @@ fn cargo_bin_preserves_optional_bazel_lookup() -> Result<(), Box<dyn Error>> {
                     command
                         .env("RUNFILES_MANIFEST_ONLY", "1")
                         .env("RUNFILES_MANIFEST_FILE", directory.join("absent-manifest"));
+                    if scenario == "bazel-undeclared-sibling" {
+                        command.env("CARGO_BIN_EXE_codex", "_main/codex-rs/cli/codex");
+                    }
                 }
                 "declared-primary" | "declared-underscore" | "invalid-primary" => {
                     if manifest_resolution {
