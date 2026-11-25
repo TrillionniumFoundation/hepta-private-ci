@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "checked_base": "2210dda80e15accd8a048da9b144bb56e4bfc80e",
+  "reason": "The base commit intentionally cleared the public root README; readiness discovery continues to be enforced at four maintained internal entrypoints.",
+  "changed_source": "scripts/hepta-readiness.py",
+  "source_sha256": "70b3882c191dadb56f686e99f99ea941359c54a648cdcacac13e217b29367156",
+  "root_readme_bytes": 0,
+  "only_change": "Remove root README from documentation discovery-link locations and explain the retained internal entrypoints.",
+  "authorization_and_qualification_rules_unchanged": true,
+  "readiness_verifier_passed": true,
+  "existing_semantics_tests_passed": 11,
+  "official_just_fmt": {
+    "exit_code": 0,
+    "source_hash_unchanged": true,
+    "scope": "Official repository formatter including scripts; qualification Python is excluded by its configuration."
+  },
+  "full_development_docs_verifier_passed": true,
+  "checked_model_training": false,
+  "final_docs_job": {
+    "job_id": "1a2126c4719-ffbe-3f9e",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true
+  },
+  "preserved_receipts": [
+    {
+      "path": "FORMAT_AND_SEMANTICS.json",
+      "sha256": "8ec88fb30d25178122a8673a25dedcdf8e874646f7529ea0db8b126b7e207dc2",
+      "note": "Contains an earlier sparse-checkout docs failure; final outcome is in DOCS_CHECKOUT_RECOVERY.json."
+    },
+    {
+      "path": "DOCS_CHECKOUT_RECOVERY.json",
+      "sha256": "cba764856cb064e5bee09cc9ff52035a927c5c4e6d566151a8a08267f7234f75"
+    }
+  ],
+  "all_repository_ci_green_claimed": false
+}

@@ -1,0 +1,66 @@
+{
+  "checked_base": "2210dda80e15accd8a048da9b144bb56e4bfc80e",
+  "homepage_bytes": 0,
+  "readiness_sha256_before_format": "70b3882c191dadb56f686e99f99ea941359c54a648cdcacac13e217b29367156",
+  "readiness_sha256_after_format": "70b3882c191dadb56f686e99f99ea941359c54a648cdcacac13e217b29367156",
+  "steps": [
+    {
+      "step": "linked_files",
+      "exit_code": 0,
+      "wall_s": 25.9458962129429,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "step": "tools_venv",
+      "exit_code": 0,
+      "wall_s": 1.5857345920521766,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "step": "install_uv",
+      "exit_code": 0,
+      "wall_s": 32.32164224202279,
+      "stdout_tail": "Collecting uv\n  Downloading uv-0.13.10-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)\nDownloading uv-0.13.10-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (17.7 MB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 17.7/17.7 MB 979.4 kB/s eta 0:00:00\nInstalling collected packages: uv\nSuccessfully installed uv-0.13.10\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "readiness_v3",
+      "exit_code": 0,
+      "wall_s": 0.07337934407405555,
+      "stdout_tail": "{\"assimilationComponents\": 9, \"authorityGranted\": false, \"documentationGaps\": 54, \"externalCapabilityGates\": 9, \"implementationLanes\": 7, \"integrationTracks\": 3, \"laneOrderDigest\": \"5a9218751d5c46be062b9b7c17009975bdc6a41070a59a1b749e85278857fc52\", \"moduleBindings\": 40, \"overlayVersion\": \"8.2.0-readiness\", \"protocols\": 31, \"registryBoundedObjectSchemas\": 46, \"sourceImplementationClaimed\": false, \"specifications\": 9, \"status\": \"PASS_HEPTA_PRECODING_IMPLEMENTATION_READINESS\"}\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "docs_v3",
+      "exit_code": 1,
+      "wall_s": 1.6126339950133115,
+      "stdout_tail": "",
+      "stderr_tail": "FAIL_HEPTA_DEVELOPMENT_DOCS_V8: module docs verifier FAIL_HEPTA_MODULE_DOCS: browser.servo declared roots\n"
+    },
+    {
+      "step": "semantics_v3",
+      "exit_code": 0,
+      "wall_s": 0.12517003796529025,
+      "stdout_tail": "",
+      "stderr_tail": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.015s\n\nOK\n"
+    },
+    {
+      "step": "format_v3",
+      "exit_code": 0,
+      "wall_s": 49.472021181019954,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    {
+      "step": "diff_v3",
+      "exit_code": 0,
+      "wall_s": 0.02275068301241845,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    }
+  ],
+  "all_passed": false,
+  "original_authority_rules_changed": false
+}
