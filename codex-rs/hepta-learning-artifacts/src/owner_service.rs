@@ -129,6 +129,11 @@ impl LearningArtifactOwnerService {
                 config.now,
             )?,
         };
+        if let Some(current) = host.discover_current_head(config.now)?
+            && current.signed.binding != config.storage_binding
+        {
+            return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
+        }
         let withdrawal_registry = host.recover_original_withdrawal_frontier(
             &config.withdrawal_registry,
             config.storage_binding,
@@ -166,12 +171,19 @@ impl LearningArtifactOwnerService {
 
     /// Return the exact authenticated CURRENT registry view for read-only
     /// product consumers. This delegates current-head discovery, signature
-    /// validation and snapshot binding to the fenced artifact owner.
+    /// validation and snapshot binding to the fenced artifact owner. A pending
+    /// publication can be inspected through its original-operation readback,
+    /// but is not exposed as a ready product view before reconciliation.
     pub fn current_registry_view(
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
         self.require_original_withdrawal()?;
+        if let Some(operation_id) = self.recovery_required() {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                operation_id.clone(),
+            ));
+        }
         Ok(self.host.current_registry_view(now)?)
     }
 
@@ -617,6 +629,10 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 #[path = "owner_service_readback_tests.rs"]
 mod publication_readback_tests;
 
+#[cfg(all(test, unix))]
+#[path = "owner_service_crash_tests.rs"]
+mod process_crash_tests;
+
 #[cfg(test)]
 mod tests {
     #[cfg(target_os = "linux")]
@@ -758,7 +774,7 @@ mod tests {
         }
     }
 
-    fn publish_request(
+    pub(super) fn publish_request(
         key: &SigningKey,
         withdrawals: &DatasetWithdrawalRegistry,
         predecessor: Digest32,
