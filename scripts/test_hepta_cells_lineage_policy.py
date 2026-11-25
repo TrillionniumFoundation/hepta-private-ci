@@ -68,6 +68,7 @@ def enrollment(lineage, *, scope=None, kernel=None, name=None, **overrides):
         generation=7,
         components=components(),
         data_scope="data-allowed",
+        dataset_digest=pin(201) if scope else None,
         feature_share_group="shared-perception" if lineage in {"PERC", "MEM"} else None,
         feature_abi=pin(230) if lineage in {"PERC", "MEM"} else None,
         trainable_scope=scope,
@@ -105,7 +106,7 @@ def evidence(cell, **overrides):
         candidate_generation=cell.generation + 1,
         candidate_components=replace(cell.components, heads=pin(333)),
         training_source=cell.bundle_digest,
-        dataset_digest=pin(201),
+        dataset_digest=cell.dataset_digest,
         update_rule=cell.update_rule,
         evaluation_profile=cell.evaluation_profile,
         evaluation_receipt_digest=pin(222),
@@ -159,6 +160,7 @@ class LineagePolicyTests(unittest.TestCase):
         candidate = replace(
             next(c for c in base if c.lineage == "PERC"),
             trainable_scope="heads",
+            dataset_digest=pin(201),
             max_training_steps=8,
             evaluation_profile=pin(220),
             update_rule=pin(221),
@@ -170,6 +172,7 @@ class LineagePolicyTests(unittest.TestCase):
         extra = replace(
             next(c for c in base if c.lineage == "MEM"),
             trainable_scope="heads",
+            dataset_digest=pin(201),
             max_training_steps=8,
             evaluation_profile=pin(220),
             update_rule=pin(221),
@@ -303,6 +306,21 @@ class LineagePolicyTests(unittest.TestCase):
             with self.subTest(overrides=tuple(overrides)):
                 with self.assertRaises(LineagePolicyError):
                     review_update(r, evidence(c, **overrides))
+
+    def test_frozen_training_dataset_cannot_be_relabelled_or_omitted(self):
+        with self.assertRaisesRegex(LineagePolicyError, "dataset_digest"):
+            enrollment("PRED", scope="kernel_and_heads", dataset_digest=None)
+        with self.assertRaisesRegex(LineagePolicyError, "dataset_digest"):
+            enrollment("VERIFY", scope="heads", dataset_digest="0" * 64)
+        with self.assertRaisesRegex(LineagePolicyError, "frozen cell"):
+            enrollment("MEM", dataset_digest=pin(201))
+        r = roster()
+        for lineage in ("PRED", "VERIFY"):
+            with self.subTest(lineage=lineage):
+                cell = next(c for c in r.cells if c.lineage == lineage)
+                self.assertEqual(review_update(r, evidence(cell)).status, "REVIEW_ONLY")
+                with self.assertRaisesRegex(LineagePolicyError, "frozen lineage"):
+                    review_update(r, evidence(cell, dataset_digest=pin(979)))
 
     def test_missing_cost_or_original_evaluation_stays_hold(self):
         r = roster()
