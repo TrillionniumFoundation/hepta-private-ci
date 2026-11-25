@@ -438,7 +438,7 @@ async fn cancellation_reconnect_and_duplicate_keep_the_original_real_turn() -> R
         app_server_session_id: thread_view.thread.session_id,
         codex_home: agent.layout.home_root().to_path_buf(),
     };
-    let mut session = AgentdTextSession::connect(config.clone())
+    let session = AgentdTextSession::connect(config.clone())
         .await
         .context("cancel stage: attach original session")?;
     let signed = signed_text(&agent.agent_id, &key, &thread, 1)?;
