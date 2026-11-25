@@ -1,0 +1,22 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -131,7 +131,7 @@
+ ]
+ 
+ [dependencies.rusqlite]
+-version = "0.40.2"
++version = "=0.39.0"
+ features = [
+     "limits",
+     "fallible_uint",
+--- a/Cargo.toml.orig
++++ b/Cargo.toml.orig
+@@ -41,7 +41,7 @@
+ num_cpus = { version = "1.17.0", default-features = false }
+ rmp-serde.workspace = true
+ ruma.workspace = true
+-rusqlite = { version = "0.40.2", default-features = false, features = ["limits", "fallible_uint", "cache"] }
++rusqlite = { version = "=0.39.0", default-features = false, features = ["limits", "fallible_uint", "cache"] }
+ serde.workspace = true
+ serde_json.workspace = true
+ serde_path_to_error = { version = "0.1.20", default-features = false }
