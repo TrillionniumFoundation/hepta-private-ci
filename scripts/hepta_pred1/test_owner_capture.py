@@ -19,7 +19,9 @@ class OwnerCaptureTests(unittest.TestCase):
         self.db = sqlite3.connect(self.database)
         self.addCleanup(self.db.close)
         self.db.executescript("""
-            CREATE TABLE taskflow_runs(owner_agent_id TEXT, run_id TEXT);
+            CREATE TABLE taskflow_runs (
+                owner_agent_id TEXT NOT NULL, run_id TEXT NOT NULL,
+                PRIMARY KEY(owner_agent_id, run_id));
             CREATE TABLE automation_meta(singleton INTEGER, schema_version INTEGER);
             INSERT INTO automation_meta VALUES (1, 10);
             CREATE TRIGGER automation_meta_no_update BEFORE UPDATE ON automation_meta
@@ -43,6 +45,9 @@ class OwnerCaptureTests(unittest.TestCase):
                 str(index) * 64,
                 "command",
                 index,
+            )
+            self.db.execute(
+                "INSERT INTO taskflow_runs VALUES (?, ?)", values[:2]
             )
             self.db.execute(
                 "INSERT INTO taskflow_effect_dispatch_attempts ("
