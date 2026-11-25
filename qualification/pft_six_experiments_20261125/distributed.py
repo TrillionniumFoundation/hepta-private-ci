@@ -49,60 +49,165 @@ def durable_write(path, value):
 
 
 class Receiver:
+    """One fixed objective; callers serialize access as the TCP peer already does.
+
+    Numerical checks reject impossible statistics, not coherently fabricated
+    data. A digest does not authenticate a client or establish data consent.
+    """
+
     def __init__(self, header):
-        self.header = header
-        self.messages = {}
+        ids = ("parent_id", "coordinate_id", "objective_id")
+        if not isinstance(header, dict) or type(header.get("size")) is not int or header["size"] < 1:
+            raise ValueError("A positive integer feature dimension is required")
+        if any(not isinstance(header.get(key), str) or len(header[key]) != 64
+               or any(c not in "0123456789abcdef" for c in header[key]) for key in ids):
+            raise ValueError("Frozen parent, coordinate and objective digests are required")
+        self._header = copy.deepcopy(header)
+        self._messages = {}
+        self._data_ids = set()
+        self._total_gram = np.zeros((header["size"], header["size"]))
+        self._total_moment = np.zeros(header["size"])
+        self._snapshot = None
+        self._parent_snapshot_id = None
+
+    @property
+    def header(self):
+        return copy.deepcopy(self._header)
+
+    @property
+    def messages(self):
+        return copy.deepcopy(self._messages)
 
     def accept(self, message):
+        if not isinstance(message, dict):
+            return "rejected_malformed"
         for key, status in [("parent_id", "rejected_stale_parent"),
                             ("coordinate_id", "rejected_wrong_coordinates"),
                             ("objective_id", "rejected_wrong_objective")]:
-            if message.get(key) != self.header[key]:
+            if message.get(key) != self._header[key]:
                 return status
-        size = self.header["size"]
+        size = self._header["size"]
         try:
             gram, moment = np.asarray(message["gram"], dtype=float), np.asarray(message["moment"], dtype=float)
-            if gram.shape != (size, size) or moment.shape != (size,):
+            if type(message.get("size")) is not int or message["size"] != size or gram.shape != (size, size) or moment.shape != (size,):
                 return "rejected_shape"
             if not np.isfinite(gram).all() or not np.isfinite(moment).all():
                 return "rejected_nonfinite"
-            if not isinstance(message["count"], int) or message["count"] < 1:
+            if type(message["count"]) is not int or message["count"] < 1:
                 return "rejected_count"
+            if not isinstance(message["client_id"], str) or not message["client_id"]:
+                return "rejected_malformed"
+            data_id = message["data_sha256"]
+            if not isinstance(data_id, str) or len(data_id) != 64 or any(c not in "0123456789abcdef" for c in data_id):
+                return "rejected_malformed"
             expected = seal({key: value for key, value in message.items() if key != "payload_sha256"})
             if expected["contribution_id"] != message["contribution_id"] or expected["payload_sha256"] != message["payload_sha256"]:
                 return "rejected_integrity"
-        except (KeyError, ValueError, TypeError):
+        except (KeyError, ValueError, TypeError, OverflowError):
             return "rejected_malformed"
         identity = message["contribution_id"]
-        if identity in self.messages:
-            return "duplicate" if self.messages[identity]["payload_sha256"] == message["payload_sha256"] else "rejected_conflicting_contribution"
-        if not np.allclose(gram, gram.T, atol=1e-10, rtol=1e-10) or np.linalg.eigvalsh(gram)[0] < -1e-9 * max(1.0, np.linalg.norm(gram)):
+        if identity in self._messages:
+            return "duplicate" if self._messages[identity]["payload_sha256"] == message["payload_sha256"] else "rejected_conflicting_contribution"
+        if self._snapshot is not None:
+            return "rejected_frozen_candidate"
+        if data_id in self._data_ids:
+            return "rejected_duplicate_data"
+        # Scale first: norms/eigendecomposition of finite huge inputs can overflow.
+        scale = max(float(np.max(np.abs(gram))), np.finfo(float).tiny)
+        scaled = gram / scale
+        tolerance = 64 * np.finfo(float).eps * size
+        if not np.allclose(scaled, scaled.T, atol=tolerance, rtol=tolerance):
             return "rejected_non_psd_gram"
-        self.messages[identity] = copy.deepcopy(message)
+        try:
+            values, vectors = np.linalg.eigh((scaled + scaled.T) * 0.5)
+        except np.linalg.LinAlgError:
+            return "rejected_non_psd_gram"
+        if not np.isfinite(values).all() or values[0] < -tolerance:
+            return "rejected_non_psd_gram"
+        if int(np.count_nonzero(values > tolerance)) > message["count"]:
+            return "rejected_impossible_sample_rank"
+        moment_scale = max(float(np.max(np.abs(moment))), np.finfo(float).tiny)
+        normalized_moment = moment / moment_scale
+        # A small positive eigenvalue is not a null direction: legitimate targets
+        # can concentrate entirely there. Near-zero/roundoff directions are
+        # inconclusive without additional target-norm or raw-data evidence.
+        unsupported = vectors[:, values == 0].T @ normalized_moment
+        if np.linalg.norm(unsupported) > np.sqrt(tolerance) * max(1.0, np.linalg.norm(normalized_moment)):
+            return "rejected_inconsistent_moment"
+        with np.errstate(over="ignore", invalid="ignore"):
+            total_gram = self._total_gram + gram
+            total_moment = self._total_moment + moment
+        if not np.isfinite(total_gram).all() or not np.isfinite(total_moment).all():
+            return "rejected_aggregate_overflow"
+        self._messages[identity] = copy.deepcopy(message)
+        self._data_ids.add(data_id)
+        self._total_gram, self._total_moment = total_gram, total_moment
         return "accepted"
 
     def sums(self):
-        size = self.header["size"]
+        size = self._header["size"]
         gram, moment = np.zeros((size, size)), np.zeros(size)
-        for identity in sorted(self.messages):
-            gram += np.asarray(self.messages[identity]["gram"])
-            moment += np.asarray(self.messages[identity]["moment"])
+        try:
+            with np.errstate(over="raise", invalid="raise"):
+                for identity in sorted(self._messages):
+                    gram += np.asarray(self._messages[identity]["gram"])
+                    moment += np.asarray(self._messages[identity]["moment"])
+        except FloatingPointError as error:
+            raise ValueError("Ordered aggregate is not finite") from error
         return gram, moment
 
+    def freeze(self, cutoff_id):
+        """Close this candidate at an explicit event; this is not a trusted clock."""
+        if not isinstance(cutoff_id, str) or not cutoff_id:
+            raise ValueError("A cutoff event identity is required")
+        if self._snapshot is not None:
+            if self._snapshot["cutoff_id"] != cutoff_id:
+                raise ValueError("A frozen candidate cannot change its cutoff")
+            return copy.deepcopy(self._snapshot)
+        if not self._messages:
+            raise ValueError("An empty ledger cannot produce a candidate")
+        gram, moment = self.sums()
+        body = {"schema": "pft-statistics-snapshot-v1", "cutoff_id": cutoff_id,
+                "parent_snapshot_id": self._parent_snapshot_id, "header": self.header,
+                "contributions": [[key, self._messages[key]["payload_sha256"]] for key in sorted(self._messages)],
+                "statistics_sha256": hashed([gram.tolist(), moment.tolist()])}
+        self._snapshot = {**body, "snapshot_id": hashed(body)}
+        return copy.deepcopy(self._snapshot)
+
+    def fork(self):
+        """Start a new candidate for late arrivals; the old snapshot stays closed."""
+        if self._snapshot is None:
+            raise ValueError("Freeze the current candidate before forking")
+        receiver = Receiver(self._header)
+        for key in sorted(self._messages):
+            if receiver.accept(self._messages[key]) != "accepted":
+                raise ValueError("Cannot fork invalid contributions")
+        receiver._parent_snapshot_id = self._snapshot["snapshot_id"]
+        return receiver
+
     def checkpoint(self, path):
-        body = {"header": self.header, "messages": [self.messages[key] for key in sorted(self.messages)]}
+        body = {"header": self.header, "messages": [self._messages[key] for key in sorted(self._messages)],
+                "snapshot": self._snapshot, "parent_snapshot_id": self._parent_snapshot_id}
         durable_write(path, {"body": body, "body_sha256": hashed(body)})
 
     @classmethod
-    def restore(cls, path):
+    def restore(cls, path, *, expected_header=None, expected_snapshot_id=None):
         envelope = json.loads(Path(path).read_text())
         body = envelope["body"]
         if hashed(body) != envelope["body_sha256"]:
             raise ValueError("Checkpoint checksum does not match")
+        if expected_header is not None and body["header"] != expected_header:
+            raise ValueError("Checkpoint objective differs from the expected header")
         receiver = cls(body["header"])
         for message in body["messages"]:
             if receiver.accept(message) != "accepted":
                 raise ValueError("Checkpoint contains invalid or duplicate contribution")
+        receiver._parent_snapshot_id = body.get("parent_snapshot_id")
+        snapshot = body.get("snapshot")
+        if snapshot is not None and receiver.freeze(snapshot["cutoff_id"]) != snapshot:
+            raise ValueError("Checkpoint snapshot differs from its contributions")
+        if expected_snapshot_id is not None and (snapshot or {}).get("snapshot_id") != expected_snapshot_id:
+            raise ValueError("Checkpoint differs from the externally retained snapshot")
         return receiver
 
 

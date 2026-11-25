@@ -1,0 +1,36 @@
+name: PFT statistics admission controls
+
+on:
+  pull_request:
+    paths:
+      - qualification/pft_six_experiments_20261125/distributed.py
+      - qualification/pft_six_experiments_20261125/transport.py
+      - qualification/pft_six_experiments_20261125/test_distributed_admission.py
+      - .github/workflows/pft-statistics-admission.yml
+
+permissions:
+  contents: read
+
+jobs:
+  statistics-admission:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          sparse-checkout: qualification/pft_six_experiments_20261125
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: '3.12'
+      - name: Install the declared numerical test dependency
+        run: python -m pip install --disable-pip-version-check --only-binary=:all: numpy==2.3.5
+      - name: Check small deterministic engineering controls
+        run: python -m unittest discover -s qualification/pft_six_experiments_20261125 -p test_distributed_admission.py -v
+      - name: Check source stayed unchanged
+        run: git diff --exit-code
