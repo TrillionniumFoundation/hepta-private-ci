@@ -4,7 +4,7 @@
   "upstream_repository": "https://github.com/kevinaboos/makepad",
   "upstream_commit": "337566c8b25d47f7e4fff6a202157b65bf183330",
   "upstream_tree": "c6e18be7754f9634492ec5251bac3e8b4f7e09b7",
-  "patched_tree": "c710634ec7ad6f60b8b8456ecb771376103ef85f",
+  "patched_tree": "8513ad050905a43f20b0de65cdfc49207787921f",
   "package": {
     "name": "makepad-platform",
     "version": "2.0.0"
@@ -24,6 +24,11 @@
       "file": "native-ime-outcomes.patch",
       "sha256": "5be1b038961b005a3b5f2dd80b57f55edede1412071ac389eca65b2e4f52cd8d",
       "bytes": 17202
+    },
+    {
+      "file": "native-ime-callback-spot.patch",
+      "sha256": "96206814029cb452d433e1716cf2cd76713a1e3809523894226c09df7b1611b6",
+      "bytes": 1597
     }
   ],
   "changed_files": [
@@ -36,8 +41,8 @@
     {
       "path": "platform/src/os/linux/x11/xlib_window.rs",
       "upstream_sha256": "9f4ec496a5f2d7b92ad4ea3fd9541a2f93feec3c764d647d3cc3085e2886d0d4",
-      "patched_sha256": "a516d2eb4c8faf788bcf258fd6a03794f38a5993eb0ae26cc42b5e748e546193",
-      "bytes": 56203
+      "patched_sha256": "e8c6bed91efd67be1e5dd8db002ccd088f09e5e941137de698373e63c0e855a6",
+      "bytes": 56721
     },
     {
       "path": "libs/vulkan/makepad-half/Cargo.toml",

@@ -1,6 +1,7 @@
 //! Capture and serve using one retained set of the original Root objects.
 
 use super::*;
+use crate::authority_host_native_launch::deployment::NativeDeploymentLock;
 
 #[path = "root_agentd_filesystem.rs"]
 mod filesystem;
@@ -67,6 +68,7 @@ pub(crate) use generation_publication::publication_data;
 /// and original service. This wrapper is not Clone and creates no additional
 /// issuer, clock, checkpoint or consumer owner during bootstrap capture.
 pub struct PreparedHostAuthoritySession {
+    native_deployment_lock: Option<NativeDeploymentLock>,
     config: HostAuthorityServiceConfig,
     registration: HostAuthorityRegistration,
     owner_pidfd: OwnedFd,
@@ -121,6 +123,7 @@ impl PreparedHostAuthoritySession {
         let service =
             service.initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?;
         Ok(Self {
+            native_deployment_lock: None,
             config,
             registration,
             owner_pidfd,
@@ -149,6 +152,7 @@ impl PreparedHostAuthoritySession {
         let service = open_registered_writer(&config, &registration, &owner_pidfd)?
             .initialize_fresh_heads(&config, &registration, &owner_pidfd, fresh)?;
         Ok(Self {
+            native_deployment_lock: None,
             config,
             registration,
             owner_pidfd,
@@ -162,6 +166,15 @@ impl PreparedHostAuthoritySession {
         })
     }
 
+    pub(crate) fn with_native_deployment_lock(mut self, lock: NativeDeploymentLock) -> Self {
+        self.native_deployment_lock = Some(lock);
+        self
+    }
+
+    pub(crate) fn holds_native_deployment_lock(&self) -> bool {
+        self.native_deployment_lock.is_some()
+    }
+
     /// Open existing Root state once through the original service factory.
     /// No file, lease, signer, consumer or checkpoint is initialized here.
     pub fn open(
@@ -173,6 +186,7 @@ impl PreparedHostAuthoritySession {
         let registration = read_root_json(registration_file)?;
         let service = open_registered_service(&config, &registration, &owner_pidfd)?;
         Ok(Self {
+            native_deployment_lock: None,
             config,
             registration,
             owner_pidfd,
@@ -359,7 +373,6 @@ impl PreparedHostAuthoritySession {
             config,
             profile,
             profile_file,
-            /*protect_installer_lock*/ false,
             ready,
         )
     }
@@ -370,6 +383,7 @@ impl PreparedHostAuthoritySession {
         ready: impl FnOnce() -> io::Result<()>,
     ) -> io::Result<()> {
         let Self {
+            native_deployment_lock: _native_deployment_lock,
             config,
             registration,
             owner_pidfd,

@@ -153,6 +153,7 @@ impl PreparedHostAuthoritySession {
         let service = open_registered_writer(&config, &registration, &owner_pidfd)?
             .recover_material_from_registered(&config, &registration, &owner_pidfd)?;
         Ok(Self {
+            native_deployment_lock: None,
             config,
             registration,
             owner_pidfd,
@@ -187,6 +188,7 @@ impl PreparedHostAuthoritySession {
             fresh,
         )?;
         Ok(Self {
+            native_deployment_lock: None,
             config,
             registration,
             owner_pidfd,
@@ -217,6 +219,7 @@ impl PreparedHostAuthoritySession {
             deadline: std::time::Duration::from_millis(config.timeout_ms.min(5_000)),
         })?;
         Ok(Self {
+            native_deployment_lock: None,
             config,
             registration,
             owner_pidfd,

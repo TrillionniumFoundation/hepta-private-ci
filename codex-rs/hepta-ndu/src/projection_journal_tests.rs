@@ -94,12 +94,8 @@ fn successful_selection_replay_survives_later_revocation() {
         subject,
         projection,
     ));
-    let selected = must(journal.select_projection(
-        selection_identity,
-        objective,
-        subject,
-        projection,
-    ));
+    let selected =
+        must(journal.select_projection(selection_identity, objective, subject, projection));
     must(journal.revoke_projection(
         digest("revocation-identity"),
         objective,
@@ -107,12 +103,8 @@ fn successful_selection_replay_survives_later_revocation() {
         projection,
     ));
 
-    let replayed = must(journal.select_projection(
-        selection_identity,
-        objective,
-        subject,
-        projection,
-    ));
+    let replayed =
+        must(journal.select_projection(selection_identity, objective, subject, projection));
     assert_eq!(replayed, selected);
     assert_eq!(journal.entries().len(), 3);
     assert_eq!(journal.selected_projection_digest(objective, subject), None);

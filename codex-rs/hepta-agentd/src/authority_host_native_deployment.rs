@@ -6,7 +6,7 @@ use std::os::fd::OwnedFd;
 use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 
-pub(super) struct NativeDeploymentLock {
+pub(crate) struct NativeDeploymentLock {
     _file: File,
 }
 
