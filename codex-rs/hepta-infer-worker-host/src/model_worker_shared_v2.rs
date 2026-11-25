@@ -829,7 +829,7 @@ mod tests {
                 base_digest
             );
         }
-        let mut changed_normalizer = base.clone();
+        let mut changed_normalizer = base;
         Arc::make_mut(&mut changed_normalizer.snapshot)
             .identity
             .normalizer_digest = Digest32::of_bytes(b"other normalizer");
