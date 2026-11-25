@@ -114,7 +114,12 @@ fn private_directory_validation_rejects_permission_changes_and_symlink_redirecti
 #[test]
 fn retained_request_read_rejects_linked_or_exposed_bytes() {
     let directory = tempfile::tempdir().expect("root");
-    let root = directory.path().canonicalize().expect("canonical root");
+    let root = directory
+        .path()
+        .canonicalize()
+        .expect("canonical root")
+        .join("retained");
+    create_private_directory(&root).expect("private request directory");
     let request = root.join("request.json");
     fs::write(&request, b"{}").expect("request");
     fs::set_permissions(&request, fs::Permissions::from_mode(0o600)).expect("private request");
