@@ -1,0 +1,47 @@
+name: Hepta and Chain identity interoperability
+
+on:
+  pull_request:
+    paths:
+      - qualification/p0-p1-acceptance-20261125/**
+      - scripts/cell_experiments/**
+      - .github/workflows/hepta-chain-identity-contract.yml
+
+permissions:
+  contents: read
+
+jobs:
+  cross-repository-identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: hepta
+          persist-credentials: false
+          sparse-checkout: |
+            scripts/cell_experiments
+            qualification/paired-consumer-use-20261123
+            qualification/p0-p1-acceptance-20261125
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: 2f0c7bf637cdae4b3a429b29118e2f16b09c42c9
+          path: chain
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: '3.12'
+      - name: Verify actual producer and independent consumer
+        run: |
+          python hepta/qualification/p0-p1-acceptance-20261125/verify_cross_repo.py --hepta-root hepta --chain-root chain
+      - name: Check Hepta source stayed unchanged
+        run: git -C hepta diff --exit-code
+      - name: Check Chain source stayed unchanged
+        run: git -C chain diff --exit-code
