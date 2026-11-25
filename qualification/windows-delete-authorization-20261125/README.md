@@ -71,6 +71,12 @@ is no skip, fallback, automatic retry, disabled sandbox check or ACL repair of
 an existing object. Source execution and real CI merge identities are recorded
 separately.
 
+The isolated probe has a dedicated nextest configuration because repository
+overrides naming unrelated workspace packages are invalid in a single-member
+graph. The controller checks its timeout and JUnit configuration against the
+repository defaults exactly; the local profile inherits those defaults and
+retries are explicitly zero. No existing repository profile is modified.
+
 ## Primary contracts
 
 - [CreateRestrictedToken](https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken)

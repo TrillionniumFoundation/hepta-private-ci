@@ -1,0 +1,61 @@
+name: Windows deletion authorization matrix
+
+on:
+  push:
+    branches:
+      - research/windows-delete-authorization-matrix-20261125-87d09924
+    paths:
+      - .github/workflows/hepta-windows-delete-authorization.yml
+      - qualification/windows-delete-authorization-20261125/**
+      - codex-rs/windows-sandbox-rs/src/token_delete_*.rs
+      - codex-rs/windows-sandbox-rs/src/token.rs
+  pull_request:
+    paths:
+      - .github/workflows/hepta-windows-delete-authorization.yml
+      - qualification/windows-delete-authorization-20261125/**
+      - codex-rs/windows-sandbox-rs/src/token_delete_*.rs
+      - codex-rs/windows-sandbox-rs/src/token.rs
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-delete-authorization-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc
+        with:
+          toolchain: 1.96.0
+          components: clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Execute all four native tests and retain exact-source receipts
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP 'hepta-delete-target'
+          python qualification/windows-delete-authorization-20261125/run_native.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve successes and failures without rerunning
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: windows-delete-authorization-${{ env.EXPECTED_HEAD }}
+          path: ${{ runner.temp }}/hepta-delete-evidence
+          if-no-files-found: error
+          retention-days: 14
