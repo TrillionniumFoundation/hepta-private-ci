@@ -6,6 +6,8 @@
 
 #![forbid(unsafe_code)]
 
+pub mod coupled_field_admission;
+
 mod canonical;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
