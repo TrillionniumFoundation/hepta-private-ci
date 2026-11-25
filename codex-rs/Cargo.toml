@@ -439,7 +439,7 @@ lazy_static = "1"
 libc = "0.2.182"
 # Keep SQLx's bundled SQLite on a version containing the WAL-reset corruption fix:
 # https://www.sqlite.org/wal.html#the_wal_reset_bug
-libsqlite3-sys = { version = "0.37", default-features = false }
+libsqlite3-sys = { version = "0.39.1", default-features = false }
 log = "0.4"
 lru = "0.18.2"
 maplit = "1.0.2"
@@ -478,7 +478,7 @@ rcgen = { version = "0.14.7", default-features = false, features = [
 regex = "1.12.3"
 regex-lite = "0.1.8"
 reqwest = { version = "0.12", features = ["cookies"] }
-rmcp = { version = "=3.1.3", default-features = false }
+rmcp = { version = "=3.9.0", default-features = false }
 runfiles = { git = "https://github.com/dzbarsky/rules_rust", rev = "b56cbaa8465e74127f1ea216f813cd377295ad81" }
 rustix = { version = "1.1.4", features = ["net"] }
 rustls = { version = "0.23", default-features = false, features = [
@@ -512,7 +512,7 @@ symphonia = { version = "0.6.0", default-features = false, features = [
 ] }
 socket2 = "0.6.1"
 # When bumping sqlx, audit the SQLite constructor deny list in clippy.toml.
-sqlx = { version = "0.9.0", default-features = false, features = [
+sqlx = { version = "0.9.1", default-features = false, features = [
     "chrono",
     "json",
     "macros",
@@ -563,7 +563,7 @@ tungstenite = { version = "0.27.0", features = ["deflate", "proxy"] }
 uds_windows = "1.1.0"
 unicode-segmentation = "1.12.0"
 unicode-width = "0.2"
-url = "2"
+url = "2.5.9"
 urlencoding = "2.1"
 uuid = "1"
 v8 = "=150.4.0"
@@ -696,9 +696,9 @@ zbus-secret-service-keyring-store = { path = "third_party/zbus-secret-service-ke
 # Matrix SDK exposes anymap2 in its event handler API. Keep that
 # API stable while replacing the unmaintained implementation with anymap3.
 anymap2 = { path = "third_party/anymap2-compat" }
-# Matrix SDK 0.19.1 requires the libsqlite3-sys 0.38 line through rusqlite.
-# Preserve the existing SQLx 0.9/libsqlite3-sys 0.37 link with a manifest-only
-# rusqlite 0.39 compatibility patch. Upstream Rust and SQL are unchanged.
+# Matrix SDK 0.19.1 uses a manifest-only rusqlite 0.41 compatibility patch.
+# Share the patched libsqlite3-sys 0.39 line with SQLx 0.9.1 while preserving
+# the upstream Rust implementation and SQL migrations.
 matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.19.1" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }

@@ -136,17 +136,17 @@ async fn modern_elicitation_requires_a_live_private_owner_and_legacy_keeps_its_c
     use crate::rmcp_client::ElicitationResponse;
     use futures::FutureExt;
     use rmcp::model::ClientCapabilities;
-    use rmcp::model::ClientInfo;
+    use rmcp::model::ClientConfig;
     use rmcp::model::ElicitationAction;
     use rmcp::model::Implementation;
     use rmcp::model::ProtocolVersion;
     use rmcp::model::ServerCapabilities;
-    use rmcp::model::ServerInfo;
+    use rmcp::model::ServerConfig;
 
     let started = Arc::new(AtomicUsize::new(0));
     let observed = Arc::clone(&started);
     let service = ElicitationClientService::new(
-        ClientInfo::new(
+        ClientConfig::new(
             ClientCapabilities::default(),
             Implementation::new("owner-test", "1"),
         ),
@@ -168,7 +168,7 @@ async fn modern_elicitation_requires_a_live_private_owner_and_legacy_keeps_its_c
         service,
         transport,
         Some(
-            ServerInfo::new(ServerCapabilities::default())
+            ServerConfig::new(ServerCapabilities::default())
                 .with_protocol_version(ProtocolVersion::V_2026_07_28)
                 .into(),
         ),
@@ -225,7 +225,7 @@ async fn modern_elicitation_requires_a_live_private_owner_and_legacy_keeps_its_c
     );
     assert_eq!(started.load(Ordering::SeqCst), 0);
     running.peer().set_peer_info(
-        ServerInfo::new(ServerCapabilities::default())
+        ServerConfig::new(ServerCapabilities::default())
             .with_protocol_version(ProtocolVersion::V_2025_06_18)
             .into(),
     );

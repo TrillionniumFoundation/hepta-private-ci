@@ -15,16 +15,38 @@
     {
       "path": "Cargo.toml",
       "before_sha256": "d0714a65585690a924811221c55439663f7c16587e47b19d8c429e2af1143b30",
-      "after_sha256": "9ca466a289177dd71d0b37b1d3bc308023975de9e5df509e4c1539c349ae4488"
+      "after_sha256": "b0a7cb5568232f4c4fdee0b7ef4a65ab7b542cae10390d289e4bb65f9f6242c4"
     },
     {
       "path": "Cargo.toml.orig",
       "before_sha256": "b3916f966a3974857b9be832e657a5a1be2e5a13c7e57726397c9b3cb5f1daa6",
-      "after_sha256": "9b7c78a6b13cde7d07fdcc46b27224e3e74d35882a0405f472a3243f31a557d2"
+      "after_sha256": "4f1a04883890be6ca0a33a23c556cf1e46ebf4f6d661215208ee4a1acda8f9e3"
     }
   ],
-  "minimal_patch_sha256": "1177b9a6e78efadfdecfd719c9e40a9dd8890c9422fc4837dc7f4b12c6de88c9",
+  "minimal_patch_sha256": "2f0c453b360036ccbe584ed0ff867afe3c639be66726e5824c898a63a1ce7111",
   "all_other_archive_files_unchanged": true,
   "storage_and_sql_implementation_unchanged": true,
-  "upstream_storage_migration_is_real": true
+  "upstream_storage_migration_is_real": true,
+  "compatibility_revision": {
+    "base": "90c8402098939cf8ba8ce4da120c52ac0e6e3c0c",
+    "previous_provenance_sha256": "282fd7da12c314c9baa5348f66d10eeeced4d536110275b35fcc572b1a83b0cc",
+    "previous_minimal_patch_sha256": "1177b9a6e78efadfdecfd719c9e40a9dd8890c9422fc4837dc7f4b12c6de88c9",
+    "previous_edits": [
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "d0714a65585690a924811221c55439663f7c16587e47b19d8c429e2af1143b30",
+        "after_sha256": "9ca466a289177dd71d0b37b1d3bc308023975de9e5df509e4c1539c349ae4488"
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "b3916f966a3974857b9be832e657a5a1be2e5a13c7e57726397c9b3cb5f1daa6",
+        "after_sha256": "9b7c78a6b13cde7d07fdcc46b27224e3e74d35882a0405f472a3243f31a557d2"
+      }
+    ],
+    "rusqlite_before": "=0.39.0",
+    "rusqlite_after": "=0.41.0",
+    "shared_libsqlite3_sys_requirement": "0.39.1",
+    "sqlx_requirement": "0.9.1",
+    "native_qualification": "pending; no compilation or storage migration control executed in this static preparation"
+  }
 }
