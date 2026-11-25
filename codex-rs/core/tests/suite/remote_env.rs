@@ -1021,10 +1021,22 @@ async fn deferred_executor_promotes_primary_environment_when_startup_completes()
 }
 
 async fn read_exec_server_json(websocket: &mut WebSocketStream<TcpStream>) -> Value {
+    read_exec_server_json_with_deadline(websocket, Some(Duration::from_secs(5))).await
+}
+
+async fn read_exec_server_json_with_deadline(
+    websocket: &mut WebSocketStream<TcpStream>,
+    frame_timeout: Option<Duration>,
+) -> Value {
     loop {
-        match timeout(Duration::from_secs(5), websocket.next())
-            .await
-            .expect("websocket read should not time out")
+        let next_frame = websocket.next();
+        let frame = match frame_timeout {
+            Some(deadline) => timeout(deadline, next_frame)
+                .await
+                .expect("websocket read should not time out"),
+            None => next_frame.await,
+        };
+        match frame
             .expect("websocket should stay open")
             .expect("websocket frame should read")
         {
@@ -1098,7 +1110,9 @@ async fn serve_environment_with_agents_md(
     let mut agents_md_reads = 0;
     loop {
         let request = tokio::select! {
-            request = read_exec_server_json(&mut websocket) => request,
+            // This fixture serves a long-lived connection. Only the caller
+            // decides when it has finished; waiting idle is not an RPC timeout.
+            request = read_exec_server_json_with_deadline(&mut websocket, None) => request,
             _ = &mut shutdown => return agents_md_reads,
         };
         let is_agents_md = request["params"]["path"]
