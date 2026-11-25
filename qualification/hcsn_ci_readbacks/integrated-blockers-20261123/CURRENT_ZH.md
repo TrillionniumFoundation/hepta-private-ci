@@ -1,5 +1,15 @@
 # Hepta 研究与集成核验
 
+## 2026-11-25 16:54 UTC 后：Torch 冻结清单全量复算及五模型真实执行阻塞
+
+- #6799 精确 abfe8a7ef20a4bdc55a1d0626d621156984e5bb2（base 732e934ba496d90fbe042b8d41d479ef901643e5，open draft）较上次 8b37f459 ahead48/behind0。PR workflow 首屏100条：72 success、15 failure、7 skipped、6 in_progress；不是全仓分页终局。
+- [continuous-adjoint Torch 原生失败](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45654400305/job/139347093403) 已成功安装 Torch 2.10.0+cpu / Python 3.12.16；原源码清单 assert 在真实数值执行前失败。独立 mac Python 对该精确源码 TORCH-SOURCE.json 全部10个 base64 Git 对象重算 SHA1（10/10与Git对象一致）和 SHA256（7/10满足原冻结），三处明确冲突：workflow 4419B 实际 378e7a2488215f3959c8e4c513432dc8ce364751665b92b3347b9d3711f286b2，预定 003386e7811ef4615ed3584d3bfe86f60110f895c106e2f89543d1f830c3ed8d；spatial_generator.py 6021B 实际 85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419，预定 a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441；joint_dde/model.py 14671B 实际 d7d6b2c6dd612ad3d412042dc4962d6b78adf18a6872c8c15e2a3b9a36b610fc，预定 54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4。mac 三批回执 1a213a286ed-ffbe-40e1 / 1a213a2e24e-ffbe-40e3 / 1a213a3159e-ffbe-40e4。
+- 历史 guard evidence 1b69247fb4249f5fc3a623c6e471bee5bde8a553 的 spatial_generator.py 5920B 与 model.py 12626B 均独立复算匹配各自原冻结 SHA256，Git SHA1 2/2 匹配（mac 回执 1a213a38946-ffbe-40e5）；该 ref 不含原 Torch workflow（HTTP404），故历史完整10件套仍缺该原工作流精确对象。不能把历史物理源覆盖当前集成源或改 frozen manifest，原动态实验本轮0次。Common/Split 单文件修补也不满足 Torch 的旧冻结版本。
+- [N256 runtime snapshot](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45654397378/job/139347084864) 仍因 Ubuntu 26.04 缺 setup-python 精确 x64 3.12.3 在运行前终止；不得以其他 Python 版本代替原资格。
+- [五模型 physical contracts](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45654401714/job/139347106080)：18+13+9+11 项先过，Torch 2.10.0 独立 venv 未安装 NumPy，六项物理测试之一 test_equal_budget_training_is_deterministic 在 tensor byte digest 的 .numpy() 处 RuntimeError，5过1错。原日志中仅安装 Torch CPU wheel，无 NumPy。应恢复同实验锁定 NumPy 依赖，不改 digest 或测试。
+- 同 run 三个 Laya checkpoint probe 作业 success；[Arctic 305m](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45654401714/job/139347106863) IndexError（index 286245757663576064、dimension 0 size 13）；[Harrier 270m](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45654401714/job/139347106937) 被 trained Head must be evaluation-only and frozen 拒绝。两条错误不可用放宽 guard 关闭。[跨臂审核](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45654401714/job/139355290731) 原五个 artifact 下载 ZIP digest 全部匹配发布 digest，raw_shadow_preflight BLOCKED、退出2；缺两臂成功实际输出，不能据 Laya 三臂声称完整比较通过。以上6份真实日志共2863行（含尾空行），另为依赖/冻结定位重读两份原日志，未重跑实验。
+- 本轮只做独立身份复算和读回记录，没有产品源码改写、盲重试、冻结条件变化或红门合并。HOLD。
+
 ## 2026-11-25 15:20 UTC 后：HCSN 冻结字节冲突定位与独立恢复候选
 
 - #6799 精确 8b37f4590abff1a8bf207cba6a132e66e0efc5f0 相对 b5635277 ahead45/behind0，原 PR workflow 首屏100条 40 success/6 failure/14 skipped/36 in_progress/4 queued。#7068/#7070/#7074/#7016/#7021/#7032 head 未变，均 open Draft，#6799 base main 仍 732e934。实读8份原生作业日志共2576行（含末空行）。
