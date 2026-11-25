@@ -93,6 +93,19 @@ unsafe fn path_has_world_write_allow(path: &Path) -> Result<bool> {
     )
 }
 
+/// Inspect the existing bounded, best-effort world-write scan for UI warnings.
+///
+/// This does not create capability state, install ACLs, provision an account or
+/// write an audit log. It is a snapshot for warnings, not proof that a managed
+/// process can run safely. Existing scan limits and unreadable-ACL handling
+/// still apply; an empty result is not a complete filesystem safety assertion.
+pub fn inspect_world_writable_paths(
+    cwd: &Path,
+    env: &std::collections::HashMap<String, String>,
+) -> Result<Vec<PathBuf>> {
+    audit_everyone_writable(cwd, env, /*logs_base_dir*/ None)
+}
+
 pub fn audit_everyone_writable(
     cwd: &Path,
     env: &std::collections::HashMap<String, String>,

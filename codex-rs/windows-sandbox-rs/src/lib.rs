@@ -156,6 +156,8 @@ pub use acl::path_write_aces_need_refresh;
 #[cfg(target_os = "windows")]
 pub use audit::apply_world_writable_scan_and_denies_for_permissions;
 #[cfg(target_os = "windows")]
+pub use audit::inspect_world_writable_paths;
+#[cfg(target_os = "windows")]
 pub use cap::load_or_create_cap_sids;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_cap_sid_for_cwd;

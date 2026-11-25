@@ -143,6 +143,25 @@ impl RefusalAttempts {
 }
 
 #[test]
+fn read_only_world_write_inspection_preserves_fixture_and_reports_existing_grant() -> Result<()> {
+    let mut fixture = Fixture::new()?;
+    let world = crate::token::LocalSid::from_string("S-1-1-0")?;
+    let world_writable = fixture.cwd.join(".git");
+    // Only fixture setup changes this owned temporary directory. The subsequent
+    // scan must preserve its complete namespace, data and native DACL bytes.
+    unsafe {
+        crate::ensure_allow_write_aces(&world_writable, &[world.as_ptr()])?;
+    }
+    fixture.dacls = fixture.read_dacls()?;
+
+    let paths = crate::inspect_world_writable_paths(&fixture.cwd, &HashMap::new())?;
+
+    assert!(paths.contains(&world_writable));
+    fixture.assert_unchanged()?;
+    Ok(())
+}
+
+#[test]
 fn managed_capture_and_preflight_refuse_before_acl_setup_or_child_launch() -> Result<()> {
     let mut attempts = RefusalAttempts::default();
     for profile in [

@@ -35,15 +35,17 @@ both execution backends, including read-only profiles.
 The common error is `std::io::ErrorKind::Unsupported`, converted into `anyhow`
 without becoming a sandbox-policy denial. Existing Core capture code maps a
 launch error to `CodexErr::Io`; the orchestrator retries only `SandboxErr::Denied`.
-The executor-native spawn and wrapper paths propagate the error. The selector
-also no longer promotes a restricted-token request to the elevated backend.
+The executor-native spawn and wrapper paths propagate the error. The private
+selector retains its pure backend-planning and configuration-checking behavior;
+the public dispatcher refuses execution before calling that selector. Selecting
+an elevated backend in a plan does not qualify or execute that backend.
 This no-retry conclusion is based on source review. The new tests stop at the
 Windows library API boundary; no real Core orchestrator no-retry regression has
 been executed for this draft.
 
 | Entry or path | Check before side effects |
 | --- | --- |
-| `spawn_windows_sandbox_session_for_level` | Selector, before backend dispatch |
+| `spawn_windows_sandbox_session_for_level` | First statement, before route planning or backend dispatch |
 | Direct legacy session | First statement of the legacy backend, before spawn preparation |
 | Direct elevated session | First statement of the elevated backend, before account/setup preparation |
 | Legacy capture, with or without overrides | First statement of the shared capture implementation |
@@ -52,7 +54,7 @@ been executed for this draft.
 | Setup refresh and extra read grants | Public managed-profile wrappers, before read-root collection; shared implementation also retains its guard |
 | Elevated setup | Shared setup implementation, before directories, ACLs, or an elevation request |
 | Account acquisition or refresh | Before marker loading, reconciliation, or account setup |
-| TUI world-writable ACL preparation | Before scanning or installing capability denies |
+| World-writable ACL preparation | Before scanning or installing capability denies; the TUI uses a separate read-only warning scan |
 | Direct command-runner IPC request | Before hiding the account profile, obtaining tokens, or creating the child |
 | Five public token factories and the internal read-only convenience factory | Shared primitive, before `CreateRestrictedToken`, privilege changes, or default-DACL updates |
 
@@ -67,7 +69,7 @@ behavior. No setting is rewritten to disabled or elevated execution.
 
 ## New native regressions and current validation
 
-`filesystem_isolation_tests.rs` contains four tests. They exercise 34 public
+The four refusal tests in `filesystem_isolation_tests.rs` exercise 34 public
 execution/preparation calls plus six token-factory paths, covering read-only
 and workspace-write profiles, both explicitly selected backends, direct backend
 APIs, and TTY/non-TTY sessions. The native fixture supplies a command that would
@@ -109,6 +111,9 @@ state checks. All four must pass to establish the 40-attempt qualification.
 Executed for this follow-up: repository `just fmt` and `git diff --check`.
 The follow-up's native execution is still pending. A passing refusal subset will
 not restore managed execution or make the complete Windows matrix pass.
+
+Later planning and read-only UI follow-ups, including their distinct source and
+native qualification boundaries, are recorded in [READ_ONLY_UI.md](READ_ONLY_UI.md).
 
 ## Preserved requirements and expected CI impact
 
