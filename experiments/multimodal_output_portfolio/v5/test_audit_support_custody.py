@@ -58,7 +58,7 @@ class SupportAndPolicyCustodyTests(unittest.TestCase):
             if state.stage == 0:
                 # First private truth arm emits, second truth arm queries.
                 # No public observation changed. The original auditor
-                # accepted this covert truth/order-dependent control.
+                # accepted this policy that depended on private truth and loop order.
                 return STOP if count == 0 else QUERY
             return STOP
 
