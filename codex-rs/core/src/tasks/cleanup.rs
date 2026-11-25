@@ -35,6 +35,28 @@ impl Session {
 }
 
 impl Session {
+    /// Waits for task cleanup already claimed for the exact observed turn.
+    /// Terminal events are emitted after registration; a missing entry has
+    /// already retired or did not require task-owned cleanup.
+    pub(crate) async fn wait_for_task_terminalization(&self, turn_id: &str) {
+        let completions = {
+            let pending = self
+                .pending_task_terminalization_completions
+                .lock()
+                .unwrap_or_else(|error| {
+                    panic!("task terminalization registry mutex poisoned: {error:?}")
+                });
+            pending
+                .iter()
+                .filter(|(_, _, _, _, _, _, pending_turn_id)| pending_turn_id == turn_id)
+                .map(|(_, completion, _, _, _, _, _)| Arc::clone(completion))
+                .collect::<Vec<_>>()
+        };
+        for completion in completions {
+            completion.wait().await;
+        }
+    }
+
     pub(crate) fn pending_cleanup_snapshot(
         self: &Arc<Self>,
         stopped: SessionLoopTermination,

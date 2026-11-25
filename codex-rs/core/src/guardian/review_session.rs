@@ -644,6 +644,11 @@ impl GuardianReviewSessionManager {
         if keep_review_session && matches!(outcome, GuardianReviewSessionOutcome::Completed(_)) {
             trunk.refresh_last_committed_fork_snapshot().await;
         }
+        if !keep_review_session {
+            // Close this exact trunk while its permit is still held. Cache
+            // removal awaits a lock and must not race another acquisition.
+            trunk.review_lock.close();
+        }
         drop(trunk_guard);
 
         if keep_review_session {
@@ -1305,42 +1310,9 @@ async fn wait_for_guardian_review(
                 return (GuardianReviewSessionOutcome::Aborted, keep_review_session, false);
             }
             event = review_session.io.next_event() => {
-                match event {
-                    Ok(event) if !event_matches_turn(&event, expected_turn_id) => {}
-                    Ok(event) if matches!(&event.msg, EventMsg::ItemCompleted(_)) => {
-                        review_session.admit_node_repl_evidence(&event).await;
-                    }
-                    Ok(event) => match event.msg {
-                        EventMsg::TurnComplete(turn_complete) => {
-                            analytics_result.time_to_first_token_ms = turn_complete
-                                .time_to_first_token_ms
-                                .and_then(|ms| u64::try_from(ms).ok());
-                            if turn_complete.last_agent_message.is_none()
-                                && let Some(error) = last_error
-                            {
-                                return (
-                                    GuardianReviewSessionOutcome::SessionFailed {
-                                        error: anyhow!(error.message),
-                                        error_info: error.codex_error_info,
-                                    },
-                                    true,
-                                    true,
-                                );
-                            }
-                            return (
-                                GuardianReviewSessionOutcome::Completed(Ok(turn_complete.last_agent_message)),
-                                true,
-                                true,
-                            );
-                        }
-                        EventMsg::Error(error) => {
-                            last_error = Some(error);
-                        }
-                        EventMsg::TurnAborted(_) => {
-                            return (GuardianReviewSessionOutcome::Aborted, true, false);
-                        }
-                        _ => {}
-                    },
+                let event = match event {
+                    Ok(event) if !event_matches_turn(&event, expected_turn_id) => continue,
+                    Ok(event) => event,
                     Err(err) => {
                         return (
                             GuardianReviewSessionOutcome::Completed(Err(err.into())),
@@ -1348,6 +1320,51 @@ async fn wait_for_guardian_review(
                             false,
                         );
                     }
+                };
+                // The matching event precedes recovery and idle publication
+                // by its terminalizer. Do not reuse the trunk before it retires.
+                if matches!(&event.msg, EventMsg::TurnComplete(_) | EventMsg::TurnAborted(_))
+                    && let Err(outcome) = run_before_review_deadline(
+                        deadline,
+                        external_cancel,
+                        review_session.session.wait_for_task_terminalization(expected_turn_id),
+                    ).await
+                {
+                    return (outcome, false, false);
+                }
+                match event.msg {
+                    EventMsg::ItemCompleted(_) => {
+                        review_session.admit_node_repl_evidence(&event).await;
+                    }
+                    EventMsg::TurnComplete(turn_complete) => {
+                        analytics_result.time_to_first_token_ms = turn_complete
+                            .time_to_first_token_ms
+                            .and_then(|ms| u64::try_from(ms).ok());
+                        if turn_complete.last_agent_message.is_none()
+                            && let Some(error) = last_error
+                        {
+                            return (
+                                GuardianReviewSessionOutcome::SessionFailed {
+                                    error: anyhow!(error.message),
+                                    error_info: error.codex_error_info,
+                                },
+                                true,
+                                true,
+                            );
+                        }
+                        return (
+                            GuardianReviewSessionOutcome::Completed(Ok(turn_complete.last_agent_message)),
+                            true,
+                            true,
+                        );
+                    }
+                    EventMsg::Error(error) => {
+                        last_error = Some(error);
+                    }
+                    EventMsg::TurnAborted(_) => {
+                        return (GuardianReviewSessionOutcome::Aborted, true, false);
+                    }
+                    _ => {}
                 }
             }
         }
@@ -1510,6 +1527,10 @@ async fn interrupt_and_drain_turn(
                 event.msg,
                 EventMsg::TurnAborted(_) | EventMsg::TurnComplete(_)
             ) {
+                review_session
+                    .session
+                    .wait_for_task_terminalization(expected_turn_id)
+                    .await;
                 return Ok::<(), anyhow::Error>(());
             }
         }
@@ -2282,15 +2303,46 @@ mod tests {
             .await
             .expect("queue current turn completion");
 
+        let pending = |turn_id: &str, completion| {
+            (
+                Arc::new(()),
+                completion,
+                crate::state::TaskTerminalizationKind::Finish,
+                None,
+                None,
+                None,
+                turn_id.to_string(),
+            )
+        };
+        let prior = crate::state::StartTransitionCompletion::new();
+        let current = crate::state::StartTransitionCompletion::new();
+        review_session
+            .session
+            .pending_task_terminalization_completions
+            .lock()
+            .unwrap()
+            .extend([
+                pending("prior-turn", Arc::clone(&prior)),
+                pending("current-turn", Arc::clone(&current)),
+            ]);
+
         let mut analytics_result = GuardianReviewAnalyticsResult::without_session();
-        let (outcome, keep_review_session, capture_token_usage) = wait_for_guardian_review(
-            &review_session,
-            "current-turn",
-            tokio::time::Instant::now() + Duration::from_secs(1),
-            /*external_cancel*/ None,
-            &mut analytics_result,
-        )
-        .await;
+        let (outcome, keep_review_session, capture_token_usage) = {
+            let wait = wait_for_guardian_review(
+                &review_session,
+                "current-turn",
+                tokio::time::Instant::now() + Duration::from_secs(1),
+                /*external_cancel*/ None,
+                &mut analytics_result,
+            );
+            tokio::pin!(wait);
+            assert!(futures::poll!(&mut wait).is_pending());
+            current.complete();
+            wait.await
+        };
+        // The stale completion is still held; it cannot affect the current result.
+        assert!(!prior.is_complete());
+        prior.complete();
 
         let GuardianReviewSessionOutcome::Completed(Ok(last_agent_message)) = outcome else {
             panic!("expected current turn completion");
