@@ -1,6 +1,6 @@
 use codex_utils_absolute_path::AbsolutePathBuf;
-use serde_json::Value;
 use serde_json::json;
+use serde_json::Value;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqliteJournalMode;
 use sqlx::sqlite::SqlitePoolOptions;
