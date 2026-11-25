@@ -65,6 +65,46 @@ async fn mock_experimental_method_requires_experimental_api_capability() -> Resu
 }
 
 #[tokio::test]
+async fn bedrock_endpoints_require_experimental_api_capability() -> Result<()> {
+    let codex_home = TempDir::new()?;
+    let mut mcp = TestAppServer::builder()
+        .with_codex_home(codex_home.path())
+        .without_auto_env()
+        .build()
+        .await?;
+    let init = mcp
+        .initialize_with_capabilities(
+            default_client_info(),
+            Some(InitializeCapabilities {
+                experimental_api: false,
+                ..Default::default()
+            }),
+        )
+        .await?;
+    let JSONRPCMessage::Response(_) = init else {
+        anyhow::bail!("expected initialize response, got {init:?}");
+    };
+
+    for (method, params) in [
+        ("account/bedrock/discover", serde_json::json!({})),
+        (
+            "account/bedrock/setup",
+            serde_json::json!({"type": "environment", "region": "us-west-2"}),
+        ),
+    ] {
+        let request_id = mcp.send_raw_request(method, Some(params)).await?;
+        let error = timeout(
+            DEFAULT_TIMEOUT,
+            mcp.read_stream_until_error_message(RequestId::Integer(request_id)),
+        )
+        .await??;
+        assert_experimental_capability_error(error, method);
+    }
+    assert!(!codex_home.path().join("config.toml").exists());
+    Ok(())
+}
+
+#[tokio::test]
 async fn realtime_conversation_start_requires_experimental_api_capability() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut mcp = TestAppServer::builder()
