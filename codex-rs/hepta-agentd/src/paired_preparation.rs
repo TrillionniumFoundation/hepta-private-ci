@@ -1,6 +1,7 @@
-//! Preparation only, on the original required turn owner and writer journal.
-//! No material is opened, no FinalUse is requested and no dispatch receipt
-//! leaves this API.
+//! Preparation on the original required turn owner and writer journal.
+//! The existing preparation API remains read-only. Explicit training uses a
+//! private continuation and a separately installed fixed Root material owner;
+//! no FinalUse or public dispatch receipt leaves either API.
 
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
@@ -34,6 +35,18 @@ mod continuation;
 use continuation::FreshJournalPreparation;
 pub(crate) use continuation::OriginalPairedContinuation;
 pub(crate) use continuation::PreparedOriginal;
+
+#[path = "paired_material_client.rs"]
+mod material_client;
+#[cfg(target_os = "linux")]
+#[path = "paired_material_protocol.rs"]
+pub(crate) mod material_protocol;
+pub use material_client::AgentdPairedMaterialClient;
+pub use material_client::PairedTrainingMaterials;
+pub use material_client::PairedTrainingReadResult;
+#[path = "paired_training.rs"]
+pub(crate) mod training;
+pub use training::AgentdPairedTraining;
 
 pub(crate) const DESTINATION: &str = "paired.learning.material.v1";
 const TOPIC: &str = "hepta.paired-learning.prepare.v1";

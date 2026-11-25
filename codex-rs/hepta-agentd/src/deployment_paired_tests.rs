@@ -11,6 +11,8 @@ use std::sync::atomic::Ordering;
 
 #[path = "deployment_paired_live_tests.rs"]
 mod live;
+#[path = "deployment_paired_material_tests.rs"]
+mod materials;
 
 struct Clock(AtomicU64);
 impl AuthorityClock for Clock {

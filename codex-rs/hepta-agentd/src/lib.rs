@@ -261,6 +261,8 @@ pub use deployment_issuer::HostAuthorityWriterRegistration;
 #[cfg(target_os = "linux")]
 pub use deployment_issuer::PairedRootObservation;
 #[cfg(target_os = "linux")]
+pub use deployment_issuer::PairedTrainingMaterialManifestV1;
+#[cfg(target_os = "linux")]
 pub use deployment_issuer::RootDesktopPolicy;
 #[cfg(target_os = "linux")]
 pub use deployment_issuer::RootIssuedNotesGrantObservation;
@@ -946,7 +948,11 @@ pub use paired_original_turn::PairedTurnRequest;
 #[cfg(target_os = "linux")]
 pub use paired_original_turn::VerifiedPairedTurn;
 #[cfg(target_os = "linux")]
+pub use paired_preparation::AgentdPairedMaterialClient;
+#[cfg(target_os = "linux")]
 pub use paired_preparation::AgentdPairedPreparation;
+#[cfg(target_os = "linux")]
+pub use paired_preparation::AgentdPairedTraining;
 #[cfg(target_os = "linux")]
 pub use paired_preparation::PairedPreparationObservation;
 #[cfg(target_os = "linux")]
@@ -955,6 +961,10 @@ pub use paired_preparation::PairedPreparationRegistration;
 pub use paired_preparation::PairedPreparationRequest;
 #[cfg(target_os = "linux")]
 pub use paired_preparation::PairedPreparationResponse;
+#[cfg(target_os = "linux")]
+pub use paired_preparation::PairedTrainingMaterials;
+#[cfg(target_os = "linux")]
+pub use paired_preparation::PairedTrainingReadResult;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityEvidenceSourcesV1;

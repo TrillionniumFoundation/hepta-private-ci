@@ -85,6 +85,7 @@ pub struct AgentdNotesThreadToolRuntime {
     paired_turns:
         Option<tokio::sync::mpsc::Receiver<crate::paired_original_turn::PendingPairedTurn>>,
     paired_preparation: Option<crate::paired_preparation::PreparationLane>,
+    paired_training: Option<crate::paired_preparation::training::TrainingLane>,
 }
 
 impl AgentdConfig {
@@ -130,11 +131,31 @@ impl AgentdConfig {
             seed: None,
             paired_turns: None,
             paired_preparation: None,
+            paired_training: None,
         }
     }
 }
 
 impl AgentdNotesThreadToolRuntime {
+    pub(crate) fn install_paired_training(
+        &mut self,
+        client: crate::AgentdPairedMaterialClient,
+    ) -> Result<crate::AgentdPairedTraining, AgentdError> {
+        if self.paired_training.is_some() {
+            return Err(invalid("original paired training owner already installed"));
+        }
+        self.adapter.check_available()?;
+        let preparation = self.paired_preparation.as_ref().ok_or_else(|| {
+            invalid("original paired preparation journal must already be installed")
+        })?;
+        let (handle, lane) = crate::paired_preparation::training::TrainingLane::attach(
+            &preparation.journal,
+            client,
+        )?;
+        self.paired_training = Some(lane);
+        Ok(handle)
+    }
+
     pub(crate) fn install_paired_preparation(
         &mut self,
         registration: crate::PairedPreparationRegistration,

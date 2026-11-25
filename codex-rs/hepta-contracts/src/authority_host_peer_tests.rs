@@ -5,6 +5,9 @@ use std::io::Write;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+#[path = "authority_host_peer_response_tests.rs"]
+mod original_response;
+
 fn channel(bound: usize) -> (HostAuthorityPeerChannel, UnixStream) {
     let (server, client) = UnixStream::pair().unwrap();
     let pid = rustix::process::getpid();
