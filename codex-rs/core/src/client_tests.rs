@@ -1,6 +1,8 @@
 use super::AuthRequestTelemetryContext;
 use super::CompactConversationRequestSettings;
+use super::LastResponse;
 use super::ModelClient;
+use super::NodeReplRequestPolicy;
 use super::PendingUnauthorizedRetry;
 use super::Prompt;
 use super::UnauthorizedRecoveryExecution;
@@ -440,6 +442,115 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         )
         .expect("changed provider identity")
     );
+}
+
+#[test]
+fn websocket_continuation_rejects_changed_node_policy_for_same_model() {
+    let client = test_model_client(SessionSource::Exec);
+    let provider =
+        ModelProviderInfo::create_openai_provider(Some("https://api.openai.com/v1".to_string()))
+            .to_api_provider(Some(AuthMode::ApiKey))
+            .expect("test provider");
+    let mut metadata = test_responses_metadata_for_client(
+        &client,
+        /*turn_id*/ None,
+        "window".to_string(),
+        /*parent_thread_id*/ None,
+        TestCodexResponsesRequestKind::Turn,
+    );
+    metadata.node_repl_auto_review_required = Some(true);
+    metadata.node_repl_disabled = Some(false);
+    metadata.sandbox_mode = Some("workspace-write".to_string());
+    metadata.auto_review_enabled = Some(true);
+    let request = client
+        .build_responses_request(
+            &Prompt::default(),
+            &test_model_info(),
+            /*effort*/ None,
+            codex_protocol::config_types::ReasoningSummary::None,
+            /*service_tier*/ None,
+            &metadata,
+            &provider,
+        )
+        .expect("test request");
+    let identity = WebsocketConnectionIdentity::from_provider(
+        &provider, /*beta_features_header*/ None, &metadata,
+    )
+    .expect("connection identity");
+    let recovery = serde_json::to_value(metadata.turn_recovery_compatibility_projection())
+        .expect("recovery projection");
+    for (model, tier, review_required, disabled, reuse) in [
+        (None, None, Some(true), Some(false), true),
+        (None, None, Some(false), Some(false), false),
+        (None, None, Some(true), Some(true), false),
+        (None, None, Some(false), Some(true), false),
+        (None, None, None, None, false),
+        (Some("another-model"), None, Some(true), Some(false), false),
+        (None, Some("priority"), Some(true), Some(false), false),
+    ] {
+        let mut current_metadata = metadata.clone();
+        current_metadata.node_repl_auto_review_required = review_required;
+        current_metadata.node_repl_disabled = disabled;
+        let mut current_request = request.clone();
+        if let Some(model) = model {
+            current_request.model = model.to_string();
+        }
+        if let Some(tier) = tier {
+            current_request.service_tier = Some(tier.to_string());
+        }
+        current_request.client_metadata = Some(current_metadata.client_metadata());
+        assert_eq!(
+            identity,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                /*beta_features_header*/ None,
+                &current_metadata,
+            )
+            .expect("per-request policy retains the socket identity"),
+        );
+        let mut expected_recovery = recovery.clone();
+        for (key, value) in [
+            ("node_repl_auto_review_required", review_required),
+            ("node_repl_disabled", disabled),
+        ] {
+            if let Some(value) = value {
+                expected_recovery[key] = json!(value);
+            } else {
+                expected_recovery
+                    .as_object_mut()
+                    .expect("projection object")
+                    .remove(key);
+            }
+        }
+        assert_eq!(
+            serde_json::to_value(current_metadata.turn_recovery_compatibility_projection())
+                .expect("current recovery projection"),
+            expected_recovery,
+        );
+        let mut session = client.new_session();
+        session.websocket_session.last_request = Some(request.clone());
+        session.websocket_session.last_request_node_repl_policy =
+            Some(NodeReplRequestPolicy::from(&metadata));
+        session.websocket_session.last_response_from_untraced_warmup = true;
+        let (sender, receiver) = tokio::sync::oneshot::channel();
+        sender
+            .send(LastResponse {
+                response_id: "previous-response".to_string(),
+                items_added: Vec::new(),
+            })
+            .expect("completed response fixture");
+        session.websocket_session.last_response_rx = Some(receiver);
+        let actual = session.prepare_websocket_request(
+            &current_request,
+            NodeReplRequestPolicy::from(&current_metadata),
+        );
+        let expected = if reuse {
+            (Some(("previous-response".to_string(), Vec::new())), true)
+        } else {
+            (None, false)
+        };
+        assert_eq!(actual, expected);
+    }
 }
 
 #[tokio::test]
