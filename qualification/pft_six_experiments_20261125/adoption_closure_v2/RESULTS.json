@@ -1,0 +1,98 @@
+{
+  "as_of_utc": "2026-11-25T11:43:46.061269+00:00",
+  "authorized_revocation_recovery_and_new_task_reuse": false,
+  "engineering_delivery_complete": true,
+  "frozen_E1_E6_reopened": false,
+  "historical_model_calls": 0,
+  "historical_weight_updates": 0,
+  "independent_hcsn_v2_audit": {
+    "archive_members_hashed": 981,
+    "archive_receipt": "receipts/HCSN_V2_ARCHIVE_BYTES_AUDIT.json",
+    "archives_hashed": 190,
+    "bytes_receipt": "receipts/HCSN_V2_ARTIFACT_BYTES_AUDIT.json",
+    "candidate_count": 168,
+    "case_artifacts_hashed": 672,
+    "maximum_archive_bytes": 228124,
+    "metadata_passed": true,
+    "model_calls": 0,
+    "physical_source_files": 25,
+    "scientific_source_files": 5,
+    "test_regenerated": false
+  },
+  "independent_human_B_found": false,
+  "input_contract": {
+    "cases": 12,
+    "immutable_candidate_prefix_checked": true,
+    "prospective_stages": [
+      "frozen_waiting_b",
+      "evaluation_ready",
+      "first_use_ready",
+      "repeat_use_ready"
+    ],
+    "receipt": "receipts/CONTRACT_V2.json",
+    "schema_stages_checked": [
+      "frozen_waiting_b",
+      "evaluation_ready",
+      "first_use_ready",
+      "repeat_use_ready"
+    ],
+    "source_sha256": {
+      "PRIVATE_INPUT_CONTRACT.schema.json": "4b511c50ea5054b724d9e76be2febc348f4b68112c4f67bff7635d35370de888",
+      "intake_contract.py": "9dc25aef47ebed27eedf8aa902d2fe69d9a6ebff86940e542ab06d31684b883e",
+      "native_adapter.py": "d007443ba27a6bebedda23b2eb8ff48a5315f624207682816952bcf2b0858c6b",
+      "test_contract.py": "27cdf0aa93b70f13540a119f3582740a33e67b64bf690422e13b3ecd47c50b35"
+    },
+    "status": "PASSED_NEW_ENGINEERING_CONTROLS"
+  },
+  "native_probe": {
+    "actual_model_inference": false,
+    "cargo_lock_unchanged": true,
+    "checked_head": "fe249567feae227a362d354c1df3499a2995af40",
+    "current_model_calls": 0,
+    "current_training_updates": 0,
+    "dependency_remediation": "cargo-nextest 0.9.152 installed in isolated directory, exit 0",
+    "exit": 0,
+    "filtered_other_tests": 867,
+    "final_format_receipt": "receipts/FINAL_NATIVE_FORMAT.json",
+    "first_attempt_blocker": "cargo-nextest was absent; no native compilation or test ran",
+    "first_attempt_exit": 101,
+    "format_exit": 0,
+    "initial_v4_observation": "explicit pretty_assertions import and exact original fixture resource; RPC timed out; preparation/result not present when observed",
+    "native_tests_executed": 1,
+    "new_task_reuse_verified": false,
+    "original_v4_request_reconciled_without_new_execution": true,
+    "passed_tests": 1,
+    "receipt": "receipts/NATIVE_v4_RESULT.json",
+    "second_attempt_blocker": "sparse checkout missing original docs/modules/MODULES.json",
+    "second_attempt_exit": 101,
+    "status": "NATIVE_ENGINEERING_CONTROLS_PASSED",
+    "terminal_job": "1a212773671-ffbe-3fa8",
+    "third_attempt_blockers": [
+      "sparse checkout missing original proposal_worker.py",
+      "probe assert_eq glob import ambiguity"
+    ],
+    "third_attempt_exit": 101,
+    "third_attempt_lock_unchanged": true
+  },
+  "native_statement_adapter": {
+    "build_exit": 0,
+    "closure_complete": false,
+    "elf_sha256": "82721b3fd39251249779754f46d5923def35556e3420e89701bbb9fb70ec7817",
+    "execution_exit": 0,
+    "original_turn_authorization_available": false,
+    "receipt": "receipts/NATIVE_STATEMENT_INTERFACE.json",
+    "statement_scopes_checked": 4,
+    "status": "STATEMENT_ADAPTER_PASSED"
+  },
+  "original_turn_authorization_verified": false,
+  "private_experience_or_person_identity_published": false,
+  "production_adoption_closure_complete": false,
+  "real_cross_user_transfer_qualified": false,
+  "remaining_inputs": [
+    "protected original-Core-turn verifier and current revocation evidence",
+    "original site enrollment of two distinct human participants",
+    "authorized prospective B evaluation, keep, and two distinct subsequent use/outcome originals",
+    "same original issuer forward authorization after revocation; no file rollback"
+  ],
+  "schema": "hepta.adoption-closure.status.v2"
+}

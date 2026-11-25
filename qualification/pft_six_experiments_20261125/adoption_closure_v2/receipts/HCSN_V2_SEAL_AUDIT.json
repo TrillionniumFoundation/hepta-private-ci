@@ -1,0 +1,35 @@
+{
+  "cases": 168,
+  "checks": {
+    "all_training_terminal": true,
+    "full_case_roster_equal": true,
+    "local_five_source_bytes_match": true,
+    "raw_protocol_sha": true,
+    "seal_declares_test_not_generated": true,
+    "source_pins_equal": true,
+    "test_descriptor_equal": true,
+    "unique_case_names": true
+  },
+  "claim_of_real_user_transfer": false,
+  "model_calls": 0,
+  "observed_utc": "2026-11-25T11:12:09.127968+00:00",
+  "old_protocol_v1_preserved": true,
+  "pins": {
+    "FORMAL_PROTOCOL_v2.json": {
+      "bytes": 54335,
+      "git_blob": "b5fdbc81c6026430431522993aee9645395634dc",
+      "sha256": "aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8"
+    },
+    "GLOBAL_CANDIDATE_SEAL.json": {
+      "bytes": 91882,
+      "git_blob": "9c17a1f75c4613aee412c3ef1f5bf59020aa991c",
+      "sha256": "a447b724f6459625b0e9c5e15e9dca5bbaad439af5c433391c7b34e9a9df88ee"
+    }
+  },
+  "schema": "hepta.adoption-closure.independent-hcsn-v2-seal-audit.v1",
+  "scope": "metadata/source/roster readback only; test artifact bytes pending",
+  "seal_git": "7dfd1deb8b70867a7875ef1fc99cd1a6b20f4953",
+  "source_protocol_git": "221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3",
+  "test_labels_opened": false,
+  "training_updates": 0
+}
