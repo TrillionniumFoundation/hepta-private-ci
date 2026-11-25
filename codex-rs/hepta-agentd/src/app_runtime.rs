@@ -43,6 +43,7 @@ pub(crate) enum AppServerSocket {
 pub(crate) enum AppServerModelToolProfile {
     Standard,
     ExplicitContextOnly,
+    NotesSeedOnly,
     #[cfg(target_os = "linux")]
     OriginalNotes,
     #[cfg(target_os = "linux")]
@@ -53,7 +54,7 @@ impl AppServerModelToolProfile {
     fn cognitive_tools_enabled(self) -> bool {
         match self {
             Self::Standard => true,
-            Self::ExplicitContextOnly => false,
+            Self::ExplicitContextOnly | Self::NotesSeedOnly => false,
             #[cfg(target_os = "linux")]
             Self::OriginalNotes | Self::OriginalDesktop => false,
         }
@@ -209,17 +210,18 @@ fn app_server_runtime_options_with_writer(
         // reopen general cognitive tools through a new Core config.
         required_feature_states.insert(Feature::HeptaMemory, false);
     }
-    let explicit_context_only =
-        matches!(model_tools, AppServerModelToolProfile::ExplicitContextOnly);
-    if explicit_context_only {
+    let isolated_model_profile = matches!(
+        model_tools,
+        AppServerModelToolProfile::ExplicitContextOnly | AppServerModelToolProfile::NotesSeedOnly
+    );
+    if isolated_model_profile {
         required_feature_states
             .extend([(Feature::MemoryTool, false), (Feature::TokenBudget, false)]);
     }
-    // The qualification lifecycle is a separate automatic writer seam. Keep it
-    // unavailable to this model profile even in qualification-enabled builds.
+    // These profiles cannot use the separate automatic qualification writer.
     let qualification_turn_writer_enabled =
-        QUALIFICATION_TURN_WRITER_ENABLED && !explicit_context_only;
-    let qualification_turn_writer = qualification_turn_writer.filter(|_| !explicit_context_only);
+        QUALIFICATION_TURN_WRITER_ENABLED && !isolated_model_profile;
+    let qualification_turn_writer = qualification_turn_writer.filter(|_| !isolated_model_profile);
     let turn_queue_capacity = usize::try_from(identity.resources.turn_queue_capacity)
         .map_err(|_| std::io::Error::other("turn queue capacity does not fit this platform"))?;
     let turn_queue_capacity = NonZeroUsize::new(turn_queue_capacity).ok_or_else(|| {

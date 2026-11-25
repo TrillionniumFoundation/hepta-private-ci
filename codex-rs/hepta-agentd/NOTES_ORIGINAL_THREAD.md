@@ -82,6 +82,13 @@ Existing receipts/catalogs are refused, never dynamically extended, repaired or
 reseeded into a replacement thread. The first installed product must select one
 source combination containing this catalog before its seed is created.
 
+On Linux, start the registered Agentd seed owner with
+`codex-hepta-agentd --app-server-profile original-notes-seed`. This standalone mode requires
+the frozen execution files and disables the embedding's cognitive model tools
+before opening App Server. It cannot be combined with a production attachment
+or any other startup argument. Run `hepta-notes-thread-seed` against that
+owner's control socket; standard Agentd still rejects the seed profile.
+
 The trusted launcher can then gracefully stop the seed owner and launch the
 final Agentd with that same Core home. `verify_original_notes_thread_seed` must
 resume the original thread on the final actual App Server and compare the real

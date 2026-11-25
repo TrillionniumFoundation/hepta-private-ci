@@ -31,6 +31,23 @@ fn main() -> anyhow::Result<()> {
         Ok(move |arg0_paths| async move {
             #[cfg(target_os = "linux")]
             let (mut config, production) = startup.receive().await?;
+            if matches!(
+                arguments.as_slice(),
+                [flag, profile] if flag == "--app-server-profile" && profile == "original-notes-seed"
+            ) {
+                #[cfg(target_os = "linux")]
+                {
+                    anyhow::ensure!(
+                        production.is_none(),
+                        "Notes seed-only startup cannot install a production attachment"
+                    );
+                    config = config.with_original_notes_seed_only()?;
+                    codex_hepta_agentd::run(config, arg0_paths).await?;
+                    return Ok(());
+                }
+                #[cfg(not(target_os = "linux"))]
+                anyhow::bail!("Original Notes thread seeding requires Linux");
+            }
             let mut args = arguments.into_iter();
             let mut authbus_trust = None;
             let mut intelligence_authority_file = None;

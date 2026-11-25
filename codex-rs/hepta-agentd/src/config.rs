@@ -144,6 +144,7 @@ pub struct AgentdConfig {
     episodic_snapshot_import: Option<std::sync::Arc<crate::episodic_import::EpisodicImportIngress>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
+    original_notes_seed_only: bool,
     notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
     desktop_objective: Option<crate::AgentdDesktopObjectiveConfig>,
     #[cfg(target_os = "linux")]
@@ -336,6 +337,7 @@ impl AgentdConfig {
             episodic_snapshot_import: None,
             production_operations: None,
             production_writer_host: None,
+            original_notes_seed_only: false,
             notes_objective: None,
             desktop_objective: None,
             #[cfg(target_os = "linux")]
@@ -379,6 +381,19 @@ impl AgentdConfig {
 
     /// Explicit owner-managed public-key/route registry. No file is generated
     /// or trusted implicitly; the runtime validates and reloads it before use.
+    /// Select a deny-only App Server for the unused Notes thread seed.
+    /// The retained production attachment is installed only by the final owner.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_seed_only(mut self) -> Result<Self, AgentdError> {
+        crate::notes_thread_execution::inspect(&self.identity.home_root)?;
+        self.original_notes_seed_only = true;
+        Ok(self)
+    }
+
+    pub(crate) fn original_notes_seed_only(&self) -> bool {
+        self.original_notes_seed_only
+    }
+
     pub fn with_authbus_trust_file(mut self, path: PathBuf) -> Self {
         self.authbus_trust_file = Some(path);
         self

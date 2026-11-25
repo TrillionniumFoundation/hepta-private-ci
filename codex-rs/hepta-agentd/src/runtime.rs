@@ -153,7 +153,9 @@ async fn run_composed_with_shutdown(
     let ranker = config.cognitive_ranker();
     let mut production_writer_host = config.production_writer_host();
     let episodic_snapshot_import = config.take_episodic_snapshot_import();
-    let app_server_model_tools = if episodic_snapshot_import.is_some() {
+    let app_server_model_tools = if config.original_notes_seed_only() {
+        crate::app_runtime::AppServerModelToolProfile::NotesSeedOnly
+    } else if episodic_snapshot_import.is_some() {
         crate::app_runtime::AppServerModelToolProfile::ExplicitContextOnly
     } else {
         app_server_model_tools
