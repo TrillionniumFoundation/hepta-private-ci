@@ -215,9 +215,11 @@ class CellRoster:
         for cell in self.cells:
             if cell.feature_share_group is not None:
                 # Shared model residency is not cross-principal/agent authorization.
+                # Live feature pools cannot cross an original run partition.
                 identity = (
                     cell.principal_id,
                     cell.agent_id,
+                    cell.run_id,
                     cell.state_owner,
                     cell.data_scope,
                     cell.components.shared_feature_identity,
