@@ -163,8 +163,12 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
     let mut ledger = LedgerFixture::new("ledger-A");
     let owner = fence().owner_agent_id;
     let episode = id("episode-A");
-    let run = checked(circuit_learning_run_id_v1(&ledger.writer, &owner, &episode));
-    append_decision(&mut ledger.writer, &run, &episode);
+    let run = checked(circuit_learning_run_id_v1(
+        ledger.writer(),
+        &owner,
+        &episode,
+    ));
+    append_decision(ledger.writer_mut(), &run, &episode);
     let original = execute(owner.clone(), &run, d("objective")).await;
     let support = checked(
         original
@@ -181,15 +185,15 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             .terminal_credit_support(&foreign.store, run.as_str(), &foreign.inputs)
             .await,
     );
-    let before = ledger.bytes();
-    let signed = closure(&ledger.writer, &run, &episode, &foreign_support);
+    let before = ledger.close_read_and_reopen();
+    let signed = closure(ledger.writer(), &run, &episode, &foreign_support);
     assert!(matches!(
         foreign
             .runtime
             .append_terminal_credit(
                 &foreign.store,
                 &foreign.inputs,
-                &mut ledger.writer,
+                ledger.writer_mut(),
                 signed,
                 /*now*/ 50
             )
@@ -198,21 +202,21 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             "ledger/owner/episode execution identity"
         ))
     ));
-    assert_eq!(ledger.bytes(), before);
+    assert_eq!(ledger.close_read_and_reopen(), before);
 
     let mut other_ledger = LedgerFixture::new("ledger-B");
     // This is a valid independently signed Decision with the same run and
     // episode bytes in a different authorized ledger domain.
-    append_decision(&mut other_ledger.writer, &run, &episode);
-    let before = other_ledger.bytes();
-    let signed = closure(&other_ledger.writer, &run, &episode, &support);
+    append_decision(other_ledger.writer_mut(), &run, &episode);
+    let before = other_ledger.close_read_and_reopen();
+    let signed = closure(other_ledger.writer(), &run, &episode, &support);
     assert!(matches!(
         original
             .runtime
             .append_terminal_credit(
                 &original.store,
                 &original.inputs,
-                &mut other_ledger.writer,
+                other_ledger.writer_mut(),
                 signed,
                 /*now*/ 50
             )
@@ -221,17 +225,17 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             "ledger/owner/episode execution identity"
         ))
     ));
-    assert_eq!(other_ledger.bytes(), before);
+    assert_eq!(other_ledger.close_read_and_reopen(), before);
 
-    let before = ledger.bytes();
-    let signed = closure(&ledger.writer, &run, &id("episode-B"), &support);
+    let before = ledger.close_read_and_reopen();
+    let signed = closure(ledger.writer(), &run, &id("episode-B"), &support);
     assert!(matches!(
         original
             .runtime
             .append_terminal_credit(
                 &original.store,
                 &original.inputs,
-                &mut ledger.writer,
+                ledger.writer_mut(),
                 signed,
                 /*now*/ 50
             )
@@ -240,11 +244,11 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             "ledger/owner/episode execution identity"
         ))
     ));
-    assert_eq!(ledger.bytes(), before);
+    assert_eq!(ledger.close_read_and_reopen(), before);
 
     let mut legacy_ledger = LedgerFixture::new("legacy-ledger");
     let legacy_run = id("run-1");
-    append_decision(&mut legacy_ledger.writer, &legacy_run, &episode);
+    append_decision(legacy_ledger.writer_mut(), &legacy_run, &episode);
     let legacy = execute(owner.clone(), &legacy_run, d("objective")).await;
     let legacy_support = checked(
         legacy
@@ -252,9 +256,9 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             .terminal_credit_support(&legacy.store, legacy_run.as_str(), &legacy.inputs)
             .await,
     );
-    let before_legacy = legacy_ledger.bytes();
+    let before_legacy = legacy_ledger.close_read_and_reopen();
     let legacy_signed = closure(
-        &legacy_ledger.writer,
+        legacy_ledger.writer(),
         &legacy_run,
         &episode,
         &legacy_support,
@@ -265,7 +269,7 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             .append_terminal_credit(
                 &legacy.store,
                 &legacy.inputs,
-                &mut legacy_ledger.writer,
+                legacy_ledger.writer_mut(),
                 legacy_signed,
                 /*now*/ 50
             )
@@ -274,7 +278,7 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             "ledger/owner/episode execution identity"
         ))
     ));
-    assert_eq!(legacy_ledger.bytes(), before_legacy);
+    assert_eq!(legacy_ledger.close_read_and_reopen(), before_legacy);
 
     let wrong_objective = execute(owner, &run, d("unrelated-objective")).await;
     let wrong_support = checked(
@@ -287,14 +291,14 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             )
             .await,
     );
-    let signed = closure(&ledger.writer, &run, &episode, &wrong_support);
+    let signed = closure(ledger.writer(), &run, &episode, &wrong_support);
     assert!(matches!(
         wrong_objective
             .runtime
             .append_terminal_credit(
                 &wrong_objective.store,
                 &wrong_objective.inputs,
-                &mut ledger.writer,
+                ledger.writer_mut(),
                 signed,
                 /*now*/ 50
             )
@@ -303,9 +307,9 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             "executed objective differs from ledger"
         ))
     ));
-    assert_eq!(ledger.bytes(), before);
+    assert_eq!(ledger.close_read_and_reopen(), before);
 
-    let signed = closure(&ledger.writer, &run, &episode, &support);
+    let signed = closure(ledger.writer(), &run, &episode, &support);
     let mut bad = signed.clone();
     bad.credit_evidence.signature[0] ^= 1;
     assert!(matches!(
@@ -314,7 +318,7 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             .append_terminal_credit(
                 &original.store,
                 &original.inputs,
-                &mut ledger.writer,
+                ledger.writer_mut(),
                 bad,
                 /*now*/ 50
             )
@@ -323,40 +327,55 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             OutcomeCreditClosureErrorV2::Credit { .. }
         ))
     ));
-    assert_eq!(checked(ledger.writer.records()).len(), 2);
+    assert_eq!(checked(ledger.writer().records()).len(), 2);
     let committed = checked(
         original
             .runtime
             .append_terminal_credit(
                 &original.store,
                 &original.inputs,
-                &mut ledger.writer,
+                ledger.writer_mut(),
                 signed.clone(),
                 /*now*/ 50,
             )
             .await,
     );
-    let before = ledger.bytes();
+    let before = ledger.close_read_and_reopen();
     let replay = checked(
         original
             .runtime
             .append_terminal_credit(
                 &original.store,
                 &original.inputs,
-                &mut ledger.writer,
+                ledger.writer_mut(),
+                signed.clone(),
+                /*now*/ 50,
+            )
+            .await,
+    );
+    // The recovered owner first proves cold replay, then the same live owner
+    // must replay again without closing, re-opening, or appending between them.
+    let warm_replay = checked(
+        original
+            .runtime
+            .append_terminal_credit(
+                &original.store,
+                &original.inputs,
+                ledger.writer_mut(),
                 signed,
                 /*now*/ 50,
             )
             .await,
     );
+    assert_eq!(warm_replay, replay);
     let mut expected = committed;
     expected.outcome.disposition = AppendDisposition::IdempotentReplay;
     expected.credit.disposition = AppendDisposition::IdempotentReplay;
     assert_eq!(replay, expected);
-    assert_eq!(ledger.bytes(), before);
+    assert_eq!(ledger.close_read_and_reopen(), before);
     assert_eq!(
         (
-            checked(ledger.writer.records()).len(),
+            checked(ledger.writer().records()).len(),
             original.calls.load(Ordering::SeqCst)
         ),
         (3, 1)

@@ -63,6 +63,7 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 use super::host;
 use host::checked;
@@ -353,6 +354,22 @@ impl LedgerFixture {
             checked(fs::read(self.directory.path().join("ledger"))),
             checked(fs::read(self.directory.path().join("witness"))),
         ]
+    }
+
+    pub(super) fn close_read_and_reopen(
+        &self,
+        writer: LedgerWriter,
+    ) -> (LedgerWriter, [Vec<u8>; 2]) {
+        let records = checked(writer.records());
+        let frontier = checked(writer.witness_frontier());
+        // All appends are synchronous. Drop only unlocks; the byte observation
+        // must not add a drain, flush an outstanding write, or repair an owner.
+        drop(writer);
+        let bytes = self.bytes();
+        let reopened = self.writer(/*reopen*/ true);
+        assert_eq!(checked(reopened.records()), records);
+        assert_eq!(checked(reopened.witness_frontier()), frontier);
+        (reopened, bytes)
     }
 }
 

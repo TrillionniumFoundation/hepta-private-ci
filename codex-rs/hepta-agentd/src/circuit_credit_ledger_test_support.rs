@@ -12,6 +12,7 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 use super::checked;
 use super::d;
@@ -75,7 +76,9 @@ fn sign(
 }
 
 pub(super) struct LedgerFixture {
-    pub(super) writer: LedgerWriter,
+    writer: Option<LedgerWriter>,
+    binding: Digest32,
+    trust: ActivatedLearningTrustV1,
     directory: tempfile::TempDir,
 }
 
@@ -139,24 +142,89 @@ impl LedgerFixture {
         #[cfg(windows)]
         {
             use std::os::windows::fs::OpenOptionsExt;
-            options.custom_flags(0x0200_0000 | 0x0020_0000);
+            options.write(true).custom_flags(0x0200_0000 | 0x0020_0000);
         }
         let directory_handle: File = checked(options.open(directory.path()));
         let writer = checked(LedgerWriter::from_durable(
             ledger,
             witness,
-            trust,
+            trust.clone(),
             &directory_handle,
             &directory_handle,
         ));
-        Self { writer, directory }
+        Self {
+            writer: Some(writer),
+            binding: d(domain),
+            trust,
+            directory,
+        }
     }
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
+    pub(super) fn writer(&self) -> &LedgerWriter {
+        self.writer.as_ref().expect("live fixture ledger owner")
+    }
+
+    pub(super) fn writer_mut(&mut self) -> &mut LedgerWriter {
+        self.writer.as_mut().expect("live fixture ledger owner")
+    }
+
+    pub(super) fn close_read_and_reopen(&mut self) -> [Vec<u8>; 2] {
+        let writer = self.writer.take().expect("live fixture ledger owner");
+        let records = checked(writer.records());
+        let frontier = checked(writer.witness_frontier());
+        // The writer's drops only release its real locks. No drain or append is
+        // introduced by this observation; Windows path reads require closure.
+        drop(writer);
+        let bytes = [
             checked(std::fs::read(self.directory.path().join("ledger"))),
             checked(std::fs::read(self.directory.path().join("witness"))),
-        ]
+        ];
+        let file = |name| {
+            checked(
+                OpenOptions::new()
+                    .read(true)
+                    .write(true)
+                    .open(self.directory.path().join(name)),
+            )
+        };
+        let recovery = if records.is_empty() {
+            assert_eq!(
+                frontier.anchor,
+                LedgerAnchor {
+                    sequence: 0,
+                    chain_digest: Digest32::ZERO
+                }
+            );
+            LedgerRecovery::Unacknowledged
+        } else {
+            LedgerRecovery::Acknowledged(frontier.anchor)
+        };
+        let ledger = checked(DurableLedger::recover(
+            file("ledger"),
+            self.binding,
+            /*max_records*/ 32,
+            recovery,
+        ));
+        let witness = checked(LedgerWitnessStore::recover(file("witness"), self.binding));
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            options.write(true).custom_flags(0x0200_0000 | 0x0020_0000);
+        }
+        let directory = checked(options.open(self.directory.path()));
+        let reopened = checked(LedgerWriter::from_durable(
+            ledger,
+            witness,
+            self.trust.clone(),
+            &directory,
+            &directory,
+        ));
+        assert_eq!(checked(reopened.records()), records);
+        assert_eq!(checked(reopened.witness_frontier()), frontier);
+        self.writer = Some(reopened);
+        bytes
     }
 }
 
