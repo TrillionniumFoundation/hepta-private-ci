@@ -223,6 +223,31 @@ impl OriginalConnection {
         Ok(human)
     }
 
+    async fn verify_paired_turn(
+        &mut self,
+        state: &crate::AgentdState,
+        adapter: &AgentdNotesLiteralAdapter,
+        request: crate::PairedTurnRequest,
+    ) -> Result<crate::VerifiedPairedTurn, AgentdError> {
+        let human = self
+            .verify_human_turn(state, adapter, &request.turn_id)
+            .await?;
+        request.match_original(
+            human.delivery_id(),
+            &human.ingress().body.text,
+            human.owner(),
+        )?;
+        let host = crate::authbus_ingress::attached(state)?;
+        host.sync_replay_checkpoint().await?;
+        crate::authbus_ingress::require_ready(state)?;
+        let current = adapter
+            .verify_original_human_text(human.ingress(), human.route())
+            .await?;
+        crate::authbus_ingress::require_ready(state)?;
+        adapter.check_available()?;
+        crate::VerifiedPairedTurn::from_original(request, &human, current)
+    }
+
     async fn find_original_item(
         &mut self,
         original_turn_id: &str,
@@ -347,22 +372,36 @@ impl AgentdNotesThreadToolRuntime {
                         continue;
                     };
                     let request = pending.request.clone();
-                    pending.verify_on_owner(&cancellation, async {
-                        let human = connection.verify_human_turn(
-                            &state, &self.adapter, &request.turn_id,
+                    pending.verify_on_owner(&cancellation,
+                        connection.verify_paired_turn(&state, &self.adapter, request),
+                    ).await;
+                    continue;
+                }
+                pending = async {
+                    match self.paired_preparation.as_mut() {
+                        Some(lane) => lane.receiver.recv().await,
+                        None => std::future::pending().await,
+                    }
+                } => {
+                    let Some(pending) = pending else {
+                        self.paired_preparation = None;
+                        continue;
+                    };
+                    let request = pending.request.clone();
+                    let preparing = Arc::clone(&pending.preparing);
+                    let journal = &self.paired_preparation.as_ref()
+                        .ok_or_else(|| invalid("original paired preparation owner absent"))?.journal;
+                    pending.complete_on_owner(&cancellation, async {
+                        if let Some(retained) = journal.retained(&request).await? {
+                            return Ok(crate::PairedPreparationResponse::RetainedReadOnly(retained));
+                        }
+                        let verified = connection.verify_paired_turn(
+                            &state, &self.adapter, request.original.clone(),
                         ).await?;
-                        request.match_original(
-                            human.delivery_id(), &human.ingress().body.text, human.owner(),
-                        )?;
-                        let host = crate::authbus_ingress::attached(&state)?;
-                        host.sync_replay_checkpoint().await?;
-                        crate::authbus_ingress::require_ready(&state)?;
-                        let current = self.adapter.verify_original_human_text(
-                            human.ingress(), human.route(),
-                        ).await?;
-                        crate::authbus_ingress::require_ready(&state)?;
-                        self.adapter.check_available()?;
-                        crate::VerifiedPairedTurn::from_original(request, &human, current)
+                        self.adapter.check_paired_preparation_lifetime(&verified)?;
+                        let result = journal.prepare_verified(&request, &verified, &preparing).await?;
+                        self.adapter.check_paired_preparation_lifetime(&verified)?;
+                        Ok(result)
                     }).await;
                     continue;
                 }

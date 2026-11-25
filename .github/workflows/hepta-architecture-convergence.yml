@@ -207,6 +207,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-turn.json" --minimum-tests 10 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_original_turn::tests) | test(notes_thread_tool::human::tests)'
+      - name: Paired preparation on the original durable journal
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-preparation.json" --minimum-tests 8 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_preparation::tests)'
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |

@@ -349,6 +349,25 @@ impl AgentdNotesLiteralAdapter {
             .map_err(AgentdError::GenerationFenced)
     }
 
+    pub(crate) fn check_paired_preparation_lifetime(
+        &self,
+        verified: &crate::VerifiedPairedTurn,
+    ) -> Result<(), AgentdError> {
+        self.check_available()?;
+        if self
+            .root
+            .clock()
+            .now_unix_ms()
+            .map_err(|_| invalid("original protected clock unavailable"))?
+            >= verified.expires_at_ms()
+        {
+            return Err(invalid(
+                "original paired observation expired during preparation",
+            ));
+        }
+        Ok(())
+    }
+
     /// Retain before returning any signed ingress. This never calls a device,
     /// creates a FinalUse grant, dispatches an outbox row or submits Objective.
     /// A timeout/failed sign may leave original durable preparation; retry can

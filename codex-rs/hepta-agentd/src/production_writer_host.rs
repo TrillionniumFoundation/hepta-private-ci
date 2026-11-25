@@ -563,7 +563,12 @@ impl AgentdProductionWriterHost {
     }
 
     pub(crate) fn has_destination(&self, destination: &str) -> bool {
-        self.dispatchers.contains_key(destination) && self.grants.is_some()
+        self.has_registered_destination(destination) && self.grants.is_some()
+    }
+
+    /// Registration exists even while the separate grant provider is absent.
+    pub(crate) fn has_registered_destination(&self, destination: &str) -> bool {
+        self.dispatchers.contains_key(destination)
     }
 
     pub fn destination_count(&self) -> usize {
