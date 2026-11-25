@@ -1,6 +1,7 @@
 use super::SqliteConfig;
 use crate::runtime::test_support::create_private_test_directory;
 use crate::runtime::test_support::unique_temp_dir;
+use anyhow::Context;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 use sqlx::Connection;
@@ -34,11 +35,14 @@ async fn existing_index_connection_preserves_journal_and_enforces_foreign_keys()
     )
     .execute(&pool)
     .await?;
-    let journal: String = sqlx::query_scalar("PRAGMA journal_mode=DELETE")
-        .fetch_one(&pool)
-        .await?;
-    assert_eq!(journal, "delete");
     pool.close().await;
+    let mut fixture = config.open_existing_state_db_connection().await?;
+    let journal: String = sqlx::query_scalar("PRAGMA journal_mode=DELETE")
+        .fetch_one(&mut fixture)
+        .await
+        .context("set the closed index fixture's journal mode on a single connection")?;
+    assert_eq!(journal, "delete");
+    fixture.close().await?;
 
     let mut connection = config.open_existing_state_db_connection().await?;
     let journal: String = sqlx::query_scalar("PRAGMA journal_mode")
