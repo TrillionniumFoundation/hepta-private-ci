@@ -297,6 +297,57 @@ fn capacity_snapshot_tracks_claims_revocations_and_epoch_rollover() {
 }
 
 #[test]
+fn revocation_capacity_snapshot_matches_the_enforced_final_use_limit() {
+    let (authority, _signed, _directory) = fixture().unwrap();
+    let empty = authority.capacity().unwrap();
+    assert_eq!(empty.max_claims, MAX_CLAIMS);
+    assert_eq!(empty.max_revocations, MAX_REVOKED_GRANTS);
+    assert!(empty.max_revocations < empty.max_claims);
+    assert_eq!(empty.remaining_revocations(), MAX_REVOKED_GRANTS);
+
+    // Use the original durable authority writer, not a manually manufactured
+    // capacity value: the operational alarm must track the enforced registry.
+    let mut head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 2,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    for index in 0..(MAX_REVOKED_GRANTS - 1) {
+        assert!(head.revoked_grant_ids.insert(format!("grant:{index}")));
+    }
+    assert!(valid_head(&head));
+    authority.update_revocations(head.clone()).unwrap();
+    let almost_full = authority.capacity().unwrap();
+    assert_eq!(almost_full.revoked_grants, MAX_REVOKED_GRANTS - 1);
+    assert_eq!(almost_full.remaining_revocations(), 1);
+    assert!(!almost_full.rollover_required_with_reserve(0));
+    assert!(almost_full.rollover_required_with_reserve(1));
+
+    head.revision = 3;
+    assert!(head.revoked_grant_ids.insert("grant:last".into()));
+    assert!(valid_head(&head));
+    authority.update_revocations(head.clone()).unwrap();
+    let full = authority.capacity().unwrap();
+    assert_eq!(full.revoked_grants, MAX_REVOKED_GRANTS);
+    assert_eq!(full.max_revocations, MAX_REVOKED_GRANTS);
+    assert_eq!(full.remaining_revocations(), 0);
+    assert!(full.rollover_required_with_reserve(0));
+
+    // A failed oversize signed-head application must not advance the durable
+    // owner revision or quietly clear any prior revocation.
+    let original_head = authority.revocation_head().unwrap();
+    head.revision = 4;
+    assert!(head.revoked_grant_ids.insert("grant:overflow".into()));
+    assert!(!valid_head(&head));
+    assert_eq!(
+        authority.update_revocations(head),
+        Err(FinalUseError::StaleRevocationHead)
+    );
+    assert_eq!(authority.revocation_head().unwrap(), original_head);
+    assert_eq!(authority.capacity().unwrap(), full);
+}
+
+#[test]
 fn expired_grant_is_denied_using_verifier_clock() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.not_before_unix_ms = 1;

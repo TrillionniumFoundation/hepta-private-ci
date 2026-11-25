@@ -255,6 +255,9 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
+        #[cfg(unix)]
+        crate::registry::create_private_directory(&staging)?;
+        #[cfg(not(unix))]
         std::fs::create_dir(&staging)?;
         let result = (|| {
             let bin_root = staging.join("bin");
@@ -293,8 +296,16 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
+            #[cfg(not(target_vendor = "apple"))]
             set_mode(&staging, /*mode*/ 0o555)?;
             std::fs::rename(&staging, &final_root)?;
+            #[cfg(target_vendor = "apple")]
+            {
+                // Darwin requires write access to the directory being renamed.
+                // Catalog resolution rejects this root until it is sealed.
+                set_mode(&final_root, /*mode*/ 0o555)?;
+                sync_directory(&final_root)?;
+            }
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();

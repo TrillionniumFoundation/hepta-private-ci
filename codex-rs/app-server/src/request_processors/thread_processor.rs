@@ -5695,8 +5695,8 @@ fn thread_backwards_cursor_for_sort_key(
     // The state DB stores unique millisecond timestamps. Offset the reverse cursor by one
     // millisecond so the opposite-direction query includes the page anchor.
     let timestamp = match sort_direction {
-        SortDirection::Asc => timestamp.checked_add_signed(ChronoDuration::milliseconds(1))?,
-        SortDirection::Desc => timestamp.checked_sub_signed(ChronoDuration::milliseconds(1))?,
+        SortDirection::Asc => timestamp.checked_add(TimeDuration::milliseconds(1))?,
+        SortDirection::Desc => timestamp.checked_sub(TimeDuration::milliseconds(1))?,
     };
     Some(timestamp.to_rfc3339_opts(SecondsFormat::Millis, true))
 }
