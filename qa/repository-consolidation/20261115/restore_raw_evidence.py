@@ -30,7 +30,9 @@ VENDORED_PATCH_INDEX = "qa/repository-consolidation/20261124/vendored-patch-cust
 QUALIFIED_CONSOLE_INDEX = "qa/repository-consolidation/20261124/qualified-console-custody/raw-evidence-storage.json"
 MEM8_BOUNDED_GNU_INDEX = "qa/repository-consolidation/20261125/mem8-bounded-gnu-logs/raw-evidence-storage.json"
 RUNNER_CONSOLE_INDEX = "qa/repository-consolidation/20261125/qualified-runner-console/raw-evidence-storage.json"
+HISTORICAL_PATCH_INDEX = "qa/repository-consolidation/20261125/review-only-source-diffs/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    HISTORICAL_PATCH_INDEX: "cfdcb1368689f07a2de282e19fd40ee8d782993d7ea4f6eb2bebbf2a0f3d7b4d",
     RUNNER_CONSOLE_INDEX: "47e503499077278820266ee068ed8d638f5b0767d8bd94657cb1205d2de7307b",
     MEM8_BOUNDED_GNU_INDEX: "d249597de292b7c5e9bec309552d8e52d05a0cbe3261d1032f8b5bbb2958841e",
     QUALIFIED_CONSOLE_INDEX: "974ab4cc5a9a5066a3598ef64ba3eb990e6dff68ae3995956790835969f253b7",
