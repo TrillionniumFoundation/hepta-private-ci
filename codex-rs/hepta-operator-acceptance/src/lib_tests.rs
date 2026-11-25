@@ -224,6 +224,23 @@ fn read_only_lock_never_creates_missing_state() {
 }
 
 #[test]
+fn sidecar_lock_excludes_existing_and_creating_handles_until_drop()
+-> Result<(), crate::AcceptanceError> {
+    let temporary = private_tempdir("temporary lock contention store");
+    let root = temporary.path().canonicalize()?;
+    let creator = lock_sidecar(&root)?;
+    assert!(lock_sidecar(&root).is_err());
+    assert!(lock_existing_sidecar(&root).is_err());
+    drop(creator);
+    let existing = lock_existing_sidecar(&root)?;
+    assert!(lock_sidecar(&root).is_err());
+    assert!(lock_existing_sidecar(&root).is_err());
+    drop(existing);
+    drop(lock_sidecar(&root)?);
+    Ok(())
+}
+
+#[test]
 fn exact_replay_returns_same_receipt_and_conflicting_claim_fails() {
     let evidence = evidence();
     let operator = operator();

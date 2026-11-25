@@ -269,6 +269,8 @@ pub(crate) fn write_private_atomic_replace(
 
 pub(crate) struct SidecarLock {
     _file: File,
+    #[cfg(windows)]
+    _directory: PrivateDirectory,
 }
 
 pub(crate) fn lock_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
@@ -282,18 +284,31 @@ pub(crate) fn lock_existing_sidecar(root: &Path) -> Result<SidecarLock, Acceptan
 fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, AcceptanceError> {
     verify_secure_directory(root, "sidecar directory")?;
     let path = root.join(".operator-acceptance.lock");
-    let mut options = OpenOptions::new();
-    options.create(create).read(true).write(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options
-            .mode(0o600)
-            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
-    }
     #[cfg(windows)]
-    windows::configure_open(&mut options);
-    let file = options.open(&path).map_err(|error| {
+    let directory = if create {
+        PrivateDirectory::open_existing(root)?
+    } else {
+        PrivateDirectory::inspect(root)?
+    };
+    #[cfg(windows)]
+    let opened = directory.open(
+        ".operator-acceptance.lock",
+        if create { Access::Create } else { Access::Read },
+    );
+    #[cfg(not(windows))]
+    let opened = {
+        let mut options = OpenOptions::new();
+        options.create(create).read(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+        }
+        options.open(&path)
+    };
+    let file = opened.map_err(|error| {
         if !create && error.kind() == std::io::ErrorKind::NotFound {
             invalid("read-only receipt verification requires the existing sidecar lock")
         } else {
@@ -325,11 +340,20 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
             ));
         }
     }
-    Ok(SidecarLock { _file: file })
+    #[cfg(windows)]
+    file.try_lock()
+        .map_err(|_| invalid("another operator-acceptance process holds the sidecar lock"))?;
+    Ok(SidecarLock {
+        _file: file,
+        #[cfg(windows)]
+        _directory: directory,
+    })
 }
 
 impl Drop for SidecarLock {
     fn drop(&mut self) {
+        // On Windows the owned File closes after this destructor, releasing
+        // its LockFileEx lock while the retained directory still pins the root.
         #[cfg(unix)]
         {
             use std::os::fd::AsRawFd;
