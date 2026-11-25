@@ -191,7 +191,11 @@ pub fn evaluate_temporal_holdout(
             .ok_or(TemporalEvaluationError::CohortMismatch)?;
         bind_cluster(&mut principal_clusters, &target.principal_lineage, cluster)?;
         bind_cluster(&mut episode_clusters, &target.episode_lineage, cluster)?;
-        if observation.outcome_observed_at < target.decision_at {
+        // A temporal holdout must observe an outcome strictly after the
+        // decision.  Equality is an immediate/coincident observation and
+        // cannot establish a future window, even when it is otherwise
+        // finalized and below the OPE watermark.
+        if observation.outcome_observed_at <= target.decision_at {
             return Err(TemporalEvaluationError::OutcomeBeforeDecision);
         }
         let outputs = predictions

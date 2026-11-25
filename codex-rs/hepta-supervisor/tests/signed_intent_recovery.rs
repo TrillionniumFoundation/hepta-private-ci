@@ -153,17 +153,14 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    let (recovered, _report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
-    );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    )?;
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    drop(recovered);
 
     let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
