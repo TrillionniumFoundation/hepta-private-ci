@@ -235,18 +235,30 @@ fn execute_case(mut fixture: Fixture, expected: RequestState, timeout: Duration)
             .expect("idempotent settle")
             .idempotent
     );
-    assert_eq!(
-        worker
-            .run(/*now_ms*/ 100, &fixture.model_id, request.clone())
-            .expect("cached exact retry"),
-        observed
-    );
-    let mut underfunded = request;
-    underfunded.maximum_tokens = 7;
-    assert_eq!(
-        worker.run(/*now_ms*/ 100, &fixture.model_id, underfunded),
-        Err(WorkerError::TokenLimit)
-    );
+    if expected == RequestState::Indeterminate {
+        // Unknown physical outcomes fence this worker generation. The
+        // retained owner record may still be settled idempotently; the
+        // original model path must never infer or unload again.
+        assert_eq!(
+            worker.run(/*now_ms*/ 100, &fixture.model_id, request),
+            Err(WorkerError::IndeterminateLifecycle)
+        );
+    } else {
+        assert_eq!(
+            worker
+                .run(/*now_ms*/ 100, &fixture.model_id, request.clone())
+                .expect("cached exact retry"),
+            observed
+        );
+        // Reject at the worker reservation boundary, before dispatch to
+        // the driver. Its separate tests cover the eight-position minimum.
+        let mut underfunded = request;
+        underfunded.reservation_maximum_tokens = 7;
+        assert_eq!(
+            worker.run(/*now_ms*/ 100, &fixture.model_id, underfunded),
+            Err(WorkerError::TokenLimit)
+        );
+    }
     assert_eq!(evidence.get(&payload), Some(process));
     drop(control);
     let recovered = DurableInferenceControl::open(journal, /*capacity*/ 8)
@@ -255,9 +267,12 @@ fn execute_case(mut fixture: Fixture, expected: RequestState, timeout: Duration)
         recovered.get(&request_id).expect("recovered request").state,
         expected
     );
-    worker
-        .unload_model(/*now_ms*/ 100, &fixture.model_id)
-        .expect("unload registration");
+    let unload = worker.unload_model(/*now_ms*/ 100, &fixture.model_id);
+    if expected == RequestState::Indeterminate {
+        assert_eq!(unload, Err(WorkerError::IndeterminateLifecycle));
+    } else {
+        assert!(unload.expect("unload registration").terminal_observed);
+    }
 }
 
 #[test]
