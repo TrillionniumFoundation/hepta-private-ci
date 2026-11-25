@@ -19,6 +19,7 @@ from qualification.hcsn_smallnet_20261124.model import ModelConfig, SmallHCSN
 
 FIELDS = ("density", "boundary", "drift", "cost", "message")
 torch.set_num_threads(1)
+torch.set_num_interop_threads(1)
 
 
 def sha(path):
@@ -50,7 +51,8 @@ def validate_sources():
 
 def runtime():
     return {"python": platform.python_version(), "numpy": np.__version__, "torch": str(torch.__version__),
-            "threads": torch.get_num_threads(), "device": "cpu", "capsule": str(CAPSULE)}
+            "threads": torch.get_num_threads(), "interop_threads": torch.get_num_interop_threads(),
+            "device": "cpu", "capsule": str(CAPSULE)}
 
 
 def data(split, per_source=16, seed=271, phase="diagnosis"):

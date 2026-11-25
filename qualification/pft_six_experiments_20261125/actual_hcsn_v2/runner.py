@@ -3,7 +3,9 @@ import argparse
 from dataclasses import asdict
 import hashlib
 import json
+import os
 from pathlib import Path
+import platform
 import time
 import traceback
 
@@ -59,7 +61,7 @@ def validate_protocol(protocol):
     if protocol["source_hashes"] != source_hashes():
         raise ValueError("Frozen experiment source changed")
     actual = runtime()
-    if any(protocol["runtime"][key] != actual[key] for key in ("python", "numpy", "torch", "threads", "device")):
+    if any(protocol["runtime"][key] != actual[key] for key in ("python", "numpy", "torch", "threads", "interop_threads", "device")):
         raise ValueError("Frozen runtime changed")
     physical = validate_sources()
     for key in ("capsule_source_provenance_sha256", "research_source_hashes"):
@@ -227,13 +229,25 @@ def fit_case(protocol, case, out, protocol_sha):
     return record
 
 
-def run(protocol_path, out):
+def run(protocol_path, out, shard_index, shard_count):
     protocol = json.loads(Path(protocol_path).read_text())
     validate_protocol(protocol)
+    execution = protocol["execution"]
+    if shard_count != execution["training_worker_count"] or not 0 <= shard_index < shard_count:
+        raise ValueError("Worker shard differs from frozen execution manifest")
+    cases = [case for index, case in enumerate(protocol["cases"]) if index % shard_count == shard_index]
+    if [case_name(case) for case in cases] != execution["shards"][str(shard_index)]:
+        raise ValueError("Worker assignment differs from frozen case manifest")
     root = Path(out)
     root.mkdir(exist_ok=True)
+    wall, cpu = time.perf_counter(), time.process_time()
+    worker = {"shard_index": shard_index, "shard_count": shard_count, "pid": os.getpid(),
+              "host": platform.node(), "runtime": runtime(), "logical_cpu_count": os.cpu_count(),
+              "cpu_affinity": sorted(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else None,
+              "started_utc": utc(), "protocol_sha256": sha(protocol_path)}
+    dump(root / f"WORKER_{shard_index}_STARTED.json", worker)
     summary = []
-    for case in protocol["cases"]:
+    for case in cases:
         path = root / case_name(case)
         if path.exists():
             row = json.loads((path / "RESULT.json").read_text())
@@ -243,9 +257,12 @@ def run(protocol_path, out):
             row = fit_case(protocol, case, path, sha(protocol_path))
         summary.append({"case": case_name(case), "status": row["status"], "result_sha256": sha(path / "RESULT.json"),
                         "candidate_sha256": row.get("candidate_sha256")})
-    dump(root / "TRAINING_TERMINALS.json", {"protocol_sha256": sha(protocol_path), "rows": summary,
-                                          "all_roster_slots_terminal": len(summary) == len(protocol["cases"]),
-                                          "test_created": False})
+    dump(root / f"TRAINING_TERMINALS_shard_{shard_index}.json", {
+        "protocol_sha256": sha(protocol_path), "worker": worker, "rows": summary,
+        "all_assigned_slots_terminal": len(summary) == len(cases), "full_roster_count": len(protocol["cases"]),
+        "worker_wall_s_excluding_import": time.perf_counter() - wall,
+        "worker_cpu_s_excluding_import": time.process_time() - cpu, "completed_utc": utc(),
+        "process_time_scope": "this independent process only; no shared threaded accounting", "test_created": False})
     return 0
 
 
@@ -253,5 +270,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--protocol", required=True)
     parser.add_argument("--out", required=True)
+    parser.add_argument("--shard-index", type=int, required=True)
+    parser.add_argument("--shard-count", type=int, required=True)
     args = parser.parse_args()
-    raise SystemExit(run(args.protocol, args.out))
+    raise SystemExit(run(args.protocol, args.out, args.shard_index, args.shard_count))

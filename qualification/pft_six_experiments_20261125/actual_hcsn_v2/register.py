@@ -79,6 +79,16 @@ def build(args):
         json.dumps(descriptor, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     if len({case_name(c) for c in cases}) != len(cases):
         raise ValueError("Duplicate case names")
+    count = 1 if pilot else 4
+    protocol["protocol_revision"] = 2
+    protocol["supersedes_protocol_sha256"] = "ed607b473498538b447907400977c28d539d8d64bb5d9276fd29c3d5b6f2bdaa"
+    protocol["supersedes_git_anchor"] = "d1461abdf87fe8f5059670c7a99fac552fac58d8"
+    protocol["execution"] = {"training_worker_count": count, "evaluation_worker_count": 1,
+        "assignment_rule": "frozen case index modulo worker count", "independent_processes": True,
+        "maximum_concurrent_training_processes": count, "per_worker_cpu_quota_percent": 100,
+        "per_worker_memory_max_bytes": 2147483648, "torch_intra_threads": 1, "torch_interop_threads": 1,
+        "BLAS_threads": 1, "shared_host_contention_possible": True,
+        "shards": {str(i): [case_name(c) for j, c in enumerate(cases) if j % count == i] for i in range(count)}}
     dump(target, protocol)
     print(json.dumps({"path": str(target), "sha256": sha(target), "cases": len(cases),
                       "ridge": chosen, "groups": {g: sum(c["group"] == g for c in cases)
