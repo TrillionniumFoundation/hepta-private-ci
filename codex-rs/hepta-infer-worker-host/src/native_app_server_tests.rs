@@ -425,6 +425,14 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        serde_json::json!({
+            "type": "response.output_text.delta",
+            "item_id": "msg-cognitive-worker",
+            "output_index": 0,
+            "content_index": 0,
+            "delta": "fresh context accepted",
+        }),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
@@ -478,7 +486,11 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
     );
-    assert!(accepted.output.contains("fresh context accepted"));
+    assert!(
+        accepted.output.contains("fresh context accepted"),
+        "the real streamed message must reach the worker: {:?}",
+        accepted.output,
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()
