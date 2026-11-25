@@ -1,5 +1,7 @@
 //! Open-only paired registration on the original Root owner. No grant or read.
 use super::*;
+use crate::AgentdIdentity;
+use crate::AuthBusTextIngress;
 use codex_hepta_contracts::authority_lease::AuthorityLease;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;

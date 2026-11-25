@@ -1,6 +1,8 @@
 //! Current human inspection inside the original four-record boundary.
 //! The result remains read-only metadata. There is no material or grant entry.
 use super::*;
+use crate::AgentdIdentity;
+use crate::AuthBusTextIngress;
 use crate::authority_host_service::OriginalHumanLifetime;
 
 pub(super) enum PairedRootInspection<'a> {
