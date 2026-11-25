@@ -1,0 +1,95 @@
+name: Hepta Execution P2d (complete cold recovery and deny-only convergence)
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-evidence/**
+      - .github/workflows/hepta-execution-p2d-convergence.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-execution-p2d-convergence-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  original-owner-convergence:
+    name: Evidence original recovery and signed-entry denial (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify original source or exact two-parent prospective merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          if [ '${{ matrix.lane }}' = base-merge ]; then
+            test -n "$BASE_SHA"
+            git cat-file -e "$BASE_SHA^{commit}"
+            tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            merge="$(printf '%s\n' 'Qualification only; never authorize a tool' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            test "$(git show -s --format=%P "$merge")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$merge"
+            test "$(git rev-parse HEAD^{tree})" = "$tree"
+          fi
+          printf 'source=%s base=%s tested=%s tree=%s\n' "$SOURCE_SHA" "$BASE_SHA" \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+
+      - name: Original Cargo lock integrity
+        run: python3 scripts/verify_cargo_lock.py
+
+      - name: Native pinned Rustfmt
+        working-directory: codex-rs
+        run: |
+          rustc --version --verbose
+          cargo fmt -p codex-hepta-contracts -p codex-hepta-evidence -- --check
+
+      - name: Native original contracts and Evidence all-target build
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-contracts -p codex-hepta-evidence --all-targets
+
+      - name: P1 through P2c contracts, atomic cold recovery, denial and original provider tests
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-contracts --lib execution_contract_v1
+          cargo test --locked -p codex-hepta-contracts --lib exec_server_start_p2c
+          cargo test --locked -p codex-hepta-evidence --lib execution_preparation_v1
+          cargo test --locked -p codex-hepta-evidence --lib execution_complete_v1
+          cargo test --locked -p codex-hepta-evidence --lib execution_entry_deny_v1
+          cargo test --locked -p codex-hepta-evidence --lib provider_effect
+
+      - name: Both existing original owner crates strict Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-contracts -p codex-hepta-evidence --all-targets -- -D warnings
+
+      - name: Verify no generated tree drift
+        run: |
+          git diff --check
+          git diff --quiet
+          git diff --cached --quiet
