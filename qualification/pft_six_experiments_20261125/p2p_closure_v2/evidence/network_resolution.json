@@ -1,0 +1,144 @@
+{
+  "conclusion": "Routes and known SSH endpoints worked. The task listener started, but exact peer application-port probes timed out. Port-specific filtering is consistent with the observations; the specific rule was not readable and is not asserted.",
+  "fresh_reverse_task_port_probe": {
+    "from": "ai395",
+    "job_id": "1a21242f287-ffbe-3f34",
+    "probes": [
+      {
+        "device_bound": false,
+        "elapsed_seconds": 2.0102582569234073,
+        "errno": null,
+        "error_type": "TimeoutError",
+        "success": false
+      },
+      {
+        "device_bound": true,
+        "elapsed_seconds": 2.0105663840658963,
+        "errno": null,
+        "error_type": "TimeoutError",
+        "success": false
+      }
+    ],
+    "to": "pocket4"
+  },
+  "global_firewall_or_route_changes": false,
+  "hosts": [
+    {
+      "configured_host": "pocket4",
+      "firewall_rule_read_denied": true,
+      "firewall_service_active": true,
+      "known_peer_ssh_checks": [
+        {
+          "device_bound": false,
+          "elapsed_seconds": 0.009154864004813135,
+          "path_label": "usb4",
+          "success": true
+        },
+        {
+          "device_bound": true,
+          "elapsed_seconds": 0.006935957004316151,
+          "path_label": "usb4",
+          "success": true
+        },
+        {
+          "device_bound": false,
+          "elapsed_seconds": 0.009298417950049043,
+          "path_label": "lan_primary_peer",
+          "success": true
+        },
+        {
+          "device_bound": true,
+          "elapsed_seconds": 0.009085541940294206,
+          "path_label": "lan_primary_peer",
+          "success": true
+        },
+        {
+          "device_bound": false,
+          "elapsed_seconds": 0.011297517106868327,
+          "path_label": "lan_wifi_peer",
+          "success": true
+        },
+        {
+          "device_bound": true,
+          "elapsed_seconds": 0.03115384199190885,
+          "path_label": "lan_wifi_peer",
+          "success": true
+        }
+      ],
+      "local_listener_checks_all_passed": true,
+      "private_raw_sha256": "e6708bf01b329f20c6e0dd128ed72a518d07e4093cc46910f454691a069f569f",
+      "route_lookups_all_succeeded": true,
+      "source_sha256": "460e08e1c61918deebe8fc9aec506a4e2f1207a0e041d984f3888015c1222eb3"
+    },
+    {
+      "configured_host": "ai395",
+      "firewall_rule_read_denied": true,
+      "firewall_service_active": true,
+      "known_peer_ssh_checks": [
+        {
+          "device_bound": false,
+          "elapsed_seconds": 0.005017775110900402,
+          "path_label": "usb4",
+          "success": true
+        },
+        {
+          "device_bound": true,
+          "elapsed_seconds": 0.003762620035558939,
+          "path_label": "usb4",
+          "success": true
+        },
+        {
+          "device_bound": false,
+          "elapsed_seconds": 0.006971757858991623,
+          "path_label": "lan_primary_peer",
+          "success": true
+        },
+        {
+          "device_bound": true,
+          "elapsed_seconds": 0.006660139188170433,
+          "path_label": "lan_primary_peer",
+          "success": true
+        },
+        {
+          "device_bound": false,
+          "elapsed_seconds": 0.008306131698191166,
+          "path_label": "lan_wifi_peer",
+          "success": true
+        },
+        {
+          "device_bound": true,
+          "elapsed_seconds": 0.010000273119658232,
+          "path_label": "lan_wifi_peer",
+          "success": true
+        }
+      ],
+      "local_listener_checks_all_passed": true,
+      "private_raw_sha256": "2b7eea13d3815fdc329d1f032f6e0d83a45e02d2ac56e3e0aefda0ed2b14dbd0",
+      "route_lookups_all_succeeded": true,
+      "source_sha256": "460e08e1c61918deebe8fc9aec506a4e2f1207a0e041d984f3888015c1222eb3"
+    }
+  ],
+  "network_scan_performed": false,
+  "record_kind": "pft2_v2_network_resolution",
+  "registered_hosts_only": true,
+  "resolution": {
+    "batch_mode": true,
+    "controller_training_data_relay": false,
+    "existing_selector_sha256": "62806672b699d794e2fe9c738a281727fa1fd6595266440a747f8a4145d449e9",
+    "formal_job_id": "1a2124eead0-ffbe-3f56",
+    "new_credentials_or_trust_entries": false,
+    "strict_host_key_checking": true,
+    "successful_formal_sessions": 24,
+    "transport": "existing authenticated direct peer SSH over USB4"
+  },
+  "schema_version": 1,
+  "task_listener": {
+    "configured_host": "pocket4",
+    "incoming_valid_connections": 0,
+    "job_id": "1a212429694-ffbe-3f32",
+    "listening_verified": true,
+    "private_terminal_result_sha256": "58c2ab842610d2fedd8f2400b30e481c71ba0b8a611d508cf1bc25db5bd7c662",
+    "source_sha256": "54c006bd2c69916b7642ab784f4cf17edbe65ddb6a022a84b535876ac0aa6508",
+    "terminal_exit_code": 0
+  }
+}
