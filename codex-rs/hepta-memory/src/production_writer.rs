@@ -57,6 +57,11 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_terminal_journal.rs"]
+mod terminal_journal;
+
+use terminal_journal::TerminalObservation;
+
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
 /// Stable provenance namespace for production writer receipts.
@@ -932,15 +937,28 @@ impl ProductionDurableWriter {
                 .reconciliation_request(&operation_id, target.destination_id())
                 .await?;
             match target.observe_terminal(&request).await {
-                ProductionTerminalObservation::Applied { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
-                        .await?;
+                ProductionTerminalObservation::Applied { receipt } => {
+                    self.reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::Committed { receipt: &receipt },
+                    )
+                    .await?;
                     reconciled += 1;
                 }
-                ProductionTerminalObservation::NotApplied { .. }
-                | ProductionTerminalObservation::Quarantined { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
-                        .await?;
+                ProductionTerminalObservation::NotApplied { reason } => {
+                    self.reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::NotApplied { reason: &reason },
+                    )
+                    .await?;
+                    reconciled += 1;
+                }
+                ProductionTerminalObservation::Quarantined { reason } => {
+                    self.reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::Quarantined { reason: &reason },
+                    )
+                    .await?;
                     reconciled += 1;
                 }
                 ProductionTerminalObservation::Indeterminate { .. } => {
@@ -1350,13 +1368,8 @@ impl ProductionDurableWriter {
         };
         let outcome = future.await;
         let settled = if inherited_from_generation.is_some() {
-            self.settle_inherited_dispatch_outcome(
-                request,
-                &receipt.occurrence_key,
-                dispatch_claim_event_id,
-                outcome,
-            )
-            .await
+            self.settle_inherited_dispatch_outcome(request, dispatch_claim_event_id, outcome)
+                .await
         } else {
             self.settle_dispatch_outcome(
                 request,
@@ -1399,14 +1412,16 @@ impl ProductionDurableWriter {
     async fn settle_inherited_dispatch_outcome(
         &self,
         request: ProductionDispatchRequest,
-        occurrence_key: &str,
         dispatch_claim_event_id: String,
         outcome: ProductionTargetOutcome,
     ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
         match outcome {
             ProductionTargetOutcome::Committed { receipt } => {
                 let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Committed)
+                    .reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::Committed { receipt: &receipt },
+                    )
                     .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1420,7 +1435,10 @@ impl ProductionDurableWriter {
             }
             ProductionTargetOutcome::NotApplied { reason } => {
                 let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                    .reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::NotApplied { reason: &reason },
+                    )
                     .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1434,7 +1452,10 @@ impl ProductionDurableWriter {
             }
             ProductionTargetOutcome::Rejected { reason } => {
                 let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                    .reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::Rejected { reason: &reason },
+                    )
                     .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -3795,7 +3816,8 @@ mod final_use_dispatch_tests {
     }
 
     #[tokio::test]
-    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use() {
+    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use()
+    -> Result<(), Box<dyn std::error::Error>> {
         let temp = TempDir::new().expect("temp");
         let store = store(&temp).await;
         let owner = store.owner_agent_id().clone();
@@ -3921,5 +3943,34 @@ mod final_use_dispatch_tests {
             max_attempt, 2,
             "successor takeover must advance the durable dispatch attempt"
         );
+        let (generation, payload): (i64, String) = sqlx::query_as(
+            "SELECT generation, payload_json FROM cognitive_local_events
+             WHERE occurrence_key = 'occurrence:queued-handoff'
+               AND event_kind = 'reconcile_committed'",
+        )
+        .fetch_one(&successor.store.pool)
+        .await?;
+        let expected = serde_json::json!({
+            "schema_version": 1,
+            "namespace": "production_terminal_observation",
+            "lease_id": result.request.lease_id,
+            "operation_id": result.request.occurrence_key,
+            "destination_id": result.request.operation_destination_id,
+            "operation_semantic_sha256": result.request.operation_semantic_sha256,
+            "payload_sha256": result.request.payload_sha256,
+            "operation_digest": result.request.operation_digest,
+            "observation": {
+                "disposition": "committed",
+                "receipt": "target:committed",
+            },
+        });
+        pretty_assertions::assert_eq!(
+            (
+                generation,
+                serde_json::from_str::<serde_json::Value>(&payload)?
+            ),
+            (2, expected)
+        );
+        Ok(())
     }
 }

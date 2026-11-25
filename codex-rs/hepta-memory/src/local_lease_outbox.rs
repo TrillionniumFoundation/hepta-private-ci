@@ -2343,16 +2343,24 @@ impl LocalLeaseOutbox {
         occurrence_key: impl Into<String>,
         outcome: LocalReconcileOutcome,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        self.append_reconciliation(occurrence_key.into(), outcome)
+        self.reconcile_with_payload(occurrence_key.into(), outcome, outcome.as_str().to_string())
             .await
     }
 
-    async fn append_reconciliation(
+    /// Retain an owner-validated observation in the same event and transaction
+    /// as its outcome. The ordinary reconciliation API keeps its legacy payload.
+    pub(crate) async fn reconcile_with_payload(
         &self,
         occurrence_key: String,
         outcome: LocalReconcileOutcome,
+        payload: String,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        validate_text(
+            &payload,
+            "reconciliation payload",
+            /*max_bytes*/ 65_536,
+        )?;
         let (kind, resulting_state) = match outcome {
             LocalReconcileOutcome::Committed => {
                 ("reconcile_committed", LocalOutcomeState::Committed)
@@ -2363,7 +2371,6 @@ impl LocalLeaseOutbox {
                 LocalOutcomeState::Indeterminate,
             ),
         };
-        let payload = outcome.as_str().to_string();
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
 
         let mut transaction = self
