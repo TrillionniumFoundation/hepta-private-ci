@@ -158,12 +158,6 @@ fn install_registered_queue(
     Ok(service)
 }
 
-fn queue_python_interpreter() -> &'static str {
-    // The Windows hosted Bazel runner invokes `python`; `python3` is not
-    // guaranteed to resolve to an executable in the Windows test environment.
-    if cfg!(windows) { "python" } else { "python3" }
-}
-
 fn queue_python_hook_command(script_path: &Path) -> String {
     #[cfg(windows)]
     {
@@ -174,19 +168,8 @@ fn queue_python_hook_command(script_path: &Path) -> String {
             .map(|directory| directory.join("python.exe"))
             .find(|candidate| candidate.is_absolute() && candidate.is_file())
             .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
-        // Keep the resolved interpreter even when the session PATH differs.
-        // Core runs hooks through the environment shell, normally PowerShell
-        // on Windows; a quoted executable needs its call operator there.
-        if codex_core::shell::default_user_shell().name() == "powershell" {
-            format!(
-                "& '{}' '{}'",
-                python.to_string_lossy().replace('\'', "''"),
-                script_path.to_string_lossy().replace('\'', "''"),
-            )
-        } else {
-            // The command runner supplies cmd.exe's outer /C quoting.
-            format!("\"{}\" \"{}\"", python.display(), script_path.display())
-        }
+        // cmd.exe's runner supplies the outer /C quoting.
+        format!("\"{}\" \"{}\"", python.display(), script_path.display())
     }
 
     #[cfg(not(windows))]
@@ -194,53 +177,42 @@ fn queue_python_hook_command(script_path: &Path) -> String {
 }
 
 #[cfg(windows)]
-#[test]
-fn python_hook_uses_resolved_interpreter_without_child_path() {
-    use std::os::windows::process::CommandExt;
+fn powershell_path(path: &Path) -> String {
+    format!("'{}'", path.to_string_lossy().replace('\'', "''"))
+}
 
-    let fixture = tempfile::tempdir().expect("create hook fixture");
-    let script_path = fixture.path().join("queue hook's spaces.py");
-    std::fs::write(&script_path, "print('queue-python-exact-path')\n")
-        .expect("write Python hook fixture");
-    let command = queue_python_hook_command(&script_path);
-    let shell = codex_core::shell::default_user_shell();
-    let mut argv = shell.derive_exec_args("", /*use_login_shell*/ false);
-    let program = argv.remove(0);
-    let _ = argv.pop();
-    // Match Core's environment-shell selection and CommandHookRuntime's
-    // argument handling, rather than testing only cmd.exe's fallback path.
-    let mut child = std::process::Command::new(&program);
-    child.args(&argv);
-    if argv.iter().any(|arg| arg.eq_ignore_ascii_case("/c")) {
-        child.raw_arg(format!(r#""{command}""#));
-    } else {
-        child.arg(&command);
-    }
-    let output = child
-        .env("PATH", "")
-        .current_dir(fixture.path())
-        .output()
-        .expect("run Python hook without a child search path");
-    let diagnostics = format!(
-        "program={program:?}, argv={argv:?}, command={command:?}, PATHEXT={:?}, status={}, stdout={:?}, stderr={:?}",
-        std::env::var_os("PATHEXT"),
-        output.status,
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr),
-    );
-    assert!(
-        output.status.success(),
-        "Python fixture hook exited unsuccessfully: {diagnostics}",
-    );
-    assert!(
-        String::from_utf8_lossy(&output.stdout).trim() == "queue-python-exact-path",
-        "Python fixture hook did not produce the exact marker: {diagnostics}",
-    );
+fn write_queue_hook(home: &Path, command: String) {
+    let hooks = serde_json::json!({
+        "hooks": {
+            "UserPromptSubmit": [{
+                "hooks": [{"type": "command", "command": command}]
+            }]
+        }
+    });
+    std::fs::write(home.join("hooks.json"), hooks.to_string())
+        .unwrap_or_else(|error| panic!("write queue hook configuration: {error}"));
 }
 
 fn write_rejecting_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
+    #[cfg(windows)]
+    if codex_core::shell::default_user_shell().name() == "powershell" {
+        let log = powershell_path(&log_path);
+        // Exercise the actual command hook even when the child PATH differs.
+        // Do not introduce a second interpreter beneath the Windows shell.
+        return write_queue_hook(
+            home,
+            format!(
+                r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+[IO.File]::AppendAllText({log}, [string]$payload.prompt + [char]10)
+if ($payload.prompt -ceq 'blocked') {{
+    @{{ decision = 'block'; reason = 'blocked by queue hook' }} | ConvertTo-Json -Compress
+}}"#
+            ),
+        );
+    }
+    let script_path = home.join("queue_prompt_hook.py");
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -256,24 +228,38 @@ if payload["prompt"] == "blocked":
     );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write queue hook script: {error}"));
-    let hooks = serde_json::json!({
-        "hooks": {
-            "UserPromptSubmit": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": queue_python_hook_command(&script_path),
-                }]
-            }]
-        }
-    });
-    std::fs::write(home.join("hooks.json"), hooks.to_string())
-        .unwrap_or_else(|error| panic!("write queue hooks: {error}"));
+    write_queue_hook(home, queue_python_hook_command(&script_path));
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
+    #[cfg(windows)]
+    if codex_core::shell::default_user_shell().name() == "powershell" {
+        let entered = powershell_path(&entered_path);
+        let release = powershell_path(&release_path);
+        return write_queue_hook(
+            home,
+            format!(
+                r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+if (@('delay exact persistence', 'delay exact rejection') -ccontains $payload.prompt) {{
+    [IO.File]::WriteAllText({entered}, 'entered')
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    while (![IO.File]::Exists({release})) {{
+        if ($clock.Elapsed.TotalSeconds -ge 20) {{
+            throw 'timed out waiting to release queue persistence hook'
+        }}
+        [Threading.Thread]::Sleep(10)
+    }}
+    if ($payload.prompt -ceq 'delay exact rejection') {{
+        @{{ decision = 'block'; reason = 'delayed queue rejection' }} | ConvertTo-Json -Compress
+    }}
+}}"#
+            ),
+        );
+    }
+    let script_path = home.join("queue_blocking_prompt_hook.py");
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -296,40 +282,46 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
     );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
-    let hooks = serde_json::json!({
-        "hooks": {
-            "UserPromptSubmit": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": queue_python_hook_command(&script_path),
-                }]
-            }]
-        }
-    });
-    std::fs::write(home.join("hooks.json"), hooks.to_string())
-        .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
+    write_queue_hook(home, queue_python_hook_command(&script_path));
 }
 
 #[test]
-fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
-    let home = tempfile::tempdir()?;
-    write_rejecting_prompt_hook(home.path());
-    let script_path = home.path().join("queue_prompt_hook.py");
+fn rejecting_queue_hook_runs_through_its_configured_shell() -> anyhow::Result<()> {
+    let root = tempfile::tempdir()?;
+    let home = root.path().join("queue hook's spaces");
+    std::fs::create_dir(&home)?;
+    write_rejecting_prompt_hook(&home);
     let hooks: serde_json::Value =
-        serde_json::from_slice(&std::fs::read(home.path().join("hooks.json"))?)?;
-    let command = hooks
+        serde_json::from_slice(&std::fs::read(home.join("hooks.json"))?)?;
+    let hook = hooks
         .pointer("/hooks/UserPromptSubmit/0/hooks/0/command")
         .and_then(serde_json::Value::as_str)
         .context("generated UserPromptSubmit command should exist")?;
-    assert_eq!(command, queue_python_hook_command(&script_path));
 
-    let mut child = std::process::Command::new(queue_python_interpreter())
-        .arg(&script_path)
+    let shell = codex_core::shell::default_user_shell();
+    let mut argv = shell.derive_exec_args("", /*use_login_shell*/ false);
+    let program = argv.remove(0);
+    let _ = argv.pop();
+    let mut command = std::process::Command::new(program);
+    command.args(&argv).current_dir(&home);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        command.env("PATH", "");
+        if argv.iter().any(|arg| arg.eq_ignore_ascii_case("/c")) {
+            command.raw_arg(format!(r#""{hook}""#));
+        } else {
+            command.arg(hook);
+        }
+    }
+    #[cfg(not(windows))]
+    command.arg(hook);
+    let mut child = command
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::piped())
         .spawn()
-        .context("host Python executable must be available for queue hook tests")?;
+        .context("configured shell must start the generated queue hook")?;
     {
         let mut stdin = child
             .stdin
@@ -340,12 +332,12 @@ fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
     let output = child.wait_with_output()?;
     anyhow::ensure!(
         output.status.success(),
-        "queue hook Python exited unsuccessfully: {}",
+        "queue hook exited unsuccessfully: {}",
         String::from_utf8_lossy(&output.stderr)
     );
     let reply: serde_json::Value = serde_json::from_slice(&output.stdout)?;
     assert_eq!(reply["decision"].as_str(), Some("block"));
-    let hook_log = std::fs::read_to_string(home.path().join("queue_prompt_hook.log"))?;
+    let hook_log = std::fs::read_to_string(home.join("queue_prompt_hook.log"))?;
     anyhow::ensure!(
         hook_log.ends_with('\n'),
         "queue hook log must end with a newline"
