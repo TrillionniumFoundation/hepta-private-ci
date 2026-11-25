@@ -5,6 +5,7 @@ Models, generated text and measured costs are experimental evidence only.
 """
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -226,6 +227,9 @@ def _libraries():
 
 
 def _load(manifest, root, trainable=False):
+    # Caller-owned dictionaries and the process cwd may change inside a backend.
+    manifest = copy.deepcopy(manifest)
+    root = Path(root).resolve(strict=True)
     model_digest = verify_model(manifest, root)
     torch, transformers, peft = _libraries()
     runtime = manifest["runtime"]
@@ -258,13 +262,17 @@ def _load(manifest, root, trainable=False):
             is_trainable=trainable,
             local_files_only=True,
         )
+    if verify_model(manifest, root) != model_digest:
+        raise ValueError("model material identity changed during loading")
     return model, tokenizer, model_digest
 
 
 class Predictor:
     def __init__(self, manifest, artifact_root):
-        self.manifest = manifest
-        self.model, self.tokenizer, self.model_digest = _load(manifest, artifact_root)
+        self.manifest = copy.deepcopy(manifest)
+        self.model, self.tokenizer, self.model_digest = _load(
+            self.manifest, artifact_root
+        )
         self.model.eval()
 
     def predict(self, record, *, retain_encoding=False):

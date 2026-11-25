@@ -5,6 +5,8 @@ on:
     paths:
       - scripts/cell_experiments/paired_loop.py
       - scripts/cell_experiments/runtime_artifacts.py
+      - scripts/cell_experiments/coding_sft.py
+      - scripts/cell_experiments/test_coding_load_identity.py
       - scripts/cell_experiments/test_runtime_artifacts.py
       - scripts/cell_experiments/test_paired_loop.py
       - .github/workflows/paired-artifact-contract.yml
@@ -33,6 +35,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Verify actual file substitutions and retained loop records
-        run: python -m unittest cell_experiments.test_runtime_artifacts cell_experiments.test_paired_loop -v
+        run: |
+          python -m unittest cell_experiments.test_runtime_artifacts cell_experiments.test_paired_loop cell_experiments.test_coding_load_identity cell_experiments.test_coding_sft -v
       - name: Check source stayed unchanged
         run: git diff --exit-code
