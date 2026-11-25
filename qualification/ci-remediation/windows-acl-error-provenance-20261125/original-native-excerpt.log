@@ -1,0 +1,21 @@
+2026-11-24T19:34:39.1139582Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-24T19:34:39.1507315Z 
+2026-11-24T19:34:39.1857992Z ---- unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn stdout ----
+2026-11-24T19:34:39.2277516Z 
+2026-11-24T19:34:39.2828573Z thread 'unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn' (2752) panicked at windows-sandbox-rs/src\unified_exec\acl_setup_tests.rs:346:9:
+2026-11-24T19:34:39.3470020Z assertion failed: `(left == right)`
+2026-11-24T19:34:39.3948199Z 
+2026-11-24T19:34:39.4441557Z Diff < left / right > :
+2026-11-24T19:34:39.4993073Z  (
+2026-11-24T19:34:39.5561768Z      "apply legacy deny-write ACL to D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpyCefkc\\protected.txt",
+2026-11-24T19:34:39.6321571Z <    "Access is denied. (os error 5)",
+2026-11-24T19:34:39.6958145Z >    "SetNamedSecurityInfoW failed for D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpyCefkc\\protected.txt: 5",
+2026-11-24T19:34:39.7660905Z      false,
+2026-11-24T19:34:39.8401496Z  )
+2026-11-24T19:34:39.9050402Z 
+2026-11-24T19:34:39.9688621Z 
+2026-11-24T19:34:40.0268618Z 
+2026-11-24T19:34:40.1170170Z ---- unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn stdout ----
+2026-11-24T19:34:40.1958795Z 
+2026-11-24T19:34:40.2842576Z thread 'unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn' (7688) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:59:10:
+2026-11-24T19:34:40.3629317Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
