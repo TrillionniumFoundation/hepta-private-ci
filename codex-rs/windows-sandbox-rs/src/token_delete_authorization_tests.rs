@@ -36,7 +36,6 @@ fn native_delete_distinguishes_target_right_from_parent_delete_child() -> Result
                 let parent = fixture.path().join("parent");
                 let target = parent.join("target");
                 std::fs::create_dir(&parent)?;
-                support::create_target(&target, kind)?;
                 let (parent_policy, target_policy) = match grant {
                     DeleteGrant::Neither => (
                         Dacl::Identity(FILE_ALL_ACCESS),
@@ -52,6 +51,7 @@ fn native_delete_distinguishes_target_right_from_parent_delete_child() -> Result
                     ),
                 };
                 support::set_dacl(&parent, parent_policy)?;
+                support::create_target(&target, kind)?;
                 support::set_dacl(&target, target_policy)?;
                 let outcome = token
                     .run(|| support::delete(&target, kind))?
@@ -149,7 +149,6 @@ fn null_dacl_is_an_explicit_limit_of_full_restriction() -> Result<()> {
             let parent = fixture.path().join("outside");
             let target = parent.join("target");
             std::fs::create_dir(&parent)?;
-            support::create_target(&target, kind)?;
             let (parent_policy, target_policy) = match grant {
                 DeleteGrant::Target => (
                     Dacl::Identity(FILE_ALL_ACCESS & !FILE_DELETE_CHILD),
@@ -159,6 +158,7 @@ fn null_dacl_is_an_explicit_limit_of_full_restriction() -> Result<()> {
                 DeleteGrant::Neither => unreachable!(),
             };
             support::set_dacl(&parent, parent_policy)?;
+            support::create_target(&target, kind)?;
             support::set_dacl(&target, target_policy)?;
             token.run(|| support::delete(&target, kind))??;
             assert!(!target.try_exists()?);
@@ -182,8 +182,8 @@ fn low_integrity_does_not_protect_a_low_outside_null_dacl_object() -> Result<()>
         let parent = fixture.path().join("outside-low");
         let target = parent.join("target");
         std::fs::create_dir(&parent)?;
-        support::create_target(&target, kind)?;
         support::set_dacl(&parent, Dacl::Null)?;
+        support::create_target(&target, kind)?;
         support::set_dacl(&target, Dacl::Null)?;
         support::lower_object_integrity(&parent)?;
         support::lower_object_integrity(&target)?;

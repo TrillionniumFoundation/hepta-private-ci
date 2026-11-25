@@ -77,6 +77,26 @@ graph. The controller checks its timeout and JUnit configuration against the
 repository defaults exactly; the local profile inherits those defaults and
 retries are explicitly zero. No existing repository profile is modified.
 
+## First native execution and fixture correction
+
+Normal workflow run `45630787762`, exact head
+`047d7d8bccf848fd5435243fd86ecaa24c431e6c`, ran all four tests once:
+one passed, three failed, zero skipped and zero retried. Strict native Clippy
+passed. The combined controlled-write/outside-denial scenario passed. The three
+deletion groups failed while opening an owned object for DACL installation,
+with OS error 5, before any completed deletion-cell receipt. They establish no
+deletion outcome. The original artifact `15031295237` is 5,520 bytes, SHA-256
+`df3c8a80d895fe446301ab00a7860c5fa2ea61a5876249b55d7b70e5a0ec8d4e`.
+
+The next fixture configures each parent before creating its child, then installs
+and reads back the child's exact final policy. This prevents parent installation
+from changing an already-existing child's inherited ACL during setup. All final
+policy masks, token flags, deletion expectations and namespace assertions stay
+unchanged. The old error omitted the failing path, so ACL propagation is a source
+hypothesis, not an independently observed cause of that failure. New context
+records the exact object and checks the original thread identity before setup.
+The revised source still requires its own native result.
+
 ## Primary contracts
 
 - [CreateRestrictedToken](https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken)

@@ -49,7 +49,8 @@ def identity():
     return {
         "head": git("rev-parse", "HEAD"),
         "tree": git("rev-parse", "HEAD^{tree}"),
-        "parents": git("show", "-s", "--format=%P", "HEAD").split(),
+        "parents": [line.split()[1] for line in git("cat-file", "-p", "HEAD")
+                    .split("\n\n", 1)[0].splitlines() if line.startswith("parent ")],
         "status": git("status", "--porcelain"),
         "sha256": {name: sha((ROOT / name).read_bytes()) for name in SOURCES},
     }
@@ -83,7 +84,7 @@ def verify_native(log):
         raise RuntimeError("expected exactly the four preregistered passing tests")
     if not re.search(r"Summary\s+\[[^]]+\] 4 tests run: 4 passed, 0 skipped", clean):
         raise RuntimeError("missing complete four-test, zero-skip summary")
-    cells = re.findall(r"^HEPTA_DELETE_MATRIX (.+)$", clean, re.M)
+    cells = re.findall(r"^\s*HEPTA_DELETE_MATRIX (.+)$", clean, re.M)
     if len(cells) != len(set(cells)) or len(cells) != 18:
         raise RuntimeError("expected 18 distinct completed deletion-cell receipts")
     counts = [sum(cell.startswith(prefix) for cell in cells) for prefix in

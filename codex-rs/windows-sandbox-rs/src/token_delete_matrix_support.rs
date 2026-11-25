@@ -328,6 +328,7 @@ fn acl_bytes(acl: *const ACL) -> Option<Vec<u8>> {
 }
 
 pub(super) fn set_dacl(path: &Path, policy: Dacl) -> Result<()> {
+    ensure_unimpersonated().context("configure owned ACL fixture with original thread identity")?;
     let sddl = match policy {
         Dacl::Identity(mask) => format!("D:P(A;;0x{mask:08x};;;WD)"),
         Dacl::Capability(mask) => format!("D:P(A;;FA;;;WD)(A;;0x{mask:08x};;;{CAPABILITY})"),
@@ -349,7 +350,12 @@ pub(super) fn set_dacl(path: &Path, policy: Dacl) -> Result<()> {
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
         .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
         .open(path)
-        .context("open owned fixture for exact DACL installation")?;
+        .with_context(|| {
+            format!(
+                "open owned fixture for exact DACL installation: {}",
+                path.display()
+            )
+        })?;
     let code = unsafe {
         SetSecurityInfo(
             handle.as_raw_handle() as _,
