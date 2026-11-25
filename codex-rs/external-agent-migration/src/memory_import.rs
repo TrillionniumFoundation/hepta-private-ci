@@ -81,7 +81,9 @@ pub(super) async fn import(
     if copy_outcome.workspace_changed
         && let Err(err) = state_db
             .memories()
-            .enqueue_global_consolidation(chrono::Utc::now().timestamp())
+            .enqueue_global_consolidation(
+                crate::timestamp::current_utc(time::OffsetDateTime::now_utc()).unix_timestamp(),
+            )
             .await
     {
         tracing::warn!(error = %err, "failed to enqueue imported memory consolidation");

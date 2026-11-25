@@ -1,7 +1,7 @@
-use chrono::SecondsFormat;
-use chrono::Utc;
 use codex_protocol::DEFAULT_FUNCTION_NAMESPACE;
 use codex_protocol::ToolName;
+use time::OffsetDateTime;
+use time::UtcOffset;
 
 pub(crate) fn tool_namespace(tool_name: &ToolName) -> &str {
     tool_name
@@ -17,7 +17,7 @@ macro_rules! log_event {
             target: $crate::targets::OTEL_LOG_ONLY_TARGET,
             tracing::Level::INFO,
             $($fields)*
-            event.timestamp = %$crate::events::shared::timestamp(),
+            event.timestamp = %$crate::events::shared::timestamp(::time::OffsetDateTime::now_utc()),
             conversation.id = %$self.metadata.conversation_id,
             app.version = %$self.metadata.app_version,
             auth_mode = $self.metadata.auth_mode,
@@ -37,7 +37,7 @@ macro_rules! trace_event {
             target: $crate::targets::OTEL_TRACE_SAFE_TARGET,
             tracing::Level::INFO,
             $($fields)*
-            event.timestamp = %$crate::events::shared::timestamp(),
+            event.timestamp = %$crate::events::shared::timestamp(::time::OffsetDateTime::now_utc()),
             conversation.id = %$self.metadata.conversation_id,
             app.version = %$self.metadata.app_version,
             auth_mode = $self.metadata.auth_mode,
@@ -65,6 +65,20 @@ pub(crate) use log_and_trace_event;
 pub(crate) use log_event;
 pub(crate) use trace_event;
 
-pub(crate) fn timestamp() -> String {
-    Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)
+pub(crate) fn timestamp(now: OffsetDateTime) -> String {
+    #[cfg(not(all(
+        target_arch = "wasm32",
+        not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
+    )))]
+    assert!(now.unix_timestamp() >= 0, "system time before Unix epoch");
+
+    now.to_offset(UtcOffset::UTC)
+        .format(time::macros::format_description!(
+            "[year]-[month]-[day]T[hour]:[minute]:[second].[subsecond digits:3]Z"
+        ))
+        .expect("UTC timestamp contains every component required by the static format")
 }
+
+#[cfg(test)]
+#[path = "shared_timestamp_tests.rs"]
+mod timestamp_tests;

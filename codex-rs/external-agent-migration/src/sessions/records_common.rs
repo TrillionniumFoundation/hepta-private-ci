@@ -1,5 +1,8 @@
 use super::truncate;
 use serde_json::Value as JsonValue;
+use std::borrow::Cow;
+use time::OffsetDateTime;
+use time::format_description::well_known::Rfc3339;
 
 const NOTE_MAX_LEN: usize = 2_000;
 const TOOL_RESULT_MAX_LEN: usize = 4_000;
@@ -59,9 +62,34 @@ pub(super) fn extract_message_text(content: &JsonValue) -> Option<ExtractedMessa
 }
 
 pub(super) fn parse_timestamp(timestamp: &str) -> Option<i64> {
-    chrono::DateTime::parse_from_rfc3339(timestamp)
+    // Preserve this importer's original syntax. The time parser also accepts
+    // other single-byte separators, which were not accepted here.
+    if !matches!(timestamp.as_bytes().get(10), Some(b'T' | b't' | b' ')) {
+        return None;
+    }
+
+    let suffix = timestamp.get(19..)?;
+    let offset_start = if let Some(fraction) = suffix.strip_prefix('.') {
+        20 + fraction.bytes().take_while(u8::is_ascii_digit).count()
+    } else {
+        19
+    };
+    let mut compatible = Cow::Borrowed(timestamp);
+    // The previous parser accepted U+2212 only as the offset's minus sign.
+    if timestamp[offset_start..].starts_with('\u{2212}') {
+        compatible
+            .to_mut()
+            .replace_range(offset_start..offset_start + '\u{2212}'.len_utf8(), "-");
+    }
+    // This owner returns only whole Unix seconds. Its previous leap-second
+    // representation mapped :60 (at any minute) to the same integer as :59,
+    // including fractional input and nonzero minute-aligned offsets.
+    if timestamp.as_bytes().get(17..19) == Some(b"60".as_slice()) {
+        compatible.to_mut().replace_range(17..19, "59");
+    }
+    OffsetDateTime::parse(compatible.as_ref(), &Rfc3339)
         .ok()
-        .map(|value| value.timestamp())
+        .map(OffsetDateTime::unix_timestamp)
 }
 
 fn content_blocks(content: &JsonValue) -> Vec<JsonValue> {

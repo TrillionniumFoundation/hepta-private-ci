@@ -10,7 +10,6 @@ workspace = true
 
 [dependencies]
 anyhow = { workspace = true }
-chrono = { workspace = true }
 codex-file-system = { workspace = true }
 codex-protocol = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
@@ -25,6 +24,7 @@ serde = { workspace = true, features = ["derive"] }
 similar = { workspace = true }
 tempfile = { workspace = true }
 thiserror = { workspace = true }
+time = { workspace = true, features = ["wasm-bindgen"] }
 tokio = { workspace = true, features = ["macros", "process", "rt", "time"] }
 ts-rs = { workspace = true, features = [
     "uuid-impl",
