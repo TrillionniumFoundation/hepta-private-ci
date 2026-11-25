@@ -8,15 +8,11 @@ struct SnapshotDirectory(PathBuf);
 
 impl SnapshotDirectory {
     fn new() -> Self {
-        let path = std::env::temp_dir().join(format!(
-            "hepta-control-snapshot-bound-{}-{}",
-            std::process::id(),
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .expect("clock")
-                .as_nanos()
-        ));
-        fs::create_dir(&path).expect("create snapshot directory");
+        let tick = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos();
+        let path = super::control_test_directory_at("hepta-control-snapshot-bound", tick);
         Self(path)
     }
 }

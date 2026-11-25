@@ -1149,6 +1149,34 @@ impl<'a> ControlCursor<'a> {
 }
 
 #[cfg(test)]
+fn control_test_directory_at(prefix: &str, tick: u128) -> PathBuf {
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+
+    static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
+    loop {
+        let sequence = NEXT_ROOT.fetch_add(1, Ordering::Relaxed);
+        let process = std::process::id();
+        let directory = std::env::temp_dir().join(format!("{prefix}-{process}-{tick}-{sequence}"));
+        let builder = fs::DirBuilder::new();
+        #[cfg(unix)]
+        let builder = {
+            use std::os::unix::fs::DirBuilderExt;
+            let mut builder = builder;
+            builder.mode(0o700);
+            builder
+        };
+        // Exclusive creation also avoids reusing a stale fixture after PID
+        // reuse. Only name collisions retry; real I/O errors remain errors.
+        match builder.create(&directory) {
+            Ok(()) => return directory,
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(error) => panic!("create private ControlRole fixture: {error}"),
+        }
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
 
