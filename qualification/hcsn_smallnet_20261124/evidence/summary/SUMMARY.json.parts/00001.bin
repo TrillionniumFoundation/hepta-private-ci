@@ -1,0 +1,2196 @@
+ {
+            "300": 0.328125,
+            "301": 0.078125,
+            "302": 0.234375,
+            "303": 0.328125,
+            "304": 0.21875,
+            "305": 0.28125,
+            "306": 0.3125,
+            "307": 0.21875
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.328125,
+          "mean": 0.109375,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.18944305707784595
+        },
+        "301": {
+          "max": 0.078125,
+          "mean": 0.010416666666666666,
+          "min": -0.046875,
+          "n": 3,
+          "sample_std": 0.06314768569261532
+        },
+        "302": {
+          "max": 0.234375,
+          "mean": 0.07291666666666667,
+          "min": -0.015625,
+          "n": 3,
+          "sample_std": 0.14004510062238285
+        },
+        "303": {
+          "max": 0.328125,
+          "mean": 0.08854166666666667,
+          "min": -0.0625,
+          "n": 3,
+          "sample_std": 0.20982538623420507
+        },
+        "304": {
+          "max": 0.21875,
+          "mean": 0.052083333333333336,
+          "min": -0.0625,
+          "n": 3,
+          "sample_std": 0.14768173832039402
+        },
+        "305": {
+          "max": 0.28125,
+          "mean": 0.078125,
+          "min": -0.046875,
+          "n": 3,
+          "sample_std": 0.17746588580625855
+        },
+        "306": {
+          "max": 0.3125,
+          "mean": 0.09375,
+          "min": -0.03125,
+          "n": 3,
+          "sample_std": 0.19008632907181935
+        },
+        "307": {
+          "max": 0.21875,
+          "mean": 0.0625,
+          "min": -0.03125,
+          "n": 3,
+          "sample_std": 0.13621559198564606
+        }
+      }
+    },
+    {
+      "alternative": "qvi_tanh",
+      "difference": {
+        "accuracy": {
+          "max": 0.0,
+          "mean": -0.046223958333333336,
+          "min": -0.138671875,
+          "n": 3,
+          "sample_std": 0.08006224436028013
+        },
+        "brier": {
+          "max": 0.21356725371488383,
+          "mean": 0.06668909622716189,
+          "min": -0.00912075603531598,
+          "n": 3,
+          "sample_std": 0.1272223071136411
+        },
+        "cross_entropy": {
+          "max": 0.29324527868166206,
+          "mean": 0.09319098988724306,
+          "min": -0.009241798207467289,
+          "n": 3,
+          "sample_std": 0.17326879687462463
+        },
+        "final_over_pre_late": {
+          "max": 0.0,
+          "mean": -0.051432291666666664,
+          "min": -0.154296875,
+          "n": 3,
+          "sample_std": 0.08908334231636804
+        },
+        "initial_accuracy": {
+          "max": 0.0,
+          "mean": -0.016927083333333332,
+          "min": -0.05078125,
+          "n": 3,
+          "sample_std": 0.029318568357285683
+        },
+        "learned_over_initial": {
+          "max": 0.0,
+          "mean": -0.029296875,
+          "min": -0.087890625,
+          "n": 3,
+          "sample_std": 0.05074367600299445
+        },
+        "pre_late_accuracy": {
+          "max": 0.015625,
+          "mean": 0.005208333333333333,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.009021097956087902
+        },
+        "stopping_utility": {
+          "max": 0.0,
+          "mean": -0.0059706439393938755,
+          "min": -0.017911931818181626,
+          "n": 3,
+          "sample_std": 0.010341458656933384
+        }
+      },
+      "direction": "full minus alternative; positive accuracy/gain favors full, negative Brier/CE favors full",
+      "inference": "descriptive paired differences; no p-values or confidence intervals",
+      "missing_seed_pairs": [],
+      "neurons": 32,
+      "paired_seeds": 3,
+      "pairs": [
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": -0.00912075603531598,
+            "cross_entropy": -0.009241798207467289,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 1101,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": -0.004379208998082196,
+            "cross_entropy": -0.004430510812465593,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 2202,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": -0.138671875,
+            "brier": 0.21356725371488383,
+            "cross_entropy": 0.29324527868166206,
+            "final_over_pre_late": -0.154296875,
+            "initial_accuracy": -0.05078125,
+            "learned_over_initial": -0.087890625,
+            "pre_late_accuracy": 0.015625,
+            "stopping_utility": -0.017911931818181626
+          },
+          "seed": 3303,
+          "source_differences": {
+            "300": -0.109375,
+            "301": -0.265625,
+            "302": -0.109375,
+            "303": -0.09375,
+            "304": -0.140625,
+            "305": -0.078125,
+            "306": -0.140625,
+            "307": -0.171875
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.0,
+          "mean": -0.036458333333333336,
+          "min": -0.109375,
+          "n": 3,
+          "sample_std": 0.06314768569261532
+        },
+        "301": {
+          "max": 0.0,
+          "mean": -0.08854166666666667,
+          "min": -0.265625,
+          "n": 3,
+          "sample_std": 0.15335866525349434
+        },
+        "302": {
+          "max": 0.0,
+          "mean": -0.036458333333333336,
+          "min": -0.109375,
+          "n": 3,
+          "sample_std": 0.06314768569261532
+        },
+        "303": {
+          "max": 0.0,
+          "mean": -0.03125,
+          "min": -0.09375,
+          "n": 3,
+          "sample_std": 0.05412658773652741
+        },
+        "304": {
+          "max": 0.0,
+          "mean": -0.046875,
+          "min": -0.140625,
+          "n": 3,
+          "sample_std": 0.08118988160479113
+        },
+        "305": {
+          "max": 0.0,
+          "mean": -0.026041666666666668,
+          "min": -0.078125,
+          "n": 3,
+          "sample_std": 0.04510548978043951
+        },
+        "306": {
+          "max": 0.0,
+          "mean": -0.046875,
+          "min": -0.140625,
+          "n": 3,
+          "sample_std": 0.08118988160479113
+        },
+        "307": {
+          "max": 0.0,
+          "mean": -0.057291666666666664,
+          "min": -0.171875,
+          "n": 3,
+          "sample_std": 0.09923207751696693
+        }
+      }
+    },
+    {
+      "alternative": "qvi_value_only",
+      "difference": {
+        "accuracy": {
+          "max": 0.0,
+          "mean": -0.08658854166666667,
+          "min": -0.244140625,
+          "n": 3,
+          "sample_std": 0.1366675871531184
+        },
+        "brier": {
+          "max": 0.13421641548357977,
+          "mean": 0.04543454812100589,
+          "min": 0.0003169875337194483,
+          "n": 3,
+          "sample_std": 0.07689078596262212
+        },
+        "cross_entropy": {
+          "max": 0.14117397157421419,
+          "mean": 0.041600486177984765,
+          "min": -0.016690221431426178,
+          "n": 3,
+          "sample_std": 0.08665146660430735
+        },
+        "final_over_pre_late": {
+          "max": 0.0,
+          "mean": -0.014322916666666666,
+          "min": -0.0234375,
+          "n": 3,
+          "sample_std": 0.012556836928376244
+        },
+        "initial_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "learned_over_initial": {
+          "max": 0.0,
+          "mean": -0.08658854166666667,
+          "min": -0.244140625,
+          "n": 3,
+          "sample_std": 0.1366675871531184
+        },
+        "pre_late_accuracy": {
+          "max": 0.0078125,
+          "mean": -0.072265625,
+          "min": -0.224609375,
+          "n": 3,
+          "sample_std": 0.13199137249119494
+        },
+        "stopping_utility": {
+          "max": 0.0,
+          "mean": -0.09394886363636364,
+          "min": -0.2561789772727274,
+          "n": 3,
+          "sample_std": 0.14108034563785643
+        }
+      },
+      "direction": "full minus alternative; positive accuracy/gain favors full, negative Brier/CE favors full",
+      "inference": "descriptive paired differences; no p-values or confidence intervals",
+      "missing_seed_pairs": [],
+      "neurons": 32,
+      "paired_seeds": 3,
+      "pairs": [
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": -0.244140625,
+            "brier": 0.13421641548357977,
+            "cross_entropy": 0.14117397157421419,
+            "final_over_pre_late": -0.01953125,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": -0.244140625,
+            "pre_late_accuracy": -0.224609375,
+            "stopping_utility": -0.2561789772727274
+          },
+          "seed": 1101,
+          "source_differences": {
+            "300": -0.296875,
+            "301": -0.0625,
+            "302": -0.25,
+            "303": -0.359375,
+            "304": -0.203125,
+            "305": -0.28125,
+            "306": -0.296875,
+            "307": -0.203125
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.0003169875337194483,
+            "cross_entropy": 0.0003177083911662937,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 2202,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": -0.015625,
+            "brier": 0.0017702413457184596,
+            "cross_entropy": -0.016690221431426178,
+            "final_over_pre_late": -0.0234375,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": -0.015625,
+            "pre_late_accuracy": 0.0078125,
+            "stopping_utility": -0.025667613636363495
+          },
+          "seed": 3303,
+          "source_differences": {
+            "300": 0.0,
+            "301": -0.015625,
+            "302": 0.046875,
+            "303": -0.015625,
+            "304": -0.015625,
+            "305": 0.015625,
+            "306": -0.09375,
+            "307": -0.046875
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.0,
+          "mean": -0.09895833333333333,
+          "min": -0.296875,
+          "n": 3,
+          "sample_std": 0.17140086116567016
+        },
+        "301": {
+          "max": 0.0,
+          "mean": -0.026041666666666668,
+          "min": -0.0625,
+          "n": 3,
+          "sample_std": 0.03252603124165832
+        },
+        "302": {
+          "max": 0.046875,
+          "mean": -0.06770833333333333,
+          "min": -0.25,
+          "n": 3,
+          "sample_std": 0.1595995150629642
+        },
+        "303": {
+          "max": 0.0,
+          "mean": -0.125,
+          "min": -0.359375,
+          "n": 3,
+          "sample_std": 0.203125
+        },
+        "304": {
+          "max": 0.0,
+          "mean": -0.07291666666666667,
+          "min": -0.203125,
+          "n": 3,
+          "sample_std": 0.11303403340734743
+        },
+        "305": {
+          "max": 0.015625,
+          "mean": -0.08854166666666667,
+          "min": -0.28125,
+          "n": 3,
+          "sample_std": 0.16707307221193166
+        },
+        "306": {
+          "max": 0.0,
+          "mean": -0.13020833333333334,
+          "min": -0.296875,
+          "n": 3,
+          "sample_std": 0.1517583571284736
+        },
+        "307": {
+          "max": 0.0,
+          "mean": -0.08333333333333333,
+          "min": -0.203125,
+          "n": 3,
+          "sample_std": 0.10635717633678196
+        }
+      }
+    },
+    {
+      "alternative": "qvi_risk_only",
+      "difference": {
+        "accuracy": {
+          "max": 0.25,
+          "mean": 0.08333333333333333,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.14433756729740643
+        },
+        "brier": {
+          "max": -0.0021306864169438056,
+          "mean": -0.05464511844346056,
+          "min": -0.1534019115845333,
+          "n": 3,
+          "sample_std": 0.08558336790529245
+        },
+        "cross_entropy": {
+          "max": -0.002147761072695986,
+          "mean": -0.05764760620439372,
+          "min": -0.16227709757501196,
+          "n": 3,
+          "sample_std": 0.0906677600188683
+        },
+        "final_over_pre_late": {
+          "max": 0.017578125,
+          "mean": 0.005859375,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.01014873520059889
+        },
+        "initial_accuracy": {
+          "max": 0.0,
+          "mean": -0.016927083333333332,
+          "min": -0.05078125,
+          "n": 3,
+          "sample_std": 0.029318568357285683
+        },
+        "learned_over_initial": {
+          "max": 0.30078125,
+          "mean": 0.10026041666666667,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.17365613565469212
+        },
+        "pre_late_accuracy": {
+          "max": 0.232421875,
+          "mean": 0.07747395833333333,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.13418883209680754
+        },
+        "stopping_utility": {
+          "max": 0.25537642045454556,
+          "mean": 0.08512547348484852,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.14744164509411492
+        }
+      },
+      "direction": "full minus alternative; positive accuracy/gain favors full, negative Brier/CE favors full",
+      "inference": "descriptive paired differences; no p-values or confidence intervals",
+      "missing_seed_pairs": [],
+      "neurons": 32,
+      "paired_seeds": 3,
+      "pairs": [
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": -0.008402757328904553,
+            "cross_entropy": -0.00851795996547322,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 1101,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": -0.0021306864169438056,
+            "cross_entropy": -0.002147761072695986,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 2202,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.25,
+            "brier": -0.1534019115845333,
+            "cross_entropy": -0.16227709757501196,
+            "final_over_pre_late": 0.017578125,
+            "initial_accuracy": -0.05078125,
+            "learned_over_initial": 0.30078125,
+            "pre_late_accuracy": 0.232421875,
+            "stopping_utility": 0.25537642045454556
+          },
+          "seed": 3303,
+          "source_differences": {
+            "300": 0.328125,
+            "301": 0.078125,
+            "302": 0.234375,
+            "303": 0.328125,
+            "304": 0.21875,
+            "305": 0.28125,
+            "306": 0.3125,
+            "307": 0.21875
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.328125,
+          "mean": 0.109375,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.18944305707784595
+        },
+        "301": {
+          "max": 0.078125,
+          "mean": 0.026041666666666668,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.04510548978043951
+        },
+        "302": {
+          "max": 0.234375,
+          "mean": 0.078125,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.13531646934131855
+        },
+        "303": {
+          "max": 0.328125,
+          "mean": 0.109375,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.18944305707784595
+        },
+        "304": {
+          "max": 0.21875,
+          "mean": 0.07291666666666667,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.12629537138523064
+        },
+        "305": {
+          "max": 0.28125,
+          "mean": 0.09375,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.16237976320958225
+        },
+        "306": {
+          "max": 0.3125,
+          "mean": 0.10416666666666667,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.18042195912175804
+        },
+        "307": {
+          "max": 0.21875,
+          "mean": 0.07291666666666667,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.12629537138523064
+        }
+      }
+    },
+    {
+      "alternative": "qvi_boundary",
+      "difference": {
+        "accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "brier": {
+          "max": 0.017567615267080672,
+          "mean": 0.005779997062412612,
+          "min": -0.0005526161171951482,
+          "n": 3,
+          "sample_std": 0.010217803395177383
+        },
+        "cross_entropy": {
+          "max": 0.01819023119273333,
+          "mean": 0.005982712751479213,
+          "min": -0.0005673785074383764,
+          "n": 3,
+          "sample_std": 0.01058143856753769
+        },
+        "final_over_pre_late": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "initial_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "learned_over_initial": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "pre_late_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "stopping_utility": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        }
+      },
+      "direction": "full minus alternative; positive accuracy/gain favors full, negative Brier/CE favors full",
+      "inference": "descriptive paired differences; no p-values or confidence intervals",
+      "missing_seed_pairs": [],
+      "neurons": 64,
+      "paired_seeds": 3,
+      "pairs": [
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.017567615267080672,
+            "cross_entropy": 0.01819023119273333,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 1101,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.00032499203735231186,
+            "cross_entropy": 0.0003252855691426859,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 2202,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": -0.0005526161171951482,
+            "cross_entropy": -0.0005673785074383764,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 3303,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "301": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "302": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "303": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "304": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "305": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "306": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "307": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        }
+      }
+    },
+    {
+      "alternative": "qvi_flow",
+      "difference": {
+        "accuracy": {
+          "max": 0.05078125,
+          "mean": -0.029296875,
+          "min": -0.138671875,
+          "n": 3,
+          "sample_std": 0.09806554852057181
+        },
+        "brier": {
+          "max": 0.04831949684066983,
+          "mean": 0.016004067702876563,
+          "min": -0.0013285906261427116,
+          "n": 3,
+          "sample_std": 0.02801063571412214
+        },
+        "cross_entropy": {
+          "max": 0.037479720729526766,
+          "mean": 0.012399024909185985,
+          "min": -0.0013287329195809106,
+          "n": 3,
+          "sample_std": 0.021752951970689542
+        },
+        "final_over_pre_late": {
+          "max": 0.0390625,
+          "mean": 0.026041666666666668,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.022552744890219755
+        },
+        "initial_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "learned_over_initial": {
+          "max": 0.05078125,
+          "mean": -0.029296875,
+          "min": -0.138671875,
+          "n": 3,
+          "sample_std": 0.09806554852057181
+        },
+        "pre_late_accuracy": {
+          "max": 0.01171875,
+          "mean": -0.055338541666666664,
+          "min": -0.177734375,
+          "n": 3,
+          "sample_std": 0.10615972535953293
+        },
+        "stopping_utility": {
+          "max": 0.05078125,
+          "mean": -0.04899384469696966,
+          "min": -0.19776278409090897,
+          "n": 3,
+          "sample_std": 0.1313157714602051
+        }
+      },
+      "direction": "full minus alternative; positive accuracy/gain favors full, negative Brier/CE favors full",
+      "inference": "descriptive paired differences; no p-values or confidence intervals",
+      "missing_seed_pairs": [],
+      "neurons": 64,
+      "paired_seeds": 3,
+      "pairs": [
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": -0.138671875,
+            "brier": 0.04831949684066983,
+            "cross_entropy": 0.037479720729526766,
+            "final_over_pre_late": 0.0390625,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": -0.138671875,
+            "pre_late_accuracy": -0.177734375,
+            "stopping_utility": -0.19776278409090897
+          },
+          "seed": 1101,
+          "source_differences": {
+            "300": -0.1875,
+            "301": 0.078125,
+            "302": -0.09375,
+            "303": -0.125,
+            "304": -0.125,
+            "305": -0.171875,
+            "306": -0.234375,
+            "307": -0.25
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.05078125,
+            "brier": -0.0013285906261427116,
+            "cross_entropy": -0.0013287329195809106,
+            "final_over_pre_late": 0.0390625,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.05078125,
+            "pre_late_accuracy": 0.01171875,
+            "stopping_utility": 0.05078125
+          },
+          "seed": 2202,
+          "source_differences": {
+            "300": -0.0625,
+            "301": 0.25,
+            "302": 0.0625,
+            "303": 0.0,
+            "304": 0.0625,
+            "305": 0.0625,
+            "306": 0.0,
+            "307": 0.03125
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.0010212968941025746,
+            "cross_entropy": 0.001046086917612099,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 3303,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.0,
+          "mean": -0.08333333333333333,
+          "min": -0.1875,
+          "n": 3,
+          "sample_std": 0.09547032697824667
+        },
+        "301": {
+          "max": 0.25,
+          "mean": 0.109375,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.12789613706050704
+        },
+        "302": {
+          "max": 0.0625,
+          "mean": -0.010416666666666666,
+          "min": -0.09375,
+          "n": 3,
+          "sample_std": 0.07864410870073697
+        },
+        "303": {
+          "max": 0.0,
+          "mean": -0.041666666666666664,
+          "min": -0.125,
+          "n": 3,
+          "sample_std": 0.07216878364870322
+        },
+        "304": {
+          "max": 0.0625,
+          "mean": -0.020833333333333332,
+          "min": -0.125,
+          "n": 3,
+          "sample_std": 0.09547032697824667
+        },
+        "305": {
+          "max": 0.0625,
+          "mean": -0.036458333333333336,
+          "min": -0.171875,
+          "n": 3,
+          "sample_std": 0.1213664603930317
+        },
+        "306": {
+          "max": 0.0,
+          "mean": -0.078125,
+          "min": -0.234375,
+          "n": 3,
+          "sample_std": 0.13531646934131855
+        },
+        "307": {
+          "max": 0.03125,
+          "mean": -0.07291666666666667,
+          "min": -0.25,
+          "n": 3,
+          "sample_std": 0.15415258944738272
+        }
+      }
+    },
+    {
+      "alternative": "fixed_full",
+      "difference": {
+        "accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "brier": {
+          "max": 0.014755260582470342,
+          "mean": 0.004952517292985366,
+          "min": -4.14908547734516e-05,
+          "n": 3,
+          "sample_std": 0.008489930124644616
+        },
+        "cross_entropy": {
+          "max": 0.01534340749175156,
+          "mean": 0.005147985774858792,
+          "min": -4.2566526211484934e-05,
+          "n": 3,
+          "sample_std": 0.008829982305895918
+        },
+        "final_over_pre_late": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "initial_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "learned_over_initial": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "pre_late_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "stopping_utility": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        }
+      },
+      "direction": "full minus alternative; positive accuracy/gain favors full, negative Brier/CE favors full",
+      "inference": "descriptive paired differences; no p-values or confidence intervals",
+      "missing_seed_pairs": [],
+      "neurons": 64,
+      "paired_seeds": 3,
+      "pairs": [
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.014755260582470342,
+            "cross_entropy": 0.01534340749175156,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 1101,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.00014378215125920857,
+            "cross_entropy": 0.00014311635903629938,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 2202,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": -4.14908547734516e-05,
+            "cross_entropy": -4.2566526211484934e-05,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 3303,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "301": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "302": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "303": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "304": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "305": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "306": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "307": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        }
+      }
+    },
+    {
+      "alternative": "learned_full",
+      "difference": {
+        "accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "brier": {
+          "max": 0.012694296825814577,
+          "mean": 0.004350083440931962,
+          "min": -2.8560123679910454e-05,
+          "n": 3,
+          "sample_std": 0.007229251706705656
+        },
+        "cross_entropy": {
+          "max": 0.013239559421588831,
+          "mean": 0.004531747691306154,
+          "min": -2.929998872669426e-05,
+          "n": 3,
+          "sample_std": 0.007544030526118847
+        },
+        "final_over_pre_late": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "initial_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "learned_over_initial": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "pre_late_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "stopping_utility": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        }
+      },
+      "direction": "full minus alternative; positive accuracy/gain favors full, negative Brier/CE favors full",
+      "inference": "descriptive paired differences; no p-values or confidence intervals",
+      "missing_seed_pairs": [],
+      "neurons": 64,
+      "paired_seeds": 3,
+      "pairs": [
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.012694296825814577,
+            "cross_entropy": 0.013239559421588831,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 1101,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.00038451362066121986,
+            "cross_entropy": 0.00038498364105632454,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 2202,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": -2.8560123679910454e-05,
+            "cross_entropy": -2.929998872669426e-05,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 3303,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "301": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "302": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "303": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "304": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "305": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "306": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "307": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        }
+      }
+    },
+    {
+      "alternative": "qvi_tanh",
+      "difference": {
+        "accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "brier": {
+          "max": 0.017801264333173306,
+          "mean": 0.003915826125097166,
+          "min": -0.005440522099415479,
+          "n": 3,
+          "sample_std": 0.012264976608372655
+        },
+        "cross_entropy": {
+          "max": 0.018425246705917497,
+          "mean": 0.004059963026552464,
+          "min": -0.005625787694264028,
+          "n": 3,
+          "sample_std": 0.012690019127735203
+        },
+        "final_over_pre_late": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "initial_accuracy": {
+          "max": 0.05078125,
+          "mean": 0.016927083333333332,
+          "min": -0.05078125,
+          "n": 3,
+          "sample_std": 0.05863713671457137
+        },
+        "learned_over_initial": {
+          "max": 0.05078125,
+          "mean": -0.016927083333333332,
+          "min": -0.05078125,
+          "n": 3,
+          "sample_std": 0.05863713671457137
+        },
+        "pre_late_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "stopping_utility": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        }
+      },
+      "direction": "full minus alternative; positive accuracy/gain favors full, negative Brier/CE favors full",
+      "inference": "descriptive paired differences; no p-values or confidence intervals",
+      "missing_seed_pairs": [],
+      "neurons": 64,
+      "paired_seeds": 3,
+      "pairs": [
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.017801264333173306,
+            "cross_entropy": 0.018425246705917497,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.05078125,
+            "learned_over_initial": -0.05078125,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 1101,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": -0.0006132638584663286,
+            "cross_entropy": -0.0006195699319960779,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": -0.05078125,
+            "learned_over_initial": 0.05078125,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 2202,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": -0.005440522099415479,
+            "cross_entropy": -0.005625787694264028,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.05078125,
+            "learned_over_initial": -0.05078125,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 3303,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "301": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "302": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "303": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "304": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "305": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "306": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "307": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        }
+      }
+    },
+    {
+      "alternative": "qvi_value_only",
+      "difference": {
+        "accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "brier": {
+          "max": 0.015209183211041144,
+          "mean": 0.005653493423441476,
+          "min": 0.0001650852079295162,
+          "n": 3,
+          "sample_std": 0.008305919920261091
+        },
+        "cross_entropy": {
+          "max": 0.015804885118588574,
+          "mean": 0.005864250716725509,
+          "min": 0.00016457558971039177,
+          "n": 3,
+          "sample_std": 0.008639682992909436
+        },
+        "final_over_pre_late": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "initial_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "learned_over_initial": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "pre_late_accuracy": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "stopping_utility": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        }
+      },
+      "direction": "full minus alternative; positive accuracy/gain favors full, negative Brier/CE favors full",
+      "inference": "descriptive paired differences; no p-values or confidence intervals",
+      "missing_seed_pairs": [],
+      "neurons": 64,
+      "paired_seeds": 3,
+      "pairs": [
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.015209183211041144,
+            "cross_entropy": 0.015804885118588574,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 1101,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.0001650852079295162,
+            "cross_entropy": 0.00016457558971039177,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 2202,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": 0.0015862118513537693,
+            "cross_entropy": 0.0016232914418775612,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.0,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 3303,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "301": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "302": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "303": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "304": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "305": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "306": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        },
+        "307": {
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0
+        }
+      }
+    },
+    {
+      "alternative": "qvi_risk_only",
+      "difference": {
+        "accuracy": {
+          "max": 0.05078125,
+          "mean": 0.018229166666666668,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.028258508351836856
+        },
+        "brier": {
+          "max": 0.014920445215227396,
+          "mean": 0.005821681132060719,
+          "min": -0.0024741009997041874,
+          "n": 3,
+          "sample_std": 0.00872502977167158
+        },
+        "cross_entropy": {
+          "max": 0.015543910151065155,
+          "mean": 0.0060503746006123444,
+          "min": -0.0025043679788615547,
+          "n": 3,
+          "sample_std": 0.00906068899397652
+        },
+        "final_over_pre_late": {
+          "max": 0.00390625,
+          "mean": 0.0013020833333333333,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.0022552744890219755
+        },
+        "initial_accuracy": {
+          "max": 0.05078125,
+          "mean": 0.016927083333333332,
+          "min": -0.05078125,
+          "n": 3,
+          "sample_std": 0.05863713671457137
+        },
+        "learned_over_initial": {
+          "max": 0.05078125,
+          "mean": 0.0013020833333333333,
+          "min": -0.046875,
+          "n": 3,
+          "sample_std": 0.04884114409768503
+        },
+        "pre_late_accuracy": {
+          "max": 0.05078125,
+          "mean": 0.016927083333333332,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.029318568357285683
+        },
+        "stopping_utility": {
+          "max": 0.05078125,
+          "mean": 0.018229166666666668,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.028258508351836856
+        }
+      },
+      "direction": "full minus alternative; positive accuracy/gain favors full, negative Brier/CE favors full",
+      "inference": "descriptive paired differences; no p-values or confidence intervals",
+      "missing_seed_pairs": [],
+      "neurons": 64,
+      "paired_seeds": 3,
+      "pairs": [
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.05078125,
+            "brier": 0.014920445215227396,
+            "cross_entropy": 0.015543910151065155,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": 0.05078125,
+            "learned_over_initial": 0.0,
+            "pre_late_accuracy": 0.05078125,
+            "stopping_utility": 0.05078125
+          },
+          "seed": 1101,
+          "source_differences": {
+            "300": -0.0625,
+            "301": 0.25,
+            "302": 0.0625,
+            "303": 0.0,
+            "304": 0.0625,
+            "305": 0.0625,
+            "306": 0.0,
+            "307": 0.03125
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.0,
+            "brier": -0.0024741009997041874,
+            "cross_entropy": -0.0025043679788615547,
+            "final_over_pre_late": 0.0,
+            "initial_accuracy": -0.05078125,
+            "learned_over_initial": 0.05078125,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.0
+          },
+          "seed": 2202,
+          "source_differences": {
+            "300": 0.0,
+            "301": 0.0,
+            "302": 0.0,
+            "303": 0.0,
+            "304": 0.0,
+            "305": 0.0,
+            "306": 0.0,
+            "307": 0.0
+          }
+        },
+        {
+          "differences_full_minus_alternative": {
+            "accuracy": 0.00390625,
+            "brier": 0.005018699180658948,
+            "cross_entropy": 0.005111581629633433,
+            "final_over_pre_late": 0.00390625,
+            "initial_accuracy": 0.05078125,
+            "learned_over_initial": -0.046875,
+            "pre_late_accuracy": 0.0,
+            "stopping_utility": 0.00390625
+          },
+          "seed": 3303,
+          "source_differences": {
+            "300": -0.03125,
+            "301": 0.15625,
+            "302": -0.0625,
+            "303": 0.03125,
+            "304": -0.03125,
+            "305": 0.015625,
+            "306": 0.03125,
+            "307": -0.078125
+          }
+        }
+      ],
+      "reference": "qvi_full",
+      "source_difference_seed_mean": {
+        "300": {
+          "max": 0.0,
+          "mean": -0.03125,
+          "min": -0.0625,
+          "n": 3,
+          "sample_std": 0.03125
+        },
+        "301": {
+          "max": 0.25,
+          "mean": 0.13541666666666666,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.12629537138523064
+        },
+        "302": {
+          "max": 0.0625,
+          "mean": 0.0,
+          "min": -0.0625,
+          "n": 3,
+          "sample_std": 0.0625
+        },
+        "303": {
+          "max": 0.03125,
+          "mean": 0.010416666666666666,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.018042195912175804
+        },
+        "304": {
+          "max": 0.0625,
+          "mean": 0.010416666666666666,
+          "min": -0.03125,
+          "n": 3,
+          "sample_std": 0.047735163489123336
+        },
+        "305": {
+          "max": 0.0625,
+          "mean": 0.026041666666666668,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.03252603124165832
+        },
+        "306": {
+          "max": 0.03125,
+          "mean": 0.010416666666666666,
+          "min": 0.0,
+          "n": 3,
+          "sample_std": 0.018042195912175804
+        },
+        "307": {
+          "max": 0.03125,
+          "mean": -0.015625,
+          "min": -0.078125,
+          "n": 3,
+          "sample_std": 0.05633673867912483
+        }
+      }
+    }
+  ],
+  "protocol": {
+    "arms": [
+      {
+        "boundary_mode": "qvi",
+        "feature_bank": "value_risk",
+        "id": "qvi_full",
+        "message_mode": "full"
+      },
+      {
+        "boundary_mode": "qvi",
+        "feature_bank": "value_risk",
+        "id": "qvi_boundary",
+        "message_mode": "boundary"
+      },
+      {
+        "boundary_mode": "qvi",
+        "feature_bank": "value_risk",
+        "id": "qvi_flow",
+        "message_mode": "flow"
+      },
+      {
+        "boundary_mode": "fixed",
+        "feature_bank": "value_risk",
+        "id": "fixed_full",
+        "message_mode": "full"
+      },
+      {
+        "boundary_mode": "learned",
+        "feature_bank": "value_risk",
+        "id": "learned_full",
+        "message_mode": "full"
+      },
+      {
+        "boundary_mode": "qvi",
+        "feature_bank": "tanh",
+        "id": "qvi_tanh",
+        "message_mode": "full"
+      },
+      {
+        "boundary_mode": "qvi",
+        "feature_bank": "value_only",
+        "id": "qvi_value_only",
+        "message_mode": "full"
+      },
+      {
+        "boundary_mode": "qvi",
+        "feature_bank": "risk_only",
+        "id": "qvi_risk_only",
+        "message_mode": "full"
+      }
+    ],
+    "backend": "uniformized",
+    "backend_by_neurons": {
+      "32": "dense",
+      "64": "uniformized",
+      "8": "dense"
+    },
+    "base_commit": "b1af67a38f8cf9cee700cc067da1e6001ce220a8",
+    "claim_scope": "Independent finite-state probability populations with learned intercell messages; synthetic disjoint source families. Finite-volume spatial and Erlang refractory approximations remain explicit. No multimodal-foundation-model claim. Width is population count, not signed-content width.",
+    "cost_policy": "Report actual training CPU, complete worker wall/CPU, process maximum RSS, state bytes, all selection/checkpoint/evaluation time and failures. Report energy unknown when no readable hardware counter; never infer Joules from CPU seconds.",
+    "data": {
+      "dev_per_source": 48,
+      "dev_sources": 4,
+      "input_size": 6,
+      "length": 12,
+      "test_per_source": 64,
+      "test_sources": 8,
+      "train_per_source": 48,
+      "train_sources": 12
+    },
+    "editing": {
+      "bp_steps": 96,
+      "cpu_seconds": 10.0,
+      "eligible_names": [
+        "readout.weight",
+        "readout.bias"
+      ],
+      "max_dev_old_accuracy_loss": 0.02,
+      "max_dev_old_brier_increase": 0.02,
+      "methods": [
+        "KEEP",
+        "BP",
+        "ANALYTIC",
+        "STRICT_WSP",
+        "HYBRID"
+      ],
+      "objective": "mean squared error to common signed one-hot targets plus ridge on weight",
+      "ridge": 0.01,
+      "strict_wsp_rule": null
+    },
+    "experiment_id": "HCSN-INDEPENDENT-POPULATIONS-20261124-v1",
+    "feature_normalization": "none",
+    "independent_neurons": [
+      8,
+      32,
+      64
+    ],
+    "numerical_scope": "Mixed precision physical state remains FP64; native32 diagnostic failed long-horizon mass gate before campaign. QVI root differentiable; finite-grid projection is piecewise differentiable with symmetric generalized derivatives at exact knots.",
+    "precision": "mixed",
+    "preflight_decision": "Population-normalized and raw readouts both failed the exploratory pulse-learning smoke; retain the original raw feature definition. Report this negative result and run the prespecified bounded campaign without further smoke selection.",
+    "runtime": {
+      "device": "cpu",
+      "implementation": "CPython",
+      "numpy": "2.5.4",
+      "python": "3.12.3",
+      "threads": 1,
+      "torch": "2.8.0+cpu"
+    },
+    "seeds": [
+      1101,
+      2202,
+      3303
+    ],
+    "source_hashes": {
+      "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+      "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+      "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+      "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+      "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+      "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+      "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+      "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+      "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+      "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+      "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+      "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+      "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+      "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+    },
+    "stage": "controlled_delayed_evidence",
+    "stopping_scope": "Earliest confidence >= .8; forced final at step11; pre-late metric uses each sample late_step-1, not t0 receiver with no message.",
+    "test_policy": "Training never constructs test data. Seal all expected training artifacts before test evaluation. Final testing cannot change source, hyperparameters or selection. New revisions require a new experiment and holdout family.",
+    "training": {
+      "batch_size": 8,
+      "development_every": 64,
+      "gradient_clip": 3.0,
+      "learning_rate": 0.01,
+      "max_updates": 512,
+      "optimizer": "Adam",
+      "selection": "development_final_cross_entropy",
+      "threads": 1,
+      "train_cpu_seconds": 180.0,
+      "train_loss": "0.8 final CE + 0.2 mean prefix CE",
+      "weight_decay": 0.0
+    },
+    "validation": {
+      "max_fp32_probability_balance_error": 3e-05,
+      "min_final_accuracy": 0.8,
+      "min_final_over_pre_late_accuracy": 0.1,
+      "min_fraction_seeds_passing_learning": 0.6666666666666666,
+      "min_learned_over_initial_accuracy": 0.1
+    }
+  },
+  "protocol_sha256": "c259030b227f25bc72ccbab12402fbe62747df845c9dce965e795b85b1af176d",
+  "schema": "hcsn-training-summary-v1",
+  "thresholds": {
+    "final_accuracy": 0.8,
+    "final_over_pre_late": 0.1,
+    "learned_over_initial": 0.1,
+    "min_fraction_seeds": 0.6666666666666666
+  },
+  "verified_evaluated_attempts": 72
+}

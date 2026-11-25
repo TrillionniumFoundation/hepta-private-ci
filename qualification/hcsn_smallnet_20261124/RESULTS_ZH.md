@@ -96,7 +96,7 @@ pre-late 评价使用各样本晚 cue 前一拍；t=0 的 receiver 尚未收到 
 
 逐 seed 须同时满足最终准确率≥.8、相对同seed初始提升≥.1、相对pre-late提升≥.1；每个N×arm至少2/3 seed通过，使用未舍入值。缺失/失败留在预定分母，均值只用已评测seed并报覆盖；selected step 0不能称学到任务。缺证组为UNVERIFIED，封存/预测身份不符则拒绝分析。
 
-72/72训练与评测均完成，0个训练运行失败；封存/逐项回执/预测SHA全部核验。完整24组及72逐项结果见 [RESULTS_TRAINING.md](evidence/summary/RESULTS_TRAINING.md) 与 [SUMMARY.json](evidence/summary/SUMMARY.json)。另由 `evidence/INDEPENDENT_METRICS_VERIFICATION.json` 对72份selected/initial完整prefix logits独立NumPy重算指标，最大标量差 `2.220446049250313e-16`；这是保存预测的指标一致性，不是重跑物理轨迹。
+72/72训练与评测均完成，0个训练运行失败；封存/逐项回执/预测SHA全部核验。完整24组及72逐项结果见 [RESULTS_TRAINING.md](evidence/summary/RESULTS_TRAINING.md) 与 [SUMMARY.json 的无损分块清单](evidence/summary/SUMMARY.json.parts.json)。另由 `evidence/INDEPENDENT_METRICS_VERIFICATION.json` 对72份selected/initial完整prefix logits独立NumPy重算指标，最大标量差 `2.220446049250313e-16`；这是保存预测的指标一致性，不是重跑物理轨迹。
 
 | N | qvi_full 最终准确率与 seed SD | 相对初始提升 | final−pre-late | 通过 seed/预定 seed | 证据与组门槛 |
 | ---: | --- | --- | --- | --- | --- |
@@ -230,6 +230,7 @@ plan bytes 只计持有tensor，action views不重复计数；不代表进程总
 | `evidence/audit/fixed_law_benchmark.json`、`native32_uniformized.json`及各自`*_job.json`（同目录） | 缓存基准、原门槛FP32追加诊断与回执；不改正式精度 |
 | `evidence/ADAPTATION_FINAL_TEST_AUDIT.json`、`evidence/summary/`、`evidence/INDEPENDENT_*VERIFICATION.json` | 主矩阵、45适配视图、费用及两类独立指标重算 |
 | `evidence/audit/rust_formatter_unavailable_execution.json`、`evidence/FINAL_STAGE_RECEIPT.json`、`evidence/training/RESUME_RECEIPT.json` | 格式化未执行；原124退出、63保留/9续测、成本缺口 |
+| [无损运输说明](../hcsn_evidence_transport_20261125/README.md) 与 `INDEX.json` | 11 个原对象按 44 个小块存储；重组后使用原文件 SHA 与历史索引，研究结果未重写 |
 | `evidence/archives/ARCHIVE_INDEX.json`、`GIT_PUBLICATION_MANIFEST.json`（同目录）、`evidence/preflight-evidence.tar.gz` | 主82份原始档案的SHA/内部路径；历史smoke、失败、source snapshots |
 
 ## 13. Signed-only 事后补充对照

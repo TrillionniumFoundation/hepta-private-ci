@@ -4,7 +4,7 @@ This directory preserves the frozen experiment, the completed evaluations, and t
 
 ## Readable results
 
-- [Training summary](summary/RESULTS_TRAINING.md) and [machine-readable summary](summary/SUMMARY.json): all 72 training slots, all 24 groups, the original learning gates, paired ablations, and scoped costs.
+- [Training summary](summary/RESULTS_TRAINING.md) and [machine-readable summary parts](summary/SUMMARY.json.parts.json): all 72 training slots, all 24 groups, the original learning gates, paired ablations, and scoped costs.
 - [Independent training metric reconstruction](INDEPENDENT_METRICS_VERIFICATION.json): 72 saved prediction pairs checked with NumPy, without importing the model or trainer.
 - [Independent adaptation metric reconstruction](INDEPENDENT_ADAPTATION_VERIFICATION.json): 45 candidates, each on the old and new holdouts.
 - [Adaptation final-test audit](ADAPTATION_FINAL_TEST_AUDIT.json) and [development audit](ADAPTATION_DEVELOPMENT_AUDIT.json): selections, retention, per-source metrics, and cost attribution. Their original download scope is preserved; the later independent reconstruction is a separate record.
@@ -15,13 +15,15 @@ This directory preserves the frozen experiment, the completed evaluations, and t
 
 [ARCHIVE_INDEX.json](archives/ARCHIVE_INDEX.json) enumerates 82 deterministic gzip/tar archives and records the SHA256 of every original member. [GIT_PUBLICATION_MANIFEST.json](archives/GIT_PUBLICATION_MANIFEST.json) records both the archive SHA256 and the independently computed Git blob SHA1 used to verify publication.
 
+The nine adaptation archives, the separate signed archive, and the main JSON summary are stored as bounded raw-byte parts; [transport instructions and complete mapping](../../hcsn_evidence_transport_20261125/README.md) restore the exact original bytes and filenames. Historical indices and publication receipts retain their original identities. Reassemble those files before using the archive replay instructions below.
+
 There are 72 `training--*.tar.gz` archives, nine `adaptation--*.tar.gz` archives, and one `run-metadata-and-source.tar.gz`. Together they preserve all selected and initial checkpoints, development histories, saved prefix predictions, final results, logs, frozen source dependencies, seals, the recovery records, and analysis/verification provenance. All member paths are relative to the formal run root. Extracting the archives into one new directory reconstructs that run; it does not restart any training.
 
 [preflight-evidence.tar.gz](preflight-evidence.tar.gz) separately preserves the earlier numerical failures and fixes, smoke runs, runtime diagnostics, fixed-law cache measurements, FP32 backend comparison, formatter/clone failures, and their source snapshots. Its paths are rooted at the development evidence capsule. The readable `audit/*.json` files are copies of the principal records.
 
 [PREFLIGHT_ARCHIVE_INDEX.json](PREFLIGHT_ARCHIVE_INDEX.json) binds the development archive and its members. [The publication verification](FORMAL_ARCHIVE_BLOB_VERIFICATION.json) and [transport ledger](FORMAL_ARCHIVE_BLOB_PUBLICATION.json) retain the completed main-archive transfer checks and the resolved transport interruption.
 
-The exact signed-message-only control is a separate, explicitly post-results experiment: [results and scope](../../hcsn_signed_control_20261124/evidence/RESULTS_SIGNED_ONLY.md), [raw archive manifest](../../hcsn_signed_control_20261124/evidence/archives/ARCHIVE_MANIFEST.json), and [complete supplemental archive](../../hcsn_signed_control_20261124/evidence/archives/signed-control-v1.raw.tar.gz). Its nine fits do not replace any main-study slot, and the 45 adaptation candidates still belong to the original qvi_full parents.
+The exact signed-message-only control is a separate, explicitly post-results experiment: [results and scope](../../hcsn_signed_control_20261124/evidence/RESULTS_SIGNED_ONLY.md), [raw archive manifest](../../hcsn_signed_control_20261124/evidence/archives/ARCHIVE_MANIFEST.json), and [complete supplemental archive parts](../../hcsn_signed_control_20261124/evidence/archives/signed-control-v1.raw.tar.gz.parts.json). Its nine fits do not replace any main-study slot, and the 45 adaptation candidates still belong to the original qvi_full parents.
 
 ## Interrupted evaluation and continuation
 

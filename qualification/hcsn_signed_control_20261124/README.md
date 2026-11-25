@@ -28,3 +28,7 @@ HCSN_PYTHON=/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python
 The driver launches nine fresh single-thread workers and waits for the entire training roster before opening any test worker. Our external operator job imposed a 900% aggregate CPU quota, 8 GiB memory limit, and 900-second job deadline; these cgroup limits are external to the CLI. Per-attempt training remains capped by the unchanged 180 CPU seconds / 512 updates. The `POSTPROCESS_REVISION.json` receipt preserves a read-only analysis robustness revision separately from the four frozen supplemental training files.
 
 Interpret test costs using full worker or stage receipts: the supplemental pair-body timer starts after data/checkpoint/model setup, whereas the original main pair-body timer included checkpoint handling. Those two nested body fields are not interchangeable timing baselines.
+
+## Evidence transport
+
+The immutable supplemental raw archive is available through [its raw-byte part manifest](evidence/archives/signed-control-v1.raw.tar.gz.parts.json). Follow the [shared reassembly instructions](../hcsn_evidence_transport_20261125/README.md) to recover its original bytes and `signed-control-v1/` member prefix. The original archive manifest and publication receipts retain their historical hashes; no supplemental run, metric, or test policy has changed.

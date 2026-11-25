@@ -232,7 +232,7 @@ PY
 
 ## 9. 如何读取迭代结果
 
-完整结果见 [RESULTS_ZH.md](RESULTS_ZH.md)，逐组训练结果见 `evidence/summary/RESULTS_TRAINING.md`。检查点、预测与日志按 `evidence/archives/ARCHIVE_INDEX.json` 和 `evidence/archives/GIT_PUBLICATION_MANIFEST.json` 定位；历史smoke与source snapshots保留在 `evidence/preflight-evidence.tar.gz`。非冻结后处理helper为解释恢复成本修订，旧/新版均留存，短暂路径替换已恢复，输出只移动而未重算；详见 `evidence/POSTPROCESS_REVISION_RECEIPT.json`，14个训练模块未改。
+11个超限证据文件现用44个≤480000字节小块保存；[无损运输说明与索引](../hcsn_evidence_transport_20261125/README.md)可重组全部原字节，历史提交/封存SHA保持原义。完整结果见 [RESULTS_ZH.md](RESULTS_ZH.md)，逐组训练结果见 `evidence/summary/RESULTS_TRAINING.md`。检查点、预测与日志按 `evidence/archives/ARCHIVE_INDEX.json` 和 `evidence/archives/GIT_PUBLICATION_MANIFEST.json` 定位；历史smoke与source snapshots保留在 `evidence/preflight-evidence.tar.gz`。非冻结后处理helper为解释恢复成本修订，旧/新版均留存，短暂路径替换已恢复，输出只移动而未重算；详见 `evidence/POSTPROCESS_REVISION_RECEIPT.json`，14个训练模块未改。
 
 训练目录保留 started/history、initial/selected/last model、优化器与 RNG、result、worker 成本及日志；最终预测原件包含 selected/initial 全 prefix logits。适配保留公共特征、全部候选记录、KEEP/ABSTAIN、独立源冻结、父权重身份和全局 seal。body、import-inclusive worker、launch-to-exit、共享费用与能耗可用性是不同口径。
 
