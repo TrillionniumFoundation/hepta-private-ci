@@ -235,8 +235,12 @@ impl ExecutionIntentV1 {
         let source = self.payload_sha256.as_str();
         Sha256Digest::parse(source.to_owned())
             .map_err(|_| ExecutionEnvelopeErrorV1::InvalidDigest)?;
+        let (pairs, remainder) = source.as_bytes().as_chunks::<2>();
         let mut bytes = [0_u8; 32];
-        for (byte, pair) in bytes.iter_mut().zip(source.as_bytes().chunks_exact(2)) {
+        if !remainder.is_empty() || pairs.len() != bytes.len() {
+            return Err(ExecutionEnvelopeErrorV1::InvalidDigest);
+        }
+        for (byte, pair) in bytes.iter_mut().zip(pairs) {
             let pair =
                 std::str::from_utf8(pair).map_err(|_| ExecutionEnvelopeErrorV1::InvalidDigest)?;
             *byte = u8::from_str_radix(pair, 16)
