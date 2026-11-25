@@ -25,7 +25,11 @@ This is a **configuration example**, not a universal kernel assignment: actual C
 
 `CellRoster` requires all seven responsibilities, distinct principal/agent/cell/run state partitions and exact base/organ/encoder/tokenizer/normalizer/composition/numeric-profile alignment for any shared semantic feature group. Such a group also requires one matching state owner and data-use scope: it never grants cross-principal/agent/data residency or temporal state sharing by implication.
 
+Participants in a shared feature group must declare the same nonzero SHA-256 `feature_abi` for the frozen feature dimension, layout and interpretation. A declaration does not attest the native ABI, and cells outside a feature group must leave it absent.
+
 `review_update` binds original bundle digest/generation, Dataset-to-Training source, frozen update rule, frozen evaluation profile, permitted component changes, optimizer step ceiling, and a non-omittable cost-axis inventory. Unknown cost or absent original evaluation receipt keeps HOLD. Even with all declared fields present, its only positive status is `REVIEW_ONLY`: a digest is not authentic execution evidence, real model loading, independent data, held-out outcomes or acceptance.
+
+Frozen cells require an integer zero step budget and no evaluation profile or update rule. Update proposals must name the immediate successor generation within the native unsigned 64-bit range.
 
 ## Non-authority and open blockers
 
