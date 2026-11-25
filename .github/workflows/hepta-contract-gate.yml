@@ -22,9 +22,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - name: Check out repository
+      - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Validate branch policy
@@ -52,11 +53,12 @@ jobs:
           PY
       - name: Validate canonical contract and readiness documents
         env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           VERIFICATION_PROFILE: ${{ inputs.profile }}
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           git diff --check
           git diff --quiet
           git diff --cached --quiet
@@ -67,5 +69,5 @@ jobs:
           # Includes module, algorithm, readiness, CNS and HNMF checks.
           # Historical source evidence is revalidated only by qualification.
           python3 scripts/hepta-docs.py verify --profile "$VERIFICATION_PROFILE"
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain --untracked-files=no)"
