@@ -17,8 +17,11 @@ struct ProtocolPeer {
     receipt: Mutex<CognitiveCheckpointReceipt>,
     commands: Mutex<Vec<CognitiveCheckpointCommand>>,
     hold_current_reply: AtomicBool,
+    hold_prepare_reply: AtomicBool,
     wrong_owner_reply: AtomicBool,
     published: Notify,
+    prepared: Notify,
+    resume_prepare: Notify,
     began_writes: Notify,
     revoke_after_publication: AtomicBool,
     verifier: Arc<TestVerifier>,
@@ -93,6 +96,12 @@ impl CognitiveCheckpointTransport for ProtocolPeer {
         {
             self.published.notify_one();
             std::future::pending::<()>().await;
+        }
+        if request.command == CognitiveCheckpointCommand::PreparePublication
+            && self.hold_prepare_reply.load(Ordering::SeqCst)
+        {
+            self.prepared.notify_one();
+            self.resume_prepare.notified().await;
         }
         let mut head = current.head;
         if self.wrong_owner_reply.load(Ordering::SeqCst) {
@@ -196,8 +205,11 @@ impl ManagedFixture {
             receipt: Mutex::new(receipt.clone()),
             commands: Mutex::new(Vec::new()),
             hold_current_reply: AtomicBool::new(false),
+            hold_prepare_reply: AtomicBool::new(false),
             wrong_owner_reply: AtomicBool::new(false),
             published: Notify::new(),
+            prepared: Notify::new(),
+            resume_prepare: Notify::new(),
             began_writes: Notify::new(),
             revoke_after_publication: AtomicBool::new(false),
             verifier: verifier.clone(),
