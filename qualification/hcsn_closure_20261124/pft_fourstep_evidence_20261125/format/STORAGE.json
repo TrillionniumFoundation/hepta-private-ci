@@ -1,0 +1,13 @@
+{
+  "byte_identical_after_decompression": true,
+  "historical_manifests": "MANIFEST.json and TRANSPORT_CHUNKS.json describe original remote bytes, unchanged",
+  "raw_bytes": 201706,
+  "raw_git_blob": "ccfa22ebf24710d0d3396e46b52489032d57bfe3",
+  "raw_path": "format.diff",
+  "raw_sha256": "0fdcf2fbfecb471d3a11f73957e6277500553b03b1b5e7a1b4f6c882cce7f27c",
+  "reason": "git diff --check interprets raw patch context whitespace as new trailing whitespace",
+  "schema": "lossless-evidence-storage-v1",
+  "stored_bytes": 42989,
+  "stored_path": "format.diff.gz",
+  "stored_sha256": "8287548fc94fee5a4d2639c4db3dc4c22a9fb872cedae8c28c6e8f82ce3366be"
+}

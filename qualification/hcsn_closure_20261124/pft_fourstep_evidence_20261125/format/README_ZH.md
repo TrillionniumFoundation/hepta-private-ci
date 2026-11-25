@@ -22,9 +22,13 @@
 
 - FORMAT_TERMINAL.json：官方 no-op 与显式 Python backend 的分开状态、全部 15 个前后 SHA、AST 一致性、原依赖不变及完整命令输出。
 - PREPARED.json：c4ae、16 个真实依赖、staged 路径和实际官方分派结果。
-- before-source.tar.gz、after-source.tar.gz、format.diff：原样源码、格式后源码与全部布局差异。
+- before-source.tar.gz、after-source.tar.gz、format.diff.gz：原样源码、格式后源码与全部布局差异。
 - REMOTE_STATUS.json、REMOTE_LOGS.json：最终进程完整终态与日志。
 - clone-v1-failure.json、path-v2-failure.json 及相应 STATUS/LOGS：两个真实准备阻断。
 - TRANSPORT_CHUNKS.json、LOCAL_VERIFICATION.json：版本绑定传输、archive SHA、15 个本地前后源码和静态 AST 校验。
 
 本目录记录只新增，不回写或改写任何科学实验的 source SHA / protocol / seal。
+
+## CI 存储修复
+
+原始 diff 包含补丁上下文标记后的空格，触发严格门的 git diff --check。现以 gzip 无损保存，解压 SHA256 与原文件相同；STORAGE.json 记录双侧字节绑定。原始 MANIFEST 与 TRANSPORT_CHUNKS 保留远端原件名和哈希，不改历史。
