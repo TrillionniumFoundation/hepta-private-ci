@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fs;
+use std::io::Write;
 use std::num::NonZeroUsize;
 use std::path::Path;
 use std::sync::Arc;
@@ -12,12 +13,16 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use anyhow::Context;
+use codex_core::IdleWorkPriority;
 use codex_core::NotSubmittedReason;
 use codex_core::StartIfIdleSubmission;
 use codex_core::StartThreadOptions;
 use codex_core::TurnInput;
 use codex_core::TurnInputRequest;
 use codex_core::TurnInputSubmission;
+use codex_core::context::ContextualUserFragment;
+use codex_core::context::InternalContextSource;
+use codex_core::context::InternalModelContextFragment;
 use codex_extension_api::ExtensionData;
 use codex_extension_api::ExtensionEventSink;
 use codex_extension_api::ExtensionFuture;
@@ -153,6 +158,86 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn queue_python_interpreter() -> &'static str {
+    // The Windows hosted Bazel runner invokes `python`; `python3` is not
+    // guaranteed to resolve to an executable in the Windows test environment.
+    if cfg!(windows) { "python" } else { "python3" }
+}
+
+fn queue_python_hook_command(script_path: &Path) -> String {
+    #[cfg(windows)]
+    {
+        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+            .into_iter()
+            .chain(std::env::var_os("PATH"))
+            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+            .map(|directory| directory.join("python.exe"))
+            .find(|candidate| candidate.is_absolute() && candidate.is_file())
+            .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
+        // Keep the resolved interpreter even when the session PATH differs.
+        // Core runs hooks through the environment shell, normally PowerShell
+        // on Windows; a quoted executable needs its call operator there.
+        if codex_core::shell::default_user_shell().name() == "powershell" {
+            format!(
+                "& '{}' '{}'",
+                python.to_string_lossy().replace('\'', "''"),
+                script_path.to_string_lossy().replace('\'', "''"),
+            )
+        } else {
+            // The command runner supplies cmd.exe's outer /C quoting.
+            format!("\"{}\" \"{}\"", python.display(), script_path.display())
+        }
+    }
+
+    #[cfg(not(windows))]
+    format!("python3 \"{}\"", script_path.display())
+}
+
+#[cfg(windows)]
+#[test]
+fn python_hook_uses_resolved_interpreter_without_child_path() {
+    use std::os::windows::process::CommandExt;
+
+    let fixture = tempfile::tempdir().expect("create hook fixture");
+    let script_path = fixture.path().join("queue hook's spaces.py");
+    std::fs::write(&script_path, "print('queue-python-exact-path')\n")
+        .expect("write Python hook fixture");
+    let command = queue_python_hook_command(&script_path);
+    let shell = codex_core::shell::default_user_shell();
+    let mut argv = shell.derive_exec_args("", /*use_login_shell*/ false);
+    let program = argv.remove(0);
+    let _ = argv.pop();
+    // Match Core's environment-shell selection and CommandHookRuntime's
+    // argument handling, rather than testing only cmd.exe's fallback path.
+    let mut child = std::process::Command::new(&program);
+    child.args(&argv);
+    if argv.iter().any(|arg| arg.eq_ignore_ascii_case("/c")) {
+        child.raw_arg(format!(r#""{command}""#));
+    } else {
+        child.arg(&command);
+    }
+    let output = child
+        .env("PATH", "")
+        .current_dir(fixture.path())
+        .output()
+        .expect("run Python hook without a child search path");
+    let diagnostics = format!(
+        "program={program:?}, argv={argv:?}, command={command:?}, PATHEXT={:?}, status={}, stdout={:?}, stderr={:?}",
+        std::env::var_os("PATHEXT"),
+        output.status,
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr),
+    );
+    assert!(
+        output.status.success(),
+        "Python fixture hook exited unsuccessfully: {diagnostics}",
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).trim() == "queue-python-exact-path",
+        "Python fixture hook did not produce the exact marker: {diagnostics}",
+    );
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
     let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
@@ -176,7 +261,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": queue_python_hook_command(&script_path),
                 }]
             }]
         }
@@ -216,13 +301,57 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": queue_python_hook_command(&script_path),
                 }]
             }]
         }
     });
     std::fs::write(home.join("hooks.json"), hooks.to_string())
         .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
+}
+
+#[test]
+fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
+    let home = tempfile::tempdir()?;
+    write_rejecting_prompt_hook(home.path());
+    let script_path = home.path().join("queue_prompt_hook.py");
+    let hooks: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(home.path().join("hooks.json"))?)?;
+    let command = hooks
+        .pointer("/hooks/UserPromptSubmit/0/hooks/0/command")
+        .and_then(serde_json::Value::as_str)
+        .context("generated UserPromptSubmit command should exist")?;
+    assert_eq!(command, queue_python_hook_command(&script_path));
+
+    let mut child = std::process::Command::new(queue_python_interpreter())
+        .arg(&script_path)
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .context("host Python executable must be available for queue hook tests")?;
+    {
+        let mut stdin = child
+            .stdin
+            .take()
+            .context("queue hook stdin must be piped")?;
+        stdin.write_all(br#"{"prompt":"blocked"}"#)?;
+    }
+    let output = child.wait_with_output()?;
+    anyhow::ensure!(
+        output.status.success(),
+        "queue hook Python exited unsuccessfully: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let reply: serde_json::Value = serde_json::from_slice(&output.stdout)?;
+    assert_eq!(reply["decision"].as_str(), Some("block"));
+    let hook_log = std::fs::read_to_string(home.path().join("queue_prompt_hook.log"))?;
+    anyhow::ensure!(
+        hook_log.ends_with('\n'),
+        "queue hook log must end with a newline"
+    );
+    assert_eq!(hook_log.lines().collect::<Vec<_>>(), ["blocked"]);
+    Ok(())
 }
 
 async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
@@ -265,7 +394,7 @@ struct FailDeleteOnceQueueStore {
     block_complete_after_panic: AtomicBool,
     allow_blocked_complete: AtomicBool,
     complete_attempts: AtomicUsize,
-    short_dispatch_lease: bool,
+    short_authorized_dispatch_lease: bool,
     release_count: AtomicUsize,
 }
 
@@ -279,7 +408,7 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(false),
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: false,
+            short_authorized_dispatch_lease: false,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -293,7 +422,7 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(false),
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: true,
+            short_authorized_dispatch_lease: true,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -307,7 +436,7 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(false),
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: true,
+            short_authorized_dispatch_lease: true,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -321,7 +450,7 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(true),
             allow_blocked_complete: AtomicBool::new(false),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: true,
+            short_authorized_dispatch_lease: true,
             release_count: AtomicUsize::new(0),
         }
     }
@@ -427,11 +556,8 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
-            now_ms + 250
-        } else {
-            lease_expires_at_ms
-        };
+        // Preserve the production claim window for the persisted-rollout probe.
+        // Short-lease fixtures begin their 250ms window at authorization below.
         self.inner.claim_client_binding_dispatch(
             process_lock,
             queued_item_id,
@@ -448,7 +574,7 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchLease> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
+        let lease_expires_at_ms = if self.short_authorized_dispatch_lease {
             now_ms + 250
         } else {
             lease_expires_at_ms
@@ -2368,16 +2494,24 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let queue = install_registered_queue(&test, installed.as_ref())?;
 
     tokio::time::timeout(Duration::from_secs(10), async {
+        // This helper already consumes A's completion. The only queued
+        // attempt required here is the rejected head, not a second wake.
         test.submit_text_turn("A").await?;
-        for _ in 0..2 {
-            wait_for_event_match(test.codex.as_ref(), |event| {
-                matches!(event, EventMsg::TurnComplete(_)).then_some(())
-            })
-            .await;
+        let rejected_turn_id = wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::TurnComplete(completed) => Some(completed.turn_id.clone()),
+            _ => None,
+        })
+        .await;
+        if let Some(completion) = test
+            .codex
+            .pending_normal_turn_finish_completion(&rejected_turn_id)
+        {
+            completion.await;
         }
         anyhow::Ok(())
     })
-    .await??;
+    .await
+    .context("the queued head must complete its rejection after turn A")??;
 
     let prompts = responses
         .requests()
