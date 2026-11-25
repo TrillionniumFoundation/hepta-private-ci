@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "decision": "PASS_EXACT_CANDIDATE_HOSTED_NATIVE_AND_FULL_SDK",
+  "source_commit": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+  "workflow_run": 45540235075,
+  "job": 138957422954,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45540235075/job/138957422954",
+  "job_started_at": "2026-11-25T03:30:41Z",
+  "job_completed_at": "2026-11-25T03:39:33Z",
+  "complete_job_wall_seconds": 532.0,
+  "hosted_cpu_seconds": null,
+  "hosted_rss_bytes": null,
+  "log_bytes": 727947,
+  "log_sha256": "1c0da88f9f80581c85d0b04d8d51f6606d56decd8b0c56f09276c6c23fe242fd",
+  "checked_out_source_verified_in_original_log": true,
+  "required_steps": [
+    {
+      "name": "Verify exact SDK source",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-25T03:31:41Z",
+      "completed_at": "2026-11-25T03:31:41Z"
+    },
+    {
+      "name": "Build codex and code-mode host with Bazel",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-11-25T03:32:16Z",
+      "completed_at": "2026-11-25T03:37:15Z"
+    },
+    {
+      "name": "Warm up Bazel-built SDK executables",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-11-25T03:37:15Z",
+      "completed_at": "2026-11-25T03:37:15Z"
+    },
+    {
+      "name": "Install dependencies",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11,
+      "started_at": "2026-11-25T03:37:15Z",
+      "completed_at": "2026-11-25T03:38:10Z"
+    },
+    {
+      "name": "Build SDK packages",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12,
+      "started_at": "2026-11-25T03:38:10Z",
+      "completed_at": "2026-11-25T03:38:13Z"
+    },
+    {
+      "name": "Lint SDK packages",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13,
+      "started_at": "2026-11-25T03:38:13Z",
+      "completed_at": "2026-11-25T03:38:15Z"
+    },
+    {
+      "name": "Test SDK packages",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 14,
+      "started_at": "2026-11-25T03:38:15Z",
+      "completed_at": "2026-11-25T03:39:23Z"
+    },
+    {
+      "name": "Preserve MCP conformance reports",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15,
+      "started_at": "2026-11-25T03:39:23Z",
+      "completed_at": "2026-11-25T03:39:24Z"
+    },
+    {
+      "name": "Check for a clean worktree",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17,
+      "started_at": "2026-11-25T03:39:28Z",
+      "completed_at": "2026-11-25T03:39:29Z"
+    }
+  ],
+  "native_targets": [
+    "//codex-rs/cli:codex",
+    "//codex-rs/code-mode-host:codex-code-mode-host"
+  ],
+  "bazel_total_actions": 25041,
+  "native_warmup_and_original_full_test_command_passed": true,
+  "jest": {
+    "suites_passed": 5,
+    "suites_total": 5,
+    "tests_passed": 47,
+    "tests_total": 47,
+    "failed": 0,
+    "skipped": 0,
+    "snapshots_total": 0
+  },
+  "proof_lines": [
+    "2026-11-25T03:31:40.6845833Z HEAD is now at e4f2cfa6 Pin the remaining Babel, Hono and HumanFS advisory fixes",
+    "2026-11-25T03:31:41.3213866Z ##[group]Run test \"$(git rev-parse HEAD)\" = \"$SOURCE_SHA\"",
+    "2026-11-25T03:32:16.0964588Z   --build_metadata=COMMIT_SHA=${SOURCE_SHA} \\",
+    "2026-11-25T03:36:28.6150891Z INFO: Build completed successfully, 25041 total actions",
+    "2026-11-25T03:38:15.8575862Z ##[group]Run pnpm -r --filter ./sdk/typescript run test",
+    "2026-11-25T03:38:22.3016847Z PASS tests/exec.test.ts (5.125 s)",
+    "2026-11-25T03:38:24.4917936Z PASS tests/abort.test.ts",
+    "2026-11-25T03:38:28.5363879Z PASS tests/runStreamed.test.ts (11.366 s)",
+    "2026-11-25T03:39:09.8566059Z PASS tests/run.test.ts (52.773 s)",
+    "2026-11-25T03:39:23.1104014Z PASS tests/mcpConformance.test.ts (58.607 s)",
+    "2026-11-25T03:39:23.1825997Z Test Suites: 5 passed, 5 total",
+    "2026-11-25T03:39:23.1826473Z Tests:       47 passed, 47 total",
+    "2026-11-25T03:39:23.1826830Z Snapshots:   0 total",
+    "2026-11-25T03:39:24.0336135Z Artifact sdk-mcp-conformance-reports successfully finalized. Artifact ID 14989107963",
+    "2026-11-25T03:39:24.0338238Z Artifact sdk-mcp-conformance-reports has been successfully uploaded! Final size is 32432 bytes. Artifact ID is 14989107963",
+    "2026-11-25T03:39:24.0341609Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45540235075/artifacts/14989107963"
+  ],
+  "published_artifact": {
+    "id": 14989107963,
+    "name": "sdk-mcp-conformance-reports",
+    "api_digest": "sha256:91638585bdbaad62ad8cc903d5828cad372b926914eddc8e55a2707f3bb3af71",
+    "zip_bytes": 32432,
+    "sha256": "91638585bdbaad62ad8cc903d5828cad372b926914eddc8e55a2707f3bb3af71"
+  },
+  "published_artifact_members": [
+    {
+      "path": "codex-mcp-conformance-11786.json",
+      "bytes": 785435,
+      "sha256": "09c119f2b9d8b051f612296e6d1dc51f47232f16940e3c0c841da9d99ab20a81"
+    },
+    {
+      "path": "codex-mcp-review-11786.json",
+      "bytes": 68824,
+      "sha256": "d7e85835c8f3bb6ea3cedc08fec4e6e559580859d4638fca696c9a0673e32355"
+    }
+  ],
+  "binary_sha256": null,
+  "binary_identity_scope": "The workflow staged and exercised Bazel-produced executables from the exact source. It published the two MCP reports, not executable binaries or binary checksums; no checksum is invented.",
+  "scope": "This SDK job checked out the exact PR source. It does not grant all other jobs or the default branch a pass, and does not close GitHub advisory alerts."
+}

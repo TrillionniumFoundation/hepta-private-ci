@@ -1,0 +1,1027 @@
+{
+  "schema": 1,
+  "audited_utc": "2026-11-25T04:01:41.924178+00:00",
+  "source_commit": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+  "original_parent": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+  "hosted_run": 45540235075,
+  "sdk_job": 138957422954,
+  "artifact_id": 14989107963,
+  "artifact_sha256": "91638585bdbaad62ad8cc903d5828cad372b926914eddc8e55a2707f3bb3af71",
+  "decision": "PASS_EXISTING_REGRESSION_CONTRACT_WITH_RETAINED_KNOWN_FAILURES",
+  "sdk_jest": {
+    "suites_passed": 5,
+    "suites_total": 5,
+    "tests_passed": 47,
+    "tests_total": 47
+  },
+  "original_contract": "Two original Jest MCP tests run the committed Python harness with --baseline-report and fail on a nonzero exit. The harness exit follows regressionGate.success when a baseline is supplied; overall success remains false when acknowledged checks fail.",
+  "contract_and_baselines_unchanged_from_parent": true,
+  "new_exceptions_or_waivers_added": false,
+  "runtime_or_model_tests_executed_by_this_audit": 0,
+  "sources": [
+    {
+      "path": "sdk/typescript/tests/mcpConformance.test.ts",
+      "candidate_ref": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+      "parent_ref": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+      "candidate_git_blob": "28ad908f07183fc13cfa04420c2faea77590e079",
+      "parent_git_blob": "28ad908f07183fc13cfa04420c2faea77590e079",
+      "candidate_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1/sdk/typescript/tests/mcpConformance.test.ts",
+      "parent_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/356877c2d1d5225e97e0417683a5e5a7f8e2c1fc/sdk/typescript/tests/mcpConformance.test.ts",
+      "chars": 4819,
+      "bytes": 4819,
+      "sha256": "b1aab74357b75938b08cec989b8730d8fc711f64e10c096987b4979436385f62",
+      "parent_candidate_equal": true
+    },
+    {
+      "path": "scripts/mcp_conformance/regression-baseline-v1.json",
+      "candidate_ref": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+      "parent_ref": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+      "candidate_git_blob": "dc936a64689e5a52c44fc258a68b0f37875fcc8d",
+      "parent_git_blob": "dc936a64689e5a52c44fc258a68b0f37875fcc8d",
+      "candidate_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1/scripts/mcp_conformance/regression-baseline-v1.json",
+      "parent_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/356877c2d1d5225e97e0417683a5e5a7f8e2c1fc/scripts/mcp_conformance/regression-baseline-v1.json",
+      "chars": 127059,
+      "bytes": 127059,
+      "sha256": "896630ee5f2c890152634e84a39d433f68eede8fff0b4ff99317800453b048ca",
+      "parent_candidate_equal": true
+    },
+    {
+      "path": "scripts/mcp_conformance/review-regression-baseline-v1.json",
+      "candidate_ref": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+      "parent_ref": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+      "candidate_git_blob": "5688eafc0426cb16eb27ad78947f1d8cbfa45a42",
+      "parent_git_blob": "5688eafc0426cb16eb27ad78947f1d8cbfa45a42",
+      "candidate_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1/scripts/mcp_conformance/review-regression-baseline-v1.json",
+      "parent_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/356877c2d1d5225e97e0417683a5e5a7f8e2c1fc/scripts/mcp_conformance/review-regression-baseline-v1.json",
+      "chars": 31456,
+      "bytes": 31456,
+      "sha256": "428e1fcc9f6e6f74aa95494a88a1dcf4a37f07a0f8cdd7b3e7ef9339fed6b6d3",
+      "parent_candidate_equal": true
+    },
+    {
+      "path": "scripts/mcp_conformance/run_codex_compliance.py",
+      "candidate_ref": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+      "parent_ref": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+      "candidate_git_blob": "55a75efc8b5a23b88c1623b1ae4d1fe2c0da1f16",
+      "parent_git_blob": "55a75efc8b5a23b88c1623b1ae4d1fe2c0da1f16",
+      "candidate_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1/scripts/mcp_conformance/run_codex_compliance.py",
+      "parent_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/356877c2d1d5225e97e0417683a5e5a7f8e2c1fc/scripts/mcp_conformance/run_codex_compliance.py",
+      "chars": 80661,
+      "bytes": 80665,
+      "sha256": "622fbb51226234ba548ea336684e991fe85160da17c107755e6a7766f664c574",
+      "parent_candidate_equal": true
+    },
+    {
+      "path": "scripts/mcp_conformance/review_regressions.py",
+      "candidate_ref": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+      "parent_ref": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+      "candidate_git_blob": "da440fd5c3291b90656244ce2adb6487c328c6c7",
+      "parent_git_blob": "da440fd5c3291b90656244ce2adb6487c328c6c7",
+      "candidate_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1/scripts/mcp_conformance/review_regressions.py",
+      "parent_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/356877c2d1d5225e97e0417683a5e5a7f8e2c1fc/scripts/mcp_conformance/review_regressions.py",
+      "chars": 45979,
+      "bytes": 45979,
+      "sha256": "f5d892e17655c06d49beee2be6c1228f8207120ba66a3af7052d9884109bb4a5",
+      "parent_candidate_equal": true
+    }
+  ],
+  "reports": {
+    "codex-mcp-conformance-11786.json": {
+      "bytes": 785435,
+      "sha256": "09c119f2b9d8b051f612296e6d1dc51f47232f16940e3c0c841da9d99ab20a81",
+      "original_overall_success": false,
+      "original_regression_gate_success": true,
+      "cases_passed": 4,
+      "cases_total": 6,
+      "row_status_counts": {
+        "PASS": 1119,
+        "FAIL": 28,
+        "SKIP": 7
+      },
+      "raw_rows": 1154,
+      "applicable_rows_excluding_skip": 1147,
+      "mode_row_status_counts": [
+        {
+          "mode": "2025-06-18",
+          "PASS": 106
+        },
+        {
+          "mode": "2025-11-25",
+          "PASS": 378,
+          "FAIL": 16
+        },
+        {
+          "mode": "2026-07-28",
+          "PASS": 635,
+          "SKIP": 7,
+          "FAIL": 12
+        }
+      ],
+      "baseline_identity_counts": {
+        "failing": 28,
+        "passing": 562
+      },
+      "candidate_distinct_identities": 592,
+      "recomputed_known_failures": 28,
+      "recomputed_new_failures": 0,
+      "recomputed_missing_checks": 0,
+      "recomputed_fixed_checks": 0,
+      "all_gate_identity_sets_match_original": true,
+      "known_failure_identities": [
+        {
+          "check_id": "harness/auth/metadata-var3/codex-adapter",
+          "mode": "2025-11-25",
+          "scenario": "auth/metadata-var3",
+          "source": "harness",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "harness/auth/pre-registration/codex-adapter",
+          "mode": "2025-11-25",
+          "scenario": "auth/pre-registration",
+          "source": "harness",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "harness/auth/scope-from-www-authenticate/codex-adapter",
+          "mode": "2025-11-25",
+          "scenario": "auth/scope-from-www-authenticate",
+          "source": "harness",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "harness/auth/scope-step-up/codex-adapter",
+          "mode": "2025-11-25",
+          "scenario": "auth/scope-step-up",
+          "source": "harness",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "authorization-request",
+          "mode": "2025-11-25",
+          "scenario": "auth/metadata-var3",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "authorization-server-metadata",
+          "mode": "2025-11-25",
+          "scenario": "auth/metadata-var3",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "client-registration",
+          "mode": "2025-11-25",
+          "scenario": "auth/metadata-var3",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "token-request",
+          "mode": "2025-11-25",
+          "scenario": "auth/metadata-var3",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "pre-registration-auth",
+          "mode": "2025-11-25",
+          "scenario": "auth/pre-registration",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "scope-from-www-authenticate",
+          "mode": "2025-11-25",
+          "scenario": "auth/scope-from-www-authenticate",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "scope-step-up-initial",
+          "mode": "2025-11-25",
+          "scenario": "auth/scope-step-up",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "client-elicitation-sep1034-boolean-default",
+          "mode": "2025-11-25",
+          "scenario": "elicitation-sep1034-client-defaults",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "client-elicitation-sep1034-enum-default",
+          "mode": "2025-11-25",
+          "scenario": "elicitation-sep1034-client-defaults",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "client-elicitation-sep1034-integer-default",
+          "mode": "2025-11-25",
+          "scenario": "elicitation-sep1034-client-defaults",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "client-elicitation-sep1034-number-default",
+          "mode": "2025-11-25",
+          "scenario": "elicitation-sep1034-client-defaults",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "client-elicitation-sep1034-string-default",
+          "mode": "2025-11-25",
+          "scenario": "elicitation-sep1034-client-defaults",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "harness/auth/metadata-var3/codex-adapter",
+          "mode": "2026-07-28",
+          "scenario": "auth/metadata-var3",
+          "source": "harness",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "harness/auth/pre-registration/codex-adapter",
+          "mode": "2026-07-28",
+          "scenario": "auth/pre-registration",
+          "source": "harness",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "harness/auth/scope-from-www-authenticate/codex-adapter",
+          "mode": "2026-07-28",
+          "scenario": "auth/scope-from-www-authenticate",
+          "source": "harness",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "harness/auth/scope-step-up/codex-adapter",
+          "mode": "2026-07-28",
+          "scenario": "auth/scope-step-up",
+          "source": "harness",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "authorization-request",
+          "mode": "2026-07-28",
+          "scenario": "auth/metadata-var3",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "authorization-server-metadata",
+          "mode": "2026-07-28",
+          "scenario": "auth/metadata-var3",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "client-registration",
+          "mode": "2026-07-28",
+          "scenario": "auth/metadata-var3",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "token-request",
+          "mode": "2026-07-28",
+          "scenario": "auth/metadata-var3",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "pre-registration-auth",
+          "mode": "2026-07-28",
+          "scenario": "auth/pre-registration",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "scope-from-www-authenticate",
+          "mode": "2026-07-28",
+          "scenario": "auth/scope-from-www-authenticate",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "scope-step-up-initial",
+          "mode": "2026-07-28",
+          "scenario": "auth/scope-step-up",
+          "source": "official",
+          "transport": "official-http"
+        },
+        {
+          "check_id": "sep-2350-scope-union-on-reauth",
+          "mode": "2026-07-28",
+          "scenario": "auth/scope-step-up",
+          "source": "official",
+          "transport": "official-http"
+        }
+      ],
+      "fixed_identity_set": [],
+      "failed_rows": [
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "elicitation-sep1034-client-defaults",
+          "check_id": "client-elicitation-sep1034-string-default",
+          "status": "FAIL",
+          "detail": "Field \"name\" missing - should have default \"John Doe\""
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "elicitation-sep1034-client-defaults",
+          "check_id": "client-elicitation-sep1034-integer-default",
+          "status": "FAIL",
+          "detail": "Field \"age\" missing - should have default 30"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "elicitation-sep1034-client-defaults",
+          "check_id": "client-elicitation-sep1034-number-default",
+          "status": "FAIL",
+          "detail": "Field \"score\" missing - should have default 95.5"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "elicitation-sep1034-client-defaults",
+          "check_id": "client-elicitation-sep1034-enum-default",
+          "status": "FAIL",
+          "detail": "Field \"status\" missing - should have default \"active\""
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "elicitation-sep1034-client-defaults",
+          "check_id": "client-elicitation-sep1034-boolean-default",
+          "status": "FAIL",
+          "detail": "Field \"verified\" missing - should have default true"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/metadata-var3",
+          "check_id": "authorization-server-metadata",
+          "status": "FAIL",
+          "detail": "Expected Check Missing: authorization-server-metadata"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/metadata-var3",
+          "check_id": "client-registration",
+          "status": "FAIL",
+          "detail": "Expected Check Missing: client-registration"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/metadata-var3",
+          "check_id": "authorization-request",
+          "status": "FAIL",
+          "detail": "Expected Check Missing: authorization-request"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/metadata-var3",
+          "check_id": "token-request",
+          "status": "FAIL",
+          "detail": "Expected Check Missing: token-request"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "harness",
+          "scenario": "auth/metadata-var3",
+          "check_id": "harness/auth/metadata-var3/codex-adapter",
+          "status": "FAIL",
+          "detail": "scenario: OAuth login failed: {\"code\": -32603, \"message\": \"failed to login to MCP server 'mcp_spec_fixture': Registration failed: Dynamic registration failed: Registration failed: HTTP 404 Not Found: <!DOCTYPE html>\\n<html lang=\\\"en\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\">\\n<title>Error</title>\\n</head>\\n<body>\\n<pre>Cannot POST /register</pre>\\n</body>\\n</html>\\n\"}"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/scope-from-www-authenticate",
+          "check_id": "scope-from-www-authenticate",
+          "status": "FAIL",
+          "detail": "Client SHOULD use the scope parameter from the WWW-Authenticate header when provided"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "harness",
+          "scenario": "auth/scope-from-www-authenticate",
+          "check_id": "harness/auth/scope-from-www-authenticate/codex-adapter",
+          "status": "FAIL",
+          "detail": "scenario: tool test-tool: {\"code\": -32603, \"message\": \"failed to get client: MCP startup failed: handshaking with MCP server failed: Send message error Transport [rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<rmcp::transport::auth::AuthClient<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: Insufficient scope, when send initialize request\"}"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/scope-step-up",
+          "check_id": "scope-step-up-initial",
+          "status": "FAIL",
+          "detail": "Client SHOULD use the scope parameter from the WWW-Authenticate header"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "harness",
+          "scenario": "auth/scope-step-up",
+          "check_id": "harness/auth/scope-step-up/codex-adapter",
+          "status": "FAIL",
+          "detail": "scenario: tool test-tool: {\"code\": -32603, \"message\": \"failed to get client: MCP startup failed: Transport send error: Transport [rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<rmcp::transport::auth::AuthClient<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: Insufficient scope\"}"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/pre-registration",
+          "check_id": "pre-registration-auth",
+          "status": "FAIL",
+          "detail": "Client did not use Basic authentication with pre-registered credentials"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "official-http",
+          "source": "harness",
+          "scenario": "auth/pre-registration",
+          "check_id": "harness/auth/pre-registration/codex-adapter",
+          "status": "FAIL",
+          "detail": "scenario: OAuth login failed: failed to handle OAuth callback"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/metadata-var3",
+          "check_id": "authorization-server-metadata",
+          "status": "FAIL",
+          "detail": "Expected Check Missing: authorization-server-metadata"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/metadata-var3",
+          "check_id": "client-registration",
+          "status": "FAIL",
+          "detail": "Expected Check Missing: client-registration"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/metadata-var3",
+          "check_id": "authorization-request",
+          "status": "FAIL",
+          "detail": "Expected Check Missing: authorization-request"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/metadata-var3",
+          "check_id": "token-request",
+          "status": "FAIL",
+          "detail": "Expected Check Missing: token-request"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "harness",
+          "scenario": "auth/metadata-var3",
+          "check_id": "harness/auth/metadata-var3/codex-adapter",
+          "status": "FAIL",
+          "detail": "scenario: OAuth login failed: {\"code\": -32603, \"message\": \"failed to login to MCP server 'mcp_spec_fixture': Registration failed: Dynamic registration failed: Registration failed: HTTP 404 Not Found: <!DOCTYPE html>\\n<html lang=\\\"en\\\">\\n<head>\\n<meta charset=\\\"utf-8\\\">\\n<title>Error</title>\\n</head>\\n<body>\\n<pre>Cannot POST /register</pre>\\n</body>\\n</html>\\n\"}"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/scope-from-www-authenticate",
+          "check_id": "scope-from-www-authenticate",
+          "status": "FAIL",
+          "detail": "Client SHOULD use the scope parameter from the WWW-Authenticate header when provided"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "harness",
+          "scenario": "auth/scope-from-www-authenticate",
+          "check_id": "harness/auth/scope-from-www-authenticate/codex-adapter",
+          "status": "FAIL",
+          "detail": "scenario: tool test-tool: {\"code\": -32603, \"message\": \"failed to get client: MCP startup failed: handshaking with MCP server failed: Send message error Transport [rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<rmcp::transport::auth::AuthClient<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: Insufficient scope, when send discover request\"}"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/scope-step-up",
+          "check_id": "scope-step-up-initial",
+          "status": "FAIL",
+          "detail": "Client SHOULD use the scope parameter from the WWW-Authenticate header"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/scope-step-up",
+          "check_id": "sep-2350-scope-union-on-reauth",
+          "status": "FAIL",
+          "detail": "Client SHOULD compute the union of previously requested scopes and newly challenged scopes when initiating re-authorization (SEP-2350); previously-granted scope was dropped"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "harness",
+          "scenario": "auth/scope-step-up",
+          "check_id": "harness/auth/scope-step-up/codex-adapter",
+          "status": "FAIL",
+          "detail": "scenario: tool test-tool: {\"code\": -32603, \"message\": \"failed to get client: MCP startup failed: handshaking with MCP server failed: Send message error Transport [rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<rmcp::transport::auth::AuthClient<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>] error: Insufficient scope, when send discover request\"}"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "auth/pre-registration",
+          "check_id": "pre-registration-auth",
+          "status": "FAIL",
+          "detail": "Client did not use Basic authentication with pre-registered credentials"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "harness",
+          "scenario": "auth/pre-registration",
+          "check_id": "harness/auth/pre-registration/codex-adapter",
+          "status": "FAIL",
+          "detail": "scenario: OAuth login failed: failed to handle OAuth callback"
+        }
+      ],
+      "skipped_rows": [
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "request-metadata",
+          "check_id": "sep-2575-client-declares-roots-capability",
+          "status": "SKIP",
+          "detail": "Client declares valid roots capability if present"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "request-metadata",
+          "check_id": "sep-2575-client-declares-sampling-capability",
+          "status": "SKIP",
+          "detail": "Client declares valid sampling capability if present"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "http-standard-headers",
+          "check_id": "sep-2243-client-includes-standard-headers",
+          "status": "SKIP",
+          "detail": "Client did not send a initialize request; Mcp-Method header was not exercised for this method."
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "http-standard-headers",
+          "check_id": "sep-2243-client-includes-standard-headers",
+          "status": "SKIP",
+          "detail": "Client did not send a notifications/initialized request; Mcp-Method header was not exercised for this method."
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "http-standard-headers",
+          "check_id": "sep-2243-client-includes-standard-headers",
+          "status": "SKIP",
+          "detail": "Client did not send a prompts/list request; Mcp-Method header was not exercised for this method."
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "http-standard-headers",
+          "check_id": "sep-2243-client-includes-standard-headers",
+          "status": "SKIP",
+          "detail": "Client did not send a prompts/get request; Mcp-Method header was not exercised for this method."
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "official-http",
+          "source": "official",
+          "scenario": "http-standard-headers",
+          "check_id": "sep-2243-client-includes-standard-headers",
+          "status": "SKIP",
+          "detail": "Client did not send a prompts/get request; Mcp-Name header was not exercised for this method."
+        }
+      ],
+      "count_scope": "Rows include repeated protocol observations; stable identities collapse retries. Neither count is an independent Jest-test denominator."
+    },
+    "codex-mcp-review-11786.json": {
+      "bytes": 68824,
+      "sha256": "d7e85835c8f3bb6ea3cedc08fec4e6e559580859d4638fca696c9a0673e32355",
+      "original_overall_success": false,
+      "original_regression_gate_success": true,
+      "cases_passed": 15,
+      "cases_total": 21,
+      "row_status_counts": {
+        "PASS": 162,
+        "FAIL": 24
+      },
+      "raw_rows": 186,
+      "applicable_rows_excluding_skip": 186,
+      "mode_row_status_counts": [
+        {
+          "mode": "2025-06-18",
+          "PASS": 34,
+          "FAIL": 8
+        },
+        {
+          "mode": "2025-11-25",
+          "PASS": 34,
+          "FAIL": 8
+        },
+        {
+          "mode": "2026-07-28",
+          "PASS": 94,
+          "FAIL": 8
+        }
+      ],
+      "baseline_identity_counts": {
+        "failing": 30,
+        "passing": 156
+      },
+      "candidate_distinct_identities": 186,
+      "recomputed_known_failures": 24,
+      "recomputed_new_failures": 0,
+      "recomputed_missing_checks": 0,
+      "recomputed_fixed_checks": 6,
+      "all_gate_identity_sets_match_original": true,
+      "known_failure_identities": [
+        {
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "mode": "2025-06-18",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/server-info",
+          "mode": "2025-06-18",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "mode": "2025-06-18",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/tool-count",
+          "mode": "2025-06-18",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "mode": "2025-06-18",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/server-info",
+          "mode": "2025-06-18",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "mode": "2025-06-18",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/tool-count",
+          "mode": "2025-06-18",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "mode": "2025-11-25",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/server-info",
+          "mode": "2025-11-25",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "mode": "2025-11-25",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/tool-count",
+          "mode": "2025-11-25",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "mode": "2025-11-25",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/server-info",
+          "mode": "2025-11-25",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "mode": "2025-11-25",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/tool-count",
+          "mode": "2025-11-25",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "mode": "2026-07-28",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/server-info",
+          "mode": "2026-07-28",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "mode": "2026-07-28",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/tool-count",
+          "mode": "2026-07-28",
+          "transport": "review-http:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "mode": "2026-07-28",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/server-info",
+          "mode": "2026-07-28",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "mode": "2026-07-28",
+          "transport": "review-stdio:catalog-over-limit"
+        },
+        {
+          "check_id": "review/catalog-over-limit/tool-count",
+          "mode": "2026-07-28",
+          "transport": "review-stdio:catalog-over-limit"
+        }
+      ],
+      "fixed_identity_set": [
+        {
+          "check_id": "review/exact-large-integer-elicitation-round-trip",
+          "mode": "2026-07-28",
+          "transport": "review-http:review-regressions"
+        },
+        {
+          "check_id": "review/exact-large-integer-elicitation-schema",
+          "mode": "2026-07-28",
+          "transport": "review-http:review-regressions"
+        },
+        {
+          "check_id": "review/mrtr-input-requests-bounded-to-64",
+          "mode": "2026-07-28",
+          "transport": "review-http:review-regressions"
+        },
+        {
+          "check_id": "review/exact-large-integer-elicitation-round-trip",
+          "mode": "2026-07-28",
+          "transport": "review-stdio:review-regressions"
+        },
+        {
+          "check_id": "review/exact-large-integer-elicitation-schema",
+          "mode": "2026-07-28",
+          "transport": "review-stdio:review-regressions"
+        },
+        {
+          "check_id": "review/mrtr-input-requests-bounded-to-64",
+          "mode": "2026-07-28",
+          "transport": "review-stdio:review-regressions"
+        }
+      ],
+      "failed_rows": [
+        {
+          "mode": "2025-06-18",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "status": "FAIL",
+          "detail": "observed MCP server startup 'ready'; expected 'failed'"
+        },
+        {
+          "mode": "2025-06-18",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "status": "FAIL",
+          "detail": "startup failure did not report 'tools/list exceeded the catalog limit of 1024 items'"
+        },
+        {
+          "mode": "2025-06-18",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/server-info",
+          "status": "FAIL",
+          "detail": "catalog server information did not match its startup status"
+        },
+        {
+          "mode": "2025-06-18",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/tool-count",
+          "status": "FAIL",
+          "detail": "expected 0 discovered tools, observed 1025"
+        },
+        {
+          "mode": "2025-06-18",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "status": "FAIL",
+          "detail": "observed MCP server startup 'ready'; expected 'failed'"
+        },
+        {
+          "mode": "2025-06-18",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "status": "FAIL",
+          "detail": "startup failure did not report 'tools/list exceeded the catalog limit of 1024 items'"
+        },
+        {
+          "mode": "2025-06-18",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/server-info",
+          "status": "FAIL",
+          "detail": "catalog server information did not match its startup status"
+        },
+        {
+          "mode": "2025-06-18",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/tool-count",
+          "status": "FAIL",
+          "detail": "expected 0 discovered tools, observed 1025"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "status": "FAIL",
+          "detail": "observed MCP server startup 'ready'; expected 'failed'"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "status": "FAIL",
+          "detail": "startup failure did not report 'tools/list exceeded the catalog limit of 1024 items'"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/server-info",
+          "status": "FAIL",
+          "detail": "catalog server information did not match its startup status"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/tool-count",
+          "status": "FAIL",
+          "detail": "expected 0 discovered tools, observed 1025"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "status": "FAIL",
+          "detail": "observed MCP server startup 'ready'; expected 'failed'"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "status": "FAIL",
+          "detail": "startup failure did not report 'tools/list exceeded the catalog limit of 1024 items'"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/server-info",
+          "status": "FAIL",
+          "detail": "catalog server information did not match its startup status"
+        },
+        {
+          "mode": "2025-11-25",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/tool-count",
+          "status": "FAIL",
+          "detail": "expected 0 discovered tools, observed 1025"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "status": "FAIL",
+          "detail": "observed MCP server startup 'ready'; expected 'failed'"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "status": "FAIL",
+          "detail": "startup failure did not report 'tools/list exceeded the catalog limit of 1024 items'"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/server-info",
+          "status": "FAIL",
+          "detail": "catalog server information did not match its startup status"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "review-stdio:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/tool-count",
+          "status": "FAIL",
+          "detail": "expected 0 discovered tools, observed 1025"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/startup-failed",
+          "status": "FAIL",
+          "detail": "observed MCP server startup 'ready'; expected 'failed'"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/exact-limit-error",
+          "status": "FAIL",
+          "detail": "startup failure did not report 'tools/list exceeded the catalog limit of 1024 items'"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/server-info",
+          "status": "FAIL",
+          "detail": "catalog server information did not match its startup status"
+        },
+        {
+          "mode": "2026-07-28",
+          "transport": "review-http:catalog-over-limit",
+          "check_id": "review/catalog-over-limit/tool-count",
+          "status": "FAIL",
+          "detail": "expected 0 discovered tools, observed 1025"
+        }
+      ],
+      "skipped_rows": [],
+      "count_scope": "Rows include repeated protocol observations; stable identities collapse retries. Neither count is an independent Jest-test denominator."
+    }
+  },
+  "interpretation": [
+    "47/47 Jest means the existing exact-source SDK contract passed, not zero failing MCP scenarios.",
+    "Conformance has1119 PASS,28 FAIL,7 SKIP rows;1147 applicable rows,4/6 transport cases. All28 failures match the committed baseline; no new/missing checks.",
+    "Reviewer has162 PASS,24 FAIL rows and15/21 cases. The baseline had30 failing identities;6 now pass,24 remain acknowledged failures.",
+    "Conformance failures cover intermediate default elicitation values and intermediate/modern OAuth metadata-var3, scope challenges/step-up, preregistration; modern also scope union.",
+    "Reviewer failures are4 catalog-over-limit assertions in each of3 modes by2 transports: startup wrongly ready, missing expected limit error, server-info mismatch, and1025 discovered tools where0 were required.",
+    "The6 fixed reviewer identities are large-integer elicitation schema/round-trip and MRTR64-input bounds on modern HTTP and stdio; this comparison is not causal attribution to the npm-only patch.",
+    "Shipping conformance checks pass; shipping catalog reviewer failures remain. No complete MCP conformance, default-branch or whole-repository pass is asserted."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "classification": "CANCELLED_AS_REDUNDANT_AFTER_EXACT_HOSTED_PASS",
+  "local_native_pass": false,
+  "local_full_jest_replayed": false,
+  "cancellation_transport": "One control-C via the runtime-owned dedicated PTY; no PID kill.",
+  "native_pty_exit_code": 1,
+  "dedicated_bazel_shutdown_exit_code": 0,
+  "driver_interrupt_reporting_issue": "The original driver entered finally after KeyboardInterrupt, shut down its own Bazel server successfully, persisted final source/cost fields, then raised KeyError for its unset status display. Original raw receipt/log are retained unchanged.",
+  "measured_driver_wall_seconds": 2550.848513948964,
+  "pre_cancel_scope_snapshot": "ControlGroup=/user.slice/user-1000.slice/user@1000.service/app.slice/hcsn-dependency-native-sdk-v1.scope\nMemoryCurrent=8539140096\nMemoryPeak=8589934592\nCPUUsageNSec=1368693058000\nActiveState=active\n",
+  "post_cancel_scope_snapshot": "MemoryPeak=[not set]\nCPUUsageNSec=[not set]\nLoadState=not-found\nActiveState=inactive\n",
+  "post_cancel_scope_query_exit_code": 0,
+  "complete_scope_cpu_seconds": null,
+  "cost_scope": "Driver wall is measured through shutdown. Pre-cancel scope CPU/peak-memory are retained observations; full cleanup CPU was not separately captured. No local completion, speedup, or full-CPU estimate is asserted.",
+  "partial_build_error_lines": [],
+  "non_interruption_error_lines": [],
+  "final_tracked_changes": [
+    "package.json",
+    "pnpm-lock.yaml"
+  ],
+  "final_package_sha256": "09814870b8df15595b9546b8a041a1791ca419cce1389e5a5d3da7afa126c513",
+  "final_lock_sha256": "b2dc81d2d55a2f48ba88cbcfd34cdf162bc30bd168b09ee504424a16f6a30cd3",
+  "hosted_acceptance_source": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+  "hosted_acceptance_job": 138957422954
+}

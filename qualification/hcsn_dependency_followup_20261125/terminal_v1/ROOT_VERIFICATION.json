@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "verified_at_utc": "2026-11-25T04:16:15.969087+00:00",
+  "reviewer": "root",
+  "archives": [
+    {
+      "archive": "dependency-terminal-v1.tar.gz",
+      "bytes": 252561,
+      "sha256": "41e9eae46417dc9a217fa665b89a86765b12380ec5369b6269402d08dab15d36",
+      "members": 33,
+      "all_member_digests_verified": true
+    },
+    {
+      "archive": "mcp-gate-scope-v1.tar.gz",
+      "bytes": 77166,
+      "sha256": "3b6da10092ecc4077f26b6eb27c0dfc6e2a01e2e7439fe6534f27185101218da",
+      "members": 10,
+      "all_member_digests_verified": true
+    }
+  ],
+  "sdk_raw_log_digest_and_gzip_verified": true,
+  "literal_proof_lines_in_raw_log": 15,
+  "total_proof_lines": 16,
+  "proof_lines_after_only_ansi_control_removal": 16,
+  "artifact_zip_api_digest_crc_and_both_members_verified": true,
+  "prior_root_verifier_attempt": {
+    "result": "AssertionError in v2 first attempt: one display proof line did not appear byte-for-byte in ANSI-colored raw log.",
+    "resolution": "Preserved all original evidence bytes. Verify full raw SHA then separately remove ANSI display controls; all16 display proof lines match,15 also match raw. No test rerun or test-result change.",
+    "earlier_v1_staging": "Nine files and no publication manifest were present at resumption; retained untouched."
+  },
+  "scope": "Exact e4f2 source hosted SDK47/47,5/5 suites. Original MCP regression baseline passes while inner conformance remains1119PASS/28FAIL/7SKIP and review162PASS/24FAIL. Local duplicate build cancelled, not passed."
+}

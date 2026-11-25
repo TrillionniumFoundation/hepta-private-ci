@@ -1,0 +1,727 @@
+{
+  "schema": 1,
+  "as_of_utc": "2026-11-25T03:58:48.723821+00:00",
+  "status": "DEFAULT_BRANCH_DEPENDENCY_HOLD; REVIEWED_TWO_FILE_CANDIDATE_HOSTED_EXACT_NATIVE_AND_FULL_SDK_PASS; LOCAL_DUPLICATE_CANCELLED",
+  "read_only_audit": false,
+  "remote_ref_changes": 0,
+  "training_or_model_tests": 0,
+  "registry": {
+    "branch": "evidence/hcsn-qualification-blocker-audit-20261123",
+    "observed_head": "29846dc12f2b5252a2eef7f8ef0eaca7528aab5f",
+    "path": "qualification/hcsn_ci_readbacks/integrated-blockers-20261123/CURRENT_ZH.md",
+    "git_blob_sha1": "dbd0ad2a1147544d02abf7250c80becb11548874"
+  },
+  "default_branch": {
+    "name": "main",
+    "observed_head": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "live_open_alerts": 157,
+    "severity_counts": {
+      "medium": 70,
+      "low": 15,
+      "high": 69,
+      "critical": 3
+    },
+    "ecosystem_counts": {
+      "npm": 114,
+      "rust": 34,
+      "pip": 9
+    },
+    "unique_ecosystem_package_names": 41,
+    "locked_package_versions": 46,
+    "note": "GitHub labels medium; push notice labels the same70 moderate.157 alerts are not157 independent upgrades or proven exploitable production paths."
+  },
+  "access": {
+    "advisory_endpoint": "GET /repos/TrillionniumFoundation/hepta-private-ci/dependabot/alerts?state=open&per_page=100",
+    "method": "Configured desktop gh api GET --paginate, no credentials read or printed",
+    "status": "SUCCESS",
+    "raw_bytes": 802915,
+    "raw_sha256": "89974c43b2b35d730807a8603c3fcd8c8857b99fb12654448281d3c59cafc88b",
+    "raw_local": "dependency_readback/alerts.raw.json.gz",
+    "receipt": "dependency_readback/ACCESS_RECEIPT.json",
+    "historical_probe_error": "Older gh rejected --slurp before network; compatible pagination then succeeded. This was a CLI flag issue, not an authorization failure."
+  },
+  "critical_minimal_units": [
+    {
+      "package": "handlebars",
+      "main_version": [
+        "4.7.9"
+      ],
+      "patched_version": [
+        "4.7.10"
+      ],
+      "critical_count": 2,
+      "manifest": "pnpm-lock.yaml",
+      "main_dependency_chain": [
+        {
+          "importer": "sdk/typescript",
+          "scope": "devDependencies"
+        },
+        {
+          "package": "ts-jest",
+          "version": "29.4.4(@babel/core@7.28.4)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.28.4))(esbuild@0.28.1)(jest-util@29.7.0)(jest@29.7.0(@types/node@20.19.18)(ts-node@10.9.2(@types/node@20.19.18)(typescript@5.9.2)))(typescript@5.9.2)"
+        },
+        {
+          "package": "handlebars",
+          "version": "4.7.9"
+        }
+      ],
+      "parallel_owner": "PR #6799",
+      "owner_head": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+      "owner_locked_versions": [
+        "4.7.10"
+      ],
+      "pr7068_covered": false,
+      "acceptance": "Static lock coverage only. Preserve existing critical fixes; no duplicate version bump. Default branch remains unfixed until qualified integration.",
+      "critical_ghsa_ids": [
+        "GHSA-8r5x-fm3f-whwj",
+        "GHSA-p8wg-vrv2-v86f"
+      ],
+      "other_advisories_addressed_by_same_version": [
+        "GHSA-xw65-4hp5-5hc7"
+      ]
+    },
+    {
+      "package": "proxy-addr",
+      "main_version": [
+        "2.0.7"
+      ],
+      "patched_version": [
+        "2.0.8"
+      ],
+      "critical_count": 1,
+      "manifest": "pnpm-lock.yaml",
+      "main_dependency_chain": [
+        {
+          "importer": "sdk/typescript",
+          "scope": "devDependencies"
+        },
+        {
+          "package": "@modelcontextprotocol/conformance",
+          "version": "https://codeload.github.com/modelcontextprotocol/conformance/tar.gz/49103de6ed70804e940637bf3e9e29e4a3f54e64"
+        },
+        {
+          "package": "express",
+          "version": "5.2.1"
+        },
+        {
+          "package": "proxy-addr",
+          "version": "2.0.7"
+        }
+      ],
+      "parallel_owner": "PR #6799",
+      "owner_head": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+      "owner_locked_versions": [
+        "2.0.8"
+      ],
+      "pr7068_covered": false,
+      "acceptance": "Static lock coverage only. Preserve existing critical fixes; no duplicate version bump. Default branch remains unfixed until qualified integration.",
+      "critical_ghsa_ids": [
+        "GHSA-jqcg-44mw-7w3h"
+      ],
+      "other_advisories_addressed_by_same_version": []
+    }
+  ],
+  "static_graph_comparison": {
+    "main": {
+      "remaining_matching_alert_count": 157,
+      "remaining_affected_package_count": 41
+    },
+    "pr7068": {
+      "remaining_matching_alert_count": 137,
+      "remaining_affected_package_count": 34
+    },
+    "pr6799": {
+      "remaining_matching_alert_count": 4,
+      "remaining_affected_package_count": 3
+    }
+  },
+  "comparison_limit": "Range checks use every retrieved vulnerability range for the same ecosystem/package, not merely one first-patched threshold. Counts compare these157 retrieved alerts only; they are not new scanner results or automatic alert dismissals. The original alert-specific ranges and all-advisory-range unions give identical results for all3 observed graphs, but are not an authoritative GitHub closure API.",
+  "remaining_uncovered_units": [
+    {
+      "package": "@babel/core",
+      "current_locked_versions": [
+        "7.28.4"
+      ],
+      "target": "7.29.6",
+      "advisories": [
+        "GHSA-4x5r-pxfx-6jf8"
+      ],
+      "severity_counts": {
+        "low": 1
+      },
+      "main_dependency_chain": [
+        {
+          "importer": "sdk/typescript",
+          "scope": "devDependencies"
+        },
+        {
+          "package": "ts-jest",
+          "version": "29.4.4(@babel/core@7.28.4)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.28.4))(esbuild@0.28.1)(jest-util@29.7.0)(jest@29.7.0(@types/node@20.19.18)(ts-node@10.9.2(@types/node@20.19.18)(typescript@5.9.2)))(typescript@5.9.2)"
+        },
+        {
+          "package": "@babel/core",
+          "version": "7.28.4"
+        }
+      ],
+      "status": "COVERED_BY_REVIEWED_TWO_FILE_CANDIDATE_E4F2; EXACT_HOSTED_NATIVE_AND_FULL_SDK_PASS; DEFAULT_BRANCH_NOT_RESCANNED",
+      "parallel_pr_search": "No open PR result from exact quoted package-name search; this is not proof of absence of all owner work.",
+      "candidate_pr": 7072
+    },
+    {
+      "package": "@hono/node-server",
+      "current_locked_versions": [
+        "1.19.13"
+      ],
+      "target": "1.19.18",
+      "advisories": [
+        "GHSA-frvp-7c67-39w9",
+        "GHSA-jpvv-r467-5p4w"
+      ],
+      "severity_counts": {
+        "medium": 2
+      },
+      "main_dependency_chain": [
+        {
+          "importer": "sdk/typescript",
+          "scope": "devDependencies"
+        },
+        {
+          "package": "@modelcontextprotocol/sdk",
+          "version": "1.26.0(zod@3.25.76)"
+        },
+        {
+          "package": "@hono/node-server",
+          "version": "1.19.13(hono@4.12.25)"
+        }
+      ],
+      "status": "COVERED_BY_REVIEWED_TWO_FILE_CANDIDATE_E4F2; EXACT_HOSTED_NATIVE_AND_FULL_SDK_PASS; DEFAULT_BRANCH_NOT_RESCANNED",
+      "parallel_pr_search": "No open PR result from exact quoted package-name search; this is not proof of absence of all owner work.",
+      "candidate_pr": 7072
+    },
+    {
+      "package": "@humanfs/node",
+      "current_locked_versions": [
+        "0.16.7"
+      ],
+      "target": "0.16.8",
+      "advisories": [
+        "GHSA-p498-v437-472g"
+      ],
+      "severity_counts": {
+        "medium": 1
+      },
+      "main_dependency_chain": [
+        {
+          "importer": "sdk/typescript",
+          "scope": "devDependencies"
+        },
+        {
+          "package": "eslint",
+          "version": "9.36.0"
+        },
+        {
+          "package": "@humanfs/node",
+          "version": "0.16.7"
+        }
+      ],
+      "status": "COVERED_BY_REVIEWED_TWO_FILE_CANDIDATE_E4F2; EXACT_HOSTED_NATIVE_AND_FULL_SDK_PASS; DEFAULT_BRANCH_NOT_RESCANNED",
+      "parallel_pr_search": "No open PR result from exact quoted package-name search; this is not proof of absence of all owner work.",
+      "candidate_pr": 7072
+    }
+  ],
+  "existing_parallel_work": [
+    {
+      "pr": 7063,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7063",
+      "state": "open",
+      "draft": false,
+      "head": "86d13925f313caaca0e674e47eb6c89a932d9976",
+      "scope": "main-specific cookie0.18.1 to0.18.3, original Cargo+Bazel lock generation already verified; other dependencies unchanged",
+      "gate": "Historical exact-candidate Cargo/Bazel pass; original cargo-deny failed with59 distinctRustSec IDs. No merge."
+    },
+    {
+      "pr": 7068,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7068",
+      "state": "open",
+      "draft": true,
+      "head": "804ac018433ff08dfd195e93eed936394baf5053",
+      "scope": "Dependency/source migrations already owned; current npm and Python locks exactly equal main. Current retrieved-alert static comparison retains137 matching alerts across34 packages.",
+      "native_gate": {
+        "run": 45458387224,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45458387224",
+        "head": "804ac018433ff08dfd195e93eed936394baf5053",
+        "conclusion": "failure",
+        "total_jobs": 37,
+        "job_conclusions": {
+          "success": 14,
+          "failure": 16,
+          "cancelled": 4,
+          "skipped": 3
+        },
+        "cargo_deny_job": 138713957160,
+        "cargo_deny_conclusion": "success"
+      },
+      "recorded_policy": "stage5 records0advisory errors,3yanked warnings and9unchanged prior exceptions, advisoryDB1d328b6bb9f2f350bf65c1c81ab68781cb9e018a; not zero-risk and not coverage of every GitHub ecosystem.",
+      "pending": "Complete final-head CI, Matrix consumer migration and Windows SQLite/consumer qualification remain separately scoped."
+    },
+    {
+      "pr": 6799,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6799",
+      "state": "open",
+      "draft": true,
+      "head": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+      "scope": "38 of41 package units have no locked version matching retrieved ranges;3packages absent from lock are distinguished from version upgrades.4alerts/3packages remain.",
+      "last_pnpm_change": "85a760679a0f80d1a44dddb9210c3b2aefc0f2d6",
+      "source_gate": "Exact parent SDK138937678195 and cargo-deny138937678083 completed success, read via authenticated gh GET on 2026-11-25T03:14:57Z. This qualifies these parent jobs only, not the residual npm candidate or all CI.",
+      "check_receipt": "dependency_readback/6799-check-runs-RECEIPT.json",
+      "latest_exact_parent_jobs": [
+        {
+          "id": 138937678195,
+          "name": "sdk / sdks",
+          "head_sha": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45534322293/job/138937678195"
+        },
+        {
+          "id": 138937678083,
+          "name": "cargo-deny / cargo-deny",
+          "head_sha": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45534322293/job/138937678083"
+        }
+      ],
+      "gate_refresh_receipt": "dependency_readback/PARENT_CI_REFRESH.json"
+    }
+  ],
+  "historical_feed_boundary": {
+    "rustsec_count": 59,
+    "crate_count": 26,
+    "vulnerability_class": 51,
+    "unmaintained_class": 8,
+    "source_head": "86d13925f313caaca0e674e47eb6c89a932d9976",
+    "run": 45165845066,
+    "job": 137662452404,
+    "comparison": "Historical RustSec scan is a different source/graph/policy/date from GitHub157. Do not report98 new vulnerabilities or transfer #7032 safety to main."
+  },
+  "external_evidence_or_permission_blockers": [
+    {
+      "kind": "advisory_read_permission",
+      "status": "NOT_BLOCKED",
+      "reason": "Normal configured gh GET returned157 actual open alerts."
+    },
+    {
+      "kind": "runtime_reachability",
+      "status": "UNESTABLISHED",
+      "reason": "Advisory reachability metadata is disabled. Lock graph paths do not prove production exploitation; both critical paths start under sdk/typescript devDependencies."
+    },
+    {
+      "kind": "cross_platform_final_head_validation",
+      "status": "PARTIALLY_CLOSED_EXACT_LINUX_SDK; REMAINING_INTEGRATION_AND_DEFAULT_BRANCH_SCOPE_OPEN",
+      "reason": "Candidate e4f2 exact-source Linux Bazel native build and original full SDK5suites47tests passed. Whole final integrated CI, a separately demonstrated Windows Hono regression and post-merge default-branch rescan are not established by this SDK job."
+    },
+    {
+      "kind": "no_first_patch_field",
+      "package": "hickory-proto",
+      "ghsa_id": "GHSA-3v94-mw7p-v465",
+      "status": "MIGRATION_ROUTE_EXISTS",
+      "reason": "The primary advisory moves affected code to hickory-net and names0.26.1 as fixed. Both exact candidate locks explicitly resolve net/proto/resolver0.26.3; an empty first_patched_version on the old package is not a no-fix blocker."
+    }
+  ],
+  "minimal_repair_verification": [
+    "Keep #6799 existing handlebars4.7.10/proxy-addr2.0.8; regenerate with pinned pnpm10.34.5 on the chosen integrated source, preserving root resolutions and release-age/build/trust policy.",
+    "For the3 uncovered packages, add only exact scoped resolutions, generate pnpm-lock.yaml natively, inspect every changed package and peer binding, and require frozen-lockfile consistency; no hand-edited integrity hashes.",
+    "Exercise actual SDK compile/lint/Jest consumers with the existing scripts; report infrastructure or pre-existing failures. Hono Windows serve-static regression still requires a real Windows gate.",
+    "Re-evaluate all157 retrieved ranges against candidate full lock inventories; preserve original GitHub alerts until qualified default-branch integration and real rescan."
+  ],
+  "evidence": {
+    "all41_package_units_and157_correlations": "dependency_readback/ALERT_LOCK_CORRELATION.json",
+    "auditor": "dependency_readback/audit_dependency_metadata.py",
+    "verified_git_objects": "dependency_readback/VERIFIED_GITHUB_READ_RECEIPTS.json",
+    "original_registry_files": "dependency_readback/",
+    "candidate_patch_remote": "desktop:/home/qian-qi/hcsn-smallnet-20261124/dependency-residual-patch-v1",
+    "patch_status": "GENERATOR_FROZEN_LOCK_PRETTIER_SDK_BUILD_LINT_ORIGINAL_JUST_FMT_PASS; EXACT_HOSTED_NATIVE_AND_FULL_47_JEST_PASS; LOCAL_DUPLICATE_CANCELLED; INITIAL_18_PASS_29_ENVIRONMENT_FAILURES_PRESERVED",
+    "candidate_patch_local": "dependency_readback/patch-RESIDUAL_DEPENDENCIES.patch",
+    "candidate_static_audit": "dependency_readback/RESIDUAL_CANDIDATE_STATIC_AUDIT.json",
+    "candidate_patch_sha256": "a6f0446cdcc5b9753e8a9672f0c503791c0145136dbc8c50c2663b548150eada",
+    "historical_59_rustsec_graph_mapping": "dependency_readback/HISTORICAL_RUSTSEC_LOCK_MAPPING.json",
+    "residual_peer_metadata_diff": "dependency_readback/RESIDUAL_PEER_METADATA_DIFF.json",
+    "publication_manifest": "dependency_readback/PUBLICATION_READY_POST_FORMAT.json",
+    "independent_patch_review": "dependency_readback/PATCH_REVIEW.json",
+    "validation_receipt": "dependency_readback/patch-VALIDATION_RECEIPT.json",
+    "original_formatter_receipt": "dependency_readback/patch-FORMAT_RECEIPT.json",
+    "original_formatter_log": "dependency_readback/patch-just-fmt.log",
+    "formatter_fixture_manifest": "dependency_readback/formatter_hydration_manifest.json",
+    "native_pending_snapshot": "dependency_readback/native-sdk-in-progress-RECEIPT.snapshot.json",
+    "source_publication": "dependency_readback/SOURCE_PR_PUBLICATION.json",
+    "immutable_v1_archive": {
+      "path": "dependency-evidence-v1.tar.gz",
+      "sha256": "ce8dba04e69968376d2fb8ac71881caa60cfa6b0b5f0aca0c8b681816dbc3cef",
+      "published_commit": "2178f51af0b0af96b59a8b647672185bae46d51e",
+      "pending_at_freeze": true
+    },
+    "terminal_append_archive": {
+      "path": "dependency-terminal-v1.tar.gz",
+      "index": "DEPENDENCY_TERMINAL_ARCHIVE_V1.json",
+      "bytes": 252561,
+      "sha256": "41e9eae46417dc9a217fa665b89a86765b12380ec5369b6269402d08dab15d36",
+      "git_blob_sha1": "8a0f963c08dd9cceadc4c6b1ce3ef1932a9d431b",
+      "member_count": 33,
+      "manifest_sha256": "600cfdfa482fa1b7bb2470fbc0d3706145f8b004e861905afe4b5f0b23ecf371"
+    }
+  },
+  "hickory_migration_check": {
+    "pr6799": [
+      {
+        "name": "hickory-net",
+        "version": "0.26.3"
+      },
+      {
+        "name": "hickory-proto",
+        "version": "0.26.3"
+      },
+      {
+        "name": "hickory-resolver",
+        "version": "0.26.3"
+      }
+    ],
+    "pr7068": [
+      {
+        "name": "hickory-net",
+        "version": "0.26.3"
+      },
+      {
+        "name": "hickory-proto",
+        "version": "0.26.3"
+      },
+      {
+        "name": "hickory-resolver",
+        "version": "0.26.3"
+      }
+    ],
+    "scope": "Both locks explicitly contain hickory-net0.26.3, above the upstream0.26.1 migration fix; no current whole-feature native execution is implied."
+  },
+  "initial_sdk_validation": {
+    "operations": [
+      {
+        "name": "frozen-install",
+        "argv": [
+          "corepack",
+          "pnpm",
+          "install",
+          "--frozen-lockfile",
+          "--ignore-scripts"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 177.6357353599742,
+        "bytes": 36516,
+        "sha256": "a1117fe5ba2db22211d0803e52e2059aecbc0d26d7765fe1567187c1cb2b97ba"
+      },
+      {
+        "name": "format-manifests",
+        "argv": [
+          "corepack",
+          "pnpm",
+          "exec",
+          "prettier",
+          "--check",
+          "package.json",
+          "pnpm-lock.yaml"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.9236385009717196,
+        "bytes": 66,
+        "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+      },
+      {
+        "name": "sdk-build",
+        "argv": [
+          "corepack",
+          "pnpm",
+          "--dir",
+          "sdk/typescript",
+          "run",
+          "build"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 3.808340057032183,
+        "bytes": 575,
+        "sha256": "105ba1d69728d9b639ef1e0ef80aa6c681d096748e58b0f3a3d3ab5f895d4948"
+      },
+      {
+        "name": "sdk-lint",
+        "argv": [
+          "corepack",
+          "pnpm",
+          "--dir",
+          "sdk/typescript",
+          "exec",
+          "eslint",
+          "src/**/*.ts",
+          "tests/**/*.ts"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 3.048667538911104,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "sdk-tests",
+        "argv": [
+          "corepack",
+          "pnpm",
+          "--dir",
+          "sdk/typescript",
+          "run",
+          "test",
+          "--runInBand"
+        ],
+        "exit_code": 1,
+        "wall_seconds": 6.828921988024376,
+        "bytes": 7901,
+        "sha256": "a05f66b997f7aa275a85bfc6fb9003c868e35059084c2cd8f172cceda91e24be"
+      }
+    ],
+    "jest": {
+      "total": 47,
+      "pass": 18,
+      "fail": 29,
+      "missing_exact_codex": 27,
+      "missing_tracked_mcp_harness": 2,
+      "source_fixture_gap_being_closed": false,
+      "source_fixture_gap_closed_exact_hydration": true
+    },
+    "native_followup": "Completed exact-source hosted native build and original full SDK47/47 PASS; local duplicate cancelled only after verifying that evidence. Initial47=18pass29environmentfail remain preserved in immutablev1; denominators are not combined."
+  },
+  "authorized_work_scope": "Read-only graph audit followed by a root-authorized isolated two-file residual npm patch; no remote ref changes by this subagent.",
+  "original_formatter_validation": {
+    "status": "PASS_EXACT_SCOPED_FORMAT_NO_SOURCE_DRIFT",
+    "exit_code": 0,
+    "wall_seconds": 0.41627212101593614,
+    "verified_fixture_count": 44,
+    "unchanged_existing": 37,
+    "exact_absent_hydrated": 7,
+    "scope_groups": [],
+    "rust_source_tree": "e8a0e8a6e7d0c4799e4a1d8688a2cc2a83df563a",
+    "rust_worktree_diff_empty": true,
+    "candidate_sha256_unchanged": true
+  },
+  "candidate_publication": {
+    "pr": 7072,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7072",
+    "draft": true,
+    "head": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+    "tree": "55270d7cb16ab274c5705e34590168ccf55eace1",
+    "parent": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+    "observed_base": "3fc5befdc08f5bf78e90f9c50b21e0f0a43427b6",
+    "hosted_merge": "cfd9bc9eddadead0775d9cd82b12a8245371a3bf",
+    "hosted_merge_tree": "f3582745fd5ee230440bfa3983b37618d125b94f",
+    "blocking_workflow_run": 45540235075,
+    "source_receipt": "dependency_readback/SOURCE_PR_PUBLICATION.json",
+    "scope": "SDK workflow explicitly checked out exact PR source e4f2 and verified HEAD=SOURCE_SHA; original Bazel metadata/staging/warmup and full47test log establish that source. Workflow synthetic merge cfd9 and moving base3fc5 have separate identities; this source-job pass does not automatically qualify all jobs or default branch."
+  },
+  "hosted_exact_sdk_terminal": {
+    "schema": 1,
+    "decision": "PASS_EXACT_CANDIDATE_HOSTED_NATIVE_AND_FULL_SDK",
+    "source_commit": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+    "workflow_run": 45540235075,
+    "job": 138957422954,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45540235075/job/138957422954",
+    "job_started_at": "2026-11-25T03:30:41Z",
+    "job_completed_at": "2026-11-25T03:39:33Z",
+    "complete_job_wall_seconds": 532.0,
+    "hosted_cpu_seconds": null,
+    "hosted_rss_bytes": null,
+    "log_bytes": 727947,
+    "log_sha256": "1c0da88f9f80581c85d0b04d8d51f6606d56decd8b0c56f09276c6c23fe242fd",
+    "checked_out_source_verified_in_original_log": true,
+    "required_steps": [
+      {
+        "name": "Verify exact SDK source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-25T03:31:41Z",
+        "completed_at": "2026-11-25T03:31:41Z"
+      },
+      {
+        "name": "Build codex and code-mode host with Bazel",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-11-25T03:32:16Z",
+        "completed_at": "2026-11-25T03:37:15Z"
+      },
+      {
+        "name": "Warm up Bazel-built SDK executables",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-11-25T03:37:15Z",
+        "completed_at": "2026-11-25T03:37:15Z"
+      },
+      {
+        "name": "Install dependencies",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-11-25T03:37:15Z",
+        "completed_at": "2026-11-25T03:38:10Z"
+      },
+      {
+        "name": "Build SDK packages",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-11-25T03:38:10Z",
+        "completed_at": "2026-11-25T03:38:13Z"
+      },
+      {
+        "name": "Lint SDK packages",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-11-25T03:38:13Z",
+        "completed_at": "2026-11-25T03:38:15Z"
+      },
+      {
+        "name": "Test SDK packages",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-11-25T03:38:15Z",
+        "completed_at": "2026-11-25T03:39:23Z"
+      },
+      {
+        "name": "Preserve MCP conformance reports",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-11-25T03:39:23Z",
+        "completed_at": "2026-11-25T03:39:24Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-11-25T03:39:28Z",
+        "completed_at": "2026-11-25T03:39:29Z"
+      }
+    ],
+    "native_targets": [
+      "//codex-rs/cli:codex",
+      "//codex-rs/code-mode-host:codex-code-mode-host"
+    ],
+    "bazel_total_actions": 25041,
+    "native_warmup_and_original_full_test_command_passed": true,
+    "jest": {
+      "suites_passed": 5,
+      "suites_total": 5,
+      "tests_passed": 47,
+      "tests_total": 47,
+      "failed": 0,
+      "skipped": 0,
+      "snapshots_total": 0
+    },
+    "proof_lines": [
+      "2026-11-25T03:31:40.6845833Z HEAD is now at e4f2cfa6 Pin the remaining Babel, Hono and HumanFS advisory fixes",
+      "2026-11-25T03:31:41.3213866Z ##[group]Run test \"$(git rev-parse HEAD)\" = \"$SOURCE_SHA\"",
+      "2026-11-25T03:32:16.0964588Z   --build_metadata=COMMIT_SHA=${SOURCE_SHA} \\",
+      "2026-11-25T03:36:28.6150891Z INFO: Build completed successfully, 25041 total actions",
+      "2026-11-25T03:38:15.8575862Z ##[group]Run pnpm -r --filter ./sdk/typescript run test",
+      "2026-11-25T03:38:22.3016847Z PASS tests/exec.test.ts (5.125 s)",
+      "2026-11-25T03:38:24.4917936Z PASS tests/abort.test.ts",
+      "2026-11-25T03:38:28.5363879Z PASS tests/runStreamed.test.ts (11.366 s)",
+      "2026-11-25T03:39:09.8566059Z PASS tests/run.test.ts (52.773 s)",
+      "2026-11-25T03:39:23.1104014Z PASS tests/mcpConformance.test.ts (58.607 s)",
+      "2026-11-25T03:39:23.1825997Z Test Suites: 5 passed, 5 total",
+      "2026-11-25T03:39:23.1826473Z Tests:       47 passed, 47 total",
+      "2026-11-25T03:39:23.1826830Z Snapshots:   0 total",
+      "2026-11-25T03:39:24.0336135Z Artifact sdk-mcp-conformance-reports successfully finalized. Artifact ID 14989107963",
+      "2026-11-25T03:39:24.0338238Z Artifact sdk-mcp-conformance-reports has been successfully uploaded! Final size is 32432 bytes. Artifact ID is 14989107963",
+      "2026-11-25T03:39:24.0341609Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45540235075/artifacts/14989107963"
+    ],
+    "published_artifact": {
+      "id": 14989107963,
+      "name": "sdk-mcp-conformance-reports",
+      "api_digest": "sha256:91638585bdbaad62ad8cc903d5828cad372b926914eddc8e55a2707f3bb3af71",
+      "zip_bytes": 32432,
+      "sha256": "91638585bdbaad62ad8cc903d5828cad372b926914eddc8e55a2707f3bb3af71"
+    },
+    "published_artifact_members": [
+      {
+        "path": "codex-mcp-conformance-11786.json",
+        "bytes": 785435,
+        "sha256": "09c119f2b9d8b051f612296e6d1dc51f47232f16940e3c0c841da9d99ab20a81"
+      },
+      {
+        "path": "codex-mcp-review-11786.json",
+        "bytes": 68824,
+        "sha256": "d7e85835c8f3bb6ea3cedc08fec4e6e559580859d4638fca696c9a0673e32355"
+      }
+    ],
+    "binary_sha256": null,
+    "binary_identity_scope": "The workflow staged and exercised Bazel-produced executables from the exact source. It published the two MCP reports, not executable binaries or binary checksums; no checksum is invented.",
+    "scope": "This SDK job checked out the exact PR source. It does not grant all other jobs or the default branch a pass, and does not close GitHub advisory alerts."
+  },
+  "local_native_terminal": {
+    "schema": 1,
+    "classification": "CANCELLED_AS_REDUNDANT_AFTER_EXACT_HOSTED_PASS",
+    "local_native_pass": false,
+    "local_full_jest_replayed": false,
+    "cancellation_transport": "One control-C via the runtime-owned dedicated PTY; no PID kill.",
+    "native_pty_exit_code": 1,
+    "dedicated_bazel_shutdown_exit_code": 0,
+    "driver_interrupt_reporting_issue": "The original driver entered finally after KeyboardInterrupt, shut down its own Bazel server successfully, persisted final source/cost fields, then raised KeyError for its unset status display. Original raw receipt/log are retained unchanged.",
+    "measured_driver_wall_seconds": 2550.848513948964,
+    "pre_cancel_scope_snapshot": "ControlGroup=/user.slice/user-1000.slice/user@1000.service/app.slice/hcsn-dependency-native-sdk-v1.scope\nMemoryCurrent=8539140096\nMemoryPeak=8589934592\nCPUUsageNSec=1368693058000\nActiveState=active\n",
+    "post_cancel_scope_snapshot": "MemoryPeak=[not set]\nCPUUsageNSec=[not set]\nLoadState=not-found\nActiveState=inactive\n",
+    "post_cancel_scope_query_exit_code": 0,
+    "complete_scope_cpu_seconds": null,
+    "cost_scope": "Driver wall is measured through shutdown. Pre-cancel scope CPU/peak-memory are retained observations; full cleanup CPU was not separately captured. No local completion, speedup, or full-CPU estimate is asserted.",
+    "partial_build_error_lines": [],
+    "non_interruption_error_lines": [],
+    "final_tracked_changes": [
+      "package.json",
+      "pnpm-lock.yaml"
+    ],
+    "final_package_sha256": "09814870b8df15595b9546b8a041a1791ca419cce1389e5a5d3da7afa126c513",
+    "final_lock_sha256": "b2dc81d2d55a2f48ba88cbcfd34cdf162bc30bd168b09ee504424a16f6a30cd3",
+    "hosted_acceptance_source": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+    "hosted_acceptance_job": 138957422954
+  },
+  "other_exact_source_job_metadata": [
+    {
+      "id": 138957422867,
+      "run_id": 45540235075,
+      "head_sha": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+      "name": "sdk / python-sdk",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-25T03:30:38Z",
+      "completed_at": "2026-11-25T03:33:01Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45540235075/job/138957422867"
+    },
+    {
+      "id": 138957422971,
+      "run_id": 45540235075,
+      "head_sha": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-25T03:30:37Z",
+      "completed_at": "2026-11-25T03:32:42Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45540235075/job/138957422971"
+    }
+  ],
+  "update_provenance": {
+    "previous_summary_sha256": "a0641036f8d8291fcc7ddcfb8606658b7d872a583f01ca409e1fbecc65674a2d",
+    "immutable_v1_unchanged": true,
+    "terminal_archive_readback_verified": true,
+    "root_ref_publication_owner": "/root",
+    "this_agent_ref_changes": 0,
+    "default_branch_rescan_performed": false
+  }
+}
