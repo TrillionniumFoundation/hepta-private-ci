@@ -59,6 +59,19 @@ to `verified_runtime_artifacts_v1`. Identity and readback schemas become
 Chain uses a new request/delivery version rather than silently changing a v2
 request that has already been commissioned.
 
+## Model material during loading
+
+The coding Cell loader snapshots the caller's manifest and resolves its material
+root before entering a backend. It verifies the model, tokenizer and adapter
+files again after loading, before returning a predictor or trainable model. A
+persistent file replacement, new unbound loadable file, changed caller object or
+backend working-directory change cannot silently retarget that loaded identity.
+The predictor also retains its own manifest copy for subsequent inference.
+
+These checks observe files before and after loading; they do not seal mutable
+storage or detect every change-and-restore race. The additional full-file read
+has real loading cost and does not upgrade `runtime_closure_complete`.
+
 ## Remaining qualification boundaries
 
 `runtime_closure_complete` remains false. Declared files and installed RECORD
