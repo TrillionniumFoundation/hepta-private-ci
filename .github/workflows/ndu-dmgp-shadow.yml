@@ -1,0 +1,28 @@
+name: NDU-DMGP shadow reference
+
+on:
+  push:
+    paths:
+      - 'qualification/ndu-dmgp/**'
+      - '.github/workflows/ndu-dmgp-shadow.yml'
+  pull_request:
+    paths:
+      - 'qualification/ndu-dmgp/**'
+      - '.github/workflows/ndu-dmgp-shadow.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Run shadow-only adversarial reference tests
+        run: python3 -m unittest discover -s qualification/ndu-dmgp -p 'test_*.py' -v
+      - name: Exercise fixed synthetic A0-A5 matrix
+        run: python3 qualification/ndu-dmgp/synthetic_matrix.py > /tmp/ndu-dmgp-synthetic.json
