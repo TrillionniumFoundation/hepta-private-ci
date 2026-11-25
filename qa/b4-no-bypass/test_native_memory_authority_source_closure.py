@@ -206,6 +206,27 @@ class NativeMemoryAuthoritySourceClosureTests(unittest.TestCase):
                     receipt + middle + call,
                 )
 
+    def test_both_bao_profiles_use_the_bound_authority_update_and_clock(self):
+        for call in (
+            ".apply(&self.authority, update, now_unix_ms)",
+            ".apply_or_confirm_current(&self.authority, update, now_unix_ms)",
+        ):
+            for changed in (
+                call.replace("&self.authority", "&other_authority"),
+                call.replace("update,", "other_update,"),
+                call.replace("now_unix_ms", "supplied_time"),
+            ):
+                with self.subTest(call=call, replacement=changed):
+                    self.rejects(BAO, call, changed)
+
+    def test_bao_retention_requires_the_checked_result_and_profile(self):
+        self.rejects(BAO, "if !retain_longer_same_head", "if true")
+        self.rejects(
+            BAO,
+            ".apply_or_confirm_current(&self.authority, update, now_unix_ms)",
+            ".apply(&self.authority, update, now_unix_ms)",
+        )
+
     def test_receipt_must_bind_the_verified_update(self):
         for relative, receipt, changed in (
             (

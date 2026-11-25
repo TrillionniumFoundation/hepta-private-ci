@@ -104,12 +104,16 @@ class LintPreservedOwnerGuardsSourceClosureTests(unittest.TestCase):
                 changed = dict(sources)
                 changed[LANE] = changed[LANE].replace(indirect, call, 1)
                 PROOF._verify_boundary(ROOT, boundary, changed, ())
-                removed = dict(changed)
-                removed[LANE] = removed[LANE].replace(call, ".map(|_| None)", 1)
-                with self.assertRaisesRegex(
-                    PROOF.VerificationFailure, "caller set mismatch; missing="
+                for replacement in (
+                    ".map(|_| None)",
+                    ".map(OtherSource::begin_source_operation)",
                 ):
-                    PROOF._verify_boundary(ROOT, boundary, removed, ())
+                    removed = dict(changed)
+                    removed[LANE] = removed[LANE].replace(call, replacement, 1)
+                    with self.assertRaisesRegex(
+                        PROOF.VerificationFailure, "caller set mismatch; missing="
+                    ):
+                        PROOF._verify_boundary(ROOT, boundary, removed, ())
                 unregistered = dict(changed)
                 unregistered[PREFIX + "unregistered_training_source_operation.rs"] = (
                     changed[LANE]
