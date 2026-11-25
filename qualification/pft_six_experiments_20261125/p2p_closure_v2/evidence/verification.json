@@ -1,0 +1,45 @@
+{
+  "exit_code": 0,
+  "local_pipe_test": {
+    "completed_cases": 2,
+    "local_test": true,
+    "node": "ai395",
+    "pid": 6,
+    "record_kind": "pft2_direct_peer_ssh_supervisor",
+    "records": [
+      {
+        "candidate_sha256": "084ea4ac2acd271bd05b37923437a75d886e4ec616a8f2daaeede6b4fe51a61f",
+        "case_wall_seconds": 0.5153177800020785,
+        "round_id": "local-frozen-n8-s271801",
+        "seed": 271801,
+        "size": 8
+      },
+      {
+        "candidate_sha256": "4e77b8cac7abed26815a2cab63ba7e307514582fa23e8bea81798fda94c0654c",
+        "case_wall_seconds": 1.2159263610010385,
+        "round_id": "local-frozen-n64-s271801",
+        "seed": 271801,
+        "size": 64
+      }
+    ],
+    "schema_version": 1,
+    "sources": {
+      "ssh_runner.py": "e860287e58562531566d3c4ff90f71beba5df9a1d46cd19862b9d2939d337f7f",
+      "stream_peer.py": "0a1a6a8721197ab756cd7a40f460723832bc98cbf56eb2cd06a5442d0872c638",
+      "sufficient.py": "aa00a413a973c93cb74761c2918c3618100909d05870b062d5eb0507cfe38553"
+    },
+    "timing_note": "Node wall times overlap. Pipe read waits include peer computation and persistence; phase times are not additive across hosts.",
+    "wall_seconds": 1.871091441003955
+  },
+  "python": "3.12.14",
+  "record_kind": "pft2_frozen_source_verification",
+  "scope": "Focused state admission/resume/freeze checks plus local subprocess crash/recovery. Multihost evidence is in separate host archives.",
+  "sources": {
+    "ssh_runner.py": "e860287e58562531566d3c4ff90f71beba5df9a1d46cd19862b9d2939d337f7f",
+    "stream_peer.py": "0a1a6a8721197ab756cd7a40f460723832bc98cbf56eb2cd06a5442d0872c638",
+    "sufficient.py": "aa00a413a973c93cb74761c2918c3618100909d05870b062d5eb0507cfe38553"
+  },
+  "stderr": "test_negative_gram_rejected (__main__.ProtocolStateTests.test_negative_gram_rejected) ... ok\ntest_parent_and_ridge_types (__main__.ProtocolStateTests.test_parent_and_ridge_types) ... ok\ntest_published_round_is_frozen (__main__.ProtocolStateTests.test_published_round_is_frozen) ... ok\ntest_resume_cli_identity (__main__.ProtocolStateTests.test_resume_cli_identity) ... ok\ntest_resume_recomputes_boundary (__main__.ProtocolStateTests.test_resume_recomputes_boundary) ... ok\ntest_semantic_deduplication (__main__.ProtocolStateTests.test_semantic_deduplication) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.028s\n\nOK\n",
+  "stdout": "",
+  "test_source_sha256": "55aa170a015d8684c5dc42a0769f54dde353f4b36601156195690e7e929c9ac1"
+}

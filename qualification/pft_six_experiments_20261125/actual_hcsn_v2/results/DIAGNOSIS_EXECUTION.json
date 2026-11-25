@@ -1,0 +1,23 @@
+{
+  "status": "COMPLETED",
+  "exit_code": 0,
+  "diagnosis_wall_s": 15.590899382019415,
+  "total_wall_s": 15.59996191400569,
+  "command": [
+    "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+    "/home/alex/pft-six-actual-hcsn-v2-20261125/diagnose.py",
+    "--out",
+    "/home/alex/pft-six-actual-hcsn-v2-20261125/diagnosis_v1",
+    "--old-root",
+    "/home/alex/pft-six-actual-hcsn-20261125"
+  ],
+  "setup": {
+    "capsule_sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+    "files": 30,
+    "scripts": {
+      "common.py": "e148baae5ec1594779dd40583659e64505dfd1b91d228a93e153862486598650",
+      "diagnose.py": "ee4764fd7bd1d915212d27dca7909bed057b01c5b3d5f662d8a77a46680232c4"
+    },
+    "old_qualification_inherited": false
+  }
+}

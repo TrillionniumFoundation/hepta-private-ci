@@ -1,0 +1,127 @@
+{
+  "accuracy_by_width": [
+    {
+      "candidate_accuracy": 0.7434895833333334,
+      "cases": 3,
+      "max_realization_error": 2.2160051571518125e-12,
+      "parent_accuracy": 0.4635416666666667,
+      "per_case_accuracy": [
+        0.796875,
+        0.65625,
+        0.77734375
+      ],
+      "width": 8
+    },
+    {
+      "candidate_accuracy": 0.8190104166666666,
+      "cases": 3,
+      "max_realization_error": 1.311395436687235e-12,
+      "parent_accuracy": 0.5052083333333334,
+      "per_case_accuracy": [
+        0.8046875,
+        0.81640625,
+        0.8359375
+      ],
+      "width": 16
+    },
+    {
+      "candidate_accuracy": 0.8580729166666666,
+      "cases": 3,
+      "max_realization_error": 1.3511414209688155e-12,
+      "parent_accuracy": 0.5182291666666666,
+      "per_case_accuracy": [
+        0.8671875,
+        0.82421875,
+        0.8828125
+      ],
+      "width": 32
+    },
+    {
+      "candidate_accuracy": 0.87109375,
+      "cases": 3,
+      "max_realization_error": 7.369660437461789e-13,
+      "parent_accuracy": 0.5234375,
+      "per_case_accuracy": [
+        0.8203125,
+        0.87890625,
+        0.9140625
+      ],
+      "width": 64
+    }
+  ],
+  "actual_observed_window_to_heldout_evaluation": {
+    "environment_setup_job_created_utc": "2026-11-25T10:37:31.755000+00:00",
+    "evaluation_finished_utc": "2026-11-25T11:15:39.246703+00:00",
+    "scope": "Observed workflow window including waits and concurrent work; not an isolated performance benchmark; cold replay and later packaging lie outside this endpoint.",
+    "wall_s": 2287.491
+  },
+  "archive_job": {
+    "exit_code": 0,
+    "job_id": "1a21276e6cb-ffbe-3fa6",
+    "output_complete": true,
+    "output_durable": true,
+    "stderr_eof": true,
+    "stdout_eof": true,
+    "terminal_publication_confirmed": true
+  },
+  "archive_launch_acknowledgement": "MCP call timed out; original remote request was recovered by exact task argument identity and original job status. No replacement archive execution was launched.",
+  "candidate_commit": "e725f22b5c9806fb1ebb33845085195926a993b4",
+  "cold_forward_replay": {
+    "all_non_readout_parameters_exact": true,
+    "all_passed": true,
+    "child_cpu_s": 32.603591,
+    "fresh_processes": 12,
+    "head_realization_max_abs_error": 2.2160051571518125e-12,
+    "heldout_partitions": 24,
+    "launcher_wall_s": 33.15569242404308,
+    "native_daemon_or_real_user_adoption": false,
+    "prediction_max_abs_difference": 0.0,
+    "result_sha256": "f00f0de9b43410c4bdbd44e6414ed8f6514ca6e12269c8fcdcef3bd2ac18aab1",
+    "source_commit": "2a03928bf93bc10d3db2a9afec9915a1eff9c35d",
+    "supervisor_wall_s": 33.0805228180252
+  },
+  "evaluation_job": {
+    "exit_code": 0,
+    "job_id": "1a2126a5752-ffbe-3f9c",
+    "output_complete": true,
+    "output_durable": true,
+    "stderr_eof": true,
+    "stdout_eof": true,
+    "terminal_publication_confirmed": true
+  },
+  "measured_component_wall_s": {
+    "ai395_local_training_statistics": 29.370135641656816,
+    "cold_forward_replay_launcher": 33.15569242404308,
+    "direct_peer_protocol_supervisor": 42.46561168273911,
+    "heldout_evaluation_launcher": 49.381605438073166,
+    "pocket4_local_training_statistics": 22.515777399996296,
+    "public_unlabeled_basis": 11.18921242596116,
+    "read_only_archive": 0.3130735009908676
+  },
+  "paired_data_scope": "Each seed uses the same 256 held-out examples across all four widths. There are 3 unique held-out seed populations (768 examples), with 3072 total model-example evaluations, not 3072 independent test examples.",
+  "protocol_commit": "4c40e8a7b11a1f2afd661f2b76dd3929a3f41edb",
+  "runtime_initialization": {
+    "ai395_environment_setup_wall_s": 490.243189167697,
+    "pocket4_environment": "Reused pinned existing runtime"
+  },
+  "schema_version": 1,
+  "scientific_scope": {
+    "fresh_independent_test_sources": true,
+    "full_llm_parameter_identification": false,
+    "native_daemon_adoption": false,
+    "permissionless_or_byzantine_training_proved": false,
+    "physical_nonlinear_parameters_updated": false,
+    "readout_difference_parameters": [
+      21,
+      41,
+      81,
+      161
+    ],
+    "real_cross_user_evidence": false,
+    "test_labels_in_training_or_backward_boundary": false
+  },
+  "scope": "Real SmallHCSN peer-trained readout, synthetic independent held-out sources",
+  "source_cold_replay_commit": "2a03928bf93bc10d3db2a9afec9915a1eff9c35d",
+  "timing_rule": "Component durations are separate. Concurrent host time and overlapped communication/compute must not be summed as elapsed time. Cold replay, external publication, audits, artifact transfer, provisioning and orchestration latency are separate stages.",
+  "training_network_evidence_commit": "62aa526be3e4718015c7dc7e8c6cffb741a050fd"
+}

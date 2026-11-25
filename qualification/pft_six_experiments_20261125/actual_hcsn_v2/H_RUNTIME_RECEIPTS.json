@@ -1,0 +1,445 @@
+{
+  "scope": "Authoritative durable terminal receipts and lossless EOF reads; no inference of scientific quality from exit status",
+  "source_git_anchor_reported_by_orchestrator": "221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3",
+  "candidate_git_anchor_reported_by_orchestrator": "7dfd1deb8b70867a7875ef1fc99cd1a6b20f4953",
+  "phases": [
+    {
+      "phase": "worker_0",
+      "status": {
+        "at_unix_ms": 1795604864866,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a21255744f-ffbe-3f6d",
+        "launch_nonce": "71d655f85bd5dc9df52a07965ebbad48",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1230,
+            "stored": 1230
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "read": {
+        "audit_recorded": true,
+        "job_id": "1a21255744f-ffbe-3f6d",
+        "stderr": {
+          "eof": true,
+          "next_offset": 0,
+          "offset": 0,
+          "size": 0,
+          "text": ""
+        },
+        "stdout": {
+          "eof": true,
+          "next_offset": 1230,
+          "offset": 0,
+          "size": 1230,
+          "text": "{\"status\": \"COMPLETED\", \"exit_code\": 0, \"error\": null, \"shard_index\": 0, \"shard_count\": 4, \"protocol_sha256\": \"aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8\", \"source_git_anchor\": \"221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3\", \"launcher_sha256\": \"bbe698de2883456beff1e87e96d0940340afab5b60933361e1241767969c9c6d\", \"command\": [\"/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/runner.py\", \"--protocol\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/FORMAL_PROTOCOL_v2.json\", \"--out\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/formal_v2_training\", \"--shard-index\", \"0\", \"--shard-count\", \"4\"], \"host\": \"alex-G1628-04\", \"started_utc\": \"2026-11-25T10:52:00.904586+00:00\", \"completed_utc\": \"2026-11-25T11:07:44.831682+00:00\", \"wall_s\": 943.927137117018, \"child_cpu_s\": 940.855037, \"child_peak_rss_kib\": 399616, \"requested_cpu_quota_percent\": 100, \"requested_memory_limit_bytes\": 2147483648, \"maximum_campaign_concurrent_workers\": 4, \"shared_host_contention_possible\": true, \"stdout_sha256\": \"9f04a82857880fbf546a135f02bcbd9f3e1cf2820460c6f8b524c0c912673e7b\", \"stderr_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"test_created\": false}\n"
+        }
+      }
+    },
+    {
+      "phase": "worker_1",
+      "status": {
+        "at_unix_ms": 1795604916156,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a21255d76c-ffbe-3f6f",
+        "launch_nonce": "86f83a1c7553013fabbb8185430995ba",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1231,
+            "stored": 1231
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "read": {
+        "audit_recorded": true,
+        "job_id": "1a21255d76c-ffbe-3f6f",
+        "stderr": {
+          "eof": true,
+          "next_offset": 0,
+          "offset": 0,
+          "size": 0,
+          "text": ""
+        },
+        "stdout": {
+          "eof": true,
+          "next_offset": 1231,
+          "offset": 0,
+          "size": 1231,
+          "text": "{\"status\": \"COMPLETED\", \"exit_code\": 0, \"error\": null, \"shard_index\": 1, \"shard_count\": 4, \"protocol_sha256\": \"aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8\", \"source_git_anchor\": \"221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3\", \"launcher_sha256\": \"bbe698de2883456beff1e87e96d0940340afab5b60933361e1241767969c9c6d\", \"command\": [\"/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/runner.py\", \"--protocol\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/FORMAL_PROTOCOL_v2.json\", \"--out\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/formal_v2_training\", \"--shard-index\", \"1\", \"--shard-count\", \"4\"], \"host\": \"alex-G1628-04\", \"started_utc\": \"2026-11-25T10:52:26.308287+00:00\", \"completed_utc\": \"2026-11-25T11:08:36.083887+00:00\", \"wall_s\": 969.7758252690546, \"child_cpu_s\": 965.946253, \"child_peak_rss_kib\": 400792, \"requested_cpu_quota_percent\": 100, \"requested_memory_limit_bytes\": 2147483648, \"maximum_campaign_concurrent_workers\": 4, \"shared_host_contention_possible\": true, \"stdout_sha256\": \"c2ef3ccd97810480bb6510957a688497261a13a1d21d7223d159bc3e2e96eb2e\", \"stderr_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"test_created\": false}\n"
+        }
+      }
+    },
+    {
+      "phase": "worker_2",
+      "status": {
+        "at_unix_ms": 1795604770982,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a21255a208-ffbe-3f6e",
+        "launch_nonce": "f4e3eff20d82032286df88f5bdbed41f",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1231,
+            "stored": 1231
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "read": {
+        "audit_recorded": true,
+        "job_id": "1a21255a208-ffbe-3f6e",
+        "stderr": {
+          "eof": true,
+          "next_offset": 0,
+          "offset": 0,
+          "size": 0,
+          "text": ""
+        },
+        "stdout": {
+          "eof": true,
+          "next_offset": 1231,
+          "offset": 0,
+          "size": 1231,
+          "text": "{\"status\": \"COMPLETED\", \"exit_code\": 0, \"error\": null, \"shard_index\": 2, \"shard_count\": 4, \"protocol_sha256\": \"aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8\", \"source_git_anchor\": \"221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3\", \"launcher_sha256\": \"bbe698de2883456beff1e87e96d0940340afab5b60933361e1241767969c9c6d\", \"command\": [\"/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/runner.py\", \"--protocol\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/FORMAL_PROTOCOL_v2.json\", \"--out\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/formal_v2_training\", \"--shard-index\", \"2\", \"--shard-count\", \"4\"], \"host\": \"alex-G1628-04\", \"started_utc\": \"2026-11-25T10:52:12.654244+00:00\", \"completed_utc\": \"2026-11-25T11:06:10.942463+00:00\", \"wall_s\": 838.2883296689251, \"child_cpu_s\": 835.531833, \"child_peak_rss_kib\": 401764, \"requested_cpu_quota_percent\": 100, \"requested_memory_limit_bytes\": 2147483648, \"maximum_campaign_concurrent_workers\": 4, \"shared_host_contention_possible\": true, \"stdout_sha256\": \"5be31ce40b85146e0a7ba8e5a4bd4e7e91fcdeff65feeb4ab5fc0b1f330e12e2\", \"stderr_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"test_created\": false}\n"
+        }
+      }
+    },
+    {
+      "phase": "worker_3",
+      "status": {
+        "at_unix_ms": 1795604816141,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a212560682-ffbe-3f70",
+        "launch_nonce": "e7cde95ceba55cd490515c6cd3a7bbc1",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1231,
+            "stored": 1231
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "read": {
+        "audit_recorded": true,
+        "job_id": "1a212560682-ffbe-3f70",
+        "stderr": {
+          "eof": true,
+          "next_offset": 0,
+          "offset": 0,
+          "size": 0,
+          "text": ""
+        },
+        "stdout": {
+          "eof": true,
+          "next_offset": 1231,
+          "offset": 0,
+          "size": 1231,
+          "text": "{\"status\": \"COMPLETED\", \"exit_code\": 0, \"error\": null, \"shard_index\": 3, \"shard_count\": 4, \"protocol_sha256\": \"aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8\", \"source_git_anchor\": \"221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3\", \"launcher_sha256\": \"bbe698de2883456beff1e87e96d0940340afab5b60933361e1241767969c9c6d\", \"command\": [\"/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/runner.py\", \"--protocol\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/FORMAL_PROTOCOL_v2.json\", \"--out\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/formal_v2_training\", \"--shard-index\", \"3\", \"--shard-count\", \"4\"], \"host\": \"alex-G1628-04\", \"started_utc\": \"2026-11-25T10:52:48.272951+00:00\", \"completed_utc\": \"2026-11-25T11:06:56.090755+00:00\", \"wall_s\": 847.8179082530551, \"child_cpu_s\": 845.187844, \"child_peak_rss_kib\": 407280, \"requested_cpu_quota_percent\": 100, \"requested_memory_limit_bytes\": 2147483648, \"maximum_campaign_concurrent_workers\": 4, \"shared_host_contention_possible\": true, \"stdout_sha256\": \"39fef8d81b663b2381922fe1621f3e6cddb970de38817ab6c2d828f124916f9e\", \"stderr_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"test_created\": false}\n"
+        }
+      }
+    },
+    {
+      "phase": "candidate_seal",
+      "status": {
+        "at_unix_ms": 1795604969656,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a212653a7d-ffbe-3f8f",
+        "launch_nonce": "543503c67af2ef88eaa7afd207338ded",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 589,
+            "stored": 589
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "read": {
+        "audit_recorded": true,
+        "job_id": "1a212653a7d-ffbe-3f8f",
+        "stderr": {
+          "eof": true,
+          "next_offset": 0,
+          "offset": 0,
+          "size": 0,
+          "text": ""
+        },
+        "stdout": {
+          "eof": true,
+          "next_offset": 589,
+          "offset": 0,
+          "size": 589,
+          "text": "{\"training\": {\"COMPLETED_MAX_UPDATES\": 168}, \"rows\": 168, \"test_available\": false}\n{\"started_utc\": \"2026-11-25T11:09:26.181967+00:00\", \"completed_utc\": \"2026-11-25T11:09:29.607220+00:00\", \"wall_s\": 3.425440010963939, \"child_cpu_s\": 2.820617, \"source_git_anchor\": \"221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3\", \"test_created\": false, \"outputs\": {\"GLOBAL_CANDIDATE_SEAL.json\": {\"bytes\": 91882, \"sha256\": \"a447b724f6459625b0e9c5e15e9dca5bbaad439af5c433391c7b34e9a9df88ee\"}, \"TRAINING_SUMMARY.json\": {\"bytes\": 6731, \"sha256\": \"27dc82724dfa6676bef2f916969c3db89263ebd68b25131a68bcc85fc6a823c2\"}}}\n"
+        }
+      }
+    },
+    {
+      "phase": "independent_test",
+      "status": {
+        "at_unix_ms": 1795605397680,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a21267197b-ffbe-3f92",
+        "launch_nonce": "cb671c94026b4f0e3aa7680e6b7f2421",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1394,
+            "stored": 1394
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "read": {
+        "audit_recorded": true,
+        "job_id": "1a21267197b-ffbe-3f92",
+        "stderr": {
+          "eof": true,
+          "next_offset": 0,
+          "offset": 0,
+          "size": 0,
+          "text": ""
+        },
+        "stdout": {
+          "eof": true,
+          "next_offset": 1394,
+          "offset": 0,
+          "size": 1394,
+          "text": "{\"status\": \"COMPLETED\", \"exit_code\": 0, \"error\": null, \"command\": [\"/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/evaluate.py\", \"test\", \"--protocol\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/FORMAL_PROTOCOL_v2.json\", \"--root\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/formal_v2_training\", \"--seal\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/GLOBAL_CANDIDATE_SEAL.json\", \"--out\", \"/home/alex/pft-six-actual-hcsn-v2-20261125/formal_v2_test\"], \"protocol_sha256\": \"aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8\", \"source_git_anchor\": \"221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3\", \"candidate_git_anchor\": \"7dfd1deb8b70867a7875ef1fc99cd1a6b20f4953\", \"candidate_seal_sha256\": \"a447b724f6459625b0e9c5e15e9dca5bbaad439af5c433391c7b34e9a9df88ee\", \"launcher_sha256\": \"fca43ffcc52092479d9d21a46474e1bfa0d3b95b288b5a2bbb17ecf02ad5bba9\", \"started_utc\": \"2026-11-25T11:11:17.623083+00:00\", \"completed_utc\": \"2026-11-25T11:16:37.662522+00:00\", \"wall_s\": 320.03962161007803, \"child_cpu_s\": 317.736882, \"child_peak_rss_kib\": 257440, \"independent_evaluation_process\": true, \"test_used_for_selection\": false, \"git_anchors_checked_by_orchestrator_receipts\": true, \"stdout_sha256\": \"f523c90aa00bc1caabb2c2d58f623e1de58a8d686e5939d53b42e9cbadb21af4\", \"stderr_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n"
+        }
+      }
+    },
+    {
+      "phase": "postprocess",
+      "status": {
+        "at_unix_ms": 1795605735808,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a2126f6973-ffbe-3fa2",
+        "launch_nonce": "b97b1fed63b612fe087760ec6339de2a",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1000,
+            "stored": 1000
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "read": {
+        "audit_recorded": true,
+        "job_id": "1a2126f6973-ffbe-3fa2",
+        "stderr": {
+          "eof": true,
+          "next_offset": 0,
+          "offset": 0,
+          "size": 0,
+          "text": ""
+        },
+        "stdout": {
+          "eof": true,
+          "next_offset": 1000,
+          "offset": 0,
+          "size": 1000,
+          "text": "{\"rows\": 168, \"statuses\": {\"EVALUATED\": 168}, \"feature_difference\": {\"n\": 72, \"mean\": 0.019314236111111112, \"median\": 0.0234375, \"min\": -0.15625, \"max\": 0.1484375}, \"scaling_gain\": {\"n\": 144, \"mean\": 0.20225694444444445, \"median\": 0.2109375, \"min\": -0.046875, \"max\": 0.359375}}\n{\"analysis_sha256\": \"7219e192f0723a5f03890564cbdfc52c45b6ea60c1d395cf1c362a684a63fa57\", \"rows\": 168, \"evaluated\": 168, \"selection_steps\": {\"all\": {\"96\": 36, \"16\": 15, \"4\": 29, \"32\": 14, \"0\": 47, \"8\": 7, \"64\": 20}, \"main\": {\"96\": 30, \"16\": 12, \"4\": 21, \"32\": 13, \"0\": 42, \"8\": 7, \"64\": 19}, \"counts_at_final_budget_do_not_prove_convergence\": true}}\n{\"archive_count\": 190, \"bytes\": 19180320, \"wall_s\": 8.122050003963523, \"cpu_s\": 7.989132185}\n{\"status\": \"COMPLETED\", \"started_utc\": \"2026-11-25T11:22:07.318128+00:00\", \"completed_utc\": \"2026-11-25T11:22:15.763120+00:00\", \"wall_s\": 8.445059794932604, \"child_cpu_s\": 8.233075, \"no_science_rerun\": true, \"stages\": [\"summarize\", \"descriptive_accounting\", \"lossless_archiving\"]}\n"
+        }
+      }
+    }
+  ],
+  "postprocess_reconciliation": {
+    "stable_key": "pft-actual-hcsn-v2-postprocess-20261125-v2",
+    "initial_call": "MCP request timed out",
+    "identical_retry": "MCP request timed out",
+    "original_request_exactly_matched": true,
+    "remote_request": {
+      "allow_detached_fallback": true,
+      "allow_job_network": true,
+      "args": [
+        "-c",
+        "import json,pathlib,resource,subprocess,sys,time\nfrom datetime import datetime,timezone\nroot=pathlib.Path(\"/home/alex/pft-six-actual-hcsn-v2-20261125\")\nr=json.loads((root/\"TEST_EXECUTION.json\").read_text())\nif r[\"status\"]!=\"COMPLETED\" or r[\"exit_code\"]!=0: raise RuntimeError(\"Incomplete test\")\nstart=time.perf_counter(); before=resource.getrusage(resource.RUSAGE_CHILDREN); started=datetime.now(timezone.utc).isoformat()\nfor name in [\"summarize.py\",\"analyze_results.py\",\"pack_evidence.py\"]:\n subprocess.run([sys.executable,str(root/name),\"--root\",str(root)],check=True)\nafter=resource.getrusage(resource.RUSAGE_CHILDREN)\nreceipt={\"status\":\"COMPLETED\",\"started_utc\":started,\"completed_utc\":datetime.now(timezone.utc).isoformat(),\"wall_s\":time.perf_counter()-start,\"child_cpu_s\":after.ru_utime+after.ru_stime-before.ru_utime-before.ru_stime,\"no_science_rerun\":True,\"stages\":[\"summarize\",\"descriptive_accounting\",\"lossless_archiving\"]}\n(root/\"POSTPROCESS_EXECUTION.json\").write_text(json.dumps(receipt,indent=2,sort_keys=True)+\"\\n\")\nprint(json.dumps(receipt))\n"
+      ],
+      "cpu_quota_percent": 100,
+      "cwd": "/home/alex/pft-six-actual-hcsn-v2-20261125",
+      "default_cwd": "/home/alex",
+      "env": {},
+      "executable": "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+      "execution_mode": "operator",
+      "job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a2126f6973-ffbe-3fa2",
+      "job_id": "1a2126f6973-ffbe-3fa2",
+      "launch_nonce": "b97b1fed63b612fe087760ec6339de2a",
+      "memory_max_bytes": 2147483648,
+      "nice": 10,
+      "platform": "linux",
+      "request_digest": "d5f68292d6607eb6209b3cd5454de8b3a4bdee741d6283c7f3a949e8da26c8fc",
+      "request_fingerprint": "d5f68292d6607eb6209b3cd5454de8b3a4bdee741d6283c7f3a949e8da26c8fc",
+      "terminal_publication_protocol": 1,
+      "timeout_seconds": 600,
+      "unit": "hepta-runtime-job-1a2126f6973-ffbe-3fa2"
+    },
+    "scientific_reruns": 0
+  }
+}

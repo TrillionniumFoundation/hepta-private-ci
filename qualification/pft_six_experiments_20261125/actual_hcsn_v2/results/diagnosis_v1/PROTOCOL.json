@@ -1,0 +1,60 @@
+{
+  "common_sha256": "e148baae5ec1594779dd40583659e64505dfd1b91d228a93e153862486598650",
+  "data_seed": 271,
+  "experiment": "actual-hcsn-v2-train-dev-diagnosis-v1",
+  "old_test_read": false,
+  "runtime": {
+    "capsule": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule",
+    "device": "cpu",
+    "numpy": "2.5.5",
+    "python": "3.14.4",
+    "threads": 1,
+    "torch": "2.15.0+cpu"
+  },
+  "script_sha256": "ee4764fd7bd1d915212d27dca7909bed057b01c5b3d5f662d8a77a46680232c4",
+  "source": {
+    "capsule_source_provenance_sha256": "72194249d27b8af51cf95f89f5db494fa525e44c156eaf11b56e417ccc8c3b55",
+    "imported_paths": {
+      "qualification": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/__init__.py",
+      "qualification.hcsn_adaptive": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/hcsn_adaptive/__init__.py",
+      "qualification.hcsn_adaptive.batched_flow": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/hcsn_adaptive/batched_flow.py",
+      "qualification.hcsn_adaptive.finite_control": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/hcsn_adaptive/finite_control.py",
+      "qualification.hcsn_adaptive.flow_semantics": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/hcsn_adaptive/flow_semantics.py",
+      "qualification.hcsn_adaptive.impulse_execution": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/hcsn_adaptive/impulse_execution.py",
+      "qualification.hcsn_adaptive.uniformized_flow": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/hcsn_adaptive/uniformized_flow.py",
+      "qualification.hcsn_smallnet_20261124": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/hcsn_smallnet_20261124/__init__.py",
+      "qualification.hcsn_smallnet_20261124.model": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/hcsn_smallnet_20261124/model.py",
+      "qualification.hcsn_training": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/hcsn_training/__init__.py",
+      "qualification.hcsn_training.population_generator": "/home/alex/pft-six-actual-hcsn-v2-20261125/capsule/src/qualification/hcsn_training/population_generator.py"
+    },
+    "research_source_hashes": {
+      "qualification/__init__.py": "a72f4fbcce83867d8455c9956f6347923addfe67ab3de06a73688ab6a0cf864b",
+      "qualification/hcsn_adaptive/__init__.py": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+      "qualification/hcsn_adaptive/batched_flow.py": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+      "qualification/hcsn_adaptive/finite_control.py": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+      "qualification/hcsn_adaptive/flow_semantics.py": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+      "qualification/hcsn_adaptive/impulse_execution.py": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+      "qualification/hcsn_adaptive/uniformized_flow.py": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+      "qualification/hcsn_smallnet_20261124/__init__.py": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+      "qualification/hcsn_smallnet_20261124/adaptation_suite.py": "8f1f0619fcb5aa4354f151534f7164c5f1cba867eee8e58fd66ea1b3e210920c",
+      "qualification/hcsn_smallnet_20261124/adaptation_tests.py": "856d24472de515c180f22dfba39e21e6d58c9a5012e00b539a17cfe43c9d6df1",
+      "qualification/hcsn_smallnet_20261124/benchmark.py": "5d1e1db5515e7754eac79177bed07cb7daa9c38cf53b582ab5b68f9e75426fae",
+      "qualification/hcsn_smallnet_20261124/campaign.py": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+      "qualification/hcsn_smallnet_20261124/cost.py": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+      "qualification/hcsn_smallnet_20261124/data.py": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+      "qualification/hcsn_smallnet_20261124/data_tests.py": "f64fd68c7c58f42230b0d7cd2bb60e0cc4c252c7c3afb3c52b51c079876db18f",
+      "qualification/hcsn_smallnet_20261124/editing.py": "0577fea73b8678e03476082f4b4eab7623bbada47a628e6eed31b4180c7d90dc",
+      "qualification/hcsn_smallnet_20261124/editing_tests.py": "bc18d5b89b27b709e65ec96e62e605e016c2546ce160e579f6afb3a6fa384345",
+      "qualification/hcsn_smallnet_20261124/kernel_tests.py": "ec16913e3ea76e0c845e9becbc47f94e2fc5c7f3c7148f2a6344deb36b93764e",
+      "qualification/hcsn_smallnet_20261124/model.py": "aabc7a29ebfdaed592ebd4a16d7e4db927a6a88cb7247d4b334fd7299eab8576",
+      "qualification/hcsn_smallnet_20261124/protocol_tests.py": "638d977d0a7f065bdbec3681c3e0dc8ca71d3a42f8535c7a7a2922999bd89b52",
+      "qualification/hcsn_smallnet_20261124/resume_test_execution.py": "58fb4877678b527e2831aff51760588ed8e044798de3e6dcdcec20b99107b749",
+      "qualification/hcsn_smallnet_20261124/train.py": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+      "qualification/hcsn_smallnet_20261124/transfer_suite.py": "1f76e411f9b22d9bd5c8f356912d0658b3df81f0c94abea8ff8f8a1ea2e85ed5",
+      "qualification/hcsn_training/__init__.py": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+      "qualification/hcsn_training/population_generator.py": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+    }
+  },
+  "test_created": false,
+  "utc": "2026-11-25T10:23:56.760180+00:00"
+}

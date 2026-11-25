@@ -1,0 +1,1512 @@
+{
+  "archive_count": 190,
+  "archive_member_count": 981,
+  "archives_git_anchor_reported_by_orchestrator": "5400e50bf192123eb231bca41b69de1140442a32",
+  "candidate_git_anchor": "7dfd1deb8b70867a7875ef1fc99cd1a6b20f4953",
+  "complete_performance_advantage_established": false,
+  "file_count_excluding_this_manifest": 238,
+  "files": [
+    {
+      "bytes": 26540,
+      "git_blob_sha1": "f453ba54ea2ca01fdbf11b95df2942f9e9aaba58",
+      "path": "ANALYSIS.json",
+      "role": "receipt_or_protocol",
+      "sha256": "7219e192f0723a5f03890564cbdfc52c45b6ea60c1d395cf1c362a684a63fa57"
+    },
+    {
+      "bytes": 1086,
+      "git_blob_sha1": "6a8ae930659eb337039590b08be269f5ceb84f94",
+      "path": "BYTE_VERIFICATION.json",
+      "role": "receipt_or_protocol",
+      "sha256": "cc6084bf56e422f0dc0ae01ddf85f4c2ea00796681435ed126d0468e12985a04"
+    },
+    {
+      "bytes": 4506,
+      "git_blob_sha1": "6ea233d17d433bb364652ef4d1aa2f1529808c31",
+      "path": "BYTE_VERIFY_MODES.json",
+      "role": "normal_and_optimized_verification_receipt",
+      "sha256": "a487b3db78714b4bfb0e2b3f571732a5c0f0547020121c38fd7ca7ac41e2e4e1"
+    },
+    {
+      "bytes": 11085,
+      "git_blob_sha1": "92a39eb71987f2f89a10d40b4cbebb3c7e19ece2",
+      "path": "DESIGN.md",
+      "role": "report",
+      "sha256": "2d6a6585be6260361bef92a2f6c14e2e7a4e306f583b532b144a3f6a84a3b02d"
+    },
+    {
+      "bytes": 157358,
+      "git_blob_sha1": "1e47bdd948f76285520a7de6b995ad7fae4b2aba",
+      "path": "EVIDENCE_RETRIEVAL_AGENT.json",
+      "role": "receipt_or_protocol",
+      "sha256": "d38abc634603f2b75ead10cc26a84cf073764dd8450cf54de707bec24764efbc"
+    },
+    {
+      "bytes": 84470,
+      "git_blob_sha1": "b65b02cd418274abda3f9e480bc2a5061af6e821",
+      "path": "FINAL_SUMMARY.json",
+      "role": "receipt_or_protocol",
+      "sha256": "080826db8b38a01f11b8f64bb467ea26735b13020ae113d30e8b425e83fea743"
+    },
+    {
+      "bytes": 1936,
+      "git_blob_sha1": "92de067eb30147e657dbd6e2504b6ca2b7b287d6",
+      "path": "FORMAL_FREEZE_EXECUTION.json",
+      "role": "receipt_or_protocol",
+      "sha256": "42df02c12b984db04f5401739ec2687db73de37e894d5454e999235e0a23f5f0"
+    },
+    {
+      "bytes": 44470,
+      "git_blob_sha1": "325174a99eb2552dba8b60a41a4cc8cab9943d52",
+      "path": "FORMAL_PROTOCOL.json",
+      "role": "receipt_or_protocol",
+      "sha256": "ed607b473498538b447907400977c28d539d8d64bb5d9276fd29c3d5b6f2bdaa"
+    },
+    {
+      "bytes": 54335,
+      "git_blob_sha1": "b5fdbc81c6026430431522993aee9645395634dc",
+      "path": "FORMAL_PROTOCOL_v2.json",
+      "role": "receipt_or_protocol",
+      "sha256": "aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8"
+    },
+    {
+      "bytes": 1329,
+      "git_blob_sha1": "4fedfc46c0651d3013d530dd34e117e02a86c866",
+      "path": "FORMAL_V2_FREEZE_EXECUTION.json",
+      "role": "receipt_or_protocol",
+      "sha256": "680eaa254a7cca730f8e76ef5744a54969c448bcf95297337ad17f880b8e7f0b"
+    },
+    {
+      "bytes": 91882,
+      "git_blob_sha1": "9c17a1f75c4613aee412c3ef1f5bf59020aa991c",
+      "path": "GLOBAL_CANDIDATE_SEAL.json",
+      "role": "receipt_or_protocol",
+      "sha256": "a447b724f6459625b0e9c5e15e9dca5bbaad439af5c433391c7b34e9a9df88ee"
+    },
+    {
+      "bytes": 21041,
+      "git_blob_sha1": "89f4487aee408142974e1c3ae0d0814656583e4f",
+      "path": "H_RUNTIME_RECEIPTS.json",
+      "role": "receipt_or_protocol",
+      "sha256": "4de55c05c9db6857acbf9b93a49f4404a295624e8d48e404eefeaf3a73fdc575"
+    },
+    {
+      "bytes": 313,
+      "git_blob_sha1": "e2b3d61bef2aaa67c7055b5e77b517f7d10415e1",
+      "path": "POSTPROCESS_EXECUTION.json",
+      "role": "receipt_or_protocol",
+      "sha256": "1b81aa4f4db9d1c6de18fa485247639e274183c3a8d8a3c9b0b6ff3c74a0e401"
+    },
+    {
+      "bytes": 17420,
+      "git_blob_sha1": "fa13f0371157579248551c5945cb6ccab2514dff",
+      "path": "README.md",
+      "role": "report",
+      "sha256": "7191ac72e453ebc1269e85a10d649c20c270251f8e74839d3b1a8436bfbfab27"
+    },
+    {
+      "bytes": 570,
+      "git_blob_sha1": "4b96700a2e5a53600899983468612d80d3dfb721",
+      "path": "SEAL_EXECUTION.json",
+      "role": "receipt_or_protocol",
+      "sha256": "f557ce4311fe28d1ae7dd47f0c574ae1a5eedc4cb3b0f5b588c2cf0c6e150603"
+    },
+    {
+      "bytes": 1482,
+      "git_blob_sha1": "a6ddbc7f8f4620ed26dd9d35ef37de9c87a8bb31",
+      "path": "TEST_EXECUTION.json",
+      "role": "receipt_or_protocol",
+      "sha256": "efe30fe155e706c00104fb9bd47dcd0e830f3cbd945ac2eb730d05aa8bcea882"
+    },
+    {
+      "bytes": 6731,
+      "git_blob_sha1": "d0bc46217430afc2de2efffdb47f83059e8a42d0",
+      "path": "TRAINING_SUMMARY.json",
+      "role": "receipt_or_protocol",
+      "sha256": "27dc82724dfa6676bef2f916969c3db89263ebd68b25131a68bcc85fc6a823c2"
+    },
+    {
+      "bytes": 1320,
+      "git_blob_sha1": "eff6374af8d34a1cccf36890b5a93376c251d1e0",
+      "path": "WORKER_0_EXECUTION.json",
+      "role": "receipt_or_protocol",
+      "sha256": "0bd8d96d87229fc22c452530b63f2b82aa71263b40f16faeebe256e341b63a27"
+    },
+    {
+      "bytes": 1321,
+      "git_blob_sha1": "c0d25f8174b99c8d4cf6505e425b3d61a290a13d",
+      "path": "WORKER_1_EXECUTION.json",
+      "role": "receipt_or_protocol",
+      "sha256": "e51d6f469a78f1681ea6fc57d6f3b0c44d3fba4a618f41a4880e10e68861e487"
+    },
+    {
+      "bytes": 1321,
+      "git_blob_sha1": "b7f6f676ef29fb2c6bb52ac8681034d8c67f7da8",
+      "path": "WORKER_2_EXECUTION.json",
+      "role": "receipt_or_protocol",
+      "sha256": "357cced4ee5e0199be41e49cb43dfe70aac3fbe5d57c7c7fcd19d155e075ba37"
+    },
+    {
+      "bytes": 1321,
+      "git_blob_sha1": "d927a1dcf630a2be566d2d401dcd4c280df6a6e2",
+      "path": "WORKER_3_EXECUTION.json",
+      "role": "receipt_or_protocol",
+      "sha256": "60ee3405660ed609dbdb7b0f7b10f4df4325f3b918a7a5942b04b202a1e09d44"
+    },
+    {
+      "bytes": 9223,
+      "git_blob_sha1": "fe1858156725d50a0722ee7cd10772d07dfacb46",
+      "path": "analyze_results.py",
+      "role": "source",
+      "sha256": "0b56c45b44ce1fd2542b0565af138bd74fb97cf44b767ca3d19cb167754e1cfb"
+    },
+    {
+      "bytes": 3434,
+      "git_blob_sha1": "28026a1c62efa3f39f778613a588f50318012245",
+      "path": "cache_check.py",
+      "role": "source",
+      "sha256": "90b04adbfb26058b0b7c680db4f48c46fa71a6dae37cb80633fb666ed58df9ff"
+    },
+    {
+      "bytes": 9582,
+      "git_blob_sha1": "009bc61c461f230d814f1ef6b34b0a3126549c2f",
+      "path": "common.py",
+      "role": "source",
+      "sha256": "b14f1d47e3a8635aa781b5b983e84eca7634f9d1e26cbf7674fb697645d7759a"
+    },
+    {
+      "bytes": 8313,
+      "git_blob_sha1": "9ae0e86c1bc8e4ff7b9f68a1bf0d63e4807ea00f",
+      "path": "diagnose.py",
+      "role": "source",
+      "sha256": "ee4764fd7bd1d915212d27dca7909bed057b01c5b3d5f662d8a77a46680232c4"
+    },
+    {
+      "bytes": 9496,
+      "git_blob_sha1": "f02dd36eebc963d03da438c08fd9ee06ad25bb45",
+      "path": "evaluate.py",
+      "role": "source",
+      "sha256": "3cc009afd4241e0fbf9906e663b5127f11c0447a014c89d3717b82e7b47d858d"
+    },
+    {
+      "bytes": 265855,
+      "git_blob_sha1": "214767f9b0005fd032413b5dd84d81f7576ee1b7",
+      "path": "evidence_archives/ARCHIVE_INDEX.json",
+      "role": "receipt_or_protocol",
+      "sha256": "37736a1b054eb4dc5e6160dbdc5b02a01de8bd44a5ba57635eb1c97c3ecc74c4"
+    },
+    {
+      "bytes": 4960,
+      "path": "evidence_archives/cache_check.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "017bbe0856acc29dc7252b796b457060ba8344457a44fca36fe70b3e9772c39c"
+    },
+    {
+      "bytes": 28580,
+      "path": "evidence_archives/diagnosis.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "878bb3c9a9d920e9b29bb5d8e98d9e23b751feb191cfc88854757ceb9b308da1"
+    },
+    {
+      "bytes": 58288,
+      "path": "evidence_archives/formal_source_and_metadata.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "564666fb7fa9a065ff50e742574e2cc6bf97eb367636d60af2acd7b9f0ad86f9"
+    },
+    {
+      "bytes": 58800,
+      "path": "evidence_archives/formal_test_metadata.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "eb030f862c450d4c7c7afe41d8136f468a8df7ea7e364817e111a566e77a29cd"
+    },
+    {
+      "bytes": 71940,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "efbfe806cad47ab9663c49f0885543936b41c647a0c5afc4f6264efb45e492c2"
+    },
+    {
+      "bytes": 71720,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "6e3c7b16b49d12c9d983785da3c2f2c1073196aa326afcb544806cc94e086404"
+    },
+    {
+      "bytes": 73372,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "cc524ac4cbfe96bda342ceab80bef2210225234ce89b0275aaa0d650af32c7e1"
+    },
+    {
+      "bytes": 78472,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "7f1aa972209f6534b8a06fe16d90bcbf3fa933e7953b70954f0cb1bf1cf5c31a"
+    },
+    {
+      "bytes": 73544,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "3a1a1f9dfd8cae1e52d9d594580881b8a0a94587e9c87801a991266b42a9934a"
+    },
+    {
+      "bytes": 75956,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-tanh-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "7c1a01516a3d1cbe67c8954165fa02cada4af7680348a75b8fab5c1735d6e54e"
+    },
+    {
+      "bytes": 80552,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-tanh-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "3c8392e9ebfb27eca67bd5116c5291aab61e61b415aec03b68ea4c40fbeb78ec"
+    },
+    {
+      "bytes": 80464,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b2d5e70ba1a848bbea90c22b9200a6ec14b88ebb8f14d5d1711634abad2d3ebb"
+    },
+    {
+      "bytes": 72500,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "1f18e7e8d6d3dede99b88ab583a2f8c291ccaef37e53a92cf597916a3a9b14de"
+    },
+    {
+      "bytes": 72440,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "8ba4240e4c9a7719779ac8543b78525eda6034697ae5ce39558540563425c525"
+    },
+    {
+      "bytes": 73980,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "5ab2286f0970828b2a1001cc335c1bf3c2e5fbc38b2120d6d6f438c47f469c6e"
+    },
+    {
+      "bytes": 78892,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "0da4b8d3613f65c0f47d18e61f266b8dd71ede021ddb66d01511a7172d5a5eb5"
+    },
+    {
+      "bytes": 74252,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "35768fa65d66df65ed657f78636ce3b8e2253563faa01b937dc89196d1d101e5"
+    },
+    {
+      "bytes": 76352,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-value_risk-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f64a8dc7ae2a136c9fe3215053a792be81617f2059262fdd521996f022989137"
+    },
+    {
+      "bytes": 81784,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-value_risk-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b5f129a6abe0a262a1833bf029d164bb59f61ddda8a8a58d706a0df944210532"
+    },
+    {
+      "bytes": 81024,
+      "path": "evidence_archives/formal_v2_training--n16-s2101-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "7758ce6fd68b738fa9c0420e846f01c99717fb0365e6618e0c96018e42b2303b"
+    },
+    {
+      "bytes": 71668,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "7a463ef051608dad6daa2a9edd589d15aa24e0dcb973b5239733fea920922d88"
+    },
+    {
+      "bytes": 72144,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "e334fd453deeffedd7ce9c6070cfb8a3fb8fe21d4201fec65101135bd9a4d217"
+    },
+    {
+      "bytes": 73380,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f5528ecf4654d80889aa9117fa9b35e56c68a76f9122d3fc90854cd46a3656c3"
+    },
+    {
+      "bytes": 78120,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "2634446d50ce6af4820ab17a3f3af752d8ff38950fc18853016a7aa432bc9277"
+    },
+    {
+      "bytes": 73448,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "4b7b274efa71ca20e4dd3351c5720015a692ffcad49de1b4acb30a01a04578ae"
+    },
+    {
+      "bytes": 80268,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-tanh-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "afe5657743c089574ecc3d5848d49a563bdfa88f65d3e8c80bde0a48a605e735"
+    },
+    {
+      "bytes": 80152,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-tanh-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b4d12f60637d6de4f6146f3e0a8811470c3944116f458845fdc73565bcf056c1"
+    },
+    {
+      "bytes": 80292,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "97b6b8f5cf6336163deb41ab747c00f58ef37c986cff42d92b32b3b22ab05542"
+    },
+    {
+      "bytes": 71912,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "eb09bb4a7a4fd5487c96321d63a733e780651cf0ebdc1538566aba75a9ba0689"
+    },
+    {
+      "bytes": 72492,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "bd2d4a193176407f2e99c62104de9adf93ea65e494e6f5f8d98e6df6425f89bd"
+    },
+    {
+      "bytes": 74128,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "54d6bbc5eab06e6d0c1db36bbbb73091e5c70fa2372104b05c6edf7d0104cac7"
+    },
+    {
+      "bytes": 78952,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "134aa6f3edfca89ac19a9b7a8881b07e4b0d185f25d62a9ce76675dfc0eddc8e"
+    },
+    {
+      "bytes": 74188,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "8f3f5cac9135ecc6adc6e4a9108e5827e1c5211bce0aafd63fd684e6d2f1a845"
+    },
+    {
+      "bytes": 80104,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-value_risk-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "e8df00e4eb45b902b073f588743253dd280be378fc3a6d453109a7a03f6dea7a"
+    },
+    {
+      "bytes": 76316,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-value_risk-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f151a170c9b3d5b50323ca8345ef57fb6b4f4a74b1e89bd9e0dff4c8fee22759"
+    },
+    {
+      "bytes": 81092,
+      "path": "evidence_archives/formal_v2_training--n16-s2102-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "e5b0d6d0233c1a86e802bd440acd6b05064894ce26f11aed480fa27b5d4f3713"
+    },
+    {
+      "bytes": 72428,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "9072eb53497f999d95c11fcad3e64b9748d9ee61491eaa54c6f5b67efbbef313"
+    },
+    {
+      "bytes": 71620,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b6576b69fe9b6698a1196c43255e1d72ff9bd260f2135b89488e5e77ac69d48d"
+    },
+    {
+      "bytes": 73668,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "e8a425b2be1315cf6b562a1c72a5ffef3d9e97202970c6a27d2484e6cae642ec"
+    },
+    {
+      "bytes": 78428,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "5a6faa340fe75e98456ed8f78e3bd19ec7f8508bb10710625eff7875a6d55cfd"
+    },
+    {
+      "bytes": 73536,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "1639d1a01ca7dcb9eaf35e9231fb6025cba269d6d5e95f10a048de8b0582956c"
+    },
+    {
+      "bytes": 75972,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-tanh-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "dbab763f559e771e7af977522d2acebb5a444811bef1ea63d2f22ac6ea8c6613"
+    },
+    {
+      "bytes": 80420,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-tanh-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "9154ed0eb4730e4761291d5ec6b093d338b8f942354434d4965e2d18c7eae23d"
+    },
+    {
+      "bytes": 80572,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "ccd3ca27545ff4105626b8738e871e2160fc58035f9dd3b3a431a8bd091457e8"
+    },
+    {
+      "bytes": 72620,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "71336b9d37839d5ff0d6c5b2442738a3bb14f64857423eed181070a16275c5f6"
+    },
+    {
+      "bytes": 72956,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "1501a31d49b8b1c51edcae13597ccb8a0ce15d713d95d21bee1a3ff9221f3ff3"
+    },
+    {
+      "bytes": 73852,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "eec776b3a02149a91d8681845ff8cdd63d181937224fc77fbad018c8558ba37c"
+    },
+    {
+      "bytes": 75324,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "710674daeee3f935da24bb904e5d13ef471a7bd28ccd9fb880b9027180693999"
+    },
+    {
+      "bytes": 74004,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "5f6294ed401b36c55850717eb47f8d8eff01cf0d6807828b4207c7ba3e611c3d"
+    },
+    {
+      "bytes": 80392,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-value_risk-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "d035672ac70ad9942b2ff005b1db68c33c353fb013d57366b8cca1a444987fef"
+    },
+    {
+      "bytes": 77556,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-value_risk-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "0228ee9b31070db1a74d221164931b12ac2e6d1792caafaede7cea4c0646d34f"
+    },
+    {
+      "bytes": 80840,
+      "path": "evidence_archives/formal_v2_training--n16-s2103-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b23275aa581d5b54197d81cb888cbf28aaec23083822b88fc4005a6f9dcbb28b"
+    },
+    {
+      "bytes": 94124,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "8d3a125693d498b6f9b06a4435e238a378c61392018be1872696242e52a12b1c"
+    },
+    {
+      "bytes": 96416,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "d8debeaf17fcc17cd8768523a9c72747f384ce18e2d8c42f679ef1dccd48ad7f"
+    },
+    {
+      "bytes": 96192,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "375a0e9f1e39cb44fefbe8de4364ee37060e107fa8952067194ad38c693f9851"
+    },
+    {
+      "bytes": 102980,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "5d3e8fe739611d450f2de102c887b4b909b510db976a0599b68dfb47320e59f5"
+    },
+    {
+      "bytes": 96628,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "eba59e8ea917f3032b711dfb6c5469b4f6d135225430ac8270feec3e8f21b173"
+    },
+    {
+      "bytes": 123560,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-tanh-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "e5484c70f1af733667445c23b089d17b77108b018f496e76c7f63f8c47dcb291"
+    },
+    {
+      "bytes": 107308,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-tanh-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "29a00027e5d3c20ba64bf7075bcd132d72911c107e4a25219dc2ad34620d92d1"
+    },
+    {
+      "bytes": 123508,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "c293f3922c1c61737a16a2d9b77f967901b292cbef359aba179cf0e96ac41338"
+    },
+    {
+      "bytes": 95308,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "19fb9e693a462514e8c50dc195cb0e18da85782f520b65610b7bebf36096605a"
+    },
+    {
+      "bytes": 97796,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "7947a3f2703b34d864cf7746e1ace5ce8d47127ed3eb502fb4665e5ed7f612e6"
+    },
+    {
+      "bytes": 96892,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "4253a9d64151262ef2571c217770d1e963a3472883502daa6c2e21c3fba84efc"
+    },
+    {
+      "bytes": 115828,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "d8b65d17cfa1e365ba40ae89c487c6744967224ab2e9b674a70411c7b1799ee7"
+    },
+    {
+      "bytes": 96424,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "1ca154a359028930624279979afac42892d5378f0871bb9e6038960c3bc156f5"
+    },
+    {
+      "bytes": 123380,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-value_risk-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f70fc6230eed6b2d08a5f8bca4c3b81ef8b3660adac772e233062d6ed17a6d73"
+    },
+    {
+      "bytes": 107948,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-value_risk-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "bc38343616d96ac7b72b8485e1d29c5df27594be4c03ee7e6be0920aa0f65854"
+    },
+    {
+      "bytes": 123760,
+      "path": "evidence_archives/formal_v2_training--n32-s2101-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b41f6c0f906ab3ccba2025e9fc2f3741b13b38acd6605b8caf41fe11ce6a446b"
+    },
+    {
+      "bytes": 94228,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "a6c03b4ac3557342f8561eab26df95e6a98dc28cfafc9d772300901e3f078054"
+    },
+    {
+      "bytes": 96752,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "3b41226d9e0608b7c57a285a810de52bfd6ed455a8265bfd6c3e65e2c1210792"
+    },
+    {
+      "bytes": 94052,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "4e4bcbc5d87367fb24523dd3c56c24e1b2528fad54bd38e4fa5de23e46c2ef1e"
+    },
+    {
+      "bytes": 114800,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "d3d0a6af344fd0309fcd685816f1177aeec5a5b4480900718e3a3a0903829cff"
+    },
+    {
+      "bytes": 94448,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "9dd8c9330315d073d171b1e160e4aec1dd35605f93b89c05a1602846bf247673"
+    },
+    {
+      "bytes": 123028,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-tanh-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "47e74a06739bb288a38b9211d58c534f822a8dfed740f0381dde04e6352ea2d4"
+    },
+    {
+      "bytes": 107808,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-tanh-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "90d90656ea11b50f7acca82fc3fca11ced3066540a7ddc817d564d5746bc4a0a"
+    },
+    {
+      "bytes": 123660,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "ca1f40b1a03434438013b6f62211bdef64e452a89573083675e657e2e3e569d4"
+    },
+    {
+      "bytes": 94960,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "07679d411895b9092d7410c1bfccf72c540d43765c445235cf7e85e9fdde2431"
+    },
+    {
+      "bytes": 97584,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "0160541b22a417f75bd995387f58cd8e023e155a4a5b1ab1178b4e5d05e11df0"
+    },
+    {
+      "bytes": 94604,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "8fe297d1cfc76bf84ad499473020df99b8b259f08eba01c2a6b0871d89f03413"
+    },
+    {
+      "bytes": 104644,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "38210a51280d75a8d910465ade6d288207d63417b38899a5dd25b8d59fd5db7e"
+    },
+    {
+      "bytes": 95312,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "17a6029c0a24e98797c6287701920b36f1eac54a7eece562514621f863e84ad0"
+    },
+    {
+      "bytes": 123224,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-value_risk-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "d765719b8a43e36ccfcac9d6c0a47b6bdf5581d7a581ec6839735f4783f1a00b"
+    },
+    {
+      "bytes": 124292,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-value_risk-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "d7c60e7115ca7221f44eb2c776d81dcece66f4e2b2038d8e430f109cdc04671f"
+    },
+    {
+      "bytes": 124768,
+      "path": "evidence_archives/formal_v2_training--n32-s2102-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "c0b4aef665bce31c0b0faa249a9160df76cc1fb15277a08898a01935a27c3a9c"
+    },
+    {
+      "bytes": 92804,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "bc7cd941f8b628c4d03e9a360625ad7c0f5d25b1f45d4f1138bab43568881950"
+    },
+    {
+      "bytes": 96512,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f2d39c6a921383acfb54447d1add47274a5081d8d3c748eff3751e8fca57b88d"
+    },
+    {
+      "bytes": 95824,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f1d332310a3d883f201e3443a3aed54201bb1691ee37d798193f075ea4268d5f"
+    },
+    {
+      "bytes": 102632,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "5f30435bed363dd25da15a76fefa0b1b3190bf774a6f4cd04e78be39e0e5550f"
+    },
+    {
+      "bytes": 96992,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "3a4e5ec72af992a5322e363b1795d9875dfe06174e60ad926948bb44bf40ed9c"
+    },
+    {
+      "bytes": 107152,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-tanh-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "22e23ca94f364cfc0574b97f13052651b412fa942addf2618835098bf9ae3f93"
+    },
+    {
+      "bytes": 109052,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-tanh-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "3eaa1368db613806bf3e9a005d78b185dcc43c5a79cdac7d6374ba9510aa3b18"
+    },
+    {
+      "bytes": 107832,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "615ab1026380711d3b312b71a4381812602f96c5bb0106a38781143359c37756"
+    },
+    {
+      "bytes": 95540,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b972b1280361ff168874ac9941e5aa187f6f4571c066076e55da291c562c86f0"
+    },
+    {
+      "bytes": 97372,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "4def48c98d29f1835482b17b7ca12a634f7589fe304a82cfac5f3685ca912419"
+    },
+    {
+      "bytes": 96596,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "d024eb167d07d80e10f2edd7ae7fea5ed6ddffb7d36170b46e86b8d6a2f65269"
+    },
+    {
+      "bytes": 103496,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "94bf6b6221aa8966b0c930e2403538c40d3b4d7ec97f463b0ca95e90143fe9d5"
+    },
+    {
+      "bytes": 96956,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "a76ed41ec747a332661ef95a0fe88caf2751a0e8570e523609331f8b376b4e81"
+    },
+    {
+      "bytes": 107960,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-value_risk-full-learned-m16-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "6536bcf937f0085a08548d951b6698a5d2feab1acd9652c0f697f42506bc4bf1"
+    },
+    {
+      "bytes": 124944,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-value_risk-full-learned-m32-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "1518cd1ac0e4616ba77c036ba15805c83e565148880face0e6f46f7e7bf2a6e4"
+    },
+    {
+      "bytes": 108140,
+      "path": "evidence_archives/formal_v2_training--n32-s2103-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "97ad04924f8e81f6f6848b6b73a2364cb70ac386a31c91c81f8f6f2d39b598a3"
+    },
+    {
+      "bytes": 169568,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "16f595fdd48419ac8b97d011f6ecb37bf51dc1d537ebf85e3853a8da27564aa3"
+    },
+    {
+      "bytes": 187368,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "89683eabe6838c22b17f1b18924b8d028af7a4569f2f14a46f7ed005f2e4f1f2"
+    },
+    {
+      "bytes": 171100,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "e9fb3810ac9247269fa2c5302de99b46f5e18fb84457dbf872bd90fa481bbc96"
+    },
+    {
+      "bytes": 208528,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "657e4832c4a407b9e918ce8c23fcee418285a5152e7b70d505cb77d451b094b7"
+    },
+    {
+      "bytes": 172336,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "69f2adf1242b7cc28de98e06a46c341b0d29904c2c2c9baf2f4673ed300f63f7"
+    },
+    {
+      "bytes": 227036,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "839c9956ad8085a67977bdfefa489eeb62729873c3e12db26743df521fa4394c"
+    },
+    {
+      "bytes": 173340,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "dfa683561719d835bf9d0a6ebb5cba1cc8cd0c3bc84c681b4c3728649661ade2"
+    },
+    {
+      "bytes": 188632,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "50a624decf5c707ef5702e1945999250e595bcfd731398805a852e4d6df14d50"
+    },
+    {
+      "bytes": 172272,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "d2c6961ca6e08122a9df45c29304efdc8812bcfebf45680d2b18404a5406ccb3"
+    },
+    {
+      "bytes": 209952,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "6ae5f50e35752d0d7901ddf64492be7fdc278ffc4a16d2fc9121e087cfc1eda9"
+    },
+    {
+      "bytes": 172444,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "c6fc2ed9efe6deed96ea7cece878b330cedb51ec243911b2e1cf3573e538c7f7"
+    },
+    {
+      "bytes": 227912,
+      "path": "evidence_archives/formal_v2_training--n64-s2101-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "2e581d804f4d352caa252f4a7866d5cbb209d70a72bcbf51656322ad4c7b29c8"
+    },
+    {
+      "bytes": 168892,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "dd4203e0a344df55abdad686eac73c124bd9163a88c407c79b50f2aed2ffae70"
+    },
+    {
+      "bytes": 188408,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "079ad1739e4386c55f4d5e92725de8ec2de40481ad122c1fa653a1ae54ffa0fa"
+    },
+    {
+      "bytes": 171216,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "ba856186136cc701751a3394d60508b02075f67448b057b85c5baf2bf34f23f7"
+    },
+    {
+      "bytes": 209248,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "7232b90127772d6a93acfe7000db3d27fa799be8a8270062c247dafcde8af5a2"
+    },
+    {
+      "bytes": 171160,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "3bd25a62e496358782c33b342eba1bdbf0766cec405a55b9da06148cdf572dd6"
+    },
+    {
+      "bytes": 227144,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f2ce17901f5004588b4c47c0380f368e968d0571c0e0ad7cd9d98cc57527b0ce"
+    },
+    {
+      "bytes": 169700,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "9bb1108cc6c25b163eb470849eb6f22229fdc22a0ce4785ef2da4e4173f3f7a6"
+    },
+    {
+      "bytes": 188592,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "006707ac3ae436a13b765fc2b17b5330660faa310ea8714f87d9b74659c645b9"
+    },
+    {
+      "bytes": 177568,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "7db1ffb99d2042a592b84adef6db3f8cafb23267532ef7642a57352c76cbd746"
+    },
+    {
+      "bytes": 209916,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "c48276460305c45debc574a427b22471561a4ee98d270b51c35d7aa8fc61af2a"
+    },
+    {
+      "bytes": 177536,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "9a289412b820dd245650e00ddd281eed13823e51b389f0e490ddbf5f19b3c8b2"
+    },
+    {
+      "bytes": 227336,
+      "path": "evidence_archives/formal_v2_training--n64-s2102-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "4604a751cb5e6df671e3cde1a4f381ee0483c89b7a818118830688684da3f552"
+    },
+    {
+      "bytes": 168256,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "9e17d013152ade5ac0169f86cf2cd7dae5d381e18b51c5083ceb4bff480dd900"
+    },
+    {
+      "bytes": 187288,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "d864b0bb1c349fedf584975da062ee230fc0be8ca62205082d729e95c482dfec"
+    },
+    {
+      "bytes": 175400,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b8517c8be50ed572eb00af49d02061b6cc01ca7a17bc77bff0330a96c8c6e1c4"
+    },
+    {
+      "bytes": 208456,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "5d802ada7ffd023b20ae9557f59b9315f8fbc84d983ed5d2b1b62112d91529eb"
+    },
+    {
+      "bytes": 175316,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "19902d987e7c04188bbd43d4e4f6a6a332c29e107a24dc6bbdb064d1b0e0a788"
+    },
+    {
+      "bytes": 226876,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "931afcd284ac1d83fc7facd65015e5c373a75e2024bd764e837b2807c0674c5f"
+    },
+    {
+      "bytes": 170404,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "96265d7bbf3db1374aec8430149b41e2e653558a91b6bbf02bd996fda5a950ac"
+    },
+    {
+      "bytes": 188824,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "0b341e02215e2f13e9c241f43daf33c5f430156064bc06471b51d9d9d85e6a76"
+    },
+    {
+      "bytes": 176528,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "752168826e9db3a5f54cb5ec5bb16d8cc862742c53477bc1d63e95e1ceff785f"
+    },
+    {
+      "bytes": 209748,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f5ab210294f6cc7755b8e929be032934d58a9921de383179c0c0b297d2e0ce70"
+    },
+    {
+      "bytes": 176788,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "e52c0de74d42eebcc4be8ea6d0ff664542d32f527dfe9ef88df1c411409d7bf7"
+    },
+    {
+      "bytes": 228124,
+      "path": "evidence_archives/formal_v2_training--n64-s2103-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "4dfb7515b70724f66a24a25521f1adfa7bdf009fd294f50a9d30a67b52b4a480"
+    },
+    {
+      "bytes": 65160,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "46d0006b8976c3e8ef912e3a89c4939168f1f0f64cffd7688c834fec29de907d"
+    },
+    {
+      "bytes": 64500,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "98596944fb75919c7c0e624ddcdd2f7c52f3593c7d1ad6688e616544869088ae"
+    },
+    {
+      "bytes": 65656,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b8a2656470f739f6768fff2893f8d7c29371fde12619820d88bd96ba45afb8c9"
+    },
+    {
+      "bytes": 67132,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "4ab1356a26677c4a0865f54ee7a5610d27d75a72dbb6e0f7e8f91d1993bceb17"
+    },
+    {
+      "bytes": 65812,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f0e912bfd0049cf38fc5deab8dddf0d1dfdd4b68455128a7abca484ff571e692"
+    },
+    {
+      "bytes": 65988,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "c34fa108f39fe2e10e1fae911bfc1f85f26f1db903f8d9a8be6dd82bd7e75f0f"
+    },
+    {
+      "bytes": 65884,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "01d339260839b8587a7f8d27b5d1b8af27023b1d815715376e553288d71909ee"
+    },
+    {
+      "bytes": 65776,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "3026838adb6cca589fb83ec866082dfee6c9768db97c4bb488585e567a978d83"
+    },
+    {
+      "bytes": 66536,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f729856010858b33a571fde738a1dc0867fac5de436afbbe35cad25f2fe5e08f"
+    },
+    {
+      "bytes": 67800,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f260b239f41609299ea0ce3e27042157c9b7770d3640a5461723b208ff79a4be"
+    },
+    {
+      "bytes": 65964,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "80a091cd72cf600fd5428c433b46377023a58f05857ce10b279a2aef96d002e7"
+    },
+    {
+      "bytes": 67748,
+      "path": "evidence_archives/formal_v2_training--n8-s2101-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "fc08810629102cdd97e2a81a6441bf9c7cca4d4826d84a6a909cc3dcb68691be"
+    },
+    {
+      "bytes": 65080,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "c56328b5e17819369428962a484b37780a4269e695d3e808d87092667b220bfb"
+    },
+    {
+      "bytes": 64956,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "99696cd140c7c8f37c0ee28b7935f972962d37286236cca3add424a84618f691"
+    },
+    {
+      "bytes": 65344,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "30012d6db08d445f4c4e0fbdd75e32db0cff4ba2c0ce31774856ba93c328df90"
+    },
+    {
+      "bytes": 67392,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "472f49b523e59747e339f57e7151d39125246fc4fd5c728b151495a36c4045cb"
+    },
+    {
+      "bytes": 65332,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "e2d82fe5cd3b99fb5bd33dae873e2b8f25fd2a8110278fd65ba35df52e919cb3"
+    },
+    {
+      "bytes": 67936,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "cc2f346858573ab1cd9f0d7a43f8a4f73b3099a813d2e4ed9648c646f8f4f4e9"
+    },
+    {
+      "bytes": 65248,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "14e9f5b9349b5b84bd5d463901f2d497413f547004a360ae21b06c08ad6f389f"
+    },
+    {
+      "bytes": 65040,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "0f82ae11d2294e51a81da9f8c1aa08fe337f3bac1f9398a34925a8d95b4feba9"
+    },
+    {
+      "bytes": 65444,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "7f211a6761f02b07646a0ca7847d3704652a3d984ffef9c6dc944beed039b8f8"
+    },
+    {
+      "bytes": 66256,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "0f1fa835fda8a4d7f89e79fed94296b965aab00daa46a683d887d80b7324a6ca"
+    },
+    {
+      "bytes": 65464,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "cf4c69515e0ece67e8d965368595fdd960fbbdbbaacb41f549418772971d3411"
+    },
+    {
+      "bytes": 65868,
+      "path": "evidence_archives/formal_v2_training--n8-s2102-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "59fde9fa6bf62ff05f4af2a166ff9ea1a77b90ef30d10475c4f4e6cb6636e90e"
+    },
+    {
+      "bytes": 65228,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-tanh-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "0a18385a54b8e3345b8b082895020d4bb0ee7825eb31dc9e1fb2c6db7858375f"
+    },
+    {
+      "bytes": 64604,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-tanh-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "a77011b4c662db68eda18077f852c18d3dca42d255fabb78abe8e209ea43bdc5"
+    },
+    {
+      "bytes": 66280,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-tanh-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "35de03149cadfc9cc6336f1ef5d85b025be1c1b1044b57fbaee1c57b83b8c62a"
+    },
+    {
+      "bytes": 65944,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-tanh-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b31cf1badded653133f1d30ed0a5944a72ddce589ea6bc0b1a320944f37734db"
+    },
+    {
+      "bytes": 65632,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-tanh-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "b83885a813ad99994d5139e33e97176e4302c618061f403ce3db0a568e2a406b"
+    },
+    {
+      "bytes": 66392,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "f7ff46c59aa71deb999f1871c0c86e2dd4231b7abaf4c3580cc382868087b2bd"
+    },
+    {
+      "bytes": 65712,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-value_risk-boundary-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "6d285aacb077a1b3894fd19d51131f27c11355b947f9a24eed53bd15bf32b817"
+    },
+    {
+      "bytes": 65040,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-value_risk-boundary-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "6d877a89238c2235eaeaf361b77baa901f97aeded49621c725bd4965856b12d6"
+    },
+    {
+      "bytes": 66112,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-value_risk-flow-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "ae225f233f271b84ef36d7a43fbf4373c104426f3cb29416faec0749d015c2f4"
+    },
+    {
+      "bytes": 67424,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-value_risk-flow-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "e7edfe0e30f063f9255941b2cfffd376eba34a907a232b6f8d8262519d6c2722"
+    },
+    {
+      "bytes": 66204,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-value_risk-full-fixed-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "20b4a843d3af3971320caabe714201ea87d6f5d8fb405b3cb091b3c66349e8af"
+    },
+    {
+      "bytes": 66652,
+      "path": "evidence_archives/formal_v2_training--n8-s2103-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "6aa3d582b79cd9d5536a34f0d2c477b09a2af81f0de38130f02898a3e06566cb"
+    },
+    {
+      "bytes": 23572,
+      "path": "evidence_archives/pilot_source_and_metadata.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "bb7b22238adcf690a0eb35f3fa25b42cbbc22c10c6983aa2ffff223c11240054"
+    },
+    {
+      "bytes": 19780,
+      "path": "evidence_archives/pilot_v1--n16-s1701-tanh-full-learned-m64-lr0.0001.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "7e450a2a1babdc3c60edefdecc8929639fde49d27adae66528285dcd421e2a48"
+    },
+    {
+      "bytes": 24536,
+      "path": "evidence_archives/pilot_v1--n16-s1701-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "1a716a2c6a5232528d49f26210caabad3b504e3fda7a42708e9909bc6674bfa8"
+    },
+    {
+      "bytes": 20004,
+      "path": "evidence_archives/pilot_v1--n16-s1701-value_risk-full-learned-m64-lr0.0001.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "8db202cdad77ef3d6a40e8ab1a84c03f6802dd1103a291d34e7e0843087131a7"
+    },
+    {
+      "bytes": 24708,
+      "path": "evidence_archives/pilot_v1--n16-s1701-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "30dfa29dae652bda74020ba3a37bf43ecf03ccccb16f66c3f2f8d1a5509cffbc"
+    },
+    {
+      "bytes": 52712,
+      "path": "evidence_archives/pilot_v1--n32-s1701-tanh-full-learned-m64-lr0.0001.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "0ae47e79ebb0e6c121b14fadcaf2721f408ff7da62fa8142b83605fceb477b04"
+    },
+    {
+      "bytes": 51268,
+      "path": "evidence_archives/pilot_v1--n32-s1701-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "bc7ea162d6302bc335ee915967af101f6470c39a436f4cf422cca48d895544d4"
+    },
+    {
+      "bytes": 53356,
+      "path": "evidence_archives/pilot_v1--n32-s1701-value_risk-full-learned-m64-lr0.0001.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "514d1b0995c3da2d399157a881b8c49b20f8c8f1dcecb7969e7f46f7d873b2b4"
+    },
+    {
+      "bytes": 68924,
+      "path": "evidence_archives/pilot_v1--n32-s1701-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "4e64bdf7827518b0f79a4d00e8cd915097da8bd41e97046a0da433d3ffb47a75"
+    },
+    {
+      "bytes": 177104,
+      "path": "evidence_archives/pilot_v1--n64-s1701-tanh-full-learned-m64-lr0.0001.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "15bce1760d4f48d489647e5787e9fc367af100400bb27b48525cc3017d355a5f"
+    },
+    {
+      "bytes": 171896,
+      "path": "evidence_archives/pilot_v1--n64-s1701-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "0cdf9413a628421d60b6187e91c9761765268492a8536de4b421474d70590aa9"
+    },
+    {
+      "bytes": 176548,
+      "path": "evidence_archives/pilot_v1--n64-s1701-value_risk-full-learned-m64-lr0.0001.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "ba2910a6f92d3a30f5b34b1cdebc257a757f6378d5263c8c653f159e8fa6a276"
+    },
+    {
+      "bytes": 172712,
+      "path": "evidence_archives/pilot_v1--n64-s1701-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "3dcb41b236f9b5298ff346d91dd5f662fae0b9e9a4dda1296fc5b7dd778f1d70"
+    },
+    {
+      "bytes": 12440,
+      "path": "evidence_archives/pilot_v1--n8-s1701-tanh-full-learned-m64-lr0.0001.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "454ed64b7e055042a277d32f6a3f8e497ddf3bd8ca13416869317c755463cbd0"
+    },
+    {
+      "bytes": 12304,
+      "path": "evidence_archives/pilot_v1--n8-s1701-tanh-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "ca4b28f8866728d542a13376ae011925287e58d3b7c4e834cc2bbd897f1dfb75"
+    },
+    {
+      "bytes": 10476,
+      "path": "evidence_archives/pilot_v1--n8-s1701-value_risk-full-learned-m64-lr0.0001.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "4d56f77e638314a062b7e05b48f810d26bb5e003daa202883361e74e691e3711"
+    },
+    {
+      "bytes": 12464,
+      "path": "evidence_archives/pilot_v1--n8-s1701-value_risk-full-learned-m64-lr1e-05.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "8ca0a3e4fc55a2b44808e4b43581db96141ef91781cd3805954a9281e00d4acd"
+    },
+    {
+      "bytes": 15028,
+      "path": "evidence_archives/superseded_formal_v1.tar.xz",
+      "role": "lossless_evidence_archive",
+      "sha256": "32fe55f37843422cac57bd097265bf8599eee911bebcefafb06972354d82fcdf"
+    },
+    {
+      "bytes": 1923,
+      "git_blob_sha1": "0bb67b435e101a879a2c220fbc5462186d33323b",
+      "path": "optimized.py",
+      "role": "source",
+      "sha256": "c481cc23fe3953bcbb6a5e82dff28344d7cb4c0c4703cb74d14500b5b33c60d3"
+    },
+    {
+      "bytes": 6575,
+      "git_blob_sha1": "2ed1d5a391974f9227532f4d16a379bcae32c79c",
+      "path": "pack_evidence.py",
+      "role": "source",
+      "sha256": "a252b0ebbd76de60572fed580e83d05890ba7f0193e228d8d8f0ec8735af1698"
+    },
+    {
+      "bytes": 2901,
+      "git_blob_sha1": "f382dcc0fad0ee0150e65607798c2696001540e6",
+      "path": "pilot_summary.py",
+      "role": "source",
+      "sha256": "ef87b68dcf13344f45b6a67e96f48233484d2daf8bbcd738eac6609379c296c6"
+    },
+    {
+      "bytes": 7579,
+      "git_blob_sha1": "bb75d4fe644e9d12b816b7ea13586986ee6ea121",
+      "path": "register.py",
+      "role": "source",
+      "sha256": "a73f3a9dd80277c932d824b32f3bf995ebbfa9a00f1991caf26d4d9b6756e2d9"
+    },
+    {
+      "bytes": 186,
+      "git_blob_sha1": "5e28b305de0af7d9cd5cbea9d2b079bf41c67cd1",
+      "path": "results/CACHE_CHECK_EXECUTION.json",
+      "role": "scientific_result",
+      "sha256": "7b0dfbc452755913732f2b6f9607901cd254327f56054ce91132dbc2b2d64aef"
+    },
+    {
+      "bytes": 775,
+      "git_blob_sha1": "a044ff073aca1fcd412c6b845a7c3f43a45fd9ca",
+      "path": "results/DIAGNOSIS_EXECUTION.json",
+      "role": "scientific_result",
+      "sha256": "06bc7f78ec9b5d64ce201196b7433977a9117772930230af694b85d549e4c750"
+    },
+    {
+      "bytes": 1084,
+      "git_blob_sha1": "90a1f73b051aee42e5f2c9ea1e7a235a4b06bda0",
+      "path": "results/PILOT_EXECUTION.json",
+      "role": "scientific_result",
+      "sha256": "9b485c0e8df34a55ba33bee8b57bcd223277fd7d62c26da3570f54a8e0bb518b"
+    },
+    {
+      "bytes": 11094,
+      "git_blob_sha1": "35eb8546959b12886cd6314386888f60d22e642d",
+      "path": "results/PILOT_PROTOCOL.json",
+      "role": "scientific_result",
+      "sha256": "b0ff17a37abcd66a7a45345c18897fc55288a108496f6d43282dafa806ad1999"
+    },
+    {
+      "bytes": 80683,
+      "git_blob_sha1": "4702492c0fd3eb5226ea98cebd6552efec029914",
+      "path": "results/PILOT_SUMMARY.json",
+      "role": "scientific_result",
+      "sha256": "97991e5822eb61797aa6b60877366861d9ebec45df66f4ae1f2fcda13f0462c0"
+    },
+    {
+      "bytes": 337,
+      "git_blob_sha1": "3fbd58504207a6707497106e29b796f84790cfdd",
+      "path": "results/SETUP.json",
+      "role": "scientific_result",
+      "sha256": "657bae2c873586fd3f205dcd583234d01a612ab493e30b0858aa068dea8c1f8c"
+    },
+    {
+      "bytes": 5376,
+      "git_blob_sha1": "22b3a267f62cb5cf4a184498046ac8c30a4eba88",
+      "path": "results/cache_check_v1/PROTOCOL.json",
+      "role": "scientific_result",
+      "sha256": "036eeeba7c2d9e9af27c54b5792f54186d3500d181c4d18cbbfa7021229d8ffa"
+    },
+    {
+      "bytes": 31606,
+      "git_blob_sha1": "56c72d4753eba20150947b268fbfdcf94b31f97a",
+      "path": "results/cache_check_v1/RESULT.json",
+      "role": "scientific_result",
+      "sha256": "da9f6221f22e8c93ee6e80154ac66ebf92ea85524ad5e990c5d62fdeb5038e49"
+    },
+    {
+      "bytes": 5522,
+      "git_blob_sha1": "9a4ea8234b15a7c849063e0de2ceac59c3647ccc",
+      "path": "results/diagnosis_v1/PROTOCOL.json",
+      "role": "scientific_result",
+      "sha256": "bd4a93608977577c760690c766969ca1ca62920d7b73814bc7f0486d7c65234c"
+    },
+    {
+      "bytes": 236138,
+      "git_blob_sha1": "d6a76806c0e5071088c003a06a1f20dc65004e7b",
+      "path": "results/diagnosis_v1/RESULT.json",
+      "role": "scientific_result",
+      "sha256": "11c3ad04e214c5f8655a473804c935a2e68d015995dcd12343b0f20cc422455d"
+    },
+    {
+      "bytes": 579,
+      "git_blob_sha1": "7260717a6dadbe6402df24daa6351173b60143c9",
+      "path": "results/formal_v2_test/OPEN_RECEIPT.json",
+      "role": "scientific_result",
+      "sha256": "3586595fb6f50e3ec0fff233d4be31958a5159d71e2f47655944b8e620efabc2"
+    },
+    {
+      "bytes": 390705,
+      "git_blob_sha1": "a0fa2ccde31f75ae131407dcf658b08a59af8c01",
+      "path": "results/formal_v2_test/RESULT.json",
+      "role": "scientific_result",
+      "sha256": "5cc51ea9d99f061214822429131d97662f8295c250055e266c3d55c8d978b0a8"
+    },
+    {
+      "bytes": 16492,
+      "git_blob_sha1": "7dbc61ce40f93e64b53f16edf674745590036391",
+      "path": "runner.py",
+      "role": "source",
+      "sha256": "d92ba8a2c7c755ce10ad2b1b2eae548cef344a587225d0b9b2d2078717ac948f"
+    },
+    {
+      "bytes": 11443,
+      "git_blob_sha1": "f1cc575c2c60a1ca9281875f29d239e87505b742",
+      "path": "summarize.py",
+      "role": "source",
+      "sha256": "be84c8a56a16a1705e9b14cef4020698fd98a3a45b0b505a79f9eb605ed9a938"
+    },
+    {
+      "bytes": 3799,
+      "git_blob_sha1": "6beb8c9631b24d5335e889d054f20b0427ead0b5",
+      "path": "test_launch.py",
+      "role": "source",
+      "sha256": "fca43ffcc52092479d9d21a46474e1bfa0d3b95b288b5a2bbb17ecf02ad5bba9"
+    },
+    {
+      "bytes": 6926,
+      "git_blob_sha1": "4b12e9189ba623443a5183e2c71c0e6eaa7b293c",
+      "path": "verify_evidence.py",
+      "role": "source",
+      "sha256": "d1add757e88ff873470b87896acac774fe4947ae4362cf6fba0ea0494a16cdbc"
+    },
+    {
+      "bytes": 3405,
+      "git_blob_sha1": "76e77adb1954f3e3de970744295cea7386c580d0",
+      "path": "worker_launch.py",
+      "role": "source",
+      "sha256": "bbe698de2883456beff1e87e96d0940340afab5b60933361e1241767969c9c6d"
+    }
+  ],
+  "formal_training_cases": 168,
+  "formal_updates_each": 96,
+  "historical_files_note": "The original v1 source snapshot is retained in its archive and earlier Git source anchor; this list does not delete earlier committed files.",
+  "maximum_file_bytes": 390705,
+  "not_for_publication": [
+    "raw_remote/",
+    "private/",
+    "__pycache__/",
+    "PUBLICATION_DESCRIPTORS.json",
+    "LOCAL_PRELIMINARY_SUMMARY.json",
+    "PUBLISH_BLOB_ENTRIES*.json"
+  ],
+  "per_file_limit_bytes": 512000,
+  "production_adoption_performed": false,
+  "protocol_sha256": "aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8",
+  "quality_reached_cases": 68,
+  "quality_threshold_accuracy": 0.85,
+  "real_user_transfer_claim": false,
+  "scaling_interpretation": "same numeric lambda changes the ridge penalty metric in original physical coordinates; observed gain is not solely floating-point stabilization",
+  "scope": "finite actual SmallHCSN v2 scientific evidence and readable reports; manifest itself excluded from its own hash list",
+  "selected_final_budget_step_cases": 36,
+  "selected_initialization_cases": 47,
+  "source_and_scientific_results_not_rewritten": true,
+  "source_git_anchor": "221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3",
+  "test_evaluated_cases": 168,
+  "total_bytes_excluding_this_manifest": 20843188
+}

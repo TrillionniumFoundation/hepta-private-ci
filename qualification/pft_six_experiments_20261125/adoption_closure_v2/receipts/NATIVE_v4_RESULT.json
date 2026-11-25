@@ -1,0 +1,67 @@
+{
+  "argv": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(cold_revocation_blocks_existing_checkpoint_adoption_v2)",
+    "--no-capture"
+  ],
+  "cargo_lock": {
+    "bytes": 421418,
+    "sha256": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f"
+  },
+  "cargo_lock_unchanged": true,
+  "checked_head": "fe249567feae227a362d354c1df3499a2995af40",
+  "closure_complete": false,
+  "exit": 0,
+  "human_participants": 0,
+  "logs": {
+    "stderr.log": {
+      "bytes": 2906,
+      "sha256": "1398a120b2e7eb8e8945882c59a5331299bd1fb691a418c3edd5cf002a255a5d"
+    },
+    "stdout.log": {
+      "bytes": 1135,
+      "sha256": "5272eb6363a29cb548bfca17dff68695a57336590e1165467c91ee1651ddda63"
+    }
+  },
+  "model_inference": false,
+  "parent_git_blob": "508081d1e497b9e34a71dd751e5912be6d2e3ebb",
+  "probe": {
+    "bytes": 5884,
+    "sha256": "3299bcb57fda69b131bcb17110e4f54c6590000a9e8b654b377b5ee320449909"
+  },
+  "probe_outputs": [
+    {
+      "actual_model_inference": false,
+      "authorized_forward_recovery_and_reuse": false,
+      "candidate_bundle": "86a0a494223e129635e767809ef74fbe1016e98331383411abd7fb7b7585b75e",
+      "closure_complete": false,
+      "cold_readback_equals_original": true,
+      "consumed_final_use_nonces": 1,
+      "duplicate_original_request_replayed": true,
+      "independent_human_participants": 0,
+      "native_control_dispatches": 1,
+      "new_task_repeated_use_observed": false,
+      "original_turn_authorization_verified": false,
+      "post_cold_revocation_blocks_readback": true,
+      "post_cold_revocation_historical_receipt_replayed": false,
+      "production_authorization_available": false,
+      "revoked_historical_request_caused_no_new_dispatch": true,
+      "revoked_publication_cold_recovery_refused": true,
+      "runtime_adopted_update_engineering_only": true,
+      "schema": "hepta.adoption-closure.native-engineering.v2",
+      "scope": "engineering_fixture",
+      "training_updates": 0
+    }
+  ],
+  "schema": "hepta.adoption-closure.native-execution.v2",
+  "scope": "engineering_fixture",
+  "status": "NATIVE_ENGINEERING_CONTROLS_PASSED",
+  "training_updates": 0,
+  "wall_seconds": 73.76579959900118
+}

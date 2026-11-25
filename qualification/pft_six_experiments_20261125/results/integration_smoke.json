@@ -1,0 +1,173 @@
+{
+  "scope": "Independent smoke replay, not additional independent scientific seeds",
+  "run_complete": {
+    "status": "COMPLETED",
+    "commands": [
+      {
+        "index": 0,
+        "argv": [
+          "identifiability.py",
+          "--sizes",
+          "8",
+          "--num-seeds",
+          "1",
+          "--output",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125/pft1.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.188184275997628
+      },
+      {
+        "index": 1,
+        "argv": [
+          "distributed.py",
+          "--sizes",
+          "8",
+          "--num-seeds",
+          "1",
+          "--output",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125/pft2.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.2731361799997103
+      },
+      {
+        "index": 2,
+        "argv": [
+          "transport.py",
+          "--sizes",
+          "8",
+          "--num-seeds",
+          "1",
+          "--output",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125/pft2_transport.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 1.1903120310016675
+      },
+      {
+        "index": 3,
+        "argv": [
+          "structure_circuit.py",
+          "--widths",
+          "8",
+          "--seeds",
+          "0",
+          "--steps",
+          "30",
+          "--output",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 2.559952355997666
+      },
+      {
+        "index": 4,
+        "argv": [
+          "-c",
+          "import sys; from pathlib import Path; from pft34_verify import verify; verify(Path(sys.argv[1]))",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.6688370730007591
+      },
+      {
+        "index": 5,
+        "argv": [
+          "cross_user.py",
+          "suite",
+          "--widths",
+          "8",
+          "--seeds",
+          "0",
+          "--root",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125/pft5_final_artifacts",
+          "--out",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125/pft5.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.5196195999997144
+      },
+      {
+        "index": 6,
+        "argv": [
+          "cross_user.py",
+          "check-isolation",
+          "--root",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125/pft5_isolation_artifacts",
+          "--out",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125/pft5_protocol_checks.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.11793882100027986
+      },
+      {
+        "index": 7,
+        "argv": [
+          "costs.py",
+          "--widths",
+          "8",
+          "--seeds",
+          "0",
+          "--root",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125/pft6_final_artifacts",
+          "--out",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125/pft6.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.5345980349993624
+      },
+      {
+        "index": 8,
+        "argv": [
+          "verify_receipts.py",
+          "--results",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125",
+          "--output",
+          "/workspace/scratch/ef5487d13d56/hepta-pft-six-smoke-20261125/receipt_audit.json"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 0.09148618900144356
+      }
+    ],
+    "wall_seconds": 6.150675898999907
+  },
+  "audit": {
+    "status": "PASS_RECEIPT_AUDIT_NOT_SCIENTIFIC_ACCEPTANCE",
+    "created_utc": "2026-11-25T08:41:17.401485+00:00",
+    "checks": {
+      "source_hashes_match": true,
+      "identifiability_and_transport_contracts": true,
+      "matched_data_and_independent_causality_checks": true,
+      "cross_user_isolation_and_scope": true,
+      "cost_accounting_and_ridge_rls_equivalence": true
+    },
+    "pft5_frozen_candidates_verified": 2,
+    "pft6_candidate_files_verified": 10,
+    "maximum_ridge_rls_parameter_relative_error": 1.0009543797260142e-14,
+    "artifact_presence": "local candidates available",
+    "input_sha256": {
+      "pft1.json": "f7714d4bf66b1ccd3a337fa4c7a95118154d84a57c0a28afe0dd8b102fc9a084",
+      "pft2.json": "64d82c9df171a6ae2a6c873d805d35be1b9a40b08a6b21c50c9a5377ef957123",
+      "pft2_transport.json": "84ca7e72274653c7d83de620fda93043e0577f58a519fd83ecf780889d61c4c3",
+      "pft3.json": "497c5fb993ee6de4e0384e3db196f121d74975d2410ef2bc5121dfe149b8a1b5",
+      "pft4.json": "dfe375b77b427a49034d7cc2235892e0f6723723f92ccac316e31ddb15a74af1",
+      "pft34_verification.json": "3a5b54baaaff7422c4c350d8fde17af0a53269cce8b5937047f3829d7c74178e",
+      "pft5.json": "ffc088d4237dd945f6c5bf6e0888954ad0584011caf3071e406e64a6469220b0",
+      "pft5_protocol_checks.json": "00b94744b64cdd622abc1c1194b7c785273b26a8e09857e2dec9ee36f9a2a3e2",
+      "pft6.json": "2337ff36288491069d11e452d3787e114fe47a5931c047bc9daf603c345497d5"
+    },
+    "source_sha256": "6ed1ecdc6f4cec0fcd2bcc7d4d0591e5ce7bc8c73ec04c669ed80e0f7078cd55"
+  },
+  "audit_source_change": {
+    "status": "AUDITOR_ONLY_GUARD_CHANGE",
+    "changes": [
+      {
+        "filename": "verify_receipts.py",
+        "smoke_start_sha256": "eecf824920498944bd539763bf368398f26414efdd5a82da1cf5713c6fdde4ee",
+        "current_sha256": "6ed1ecdc6f4cec0fcd2bcc7d4d0591e5ce7bc8c73ec04c669ed80e0f7078cd55"
+      }
+    ],
+    "reason": "Root added explicit refusal under Python optimization; scientific source unchanged. Original smoke and audit receipts retained. Only final audit repeated."
+  }
+}

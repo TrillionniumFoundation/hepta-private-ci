@@ -1,0 +1,57 @@
+{
+  "batches_per_node": 4,
+  "calibration_per_node": 32,
+  "calibration_rule": "Shared unlabeled public synthetic corpus; no calibration labels computed or used; identical serialized basis delivered before local training",
+  "cost_scope": "Record dependency preparation, shared calibration, each host local feature/G,b preparation, direct transport/recovery/solve/persistence, separate post-seal evaluation; overlapping host phases must not be summed as elapsed time",
+  "evaluation_source_sha256": "c17e6b9c0002e6cacec32288cab589cb6ede20a5a19c9d07d0986b3ca2cf4416",
+  "experiment": "pft-actual-hcsn-two-host-v2",
+  "head_coordinates": "receiver value/risk/signed-event/event-rate/margin in actual feature_names order; shared calibration centering/scaling; final intercept",
+  "head_realization_tolerance": 1e-07,
+  "initialization_rule": "torch.manual_seed(910000+101*width+seed)",
+  "objective": {
+    "loss": "half_sum_squared_residual",
+    "ridge": 0.01
+  },
+  "partition": "Each host generates four own independent-source batches; early/late latent sum target; late-latent support and nuisance distribution differ between hosts",
+  "physical_model": "Unmodified pinned SmallHCSN, dense float64, QVI boundary, full messages; all physical and recurrent parameters frozen",
+  "relative_central_tolerance": 1e-07,
+  "relative_normal_residual_tolerance": 1e-10,
+  "runtime": {
+    "intra_op_threads": 1,
+    "numpy": "2.5.5",
+    "python": "3.14.4",
+    "torch": "2.15.0+cpu"
+  },
+  "scale_floor": 1e-06,
+  "schema_version": 1,
+  "scope_limits": [
+    "synthetic task and synthetic data, not real-user A-to-B",
+    "readout training on actual HCSN features, not inversion/training of the full nonlinear field",
+    "two configured physical hosts, not permissionless Sybil-resistant federation",
+    "local research model readout installation/reload, not native daemon product adoption"
+  ],
+  "seeds": [
+    271901,
+    271902,
+    271903
+  ],
+  "shared_capsule_sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+  "sources": {
+    "features.py": "0eacf1123cdd99f2036911ce7b2066b665c28b6dcefc1b97d71216bf8c71fc47",
+    "prepare.py": "5074d716ff013b5c0b82ef547bb9668fad7e431c8eefeb4719f3a2f528830e01"
+  },
+  "statistics_rule": "G=X^T X; b=X^T(y-X parent); objective 0.5*sum((X action-residual)^2)+ridge/2*||action||^2; same parent, basis, provider and objective identifiers",
+  "test_per_node": 128,
+  "test_policy": "All 12 candidates and exact result hashes must be externally sealed in Git before test generation; no test-dependent tuning or backward boundary",
+  "test_preflight": "Verify all 12 result/candidate seals, basis, model, parent+action and independent numerical references before generating any test source; fail closed on any mismatch",
+  "test_shift": "New source IDs and random generators; arrival support expands 4..6 to 3..8; initial-margin support expands; no repeated training rows",
+  "train_per_batch": 32,
+  "transport": "Existing authenticated direct USB4 SSH; eight unique contributions; out-of-order delivery/repetition; actual remote exit17 and durable restart; no controller training-byte relay",
+  "updated_parameters": "difference of two class readouts, including intercept: 5*(width/2)+1",
+  "widths": [
+    8,
+    16,
+    32,
+    64
+  ]
+}

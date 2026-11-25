@@ -983,8 +983,9 @@ def verify() -> int:
         ),
         "readiness README discovery/commands",
     )
+    # The public homepage is intentionally empty; maintained internal entrypoints
+    # remain responsible for exposing the readiness contract.
     for discovery_path in [
-        "README.md",
         "docs/DEVELOPMENT.md",
         "docs/modules/README.md",
         "docs/learning/README.md",

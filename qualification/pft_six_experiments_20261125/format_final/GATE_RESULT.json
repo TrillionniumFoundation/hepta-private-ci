@@ -1,0 +1,84 @@
+{
+  "all_repository_python_blobs_equal_to_frozen_code_head": true,
+  "allowlist_unchanged_from_main": true,
+  "blob_size": {
+    "all_changed_paths_under_task_directory": true,
+    "changed_added_or_modified_files": 130,
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "--head",
+      "f2cefb7643dad2adc726b62c5c7bf0c48791dc3b",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "max_bytes": 512000,
+    "scope": "Exact base-to-head added/modified blob sizes; not repository history.",
+    "wall_s": 0.4054349159123376
+  },
+  "changed_files_after_gates": [],
+  "checked_head": "f2cefb7643dad2adc726b62c5c7bf0c48791dc3b",
+  "checked_head_differs_only_after_python_identity_check": true,
+  "exact_main_base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "format": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "codex-rs",
+    "exit_code": 0,
+    "full_repository_format_coverage": false,
+    "qualification_python_style_coverage": false,
+    "scoped_noop": true,
+    "wall_s": 0.10857200995087624
+  },
+  "frozen_code_head": "37198eefdcc1b83d163e0441cb651e1377e6cd87",
+  "git_diff_check_exit_code": 0,
+  "git_diff_stat": "",
+  "host_alias": "pocket4",
+  "logs": {
+    "BLOB_STDERR.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "BLOB_STDOUT.txt": {
+      "bytes": 16467,
+      "sha256": "78ec8f515a515d8b9120c7149292031ee41c1edeaf838ac6ca9a1a2588868dc5"
+    },
+    "FORMAT_STDERR.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "FORMAT_STDOUT.txt": {
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    }
+  },
+  "materialized_file_count": 143,
+  "materialized_tree_sha256_after": "13cb2a1f9d457a46fd27d19d66768fba4f382220eb6128d3a906b2d9665af1f4",
+  "materialized_tree_sha256_before": "13cb2a1f9d457a46fd27d19d66768fba4f382220eb6128d3a906b2d9665af1f4",
+  "official_files_same_as_previously_reviewed_commit": "71edce664ebcaf31921000d879e33a614815d3b1",
+  "official_instruction_and_gate_blob_ids": {
+    ".github/blob-size-allowlist.txt": "9375b49c2739ae9adacfefd38ded9e88bb865541",
+    ".github/workflows/blob-size-policy.yml": "60de74f581a2fa4f2b504f375bff39942fc2d499",
+    "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/check_blob_size.py": "b63e1d19f0cba28e7954bc41d3800d3f967b6c9b",
+    "scripts/format.py": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+    "scripts/just-shell.py": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+  },
+  "python_blob_map_sha256": "af360e894064b4bcdb13b7adcca529ec7b805170813bf9a93080ffd6be5e1fd8",
+  "python_file_count": 400,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scientific_experiments_rerun": false,
+  "scientific_source_or_candidate_mutations": false,
+  "scope_note": "Official default just fmt is a scoped no-op on this clean committed worktree; it is not evidence that qualification Python or all Rust files were style-checked. The independent official blob-size checker covers the exact recorded base and head.",
+  "status": "PASS_COMMAND_EXECUTION_AND_BLOB_SIZE_GATE",
+  "tracked_worktree_clean_after_gates": true
+}

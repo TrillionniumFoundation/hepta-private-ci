@@ -1,0 +1,245 @@
+{
+  "record_kind": "pft_actual_hcsn_peer_execution_receipts",
+  "schema_version": 1,
+  "protocol_sha256": "5d5e6193ff962ded6e912238f0f87ea969d362bbd7345cf0885f9625c81c89c1",
+  "protocol_commit": "4c40e8a7b11a1f2afd661f2b76dd3929a3f41edb",
+  "providers": [
+    {
+      "configured_host": "pocket4",
+      "status": {
+        "job_id": "1a2125f3d2b-ffbe-3f83",
+        "exit_code": 0,
+        "state": "succeeded",
+        "output_complete": true,
+        "output_durable": true,
+        "terminal_publication_confirmed": true,
+        "timed_out": false,
+        "cancelled": false,
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 231,
+            "stored": 231
+          }
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "at_unix_ms": 1795604584859
+      },
+      "streams": {
+        "stdout": {
+          "eof": true,
+          "size": 231,
+          "next_offset": 231
+        },
+        "stderr": {
+          "eof": true,
+          "size": 0,
+          "next_offset": 0
+        }
+      },
+      "stdout": "{\"node\": \"pocket4\", \"exit_code\": 0, \"wall_s\": 22.515777399996296, \"child_cpu_s\": 22.226654, \"max_rss_kib\": 268540, \"test_created\": false, \"basis_manifest_sha256\": \"4c8b5b7f3353229d62c7681170d145f8bea21775013011ae921d48893b14c4a5\"}\n",
+      "stderr": "",
+      "manifest_sha256": "7f90191973bea40a3c14e4610686c2e41233074fddc1b893cbd034f24340db31"
+    },
+    {
+      "configured_host": "ai395",
+      "status": {
+        "job_id": "1a2125efbe4-ffbe-3f82",
+        "exit_code": 0,
+        "state": "succeeded",
+        "output_complete": true,
+        "output_durable": true,
+        "terminal_publication_confirmed": true,
+        "timed_out": false,
+        "cancelled": false,
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 229,
+            "stored": 229
+          }
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "at_unix_ms": 1795604575114
+      },
+      "streams": {
+        "stdout": {
+          "eof": true,
+          "size": 229,
+          "next_offset": 229
+        },
+        "stderr": {
+          "eof": true,
+          "size": 0,
+          "next_offset": 0
+        }
+      },
+      "stdout": "{\"node\": \"ai395\", \"exit_code\": 0, \"wall_s\": 29.370135641656816, \"child_cpu_s\": 29.114852, \"max_rss_kib\": 279512, \"test_created\": false, \"basis_manifest_sha256\": \"4c8b5b7f3353229d62c7681170d145f8bea21775013011ae921d48893b14c4a5\"}\n",
+      "stderr": "",
+      "manifest_sha256": "a8012ae43b5f42e0da1bf7c7e90ce5b348bac3a84bda979a8d4bd8541252d7a7"
+    }
+  ],
+  "packaging": [
+    {
+      "configured_host": "pocket4",
+      "status": {
+        "job_id": "1a21262a5a5-ffbe-3f8c",
+        "exit_code": 0,
+        "state": "succeeded",
+        "output_complete": true,
+        "output_durable": true,
+        "terminal_publication_confirmed": true,
+        "timed_out": false,
+        "cancelled": false,
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 234,
+            "stored": 234
+          }
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "at_unix_ms": 1795604799103
+      },
+      "streams": {
+        "stdout": {
+          "eof": true,
+          "size": 234,
+          "next_offset": 234
+        },
+        "stderr": {
+          "eof": true,
+          "size": 0,
+          "next_offset": 0
+        }
+      },
+      "stdout": "{\"node\": \"pocket4\", \"manifest_sha256\": \"a829e472cd4495f837c15c3f783e27a3c793a6ff091205507d48873a13dc50b5\", \"manifest_bytes\": 15820, \"logical_archives\": 12, \"parts\": 30, \"total_bytes\": 10515376, \"pack_wall_seconds\": 3.155479095992632}\n",
+      "stderr": "",
+      "manifest_sha256": "a829e472cd4495f837c15c3f783e27a3c793a6ff091205507d48873a13dc50b5"
+    },
+    {
+      "configured_host": "ai395",
+      "status": {
+        "job_id": "1a212632060-ffbe-3f8e",
+        "exit_code": 0,
+        "state": "succeeded",
+        "output_complete": true,
+        "output_durable": true,
+        "terminal_publication_confirmed": true,
+        "timed_out": false,
+        "cancelled": false,
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 232,
+            "stored": 232
+          }
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "at_unix_ms": 1795604819480
+      },
+      "streams": {
+        "stdout": {
+          "eof": true,
+          "size": 232,
+          "next_offset": 232
+        },
+        "stderr": {
+          "eof": true,
+          "size": 0,
+          "next_offset": 0
+        }
+      },
+      "stdout": "{\"node\": \"ai395\", \"manifest_sha256\": \"e013c9280f8ed4c205b0a38ad3f92c336e65fd52d6658a07201da611e4b81202\", \"manifest_bytes\": 11051, \"logical_archives\": 12, \"parts\": 21, \"total_bytes\": 6698172, \"pack_wall_seconds\": 2.1364938779734075}\n",
+      "stderr": "",
+      "manifest_sha256": "e013c9280f8ed4c205b0a38ad3f92c336e65fd52d6658a07201da611e4b81202"
+    }
+  ],
+  "peer_run": {
+    "configured_host": "ai395",
+    "status": {
+      "job_id": "1a21260f75a-ffbe-3f86",
+      "exit_code": 0,
+      "state": "succeeded",
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "timed_out": false,
+      "cancelled": false,
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 2658,
+          "stored": 2658
+        }
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "at_unix_ms": 1795604718028
+    },
+    "streams": {
+      "stdout": {
+        "eof": true,
+        "size": 2658,
+        "next_offset": 2658
+      },
+      "stderr": {
+        "eof": true,
+        "size": 0,
+        "next_offset": 0
+      }
+    },
+    "stdout": "{\"round_id\": \"pft2-hcsn-usb4-v2-n21-s271901\", \"size\": 21, \"seed\": 271901, \"candidate_sha256\": \"9ad4d74e13aef6822bf4a24de89f1bcd794d4907aa9fd2924b027ccf501f307b\", \"case_wall_seconds\": 1.0447695469483733}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n21-s271902\", \"size\": 21, \"seed\": 271902, \"candidate_sha256\": \"b3ba718844c16d21522430cad6a871771a0f49198f8d0aa7e703dddfda42175d\", \"case_wall_seconds\": 1.0445280759595335}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n21-s271903\", \"size\": 21, \"seed\": 271903, \"candidate_sha256\": \"3ae6a3ce6de3a512551e797ef7097b1f6c1d4be5e91098549bee303b1133c894\", \"case_wall_seconds\": 1.0536595140583813}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n41-s271901\", \"size\": 41, \"seed\": 271901, \"candidate_sha256\": \"ae356f858ca866a5b823ebf6b49c2f9cad35cefec5f3cf861cbbf97130086c8c\", \"case_wall_seconds\": 1.2841202928684652}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n41-s271902\", \"size\": 41, \"seed\": 271902, \"candidate_sha256\": \"75a5ac5a2757c9ffb0d41ff1d999d9c4bcf229cd1cf47e1798371225601576cd\", \"case_wall_seconds\": 1.4256440000608563}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n41-s271903\", \"size\": 41, \"seed\": 271903, \"candidate_sha256\": \"9118c953cb5e13ef665c22b8e33f3ec05dbbf2a185239642a44918596ae5d9ae\", \"case_wall_seconds\": 1.4825440249405801}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n81-s271901\", \"size\": 81, \"seed\": 271901, \"candidate_sha256\": \"e90c4965f0fa44457b204932dffa4c2257792fc699f8a4c0a1aa6162868223f9\", \"case_wall_seconds\": 2.5603036489337683}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n81-s271902\", \"size\": 81, \"seed\": 271902, \"candidate_sha256\": \"9463fe86c1410d4145e0644ab25a194970e4e7c18a84e69f4f0fc76e11afdf66\", \"case_wall_seconds\": 2.5787647012621164}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n81-s271903\", \"size\": 81, \"seed\": 271903, \"candidate_sha256\": \"71637eead741c71805a16a2814a3f817208f5cea8a8b92dc590b7d9e21254018\", \"case_wall_seconds\": 2.5595120890066028}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n161-s271901\", \"size\": 161, \"seed\": 271901, \"candidate_sha256\": \"de38a3eb859b9171554122c10300abb399557b5541c518e7e09c3d37b9a4d947\", \"case_wall_seconds\": 7.4840151011012495}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n161-s271902\", \"size\": 161, \"seed\": 271902, \"candidate_sha256\": \"e49cfe71e154e73e3b189d6fa37a8e2b86d40ee279583019beea0b12f33d1cf1\", \"case_wall_seconds\": 7.240269105881453}\n{\"round_id\": \"pft2-hcsn-usb4-v2-n161-s271903\", \"size\": 161, \"seed\": 271903, \"candidate_sha256\": \"7dbc4fb2f9af7914e9f0e2c44b110b693f6574b0de82061369e6ebe68cc2dfe3\", \"case_wall_seconds\": 6.931937743909657}\n{\"completed_cases\": 12, \"supervisor_sha256\": \"a8aabcee413d88888891b02ca588ef6bb50088c7054a8416c33e64c2857a8511\", \"wall_seconds\": 42.46561168273911}\n{\"launcher_exit_code\": 0, \"launcher_wall_seconds\": 42.51107239210978}\n",
+    "stderr": ""
+  },
+  "scope": "Provider artifacts were computed locally on each physical host. The frozen stdlib SSH protocol transferred and independently solved their statistics. Test data were not generated or read by this run or the subsequent independent audit."
+}

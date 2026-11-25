@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(cold_revocation_blocks_existing_checkpoint_adoption_v2)",
+    "--no-capture"
+  ],
+  "cargo_lock": {
+    "bytes": 421418,
+    "sha256": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f"
+  },
+  "cargo_lock_unchanged": true,
+  "checked_head": "fe249567feae227a362d354c1df3499a2995af40",
+  "closure_complete": false,
+  "exit": 101,
+  "human_participants": 0,
+  "logs": {
+    "stderr.log": {
+      "bytes": 14442,
+      "sha256": "f01e131d2c26971431b03edc06772a59484e1402eae62799be08b196f2e303f4"
+    },
+    "stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "model_inference": false,
+  "parent_git_blob": "508081d1e497b9e34a71dd751e5912be6d2e3ebb",
+  "probe": {
+    "bytes": 5850,
+    "sha256": "82ee89337030073622ea148f67ec18974ffd6ada904a79efc2d7cbfd588c473f"
+  },
+  "probe_outputs": [],
+  "schema": "hepta.adoption-closure.native-execution.v2",
+  "scope": "engineering_fixture",
+  "status": "BLOCKED_OR_FAILED",
+  "training_updates": 0,
+  "wall_seconds": 94.21339400100987
+}

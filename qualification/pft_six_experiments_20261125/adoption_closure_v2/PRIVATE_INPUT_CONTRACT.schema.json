@@ -1,0 +1,378 @@
+{
+  "$defs": {
+    "object": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "maximum": 16777216,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sha256",
+        "bytes"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "urn:hepta:adoption-closure:private-intake:v2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "properties": {
+        "enrollment": {
+          "properties": {
+            "person_b": {
+              "type": "null"
+            }
+          }
+        },
+        "objects": {
+          "maxProperties": 5,
+          "minProperties": 5,
+          "required": [
+            "a_failure",
+            "a_success",
+            "a_train_consent",
+            "a_enrollment",
+            "keep"
+          ]
+        },
+        "pins": {
+          "properties": {
+            "loop": {
+              "type": "null"
+            }
+          }
+        },
+        "sequence": {
+          "maxProperties": 3,
+          "minProperties": 3,
+          "required": [
+            "a_success",
+            "a_authorization",
+            "freeze"
+          ]
+        }
+      }
+    },
+    {
+      "properties": {
+        "enrollment": {
+          "properties": {
+            "person_b": {
+              "type": "string"
+            }
+          }
+        },
+        "objects": {
+          "maxProperties": 8,
+          "minProperties": 8,
+          "required": [
+            "a_failure",
+            "a_success",
+            "a_train_consent",
+            "a_enrollment",
+            "keep",
+            "b_evaluate_consent",
+            "b_enrollment",
+            "b_future"
+          ]
+        },
+        "pins": {
+          "properties": {
+            "loop": {
+              "type": "string"
+            }
+          }
+        },
+        "sequence": {
+          "maxProperties": 5,
+          "minProperties": 5,
+          "required": [
+            "a_success",
+            "a_authorization",
+            "freeze",
+            "b_first_arrival",
+            "b_evaluation"
+          ]
+        }
+      }
+    },
+    {
+      "properties": {
+        "enrollment": {
+          "properties": {
+            "person_b": {
+              "type": "string"
+            }
+          }
+        },
+        "objects": {
+          "maxProperties": 9,
+          "minProperties": 9,
+          "required": [
+            "a_failure",
+            "a_success",
+            "a_train_consent",
+            "a_enrollment",
+            "keep",
+            "b_evaluate_consent",
+            "b_enrollment",
+            "b_future",
+            "b_use_first"
+          ]
+        },
+        "pins": {
+          "properties": {
+            "loop": {
+              "type": "string"
+            }
+          }
+        },
+        "sequence": {
+          "maxProperties": 6,
+          "minProperties": 6,
+          "required": [
+            "a_success",
+            "a_authorization",
+            "freeze",
+            "b_first_arrival",
+            "b_evaluation",
+            "first_use"
+          ]
+        }
+      }
+    },
+    {
+      "properties": {
+        "enrollment": {
+          "properties": {
+            "person_b": {
+              "type": "string"
+            }
+          }
+        },
+        "objects": {
+          "maxProperties": 10,
+          "minProperties": 10,
+          "required": [
+            "a_failure",
+            "a_success",
+            "a_train_consent",
+            "a_enrollment",
+            "keep",
+            "b_evaluate_consent",
+            "b_enrollment",
+            "b_future",
+            "b_use_first",
+            "b_use_again"
+          ]
+        },
+        "pins": {
+          "properties": {
+            "loop": {
+              "type": "string"
+            }
+          }
+        },
+        "sequence": {
+          "maxProperties": 7,
+          "minProperties": 7,
+          "required": [
+            "a_success",
+            "a_authorization",
+            "freeze",
+            "b_first_arrival",
+            "b_evaluation",
+            "first_use",
+            "second_use"
+          ]
+        }
+      }
+    }
+  ],
+  "properties": {
+    "enrollment": {
+      "additionalProperties": false,
+      "properties": {
+        "authority": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "person_a": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "person_b": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "authority",
+        "person_a",
+        "person_b"
+      ],
+      "type": "object"
+    },
+    "objects": {
+      "additionalProperties": false,
+      "properties": {
+        "a_enrollment": {
+          "$ref": "#/$defs/object"
+        },
+        "a_failure": {
+          "$ref": "#/$defs/object"
+        },
+        "a_success": {
+          "$ref": "#/$defs/object"
+        },
+        "a_train_consent": {
+          "$ref": "#/$defs/object"
+        },
+        "b_enrollment": {
+          "$ref": "#/$defs/object"
+        },
+        "b_evaluate_consent": {
+          "$ref": "#/$defs/object"
+        },
+        "b_future": {
+          "$ref": "#/$defs/object"
+        },
+        "b_use_again": {
+          "$ref": "#/$defs/object"
+        },
+        "b_use_first": {
+          "$ref": "#/$defs/object"
+        },
+        "keep": {
+          "$ref": "#/$defs/object"
+        }
+      },
+      "required": [
+        "a_failure",
+        "a_success",
+        "a_train_consent",
+        "a_enrollment",
+        "keep"
+      ],
+      "type": "object"
+    },
+    "pins": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "freeze": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "loop": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "parent": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "runtime_artifacts": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "study": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "study",
+        "parent",
+        "candidate",
+        "freeze",
+        "loop",
+        "runtime_artifacts"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "hepta.adoption-closure.private-intake.v2"
+    },
+    "scope": {
+      "enum": [
+        "engineering_fixture",
+        "protected_original_owner"
+      ]
+    },
+    "sequence": {
+      "additionalProperties": false,
+      "properties": {
+        "a_authorization": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "a_success": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "b_evaluation": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "b_first_arrival": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "first_use": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "freeze": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "second_use": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "a_success",
+        "a_authorization",
+        "freeze"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema",
+    "scope",
+    "pins",
+    "objects",
+    "enrollment",
+    "sequence"
+  ],
+  "title": "Private original-owner A/B intake (not an authorization)",
+  "type": "object"
+}

@@ -1,0 +1,82 @@
+{
+  "modes": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-c",
+        "import json,platform,sys; sys.path.insert(0,sys.argv[1]); import verify_evidence; r=verify_evidence.verify(sys.argv[1],sys.argv[2]); r[\"observed_optimize\"]=sys.flags.optimize; r[\"python_version\"]=platform.python_version(); print(json.dumps(r,sort_keys=True))",
+        "/workspace/scratch/ef5487d13d56/hepta-pft-six/qualification/pft_six_experiments_20261125/actual_hcsn_v2",
+        "/workspace/scratch/ef5487d13d56/hepta-pft-six/qualification/pft_six_experiments_20261125/actual_hcsn/runtime_capsule.tar.gz"
+      ],
+      "exit_code": 0,
+      "mode": 0,
+      "result": {
+        "archive_count": 190,
+        "archive_index_sha256": "37736a1b054eb4dc5e6160dbdc5b02a01de8bd44a5ba57635eb1c97c3ecc74c4",
+        "candidate_git_anchor_reported_by_orchestrator": "7dfd1deb8b70867a7875ef1fc99cd1a6b20f4953",
+        "candidates": 168,
+        "capsule": {
+          "actual_sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+          "expected_sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+          "requested": true
+        },
+        "evaluated_rows": 168,
+        "external_git_commit_existence_requeried": false,
+        "observed_optimize": 0,
+        "protocol_sha256": "aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8",
+        "python_version": "3.12.14",
+        "scope": "raw bytes, local source and receipt bindings; no Torch deserialization or scientific retraining",
+        "seal_sha256": "a447b724f6459625b0e9c5e15e9dca5bbaad439af5c433391c7b34e9a9df88ee",
+        "source_git_anchor": "221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3",
+        "status": "BYTE_AND_BINDING_CHECKS_PASSED",
+        "unique_members": 981,
+        "verifier_source_sha256": "d1add757e88ff873470b87896acac774fe4947ae4362cf6fba0ea0494a16cdbc",
+        "wall_s": 1.4050231910005095
+      },
+      "stderr": "",
+      "stdout_sha256": "7956640e4bff666133091b969c63d063b10176daade142fe5d8a171153e66a52",
+      "wall_s": 1.4686211880034534
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-O",
+        "-c",
+        "import json,platform,sys; sys.path.insert(0,sys.argv[1]); import verify_evidence; r=verify_evidence.verify(sys.argv[1],sys.argv[2]); r[\"observed_optimize\"]=sys.flags.optimize; r[\"python_version\"]=platform.python_version(); print(json.dumps(r,sort_keys=True))",
+        "/workspace/scratch/ef5487d13d56/hepta-pft-six/qualification/pft_six_experiments_20261125/actual_hcsn_v2",
+        "/workspace/scratch/ef5487d13d56/hepta-pft-six/qualification/pft_six_experiments_20261125/actual_hcsn/runtime_capsule.tar.gz"
+      ],
+      "exit_code": 0,
+      "mode": 1,
+      "result": {
+        "archive_count": 190,
+        "archive_index_sha256": "37736a1b054eb4dc5e6160dbdc5b02a01de8bd44a5ba57635eb1c97c3ecc74c4",
+        "candidate_git_anchor_reported_by_orchestrator": "7dfd1deb8b70867a7875ef1fc99cd1a6b20f4953",
+        "candidates": 168,
+        "capsule": {
+          "actual_sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+          "expected_sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+          "requested": true
+        },
+        "evaluated_rows": 168,
+        "external_git_commit_existence_requeried": false,
+        "observed_optimize": 1,
+        "protocol_sha256": "aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8",
+        "python_version": "3.12.14",
+        "scope": "raw bytes, local source and receipt bindings; no Torch deserialization or scientific retraining",
+        "seal_sha256": "a447b724f6459625b0e9c5e15e9dca5bbaad439af5c433391c7b34e9a9df88ee",
+        "source_git_anchor": "221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3",
+        "status": "BYTE_AND_BINDING_CHECKS_PASSED",
+        "unique_members": 981,
+        "verifier_source_sha256": "d1add757e88ff873470b87896acac774fe4947ae4362cf6fba0ea0494a16cdbc",
+        "wall_s": 1.330108818001463
+      },
+      "stderr": "",
+      "stdout_sha256": "dbd503c9377414c6d7a080ca8565cd6516c31205c5bede239781dfb7e25c5e82",
+      "wall_s": 1.4851280309958383
+    }
+  ],
+  "no_model_calls_or_data_generation": true,
+  "source_sha256": "d1add757e88ff873470b87896acac774fe4947ae4362cf6fba0ea0494a16cdbc",
+  "status": "BOTH_NORMAL_AND_OPTIMIZED_BYTE_VERIFIERS_PASSED"
+}

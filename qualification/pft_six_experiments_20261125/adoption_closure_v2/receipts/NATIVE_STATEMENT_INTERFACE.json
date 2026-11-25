@@ -1,0 +1,49 @@
+{
+  "checked_head": "fe249567feae227a362d354c1df3499a2995af40",
+  "cli_git_blob": "2fa99d56f10e492be8ce0fdb3b15ef632dae6284",
+  "closure_complete": false,
+  "evidence_scope": "engineering_fixture",
+  "human_participants": 0,
+  "model_inference": false,
+  "native": {
+    "blocker": "ORIGINAL_TURN_VERIFIER_REQUIRED",
+    "help_sha256": "503f402cba314054fb6ab223113590d1c0c62f9c2879b55ebad2494ed5021c2e",
+    "legacy_sqlite_receipt_accepted": false,
+    "native_elf_sha256": "82721b3fd39251249779754f46d5923def35556e3420e89701bbb9fb70ec7817",
+    "original_turn_authorization_available": false,
+    "schema": "hepta.adoption-closure.native-interface.v2",
+    "statement_renderer_available": true
+  },
+  "original_turn_authorization_verified": false,
+  "schema": "hepta.adoption-closure.native-statement-execution.v2",
+  "source_sha256": {
+    "intake_contract.py": "9dc25aef47ebed27eedf8aa902d2fe69d9a6ebff86940e542ab06d31684b883e",
+    "native_adapter.py": "d007443ba27a6bebedda23b2eb8ff48a5315f624207682816952bcf2b0858c6b",
+    "native_interface_probe.py": "6a7068a8cee218e566500061c19ccade77706d04fdc8abfd6e58f96231c8c6b2"
+  },
+  "statements": {
+    "evaluate_only": {
+      "binding_count": 3,
+      "bytes": 374,
+      "sha256": "2687bb7e3cf76a73f3166f86e946879b7558b60329a1af2a074764145d0ae7e8"
+    },
+    "report_consumer_outcome": {
+      "binding_count": 8,
+      "bytes": 860,
+      "sha256": "55b28855a638e93402c993c236c302e2fe2620bff7109600ed4201f58966ccad"
+    },
+    "request_consumer_run": {
+      "binding_count": 5,
+      "bytes": 581,
+      "sha256": "acfe67d5f8409d30902ac34ed1039cbdb5f6b0d2358d64ba47df6ed9820ceb05"
+    },
+    "train": {
+      "binding_count": 3,
+      "bytes": 352,
+      "sha256": "1e325b958f2771ec800b111957043580f33937722ef16dbb12bdb70dc9ef329c"
+    }
+  },
+  "status": "STATEMENT_ADAPTER_PASSED",
+  "training_updates": 0,
+  "wall_seconds": 0.1771764449076727
+}

@@ -1,0 +1,49 @@
+{
+  "status": "FROZEN",
+  "stages": [
+    {
+      "command": [
+        "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/pilot_summary.py",
+        "--root",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125",
+        "--out",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/PILOT_SUMMARY.json"
+      ],
+      "exit_code": 0,
+      "wall_s": 0.06153769895900041,
+      "stdout": "{\"censored_rows\": 4, \"chosen_physical_lr\": 1e-05, \"completed_updates_rows\": 12, \"max_selected_step\": 64}\n{\"path\": \"/home/alex/pft-six-actual-hcsn-v2-20261125/PILOT_SUMMARY.json\", \"sha256\": \"97991e5822eb61797aa6b60877366861d9ebec45df66f4ae1f2fcda13f0462c0\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/register.py",
+        "--mode",
+        "formal",
+        "--out",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/FORMAL_PROTOCOL.json",
+        "--diagnosis",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/diagnosis_v1/RESULT.json",
+        "--pilot-result",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/PILOT_SUMMARY.json",
+        "--cache-check",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/cache_check_v1/RESULT.json",
+        "--max-updates",
+        "96",
+        "--cpu-budget",
+        "90",
+        "--wall-budget",
+        "120",
+        "--physical-lr",
+        "1e-5"
+      ],
+      "exit_code": 0,
+      "wall_s": 1.2743592140031978,
+      "stdout": "{\"path\": \"/home/alex/pft-six-actual-hcsn-v2-20261125/FORMAL_PROTOCOL.json\", \"sha256\": \"ed607b473498538b447907400977c28d539d8d64bb5d9276fd29c3d5b6f2bdaa\", \"cases\": 168, \"ridge\": 1e-06, \"groups\": {\"main_factorial\": 144, \"sample_efficiency\": 24}}\n",
+      "stderr": ""
+    }
+  ],
+  "training_started": false,
+  "test_created": false
+}

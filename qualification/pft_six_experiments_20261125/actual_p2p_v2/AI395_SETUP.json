@@ -1,0 +1,29 @@
+{
+  "status": "PREPARED",
+  "capsule_sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+  "capsule_bytes": 406079,
+  "steps": [
+    {
+      "stage": "venv",
+      "exit_code": 0,
+      "wall_s": 3.4201629953458905
+    },
+    {
+      "stage": "numpy",
+      "exit_code": 0,
+      "wall_s": 134.69327141391113
+    },
+    {
+      "stage": "torch",
+      "exit_code": 0,
+      "wall_s": 350.1856294791214
+    }
+  ],
+  "wall_s": 490.243189167697,
+  "runtime": {
+    "python": "3.14.4",
+    "numpy": "2.5.5",
+    "torch": "2.15.0+cpu"
+  },
+  "training_performed": false
+}

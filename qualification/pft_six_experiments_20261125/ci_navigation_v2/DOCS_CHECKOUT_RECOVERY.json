@@ -1,0 +1,39 @@
+{
+  "all_passed": true,
+  "homepage_bytes": 0,
+  "source_sha256": "70b3882c191dadb56f686e99f99ea941359c54a648cdcacac13e217b29367156",
+  "steps": [
+    {
+      "exit_code": 1,
+      "iteration": 0,
+      "materialized_tracked_directories": [
+        "qualification/memory-retrieval",
+        "qualification/lane-f-shadow"
+      ],
+      "stderr": "FAIL_HEPTA_DEVELOPMENT_DOCS_V8: CNS verifier FAIL_HEPTA_CNS: CNS-GAP-002 missing evidence qualification/cns-organ-reference/reference.py\n",
+      "stdout": "",
+      "wall_s": 1.5547269529197365
+    },
+    {
+      "exit_code": 1,
+      "iteration": 1,
+      "materialized_tracked_directories": [
+        "qualification/cns-organ-reference"
+      ],
+      "stderr": "FAIL_HEPTA_DEVELOPMENT_DOCS_V8: CNS verifier FAIL_HEPTA_CNS: missing integrated evidence qualification/hnmf-adversarial-reference/Cargo.toml\n",
+      "stdout": "",
+      "wall_s": 1.1689251660136506
+    },
+    {
+      "exit_code": 0,
+      "iteration": 2,
+      "materialized_tracked_directories": [
+        "qualification/hnmf-adversarial-reference"
+      ],
+      "stderr": "",
+      "stdout": "{\"adaptiveSpecifications\": 6, \"cnsOrgans\": 24, \"cnsReferenceGaps\": 22, \"contracts\": 205, \"dataDomains\": 67, \"declaredLeaseCount\": 1, \"externallyAttestedLeaseCount\": 0, \"historicalEvidenceRevalidated\": false, \"hnmfReferenceGaps\": 18, \"leaseActivationEvaluated\": false, \"leasedPathCount\": 1, \"legacyPaths\": 0, \"moduleTechnicalDocuments\": 40, \"modules\": 40, \"paperSources\": 4, \"planVersion\": \"8.0.0\", \"protocols\": 58, \"readinessDocumentationGaps\": 54, \"readinessProtocols\": 31, \"readinessSpecifications\": 9, \"sourceBindings\": 40, \"status\": \"PASS_HEPTA_DEVELOPMENT_DOCS_V8\", \"touchedLeaseCount\": 0, \"unresolvedPathConflicts\": 0, \"verificationProfile\": \"development\", \"workPackages\": 91}\n",
+      "wall_s": 1.3959446189692244
+    }
+  ],
+  "verification": "development_docs_after_intended_homepage_clear"
+}

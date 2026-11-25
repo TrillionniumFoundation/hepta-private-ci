@@ -1,0 +1,133 @@
+{
+  "scope": "Finite publication set for the actual SmallHCSN appendix; this manifest itself is also included.",
+  "blob_size_limit_bytes": 512000,
+  "expanded_runtime_source_and_parent_copies_excluded": true,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 11804,
+      "sha256": "38361279bc7b7ad5983f120969469cb636586b0d7ab90fd990caf6ba4f85f224"
+    },
+    {
+      "path": "study.py",
+      "bytes": 18171,
+      "sha256": "3007f64b548671f2f372ae9db4f48459d2795a68f0154fbeb1a6579994719678"
+    },
+    {
+      "path": "collect_evidence.py",
+      "bytes": 6577,
+      "sha256": "20d97569e8382ad0f737c8df97441279eb671199542c78198a8f8e323ac6e067"
+    },
+    {
+      "path": "source_provenance.json",
+      "bytes": 9632,
+      "sha256": "72194249d27b8af51cf95f89f5db494fa525e44c156eaf11b56e417ccc8c3b55"
+    },
+    {
+      "path": "CAPSULE_MANIFEST.json",
+      "bytes": 5586,
+      "sha256": "e4c75095d7cb95f331cd57f95c93b1887f4f9cfac990aec60e554a6c18f3bb12"
+    },
+    {
+      "path": "runtime_capsule.tar.gz",
+      "bytes": 406079,
+      "sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96"
+    },
+    {
+      "path": "results/local_dependency_check/RESULT.json",
+      "bytes": 108,
+      "sha256": "9c215314d842be33830b348a343e34a65134ae2a0d58ad413421d254efaa4184"
+    },
+    {
+      "path": "results/pocket4_run_v1/ARCHIVE_VERIFICATION.json",
+      "bytes": 1453,
+      "sha256": "a8c7e7a1a789893f021130dd77262a7e50f43b153b551fd6488e535a1091f407"
+    },
+    {
+      "path": "results/pocket4_run_v1/DEPENDENCY_INSTALL_RESULT.json",
+      "bytes": 1564,
+      "sha256": "24ff750df9bf15d712b5d6d920ec715e34a5080cfe2141de64fa29f8db3f1c9e"
+    },
+    {
+      "path": "results/pocket4_run_v1/EXECUTION_RECEIPT.json",
+      "bytes": 501,
+      "sha256": "bfb1e2b7f7ad7e15a2a49a3efcaf03b2b5dff96dff06cf25d52001664a16b975"
+    },
+    {
+      "path": "results/pocket4_run_v1/GLOBAL_CANDIDATE_FREEZE.json",
+      "bytes": 19610,
+      "sha256": "bdbbcb7f5f93661bd3140ce11036170516f5b345149bbd175140125f787ee1db"
+    },
+    {
+      "path": "results/pocket4_run_v1/MODEL_PARAMETER_INVENTORY.json",
+      "bytes": 12721,
+      "sha256": "8d03e8224210e884a7feabe7aad7cf50d4d528a9dd3fe747a189263b7c62403f"
+    },
+    {
+      "path": "results/pocket4_run_v1/PROCESS_RECEIPTS.json",
+      "bytes": 29037,
+      "sha256": "43a11d5a74f34aa30ade044a24ab90ee8245eb183aaa82ca8088aa8cd6c54f1d"
+    },
+    {
+      "path": "results/pocket4_run_v1/PROTOCOL.json",
+      "bytes": 3161,
+      "sha256": "4cd9a08592f7c9fbc6843ba5fcf04816ce02ff1bb025a33dd3c618aba16e3dcf"
+    },
+    {
+      "path": "results/pocket4_run_v1/RESULT.json",
+      "bytes": 25804,
+      "sha256": "f1795c758a178c5841e3e9c30ae064a2b773859e9f57f3a5d9cae6f826a62dd7"
+    },
+    {
+      "path": "results/pocket4_run_v1/RETRIEVAL_RECEIPT.json",
+      "bytes": 3082,
+      "sha256": "33d7ce216a28f38b65ba15097df77113b0689ab8a3650956f31a0694b39cdefe"
+    },
+    {
+      "path": "evidence_archives/ARCHIVE_INDEX.json",
+      "bytes": 7043,
+      "sha256": "873339e7785898273c38913c91bbeb4a9afd7c3ce70588c4beac2ea8352c25ff"
+    },
+    {
+      "path": "evidence_archives/metadata.tar.gz",
+      "bytes": 45566,
+      "sha256": "d4699889dd3cd924347d83d32db85149a3de05a15bae143f16fb92a8990d8a8c"
+    },
+    {
+      "path": "evidence_archives/n16.tar.gz",
+      "bytes": 32944,
+      "sha256": "e56b55e9bc15217eceb56e02b86e9d69a19ca928f7b113dd7f13c44702a38ecb"
+    },
+    {
+      "path": "evidence_archives/n32.tar.gz",
+      "bytes": 79282,
+      "sha256": "8a217d46a886c02cb6606cf41ebbb3024085b1a266821764cb72b01f75c8600e"
+    },
+    {
+      "path": "evidence_archives/n64.tar.gz",
+      "bytes": 214849,
+      "sha256": "6515afc1d1cae355d2f60571be8285f1ead901d2c864d4ea95e5294f604bbc8b"
+    },
+    {
+      "path": "evidence_archives/n8.tar.gz",
+      "bytes": 19535,
+      "sha256": "e5bf0a38d9c2fc99ff1f7d6dc5e58912dc6394f031522ddbd2a336f09113c1d3"
+    }
+  ],
+  "file_count_including_this_manifest": 23,
+  "bytes_without_self": 954109,
+  "recovery": {
+    "reason": "shared local executor unavailable after measurements completed",
+    "payload_sources": [
+      "original captured tool results",
+      "frozen pocket4 study and evidence files"
+    ],
+    "presentation_metadata_restored": [
+      "README.md",
+      "PUBLISH_MANIFEST.json"
+    ],
+    "local_missing_dependency_result_matches_original_sha256": true,
+    "scientific_rerun": false,
+    "scientific_source_or_result_rewritten": false
+  }
+}

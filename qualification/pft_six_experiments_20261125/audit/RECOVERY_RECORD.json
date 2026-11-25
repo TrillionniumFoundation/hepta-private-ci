@@ -1,0 +1,37 @@
+{
+  "status": "RECOVERED_PRIOR_AUDIT_BYTES",
+  "recovery_date_utc": "2026-11-25",
+  "reason": "The local executor became unavailable after all three independent audits had completed. This recovery record describes publication packaging only.",
+  "files": [
+    {
+      "name": "actual_hcsn_static_review.json",
+      "sha256": "7d2bb4ea4631c3873d0592e2c88f0df239998071107d1bbe647ef3b8dc79295c",
+      "original_sha256": "7d2bb4ea4631c3873d0592e2c88f0df239998071107d1bbe647ef3b8dc79295c",
+      "byte_identical_to_prior_logged_hash": true,
+      "bytes": 3240
+    },
+    {
+      "name": "actual_hcsn_receipt_review.json",
+      "sha256": "64da2815720210e9ee53240d750640f609613e8c5baf8b17cbce6b306ff9850f",
+      "original_sha256": "64da2815720210e9ee53240d750640f609613e8c5baf8b17cbce6b306ff9850f",
+      "byte_identical_to_prior_logged_hash": true,
+      "bytes": 3156
+    },
+    {
+      "name": "actual_hcsn_payload_review.json",
+      "sha256": "4f5d97ac361e532a2d561ebd08576b49b90e5b4dee874ced0500e5c3934b28cf",
+      "original_sha256": "4f5d97ac361e532a2d561ebd08576b49b90e5b4dee874ced0500e5c3934b28cf",
+      "byte_identical_to_prior_logged_hash": true,
+      "bytes": 12771
+    }
+  ],
+  "methods": {
+    "static_and_receipt": "Deterministic report objects restored from the already recorded audit output and compared with SHA256 values logged before the environment failure.",
+    "payload": "Original scientific archives were read and their byte/hash bindings recomputed to restore the exact previous audit JSON.",
+    "format": "Machine receipts were restored from cached original remote reads and native process results; the human-readable README was restored from its previously written text."
+  },
+  "scientific_experiments_rerun": false,
+  "scientific_sources_or_candidates_modified": false,
+  "all_three_original_audit_sha256_values_matched": true,
+  "no_new_scientific_acceptance_claim": true
+}

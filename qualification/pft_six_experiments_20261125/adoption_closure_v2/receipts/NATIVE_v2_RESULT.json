@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(cold_revocation_blocks_existing_checkpoint_adoption_v2)",
+    "--no-capture"
+  ],
+  "checked_head": "fe249567feae227a362d354c1df3499a2995af40",
+  "closure_complete": false,
+  "exit": 101,
+  "human_participants": 0,
+  "logs": {
+    "stderr.log": {
+      "bytes": 73634,
+      "sha256": "a0636b4907b833e84cdeda467c820f07ee5fdebaf1c1b5473da04f6fbad68efb"
+    },
+    "stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "model_inference": false,
+  "parent_git_blob": "508081d1e497b9e34a71dd751e5912be6d2e3ebb",
+  "probe": {
+    "bytes": 5478,
+    "sha256": "fac801188eb45d09c60073a0ab9bad5179ac87c1f7bbdde0e8ac3518a3d8bb98"
+  },
+  "probe_outputs": [],
+  "schema": "hepta.adoption-closure.native-execution.v2",
+  "scope": "engineering_fixture",
+  "status": "BLOCKED_OR_FAILED",
+  "training_updates": 0,
+  "wall_seconds": 1637.0167670330266
+}
