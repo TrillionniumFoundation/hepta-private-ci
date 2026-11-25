@@ -6,6 +6,10 @@ use std::process::Stdio;
 use std::time::Duration;
 use tokio::process::Command;
 
+#[cfg(windows)]
+#[path = "git_process_windows_fixture.rs"]
+mod windows_fixture;
+
 #[derive(Clone, Copy)]
 enum GitWrapperLifetime {
     WaitForChild,
@@ -15,6 +19,11 @@ enum GitWrapperLifetime {
 async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     wrapper_lifetime: GitWrapperLifetime,
 ) {
+    #[cfg(windows)]
+    if windows_fixture::run_if_requested(wrapper_lifetime) {
+        return;
+    }
+
     let temp_dir = tempfile::tempdir().expect("create temp dir");
     let child_pid_file = temp_dir.path().join("child.pid");
     let child_ready_file = temp_dir.path().join("child-ready");
@@ -36,22 +45,7 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         command
     };
     #[cfg(windows)]
-    let mut command = {
-        let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
-        };
-        command
-            .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
-        command
-    };
+    let mut command = Command::from(windows_fixture::wrapper_command(wrapper_lifetime));
     command
         .env("CHILD_PID_FILE", &child_pid_file)
         .env("CHILD_READY_FILE", &child_ready_file)
@@ -71,8 +65,33 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
     })
-    .await
-    .expect("wait for Git wrapper child readiness");
+    .await;
+    let child_pid = match child_pid {
+        Ok(child_pid) => child_pid,
+        Err(error) => {
+            let status_before_cleanup = wrapper.try_wait();
+            // Cleanup must happen before reading inherited pipes: a live
+            // descendant may still own their write handles after wrapper exit.
+            drop(process_tree);
+            let diagnostics = match tokio::time::timeout(
+                Duration::from_secs(3),
+                wrapper.wait_with_output(),
+            )
+            .await
+            {
+                Ok(Ok(output)) => format!(
+                    "status={}, stdout(first 4096 bytes)={:?}, stderr(first 4096 bytes)={:?}",
+                    output.status,
+                    String::from_utf8_lossy(&output.stdout[..output.stdout.len().min(4096)]),
+                    String::from_utf8_lossy(&output.stderr[..output.stderr.len().min(4096)]),
+                ),
+                result => format!("output unavailable after cleanup: {result:?}"),
+            };
+            panic!(
+                "wait for Git wrapper child readiness: {error}; status before cleanup={status_before_cleanup:?}; {diagnostics}"
+            );
+        }
+    };
 
     if matches!(wrapper_lifetime, GitWrapperLifetime::ExitBeforeTimeout) {
         std::fs::write(&release_wrapper_file, "release").expect("release Git wrapper");
