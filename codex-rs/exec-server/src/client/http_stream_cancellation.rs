@@ -65,11 +65,14 @@ impl HttpStreamCancellation {
             request_id: self.request_id.clone(),
         };
         let deadline = tokio::time::Instant::now() + HTTP_CANCELLATION_ACK_TIMEOUT;
-        let mut attempt = CancellationAttempt {
+        let attempt = CancellationAttempt {
             rpc_client: Arc::clone(&rpc_client),
             response_received: false,
         };
         handle.spawn(async move {
+            // Retain the whole guard in the task. Capturing only its Copy bool
+            // would drop the original guard as soon as cancel returns.
+            let mut attempt = attempt;
             match tokio::time::timeout_at(
                 deadline,
                 rpc_client.call_for_cleanup::<_, HttpRequestCancelResponse>(
