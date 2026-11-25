@@ -44,6 +44,21 @@ reports, correlated refinements and actual four-modal emissions. Nominal
 Bellman values are checked against complete path entropic utility, with
 weighted fractional CVaR90 and explicit paid-resource conservation.
 
+## Fresh-episode state custody (source-level modeled budget)
+
+A stage-zero `PublicState` must start with `active_mask=0` and
+`witnessed=False`. Otherwise an unrecorded mask can waive a modeled fixed
+Cell activation charge, or an unobserved witness purchase can be silently
+claimed before a registered QUERY. Both are denied at state construction,
+before controller evaluation or independent full-path scoring. A genuine
+stage-one continuation retains its paid activation mask and witness flag,
+so the ordinary finite action lifecycle is unchanged.
+
+`test_fresh_root_custody.py` covers the activation-charge counterexample,
+fabricated witness, valid continuation, and unchanged complete terminal
+emission. This establishes a **synthetic input-admission invariant**, not
+physical metering, real witness provenance or production NeuronRuntime trust.
+
 ## Bounded System 2 search cost
 
 `JointController` counts unique Bellman state expansions with an exact integer
@@ -75,6 +90,30 @@ This is **Python memory-lifecycle correctness**, not physical model-generation
 or deployment latency evidence. Ordinary Python reflection is not a trusted
 authority boundary; production hosts must independently enforce model/profile
 version and effect authorization.
+
+## Fail-closed numerical interpretation near zero risk
+
+A scientific audit of the bounded v5 controller found that the ordinary
+`log(sum(p * exp(-gamma * payoff))) / gamma` expression loses precision
+as `gamma` approaches zero even when all inputs are finite, normalized
+and admitted. For two supported payoffs `[-10, -3]` with probabilities
+`[0.4, 0.6]`, `gamma=1e-16` previously returned about `-5.5591`
+instead of a value near its risk-neutral limit `-5.8`. This can
+incorrectly change Bellman policy rankings without any change in evidence.
+
+The finite scorer now uses `expm1/log1p` relative to the minimum
+**positive-support** payoff when `gamma * payoff_span <= 1e-4`, and
+normalizes the already-admitted rounded probability mass on that path.
+Extremely small positive risk coefficients use the risk-neutral limit only
+when the scaled payoff span is also negligible. A wide-payoff regression
+checks that a small coefficient does not mask material risk. Ordinary
+`gamma=1` frozen research scoring follows its original evaluation path.
+An independent 90-digit Decimal numerical oracle, boundary-mass counterexample, and near-zero
+terminal Bellman tests are collected in `test_near_neutral_risk.py`.
+
+This is an isolated **finite numerical correctness** fix, not a
+re-estimate of frozen v1–v4 outcomes, calibrated natural preference,
+independent real-world reward, physical budget or model promotion.
 
 ## Falsification and explicit assumptions
 

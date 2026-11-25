@@ -84,6 +84,11 @@ class PublicState:
             or type(self.active_mask) is not int
             or not 0 <= self.active_mask <= 15
             or type(self.witnessed) is not bool
+            # A fresh stage-zero episode has no previously activated Cell or
+            # purchased witness. Accepting a forged active mask would waive
+            # real modeled activation charges; accepting witnessed=True would
+            # assert an unobserved prior information purchase.
+            or (self.stage == 0 and (self.active_mask != 0 or self.witnessed))
         ):
             raise ValueError("invalid public state")
 
@@ -261,6 +266,25 @@ def conditional_ce(values, probabilities, gamma):
         return math.fsum(v * p for v, p in zip(values, probabilities))
     support = [(v, p) for v, p in zip(values, probabilities) if p > 0]
     anchor = min(v for v, _ in support)
+    span = max(v for v, _ in support) - anchor
+    # The conventional log(sum(p*exp(-gamma*(v-anchor)))) is numerically
+    # discontinuous at gamma -> 0: rounding a sum near 1 then dividing
+    # by gamma can change an admissible Bellman value by O(eps/gamma).
+    # In the near-neutral regime, use compensated expm1/log1p and
+    # renormalize the admitted (1 +/- 1e-12) probability mass.
+    scaled_span = gamma * span
+    # Use the mean only if the *scaled* payoff range is also negligible.
+    # A tiny gamma alone does not imply negligible risk for wide payoffs.
+    if scaled_span == 0 or (0 < gamma < 1e-250 and scaled_span < 1e-250):
+        total = math.fsum(p for _, p in support)
+        return math.fsum(v * (p / total) for v, p in support)
+    if 0 < scaled_span <= 1e-4:
+        total = math.fsum(p for _, p in support)
+        delta = math.fsum(
+            (p / total) * math.expm1(-gamma * (v - anchor))
+            for v, p in support
+        )
+        return anchor - math.log1p(delta) / gamma
     return anchor - math.log(
         math.fsum(p * math.exp(-gamma * (v - anchor))
                   for v, p in support)
