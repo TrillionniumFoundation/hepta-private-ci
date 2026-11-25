@@ -145,7 +145,26 @@ CASES = [['control.rs',
    'capture.capture_after_close(closed).await']]]
 
 
-CASES.append(['control.rs', 'fn serve_connection(', ['request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION', 'state.circuit_task_enabled()', 'crate::AgentdMethod::ObjectiveStart', 'P::response(&state, request).await', 'let completed_circuit = circuit_admission', 'matches!(&response.payload, AgentdPayload::ObjectiveRun(receipt)', 'if receipt.disposition', '.eq("circuit_succeeded")', 'match frames::write_frame(&mut writer, &bytes).await', 'Err(AgentdError::Io(error))', 'if completed_circuit', 'ErrorKind::BrokenPipe | ErrorKind::ConnectionReset', 'result => result']])
+CASES.append([
+    "control.rs",
+    "fn serve_connection(",
+    [
+        "request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION",
+        "state.circuit_task_enabled()",
+        "crate::AgentdMethod::ObjectiveStart",
+        "P::response(&state, request).await",
+        "let completed_circuit = circuit_admission",
+        "matches!(&response.payload, AgentdPayload::ObjectiveRun(receipt)",
+        "if receipt.disposition",
+        '.eq("circuit_succeeded")',
+        "let health_snapshot = matches!(&response.payload, AgentdPayload::Health(_));",
+        "match frames::write_frame(&mut writer, &bytes).await",
+        "Err(AgentdError::Io(error))",
+        "if (health_snapshot || completed_circuit)",
+        "ErrorKind::BrokenPipe | ErrorKind::ConnectionReset",
+        "result => result",
+    ],
+])
 
 # The public entry preserves the same source-capture lifetime through the shared
 # composition helper; it cannot omit the delegate or add a memory bootstrap.
@@ -168,7 +187,7 @@ class OriginalSourceExitClosureTests(unittest.TestCase):
                 with self.subTest(file=filename, function=function, marker=marker, occurrence=occurrence):
                     self.reject_removal(filename, function, marker, occurrence)
 
-    def test_only_original_completed_circuit_ack_disconnect_is_nonfatal(self):
+    def test_only_read_only_health_and_completed_circuit_ack_disconnects_are_nonfatal(self):
         self.verify_cases([18])
 
     def test_control_completion_requires_all_accepted_connections(self):
