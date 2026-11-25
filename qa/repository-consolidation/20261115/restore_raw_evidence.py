@@ -41,7 +41,9 @@ CALLER_REVIEW_DIFF_INDEX = "qa/repository-consolidation/20261125/caller-review-d
 AGENTD_STATIC_READELF_INDEX = "qa/repository-consolidation/20261125/agentd-static-readelf-custody/raw-evidence-storage.json"
 LEARNING_NATIVE_TUPLE_INDEX = "qa/repository-consolidation/20261125/learning-native-tuple-custody/raw-evidence-storage.json"
 NATIVE_NOTICE_BYTE_INDEX = "qa/repository-consolidation/20261125/native-notice-byte-custody/raw-evidence-storage.json"
+HISTORICAL_READBACK_INDEX = "qa/repository-consolidation/20261125/historical-readback-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    HISTORICAL_READBACK_INDEX: "4c9ac6db51751049cff2cdbcf060b35e53c50c1ce0ce83ba2c0dc05bd765963a",
     NATIVE_NOTICE_BYTE_INDEX: "5a323dde4ec10fca217856d5ff319acd708db94e460eebb524025a0c4463316e",
     LEARNING_NATIVE_TUPLE_INDEX: "532391f27b873d2856a19be3cc05e679a1aca0f08be253bd847c9e0a99dff111",
     AGENTD_STATIC_READELF_INDEX: "57be021f57ddec181e324c83e0aafdc80b8657a712c4e428d3b4e1155a3f49d7",
