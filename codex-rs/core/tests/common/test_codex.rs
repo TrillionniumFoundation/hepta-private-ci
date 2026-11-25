@@ -586,6 +586,26 @@ impl TestCodexBuilder {
         .await
     }
 
+    /// Rebuilds an independent runtime with the same executor selection as
+    /// `build_with_auto_env`; callers can retain the original configuration.
+    pub async fn resume_with_auto_env(
+        &mut self,
+        server: &wiremock::MockServer,
+        home: Arc<TempDir>,
+        rollout_path: PathBuf,
+    ) -> anyhow::Result<TestCodex> {
+        let base_url = format!("{}/v1", server.uri());
+        let test_env = test_env().await?;
+        Box::pin(self.build_with_home_and_base_url(
+            base_url,
+            home,
+            Some(rollout_path),
+            test_env,
+            /*include_local_environment*/ false,
+        ))
+        .await
+    }
+
     pub async fn restart(
         &mut self,
         server: &MockServer,

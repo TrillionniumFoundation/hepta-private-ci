@@ -119,16 +119,14 @@ async fn recover_turn_if_idle_requires_hepta_turn_recovery_feature() {
 async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
     let (first_response_release, first_response_gate) = oneshot::channel();
     let (server, _completions) = start_streaming_sse_server(vec![
-        vec![
-            StreamingSseChunk {
-                gate: None,
-                body: responses::sse(vec![ev_response_created("resp-interrupted")]),
-            },
-            StreamingSseChunk {
-                gate: Some(first_response_gate),
-                body: responses::sse(vec![ev_completed("resp-interrupted")]),
-            },
-        ],
+        vec![StreamingSseChunk {
+            // Even response.created closes the pre-output recovery window.
+            gate: Some(first_response_gate),
+            body: responses::sse(vec![
+                ev_response_created("resp-interrupted"),
+                ev_completed("resp-interrupted"),
+            ]),
+        }],
         vec![StreamingSseChunk {
             gate: None,
             body: responses::sse(vec![
@@ -146,7 +144,24 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         .await
         .expect("build recovered turn session");
 
-    let initial_submission = submit_user_message(&test.codex, "recoverable user input")
+    let plan_mode = CollaborationMode {
+        mode: ModeKind::Plan,
+        settings: Settings {
+            model: test.session_configured.model.clone(),
+            reasoning_effort: None,
+            developer_instructions: None,
+        },
+    };
+    let initial_submission = test
+        .codex
+        .start_or_steer_turn(
+            user_message_request("recoverable user input").with_thread_settings(
+                ThreadSettingsOverrides {
+                    collaboration_mode: Some(plan_mode.clone()),
+                    ..Default::default()
+                },
+            ),
+        )
         .await
         .expect("initial turn should start");
     let TurnInputSubmission::Started { turn_id } = initial_submission else {
@@ -214,17 +229,9 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         .recover_turn_if_idle(RecoverTurnRequest {
             turn_id: turn_id.clone(),
             expected_epoch,
-            thread_settings: ThreadSettingsOverrides {
-                collaboration_mode: Some(CollaborationMode {
-                    mode: ModeKind::Plan,
-                    settings: Settings {
-                        model: test.session_configured.model.clone(),
-                        reasoning_effort: None,
-                        developer_instructions: None,
-                    },
-                }),
-                ..Default::default()
-            },
+            // Recovery replays the interrupted Plan turn; it cannot override
+            // the context already bound by that turn's Ready marker.
+            thread_settings: ThreadSettingsOverrides::default(),
             trace: None,
         })
         .await
@@ -244,6 +251,11 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         unreachable!("wait_for_event returned unexpected event");
     };
     assert_eq!(started.turn_id, turn_id);
+    assert_eq!(started.collaboration_mode_kind, ModeKind::Plan);
+    assert_eq!(
+        test.codex.config_snapshot().await.collaboration_mode,
+        plan_mode
+    );
     wait_for_event(&test.codex, |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })

@@ -12,6 +12,7 @@ use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::SubAgentSource;
+use codex_protocol::protocol::TurnRecoveryCandidateState;
 use codex_protocol::user_input::UserInput;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_function_call;
@@ -26,6 +27,7 @@ use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
 use regex_lite::Regex;
 use serde_json::json;
+use tokio::time::timeout;
 
 /// Integration test: spawn a long‑running exec_command tool via a mocked Responses SSE
 /// function call, then interrupt the session and expect TurnAborted.
@@ -77,7 +79,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     let server = start_mock_server().await;
     // Waiting on the mocked response keeps the turn active on local and remote executors
     // without requiring an OS-specific command or a working sandboxed child process.
-    mount_response_once(
+    let initial_response = mount_response_once(
         &server,
         sse_response(sse(vec![
             ev_response_created("suspended_response"),
@@ -120,6 +122,15 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         panic!("expected a started root turn");
     };
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnStarted(_))).await;
+    // TurnStarted precedes the durable Ready boundary. Observe physical
+    // dispatch while the original delayed response still withholds all output.
+    timeout(Duration::from_secs(5), async {
+        while initial_response.requests().is_empty() {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .expect("suspended turn must reach its provider before output");
 
     assert_eq!(
         codex
@@ -165,35 +176,44 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         item,
         RolloutItem::EventMsg(EventMsg::TurnAborted(_) | EventMsg::TurnComplete(_))
     )));
+    assert!(items.iter().any(|item| matches!(
+        item,
+        RolloutItem::EventMsg(EventMsg::TurnRecoveryCandidate(marker))
+            if marker.turn_id == turn_id && marker.state == TurnRecoveryCandidateState::Ready
+    )));
     test.thread_manager
         .remove_thread(&test.session_configured.thread_id)
         .await
         .expect("unload the suspended root");
-    let recovery_server = start_mock_server().await;
-    mount_sse_once(
-        &recovery_server,
+    let recovery_response = mount_sse_once(
+        &server,
         sse(vec![
             ev_response_created("recovered_response"),
             ev_completed("recovered_response"),
         ]),
     )
     .await;
+    // A new runtime must preserve the exact provider deployment, cwd,
+    // settings and executor selection bound by the original Ready request.
+    let original_config = test.config.clone();
     let resumed = test_codex()
-        .with_config(|config| {
-            let _ = config.features.enable(Feature::HeptaTurnRecovery);
-        })
-        .with_model("gpt-5.4")
-        .resume(&recovery_server, Arc::clone(&test.home), rollout_path)
+        .with_config(move |config| *config = original_config)
+        .resume_with_auto_env(&server, Arc::clone(&test.home), rollout_path)
         .await
         .expect("resume the suspended root on a replacement runtime");
+    assert!(!Arc::ptr_eq(&test.thread_manager, &resumed.thread_manager));
+    assert!(!Arc::ptr_eq(&codex, &resumed.codex));
+    let expected_epoch = resumed
+        .codex
+        .recovery_epoch_if_idle(&turn_id)
+        .await
+        .expect("restored Ready history must expose its public recovery epoch");
     assert_eq!(
         resumed
             .codex
             .recover_turn_if_idle(codex_core::RecoverTurnRequest {
                 turn_id: turn_id.clone(),
-                // The suspended rollout is the initial recovery generation;
-                // no in-memory epoch is exposed until admission succeeds.
-                expected_epoch: 0,
+                expected_epoch,
                 thread_settings: Default::default(),
                 trace: None,
             })
@@ -211,6 +231,8 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         unreachable!("wait_for_event returned unexpected event");
     };
     assert_eq!(completed.turn_id, turn_id);
+    assert_eq!(initial_response.requests().len(), 1);
+    assert_eq!(recovery_response.requests().len(), 1);
 }
 
 /// After an interrupt we expect the next request to the model to include both
