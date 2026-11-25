@@ -108,6 +108,21 @@ async fn private_readonly_sqlx_worker_retains_the_explicit_vfs() -> anyhow::Resu
         directory.file_snapshot(&file)?;
     }
     reader.close().await?;
+    let reader_pool = config.open_private_read_only_pool(&path).await?;
+    let mut pooled_reader = reader_pool.acquire().await?;
+    assert_private_vfs(&mut pooled_reader).await?;
+    let value: i64 = sqlx::query_scalar("SELECT value FROM fact")
+        .fetch_one(&mut *pooled_reader)
+        .await?;
+    assert_eq!(value, 9);
+    assert!(
+        sqlx::query("UPDATE fact SET value = 11")
+            .execute(&mut *pooled_reader)
+            .await
+            .is_err()
+    );
+    drop(pooled_reader);
+    reader_pool.close().await;
     writer.close().await;
     drop(directory);
     std::fs::remove_dir_all(home)?;

@@ -70,6 +70,23 @@ impl SqliteConfig {
             .await
     }
 
+    /// Open an existing private database with the matching VFS and read-only flags.
+    ///
+    /// The caller still validates the directory and source identity. SQLite may
+    /// need shared-memory coordination for a live WAL; this grants no database
+    /// writes and does not replace an immutable recovery-image boundary.
+    pub async fn open_private_read_only_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(false)
+            .read_only(true)
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(Self::with_private_creation_owner(options)?)
+            .await
+    }
+
     /// Open an explicitly private evidence store with full synchronous durability.
     ///
     /// This adds creation ownership, not a current-cut or source-identity proof.
