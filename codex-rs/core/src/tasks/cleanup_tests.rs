@@ -31,6 +31,7 @@ async fn cleanup_snapshot_waits_for_captured_owners_without_retiring_their_fence
             None,
             None,
             None,
+            "cleanup-snapshot-owner".to_string(),
         ));
     let (generation, mut wait) = session
         .pending_cleanup_snapshot(futures::future::pending::<()>().boxed().shared())
@@ -71,6 +72,7 @@ async fn cleanup_snapshot_rejects_a_changed_generation_and_shutdown() {
                 None,
                 None,
                 None,
+                "cleanup-snapshot-owner".to_string(),
             ));
         let (_, wait) = session
             .pending_cleanup_snapshot(futures::future::pending::<()>().boxed().shared())
@@ -102,6 +104,7 @@ async fn session_termination_cancels_only_the_wake_up_not_the_owner_fence() {
             None,
             None,
             None,
+            "cleanup-snapshot-owner".to_string(),
         ));
     let (stop, stopped) = tokio::sync::oneshot::channel::<()>();
     let (_, wait) = session
