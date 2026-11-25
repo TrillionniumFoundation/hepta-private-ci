@@ -456,8 +456,14 @@ async fn queues_non_interactive_and_custom_sessions_without_scanning_rollouts()
         /*archived*/ false,
     );
     custom_metadata.source = serde_json::to_string(&custom_source)?;
-    custom_metadata.recency_at += time::Duration::hours(/*hours*/ 1);
-    custom_metadata.updated_at += time::Duration::hours(/*hours*/ 1);
+    custom_metadata.recency_at = custom_metadata
+        .recency_at
+        .checked_add(time::Duration::hours(/*hours*/ 1))
+        .expect("fixture recency timestamp plus one hour");
+    custom_metadata.updated_at = custom_metadata
+        .updated_at
+        .checked_add(time::Duration::hours(/*hours*/ 1))
+        .expect("fixture update timestamp plus one hour");
     runtime
         .upsert_thread(&custom_metadata)
         .await
