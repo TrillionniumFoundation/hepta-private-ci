@@ -1,0 +1,723 @@
+{
+  "backend_argv": [
+    "uv",
+    "run",
+    "--frozen",
+    "--project",
+    "scripts",
+    "ruff",
+    "format",
+    "./qualification/hcsn_closure_20261124/pft_horizon.py",
+    "./qualification/hcsn_closure_20261124/pft_horizon_audit.py",
+    "./qualification/hcsn_closure_20261124/pft_horizon_tests.py",
+    "./qualification/hcsn_closure_20261124/pft_interventions.py",
+    "./qualification/hcsn_closure_20261124/pft_interventions_tests.py",
+    "./qualification/hcsn_closure_20261124/pft_linear.py",
+    "./qualification/hcsn_closure_20261124/pft_linear_tests.py",
+    "./qualification/hcsn_closure_20261124/pft_network_probe.py",
+    "./qualification/hcsn_closure_20261124/pft_peer.py",
+    "./qualification/hcsn_closure_20261124/pft_peer_tests.py",
+    "./qualification/hcsn_closure_20261124/pft_ring_qualification.py",
+    "./qualification/hcsn_closure_20261124/pft_structure_audit.py",
+    "./qualification/hcsn_closure_20261124/pft_structure_audit_tests.py",
+    "./qualification/hcsn_closure_20261124/pft_transfer_gate.py",
+    "./qualification/hcsn_closure_20261124/pft_transfer_gate_tests.py"
+  ],
+  "before_archive": {
+    "bytes": 41335,
+    "sha256": "2f4a33b567174a688b383df881a7ecf7402f88b3da92d3bb0574b29db048feb8"
+  },
+  "before_source_sha256": {
+    "qualification/hcsn_closure_20261124/pft_horizon.py": "09a0c5ee846a6108ec2372ebd5fc3d8c66990e18f02ed572b937135d4674fbff",
+    "qualification/hcsn_closure_20261124/pft_horizon_audit.py": "11434726983769c8d6f365fad69219ed2319d90ccef46ff015a51f4bcdf57acf",
+    "qualification/hcsn_closure_20261124/pft_horizon_tests.py": "7fa3a06e0da6170a4614b703cf1fe35dee771e73e42d36ea838da3bcb998e124",
+    "qualification/hcsn_closure_20261124/pft_interventions.py": "7e12a6ee493a577fc41866ca46f0334179cd8b412393d1ddbf7e49952908c367",
+    "qualification/hcsn_closure_20261124/pft_interventions_tests.py": "e69a1576a843c26e3bd62227577d1392dff9deb45367e9e75d39bec76091e491",
+    "qualification/hcsn_closure_20261124/pft_linear.py": "5c98e86379d53c2df06f684d729300b403b730073c4f21baeb9e6f12e4d00a66",
+    "qualification/hcsn_closure_20261124/pft_linear_tests.py": "e33688c3dec4d9f4ce8a54cebdcd589ab0bb033f26c6067440f075b8d9919e24",
+    "qualification/hcsn_closure_20261124/pft_network_probe.py": "3de1c89ddf6d122630eea274ff17d666ffcbf1ace130e4645c65bdc11a1c1518",
+    "qualification/hcsn_closure_20261124/pft_peer.py": "6729f3a5cdaa19c133ba9997a966615892b8a2c8ae3c719400146877ce09d823",
+    "qualification/hcsn_closure_20261124/pft_peer_tests.py": "6a41d5d5d6022288d760707b113e1bbe7a450641371d379932c83a7e6074802a",
+    "qualification/hcsn_closure_20261124/pft_ring_qualification.py": "c369c1393db613ff64b4b5e219e637d512e52d0841201bfb972f485cec9dfd1a",
+    "qualification/hcsn_closure_20261124/pft_structure_audit.py": "f242410a81e6c76807e2b7750df58d1a8d46059f9900e242596d87ffbe4745f0",
+    "qualification/hcsn_closure_20261124/pft_structure_audit_tests.py": "ec6a3716ef32a64bdf6249ecb6c38b297906d85f1b86dea043985e0cf87f9c10",
+    "qualification/hcsn_closure_20261124/pft_transfer_gate.py": "b6a5497308e01f335a365442d5204056f1e1767ffc4b14910830752ab68227c6",
+    "qualification/hcsn_closure_20261124/pft_transfer_gate_tests.py": "22af423850f5ffaa85d6a40a7aa6e32408e3a01ecef7c82c7e88bbbf3f9ae0c7"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "init",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "\u63d0\u793a\uff1a\u4f7f\u7528 'master' \u4f5c\u4e3a\u521d\u59cb\u5206\u652f\u7684\u540d\u79f0\u3002\u8fd9\u4e2a\u9ed8\u8ba4\u5206\u652f\u540d\u79f0\u53ef\u80fd\u4f1a\u66f4\u6539\u3002\u8981\u5728\u65b0\u4ed3\u5e93\u4e2d\n\u63d0\u793a\uff1a\u914d\u7f6e\u4f7f\u7528\u521d\u59cb\u5206\u652f\u540d\uff0c\u5e76\u6d88\u9664\u8fd9\u6761\u8b66\u544a\uff0c\u8bf7\u6267\u884c\uff1a\n\u63d0\u793a\uff1a\n\u63d0\u793a\uff1a\tgit config --global init.defaultBranch <\u540d\u79f0>\n\u63d0\u793a\uff1a\n\u63d0\u793a\uff1a\u9664\u4e86 'master' \u4e4b\u5916\uff0c\u901a\u5e38\u9009\u5b9a\u7684\u540d\u5b57\u6709 'main'\u3001'trunk' \u548c 'development'\u3002\n\u63d0\u793a\uff1a\u53ef\u4ee5\u901a\u8fc7\u4ee5\u4e0b\u547d\u4ee4\u91cd\u547d\u540d\u521a\u521b\u5efa\u7684\u5206\u652f\uff1a\n\u63d0\u793a\uff1a\n\u63d0\u793a\uff1a\tgit branch -m <name>\n",
+      "stdout": "\u5728 /home/qian-qi/hepta-pft-format-20261125-v2/repo/.git/ \u521d\u59cb\u5316\u7a7a\u7684 Git \u4ed3\u5e93\n",
+      "wall_seconds": 0.0054576219990849495
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "config",
+        "core.autocrlf",
+        "false"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.0029493459733203053
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "config",
+        "core.sparseCheckout",
+        "true"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.002166172955185175
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "config",
+        "core.sparseCheckoutCone",
+        "false"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.0026700800517573953
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "update-ref",
+        "--no-deref",
+        "HEAD",
+        "c4ae70d44613434aaf165529a6076fa3400ca431"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.0040861720917746425
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:scripts/format.py"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "5ec5819cd6441798f406a77514736baa7294ef4a\n",
+      "wall_seconds": 0.002790780970826745
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "5ec5819cd6441798f406a77514736baa7294ef4a\n",
+      "wall_seconds": 0.0034569770796224475
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:scripts/just-shell.py"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "bb2db6ebc4312a301ee39d2793fde16289d046d8\n",
+      "wall_seconds": 0.003470549010671675
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "bb2db6ebc4312a301ee39d2793fde16289d046d8\n",
+      "wall_seconds": 0.0026768469251692295
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:scripts/pyproject.toml"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "ac49a948a2d32e2bf4576ad5ede4076029dba227\n",
+      "wall_seconds": 0.0029331580735743046
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "ac49a948a2d32e2bf4576ad5ede4076029dba227\n",
+      "wall_seconds": 0.00272843602579087
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:AGENTS.md"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a\n",
+      "wall_seconds": 0.002464481978677213
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a\n",
+      "wall_seconds": 0.002523159026168287
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:.gitignore"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "dbcd8633154a13966c231033a6c07ad8be169c73\n",
+      "wall_seconds": 0.00285846006590873
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "dbcd8633154a13966c231033a6c07ad8be169c73\n",
+      "wall_seconds": 0.0021823151037096977
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:scripts/uv.lock"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "3fd02698ddb7a4042cad2f417db92779fafd01bf\n",
+      "wall_seconds": 0.0026200759457424283
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "3fd02698ddb7a4042cad2f417db92779fafd01bf\n",
+      "wall_seconds": 0.0034064239589497447
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/Packages/Rust/syntax_test_rust.rs"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "8dcd847fc13bdea9af16087e207e70dd87ac7c39\n",
+      "wall_seconds": 0.0027023449074476957
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "8dcd847fc13bdea9af16087e207e70dd87ac7c39\n",
+      "wall_seconds": 0.0034235439961776137
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/issue28.rs"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "909000953b10bc96894cda812ec348bfc6e095df\n",
+      "wall_seconds": 0.002501192968338728
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "909000953b10bc96894cda812ec348bfc6e095df\n",
+      "wall_seconds": 0.0027390309842303395
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/issue33.rs"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "ec57c30401d6d098bd259966d4e31a388c75177a\n",
+      "wall_seconds": 0.0025736340321600437
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "ec57c30401d6d098bd259966d4e31a388c75177a\n",
+      "wall_seconds": 0.0025834599509835243
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/parser.rs"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "aab831b8b7a1ad85c1653cec1564dd78a68ca2b3\n",
+      "wall_seconds": 0.002711418899707496
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "aab831b8b7a1ad85c1653cec1564dd78a68ca2b3\n",
+      "wall_seconds": 0.009211175958625972
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/spacegray/fileicons-test/rust.rs"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\n",
+      "wall_seconds": 0.002948399051092565
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\n",
+      "wall_seconds": 0.0032544779824092984
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:qualification/memory-cell-mem8-ci-followup/pending-model-wire-cache/model_list.rs"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "0295b921099f63f245953eafd9b377db435184a9\n",
+      "wall_seconds": 0.0030409489991143346
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "0295b921099f63f245953eafd9b377db435184a9\n",
+      "wall_seconds": 0.003027084982022643
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:qualification/memory-cell-mem8-ci-followup/v17/memory-coverage-diagnostic-preparation/cognitive_runtime_tests.rs"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "9e40f57c40be855653f1cc7a716740a89bf60cf5\n",
+      "wall_seconds": 0.0027131240349262953
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "9e40f57c40be855653f1cc7a716740a89bf60cf5\n",
+      "wall_seconds": 0.002887256909161806
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:justfile"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "a215a76cf407ace9715bca39c20497014e7dd4dc\n",
+      "wall_seconds": 0.002409253967925906
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "a215a76cf407ace9715bca39c20497014e7dd4dc\n",
+      "wall_seconds": 0.0020970080513507128
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:codex-rs/Cargo.toml"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "38944025536086b5bde79792bd59e4c7eecbac62\n",
+      "wall_seconds": 0.0022817279677838087
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "38944025536086b5bde79792bd59e4c7eecbac62\n",
+      "wall_seconds": 0.0024301899829879403
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "rev-parse",
+        "c4ae70d44613434aaf165529a6076fa3400ca431:codex-rs/rust-toolchain.toml"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "917d2492264a35bc9c0feaef41878d8825870866\n",
+      "wall_seconds": 0.0023139240220189095
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "917d2492264a35bc9c0feaef41878d8825870866\n",
+      "wall_seconds": 0.0020389349665492773
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "read-tree",
+        "-mu",
+        "HEAD"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.24174059589859098
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "status",
+        "--short"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.09050118096638471
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "add",
+        "--sparse",
+        "--",
+        "qualification/hcsn_closure_20261124/pft_horizon.py",
+        "qualification/hcsn_closure_20261124/pft_horizon_audit.py",
+        "qualification/hcsn_closure_20261124/pft_horizon_tests.py",
+        "qualification/hcsn_closure_20261124/pft_interventions.py",
+        "qualification/hcsn_closure_20261124/pft_interventions_tests.py",
+        "qualification/hcsn_closure_20261124/pft_linear.py",
+        "qualification/hcsn_closure_20261124/pft_linear_tests.py",
+        "qualification/hcsn_closure_20261124/pft_network_probe.py",
+        "qualification/hcsn_closure_20261124/pft_peer.py",
+        "qualification/hcsn_closure_20261124/pft_peer_tests.py",
+        "qualification/hcsn_closure_20261124/pft_ring_qualification.py",
+        "qualification/hcsn_closure_20261124/pft_structure_audit.py",
+        "qualification/hcsn_closure_20261124/pft_structure_audit_tests.py",
+        "qualification/hcsn_closure_20261124/pft_transfer_gate.py",
+        "qualification/hcsn_closure_20261124/pft_transfer_gate_tests.py"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.17812940501607955
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian-qi/hepta-pft-format-20261125-v2/repo",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "cwd": null,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "qualification/hcsn_closure_20261124/pft_horizon.py\nqualification/hcsn_closure_20261124/pft_horizon_audit.py\nqualification/hcsn_closure_20261124/pft_horizon_tests.py\nqualification/hcsn_closure_20261124/pft_interventions.py\nqualification/hcsn_closure_20261124/pft_interventions_tests.py\nqualification/hcsn_closure_20261124/pft_linear.py\nqualification/hcsn_closure_20261124/pft_linear_tests.py\nqualification/hcsn_closure_20261124/pft_network_probe.py\nqualification/hcsn_closure_20261124/pft_peer.py\nqualification/hcsn_closure_20261124/pft_peer_tests.py\nqualification/hcsn_closure_20261124/pft_ring_qualification.py\nqualification/hcsn_closure_20261124/pft_structure_audit.py\nqualification/hcsn_closure_20261124/pft_structure_audit_tests.py\nqualification/hcsn_closure_20261124/pft_transfer_gate.py\nqualification/hcsn_closure_20261124/pft_transfer_gate_tests.py\n",
+      "wall_seconds": 0.07150778593495488
+    }
+  ],
+  "native_formatter_groups": [],
+  "original_hashes": {
+    ".gitignore": "cb7ad0c00bee003f77837a731bdea2539c999bce2333a1fda584f1860e3f5740",
+    "AGENTS.md": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+    "codex-rs/Cargo.toml": "abdbc82048033efff8d66ee1fe3c29f6f3380ca74ecfe6bd507ba5f84cb05fdd",
+    "codex-rs/rust-toolchain.toml": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/Packages/Rust/syntax_test_rust.rs": "12cc528a46e2681af786bd1a024b64517a616ab9191829f81aa548b18c14d9f3",
+    "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/issue28.rs": "2f660b2c5a8739bbe90545cb45f218fae6a7d2a902e044274042092aee605017",
+    "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/issue33.rs": "579e35846711308d28bd6cb02476a0b1c96ae2aede50105e6bc8dbc0a80ced8f",
+    "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/parser.rs": "8b21ecd498165716362abea58cc8904ba8b9b02c8983d45cb501194585a93ae6",
+    "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/spacegray/fileicons-test/rust.rs": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "qualification/memory-cell-mem8-ci-followup/pending-model-wire-cache/model_list.rs": "1136589db852ba45ce9bee975dd10fcf7a48a24c832aca5c0b8019db5a987177",
+    "qualification/memory-cell-mem8-ci-followup/v17/memory-coverage-diagnostic-preparation/cognitive_runtime_tests.rs": "5ecb8bce0adb6d0151eb1ed23405489757354482f70b1b33d1232b35afc85d3c",
+    "scripts/format.py": "d42fa841b1aa809d1016508d3091e4c8aedb14bcae0e86b08a4e60f98d7ad2c5",
+    "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+    "scripts/pyproject.toml": "0c3ab8d5b7ea30fdd76605a1520c3c47d277ad319a670e96414df08c22cc61b2",
+    "scripts/uv.lock": "3f43073d767c529ab96172b69593142ba234cd35f9ed25c9f5735440f056a2a3"
+  },
+  "pin": "c4ae70d44613434aaf165529a6076fa3400ca431",
+  "scope_gap": "qualification Python is omitted by unchanged c4ae scoped dispatcher; explicit same Python backend covers every staged Python path",
+  "sparse_checkout_paths": [
+    ".gitignore",
+    "AGENTS.md",
+    "codex-rs/Cargo.toml",
+    "codex-rs/rust-toolchain.toml",
+    "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/Packages/Rust/syntax_test_rust.rs",
+    "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/issue28.rs",
+    "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/issue33.rs",
+    "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/parser.rs",
+    "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata/spacegray/fileicons-test/rust.rs",
+    "justfile",
+    "qualification/memory-cell-mem8-ci-followup/pending-model-wire-cache/model_list.rs",
+    "qualification/memory-cell-mem8-ci-followup/v17/memory-coverage-diagnostic-preparation/cognitive_runtime_tests.rs",
+    "scripts/format.py",
+    "scripts/just-shell.py",
+    "scripts/pyproject.toml",
+    "scripts/uv.lock"
+  ],
+  "staged_paths": [
+    "qualification/hcsn_closure_20261124/pft_horizon.py",
+    "qualification/hcsn_closure_20261124/pft_horizon_audit.py",
+    "qualification/hcsn_closure_20261124/pft_horizon_tests.py",
+    "qualification/hcsn_closure_20261124/pft_interventions.py",
+    "qualification/hcsn_closure_20261124/pft_interventions_tests.py",
+    "qualification/hcsn_closure_20261124/pft_linear.py",
+    "qualification/hcsn_closure_20261124/pft_linear_tests.py",
+    "qualification/hcsn_closure_20261124/pft_network_probe.py",
+    "qualification/hcsn_closure_20261124/pft_peer.py",
+    "qualification/hcsn_closure_20261124/pft_peer_tests.py",
+    "qualification/hcsn_closure_20261124/pft_ring_qualification.py",
+    "qualification/hcsn_closure_20261124/pft_structure_audit.py",
+    "qualification/hcsn_closure_20261124/pft_structure_audit_tests.py",
+    "qualification/hcsn_closure_20261124/pft_transfer_gate.py",
+    "qualification/hcsn_closure_20261124/pft_transfer_gate_tests.py"
+  ],
+  "tools": {
+    "cargo": "/home/qian-qi/.cargo/bin/cargo",
+    "git": "/usr/bin/git",
+    "just": "/home/qian-qi/.cargo/bin/just",
+    "rustfmt": "/home/qian-qi/.cargo/bin/rustfmt",
+    "uv": null
+  }
+}

@@ -19,16 +19,16 @@
 
 实现位于 `pft_linear.py`、`pft_peer.py` 和 `pft_ring_qualification.py`。固定特征下，每个节点形成
 
-\[
+$$
 G_i=X_i^\top X_i,\qquad h_i=X_i^\top y_i,
-\]
+$$
 
 全局目标为
 
-\[
+$$
 \frac12\sum_i\|X_iW-y_i\|_F^2+\frac\lambda2\|W\|_F^2,
 \qquad W^*=\left(\sum_iG_i+\lambda I\right)^{-1}\sum_i h_i.
-\]
+$$
 
 全局正则只加一次。实现用线性求解而非显式求逆。PFT 分支保留所有被计费的未来响应方向；多步版本支持非对角正定动作代价、可变有效秩、答案与 retention 观测的增广。它不处理任意非线性动力学、交叉熵、坐标 box constraints 或未知模型识别。
 
@@ -149,7 +149,9 @@ source retention gate did not permit prospective dispatch
 
 所有代码位于现有 `qualification/hcsn_closure_20261124` 下，按可独立审查的阶段提交。没有修改原protocol、原checkpoint或原实验目录。数值原件使用无损gzip；大包按480000字节分片并提供原始/压缩/分片hash。跨机网络原件保留于原执行所有者，公开版是明确标注的投影。
 
-最终仓库格式化可能改变源码字节而不改变语义。**复现旧冻结协议应先使用[frozen-executed-source.tar.gz](pft_fourstep_evidence_20261125/frozen-executed-source.tar.gz)及[逐源hash](pft_fourstep_evidence_20261125/FROZEN_EXECUTED_SOURCE.json)**，或对应的格式前Git提交；不要把当前格式化源码的hash冒充当时执行源码。每个实验的自己的protocol记录才是具体执行身份。
+最终仓库格式化已完成。原仓库 `just fmt` 对 `qualification/**` 没有 Python 分派，真实返回0但没有覆盖这些文件；随后显式使用原 Python backend 的 Ruff 0.15.13 格式化全部15个新文件，返回0，15/15静态AST前后一致，`git diff --check` 返回0。格式化后没有重跑测试或实验。完整before/after、原命令、真实终态及本地hash核验见[格式门原件](pft_fourstep_evidence_20261125/format/MANIFEST.json)。远端GitHub CI与这些已完成本地门分开，PR仍为draft。
+
+格式化改变了源码字节。**复现旧冻结协议应先使用[frozen-executed-source.tar.gz](pft_fourstep_evidence_20261125/frozen-executed-source.tar.gz)及[逐源hash](pft_fourstep_evidence_20261125/FROZEN_EXECUTED_SOURCE.json)**，或对应的格式前Git提交；不要把当前格式化源码的hash冒充当时执行源码。每个实验自己的protocol记录才是具体执行身份。
 
 原始线性实现的第一次尝试也保留，但不算作第二批独立样本。一次可选远端post-run原件重哈希请求返回launch_unknown，随后没有可读job目录；没有重放，也没有宣称它成功。已完成的本地36个候选文件、9个冷载文件和原冻结训练承诺核对单独存档。
 
