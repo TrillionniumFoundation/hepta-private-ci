@@ -23,6 +23,19 @@ PROFILES = {
     "communication": ("communication.py", "communication_tests.py", "communication_run.py",
                       "communication_observe.py", "communication_analysis.py"),
     "companions": ("baselines.py", "baselines_run.py", "programs.py", "program_tests.py", "cost_replay.py"),
+    "projection": ("fast_kernel.py", "efficiency.py", "normalized_uniformization.py",
+                   "normalization_tests.py", "normalization_probe.py", "mass_projection.py",
+                   "projection_tests.py", "projection_probe.py", "projection_audit.py"),
+    "precision": ("variant_run.py", "fast_kernel.py", "fast_tests.py",
+                  "normalized_uniformization.py", "normalization_tests.py",
+                  "mass_projection.py", "projection_tests.py", "precision_run.py", "precision_tests.py"),
+    "joint": ("fast_kernel.py", "joint_run.py", "joint_tests.py"),
+    "boundary": ("fast_kernel.py", "joint_run.py", "joint_tests.py", "communication.py",
+                 "communication_observe.py", "boundary_fix.py", "boundary_fix_run.py", "boundary_fix_tests.py"),
+    "av": ("fast_kernel.py",) + tuple("qualification/hcsn_closure_av_20261125/"+name for name in (
+        "__init__.py", "acquire.py", "decoder_original.py", "prepare.py", "retime.py",
+        "protocol.json", "models.py", "metrics.py", "provenance.py", "runner.py",
+        "campaign.py", "tests.py", "analysis.py", "README.md")),
 }
 
 
@@ -52,7 +65,8 @@ def install(repo, destination, profiles):
     if sha(raw) != BASE_SHA256:
         raise ValueError("base installation manifest changed")
     base = json.loads(raw)
-    extras = {PREFIX+name for profile in profiles for name in PROFILES[profile]}
+    extras = {name if name.startswith("qualification/") else PREFIX+name
+              for profile in profiles for name in PROFILES[profile]}
     if "companions" in profiles:
         extras.update("qualification/hcsn_smallnet_20261124/"+name
                       for name in ("editing.py", "transfer_suite.py"))
