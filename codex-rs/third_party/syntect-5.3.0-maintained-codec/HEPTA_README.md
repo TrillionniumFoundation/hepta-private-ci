@@ -94,6 +94,13 @@ files, byte changes and symlinks are errors. Unregistered neighbors and all real
 `src` and `tests` Rust files continue through normal formatting. The complete
 inventory and upstream Git blob identities are in `HEPTA_VERBATIM_FIXTURES.json`.
 
+The archived non-grammar fixtures are listed in `fixture-custody/raw-evidence-storage.json`.
+The `syntest` example checks their stored and original digests and reads a private
+copy while reporting the original logical file paths. Recover all archived
+bytes at their original paths through `restore_raw_evidence.py` as described
+below. Grammar and metadata inputs stay at their original paths because
+`gendata` uses those paths when building deterministic packs.
+
 `HEPTA-maintenance.patch` records functional changes. `HEPTA-lint-fixes.patch`
 records the subsequent scoped `just fix` changes, without weakening original
 assertions. Final mechanical `just fmt` changes are recorded separately. Tests

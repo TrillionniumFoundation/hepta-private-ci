@@ -21,7 +21,7 @@ use std::cmp::min;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::time::Instant;
 
@@ -30,6 +30,11 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use walkdir::DirEntry;
 use walkdir::WalkDir;
+
+mod fixture_inputs;
+
+use fixture_inputs::FixtureInputs;
+use std::process::ExitCode;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SyntaxTestHeaderError {
@@ -183,11 +188,12 @@ fn process_assertions(
 fn test_file(
     ss: &SyntaxSet,
     path: &Path,
+    input: &Path,
     parse_test_lines: bool,
     out_opts: OutputOptions,
 ) -> Result<SyntaxTestFileResult, SyntaxTestHeaderError> {
     use syntect::util::debug_print_ops;
-    let f = File::open(path).unwrap();
+    let f = File::open(input).unwrap();
     let mut reader = BufReader::new(f);
     let mut line = String::new();
 
@@ -338,7 +344,7 @@ fn test_file(
     res
 }
 
-fn main() {
+fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().collect();
     let mut opts = Options::new();
     opts.optflag("d", "debug", "Show parsing results for each test line");
@@ -356,13 +362,8 @@ fn main() {
         }
     };
 
-    let tests_path = if matches.free.is_empty() {
-        "."
-    } else {
-        &args[1]
-    };
-
-    let syntaxes_path = if matches.free.len() < 2 { "" } else { &args[2] };
+    let tests_path = Path::new(matches.free.first().map(String::as_str).unwrap_or("."));
+    let syntaxes_path = matches.free.get(1).map(String::as_str).unwrap_or("");
 
     // load the syntaxes from disk if told to
     // (as opposed to from the binary dumps)
@@ -376,7 +377,7 @@ fn main() {
     if !syntaxes_path.is_empty() {
         println!("loading syntax definitions from {}", syntaxes_path);
         let mut builder = SyntaxSetBuilder::new();
-        builder.add_from_folder(syntaxes_path, true).unwrap(); // note that we load the version with newlines
+        builder.add_from_folder(syntaxes_path, true).unwrap();
         ss = builder.build();
     }
 
@@ -386,31 +387,36 @@ fn main() {
         summary: matches.opt_present("summary"),
     };
 
-    let exit_code = recursive_walk(&ss, tests_path, out_opts);
-    println!("exiting with code {}", exit_code);
-    std::process::exit(exit_code);
-}
-
-fn recursive_walk(ss: &SyntaxSet, path: &str, out_opts: OutputOptions) -> i32 {
-    let mut exit_code: i32 = 0; // exit with code 0 by default, if all tests pass
-    let walker = WalkDir::new(path).into_iter();
-
-    // accumulate and sort for consistency of diffs across machines
+    let fixtures = FixtureInputs::for_syntax_tests(tests_path).unwrap();
     let mut files = Vec::new();
-    for entry in walker.filter_entry(|e| e.file_type().is_dir() || is_a_syntax_test_file(e)) {
-        let entry = entry.unwrap();
-        if entry.file_type().is_file() {
-            files.push(entry.path().to_owned());
+    if tests_path.exists() || fixtures.files.is_empty() {
+        for entry in WalkDir::new(tests_path)
+            .into_iter()
+            .filter_entry(|entry| entry.file_type().is_dir() || is_a_syntax_test_file(entry))
+        {
+            let entry = entry.unwrap();
+            if entry.file_type().is_file() && !fixtures.carriers.contains(entry.path()) {
+                let path = entry.into_path();
+                files.push((path.clone(), path));
+            }
         }
     }
+    files.extend(fixtures.files.iter().cloned());
+    let exit_code = test_files(&ss, files, out_opts);
+    println!("exiting with code {}", exit_code);
+    ExitCode::from(exit_code as u8)
+}
+
+fn test_files(ss: &SyntaxSet, mut files: Vec<(PathBuf, PathBuf)>, out_opts: OutputOptions) -> i32 {
+    let mut exit_code: i32 = 0; // exit with code 0 by default, if all tests pass
     files.sort();
 
-    for path in &files {
+    for (path, input) in &files {
         if !out_opts.summary {
             println!("Testing file {}", path.display());
         }
         let start = Instant::now();
-        let result = test_file(ss, path, true, out_opts);
+        let result = test_file(ss, path, input, true, out_opts);
         let elapsed = start.elapsed();
         if out_opts.time {
             let ms = (elapsed.as_secs() * 1_000) + elapsed.subsec_millis() as u64;
