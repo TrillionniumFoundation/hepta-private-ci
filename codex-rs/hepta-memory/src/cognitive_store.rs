@@ -49,10 +49,13 @@ use crate::framing::frame_part;
 
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
+#[path = "cognitive_store_sync.rs"]
+mod synchronization;
 pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
 pub use recovery::RecoveredCognitiveReadOnly;
+use synchronization::sync_cognitive_directory;
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const COGNITIVE_ACTIVE_DB_POINTER: &str = ".cognitive-active-v1";
@@ -1618,9 +1621,7 @@ pub(crate) fn publish_active_database(
         file.write_all(b"\n").map_err(unavailable)?;
         file.sync_all().map_err(unavailable)?;
         fs::rename(&temporary, &pointer).map_err(unavailable)?;
-        File::open(root)
-            .and_then(|directory| directory.sync_all())
-            .map_err(unavailable)?;
+        sync_cognitive_directory(root)?;
         Ok(())
     })();
     if result.is_err() {
