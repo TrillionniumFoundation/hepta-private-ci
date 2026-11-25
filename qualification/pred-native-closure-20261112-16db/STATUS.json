@@ -1,0 +1,278 @@
+{
+  "schema": "pred-native-shadow-closure-status-v1",
+  "recorded_at_utc": "2026-11-12T07:07:23.047262+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "implementation_head": "7214dfc7f093c5d5f63b87f553cb298b7aa5132c",
+  "implementation_tree": "790524a2d674d7fa7b42b9513b6ac869b3114b5f",
+  "pull_requests": [
+    {
+      "number": 6140,
+      "source_sha": "fbee6fb9bd4e5a847b830b475a02cb1849347ea5",
+      "scope": "CI identity and nonfatal diagnostics",
+      "draft": true,
+      "merged": false,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6140"
+    },
+    {
+      "number": 6148,
+      "source_sha": "0582fc0b98561066dcb20d0039b833be86c4aaef",
+      "scope": "Strict native original-byte parser",
+      "draft": true,
+      "merged": false,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6148"
+    },
+    {
+      "number": 6149,
+      "source_sha": "bf78a9218a6fd9d8b9c51d6505418b53ebc47f9b",
+      "scope": "Distinct native event ABI",
+      "draft": true,
+      "merged": false,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6149"
+    },
+    {
+      "number": 6156,
+      "source_sha": "3d6a2501519873e007a187516e1692d9be70d622",
+      "scope": "Actual Rust slot to Python and fresh-process replay",
+      "draft": true,
+      "merged": false,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6156"
+    },
+    {
+      "number": 6181,
+      "source_sha": "0e4b3f45aa70d24c99c56246f83aa3408124f9e9",
+      "scope": "Owner-action-preserving shadow panel",
+      "draft": true,
+      "merged": false,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6181"
+    },
+    {
+      "number": 6186,
+      "source_sha": "7214dfc7f093c5d5f63b87f553cb298b7aa5132c",
+      "scope": "Independent-effect calibration join",
+      "draft": true,
+      "merged": false,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6186"
+    }
+  ],
+  "native": {
+    "all_effect_labels_remain_null": true,
+    "artifact_bytes": 28347,
+    "artifact_digest_matches_GitHub": true,
+    "artifact_id": 13922297993,
+    "artifact_sha256": "66f8e9f77073037689877f0789305a6c0b89e3f5c016ba453562f800a169b3ce",
+    "cpu_results": "CPU_FINAL_SUMMARY.json",
+    "cross_language_smoke": {
+      "abi_sha256": "f726d87e4f8c43ab6f2c0d04814a8317154f399a28346797c94773fa8a2d4fb8",
+      "fixture_bridge_status": "PASS",
+      "fixture_only": true,
+      "import_process_id": 22670,
+      "independent_effect_labels": 0,
+      "native_fact_sha256": "9fbda326d83241ea9350832e239f475cf5393839d2209b49a03e2bd3458a3ca3",
+      "native_manifest_sha256": "f9abd69d5b4a126d60548e748177a9185ee7731bfaa9988c7e83ab5c8c4fdbb4",
+      "new_live_owner_records": 0,
+      "producer_test": "automation_predispatch_export::tests::ordinary_product_caller_retains_claimed_fact_before_contact_and_replays_once",
+      "production_activation": false,
+      "production_qualification": "HOLD",
+      "readback": {
+        "abi_sha256": "f726d87e4f8c43ab6f2c0d04814a8317154f399a28346797c94773fa8a2d4fb8",
+        "fixture_only": true,
+        "independent_effect_labels": 0,
+        "native_fact_sha256": "9fbda326d83241ea9350832e239f475cf5393839d2209b49a03e2bd3458a3ca3",
+        "process_id": 22671,
+        "schema": "pred1-native-abi-readback-v1",
+        "source": "native_test_fixture",
+        "source_provenance_authenticated": false
+      },
+      "real_policy_comparisons": 0,
+      "schema": "pred1-native-cross-language-smoke-v1",
+      "source": "native_test_fixture",
+      "source_provenance_authenticated": false
+    },
+    "final_source_unchanged_check": "success",
+    "format": "success",
+    "fresh_process_readback": [
+      22670,
+      22671
+    ],
+    "job_id": 131019885770,
+    "native_fixture_only": true,
+    "native_tests": {
+      "all_required_names_observed_once": true,
+      "command_elapsed_seconds_including_build": 504.659076798,
+      "executed_passes": 8,
+      "failed": 0,
+      "filtered_skipped": 778,
+      "required_named_cases": 8,
+      "terminal_summary": "2026-11-12T06:53:11.1222752Z      Summary [   1.885s] 8 tests run: 8 passed, 778 skipped"
+    },
+    "no_transfer_to_successor_sha": true,
+    "production_qualification": "HOLD",
+    "raw_command_log_digests_match_receipts": true,
+    "raw_job_bytes": 420120,
+    "raw_job_sha256": "9f428ed995b01cace92c860f8c089324b9307692d23b8201a22cd05b85eacab4",
+    "requested_clippy_checks": "success",
+    "retained_original_native_fact_count": 1,
+    "run_id": 43169731405,
+    "shared_arrival_cursor_and_clock_remain_null": true,
+    "source_binding": {
+      "clean_before_equals_after": true,
+      "lane": "source-head",
+      "source_sha_equals_tested_sha": true
+    },
+    "source_sha": "3d6a2501519873e007a187516e1692d9be70d622",
+    "status": "PASS_SCOPED_NATIVE_AND_CROSS_LANGUAGE_FIXTURE",
+    "tree": "c80b42d05503f81b5b4b3a6e926658d89b71db19",
+    "workflow_tests": {
+      "elapsed_seconds": 1.3006522300000043,
+      "executed_passes": 5,
+      "failed": 0
+    }
+  },
+  "cpu_by_source": [
+    {
+      "source_sha": "3d6a2501519873e007a187516e1692d9be70d622",
+      "run_id": 43169740106,
+      "all_cpu_jobs_success": true,
+      "scope": "exact-source CPU development tests only; excluded cases remain skipped; no production/native/live-data qualification",
+      "platforms": [
+        {
+          "platform": "ubuntu",
+          "job_id": 131019917196,
+          "ran": 205,
+          "executed_passes": 205,
+          "skipped": 0,
+          "raw_job_sha256": "678dc4ddd6d9edef2ba913391fd0cf5b573d948ac382abef12071f16f2d52681"
+        },
+        {
+          "platform": "macos",
+          "job_id": 131019917057,
+          "ran": 205,
+          "executed_passes": 199,
+          "skipped": 6,
+          "raw_job_sha256": "a457cf4bdefd226b90bb3b5efdcbf2c5ff3571f7f14c85c42984b635c1b86527"
+        },
+        {
+          "platform": "windows",
+          "job_id": 131019916748,
+          "ran": 205,
+          "executed_passes": 195,
+          "skipped": 10,
+          "raw_job_sha256": "618124d3c2906e59301dd124ad107aa861c58fe2f166e65ef6dc00848b7f1f48"
+        }
+      ]
+    },
+    {
+      "all_cpu_jobs_success": true,
+      "platforms": [
+        {
+          "executed_passes": 208,
+          "job_id": 131025210955,
+          "platform": "ubuntu",
+          "ran": 208,
+          "raw_job_sha256": "7b54dbe9a0b7a2149c80eda794ea70113f7756bb7316161cc485b4fff665c46f",
+          "skipped": 0
+        },
+        {
+          "executed_passes": 202,
+          "job_id": 131025210765,
+          "platform": "macos",
+          "ran": 208,
+          "raw_job_sha256": "e20cda0430f83bd0dcc239e14fd15bc3c7fc7039bd919f93472b8049c430ddd2",
+          "skipped": 6
+        },
+        {
+          "executed_passes": 198,
+          "job_id": 131025210975,
+          "platform": "windows",
+          "ran": 208,
+          "raw_job_sha256": "4ff0718195f1000cc847cb328ba5ef6a17942b925f03eb4af1f9cbfb33030743",
+          "skipped": 10
+        }
+      ],
+      "run_id": 43171371178,
+      "scope": "exact-source CPU development tests only; excluded cases remain skipped; no production/native/live-data qualification",
+      "source_sha": "0e4b3f45aa70d24c99c56246f83aa3408124f9e9"
+    },
+    {
+      "all_cpu_jobs_success": true,
+      "platforms": [
+        {
+          "executed_passes": 212,
+          "job_id": 131027403977,
+          "platform": "ubuntu",
+          "ran": 212,
+          "raw_job_sha256": "5b492575b1dfd12d7e5c88da094819d5b72eb824e0fea0c608e87fd6fc50dbe6",
+          "skipped": 0
+        },
+        {
+          "executed_passes": 206,
+          "job_id": 131027403545,
+          "platform": "macos",
+          "ran": 212,
+          "raw_job_sha256": "6d96b7044417eb6ecd1dc9897939bb75987c029dc025ccc7805ff6ca3450560f",
+          "skipped": 6
+        },
+        {
+          "executed_passes": 202,
+          "job_id": 131027404088,
+          "platform": "windows",
+          "ran": 212,
+          "raw_job_sha256": "6b882534f4d68c5f0f664887b646dcef788090d942bdf0c685264825f7f7eb85",
+          "skipped": 10
+        }
+      ],
+      "run_id": 43172039470,
+      "scope": "exact-source CPU development tests only; excluded cases remain skipped; no production/native/live-data qualification",
+      "source_sha": "7214dfc7f093c5d5f63b87f553cb298b7aa5132c"
+    }
+  ],
+  "local_final": {
+    "test_passes": 212,
+    "test_skipped": 0,
+    "workflow_control_passes": 5,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "source_files_hashed": 70,
+    "source_unchanged_before_after_and_post_format": true,
+    "all_tested_file_hashes_equal_published_commit": true,
+    "full_log": "shadow-final-local/pred-suite.log.gz",
+    "record": "shadow-final-local/LOCAL_VALIDATION.json",
+    "published_source_binding": "shadow-final-local/FINAL_SOURCE_BINDING.json"
+  },
+  "independent_review": {
+    "focused_tests_passed": 7,
+    "fixture_only": true,
+    "four_source_hashes_unchanged": true,
+    "old_checkpoint_source_files_unchanged": 12
+  },
+  "qualification": {
+    "new_live_owner_records": 0,
+    "independent_real_effect_labels": 0,
+    "real_policy_comparisons": 0,
+    "source_provenance_authenticated": false,
+    "shared_arrival_cursor_authenticated": false,
+    "independent_observer_authenticated": false,
+    "physical_cost_complete": false,
+    "production_activation": false,
+    "production_qualification": "HOLD",
+    "policy_update": "NoUpdate",
+    "native_predictor_call_connected": false,
+    "continuous_observed_joint_law_qualified": false,
+    "continuous_observed_ssm_comparison_qualified": false
+  },
+  "limits": [
+    "Native run is bound only to 3d6a2501; no native execution at 7214dfc7 is claimed.",
+    "CPU reports bind their own original checked-out SHA. Skipped cases are not passes.",
+    "The real Rust-produced bytes are from a native test fixture, not an independent live business task.",
+    "Shadow preserves declared owner policy and cannot enter ordinary policy-value readers.",
+    "Current continuous observed models provide marginals; full joint consequences and missingness/survival modeling remain open.",
+    "Bounded host discovery does not establish global source absence; desktop original request remains UNKNOWN and was not reissued.",
+    "No repository-wide CI green, production deployment, recursive latent rollout or real policy gain is claimed."
+  ],
+  "native_record_path": "interop-final/FINAL_SUMMARY.json",
+  "cpu_record_paths": [
+    "interop-final/CPU_FINAL_SUMMARY.json",
+    "shadow-panel-hosted/CPU_FINAL_SUMMARY.json",
+    "shadow-final-hosted/CPU_FINAL_SUMMARY.json"
+  ]
+}
