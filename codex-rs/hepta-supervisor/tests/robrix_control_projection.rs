@@ -352,7 +352,7 @@ fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
     // Resolve a declared file: manifest-only runfiles need not contain a
     // directory entry. Enumerating its parent still checks the complete set.
     let resource_path = format!("fixtures/robrix-control-v2/{MANIFEST_FILE}");
-    let manifest = codex_utils_cargo_bin::find_resource!(&resource_path)?;
+    let manifest = codex_utils_cargo_bin::find_resource!(resource_path)?;
     read_artifacts(manifest.parent().context("projection manifest parent")?)
 }
 
