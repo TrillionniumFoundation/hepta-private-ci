@@ -32,6 +32,8 @@ CANARY_PATH_PATTERNS = {
     ".github/workflows/v8-canary.yml",
     "MODULE.bazel",
     "MODULE.bazel.lock",
+    # V8 adapter Bazel features (including Windows sandbox selection) affect the linked artifact.
+    "codex-rs/v8-poc/BUILD.bazel",
     "codex-rs/Cargo.toml",
     "patches/BUILD.bazel",
     "patches/llvm_*.patch",
@@ -49,6 +51,8 @@ WINDOWS_SOURCE_BUILD_PATHS = {
     ".github/scripts/v8_canary_changes.py",
     ".github/workflows/rusty-v8-release.yml",
     ".github/workflows/v8-canary.yml",
+    # The adapter can change the Windows sandbox link feature without changing rusty_v8.
+    "codex-rs/v8-poc/BUILD.bazel",
 }
 
 

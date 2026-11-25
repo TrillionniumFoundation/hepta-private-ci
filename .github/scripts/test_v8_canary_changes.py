@@ -59,6 +59,12 @@ version = "149.2.0"
                     windows_source_required(changed_files, "149.2.0", "149.2.0")
                 )
 
+    def test_v8_poc_bazel_sandbox_feature_change_requires_both_matrices(self) -> None:
+        # A Windows-specific Bazel feature selection must not pass on metadata alone.
+        paths = {"codex-rs/v8-poc/BUILD.bazel"}
+        self.assertTrue(canary_required(paths, "149.2.0", "149.2.0"))
+        self.assertTrue(windows_source_required(paths, "149.2.0", "149.2.0"))
+
     def test_manual_dispatch_requires_source_build(self) -> None:
         self.assertTrue(
             windows_source_required(
