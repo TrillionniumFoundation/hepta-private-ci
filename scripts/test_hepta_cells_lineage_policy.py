@@ -323,6 +323,23 @@ class LineagePolicyTests(unittest.TestCase):
         with self.assertRaisesRegex(LineagePolicyError, "invalid measured cost"):
             review_update(current, replace(candidate, costs=costs))
 
+    def test_transport_bytes_requires_a_representable_count(self):
+        current = roster()
+        cell = next(c for c in current.cells if c.lineage == "PRED")
+        candidate = evidence(cell)
+        for invalid in (0.5, 1.25, 2**64, float(2**64)):
+            with self.subTest(value=invalid):
+                costs = dict(candidate.costs, transport_bytes=invalid)
+                with self.assertRaisesRegex(
+                    LineagePolicyError, "invalid measured cost"
+                ):
+                    review_update(current, replace(candidate, costs=costs))
+        for valid in (0, 1, 0.0, 1.0, 2**64 - 1):
+            with self.subTest(value=valid):
+                costs = dict(candidate.costs, transport_bytes=valid)
+                review = review_update(current, replace(candidate, costs=costs))
+                self.assertEqual(review.status, "REVIEW_ONLY")
+
     def test_cost_census_cannot_drop_failures_or_unmeasured_axes(self):
         r = roster()
         c = next(c for c in r.cells if c.lineage == "VERIFY")

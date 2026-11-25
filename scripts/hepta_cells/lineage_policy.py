@@ -310,7 +310,16 @@ def review_update(roster: CellRoster, evidence: UpdateEvidence) -> UpdateReview:
         value = evidence.costs[axis]
         if value is None:
             missing.append(axis)
-        elif type(value) not in (float, int) or not 0 <= value <= float_info.max:
+        elif (
+            type(value) not in (float, int)
+            or not 0 <= value <= float_info.max
+            or (
+                axis == "transport_bytes"
+                and (
+                    value >= 2**64 or (type(value) is float and not value.is_integer())
+                )
+            )
+        ):
             raise LineagePolicyError(f"invalid measured cost: {axis}")
     if evidence.evaluation_receipt_digest is None:
         missing.append("original_signed_evaluation")
