@@ -50,8 +50,11 @@ pub(crate) use admin_issuer::CommittedIssuerRevocation;
 mod desktop_successor;
 #[path = "authority_host_human_text.rs"]
 mod human_text;
+pub(crate) use human_text::OriginalHumanLifetime;
 #[path = "authority_host_logind.rs"]
 mod logind;
+#[cfg(test)]
+pub(crate) use logind::paired_human_tests::SyntheticOriginalHuman;
 #[path = "authority_host_notes_successor.rs"]
 mod notes_successor;
 
@@ -200,6 +203,25 @@ impl HostAuthorityService {
             .as_ref()
             .ok_or_else(|| io::Error::other("original paired registration unavailable"))?
             .observe()
+    }
+
+    /// Read-only original-signature and live-handle inspection under the same
+    /// four-record owner. This does not prove a Core turn, prepare an operation,
+    /// return a continuation, consume a grant or authorize a material read.
+    pub fn observe_registered_paired_human(
+        &self,
+        ingress: &crate::AuthBusTextIngress,
+    ) -> io::Result<crate::PairedRootObservation> {
+        let end = std::time::Instant::now() + std::time::Duration::from_secs(1);
+        let held = OriginalHumanLifetime::from_original(
+            self.human_text.as_ref(),
+            self.logind_session.as_ref(),
+            end,
+        )?;
+        self.paired
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original paired registration unavailable"))?
+            .observe_original_human(&self.identity, ingress, &held)
     }
 
     pub(crate) fn with_notes_from_original_session(

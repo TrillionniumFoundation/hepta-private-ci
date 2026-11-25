@@ -55,10 +55,19 @@ fn paired_four_records_hold_enrollment_revocation_until_actual_boundary_returns(
         worker.join().unwrap();
         done_rx.recv().unwrap().unwrap();
     });
+    // Revoke commits revision 2. A fresh lookup with the old expected
+    // revision is rejected before the current record's tombstone check.
     assert_eq!(
         f.registry
             .verifier()
             .verify_use(&enrolled.lease_id, 1, &enrolled.binding)
+            .unwrap_err(),
+        AuthorityLeaseError::RevisionMismatch
+    );
+    assert_eq!(
+        f.registry
+            .verifier()
+            .verify_use(&enrolled.lease_id, 2, &enrolled.binding)
             .unwrap_err(),
         AuthorityLeaseError::Revoked
     );
@@ -171,10 +180,16 @@ fn paired_four_records_revalidate_each_role_after_tokens_were_issued() {
                     (tokens.2, &enrolled.binding),
                     |_, _, _, _, _, _| panic!("ended dependency entered"),
                 );
-            assert!(matches!(
-                result,
-                Err(AuthorityLeaseError::Revoked | AuthorityLeaseError::Expired)
-            ));
+            // The issuer is looked up by its old pinned revision; the other
+            // roles retain their original opaque tokens. Revocation advances
+            // the current record, so these two checks reject at distinct,
+            // exact stages of the unchanged production validation order.
+            let expected = match (revoke, role) {
+                (false, _) => AuthorityLeaseError::Expired,
+                (true, 0) => AuthorityLeaseError::RevisionMismatch,
+                (true, _) => AuthorityLeaseError::Revoked,
+            };
+            assert_eq!(result, Err(expected));
         }
     }
 }

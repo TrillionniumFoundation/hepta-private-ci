@@ -179,7 +179,9 @@ async fn queued_request_cancels_without_network_and_unknown_id_is_not_success() 
         .await??,
         HttpRequestCancelResponse::Cancelled
     );
-    assert!(poll!(queued_listener.accept()).is_pending());
+    let queued_accept = queued_listener.accept();
+    tokio::pin!(queued_accept);
+    assert!(poll!(queued_accept.as_mut()).is_pending());
     let id = server
         .send_request(
             "http/cancelRequestV1",
@@ -222,7 +224,7 @@ async fn queued_request_cancels_without_network_and_unknown_id_is_not_success() 
             .status,
         204
     );
-    assert!(poll!(queued_listener.accept()).is_pending());
+    assert!(poll!(queued_accept.as_mut()).is_pending());
     server.shutdown().await?;
     Ok(())
 }

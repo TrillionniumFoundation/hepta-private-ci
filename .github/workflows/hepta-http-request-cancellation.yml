@@ -40,8 +40,6 @@ jobs:
     name: Nine original HTTP cancellation controls (source-head)
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
-    env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/http-cancellation-target
     steps:
       - name: Check out the exact source head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -59,6 +57,8 @@ jobs:
           sudo apt-get install -y build-essential pkg-config libcap-dev libssl-dev
       - name: Execute the nine exact original controls once
         id: controls
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/http-cancellation-target
         shell: bash
         run: |
           set -euo pipefail
@@ -78,6 +78,8 @@ jobs:
           jq -e '.observed_passed_tests == 9 and .observed_failed_tests == 0' "$RUNNER_TEMP/http-cancellation-records/controls.json"
       - name: Retain the fresh nine-name native JUnit original
         if: always() && !cancelled() && steps.controls.outcome != 'skipped'
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/http-cancellation-target
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_junit.py --execution "$RUNNER_TEMP/http-cancellation-records/controls.json" --junit "$CARGO_TARGET_DIR/nextest/local/junit.xml" --output "$RUNNER_TEMP/http-cancellation-records/controls.junit.xml"

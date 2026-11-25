@@ -9,6 +9,9 @@ use pretty_assertions::assert_eq;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
+#[path = "deployment_paired_live_tests.rs"]
+mod live;
+
 struct Clock(AtomicU64);
 impl AuthorityClock for Clock {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {

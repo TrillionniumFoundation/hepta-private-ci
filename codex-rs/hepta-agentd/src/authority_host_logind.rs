@@ -23,6 +23,22 @@ pub(super) struct OriginalLogindSession {
     binding: TextHumanBinding,
 }
 
+impl OriginalLogindSession {
+    /// Recheck this already authenticated login through its original held fd.
+    /// A missing login cannot call this method, and the caller supplies one
+    /// existing absolute deadline for both the login and the UI observation.
+    pub(super) fn check_original_human_binding(
+        &self,
+        binding: &TextHumanBinding,
+        end: Instant,
+    ) -> io::Result<()> {
+        if &self.binding != binding {
+            return Err(io::Error::other("original physical login binding changed"));
+        }
+        crate::authority_host_runtime::owner_alive(&self.held, end)
+    }
+}
+
 impl HostAuthorityNativeProfile {
     pub(crate) fn original_human_binding(&self) -> TextHumanBinding {
         TextHumanBinding {
@@ -229,3 +245,7 @@ fn verify_original_login(
 #[cfg(test)]
 #[path = "authority_host_logind_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "authority_host_paired_human_tests.rs"]
+pub(crate) mod paired_human_tests;
