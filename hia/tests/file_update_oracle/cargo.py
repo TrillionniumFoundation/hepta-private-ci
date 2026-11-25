@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import types
@@ -131,7 +132,9 @@ def capture(cargo, producer, env, native, commands):
 
 def verify_library_copy(source, staged, digest, size):
     """Require a byte-exact snapshot with no shared inode with its producer."""
-    if (source.samefile(staged) or staged.stat().st_nlink != 1
+    if (not stat.S_ISREG(source.lstat().st_mode)
+            or not stat.S_ISREG(staged.lstat().st_mode)
+            or source.samefile(staged) or staged.stat().st_nlink != 1
             or source.stat().st_size != size or staged.stat().st_size != size
             or sha(source) != digest or sha(staged) != digest):
         raise RuntimeError("staged library is not an independent exact copy")
@@ -145,6 +148,121 @@ def stage_library(source, staged, digest):
         shutil.copyfileobj(inp, out)
     verify_library_copy(source, staged, digest, size)
     return size
+
+
+def native_search_source(raw, target_dir):
+    """Classify target-owned -L arguments without inspecting external directories."""
+    kind, separator, path = raw.partition("=")
+    if separator and kind in {"native", "dependency", "crate", "framework", "all"}:
+        prefix = kind + "="
+    else:
+        prefix, path = "", raw
+    requested = Path(path)
+    if not requested.is_absolute():
+        return prefix, None
+    absolute = Path(os.path.normpath(requested))
+    if not absolute.is_relative_to(target_dir):
+        return prefix, None
+    if (absolute == target_dir or absolute.resolve(strict=True) != absolute
+            or requested.resolve(strict=True) != absolute):
+        raise RuntimeError("target-owned native search root is not an isolated canonical directory")
+    return prefix, absolute
+
+
+def native_search_inventory(root):
+    """Include empty directories; reject nonregular entries instead of following links."""
+    if not stat.S_ISDIR(root.lstat().st_mode) or root.resolve(strict=True) != root:
+        raise RuntimeError("native search root is not a canonical directory")
+    records = {}
+    for path in sorted(root.rglob("*")):
+        relative = path.relative_to(root).as_posix()
+        mode = path.lstat().st_mode
+        if stat.S_ISDIR(mode):
+            records[relative] = {"kind": "directory"}
+        elif stat.S_ISREG(mode):
+            records[relative] = {"kind": "file", "bytes": path.stat().st_size,
+                                 "sha256": sha(path)}
+        else:
+            raise RuntimeError("native search directory contains a nonregular entry")
+    return records
+
+
+def stage_native_search(paths, target_dir, stage):
+    """Snapshot target-owned build-script search roots; preserve other -L arguments."""
+    target_dir = target_dir.resolve(strict=True)
+    stage = stage.resolve()
+    if stage.is_relative_to(target_dir) or target_dir.is_relative_to(stage):
+        raise RuntimeError("native search staging must be outside the actual target directory")
+    stage.mkdir()
+    records = []
+    for index, raw in enumerate(sorted(set(paths))):
+        prefix, source = native_search_source(raw, target_dir)
+        if source is None:
+            records.append({"original": raw, "effective": raw,
+                            "scope": "external_or_relative_unisolated"})
+            continue
+        destination = stage / str(index)
+        entries = native_search_inventory(source)
+        destination.mkdir()
+        for relative, record in entries.items():
+            output = destination / relative
+            if record["kind"] == "directory":
+                output.mkdir()
+            else:
+                size = stage_library(source / relative, output, record["sha256"])
+                if size != record["bytes"]:
+                    raise RuntimeError("native search input size changed during staging")
+        records.append({"original": raw, "effective": prefix + str(destination),
+                        "scope": "target_owned_snapshot", "source": str(source),
+                        "staged": str(destination), "entries": entries})
+    result = {"native_paths": [r["effective"] for r in records],
+              "native_search": records, "native_search_stage": str(stage),
+              "native_search_target_dir": str(target_dir),
+              "native_search_fully_isolated": all(
+                  r["scope"] == "target_owned_snapshot" for r in records)}
+    verify_native_search(result)
+    return result
+
+
+def verify_native_search(graph):
+    stage = Path(graph["native_search_stage"])
+    target = Path(graph["native_search_target_dir"])
+    records = graph["native_search"]
+    originals = [r["original"] for r in records]
+    if (originals != sorted(set(originals))
+            or graph["native_paths"] != [r["effective"] for r in records]
+            or target.resolve(strict=True) != target
+            or stage.resolve(strict=True) != stage
+            or not stat.S_ISDIR(stage.lstat().st_mode)
+            or stage.is_relative_to(target) or target.is_relative_to(stage)):
+        raise RuntimeError("native search argument or staging identity changed")
+    expected_directories = set()
+    for index, record in enumerate(records):
+        raw = record["original"]
+        prefix, source = native_search_source(raw, target)
+        if source is None:
+            if record != {"original": raw, "effective": raw,
+                          "scope": "external_or_relative_unisolated"}:
+                raise RuntimeError("unisolated native search argument changed")
+            continue
+        destination = stage / str(index)
+        expected_directories.add(destination.name)
+        if (record["scope"] != "target_owned_snapshot"
+                or record["source"] != str(source)
+                or record["staged"] != str(destination)
+                or record["effective"] != prefix + str(destination)
+                or native_search_inventory(source) != record["entries"]
+                or native_search_inventory(destination) != record["entries"]):
+            raise RuntimeError("native search snapshot or source inventory changed")
+        for relative, entry in record["entries"].items():
+            if entry["kind"] == "file":
+                verify_library_copy(source / relative, destination / relative,
+                                    entry["sha256"], entry["bytes"])
+    if {p.name for p in stage.iterdir()} != expected_directories:
+        raise RuntimeError("native search staging contains missing or extra directories")
+    if graph["native_search_fully_isolated"] is not all(
+            r["scope"] == "target_owned_snapshot" for r in records):
+        raise RuntimeError("native search isolation scope changed")
 
 
 def admit(path, packages, owner, dependencies, target_dir, stage, *, native):
@@ -226,9 +344,11 @@ def admit(path, packages, owner, dependencies, target_dir, stage, *, native):
         chosen[name] = choices[0]
     if chosen["codex_apply_patch"]["unit"]["features"] != (["hia-native"] if native else []):
         raise RuntimeError("actual production owner feature dispatch is wrong")
-    return {"direct": chosen, "files": files, "units": units,
-            "native_paths": sorted(native_paths), "artifact_jsonl_sha256": sha(path),
-            "stage": str(stage), "actual_cargo_build_succeeded": True}
+    search = stage_native_search(native_paths, target_dir,
+                                 stage.with_name(stage.name + "-native-search"))
+    return {"direct": chosen, "files": files, "units": units, **search,
+            "artifact_jsonl_sha256": sha(path), "stage": str(stage),
+            "actual_cargo_build_succeeded": True}
 
 
 def verify_graph(graph):
@@ -237,6 +357,8 @@ def verify_graph(graph):
     for record in graph["files"].values():
         verify_library_copy(Path(record["source"]), Path(record["path"]),
                             record["sha256"], record["bytes"])
+    if graph.get("actual_cargo_build_succeeded") is True:
+        verify_native_search(graph)
 
 
 def flags(rustc, graph, *, original):

@@ -298,5 +298,81 @@ class IndependentLibraryCopyTests(unittest.TestCase):
             cargo.stage_library(self.source, self.staged, self.digest)
 
 
+    def test_matching_symlink_is_not_an_independent_copy(self):
+        other = self.stage.parent / "other.rlib"
+        other.write_bytes(self.source.read_bytes())
+        self.staged.symlink_to(other)
+        with self.assertRaises(RuntimeError):
+            cargo.verify_graph(self.graph())
+
+
+class NativeSearchSnapshotTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name).resolve()
+        self.target = root / "target"
+        self.source = self.target / "debug" / "build" / "fixture" / "out"
+        self.source.mkdir(parents=True)
+        (self.source / "empty").mkdir()
+        (self.source / "nested").mkdir()
+        self.archive = self.source / "nested" / "fixture.a"
+        self.archive.write_bytes(b"!<arch>\nfixture")
+        self.stage = root / "search-snapshot"
+        self.external = root / "external"
+        self.external.mkdir()
+
+    def test_search_order_and_independent_target_owned_snapshot(self):
+        raw = ["native=" + str(self.source), "native=" + str(self.external),
+               "dependency=" + str(self.source), "relative-search"]
+        graph = cargo.stage_native_search(raw, self.target, self.stage)
+        self.assertEqual([r["original"] for r in graph["native_search"]], sorted(raw))
+        self.assertFalse(graph["native_search_fully_isolated"])
+        for record in graph["native_search"]:
+            if record["scope"] == "external_or_relative_unisolated":
+                self.assertEqual(record["effective"], record["original"])
+                continue
+            destination = Path(record["staged"])
+            self.assertTrue((destination / "empty").is_dir())
+            copied = destination / "nested" / "fixture.a"
+            self.assertEqual(copied.read_bytes(), self.archive.read_bytes())
+            self.assertFalse(copied.samefile(self.archive))
+            self.assertTrue(record["effective"].endswith(str(destination)))
+        cargo.verify_native_search(graph)
+        self.archive.write_bytes(b"changed")
+        for record in graph["native_search"]:
+            if record["scope"] == "target_owned_snapshot":
+                self.assertEqual((Path(record["staged"]) / "nested" / "fixture.a").read_bytes(),
+                                 b"!<arch>\nfixture")
+        with self.assertRaises(RuntimeError):
+            cargo.verify_native_search(graph)
+
+    def test_extra_staged_leaf_and_argument_drift_are_rejected(self):
+        graph = cargo.stage_native_search(["native=" + str(self.source)],
+                                          self.target, self.stage)
+        self.assertTrue(graph["native_search_fully_isolated"])
+        cargo.verify_native_search(graph)
+        graph["native_paths"][0] = "native=" + str(self.source)
+        with self.assertRaises(RuntimeError):
+            cargo.verify_native_search(graph)
+        graph["native_paths"][0] = graph["native_search"][0]["effective"]
+        (Path(graph["native_search"][0]["staged"]) / "extra").write_bytes(b"extra")
+        with self.assertRaises(RuntimeError):
+            cargo.verify_native_search(graph)
+
+    def test_nonregular_native_search_leaf_is_rejected(self):
+        (self.source / "alias").symlink_to(self.archive)
+        with self.assertRaises(RuntimeError):
+            cargo.stage_native_search(["native=" + str(self.source)],
+                                      self.target, self.stage)
+
+    def test_staging_inside_the_target_is_rejected_before_creation(self):
+        destination = self.target / "invalid-snapshot"
+        with self.assertRaises(RuntimeError):
+            cargo.stage_native_search(["native=" + str(self.source)],
+                                      self.target, destination)
+        self.assertFalse(destination.exists())
+
+
 if __name__ == "__main__":
     unittest.main()
