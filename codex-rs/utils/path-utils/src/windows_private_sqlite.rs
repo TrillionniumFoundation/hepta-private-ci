@@ -137,6 +137,13 @@ impl PrivateSqliteDirectory {
         Self::open_directory(path, DirectoryMode::Prepare)
     }
 
+    /// Atomically create a new owner-only inheritable root. Existing names
+    /// return `AlreadyExists`; no existing directory is adopted or repaired.
+    /// The parent must already exist and every lookup refuses reparse points.
+    pub fn create_new(path: &Path) -> io::Result<Self> {
+        Self::open_directory(path, DirectoryMode::CreateNew)
+    }
+
     /// Open an existing private root without creation, repair, or a write flush.
     /// Both the explicit non-inheriting policy and the SQLite policy qualify
     /// for read-only inspection; children must independently be owner-only.
@@ -160,7 +167,7 @@ impl PrivateSqliteDirectory {
 
     fn open_directory(path: &Path, mode: DirectoryMode) -> io::Result<Self> {
         let identity = security::Identity::current()?;
-        let descriptor = if matches!(mode, DirectoryMode::Prepare) {
+        let descriptor = if matches!(mode, DirectoryMode::Prepare | DirectoryMode::CreateNew) {
             Some(identity.sqlite_descriptor()?)
         } else {
             None

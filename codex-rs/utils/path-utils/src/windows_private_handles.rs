@@ -140,6 +140,7 @@ pub(super) fn canonical_path(file: &File) -> io::Result<PathBuf> {
 #[derive(Clone, Copy)]
 pub(super) enum DirectoryMode {
     Prepare,
+    CreateNew,
     ReadOnlyExisting,
     WritableExisting,
 }
@@ -174,16 +175,16 @@ pub(super) fn directory_with(
     }));
     let rights =
         FILE_LIST_DIRECTORY | FILE_TRAVERSE | FILE_READ_ATTRIBUTES | FILE_READ_EA | READ_CONTROL;
-    let (rights, disposition) = match mode {
-        DirectoryMode::ReadOnlyExisting => (rights, FILE_OPEN),
-        DirectoryMode::Prepare | DirectoryMode::WritableExisting => (
-            rights | FILE_ADD_FILE | FILE_ADD_SUBDIRECTORY | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA,
-            if matches!(mode, DirectoryMode::Prepare) {
-                FILE_OPEN_IF
-            } else {
-                FILE_OPEN
-            },
-        ),
+    let disposition = match mode {
+        DirectoryMode::Prepare => FILE_OPEN_IF,
+        DirectoryMode::CreateNew => FILE_CREATE,
+        DirectoryMode::ReadOnlyExisting | DirectoryMode::WritableExisting => FILE_OPEN,
+    };
+    let rights = match mode {
+        DirectoryMode::ReadOnlyExisting => rights,
+        DirectoryMode::Prepare | DirectoryMode::CreateNew | DirectoryMode::WritableExisting => {
+            rights | FILE_ADD_FILE | FILE_ADD_SUBDIRECTORY | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA
+        }
     };
     open(
         /*root*/ 0,

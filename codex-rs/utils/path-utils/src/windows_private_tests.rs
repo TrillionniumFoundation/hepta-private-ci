@@ -99,6 +99,36 @@ fn private_directory_preserves_exclusive_writer_locking() {
 }
 
 #[test]
+fn sqlite_directory_create_new_never_adopts_existing_roots() -> std::io::Result<()> {
+    let temporary = tempfile::tempdir()?;
+    let root = temporary.path().join("private");
+    let directory = PrivateSqliteDirectory::create_new(&root)?;
+    let mut file = directory.open("kept.sqlite3", Access::CreateNew)?;
+    file.write_all(b"unchanged")?;
+    file.sync_all()?;
+    drop(file);
+    directory.sync_all()?;
+    let before = directory.snapshot()?;
+    let broad = temporary.path().join("ordinary");
+    fs::create_dir(&broad)?;
+    for existing in [&root, &broad] {
+        let reader = OpenOptions::new()
+            .access_mode(windows_sys::Win32::Storage::FileSystem::READ_CONTROL)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(existing)?;
+        let security = owner::FileSecurity::read(&reader)?;
+        assert!(matches!(
+            PrivateSqliteDirectory::create_new(existing),
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists
+        ));
+        assert!(security.unchanged(&owner::FileSecurity::read(&reader)?));
+    }
+    assert_eq!(directory.snapshot()?, before);
+    assert_eq!(fs::read(root.join("kept.sqlite3"))?, b"unchanged");
+    Ok(())
+}
+
+#[test]
 fn sqlite_inheritance_is_owner_only_and_does_not_weaken_the_default_policy() {
     let temporary = tempfile::tempdir().expect("synthetic directory");
     let root = temporary.path().join("sqlite");
@@ -336,6 +366,8 @@ fn reparse_root_and_reparse_ancestor_never_reach_the_target() {
     assert!(PrivateDirectory::prepare(&junction.join("child")).is_err());
     assert!(PrivateSqliteDirectory::inspect(&junction).is_err());
     assert!(PrivateSqliteDirectory::inspect(&junction.join("child")).is_err());
+    assert!(PrivateSqliteDirectory::create_new(&junction).is_err());
+    assert!(PrivateSqliteDirectory::create_new(&junction.join("child")).is_err());
     assert!(!target.join("child").exists());
     assert_eq!(
         fs::read(target.join("marker")).expect("unchanged target"),
