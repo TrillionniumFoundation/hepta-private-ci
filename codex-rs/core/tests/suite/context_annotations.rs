@@ -242,11 +242,14 @@ async fn content_item_kinds_are_omitted_when_feature_disabled() -> Result<()> {
     test.submit_text_turn("inspect request metadata").await?;
 
     let request = response.single_request();
-    let input = persisted_request_items(&test.codex, &request, |_| true).await?;
-    assert!(input.iter().all(|item| {
+    // The feature controls the request copy. Durable local annotations remain
+    // available even when the provider does not accept them on the wire.
+    assert!(request.input().iter().all(|item| {
         item.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds")
             .is_none()
     }));
+    let input = persisted_request_items(&test.codex, &request, |_| true).await?;
+    assert_local_content_kinds(&input, &["user.text"]);
     assert!(input.iter().any(|item| {
         item.pointer("/internal_chat_message_metadata_passthrough/turn_id")
             .is_some()

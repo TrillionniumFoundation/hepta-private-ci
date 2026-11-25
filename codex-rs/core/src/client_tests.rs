@@ -137,7 +137,8 @@ fn test_model_client_with_thread_id(
 }
 
 #[test]
-fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
+fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() -> anyhow::Result<()>
+{
     let client = test_model_client(SessionSource::Exec);
     let chatgpt_provider =
         ModelProviderInfo::create_openai_provider(Some(CHATGPT_CODEX_BASE_URL.to_string()))
@@ -156,6 +157,7 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         }],
         phase: None,
         internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
+            turn_id: Some("turn-a".to_string()),
             content_item_kinds: Some(vec![ContentItemKind("user.text".to_string())]),
             ..Default::default()
         }),
@@ -227,6 +229,33 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
             .get("internal_chat_message_metadata_passthrough")
             .is_none()
     );
+
+    // Exercise the feature gate on a provider that accepts internal metadata;
+    // localhost transport tests independently assert its stricter wire policy.
+    let mut disabled_client = test_model_client(SessionSource::Exec);
+    Arc::get_mut(&mut disabled_client.state)
+        .ok_or_else(|| anyhow::anyhow!("fresh test client must uniquely own its state"))?
+        .content_item_kinds_enabled = false;
+    let stored_item = item_with_metadata();
+    let mut request_item = stored_item.clone();
+    disabled_client.prepare_response_items_for_request(
+        std::slice::from_mut(&mut request_item),
+        &openai_provider,
+    );
+    assert_eq!(
+        serde_json::to_value(request_item)?,
+        json!({
+            "type": "message",
+            "role": "user",
+            "content": [{"type": "input_text", "text": "hello"}],
+            "internal_chat_message_metadata_passthrough": {"turn_id": "turn-a"},
+        }),
+    );
+    assert_eq!(
+        serde_json::to_value(stored_item)?["internal_chat_message_metadata_passthrough"],
+        json!({"turn_id": "turn-a", "content_item_kinds": ["user.text"]}),
+    );
+    Ok(())
 }
 
 struct TransportSelectionEphemeralContributor {
