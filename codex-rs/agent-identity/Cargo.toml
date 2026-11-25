@@ -15,7 +15,6 @@ workspace = true
 [dependencies]
 anyhow = { workspace = true }
 base64 = { workspace = true }
-chrono = { workspace = true }
 codex-http-client = { workspace = true }
 codex-protocol = { workspace = true }
 crypto_box = { workspace = true }
@@ -26,6 +25,7 @@ rand = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
+time = { workspace = true, features = ["formatting", "macros", "wasm-bindgen"] }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }

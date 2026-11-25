@@ -4,11 +4,11 @@ use crate::runtime::HostBlockDecision;
 use crate::runtime::HostBlockReason;
 use crate::state::NetworkProxyState;
 use anyhow::Result;
-use chrono::SecondsFormat;
-use chrono::Utc;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
+use time::OffsetDateTime;
+use time::UtcOffset;
 
 const AUDIT_TARGET: &str = "codex_otel.network_proxy";
 const POLICY_DECISION_EVENT_NAME: &str = "codex.network_proxy.policy_decision";
@@ -261,7 +261,7 @@ struct PolicyAuditEventArgs<'a> {
 
 fn emit_policy_audit_event(state: &NetworkProxyState, args: PolicyAuditEventArgs<'_>) {
     let metadata = state.audit_metadata();
-    let timestamp = audit_timestamp();
+    let timestamp = audit_timestamp(OffsetDateTime::now_utc());
     tracing::event!(
         target: AUDIT_TARGET,
         tracing::Level::INFO,
@@ -305,8 +305,18 @@ fn emit_policy_audit_event(state: &NetworkProxyState, args: PolicyAuditEventArgs
     }
 }
 
-fn audit_timestamp() -> String {
-    Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)
+fn audit_timestamp(now: OffsetDateTime) -> String {
+    #[cfg(not(all(
+        target_arch = "wasm32",
+        not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
+    )))]
+    assert!(now.unix_timestamp() >= 0, "system time before Unix epoch");
+
+    now.to_offset(UtcOffset::UTC)
+        .format(time::macros::format_description!(
+            "[year]-[month]-[day]T[hour]:[minute]:[second].[subsecond digits:3]Z"
+        ))
+        .expect("UTC timestamp contains every component required by the static format")
 }
 
 /// Decide whether a network request should be allowed.
@@ -654,6 +664,36 @@ mod tests {
             state: state.clone(),
         });
         NetworkProxyState::with_reloader_and_audit_metadata(state, reloader, metadata)
+    }
+
+    #[test]
+    fn audit_timestamp_preserves_fixed_millisecond_utc_bytes() {
+        let cases = [
+            (OffsetDateTime::UNIX_EPOCH, "1970-01-01T00:00:00.000Z"),
+            (
+                time::macros::datetime!(2024-02-29 23:59:59.999999999 UTC),
+                "2024-02-29T23:59:59.999Z",
+            ),
+            (
+                time::macros::datetime!(2024-03-01 00:30:00.123999999 +01:00),
+                "2024-02-29T23:30:00.123Z",
+            ),
+        ];
+        for (now, expected) in cases {
+            assert_eq!(audit_timestamp(now), expected);
+        }
+    }
+
+    #[cfg(not(all(
+        target_arch = "wasm32",
+        not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
+    )))]
+    #[test]
+    #[should_panic(expected = "system time before Unix epoch")]
+    fn audit_timestamp_preserves_native_pre_epoch_refusal() {
+        let nanos = -1;
+        let now = OffsetDateTime::from_unix_timestamp_nanos(nanos).expect("valid pre-epoch time");
+        audit_timestamp(now);
     }
 
     fn is_rfc3339_utc_millis(timestamp: &str) -> bool {

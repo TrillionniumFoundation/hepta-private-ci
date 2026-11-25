@@ -139,7 +139,7 @@ fn commit_current_tree(repo: &gix::Repository, message: &str) -> anyhow::Result<
         .workdir()
         .context("git baseline repo must have a worktree")?;
     let tree_id = write_tree(repo, root)?;
-    let signature = codex_signature();
+    let signature = codex_signature(time::OffsetDateTime::now_utc());
     let mut time = gix::date::parse::TimeBuf::default();
     let signature_ref = signature.to_ref(&mut time);
     repo.commit_as(
@@ -159,12 +159,18 @@ fn write_index_from_head(root: &Path) -> anyhow::Result<()> {
         .context("write git baseline index from HEAD")
 }
 
-fn codex_signature() -> gix::actor::Signature {
+fn codex_signature(now: time::OffsetDateTime) -> gix::actor::Signature {
+    #[cfg(not(all(
+        target_arch = "wasm32",
+        not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
+    )))]
+    assert!(now.unix_timestamp() >= 0, "system time before Unix epoch");
+
     gix::actor::Signature {
         name: "Codex".into(),
         email: "noreply@openai.com".into(),
         time: gix::date::Time {
-            seconds: chrono::Utc::now().timestamp(),
+            seconds: now.unix_timestamp(),
             offset: 0,
         },
     }
@@ -532,6 +538,35 @@ mod tests {
     use std::fs;
     use std::process::Command;
     use tempfile::TempDir;
+
+    #[test]
+    fn codex_signature_preserves_epoch_seconds_and_zero_offset() {
+        for (nanos, seconds) in [(0, 0), (999_999_999, 0), (1_999_999_999, 1)] {
+            let now = time::OffsetDateTime::from_unix_timestamp_nanos(nanos)
+                .expect("valid signature time");
+            assert_eq!(
+                codex_signature(now),
+                gix::actor::Signature {
+                    name: "Codex".into(),
+                    email: "noreply@openai.com".into(),
+                    time: gix::date::Time { seconds, offset: 0 },
+                }
+            );
+        }
+    }
+
+    #[cfg(not(all(
+        target_arch = "wasm32",
+        not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
+    )))]
+    #[test]
+    #[should_panic(expected = "system time before Unix epoch")]
+    fn codex_signature_preserves_native_pre_epoch_refusal() {
+        let nanos = -1;
+        let now =
+            time::OffsetDateTime::from_unix_timestamp_nanos(nanos).expect("valid pre-epoch time");
+        codex_signature(now);
+    }
 
     fn git_stdout(root: &Path, args: &[&str]) -> String {
         let output = Command::new("git")
