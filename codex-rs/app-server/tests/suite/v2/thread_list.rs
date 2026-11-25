@@ -199,7 +199,10 @@ fn timestamp_at(
 #[allow(dead_code)]
 fn set_rollout_mtime(path: &Path, updated_at_rfc3339: &str) -> Result<()> {
     let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(updated_at_rfc3339)?;
-    let times = FileTimes::new().set_modified(parsed.into());
+    let modified = parsed.to_system_time().ok_or_else(|| {
+        std::io::Error::other("rollout timestamp is outside the platform file-time range")
+    })?;
+    let times = FileTimes::new().set_modified(modified);
     OpenOptions::new()
         .append(true)
         .open(path)?
