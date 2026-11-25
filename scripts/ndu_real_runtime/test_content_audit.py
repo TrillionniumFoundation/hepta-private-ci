@@ -9,6 +9,7 @@ import tempfile
 import unittest
 
 from ndu_real_materials import evaluator
+from .action_effects import action_effect
 from .content_audit import SCHEMA, audit
 from .content_identity import content_identity_report, selection_receipt
 
@@ -42,7 +43,15 @@ class ContentAuditTests(unittest.TestCase):
         }
         if selected:
             observation["content_selection"] = selection_receipt(candidates, 0, action)
-        wire = json.dumps(observation, ensure_ascii=False)
+        effect = action_effect(
+            "WRITE_TEXT", {"text": None}, {"text": candidates[0]["text"]}
+        )
+        wire_observation = (
+            {**observation, "action_effect": effect}
+            if fault == "actor_host_metadata"
+            else observation
+        )
+        wire = json.dumps(wire_observation, ensure_ascii=False)
         ready = json.dumps(
             {
                 "schema": "ndu.real.actor-ready.v1",
@@ -77,7 +86,15 @@ class ContentAuditTests(unittest.TestCase):
         )
         trajectory = put(
             "trajectory.json",
-            {"steps": [{**observation, "observed_action_seconds": 0.1}]},
+            {
+                "steps": [
+                    {
+                        **observation,
+                        "action_effect": effect,
+                        "observed_action_seconds": 0.1,
+                    }
+                ]
+            },
         )
         delivery = put(
             "delivery.json",
@@ -410,6 +427,15 @@ class ContentAuditTests(unittest.TestCase):
                             "content_failure_present_at_actor_payload"
                         ]
                     )
+
+    def test_actor_message_cannot_supply_host_action_effect(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw, pin = self.fixture(root, selected=True, fault="actor_host_metadata")
+            row = audit(root, raw, pin)["episodes"][0]["rows"][0]
+            self.assertIs(row["checks"]["raw_actor_wire_receipt"], True)
+            self.assertIs(row["checks"]["wire_to_trajectory"], False)
+            self.assertIsNone(row["selected_used"])
 
     def test_selection_witness_requires_matching_ready_profile(self):
         for kind in ("absent", "unknown", "advertised", "legacy"):

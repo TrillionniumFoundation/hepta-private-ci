@@ -121,6 +121,15 @@ def verify_evaluation(
         raise ValueError("External evaluation differs from the actual delivery binding")
 
 
+def actor_wire_projection(observation):
+    """Remove only receipts that the host adds after executing the action."""
+    return {
+        key: value
+        for key, value in observation.items()
+        if key not in {"action_effect", "observed_action_seconds"}
+    }
+
+
 def verify_content_identity(
     observation,
     delivery_raw,
@@ -154,14 +163,9 @@ def verify_content_identity(
     if actor_payload_raw is not None:
         payload_sha = hashlib.sha256(actor_payload_raw).hexdigest()
         supplied = strict_json(actor_payload_raw)
-        # These receipts are computed by the host after the actor message.
-        # Compare the supplied wire as-is so actor-supplied receipts still fail.
-        original = {
-            key: value
-            for key, value in observation.items()
-            if key not in {"action_effect", "observed_action_seconds"}
-        }
-        if payload_sha != expected_payload_sha256 or supplied != original:
+        if payload_sha != expected_payload_sha256 or supplied != actor_wire_projection(
+            observation
+        ):
             raise ValueError("Actor wire differs from the observed action")
     if evaluation is not None:
         verify_evaluation(

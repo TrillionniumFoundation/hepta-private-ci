@@ -12,7 +12,12 @@ from pathlib import Path
 
 from ndu_real_materials.common import read_bound, read_relative, strict_json, write_json
 from ndu_real_materials import evaluator
-from .content_identity import SELECTION_SCHEMA, check_selection, verify_evaluation
+from .content_identity import (
+    SELECTION_SCHEMA,
+    actor_wire_projection,
+    check_selection,
+    verify_evaluation,
+)
 from .metering import canonical_sha
 
 SCHEMA = "ndu.real.content-audit-manifest.v1"
@@ -142,12 +147,7 @@ def _episode(root, entry, manifest, total):
         wire, wire_binding = None, False
         if ordered:
             wire, observed = observations[index]
-            original = {
-                key: value
-                for key, value in step.items()
-                if key != "observed_action_seconds"
-            }
-            wire_binding = original == observed
+            wire_binding = actor_wire_projection(step) == observed
         selection = None
         if step.get("content_selection") is not None:
             try:
