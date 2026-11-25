@@ -28,8 +28,10 @@ HISTORICAL_CARGO_DENY_INDEX = "qa/repository-consolidation/20261124/historical-c
 PAIRED_DIAGNOSTIC_INDEX = "qa/repository-consolidation/20261124/paired-diagnostic-logs/raw-evidence-storage.json"
 VENDORED_PATCH_INDEX = "qa/repository-consolidation/20261124/vendored-patch-custody/raw-evidence-storage.json"
 QUALIFIED_CONSOLE_INDEX = "qa/repository-consolidation/20261124/qualified-console-custody/raw-evidence-storage.json"
+MEM8_BOUNDED_GNU_INDEX = "qa/repository-consolidation/20261125/mem8-bounded-gnu-logs/raw-evidence-storage.json"
 INDEX_SHA256 = {
-    QUALIFIED_CONSOLE_INDEX: "db9cfa824d2620226ebcd03bb9a1ea540fdd656a7527f4bec7dd76aaac59b818",
+    MEM8_BOUNDED_GNU_INDEX: "d249597de292b7c5e9bec309552d8e52d05a0cbe3261d1032f8b5bbb2958841e",
+    QUALIFIED_CONSOLE_INDEX: "974ab4cc5a9a5066a3598ef64ba3eb990e6dff68ae3995956790835969f253b7",
     VENDORED_PATCH_INDEX: "17ba3a271e6a289faea295617649ad6dfc7cb90e42709c6b8c9e96ff2d352de9",
     PAIRED_DIAGNOSTIC_INDEX: "01d68c678f8f5fddb3ed685bdf6604da7639d740faddeda6a5fc723cf89ed7cf",
     HISTORICAL_CARGO_DENY_INDEX: "afd074a431b6cec896c4f4d8ce93a8edefd6b9641149a76bbf7c9b4d53aa30fd",
