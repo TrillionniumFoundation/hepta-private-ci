@@ -1,6 +1,4 @@
 use super::*;
-#[cfg(test)]
-#[cfg(test)]
 use codex_protocol::config_types::MultiAgentMode;
 
 #[cfg(test)]
