@@ -136,7 +136,12 @@ pub(crate) fn write_cached_directory_plugins(
     }) else {
         return;
     };
-    let _ = codex_utils_path::write_atomically(&cache_path, &contents);
+    if let Err(err) = codex_utils_path::write_atomically(&cache_path, &contents) {
+        warn!(
+            cache_path = %cache_path.display(),
+            "failed to write remote plugin catalog disk cache: {err}"
+        );
+    }
 }
 
 pub(crate) fn remove_cached_directory_plugins(
