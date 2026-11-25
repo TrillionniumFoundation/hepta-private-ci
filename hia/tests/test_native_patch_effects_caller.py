@@ -171,6 +171,12 @@ def verify(args, report):
                 "an actual Cargo lane metadata receipt changed")
     for path, digest in input_hashes.items():
         require(identity.sha(path) == digest, "a qualification source input changed")
+    for side, graph in graphs.items():
+        label = "cargo-metadata" if side == "default" else "cargo-" + side + "-metadata"
+        captured = [record for record in commands.records if record["label"] == label]
+        require(len(captured) == 1 and captured[0]["returncode"] == 0
+                and identity.sha(captured[0]["stdout"]) == metadata[side]["metadata_sha256"],
+                "an actual Cargo metadata command log changed")
     report["source_and_artifacts_unchanged"] = True
     report["passed"] = True
 

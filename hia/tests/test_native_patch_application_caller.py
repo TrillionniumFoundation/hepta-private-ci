@@ -31,7 +31,8 @@ def verify(args, report):
     require(support == producer / "hia/tests/patch_application_oracle" and
             Path(__file__).resolve() == producer / "hia/tests/test_native_patch_application_caller.py",
             "public writer helpers must come from the actual producing checkout")
-    roots = (producer, library)
+    original_boundary = admission.parent_original_checkout(parent_path, producer)
+    roots = (producer, library, original_boundary)
     work = identity.outside(args.work_dir, roots)
     identity.outside(args.report, roots)
     identity.outside(parent_path, roots)
@@ -138,8 +139,8 @@ def verify(args, report):
             bind(path, digest)
     original_checkout, metadata = admission.verify_parent_lanes(
         parent, parent_work, producer, graphs, bind)
-    identity.outside(work, (original_checkout,))
-    identity.outside(args.report, (original_checkout,))
+    require(original_checkout == original_boundary,
+            "prerequisite original checkout changed during admission")
     native = Path(graphs["native"]["direct"]["codex_apply_patch"]["path"])
     bind(native, graphs["native"]["files"][native.name]["sha256"])
     rustc, _, env, compiler = cargo.compiler(args.rustc, commands, producer)
