@@ -87,7 +87,10 @@ fn windows_git_wrapper_lifetime_fixture() -> std::io::Result<()> {
 async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     wrapper_lifetime: GitWrapperLifetime,
 ) {
-    let temp_dir = tempfile::tempdir().expect("create temp dir");
+    let temp_dir = tempfile::Builder::new()
+        .prefix("git-process-[literal]-")
+        .tempdir()
+        .expect("create temp dir");
     let child_pid_file = temp_dir.path().join("child.pid");
     let child_ready_file = temp_dir.path().join("child-ready");
     let release_child_file = temp_dir.path().join("release-child");

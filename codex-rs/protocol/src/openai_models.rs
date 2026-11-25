@@ -671,8 +671,7 @@ where
     Ok(value
         .as_ref()
         .and_then(serde_json::Value::as_str)
-        .and_then(|value| codex_utils_time::Timestamp::parse_from_rfc3339(value).ok())
-        .map(|value| value))
+        .and_then(|value| codex_utils_time::Timestamp::parse_from_rfc3339(value).ok()))
 }
 
 impl From<&ModelUpgrade> for ModelInfoUpgrade {
