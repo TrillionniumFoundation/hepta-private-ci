@@ -6,16 +6,22 @@ inputs, grant training/distribution rights, or issue production acceptance.
 No pickle, remote loader, arbitrary path, implicit fallback or model execution.
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import stat
 
-import torch
-from safetensors.torch import load
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import torch
 
 MAX_ADAPTER_BYTES = 64 * 1024 * 1024
+MAX_MANIFEST_BYTES = 256 * 1024
 
 
 def sha256(payload: bytes) -> str:
@@ -80,8 +86,17 @@ def strict_json(payload: bytes) -> dict:
     def invalid_constant(value):
         raise ValueError(f"nonfinite JSON constant: {value}")
 
+    def finite_float(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError("Out of range float values are not JSON compliant")
+        return number
+
     value = json.loads(
-        payload, object_pairs_hook=unique, parse_constant=invalid_constant
+        payload,
+        object_pairs_hook=unique,
+        parse_constant=invalid_constant,
+        parse_float=finite_float,
     )
     if not isinstance(value, dict):
         raise ValueError("candidate object required")
@@ -106,6 +121,9 @@ def validate_tensor_bytes(
         raise ValueError("candidate tensor content binding")
     if not expected_layout or len(expected_layout) > 4096:
         raise ValueError("missing/bounded independently supplied tensor inventory")
+    import torch
+    from safetensors.torch import load
+
     tensors = load(payload)
     if tensor_layout(tensors) != expected_layout:
         raise ValueError("candidate tensor inventory/shape/precision mismatch")
@@ -156,7 +174,7 @@ def read_candidate(
     revoked_roots: set[str],
 ):
     """Load bytes once and validate before any caller-selected model mutation."""
-    manifest_bytes = bounded_read(directory / "lineage.json", 256 * 1024)
+    manifest_bytes = bounded_read(directory / "lineage.json", MAX_MANIFEST_BYTES)
     if sha256(manifest_bytes) != expected_manifest_sha256:
         raise ValueError("candidate manifest binding")
     manifest = strict_json(manifest_bytes)
