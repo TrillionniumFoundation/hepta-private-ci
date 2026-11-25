@@ -162,7 +162,12 @@ def main():
     for name in ("producer", "library-dir", "effects-report", "rustc", "work-dir", "report"):
         parser.add_argument("--" + name, required=True, type=Path)
     args = parser.parse_args()
+    # A failure report must not write into the pinned original checkout either.
+    from patch_effects_oracle import admission
+    original = admission.parent_original_checkout(
+        args.effects_report.resolve(strict=True), args.producer.resolve(strict=True))
     path = args.report.resolve()
+    admission.identity.outside(path, (original,))
     if path.exists() or any(path.is_relative_to(root.resolve())
                             for root in (args.producer, args.library_dir)):
         raise RuntimeError("report must be new and outside source/artifact directories")
