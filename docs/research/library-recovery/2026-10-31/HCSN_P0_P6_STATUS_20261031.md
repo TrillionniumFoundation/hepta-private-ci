@@ -58,7 +58,7 @@ operator resets to a fixed grid state at positive cost. Policy iteration checks
 Five extra unit tests verify generator conservativity/nonnegative jump rates,
 Bellman complementarity, parameter rejection, repeated intervention semantics,
 and a two-mesh convergence comparison. Total suite: **23 tests PASS** in
-this session. This is a standalone **finite-grid impulse-control construction**, 
+this session. This is a standalone **finite-grid impulse-control construction**,
 NOT a solution of the original He-Xiong rollover/debt-coupled model. Mesh
 refinement 401->801 gives max interior value difference ~0.08936 in the
 chosen parameters. In an earlier, stricter 201->401 comparison max interior

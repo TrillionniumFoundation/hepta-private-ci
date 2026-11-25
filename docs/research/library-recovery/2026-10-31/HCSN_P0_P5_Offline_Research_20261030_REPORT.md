@@ -1,7 +1,7 @@
 # HCSN P0–P5 本地研究冲刺交付
 
-日期：2026-10-30（美东）/ 2026-10-31（UTC）  
-仓库目标：`TrillionniumFoundation/hepta-private-ci`  
+日期：2026-10-30（美东）/ 2026-10-31（UTC）\
+仓库目标：`TrillionniumFoundation/hepta-private-ci`\
 状态：`LOCAL_RESEARCH_ONLY`、`DENY_ALL`、未推送、未合并、未部署
 
 ## 远端当前阻塞

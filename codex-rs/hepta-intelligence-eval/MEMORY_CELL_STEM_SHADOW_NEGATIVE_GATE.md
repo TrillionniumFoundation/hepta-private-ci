@@ -1,9 +1,9 @@
 # Native Stem shadow-scale experiment: negative gate, not deployment
 
-**Source run:** [38135216246](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38135216246) (completed **success**).  
-**Actual source commit:** `953c65d9cf9a79dbd3e6543e2177a6a6ef61ed9c`  
-**Source Git tree:** `4c57c214109b756ff97415c1f235a7250e4b9a6f`  
-**Immutable artifact ID:** `11700958394`; **ZIP SHA256:** `3fe286f84d7f719ebe9ee300d3772aec1842dafb5c97ab9dfdb792eb4daaf43c`  
+**Source run:** [38135216246](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38135216246) (completed **success**).\
+**Actual source commit:** `953c65d9cf9a79dbd3e6543e2177a6a6ef61ed9c`\
+**Source Git tree:** `4c57c214109b756ff97415c1f235a7250e4b9a6f`\
+**Immutable artifact ID:** `11700958394`; **ZIP SHA256:** `3fe286f84d7f719ebe9ee300d3772aec1842dafb5c97ab9dfdb792eb4daaf43c`\
 **Integrity:** 146/146 internal SHA256SUMS entries verified independently from downloaded bytes.
 
 ## The actual result

@@ -1,8 +1,8 @@
 # Strict native 576/576 completion: independently auditable evidence, not Cell superiority
 
-**Source:** `675970bb610c70bb0ec30a2dee05c025440510e6`  
-**Complete CI:** https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38114716982 — **success**  
-**Immutable artifact:** GitHub artifact `11693693993`, ZIP SHA-256 `1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8`  
+**Source:** `675970bb610c70bb0ec30a2dee05c025440510e6`\
+**Complete CI:** https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38114716982 — **success**\
+**Immutable artifact:** GitHub artifact `11693693993`, ZIP SHA-256 `1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8`\
 **Exact tested tree:** `d280ba53070fb6457c04ff0d97fbb14ebbdbc3fb`
 
 This was an actual model run under the **strict as-of source admission before retrieval**. The archive has **130 internally SHA-256-verified files**. All 576 preregistered policy answers succeeded; full repository regression/static checks, native timestamp census, source features, actual Reader calls and model artifact-only reloads completed. No inferred or imputed answer was introduced to fill a failed request. The entire result remains a previously exposed **development** benchmark, not an untouched prospective test.

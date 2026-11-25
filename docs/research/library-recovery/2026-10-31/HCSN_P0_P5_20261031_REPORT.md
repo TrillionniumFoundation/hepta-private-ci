@@ -1,7 +1,7 @@
 # HCSN P0–P5 全量研发冲刺 — 离线可复验交付
 
-**日期：** 2026-10-31  
-**目标仓库：** `TrillionniumFoundation/hepta-private-ci`  
+**日期：** 2026-10-31\
+**目标仓库：** `TrillionniumFoundation/hepta-private-ci`\
 **当前结论：** `LOCAL_RESEARCH_ONLY` / `DENY_ALL`。没有获得远端最新 HEAD、没有提交 PR、没有产品激活。
 
 ## 1. 实际完成的代码与验证
