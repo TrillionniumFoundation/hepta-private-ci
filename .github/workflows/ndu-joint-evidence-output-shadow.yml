@@ -2,8 +2,8 @@ name: NDU joint evidence and four-output research (shadow)
 on:
   pull_request:
     paths:
-      - 'experiments/multimodal_output_portfolio/v5/**'
-      - '.github/workflows/ndu-joint-evidence-output-shadow.yml'
+      - "experiments/multimodal_output_portfolio/v5/**"
+      - ".github/workflows/ndu-joint-evidence-output-shadow.yml"
   workflow_dispatch:
 permissions:
   contents: read

@@ -49,10 +49,7 @@ pub(crate) async fn observe(
     use std::io::Write;
 
     let outcome = capture(store, intent, fence, caller_time_ms).await;
-    let status = match outcome {
-        Ok(status) => status,
-        Err(()) => "unavailable",
-    };
+    let status = outcome.unwrap_or("unavailable");
     // A failed diagnostic sink must not interrupt the original authorization
     // and provider path after best-effort shadow retention.
     let _ = writeln!(
