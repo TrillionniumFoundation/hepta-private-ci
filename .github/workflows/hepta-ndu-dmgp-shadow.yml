@@ -1,0 +1,34 @@
+name: Hepta NDU-DMGP shadow reference
+
+on:
+  pull_request:
+    paths:
+      - "qualification/ndu-dmgp-shadow/**"
+      - ".github/workflows/hepta-ndu-dmgp-shadow.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ndu-dmgp-shadow:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Fail-closed adversarial unit tests
+        run: python3 -m unittest discover -s qualification/ndu-dmgp-shadow -p 'test_*.py' -v
+      - name: Reproducible synthetic six-arm experiment
+        run: |
+          python3 qualification/ndu-dmgp-shadow/experiment.py > /tmp/ndu-dmgp-shadow.json
+          python3 - <<'PY'
+          import json
+          x = json.load(open('/tmp/ndu-dmgp-shadow.json'))
+          assert x['kind'] == 'synthetic-shadow-only'
+          assert not x['neural_decoding'] and not x['gpu_benchmark']
+          assert set(x['arms']) == {f'A{i}' for i in range(6)}
+          assert x['episodes'] >= 20
+          print('SHADOW_ONLY A0-A5: reference tests pass; production gates remain open')
+          PY
