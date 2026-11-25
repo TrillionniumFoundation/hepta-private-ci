@@ -359,6 +359,7 @@ async fn real_agentd_remember_recall_correct_and_forget_revalidate_physical_send
         read_h7_trajectory_for_turn(&trajectory_store, &agent, &remember_turn_id)
             .await?
             .context("qualification turn did not leave an H7 trajectory")?;
+    trajectory_store.close().await;
     ensure!(
         remember_trajectory.events.len() == 2,
         "qualification turn trajectory was not start+terminal: {:?}",
@@ -2253,6 +2254,7 @@ async fn read_h7_trajectory_for_turn(
     .bind(turn_id)
     .fetch_optional(&pool)
     .await?;
+    pool.close().await;
     let Some(trajectory_id) = trajectory_id else {
         return Ok(None);
     };
@@ -2315,8 +2317,12 @@ async fn read_kg_sqlite_evidence(
             && immutable_relation_count == immutable_relations,
         "immutable KG fact rows did not match their fact-set receipt"
     );
+    // G14 generations retain revision facts instead of copying kg_nodes/edges.
+    // This fixture has one memory in the scope; count its verified active head
+    // with the exact source citation, independently of the receipt's counts.
     let (
         generation,
+        storage_mode,
         receipt_fact_set_sha256,
         input_heads_sha256,
         output_sha256,
@@ -2335,6 +2341,7 @@ async fn read_kg_sqlite_evidence(
         String,
         String,
         String,
+        String,
         i64,
         i64,
         i64,
@@ -2342,22 +2349,31 @@ async fn read_kg_sqlite_evidence(
         i64,
         i64,
     ) = sqlx::query_as(
-        "SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
+        "SELECT r.generation, st.storage_mode,
+                r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
                 s.generation_sha256, s.publication_sha256,
                 r.entity_count, r.relation_count, r.node_count, r.edge_count,
-                (SELECT COUNT(*) FROM kg_nodes AS n
-                 WHERE n.projection_scope = r.projection_scope
-                   AND n.generation = r.generation
-                   AND n.memory_id = r.trigger_memory_id
+                (SELECT COUNT(*) FROM kg_revision_entities AS n
+                 JOIN memory_heads AS h
+                   ON h.memory_id = n.memory_id AND h.revision = n.memory_revision
+                 JOIN memory_revisions AS m
+                   ON m.memory_id = h.memory_id AND m.revision = h.revision
+                 WHERE n.memory_id = r.trigger_memory_id
                    AND n.memory_revision = r.trigger_memory_revision
+                   AND m.verification = 'verified' AND m.lifecycle = 'active'
                    AND n.source_id = ? AND n.source_revision = 1),
-                (SELECT COUNT(*) FROM kg_edges AS e
-                 WHERE e.projection_scope = r.projection_scope
-                   AND e.generation = r.generation
-                   AND e.memory_id = r.trigger_memory_id
+                (SELECT COUNT(*) FROM kg_revision_relations AS e
+                 JOIN memory_heads AS h
+                   ON h.memory_id = e.memory_id AND h.revision = e.memory_revision
+                 JOIN memory_revisions AS m
+                   ON m.memory_id = h.memory_id AND m.revision = h.revision
+                 WHERE e.memory_id = r.trigger_memory_id
                    AND e.memory_revision = r.trigger_memory_revision
+                   AND m.verification = 'verified' AND m.lifecycle = 'active'
                    AND e.source_id = ? AND e.source_revision = 1)
          FROM kg_projection_generation_receipts AS r
+         JOIN kg_projection_generation_storage AS st
+           ON st.projection_scope = r.projection_scope AND st.generation = r.generation
          JOIN kg_projection_generation_semantics AS s
            ON s.projection_scope = r.projection_scope AND s.generation = r.generation
          JOIN kg_projection AS p
@@ -2372,12 +2388,17 @@ async fn read_kg_sqlite_evidence(
     .await?;
     pool.close().await;
     ensure!(
+        storage_mode == "revision_facts_v1",
+        "current projection uses an unexpected storage representation: {storage_mode}"
+    );
+    ensure!(
         receipt_fact_set_sha256 == fact_set_sha256,
         "current projection receipt did not bind the immutable fact set"
     );
     ensure!(
         node_count == actual_node_count && edge_count == actual_edge_count,
-        "current projection rows did not match their generation receipt"
+        "current revision-fact projection rows did not match their generation receipt: \
+         nodes {actual_node_count}/{node_count}, edges {actual_edge_count}/{edge_count}"
     );
     Ok(KgProjectionEvidence {
         generation: u64::try_from(generation)?,
