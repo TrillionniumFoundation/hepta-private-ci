@@ -4,15 +4,33 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
+import os
 import pathlib
 import re
+import stat
 import subprocess
 import sys
+import zlib
 from dataclasses import dataclass
 from typing import Iterable
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+
+FROZEN_RESULTS = "qualification/pft_six_experiments_20261125/results/"
+FROZEN_REPORT = FROZEN_RESULTS + "pft2_multihost.json"
+FROZEN_REPORT_SHA256 = (
+    "10db4af87950b614d174593bfbf5d8b652e785cd7aef54294490d9cbafd83666"
+)
+FROZEN_ARCHIVES = (
+    FROZEN_RESULTS + "pft2_multihost_ai395.json.zlib",
+    FROZEN_RESULTS + "pft2_multihost_pocket4.json.zlib",
+)
+MAX_FROZEN_REPORT_BYTES = 64 * 1024
+MAX_FROZEN_PACKED_BYTES = 256 * 1024
+MAX_FROZEN_RAW_BYTES = 1024 * 1024
 
 SCANNED_SUFFIXES = {".yml", ".yaml", ".py", ".sh", ".bash", ".zsh", ".ps1"}
 SCANNED_PREFIXES = (".github/workflows/", ".github/actions/", "scripts/")
@@ -209,6 +227,151 @@ def verify(base: str, head: str, output: str | None) -> int:
     return 0 if not violations else 1
 
 
+def strict_evidence_json(raw: bytes) -> object:
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate evidence JSON key")
+            result[key] = value
+        return result
+
+    def reject_constant(_value):
+        raise ValueError("non-finite evidence JSON number")
+
+    def finite_float(value):
+        result = float(value)
+        if not math.isfinite(result):
+            raise ValueError("non-finite evidence JSON number")
+        return result
+
+    return json.loads(
+        raw.decode("utf-8"),
+        object_pairs_hook=pairs,
+        parse_constant=reject_constant,
+        parse_float=finite_float,
+    )
+
+
+def read_frozen_evidence(path: pathlib.Path, limit: int) -> bytes:
+    if path.is_symlink():
+        raise ValueError("frozen evidence must not be a symbolic link")
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    with os.fdopen(os.open(path, flags), "rb") as stream:
+        info = os.fstat(stream.fileno())
+        if not stat.S_ISREG(info.st_mode) or info.st_size > limit:
+            raise ValueError("frozen evidence is not a bounded regular file")
+        raw = stream.read(limit + 1)
+    if len(raw) > limit:
+        raise ValueError("frozen evidence exceeds its byte limit")
+    return raw
+
+
+def unpack_frozen_evidence(packed: bytes) -> bytes:
+    if len(packed) > MAX_FROZEN_PACKED_BYTES:
+        raise ValueError("compressed evidence exceeds its byte limit")
+    decoder = zlib.decompressobj()
+    raw = decoder.decompress(packed, MAX_FROZEN_RAW_BYTES + 1)
+    if (
+        len(raw) > MAX_FROZEN_RAW_BYTES
+        or not decoder.eof
+        or decoder.unused_data
+        or decoder.unconsumed_tail
+    ):
+        raise ValueError("evidence must be one complete bounded zlib stream")
+    return raw
+
+
+def spelling_inputs(root: pathlib.Path) -> dict[str, object]:
+    """Classify only the two immutable archives in the existing PFT report."""
+    observed = set()
+
+    def walk_error(error):
+        raise error
+
+    for folder, directories, files in os.walk(
+        root, onerror=walk_error, followlinks=False
+    ):
+        if pathlib.Path(folder) == root:
+            directories[:] = [name for name in directories if name != ".git"]
+        for name in [*directories, *files]:
+            if pathlib.Path(name).suffix.lower() == ".zlib":
+                observed.add((pathlib.Path(folder) / name).relative_to(root).as_posix())
+    if observed != set(FROZEN_ARCHIVES):
+        raise ValueError(
+            "missing or unregistered zlib evidence; no spelling exclusions granted"
+        )
+    for part in (root / FROZEN_REPORT).parents:
+        if part == root:
+            break
+        if part.is_symlink():
+            raise ValueError("frozen evidence parent must not be a symbolic link")
+
+    report_raw = read_frozen_evidence(root / FROZEN_REPORT, MAX_FROZEN_REPORT_BYTES)
+    if hashlib.sha256(report_raw).hexdigest() != FROZEN_REPORT_SHA256:
+        raise ValueError("the frozen evidence registration changed")
+    report = strict_evidence_json(report_raw)
+    artifacts = report["raw_statistic_artifacts"]
+    receipts = report["numerical_host_receipts"]
+    if (
+        len(artifacts) != 2
+        or len(receipts) != 2
+        or {FROZEN_RESULTS + item["file"] for item in artifacts} != set(FROZEN_ARCHIVES)
+    ):
+        raise ValueError("the frozen evidence roster differs")
+    checked = []
+    for relative in FROZEN_ARCHIVES:
+        artifact = next(
+            item for item in artifacts if FROZEN_RESULTS + item["file"] == relative
+        )
+        host = artifact["configured_host"]
+        receipt = next(item for item in receipts if item["configured_host"] == host)
+        packed = read_frozen_evidence(root / relative, MAX_FROZEN_PACKED_BYTES)
+        digest = hashlib.sha256(packed).hexdigest()
+        blob = hashlib.sha1(
+            b"blob " + str(len(packed)).encode("ascii") + b"\0" + packed
+        ).hexdigest()
+        if (
+            artifact["compression"] != "zlib"
+            or len(packed) != artifact["bytes"]
+            or len(packed) != receipt["bytes"]
+            or digest != artifact["sha256"]
+            or digest != receipt["packed_sha256"]
+            or blob != artifact["git_blob_sha1"]
+        ):
+            raise ValueError("the registered compressed evidence identity differs")
+        raw = unpack_frozen_evidence(packed)
+        if hashlib.sha256(raw).hexdigest() != receipt["raw_sha256"]:
+            raise ValueError("the registered uncompressed evidence identity differs")
+        original = strict_evidence_json(raw)
+        if (
+            original["configured_host"] != host
+            or original["source_sha256"] != receipt["source_sha256"]
+            or original["source_sha256"] != report["source_sha256"]
+            or not isinstance(original["records"], list)
+            or len(original["records"]) != receipt["records"]
+        ):
+            raise ValueError("the registered evidence host, source or records differ")
+        checked.append(
+            {
+                "path": relative,
+                "bytes": len(packed),
+                "sha256": digest,
+                "git_blob_sha1": blob,
+                "raw_sha256": receipt["raw_sha256"],
+            }
+        )
+    return {
+        "schema": "hepta.frozen-evidence-spelling-inputs.v1",
+        "status": "PASS_FROZEN_EVIDENCE_SPELLING_INPUTS",
+        "registration_sha256": FROZEN_REPORT_SHA256,
+        "verified_archives": checked,
+        "skip": "./.git," + ",".join("./" + path for path in FROZEN_ARCHIVES),
+        "text_policy_changed": False,
+        "authorityGranted": False,
+    }
+
+
 def self_test() -> int:
     good = """name: safe
 permissions:
@@ -256,6 +419,8 @@ def parser() -> argparse.ArgumentParser:
     verify_parser.add_argument("--base", required=True)
     verify_parser.add_argument("--head", required=True)
     verify_parser.add_argument("--output")
+    spelling_parser = sub.add_parser("spelling-inputs")
+    spelling_parser.add_argument("--github-output", type=pathlib.Path)
     sub.add_parser("self-test")
     return root
 
@@ -266,6 +431,24 @@ def main(argv: Iterable[str] | None = None) -> int:
         return self_test()
     if args.command == "verify":
         return verify(args.base, args.head, args.output)
+    if args.command == "spelling-inputs":
+        try:
+            payload = spelling_inputs(ROOT)
+            if args.github_output:
+                with args.github_output.open("a", encoding="utf-8") as output:
+                    output.write("skip=" + payload["skip"] + "\n")
+        except (OSError, ValueError, zlib.error) as error:
+            print(
+                json.dumps(
+                    {
+                        "status": "FAIL_FROZEN_EVIDENCE_SPELLING_INPUTS",
+                        "reason": str(error),
+                    }
+                )
+            )
+            return 1
+        print(json.dumps(payload, sort_keys=True))
+        return 0
     raise AssertionError(args.command)
 
 
