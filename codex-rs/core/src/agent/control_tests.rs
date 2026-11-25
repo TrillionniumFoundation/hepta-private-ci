@@ -387,6 +387,16 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         .session
         .abort_all_tasks(TurnAbortReason::Interrupted)
         .await;
+    // An existing finish owner or start transition owns its cleanup, so the
+    // ordinary abort call can return before that owner's admission fence opens.
+    // This fixture must wait for readiness before injecting durable history.
+    timeout(Duration::from_secs(5), async {
+        while thread.session.has_pending_admission_fence() {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .expect("aborted fixture turn should reopen admission");
     thread
         .inject_response_items(vec![user_message(message)])
         .await
