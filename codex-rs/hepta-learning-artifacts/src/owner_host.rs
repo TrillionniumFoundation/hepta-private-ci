@@ -504,6 +504,10 @@ impl LearningArtifactOwnerHost {
         self.verifier.verify_writer_lease(&self.lease, now)
     }
 
+    pub(crate) fn original_store_root(&self) -> &Path {
+        &self.root
+    }
+
     pub(crate) fn check_current_writer(&self, now: u64) -> Result<(), ArtifactOwnerHostError> {
         self.require_current_writer(now).map(|_| ())
     }
@@ -949,6 +953,44 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<Option<VerifiedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
         self.read_view().discover_current_head(now)
+    }
+
+    pub(crate) fn require_recovery_head_identity(
+        &self,
+        signed: &SignedCurrentArtifactHeadV1,
+        expected_predecessor: Digest32,
+        now: u64,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        let trust = &self.verifier.trust;
+        let requirement = RegistryHeadRequirementV1 {
+            registry_id: trust.registry_id.clone(),
+            minimum_generation: trust.minimum_registry_generation,
+            expected_predecessor_head_digest: expected_predecessor,
+            minimum_authority_epoch: trust.minimum_authority_epoch,
+            now,
+        };
+        self.verifier
+            .verify_signed_head(signed, &requirement, true)
+            .map(|_| ())
+    }
+
+    pub(crate) fn require_recovery_prepared_checkpoint(
+        &self,
+        transaction: &ArtifactPublicationTransactionV1,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        let checkpoint =
+            checkpoint_from_snapshot(&transaction.snapshot(), self.verified_lease.lease_digest);
+        let existing = read_small_record(
+            &self.checkpoint_path(
+                &checkpoint.operation_id,
+                ArtifactPublicationPhaseV1::Prepared,
+            ),
+            MAX_SMALL_RECORD_BYTES,
+        )?;
+        if existing != encode_checkpoint(&checkpoint) {
+            return Err(ArtifactOwnerHostError::IdentityConflict);
+        }
+        Ok(())
     }
 
     fn persist_checkpoint(

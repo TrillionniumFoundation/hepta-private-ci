@@ -35,6 +35,13 @@ use crate::WithdrawalBoundArtifactAdmissionV3;
 #[path = "owner_service_readback.rs"]
 mod readback;
 
+#[path = "owner_service_durable_drain.rs"]
+mod durable_drain;
+#[path = "owner_service_durable_inputs.rs"]
+mod durable_inputs;
+
+use durable_drain::DurableDrain;
+
 #[path = "owner_service_preparation.rs"]
 mod preparation;
 
@@ -74,6 +81,13 @@ pub struct LearningArtifactOwnerServiceStatusV1 {
     pub authority: AuthorityPosture,
 }
 
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum DurableDrainState {
+    NotRequested,
+    Uncertain,
+    Confirmed,
+}
+
 pub struct LearningArtifactOwnerService {
     host: LearningArtifactOwnerHost,
     withdrawal_registry: DatasetWithdrawalRegistry,
@@ -82,6 +96,8 @@ pub struct LearningArtifactOwnerService {
     recovery_required: Option<StableId>,
     withdrawal_pending: bool,
     draining: bool,
+    durable_drain: DurableDrain,
+    durable_drain_state: DurableDrainState,
     last_admission_ms: u64,
     successful_requests: u64,
     rejected_requests: u64,
@@ -114,6 +130,8 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
         }
+        let registry_id = config.trust.registry_id.clone();
+        let scope = config.trust.withdrawal_scope_digest;
         let host = match config.required_current_head {
             Some(current) => LearningArtifactOwnerHost::open_with_required_current_head(
                 &config.root,
@@ -138,6 +156,20 @@ impl LearningArtifactOwnerService {
             &config.withdrawal_registry,
             config.storage_binding,
         )?;
+        let durable_drain = DurableDrain::new(
+            host.original_store_root(),
+            &registry_id,
+            scope,
+            config.storage_binding,
+        );
+        let draining = durable_drain
+            .requested()
+            .map_err(ArtifactOwnerHostError::from)?;
+        let durable_drain_state = if draining {
+            DurableDrainState::Confirmed
+        } else {
+            DurableDrainState::NotRequested
+        };
         let registry = host.recover_current_registry(config.now)?;
         let recovery = host.recovery_required_operations()?;
         if recovery.len() > 1 {
@@ -153,7 +185,9 @@ impl LearningArtifactOwnerService {
             storage_binding: config.storage_binding,
             recovery_required,
             withdrawal_pending: false,
-            draining: false,
+            draining,
+            durable_drain,
+            durable_drain_state,
             last_admission_ms: config.now,
             successful_requests: 0,
             rejected_requests: 0,
@@ -224,6 +258,24 @@ impl LearningArtifactOwnerService {
         self.draining = true;
     }
 
+    /// Keep new admission closed across reopening this store. An error
+    /// leaves admission closed in this process and never acknowledges the stop.
+    /// The embedding owner supplies authorization; the record grants none.
+    pub fn begin_drain_durable(&mut self) -> Result<(), LearningArtifactOwnerServiceError> {
+        self.draining = true;
+        self.durable_drain_state = DurableDrainState::Uncertain;
+        self.durable_drain
+            .persist()
+            .map_err(ArtifactOwnerHostError::from)?;
+        self.durable_drain_state = DurableDrainState::Confirmed;
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn durable_drain_requested(&self) -> bool {
+        self.durable_drain_state == DurableDrainState::Confirmed
+    }
+
     /// Whether the current owner is draining with no local write left unresolved.
     ///
     /// This is lifecycle observation only. It does not prove deployment readiness,
@@ -232,6 +284,7 @@ impl LearningArtifactOwnerService {
     #[must_use]
     pub fn is_drained(&self) -> bool {
         self.draining
+            && self.durable_drain_state != DurableDrainState::Uncertain
             && self.recovery_required.is_none()
             && !self.original_preparation_active
             && !self.original_preparation_fenced.load(Ordering::Acquire)
@@ -290,7 +343,7 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
-        if self.draining {
+        if self.draining && !self.durable_drain_requested() {
             return Err(LearningArtifactOwnerServiceError::ShuttingDown);
         }
         self.require_original_withdrawal()?;
@@ -393,6 +446,9 @@ impl LearningArtifactOwnerService {
         }
 
         let checkpoint = self.host.recover_publication(&request.operation_id)?;
+        if self.draining && checkpoint.is_none() {
+            return Err(LearningArtifactOwnerServiceError::ShuttingDown);
+        }
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
@@ -416,18 +472,45 @@ impl LearningArtifactOwnerService {
             .host
             .recover_registry_by_head(request.expected_registry_predecessor_head)?;
         let mut staged = predecessor.clone();
-        let mut transaction = self.host.begin_publication(
-            request.operation_id.clone(),
-            request.admission.clone(),
-            &self.withdrawal_registry,
-            &predecessor,
-            request.expected_registry_predecessor_head,
-            request.now,
-        )?;
+        let mut transaction = if checkpoint.is_some() {
+            let prepared = ArtifactPublicationTransactionV1::begin(
+                request.operation_id.clone(),
+                request.admission.clone(),
+                &self.withdrawal_registry,
+                &predecessor,
+                request.expected_registry_predecessor_head,
+                request.now,
+            )?;
+            self.host.require_recovery_prepared_checkpoint(&prepared)?;
+            prepared
+        } else {
+            self.host.begin_publication(
+                request.operation_id.clone(),
+                request.admission.clone(),
+                &self.withdrawal_registry,
+                &predecessor,
+                request.expected_registry_predecessor_head,
+                request.now,
+            )?
+        };
         self.host
             .stage_compatibility_registration(&transaction, &mut staged, request.now)?;
 
         if let Some(recovery) = checkpoint {
+            if staged.snapshot().head_digest != request.signed_current_head.witness.head_digest {
+                return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+            }
+            self.host.require_recovery_head_identity(
+                &request.signed_current_head,
+                request.expected_registry_predecessor_head,
+                request.now,
+            )?;
+            durable_inputs::verify_durable_inputs(
+                self.host.original_store_root(),
+                &staged,
+                request,
+                &recovery.checkpoint,
+            )?;
             transaction = rebuild_transaction(
                 transaction,
                 &staged,

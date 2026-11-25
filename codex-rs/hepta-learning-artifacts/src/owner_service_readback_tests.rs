@@ -384,3 +384,180 @@ fn legacy_writer_fences_after_uncertain_checkpoint_read() {
     assert!(fixture.service.publish(fixture.baseline.clone()).is_ok());
     assert!(fixture.service.recovery_required().is_none());
 }
+
+#[cfg(unix)]
+#[test]
+fn durable_drain_keeps_the_same_record_and_terminal_receipt_on_reopen() {
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
+    let original = fixture
+        .service
+        .read_original_publication(&fixture.baseline.operation_id)
+        .fixture("original acknowledged receipt");
+    fixture
+        .service
+        .begin_drain_durable()
+        .fixture("durable stop");
+    let after_stop = fixture.bytes();
+    assert_eq!(
+        after_stop[std::path::Path::new("writer/DRAIN.v1")],
+        format!(
+            "HEPTA-ARTIFACT-DRAIN-V1\n{}\n{}\n{}\n",
+            fixture.config.trust.registry_id,
+            fixture.config.trust.withdrawal_scope_digest,
+            fixture.config.storage_binding
+        )
+        .into_bytes()
+    );
+    fixture
+        .service
+        .begin_drain_durable()
+        .fixture("retry exact stop");
+    assert_eq!(fixture.bytes(), after_stop);
+    let mut fixture = fixture.reopen();
+    assert!(fixture.service.durable_drain_requested());
+    assert!(fixture.service.is_drained());
+    assert!(!fixture.service.status(fixture.config.now).ready);
+    assert_eq!(
+        fixture
+            .service
+            .publish(fixture.baseline.clone())
+            .fixture("observe original terminal outcome"),
+        original
+    );
+    let (new_request, _) = fixture.pending_request();
+    assert!(matches!(
+        fixture.service.publish(new_request),
+        Err(LearningArtifactOwnerServiceError::ShuttingDown)
+    ));
+    assert_eq!(fixture.bytes(), after_stop);
+}
+
+#[cfg(unix)]
+#[test]
+fn durable_drain_reopens_only_the_original_pending_publication() {
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
+    let (mut pending, _) = fixture.begin_pending();
+    fixture
+        .service
+        .begin_drain_durable()
+        .fixture("durable stop");
+    assert!(!fixture.service.is_drained());
+    let mut fixture = fixture.reopen();
+    assert!(fixture.service.durable_drain_requested());
+    assert_eq!(
+        fixture.service.recovery_required(),
+        Some(&pending.operation_id)
+    );
+    let before = fixture.bytes();
+    let mut changed = pending.clone();
+    changed.payload.push(0);
+    assert!(matches!(
+        fixture.service.publish(changed),
+        Err(LearningArtifactOwnerServiceError::RequestMismatch)
+    ));
+    assert_eq!(fixture.bytes(), before);
+
+    pending.now = fixture.config.now;
+    let mut wrong_head = pending.clone();
+    wrong_head.signed_current_head.signature[0] ^= 1;
+    assert!(matches!(
+        fixture.service.publish(wrong_head),
+        Err(LearningArtifactOwnerServiceError::Host(
+            ArtifactOwnerHostError::InvalidSignature
+        ))
+    ));
+    assert_eq!(fixture.bytes(), before);
+    fixture
+        .service
+        .publish(pending)
+        .fixture("recover exact original publication");
+    assert!(fixture.service.is_drained());
+    assert!(!fixture.service.status(fixture.config.now).ready);
+}
+
+#[cfg(unix)]
+#[test]
+fn durable_drain_never_acknowledges_a_corrupt_or_foreign_record() {
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
+    let record = fixture.config.root.join("writer/DRAIN.v1");
+    fixture
+        .service
+        .begin_drain_durable()
+        .fixture("durable stop");
+    let original = std::fs::read(&record).fixture("original stop record");
+    let mut foreign = original.clone();
+    foreign[0] ^= 1;
+    std::fs::write(&record, &foreign).fixture("controlled corrupt stop record");
+    assert!(fixture.service.begin_drain_durable().is_err());
+    assert!(!fixture.service.durable_drain_requested());
+    assert!(!fixture.service.is_drained());
+    let (request, _) = fixture.pending_request();
+    assert!(matches!(
+        fixture.service.publish(request),
+        Err(LearningArtifactOwnerServiceError::ShuttingDown)
+    ));
+    assert_eq!(
+        std::fs::read(&record).fixture("corrupt record remains"),
+        foreign
+    );
+    let config = fixture.config.clone();
+    drop(fixture.service);
+    for size in [0, original.len() / 2, original.len() - 1] {
+        std::fs::write(&record, &original[..size]).fixture("truncated stop record");
+        assert!(matches!(
+            LearningArtifactOwnerService::open(config.clone()),
+            Err(LearningArtifactOwnerServiceError::Host(
+                ArtifactOwnerHostError::Io(std::io::ErrorKind::InvalidData)
+            ))
+        ));
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn durable_drain_revalidates_a_recovered_payload_before_advancing() {
+    let mut fixture = OriginalPublicationReadbackFixture::fresh();
+    let (mut request, _) = fixture.pending_request();
+    let store = &fixture.service.host;
+    let mut snapshot = fixture.service.registry().clone();
+    let mut transaction = store
+        .begin_publication(
+            request.operation_id.clone(),
+            request.admission.clone(),
+            fixture.service.withdrawal_registry(),
+            &snapshot,
+            request.expected_registry_predecessor_head,
+            request.now,
+        )
+        .fixture("write original Prepared phase");
+    store
+        .stage_compatibility_registration(&transaction, &mut snapshot, request.now)
+        .fixture("stage original registry");
+    let raw = store
+        .ensure_payload_durable(&mut transaction, &snapshot, &request.payload, request.now)
+        .fixture("write original PayloadDurable phase");
+    std::fs::write(fixture.config.root.join(raw), b"corrupt documented payload")
+        .fixture("corrupt synthetic payload");
+    fixture
+        .service
+        .begin_drain_durable()
+        .fixture("durable stop");
+    let mut fixture = fixture.reopen();
+    request.now = fixture.config.now;
+    let operation = request.operation_id.clone();
+    let before = fixture.bytes();
+    assert!(fixture.service.publish(request).is_err());
+    assert_eq!(fixture.bytes(), before);
+    assert!(!fixture.service.is_drained());
+    assert_eq!(
+        fixture
+            .service
+            .host
+            .recover_publication(&operation)
+            .fixture("read retained recovery")
+            .fixture("retained checkpoint")
+            .checkpoint
+            .phase,
+        ArtifactPublicationPhaseV1::PayloadDurable
+    );
+}
