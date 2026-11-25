@@ -33,6 +33,39 @@ fn zip_archive_never_restores_privileged_mode_bits() {
 
 #[cfg(unix)]
 #[test]
+fn curated_zip_extracts_files_with_constrained_modes() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let staging = tempdir().expect("create private staging directory");
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    let files = [
+        ("script.txt", b"executable fixture".as_slice(), 0o777, 0o755),
+        ("private.txt", b"private fixture".as_slice(), 0o600, 0o600),
+    ];
+    for (name, content, archived_mode, _) in files {
+        let options = SimpleFileOptions::default().unix_permissions(archived_mode);
+        writer
+            .start_file(format!("archive/plugins/example/{name}"), options)
+            .expect("start archive file");
+        writer.write_all(content).expect("write archive file");
+    }
+
+    let archive = writer.finish().expect("finish archive").into_inner();
+    extract_zipball_to_dir(&archive, staging.path()).expect("extract curated archive");
+
+    for (name, content, _, expected_mode) in files {
+        let path = staging.path().join("plugins/example").join(name);
+        assert_eq!(std::fs::read(&path).expect("read extracted file"), content);
+        let mode = std::fs::metadata(&path)
+            .expect("read extracted metadata")
+            .permissions()
+            .mode();
+        assert_eq!(mode & 0o7777, expected_mode, "archive entry {name}");
+    }
+}
+
+#[cfg(unix)]
+#[test]
 fn zip_archive_rejects_symlinked_extraction_root() {
     let temp = tempdir().expect("create staging parent");
     let destination = temp.path().join("staging");
