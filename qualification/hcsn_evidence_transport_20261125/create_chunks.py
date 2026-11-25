@@ -1,10 +1,11 @@
-"""Create bounded raw-byte parts from an explicitly pinned original inventory."""
+"""Create bounded independent gzip parts from an immutable byte inventory."""
 
 import argparse
+import gzip
 import json
 from pathlib import Path
 
-from reassemble import FORMAT, MAX_PART_BYTES, PART_FORMAT, contained_file, digest, git_blob_digest
+from reassemble import FORMAT, MAX_PART_BYTES, PART_FORMAT, RAW_PART_BYTES, contained_file, digest, git_blob_digest
 
 INDEX_PATH = "qualification/hcsn_evidence_transport_20261125/INDEX.json"
 
@@ -28,20 +29,29 @@ def pack(inventory, source_root, output_root):
                 or git_blob_digest(raw) != obj["source_git_blob_sha1"]):
             raise ValueError("source differs from immutable inventory: " + obj["logical_path"])
         sources.append((obj, raw))
+    # Require a fresh output directory so no existing intermediate symlink can
+    # redirect a publication write. Validate every source before creating it.
+    output_root.mkdir(parents=True, exist_ok=False)
     index = {"format": FORMAT, "repository": inventory["repository"],
              "source_commit": inventory["source_commit"], "part_limit_bytes": MAX_PART_BYTES,
+             "decoded_part_limit_bytes": RAW_PART_BYTES,
              "object_count": len(sources), "objects": []}
     for original, raw in sources:
         obj = {**original, "format": PART_FORMAT, "source_commit": inventory["source_commit"],
                "repository": inventory["repository"], "parts": []}
         logical = obj["logical_path"]
-        for number, offset in enumerate(range(0, len(raw), MAX_PART_BYTES)):
-            part = raw[offset:offset + MAX_PART_BYTES]
-            name = logical + f".parts/{number:05d}.bin"
-            write_new(output_root / name, part)
+        for number, offset in enumerate(range(0, len(raw), RAW_PART_BYTES)):
+            part = raw[offset:offset + RAW_PART_BYTES]
+            encoded = gzip.compress(part, compresslevel=9, mtime=0)
+            if len(encoded) > MAX_PART_BYTES:
+                raise ValueError("encoded gzip part exceeds publication bound")
+            name = logical + f".parts/{number:05d}.bin.gz"
+            write_new(output_root / name, encoded)
             obj["parts"].append({"index": number, "offset": offset, "path": name,
-                                 "bytes": len(part), "sha256": digest(part),
-                                 "git_blob_sha1": git_blob_digest(part)})
+                                 "encoding": "gzip-single-member",
+                                 "encoded_bytes": len(encoded), "encoded_sha256": digest(encoded),
+                                 "decoded_bytes": len(part), "decoded_sha256": digest(part),
+                                 "git_blob_sha1": git_blob_digest(encoded)})
         name = logical + ".parts.json"
         manifest = json_bytes(obj)
         write_new(output_root / name, manifest)

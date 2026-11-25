@@ -1,24 +1,18 @@
 {
-  "schema": "hcsn-transport-local-validation-v1",
+  "schema": "hcsn-gzip-transport-local-validation-v2",
   "unit_tests": {
-    "count": 6,
+    "distinct_cases": 9,
     "suite": "transport_tests",
-    "status": "passed"
+    "local_exit_code": 0,
+    "desktop_exit_code": 0
   },
-  "git_diff_cached_check": {
-    "exit_code": 0,
-    "stdout": "",
-    "stderr": "",
-    "scope": "Isolated original-display-to-patch fixture; all new transport text and eleven original display/document files, not a full repository merge."
-  },
-  "initial_no_index_probe": {
-    "exit_code": 1,
-    "stdout": "",
-    "stderr": "",
-    "explanation": "git diff --no-index reports differing trees with exit 1; a wrapper incorrectly asserted exit 0. Replaced by exact git diff --cached --check fixture, preserving this diagnostic."
-  },
-  "new_blobs_limit_bytes": 480000,
-  "limit_policy_sha256": "28e04a7730841898c36ccfc9c24b92e4175d5a498d3990db822b3b3884664cf2",
-  "frozen_training_dependency_changes": 0,
-  "limit_policy_rule": "scripts/check_blob_size.py inspects base-to-head final added/modified objects; deleted original paths are excluded. No allowlist or threshold changes."
+  "diff_cached_check_exit_code": 0,
+  "scope": "New v2 helper/manifests/documentation/log additions in an isolated staged Git fixture; not a full repository merge or hosted Codespell run.",
+  "maximum_encoded_part_bytes": 478141,
+  "maximum_decoded_part_bytes": 479000,
+  "source_original_bytes": 18389255,
+  "encoded_total_bytes": 17814021,
+  "archive_members_verified": 403,
+  "ci_policy_changes": 0,
+  "frozen_training_dependency_changes": 0
 }

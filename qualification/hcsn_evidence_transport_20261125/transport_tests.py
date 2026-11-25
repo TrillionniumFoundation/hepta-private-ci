@@ -1,5 +1,6 @@
 """Byte-preservation and refusal tests; no research models or holdouts are run."""
 
+import gzip
 import json
 from pathlib import Path
 import tempfile
@@ -44,10 +45,11 @@ class TransportTests(unittest.TestCase):
         receipt = verify_or_restore(self.parts, self.index_path, self.output)
         self.assertEqual({p: (self.output / p).read_bytes() for p in self.raw}, self.raw)
         self.assertEqual(receipt["original_bytes"], sum(map(len, self.raw.values())))
-        self.assertEqual(receipt["maximum_part_bytes"], 480000)
+        self.assertLessEqual(receipt["maximum_part_bytes"], 480000)
+        self.assertEqual(receipt["maximum_decoded_part_bytes"], 479000)
 
     def test_corrupt_part_rejects_before_any_output(self):
-        path = self.parts / "evidence/a.tar.gz.parts/00001.bin"
+        path = self.parts / "evidence/a.tar.gz.parts/00001.bin.gz"
         path.write_bytes(b"x" + path.read_bytes()[1:])
         with self.assertRaises(ValueError):
             verify_or_restore(self.parts, self.index_path, self.output)
@@ -78,6 +80,29 @@ class TransportTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             verify_or_restore(self.parts, self.index_path, self.output)
         self.assertEqual(sentinel.read_bytes(), b"keep")
+
+    def test_decoded_hash_mismatch_rejects_before_output(self):
+        self.change_manifest(lambda obj: obj["parts"][0].update(decoded_sha256="0" * 64))
+        with self.assertRaises(ValueError):
+            verify_or_restore(self.parts, self.index_path, self.output)
+        self.assertFalse(self.output.exists())
+
+    def test_second_gzip_member_is_not_silently_accepted(self):
+        def append_member(obj):
+            part = obj["parts"][0]
+            path = self.parts / part["path"]
+            encoded = path.read_bytes() + gzip.compress(b"", mtime=0)
+            path.write_bytes(encoded)
+            part.update(encoded_bytes=len(encoded), encoded_sha256=digest(encoded),
+                        git_blob_sha1=git_blob_digest(encoded))
+        self.change_manifest(append_member)
+        with self.assertRaises(ValueError):
+            verify_or_restore(self.parts, self.index_path, self.output)
+        self.assertFalse(self.output.exists())
+
+    def test_existing_pack_namespace_is_rejected(self):
+        with self.assertRaises(FileExistsError):
+            pack(self.inventory, self.source, self.parts)
 
 
 if __name__ == "__main__":

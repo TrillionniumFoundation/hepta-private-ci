@@ -31,4 +31,4 @@ Interpret test costs using full worker or stage receipts: the supplemental pair-
 
 ## Evidence transport
 
-The immutable supplemental raw archive is available through [its raw-byte part manifest](evidence/archives/signed-control-v1.raw.tar.gz.parts.json). Follow the [shared reassembly instructions](../hcsn_evidence_transport_20261125/README.md) to recover its original bytes and `signed-control-v1/` member prefix. The original archive manifest and publication receipts retain their historical hashes; no supplemental run, metric, or test policy has changed.
+The immutable supplemental raw archive is available through [its independent gzip part manifest](evidence/archives/signed-control-v1.raw.tar.gz.parts.json). Follow the [shared reassembly instructions](../hcsn_evidence_transport_20261125/README.md) to recover its original bytes and `signed-control-v1/` member prefix. The original archive manifest and publication receipts retain their historical hashes; no supplemental run, metric, or test policy has changed.

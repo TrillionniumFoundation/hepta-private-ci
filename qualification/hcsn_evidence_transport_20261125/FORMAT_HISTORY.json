@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-transport-format-history-v1",
+  "original_scientific_commit": "14cfd44ab6d9da581bad5363495266424c661eb4",
+  "versions": [
+    {
+      "format": "hcsn-evidence-transport-v1",
+      "commit": "b1cc060d617735628eab5bc396d3b829bf6f22bc",
+      "status": "bytes verified; Codespell failed on four unframed binary pieces",
+      "codespell_job": 138892629213,
+      "codespell_run": 45521033027,
+      "diagnostics": 48,
+      "log_sha256": "98455453b122500770cebb73e9c728df3d08ea49518063f4637beed25dd579ec",
+      "log_gzip_sha256": "535e011d89041219d80fa73933887fedbb30a22a00329fc8ff19f9d3546bdfa3",
+      "log_original_bytes": 79211,
+      "log_gzip_bytes": 13452,
+      "retained_metadata": "versions/raw-v1",
+      "replay": "Use the complete immutable b1cc060d checkout and that version of reassemble.py; the retained metadata is historical, not the current live index."
+    },
+    {
+      "format": "hcsn-evidence-transport-v2",
+      "status": "44 genuine gzip members, decoded original identities verified; current-head hosted CI remains authoritative",
+      "decoded_part_limit": 479000,
+      "encoded_part_limit": 480000,
+      "rule": "Single gzip member per .bin.gz file, zero timestamp, encoded and decoded hashes/lengths; no lint exclusions or synthetic binary header."
+    }
+  ]
+}

@@ -4,10 +4,12 @@ import argparse
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
+import zlib
 
-FORMAT = "hcsn-evidence-transport-v1"
-PART_FORMAT = "hcsn-raw-byte-parts-v1"
+FORMAT = "hcsn-evidence-transport-v2"
+PART_FORMAT = "hcsn-gzip-byte-parts-v2"
 MAX_PART_BYTES = 480000
+RAW_PART_BYTES = 479000
 
 
 def digest(data):
@@ -44,7 +46,8 @@ def contained_file(root, value):
 def manifest_objects(repo_root, index_path):
     index_bytes = Path(index_path).read_bytes()
     index = json.loads(index_bytes)
-    if index.get("format") != FORMAT or index.get("part_limit_bytes") != MAX_PART_BYTES:
+    if (index.get("format") != FORMAT or index.get("part_limit_bytes") != MAX_PART_BYTES
+            or index.get("decoded_part_limit_bytes") != RAW_PART_BYTES):
         raise ValueError("unsupported transport index")
     objects, logical_paths, used_parts = [], set(), set()
     for entry in index["objects"]:
@@ -63,11 +66,16 @@ def manifest_objects(repo_root, index_path):
         for number, part in enumerate(obj["parts"]):
             relative_path(part["path"])
             if (part["index"] != number or part["offset"] != offset
-                    or type(part["bytes"]) is not int or not 0 < part["bytes"] <= MAX_PART_BYTES
+                    or part.get("encoding") != "gzip-single-member"
+                    or not part["path"].endswith(".bin.gz")
+                    or type(part["encoded_bytes"]) is not int
+                    or not 0 < part["encoded_bytes"] <= MAX_PART_BYTES
+                    or type(part["decoded_bytes"]) is not int
+                    or not 0 < part["decoded_bytes"] <= RAW_PART_BYTES
                     or part["path"] in used_parts):
                 raise ValueError("unordered, duplicate, or oversized evidence part")
             used_parts.add(part["path"])
-            offset += part["bytes"]
+            offset += part["decoded_bytes"]
         if not obj["parts"] or offset != obj["bytes"]:
             raise ValueError("part sizes do not cover the exact original object")
         objects.append(obj)
@@ -80,10 +88,19 @@ def verified_bytes(repo_root, obj):
     sha256 = hashlib.sha256()
     git_sha = hashlib.sha1(b"blob " + str(obj["bytes"]).encode() + b"\0")
     for part in obj["parts"]:
-        raw = contained_file(repo_root, part["path"]).read_bytes()
-        if (len(raw) != part["bytes"] or digest(raw) != part["sha256"]
-                or git_blob_digest(raw) != part["git_blob_sha1"]):
+        with contained_file(repo_root, part["path"]).open("rb") as handle:
+            encoded = handle.read(MAX_PART_BYTES + 1)
+        if (len(encoded) != part["encoded_bytes"] or digest(encoded) != part["encoded_sha256"]
+                or git_blob_digest(encoded) != part["git_blob_sha1"]):
             raise ValueError("evidence part identity mismatch: " + part["path"])
+        decoder = zlib.decompressobj(wbits=31)
+        try:
+            raw = decoder.decompress(encoded, part["decoded_bytes"] + 1)
+        except zlib.error as error:
+            raise ValueError("invalid gzip evidence part: " + part["path"]) from error
+        if (not decoder.eof or decoder.unused_data or decoder.unconsumed_tail
+                or len(raw) != part["decoded_bytes"] or digest(raw) != part["decoded_sha256"]):
+            raise ValueError("gzip decoded identity or single-member boundary mismatch: " + part["path"])
         sha256.update(raw)
         git_sha.update(raw)
         yield raw
@@ -111,7 +128,9 @@ def verify_or_restore(repo_root, index_path, output_root=None):
                "index_sha256": digest(index_bytes), "object_count": len(objects),
                "part_count": sum(len(o["parts"]) for o in objects),
                "original_bytes": sum(o["bytes"] for o in objects),
-               "maximum_part_bytes": max(p["bytes"] for o in objects for p in o["parts"]),
+               "maximum_part_bytes": max(p["encoded_bytes"] for o in objects for p in o["parts"]),
+               "encoded_bytes": sum(p["encoded_bytes"] for o in objects for p in o["parts"]),
+               "maximum_decoded_part_bytes": max(p["decoded_bytes"] for o in objects for p in o["parts"]),
                "restored": output_root is not None,
                "objects": [{k: o[k] for k in ("logical_path", "bytes", "sha256", "source_git_blob_sha1")}
                            for o in objects],

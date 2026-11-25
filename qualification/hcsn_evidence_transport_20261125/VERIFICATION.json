@@ -12,9 +12,11 @@
     "adaptation--n8-qvi_full-s3303.tar.gz": 28,
     "signed-control-v1.raw.tar.gz": 151
   },
-  "format": "hcsn-evidence-transport-v1",
-  "index_sha256": "1a9a95fddb5d6d59d94d5c9b40d6505e7244309c1cf755afaaac0e2e4bdf5f7b",
-  "maximum_part_bytes": 480000,
+  "encoded_bytes": 17814021,
+  "format": "hcsn-evidence-transport-v2",
+  "index_sha256": "dda7237fa878f8f9eee3883d54b148b32a142ea60f03938dae80873ff1eb7605",
+  "maximum_decoded_part_bytes": 479000,
+  "maximum_part_bytes": 478141,
   "object_count": 11,
   "objects": [
     {
@@ -86,22 +88,24 @@
   ],
   "original_byte_equality": true,
   "original_bytes": 18389255,
+  "packaging": "Every stored part is a genuine independent gzip member; no lint exclusions or fabricated magic bytes.",
   "part_count": 44,
-  "process_cpu_seconds": 1.390761279,
+  "previous_transport_commit": "b1cc060d617735628eab5bc396d3b829bf6f22bc",
+  "process_cpu_seconds": 4.054680479,
   "restored": true,
-  "retained_failure": "FAILED_PREPARATION.json",
   "scope": "Exact byte transport only; no metric, threshold, source model, or experiment change.",
   "source_commit": "14cfd44ab6d9da581bad5363495266424c661eb4",
   "sources": {
-    "create_chunks.py": "f8585efc617ffce876412ccb970e1b355f479fc66ed5cb3fc006b1b2a37744d6",
-    "reassemble.py": "98e63785eb5a83c7e61226855a5930be580867079619a4e107cbfaa870fc3529",
-    "transport_tests.py": "271e3f441f76b39569935325fcd04aecad65f8e15e45377be824cf04cb94ed0a"
+    "SOURCE_OBJECTS.json": "fe1da4a4b187948827973c7144c6cef4b70bf2e5c7db8f166da43ff84a7f5692",
+    "create_chunks.py": "755aa8749619e561161048aef665eefe608f8c28af07df378798a96542721b46",
+    "reassemble.py": "ad790e69faa0d007fdf3ce2194007e4e11ab082c088617ff1bf56e838e2545ef",
+    "transport_tests.py": "68023a711810f758e256bdabbda604af2a2fe7d76d9632b267683967cc872983"
   },
   "status": "verified",
   "unit_tests": {
-    "count": 6,
+    "count": 9,
     "returncode": 0,
-    "stderr_sha256": "fff8a001edf2fbf871f12fbf3b0c1a44fb105c86c532f1efb04baa0d48d1ed9d"
+    "stderr_sha256": "5ab370bb6f0794272ac75bb3d18694e9fda4aa07089aca4acdcf1e4179a1ed23"
   },
-  "wall_seconds": 1.3315425340551883
+  "wall_seconds": 4.523241624934599
 }

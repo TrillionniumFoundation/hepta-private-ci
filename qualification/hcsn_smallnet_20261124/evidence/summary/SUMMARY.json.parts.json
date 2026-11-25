@@ -1,23 +1,29 @@
 {
   "bytes": 541130,
-  "format": "hcsn-raw-byte-parts-v1",
+  "format": "hcsn-gzip-byte-parts-v2",
   "logical_path": "qualification/hcsn_smallnet_20261124/evidence/summary/SUMMARY.json",
   "parts": [
     {
-      "bytes": 480000,
-      "git_blob_sha1": "6f9173a1ee8d718570678fc255808c229a17edfc",
+      "decoded_bytes": 479000,
+      "decoded_sha256": "446834cfb76fa6236becb7d1e5c639912c7fb346c33344eaf09e740db6ccb354",
+      "encoded_bytes": 49826,
+      "encoded_sha256": "66ebc34cd3810f1931349070ec2f620c650629468b2fa730fa924674ece48cd7",
+      "encoding": "gzip-single-member",
+      "git_blob_sha1": "81a353dd3517283d4bd95968fc7efda9a55f3741",
       "index": 0,
       "offset": 0,
-      "path": "qualification/hcsn_smallnet_20261124/evidence/summary/SUMMARY.json.parts/00000.bin",
-      "sha256": "60ed9262be6e8159d537ccc57c2dd1d7244231146e4e9e4bf84f2f8134009834"
+      "path": "qualification/hcsn_smallnet_20261124/evidence/summary/SUMMARY.json.parts/00000.bin.gz"
     },
     {
-      "bytes": 61130,
-      "git_blob_sha1": "a8cfa37bfe57b85e87434a81502c823aa11b1e75",
+      "decoded_bytes": 62130,
+      "decoded_sha256": "b603f0c8d493be87379a7b349679a5b3e0171f2f8e4a460171060374fa018a63",
+      "encoded_bytes": 7288,
+      "encoded_sha256": "e2f72c16ad1f8e6246ddfbf6595a6c3ac724681990a9e303c7e2694fdfc34ee2",
+      "encoding": "gzip-single-member",
+      "git_blob_sha1": "5a21d7b57cd87019b59b9331452c3c08d443b484",
       "index": 1,
-      "offset": 480000,
-      "path": "qualification/hcsn_smallnet_20261124/evidence/summary/SUMMARY.json.parts/00001.bin",
-      "sha256": "aa40572109b1ce0c52f3b67fce11cf75b98cb50533df5913c5ab63486fd8f546"
+      "offset": 479000,
+      "path": "qualification/hcsn_smallnet_20261124/evidence/summary/SUMMARY.json.parts/00001.bin.gz"
     }
   ],
   "repository": "TrillionniumFoundation/hepta-private-ci",

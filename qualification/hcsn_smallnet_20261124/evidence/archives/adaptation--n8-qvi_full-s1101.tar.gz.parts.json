@@ -1,31 +1,40 @@
 {
   "bytes": 1410389,
-  "format": "hcsn-raw-byte-parts-v1",
+  "format": "hcsn-gzip-byte-parts-v2",
   "logical_path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s1101.tar.gz",
   "parts": [
     {
-      "bytes": 480000,
-      "git_blob_sha1": "10a28e6f4d34886d59cfee07780fea04353aca86",
+      "decoded_bytes": 479000,
+      "decoded_sha256": "42dde8f3574c4074ad5cd906511596b44c2b79837cd3e9b4eec9828cb81da908",
+      "encoded_bytes": 477154,
+      "encoded_sha256": "6efd2ca1682436b940384bbc3d6eb713e4d0b41908be1943c36868f25e30bad0",
+      "encoding": "gzip-single-member",
+      "git_blob_sha1": "e3543cd4dd5ada58365ed2d37b47ea896de2cc92",
       "index": 0,
       "offset": 0,
-      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s1101.tar.gz.parts/00000.bin",
-      "sha256": "b1456747c1b8d1f5c691960d42f42b5d0725681464ef960a81d4eb0009deb7c9"
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s1101.tar.gz.parts/00000.bin.gz"
     },
     {
-      "bytes": 480000,
-      "git_blob_sha1": "ccc4468e942e1ac9b5f2d168bb80f5a5640f7b22",
+      "decoded_bytes": 479000,
+      "decoded_sha256": "fc799b1e4601ae32331ca2bbb148f0d1a251bd95f40e362a3567828d76c4f0f1",
+      "encoded_bytes": 475516,
+      "encoded_sha256": "9b11cb50370f89c4b5f23793e9c15d8b9b294f3c88ecf318606a861d1098ab9c",
+      "encoding": "gzip-single-member",
+      "git_blob_sha1": "f24d5aac88a98b4d4b752a1bcd5be4fdaf2c2956",
       "index": 1,
-      "offset": 480000,
-      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s1101.tar.gz.parts/00001.bin",
-      "sha256": "1beb4e16c0b64472cf4121fe3a2811c88c31f3cfe4a1f880a63bde7192dcea7e"
+      "offset": 479000,
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s1101.tar.gz.parts/00001.bin.gz"
     },
     {
-      "bytes": 450389,
-      "git_blob_sha1": "5ce352df9b389d0cfb61aeb56ac860732f993e7b",
+      "decoded_bytes": 452389,
+      "decoded_sha256": "832ffa380f5b0f69b23c20baca98acb9cb6a9488852ba35ae1a74f55e4b9527e",
+      "encoded_bytes": 449940,
+      "encoded_sha256": "3c0ba4aaac0399cfb19e714aefa010f1867b9033c97ee09157565e6c6ec909c8",
+      "encoding": "gzip-single-member",
+      "git_blob_sha1": "d0a3b2cc98c68584ac387efed44d57f90463363f",
       "index": 2,
-      "offset": 960000,
-      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s1101.tar.gz.parts/00002.bin",
-      "sha256": "1c41ae2cb28b735608bba452ec96716ede0ba8d89fb6c773aa868dc301943851"
+      "offset": 958000,
+      "path": "qualification/hcsn_smallnet_20261124/evidence/archives/adaptation--n8-qvi_full-s1101.tar.gz.parts/00002.bin.gz"
     }
   ],
   "repository": "TrillionniumFoundation/hepta-private-ci",
