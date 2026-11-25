@@ -47,7 +47,9 @@ SOURCE_LIBRARY_INDEX = "qa/repository-consolidation/20261125/source-library-cust
 PRED_AND_HPCA_HOSTED_INDEX = "qa/repository-consolidation/20261125/pred-and-hpca-hosted-custody/raw-evidence-storage.json"
 OCT21_HISTORY_INDEX = "qa/repository-consolidation/20261125/oct21-historical-custody/raw-evidence-storage.json"
 MEM8_STATIC_SOURCE_INDEX = "qa/repository-consolidation/20261125/mem8-static-source-custody/raw-evidence-storage.json"
+MEM8_LEASE_REVIEW_INDEX = "qa/repository-consolidation/20261125/mem8-lease-review-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    MEM8_LEASE_REVIEW_INDEX: "23d1cbd5a5609c78fae6cb398676bfb5d26b51d0c3c7c97e8b287a9fa1575987",
     MEM8_STATIC_SOURCE_INDEX: "5d344321dd99a447b53fc7887414d4df4e08727507b644f9256ded6be61f253d",
     OCT21_HISTORY_INDEX: "7fd7751e0f14d503a68b1055f3a15723fc38542b17d992f337a17360569e4dc1",
     PRED_AND_HPCA_HOSTED_INDEX: "3c54780e43565c9e399e0ef64fb912d401a5fd641ed64a5e3a4ef78d166eaddc",
