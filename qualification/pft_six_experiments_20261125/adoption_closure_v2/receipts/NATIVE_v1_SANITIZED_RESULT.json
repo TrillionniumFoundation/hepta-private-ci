@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(cold_revocation_blocks_existing_checkpoint_adoption_v2)",
+    "--no-capture"
+  ],
+  "checked_head": "fe249567feae227a362d354c1df3499a2995af40",
+  "exit": 101,
+  "native.stderr.log": {
+    "bytes": 359,
+    "sha256": "fdbbb402b58670aa02158efe2208a1d8b212abab9612be2be564531b197a862b"
+  },
+  "native.stdout.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "new_scientific_trials": 0,
+  "original_receipt_sha256": "f7c466be30bb2f89873ac39ea0acb63d677b82cb2a001a554bd2e993d5ba0f76",
+  "preparation_exit": 0,
+  "probe_sha256": "fac801188eb45d09c60073a0ab9bad5179ac87c1f7bbdde0e8ac3518a3d8bb98",
+  "raw_models": false,
+  "sanitization": "operator-specific executable path replaced with command name",
+  "schema": "hepta.adoption-native-build.v2",
+  "scope": "engineering_fixture",
+  "wall_seconds": 0.2408061409369111
+}

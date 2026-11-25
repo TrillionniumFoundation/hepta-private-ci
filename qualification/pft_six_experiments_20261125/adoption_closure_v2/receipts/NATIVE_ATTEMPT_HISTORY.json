@@ -1,0 +1,43 @@
+{
+  "attempts": [
+    {
+      "attempt": 1,
+      "command_exit": 101,
+      "native_tests_executed": 0,
+      "reason": "cargo-nextest absent",
+      "receipt": "NATIVE_v1_SANITIZED_RESULT.json"
+    },
+    {
+      "attempt": 2,
+      "command_exit": 101,
+      "native_tests_executed": 0,
+      "reason": "same-commit module catalog not materialized in sparse checkout",
+      "receipt": "NATIVE_v2_RESULT.json"
+    },
+    {
+      "attempt": 3,
+      "command_exit": 101,
+      "native_tests_executed": 0,
+      "reason": "same-commit proposal worker not materialized; new probe macro import ambiguity",
+      "receipt": "NATIVE_v3_RESULT.json"
+    },
+    {
+      "attempt": 4,
+      "command_exit": 0,
+      "native_tests_executed": 1,
+      "native_tests_passed": 1,
+      "original_launch_rpc_timeout_reconciled_same_job": true,
+      "other_tests_filtered": 867,
+      "receipt": "NATIVE_v4_RESULT.json"
+    }
+  ],
+  "checked_head": "fe249567feae227a362d354c1df3499a2995af40",
+  "dependency_install_receipt": "NEXTEST_INSTALL_SANITIZED_RESULT.json",
+  "guard_or_dependency_revision_replacement": false,
+  "production_authorization_available": false,
+  "real_human_participants": 0,
+  "real_model_calls": 0,
+  "schema": "hepta.adoption-closure.native-attempt-history.v2",
+  "tested_and_prior_sources": "NATIVE_ATTEMPT_SOURCES.tar.gz",
+  "training_updates": 0
+}
