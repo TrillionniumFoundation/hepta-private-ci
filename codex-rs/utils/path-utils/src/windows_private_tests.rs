@@ -99,6 +99,48 @@ fn private_directory_preserves_exclusive_writer_locking() {
 }
 
 #[test]
+fn strict_private_inspection_cannot_create_write_replace_or_flush() -> std::io::Result<()> {
+    let temporary = tempfile::tempdir()?;
+    let root = temporary.path().join("private");
+    let directory = PrivateDirectory::create_new(&root)?;
+    let mut original = directory.open("state", Access::CreateNew)?;
+    original.write_all(b"retained")?;
+    original.sync_all()?;
+    drop(original);
+    directory.sync_all()?;
+    assert!(matches!(
+        PrivateDirectory::create_new(&root),
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists
+    ));
+    let read_only = PrivateDirectory::inspect(&root)?;
+    let mut observed = Vec::new();
+    read_only
+        .open("state", Access::Read)?
+        .read_to_end(&mut observed)?;
+    assert_eq!(observed, b"retained");
+    for access in [Access::Write, Access::Create, Access::CreateNew] {
+        assert!(matches!(
+            read_only.open("state", access),
+            Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied
+        ));
+    }
+    assert!(matches!(
+        read_only.replace("state", "other"),
+        Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied
+    ));
+    assert!(matches!(
+        read_only.sync_all(),
+        Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied
+    ));
+    assert!(!root.join("other").exists());
+    assert_eq!(fs::read(root.join("state"))?, b"retained");
+    PrivateDirectory::open_existing(&root)?.sync_all()?;
+    assert!(PrivateDirectory::open_existing(&temporary.path().join("missing")).is_err());
+    assert!(!temporary.path().join("missing").exists());
+    Ok(())
+}
+
+#[test]
 fn sqlite_directory_create_new_never_adopts_existing_roots() -> std::io::Result<()> {
     let temporary = tempfile::tempdir()?;
     let root = temporary.path().join("private");
@@ -364,6 +406,10 @@ fn reparse_root_and_reparse_ancestor_never_reach_the_target() {
     assert!(output.status.success(), "junction creation: {output:?}");
     assert!(PrivateDirectory::prepare(&junction).is_err());
     assert!(PrivateDirectory::prepare(&junction.join("child")).is_err());
+    assert!(PrivateDirectory::create_new(&junction).is_err());
+    assert!(PrivateDirectory::create_new(&junction.join("child")).is_err());
+    assert!(PrivateDirectory::inspect(&junction).is_err());
+    assert!(PrivateDirectory::open_existing(&junction).is_err());
     assert!(PrivateSqliteDirectory::inspect(&junction).is_err());
     assert!(PrivateSqliteDirectory::inspect(&junction.join("child")).is_err());
     assert!(PrivateSqliteDirectory::create_new(&junction).is_err());

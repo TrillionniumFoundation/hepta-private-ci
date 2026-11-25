@@ -105,10 +105,6 @@ unsafe extern "system" {
     ) -> NTSTATUS;
 }
 
-pub(super) fn directory(path: &Path, descriptor: *const c_void) -> io::Result<File> {
-    directory_with(path, descriptor, DirectoryMode::Prepare)
-}
-
 pub(super) fn canonical_path(file: &File) -> io::Result<PathBuf> {
     let mut name = vec![0_u16; 32_768];
     // SAFETY: The live, already validated handle is queried directly. The
