@@ -42,6 +42,23 @@ pub(super) async fn persisted_request_items(
     persisted_items_matching_expected(thread, expected).await
 }
 
+/// Match every wire item, in order, to the host's complete active context. History
+/// rewrites can change an existing item without appending its rewritten contents
+/// to the rollout, so rollback fixtures must observe the production context.
+pub(super) async fn active_request_items(
+    thread: &CodexThread,
+    request: &ResponsesRequest,
+) -> Result<Vec<Value>> {
+    assert_wire_has_no_internal_metadata(request);
+    let expected = request.input().into_iter().enumerate().collect();
+    let stored = codex_core::test_support::active_context_items(thread)
+        .await
+        .into_iter()
+        .map(serde_json::to_value)
+        .collect::<serde_json::Result<Vec<_>>>()?;
+    items_matching_expected(&stored, expected, "active")
+}
+
 /// These image fixtures explicitly prepare Original-detail images, whereas Lite
 /// omits detail on the wire. Build the expected stored values with that one known
 /// difference, then require the same exact matcher as ordinary requests. This
@@ -93,6 +110,14 @@ async fn persisted_items_matching_expected(
             _ => None,
         })
         .collect::<serde_json::Result<Vec<_>>>()?;
+    items_matching_expected(&stored, expected, "persisted")
+}
+
+fn items_matching_expected(
+    stored: &[Value],
+    expected: Vec<(usize, Value)>,
+    source: &str,
+) -> Result<Vec<Value>> {
     let mut cursor = 0;
     let mut matched = Vec::new();
     for (wire_index, expected_item) in expected {
@@ -111,8 +136,8 @@ async fn persisted_items_matching_expected(
                 let expected = expected.chars().skip(start).take(240).collect::<String>();
                 let actual = actual.chars().skip(start).take(240).collect::<String>();
                 format!("; closest history item {index} differs at character {prefix}: expected={expected:?}, stored={actual:?}")
-            }).unwrap_or_else(|| "; no remaining persisted response items".to_string());
-            format!("wire input {wire_index} has no exact ordered persisted match after history item {cursor}{detail}")
+            }).unwrap_or_else(|| format!("; no remaining {source} response items"));
+            format!("wire input {wire_index} has no exact ordered {source} match after history item {cursor}{detail}")
         })?;
         cursor += offset + 1;
         matched.push(stored[cursor - 1].clone());

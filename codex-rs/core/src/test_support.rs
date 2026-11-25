@@ -67,6 +67,17 @@ pub fn set_deterministic_process_ids(enabled: bool) {
     unified_exec::set_deterministic_process_ids_for_tests(enabled);
 }
 
+/// Returns the complete active context after the host has applied history rewrites.
+///
+/// Integration tests should capture this after their turn completes. Unlike the
+/// append-only rollout, this snapshot includes rollback and compaction effects;
+/// it preserves all response items and their local annotations without filtering.
+pub async fn active_context_items(
+    thread: &crate::CodexThread,
+) -> Vec<codex_protocol::models::ResponseItem> {
+    thread.session.clone_history().await.into_raw_items()
+}
+
 pub fn auth_manager_from_auth(auth: CodexAuth) -> Arc<AuthManager> {
     AuthManager::from_auth_for_testing(auth)
 }

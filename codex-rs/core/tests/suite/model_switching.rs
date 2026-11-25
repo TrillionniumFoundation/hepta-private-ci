@@ -345,8 +345,7 @@ async fn rollback_first_turn_model_change_removes_its_instructions(
 
     let request = &response_mock.requests()[1];
     assert_eq!(request.body_json()["model"], followup_model);
-    let local_items =
-        super::local_annotations::persisted_request_items(&test.codex, request, |_| true).await?;
+    let local_items = super::local_annotations::active_request_items(&test.codex, request).await?;
     let misaligned_messages = local_items
         .into_iter()
         .filter(|message| {
