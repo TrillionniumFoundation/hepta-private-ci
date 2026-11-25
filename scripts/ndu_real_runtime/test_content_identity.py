@@ -100,6 +100,15 @@ class ContentIdentityTests(unittest.TestCase):
                     "c" * 64,
                 )
                 host.control = SimpleNamespace(memory_mode="reset")
+                host.candidate_profile = None
+                host.candidate_profile_sha256 = None
+                host.selector_profile_sha256 = None
+                host.observation = {
+                    "path": "overview.png",
+                    "sha256": "f" * 64,
+                    "bbox": [0, 0, 8, 8],
+                    "kind": "overview",
+                }
                 host.training, host.ready, host.stopped = True, True, False
                 host.ready_receipt = {"content_identity_profile": SELECTION_SCHEMA}
                 host.prepared, host.steps, host.snapshots = None, [], []
@@ -113,17 +122,32 @@ class ContentIdentityTests(unittest.TestCase):
                     "text": None,
                     "image": None,
                 }
-                host.last_public, host.last_send = (
-                    {"remaining_seconds": 10.0},
-                    time.perf_counter(),
-                )
-                host.public_step = lambda: b"{}\n"
+                host.config = {"episode_wall_seconds": 10.0}
+                host.started = time.perf_counter()
+                host.exploration = ["WRITE_TEXT", "STOP"]
                 host.meter = Meter("content-identity-test")
                 host.snapshot()
+                self.assertIsNotNone(host.public_step())
                 observation = self.observation(selected)
+                observation["remaining_seconds"] = host.last_public["remaining_seconds"]
                 wire = json.dumps(observation, ensure_ascii=False).encode()
                 host.callback(wire)
+                step = host.steps[-1]
+                self.assertEqual(step["action_effect"]["changed"], ["text"])
                 raw = (host.snapshots[-1] / "delivery.json").read_bytes()
+                forged = json.dumps(
+                    dict(observation, action_effect=step["action_effect"])
+                ).encode()
+                with self.assertRaisesRegex(ValueError, "Actor wire differs"):
+                    verify_content_identity(
+                        step,
+                        raw,
+                        None,
+                        expected_evaluator_sha256="d" * 64,
+                        expected_rubric_sha256="e" * 64,
+                        actor_payload_raw=forged,
+                        expected_payload_sha256=hashlib.sha256(forged).hexdigest(),
+                    )
                 image = io.BytesIO()
                 Image.new("RGB", (8, 8)).save(image, format="PNG")
                 reference = {

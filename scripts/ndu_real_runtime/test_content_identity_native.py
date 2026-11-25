@@ -229,9 +229,16 @@ class NativeContentIdentityTests(unittest.TestCase):
             hashlib.sha256(wire).hexdigest(),
             launch["host_exchanges"][1]["event_sha256"],
         )
+        actor_observation = json.loads(wire)
+        self.assertNotIn("action_effect", actor_observation)
+        self.assertEqual(step["action_effect"]["changed"], ["text"])
         self.assertEqual(
-            json.loads(wire),
-            {k: v for k, v in step.items() if k != "observed_action_seconds"},
+            actor_observation,
+            {
+                key: value
+                for key, value in step.items()
+                if key not in {"action_effect", "observed_action_seconds"}
+            },
         )
         delivered = json.loads((host.snapshots[1] / "delivery.json").read_text())
         self.assertEqual(delivered["text"], selected["text"])
