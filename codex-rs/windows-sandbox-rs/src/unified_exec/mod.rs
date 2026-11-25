@@ -52,15 +52,14 @@ enum WindowsSandboxBackend {
     Elevated,
 }
 
-/// Refuse unqualified isolation before selecting an explicitly configured backend.
+/// Describe the requested backend without preparing or launching a process.
 ///
-/// Read-only and dedicated-account launches share the token deletion gap. The
-/// elevated runner only brokers process setup and I/O, not filesystem operations.
-/// It must not be selected as an automatic fallback for a restricted-token request.
+/// This is a routing decision, not a claim that either backend is available or
+/// enforces the filesystem policy. The public dispatcher checks availability
+/// before calling this helper, and both backend entry points check it again.
 fn select_windows_sandbox_backend(
     request: &WindowsSandboxSessionRequest<'_>,
 ) -> Result<WindowsSandboxBackend> {
-    crate::ensure_windows_managed_filesystem_isolation()?;
     if matches!(request.windows_sandbox_level, WindowsSandboxLevel::Elevated) {
         return Ok(WindowsSandboxBackend::Elevated);
     }
@@ -83,17 +82,17 @@ fn select_windows_sandbox_backend(
         || !request.deny_read_paths_override.is_empty()
         || !request.deny_write_paths_override.is_empty();
 
-    if requires_elevated_filesystem {
-        bail!(
-            "the configured Windows sandbox level cannot enforce the requested filesystem policy"
-        );
-    }
-    Ok(WindowsSandboxBackend::RestrictedToken)
+    Ok(if requires_elevated_filesystem {
+        WindowsSandboxBackend::Elevated
+    } else {
+        WindowsSandboxBackend::RestrictedToken
+    })
 }
 
 pub async fn spawn_windows_sandbox_session_for_level(
     request: WindowsSandboxSessionRequest<'_>,
 ) -> Result<SpawnedProcess> {
+    crate::ensure_windows_managed_filesystem_isolation()?;
     match select_windows_sandbox_backend(&request)? {
         WindowsSandboxBackend::Elevated => {
             backends::elevated::spawn_windows_sandbox_session_elevated_for_permission_profile(
