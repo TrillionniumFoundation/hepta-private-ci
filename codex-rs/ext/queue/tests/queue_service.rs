@@ -386,6 +386,13 @@ async fn test_queue_with_capacity(
     Ok((queue, home))
 }
 
+#[derive(Clone, Copy)]
+enum DispatchLeaseWindow {
+    Production,
+    ShortFromClaim,
+    ShortAfterAuthorization,
+}
+
 struct FailDeleteOnceQueueStore {
     inner: LocalQueueStore,
     fail_next_delete: AtomicBool,
@@ -394,7 +401,8 @@ struct FailDeleteOnceQueueStore {
     block_complete_after_panic: AtomicBool,
     allow_blocked_complete: AtomicBool,
     complete_attempts: AtomicUsize,
-    short_dispatch_lease: bool,
+    dispatch_lease_window: DispatchLeaseWindow,
+    expired_claims: AtomicUsize,
     release_count: AtomicUsize,
 }
 
@@ -408,7 +416,8 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(false),
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: false,
+            dispatch_lease_window: DispatchLeaseWindow::Production,
+            expired_claims: AtomicUsize::new(0),
             release_count: AtomicUsize::new(0),
         }
     }
@@ -422,7 +431,10 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(false),
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: true,
+            // Keep the production claim window through rollout inspection.
+            // The short lease begins at the successful pre-submission CAS.
+            dispatch_lease_window: DispatchLeaseWindow::ShortAfterAuthorization,
+            expired_claims: AtomicUsize::new(0),
             release_count: AtomicUsize::new(0),
         }
     }
@@ -436,7 +448,8 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(false),
             allow_blocked_complete: AtomicBool::new(true),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: true,
+            dispatch_lease_window: DispatchLeaseWindow::ShortFromClaim,
+            expired_claims: AtomicUsize::new(0),
             release_count: AtomicUsize::new(0),
         }
     }
@@ -450,7 +463,8 @@ impl FailDeleteOnceQueueStore {
             block_complete_after_panic: AtomicBool::new(true),
             allow_blocked_complete: AtomicBool::new(false),
             complete_attempts: AtomicUsize::new(0),
-            short_dispatch_lease: true,
+            dispatch_lease_window: DispatchLeaseWindow::ShortFromClaim,
+            expired_claims: AtomicUsize::new(0),
             release_count: AtomicUsize::new(0),
         }
     }
@@ -556,18 +570,28 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
-            now_ms + 250
-        } else {
-            lease_expires_at_ms
+        let lease_expires_at_ms = match self.dispatch_lease_window {
+            DispatchLeaseWindow::ShortFromClaim => now_ms + 250,
+            DispatchLeaseWindow::Production | DispatchLeaseWindow::ShortAfterAuthorization => {
+                lease_expires_at_ms
+            }
         };
-        self.inner.claim_client_binding_dispatch(
-            process_lock,
-            queued_item_id,
-            owner_id,
-            now_ms,
-            lease_expires_at_ms,
-        )
+        Box::pin(async move {
+            let outcome = self
+                .inner
+                .claim_client_binding_dispatch(
+                    process_lock,
+                    queued_item_id,
+                    owner_id,
+                    now_ms,
+                    lease_expires_at_ms,
+                )
+                .await?;
+            if matches!(&outcome, QueuedClientDispatchClaimOutcome::Expired(_)) {
+                self.expired_claims.fetch_add(1, Ordering::SeqCst);
+            }
+            Ok(outcome)
+        })
     }
 
     fn authorize_client_binding_dispatch<'a>(
@@ -577,10 +601,11 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchLease> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
-            now_ms + 250
-        } else {
-            lease_expires_at_ms
+        let lease_expires_at_ms = match self.dispatch_lease_window {
+            DispatchLeaseWindow::Production => lease_expires_at_ms,
+            DispatchLeaseWindow::ShortFromClaim | DispatchLeaseWindow::ShortAfterAuthorization => {
+                now_ms + 250
+            }
         };
         self.inner.authorize_client_binding_dispatch(
             process_lock,
@@ -1359,10 +1384,10 @@ async fn rollout_flush_before_dispatch_db_completion_recovers_without_resubmit()
         .await?;
     let thread_id = test.session_configured.thread_id;
     let runtime = test.codex.state_db().context("state runtime unavailable")?;
-    let crash_queue: Arc<dyn QueueStore> =
-        Arc::new(FailDeleteOnceQueueStore::crash_after_rollout_flush(
-            LocalQueueStore::new(Arc::clone(&runtime)),
-        ));
+    let crash_store = Arc::new(FailDeleteOnceQueueStore::crash_after_rollout_flush(
+        LocalQueueStore::new(Arc::clone(&runtime)),
+    ));
+    let crash_queue: Arc<dyn QueueStore> = crash_store.clone();
     let crashing = QueuedItemService::new(
         crash_queue,
         Arc::downgrade(&test.thread_manager),
@@ -1393,10 +1418,12 @@ async fn rollout_flush_before_dispatch_db_completion_recovers_without_resubmit()
     assert!(
         matches!(
             error,
-            QueueServiceError::Storage(ThreadStoreError::Internal { .. })
+            QueueServiceError::Storage(ThreadStoreError::Internal { ref message })
+                if message == "simulated crash after rollout flush before dispatch DB completion"
         ),
         "unexpected crash-window error: {error:?}"
     );
+    assert_eq!(crash_store.complete_attempts.load(Ordering::SeqCst), 1);
     wait_for_event_match(test.codex.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_)).then_some(())
     })
@@ -1405,8 +1432,17 @@ async fn rollout_flush_before_dispatch_db_completion_recovers_without_resubmit()
 
     let restarted_runtime =
         StateRuntime::init(runtime.sqlite().clone(), "test-provider".to_string()).await?;
+    let recovery_store = Arc::new(FailDeleteOnceQueueStore::new(LocalQueueStore::new(
+        restarted_runtime,
+    )));
+    // This adapter only observes the real expired-claim result on recovery.
+    // No deletion or completion fault is armed for the reopened store.
+    recovery_store
+        .fail_next_delete
+        .store(false, Ordering::SeqCst);
+    let recovery_queue: Arc<dyn QueueStore> = recovery_store.clone();
     let restarted = QueuedItemService::new(
-        Arc::new(LocalQueueStore::new(restarted_runtime)),
+        recovery_queue,
         Arc::downgrade(&test.thread_manager),
         Arc::new(NoopExtensionEventSink),
     );
@@ -1414,6 +1450,7 @@ async fn rollout_flush_before_dispatch_db_completion_recovers_without_resubmit()
         .start(test.codex.as_ref(), Some(item.id), None)
         .await?;
     assert!(matches!(recovered, StartIfIdleSubmission::Started { .. }));
+    assert_eq!(recovery_store.expired_claims.load(Ordering::SeqCst), 1);
     assert!(restarted.list(thread_id).await?.is_empty());
     assert_eq!(1, response.requests().len());
     assert_eq!(
