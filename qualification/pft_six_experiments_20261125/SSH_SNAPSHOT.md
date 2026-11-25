@@ -1,9 +1,13 @@
-# One-round SSH statistic delivery qualification
+# One-round SSH statistic delivery qualification, v2
 
 This is a separate engineering protocol. The original E1–E6 scientific panels,
 their remaining budgets, the original LAN/overlay failures, and the later
 45-second TCP/38653 USB4 failure remain unchanged. No scientific matrix, original
 training/evaluation job, or old CI run is restarted by this entry.
+The first SSH source/admission version was withdrawn before deployment and before
+any actual statistic exchange. Its published source and registration remain
+unchanged evidence. Version 2 uses an explicit new source/context/round identity
+to correct process ownership; it does not reset an executed scientific budget.
 
 The existing hosts already allow and mutually authenticate SSH on USB4 port 22.
 Their installed `ssh_transport.py` validates an administrator-configured peer
@@ -38,7 +42,12 @@ deadline. A fragmented frame cannot restart it. The initiating session has a
 also imposes a single 45-second bound and exits immediately on a closed pipe.
 Child termination and reaping may consume up to four additional seconds, with
 one additional bounded 0.1-second diagnostic join. SSH stderr is capped at
-64 KiB; overflow terminates the initiating process's owned SSH group.
+64 KiB; overflow notifies the sole process owner through a cancellation event.
+The diagnostic thread never signals or reaps a process. Normal and failed exits
+use Linux `waitid(WEXITED | WNOHANG | WNOWAIT)` to observe termination while the
+leader continues to reserve its PID/process group. The owner sends its final
+group signal before the unique `process.wait()` reaps that leader. No later
+cleanup call may signal a reaped leader's numeric group ID.
 
 Each host retains the exact application frames and SHA256s, actual process/boot
 identity, `SSH_CONNECTION`, strict Receiver ledger, frozen snapshot, numerical
@@ -88,3 +97,6 @@ It also checks a terminal SSH leader whose descendant still holds stderr, and a
 configuration replaced between its file read and parsing. Diagnostics use a
 nonblocking raw descriptor and bounded stop polling; a terminal leader does not
 exempt the invocation's remaining process group from cleanup.
+Version 2 also verifies that the leader is still observable with WNOWAIT at
+every group signal and is reaped exactly once afterward, and that diagnostic
+overflow retains only the configured prefix without a thread-originated signal.

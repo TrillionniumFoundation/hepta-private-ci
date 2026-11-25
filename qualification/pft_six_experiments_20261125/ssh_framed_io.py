@@ -7,7 +7,6 @@ from pathlib import Path
 import selectors
 import signal
 import struct
-import subprocess
 import threading
 import time
 
@@ -15,7 +14,7 @@ from distributed import durable_write, encoded
 
 MAX_FRAME = 65_536
 MAX_STDERR = 65_536
-WIRE = "pft-direct-ssh-statistics-v1"
+WIRE = "pft-direct-ssh-statistics-v2"
 
 
 def unique_object(pairs):
@@ -32,22 +31,26 @@ def reject_constant(value):
 
 
 class Stream:
-    def __init__(self, reader, writer, folder, node, round_id, context_id, deadline):
+    def __init__(self, reader, writer, folder, node, round_id, context_id, deadline, cancel=None):
         self.reader, self.writer = reader, writer
         self.folder, self.node = Path(folder), node
         self.round_id, self.context_id, self.deadline = round_id, context_id, deadline
+        self.cancel = cancel
         self.sent, self.received, self.events = 0, 0, []
         os.set_blocking(reader, False)
         os.set_blocking(writer, False)
 
     def ready(self, fd, event):
-        remaining = self.deadline - time.monotonic()
-        if remaining <= 0:
-            raise TimeoutError("Absolute SSH application deadline exceeded")
         with selectors.DefaultSelector() as selector:
             selector.register(fd, event)
-            if not selector.select(remaining):
-                raise TimeoutError("Absolute SSH application deadline exceeded")
+            while True:
+                if self.cancel is not None and self.cancel.is_set():
+                    raise ValueError("Bounded SSH diagnostic capture cancelled the exchange")
+                remaining = self.deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("Absolute SSH application deadline exceeded")
+                if selector.select(min(.05, remaining) if self.cancel is not None else remaining):
+                    return
 
     def record(self, direction, raw, status, started, transferred):
         digest = hashlib.sha256(raw).hexdigest()
@@ -132,35 +135,65 @@ class Stream:
             self.record("receive", bytes(raw), status, started, len(raw))
 
 
+def wait_owned_child(process, deadline, cancel=None):
+    """Observe a direct child's exit without releasing its PID/process group."""
+    while True:
+        if process.returncode is not None:
+            raise RuntimeError("The sole reaper must not reap before group cleanup")
+        if cancel is not None and cancel.is_set():
+            raise ValueError("Bounded SSH diagnostic capture cancelled the exchange")
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("Absolute owned-child deadline exceeded")
+        try:
+            status = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+        except InterruptedError:
+            continue
+        if status is not None:
+            if status.si_code == os.CLD_EXITED:
+                return status.si_status
+            if status.si_code in (os.CLD_KILLED, os.CLD_DUMPED):
+                return -status.si_status
+            raise RuntimeError("Unexpected owned-child exit status")
+        time.sleep(min(.005, remaining))
+
+
 def terminate_owned_child(process):
-    """Only a Popen child started in its own session; at most four extra seconds."""
-    try:
-        os.killpg(process.pid, signal.SIGTERM)
-    except ProcessLookupError:
-        pass
+    """Signal the still-reserved group, then be its leader's unique final reaper."""
+    if process.returncode is not None:
+        if not getattr(process, "_hepta_group_signals_complete", False):
+            raise RuntimeError("Already-reaped leader cannot authorize a process-group signal")
+        return process.returncode
+    # WNOWAIT also confirms that this PID is still our direct, unreaped child.
+    os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
     try:
         try:
-            process.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            process.wait(timeout=2)
+            os.killpg(process.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+        try:
+            wait_owned_child(process, time.monotonic() + 2)
+        except TimeoutError:
+            pass
     finally:
-        # A terminal leader is insufficient: its descendants may still own the
-        # SSH pipe. This group was created exclusively for this invocation.
+        # No poll/wait or diagnostic-thread signal may precede this final group
+        # signal. A zombie leader reserves the PGID even on successful exit.
+        os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
         try:
             os.killpg(process.pid, signal.SIGKILL)
         except ProcessLookupError:
             pass
+        process._hepta_group_signals_complete = True
+        process.wait(timeout=2)
     return process.returncode
 
 
 def collect_stderr(process, deadline):
-    """Bound SSH diagnostics; overflowing peers terminate this owned child group."""
-    state = {"raw": bytearray(), "overflow": False, "eof": False, "deadline_reached": False, "error": None}
+    """Only observe; all process signals and reaping belong to the main owner."""
+    state = {"raw": bytearray(), "overflow": False, "eof": False, "deadline_reached": False, "error": None,
+             "observed_bytes": 0}
     stop = threading.Event()
+    cancel = threading.Event()
     descriptor = process.stderr.fileno()
     os.set_blocking(descriptor, False)
 
@@ -172,6 +205,7 @@ def collect_stderr(process, deadline):
                     remaining = deadline - time.monotonic()
                     if remaining <= 0:
                         state["deadline_reached"] = True
+                        cancel.set()
                         return
                     if not selector.select(min(.05, remaining)):
                         continue
@@ -182,17 +216,17 @@ def collect_stderr(process, deadline):
                     if not part:
                         state["eof"] = True
                         return
-                    state["raw"].extend(part)
-                    if len(state["raw"]) > MAX_STDERR:
+                    available = MAX_STDERR - len(state["raw"])
+                    state["observed_bytes"] += len(part)
+                    state["raw"].extend(part[:available])
+                    if len(part) > available:
                         state["overflow"] = True
-                        try:
-                            os.killpg(process.pid, signal.SIGTERM)
-                        except ProcessLookupError:
-                            pass
+                        cancel.set()
                         return
         except BaseException as error:
             state["error"] = {"type": type(error).__name__, "message": str(error)[:200]}
+            cancel.set()
 
     thread = threading.Thread(target=drain, daemon=True)
     thread.start()
-    return state, thread, stop
+    return state, thread, stop, cancel

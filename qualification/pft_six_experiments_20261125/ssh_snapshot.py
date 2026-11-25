@@ -21,9 +21,9 @@ import numpy as np
 import direct_snapshot
 from direct_snapshot import require
 from distributed import Receiver, array_hash, durable_write, hashed
-from ssh_framed_io import MAX_FRAME, Stream, collect_stderr, terminate_owned_child
+from ssh_framed_io import MAX_FRAME, Stream, collect_stderr, terminate_owned_child, wait_owned_child
 
-SCHEMA = "pft-direct-ssh-frozen-snapshot-v1"
+SCHEMA = "pft-direct-ssh-frozen-snapshot-v2"
 SOURCES = (*direct_snapshot.SOURCES, "ssh_framed_io.py", "ssh_snapshot.py")
 QUANTIZATION = 10 ** 10
 
@@ -43,7 +43,9 @@ def context(config):
 
 
 def prepare(config):
-    require(os.name == "posix", "This SSH qualification requires POSIX pipes")
+    require(sys.platform.startswith("linux") and all(hasattr(os, name) for name in
+            ("waitid", "P_PID", "WEXITED", "WNOHANG", "WNOWAIT", "CLD_EXITED", "CLD_KILLED", "CLD_DUMPED")),
+            "This SSH qualification requires Linux WNOWAIT process ownership")
     require(config["schema"] == SCHEMA and config["deadline_seconds"] == 45,
             "Unknown SSH namespace or delivery budget")
     require(config["source_sha256"] == {
@@ -302,14 +304,14 @@ def run(path, expected):
             process = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                        start_new_session=True, env=environment)
             durable_write(folder / "SSH_CHILD.json", {"pid": process.pid, "owned_process_group": process.pid})
-            stderr_state, stderr_thread, stderr_stop = collect_stderr(process, deadline)
+            stderr_state, stderr_thread, stderr_stop, cancel = collect_stderr(process, deadline)
             stream = Stream(process.stdout.fileno(), process.stdin.fileno(), folder, 0,
-                            projected["round_id"], config["context_id"], deadline)
+                            projected["round_id"], config["context_id"], deadline, cancel)
             result = exchange(config, projected, reference, stream, own)
             process.stdin.close()
-            process.wait(timeout=max(.001, deadline - time.monotonic()))
+            observed_exit = wait_owned_child(process, deadline, cancel)
             stderr_thread.join(timeout=max(.001, deadline - time.monotonic()))
-            require(process.returncode == 0 and not stderr_thread.is_alive() and stderr_state["eof"]
+            require(observed_exit == 0 and not stderr_thread.is_alive() and stderr_state["eof"]
                     and not stderr_state["overflow"] and stderr_state["error"] is None,
                     "The fixed SSH responder did not finish within the admitted bounds")
             result["ssh_guard"] = check_ssh_diagnostics(config, bytes(stderr_state["raw"]), result["ssh_connection"])

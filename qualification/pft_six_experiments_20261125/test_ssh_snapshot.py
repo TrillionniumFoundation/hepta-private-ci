@@ -19,7 +19,7 @@ import unittest
 from unittest import mock
 
 from distributed import Receiver, durable_write, encoded, hashed
-from ssh_framed_io import MAX_FRAME, Stream, WIRE, collect_stderr, terminate_owned_child
+from ssh_framed_io import MAX_FRAME, MAX_STDERR, Stream, WIRE, collect_stderr, terminate_owned_child, wait_owned_child
 import ssh_snapshot
 from test_direct_snapshot import fixture
 
@@ -228,13 +228,14 @@ else:
 """
         process = subprocess.Popen([sys.executable, "-c", code], stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, start_new_session=True)
-        state, thread, stop = collect_stderr(process, time.monotonic() + .2)
+        state, thread, stop, cancel = collect_stderr(process, time.monotonic() + .2)
         try:
             with selectors.DefaultSelector() as selector:
                 selector.register(process.stdout, selectors.EVENT_READ)
                 self.assertTrue(selector.select(timeout=2))
             child = int(process.stdout.readline())
-            self.assertEqual(process.wait(timeout=2), 0)
+            self.assertEqual(wait_owned_child(process, time.monotonic() + 2), 0)
+            self.assertIsNone(process.returncode)
             thread.join(timeout=.5)
             self.assertFalse(thread.is_alive())
             self.assertTrue(state["deadline_reached"])
@@ -252,6 +253,51 @@ else:
             terminate_owned_child(process)
             thread.join(timeout=.2)
             process.stdout.close()
+            process.stderr.close()
+
+    def test_group_identity_is_reserved_until_all_signals_then_reaped_once(self):
+        process = subprocess.Popen([sys.executable, "-c", "pass"], start_new_session=True)
+        observed = []
+        real_killpg = os.killpg
+        def checked_signal(group, signum):
+            self.assertEqual(group, process.pid)
+            self.assertIsNone(process.returncode)
+            status = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+            self.assertIsNotNone(status)
+            observed.append(signum)
+            return real_killpg(group, signum)
+        try:
+            self.assertEqual(wait_owned_child(process, time.monotonic() + 2), 0)
+            self.assertIsNone(process.returncode)
+            with mock.patch.object(os, "killpg", checked_signal), mock.patch.object(process, "wait", wraps=process.wait) as reap:
+                self.assertEqual(terminate_owned_child(process), 0)
+                self.assertEqual(reap.call_count, 1)
+                self.assertEqual(terminate_owned_child(process), 0)
+                self.assertEqual(reap.call_count, 1)
+            self.assertEqual(observed, [signal.SIGTERM, signal.SIGKILL])
+            with self.assertRaises(ChildProcessError):
+                os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+        finally:
+            terminate_owned_child(process)
+
+    def test_stderr_overflow_only_notifies_the_owner_and_retains_the_bound(self):
+        process = subprocess.Popen([sys.executable, "-c", f"import os;os.write(2,b'x'*{MAX_STDERR + 2})"],
+                                   stderr=subprocess.PIPE, start_new_session=True)
+        state, thread, stop, cancel = collect_stderr(process, time.monotonic() + 2)
+        try:
+            with mock.patch.object(os, "killpg", wraps=os.killpg) as signals:
+                thread.join(timeout=2)
+                self.assertFalse(thread.is_alive())
+                self.assertTrue(state["overflow"])
+                self.assertTrue(cancel.is_set())
+                self.assertEqual(len(state["raw"]), MAX_STDERR)
+                self.assertGreater(state["observed_bytes"], MAX_STDERR)
+                self.assertEqual(signals.call_count, 0)
+            self.assertIsNone(process.returncode)
+        finally:
+            stop.set()
+            terminate_owned_child(process)
+            thread.join(timeout=.2)
             process.stderr.close()
 
     def test_configuration_is_parsed_from_the_same_bytes_that_were_pinned(self):
