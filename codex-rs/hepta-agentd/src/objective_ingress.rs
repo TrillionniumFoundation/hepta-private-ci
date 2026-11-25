@@ -13,7 +13,6 @@ use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_evidence::AuthBusDelivery;
 use codex_hepta_evidence::AuthBusDeliveryState;
 use codex_hepta_evidence::AuthBusDeliveryStatus;
-use codex_hepta_learning_ledger::DurableLearningJournal;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerRecovery;
@@ -446,23 +445,13 @@ fn predecessor_for_record(
         .map_err(|error| objective_invalid(&format!("learning ledger: {error}")))?;
     if let Some(existing) = records
         .iter()
-        .find(|record| event_record_id(&record.event) == record_id)
+        .find(|record| record.event.record_id() == record_id)
     {
         return Ok(existing.predecessor_chain_digest);
     }
     Ok(records
         .last()
         .map_or(Digest32::ZERO, |record| record.chain_digest))
-}
-
-fn event_record_id(event: &LedgerEvent) -> &StableId {
-    match event {
-        LedgerEvent::RunStart(value) => &value.record_id,
-        LedgerEvent::Decision(value) => &value.record_id,
-        LedgerEvent::Outcome(value) => &value.record_id,
-        LedgerEvent::Credit(value) => &value.record_id,
-        LedgerEvent::Revocation(value) => &value.record_id,
-    }
 }
 
 fn reconcile_witness(

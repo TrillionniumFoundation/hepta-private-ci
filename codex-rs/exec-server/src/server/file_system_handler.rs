@@ -184,6 +184,14 @@ impl FileSystemHandler {
         &self,
         params: FsReadFileAuthorizedParams,
     ) -> Result<FsReadFileResponse, JSONRPCErrorError> {
+        // A generic streaming read cannot prove stable-handle provenance.
+        // Refuse before reaching an ExecutorFileSystem fallback when the
+        // local runtime does not attest the advertised capability.
+        if !crate::local_file_system::stable_handle_authorized_read_available() {
+            return Err(internal_error(
+                "bounded authorized file reads are unsupported".to_string(),
+            ));
+        }
         let max_bytes = usize::try_from(params.max_bytes)
             .ok()
             .filter(|max_bytes| *max_bytes > 0 && max_bytes.checked_add(1).is_some())

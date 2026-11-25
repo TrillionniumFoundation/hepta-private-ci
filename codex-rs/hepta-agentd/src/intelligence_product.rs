@@ -11,21 +11,6 @@
 //! represented explicitly and reconciled only by replaying the exact event with
 //! its original predecessor through a freshly recovered journal.
 
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_intelligence::AdvisoryDecisionV1;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::AppendReceipt;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::CandidateSetCompleteness;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::EpisodeDecision;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::OutcomeFinality;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::OutcomeObservation;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_types::FixedQ32;
-
 #[path = "intelligence_evaluation.rs"]
 mod evaluation;
 pub use evaluation::AgentdEvaluationBindingV1;
@@ -66,10 +51,6 @@ use codex_hepta_intelligence_eval::EvaluationRequest;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
 use codex_hepta_intuition::CalibratedDispositionV1;
 use codex_hepta_intuition::decide_calibrated_v2;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLearningJournal;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::DurableLedgerError;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_ndu::ContributionSet;

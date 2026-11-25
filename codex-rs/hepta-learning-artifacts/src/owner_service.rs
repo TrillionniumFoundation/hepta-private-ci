@@ -208,9 +208,6 @@ impl LearningArtifactOwnerService {
         let checkpoint = self.host.recover_publication(&request.operation_id)?;
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
-            if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
-                return receipt_from_checkpoint(&recovery.checkpoint);
-            }
         }
 
         let predecessor = self
@@ -236,6 +233,18 @@ impl LearningArtifactOwnerService {
                 request,
                 &recovery.checkpoint,
             )?;
+            self.host.revalidate_recovered_artifacts(
+                &transaction,
+                &staged,
+                &request.signed_current_head,
+                request.now,
+            )?;
+            // An acknowledged retry must still prove the previously
+            // committed immutable payload, registry and signed witness exist.
+            // Never return a terminal receipt based only on a checkpoint.
+            if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
+                return receipt_from_checkpoint(&recovery.checkpoint);
+            }
             transaction = self
                 .host
                 .resume_publication(transaction.snapshot(), request.now)?;
@@ -281,6 +290,15 @@ fn validate_request_against_checkpoint(
     request: &LearningArtifactPublishRequestV1,
     checkpoint: &ArtifactOwnerPublicationCheckpointV1,
 ) -> Result<(), LearningArtifactOwnerServiceError> {
+    let manifest = &request.admission.validated_manifest.manifest;
+    // An idempotent retry is exact only when its supplied immutable bytes
+    // match the original admitted artifact. A terminal checkpoint must not
+    // acknowledge a changed request body with the previous receipt.
+    if request.payload.len() as u64 != manifest.encoded_size_bytes
+        || Digest32::of_bytes(&request.payload) != manifest.bytes_digest
+    {
+        return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+    }
     if checkpoint.operation_id != request.operation_id
         || checkpoint.admission_digest != request.admission.admission_digest
         || checkpoint.withdrawal_scope_digest != request.admission.withdrawal_scope_digest
@@ -654,19 +672,20 @@ mod tests {
         );
         assert!(!current_view.witness_digest().is_zero());
         assert!(!current_view.trust_digest().is_zero());
-        let current = request.signed_current_head;
+        let current = request.signed_current_head.clone();
         drop(service);
 
-        let reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-            root: directory.0.clone(),
-            trust: trust(&key, scope_digest),
-            writer_lease: lease(&key, scope_digest),
-            required_current_head: Some(current),
-            withdrawal_registry: withdrawals,
-            storage_binding: digest("binding"),
-            now: 21,
-        })
-        .fixture("reopen service");
+        let mut reopened =
+            LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+                root: directory.0.clone(),
+                trust: trust(&key, scope_digest),
+                writer_lease: lease(&key, scope_digest),
+                required_current_head: Some(current),
+                withdrawal_registry: withdrawals,
+                storage_binding: digest("binding"),
+                now: 21,
+            })
+            .fixture("reopen service");
         assert_eq!(
             reopened.registry().snapshot().head_digest,
             receipt.registry_head_digest
@@ -680,5 +699,27 @@ mod tests {
                 .head_digest,
             receipt.registry_head_digest
         );
+
+        let mut changed_retry = request.clone();
+        changed_retry.payload = b"different-payload".to_vec();
+        assert!(matches!(
+            reopened.publish(changed_retry),
+            Err(LearningArtifactOwnerServiceError::RequestMismatch)
+        ));
+
+        // A durable ACK alone is not sufficient evidence for a successful
+        // idempotent retry. Reject it when the committed payload has been
+        // removed after the first successful publication.
+        let payload = directory.0.join("payloads").join(format!(
+            "{}-{}.bin",
+            id("candidate"),
+            digest("payload")
+        ));
+        fs::remove_file(payload).fixture("remove committed payload");
+        assert!(
+            reopened.publish(request).is_err(),
+            "terminal retry must revalidate the committed bytes"
+        );
+        assert!(reopened.recovery_required().is_none());
     }
 }

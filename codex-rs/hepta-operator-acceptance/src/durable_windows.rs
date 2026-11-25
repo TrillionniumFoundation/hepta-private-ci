@@ -16,6 +16,38 @@ pub(super) fn configure_open(options: &mut OpenOptions) {
     options.custom_flags(FILE_FLAG_OPEN_REPARSE_POINT);
 }
 
+pub(super) fn sync_directory(path: &Path) -> Result<(), AcceptanceError> {
+    // FlushFileBuffers requires a writable directory handle on Windows.
+    // The backup flag permits opening a directory; OPEN_REPARSE_POINT keeps
+    // junctions and symlinks from silently redirecting the durability boundary.
+    const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+    let flags = FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT;
+
+    let mut options = OpenOptions::new();
+    options.read(true).write(true).custom_flags(flags);
+    let directory = options.open(path)?;
+    let before = winapi_util::file::information(&directory)?;
+    if before.file_attributes() & FILE_ATTRIBUTE_DIRECTORY == 0
+        || before.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
+    {
+        return Err(invalid("sidecar flush target is not a real directory"));
+    }
+    directory.sync_all()?;
+
+    let mut verify_options = OpenOptions::new();
+    verify_options.read(true).custom_flags(flags);
+    let observed_file = verify_options.open(path)?;
+    let after = winapi_util::file::information(&observed_file)?;
+    if after.file_attributes() & FILE_ATTRIBUTE_DIRECTORY == 0
+        || after.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0
+        || before.file_index() != after.file_index()
+        || before.volume_serial_number() != after.volume_serial_number()
+    {
+        return Err(invalid("sidecar flush directory identity changed"));
+    }
+    Ok(())
+}
+
 #[derive(Debug, Eq, PartialEq)]
 pub(super) struct FileSnapshot {
     attributes: u64,

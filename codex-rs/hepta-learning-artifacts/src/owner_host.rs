@@ -15,6 +15,8 @@ use std::fs::TryLockError;
 use std::io::Read;
 use std::io::Write;
 #[cfg(unix)]
+use std::os::unix::fs::MetadataExt;
+#[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -421,11 +423,22 @@ impl LearningArtifactOwnerHost {
         let verifier = ArtifactOwnerVerifierV1::new(trust)?;
         let verified_lease = verifier.verify_writer_lease(&lease, now)?;
         let fence_path = root.join("writer").join("owner.lock");
+        // Do not follow a pre-existing symbolic link into an unrelated file.
+        // The post-open identity check also rejects a replacement during open.
+        match fs::symlink_metadata(&fence_path) {
+            Ok(metadata) if metadata.file_type().is_symlink() || !metadata.is_file() => {
+                return Err(ArtifactOwnerHostError::PathBoundary);
+            }
+            Ok(_) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(error.into()),
+        }
         let mut options = OpenOptions::new();
         options.read(true).write(true).create(true);
         #[cfg(unix)]
         options.mode(0o600);
-        let writer_fence = options.open(fence_path)?;
+        let writer_fence = options.open(&fence_path)?;
+        verify_owner_writer_fence(&fence_path, &writer_fence)?;
         match writer_fence.try_lock() {
             Ok(()) => {}
             Err(TryLockError::WouldBlock) => return Err(ArtifactOwnerHostError::WriterFenceBusy),
@@ -460,6 +473,13 @@ impl LearningArtifactOwnerHost {
         &self,
         now: u64,
     ) -> Result<VerifiedArtifactWriterLeaseV1, ArtifactOwnerHostError> {
+        // The OS lock fences the opened inode, not its pathname. If owner.lock
+        // was unlinked or replaced after open, a second process could lock a
+        // different inode. Refuse further owner writes in that state.
+        verify_owner_writer_fence(
+            &self.root.join("writer").join("owner.lock"),
+            &self.writer_fence,
+        )?;
         self.verifier.verify_writer_lease(&self.lease, now)
     }
 
@@ -566,7 +586,7 @@ impl LearningArtifactOwnerHost {
             }
             Err(crate::ArtifactStorageError::AlreadyExists) => {
                 let loaded = read_candidate_payload(
-                    File::open(self.root.join(&relative))?,
+                    open_owner_artifact_file(self.root.join(&relative))?,
                     staged_registry,
                     &manifest.artifact_id,
                 )?;
@@ -577,6 +597,93 @@ impl LearningArtifactOwnerHost {
         }
         self.persist_checkpoint(transaction)?;
         Ok(relative)
+    }
+
+    /// Revalidate every immutable file represented by a recovered transaction
+    /// before its checkpoint phase is resumed.  Checkpoint metadata is a
+    /// progress witness, not the payload, snapshot or witness itself: a crash
+    /// recovery must not advance from a stale checkpoint after one of those
+    /// files was removed or replaced.
+    pub fn revalidate_recovered_artifacts(
+        &self,
+        transaction: &ArtifactPublicationTransactionV1,
+        staged_registry: &ArtifactRegistry,
+        signed: &SignedCurrentArtifactHeadV1,
+        now: u64,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        self.require_current_writer(now)?;
+        let snapshot = transaction.snapshot();
+        let manifest = &transaction.intent().admission.validated_manifest.manifest;
+
+        if phase_code(snapshot.phase) >= phase_code(ArtifactPublicationPhaseV1::PayloadDurable) {
+            let relative = PathBuf::from("payloads").join(format!(
+                "{}-{}.bin",
+                manifest.artifact_id, manifest.bytes_digest
+            ));
+            let payload = read_candidate_payload(
+                open_owner_artifact_file(self.root.join(relative))?,
+                staged_registry,
+                &manifest.artifact_id,
+            )?;
+            if Digest32::of_bytes(&payload) != manifest.bytes_digest
+                || payload.len() as u64 != manifest.encoded_size_bytes
+            {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            }
+        }
+
+        if phase_code(snapshot.phase) >= phase_code(ArtifactPublicationPhaseV1::RegistryDurable) {
+            let receipt = snapshot
+                .registry_receipt
+                .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+            if receipt.binding != signed.binding {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            }
+            let reopened = read_registry_snapshot(
+                open_owner_artifact_file(self.registry_snapshot_path(receipt))?,
+                receipt,
+            )?;
+            if reopened.snapshot() != staged_registry.snapshot() {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            }
+        }
+
+        if phase_code(snapshot.phase) >= phase_code(ArtifactPublicationPhaseV1::WitnessDurable) {
+            let receipt = snapshot
+                .witness_receipt
+                .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+            if receipt.binding != signed.binding {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            }
+            let requirement = self.witness_requirement(
+                signed,
+                transaction.intent().expected_registry_predecessor_head,
+                now,
+            )?;
+            let verified = self
+                .verifier
+                .verify_signed_head(signed, &requirement, true)?;
+            let relative = PathBuf::from("witnesses").join(format!(
+                "{}-{}.witness",
+                signed.witness.generation.get(),
+                verified.witness_digest
+            ));
+            let reopened = read_registry_head_witness(
+                open_owner_artifact_file(self.root.join(relative))?,
+                receipt,
+                &requirement,
+            )?;
+            if reopened != signed.witness {
+                return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+            }
+            let current = self
+                .discover_current_head(now)?
+                .ok_or(ArtifactOwnerHostError::CurrentHeadConflict)?;
+            if current.signed != *signed {
+                return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+            }
+        }
+        Ok(())
     }
 
     pub fn ensure_registry_durable(
@@ -604,8 +711,10 @@ impl LearningArtifactOwnerHost {
             match write_registry_snapshot_beneath(&self.root, &relative, registry, binding) {
                 Ok(receipt) => receipt,
                 Err(crate::ArtifactStorageError::AlreadyExists) => {
-                    let reopened =
-                        read_registry_snapshot(File::open(self.root.join(&relative))?, expected)?;
+                    let reopened = read_registry_snapshot(
+                        open_owner_artifact_file(self.root.join(&relative))?,
+                        expected,
+                    )?;
                     if reopened.snapshot().head_digest != expected.head_digest {
                         return Err(ArtifactOwnerHostError::CheckpointMismatch);
                     }
@@ -629,43 +738,8 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<RegistryHeadWitnessReceipt, ArtifactOwnerHostError> {
         self.require_current_writer(now)?;
-        let current = self.discover_current_head(now)?;
         let expected_predecessor = transaction.intent().expected_registry_predecessor_head;
-        let requirement = match current.as_ref() {
-            Some(current) if current.signed.witness.head_digest == signed.witness.head_digest => {
-                RegistryHeadRequirementV1 {
-                    registry_id: self.verifier.trust.registry_id.clone(),
-                    minimum_generation: signed.witness.generation,
-                    expected_predecessor_head_digest: expected_predecessor,
-                    minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
-                    now,
-                }
-            }
-            Some(current) if current.signed.witness.head_digest == expected_predecessor => {
-                RegistryHeadRequirementV1 {
-                    registry_id: self.verifier.trust.registry_id.clone(),
-                    minimum_generation: current
-                        .signed
-                        .witness
-                        .generation
-                        .next()
-                        .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?,
-                    expected_predecessor_head_digest: expected_predecessor,
-                    minimum_authority_epoch: current.signed.witness.authority_epoch,
-                    now,
-                }
-            }
-            None if expected_predecessor == self.verifier.trust.genesis_predecessor_head_digest => {
-                RegistryHeadRequirementV1 {
-                    registry_id: self.verifier.trust.registry_id.clone(),
-                    minimum_generation: self.verifier.trust.minimum_registry_generation,
-                    expected_predecessor_head_digest: expected_predecessor,
-                    minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
-                    now,
-                }
-            }
-            Some(_) | None => return Err(ArtifactOwnerHostError::CurrentHeadConflict),
-        };
+        let requirement = self.witness_requirement(signed, expected_predecessor, now)?;
         let verified = self
             .verifier
             .verify_signed_head(signed, &requirement, true)?;
@@ -691,7 +765,7 @@ impl LearningArtifactOwnerHost {
             Ok(receipt) => receipt,
             Err(crate::ArtifactStorageError::AlreadyExists) => {
                 let reopened = read_registry_head_witness(
-                    File::open(self.root.join(&relative))?,
+                    open_owner_artifact_file(self.root.join(&relative))?,
                     expected_receipt,
                     &requirement,
                 )?;
@@ -718,6 +792,50 @@ impl LearningArtifactOwnerHost {
         )?;
         self.persist_checkpoint(transaction)?;
         Ok(receipt)
+    }
+
+    fn witness_requirement(
+        &self,
+        signed: &SignedCurrentArtifactHeadV1,
+        expected_predecessor: Digest32,
+        now: u64,
+    ) -> Result<RegistryHeadRequirementV1, ArtifactOwnerHostError> {
+        let current = self.discover_current_head(now)?;
+        match current.as_ref() {
+            Some(current) if current.signed.witness.head_digest == signed.witness.head_digest => {
+                Ok(RegistryHeadRequirementV1 {
+                    registry_id: self.verifier.trust.registry_id.clone(),
+                    minimum_generation: signed.witness.generation,
+                    expected_predecessor_head_digest: expected_predecessor,
+                    minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+                    now,
+                })
+            }
+            Some(current) if current.signed.witness.head_digest == expected_predecessor => {
+                Ok(RegistryHeadRequirementV1 {
+                    registry_id: self.verifier.trust.registry_id.clone(),
+                    minimum_generation: current
+                        .signed
+                        .witness
+                        .generation
+                        .next()
+                        .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?,
+                    expected_predecessor_head_digest: expected_predecessor,
+                    minimum_authority_epoch: current.signed.witness.authority_epoch,
+                    now,
+                })
+            }
+            None if expected_predecessor == self.verifier.trust.genesis_predecessor_head_digest => {
+                Ok(RegistryHeadRequirementV1 {
+                    registry_id: self.verifier.trust.registry_id.clone(),
+                    minimum_generation: self.verifier.trust.minimum_registry_generation,
+                    expected_predecessor_head_digest: expected_predecessor,
+                    minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+                    now,
+                })
+            }
+            Some(_) | None => Err(ArtifactOwnerHostError::CurrentHeadConflict),
+        }
     }
 
     pub fn acknowledge(
@@ -789,7 +907,10 @@ impl LearningArtifactOwnerHost {
             "{}-{}.snapshot",
             receipt.head_digest, receipt.file_digest
         ));
-        Ok(read_registry_snapshot(File::open(path)?, receipt)?)
+        Ok(read_registry_snapshot(
+            open_owner_artifact_file(path)?,
+            receipt,
+        )?)
     }
 
     /// Recover the artifact registry that exactly backs the authenticated
@@ -860,8 +981,10 @@ impl LearningArtifactOwnerHost {
             .discover_current_head(now)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         let receipt = self.current_registry_receipt(&current)?;
-        let registry =
-            read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+        let registry = read_registry_snapshot(
+            open_owner_artifact_file(self.registry_snapshot_path(receipt))?,
+            receipt,
+        )?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
@@ -881,8 +1004,10 @@ impl LearningArtifactOwnerHost {
             return Ok(ArtifactRegistry::new());
         };
         let receipt = self.current_registry_receipt(&current)?;
-        let registry =
-            read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+        let registry = read_registry_snapshot(
+            open_owner_artifact_file(self.registry_snapshot_path(receipt))?,
+            receipt,
+        )?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
@@ -895,7 +1020,12 @@ impl LearningArtifactOwnerHost {
     pub fn recovery_required_operations(
         &self,
     ) -> Result<Vec<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {
-        let mut latest: BTreeMap<StableId, ArtifactOwnerPublicationCheckpointV1> = BTreeMap::new();
+        // Merely choosing the highest phase lets a forged or truncated
+        // Acknowledged checkpoint hide a crashed in-flight publication at
+        // service startup. First collect operation identities, then enforce
+        // the *same* contiguous checkpoint chain and immutable intent
+        // invariants as explicit operation recovery.
+        let mut operation_ids = std::collections::BTreeSet::new();
         for entry in fs::read_dir(self.root.join("transactions"))? {
             let entry = entry?;
             let metadata = fs::symlink_metadata(entry.path())?;
@@ -907,17 +1037,23 @@ impl LearningArtifactOwnerHost {
             }
             let checkpoint =
                 decode_checkpoint(&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?)?;
-            match latest.get(&checkpoint.operation_id) {
-                Some(existing) if phase_code(existing.phase) >= phase_code(checkpoint.phase) => {}
-                Some(_) | None => {
-                    latest.insert(checkpoint.operation_id.clone(), checkpoint);
-                }
+            // Reject orphan aliases and mismatched operation/phase filenames;
+            // they cannot be ignored when determining startup authority.
+            if entry.path() != self.checkpoint_path(&checkpoint.operation_id, checkpoint.phase) {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            }
+            operation_ids.insert(checkpoint.operation_id);
+        }
+        let mut recovery_required = Vec::new();
+        for operation_id in operation_ids {
+            let recovery = self
+                .recover_publication(&operation_id)?
+                .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
+            if recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged {
+                recovery_required.push(recovery.checkpoint);
             }
         }
-        Ok(latest
-            .into_values()
-            .filter(|checkpoint| checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged)
-            .collect())
+        Ok(recovery_required)
     }
 
     pub fn recover_publication(
@@ -926,7 +1062,7 @@ impl LearningArtifactOwnerHost {
     ) -> Result<Option<ArtifactOwnerRecoveryV1>, ArtifactOwnerHostError> {
         let mut latest = None;
         let mut missing_seen = false;
-        let mut invariant: Option<(Digest32, Digest32, Digest32, Digest32)> = None;
+        let mut invariant: Option<(Digest32, Digest32, Digest32, Digest32, Digest32)> = None;
         for phase in ordered_phases() {
             let path = self.checkpoint_path(operation_id, phase);
             if !path.exists() {
@@ -945,6 +1081,7 @@ impl LearningArtifactOwnerHost {
                 checkpoint.intent_digest,
                 checkpoint.admission_digest,
                 checkpoint.withdrawal_scope_digest,
+                checkpoint.withdrawal_head_digest,
                 checkpoint.expected_registry_predecessor_head,
             );
             if invariant.is_some_and(|value| value != key) {
@@ -1444,6 +1581,64 @@ fn digest_signer_set(bytes: &mut Vec<u8>, signers: &[TrustedArtifactSignerV1]) {
     }
 }
 
+/// Verify the lock inode before acquiring writer authority. Existing lock
+/// files must be private and have exactly one link: an attacker-controlled
+/// hardlink, symbolic link or path replacement must not become the owner lock.
+/// Reopen immutable owner evidence without accepting a symlink, hardlink, or
+/// replacement between path inspection and file open. The storage root's
+/// containing directories remain under the trusted host's ownership.
+fn open_owner_artifact_file(path: impl AsRef<Path>) -> Result<File, ArtifactOwnerHostError> {
+    let path = path.as_ref();
+    let before = fs::symlink_metadata(path)?;
+    if before.file_type().is_symlink() || !before.is_file() {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    #[cfg(unix)]
+    if before.nlink() != 1 || before.mode() & 0o077 != 0 {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    let file = File::open(path)?;
+    let after = fs::symlink_metadata(path)?;
+    let opened = file.metadata()?;
+    if after.file_type().is_symlink() || !after.is_file() || !opened.is_file() {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    #[cfg(unix)]
+    if before.dev() != opened.dev()
+        || before.ino() != opened.ino()
+        || after.dev() != opened.dev()
+        || after.ino() != opened.ino()
+        || opened.nlink() != 1
+        || after.nlink() != 1
+        || opened.mode() & 0o077 != 0
+        || after.mode() & 0o077 != 0
+    {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    Ok(file)
+}
+
+fn verify_owner_writer_fence(path: &Path, opened: &File) -> Result<(), ArtifactOwnerHostError> {
+    #[cfg(not(unix))]
+    let _ = opened;
+    let on_path = fs::symlink_metadata(path)?;
+    if on_path.file_type().is_symlink() || !on_path.is_file() {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    #[cfg(unix)]
+    {
+        let opened_meta = opened.metadata()?;
+        if on_path.dev() != opened_meta.dev()
+            || on_path.ino() != opened_meta.ino()
+            || on_path.nlink() != 1
+            || on_path.mode() & 0o077 != 0
+        {
+            return Err(ArtifactOwnerHostError::PathBoundary);
+        }
+    }
+    Ok(())
+}
+
 fn ensure_real_directory(root: &Path, name: &str) -> Result<(), ArtifactOwnerHostError> {
     let path = root.join(name);
     match fs::symlink_metadata(&path) {
@@ -1488,7 +1683,7 @@ fn read_small_record(path: &Path, limit: usize) -> Result<Vec<u8>, ArtifactOwner
     if metadata.file_type().is_symlink() || !metadata.is_file() || metadata.len() > limit as u64 {
         return Err(ArtifactOwnerHostError::Capacity);
     }
-    let mut file = File::open(path)?;
+    let mut file = open_owner_artifact_file(path)?;
     match file.try_lock_shared() {
         Ok(()) => {}
         Err(TryLockError::WouldBlock) => return Err(ArtifactOwnerHostError::WriterFenceBusy),
@@ -1784,6 +1979,93 @@ mod tests {
         value
     }
 
+    #[cfg(unix)]
+    #[test]
+    fn owner_writer_fence_rejects_symbolic_hard_and_overpermissive_files() {
+        use std::os::unix::fs::PermissionsExt;
+
+        for attack in ["symlink", "hardlink", "overpermissive"] {
+            let directory = TestDir::new();
+            let writer = directory.0.join("writer");
+            fs::create_dir(&writer).fixture("create writer dir");
+            let victim = directory.0.join("unrelated-data");
+            fs::write(&victim, b"unaltered").fixture("create unrelated file");
+            let lock = writer.join("owner.lock");
+            match attack {
+                "symlink" => {
+                    std::os::unix::fs::symlink(&victim, &lock).fixture("place symbolic link")
+                }
+                "hardlink" => fs::hard_link(&victim, &lock).fixture("place hard link"),
+                "overpermissive" => {
+                    fs::write(&lock, b"lock-data").fixture("create insecure lock");
+                    fs::set_permissions(&lock, fs::Permissions::from_mode(0o644))
+                        .fixture("make lock group/world readable");
+                }
+                _ => unreachable!("listed attack"),
+            }
+            let key = signer();
+            let scope_digest = withdrawal_scope().digest();
+            let error = LearningArtifactOwnerHost::open(
+                &directory.0,
+                trust(&key, scope_digest),
+                lease(&key, scope_digest),
+                20,
+            )
+            .fixture_error("untrusted owner lock must not be opened");
+            assert!(matches!(error, ArtifactOwnerHostError::PathBoundary));
+            assert_eq!(
+                fs::read(&victim)
+                    .fixture("read victim after denial")
+                    .as_slice(),
+                b"unaltered"
+            );
+        }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn owner_artifact_recovery_reader_rejects_link_and_permission_substitution() {
+        use std::os::unix::fs::OpenOptionsExt;
+        use std::os::unix::fs::PermissionsExt;
+
+        let directory = TestDir::new();
+        let trusted = directory.0.join("trusted-checkpoint");
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true).mode(0o600);
+        let mut file = options.open(&trusted).fixture("create private evidence");
+        file.write_all(b"immutable-recovery-evidence")
+            .fixture("write private evidence");
+        file.sync_all().fixture("sync private evidence");
+        drop(file);
+        open_owner_artifact_file(&trusted).fixture("private regular evidence");
+
+        let symbolic = directory.0.join("symbolic-checkpoint");
+        std::os::unix::fs::symlink(&trusted, &symbolic).fixture("symbolic alias");
+        assert!(matches!(
+            open_owner_artifact_file(&symbolic),
+            Err(ArtifactOwnerHostError::PathBoundary)
+        ));
+
+        let linked = directory.0.join("linked-checkpoint");
+        fs::hard_link(&trusted, &linked).fixture("hardlink alias");
+        assert!(matches!(
+            open_owner_artifact_file(&trusted),
+            Err(ArtifactOwnerHostError::PathBoundary)
+        ));
+        assert!(matches!(
+            open_owner_artifact_file(&linked),
+            Err(ArtifactOwnerHostError::PathBoundary)
+        ));
+
+        fs::remove_file(&linked).fixture("remove alias");
+        fs::set_permissions(&trusted, fs::Permissions::from_mode(0o644))
+            .fixture("widen evidence permissions");
+        assert!(matches!(
+            open_owner_artifact_file(&trusted),
+            Err(ArtifactOwnerHostError::PathBoundary)
+        ));
+    }
+
     #[test]
     fn owner_host_exclusively_fences_writer_lease() {
         let directory = TestDir::new();
@@ -1814,6 +2096,191 @@ mod tests {
             20,
         )
         .fixture("fence is released");
+    }
+
+    #[test]
+    fn recovery_rejects_cross_phase_withdrawal_head_drift() {
+        let directory = TestDir::new();
+        let key = signer();
+        let scope = withdrawal_scope();
+        let scope_digest = scope.digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("owner");
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            20,
+        )
+        .fixture("admission");
+        let mut transaction = owner
+            .begin_publication(
+                id("head-drift-operation"),
+                admission,
+                &withdrawals,
+                &ArtifactRegistry::new(),
+                Digest32::ZERO,
+                20,
+            )
+            .fixture("begin");
+        transaction
+            .record_payload_durable(digest("payload"), 7)
+            .fixture("payload phase");
+        owner
+            .persist_checkpoint(&transaction)
+            .fixture("checkpoint payload phase");
+
+        // Model a disk-corrupted later checkpoint which still claims the
+        // same operation, intent, admission, scope and registry predecessor.
+        // Withdrawal-head identity is a frozen admission property, not
+        // mutable progress metadata.
+        let mut corrupt =
+            checkpoint_from_snapshot(&transaction.snapshot(), owner.writer_lease_digest());
+        corrupt.withdrawal_head_digest = digest("different-withdrawal-head");
+        fs::write(
+            owner.checkpoint_path(
+                &id("head-drift-operation"),
+                ArtifactPublicationPhaseV1::PayloadDurable,
+            ),
+            encode_checkpoint(&corrupt),
+        )
+        .fixture("inject withdrawal head drift");
+        assert!(matches!(
+            owner.recover_publication(&id("head-drift-operation")),
+            Err(ArtifactOwnerHostError::CheckpointMismatch)
+        ));
+        assert!(matches!(
+            owner.recovery_required_operations(),
+            Err(ArtifactOwnerHostError::CheckpointMismatch)
+        ));
+    }
+
+    #[test]
+    fn startup_rejects_orphan_terminal_checkpoint_and_missing_phases() {
+        let directory = TestDir::new();
+        let key = signer();
+        let scope = withdrawal_scope();
+        let scope_digest = scope.digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("owner");
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            20,
+        )
+        .fixture("admission");
+        let transaction = owner
+            .begin_publication(
+                id("gap-operation"),
+                admission,
+                &withdrawals,
+                &ArtifactRegistry::new(),
+                Digest32::ZERO,
+                20,
+            )
+            .fixture("begin");
+        let mut forged =
+            checkpoint_from_snapshot(&transaction.snapshot(), owner.writer_lease_digest());
+        forged.phase = ArtifactPublicationPhaseV1::Acknowledged;
+        forged.acknowledged_at = Some(20);
+        write_create_only_or_exact(
+            &owner.checkpoint_path(
+                &id("gap-operation"),
+                ArtifactPublicationPhaseV1::Acknowledged,
+            ),
+            &encode_checkpoint(&forged),
+        )
+        .fixture("write forged terminal checkpoint");
+        assert!(matches!(
+            owner.recovery_required_operations(),
+            Err(ArtifactOwnerHostError::CheckpointGap)
+        ));
+    }
+
+    #[test]
+    fn startup_rejects_noncanonical_checkpoint_filenames() {
+        let directory = TestDir::new();
+        let key = signer();
+        let scope = withdrawal_scope();
+        let scope_digest = scope.digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("owner");
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            20,
+        )
+        .fixture("admission");
+        let transaction = owner
+            .begin_publication(
+                id("filename-operation"),
+                admission,
+                &withdrawals,
+                &ArtifactRegistry::new(),
+                Digest32::ZERO,
+                20,
+            )
+            .fixture("begin");
+        let checkpoint =
+            checkpoint_from_snapshot(&transaction.snapshot(), owner.writer_lease_digest());
+        write_create_only_or_exact(
+            &directory.0.join("transactions").join("orphan.checkpoint"),
+            &encode_checkpoint(&checkpoint),
+        )
+        .fixture("write orphan alias");
+        assert!(matches!(
+            owner.recovery_required_operations(),
+            Err(ArtifactOwnerHostError::CheckpointMismatch)
+        ));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn replaced_owner_lock_inode_revokes_current_writer() {
+        use std::os::unix::fs::PermissionsExt as _;
+
+        let directory = TestDir::new();
+        let key = signer();
+        let scope_digest = withdrawal_scope().digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("original fenced writer");
+
+        let path = directory.0.join("writer").join("owner.lock");
+        fs::remove_file(&path).fixture("unlink original locked inode");
+        File::create(&path).fixture("create replacement lock file");
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600))
+            .fixture("set replacement lock mode");
+        assert!(matches!(
+            owner
+                .require_current_writer(20)
+                .fixture_error("a replacement inode must revoke the original writer"),
+            ArtifactOwnerHostError::PathBoundary
+        ));
     }
 
     #[test]
@@ -1877,6 +2344,128 @@ mod tests {
             .resume_publication(snapshot, 21)
             .fixture("exact snapshot resumes");
         assert_eq!(resumed.phase(), ArtifactPublicationPhaseV1::PayloadDurable);
+    }
+
+    #[test]
+    fn recovered_payload_phase_requires_the_payload_file() {
+        let directory = TestDir::new();
+        let key = signer();
+        let scope = withdrawal_scope();
+        let scope_digest = scope.digest();
+        let owner = LearningArtifactOwnerHost::open(
+            &directory.0,
+            trust(&key, scope_digest),
+            lease(&key, scope_digest),
+            20,
+        )
+        .fixture("owner");
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope);
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            20,
+        )
+        .fixture("admission");
+        let mut staged = ArtifactRegistry::new();
+        let mut transaction = owner
+            .begin_publication(
+                id("recovery-payload-operation"),
+                admission,
+                &withdrawals,
+                &staged,
+                Digest32::ZERO,
+                20,
+            )
+            .fixture("begin");
+        owner
+            .stage_compatibility_registration(&transaction, &mut staged, 20)
+            .fixture("stage registration");
+        owner
+            .ensure_payload_durable(&mut transaction, &staged, b"payload", 20)
+            .fixture("payload durable");
+
+        let signed = signed_head(&key, scope_digest, staged.snapshot().head_digest);
+        let payload = directory.0.join("payloads").join(format!(
+            "{}-{}.bin",
+            id("candidate"),
+            digest("payload")
+        ));
+        owner
+            .revalidate_recovered_artifacts(&transaction, &staged, &signed, 20)
+            .fixture("payload recovery revalidation");
+        fs::remove_file(payload).fixture("remove payload after checkpoint");
+        assert!(
+            owner
+                .revalidate_recovered_artifacts(&transaction, &staged, &signed, 20)
+                .is_err()
+        );
+        write_candidate_payload_beneath(
+            &directory.0,
+            PathBuf::from("payloads").join(format!(
+                "{}-{}.bin",
+                id("candidate"),
+                digest("payload")
+            )),
+            &staged,
+            &id("candidate"),
+            b"payload",
+        )
+        .fixture("restore payload");
+        owner
+            .ensure_registry_durable(&mut transaction, &staged, &withdrawals, signed.binding, 20)
+            .fixture("registry durable");
+        let registry_receipt = transaction
+            .snapshot()
+            .registry_receipt
+            .fixture("registry receipt");
+        let registry = directory.0.join("registries").join(format!(
+            "{}-{}.snapshot",
+            registry_receipt.head_digest, registry_receipt.file_digest
+        ));
+        fs::remove_file(registry).fixture("remove registry after checkpoint");
+        assert!(
+            owner
+                .revalidate_recovered_artifacts(&transaction, &staged, &signed, 20)
+                .is_err()
+        );
+
+        write_registry_snapshot_beneath(
+            &directory.0,
+            PathBuf::from("registries").join(format!(
+                "{}-{}.snapshot",
+                registry_receipt.head_digest, registry_receipt.file_digest
+            )),
+            &staged,
+            signed.binding,
+        )
+        .fixture("restore registry");
+        owner
+            .ensure_witness_durable(&mut transaction, &signed, &withdrawals, 20)
+            .fixture("witness durable");
+        let requirement = RegistryHeadRequirementV1 {
+            registry_id: id("learning-artifacts"),
+            minimum_generation: Generation::new(1).fixture("generation"),
+            expected_predecessor_head_digest: Digest32::ZERO,
+            minimum_authority_epoch: 1,
+            now: 20,
+        };
+        let witness_digest = owner
+            .verifier
+            .verify_signed_head(&signed, &requirement, true)
+            .fixture("verify witness")
+            .witness_digest;
+        let witness = directory.0.join("witnesses").join(format!(
+            "{}-{}.witness",
+            signed.witness.generation.get(),
+            witness_digest
+        ));
+        fs::remove_file(witness).fixture("remove witness after checkpoint");
+        assert!(
+            owner
+                .revalidate_recovered_artifacts(&transaction, &staged, &signed, 20)
+                .is_err()
+        );
     }
 
     #[test]
