@@ -178,7 +178,7 @@ pub fn run_memory_cell_tick(
         transient_bytes: 0,
     };
     receipt
-        .validate()
+        .validate_against_manifest_and_input(manifest, input)
         .map_err(|error| MemoryCellRuntimeErrorV1::Contract(format!("{error:?}")))?;
     Ok(MemoryCellShadowTickV1 { receipt, recall })
 }
