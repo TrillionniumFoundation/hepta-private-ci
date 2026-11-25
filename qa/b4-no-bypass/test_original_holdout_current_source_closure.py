@@ -20,6 +20,8 @@ STORE = DIRECTORY + "fenced_holdout_file.rs"
 CURRENT = DIRECTORY + "fenced_holdout_current.rs"
 REPLAY = DIRECTORY + "fenced_holdout_file_replay.rs"
 OWNER = DIRECTORY + "fenced_holdout.rs"
+LOCK = DIRECTORY + "holdout_file_lock.rs"
+UNIX_LOCK = DIRECTORY + "holdout_file_lock_unix.rs"
 FUNCTIONS = {
     OWNER: {
         "fn consume(", "fn read_consumption(", "fn read_consumption_for_execution(",
@@ -32,17 +34,19 @@ FUNCTIONS = {
     STORE: {
         "fn create(", "fn recover(", "fn require_current(", "fn require_physical_current(",
         "fn acquire(", "fn load(", "fn compare_and_swap(", "fn anchor(",
-        "fn decode_fence(", "fn deref(", "fn deref_mut(", "fn drop(",
+        "fn decode_fence(",
         "fn encode_fence(", "fn fmt(", "fn io_error(",
         "fn qualification_unpoisoned_file_bytes(", "fn record_anchor(",
         "fn replay_event(", "fn transition_payload(", "fn validate_minimum(",
     },
     # Physical CURRENT delegates the shared replay grammar to REPLAY below.
     CURRENT: {"fn read_physical("},
+    LOCK: {"fn acquire(", "fn check_process(", "fn deref(", "fn deref_mut(", "fn drop("},
+    UNIX_LOCK: {"fn reserve(", "fn check_origin(", "fn acquire(", "fn check(", "fn release_registered("},
 }
 REPLAY_FUNCTIONS = {"fn read_stable_image(", "fn read_image(", "fn replay_image("}
 # Each file has one consolidated record containing every guard from both owners.
-PROTECTED_ROW_COUNTS = {OWNER: 1, STORE: 1, CURRENT: 1, REPLAY: 1}
+PROTECTED_ROW_COUNTS = {path: 1 for path in (*FUNCTIONS, REPLAY)}
 
 
 def function_body(source, marker):
@@ -148,7 +152,7 @@ class OriginalHoldoutCurrentSourceClosureTests(unittest.TestCase):
         ):
             with self.subTest(call=call):
                 self.verify_changed(CURRENT, source + "\nfn bypass() { " + call + " }\n")
-        for path in FUNCTIONS:
+        for path in (OWNER, STORE, CURRENT):
             original = (ROOT / path).read_text()
             for call in ("SigningKey::from_bytes(bytes);", "LearningEvidenceVerifierV1::new(trust);"):
                 with self.subTest(path=path, call=call):
@@ -162,11 +166,19 @@ class OriginalHoldoutCurrentSourceClosureTests(unittest.TestCase):
             "const MAX_BYTES: u64 = 32 * 1024 * 1024",
             "const MAX_FRAME: usize = 4096",
             "const MAX_RECORDS: usize = 1_000_000",
-            "file.try_lock()",
-            "let _ = self.0.unlock()",
+            "AcquiredFile::acquire(file)",
         ):
             self.assertIn(marker, store)
             self.verify_changed(STORE, store.replace(marker, "", 1))
+        lock = (ROOT / LOCK).read_text()
+        unix_lock = (ROOT / UNIX_LOCK).read_text()
+        for path, source, markers in (
+            (LOCK, lock, ("file.try_lock()?", "let _ = self.file.unlock()", "unix::release(&self.file, lease)")),
+            (UNIX_LOCK, unix_lock, ("acquired.file.try_lock()", "registry.release(lease, || file.unlock())")),
+        ):
+            for marker in markers:
+                self.assertIn(marker, source)
+                self.verify_changed(path, source.replace(marker, "", 1))
         recovery = function_body(store, "fn recover(")
         self.assertIn("current::read_physical(&mut file, binding, minimum)?", recovery)
         self.assertNotRegex(recovery, r"(?:initialize|create|compare_and_swap|write_all)\s*\(")

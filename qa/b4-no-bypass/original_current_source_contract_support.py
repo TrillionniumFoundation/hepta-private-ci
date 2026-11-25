@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 
 
-PROJECTION_SHA256 = "d26eaa94aa57d65503aca96eb6884b0455c24a755cd676d2c6bbec8221edf084"
+PROJECTION_SHA256 = "3b1ce93d06dc08e0aa52c3cafe1b1bd37150d88ac516935564912163dc67cc65"
 
 
 def _canonical_sha256(value):
