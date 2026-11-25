@@ -5,6 +5,10 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
 use codex_hepta_types::Digest32;
 
+#[path = "deployment_paired_live.rs"]
+mod live;
+use live::PairedRootInspection;
+
 /// Trusted launcher metadata, not proof of a human turn or material custody.
 /// The original Registry must already contain the exact enrollment and effect.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -226,6 +230,23 @@ impl RegisteredRootPaired {
     }
 
     pub(crate) fn observe(&self) -> io::Result<PairedRootObservation> {
+        self.inspect(PairedRootInspection::RegistrationOnly)
+    }
+
+    pub(crate) fn observe_original_human(
+        &self,
+        identity: &AgentdIdentity,
+        ingress: &AuthBusTextIngress,
+        held: &crate::authority_host_service::OriginalHumanLifetime<'_>,
+    ) -> io::Result<PairedRootObservation> {
+        self.inspect(PairedRootInspection::OriginalHuman {
+            identity,
+            ingress,
+            held,
+        })
+    }
+
+    fn inspect(&self, inspection: PairedRootInspection<'_>) -> io::Result<PairedRootObservation> {
         let pinned = self
             .issuer
             .lease
@@ -286,6 +307,16 @@ impl RegisteredRootPaired {
                     {
                         return Err(denied(
                             "paired observation expired during original owner readback",
+                        ));
+                    }
+                    let now = inspection.verify(self, &state, now)?;
+                    if [issuer, writer, effect, enrollment]
+                        .iter()
+                        .any(|lease| now >= lease.expires_at_unix_ms)
+                        || now >= self.registration.human_expires_at_ms
+                    {
+                        return Err(denied(
+                            "paired dependencies expired during original human check",
                         ));
                     }
                     Ok(PairedRootObservation {

@@ -212,11 +212,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-preparation.json" --minimum-tests 12 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_preparation::tests)'
-      - name: Original paired Root registration and four-record boundary
+      - name: Original paired Root registration, human fence, and four-record boundary
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-root-registration.json" --minimum-tests 9 -- just test --locked -p codex-hepta-contracts -p codex-hepta-agentd --lib -E 'test(authority_lease::pair_boundary::tests::pinned_issuer::paired::) | test(deployment_issuer::paired::tests)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-root-registration.json" --minimum-tests 16 -- just test --locked -p codex-hepta-contracts -p codex-hepta-agentd --lib -E 'test(authority_lease::pair_boundary::tests::pinned_issuer::paired::) | test(deployment_issuer::paired::tests) | test(authority_host_service::logind::paired_human_tests)'
       - name: Isolated paired Root gate rejection controls
         if: matrix.lane == 'source-head' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |

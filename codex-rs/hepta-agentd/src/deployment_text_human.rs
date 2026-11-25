@@ -68,7 +68,28 @@ impl DeploymentFinalUseIssuer {
             .lock()
             .map_err(|_| io::Error::other("issuer fenced"))?;
         let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
-        let retained = state
+        let now = self.clock.now_unix_ms().map_err(io::Error::other)?;
+        state
+            .verify_retained_human_text_at(identity, ingress, human, namespace, now)
+            .map(|_| ())
+    }
+}
+
+impl IssuerState {
+    /// Inspect the same original state while its caller owns the request lock.
+    /// This pure predicate neither opens the Registry nor returns a read permit.
+    /// Its result is only the earliest retained human/signature expiry.
+    pub(in crate::deployment_issuer) fn verify_retained_human_text_at(
+        &self,
+        identity: &AgentdIdentity,
+        ingress: &AuthBusTextIngress,
+        human: &TextHumanBinding,
+        namespace: &str,
+        now: u64,
+    ) -> io::Result<u64> {
+        let destination = DeploymentFinalUseIssuer::text_destination(&human.route.thread_id)?;
+        self.require_text_route(identity, &destination)?;
+        let retained = self
             .text_signatures
             .iter()
             .find(|retained| {
@@ -81,7 +102,6 @@ impl DeploymentFinalUseIssuer {
             .body
             .as_ref()
             .ok_or_else(|| io::Error::other("legacy text has no retained input"))?;
-        let now = self.clock.now_unix_ms().map_err(io::Error::other)?;
         if retained.human_binding.as_ref() != Some(human)
             || !retained.request_id.starts_with(&format!("{namespace}:"))
             || body.thread_id != human.route.thread_id
@@ -93,7 +113,7 @@ impl DeploymentFinalUseIssuer {
                 .as_array()
             || now >= human.expires_at_ms
             || now >= retained.expires_at_ms
-            || serde_json::to_value(envelope(&state.signer_id, retained, body.clone()))
+            || serde_json::to_value(envelope(&self.signer_id, retained, body.clone()))
                 .map_err(io::Error::other)?
                 != serde_json::to_value(ingress).map_err(io::Error::other)?
         {
@@ -101,7 +121,7 @@ impl DeploymentFinalUseIssuer {
                 "original text was not authenticated by this live human session",
             ));
         }
-        Ok(())
+        Ok(human.expires_at_ms.min(retained.expires_at_ms))
     }
 }
 

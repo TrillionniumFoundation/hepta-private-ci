@@ -98,18 +98,7 @@ impl DeploymentFinalUseIssuer {
             .lock()
             .map_err(|_| io::Error::other("issuer fenced"))?;
         let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
-        if !state.policies.iter().any(|policy| {
-            policy.subject_id == identity.agent_id.as_str()
-                && policy.destination_id == destination
-                && policy.scope_sha256 == Self::text_scope(&identity.agent_id)
-                && (1..=300_000).contains(&policy.lifetime_ms)
-        }) {
-            return Err(io::Error::new(
-                io::ErrorKind::PermissionDenied,
-                "text route is not installed",
-            ));
-        }
-        Ok(())
+        state.require_text_route(identity, &destination)
     }
 
     /// Exact existing-thread policy destination, installed by the root owner.
@@ -373,6 +362,29 @@ impl DeploymentFinalUseIssuer {
             return Err(io::Error::other("text expired during signing"));
         }
         Ok(signed)
+    }
+}
+
+impl IssuerState {
+    /// Check the already loaded original state without taking another lock.
+    /// Callers that authorize an entry must retain the issuer request lock.
+    pub(super) fn require_text_route(
+        &self,
+        identity: &AgentdIdentity,
+        destination: &str,
+    ) -> io::Result<()> {
+        if !self.policies.iter().any(|policy| {
+            policy.subject_id == identity.agent_id.as_str()
+                && policy.destination_id == destination
+                && policy.scope_sha256 == DeploymentFinalUseIssuer::text_scope(&identity.agent_id)
+                && (1..=300_000).contains(&policy.lifetime_ms)
+        }) {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "text route is not installed",
+            ));
+        }
+        Ok(())
     }
 }
 
