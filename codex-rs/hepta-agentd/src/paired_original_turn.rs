@@ -102,6 +102,33 @@ impl PairedTurnRequest {
         }
         Ok(())
     }
+
+    /// Correlate the retained signed bytes, never a substitute signature or
+    /// current human verification. No verified-turn value is created here.
+    pub(crate) fn match_ingress(
+        &self,
+        ingress: &crate::AuthBusTextIngress,
+        owner: &TextOwnerReceipt,
+    ) -> Result<(), AgentdError> {
+        let message = codex_hepta_authbus::SignedMessage {
+            claims: crate::authbus_text_claims(&owner.route.agent_id, ingress)?,
+            signature: crate::authbus_trust::hex_bytes(&ingress.signature_hex)?,
+        };
+        self.match_original(
+            &format!("hepta.authbus:{}", message.delivery_id()),
+            &ingress.body.text,
+            owner,
+        )?;
+        if ingress.body.thread_id != owner.route.thread_id
+            || ingress.body.spawn_generation == 0
+            || ingress.body.spawn_generation > owner.route.spawn_generation
+        {
+            return Err(invalid(
+                "paired continuation lost its original signed route",
+            ));
+        }
+        Ok(())
+    }
 }
 
 /// Created only inside the required runtime after original Core, AuthBus and
@@ -110,6 +137,7 @@ pub struct VerifiedPairedTurn {
     request: PairedTurnRequest,
     owner: TextOwnerReceipt,
     statement_sha256: Digest32,
+    ingress: crate::AuthBusTextIngress,
 }
 
 impl VerifiedPairedTurn {
@@ -124,11 +152,14 @@ impl VerifiedPairedTurn {
                 "paired human authorization changed during verification",
             ));
         }
-        Ok(Self {
+        let verified = Self {
             statement_sha256: Digest32::of_bytes(human.ingress().body.text.as_bytes()),
             request,
             owner: current,
-        })
+            ingress: human.ingress().clone(),
+        };
+        verified.original_ingress()?;
+        Ok(verified)
     }
 
     pub fn request(&self) -> &PairedTurnRequest {
@@ -149,6 +180,18 @@ impl VerifiedPairedTurn {
 
     pub fn statement_sha256(&self) -> Digest32 {
         self.statement_sha256
+    }
+
+    /// Borrow the original signed source inside the required owner only. This
+    /// correlation check is not a fresh Root check or permission to read data.
+    pub(crate) fn original_ingress(&self) -> Result<&crate::AuthBusTextIngress, AgentdError> {
+        self.request.match_ingress(&self.ingress, &self.owner)?;
+        if Digest32::of_bytes(self.ingress.body.text.as_bytes()) != self.statement_sha256 {
+            return Err(invalid(
+                "paired continuation lost its original signed delivery",
+            ));
+        }
+        Ok(&self.ingress)
     }
 }
 

@@ -13,6 +13,25 @@ use codex_hepta_paths::HeptaFleetRoot;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
+#[path = "paired_preparation_continuation_tests.rs"]
+mod continuation;
+
+impl PreparationJournal {
+    // Preserve the original eight controls' metadata-only fixture API. The
+    // actual receipt is created by the real writer and explicitly discarded.
+    async fn retain_payload(
+        &self,
+        request: &PairedPreparationRequest,
+        payload: PreparationPayload,
+        preparing: &AtomicBool,
+    ) -> Result<PairedPreparationResponse, AgentdError> {
+        Ok(self
+            .retain_original_receipt(request, payload, preparing)
+            .await?
+            .into_observation())
+    }
+}
+
 struct SyntheticVerifier(AtomicBool);
 impl ProductionAuthorityVerifier for SyntheticVerifier {
     fn verify(

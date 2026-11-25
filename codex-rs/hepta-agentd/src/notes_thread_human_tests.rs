@@ -127,6 +127,21 @@ fn paired_scope_composes_with_original_admission_and_core_reconciliation() {
     request
         .match_original(&client_id, &ingress.body.text, &owner)
         .unwrap();
+    request.match_ingress(&ingress, &owner).unwrap();
+    // Exercise the same canonical-byte correlation used by the private
+    // continuation, without constructing a human/paired authority token.
+    let mut changed = ingress.clone();
+    changed.signature_hex.replace_range(0..2, "ff");
+    if changed.signature_hex == ingress.signature_hex {
+        changed.signature_hex.replace_range(0..2, "00");
+    }
+    assert!(request.match_ingress(&changed, &owner).is_err());
+    let mut changed = ingress.clone();
+    changed.message_id.push('x');
+    assert!(request.match_ingress(&changed, &owner).is_err());
+    let mut changed = ingress.clone();
+    changed.body.thread_id.push('x');
+    assert!(request.match_ingress(&changed, &owner).is_err());
     let mut wrong = request.clone();
     wrong.usage = PairedLearningDataUse::TrainOnFailureAndCorrection {
         failure: Digest32::of_bytes(b"fixture failure"),

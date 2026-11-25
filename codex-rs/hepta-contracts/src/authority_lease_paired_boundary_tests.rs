@@ -1,5 +1,6 @@
 //! Synthetic records in the actual Registry; no human or deployment evidence.
 use super::*;
+use pretty_assertions::assert_eq;
 
 fn enrollment(f: &Fixture) -> AuthorityLease {
     let record = AuthorityLease {
