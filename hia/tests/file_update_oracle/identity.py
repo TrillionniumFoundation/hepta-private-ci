@@ -242,12 +242,37 @@ def _exec_server_test_projection(relative, expected, actual, listing):
     }
 
 
-def producer_inputs(producer, original_root, original_manifest):
+# The original and reviewed candidate lock bytes are distinct. Admission of
+# this pair is only used by consumers that actually build the separate graph.
+ORIGINAL_LOCK_BLOB = "e1fdaf3fde907d24fec7ea787d49c0e29b3eb4bd"
+REVIEWED_CANDIDATE_LOCK_BLOB = "fa06d0050579dc7747338025ff14839461248d66"
+
+
+def distinct_lock_inputs(original_lock, candidate_lock):
+    bindings = {}
+    for side, path, expected in (
+        ("original", original_lock, ORIGINAL_LOCK_BLOB),
+        ("candidate", candidate_lock, REVIEWED_CANDIDATE_LOCK_BLOB),
+    ):
+        data = path.read_bytes()
+        blob = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+        if blob != expected:
+            raise RuntimeError("unreviewed " + side + " Cargo.lock bytes")
+        bindings[side] = {"blob": blob, "sha256": hashlib.sha256(data).hexdigest(),
+                          "bytes": len(data)}
+    return bindings
+
+
+def producer_inputs(producer, original_root, original_manifest, *, separate_lock=False):
     current = clean_identity(producer)
     # Equality to immutable originals rejects manifest/default-feature changes even
     # if an attacker updates a self-reported manifest SHA to match that change.
     matched = {}
-    for path in ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock", CRATE + "/Cargo.toml", *TYPE_SOURCES):
+    lock_path = "codex-rs/Cargo.lock"
+    files = ("codex-rs/Cargo.toml", CRATE + "/Cargo.toml", *TYPE_SOURCES)
+    if not separate_lock:
+        files += (lock_path,)
+    for path in files:
         if sha(producer / path) != sha(original_root / path):
             raise RuntimeError(f"original dependency/type declaration changed: {path}")
         matched[path] = sha(producer / path)
@@ -268,6 +293,9 @@ def producer_inputs(producer, original_root, original_manifest):
     result = {**current, "matched_original_files": matched, "path_dependency_trees": path_trees,
               "original_source_manifest": original_manifest["crate_tree"],
               "exact_routing_inverse": recover_owner(producer)}
+    if separate_lock:
+        result["distinct_lock_inputs"] = distinct_lock_inputs(
+            original_root / lock_path, producer / lock_path)
     if projections:
         result["path_dependency_projections"] = projections
     return result
