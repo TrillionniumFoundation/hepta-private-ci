@@ -267,6 +267,26 @@ async fn discover_streamable_http_oauth_with_manager(
             scopes_supported: normalize_scopes(resolution.metadata.scopes_supported),
         })),
         Err(AuthError::NoAuthorizationSupport) => Ok(None),
+        Err(err @ (AuthError::HttpError(_) | AuthError::UrlError(_))) => Err(err.into()),
+        Err(err) if std::error::Error::source(&err).is_some() => {
+            // RMCP 3.9 retains discovery request causes in a source-bearing error.
+            // Keep the established metadata classification and the original cause.
+            let error = anyhow::Error::from(err);
+            let mut diagnostic = format!("{error:#}");
+            // RMCP's redirect-limit error is private. Normalize only its complete
+            // discovery cause, retaining both the SDK's limit and its source chain.
+            if let Some(AuthError::DiscoveryRequestFailed { source, .. }) =
+                error.downcast_ref::<AuthError>()
+                && let Some(limit) = source
+                    .to_string()
+                    .strip_prefix("OAuth request exceeded ")
+                    .and_then(|reason| reason.strip_suffix(" redirects"))
+                    .and_then(|limit| limit.parse::<usize>().ok())
+            {
+                diagnostic = format!("OAuth discovery exceeded {limit} redirects: {diagnostic}");
+            }
+            Err(error.context(AuthError::MetadataError(diagnostic)))
+        }
         Err(err) => Err(err.into()),
     }
 }
