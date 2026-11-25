@@ -1,0 +1,51 @@
+{
+  "status": "RECOVERED_SUCCESSFUL_GATE_RESULTS_AFTER_START_RESPONSE_TIMEOUT",
+  "checked_head": "f2cefb7643dad2adc726b62c5c7bf0c48791dc3b",
+  "exact_main_base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "frozen_code_head": "37198eefdcc1b83d163e0441cb651e1377e6cd87",
+  "tool_transport": {
+    "start_response": "MCP request timed out",
+    "operation_restarted": false,
+    "scientific_experiments_restarted": false,
+    "native_process_job_id": "NOT_RETURNED",
+    "native_supervisor_terminal_status": "NOT_SEPARATELY_RETRIEVED",
+    "completion_evidence": "The gate wrapper's completed result file and four actual subprocess stdout/stderr files were read through native version-bound file reads; official subprocess exit codes are recorded in GATE_RESULT.json."
+  },
+  "files": [
+    {
+      "name": "GATE_RESULT.json",
+      "sha256": "308832358e0503f361a4788c8388eb9d78a68be49463e842b71e5a8716a76b6b",
+      "bytes": 3464
+    },
+    {
+      "name": "FORMAT_STDOUT.txt",
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "bytes": 73
+    },
+    {
+      "name": "FORMAT_STDERR.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "name": "BLOB_STDOUT.txt",
+      "sha256": "78ec8f515a515d8b9120c7149292031ee41c1edeaf838ac6ca9a1a2588868dc5",
+      "bytes": 16467
+    },
+    {
+      "name": "BLOB_STDERR.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "log_hashes_and_sizes_match_gate_manifest": true,
+  "blob_log_summary": {
+    "rows": 130,
+    "max_changed_blob_bytes": 499512,
+    "blocked_rows": 0,
+    "allowlisted_rows": 0
+  },
+  "source_changed": false,
+  "scientific_experiments_rerun": false,
+  "receipt_scope": "Task-specific publication evidence; contains no unrelated host inventory or network addresses."
+}
