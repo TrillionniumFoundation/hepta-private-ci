@@ -421,7 +421,7 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         MatrixdControlError::Invalid("matrixd control socket has no parent directory".to_string())
     })?;
     codex_uds::prepare_private_socket_directory(parent).await?;
-    match UnixStream::connect(socket_path).await {
+    let connection_error = match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(MatrixdControlError::Io(std::io::Error::new(
                 ErrorKind::AddrInUse,
@@ -431,10 +431,17 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
                 ),
             )));
         }
+        Err(error) => error,
+    };
+    // ConnectionRefused does not establish that a rendezvous file exists.
+    // Only an explicit no-follow NotFound permits a fresh bind.
+    match tokio::fs::symlink_metadata(socket_path).await {
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_) if !socket_path.exists() => return Ok(()),
         Err(error) => return Err(error.into()),
+        Ok(_) if connection_error.kind() != ErrorKind::ConnectionRefused => {
+            return Err(connection_error.into());
+        }
+        Ok(_) => {}
     }
     if codex_uds::is_stale_socket_path(socket_path).await? {
         tokio::fs::remove_file(socket_path).await?;
@@ -528,6 +535,10 @@ pub enum MatrixdControlError {
     #[error(transparent)]
     Protocol(#[from] codex_hepta_matrix_protocol::MatrixProtocolError),
 }
+
+#[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod socket_tests;
 
 #[cfg(test)]
 mod tests {

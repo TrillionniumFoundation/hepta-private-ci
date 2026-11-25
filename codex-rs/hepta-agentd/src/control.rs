@@ -170,7 +170,7 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     codex_uds::prepare_private_socket_directory(parent)
         .await
         .map_err(|error| io_context("prepare agentd control socket directory", parent, error))?;
-    match UnixStream::connect(socket_path).await {
+    let connection_error = match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(AgentdError::Io(std::io::Error::new(
                 ErrorKind::AddrInUse,
@@ -180,16 +180,28 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
                 ),
             )));
         }
+        Err(error) => error,
+    };
+    // Windows may report ConnectionRefused for an absent AF_UNIX endpoint.
+    // Inspect the path itself, without following a symlink or hiding I/O errors,
+    // before deciding that there is a stale object to remove.
+    match tokio::fs::symlink_metadata(socket_path).await {
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_error) if !socket_path.exists() => return Ok(()),
         Err(error) => {
+            return Err(io_context(
+                "inspect existing agentd control socket",
+                socket_path,
+                error,
+            ));
+        }
+        Ok(_) if connection_error.kind() != ErrorKind::ConnectionRefused => {
             return Err(io_context(
                 /* operation */ "probe existing agentd control socket",
                 /* path */ socket_path,
-                /* source */ error,
+                /* source */ connection_error,
             ));
         }
+        Ok(_) => {}
     }
     if codex_uds::is_stale_socket_path(socket_path)
         .await
@@ -230,3 +242,7 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod socket_tests;
