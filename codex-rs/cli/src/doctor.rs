@@ -3967,36 +3967,66 @@ mod tests {
         assert_eq!(status, Ok("HTTP 405".to_string()));
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn mcp_http_probe_falls_back_to_get_when_head_times_out() {
-        let listener = TcpListener::bind("127.0.0.1:0").expect("bind test listener");
+        use tokio::io::AsyncReadExt as _;
+        use tokio::io::AsyncWriteExt as _;
+
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
+            .await
+            .expect("bind test listener");
         let addr = listener.local_addr().expect("listener address");
-        let server = std::thread::spawn(move || {
-            let (mut head_stream, _) = listener.accept().expect("accept HEAD probe request");
-            let head = std::thread::spawn(move || {
-                let mut request = [0; 1024];
-                let _ = head_stream.read(&mut request);
-                std::thread::sleep(Duration::from_millis(50));
-            });
+        let request_timeout = Duration::from_millis(10);
+        let clock_start = tokio::time::Instant::now();
+        let server = async {
+            let mut held_head = None;
+            for method in [Method::HEAD, Method::GET] {
+                let (mut stream, _) = listener.accept().await.expect("accept probe request");
+                let mut request = Vec::new();
+                while !request.ends_with(b"\r\n\r\n") {
+                    assert!(request.len() < 4096, "probe headers stay bounded");
+                    request.push(stream.read_u8().await.expect("read complete probe headers"));
+                }
+                assert!(request.starts_with(format!("{method} /mcp HTTP/1.1\r\n").as_bytes()));
+                if method == Method::HEAD {
+                    // Trigger the original 10 ms request deadline only after
+                    // the real HEAD has arrived. Keep its socket unanswered.
+                    held_head = Some(stream);
+                    tokio::time::advance(request_timeout).await;
+                } else {
+                    stream
+                        .write_all(
+                            b"HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
+                        )
+                        .await
+                        .expect("write GET response");
+                    stream.flush().await.expect("flush GET response");
+                }
+            }
+            drop(held_head);
+        };
 
-            let (mut get_stream, _) = listener.accept().expect("accept GET probe request");
-            let mut request = [0; 1024];
-            let _ = get_stream.read(&mut request);
-            get_stream
-                .write_all(
-                    b"HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
-                )
-                .expect("write response");
-            head.join().expect("HEAD holder should finish");
-        });
+        let url = format!("http://{addr}/mcp");
+        let exchange = async {
+            tokio::join!(
+                mcp_http_probe_url_with_timeout(&url, request_timeout),
+                server
+            )
+        };
+        tokio::pin!(exchange);
+        let io_started = std::time::Instant::now();
+        let (status, ()) = loop {
+            tokio::select! {
+                result = &mut exchange => break result,
+                // Keep I/O runnable so Tokio does not auto-advance the GET
+                // deadline while the operating system schedules its socket.
+                _ = tokio::task::yield_now() => {
+                    assert!(io_started.elapsed() < Duration::from_secs(3), "real probe I/O completed");
+                }
+            }
+        };
 
-        let status = mcp_http_probe_url_with_timeout(
-            &format!("http://{addr}/mcp"),
-            Duration::from_millis(10),
-        )
-        .await;
-        server.join().expect("probe server thread should finish");
-
+        assert_eq!(clock_start.elapsed(), request_timeout);
         assert_eq!(status, Ok("HTTP 405".to_string()));
     }
 
