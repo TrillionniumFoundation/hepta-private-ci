@@ -1,0 +1,289 @@
+{
+  "documentation_review": "No blocker. Retains original boundary failures; separates direct centering and adding-signed contrasts; does not attribute the combined-vs-raw-signed comparison solely to boundary; reports worse stopping utility, unequal active capacity and no speed advantage.",
+  "full_fit_test_children_cpu_seconds": 3662.191673,
+  "groups": {
+    "n32/boundary_accumulate_centered": {
+      "accuracy": {
+        "mean": 0.9661458333333334,
+        "n": 3,
+        "sample_sd": 0.006647323521048873,
+        "values": [
+          0.9609375,
+          0.9736328125,
+          0.9638671875
+        ]
+      },
+      "brier": {
+        "mean": 0.05556578060036569,
+        "n": 3,
+        "sample_sd": 0.007067007505521548,
+        "values": [
+          0.05714475238492894,
+          0.04784284454523133,
+          0.06170974487093682
+        ]
+      },
+      "fit_full_wall_seconds": {
+        "mean": 261.910048598346,
+        "n": 3,
+        "sample_sd": 5.4090479949439905,
+        "values": [
+          260.0423533610301,
+          268.0054450239986,
+          257.68234741000924
+        ]
+      },
+      "learning_passes": 3,
+      "stop_accuracy": {
+        "mean": 0.818359375,
+        "n": 3,
+        "sample_sd": 0.008679877360659755,
+        "values": [
+          0.8251953125,
+          0.8212890625,
+          0.80859375
+        ]
+      },
+      "stopping_utility": {
+        "mean": 0.8086955492424241,
+        "n": 3,
+        "sample_sd": 0.007363879860884849,
+        "values": [
+          0.8146093750000001,
+          0.8110298295454544,
+          0.800447443181818
+        ]
+      }
+    },
+    "n32/boundary_accumulate_raw": {
+      "accuracy": {
+        "mean": 0.5185546875,
+        "n": 3,
+        "sample_sd": 0.0,
+        "values": [
+          0.5185546875,
+          0.5185546875,
+          0.5185546875
+        ]
+      },
+      "brier": {
+        "mean": 0.4996765382423138,
+        "n": 3,
+        "sample_sd": 0.0001574330084175117,
+        "values": [
+          0.499633318153603,
+          0.4995452294517002,
+          0.4998510671216381
+        ]
+      },
+      "fit_full_wall_seconds": {
+        "mean": 257.16577199369203,
+        "n": 3,
+        "sample_sd": 3.0329810565390085,
+        "values": [
+          255.0324594200356,
+          255.82707857899368,
+          260.6377779820468
+        ]
+      },
+      "learning_passes": 0,
+      "stop_accuracy": {
+        "mean": 0.5185546875,
+        "n": 3,
+        "sample_sd": 0.0,
+        "values": [
+          0.5185546875,
+          0.5185546875,
+          0.5185546875
+        ]
+      },
+      "stopping_utility": {
+        "mean": 0.47855468749999996,
+        "n": 3,
+        "sample_sd": 0.0,
+        "values": [
+          0.47855468749999996,
+          0.47855468749999996,
+          0.47855468749999996
+        ]
+      }
+    },
+    "n32/boundary_signed_accumulate_centered": {
+      "accuracy": {
+        "mean": 0.9290364583333334,
+        "n": 3,
+        "sample_sd": 0.009073801995290596,
+        "values": [
+          0.9228515625,
+          0.939453125,
+          0.9248046875
+        ]
+      },
+      "brier": {
+        "mean": 0.09579650717323203,
+        "n": 3,
+        "sample_sd": 0.012198452573246223,
+        "values": [
+          0.09703503764951975,
+          0.08302603718509663,
+          0.10732844668507974
+        ]
+      },
+      "fit_full_wall_seconds": {
+        "mean": 259.94639004266355,
+        "n": 3,
+        "sample_sd": 1.6050896702486572,
+        "values": [
+          258.6871900870465,
+          261.75375249795616,
+          259.398227542988
+        ]
+      },
+      "learning_passes": 3,
+      "stop_accuracy": {
+        "mean": 0.8173828125,
+        "n": 3,
+        "sample_sd": 0.012807497117777344,
+        "values": [
+          0.8291015625,
+          0.8037109375,
+          0.8193359375
+        ]
+      },
+      "stopping_utility": {
+        "mean": 0.8066394412878787,
+        "n": 3,
+        "sample_sd": 0.011417683380621962,
+        "values": [
+          0.8172691761363635,
+          0.7945703124999999,
+          0.8080788352272726
+        ]
+      }
+    },
+    "n32/signed_raw": {
+      "accuracy": {
+        "mean": 0.9212239583333334,
+        "n": 3,
+        "sample_sd": 0.005378486862584084,
+        "values": [
+          0.9150390625,
+          0.9248046875,
+          0.923828125
+        ]
+      },
+      "brier": {
+        "mean": 0.11232533026562384,
+        "n": 3,
+        "sample_sd": 0.004290739840089218,
+        "values": [
+          0.1171232489103575,
+          0.1109966189912425,
+          0.10885612289527154
+        ]
+      },
+      "fit_full_wall_seconds": {
+        "mean": 258.1171560223447,
+        "n": 3,
+        "sample_sd": 2.9652753539739596,
+        "values": [
+          261.19356398598757,
+          257.8807367599802,
+          255.27716732106637
+        ]
+      },
+      "learning_passes": 3,
+      "stop_accuracy": {
+        "mean": 0.8352864583333334,
+        "n": 3,
+        "sample_sd": 0.0014917238590351043,
+        "values": [
+          0.8369140625,
+          0.833984375,
+          0.8349609375
+        ]
+      },
+      "stopping_utility": {
+        "mean": 0.8227722537878788,
+        "n": 3,
+        "sample_sd": 0.0013100821803944751,
+        "values": [
+          0.8239417613636364,
+          0.821356534090909,
+          0.8230184659090908
+        ]
+      }
+    }
+  },
+  "maximum_absolute_error_record": {
+    "absolute_error": 2.3283064365386963e-10,
+    "field": "n32/boundary_accumulate_centered.cost.fit_peak_rss_bytes.sample_sd",
+    "scaled_error": 1.8439108700764255e-16
+  },
+  "maximum_scaled_error_record": {
+    "absolute_error": 2.3283064365386963e-10,
+    "field": "n32/boundary_accumulate_centered.cost.fit_peak_rss_bytes.sample_sd",
+    "scaled_error": 1.8439108700764255e-16
+  },
+  "prespecified_contrasts": {
+    "boundary_accumulate_centered-minus-boundary_accumulate_raw": {
+      "accuracy": {
+        "mean": 0.4475911458333333,
+        "n": 3,
+        "sample_sd": 0.006647323521048873,
+        "values": [
+          0.4423828125,
+          0.455078125,
+          0.4453125
+        ]
+      },
+      "brier": {
+        "mean": -0.4441107576419481,
+        "n": 3,
+        "sample_sd": 0.0069245386087233695,
+        "values": [
+          -0.44248856576867407,
+          -0.45170238490646886,
+          -0.4381413222507013
+        ]
+      }
+    },
+    "boundary_signed_accumulate_centered-minus-boundary_accumulate_centered": {
+      "accuracy": {
+        "mean": -0.037109375,
+        "n": 3,
+        "sample_sd": 0.0025837415147115144,
+        "values": [
+          -0.0380859375,
+          -0.0341796875,
+          -0.0390625
+        ]
+      },
+      "brier": {
+        "mean": 0.04023072657286634,
+        "n": 3,
+        "sample_sd": 0.005226077701765765,
+        "values": [
+          0.039890285264590805,
+          0.0351831926398653,
+          0.04561870181414292
+        ]
+      }
+    }
+  },
+  "protocol_sha256": "3a57563375351a6f7895a694f9cc481658d3ee240c6e53fc25180af4b37560d9",
+  "roundoff_note": "Initial blanket absolute-1e-10 comparison failed on a large RSS-byte standard deviation. Recalculation now reports both absolute and scale-aware error by field; no model gate, raw artifact or scientific tolerance was changed.",
+  "rows": 12,
+  "schema": "hcsn-boundary-center-summary-reaggregation-v1",
+  "scope": "Independent standard-library recalculation of saved per-model metrics, group statistics, all same-seed contrasts and cost nesting. Does not execute Torch or re-integrate physical dynamics; original independent raw-logit audit remains separate.",
+  "source_sha256": {
+    "AUDIT.json": "db507e2db3a920226ee587b2f522d527b877bad55b8e7024c9b563bbd35dc260",
+    "INTERPRETATION_ZH.md": "48b718064af95fb13bd9ce5ca62d85662f78df1735608675cb98fcf4c9125130",
+    "SUMMARY.json": "f08771cf51919ed1d4cae539dbb298f6b80b1455c9007e3df0fdcecb1489ead8"
+  },
+  "statistic_groups_checked": 164,
+  "status": "verified",
+  "zero_step_selected": [
+    "n32-boundary_accumulate_raw-s35011"
+  ]
+}

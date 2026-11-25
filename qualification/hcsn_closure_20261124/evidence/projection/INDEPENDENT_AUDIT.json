@@ -1,0 +1,844 @@
+{
+  "arrays": 162,
+  "bytes": 8707301,
+  "case_count": 7,
+  "cases": [
+    {
+      "case": "n8-t12-b8-native32",
+      "implementations": {
+        "normalized": {
+          "differences": {
+            "features": {
+              "max_abs": 4.299987666378513e-06,
+              "relative_l2": 6.889825534722783e-07
+            },
+            "input_vjp": {
+              "max_abs": 1.3811262904387754e-07,
+              "relative_l2": 0.0015286124083148875
+            },
+            "logits": {
+              "max_abs": 1.4761498556836727e-06,
+              "relative_l2": 7.143303794945668e-07
+            },
+            "parameter_vjp": {
+              "max_abs": 2.686024272768048e-06,
+              "relative_l2": 5.2570406572377985e-05
+            },
+            "state_boundary": {
+              "max_abs": 3.6463268471287336e-07,
+              "relative_l2": 2.3539836069734042e-07
+            },
+            "state_cost": {
+              "max_abs": 1.304357460929495e-08,
+              "relative_l2": 4.701499890809807e-08
+            },
+            "state_density": {
+              "max_abs": 3.439768573310076e-07,
+              "relative_l2": 4.780105298698389e-07
+            },
+            "state_drift": {
+              "max_abs": 1.5996390878569855e-08,
+              "relative_l2": 3.060827299006204e-08
+            },
+            "state_message": {
+              "max_abs": 4.4764865658741826e-07,
+              "relative_l2": 3.204100874911401e-07
+            }
+          },
+          "executed": true,
+          "gate_pass": true,
+          "independently_recomputed_final_mass_defect": 8.083879947662354e-07,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 8,
+            "mark_excess": 0.0,
+            "mass_error": 8.940696716308594e-07,
+            "probability_min": 0.0,
+            "refractory_variance": 0.013333333333333336,
+            "state_elements": 1664,
+            "state_step": 12,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.005204522516578436
+          },
+          "rejected": []
+        },
+        "projected": {
+          "differences": {
+            "features": {
+              "max_abs": 3.1078947708707005e-06,
+              "relative_l2": 4.3908298066809337e-07
+            },
+            "input_vjp": {
+              "max_abs": 1.3811626702268463e-07,
+              "relative_l2": 0.0015286181517046424
+            },
+            "logits": {
+              "max_abs": 9.993126974805477e-07,
+              "relative_l2": 4.4268986654282926e-07
+            },
+            "parameter_vjp": {
+              "max_abs": 2.6852894010490156e-06,
+              "relative_l2": 5.256447714749883e-05
+            },
+            "state_boundary": {
+              "max_abs": 3.6463268471287336e-07,
+              "relative_l2": 2.3539836069734042e-07
+            },
+            "state_cost": {
+              "max_abs": 1.304357460929495e-08,
+              "relative_l2": 4.701499890809807e-08
+            },
+            "state_density": {
+              "max_abs": 1.999622110671062e-07,
+              "relative_l2": 3.001040143386043e-07
+            },
+            "state_drift": {
+              "max_abs": 1.5996390878569855e-08,
+              "relative_l2": 3.060827299006204e-08
+            },
+            "state_message": {
+              "max_abs": 3.8803199831072277e-07,
+              "relative_l2": 2.7056042513505e-07
+            }
+          },
+          "executed": true,
+          "gate_pass": true,
+          "independently_recomputed_final_mass_defect": 1.30385160446167e-07,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 8,
+            "joint_projection": true,
+            "mark_excess": 0.0,
+            "mass_error": 2.384185791015625e-07,
+            "probability_correction_l1_sum_of_step_maxima": 3.4932163543999195e-06,
+            "probability_min": 0.0,
+            "projection_local_admission": 2e-06,
+            "projection_steps": 12,
+            "raw_local_mass_defect_max": 3.5762786865234375e-07,
+            "refractory_variance": 0.013333333333333336,
+            "signed_correction_l1_sum_of_step_maxima": 7.937633199617267e-07,
+            "state_elements": 1664,
+            "state_step": 12,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.005204526241868734
+          },
+          "rejected": []
+        }
+      },
+      "raw_sha256": {
+        "fp64_reference.npz": "95b94a8a0746aa949ea41071a24137830f67353a37ae52cfaea06e47218b6136",
+        "normalized.npz": "7b02cc7f17ce62bc33b11a0df209f82d71da67b1c230b85d9ada6b31ba4d8c0c",
+        "projected.npz": "91337f30d7ee9bb164987564f52f6546a90f02b7e6adbcfc54ff4c8af9ce97f8"
+      },
+      "result_sha256": "47fc503c588614775ffdec4dff06938be85f413fcb72f6c7302f5db52f5533fa"
+    },
+    {
+      "case": "n32-t12-b8-native32",
+      "implementations": {
+        "normalized": {
+          "differences": {
+            "features": {
+              "max_abs": 4.609694429724698e-06,
+              "relative_l2": 6.197189246260062e-07
+            },
+            "input_vjp": {
+              "max_abs": 4.4603236533780863e-07,
+              "relative_l2": 0.0024398821786009556
+            },
+            "logits": {
+              "max_abs": 8.658512367087923e-07,
+              "relative_l2": 4.382988167019937e-06
+            },
+            "parameter_vjp": {
+              "max_abs": 5.488333217545969e-06,
+              "relative_l2": 0.00010256971797303197
+            },
+            "state_boundary": {
+              "max_abs": 5.018632269759848e-07,
+              "relative_l2": 2.5061042408121516e-07
+            },
+            "state_cost": {
+              "max_abs": 1.3539745186141872e-08,
+              "relative_l2": 4.955721078495e-08
+            },
+            "state_density": {
+              "max_abs": 4.426862245665575e-07,
+              "relative_l2": 4.917225708298867e-07
+            },
+            "state_drift": {
+              "max_abs": 2.391532377687966e-08,
+              "relative_l2": 2.8824444614300375e-08
+            },
+            "state_message": {
+              "max_abs": 5.990628191288039e-07,
+              "relative_l2": 3.4335928206157497e-07
+            }
+          },
+          "executed": true,
+          "gate_pass": false,
+          "independently_recomputed_final_mass_defect": 9.98377799987793e-07,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 32,
+            "mark_excess": 0.0,
+            "mass_error": 1.0132789611816406e-06,
+            "probability_min": 0.0,
+            "refractory_variance": 0.013333333333333336,
+            "state_elements": 6656,
+            "state_step": 12,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.002904889639467001
+          },
+          "rejected": [
+            "input_vjp:relative"
+          ]
+        },
+        "projected": {
+          "differences": {
+            "features": {
+              "max_abs": 2.774635656788149e-06,
+              "relative_l2": 4.20086592017658e-07
+            },
+            "input_vjp": {
+              "max_abs": 4.4604509826363345e-07,
+              "relative_l2": 0.00243987731889089
+            },
+            "logits": {
+              "max_abs": 4.994532567526022e-07,
+              "relative_l2": 3.5066128758271385e-06
+            },
+            "parameter_vjp": {
+              "max_abs": 5.488809792769698e-06,
+              "relative_l2": 0.00010237206069443604
+            },
+            "state_boundary": {
+              "max_abs": 5.018632269759848e-07,
+              "relative_l2": 2.472938019824034e-07
+            },
+            "state_cost": {
+              "max_abs": 1.3539745186141872e-08,
+              "relative_l2": 4.955721078495e-08
+            },
+            "state_density": {
+              "max_abs": 2.72939552792284e-07,
+              "relative_l2": 2.905120632704253e-07
+            },
+            "state_drift": {
+              "max_abs": 2.391532377687966e-08,
+              "relative_l2": 2.9055270337637783e-08
+            },
+            "state_message": {
+              "max_abs": 5.018632269759848e-07,
+              "relative_l2": 2.7090420209470476e-07
+            }
+          },
+          "executed": true,
+          "gate_pass": false,
+          "independently_recomputed_final_mass_defect": 1.9744038581848145e-07,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 32,
+            "joint_projection": true,
+            "mark_excess": 0.0,
+            "mass_error": 3.5762786865234375e-07,
+            "probability_correction_l1_sum_of_step_maxima": 4.265864845365286e-06,
+            "probability_min": 0.0,
+            "projection_local_admission": 2e-06,
+            "projection_steps": 12,
+            "raw_local_mass_defect_max": 4.172325134277344e-07,
+            "refractory_variance": 0.013333333333333336,
+            "signed_correction_l1_sum_of_step_maxima": 1.1723459465429187e-06,
+            "state_elements": 6656,
+            "state_step": 12,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.0029048891738057137
+          },
+          "rejected": [
+            "input_vjp:relative"
+          ]
+        }
+      },
+      "raw_sha256": {
+        "fp64_reference.npz": "5bf4d33ecdeaf7cce054bb6fbfd99fe19a42d0fbdbc0ad02c896eebfca181d5f",
+        "normalized.npz": "860ec7825c73798ab2f518ade796ae7df4b1d424f1cd30e9b90261a463bd4a08",
+        "projected.npz": "0bc30a2f7f2655538b9067aa8200750edc11b1a262de0de5c8aaa030c6d7620f"
+      },
+      "result_sha256": "c27360f43f4efa3b8bb6473254d2e87984362f2ccb81bf4c7391b92ff6d9639c"
+    },
+    {
+      "case": "n64-t12-b8-native32",
+      "implementations": {
+        "normalized": {
+          "differences": {
+            "features": {
+              "max_abs": 4.361596143365176e-06,
+              "relative_l2": 6.398783226868331e-07
+            },
+            "input_vjp": {
+              "max_abs": 7.163792383398939e-11,
+              "relative_l2": 8.339495364844315e-07
+            },
+            "logits": {
+              "max_abs": 1.2376661780999498e-06,
+              "relative_l2": 7.762814068420524e-07
+            },
+            "parameter_vjp": {
+              "max_abs": 1.1623042359039664e-05,
+              "relative_l2": 2.0031452266205543e-05
+            },
+            "state_boundary": {
+              "max_abs": 4.689925581224941e-07,
+              "relative_l2": 2.3293007694217454e-07
+            },
+            "state_cost": {
+              "max_abs": 1.336801602747073e-08,
+              "relative_l2": 4.8845902677787335e-08
+            },
+            "state_density": {
+              "max_abs": 3.8560506027129904e-07,
+              "relative_l2": 4.79857532100805e-07
+            },
+            "state_drift": {
+              "max_abs": 2.3857425812678912e-08,
+              "relative_l2": 3.100751440961761e-08
+            },
+            "state_message": {
+              "max_abs": 5.777353694891296e-07,
+              "relative_l2": 3.172198108726991e-07
+            }
+          },
+          "executed": true,
+          "gate_pass": true,
+          "independently_recomputed_final_mass_defect": 1.2032687664031982e-06,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 64,
+            "mark_excess": 0.0,
+            "mass_error": 1.2516975402832031e-06,
+            "probability_min": 0.0,
+            "refractory_variance": 0.013333333333333336,
+            "state_elements": 13312,
+            "state_step": 12,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.005377627909183502
+          },
+          "rejected": []
+        },
+        "projected": {
+          "differences": {
+            "features": {
+              "max_abs": 3.005526741706177e-06,
+              "relative_l2": 4.361424039942565e-07
+            },
+            "input_vjp": {
+              "max_abs": 6.212535167023341e-11,
+              "relative_l2": 7.34972363398674e-07
+            },
+            "logits": {
+              "max_abs": 6.92865169238388e-07,
+              "relative_l2": 5.771518542323165e-07
+            },
+            "parameter_vjp": {
+              "max_abs": 1.1621761790499567e-05,
+              "relative_l2": 1.9911630492635175e-05
+            },
+            "state_boundary": {
+              "max_abs": 4.689925581224941e-07,
+              "relative_l2": 2.3480470077313442e-07
+            },
+            "state_cost": {
+              "max_abs": 1.336801602747073e-08,
+              "relative_l2": 4.8845902677787335e-08
+            },
+            "state_density": {
+              "max_abs": 2.530019716506793e-07,
+              "relative_l2": 2.891216157649287e-07
+            },
+            "state_drift": {
+              "max_abs": 2.3857425812678912e-08,
+              "relative_l2": 3.074240180116447e-08
+            },
+            "state_message": {
+              "max_abs": 4.689925581224941e-07,
+              "relative_l2": 2.612427861742719e-07
+            }
+          },
+          "executed": true,
+          "gate_pass": true,
+          "independently_recomputed_final_mass_defect": 2.0116567611694336e-07,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 64,
+            "joint_projection": true,
+            "mark_excess": 0.0,
+            "mass_error": 2.384185791015625e-07,
+            "probability_correction_l1_sum_of_step_maxima": 4.287809133529663e-06,
+            "probability_min": 0.0,
+            "projection_local_admission": 2e-06,
+            "projection_steps": 12,
+            "raw_local_mass_defect_max": 4.172325134277344e-07,
+            "refractory_variance": 0.013333333333333336,
+            "signed_correction_l1_sum_of_step_maxima": 1.1933298083022237e-06,
+            "state_elements": 13312,
+            "state_step": 12,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.005377626977860928
+          },
+          "rejected": []
+        }
+      },
+      "raw_sha256": {
+        "fp64_reference.npz": "fe72e90e6d2c974b67416e170118c630895481bc57b774cc7f62125564768f6d",
+        "normalized.npz": "d9bbcb55b37861945c71b375b6699a068159d956f9a21759808d3da6dac6dd39",
+        "projected.npz": "cb57702beafd0a3f4aeab857ad22c5733c27389066c13eaa29776ae325b4f6f3"
+      },
+      "result_sha256": "7e1580ac7a3a5e56ba55f929251ad728b0fb71cca1775df4794e0f7fea4d5849"
+    },
+    {
+      "case": "n8-t2048-b1-native32",
+      "implementations": {
+        "normalized": {
+          "executed": false,
+          "failure": {
+            "diagnostics": {
+              "all_finite": true,
+              "independent_populations": 8,
+              "mark_excess": 0.0,
+              "mass_error": 3.790855407714844e-05,
+              "probability_min": 0.0,
+              "refractory_variance": 0.013333333333333336,
+              "state_elements": 208,
+              "state_step": 2048,
+              "transport_dtype": "torch.float32",
+              "upper_projection_mass_max": 0.006880716420710087
+            },
+            "traceback": "Traceback (most recent call last):\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_closure_20261124/projection_probe.py\", line 55, in case\n    data, info = execute(model, x.double() if name == \"fp64_reference\" else x, labels)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_closure_20261124/efficiency.py\", line 50, in execute\n    logits, features, state = model(x, return_features=True)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1773, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1784, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_closure_20261124/fast_kernel.py\", line 108, in forward\n    return super().forward(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_smallnet_20261124/model.py\", line 354, in forward\n    raise FloatingPointError(\"complete probability/mark invariant failed; no normalization applied\")\nFloatingPointError: complete probability/mark invariant failed; no normalization applied\n"
+          },
+          "gate_pass": false
+        },
+        "projected": {
+          "differences": {
+            "features": {
+              "max_abs": 3.203364201453951e-06,
+              "relative_l2": 3.3258289190283853e-07
+            },
+            "input_vjp": {
+              "max_abs": 3.298580684175081e-09,
+              "relative_l2": 1.0581475231749509e-05
+            },
+            "logits": {
+              "max_abs": 1.0255989373320062e-06,
+              "relative_l2": 3.002011376733528e-07
+            },
+            "parameter_vjp": {
+              "max_abs": 3.1962542009433825e-05,
+              "relative_l2": 8.430920746168434e-06
+            },
+            "state_boundary": {
+              "max_abs": 4.1667114714094566e-07,
+              "relative_l2": 2.8363763815114686e-07
+            },
+            "state_cost": {
+              "max_abs": 1.3018498334904649e-08,
+              "relative_l2": 5.9198587539058865e-08
+            },
+            "state_density": {
+              "max_abs": 1.1651841846926914e-07,
+              "relative_l2": 3.133037119462849e-07
+            },
+            "state_drift": {
+              "max_abs": 1.1565988777828551e-08,
+              "relative_l2": 2.8027591246946573e-08
+            },
+            "state_message": {
+              "max_abs": 4.1667114714094566e-07,
+              "relative_l2": 3.186768640384156e-07
+            }
+          },
+          "executed": true,
+          "gate_pass": true,
+          "independently_recomputed_final_mass_defect": 8.195638656616211e-08,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 8,
+            "joint_projection": true,
+            "mark_excess": 0.0,
+            "mass_error": 2.384185791015625e-07,
+            "probability_correction_l1_sum_of_step_maxima": 0.0003814428928308189,
+            "probability_min": 0.0,
+            "projection_local_admission": 2e-06,
+            "projection_steps": 2048,
+            "raw_local_mass_defect_max": 3.5762786865234375e-07,
+            "refractory_variance": 0.013333333333333336,
+            "signed_correction_l1_sum_of_step_maxima": 8.784072088019457e-05,
+            "state_elements": 208,
+            "state_step": 2048,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.006880866829305887
+          },
+          "rejected": []
+        }
+      },
+      "raw_sha256": {
+        "fp64_reference.npz": "b14eb1a1c3a218efb4abede00aebf224b764864849798a5ba2305cc3e0748392",
+        "projected.npz": "eaf6db549b3d2129da5ec0135d447d2b0f7305a75c93db504997eeffa8f81a56"
+      },
+      "result_sha256": "1bae65af49c800458f73d4a8bef498f1c8b70208fdbe9d27adc3392ba1306dcb"
+    },
+    {
+      "case": "n32-t2048-b1-native32",
+      "implementations": {
+        "normalized": {
+          "executed": false,
+          "failure": {
+            "diagnostics": {
+              "all_finite": true,
+              "independent_populations": 32,
+              "mark_excess": 0.0,
+              "mass_error": 4.7087669372558594e-05,
+              "probability_min": 0.0,
+              "refractory_variance": 0.013333333333333336,
+              "state_elements": 832,
+              "state_step": 2048,
+              "transport_dtype": "torch.float32",
+              "upper_projection_mass_max": 0.008484556339681149
+            },
+            "traceback": "Traceback (most recent call last):\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_closure_20261124/projection_probe.py\", line 55, in case\n    data, info = execute(model, x.double() if name == \"fp64_reference\" else x, labels)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_closure_20261124/efficiency.py\", line 50, in execute\n    logits, features, state = model(x, return_features=True)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1773, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1784, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_closure_20261124/fast_kernel.py\", line 108, in forward\n    return super().forward(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_smallnet_20261124/model.py\", line 354, in forward\n    raise FloatingPointError(\"complete probability/mark invariant failed; no normalization applied\")\nFloatingPointError: complete probability/mark invariant failed; no normalization applied\n"
+          },
+          "gate_pass": false
+        },
+        "projected": {
+          "differences": {
+            "features": {
+              "max_abs": 3.0330832752056835e-06,
+              "relative_l2": 3.236239318830856e-07
+            },
+            "input_vjp": {
+              "max_abs": 1.6735183933902216e-06,
+              "relative_l2": 0.004409995432502877
+            },
+            "logits": {
+              "max_abs": 7.982673599915557e-07,
+              "relative_l2": 2.4094249460701587e-06
+            },
+            "parameter_vjp": {
+              "max_abs": 2.8706635133777907e-05,
+              "relative_l2": 8.19168445810191e-06
+            },
+            "state_boundary": {
+              "max_abs": 2.909600895772968e-07,
+              "relative_l2": 2.387607009053389e-07
+            },
+            "state_cost": {
+              "max_abs": 1.2996926951336363e-08,
+              "relative_l2": 4.6787415535405096e-08
+            },
+            "state_density": {
+              "max_abs": 1.643632992487376e-07,
+              "relative_l2": 2.73359443063e-07
+            },
+            "state_drift": {
+              "max_abs": 1.0570606806536986e-08,
+              "relative_l2": 2.4691873588472186e-08
+            },
+            "state_message": {
+              "max_abs": 2.909600895772968e-07,
+              "relative_l2": 2.7934701943635676e-07
+            }
+          },
+          "executed": true,
+          "gate_pass": false,
+          "independently_recomputed_final_mass_defect": 1.4156103134155273e-07,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 32,
+            "joint_projection": true,
+            "mark_excess": 0.0,
+            "mass_error": 2.980232238769531e-07,
+            "probability_correction_l1_sum_of_step_maxima": 0.0004914674791507423,
+            "probability_min": 0.0,
+            "projection_local_admission": 2e-06,
+            "projection_steps": 2048,
+            "raw_local_mass_defect_max": 4.172325134277344e-07,
+            "refractory_variance": 0.013333333333333336,
+            "signed_correction_l1_sum_of_step_maxima": 0.00011949348845519125,
+            "state_elements": 832,
+            "state_step": 2048,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.008484804071485996
+          },
+          "rejected": [
+            "input_vjp:relative"
+          ]
+        }
+      },
+      "raw_sha256": {
+        "fp64_reference.npz": "7e3a2b68d87315c257fb6f190e82487f21dc962acd79bf5150fbfb4c09ef8de2",
+        "projected.npz": "91c56068dd91f2f960642f8dd08dbeafe78281b4c172013bd29fe4f7b8432e67"
+      },
+      "result_sha256": "798d9d9ff1bb19d1fa9ff2ce5c6e50a5215ba52a137edd52d373c660542a021d"
+    },
+    {
+      "case": "n64-t2048-b1-native32",
+      "implementations": {
+        "normalized": {
+          "executed": false,
+          "failure": {
+            "diagnostics": {
+              "all_finite": true,
+              "independent_populations": 64,
+              "mark_excess": 0.0,
+              "mass_error": 4.220008850097656e-05,
+              "probability_min": 0.0,
+              "refractory_variance": 0.013333333333333336,
+              "state_elements": 1664,
+              "state_step": 2048,
+              "transport_dtype": "torch.float32",
+              "upper_projection_mass_max": 0.01066014263778925
+            },
+            "traceback": "Traceback (most recent call last):\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_closure_20261124/projection_probe.py\", line 55, in case\n    data, info = execute(model, x.double() if name == \"fp64_reference\" else x, labels)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_closure_20261124/efficiency.py\", line 50, in execute\n    logits, features, state = model(x, return_features=True)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1773, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1784, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_closure_20261124/fast_kernel.py\", line 108, in forward\n    return super().forward(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/projection-v1-source/qualification/hcsn_smallnet_20261124/model.py\", line 354, in forward\n    raise FloatingPointError(\"complete probability/mark invariant failed; no normalization applied\")\nFloatingPointError: complete probability/mark invariant failed; no normalization applied\n"
+          },
+          "gate_pass": false
+        },
+        "projected": {
+          "differences": {
+            "features": {
+              "max_abs": 3.4004541729082405e-06,
+              "relative_l2": 3.303959143494663e-07
+            },
+            "input_vjp": {
+              "max_abs": 2.2715510076627205e-08,
+              "relative_l2": 3.241046071474621e-05
+            },
+            "logits": {
+              "max_abs": 9.12453055113005e-07,
+              "relative_l2": 3.9957097361121596e-07
+            },
+            "parameter_vjp": {
+              "max_abs": 1.5927366853296654e-05,
+              "relative_l2": 2.2941915292499595e-06
+            },
+            "state_boundary": {
+              "max_abs": 4.4169474699984335e-07,
+              "relative_l2": 2.776075512716469e-07
+            },
+            "state_cost": {
+              "max_abs": 1.3313752128540912e-08,
+              "relative_l2": 5.173506287899723e-08
+            },
+            "state_density": {
+              "max_abs": 2.730823467911314e-07,
+              "relative_l2": 3.256284119953292e-07
+            },
+            "state_drift": {
+              "max_abs": 1.9920436911124995e-08,
+              "relative_l2": 3.0058863387322396e-08
+            },
+            "state_message": {
+              "max_abs": 4.4169474699984335e-07,
+              "relative_l2": 3.0098036270886385e-07
+            }
+          },
+          "executed": true,
+          "gate_pass": true,
+          "independently_recomputed_final_mass_defect": 1.4156103134155273e-07,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 64,
+            "joint_projection": true,
+            "mark_excess": 0.0,
+            "mass_error": 2.980232238769531e-07,
+            "probability_correction_l1_sum_of_step_maxima": 0.0005278405733406544,
+            "probability_min": 0.0,
+            "projection_local_admission": 2e-06,
+            "projection_steps": 2048,
+            "raw_local_mass_defect_max": 4.76837158203125e-07,
+            "refractory_variance": 0.013333333333333336,
+            "signed_correction_l1_sum_of_step_maxima": 0.00015888959023868665,
+            "state_elements": 1664,
+            "state_step": 2048,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.01066027395427227
+          },
+          "rejected": []
+        }
+      },
+      "raw_sha256": {
+        "fp64_reference.npz": "4f6c3d1723cc09751897345af1e1c10485b363f15369d968234c707feab80427",
+        "projected.npz": "7b7fcc63d372c48ea39c74e2047589726b2979b31507f9a8c555dd9ce7cac9b7"
+      },
+      "result_sha256": "a26bf78655d246a40d25ef0a019057067ea4ee1fe3289ad03156735e0746a262"
+    },
+    {
+      "case": "n64-t512-b1-native32",
+      "implementations": {
+        "normalized": {
+          "differences": {
+            "features": {
+              "max_abs": 3.6228134623339514e-05,
+              "relative_l2": 5.050148172594483e-06
+            },
+            "input_vjp": {
+              "max_abs": 1.0691413332235798e-08,
+              "relative_l2": 1.795282471902107e-05
+            },
+            "logits": {
+              "max_abs": 2.837114104259353e-06,
+              "relative_l2": 1.2552409524653788e-05
+            },
+            "parameter_vjp": {
+              "max_abs": 1.7742946256005254e-05,
+              "relative_l2": 8.02897894389548e-06
+            },
+            "state_boundary": {
+              "max_abs": 4.187524047516433e-07,
+              "relative_l2": 2.470363051641139e-07
+            },
+            "state_cost": {
+              "max_abs": 1.3266355652907791e-08,
+              "relative_l2": 4.9852583640667854e-08
+            },
+            "state_density": {
+              "max_abs": 3.5347550524922333e-06,
+              "relative_l2": 9.00017414207335e-06
+            },
+            "state_drift": {
+              "max_abs": 2.546416119630912e-08,
+              "relative_l2": 5.4141116482421334e-08
+            },
+            "state_message": {
+              "max_abs": 5.065243221413773e-06,
+              "relative_l2": 4.507767701471327e-06
+            }
+          },
+          "executed": true,
+          "gate_pass": true,
+          "independently_recomputed_final_mass_defect": 1.2909993529319763e-05,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 64,
+            "mark_excess": 0.0,
+            "mass_error": 1.3470649719238281e-05,
+            "probability_min": 0.0,
+            "refractory_variance": 0.013333333333333336,
+            "state_elements": 1664,
+            "state_step": 512,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.011439484544098377
+          },
+          "rejected": []
+        },
+        "projected": {
+          "differences": {
+            "features": {
+              "max_abs": 3.01511887101924e-06,
+              "relative_l2": 3.3738080461079157e-07
+            },
+            "input_vjp": {
+              "max_abs": 2.566026544320087e-09,
+              "relative_l2": 5.1702263983038946e-06
+            },
+            "logits": {
+              "max_abs": 9.229558407541916e-07,
+              "relative_l2": 2.462918293971004e-06
+            },
+            "parameter_vjp": {
+              "max_abs": 1.972490533797e-06,
+              "relative_l2": 5.836137451887084e-07
+            },
+            "state_boundary": {
+              "max_abs": 5.333065211665655e-07,
+              "relative_l2": 2.260521606092879e-07
+            },
+            "state_cost": {
+              "max_abs": 1.3266355652907791e-08,
+              "relative_l2": 4.9852583640667854e-08
+            },
+            "state_density": {
+              "max_abs": 2.3041751867625138e-07,
+              "relative_l2": 2.606583083369269e-07
+            },
+            "state_drift": {
+              "max_abs": 1.1724430037940436e-08,
+              "relative_l2": 2.8756777991181533e-08
+            },
+            "state_message": {
+              "max_abs": 5.333065211665655e-07,
+              "relative_l2": 2.465632254354674e-07
+            }
+          },
+          "executed": true,
+          "gate_pass": true,
+          "independently_recomputed_final_mass_defect": 1.1734664440155029e-07,
+          "original_execution_diagnostics": {
+            "all_finite": true,
+            "independent_populations": 64,
+            "joint_projection": true,
+            "mark_excess": 0.0,
+            "mass_error": 3.5762786865234375e-07,
+            "probability_correction_l1_sum_of_step_maxima": 0.0001327507197856903,
+            "probability_min": 0.0,
+            "projection_local_admission": 2e-06,
+            "projection_steps": 512,
+            "raw_local_mass_defect_max": 3.5762786865234375e-07,
+            "refractory_variance": 0.013333333333333336,
+            "signed_correction_l1_sum_of_step_maxima": 4.11515575251542e-05,
+            "state_elements": 1664,
+            "state_step": 512,
+            "transport_dtype": "torch.float32",
+            "upper_projection_mass_max": 0.011439554393291473
+          },
+          "rejected": []
+        }
+      },
+      "raw_sha256": {
+        "fp64_reference.npz": "7d7a00982de5b5b92c0299b0c3089e24693189559a68824ad1a383883fa50370",
+        "normalized.npz": "a3721d803a93a53f6f13f4d55b489c7968d0ce8d5ba6d19cab93e850a4f282a6",
+        "projected.npz": "eb0d76e99b62a3eeb03655a868f807e303d11a1fac1a9655d6da81aca578be7a"
+      },
+      "result_sha256": "1ab88aea27084063cb13b678e9ba863acabb458c5bb893921886802ed5ce8955"
+    }
+  ],
+  "cpu_seconds": 25.048376546,
+  "maximum_report_difference": 1.6940658945086007e-21,
+  "npz_count": 18,
+  "passes": {
+    "normalized": 3,
+    "projected": 5
+  },
+  "protocol_sha256": "66812ef61731585e68e47abd3393122904e87029bd229147dc72f4bb201c4f3d",
+  "schema": "hcsn-projection-independent-array-audit-v1",
+  "scope": "independent saved-array and final-state recomputation; per-step defects/cumulative corrections originate from recorded execution; no model replay or task-quality claim",
+  "source_hashes": {
+    "qualification/hcsn_adaptive/__init__.py": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+    "qualification/hcsn_adaptive/batched_flow.py": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+    "qualification/hcsn_adaptive/finite_control.py": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+    "qualification/hcsn_adaptive/flow_semantics.py": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+    "qualification/hcsn_adaptive/impulse_execution.py": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+    "qualification/hcsn_adaptive/uniformized_flow.py": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+    "qualification/hcsn_closure_20261124/__init__.py": "aa3a0c1117ab5a880ec632c13c2c026719d1feeb772d967182a73c34f207b4c9",
+    "qualification/hcsn_closure_20261124/campaign.py": "d253c81a801e57d7aa9590f57a2d3f796adaf171af4db743e5f3a3bf684c8ef8",
+    "qualification/hcsn_closure_20261124/data.py": "b29f20dd3db66284d492e4dbd22bdcadbb288d02effa8c198cbffe9128cafea1",
+    "qualification/hcsn_closure_20261124/efficiency.py": "762cc7ffb7d9a2c2ec97aa83463402735c0f7ee95f7ef44e4eea079d0ebf0d0b",
+    "qualification/hcsn_closure_20261124/fast_kernel.py": "a92d7cc45af0ccf1e1c2629ee9fe8ef1d4b0bc6dba335bbdc53cd909c42d80b3",
+    "qualification/hcsn_closure_20261124/mass_projection.py": "42313060cb960f4c7bc8a2b27648a2ae59d85a2f1a3212ea42b1ea220a355554",
+    "qualification/hcsn_closure_20261124/models.py": "84340ea2367b9ccdeec3a68d2726e66549680334ea2fc4de3e501b46eef7dde8",
+    "qualification/hcsn_closure_20261124/normalization_probe.py": "05a5f41591f2e79d3cd4462053f8faf240697969f6c97c2ea034cae0804680ff",
+    "qualification/hcsn_closure_20261124/normalization_tests.py": "f89ea610c6fed64c600d9f3d92c566fffb9e9178e5e70719c08ed27e9238513e",
+    "qualification/hcsn_closure_20261124/normalized_uniformization.py": "4b1f3e7aa88db1c0984de9ff87233fe900e407d18ba4d156b2cb8bd744e66986",
+    "qualification/hcsn_closure_20261124/projection_probe.py": "0c283ea7c417cb0aee527c03bc26c665991004ae57af1b35c9421136e0f4da6b",
+    "qualification/hcsn_closure_20261124/projection_tests.py": "cd5dbd401241463e9cd80db8c0dc91d83a8bb8a09d58808bcd7a4c9094a9ba6d",
+    "qualification/hcsn_closure_20261124/protocol.json": "6bf3e662037da59d8da0c8a355439809d9b4b735831b3c6d5d521df2c8c3b8cd",
+    "qualification/hcsn_closure_20261124/provenance.py": "a635b5a0a8edadbce6266ba5d8336cc27030c155992e40a8aaf3d3353ac034a6",
+    "qualification/hcsn_closure_20261124/runner.py": "ab72b5c4b0dc77b304dc0aeecfc5a9100e674102efc41a3a268872e47f5feed2",
+    "qualification/hcsn_smallnet_20261124/__init__.py": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+    "qualification/hcsn_smallnet_20261124/campaign.py": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+    "qualification/hcsn_smallnet_20261124/cost.py": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+    "qualification/hcsn_smallnet_20261124/data.py": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+    "qualification/hcsn_smallnet_20261124/model.py": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+    "qualification/hcsn_smallnet_20261124/train.py": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+    "qualification/hcsn_training/__init__.py": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+    "qualification/hcsn_training/population_generator.py": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+  },
+  "wall_seconds": 1.3359867989784107
+}

@@ -1,0 +1,42 @@
+{
+  "records": [
+    {
+      "command": [
+        "-m",
+        "unittest",
+        "qualification.hcsn_closure_20261124.communication_tests",
+        "-v"
+      ],
+      "returncode": 0,
+      "wall_seconds": 6.788554418017156,
+      "children_cpu_seconds": 6.771942
+    },
+    {
+      "command": [
+        "-m",
+        "qualification.hcsn_closure_20261124.communication_run",
+        "prepare",
+        "--root",
+        "/home/qian-qi/hcsn-smallnet-20261124/communication-training-v1-preflight"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.066076535033062,
+      "children_cpu_seconds": 3.039769000000001
+    },
+    {
+      "command": [
+        "-m",
+        "qualification.hcsn_closure_20261124.communication_run",
+        "smoke",
+        "--root",
+        "/home/qian-qi/hcsn-smallnet-20261124/communication-training-v1-preflight",
+        "--workers",
+        "5"
+      ],
+      "returncode": 0,
+      "wall_seconds": 16.825708779040724,
+      "children_cpu_seconds": 52.583394
+    }
+  ],
+  "source_manifest_sha256": "6b21eb2761e7c0d04b8fb4edc6237ce7118f3169467c38a6600ec7803163ef8f"
+}

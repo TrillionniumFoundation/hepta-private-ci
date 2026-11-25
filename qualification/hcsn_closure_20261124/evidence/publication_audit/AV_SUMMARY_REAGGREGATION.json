@@ -1,0 +1,219 @@
+{
+  "cost_views": {
+    "campaign_wall_seconds": 535.3828657569829,
+    "disjoint_children_cpu_total_seconds": 1580.1818950000002,
+    "driver_cpu_seconds": 2.852769472,
+    "fit_children_cpu_seconds": 1510.041553,
+    "single_process_peak_rss_bytes": 532598784,
+    "test_children_cpu_seconds": 70.14034200000008,
+    "worker_cpu_fit_and_test_nested_seconds": 1569.770039341
+  },
+  "duration_only_negative_control": {
+    "all_candidates": {
+      "mean_rank": 2.7604166666666665,
+      "mean_reciprocal_rank": 0.5442666997354497,
+      "recall_at_1": 0.3177083333333333,
+      "recall_at_5": 0.9114583333333334
+    },
+    "examples": 192,
+    "scope": "No fitting. Exact shared duration provides a possible paired-recording shortcut; stable lowest-index tie break.",
+    "unique_durations": 61,
+    "within_actor": {
+      "mean_rank": 1.2760416666666667,
+      "mean_reciprocal_rank": 0.8842881944444444,
+      "recall_at_1": 0.7864583333333334,
+      "recall_at_5": 1.0
+    }
+  },
+  "groups": {
+    "hcsn": {
+      "audio_to_video.recall_at_1": {
+        "count": 3,
+        "mean": 0.008680555555555556,
+        "sample_sd": 0.0030070326520293005,
+        "values": [
+          0.005208333333333333,
+          0.010416666666666666,
+          0.010416666666666666
+        ]
+      },
+      "audio_to_video_cross_actor_semantic.mean_average_precision": {
+        "count": 3,
+        "mean": 0.22669686246324985,
+        "sample_sd": 0.03388169100319522,
+        "values": [
+          0.18842534912185452,
+          0.23880144318994298,
+          0.2528637950779521
+        ]
+      },
+      "fused.accuracy": {
+        "count": 3,
+        "mean": 0.3142361111111111,
+        "sample_sd": 0.01591172116304111,
+        "values": [
+          0.328125,
+          0.296875,
+          0.3177083333333333
+        ]
+      },
+      "fused.brier": {
+        "count": 3,
+        "mean": 0.764896193211025,
+        "sample_sd": 0.005138235108286997,
+        "values": [
+          0.7590334987584838,
+          0.7686168884879931,
+          0.7670381923865981
+        ]
+      },
+      "mean_complete_fit_launch_exit_wall_seconds": 484.70078390530153,
+      "mean_fit_body_cpu_seconds": 479.1597248576667,
+      "mean_update_cpu_seconds": 452.03316464599993,
+      "parameter_accounting": {
+        "masked_recurrent": 288,
+        "requires_grad": 4182,
+        "scope": "exact declared masks, not effective functional rank; equal width is not equal capacity",
+        "structurally_active": 3894,
+        "total": 4198
+      },
+      "selected_steps": [
+        192,
+        256,
+        256
+      ]
+    },
+    "lif": {
+      "audio_to_video.recall_at_1": {
+        "count": 3,
+        "mean": 0.012152777777777778,
+        "sample_sd": 0.012028130608117204,
+        "values": [
+          0.005208333333333333,
+          0.005208333333333333,
+          0.026041666666666668
+        ]
+      },
+      "audio_to_video_cross_actor_semantic.mean_average_precision": {
+        "count": 3,
+        "mean": 0.20653969510838213,
+        "sample_sd": 0.012441965877500466,
+        "values": [
+          0.19595128257680913,
+          0.20342458184505052,
+          0.2202432209032867
+        ]
+      },
+      "fused.accuracy": {
+        "count": 3,
+        "mean": 0.3246527777777778,
+        "sample_sd": 0.0108420104138861,
+        "values": [
+          0.3333333333333333,
+          0.328125,
+          0.3125
+        ]
+      },
+      "fused.brier": {
+        "count": 3,
+        "mean": 0.7719354739557589,
+        "sample_sd": 0.007443771028309581,
+        "values": [
+          0.7782265764694039,
+          0.7738620276854297,
+          0.7637178177124433
+        ]
+      },
+      "mean_complete_fit_launch_exit_wall_seconds": 13.2414916473208,
+      "mean_fit_body_cpu_seconds": 9.691951167333333,
+      "mean_update_cpu_seconds": 7.578048852,
+      "parameter_accounting": {
+        "masked_recurrent": 0,
+        "requires_grad": 3142,
+        "scope": "exact declared masks, not effective functional rank; equal width is not equal capacity",
+        "structurally_active": 3142,
+        "total": 3142
+      },
+      "selected_steps": [
+        256,
+        256,
+        256
+      ]
+    },
+    "transformer": {
+      "audio_to_video.recall_at_1": {
+        "count": 3,
+        "mean": 0.010416666666666666,
+        "sample_sd": 0.009021097956087902,
+        "values": [
+          0.005208333333333333,
+          0.020833333333333332,
+          0.005208333333333333
+        ]
+      },
+      "audio_to_video_cross_actor_semantic.mean_average_precision": {
+        "count": 3,
+        "mean": 0.23297338668331974,
+        "sample_sd": 0.009301701648340016,
+        "values": [
+          0.22437763041503644,
+          0.2428485745799663,
+          0.23169395505495646
+        ]
+      },
+      "fused.accuracy": {
+        "count": 3,
+        "mean": 0.3020833333333333,
+        "sample_sd": 0.023867581744561668,
+        "values": [
+          0.328125,
+          0.296875,
+          0.28125
+        ]
+      },
+      "fused.brier": {
+        "count": 3,
+        "mean": 0.7586985823525872,
+        "sample_sd": 0.01992963205261009,
+        "values": [
+          0.7705145287343695,
+          0.7356886270520236,
+          0.7698925912713687
+        ]
+      },
+      "mean_complete_fit_launch_exit_wall_seconds": 7.712334754643962,
+      "mean_fit_body_cpu_seconds": 4.621500102333333,
+      "mean_update_cpu_seconds": 2.812191624333329,
+      "parameter_accounting": {
+        "masked_recurrent": 0,
+        "requires_grad": 4070,
+        "scope": "exact declared masks, not effective functional rank; equal width is not equal capacity",
+        "structurally_active": 4070,
+        "total": 4070
+      },
+      "selected_steps": [
+        256,
+        256,
+        192
+      ]
+    }
+  },
+  "hcsn_over_baseline_ratios": {
+    "lif": {
+      "complete_fit_wall_ratio": 36.60469657158096,
+      "update_cpu_ratio": 59.650336580596104
+    },
+    "transformer": {
+      "complete_fit_wall_ratio": 62.847477362602845,
+      "update_cpu_ratio": 160.74052732916485
+    }
+  },
+  "interpretation": "All9 complete256 updates. Same width is not same parameter count. Ratios explicitly distinguish update CPU from complete per-worker launch-to-exit wall; body/worker/stage counters are nested. Duration-only numbers describe paired retrieval, not six-class classification.",
+  "maximum_aggregate_error": 0.0,
+  "rows": 9,
+  "scalar_statistic_groups_checked": 228,
+  "schema": "av-summary-independent-reaggregation-v1",
+  "scope": "Independent standard-library recomputation from nine published per-slot records and stage receipts embedded in SUMMARY. This is a second aggregation/cost check, not a second raw-logit audit or physical model replay. Acquisition/preparation/failed setup costs remain outside these fit/test campaign views.",
+  "source_summary_sha256": "7ee9c914f9b2ab4e64cfdb56d130454d875f07908e85053f10ffb3bd875d5a48",
+  "status": "verified"
+}

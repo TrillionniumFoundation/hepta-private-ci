@@ -1,0 +1,62 @@
+{
+  "exit_code": 0,
+  "files": {
+    "baselines-v1/JOINT_TEST_SEAL.json": {
+      "bytes": 276,
+      "observed_mtime_ns": 1795569195698687000,
+      "sha256": "4553e7c5db5f98a40fdf2b59aa28dbd2f59a2f72723258aa704f3e67e68c198f",
+      "value": {
+        "baseline_seal_sha256": "9251e5cdca12e3fbcb3c78133edeee4561cded9437a3ec2742559f48b350bd43",
+        "main_seal_sha256": "920712b8ad5d7bff0c6556873acf7a3fb978bd8dff6be75fdcc75436fffd104f",
+        "protocol_sha256": "0585b2c786c697bc9c47ab07f928633f167f1b8a81f5886cd39b29cfcd63cbcc"
+      }
+    },
+    "baselines-v1/SEAL.json": {
+      "bytes": 16150,
+      "observed_mtime_ns": 1795567715645975600,
+      "sha256": "9251e5cdca12e3fbcb3c78133edeee4561cded9437a3ec2742559f48b350bd43",
+      "value": {
+        "attempts_count": 27,
+        "protocol_sha256": "0585b2c786c697bc9c47ab07f928633f167f1b8a81f5886cd39b29cfcd63cbcc"
+      }
+    },
+    "baselines-v1/TRAINING_TERMINAL.json": {
+      "bytes": 125,
+      "observed_mtime_ns": 1795567715652403500,
+      "sha256": "30f96be127cf767731334468a3d8c78c6007112c7b15337c6a20c6a4f470ed59",
+      "value": {
+        "seal_sha256": "9251e5cdca12e3fbcb3c78133edeee4561cded9437a3ec2742559f48b350bd43",
+        "sealed_unix": 1795567715.6519547
+      }
+    },
+    "closure-v1/SEAL.json": {
+      "bytes": 31919,
+      "observed_mtime_ns": 1795569190368782300,
+      "sha256": "920712b8ad5d7bff0c6556873acf7a3fb978bd8dff6be75fdcc75436fffd104f",
+      "value": {
+        "attempts_count": 63,
+        "protocol_sha256": "a010e62089bb34c6c22bd67a6854ffa288c5b5bf5429b74dc658de730f85ef9a"
+      }
+    },
+    "closure-v1/TEST_CLAIM.json": {
+      "bytes": 177,
+      "observed_mtime_ns": 1795569190388446500,
+      "sha256": "4b77d3d449a83d22ccb87951fae8994be977b1a194077a9be3c895bb391be8d0",
+      "value": {
+        "protocol_sha256": "a010e62089bb34c6c22bd67a6854ffa288c5b5bf5429b74dc658de730f85ef9a",
+        "seal_sha256": "920712b8ad5d7bff0c6556873acf7a3fb978bd8dff6be75fdcc75436fffd104f"
+      }
+    },
+    "closure-v2-source/qualification/hcsn_closure_20261124/campaign.py": {
+      "bytes": 4382,
+      "sha256": "d253c81a801e57d7aa9590f57a2d3f796adaf171af4db743e5f3a3bf684c8ef8"
+    },
+    "companions-v2-source/qualification/hcsn_closure_20261124/baselines_run.py": {
+      "bytes": 20692,
+      "sha256": "2521d8d6bd4211f42512d87fe6dcbfbe6e154ae634b54d1e9c734f5566e144c4"
+    }
+  },
+  "pty": "dpty-74be5fbaf644889fe2e64a366a5ba5e72ee4aa019399e5e69fe7498ca42452f5",
+  "schema": "hcsn-joint-seal-host-metadata-observation-v1",
+  "scope": "Read-only JSON metadata and host file mtimes; not a signed timestamp and not a new model/test run."
+}

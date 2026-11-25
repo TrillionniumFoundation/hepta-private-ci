@@ -1,0 +1,40 @@
+{
+  "status": "independently_verified",
+  "source_head": "c4ae70d44613434aaf165529a6076fa3400ca431",
+  "evidence_head": "84d554300002f802e98d30ef0552ab008c2b0241",
+  "parent": "8136eea9243b2a54e054508d9d8fd8ad4898cc2a",
+  "tree": "a9bf046c02dcb28d92a5635a868d1e82638797df",
+  "ref_unchanged": true,
+  "remote_receipts": {
+    "atomic_snapshot": false,
+    "encoding": "utf-8",
+    "files": [
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn7067-publication-20261125-v1/wave3-evidence-publication/RECEIPT.json",
+        "sha256": "d516afa44fb34ecbf4da40ceeb19ef8f8cd5e8aef51242999b04dd5926576088",
+        "size": 471,
+        "text": "{\n  \"status\": \"pushed_readback_pending\",\n  \"parent\": \"8136eea9243b2a54e054508d9d8fd8ad4898cc2a\",\n  \"commit\": \"84d554300002f802e98d30ef0552ab008c2b0241\",\n  \"target_ref\": \"refs/heads/evidence/hcsn-closure-results-20261125\",\n  \"source_head\": \"c4ae70d44613434aaf165529a6076fa3400ca431\",\n  \"source_pr_ref_unchanged\": true,\n  \"error\": null,\n  \"wall_seconds\": 31.60204771498684,\n  \"cpu_seconds\": 3.81148132,\n  \"archives\": 26,\n  \"files\": 148,\n  \"ordinary_non_force_push\": true\n}\n",
+        "version": "2050:56561014:471:1795573243094380297:1795573243094380297"
+      },
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn7067-publication-20261125-v1/wave3-evidence-publication/TRANSPORT_PREPARATION.json",
+        "sha256": "acc21cbf172050fc4fdcaadf44e6101306d329a49430a4f7a851a9f41049212a",
+        "size": 206,
+        "text": "{\n  \"status\": \"packed_and_verified\",\n  \"archives\": 26,\n  \"original_archive_bytes\": 46145878,\n  \"files\": 148,\n  \"wall_seconds\": 3.5725513170473278,\n  \"cpu_seconds\": 3.548381064,\n  \"max_blob_bytes\": 479168\n}\n",
+        "version": "2050:56561009:206:1795573215064782021:1795573215064782021"
+      },
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hcsn7067-publication-20261125-v1/wave3-evidence-publication/STEPS.json",
+        "sha256": "cb2801438f4ddb39627812740340f77c43f07c5a756b1a6f9c83a067dcf62af9",
+        "size": 1606,
+        "text": "[\n  {\n    \"args\": [\n      \"git\",\n      \"-C\",\n      \"/home/qian-qi/hcsn7067-publication-20261125-v1/repo\",\n      \"sparse-checkout\",\n      \"add\",\n      \"qualification/hcsn_closure_av_20261125\"\n    ],\n    \"returncode\": 0,\n    \"wall_seconds\": 2.3210844370769337\n  },\n  {\n    \"args\": [\n      \"git\",\n      \"-C\",\n      \"/home/qian-qi/hcsn7067-publication-20261125-v1/repo\",\n      \"add\",\n      \"--\",\n      \"qualification/hcsn_closure_20261124/evidence\",\n      \"qualification/hcsn_closure_av_20261125/evidence\"\n    ],\n    \"returncode\": 0,\n    \"wall_seconds\": 2.0202898209681734\n  },\n  {\n    \"args\": [\n      \"git\",\n      \"-C\",\n      \"/home/qian-qi/hcsn7067-publication-20261125-v1/repo\",\n      \"diff\",\n      \"--cached\",\n      \"--check\"\n    ],\n    \"returncode\": 0,\n    \"wall_seconds\": 0.032997653004713356\n  },\n  {\n    \"args\": [\n      \"git\",\n      \"-C\",\n      \"/home/qian-qi/hcsn7067-publication-20261125-v1/repo\",\n      \"-c\",\n      \"user.name=ChatGPT\",\n      \"-c\",\n      \"user.email=noreply@openai.com\",\n      \"commit\",\n      \"-m\",\n      \"Preserve frozen boundary correction, precision and real audio-video confirmation evidence\"\n    ],\n    \"returncode\": 0,\n    \"wall_seconds\": 0.1655145399272442\n  },\n  {\n    \"args\": [\n      \"git\",\n      \"-C\",\n      \"/home/qian-qi/hcsn7067-publication-20261125-v1/repo\",\n      \"-c\",\n      \"http.lowSpeedLimit=1024\",\n      \"-c\",\n      \"http.lowSpeedTime=180\",\n      \"push\",\n      \"--progress\",\n      \"origin\",\n      \"84d554300002f802e98d30ef0552ab008c2b0241:refs/heads/evidence/hcsn-closure-results-20261125\"\n    ],\n    \"returncode\": 0,\n    \"wall_seconds\": 19.880834362003952\n  }\n]\n",
+        "version": "2050:56561011:1606:1795573243093839450:1795573243093839450"
+      }
+    ],
+    "snapshot_scope": "independent_file",
+    "truncated": false
+  }
+}

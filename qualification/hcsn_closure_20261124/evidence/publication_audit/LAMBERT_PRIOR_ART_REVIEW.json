@@ -1,0 +1,80 @@
+{
+  "schema": "hcsn-lambert-prior-art-review-v1",
+  "review_date_utc": "2026-11-25",
+  "reviewer": "hcsn_mathematics",
+  "scope": "Independent algebra and primary-literature review only. No additional experiment, execution-source edit, model selection or performance measurement.",
+  "lambert_w": {
+    "decision": "Correct under the stated frozen-segment domain; suitable as an explanatory special-function expression.",
+    "domain": [
+      "alpha>0, rho>0, sigma>0; all parameters finite; s=alpha/rho>0.",
+      "k=(mu+sqrt(mu^2+2*rho*sigma^2))/sigma^2>0; i=alpha*mu/rho^2-ell/rho; A=s/k.",
+      "Fixed absolute reset a and independent refractory law D, with eta=E[exp(-rho*D)] in (0,1). For R>=1 Erlang phases of mean d>0: eta=((R/d)/(R/d+rho))^R.",
+      "a, s, k, i, eta and K are fixed with respect to the current unknown b. The reference model has K>0; the algebra uses s>0, k>0 and 0<eta<1.",
+      "The required continuation boundary satisfies b<a. Existence in that half-line requires R(a)>0."
+    ],
+    "definitions": {
+      "C": "(1-eta)*i+A+K-eta*s*a",
+      "residual": "R(b)=s*b+C-eta*A*exp(k*(b-a))",
+      "q_scalar": "q=k*a+k*C/s; this scalar is unrelated to the signed-content population also denoted q elsewhere.",
+      "z_scalar": "z=k*b+k*C/s",
+      "Lambert_definition": "W(u)*exp(W(u))=u"
+    },
+    "derivation": [
+      "Multiplying R(b)=0 by k/s gives z=eta*exp(z-q).",
+      "Therefore z*exp(-z)=eta*exp(-q), or (-z)*exp(-z)=-eta*exp(-q).",
+      "The admissible solution is b=-W_0(-eta*exp(-k*a-k*C/s))/k-C/s."
+    ],
+    "branch_and_existence_proof": [
+      "R(a)=(s/k)*(q-eta), hence R(a)>0 is equivalent to q>eta.",
+      "With 0<eta<1 and q>eta: 0<eta*exp(-q)<eta*exp(-eta)<1/e. The Lambert argument is strictly in (-1/e,0), so exactly two real branches exist.",
+      "For W_0, z=-W_0(-eta*exp(-q)) lies in (0,1). Since z*exp(-z) is strictly increasing on (0,1), comparison with eta*exp(-eta) gives 0<z<eta<q. Consequently b<a.",
+      "For W_{-1}, z>1>eta. The defining equation gives z-q=log(z/eta)>0, hence b>a. This real branch is inadmissible for the required reset geometry.",
+      "For b<a, R_b=s*(1-eta*exp(k*(b-a)))>0 and R(b) tends to -infinity as b tends to -infinity. Thus R(a)>0 is necessary and sufficient for exactly one root with b<a.",
+      "If R(a)=0, the principal branch gives b=a, outside the strict domain. If R(a)<0, no root exists with b<a; real roots outside this domain, if present, do not supply an admissible policy."
+    ],
+    "implementation_boundary": [
+      "A unique half-line root does not guarantee membership in the executable solver's finite bracket or in its finite-grid reset-deposition range. Retain the actual bracket, residual, root-domain and reset-projection checks.",
+      "The expression solves the frozen reference regenerative affine QVI. It is not the original financial paper's model, an exact optimal policy for the truncated reflecting finite chain, or a global closed form for the input-driven network.",
+      "This special-function expression does not establish a globally smooth numerical network or a stable floating-point Lambert evaluator.",
+      "The reported experiments used the qualified safeguarded Newton implementation and its implicit backward. Lambert W was not implemented or benchmarked, and no performance advantage is claimed for this expression."
+    ]
+  },
+  "prior_art": [
+    {
+      "authors": ["Duane Q. Nykamp", "Daniel Tranchina"],
+      "year": 2000,
+      "title": "A Population Density Approach That Facilitates Large-Scale Modeling of Neural Networks: Analysis and an Application to Orientation Tuning",
+      "journal": "Journal of Computational Neuroscience",
+      "volume": 8,
+      "issue": 1,
+      "pages": "19-50",
+      "doi": "10.1023/A:1008912914816",
+      "publisher_url": "https://link.springer.com/article/10.1023/A:1008912914816",
+      "original_article_pdf_mirror": "https://sites.stat.columbia.edu/liam/teaching/neurostat-spr11/papers/Fokker-Planck/nykamp-tranchina.pdf",
+      "exact_locations": [
+        {"section": "3.2", "printed_page": 24, "equations": "(10)-(13)", "finding": "Conservation-law population-density evolution; r(t)=J(v_th,t); a delta probability source at v_reset carrying the threshold flux; a delayed source for refractory time."},
+        {"section": "7.3", "printed_page": 44, "equations": null, "finding": "For the specified stationary setting, firing is a renewal process. Starting from reset and removing neurons after they fire makes threshold flux the first-spike/interspike-interval probability density."}
+      ]
+    },
+    {
+      "authors": ["Nicolas Brunel"],
+      "year": 2000,
+      "title": "Dynamics of Sparsely Connected Networks of Excitatory and Inhibitory Spiking Neurons",
+      "journal": "Journal of Computational Neuroscience",
+      "volume": 8,
+      "issue": 3,
+      "pages": "183-208",
+      "doi": "10.1023/A:1008925309027",
+      "publisher_url": "https://link.springer.com/article/10.1023/A:1008925309027",
+      "original_article_pdf_mirror": "https://web.njit.edu/~horacio/AdvancedCompNeuro/downloads/Brunel_JCompNeurosci-2000.pdf",
+      "exact_locations": [
+        {"section": "3", "printed_pages": "186-187", "equations": "(6)-(12)", "finding": "Fokker-Planck population density in (6), continuity and probability current in (7)-(8). Text before (9) states absorbing P(theta,t)=0 and firing rate nu(t)=S(theta,t); (9) specifies the threshold derivative. Equation (10) gives refractory-delayed reset reinjection through a current jump; (12) normalizes active probability plus refractory probability to one."}
+      ]
+    }
+  ],
+  "relevance_and_novelty_limits": [
+    "Population-density evolution, threshold flux, absorption, reset/refractory reinjection and first-passage/renewal descriptions of neuronal firing are established prior methods, not foundational inventions of this project. These two primary papers demonstrate prior existence; this review does not identify the earliest origin.",
+    "The project's potential distinction should be framed as the specific reference-QVI endogenous policy, signed-content communication interface, differentiable implementation and finite weight-program combination, with its measured capabilities and limitations. This review does not establish that the entire combination is unprecedented, nor make an exhaustive novelty or patent conclusion.",
+    "Signed probability current in Nykamp-Tranchina denotes direction of motion through voltage space. The project's signed-content population is a mark carried by nonnegative probability mass; shared use of the word signed does not establish mathematical identity."
+  ]
+}

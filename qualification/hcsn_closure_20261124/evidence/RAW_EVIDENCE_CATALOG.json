@@ -1,0 +1,1007 @@
+{
+  "schema": "hcsn-complete-raw-evidence-v1",
+  "source_commit": "c4ae70d44613434aaf165529a6076fa3400ca431",
+  "raw_evidence_commit": "84d554300002f802e98d30ef0552ab008c2b0241",
+  "indices": [
+    {
+      "name": "root-wave1",
+      "first_publication_commit": "4b0f1f44a91cdb708889198d8bf510df66aa982b",
+      "index_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1-INDEX.json",
+      "index_sha256": "b5a3ddaabb4355666e63b5afb819304cd0d2475dfcbe00ab6f280a525175e67f",
+      "index": {
+        "decoded_part_limit_bytes": 479000,
+        "format": "hcsn-evidence-transport-v2",
+        "object_count": 19,
+        "objects": [
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1194,
+            "manifest_sha256": "ad76deb916b48859881f7cda7b5739f23e95887923b38cea912eb6d572f0a94c"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-v2-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-v2-source.tar.gz.parts.json",
+            "manifest_bytes": 1194,
+            "manifest_sha256": "4edef3529d3562220c3ff8fd4aaa13432bc2669c6a9688c5b8437dee6c62dc02"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1185,
+            "manifest_sha256": "4770049a786daf4a617ec27929d76808a8fb10e2b3b2d919f13efc630d77a8fd"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-v2-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-v2-source.tar.gz.parts.json",
+            "manifest_bytes": 1185,
+            "manifest_sha256": "cffae1405705ba538ce427fe0c0b83682e29d5187d934eb83ebc90b30c9b0a72"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-v3-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-v3-source.tar.gz.parts.json",
+            "manifest_bytes": 1185,
+            "manifest_sha256": "2d3f59b5bbd965a9118a5a27b0c0505251385a662044fdfe388f623add86292a"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/dual-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/dual-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1185,
+            "manifest_sha256": "d7f81a38a1eb6f4557ea32a068c4e94aad5f775932829ce0d9644070078500f2"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/variant-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/variant-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1194,
+            "manifest_sha256": "4d8d6ed162d7cb24d436e5989cb7a6963b3d9aa185e316e19127c43438787ba0"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/normalization-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/normalization-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1212,
+            "manifest_sha256": "c947dcb0b991108d002231a9b81359eb05f2bbb2ec75ed5402a9e24eee7c4493"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-preflight-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-preflight-v1.tar.gz.parts.json",
+            "manifest_bytes": 1210,
+            "manifest_sha256": "8f1a3ea3df87b99b5f4784f17dda54995bbc18b943ecdf460a0e95e7886e115f"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-preflight-v2.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-preflight-v2.tar.gz.parts.json",
+            "manifest_bytes": 1210,
+            "manifest_sha256": "ce0d293b0ae0be510c6a6f550eb5a6bc0fb4b2f7964bc5f85de0113146896670"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/dual-preflight-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/dual-preflight-v1.tar.gz.parts.json",
+            "manifest_bytes": 1210,
+            "manifest_sha256": "d0bd92eccac1e710b4a18d1063a9cda18195609419bb84871a2bc9420d3aba0c"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/variant-preflight-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/variant-preflight-v1.tar.gz.parts.json",
+            "manifest_bytes": 1229,
+            "manifest_sha256": "4ba36c2460ea22680cd26bc8bbdf9756a075e88002d0629751d29406be78e267"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/normalization-preflight-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/normalization-preflight-v1.tar.gz.parts.json",
+            "manifest_bytes": 1263,
+            "manifest_sha256": "1b427495bcb31e79621de0b3885b6ca93787313f28663ff17a6b73bb32d54091"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-smoke-v2.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-smoke-v2.tar.gz.parts.json",
+            "manifest_bytes": 1362,
+            "manifest_sha256": "aac6e0ee3c8ed31a9c990f7f091250cb33ee8ead62865694f2eeea5c290e43d2"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-v1.tar.gz.parts.json",
+            "manifest_bytes": 54133,
+            "manifest_sha256": "3fffb92d5dfcd4e44f31467a2e4b415bee4edecc8d45864dfe002bbcca0a7b24"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/dual-training-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/dual-training-v1.tar.gz.parts.json",
+            "manifest_bytes": 10236,
+            "manifest_sha256": "3e522ed3f188df6b79d2de771913a4d8e2d7380d3c6d7aa3e0d641b43267f473"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/efficiency-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/efficiency-v1.tar.gz.parts.json",
+            "manifest_bytes": 12250,
+            "manifest_sha256": "fbce8efbaadf770154b7ae6daefa1960f1f078a4db4166692ccb3d5f3d620102"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/efficiency-v2.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/efficiency-v2.tar.gz.parts.json",
+            "manifest_bytes": 12250,
+            "manifest_sha256": "5901f1c0823cc253096887f743ed696e7ebbbf65e25d62c5189a56fb1a52854e"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/normalization-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/normalization-v1.tar.gz.parts.json",
+            "manifest_bytes": 15502,
+            "manifest_sha256": "57e9278019ae118ad05bfc2279776e44190ab4feafcf5b7913bf0cdfefab7eb9"
+          }
+        ],
+        "part_limit_bytes": 480000,
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "source_commit": "b8acc244a3929d6f40919586812465f7aed2892e"
+      },
+      "verification": {
+        "format": "hcsn-evidence-transport-v2",
+        "status": "verified",
+        "source_commit": "b8acc244a3929d6f40919586812465f7aed2892e",
+        "index_sha256": "b5a3ddaabb4355666e63b5afb819304cd0d2475dfcbe00ab6f280a525175e67f",
+        "object_count": 19,
+        "part_count": 206,
+        "original_bytes": 92273286,
+        "maximum_part_bytes": 479168,
+        "encoded_bytes": 92248562,
+        "maximum_decoded_part_bytes": 479000,
+        "restored": false,
+        "objects": [
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-v1-source.tar.gz",
+            "bytes": 44896,
+            "sha256": "ec1869e224eff74b492379fdd97c6ac883f19d92f83f31037adfd786bf6152b5",
+            "source_git_blob_sha1": "4273cec9e73c5c2aba62ac42c889189908a6924f"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-v2-source.tar.gz",
+            "bytes": 45715,
+            "sha256": "53af087269cb6910201dce69e1dc10beaa05c1e00913fd28569ad89ade4436eb",
+            "source_git_blob_sha1": "47330e40cea8102e349ba5d2231ad2bf2bb3171f"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-v1-source.tar.gz",
+            "bytes": 49344,
+            "sha256": "20fd0a203c5ae53f57e90daaf4b9cd591d241c1c50b792c2bd4ea0f4ce7aa8f8",
+            "source_git_blob_sha1": "aec38e0cd3007be3f988bc88fe15cf73b8b3bf02"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-v2-source.tar.gz",
+            "bytes": 52374,
+            "sha256": "0a19ec2f3b43d4f44a26fcc405179953f425c7d1fd31cbdfa6628523016ff4c4",
+            "source_git_blob_sha1": "483c3cc14f2d3cfdb2db3f2d82556a27a1e6f44d"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-v3-source.tar.gz",
+            "bytes": 52696,
+            "sha256": "c70fbac7ae385e5f4009764a15802f255c341ee665eebbf529b1e9996f798a06",
+            "source_git_blob_sha1": "ddc490981fcb64b94ded965a53ed1d310abeb221"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/dual-v1-source.tar.gz",
+            "bytes": 49771,
+            "sha256": "25eef9d095c77b5676ad11b49ca8825ee7a87de6b6eb0f1e6f250eca00a764a1",
+            "source_git_blob_sha1": "f6340e5de9c5fdfc2cba3a532844b0577433647b"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/variant-v1-source.tar.gz",
+            "bytes": 56440,
+            "sha256": "47c2a271e038d7e8e9f6ce967b2271e6255fa42ef566c6d15be04f6c476bd6c9",
+            "source_git_blob_sha1": "85838b8c7bb5d9daad22b96ed4684e7976bde0a0"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/normalization-v1-source.tar.gz",
+            "bytes": 53893,
+            "sha256": "2e2b82d4d1664006289381aaf505d13dc520f052b279b5bf19376a6ee457d5c9",
+            "source_git_blob_sha1": "1dc7971b3097e7ca0b99ac8653f5b75b3192ee93"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-preflight-v1.tar.gz",
+            "bytes": 1197,
+            "sha256": "662d9cecde362711742b1f0a7382400ce380b6b675227d51a13e760d985c764b",
+            "source_git_blob_sha1": "6f08d729c1abddecd9ed604d0dc6f1380af57d73"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/fast-preflight-v2.tar.gz",
+            "bytes": 1219,
+            "sha256": "ce08d6eea40beba13bc89776c270a5b79a87fdc04f4c585f6918cab03d7c0829",
+            "source_git_blob_sha1": "54a1dd98f2a175ef64d573af443a18ce0775ac38"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/dual-preflight-v1.tar.gz",
+            "bytes": 1217,
+            "sha256": "0f4fd1cc61995e57196a88efebbc334d60b39cf95b2020dae3fbdcb1060f3967",
+            "source_git_blob_sha1": "39c34d5d40241b5699174657d839584f8d4812a9"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/variant-preflight-v1.tar.gz",
+            "bytes": 469101,
+            "sha256": "cdec6db2161539df14ce340bd9efde61f0a74c6d8a80c6078ef654ce2aef65ab",
+            "source_git_blob_sha1": "582233f3569f27024a59bd76b9469fd83d0c9baa"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/normalization-preflight-v1.tar.gz",
+            "bytes": 2383,
+            "sha256": "7ce4580e2712fcfabc9097e7ba87df0557a5e99a15c6cac128b69337d472cb6c",
+            "source_git_blob_sha1": "e4b22616c2f38b805d7c4ab7650a2bda97482575"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-smoke-v2.tar.gz",
+            "bytes": 258315,
+            "sha256": "5d3bae3774194212bd041a1fcce964bcc09619dfc27e216d42dbc0e91011b986",
+            "source_git_blob_sha1": "9ca6841014b8bbf3316ebb3a01a6452d85c43c7a"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/closure-v1.tar.gz",
+            "bytes": 48740882,
+            "sha256": "64f8bc73e1b8387832b576a838fe43f90ee814d15b26153acf2594b38cd49ba6",
+            "source_git_blob_sha1": "62009d97be3e53e6a2ca81354af10038b4c6bb57"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/dual-training-v1.tar.gz",
+            "bytes": 8270451,
+            "sha256": "95c35f4abd3fa7cb34ac99040b3abb171a77e13968e192d3d5727f86bf2e4461",
+            "source_git_blob_sha1": "504bd7b55a482aa42c957b6f8f3762714f27c6e7"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/efficiency-v1.tar.gz",
+            "bytes": 10481008,
+            "sha256": "fd524838137d15ed2785a4a81a469b046800d8ad0b02a78f0a40819de8a3bf01",
+            "source_git_blob_sha1": "47144df8325ca89d250050f301b298f0b61ad848"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/efficiency-v2.tar.gz",
+            "bytes": 10482098,
+            "sha256": "2952fd055dbaf8a9c63391ea43ba39927de25b68e61311606d07801b991d8cff",
+            "source_git_blob_sha1": "832cd192dc31781d0339f90df60e7c86f86428f5"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1/normalization-v1.tar.gz",
+            "bytes": 13160286,
+            "sha256": "924ce9994e3ff824221b627e5d49eb7fd52d871b6f498563f7f0ae3934737a58",
+            "source_git_blob_sha1": "f09e3eef0983d2e26e0778136b8d30f97642c16e"
+          }
+        ],
+        "scope": "Exact byte transport only; no metric, threshold, source model, or experiment change."
+      }
+    },
+    {
+      "name": "wave2",
+      "first_publication_commit": "8136eea9243b2a54e054508d9d8fd8ad4898cc2a",
+      "index_path": "qualification/hcsn_closure_20261124/evidence/raw/wave2-INDEX.json",
+      "index_sha256": "54791d7d18bd5297aafddd1a9b90051800e93e1722bde7b9d5d864a7219e5d58",
+      "index": {
+        "decoded_part_limit_bytes": 479000,
+        "format": "hcsn-evidence-transport-v2",
+        "object_count": 30,
+        "objects": [
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/fast-training-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/fast-training-v1.tar.gz.parts.json",
+            "manifest_bytes": 16065,
+            "manifest_sha256": "2e6af1601ad547f60ec0a3a69194ec84899db70eba2194f3b241a82fb2f14099"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1203,
+            "manifest_sha256": "f40e7d32102e3c89763a26ff12a445a1bd9293de45c4686dabb95173be6f5263"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-preflight-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-preflight-v1.tar.gz.parts.json",
+            "manifest_bytes": 1254,
+            "manifest_sha256": "54434f8d083e204aec523e80965b115924ecf6f1d4965cc6d5ccf71635fa0905"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-v1.tar.gz.parts.json",
+            "manifest_bytes": 10666,
+            "manifest_sha256": "6329017299576f707dfabc2324a9b24724189cf777edfeecd751e4295895fc83"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-audit-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-audit-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1215,
+            "manifest_sha256": "892a3883c5e7e342435e405ec59b388254919724ef9bef732cb51cd93afb9c94"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-audit-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-audit-v1.tar.gz.parts.json",
+            "manifest_bytes": 1215,
+            "manifest_sha256": "0e12bb52081e020d3c17aa073e6175a40d96bcfd56139ec5ca547801a8149e52"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v1.tar.gz.parts.json",
+            "manifest_bytes": 5476,
+            "manifest_sha256": "b4b1325ee3e5d906ddb7a0125ed2b201fae781f0d1d013d0aef5089f51c58fab"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-cost-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-cost-v1.tar.gz.parts.json",
+            "manifest_bytes": 2306,
+            "manifest_sha256": "2a2d19d6a506566e674a51ffced0d64785303584985b46fb3a7fbb1ce5d691a1"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/baselines-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/baselines-v1.tar.gz.parts.json",
+            "manifest_bytes": 26302,
+            "manifest_sha256": "d0bdfd35ad46334c5591985db4dea8241d3f901cb5fb541997f3141ae00ea940"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-audit-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-audit-v1.tar.gz.parts.json",
+            "manifest_bytes": 1240,
+            "manifest_sha256": "65e62f35b6a5207f1390fc299d2a26b91ae2d5930c7b174335f9c0cf9e4e82c2"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/models-audit-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/models-audit-v1.tar.gz.parts.json",
+            "manifest_bytes": 1231,
+            "manifest_sha256": "57a1bdafe0cbca16e05d2dd35d5d692015794a1caeee7fd25e50c4fed267eedc"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/efficiency-v2-audit-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/efficiency-v2-audit-v1.tar.gz.parts.json",
+            "manifest_bytes": 1248,
+            "manifest_sha256": "1f9fd72ca726910046156386effb3f182d9d63c5f9f02e421af3e35b75a20ba9"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/normalization-v1-audit-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/normalization-v1-audit-v1.tar.gz.parts.json",
+            "manifest_bytes": 1257,
+            "manifest_sha256": "a50968b46b74753fd40d8e4147aabe1516f8980ff8138486bbaa0a7d1064e0c0"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1213,
+            "manifest_sha256": "8d5c81784c03c5f2184561d20a240b5d7d7c97040210cc08213964bab92bf627"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v1-tests.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v1-tests.tar.gz.parts.json",
+            "manifest_bytes": 1204,
+            "manifest_sha256": "44ad57d4bfa266b1720ac7bda6d11d591c3fbd928c5d2111130ce81eb1b6ae9b"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v2-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v2-source.tar.gz.parts.json",
+            "manifest_bytes": 1213,
+            "manifest_sha256": "f29d730ebce23499000e0fe94700f85dc418d5befb5d86d7a9beb4b35dc6d9a6"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v2-tests.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v2-tests.tar.gz.parts.json",
+            "manifest_bytes": 1204,
+            "manifest_sha256": "3261aa2ba4eafc2c244f3f4505f9587d80a30907f9aa2e95661b78e09e7d56de"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1219,
+            "manifest_sha256": "bdec9576cb0c558e16617470ee2c7f6b56d0aa9c27b35e3fc09100831286da80"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v1-tests.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v1-tests.tar.gz.parts.json",
+            "manifest_bytes": 1210,
+            "manifest_sha256": "8d68d736ec8fafd165a2f6495cb988728f133625ddf862ad6f29a06d7edd1dcb"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v2-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v2-source.tar.gz.parts.json",
+            "manifest_bytes": 1219,
+            "manifest_sha256": "5a5e08f59c900eec460003fc54655e61342818b9138c262fc537dafad5a8feed"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v2-tests.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v2-tests.tar.gz.parts.json",
+            "manifest_bytes": 1211,
+            "manifest_sha256": "456603f4a6564f7435fdfcc8bb33f4069dc0b17f58a379139e72dc4782be3df3"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-cost-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-cost-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1228,
+            "manifest_sha256": "ffdcf77b69be879f2b06e8a3b8eb29b589da1da480ede58fb979d182c8600d63"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-cost-v1-install.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-cost-v1-install.tar.gz.parts.json",
+            "manifest_bytes": 1225,
+            "manifest_sha256": "827b8b501d2120ea71487b5ca80b0e2c325ad9d2ba1754dbd814f4e63819128a"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/models-audit-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/models-audit-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1220,
+            "manifest_sha256": "52d911af6030a7868c2285bf5a77b69a20928aede3cdb45b63cea9e99a7d5d78"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companion-source-extras-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companion-source-extras-v1.tar.gz.parts.json",
+            "manifest_bytes": 1240,
+            "manifest_sha256": "f61d143ec4c8cae12d0700d6c4e45734fc751823c9e44eb1ae6104843d6d6ecc"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-training-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-training-v1.tar.gz.parts.json",
+            "manifest_bytes": 18971,
+            "manifest_sha256": "09b33fa3aa7634d4e652b8a0fac054b11e05310511cf7bc007dfc358023ef208"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-training-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-training-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1299,
+            "manifest_sha256": "5dffce6d8e06a32bee591871e787a327bcdf52082cb7bd0d4dba0909a04bfc05"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-training-v1-preflight.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-training-v1-preflight.tar.gz.parts.json",
+            "manifest_bytes": 1306,
+            "manifest_sha256": "f991b74a891d1654c9f6889a3f57f46372edcdfae1e069476c5b513eadc59bea"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-analysis-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-analysis-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1294,
+            "manifest_sha256": "869a84e4fccb34de67a79ba1b72f63bd6d8ac3e34e853bb032cc3dda38a828c5"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1263,
+            "manifest_sha256": "4fdee5aeb6b45a671e0e41266f371f8d5a220e2d1e1e1888187ec9b70cf9bfea"
+          }
+        ],
+        "part_limit_bytes": 480000,
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "source_commit": "b8acc244a3929d6f40919586812465f7aed2892e"
+      },
+      "verification": {
+        "format": "hcsn-evidence-transport-v2",
+        "status": "verified",
+        "source_commit": "b8acc244a3929d6f40919586812465f7aed2892e",
+        "index_sha256": "54791d7d18bd5297aafddd1a9b90051800e93e1722bde7b9d5d864a7219e5d58",
+        "object_count": 30,
+        "part_count": 165,
+        "original_bytes": 67759779,
+        "maximum_part_bytes": 479168,
+        "encoded_bytes": 67728864,
+        "maximum_decoded_part_bytes": 479000,
+        "restored": false,
+        "objects": [
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/fast-training-v1.tar.gz",
+            "bytes": 13851206,
+            "sha256": "8bd1ff702013c6f3af27657cd2faa99de709b2a6ab6c15bc36e6a252d24c1915",
+            "source_git_blob_sha1": "93d9c6ceac94577a3db678eee6ce646d924b69a2"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-v1-source.tar.gz",
+            "bytes": 56366,
+            "sha256": "737419efaaece915d6a70d7a7223c151b9a9c99e0d2b5e7f0df69e5926f9541a",
+            "source_git_blob_sha1": "9b02d9341fb00d6468b7271814bd742165b5475e"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-preflight-v1.tar.gz",
+            "bytes": 2501,
+            "sha256": "78c50c4e061c9d8e21759985be55dc386122a93e830cf7d02f269786b1f297f0",
+            "source_git_blob_sha1": "b15c0f1dbc676dcbe657551e635cf4a6df55f667"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-v1.tar.gz",
+            "bytes": 8659010,
+            "sha256": "634f444929a1f4861b2dbabf9adf4a900911ca39690522144251ec8d0f21a41d",
+            "source_git_blob_sha1": "b31dd155c93dfa03cf87d39797668815fbb643b5"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-audit-v1-source.tar.gz",
+            "bytes": 3129,
+            "sha256": "9d13fbafb95c3506efc7cd323cd033594802967df2ef03b263712b32928066f8",
+            "source_git_blob_sha1": "3da994f716dd889d8675f098e28f9ad02257d843"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave2/projection-audit-v1.tar.gz",
+            "bytes": 7861,
+            "sha256": "a05a643cbb702c2bc8794af12c4a71e1e84145ab1a022c11d62904c113e166ad",
+            "source_git_blob_sha1": "2d6492c25e604d4e7bbe3f5260a7e50dbef0b926"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v1.tar.gz",
+            "bytes": 4127915,
+            "sha256": "40b306e73a738b760adb2eb33867a56086b52e20875596a225f84511e88275ac",
+            "source_git_blob_sha1": "330d25ca19c7917dd6ec70f79925e739d2ed6e1e"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-cost-v1.tar.gz",
+            "bytes": 1374448,
+            "sha256": "8b5155ae2b1388fd30a7854a4e4d387203b1c03cf4f9dbacfeda9bd361f1d073",
+            "source_git_blob_sha1": "5bd758246ad5d06a0c8f47f64ef979a084a8c9b0"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/baselines-v1.tar.gz",
+            "bytes": 22769379,
+            "sha256": "5ec6b33cbd9758f389fd6e9937b49c01419087db065066ce607d5e46e8bc88cc",
+            "source_git_blob_sha1": "1f0ca0a890719eb25648bc16650c3944bdae98a1"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-audit-v1.tar.gz",
+            "bytes": 73652,
+            "sha256": "6f30aa39d93ca213f6b60b9f5c47b0232ce1eabbb3ccc3421e7c19db164fe5fe",
+            "source_git_blob_sha1": "fc7de9e8139edc149820976335d43f1063e5cd6d"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/models-audit-v1.tar.gz",
+            "bytes": 226148,
+            "sha256": "811229788b7ae1eb370c2052224fbe436d819308f19c3087231e945a67bb3dc8",
+            "source_git_blob_sha1": "97a3bd1d55892e60219e1067deb263f16d1cef42"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/efficiency-v2-audit-v1.tar.gz",
+            "bytes": 32597,
+            "sha256": "3be2666dca23ab5fa8544f973795d40ffd05b14e978a05597f6249053a003cdc",
+            "source_git_blob_sha1": "9881c150fa40cb963b0fe105048aae8f09a9c697"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/normalization-v1-audit-v1.tar.gz",
+            "bytes": 36044,
+            "sha256": "72bbd1320a06c5234a3f60d483502729d7f87269a94427b4acd06424ebec2782",
+            "source_git_blob_sha1": "77720401f9344e7cefa971e3042ec58d1a6e7a00"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v1-source.tar.gz",
+            "bytes": 59586,
+            "sha256": "a8e69d10c6bfa1df055087613925b84ea901694645a92eeff0fcbb24e510e304",
+            "source_git_blob_sha1": "15724f336b30608923886480b75e4269a78733d0"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v1-tests.tar.gz",
+            "bytes": 1447,
+            "sha256": "e830618caca46e3250bebfb4da68491450e96cd59a17d2d4edb37743dbf23b7e",
+            "source_git_blob_sha1": "5137bb04514de611a338b04203e54ed3b486da2f"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v2-source.tar.gz",
+            "bytes": 69921,
+            "sha256": "e846130f6639f7ef669e4e73f50a40f97cc4ef6c8b037f0c3ea8ace3f825c076",
+            "source_git_blob_sha1": "3ad6fe049a3f95aefe286a19e74899364b6d58db"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-v2-tests.tar.gz",
+            "bytes": 1894,
+            "sha256": "f1ff4516ab9a9a481f19ad19ee06a2424e04e370a1485962b7e5739453aef885",
+            "source_git_blob_sha1": "1c1de441cec072a1d79312a23c3624ffc6083f57"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v1-source.tar.gz",
+            "bytes": 77782,
+            "sha256": "2bee7c2f785342e364a3c8b5ea7a3d05d861edbc72083d8407374e5ea62b57ee",
+            "source_git_blob_sha1": "4840df6e5b3467e74673f80d353618fc0b34c7c6"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v1-tests.tar.gz",
+            "bytes": 2177,
+            "sha256": "9f8f08997d7579931b96cc97d439bbb8f97afd9c69307028823f81855864bd1e",
+            "source_git_blob_sha1": "14f1424bedd8b8ff009846799c229d784b1caa5c"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v2-source.tar.gz",
+            "bytes": 79596,
+            "sha256": "a894ba83215d9a74ebb55ff802e10e2f0fe0310d5cedb469d817968a4d780cb0",
+            "source_git_blob_sha1": "a323b85ff189a39f269ebc1db898a4dc4b9da876"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companions-v2-tests.tar.gz",
+            "bytes": 2246,
+            "sha256": "91eb8aead5d25dff59e6ac21bf242c640419c3722c79b3e2415ab0f24e6403c5",
+            "source_git_blob_sha1": "f86618c9deb42d129ad02849144e6aee29691843"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-cost-v1-source.tar.gz",
+            "bytes": 82554,
+            "sha256": "a8285980c2e118fcfdc4cbe235a3320d48fd2127254f27d6798d545547711331",
+            "source_git_blob_sha1": "e7dfef54a13eabd4c40199d3d47aec82eac803ca"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/programs-cost-v1-install.tar.gz",
+            "bytes": 1280,
+            "sha256": "13e28afed2dffbc03a4dd3778f63ab9652b7596b853d5627ff964230108a18e0",
+            "source_git_blob_sha1": "c7b08bd7a58e56c055a01e2d8194d896803b2c2c"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/models-audit-v1-source.tar.gz",
+            "bytes": 9382,
+            "sha256": "222bd3eee912289f9b5cd6e84f2976b105559fa8c2c1fbb9699d5f003eb546bd",
+            "source_git_blob_sha1": "d5a84652c8f1545e98474d8d61963bce91effad5"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/companion_archives/raw/companion-source-extras-v1.tar.gz",
+            "bytes": 198394,
+            "sha256": "6cf9ccef53e0f7188e56021f8376f9d2b1ccff598bd6c5482d285ffa90a8cb8b",
+            "source_git_blob_sha1": "ebf91f5a38313682a8150645e030aebb0a89ec82"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-training-v1.tar.gz",
+            "bytes": 15396861,
+            "sha256": "71006701233858e0139bc4b18a8a68416792a214fc48c268478b404cad18cc89",
+            "source_git_blob_sha1": "f6badf07296c2af268b6fd51cd87709635d65b78"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-training-v1-source.tar.gz",
+            "bytes": 60297,
+            "sha256": "6d184e8c4a5a6d3cfe37b7c9355f957710fec6d7faa33e128db23c913131622b",
+            "source_git_blob_sha1": "534877324362cc0fac71043d7cc6fbb6752bb9c1"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-training-v1-preflight.tar.gz",
+            "bytes": 376023,
+            "sha256": "bdbf08515d9e926b6c87406e847e5cc22d6f6975bf2fa426692f161f6e02152d",
+            "source_git_blob_sha1": "ca8709267db6f7d4e9ee3497188465b509083632"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-analysis-v1-source.tar.gz",
+            "bytes": 67646,
+            "sha256": "bb39e65c21d316d942b0a357c97b0c3960ceec61218faf9fb052c61d416b980b",
+            "source_git_blob_sha1": "489c9b0e50cb992cb72a61ac8e6081844d98cd4e"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/communication_archives/raw/communication-v1-source.tar.gz",
+            "bytes": 52437,
+            "sha256": "db8f359d8586262785ad0c6db99082de17087711c353cf2292426fa3c2efdabe",
+            "source_git_blob_sha1": "2e78f39a1c819a57bf39af7385d89d557fd6b440"
+          }
+        ],
+        "scope": "Exact byte transport only; no metric, threshold, source model, or experiment change."
+      }
+    },
+    {
+      "name": "wave3",
+      "first_publication_commit": "84d554300002f802e98d30ef0552ab008c2b0241",
+      "index_path": "qualification/hcsn_closure_20261124/evidence/raw/wave3-INDEX.json",
+      "index_sha256": "82291845ac557a3a19510fe512f4373d2208c1fc7c9e78227f7758242c692b73",
+      "index": {
+        "decoded_part_limit_bytes": 479000,
+        "format": "hcsn-evidence-transport-v2",
+        "object_count": 26,
+        "objects": [
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave3/precision-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave3/precision-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1200,
+            "manifest_sha256": "2ed4bedbdd895ac374c93ba47a19051e381db7860a66c6067414faf3e9142226"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave3/precision-preflight-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave3/precision-preflight-v1.tar.gz.parts.json",
+            "manifest_bytes": 1234,
+            "manifest_sha256": "01b55d68a6b893d03854953f18f36f4b18b5b87e3defc459ad3e08334794c6a0"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave3/precision-training-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/raw/root-wave3/precision-training-v1.tar.gz.parts.json",
+            "manifest_bytes": 7131,
+            "manifest_sha256": "6983f8e4c3d8e59f2c3b34caf6560436b810a3b8b26a29ca596f371d3aba44b6"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/precision_followup/independent_audit/raw/precision-audit-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/precision_followup/independent_audit/raw/precision-audit-v1.tar.gz.parts.json",
+            "manifest_bytes": 1272,
+            "manifest_sha256": "bcc604232a56ffae124ab4551fde4af2cc2f4b6766605217b6f8e830f801922b"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/precision_followup/independent_audit/raw/precision-audit-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/precision_followup/independent_audit/raw/precision-audit-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1268,
+            "manifest_sha256": "38b67f28ef88c9906b5eb49b8a36f8b79477e35fcc6dd146c4d3207d52c0fc0e"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-training-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-training-v1.tar.gz.parts.json",
+            "manifest_bytes": 8270,
+            "manifest_sha256": "38266006c5470bfc75ebc90dd3f9960f2fba6bfb2b7e55db2280f87d0618750d"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-install.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-install.tar.gz.parts.json",
+            "manifest_bytes": 1240,
+            "manifest_sha256": "34ef00896596d2cd9c1423c04e4a6df6eb03e4624ae26f6a5ddf57b4047302f0"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1210,
+            "manifest_sha256": "3b2052095369686d6495e2dc47365de77a534eba967fa38defb5b429dbe61a57"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-control.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-control.tar.gz.parts.json",
+            "manifest_bytes": 1212,
+            "manifest_sha256": "08dbbc29776f66f6889a0b5b24ebe8301846da57e9770f8afad49a1f5b280c9e"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-observations.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-observations.tar.gz.parts.json",
+            "manifest_bytes": 1219,
+            "manifest_sha256": "e8cca53ba4b42d5815466ad08ae8f7b5452d4111b17cb82e8b626ed474fe0495"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-training-v1-audit-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-training-v1-audit-v1.tar.gz.parts.json",
+            "manifest_bytes": 1264,
+            "manifest_sha256": "bb8b9602fc25a6b73016c92110ad295800051bc9159ff6af54cffab1cce33dfd"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1.tar.gz.parts.json",
+            "manifest_bytes": 10939,
+            "manifest_sha256": "6bf825d224bec02c19d9496fc72bcf095abac66fa27811041ade39dd375ad929"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-install.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-install.tar.gz.parts.json",
+            "manifest_bytes": 1264,
+            "manifest_sha256": "fef2af9b5e8a080ea7d6b11d85ab52f316ea87bda676ce9d008b2403c9399c56"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1234,
+            "manifest_sha256": "f5d9a97a9e88a3f3eae8442a5210902157edcef5d392abc63cc07bd5ddc73949"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-control.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-control.tar.gz.parts.json",
+            "manifest_bytes": 1236,
+            "manifest_sha256": "ae1a0a054c7bf2a413d4430e493aa16f6d02b40915ef1e881e19790b1e2222a8"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-smoke.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-smoke.tar.gz.parts.json",
+            "manifest_bytes": 1234,
+            "manifest_sha256": "dbf701bfbc5c3175dd0d3480149b69cd66d5863f215636b0350f0177b8d2e6f0"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-audit.tar.gz",
+            "manifest": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-audit.tar.gz.parts.json",
+            "manifest_bytes": 1252,
+            "manifest_sha256": "c4347ecc41c65a1fab7d556a08108b7b949f441534570579940885dfe37d0b75"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-data-evidence-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-data-evidence-v1.tar.gz.parts.json",
+            "manifest_bytes": 25284,
+            "manifest_sha256": "74df1c7f8a4e896e7d7574cbf7e1e2b8b6ff03eec88493b9380a171150855685"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v4.tar.gz",
+            "manifest": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v4.tar.gz.parts.json",
+            "manifest_bytes": 3374,
+            "manifest_sha256": "097079a187a8ad84b299d7d4ad4f29dbcfdf2153646215e3f515953f8b31ea89"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v4-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v4-source.tar.gz.parts.json",
+            "manifest_bytes": 1237,
+            "manifest_sha256": "749064b41f59f8c401c51d9391947b72c9f98caea4dd39f0dd0e9bdbc9389098"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v4-preflight.tar.gz",
+            "manifest": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v4-preflight.tar.gz.parts.json",
+            "manifest_bytes": 1251,
+            "manifest_sha256": "67a002e0c4fd291e5b1dc1652db82a6be4db6cc50c0b055211b39aec61c9d71c"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v3-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v3-source.tar.gz.parts.json",
+            "manifest_bytes": 1232,
+            "manifest_sha256": "550c82299adff59a8179741b48bdd985da25638ca74245c6d31cf7a13625bc14"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v2-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v2-source.tar.gz.parts.json",
+            "manifest_bytes": 1205,
+            "manifest_sha256": "b63d6b9a3855519464d8ab95afdb7428ecee425f52baceea772aca83277242e9"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v1-source.tar.gz",
+            "manifest": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v1-source.tar.gz.parts.json",
+            "manifest_bytes": 1235,
+            "manifest_sha256": "87f8211186c76c420bbef28180b96b8dd98e06274aa166c3415f54ebc64b4945"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-analysis-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-analysis-v1.tar.gz.parts.json",
+            "manifest_bytes": 1213,
+            "manifest_sha256": "866cc41b19471c3e5bd49608b9baf1f4fa472f3c492149cec0005c46600337fd"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-operator-evidence-v1.tar.gz",
+            "manifest": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-operator-evidence-v1.tar.gz.parts.json",
+            "manifest_bytes": 1231,
+            "manifest_sha256": "1b64393bc6cac5d27f0a66995c2b8dd70b91e26c21bfa4adef3c06942fc0f587"
+          }
+        ],
+        "part_limit_bytes": 480000,
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "source_commit": "c4ae70d44613434aaf165529a6076fa3400ca431"
+      },
+      "verification": {
+        "format": "hcsn-evidence-transport-v2",
+        "status": "verified",
+        "source_commit": "c4ae70d44613434aaf165529a6076fa3400ca431",
+        "index_sha256": "82291845ac557a3a19510fe512f4373d2208c1fc7c9e78227f7758242c692b73",
+        "object_count": 26,
+        "part_count": 117,
+        "original_bytes": 46145878,
+        "maximum_part_bytes": 479168,
+        "encoded_bytes": 46133654,
+        "maximum_decoded_part_bytes": 479000,
+        "restored": false,
+        "objects": [
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave3/precision-v1-source.tar.gz",
+            "bytes": 59305,
+            "sha256": "485963d4b0d3bff16a755cced8e7cfab15a77cec140da6846d8d0cabe3008e0d",
+            "source_git_blob_sha1": "314c55ede9af496364956ef0fff6c9b6ee1a5763"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave3/precision-preflight-v1.tar.gz",
+            "bytes": 400188,
+            "sha256": "057dc3e48eacc4a49142648ff246b4186efc9eefa9d1c6cdf9cf895ab1ef0f62",
+            "source_git_blob_sha1": "67d07e0f06a9d4d8db6aef6e20c83e239958457e"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave3/precision-training-v1.tar.gz",
+            "bytes": 5464595,
+            "sha256": "18582f05862143716fbb531358d54b42fab7a085fa9c33784370308ff8a87dbe",
+            "source_git_blob_sha1": "4ba0b66bf18af348266c104a42eee83c4d2ed1fa"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/precision_followup/independent_audit/raw/precision-audit-v1.tar.gz",
+            "bytes": 22628,
+            "sha256": "b1a06cb95040b21fb203b1d01c447bde2f1e86119f6450651ff0436932bd0e8d",
+            "source_git_blob_sha1": "11b23ec8e3c64fbe21d60858199614977a3d689f"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/precision_followup/independent_audit/raw/precision-audit-v1-source.tar.gz",
+            "bytes": 11318,
+            "sha256": "6be6a2af4aa6d7ba559ba6991804fe96bfde73d9ecc2984d82d802c5e854863d",
+            "source_git_blob_sha1": "294916678e4cae8ddd05bef5058547116f8a2172"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-training-v1.tar.gz",
+            "bytes": 6326558,
+            "sha256": "5b10e4f9973ddcf7df6e09f834606b8e08e4afc4024c709ddb097d8dbe791507",
+            "source_git_blob_sha1": "7daae2fb3813ac953eb422ed838c78b27300b856"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-install.tar.gz",
+            "bytes": 12998,
+            "sha256": "ad7d5779ebe3b178dc05b2907924b124109196d460487d64a48333dba4ea9cda",
+            "source_git_blob_sha1": "b7c238cbd1238a9fb393132be37b5397adf4f90a"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-source.tar.gz",
+            "bytes": 52360,
+            "sha256": "d214a74f11918a8b5d8efc8b4fc5725904cb92e13ef963491f35f941b070873d",
+            "source_git_blob_sha1": "2610957490164c46fb526af2654fbbc1fb3e287b"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-control.tar.gz",
+            "bytes": 40906,
+            "sha256": "ceb7338ac82a55d4c3cfe2fe7557584d654957fb1d16f2959c0270f73242a2cf",
+            "source_git_blob_sha1": "382cdf6c74ae45e72caa2e12a4e48f0c2988222f"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-v1-observations.tar.gz",
+            "bytes": 859,
+            "sha256": "5f09b9b5e04f3696675eaaec139fd5aa1d125e07282384fda51d66b176b70bb3",
+            "source_git_blob_sha1": "6c7df1ecf530005444bcfe255ad6c6a52320f380"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/joint_boundary_signed/raw/joint-training-v1-audit-v1.tar.gz",
+            "bytes": 26062,
+            "sha256": "2b67f9a589487143ab313a89368c0c8706f5eaaa3a7033d2c516d870b5d93e1a",
+            "source_git_blob_sha1": "d31da6d52a0454fca79b340d7515822e71be95fc"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1.tar.gz",
+            "bytes": 8811373,
+            "sha256": "da7cdfec998bef6f4c3804567c40635f4a1c6db274f836ef884f76446af5226a",
+            "source_git_blob_sha1": "fdd4d81dfbff1b96903653c7c6cbb67e9eb02250"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-install.tar.gz",
+            "bytes": 43500,
+            "sha256": "27d8d8a9b567367f45e0e14074616894fd56110a7f72c4c7d1d7061456968c3b",
+            "source_git_blob_sha1": "2d942a8a0b3d4e53b6f1e107f12092d4fa4fc1e1"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-source.tar.gz",
+            "bytes": 76761,
+            "sha256": "77e815a5f2f2284dc71a410e234f110e7514b6d124ca9a3bda42cd991d4e78e6",
+            "source_git_blob_sha1": "c62bcea693eb35ad36515e4c57d492a02fee91c1"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-control.tar.gz",
+            "bytes": 84477,
+            "sha256": "ea7429b6f2a5750dbccd80ff8e5adc9d0093bf79490c4d1bf6e95c08c7497543",
+            "source_git_blob_sha1": "8188bf787112d51c767a30e3d5a5a6aeecad1543"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-smoke.tar.gz",
+            "bytes": 206950,
+            "sha256": "fdd9e0033f466c46e16d2906f87659b51eeae6a3123995753f575b4d7741b98f",
+            "source_git_blob_sha1": "e37d7b52db20d3c53f26e1e5f767afc3f4a5da8f"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_20261124/evidence/boundary_centering/raw/boundary-center-v1-audit.tar.gz",
+            "bytes": 68511,
+            "sha256": "cc9622eaa6a535527f2dd27cb5f324ad295b63f79f8d35d3e96e270ae292de5f",
+            "source_git_blob_sha1": "a871722b661a890000c1ecb0a856558fb2eb8697"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-data-evidence-v1.tar.gz",
+            "bytes": 21969113,
+            "sha256": "6291bbc3f2f87a9f07841ecdb712b0c7c3a0726fdb2368abc41bc272c9d47ad4",
+            "source_git_blob_sha1": "c2d8e3d6ba9ba7ff74d3889d46f811a812faf939"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v4.tar.gz",
+            "bytes": 1930352,
+            "sha256": "791614e2c2784a1ed1c31ceb6c136685f0ea8f5af752f1352ba5e0174ff52aa1",
+            "source_git_blob_sha1": "4b5f54e3cc8d3cfec5f2bfb4cc5f8abdda5bfecc"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v4-source.tar.gz",
+            "bytes": 82412,
+            "sha256": "9b33103224b3fd7e972833e7da6deaa1117641e5fdea89735793f4de96dbc6fe",
+            "source_git_blob_sha1": "1d23f440f2ada59de7e30ce793ce0e90dc82ce16"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v4-preflight.tar.gz",
+            "bytes": 230647,
+            "sha256": "79aa2cf6156953eb6bfb4ae1175f1f65736f80b75614d9de3d2c331a1c0f923f",
+            "source_git_blob_sha1": "286c11d703d22377424fef1ed172abfd7336b083"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v3-source.tar.gz",
+            "bytes": 80043,
+            "sha256": "94a9a08cf04b8a79c8e81035bef85b93157c24fef36d41793ae03381aee8b63b",
+            "source_git_blob_sha1": "b9f4c04d428f12a0c33e96155ab17437103ceb24"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v2-source.tar.gz",
+            "bytes": 68464,
+            "sha256": "c65c8b9bf46095e92061fc07813d7496945960d8093c4b3ee852b3fc526a92f8",
+            "source_git_blob_sha1": "b88993b0af5fe780951971d074edf04eb62650ae"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-closure-v1-source.tar.gz",
+            "bytes": 65223,
+            "sha256": "3f7dc68c2db0a6e08e0ad31f4ed89bf1573f05ed59735600fc7a0bfc2acd297e",
+            "source_git_blob_sha1": "9116fdfee2eb533ce431606c15a008393df5773c"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-analysis-v1.tar.gz",
+            "bytes": 7633,
+            "sha256": "b412b428848e1c335304a7ba0fa58ad7c0413105e0525c42c2595c86521c22e6",
+            "source_git_blob_sha1": "9ca4ff8583fb0f7d037f057735f08558184f274e"
+          },
+          {
+            "logical_path": "qualification/hcsn_closure_av_20261125/evidence/archives/raw/av-operator-evidence-v1.tar.gz",
+            "bytes": 2642,
+            "sha256": "fcd581e2881636a9e9fef0b338caeabc95c88765d5188a79fb55a6c5e47f578c",
+            "source_git_blob_sha1": "284df92707062be901d58c25d3ef61b977706ffa"
+          }
+        ],
+        "scope": "Exact byte transport only; no metric, threshold, source model, or experiment change."
+      }
+    }
+  ],
+  "source_unchanged": true,
+  "evidence_diff_files": 348,
+  "verification_wall_seconds": 3.590311354957521,
+  "verification_cpu_seconds": 3.175764449
+}

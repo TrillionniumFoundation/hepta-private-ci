@@ -1,0 +1,133 @@
+{
+  "groups": [
+    {
+      "complete_fit_wall_seconds": {
+        "mean": 7.582455968329062,
+        "sample_sd": 0.22452363845103068,
+        "values": [
+          7.599113257019781,
+          7.798187059932388,
+          7.350067588035017
+        ]
+      },
+      "kind": "GRU",
+      "reference_neurons": 8,
+      "scope": "launch through exit of fit child; includes imports/shutdown"
+    },
+    {
+      "complete_fit_wall_seconds": {
+        "mean": 7.335013127342488,
+        "sample_sd": 0.2080989415016878,
+        "values": [
+          7.502081649960019,
+          7.101908645010553,
+          7.40104908705689
+        ]
+      },
+      "kind": "GRU",
+      "reference_neurons": 32,
+      "scope": "launch through exit of fit child; includes imports/shutdown"
+    },
+    {
+      "complete_fit_wall_seconds": {
+        "mean": 7.702952026311929,
+        "sample_sd": 0.7612901248308765,
+        "values": [
+          7.599178698961623,
+          6.998871774994768,
+          8.510805604979396
+        ]
+      },
+      "kind": "GRU",
+      "reference_neurons": 64,
+      "scope": "launch through exit of fit child; includes imports/shutdown"
+    },
+    {
+      "complete_fit_wall_seconds": {
+        "mean": 8.403894979351511,
+        "sample_sd": 0.7011384116229356,
+        "values": [
+          7.903059939970262,
+          8.103432957082987,
+          9.205192041001283
+        ]
+      },
+      "kind": "surrogate_LIF",
+      "reference_neurons": 8,
+      "scope": "launch through exit of fit child; includes imports/shutdown"
+    },
+    {
+      "complete_fit_wall_seconds": {
+        "mean": 9.08615984468876,
+        "sample_sd": 0.46568125414619965,
+        "values": [
+          8.953681968036108,
+          8.701071585062891,
+          9.603725980967283
+        ]
+      },
+      "kind": "surrogate_LIF",
+      "reference_neurons": 32,
+      "scope": "launch through exit of fit child; includes imports/shutdown"
+    },
+    {
+      "complete_fit_wall_seconds": {
+        "mean": 9.219988552620634,
+        "sample_sd": 0.44916920762781765,
+        "values": [
+          9.503368741949089,
+          9.454496182966977,
+          8.702100732945837
+        ]
+      },
+      "kind": "surrogate_LIF",
+      "reference_neurons": 64,
+      "scope": "launch through exit of fit child; includes imports/shutdown"
+    },
+    {
+      "complete_fit_wall_seconds": {
+        "mean": 8.290201792338243,
+        "sample_sd": 0.8910268385185766,
+        "values": [
+          7.85052725195419,
+          9.31560938898474,
+          7.704468736075796
+        ]
+      },
+      "kind": "causal_Transformer",
+      "reference_neurons": 8,
+      "scope": "launch through exit of fit child; includes imports/shutdown"
+    },
+    {
+      "complete_fit_wall_seconds": {
+        "mean": 7.434500959313785,
+        "sample_sd": 0.12552942525346883,
+        "values": [
+          7.301345529966056,
+          7.451481694937684,
+          7.550675653037615
+        ]
+      },
+      "kind": "causal_Transformer",
+      "reference_neurons": 32,
+      "scope": "launch through exit of fit child; includes imports/shutdown"
+    },
+    {
+      "complete_fit_wall_seconds": {
+        "mean": 7.467124725342728,
+        "sample_sd": 0.487630003511638,
+        "values": [
+          7.0491202170960605,
+          7.3494203930022195,
+          8.002833565929905
+        ]
+      },
+      "kind": "causal_Transformer",
+      "reference_neurons": 64,
+      "scope": "launch through exit of fit child; includes imports/shutdown"
+    }
+  ],
+  "input_sha256": "de04eabbd04d41aa39c8cb2b497d87929c3dff17a8cf9fda1aedd35e0425cf41",
+  "schema": "baseline-fit-complete-wall-summary-v1",
+  "scientific_candidates_changed": false
+}

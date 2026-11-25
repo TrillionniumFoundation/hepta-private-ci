@@ -1,0 +1,519 @@
+{
+  "analysis_source_sha256": "4bb5fbf8cbb411f5f79078dec49cd12666da7fb2615391ae6773c8a477a7177e",
+  "maximum_metric_error": 2.220446049250313e-16,
+  "models_verified": 63,
+  "post_test_artifact_sha256": {
+    "n32-boundary_accumulate-s18011": {
+      "MECHANISM_TEST.json": "40a0155a4a92cd293c02e8534bbbde5bb21e4a48fefcd00f0e03f5d7a386dd6e",
+      "test_parent_cost.json": "9c238ce5e6c577cb007a3fa30bd40a338d2186eefbeaa80f6439539c17a6ec5e",
+      "test_result.json": "440036fbecd83ec6a6b273a2577e92916c46d9f47dff4acd5a336dfe0367c3b3",
+      "test_worker_cost.json": "b3de6cee058b3941b609b93eea7d30486cf1a31ea37f00bdf12a51c156f7e04e"
+    },
+    "n32-boundary_accumulate-s28011": {
+      "MECHANISM_TEST.json": "aef0e2142da33ff8f7ebb81f2453fd5a8fabdcde778e3c2701f1e6780ab7ea48",
+      "test_parent_cost.json": "9bd16e3057afd247b845dd0eae7286743e0ab8761ed83a138d71f61c3f54c1ce",
+      "test_result.json": "b9b0126be7a7a8b78e2f41c86198c678c4f4773a828da6351213d41f1db2b407",
+      "test_worker_cost.json": "88ae7ba1ccf503a593bf347b60e324a50389230fee94400faf49a11aec5fbbd9"
+    },
+    "n32-boundary_accumulate-s38011": {
+      "MECHANISM_TEST.json": "9291fecade445d17aaecb05b6ae7d22348db74b2485326bdb6a2553237f7df76",
+      "test_parent_cost.json": "cf3825be3fdde248486e56c1a6a073810720dde9b48a912a511611f13055b820",
+      "test_result.json": "52b07d43b3b5c1251e0d95fa6c43711054e9a0f0c5246548515457934cf855a2",
+      "test_worker_cost.json": "0e7b7623fe069f7e6ecdb492e3de335621e611c129606fd546074f0fd453a0e4"
+    },
+    "n32-boundary_hold-s18011": {
+      "MECHANISM_TEST.json": "aef7bad7892f49e97dd4c74470fd17fe8950bc0145bd75eae12841905f8ba542",
+      "test_parent_cost.json": "6590b205a36c0189f3776ee64a0199df39f040f026d3a3acecb40cab2c7ed2d2",
+      "test_result.json": "6a74b1d95a130e7d662cfdba74ca76813f3e0670cdf3eb345c9b2b31ab5b8186",
+      "test_worker_cost.json": "4d252e434b42175a7842ed7948166fbe262f71375302244e19b980b107f60b55"
+    },
+    "n32-boundary_hold-s28011": {
+      "MECHANISM_TEST.json": "a1fc1c5f71fbfc561b206fd5ec64c280414ae48ce5c364b0340a38c1433f69dc",
+      "test_parent_cost.json": "b3e7653d5e9b1b0cca4ec94eb5a21da1e85076086eaa2611965e58a931e3e5c9",
+      "test_result.json": "b36eca083871e2cb9aca195f9fe5056b5efb58a82e9ff6eb1c46edaa2c946030",
+      "test_worker_cost.json": "82f005ff6ac248b2b3c077035017f5e54509168365f329f68b05cef7d6090311"
+    },
+    "n32-boundary_hold-s38011": {
+      "MECHANISM_TEST.json": "67e79f9ff6da44bd75310292fbc27348660905648e53cf645310f2f8d2584ce0",
+      "test_parent_cost.json": "e691521c85c8698138f99e90ec7245b742aac1965e3e45d3a8855bd332c2173d",
+      "test_result.json": "4f43ba6a306f7d8f3c1db3eddb341807915d006a0162c2f2f873549f1bb656f9",
+      "test_worker_cost.json": "b6f1501cd55f4bea80bf224623c2a21140c1f77567a77ac99ef175e4e7814fc4"
+    },
+    "n32-boundary_raw-s18011": {
+      "MECHANISM_TEST.json": "3936ea19adac559fc1308a2b26cd9c7de420f9e4bf220df8b2a9df085ba6f0c4",
+      "test_parent_cost.json": "2c8db94e23e54e7a8a259a33147260fee6201cba09e1568b858e0cf2a2526f8f",
+      "test_result.json": "f634498af742f0cc56fb953c938c836df33c81be89cd588f70d2f9df8e0c2e29",
+      "test_worker_cost.json": "0f406566a33b6a0bf5b9a9f3055241636e74952924ce9a900b46550ec8fe3a72"
+    },
+    "n32-boundary_raw-s28011": {
+      "MECHANISM_TEST.json": "1422b3d962dc0dda08a9e6d60a661ed81050436d8761c7757630f189cedd43ce",
+      "test_parent_cost.json": "193963fd6e70d8d20a2f3b2ae0a81f8bea305e360930491096ccd6bc44744ac8",
+      "test_result.json": "77a1ab8710a8eee7730076eaa6d22536d033323ddaef98439448e3004b092b61",
+      "test_worker_cost.json": "49fd89148ab7e2264486fd00ec2d3606734c410d5840867624af803d5d6fe7c9"
+    },
+    "n32-boundary_raw-s38011": {
+      "MECHANISM_TEST.json": "a7b1ea1d2bc8e3080547503dd5feb0a5d3d3fe4df431d51560ffadcd0044d6fe",
+      "test_parent_cost.json": "09ddc5a4668d5bde416359befd0427420455199c44a9077d95a85f253e9443dc",
+      "test_result.json": "346235b0e7af90ba503d433e1b7305095bd2c11f8637bcdc13e9ad2c211cac95",
+      "test_worker_cost.json": "afcee863ce89a76416464c0a5ddc968a47054a3cac4c575bb8f5048970351d71"
+    },
+    "n32-signed_only-s18011": {
+      "MECHANISM_TEST.json": "6deed473d12416686daf58bc0ab7bad295486a1f0716ef66128dc2514565edf4",
+      "test_parent_cost.json": "90efcf2eec5653f0ee0a20215858fbc142e74471ae6ed3b34e03bdafbbe071f1",
+      "test_result.json": "09e1b012609f09f11a03aae0afb7df55882e5d7352db834f68dd15af2b717031",
+      "test_worker_cost.json": "6e7ee04837800a386cc50c6b404a7a53820c33c638071c5b34da4d7fb8aa1c8b"
+    },
+    "n32-signed_only-s28011": {
+      "MECHANISM_TEST.json": "5b393f65ad57c5b9e59cfe89f452157fe028bc05dc128c48526e15e91aec350d",
+      "test_parent_cost.json": "4d3fd1df3d3006a45415d6c36917670d6d522aca08bda2c974c26b043b38e4cf",
+      "test_result.json": "2cfefcee4886cdb5882dd7250309a9919d0e0fd24e05b10484e7392c79933ad1",
+      "test_worker_cost.json": "5912a1fed6f19a5e97d80cda6060ea7af30e3eb948c6133a519ec790cf1096d6"
+    },
+    "n32-signed_only-s38011": {
+      "MECHANISM_TEST.json": "0120ea2719903d4ee48952cae13618b79984320cf9fe19500f76807cb665195c",
+      "test_parent_cost.json": "702ee1823588f61924fc9b2fdfd8ebf43aef7ece875929f42d0ed9ecf3390a3e",
+      "test_result.json": "238c0348e3178518b581cb5151da3c88d6604844c63e645dc30a3029d2f3cd71",
+      "test_worker_cost.json": "eb6db2533c3060b99ad259d4cc98de14d71c3e13cec8790c7a53a418c732081b"
+    },
+    "n32-unsigned_signed_centered-s18011": {
+      "MECHANISM_TEST.json": "1879b1f1b7a54b9fca16d25dc3b5de737b9dcab7fef250d9b9b90aedfdcd995f",
+      "test_parent_cost.json": "247b553d0b0264b86a2454369851da5caf538309c05a5dded1558897f74a2c32",
+      "test_result.json": "dbadbe824a148bbab18c8907d25f1f3c5c8a73f82835ea25ddd72e82c353c97c",
+      "test_worker_cost.json": "29c46bb415340e48f8b5587ab0ce02dd4d282af6a5ecf33468f826b1c4f9f225"
+    },
+    "n32-unsigned_signed_centered-s28011": {
+      "MECHANISM_TEST.json": "940d28d02d1782cea0387bafba5726006be152cd32c4a2eec888f3973f0b64d2",
+      "test_parent_cost.json": "0fb5484cd8617eef2fd199be1bc18171ed610538d933cd9aeca3539a6410b6c7",
+      "test_result.json": "9d6ec915e40a87f09edd14d448202004ebf1ba81ececf079a581cd5b12f4327c",
+      "test_worker_cost.json": "41c61582c07b8cfa415c1bc4ec7f90fb4bb5902b229dc72f199c7af4f42896da"
+    },
+    "n32-unsigned_signed_centered-s38011": {
+      "MECHANISM_TEST.json": "5f3ead154ef2414bd0caa83e8a3b0eb8c8ed2eca03933c54190412e2f892e2a0",
+      "test_parent_cost.json": "7e7ff7b67f6a7b9df02189887cd2065a7cc79254f481e202656b295449231da5",
+      "test_result.json": "d2d2eb0c6ff7578f13be22ec954c1d127ab9d024800f4dfcd0c33a871e34f7b7",
+      "test_worker_cost.json": "cbfc13dd678fbfebd84ae80f731a3868562f5009cb4e2a983a255c73ad8081f9"
+    },
+    "n32-unsigned_signed_centered_bounded-s18011": {
+      "MECHANISM_TEST.json": "500803391b19e8afae4b091c8accc9dece7b3f796db35a8ec7b0413335627b42",
+      "test_parent_cost.json": "cf404600e7f89597b850c8c46685342b1cb16f2938b37a18cf3f5a4117f4b6aa",
+      "test_result.json": "ea29276ec3007d2a2c3d217a9ce2e4f81d4963f759294c2e5d0bfb1e5ca3ef5b",
+      "test_worker_cost.json": "d4fbfb0762cde20259eb212c6afbae38a6ec2a05e71424de78a2fa0cd2e84447"
+    },
+    "n32-unsigned_signed_centered_bounded-s28011": {
+      "MECHANISM_TEST.json": "e31bcc81918053473fb4d82e6e725667f7eeee298107187a5394c5907123e384",
+      "test_parent_cost.json": "72aa3bf5ebec6fed69dcb97ab9b98977fc253b11725d90d1b098ca7662fb8b81",
+      "test_result.json": "26de6e0ea237e9ce6ce5e954c4be37062bd3aab8c6bfb2b4998b07f4bc29ba6c",
+      "test_worker_cost.json": "3ba84788c552003db3fb539f018c5e84ecab4c21e731f9c06c609e3e6eea0c81"
+    },
+    "n32-unsigned_signed_centered_bounded-s38011": {
+      "MECHANISM_TEST.json": "bce5b41741d1e89c66dc0f7663bbd9a396d501298e04d2cec45f12e02587cefc",
+      "test_parent_cost.json": "1735320b47194ca78f01273dd8f384c854b354d2da858478273e21bf032c02a1",
+      "test_result.json": "32ccf0993f2b4c0de2368e3e6ea5de45b1defa52e5ef6d71842e7b34db93543c",
+      "test_worker_cost.json": "6bd1b63584e16d523a45489713d5465bf8f1513933757ebd749c245c7c6f2efd"
+    },
+    "n32-unsigned_signed_raw-s18011": {
+      "MECHANISM_TEST.json": "799bc7e807d14b72809ff4e85c9584cd6152ac897b135f8c18423364ed9e0bf1",
+      "test_parent_cost.json": "0c25ba8b981c537d5f1891223fb5f9267863784595380761b39b52efe1d70eb6",
+      "test_result.json": "d532214fda9ebdb17d5e71ac8965d73bc2359f54b449daa9ee078a053824a44a",
+      "test_worker_cost.json": "806f6805f404bb4d8c6b7ec573f4d6020ab7242eb54e96889d6025325f7fca86"
+    },
+    "n32-unsigned_signed_raw-s28011": {
+      "MECHANISM_TEST.json": "c4a7255c7e37cafe8e041d6cd303f5ca84954dfec5f5892aceebc21d212f3f5c",
+      "test_parent_cost.json": "136f486ececbf1b586e30c357395693d46d41ba42f8da01bde0eac82238a7c1b",
+      "test_result.json": "55638b6718abfd5bb68709abda80a222ae6ac3d27c6de117764d3181351f106f",
+      "test_worker_cost.json": "a36c57030fecd950cf09d36f1e375178111a128ddf7d1c9dc1bcf2a5639ee6f0"
+    },
+    "n32-unsigned_signed_raw-s38011": {
+      "MECHANISM_TEST.json": "6f35b2e012b3253e6ee0f4455e50d1dda75ac6d560443fa2725cdaba4e5caf89",
+      "test_parent_cost.json": "d07baec3ae75e02a005f8c0d468aeded58f7e6356f3e61fdd1bf97efbb2dc203",
+      "test_result.json": "c228aab43488371cbab422edc5c9f987e32dfeb79bd65e444fb855f74cb98110",
+      "test_worker_cost.json": "2a83c81da7f94813d5a45136d12b0ff5c4484bab8bac6e43877dfc14a4c2b68f"
+    }
+  },
+  "protocol_sha256": "640b8eec53b684100142ab2ffeeb5861c7ce43f467914af87d8be2b9275a3f55",
+  "records": [
+    {
+      "maximum_metric_error": 0.0,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-signed_only-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-signed_only-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-signed_only-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-signed_only-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-signed_only-s28011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-signed_only-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-signed_only-s38011"
+    },
+    {
+      "maximum_metric_error": 2.220446049250313e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-signed_only-s38011"
+    },
+    {
+      "maximum_metric_error": 2.7755575615628914e-17,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-signed_only-s38011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-unsigned_signed_raw-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-unsigned_signed_raw-s18011"
+    },
+    {
+      "maximum_metric_error": 5.551115123125783e-17,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-unsigned_signed_raw-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-unsigned_signed_raw-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-unsigned_signed_raw-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-unsigned_signed_raw-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-unsigned_signed_raw-s38011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-unsigned_signed_raw-s38011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-unsigned_signed_raw-s38011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered-s18011"
+    },
+    {
+      "maximum_metric_error": 2.7755575615628914e-17,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered-s28011"
+    },
+    {
+      "maximum_metric_error": 1.3877787807814457e-17,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered-s38011"
+    },
+    {
+      "maximum_metric_error": 5.551115123125783e-17,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered-s38011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered-s38011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered_bounded-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered_bounded-s18011"
+    },
+    {
+      "maximum_metric_error": 2.7755575615628914e-17,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered_bounded-s18011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered_bounded-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered_bounded-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered_bounded-s28011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered_bounded-s38011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered_bounded-s38011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-unsigned_signed_centered_bounded-s38011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-boundary_raw-s18011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-boundary_raw-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-boundary_raw-s18011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-boundary_raw-s28011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-boundary_raw-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-boundary_raw-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-boundary_raw-s38011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-boundary_raw-s38011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-boundary_raw-s38011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-boundary_accumulate-s18011"
+    },
+    {
+      "maximum_metric_error": 2.220446049250313e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-boundary_accumulate-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-boundary_accumulate-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-boundary_accumulate-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-boundary_accumulate-s28011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-boundary_accumulate-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-boundary_accumulate-s38011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-boundary_accumulate-s38011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-boundary_accumulate-s38011"
+    },
+    {
+      "maximum_metric_error": 2.220446049250313e-16,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-boundary_hold-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-boundary_hold-s18011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-boundary_hold-s18011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-boundary_hold-s28011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-boundary_hold-s28011"
+    },
+    {
+      "maximum_metric_error": 1.1102230246251565e-16,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-boundary_hold-s28011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "selected",
+      "passed": true,
+      "slot": "n32-boundary_hold-s38011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "initial",
+      "passed": true,
+      "slot": "n32-boundary_hold-s38011"
+    },
+    {
+      "maximum_metric_error": 0.0,
+      "model": "cpu_prefix",
+      "passed": true,
+      "slot": "n32-boundary_hold-s38011"
+    }
+  ],
+  "scope": "NumPy regeneration of test data and all reported probabilistic/subgroup metrics; no Torch/model imports, no new model evaluations.",
+  "seal_sha256": "e77b8bacaa0d30be04791fc15cc83077a699a7f003709995e1ae2d045e338a06",
+  "status": "verified",
+  "test_data_sha256": "e19fae253b1172ae52fa83c7bdd1e028aa00deae0000eabdb849019024b53f26",
+  "verified_training_source_files": 24
+}

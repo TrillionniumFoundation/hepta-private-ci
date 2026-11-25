@@ -1,0 +1,193 @@
+{
+  "batch": 1,
+  "case": "n64-t512-b1-native32",
+  "comparisons": {
+    "newton_cache_vs_fp64": {
+      "features": {
+        "max_abs": 0.00008448365140800718,
+        "relative_l2": 0.000005476676744617269
+      },
+      "input_vjp": {
+        "max_abs": 5.4261860034507045e-9,
+        "relative_l2": 0.000011280097590657964
+      },
+      "logits": {
+        "max_abs": 0.000005894989483085089,
+        "relative_l2": 0.000032436814257335405
+      },
+      "parameter_vjp": {
+        "max_abs": 0.000046237643863689115,
+        "relative_l2": 0.000012376212174377466
+      },
+      "state_boundary": {
+        "max_abs": 5.333065211665655e-7,
+        "relative_l2": 2.3127018415234868e-7
+      },
+      "state_cost": {
+        "max_abs": 1.3266355652907791e-8,
+        "relative_l2": 4.9852583640667854e-8
+      },
+      "state_density": {
+        "max_abs": 0.000008107765633869057,
+        "relative_l2": 0.000007803673882261531
+      },
+      "state_drift": {
+        "max_abs": 2.0549129453595327e-8,
+        "relative_l2": 3.7895164515099974e-8
+      },
+      "state_message": {
+        "max_abs": 0.000011342570312711242,
+        "relative_l2": 0.000003875679732313666
+      }
+    },
+    "scripted_cache_vs_fp64": {
+      "features": {
+        "max_abs": 0.00008448365140800718,
+        "relative_l2": 0.000005476676744617269
+      },
+      "input_vjp": {
+        "max_abs": 5.4261860034507045e-9,
+        "relative_l2": 0.000011280097590657964
+      },
+      "logits": {
+        "max_abs": 0.000005894989483085089,
+        "relative_l2": 0.000032436814257335405
+      },
+      "parameter_vjp": {
+        "max_abs": 0.000046237643863689115,
+        "relative_l2": 0.000012376212174377466
+      },
+      "state_boundary": {
+        "max_abs": 5.333065211665655e-7,
+        "relative_l2": 2.3127018415234868e-7
+      },
+      "state_cost": {
+        "max_abs": 1.3266355652907791e-8,
+        "relative_l2": 4.9852583640667854e-8
+      },
+      "state_density": {
+        "max_abs": 0.000008107765633869057,
+        "relative_l2": 0.000007803673882261531
+      },
+      "state_drift": {
+        "max_abs": 2.0549129453595327e-8,
+        "relative_l2": 3.7895164515099974e-8
+      },
+      "state_message": {
+        "max_abs": 0.000011342570312711242,
+        "relative_l2": 0.000003875679732313666
+      }
+    }
+  },
+  "energy_joules_process": null,
+  "failures": {
+    "original": "Traceback (most recent call last):\n  File \"/home/qian-qi/hcsn-smallnet-20261124/fast-v2-source/qualification/hcsn_closure_20261124/efficiency.py\", line 108, in case\n    data, cold = execute(model, x, target)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/fast-v2-source/qualification/hcsn_closure_20261124/efficiency.py\", line 50, in execute\n    logits, features, state = model(x, return_features=True)\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1773, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/lib/python3.12/site-packages/torch/nn/modules/module.py\", line 1784, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/fast-v2-source/qualification/hcsn_smallnet_20261124/model.py\", line 354, in forward\n    raise FloatingPointError(\"complete probability/mark invariant failed; no normalization applied\")\nFloatingPointError: complete probability/mark invariant failed; no normalization applied\n"
+  },
+  "implementations": {
+    "fp64_reference": {
+      "cpu_seconds": 17.589721007,
+      "diagnostics": {
+        "all_finite": true,
+        "independent_populations": 64,
+        "mark_excess": 0,
+        "mass_error": 8.348877145181177e-14,
+        "probability_min": 0,
+        "refractory_variance": 0.013333333333333336,
+        "state_elements": 1664,
+        "state_step": 512,
+        "transport_dtype": "torch.float64",
+        "upper_projection_mass_max": 0.011439555169514485
+      },
+      "loss": 0.7532462327266499,
+      "none_gradients": [],
+      "parameters": [
+        "raw_cost",
+        "input_drive.weight",
+        "input_drive.bias",
+        "input_mark.weight",
+        "input_mark.bias",
+        "recurrent.weight",
+        "readout.weight",
+        "readout.bias"
+      ],
+      "wall_seconds": 17.620356795960106
+    },
+    "newton_cache": {
+      "cold": {
+        "construct_load_forward_backward_wall": 14.070723043987527,
+        "cpu_seconds": 13.735625750999999,
+        "diagnostics": {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0,
+          "mass_error": 0.000029921531677246094,
+          "probability_min": 0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 1664,
+          "state_step": 512,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.011439485475420952
+        },
+        "loss": 0.7532516121864319,
+        "none_gradients": [],
+        "parameters": [
+          "raw_cost",
+          "input_drive.weight",
+          "input_drive.bias",
+          "input_mark.weight",
+          "input_mark.bias",
+          "recurrent.weight",
+          "readout.weight",
+          "readout.bias"
+        ],
+        "wall_seconds": 13.74961065093521
+      },
+      "repeats": []
+    },
+    "scripted_cache": {
+      "cold": {
+        "construct_load_forward_backward_wall": 11.425379439024255,
+        "cpu_seconds": 11.140716829999999,
+        "diagnostics": {
+          "all_finite": true,
+          "independent_populations": 64,
+          "mark_excess": 0,
+          "mass_error": 0.000029921531677246094,
+          "probability_min": 0,
+          "refractory_variance": 0.013333333333333336,
+          "state_elements": 1664,
+          "state_step": 512,
+          "transport_dtype": "torch.float32",
+          "upper_projection_mass_max": 0.011439485475420952
+        },
+        "loss": 0.7532516121864319,
+        "none_gradients": [],
+        "parameters": [
+          "raw_cost",
+          "input_drive.weight",
+          "input_drive.bias",
+          "input_mark.weight",
+          "input_mark.bias",
+          "recurrent.weight",
+          "readout.weight",
+          "readout.bias"
+        ],
+        "wall_seconds": 11.157917771022767
+      },
+      "repeats": []
+    }
+  },
+  "length": 512,
+  "neurons": 64,
+  "precision": "native32",
+  "process_cpu_through_receipt": 55.081460966,
+  "process_peak_rss_bytes": 1109483520,
+  "process_wall_from_module_entry": 55.160718338913284,
+  "raw_files": {
+    "fp64_reference.npz": "7d7a00982de5b5b92c0299b0c3089e24693189559a68824ad1a383883fa50370",
+    "newton_cache.npz": "4b2c3dca193cea0d91913d557fff2da71564b87a60361ae35efe36ccb4b2cfb2",
+    "scripted_cache.npz": "4b2c3dca193cea0d91913d557fff2da71564b87a60361ae35efe36ccb4b2cfb2"
+  },
+  "scope": "single scalar classification-loss VJP; long cases are one full untruncated BPTT, no optimizer or dataset quality claim",
+  "warm_order": []
+}

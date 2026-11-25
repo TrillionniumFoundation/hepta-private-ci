@@ -1,0 +1,23 @@
+{
+  "base_installation_sha256": "e65404b2a2aac5ed03fee6d1598091100322c3449c6e4a339979aad417299ced",
+  "environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONPATH": "/home/qian-qi/hcsn-smallnet-20261124/joint-v1-source"
+  },
+  "resources": {
+    "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hcsn-joint-training-v1b.scope\n",
+    "cpu_max": "600000 100000",
+    "memory_max": "6442450944"
+  },
+  "source_manifest": {
+    "files": {
+      "qualification/hcsn_closure_20261124/fast_kernel.py": "a92d7cc45af0ccf1e1c2629ee9fe8ef1d4b0bc6dba335bbdc53cd909c42d80b3",
+      "qualification/hcsn_closure_20261124/joint_run.py": "07fc5b9e96dbbdc50b99716329f8e9498ac23eb75137c07f6de90123c9f0dc0e",
+      "qualification/hcsn_closure_20261124/joint_tests.py": "97be1cf250ad8c24e8000e3db4c35404c08463d34aa6458c2a6b8ac3f05b8f17"
+    },
+    "zip_sha256": "f9afbffbc83b34e05469301353f0ad4cf13a0f68671e3be35c72ff7c94c39f05"
+  },
+  "started_unix": 1795570857.0272532
+}

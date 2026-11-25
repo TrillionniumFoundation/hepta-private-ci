@@ -1,0 +1,77 @@
+{
+  "archive_tool_sha256": "4242f1d0e9b96cd10779fb5d55f6cf85429c74fb6f01ab574b4cbdffea6ab5ad",
+  "cpu_seconds": 1.9593702270000002,
+  "energy_joules": null,
+  "objects": [
+    {
+      "bytes": 15396861,
+      "logical_path": "raw/communication-training-v1.tar.gz",
+      "member_count": 328,
+      "member_manifest_sha256": "1e2099a173bb5f78d4656be8c9de43df5c94e0500121e7f0c7417d5e99597ba2",
+      "original_member_bytes": 20539958,
+      "sha256": "71006701233858e0139bc4b18a8a68416792a214fc48c268478b404cad18cc89",
+      "source_git_blob_sha1": "f6badf07296c2af268b6fd51cd87709635d65b78",
+      "source_name": "communication-training-v1",
+      "terminal_receipts": [
+        "CAMPAIGN_RECEIPT.json",
+        "FIT_EXECUTION.json",
+        "TEST_EXECUTION.json",
+        "OPERATOR_TERMINAL_RECEIPT.json"
+      ]
+    },
+    {
+      "bytes": 60297,
+      "logical_path": "raw/communication-training-v1-source.tar.gz",
+      "member_count": 40,
+      "member_manifest_sha256": "9964e90e3de5f7f72ff57faf700a2b8457633b53501abc05514b88dac4d9ed2d",
+      "original_member_bytes": 222593,
+      "sha256": "6d184e8c4a5a6d3cfe37b7c9355f957710fec6d7faa33e128db23c913131622b",
+      "source_git_blob_sha1": "534877324362cc0fac71043d7cc6fbb6752bb9c1",
+      "source_name": "communication-training-v1-source",
+      "terminal_receipts": [
+        "FORMAL_DRIVER_RECEIPT.json"
+      ]
+    },
+    {
+      "bytes": 376023,
+      "logical_path": "raw/communication-training-v1-preflight.tar.gz",
+      "member_count": 59,
+      "member_manifest_sha256": "1288f12d10fa5b5d49d5e86a8935fa2ac08f0a2557b3ef339d6db38a0a8db44d",
+      "original_member_bytes": 1408667,
+      "sha256": "bdbf08515d9e926b6c87406e847e5cc22d6f6975bf2fa426692f161f6e02152d",
+      "source_git_blob_sha1": "ca8709267db6f7d4e9ee3497188465b509083632",
+      "source_name": "communication-training-v1-preflight",
+      "terminal_receipts": [
+        "SMOKE_EXECUTION.json"
+      ]
+    },
+    {
+      "bytes": 67646,
+      "logical_path": "raw/communication-analysis-v1-source.tar.gz",
+      "member_count": 43,
+      "member_manifest_sha256": "7175871927e75e7ddd6a86bca3782a88c30894bf69119607490c25bffaa9dc88",
+      "original_member_bytes": 243513,
+      "sha256": "bb39e65c21d316d942b0a357c97b0c3960ceec61218faf9fb052c61d416b980b",
+      "source_git_blob_sha1": "489c9b0e50cb992cb72a61ac8e6081844d98cd4e",
+      "source_name": "communication-analysis-v1-source",
+      "terminal_receipts": [
+        "ANALYSIS_RECEIPT.json"
+      ]
+    },
+    {
+      "bytes": 52437,
+      "logical_path": "raw/communication-v1-source.tar.gz",
+      "member_count": 30,
+      "member_manifest_sha256": "29c14d6401007254de844b42b2f7efe9fe6176f8f51edce562816685bcc4d969",
+      "original_member_bytes": 193954,
+      "sha256": "db8f359d8586262785ad0c6db99082de17087711c353cf2292426fa3c2efdabe",
+      "source_git_blob_sha1": "2e78f39a1c819a57bf39af7385d89d557fd6b440",
+      "source_name": "communication-v1-source",
+      "terminal_receipts": [
+        "TEST_RECEIPT.json"
+      ]
+    }
+  ],
+  "schema": "hcsn-communication-exact-archives-v1",
+  "wall_seconds": 17.586664199945517
+}

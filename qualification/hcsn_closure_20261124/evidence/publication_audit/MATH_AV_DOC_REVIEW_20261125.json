@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn-independent-math-av-document-review-v1",
+  "reviewer": "hcsn_mathematics",
+  "scope": "Read-only review of the final root report and reproduction README. No training, inference, numerical rerun, frozen source modification or Git ref change.",
+  "reviewed_snapshots": {
+    "qualification/hcsn_closure_20261124/RESULTS_CLOSURE_ZH.md": "61465a9ba8cc0251387179d1a2d0ae0e8766f35dedc13b6c65fd31ba9f4b0c71",
+    "qualification/hcsn_closure_20261124/README.md": "a6df879e6c9e8f0857671ab3f5f9c5ad5763566eee8849e098ea1a0502544ca8",
+    "qualification/hcsn_closure_20261124/theory.md": "e54c77a43074a294a7f123dfbc19c8def299bf0dbd6afbdb4c5a4cb532135734",
+    "qualification/hcsn_closure_av_20261125/evidence/summary/SUMMARY.json": "7ee9c914f9b2ab4e64cfdb56d130454d875f07908e85053f10ffb3bd875d5a48"
+  },
+  "checks": {
+    "historical_base_source_files": 21,
+    "base_sha_mismatches": [],
+    "installer_profile_missing_files": [],
+    "cli_entry_points_checked": ["campaign", "variant_run", "communication_run", "joint_run", "precision_run", "boundary_fix_run", "baselines_run", "normalization_probe", "projection_probe"],
+    "readme_cli_parameter_mismatches": [],
+    "av_table_direction": "All three retrieval rows are audio_to_video, not a directional average.",
+    "av_paired_gallery": "All 192 gallery clips; exact recording identity is the single positive.",
+    "av_semantic_gallery": "Exclude all clips belonging to the query actor; positives share the acted emotion.",
+    "av_map_definition": "Per-query average precision, averaged over queries, then descriptive mean across three seeds.",
+    "av_table_values_match": true,
+    "av_independent_prediction_groups": 18,
+    "av_independent_fitted_models": 9,
+    "duration_reference": {
+      "all_candidates_recording_r1": 0.3177083333333333,
+      "within_actor_recording_r1": 0.7864583333333334,
+      "unique_durations": 61,
+      "examples": 192,
+      "scope": "Untrained metadata-only negative control computed after the common seal. Neither a model score nor a semantic-retrieval score. Stable lowest-index tie break."
+    },
+    "math_formulas": "Hitting Laplace kernel, renewal denominator, common-generator probability/content transport, killed first-event probability, count/probability distinction and implicit QVI derivative are correct within the linked declared domain.",
+    "source_evidence_separation": "README correctly distinguishes the frozen executable source revision from later independent analysis and evidence publication; local tests and artifact publication do not replace hosted integration gates."
+  },
+  "recommended_document_corrections": [
+    {
+      "section": "RESULTS section 1",
+      "issue": "The statement that all report results are recomputed from predictions is too broad for costs, VJP tests, causal controls and integration receipts.",
+      "replacement_scope": "Limit the statement to task metrics from the training experiments; state that numerical diagnostics and costs have their own raw evidence."
+    },
+    {
+      "section": "RESULTS section 10",
+      "issue": "A blanket prohibition on regenerating test samples conflicts with the independent deterministic reconstruction used for synthetic-data SHA and label verification.",
+      "replacement_scope": "Prohibit changing the frozen test definition, selecting extra samples and reselecting models. Permit deterministic reconstruction of the same sealed samples solely for integrity verification."
+    },
+    {
+      "section": "RESULTS sections 2 and 3",
+      "issue": "s denotes the Laplace argument and is then reused without definition for the affine reward slope.",
+      "replacement_scope": "Declare x>0, sigma>0, Laplace s>0 and H=E[exp(-s*tau); tau<infinity]. Write R_b=(alpha/rho)*(1-eta*exp(-k*(a-b))) with alpha,rho,k>0, eta in (0,1), b<a."
+    },
+    {
+      "section": "RESULTS section 9",
+      "issue": "The linked frozen AV README contains the protocol and commands, but no direct link to the completed numerical results or costs.",
+      "replacement_scope": "Link directly to hcsn_closure_av_20261125/evidence/summary/INTERPRETATION_ZH.md and SUMMARY.json. Optionally state the metadata-only duration negative control and the exact cross-actor gallery exclusion in the main report. Do not modify the frozen AV execution package."
+    }
+  ],
+  "nonblocking_reproduction_note": "README reassembly currently shows --help. The actual supported restoration flags are --repo-root, --index and --output-root; the final evidence catalog should provide the exact immutable index path and a complete command. The verifier was inspected in the transport_v2_patch mirror because this partial local checkout does not carry its published destination at the top level.",
+  "decision": "No mathematical or AV-table blocker found. Apply the stated documentation scope corrections; no experiment or frozen execution-source change is required."
+}

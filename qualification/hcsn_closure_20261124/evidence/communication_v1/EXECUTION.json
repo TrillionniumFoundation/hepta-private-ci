@@ -1,0 +1,29 @@
+{
+  "archive_path": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-ba884c82ef64c18d503e515cea74cfeb7c47b504234a30ded02ba56c8b09c9aa/output.log",
+  "available_end": 4582,
+  "chunk_sha256": "1618d8c64bc7ed4711568e126511a8e92c104af126e20f480eedaca2ae2bd186",
+  "host": "desktop",
+  "next_offset": 4582,
+  "offset": 0,
+  "output_complete": true,
+  "persistent_across_runtime_restart": true,
+  "session_id": "dpty-ba884c82ef64c18d503e515cea74cfeb7c47b504234a30ded02ba56c8b09c9aa",
+  "status": {
+    "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+    "bytes_seen": 4582,
+    "bytes_stored": 4582,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1795566614329,
+    "exit_code": 0,
+    "output_complete": true,
+    "owner_pid": 2124306,
+    "pid": 2124308,
+    "state": "exited"
+  },
+  "storage": "target_archive",
+  "text": "test_accumulator_conserves_impulses_and_waits_for_its_clock (qualification.hcsn_closure_20261124.communication_tests.CommunicationTests.test_accumulator_conserves_impulses_and_waits_for_its_clock) ... ok\r\ntest_boundary_alias_and_latest_possible_receiver_law_time (qualification.hcsn_closure_20261124.communication_tests.CommunicationTests.test_boundary_alias_and_latest_possible_receiver_law_time) ... ok\r\ntest_buffered_cue_gradient_matches_nonzero_finite_difference (qualification.hcsn_closure_20261124.communication_tests.CommunicationTests.test_buffered_cue_gradient_matches_nonzero_finite_difference) ... ok\r\ntest_odd_cut_continuation_retains_pending_input_and_held_state (qualification.hcsn_closure_20261124.communication_tests.CommunicationTests.test_odd_cut_continuation_retains_pending_input_and_held_state) ... ok\r\ntest_raw_wrapper_matches_core_and_future_cannot_change_prefix (qualification.hcsn_closure_20261124.communication_tests.CommunicationTests.test_raw_wrapper_matches_core_and_future_cannot_change_prefix) ... ok\r\ntest_unsigned_centering_is_local_and_bounding_has_unit_lipschitz_constant (qualification.hcsn_closure_20261124.communication_tests.CommunicationTests.test_unsigned_centering_is_local_and_bounding_has_unit_lipschitz_constant) ... /home/qian-qi/hcsn-smallnet-20261124/communication-v1-source/qualification/hcsn_closure_20261124/communication_tests.py:138: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.\r\nConsider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)\r\n  self.assertLessEqual(float(bounded[:, 1].abs().max()), .25)\r\nok\r\n\r\n----------------------------------------------------------------------\r\nRan 6 tests in 3.882s\r\n\r\nOK\r\n\r\n{\"root\": \"/home/qian-qi/hcsn-smallnet-20261124/communication-v1-source\", \"tests_returncode\": 0, \"diagnostic_returncode\": 0, \"children_cpu_seconds\": 10.032938, \"wall_seconds\": 10.106040806975216}\r\n{\r\n  \"cases\": {\r\n    \"accumulate_late4\": {\r\n      \"all_prefix_differences\": [\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.00023304224017128838,\r\n        0.00033590359492219335,\r\n        0.0009793368121964185,\r\n        0.0007572330183935883,\r\n        0.000638828244756251,\r\n        0.000548357527878407\r\n      ],\r\n      \"first_receiver_margin_effect\": 6,\r\n      \"max_logit_difference\": 0.0009793368121964185\r\n    },\r\n    \"accumulate_late5\": {\r\n      \"all_prefix_differences\": [\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.00021934272276857847,\r\n        0.00037093297785650847,\r\n        0.0010240592882921895,\r\n        0.0008018537320353403\r\n      ],\r\n      \"first_receiver_margin_effect\": 8,\r\n      \"max_logit_difference\": 0.0010240592882921895\r\n    },\r\n    \"hold_late4\": {\r\n      \"all_prefix_differences\": [\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.00023304224017128838,\r\n        0.00033590359492219335,\r\n        0.0007620415088966936,\r\n        0.001130499961339071,\r\n        0.0014580459048447736,\r\n        0.0017508765007105964\r\n      ],\r\n      \"first_receiver_margin_effect\": 6,\r\n      \"max_logit_difference\": 0.0017508765007105964\r\n    },\r\n    \"hold_late5\": {\r\n      \"all_prefix_differences\": [\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.00021934272276857847,\r\n        0.00037093297785650847,\r\n        0.0008172087683970819,\r\n        0.001200792153203567\r\n      ],\r\n      \"first_receiver_margin_effect\": 8,\r\n      \"max_logit_difference\": 0.001200792153203567\r\n    },\r\n    \"raw_late4\": {\r\n      \"all_prefix_differences\": [\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.00023304224017128838,\r\n        0.00033590359492219335,\r\n        0.0009793368121964185,\r\n        0.0007572330183935883,\r\n        0.000638828244756251,\r\n        0.000548357527878407\r\n      ],\r\n      \"first_receiver_margin_effect\": 6,\r\n      \"max_logit_difference\": 0.0009793368121964185\r\n    },\r\n    \"raw_late5\": {\r\n      \"all_prefix_differences\": [\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0,\r\n        0.0\r\n      ],\r\n      \"first_receiver_margin_effect\": null,\r\n      \"max_logit_difference\": 0.0\r\n    }\r\n  },\r\n  \"scope\": \"controlled-weights causal path; not a trained accuracy comparison\"\r\n}\r\n",
+  "text_is_lossy": false,
+  "truncated_before_offset": false,
+  "utf8_pending": false
+}

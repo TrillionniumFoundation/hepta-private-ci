@@ -1,0 +1,116 @@
+{
+  "compressed_full_metadata": {
+    "bytes": 71213,
+    "decompressed_bytes": 534436,
+    "decompressed_sha256": "f6c7b4cc7d12513854736700261220827f7b4cd9cc05bec1eed1848e62321cf9",
+    "file": "EXPERIMENT_ROSTER_METADATA.json.gz",
+    "sha256": "ac9c4339dfbe573cbe814b850f2335e05ae111462089b9fff40abc6f62f4e43c",
+    "source_remote": "/home/qian-qi/hcsn-smallnet-20261124/final-roster-metadata-v2/CAMPAIGNS.json",
+    "source_version": "2050:53515566:534436:1795573476650852241:1795573476650852241"
+  },
+  "download": {
+    "chunks": [
+      {
+        "next_offset": 65535,
+        "offset": 0,
+        "sha256": "afda6f89e28ec4efb175266b97f5fdb8a73a4fe9860b9628585c699b3c4b6e8d"
+      },
+      {
+        "next_offset": 131070,
+        "offset": 65535,
+        "sha256": "f824f25432850b72d70177be46533a5b7ff589a4a6714d7820d2f512cd5d749f"
+      },
+      {
+        "next_offset": 196605,
+        "offset": 131070,
+        "sha256": "6406770fe67367d2bd1e21530e952c90f5965a6720e8ec67409e0dc5a7717eb9"
+      },
+      {
+        "next_offset": 262140,
+        "offset": 196605,
+        "sha256": "7d1521f56c15cf70c15c37547d5e7281f54319ba5721873bf61bf6e9419e2f70"
+      },
+      {
+        "next_offset": 327675,
+        "offset": 262140,
+        "sha256": "575416daaeece6d7bc4ea0a4c0e8bf17153960de9f812bfe002fe3504d8bdb02"
+      },
+      {
+        "next_offset": 393210,
+        "offset": 327675,
+        "sha256": "27b54cbee9df6b36a9d6a8bc3704d2e3e1b640244847cf20dc7c7bfdc8e2d3af"
+      },
+      {
+        "next_offset": 458745,
+        "offset": 393210,
+        "sha256": "e34465b91b4c2a71e8de00de4b5446ac750afc8016818df015167e6085105c3d"
+      },
+      {
+        "next_offset": 524280,
+        "offset": 458745,
+        "sha256": "2c24fedd41a0f2d30e7edb407f5a376d26055d8b4d8408c6d8efd3d11ea7d1de"
+      },
+      {
+        "next_offset": 534436,
+        "offset": 524280,
+        "sha256": "232a1e1fb33a0b82e604c6785204e751099059a5ea7f2d39c283034e54eec8e4"
+      }
+    ],
+    "info": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/hcsn-smallnet-20261124/final-roster-metadata-v2/CAMPAIGNS.json",
+      "sha256": "f6c7b4cc7d12513854736700261220827f7b4cd9cc05bec1eed1848e62321cf9",
+      "size": 534436,
+      "version": "2050:53515566:534436:1795573476650852241:1795573476650852241"
+    }
+  },
+  "metadata_probe_v1": {
+    "new_model_or_data_execution": false,
+    "pty": "dpty-4132b680c1e8b8d5ada85ed9a5f7e1cc187e75aab257cadd8d898f20c05246e2",
+    "reason": "Metadata adapter expected protocol_sha256 in every test result; original core binds it through TEST_WORKER_CLAIM.json.",
+    "scientific_files_modified": false,
+    "status": {
+      "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+      "bytes_seen": 632,
+      "bytes_stored": 632,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1795573437478,
+      "exit_code": 1,
+      "output_complete": true,
+      "owner_pid": 2804542,
+      "pid": 2804557,
+      "state": "exited"
+    },
+    "text": "Traceback (most recent call last):\r\n  File \"/home/qian-qi/hcsn-smallnet-20261124/final_roster_metadata_v1.py\", line 186, in <module>\r\n    main()\r\n  File \"/home/qian-qi/hcsn-smallnet-20261124/final_roster_metadata_v1.py\", line 154, in main\r\n    campaigns = [audit_campaign(name, count) for name, count in EXPECTED.items()]\r\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"/home/qian-qi/hcsn-smallnet-20261124/final_roster_metadata_v1.py\", line 82, in audit_campaign\r\n    check(test['slot'] == slot and test['protocol_sha256'] == digest,\r\n                                   ~~~~^^^^^^^^^^^^^^^^^^^\r\nKeyError: 'protocol_sha256'\r\n"
+  },
+  "metadata_probe_v2": {
+    "pty": "dpty-5431b3e5c52c988b2c6fa096002a8df026d62baf4b0a27a39ad07b57c675d012",
+    "status": {
+      "boot": "8c55b477-233a-4771-995a-6f666f6299b3",
+      "bytes_seen": 1801,
+      "bytes_stored": 1801,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1795573473502,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 2805513,
+      "pid": 2805519,
+      "state": "exited"
+    },
+    "text": "{\"campaign_count\": 9, \"declared_training_slots\": 177, \"fit_status_counts\": {\"completed\": 177}, \"test_status_counts\": {\"evaluated\": 177}, \"actual_updates_distribution\": {\"512\": 168, \"256\": 9}, \"all_metadata_checks_passed\": true, \"metadata_audit_cost\": {\"wall_seconds\": 3.0829158269334584, \"cpu_seconds\": 0.331648956}}\r\n{\"campaign\": \"closure-v1\", \"fit\": {\"completed\": 63}, \"test\": {\"evaluated\": 63}, \"updates\": {\"512\": 63}, \"fit_test_children_cpu\": 26367.673122, \"issues\": []}\r\n{\"campaign\": \"communication-training-v1\", \"fit\": {\"completed\": 21}, \"test\": {\"evaluated\": 21}, \"updates\": {\"512\": 21}, \"fit_test_children_cpu\": 11019.12631, \"issues\": []}\r\n{\"campaign\": \"dual-training-v1\", \"fit\": {\"completed\": 12}, \"test\": {\"evaluated\": 12}, \"updates\": {\"512\": 12}, \"fit_test_children_cpu\": 3730.898462, \"issues\": []}\r\n{\"campaign\": \"fast-training-v1\", \"fit\": {\"completed\": 18}, \"test\": {\"evaluated\": 18}, \"updates\": {\"512\": 18}, \"fit_test_children_cpu\": 8051.55928, \"issues\": []}\r\n{\"campaign\": \"baselines-v1\", \"fit\": {\"completed\": 27}, \"test\": {\"evaluated\": 27}, \"updates\": {\"512\": 27}, \"fit_test_children_cpu\": 417.96009199999986, \"issues\": []}\r\n{\"campaign\": \"joint-training-v1\", \"fit\": {\"completed\": 9}, \"test\": {\"evaluated\": 9}, \"updates\": {\"512\": 9}, \"fit_test_children_cpu\": 2713.910046, \"issues\": []}\r\n{\"campaign\": \"precision-training-v1\", \"fit\": {\"completed\": 6}, \"test\": {\"evaluated\": 6}, \"updates\": {\"512\": 6}, \"fit_test_children_cpu\": 2982.2785259999996, \"issues\": []}\r\n{\"campaign\": \"av-closure-v4\", \"fit\": {\"completed\": 9}, \"test\": {\"evaluated\": 9}, \"updates\": {\"256\": 9}, \"fit_test_children_cpu\": 1580.1818950000002, \"issues\": []}\r\n{\"campaign\": \"boundary-center-v1\", \"fit\": {\"completed\": 12}, \"test\": {\"evaluated\": 12}, \"updates\": {\"512\": 12}, \"fit_test_children_cpu\": 3662.191673, \"issues\": []}\r\n"
+  },
+  "roster_sha256": "623ec55046be56e52af2f2e7d332cffb43ef150de7280bf3e09e92ffba6d20b3",
+  "source_sha256": "abc5276d1f086643718f4c9be48891a5704798f4a31086868e344eaf814e8084"
+}

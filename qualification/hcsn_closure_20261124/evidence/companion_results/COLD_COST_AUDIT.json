@@ -1,0 +1,337 @@
+{
+  "all_development_scores_bitwise_equal": true,
+  "all_optimizer_receipts_equal": true,
+  "all_receipts_complete": true,
+  "all_replay_candidates_bitwise_equal_to_original": true,
+  "all_train_dev_features_bitwise_equal": true,
+  "campaign": {
+    "campaign_wall_seconds": 171.0330212879926,
+    "coordinator_cpu_seconds": 0.4118031790000001,
+    "failed_slots": [],
+    "finished_unix": 1795568248.322187,
+    "scope": "coordinator CPU excludes children; campaign wall includes all children",
+    "status": "completed"
+  },
+  "complete_child_cpu_seconds": 170.1054,
+  "groups": {
+    "ANALYTIC": {
+      "closures": [
+        0,
+        0,
+        0
+      ],
+      "cold_fit_cpu_seconds": [
+        9.374413000000002,
+        10.914654999999996,
+        11.133905999999993
+      ],
+      "cold_fit_wall_seconds": [
+        9.406046951073222,
+        10.9646180360578,
+        11.214534951024689
+      ],
+      "full_cpu_seconds": 10.474324666666664,
+      "full_wall_including_parent_pretraining_mean": 208.42141111571496,
+      "full_wall_seconds": 10.528399979385236,
+      "head_phase_cpu_seconds": 0.0016656416666661993,
+      "parent_training_complete_wall_seconds": 197.89301113632973
+    },
+    "BP": {
+      "closures": [
+        30,
+        29,
+        19
+      ],
+      "cold_fit_cpu_seconds": [
+        11.420982999999998,
+        14.464670000000005,
+        11.319186000000009
+      ],
+      "cold_fit_wall_seconds": [
+        11.462176879053004,
+        14.523562277900055,
+        11.41576751798857
+      ],
+      "full_cpu_seconds": 12.401613000000005,
+      "full_wall_including_parent_pretraining_mean": 210.36018002797695,
+      "full_wall_seconds": 12.46716889164721,
+      "head_phase_cpu_seconds": 1.4550142469999994,
+      "parent_training_complete_wall_seconds": 197.89301113632973
+    },
+    "HYBRID": {
+      "closures": [
+        20,
+        19,
+        20
+      ],
+      "cold_fit_cpu_seconds": [
+        12.014380999999997,
+        12.333349000000002,
+        15.689698999999997
+      ],
+      "cold_fit_wall_seconds": [
+        12.065130166010931,
+        12.372098121093586,
+        15.724267882062122
+      ],
+      "full_cpu_seconds": 13.345809666666666,
+      "full_wall_including_parent_pretraining_mean": 211.28017652605195,
+      "full_wall_seconds": 13.387165389722213,
+      "head_phase_cpu_seconds": 1.5543166210000006,
+      "parent_training_complete_wall_seconds": 197.89301113632973
+    },
+    "KEEP": {
+      "closures": [
+        0,
+        0,
+        0
+      ],
+      "cold_fit_cpu_seconds": [
+        9.476141000000002,
+        11.209339000000003,
+        10.278308999999997
+      ],
+      "cold_fit_wall_seconds": [
+        9.558260913938284,
+        11.260175553965382,
+        10.36278897698503
+      ],
+      "full_cpu_seconds": 10.321263,
+      "full_wall_including_parent_pretraining_mean": 208.28675295129264,
+      "full_wall_seconds": 10.3937418149629,
+      "head_phase_cpu_seconds": 0.0,
+      "parent_training_complete_wall_seconds": 197.89301113632973
+    },
+    "STRICT_WSP": {
+      "closures": [
+        0,
+        0,
+        0
+      ],
+      "cold_fit_cpu_seconds": [
+        9.286603999999999,
+        11.651982,
+        9.537782999999992
+      ],
+      "cold_fit_wall_seconds": [
+        9.358733342960477,
+        11.715666634961963,
+        9.615572953014635
+      ],
+      "full_cpu_seconds": 10.158789666666664,
+      "full_wall_including_parent_pretraining_mean": 208.12300211330876,
+      "full_wall_seconds": 10.229990976979025,
+      "head_phase_cpu_seconds": 0.0,
+      "parent_training_complete_wall_seconds": 197.89301113632973
+    }
+  },
+  "limits": [
+    "Three distinct parent seeds, one timed execution each; no latency confidence interval.",
+    "Test and transfer validation remain separately charged original experiments, not replayed.",
+    "Parent complete wall measured; parent CPU through receipt excludes interpreter shutdown.",
+    "Rule authoring/discovery, energy, agent orchestration remain unmeasured.",
+    "Method quality must be assessed separately; no equal-quality strict-WSP speedup assumed."
+  ],
+  "protocol_sha256": "085dd739464e19558a336cf3f92d90b549e44780b6c230e70fdcb145e841d77e",
+  "rows": [
+    {
+      "closures": 0,
+      "full_cpu_seconds": 9.476141000000002,
+      "full_wall_seconds": 9.558260913938284,
+      "head_phase_cpu_seconds": 0.0,
+      "labels_read": 0,
+      "method": "KEEP",
+      "parent": "n8-s17011",
+      "parent_training_complete_wall_seconds": 196.59821392199956,
+      "parent_training_cpu_through_receipt": 195.60046998,
+      "slot": "n8-s17011--KEEP",
+      "worker_peak_rss_bytes": 231206912
+    },
+    {
+      "closures": 30,
+      "full_cpu_seconds": 11.420982999999998,
+      "full_wall_seconds": 11.462176879053004,
+      "head_phase_cpu_seconds": 1.3679997939999993,
+      "labels_read": 576,
+      "method": "BP",
+      "parent": "n8-s17011",
+      "parent_training_complete_wall_seconds": 196.59821392199956,
+      "parent_training_cpu_through_receipt": 195.60046998,
+      "slot": "n8-s17011--BP",
+      "worker_peak_rss_bytes": 286031872
+    },
+    {
+      "closures": 0,
+      "full_cpu_seconds": 9.374413000000002,
+      "full_wall_seconds": 9.406046951073222,
+      "head_phase_cpu_seconds": 0.0009976149999992856,
+      "labels_read": 576,
+      "method": "ANALYTIC",
+      "parent": "n8-s17011",
+      "parent_training_complete_wall_seconds": 196.59821392199956,
+      "parent_training_cpu_through_receipt": 195.60046998,
+      "slot": "n8-s17011--ANALYTIC",
+      "worker_peak_rss_bytes": 233062400
+    },
+    {
+      "closures": 0,
+      "full_cpu_seconds": 9.286603999999999,
+      "full_wall_seconds": 9.358733342960477,
+      "head_phase_cpu_seconds": 0.0,
+      "labels_read": 0,
+      "method": "STRICT_WSP",
+      "parent": "n8-s17011",
+      "parent_training_complete_wall_seconds": 196.59821392199956,
+      "parent_training_cpu_through_receipt": 195.60046998,
+      "slot": "n8-s17011--STRICT_WSP",
+      "worker_peak_rss_bytes": 229990400
+    },
+    {
+      "closures": 20,
+      "full_cpu_seconds": 12.014380999999997,
+      "full_wall_seconds": 12.065130166010931,
+      "head_phase_cpu_seconds": 1.382034925000001,
+      "labels_read": 576,
+      "method": "HYBRID",
+      "parent": "n8-s17011",
+      "parent_training_complete_wall_seconds": 196.59821392199956,
+      "parent_training_cpu_through_receipt": 195.60046998,
+      "slot": "n8-s17011--HYBRID",
+      "worker_peak_rss_bytes": 285368320
+    },
+    {
+      "closures": 0,
+      "full_cpu_seconds": 11.209339000000003,
+      "full_wall_seconds": 11.260175553965382,
+      "head_phase_cpu_seconds": 0.0,
+      "labels_read": 0,
+      "method": "KEEP",
+      "parent": "n8-s27011",
+      "parent_training_complete_wall_seconds": 198.24450519797392,
+      "parent_training_cpu_through_receipt": 197.229412795,
+      "slot": "n8-s27011--KEEP",
+      "worker_peak_rss_bytes": 230465536
+    },
+    {
+      "closures": 29,
+      "full_cpu_seconds": 14.464670000000005,
+      "full_wall_seconds": 14.523562277900055,
+      "head_phase_cpu_seconds": 1.5620293689999993,
+      "labels_read": 576,
+      "method": "BP",
+      "parent": "n8-s27011",
+      "parent_training_complete_wall_seconds": 198.24450519797392,
+      "parent_training_cpu_through_receipt": 197.229412795,
+      "slot": "n8-s27011--BP",
+      "worker_peak_rss_bytes": 286474240
+    },
+    {
+      "closures": 0,
+      "full_cpu_seconds": 10.914654999999996,
+      "full_wall_seconds": 10.9646180360578,
+      "head_phase_cpu_seconds": 0.0019985560000002067,
+      "labels_read": 576,
+      "method": "ANALYTIC",
+      "parent": "n8-s27011",
+      "parent_training_complete_wall_seconds": 198.24450519797392,
+      "parent_training_cpu_through_receipt": 197.229412795,
+      "slot": "n8-s27011--ANALYTIC",
+      "worker_peak_rss_bytes": 232538112
+    },
+    {
+      "closures": 0,
+      "full_cpu_seconds": 11.651982,
+      "full_wall_seconds": 11.715666634961963,
+      "head_phase_cpu_seconds": 0.0,
+      "labels_read": 0,
+      "method": "STRICT_WSP",
+      "parent": "n8-s27011",
+      "parent_training_complete_wall_seconds": 198.24450519797392,
+      "parent_training_cpu_through_receipt": 197.229412795,
+      "slot": "n8-s27011--STRICT_WSP",
+      "worker_peak_rss_bytes": 231288832
+    },
+    {
+      "closures": 19,
+      "full_cpu_seconds": 12.333349000000002,
+      "full_wall_seconds": 12.372098121093586,
+      "head_phase_cpu_seconds": 1.3679897140000001,
+      "labels_read": 576,
+      "method": "HYBRID",
+      "parent": "n8-s27011",
+      "parent_training_complete_wall_seconds": 198.24450519797392,
+      "parent_training_cpu_through_receipt": 197.229412795,
+      "slot": "n8-s27011--HYBRID",
+      "worker_peak_rss_bytes": 286023680
+    },
+    {
+      "closures": 0,
+      "full_cpu_seconds": 10.278308999999997,
+      "full_wall_seconds": 10.36278897698503,
+      "head_phase_cpu_seconds": 0.0,
+      "labels_read": 0,
+      "method": "KEEP",
+      "parent": "n8-s37011",
+      "parent_training_complete_wall_seconds": 198.83631428901572,
+      "parent_training_cpu_through_receipt": 197.868385737,
+      "slot": "n8-s37011--KEEP",
+      "worker_peak_rss_bytes": 231014400
+    },
+    {
+      "closures": 19,
+      "full_cpu_seconds": 11.319186000000009,
+      "full_wall_seconds": 11.41576751798857,
+      "head_phase_cpu_seconds": 1.4350135779999995,
+      "labels_read": 576,
+      "method": "BP",
+      "parent": "n8-s37011",
+      "parent_training_complete_wall_seconds": 198.83631428901572,
+      "parent_training_cpu_through_receipt": 197.868385737,
+      "slot": "n8-s37011--BP",
+      "worker_peak_rss_bytes": 286097408
+    },
+    {
+      "closures": 0,
+      "full_cpu_seconds": 11.133905999999993,
+      "full_wall_seconds": 11.214534951024689,
+      "head_phase_cpu_seconds": 0.0020007539999991053,
+      "labels_read": 576,
+      "method": "ANALYTIC",
+      "parent": "n8-s37011",
+      "parent_training_complete_wall_seconds": 198.83631428901572,
+      "parent_training_cpu_through_receipt": 197.868385737,
+      "slot": "n8-s37011--ANALYTIC",
+      "worker_peak_rss_bytes": 232448000
+    },
+    {
+      "closures": 0,
+      "full_cpu_seconds": 9.537782999999992,
+      "full_wall_seconds": 9.615572953014635,
+      "head_phase_cpu_seconds": 0.0,
+      "labels_read": 0,
+      "method": "STRICT_WSP",
+      "parent": "n8-s37011",
+      "parent_training_complete_wall_seconds": 198.83631428901572,
+      "parent_training_cpu_through_receipt": 197.868385737,
+      "slot": "n8-s37011--STRICT_WSP",
+      "worker_peak_rss_bytes": 230834176
+    },
+    {
+      "closures": 20,
+      "full_cpu_seconds": 15.689698999999997,
+      "full_wall_seconds": 15.724267882062122,
+      "head_phase_cpu_seconds": 1.9129252240000003,
+      "labels_read": 576,
+      "method": "HYBRID",
+      "parent": "n8-s37011",
+      "parent_training_complete_wall_seconds": 198.83631428901572,
+      "parent_training_cpu_through_receipt": 197.868385737,
+      "slot": "n8-s37011--HYBRID",
+      "worker_peak_rss_bytes": 286523392
+    }
+  ],
+  "schema": "independent-cold-cost-audit-v1",
+  "sum_complete_child_wall_seconds": 171.01940115808975,
+  "test_constructed": false,
+  "workers": 15
+}

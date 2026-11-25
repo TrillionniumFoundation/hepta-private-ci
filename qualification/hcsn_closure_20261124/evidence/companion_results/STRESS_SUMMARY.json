@@ -1,0 +1,655 @@
+{
+  "cost_note": "Worker totals include both delay panels and load/import; never count twice by panel. State bytes fixed eval batch, persistent only.",
+  "groups": [
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.7005208333333334,
+        "sample_sd": 0.03522851369392886
+      },
+      "model": "GRU",
+      "n": 8,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.04033553066666625,
+        "sample_sd": 0.0005763497690823641
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.6770833333333334,
+        "sample_sd": 0.011933790872280834
+      },
+      "state_bytes": {
+        "mean": 256,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 4.628681470640004,
+        "sample_sd": 0.0299952505283392
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.7682291666666666,
+        "sample_sd": 0.07507049638228945
+      },
+      "model": "GRU",
+      "n": 8,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.05633512633333352,
+        "sample_sd": 0.0005783532259592281
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.7526041666666666,
+        "sample_sd": 0.05966895436140417
+      },
+      "state_bytes": {
+        "mean": 256,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 4.628681470640004,
+        "sample_sd": 0.0299952505283392
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.6953125,
+        "sample_sd": 0.020669932117692115
+      },
+      "model": "GRU",
+      "n": 32,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.043317595666666854,
+        "sample_sd": 0.0023246978709787524
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.6875,
+        "sample_sd": 0.0078125
+      },
+      "state_bytes": {
+        "mean": 1024,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 4.811551189011273,
+        "sample_sd": 0.23201408230131992
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.7838541666666666,
+        "sample_sd": 0.03157384284630766
+      },
+      "model": "GRU",
+      "n": 32,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.058671411999999666,
+        "sample_sd": 0.0015310567192862137
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.7760416666666666,
+        "sample_sd": 0.018042195912175804
+      },
+      "state_bytes": {
+        "mean": 1024,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 4.811551189011273,
+        "sample_sd": 0.23201408230131992
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.7109375,
+        "sample_sd": 0.013531646934131853
+      },
+      "model": "GRU",
+      "n": 64,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.05022188766666661,
+        "sample_sd": 0.004943670112678745
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.6901041666666666,
+        "sample_sd": 0.009021097956087902
+      },
+      "state_bytes": {
+        "mean": 2048,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 4.912257262389176,
+        "sample_sd": 0.07683549378529866
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.8046875,
+        "sample_sd": 0.0078125
+      },
+      "model": "GRU",
+      "n": 64,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.06898818433333338,
+        "sample_sd": 0.006234059482927871
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.7916666666666666,
+        "sample_sd": 0.019661027175184243
+      },
+      "state_bytes": {
+        "mean": 2048,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 4.912257262389176,
+        "sample_sd": 0.07683549378529866
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.515625,
+        "sample_sd": 0.05412658773652741
+      },
+      "model": "surrogate_LIF",
+      "n": 8,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.12273256166666642,
+        "sample_sd": 0.021248780772437484
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.515625,
+        "sample_sd": 0.04752158226795484
+      },
+      "state_bytes": {
+        "mean": 1728,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 5.328325968662587,
+        "sample_sd": 0.3747958197306477
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.5078125,
+        "sample_sd": 0.034053897996411515
+      },
+      "model": "surrogate_LIF",
+      "n": 8,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.18100288566666714,
+        "sample_sd": 0.010144642602905065
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.5104166666666666,
+        "sample_sd": 0.03608439182435161
+      },
+      "state_bytes": {
+        "mean": 1728,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 5.328325968662587,
+        "sample_sd": 0.3747958197306477
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.578125,
+        "sample_sd": 0.14320549046737
+      },
+      "model": "surrogate_LIF",
+      "n": 32,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.10232911099999997,
+        "sample_sd": 0.0015301070667386731
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.5078125,
+        "sample_sd": 0.04878904686248749
+      },
+      "state_bytes": {
+        "mean": 5760,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 4.980352041660808,
+        "sample_sd": 0.28615063444225375
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.5703125,
+        "sample_sd": 0.12573028858930532
+      },
+      "model": "surrogate_LIF",
+      "n": 32,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.1709695383333334,
+        "sample_sd": 0.0034727587129098282
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.4921875,
+        "sample_sd": 0.034053897996411515
+      },
+      "state_bytes": {
+        "mean": 5760,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 4.980352041660808,
+        "sample_sd": 0.28615063444225375
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.5338541666666666,
+        "sample_sd": 0.0758791785642368
+      },
+      "model": "surrogate_LIF",
+      "n": 64,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.10931700300000029,
+        "sample_sd": 0.004178896972097744
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.53125,
+        "sample_sd": 0.071602745233685
+      },
+      "state_bytes": {
+        "mean": 11136,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 4.943134087331903,
+        "sample_sd": 0.30500949518238596
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.546875,
+        "sample_sd": 0.06810779599282303
+      },
+      "model": "surrogate_LIF",
+      "n": 64,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.18032418299999975,
+        "sample_sd": 0.007582664661100523
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.546875,
+        "sample_sd": 0.06810779599282303
+      },
+      "state_bytes": {
+        "mean": 11136,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 4.943134087331903,
+        "sample_sd": 0.30500949518238596
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.6458333333333334,
+        "sample_sd": 0.1842712455243176
+      },
+      "model": "causal_Transformer",
+      "n": 8,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.035667408333333185,
+        "sample_sd": 0.002886751811484686
+      },
+      "passes": 1,
+      "prelate": {
+        "mean": 0.5625,
+        "sample_sd": 0.09504316453590968
+      },
+      "state_bytes": {
+        "mean": 29184,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 5.144584157348921,
+        "sample_sd": 0.18123014783961489
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.6197916666666666,
+        "sample_sd": 0.1344869930591183
+      },
+      "model": "causal_Transformer",
+      "n": 8,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.05600068300000031,
+        "sample_sd": 0.0010001010000957992
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.5911458333333334,
+        "sample_sd": 0.12111474952326547
+      },
+      "state_bytes": {
+        "mean": 53760,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 5.144584157348921,
+        "sample_sd": 0.18123014783961489
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.6822916666666666,
+        "sample_sd": 0.23047978434036973
+      },
+      "model": "causal_Transformer",
+      "n": 32,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.036998299666666824,
+        "sample_sd": 5.646538261162858e-06
+      },
+      "passes": 1,
+      "prelate": {
+        "mean": 0.5572916666666666,
+        "sample_sd": 0.04009063624567878
+      },
+      "state_bytes": {
+        "mean": 107008,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 5.162680956302211,
+        "sample_sd": 0.29368603339996263
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.5494791666666666,
+        "sample_sd": 0.07825510000685791
+      },
+      "model": "causal_Transformer",
+      "n": 32,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.07299838133333332,
+        "sample_sd": 0.0019955889033068733
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.6223958333333334,
+        "sample_sd": 0.1578692142315383
+      },
+      "state_bytes": {
+        "mean": 197120,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 5.162680956302211,
+        "sample_sd": 0.29368603339996263
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.7083333333333334,
+        "sample_sd": 0.04009063624567878
+      },
+      "model": "causal_Transformer",
+      "n": 64,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.04432659833333356,
+        "sample_sd": 0.0025184819784405763
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.5651041666666666,
+        "sample_sd": 0.12211848008013912
+      },
+      "state_bytes": {
+        "mean": 204288,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 5.028309118002653,
+        "sample_sd": 0.029082349372856506
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.6119791666666666,
+        "sample_sd": 0.13982701831936248
+      },
+      "model": "causal_Transformer",
+      "n": 64,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 0.08300176399999959,
+        "sample_sd": 0.004583534459703704
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.609375,
+        "sample_sd": 0.15368996541332813
+      },
+      "state_bytes": {
+        "mean": 376320,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 5.028309118002653,
+        "sample_sd": 0.029082349372856506
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.6171875,
+        "sample_sd": 0.10216169398923454
+      },
+      "model": "parent",
+      "n": 8,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 10.162746142666666,
+        "sample_sd": 2.650896826893255
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.5546875,
+        "sample_sd": 0.013531646934131853
+      },
+      "state_bytes": {
+        "mean": 26624,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 33.51776140932149,
+        "sample_sd": 3.929512891235399
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.5859375,
+        "sample_sd": 0.09472152853892297
+      },
+      "model": "parent",
+      "n": 8,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 17.398000385333333,
+        "sample_sd": 0.82771708884678
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.53125,
+        "sample_sd": 0.0
+      },
+      "state_bytes": {
+        "mean": 26624,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 33.51776140932149,
+        "sample_sd": 3.929512891235399
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.65625,
+        "sample_sd": 0.13621559198564606
+      },
+      "model": "parent",
+      "n": 32,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 17.155626821333332,
+        "sample_sd": 0.6408669685938935
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.453125,
+        "sample_sd": 0.0
+      },
+      "state_bytes": {
+        "mean": 106496,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 53.79604317698007,
+        "sample_sd": 2.485477830244891
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.609375,
+        "sample_sd": 0.1335000585205864
+      },
+      "model": "parent",
+      "n": 32,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 31.178065501,
+        "sample_sd": 1.7524830025180287
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.46875,
+        "sample_sd": 0.0
+      },
+      "state_bytes": {
+        "mean": 106496,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 53.79604317698007,
+        "sample_sd": 2.485477830244891
+      }
+    },
+    {
+      "delay": 64,
+      "final": {
+        "mean": 0.6223958333333334,
+        "sample_sd": 0.1474749493204976
+      },
+      "model": "parent",
+      "n": 64,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 26.590660675,
+        "sample_sd": 0.34368718761161154
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.453125,
+        "sample_sd": 0.0
+      },
+      "state_bytes": {
+        "mean": 212992,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 79.71329534903634,
+        "sample_sd": 0.9819737834344524
+      }
+    },
+    {
+      "delay": 128,
+      "final": {
+        "mean": 0.5546875,
+        "sample_sd": 0.1355418091632615
+      },
+      "model": "parent",
+      "n": 64,
+      "nseeds": 3,
+      "panel_cpu": {
+        "mean": 47.795519301333336,
+        "sample_sd": 0.8447101804088176
+      },
+      "passes": 0,
+      "prelate": {
+        "mean": 0.46875,
+        "sample_sd": 0.0
+      },
+      "state_bytes": {
+        "mean": 212992,
+        "sample_sd": 0.0
+      },
+      "worker_wall": {
+        "mean": 79.71329534903634,
+        "sample_sd": 0.9819737834344524
+      }
+    }
+  ],
+  "metric_max_error": 8.881784197001252e-16,
+  "raw_audit_sha256": "2becf6b66eb2e2c857aced4fb7b9268cf713567c04cf697d60c20ef2e3628f08"
+}

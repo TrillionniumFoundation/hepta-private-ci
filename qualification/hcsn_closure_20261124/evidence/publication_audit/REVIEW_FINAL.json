@@ -1,0 +1,140 @@
+{
+  "actions": {
+    "new_test_runs": 0,
+    "new_training_runs": 0,
+    "prediction_array_recomputations": 0,
+    "root_reports_modified_by_reviewer": false,
+    "scientific_sources_modified": false
+  },
+  "checks": {
+    "baseline_and_long_memory": {
+      "notes": "Same short-task data/seeds/update budget and approximate parameters are stated without claiming all aspects equal. HCSN is substantially slower and does not beat GRU/LIF overall. Stress counts are HCSN 0/18, GRU 0/18, LIF 0/18, Transformer 2/18, total 2/72; no retraining or reselection. Fixed state size is not called long-memory ability; actual KV/HCSN byte counterexample and BPTT exclusions remain.",
+      "pass": true
+    },
+    "boundary_and_precision_limits": {
+      "notes": "Boundary center +44.7591 pp and added signed -3.71094 pp are separate prespecified contrasts; altered accumulation, capacity, initial selected checkpoint and stopping-utility counterexamples are disclosed. New precision 2/3 is a scoped engineering AND gate with the Brier failure retained, not universal FP32 qualification.",
+      "pass": true
+    },
+    "communication_cost": {
+      "action_required": false,
+      "fit_plus_test_full_children_cpu_seconds": 11019.12631,
+      "outer_number_not_substituted_for_stage_cost": true,
+      "pass": true,
+      "report_contains_neither_total": true,
+      "requested_outer_comparison_seconds": 11037.101
+    },
+    "precision_cost": {
+      "action_required": false,
+      "fit_plus_test_full_children_cpu_seconds": 2982.2785259999996,
+      "outer_number_not_substituted_for_stage_cost": true,
+      "pass": true,
+      "report_contains_neither_total": true,
+      "requested_outer_comparison_seconds": 2990.925904
+    },
+    "roster": {
+      "actual_updates": {
+        "256": 9,
+        "512": 168
+      },
+      "campaigns": 9,
+      "censored_cpu": 0,
+      "cold_replays_separate": 15,
+      "completed": 177,
+      "declared_training_slots": 177,
+      "evaluated_tests": 177,
+      "execution_completion_not_capability_pass": true,
+      "failed": 0,
+      "older_72_and_9_excluded": true,
+      "pass": true,
+      "program_candidates_separate": 45,
+      "stress_panels_separate": 72
+    },
+    "training_time": {
+      "notes": "Main/baseline and fast/original tables compare complete fit worker launch-through-exit wall. Update-only CPU, test and outer receipts are distinguished. The 177 roster adds only disjoint fit/test child deltas within each campaign and gives no whole-project total.",
+      "pass": true
+    },
+    "wsp": {
+      "notes": "The common abs/minmax dictionary and 15-scalar relation head are explicit. Strict compiler takes weights/rules without labels/activations; parent representation remains BP-trained. Supervised ridge is conditional analytic, not strict WSP. Query routing explains old-logit preservation. Eighteen transformed views are controls, not independent seeds. Cold-process costs include loading/features/validation; final test/transfer and unknown rule discovery are explicitly separate. No equal-quality end-to-end BP replacement or total-training speedup is claimed.",
+      "pass": true
+    }
+  },
+  "historical_joint_seal_chronology": {
+    "baseline_seal_sha256": "9251e5cdca12e3fbcb3c78133edeee4561cded9437a3ec2742559f48b350bd43",
+    "baseline_terminal_embedded_unix": 1795567715.6519547,
+    "baseline_training_terminal_precedes_main_test_claim_seconds": 1474.7364919185638,
+    "joint_seal_sha256": "4553e7c5db5f98a40fdf2b59aa28dbd2f59a2f72723258aa704f3e67e68c198f",
+    "limitation": "Observed immutable-run JSON identities and host file mtimes; no claim of cryptographic timestamping. Actual historical scheduling overlapped; final README deliberately serializes fitting and does not claim identical outer timing.",
+    "main_seal_sha256": "920712b8ad5d7bff0c6556873acf7a3fb978bd8dff6be75fdcc75436fffd104f",
+    "main_test_claim_observed_host_mtime_ns": 1795569190388446500,
+    "observation_file": {
+      "bytes": 2640,
+      "path": "next_hcsn/audit_current/JOINT_SEAL_CHRONOLOGY_OBSERVATION.json",
+      "sha256": "a1962cd6c6f98716c2f8e0989b318680814d800189ee35372af14a13ba4c7da6"
+    }
+  },
+  "not_revalidated": [
+    "Lambert-W derivation and primary finance-paper sourcing are the mathematics/source-review scope",
+    "hosted GitHub integration outcome",
+    "all predictions, VJPs and physical trajectories; existing independent audits are referenced rather than rerun"
+  ],
+  "outstanding_findings": [],
+  "resolved_findings": [
+    {
+      "anchor": "54 mixed training slots (18 boundary/feature/width settings times three seeds)",
+      "file": "README.md",
+      "final_lines": "48-50",
+      "id": "R1",
+      "initial_lines": "40-41",
+      "issue": "Initial wording counted 54 mixed training repetitions as conditions; there are 18 mixed settings with three seeds each.",
+      "resolution": "Root changed conditions to training slots and explicitly states 18 settings times three seeds. The main report separately and correctly reports 21 total settings including native32.",
+      "severity": "low"
+    },
+    {
+      "anchor": "After that terminal record exists, run the prepared main campaign in terminal B",
+      "file": "README.md",
+      "final_lines": "80-104",
+      "id": "R2",
+      "initial_lines": "69-78",
+      "issue": "Running the complete default main campaign before freezing/fitting baselines would expose the main holdout before the common comparison was frozen. Default main.run contains no baseline wait.",
+      "new_execution_needed": false,
+      "resolution": "Root now distinguishes standalone main reproduction from common comparison: prepare main, freeze and run baseline first, wait for all 27 baseline fits and TRAINING_TERMINAL, then launch main.run. Baseline waits for the main seal before its own holdout. This guarantees both fit rosters sealed before either test while explicitly not reproducing the historical overlapping schedule or outer wall time.",
+      "severity": "medium",
+      "source_verification": {
+        "baseline_driver_sha256": "2521d8d6bd4211f42512d87fe6dcbfbe6e154ae634b54d1e9c734f5566e144c4",
+        "main_campaign_sha256": "d253c81a801e57d7aa9590f57a2d3f796adaf171af4db743e5f3a3bf684c8ef8"
+      }
+    }
+  ],
+  "reviewed_at_utc": "2026-11-25T02:33:59.702247+00:00",
+  "reviewed_files": [
+    {
+      "bytes": 26842,
+      "path": "next_hcsn/qualification/hcsn_closure_20261124/RESULTS_CLOSURE_ZH.md",
+      "sha256": "ebbbd45b46ebc92478e87409be163428bdae9ed7fdf1419550df875a134b2dfe"
+    },
+    {
+      "bytes": 10083,
+      "path": "next_hcsn/qualification/hcsn_closure_20261124/README.md",
+      "sha256": "9aa33a07b9c0f78fb6d9eb881b224d219ebe0e72c12be7f033d6f748eb58ebed"
+    },
+    {
+      "bytes": 468262,
+      "path": "next_hcsn/qualification/hcsn_closure_20261124/evidence/EXPERIMENT_ROSTER.json",
+      "sha256": "623ec55046be56e52af2f2e7d332cffb43ef150de7280bf3e09e92ffba6d20b3"
+    },
+    {
+      "bytes": 3174,
+      "path": "next_hcsn/qualification/hcsn_closure_20261124/evidence/EXPERIMENT_ROSTER_ZH.md",
+      "sha256": "afd07f9909f49969a3188ba834fd6bdf6f08d8cb03df2569f8a641c54078ac36"
+    }
+  ],
+  "schema": "hcsn-final-denominator-cost-claim-review-v1",
+  "scope": [
+    "training denominators and actual updates",
+    "non-nested cost accounting",
+    "strict WSP versus supervised ridge and parent BP",
+    "conventional baselines and long-delay claims",
+    "documented common-holdout coordination"
+  ],
+  "status": "PASS_AFTER_TWO_DOCUMENTATION_CORRECTIONS"
+}

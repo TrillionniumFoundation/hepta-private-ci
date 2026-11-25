@@ -1,0 +1,199 @@
+{
+  "inputs": {
+    "BASELINE_WALL_SUMMARY.json": "36acfe8f7abea18e430b907ab34c75abd21b3dbefa78f1d9ec17aa855425e9ff",
+    "DECISION_SUMMARY.json": "dbcdead664c85871cd6b4243605d4fb60272fa6adea41e718e2dca023c57ea3a",
+    "FAST_SUMMARY.json": "019aec14dac789e246c2da6a872f0d4b7a7b5c35e030426983a5ad834534c70c",
+    "MAIN_COMPACT_SUMMARY.json": "6db2aa5bc2fe535c965b6eab0625118ddcbd3a82a7045f16f8f54f5f1aa0a975"
+  },
+  "kernel_acceleration": [
+    {
+      "fast_wall": {
+        "mean": 180.0713541613271,
+        "n": 3,
+        "sample_sd": 6.84973520930602,
+        "values": [
+          182.56332204001956,
+          185.3262505090097,
+          172.324489934952
+        ]
+      },
+      "original_wall": {
+        "mean": 273.6873364240164,
+        "n": 3,
+        "sample_sd": 8.252057809149292,
+        "values": [
+          280.27139154600445,
+          276.3605516660027,
+          264.430066060042
+        ]
+      },
+      "paired_wall_ratios": [
+        0.6513805102724983,
+        0.6705958914606123,
+        0.6516826641635511
+      ],
+      "ratio_of_wall_means": 0.6579455100631598,
+      "width": 8
+    },
+    {
+      "fast_wall": {
+        "mean": 300.86226374465815,
+        "n": 3,
+        "sample_sd": 5.50654418093668,
+        "values": [
+          306.0054567839252,
+          301.52836746396497,
+          295.05296698608436
+        ]
+      },
+      "original_wall": {
+        "mean": 426.7107619243907,
+        "n": 3,
+        "sample_sd": 9.866771058614425,
+        "values": [
+          418.2074102050392,
+          424.39563275605906,
+          437.5292428120738
+        ]
+      },
+      "paired_wall_ratios": [
+        0.7317074000049317,
+        0.7104888556600258,
+        0.6743617068649617
+      ],
+      "ratio_of_wall_means": 0.7050730625771474,
+      "width": 32
+    },
+    {
+      "fast_wall": {
+        "mean": 484.79614916463225,
+        "n": 3,
+        "sample_sd": 36.497847482686,
+        "values": [
+          503.7669523929944,
+          507.90176378993783,
+          442.71973131096456
+        ]
+      },
+      "original_wall": {
+        "mean": 668.9599927233066,
+        "n": 3,
+        "sample_sd": 1.5709234729570059,
+        "values": [
+          667.1919575029751,
+          669.4928135899827,
+          670.1952070769621
+        ]
+      },
+      "paired_wall_ratios": [
+        0.7550554929924317,
+        0.758636617869646,
+        0.6605832549025148
+      ],
+      "ratio_of_wall_means": 0.7247012593250136,
+      "width": 64
+    }
+  ],
+  "new_data_or_model_selection": false,
+  "quality_cost": [
+    {
+      "accuracy_mean": 0.9029947916666666,
+      "accuracy_sample_sd": 0.002983447718070208,
+      "family": "HCSN",
+      "full_fit_wall_mean": 197.89301113632973,
+      "full_fit_wall_sample_sd": 1.1597130549139356,
+      "width_reference": 8
+    },
+    {
+      "accuracy_mean": 0.9195963541666666,
+      "accuracy_sample_sd": 0.003429574789340084,
+      "family": "HCSN",
+      "full_fit_wall_mean": 394.9440521773261,
+      "full_fit_wall_sample_sd": 5.878929534545847,
+      "width_reference": 32
+    },
+    {
+      "accuracy_mean": 0.9153645833333334,
+      "accuracy_sample_sd": 0.004403564211741108,
+      "family": "HCSN",
+      "full_fit_wall_mean": 665.9396551626656,
+      "full_fit_wall_sample_sd": 2.412073793648374,
+      "width_reference": 64
+    },
+    {
+      "accuracy_mean": 0.9632161458333334,
+      "accuracy_sample_sd": 0.017749096198197378,
+      "family": "GRU",
+      "full_fit_wall_mean": 7.582455968329062,
+      "full_fit_wall_sample_sd": 0.22452363845103068,
+      "width_reference": 8
+    },
+    {
+      "accuracy_mean": 0.9606119791666666,
+      "accuracy_sample_sd": 0.007893460711576915,
+      "family": "GRU",
+      "full_fit_wall_mean": 7.335013127342488,
+      "full_fit_wall_sample_sd": 0.2080989415016878,
+      "width_reference": 32
+    },
+    {
+      "accuracy_mean": 0.9658203125,
+      "accuracy_sample_sd": 0.0016914558667664816,
+      "family": "GRU",
+      "full_fit_wall_mean": 7.702952026311929,
+      "full_fit_wall_sample_sd": 0.7612901248308765,
+      "width_reference": 64
+    },
+    {
+      "accuracy_mean": 0.962890625,
+      "accuracy_sample_sd": 0.012467915366019242,
+      "family": "surrogate_LIF",
+      "full_fit_wall_mean": 8.403894979351511,
+      "full_fit_wall_sample_sd": 0.7011384116229356,
+      "width_reference": 8
+    },
+    {
+      "accuracy_mean": 0.9557291666666666,
+      "accuracy_sample_sd": 0.010164384763018227,
+      "family": "surrogate_LIF",
+      "full_fit_wall_mean": 9.08615984468876,
+      "full_fit_wall_sample_sd": 0.46568125414619965,
+      "width_reference": 32
+    },
+    {
+      "accuracy_mean": 0.9475911458333334,
+      "accuracy_sample_sd": 0.007064627087959214,
+      "family": "surrogate_LIF",
+      "full_fit_wall_mean": 9.219988552620634,
+      "full_fit_wall_sample_sd": 0.44916920762781765,
+      "width_reference": 64
+    },
+    {
+      "accuracy_mean": 0.8365885416666666,
+      "accuracy_sample_sd": 0.0327160583574277,
+      "family": "causal_Transformer",
+      "full_fit_wall_mean": 8.290201792338243,
+      "full_fit_wall_sample_sd": 0.8910268385185766,
+      "width_reference": 8
+    },
+    {
+      "accuracy_mean": 0.9208984375,
+      "accuracy_sample_sd": 0.0828870905231365,
+      "family": "causal_Transformer",
+      "full_fit_wall_mean": 7.434500959313785,
+      "full_fit_wall_sample_sd": 0.12552942525346883,
+      "width_reference": 32
+    },
+    {
+      "accuracy_mean": 0.90625,
+      "accuracy_sample_sd": 0.1302421017410191,
+      "family": "causal_Transformer",
+      "full_fit_wall_mean": 7.467124725342728,
+      "full_fit_wall_sample_sd": 0.487630003511638,
+      "width_reference": 64
+    }
+  ],
+  "schema": "hcsn-audited-figure-data-v1",
+  "scope": "Synthetic T12 task only. Cost is full fit, with final holdout evaluation accounted separately. No GPU or joule claim.",
+  "source_sha256": "19b7fecb706a366cc76a45624058e802ee7a78b3c7c7d1a65100ef17b1d3d0ea"
+}

@@ -1,0 +1,373 @@
+{
+  "arms": {
+    "boundary_accumulate": {
+      "control_mode": "accumulate",
+      "message_mode": "boundary",
+      "signed_only": false,
+      "unsigned_mode": "raw"
+    },
+    "boundary_hold": {
+      "control_mode": "hold",
+      "message_mode": "boundary",
+      "signed_only": false,
+      "unsigned_mode": "raw"
+    },
+    "boundary_raw": {
+      "control_mode": "raw",
+      "message_mode": "boundary",
+      "signed_only": false,
+      "unsigned_mode": "raw"
+    },
+    "signed_only": {
+      "control_mode": "raw",
+      "message_mode": "flow",
+      "signed_only": true,
+      "unsigned_mode": "raw"
+    },
+    "unsigned_signed_centered": {
+      "control_mode": "raw",
+      "message_mode": "flow",
+      "signed_only": false,
+      "unsigned_mode": "centered"
+    },
+    "unsigned_signed_centered_bounded": {
+      "control_mode": "raw",
+      "message_mode": "flow",
+      "signed_only": false,
+      "unsigned_mode": "centered_bounded"
+    },
+    "unsigned_signed_raw": {
+      "control_mode": "raw",
+      "message_mode": "flow",
+      "signed_only": false,
+      "unsigned_mode": "raw"
+    }
+  },
+  "base_commit": "14cfd44ab6d9da581bad5363495266424c661eb4",
+  "base_protocol_sha256": "6bf3e662037da59d8da0c8a355439809d9b4b735831b3c6d5d521df2c8c3b8cd",
+  "capacity_policy": "Report exact active mask counts. Unsigned adds parameters; held/accumulated inputs add explicit memory. No equality of functional capacity or deployment time is assumed.",
+  "comparison": "First four arms have boundary communication disabled; unsigned addition/centering/bounding are prespecified contrasts. Last three are boundary-only and compare causal raw/accumulate/hold input-drive paths. input_mark always reads raw observed input. Extra control state is explicit and retained across continuation.",
+  "cost_policy": "512 equal updates primary; 900 CPU-second safety cap yields censored record. Preserve last pre-180-CPU checkpoint for an equal CPU prefix. Count setup, all development, checkpoint IO, process imports/shutdown, test and failures. Joules unknown if not measured. The 180-second prefix is attempted-update CPU only, not full end-to-end time; complete time is reported separately. Every sub-512 run is censored for equal-update analysis.",
+  "data": {
+    "dev_per_source": 48,
+    "dev_sources": [
+      14000,
+      14001,
+      14002,
+      14003
+    ],
+    "length": 12,
+    "smoke_dev_sources": [
+      12600,
+      12601
+    ],
+    "smoke_train_sources": [
+      12500,
+      12501
+    ],
+    "test_per_source": 64,
+    "test_sources": [
+      15000,
+      15001,
+      15002,
+      15003,
+      15004,
+      15005,
+      15006,
+      15007,
+      15008,
+      15009,
+      15010,
+      15011,
+      15012,
+      15013,
+      15014,
+      15015
+    ],
+    "train_per_source": 48,
+    "train_sources": [
+      13000,
+      13001,
+      13002,
+      13003,
+      13004,
+      13005,
+      13006,
+      13007,
+      13008,
+      13009,
+      13010,
+      13011
+    ]
+  },
+  "experiment_id": "HCSN-COMMUNICATION-PROSPECTIVE-20261125-v1",
+  "factory_patch": "Fresh worker context replaces runner.make_model, make_data, parameter_accounting, forward_batch, evaluate and check_seal; original runner.fit/test bodies remain byte-identical. No train/test labels enter preprocessing or detached observers.",
+  "holdout_policy": "All 21 terminal attempts and complete checkpoint states are globally sealed before any test construction. All failures remain in the three-seed denominator. New source identities in the existing synthetic generator family; no new real-world domain claim. No test tuning, retries or best-arm selection.",
+  "measurement": "Detached per-channel moments, preactivation saturation and preclip recurrent gradient norms. Observer CPU is included in every update and complete worker cost. Reference centering is the nominal single-neuron stationary event rate, with no data-fitted mean.",
+  "runtime": {
+    "device": "cpu",
+    "implementation": "CPython",
+    "numpy": "2.5.4",
+    "python": "3.12.3",
+    "threads": 1,
+    "torch": "2.8.0+cpu"
+  },
+  "slots": [
+    {
+      "arm": "signed_only",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-signed_only-s18011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 18011
+    },
+    {
+      "arm": "signed_only",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-signed_only-s28011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 28011
+    },
+    {
+      "arm": "signed_only",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-signed_only-s38011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 38011
+    },
+    {
+      "arm": "unsigned_signed_raw",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-unsigned_signed_raw-s18011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 18011
+    },
+    {
+      "arm": "unsigned_signed_raw",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-unsigned_signed_raw-s28011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 28011
+    },
+    {
+      "arm": "unsigned_signed_raw",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-unsigned_signed_raw-s38011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 38011
+    },
+    {
+      "arm": "unsigned_signed_centered",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-unsigned_signed_centered-s18011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 18011
+    },
+    {
+      "arm": "unsigned_signed_centered",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-unsigned_signed_centered-s28011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 28011
+    },
+    {
+      "arm": "unsigned_signed_centered",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-unsigned_signed_centered-s38011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 38011
+    },
+    {
+      "arm": "unsigned_signed_centered_bounded",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-unsigned_signed_centered_bounded-s18011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 18011
+    },
+    {
+      "arm": "unsigned_signed_centered_bounded",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-unsigned_signed_centered_bounded-s28011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 28011
+    },
+    {
+      "arm": "unsigned_signed_centered_bounded",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-unsigned_signed_centered_bounded-s38011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 38011
+    },
+    {
+      "arm": "boundary_raw",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-boundary_raw-s18011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 18011
+    },
+    {
+      "arm": "boundary_raw",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-boundary_raw-s28011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 28011
+    },
+    {
+      "arm": "boundary_raw",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-boundary_raw-s38011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 38011
+    },
+    {
+      "arm": "boundary_accumulate",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-boundary_accumulate-s18011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 18011
+    },
+    {
+      "arm": "boundary_accumulate",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-boundary_accumulate-s28011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 28011
+    },
+    {
+      "arm": "boundary_accumulate",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-boundary_accumulate-s38011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 38011
+    },
+    {
+      "arm": "boundary_hold",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-boundary_hold-s18011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 18011
+    },
+    {
+      "arm": "boundary_hold",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-boundary_hold-s28011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 28011
+    },
+    {
+      "arm": "boundary_hold",
+      "boundary": "qvi",
+      "family": "communication",
+      "features": "value_risk",
+      "id": "n32-boundary_hold-s38011",
+      "neurons": 32,
+      "precision": "mixed",
+      "seed": 38011
+    }
+  ],
+  "source_hashes": {
+    "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+    "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+    "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+    "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+    "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+    "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+    "qualification.hcsn_closure_20261124.__init__.py": "aa3a0c1117ab5a880ec632c13c2c026719d1feeb772d967182a73c34f207b4c9",
+    "qualification.hcsn_closure_20261124.campaign.py": "d253c81a801e57d7aa9590f57a2d3f796adaf171af4db743e5f3a3bf684c8ef8",
+    "qualification.hcsn_closure_20261124.communication.py": "b80113495c6caf9b6dd07eae292ce1e6301141a3ce8399423150dd118d9da420",
+    "qualification.hcsn_closure_20261124.communication_observe.py": "60a392367812e48d6e9560c6c2d2305e47eef8c1d46b3cfee392698ac051d314",
+    "qualification.hcsn_closure_20261124.communication_run.py": "9ab02bd115ce288238573853459bca7f12c8ad3f07427aa9efe10e0cd625bdae",
+    "qualification.hcsn_closure_20261124.communication_tests.py": "c0af37f7ffe612b0b03f1e3e010eee4755e60536b03ae9456a5999ecf59f1948",
+    "qualification.hcsn_closure_20261124.data.py": "b29f20dd3db66284d492e4dbd22bdcadbb288d02effa8c198cbffe9128cafea1",
+    "qualification.hcsn_closure_20261124.models.py": "84340ea2367b9ccdeec3a68d2726e66549680334ea2fc4de3e501b46eef7dde8",
+    "qualification.hcsn_closure_20261124.provenance.py": "a635b5a0a8edadbce6266ba5d8336cc27030c155992e40a8aaf3d3353ac034a6",
+    "qualification.hcsn_closure_20261124.runner.py": "ab72b5c4b0dc77b304dc0aeecfc5a9100e674102efc41a3a268872e47f5feed2",
+    "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+    "qualification.hcsn_smallnet_20261124.campaign": "6a61062024d97e5a2f94f7d36a1ecf0d7fca5e5f9d16ba29b848d307b2f6f760",
+    "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+    "qualification.hcsn_smallnet_20261124.data": "1c257acbc0c552614d312cea56f2c21ce7efe5afcd6af478f314a4ea658abe0a",
+    "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+    "qualification.hcsn_smallnet_20261124.train": "a9acf7805bd394972631f8ea15e93c4841e3f14674953d81323097597b5ac678",
+    "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+    "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+  },
+  "training": {
+    "batch_size": 8,
+    "cpu_prefix": 180.0,
+    "development_every": 64,
+    "gradient_clip": 3.0,
+    "learning_rate": 0.01,
+    "loss": "0.8 final CE + 0.2 mean prefix CE",
+    "max_updates": 512,
+    "selection": "minimum development final CE including initial",
+    "threads": 1,
+    "train_cpu_limit": 900.0
+  },
+  "unsigned_scale": 1.0,
+  "validation": {
+    "max_mixed_mass_error": 2e-09,
+    "min_final_accuracy": 0.8,
+    "min_gain_over_initial": 0.1,
+    "min_gain_over_prelate": 0.1,
+    "min_seed_fraction": 0.6666666666666666
+  }
+}

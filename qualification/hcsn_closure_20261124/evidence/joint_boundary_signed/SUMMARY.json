@@ -1,0 +1,1812 @@
+{
+  "audit_cost": {
+    "cpu_seconds": 0.934550874,
+    "metric_helper_sha256": "56e9bd55354c764ff80ccf4f7d2030e137ce5d49a936fa93732257640f2a3fcf",
+    "source_sha256": "7da22f8639ca9d6d10b12b366a9098059ad27c17026aa712b9d3ae255249c508",
+    "wall_seconds": 0.9523972269380465
+  },
+  "costs": {
+    "attempted_update_cpu_seconds": 2035.5288001380009,
+    "campaign": {
+      "driver_cpu_through_receipt": 5.8245069,
+      "energy_joules_process": null,
+      "error": null,
+      "status": "completed",
+      "wall_seconds": 611.1044258070178
+    },
+    "energy_joules": null,
+    "fit_body_cpu_seconds": 2254.482578278,
+    "fit_stage": {
+      "children_cpu_seconds_including_shutdown": 2277.082551,
+      "energy_joules_process": null,
+      "rows": [
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 253.15005547192413,
+          "returncode": 0,
+          "slot": "n32-boundary_only-s22011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 258.6142240590416,
+          "returncode": 0,
+          "slot": "n32-boundary_only-s32011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 254.15152321802452,
+          "returncode": 0,
+          "slot": "n32-boundary_only-s42011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 249.54481887700967,
+          "returncode": 0,
+          "slot": "n32-signed_only-s22011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 249.53777414001524,
+          "returncode": 0,
+          "slot": "n32-signed_only-s32011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 253.69835260591935,
+          "returncode": 0,
+          "slot": "n32-signed_only-s42011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 252.5821845290484,
+          "returncode": 0,
+          "slot": "n32-boundary_signed-s22011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 260.852296098019,
+          "returncode": 0,
+          "slot": "n32-boundary_signed-s32011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 257.14462986402214,
+          "returncode": 0,
+          "slot": "n32-boundary_signed-s42011"
+        }
+      ],
+      "wall_seconds": 510.5867735069478,
+      "workers": 6
+    },
+    "fit_test_worker_cpu_through_receipt": 2701.528627061,
+    "full_children_cpu_including_shutdown": 2713.910046,
+    "maximum_single_worker_rss_bytes": 369123328,
+    "scope": "Nested accounting views, not additive; stage child CPU includes shutdown; per-worker CPU stops at receipt; RSS is a single-process peak, not concurrent aggregate.",
+    "test_stage": {
+      "children_cpu_seconds_including_shutdown": 436.82749499999994,
+      "energy_joules_process": null,
+      "rows": [
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 50.48947601299733,
+          "returncode": 0,
+          "slot": "n32-boundary_only-s22011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 48.28494674898684,
+          "returncode": 0,
+          "slot": "n32-boundary_only-s32011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 48.785363947972655,
+          "returncode": 0,
+          "slot": "n32-boundary_only-s42011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 48.53323071799241,
+          "returncode": 0,
+          "slot": "n32-signed_only-s22011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 48.78290335601196,
+          "returncode": 0,
+          "slot": "n32-signed_only-s32011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 48.932832007994875,
+          "returncode": 0,
+          "slot": "n32-signed_only-s42011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 49.53999007202219,
+          "returncode": 0,
+          "slot": "n32-boundary_signed-s22011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 48.234685292001814,
+          "returncode": 0,
+          "slot": "n32-boundary_signed-s32011"
+        },
+        {
+          "error": null,
+          "launch_through_exit_wall_seconds": 49.636648203013465,
+          "returncode": 0,
+          "slot": "n32-boundary_signed-s42011"
+        }
+      ],
+      "wall_seconds": 98.47215636307374,
+      "workers": 6
+    }
+  },
+  "declared_slots": 9,
+  "evaluated_slots": 9,
+  "experiment_id": "HCSN-BOUNDARY-SIGNED-JOINT-PROSPECTIVE-20261125-v1",
+  "groups": {
+    "n32/boundary_only": {
+      "actual_updates": [
+        512,
+        512,
+        512
+      ],
+      "cost": {
+        "fit_full_wall_seconds": {
+          "mean": 255.30526758299675,
+          "n": 3,
+          "sample_sd": 2.909059836422958,
+          "values": [
+            253.15005547192413,
+            258.6142240590416,
+            254.15152321802452
+          ]
+        },
+        "fit_peak_rss_bytes": {
+          "mean": 367155882.6666667,
+          "n": 3,
+          "sample_sd": 1334173.1065934934,
+          "values": [
+            368693248.0,
+            366301184.0,
+            366473216.0
+          ]
+        },
+        "fit_worker_cpu_through_receipt": {
+          "mean": 253.29519175233335,
+          "n": 3,
+          "sample_sd": 2.8361135732943703,
+          "values": [
+            251.222671181,
+            256.527365074,
+            252.135539002
+          ]
+        },
+        "test_full_wall_seconds": {
+          "mean": 49.186595569985606,
+          "n": 3,
+          "sample_sd": 1.1557367476406624,
+          "values": [
+            50.48947601299733,
+            48.28494674898684,
+            48.785363947972655
+          ]
+        },
+        "test_peak_rss_bytes": {
+          "mean": 246098602.66666666,
+          "n": 3,
+          "sample_sd": 656093.4562372447,
+          "values": [
+            246816768.0,
+            245530624.0,
+            245948416.0
+          ]
+        },
+        "test_worker_cpu_through_receipt": {
+          "mean": 47.99606329366666,
+          "n": 3,
+          "sample_sd": 1.0561018290510382,
+          "values": [
+            49.208040151,
+            47.273091335,
+            47.507058395
+          ]
+        },
+        "training_cpu_seconds": {
+          "mean": 227.27054586699998,
+          "n": 3,
+          "sample_sd": 3.1185010367191537,
+          "values": [
+            224.8261839449999,
+            230.78267656799989,
+            226.2027770880001
+          ]
+        }
+      },
+      "declared_seeds": [
+        22011,
+        32011,
+        42011
+      ],
+      "engineering_learning_gate": false,
+      "evaluated": 3,
+      "joint_learning_numerical_passes": 0,
+      "learning_passes": 0,
+      "metrics": {
+        "cpu_prefix": {
+          "accuracy": {
+            "mean": 0.51171875,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "brier": {
+            "mean": 0.5382694451177253,
+            "n": 3,
+            "sample_sd": 0.03746522803047368,
+            "values": [
+              0.49976303204073347,
+              0.5745985242644789,
+              0.5404467790479639
+            ]
+          },
+          "cross_entropy": {
+            "mean": 0.734612882314667,
+            "n": 3,
+            "sample_sd": 0.04113190446604668,
+            "values": [
+              0.6929101583089621,
+              0.7751491540933348,
+              0.7357793345417042
+            ]
+          },
+          "early_accuracy": {
+            "mean": 0.515625,
+            "n": 3,
+            "sample_sd": 0.0067658234670659265,
+            "values": [
+              0.5234375,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "maximum_chunk_state_tensor_bytes": {
+            "mean": 106496.0,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              106496.0,
+              106496.0,
+              106496.0
+            ]
+          },
+          "pre_late_accuracy": {
+            "mean": 0.51171875,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "stop_accuracy": {
+            "mean": 0.51171875,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "stopping_utility": {
+            "mean": 0.47171874999999996,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              0.47171874999999996,
+              0.47171874999999996,
+              0.47171874999999996
+            ]
+          }
+        },
+        "initial": {
+          "accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "brier": {
+            "mean": 0.6171153987089207,
+            "n": 3,
+            "sample_sd": 0.10530270558634525,
+            "values": [
+              0.5040219394219488,
+              0.6349831689082335,
+              0.7123410877965802
+            ]
+          },
+          "cross_entropy": {
+            "mean": 0.8376991962338906,
+            "n": 3,
+            "sample_sd": 0.13310510130172096,
+            "values": [
+              0.6972027982809366,
+              0.853979445330598,
+              0.9619153450901369
+            ]
+          },
+          "early_accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "maximum_chunk_state_tensor_bytes": {
+            "mean": 106496.0,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              106496.0,
+              106496.0,
+              106496.0
+            ]
+          },
+          "pre_late_accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "stop_accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "stopping_utility": {
+            "mean": 0.47606415719696965,
+            "n": 3,
+            "sample_sd": 0.007526466044726956,
+            "values": [
+              0.47171874999999996,
+              0.47171874999999996,
+              0.484754971590909
+            ]
+          }
+        },
+        "selected": {
+          "accuracy": {
+            "mean": 0.51171875,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "brier": {
+            "mean": 0.5010897146551727,
+            "n": 3,
+            "sample_sd": 0.0011861574715650038,
+            "values": [
+              0.5018635888501759,
+              0.4997241005961151,
+              0.5016814545192273
+            ]
+          },
+          "cross_entropy": {
+            "mean": 0.6942431955196691,
+            "n": 3,
+            "sample_sd": 0.0011916749118668923,
+            "values": [
+              0.6950209511495328,
+              0.692871255534407,
+              0.6948373798750676
+            ]
+          },
+          "early_accuracy": {
+            "mean": 0.501953125,
+            "n": 3,
+            "sample_sd": 0.019506820659607595,
+            "values": [
+              0.5146484375,
+              0.4794921875,
+              0.51171875
+            ]
+          },
+          "maximum_chunk_state_tensor_bytes": {
+            "mean": 106496.0,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              106496.0,
+              106496.0,
+              106496.0
+            ]
+          },
+          "pre_late_accuracy": {
+            "mean": 0.51171875,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "stop_accuracy": {
+            "mean": 0.51171875,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "stopping_utility": {
+            "mean": 0.47171874999999996,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              0.47171874999999996,
+              0.47171874999999996,
+              0.47171874999999996
+            ]
+          }
+        }
+      },
+      "numerical_passes": 3,
+      "required_passes": 2,
+      "selected_steps": [
+        512,
+        192,
+        320
+      ],
+      "training_statuses": [
+        "completed",
+        "completed",
+        "completed"
+      ]
+    },
+    "n32/boundary_signed": {
+      "actual_updates": [
+        512,
+        512,
+        512
+      ],
+      "cost": {
+        "fit_full_wall_seconds": {
+          "mean": 256.85970349702984,
+          "n": 3,
+          "sample_sd": 4.142411570179976,
+          "values": [
+            252.5821845290484,
+            260.852296098019,
+            257.14462986402214
+          ]
+        },
+        "fit_peak_rss_bytes": {
+          "mean": 368106154.6666667,
+          "n": 3,
+          "sample_sd": 1628860.9778238698,
+          "values": [
+            369123328.0,
+            368967680.0,
+            366227456.0
+          ]
+        },
+        "fit_worker_cpu_through_receipt": {
+          "mean": 255.27738519599998,
+          "n": 3,
+          "sample_sd": 4.18971980616272,
+          "values": [
+            250.986162405,
+            259.357630219,
+            255.488362964
+          ]
+        },
+        "test_full_wall_seconds": {
+          "mean": 49.137107855679155,
+          "n": 3,
+          "sample_sd": 0.7830137681721651,
+          "values": [
+            49.53999007202219,
+            48.234685292001814,
+            49.636648203013465
+          ]
+        },
+        "test_peak_rss_bytes": {
+          "mean": 244630869.33333334,
+          "n": 3,
+          "sample_sd": 267162.6270070972,
+          "values": [
+            244826112.0,
+            244326400.0,
+            244740096.0
+          ]
+        },
+        "test_worker_cpu_through_receipt": {
+          "mean": 48.16674633666667,
+          "n": 3,
+          "sample_sd": 0.7551415798648341,
+          "values": [
+            48.543315903,
+            47.297370277,
+            48.65955283
+          ]
+        },
+        "training_cpu_seconds": {
+          "mean": 228.6638214566667,
+          "n": 3,
+          "sample_sd": 3.4915637050203623,
+          "values": [
+            225.0033703210003,
+            231.95754974699972,
+            229.03054430200015
+          ]
+        }
+      },
+      "declared_seeds": [
+        22011,
+        32011,
+        42011
+      ],
+      "engineering_learning_gate": false,
+      "evaluated": 3,
+      "joint_learning_numerical_passes": 0,
+      "learning_passes": 0,
+      "metrics": {
+        "cpu_prefix": {
+          "accuracy": {
+            "mean": 0.5852864583333334,
+            "n": 3,
+            "sample_sd": 0.12742300862974162,
+            "values": [
+              0.732421875,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "brier": {
+            "mean": 0.4833441899635866,
+            "n": 3,
+            "sample_sd": 0.07274971629461285,
+            "values": [
+              0.399972569528813,
+              0.5339407184745056,
+              0.5161192818874412
+            ]
+          },
+          "cross_entropy": {
+            "mean": 0.692635190199615,
+            "n": 3,
+            "sample_sd": 0.09772340925989668,
+            "values": [
+              0.5865228272315699,
+              0.7789327545727511,
+              0.7124499887945238
+            ]
+          },
+          "early_accuracy": {
+            "mean": 0.51171875,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "maximum_chunk_state_tensor_bytes": {
+            "mean": 106496.0,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              106496.0,
+              106496.0,
+              106496.0
+            ]
+          },
+          "pre_late_accuracy": {
+            "mean": 0.5709635416666666,
+            "n": 3,
+            "sample_sd": 0.10261498925049989,
+            "values": [
+              0.689453125,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "stop_accuracy": {
+            "mean": 0.5849609375,
+            "n": 3,
+            "sample_sd": 0.12685919000748613,
+            "values": [
+              0.7314453125,
+              0.51171875,
+              0.51171875
+            ]
+          },
+          "stopping_utility": {
+            "mean": 0.5718927556818182,
+            "n": 3,
+            "sample_sd": 0.11403329640148996,
+            "values": [
+              0.703409090909091,
+              0.5005504261363636,
+              0.51171875
+            ]
+          }
+        },
+        "initial": {
+          "accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "brier": {
+            "mean": 0.6170669505423759,
+            "n": 3,
+            "sample_sd": 0.10486389246197565,
+            "values": [
+              0.5040434588516336,
+              0.6359528583664974,
+              0.7112045344089968
+            ]
+          },
+          "cross_entropy": {
+            "mean": 0.837540565016234,
+            "n": 3,
+            "sample_sd": 0.13231037005471044,
+            "values": [
+              0.6972246095550221,
+              0.855357273118851,
+              0.9600398123748287
+            ]
+          },
+          "early_accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "maximum_chunk_state_tensor_bytes": {
+            "mean": 106496.0,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              106496.0,
+              106496.0,
+              106496.0
+            ]
+          },
+          "pre_late_accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "stop_accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "stopping_utility": {
+            "mean": 0.47606415719696965,
+            "n": 3,
+            "sample_sd": 0.007526466044726956,
+            "values": [
+              0.47171874999999996,
+              0.47171874999999996,
+              0.484754971590909
+            ]
+          }
+        },
+        "selected": {
+          "accuracy": {
+            "mean": 0.7376302083333334,
+            "n": 3,
+            "sample_sd": 0.0031392092320940606,
+            "values": [
+              0.736328125,
+              0.7353515625,
+              0.7412109375
+            ]
+          },
+          "brier": {
+            "mean": 0.4020547984586103,
+            "n": 3,
+            "sample_sd": 0.014627456663525624,
+            "values": [
+              0.4188742692837655,
+              0.39498354700732485,
+              0.39230657908474065
+            ]
+          },
+          "cross_entropy": {
+            "mean": 0.5983395787477814,
+            "n": 3,
+            "sample_sd": 0.013207600633107277,
+            "values": [
+              0.6110398993445906,
+              0.5846772978925647,
+              0.5993015390061892
+            ]
+          },
+          "early_accuracy": {
+            "mean": 0.48828125,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              0.48828125,
+              0.48828125,
+              0.48828125
+            ]
+          },
+          "maximum_chunk_state_tensor_bytes": {
+            "mean": 106496.0,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              106496.0,
+              106496.0,
+              106496.0
+            ]
+          },
+          "pre_late_accuracy": {
+            "mean": 0.6953125,
+            "n": 3,
+            "sample_sd": 0.048119863260761404,
+            "values": [
+              0.64453125,
+              0.701171875,
+              0.740234375
+            ]
+          },
+          "stop_accuracy": {
+            "mean": 0.7353515625,
+            "n": 3,
+            "sample_sd": 0.0009765625,
+            "values": [
+              0.736328125,
+              0.7353515625,
+              0.734375
+            ]
+          },
+          "stopping_utility": {
+            "mean": 0.702901278409091,
+            "n": 3,
+            "sample_sd": 0.006599202931779417,
+            "values": [
+              0.70578125,
+              0.6953515625000002,
+              0.7075710227272727
+            ]
+          }
+        }
+      },
+      "numerical_passes": 3,
+      "required_passes": 2,
+      "selected_steps": [
+        320,
+        448,
+        448
+      ],
+      "training_statuses": [
+        "completed",
+        "completed",
+        "completed"
+      ]
+    },
+    "n32/signed_only": {
+      "actual_updates": [
+        512,
+        512,
+        512
+      ],
+      "cost": {
+        "fit_full_wall_seconds": {
+          "mean": 250.92698187431475,
+          "n": 3,
+          "sample_sd": 2.400080041597733,
+          "values": [
+            249.54481887700967,
+            249.53777414001524,
+            253.69835260591935
+          ]
+        },
+        "fit_peak_rss_bytes": {
+          "mean": 367176362.6666667,
+          "n": 3,
+          "sample_sd": 458977.4684026802,
+          "values": [
+            367308800.0,
+            366665728.0,
+            367554560.0
+          ]
+        },
+        "fit_worker_cpu_through_receipt": {
+          "mean": 248.266913857,
+          "n": 3,
+          "sample_sd": 2.8141668070210164,
+          "values": [
+            246.703795136,
+            246.581282565,
+            251.51566387
+          ]
+        },
+        "test_full_wall_seconds": {
+          "mean": 48.74965536066642,
+          "n": 3,
+          "sample_sd": 0.20186473104230343,
+          "values": [
+            48.53323071799241,
+            48.78290335601196,
+            48.932832007994875
+          ]
+        },
+        "test_peak_rss_bytes": {
+          "mean": 245680810.66666666,
+          "n": 3,
+          "sample_sd": 1244957.1723225394,
+          "values": [
+            244289536.0,
+            246063104.0,
+            246689792.0
+          ]
+        },
+        "test_worker_cpu_through_receipt": {
+          "mean": 47.507241918000005,
+          "n": 3,
+          "sample_sd": 0.262141235202554,
+          "values": [
+            47.418089693,
+            47.301304682,
+            47.802331379
+          ]
+        },
+        "training_cpu_seconds": {
+          "mean": 222.57523272233357,
+          "n": 3,
+          "sample_sd": 2.724282443584743,
+          "values": [
+            220.86045193300063,
+            221.1486879239998,
+            225.7165583100003
+          ]
+        }
+      },
+      "declared_seeds": [
+        22011,
+        32011,
+        42011
+      ],
+      "engineering_learning_gate": true,
+      "evaluated": 3,
+      "joint_learning_numerical_passes": 3,
+      "learning_passes": 3,
+      "metrics": {
+        "cpu_prefix": {
+          "accuracy": {
+            "mean": 0.8955078125,
+            "n": 3,
+            "sample_sd": 0.03240363285749425,
+            "values": [
+              0.8994140625,
+              0.92578125,
+              0.861328125
+            ]
+          },
+          "brier": {
+            "mean": 0.1553247845001958,
+            "n": 3,
+            "sample_sd": 0.05070218417847567,
+            "values": [
+              0.13600513479295018,
+              0.11712256978319373,
+              0.2128466489244435
+            ]
+          },
+          "cross_entropy": {
+            "mean": 0.25097739219249376,
+            "n": 3,
+            "sample_sd": 0.08530297979272909,
+            "values": [
+              0.2154988876448993,
+              0.18913929123172754,
+              0.34829399770085445
+            ]
+          },
+          "early_accuracy": {
+            "mean": 0.5074869791666666,
+            "n": 3,
+            "sample_sd": 0.011813312051838578,
+            "values": [
+              0.51171875,
+              0.494140625,
+              0.5166015625
+            ]
+          },
+          "maximum_chunk_state_tensor_bytes": {
+            "mean": 106496.0,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              106496.0,
+              106496.0,
+              106496.0
+            ]
+          },
+          "pre_late_accuracy": {
+            "mean": 0.7431640625,
+            "n": 3,
+            "sample_sd": 0.00834375365753665,
+            "values": [
+              0.7353515625,
+              0.751953125,
+              0.7421875
+            ]
+          },
+          "stop_accuracy": {
+            "mean": 0.802734375,
+            "n": 3,
+            "sample_sd": 0.01019561182510796,
+            "values": [
+              0.8076171875,
+              0.8095703125,
+              0.791015625
+            ]
+          },
+          "stopping_utility": {
+            "mean": 0.7914157196969697,
+            "n": 3,
+            "sample_sd": 0.010188133073210408,
+            "values": [
+              0.7962322443181817,
+              0.7983025568181816,
+              0.7797123579545453
+            ]
+          }
+        },
+        "initial": {
+          "accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "brier": {
+            "mean": 0.6180627761353189,
+            "n": 3,
+            "sample_sd": 0.10658918068568504,
+            "values": [
+              0.5046546978758624,
+              0.6333517301103798,
+              0.7161819004197145
+            ]
+          },
+          "cross_entropy": {
+            "mean": 0.8392721564774338,
+            "n": 3,
+            "sample_sd": 0.13565555499116483,
+            "values": [
+              0.6978447556756402,
+              0.8516665005135904,
+              0.9683052132430708
+            ]
+          },
+          "early_accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "maximum_chunk_state_tensor_bytes": {
+            "mean": 106496.0,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              106496.0,
+              106496.0,
+              106496.0
+            ]
+          },
+          "pre_late_accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "stop_accuracy": {
+            "mean": 0.50390625,
+            "n": 3,
+            "sample_sd": 0.013531646934131853,
+            "values": [
+              0.51171875,
+              0.51171875,
+              0.48828125
+            ]
+          },
+          "stopping_utility": {
+            "mean": 0.47606415719696965,
+            "n": 3,
+            "sample_sd": 0.007526466044726956,
+            "values": [
+              0.47171874999999996,
+              0.47171874999999996,
+              0.484754971590909
+            ]
+          }
+        },
+        "selected": {
+          "accuracy": {
+            "mean": 0.9134114583333334,
+            "n": 3,
+            "sample_sd": 0.01296782831187636,
+            "values": [
+              0.9208984375,
+              0.9208984375,
+              0.8984375
+            ]
+          },
+          "brier": {
+            "mean": 0.12738009549481852,
+            "n": 3,
+            "sample_sd": 0.01978724827804788,
+            "values": [
+              0.11306703407792415,
+              0.11911302743143987,
+              0.14996022497509148
+            ]
+          },
+          "cross_entropy": {
+            "mean": 0.2072063806576483,
+            "n": 3,
+            "sample_sd": 0.029408967561676807,
+            "values": [
+              0.18413286942920312,
+              0.1971654352187728,
+              0.24032083732496895
+            ]
+          },
+          "early_accuracy": {
+            "mean": 0.5006510416666666,
+            "n": 3,
+            "sample_sd": 0.02032876952603645,
+            "values": [
+              0.494140625,
+              0.484375,
+              0.5234375
+            ]
+          },
+          "maximum_chunk_state_tensor_bytes": {
+            "mean": 106496.0,
+            "n": 3,
+            "sample_sd": 0.0,
+            "values": [
+              106496.0,
+              106496.0,
+              106496.0
+            ]
+          },
+          "pre_late_accuracy": {
+            "mean": 0.7477213541666666,
+            "n": 3,
+            "sample_sd": 0.0031392092320940606,
+            "values": [
+              0.75,
+              0.7490234375,
+              0.744140625
+            ]
+          },
+          "stop_accuracy": {
+            "mean": 0.8115234375,
+            "n": 3,
+            "sample_sd": 0.007751224544134543,
+            "values": [
+              0.802734375,
+              0.814453125,
+              0.8173828125
+            ]
+          },
+          "stopping_utility": {
+            "mean": 0.7998768939393939,
+            "n": 3,
+            "sample_sd": 0.0065582271889319055,
+            "values": [
+              0.7923544034090908,
+              0.8028835227272726,
+              0.8043927556818181
+            ]
+          }
+        }
+      },
+      "numerical_passes": 3,
+      "required_passes": 2,
+      "selected_steps": [
+        512,
+        512,
+        192
+      ],
+      "training_statuses": [
+        "completed",
+        "completed",
+        "completed"
+      ]
+    }
+  },
+  "independent_unit": "trained seed; three seeds per condition; source/coordinates are not additional trained-model replicates",
+  "maximum_metric_error": 2.220446049250313e-16,
+  "model_code_imported": false,
+  "new_data_constructed": false,
+  "new_model_selection": false,
+  "numerical_gate_source": "Recorded physical probability-balance diagnostics; not reconstructible from logits; metric reconstruction itself is independent NumPy.",
+  "paired_comparisons": {
+    "n32/boundary_only-minus-signed_only": {
+      "declared_pairs": 3,
+      "engineering_gate": false,
+      "engineering_passes": 0,
+      "evaluated_pairs": 3,
+      "pairs": [
+        {
+          "both_evaluated": true,
+          "both_learning_gates": false,
+          "both_numerical_gates": true,
+          "candidate": "n32-boundary_only-s22011",
+          "candidate_status": "completed",
+          "checkpoint_differences": {
+            "cpu_prefix": {
+              "accuracy": -0.3876953125,
+              "brier": 0.3637578972477833,
+              "cross_entropy": 0.47741127066406275,
+              "early_accuracy": 0.01171875,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.2236328125,
+              "stop_accuracy": -0.2958984375,
+              "stopping_utility": -0.32451349431818177
+            },
+            "initial": {
+              "accuracy": 0.0,
+              "brier": -0.0006327584539135289,
+              "cross_entropy": -0.0006419573947036294,
+              "early_accuracy": 0.0,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": 0.0,
+              "stop_accuracy": 0.0,
+              "stopping_utility": 0.0
+            },
+            "selected": {
+              "accuracy": -0.4091796875,
+              "brier": 0.3887965547722517,
+              "cross_entropy": 0.5108880817203296,
+              "early_accuracy": 0.0205078125,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.23828125,
+              "stop_accuracy": -0.291015625,
+              "stopping_utility": -0.32063565340909084
+            }
+          },
+          "deltas_are_candidate_minus_reference": true,
+          "engineering_gate": false,
+          "full_worker_wall_ratio": 1.0144472508431095,
+          "kind": "variant",
+          "neurons": 32,
+          "quality_tolerance_gate": false,
+          "reference": "n32-signed_only-s22011",
+          "reference_status": "completed",
+          "scope": "prospective engineering tolerance; not statistical equivalence/noninferiority",
+          "seed": 22011,
+          "source_accuracy_differences": {
+            "35000": -0.375,
+            "35001": -0.34375,
+            "35002": -0.46875,
+            "35003": -0.453125,
+            "35004": -0.40625,
+            "35005": -0.390625,
+            "35006": -0.359375,
+            "35007": -0.40625,
+            "35008": -0.359375,
+            "35009": -0.53125,
+            "35010": -0.421875,
+            "35011": -0.375,
+            "35012": -0.46875,
+            "35013": -0.375,
+            "35014": -0.296875,
+            "35015": -0.515625
+          },
+          "training_cpu_difference": 3.965732011999279,
+          "training_cpu_ratio": 1.0179558267552686,
+          "worker_cpu_through_receipt_ratio": 1.018317010658506
+        },
+        {
+          "both_evaluated": true,
+          "both_learning_gates": false,
+          "both_numerical_gates": true,
+          "candidate": "n32-boundary_only-s32011",
+          "candidate_status": "completed",
+          "checkpoint_differences": {
+            "cpu_prefix": {
+              "accuracy": -0.4140625,
+              "brier": 0.45747595448128514,
+              "cross_entropy": 0.5860098628616073,
+              "early_accuracy": 0.017578125,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.240234375,
+              "stop_accuracy": -0.2978515625,
+              "stopping_utility": -0.32658380681818167
+            },
+            "initial": {
+              "accuracy": 0.0,
+              "brier": 0.001631438797853657,
+              "cross_entropy": 0.0023129448170076117,
+              "early_accuracy": 0.0,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": 0.0,
+              "stop_accuracy": 0.0,
+              "stopping_utility": 0.0
+            },
+            "selected": {
+              "accuracy": -0.4091796875,
+              "brier": 0.38061107316467524,
+              "cross_entropy": 0.49570582031563415,
+              "early_accuracy": -0.0048828125,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.2373046875,
+              "stop_accuracy": -0.302734375,
+              "stopping_utility": -0.3311647727272726
+            }
+          },
+          "deltas_are_candidate_minus_reference": true,
+          "engineering_gate": false,
+          "full_worker_wall_ratio": 1.036373049933248,
+          "kind": "variant",
+          "neurons": 32,
+          "quality_tolerance_gate": false,
+          "reference": "n32-signed_only-s32011",
+          "reference_status": "completed",
+          "scope": "prospective engineering tolerance; not statistical equivalence/noninferiority",
+          "seed": 32011,
+          "source_accuracy_differences": {
+            "35000": -0.375,
+            "35001": -0.3125,
+            "35002": -0.46875,
+            "35003": -0.453125,
+            "35004": -0.4375,
+            "35005": -0.390625,
+            "35006": -0.359375,
+            "35007": -0.40625,
+            "35008": -0.328125,
+            "35009": -0.53125,
+            "35010": -0.390625,
+            "35011": -0.390625,
+            "35012": -0.4375,
+            "35013": -0.421875,
+            "35014": -0.296875,
+            "35015": -0.546875
+          },
+          "training_cpu_difference": 9.633988644000084,
+          "training_cpu_ratio": 1.0435633995138642,
+          "worker_cpu_through_receipt_ratio": 1.0403359184668777
+        },
+        {
+          "both_evaluated": true,
+          "both_learning_gates": false,
+          "both_numerical_gates": true,
+          "candidate": "n32-boundary_only-s42011",
+          "candidate_status": "completed",
+          "checkpoint_differences": {
+            "cpu_prefix": {
+              "accuracy": -0.349609375,
+              "brier": 0.3276001301235204,
+              "cross_entropy": 0.38748533684084974,
+              "early_accuracy": -0.0048828125,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.23046875,
+              "stop_accuracy": -0.279296875,
+              "stopping_utility": -0.30799360795454533
+            },
+            "initial": {
+              "accuracy": 0.0,
+              "brier": -0.003840812623134293,
+              "cross_entropy": -0.006389868152933964,
+              "early_accuracy": 0.0,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": 0.0,
+              "stop_accuracy": 0.0,
+              "stopping_utility": 0.0
+            },
+            "selected": {
+              "accuracy": -0.38671875,
+              "brier": 0.3517212295441358,
+              "cross_entropy": 0.4545165425500986,
+              "early_accuracy": -0.01171875,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.232421875,
+              "stop_accuracy": -0.3056640625,
+              "stopping_utility": -0.33267400568181815
+            }
+          },
+          "deltas_are_candidate_minus_reference": true,
+          "engineering_gate": false,
+          "full_worker_wall_ratio": 1.0017862576065248,
+          "kind": "variant",
+          "neurons": 32,
+          "quality_tolerance_gate": false,
+          "reference": "n32-signed_only-s42011",
+          "reference_status": "completed",
+          "scope": "prospective engineering tolerance; not statistical equivalence/noninferiority",
+          "seed": 42011,
+          "source_accuracy_differences": {
+            "35000": -0.359375,
+            "35001": -0.265625,
+            "35002": -0.46875,
+            "35003": -0.4375,
+            "35004": -0.40625,
+            "35005": -0.34375,
+            "35006": -0.375,
+            "35007": -0.40625,
+            "35008": -0.328125,
+            "35009": -0.484375,
+            "35010": -0.390625,
+            "35011": -0.359375,
+            "35012": -0.421875,
+            "35013": -0.375,
+            "35014": -0.265625,
+            "35015": -0.5
+          },
+          "training_cpu_difference": 0.4862187779997953,
+          "training_cpu_ratio": 1.002154112137985,
+          "worker_cpu_through_receipt_ratio": 1.002464558757344
+        }
+      ],
+      "required_passes": 2,
+      "selected_differences": {
+        "accuracy": {
+          "mean": -0.4016927083333333,
+          "n": 3,
+          "sample_sd": 0.012967828311876359,
+          "values": [
+            -0.4091796875,
+            -0.4091796875,
+            -0.38671875
+          ]
+        },
+        "brier": {
+          "mean": 0.3737096191603542,
+          "n": 3,
+          "sample_sd": 0.0194773582839912,
+          "values": [
+            0.3887965547722517,
+            0.38061107316467524,
+            0.3517212295441358
+          ]
+        },
+        "cross_entropy": {
+          "mean": 0.4870368148620208,
+          "n": 3,
+          "sample_sd": 0.0291684992546978,
+          "values": [
+            0.5108880817203296,
+            0.49570582031563415,
+            0.4545165425500986
+          ]
+        },
+        "early_accuracy": {
+          "mean": 0.0013020833333333333,
+          "n": 3,
+          "sample_sd": 0.016980210098626273,
+          "values": [
+            0.0205078125,
+            -0.0048828125,
+            -0.01171875
+          ]
+        },
+        "maximum_chunk_state_tensor_bytes": {
+          "mean": 0.0,
+          "n": 3,
+          "sample_sd": 0.0,
+          "values": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "pre_late_accuracy": {
+          "mean": -0.23600260416666666,
+          "n": 3,
+          "sample_sd": 0.003139209232094061,
+          "values": [
+            -0.23828125,
+            -0.2373046875,
+            -0.232421875
+          ]
+        },
+        "stop_accuracy": {
+          "mean": -0.2998046875,
+          "n": 3,
+          "sample_sd": 0.007751224544134543,
+          "values": [
+            -0.291015625,
+            -0.302734375,
+            -0.3056640625
+          ]
+        },
+        "stopping_utility": {
+          "mean": -0.32815814393939385,
+          "n": 3,
+          "sample_sd": 0.006558227188931905,
+          "values": [
+            -0.32063565340909084,
+            -0.3311647727272726,
+            -0.33267400568181815
+          ]
+        }
+      },
+      "statistical_equivalence_claimed": false
+    },
+    "n32/boundary_signed-minus-signed_only": {
+      "declared_pairs": 3,
+      "engineering_gate": false,
+      "engineering_passes": 0,
+      "evaluated_pairs": 3,
+      "pairs": [
+        {
+          "both_evaluated": true,
+          "both_learning_gates": false,
+          "both_numerical_gates": true,
+          "candidate": "n32-boundary_signed-s22011",
+          "candidate_status": "completed",
+          "checkpoint_differences": {
+            "cpu_prefix": {
+              "accuracy": -0.1669921875,
+              "brier": 0.2639674347358628,
+              "cross_entropy": 0.37102393958667057,
+              "early_accuracy": 0.0,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.0458984375,
+              "stop_accuracy": -0.076171875,
+              "stopping_utility": -0.09282315340909075
+            },
+            "initial": {
+              "accuracy": 0.0,
+              "brier": -0.0006112390242287713,
+              "cross_entropy": -0.0006201461206181147,
+              "early_accuracy": 0.0,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": 0.0,
+              "stop_accuracy": 0.0,
+              "stopping_utility": 0.0
+            },
+            "selected": {
+              "accuracy": -0.1845703125,
+              "brier": 0.3058072352058413,
+              "cross_entropy": 0.4269070299153874,
+              "early_accuracy": -0.005859375,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.10546875,
+              "stop_accuracy": -0.06640625,
+              "stopping_utility": -0.08657315340909078
+            }
+          },
+          "deltas_are_candidate_minus_reference": true,
+          "engineering_gate": false,
+          "full_worker_wall_ratio": 1.0121716237816811,
+          "kind": "variant",
+          "neurons": 32,
+          "quality_tolerance_gate": false,
+          "reference": "n32-signed_only-s22011",
+          "reference_status": "completed",
+          "scope": "prospective engineering tolerance; not statistical equivalence/noninferiority",
+          "seed": 22011,
+          "source_accuracy_differences": {
+            "35000": -0.140625,
+            "35001": -0.203125,
+            "35002": -0.28125,
+            "35003": -0.21875,
+            "35004": -0.171875,
+            "35005": -0.203125,
+            "35006": -0.234375,
+            "35007": -0.140625,
+            "35008": -0.171875,
+            "35009": -0.1875,
+            "35010": -0.21875,
+            "35011": -0.203125,
+            "35012": -0.171875,
+            "35013": -0.125,
+            "35014": -0.09375,
+            "35015": -0.1875
+          },
+          "training_cpu_difference": 4.142918387999657,
+          "training_cpu_ratio": 1.0187580816381578,
+          "worker_cpu_through_receipt_ratio": 1.0173583355969018
+        },
+        {
+          "both_evaluated": true,
+          "both_learning_gates": false,
+          "both_numerical_gates": true,
+          "candidate": "n32-boundary_signed-s32011",
+          "candidate_status": "completed",
+          "checkpoint_differences": {
+            "cpu_prefix": {
+              "accuracy": -0.4140625,
+              "brier": 0.4168181486913119,
+              "cross_entropy": 0.5897934633410236,
+              "early_accuracy": 0.017578125,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.240234375,
+              "stop_accuracy": -0.2978515625,
+              "stopping_utility": -0.29775213068181805
+            },
+            "initial": {
+              "accuracy": 0.0,
+              "brier": 0.0026011282561175797,
+              "cross_entropy": 0.0036907726052606282,
+              "early_accuracy": 0.0,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": 0.0,
+              "stop_accuracy": 0.0,
+              "stopping_utility": 0.0
+            },
+            "selected": {
+              "accuracy": -0.185546875,
+              "brier": 0.275870519575885,
+              "cross_entropy": 0.3875118626737919,
+              "early_accuracy": 0.00390625,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.0478515625,
+              "stop_accuracy": -0.0791015625,
+              "stopping_utility": -0.1075319602272724
+            }
+          },
+          "deltas_are_candidate_minus_reference": true,
+          "engineering_gate": false,
+          "full_worker_wall_ratio": 1.0453419206651062,
+          "kind": "variant",
+          "neurons": 32,
+          "quality_tolerance_gate": false,
+          "reference": "n32-signed_only-s32011",
+          "reference_status": "completed",
+          "scope": "prospective engineering tolerance; not statistical equivalence/noninferiority",
+          "seed": 32011,
+          "source_accuracy_differences": {
+            "35000": -0.171875,
+            "35001": -0.15625,
+            "35002": -0.265625,
+            "35003": -0.234375,
+            "35004": -0.21875,
+            "35005": -0.21875,
+            "35006": -0.21875,
+            "35007": -0.140625,
+            "35008": -0.140625,
+            "35009": -0.1875,
+            "35010": -0.171875,
+            "35011": -0.15625,
+            "35012": -0.140625,
+            "35013": -0.203125,
+            "35014": -0.125,
+            "35015": -0.21875
+          },
+          "training_cpu_difference": 10.808861822999916,
+          "training_cpu_ratio": 1.048875993452489,
+          "worker_cpu_through_receipt_ratio": 1.0518139394892314
+        },
+        {
+          "both_evaluated": true,
+          "both_learning_gates": false,
+          "both_numerical_gates": true,
+          "candidate": "n32-boundary_signed-s42011",
+          "candidate_status": "completed",
+          "checkpoint_differences": {
+            "cpu_prefix": {
+              "accuracy": -0.349609375,
+              "brier": 0.30327263296299767,
+              "cross_entropy": 0.36415599109366936,
+              "early_accuracy": -0.0048828125,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.23046875,
+              "stop_accuracy": -0.279296875,
+              "stopping_utility": -0.2679936079545453
+            },
+            "initial": {
+              "accuracy": 0.0,
+              "brier": -0.004977366010717743,
+              "cross_entropy": -0.008265400868242123,
+              "early_accuracy": 0.0,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": 0.0,
+              "stop_accuracy": 0.0,
+              "stopping_utility": 0.0
+            },
+            "selected": {
+              "accuracy": -0.1572265625,
+              "brier": 0.24234635410964916,
+              "cross_entropy": 0.35898070168122026,
+              "early_accuracy": -0.03515625,
+              "maximum_chunk_state_tensor_bytes": 0,
+              "pre_late_accuracy": -0.00390625,
+              "stop_accuracy": -0.0830078125,
+              "stopping_utility": -0.09682173295454544
+            }
+          },
+          "deltas_are_candidate_minus_reference": true,
+          "engineering_gate": false,
+          "full_worker_wall_ratio": 1.0135841530806313,
+          "kind": "variant",
+          "neurons": 32,
+          "quality_tolerance_gate": false,
+          "reference": "n32-signed_only-s42011",
+          "reference_status": "completed",
+          "scope": "prospective engineering tolerance; not statistical equivalence/noninferiority",
+          "seed": 42011,
+          "source_accuracy_differences": {
+            "35000": -0.109375,
+            "35001": -0.109375,
+            "35002": -0.25,
+            "35003": -0.203125,
+            "35004": -0.1875,
+            "35005": -0.171875,
+            "35006": -0.25,
+            "35007": -0.140625,
+            "35008": -0.125,
+            "35009": -0.125,
+            "35010": -0.171875,
+            "35011": -0.125,
+            "35012": -0.109375,
+            "35013": -0.15625,
+            "35014": -0.09375,
+            "35015": -0.1875
+          },
+          "training_cpu_difference": 3.313985991999857,
+          "training_cpu_ratio": 1.0146820685944025,
+          "worker_cpu_through_receipt_ratio": 1.0157950365113377
+        }
+      ],
+      "required_passes": 2,
+      "selected_differences": {
+        "accuracy": {
+          "mean": -0.17578125,
+          "n": 3,
+          "sample_sd": 0.016076247688627275,
+          "values": [
+            -0.1845703125,
+            -0.185546875,
+            -0.1572265625
+          ]
+        },
+        "brier": {
+          "mean": 0.27467470296379176,
+          "n": 3,
+          "sample_sd": 0.031747335957581974,
+          "values": [
+            0.3058072352058413,
+            0.275870519575885,
+            0.24234635410964916
+          ]
+        },
+        "cross_entropy": {
+          "mean": 0.3911331980901332,
+          "n": 3,
+          "sample_sd": 0.0341076541188659,
+          "values": [
+            0.4269070299153874,
+            0.3875118626737919,
+            0.35898070168122026
+          ]
+        },
+        "early_accuracy": {
+          "mean": -0.012369791666666666,
+          "n": 3,
+          "sample_sd": 0.020328769526036454,
+          "values": [
+            -0.005859375,
+            0.00390625,
+            -0.03515625
+          ]
+        },
+        "maximum_chunk_state_tensor_bytes": {
+          "mean": 0.0,
+          "n": 3,
+          "sample_sd": 0.0,
+          "values": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "pre_late_accuracy": {
+          "mean": -0.052408854166666664,
+          "n": 3,
+          "sample_sd": 0.050934389483567995,
+          "values": [
+            -0.10546875,
+            -0.0478515625,
+            -0.00390625
+          ]
+        },
+        "stop_accuracy": {
+          "mean": -0.076171875,
+          "n": 3,
+          "sample_sd": 0.008679877360659755,
+          "values": [
+            -0.06640625,
+            -0.0791015625,
+            -0.0830078125
+          ]
+        },
+        "stopping_utility": {
+          "mean": -0.09697561553030287,
+          "n": 3,
+          "sample_sd": 0.010480250745845994,
+          "values": [
+            -0.08657315340909078,
+            -0.1075319602272724,
+            -0.09682173295454544
+          ]
+        }
+      },
+      "statistical_equivalence_claimed": false
+    }
+  },
+  "protocol_file_sha256": "f31d083cd476c87e3adc2f70437768f620862fad20d0534b97027ce0ba76ef90",
+  "protocol_sha256": "7fe035a053286e59bed7123665f3f82807c645df7dc1886573fe0eb4cbaf70b2",
+  "schema": "hcsn-models-independent-audit-summary-v1"
+}
