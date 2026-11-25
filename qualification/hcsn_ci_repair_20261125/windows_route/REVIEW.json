@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "source_head": "c4ae70d44613434aaf165529a6076fa3400ca431",
+  "base_head": "b1af67a38f8cf9cee700cc067da1e6001ce220a8",
+  "job": 138926075596,
+  "run": 45530774175,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45530774175/job/138926075596",
+  "failure": "capability-only workspace tokens require a private desktop",
+  "source_path": "codex-rs/network-proxy/tests/windows_stable_ingress.rs",
+  "source_blob": "401d968593d46510739938dd85582f8546ff4a0b",
+  "candidate_sha256": "a6d72b112d4e9986b99b30616bf397018725cdca58ca0d4ee64f38b6ddcb32a9",
+  "candidate_blob": "c2d08f7aa81aad23a9f981c75f7d76022b55c84d",
+  "change": "Use the existing owned dedicated desktop selector for this route-only diagnostic child. Production token admission remains refused.",
+  "preserved": [
+    "production ElevatedWindowsSandboxIsolationUnavailable assertion",
+    "diagnostic restricted-token creation",
+    "HTTP and SOCKS allow/deny checks",
+    "environment-specific route identity checks",
+    "route cleanup and missing-route checks",
+    "original 30000 ms child bound",
+    "all original Core positive isolation tests",
+    "all production guards and ACL implementations"
+  ],
+  "source_review": {
+    "independent_peer": "weight_edit_research",
+    "result": "no source-level blocker within route-only diagnostic scope",
+    "desktop_lifetime": "CreatedProcess retains LaunchDesktop through child completion; copied process HANDLE fields do not move the owner",
+    "object_changes": "new random owned desktop only; existing host ACLs unchanged",
+    "scope_limit": "Compatibility desktop helper grants this diagnostic token SIDs, including Everyone and route, to its newly created desktop. It is not the independent DesktopCapability production contract, and does not qualify private desktop isolation or filesystem isolation."
+  },
+  "validation": {
+    "just_fmt": {
+      "exit_code": 0,
+      "wall_seconds": 1.3905732550192624
+    },
+    "git_diff_check": {
+      "exit_code": 0,
+      "wall_seconds": 0.04476379102561623
+    },
+    "entire_reversion_identity_check": true,
+    "native_windows_execution": false,
+    "required_native_target": "//codex-rs/network-proxy:network-proxy-windows_stable_ingress-test"
+  },
+  "preparation_failure_preserved": "The first isolated sparse checkout lacked two original formatter evidence fixtures. just fmt exited 2 before formatting; exact Git originals were hydrated and verified before the successful command. No policy or formatter exclusion changed.",
+  "not_closed": [
+    "native Windows acceptance of the route fixture until new-source execution",
+    "three Core elevated positive tests blocked by unqualified FILE_DELETE_CHILD isolation",
+    "full hosted repository CI"
+  ],
+  "raw_log": {
+    "decoded_bytes": 594079,
+    "decoded_sha256": "d9a1c6354f051ab858cac7e1a12986faf72e88b6cdcee5d819249d0e91b749c6",
+    "gzip_sha256": "20e8a55af9afad0f206d9af0f97943f99eaa30162446e8acb9d918fc44cdabd8"
+  }
+}
