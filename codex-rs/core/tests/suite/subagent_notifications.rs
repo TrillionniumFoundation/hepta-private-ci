@@ -1,3 +1,4 @@
+use anyhow::Context;
 use anyhow::Result;
 use codex_core::StartThreadOptions;
 use codex_core::ThreadConfigSnapshot;
@@ -335,8 +336,18 @@ async fn wait_for_hook_log(
             return Ok(inputs);
         }
         if Instant::now() >= deadline {
+            let observed_hook_states = inputs
+                .iter()
+                .take(expected_len)
+                .map(|input| {
+                    (
+                        input["hook_event_name"].as_str(),
+                        input["stop_hook_active"].as_bool(),
+                    )
+                })
+                .collect::<Vec<_>>();
             anyhow::bail!(
-                "expected at least {expected_len} entries in {filename}, got {}",
+                "expected at least {expected_len} entries in {filename}, got {}; observed hook states: {observed_hook_states:?}",
                 inputs.len()
             );
         }
@@ -1998,7 +2009,30 @@ async fn multi_agent_v2_spawn_sends_agent_message_to_child(
         }
     })
     .await
-    .expect("spawn communication logs should be emitted");
+    .with_context(|| {
+        let captured = match output.try_lock() {
+            Ok(captured) => captured,
+            Err(error) => {
+                return format!(
+                    "spawn communication logs should be emitted; capture unavailable during nonblocking failure inspection: {error}"
+                );
+            }
+        };
+        let captured_logs = String::from_utf8_lossy(&captured);
+        let communication_lines = captured_logs
+            .lines()
+            .filter(|line| line.contains("codex_otel.agent_communication"))
+            .take(8)
+            .map(|line| line.chars().take(800).collect::<String>())
+            .collect::<Vec<_>>();
+        let capture_enabled_now =
+            tracing::enabled!(target: "codex_otel.agent_communication", Level::INFO);
+        format!(
+            "spawn communication logs should be emitted; captured_bytes={}, captured_lines={}, capture_enabled_now={capture_enabled_now}, communication_lines={communication_lines:?}",
+            captured.len(),
+            captured_logs.lines().count(),
+        )
+    })?;
     let send = logs
         .lines()
         .find(|line| line.contains("kind=\"spawn\"") && line.contains("state=\"send\""))
