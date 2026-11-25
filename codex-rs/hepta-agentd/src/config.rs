@@ -554,6 +554,23 @@ impl AgentdConfig {
         self.notes_thread_tools.take()
     }
 
+    /// Add a read-only paired verifier to the same required original owner.
+    /// This does not modify its sealed catalog, enable legacy intake, or grant
+    /// authority to train, dispatch a consumer, or settle a payment.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_paired_turn_verifier(
+        mut self,
+    ) -> Result<(Self, crate::AgentdPairedTurnVerifier), AgentdError> {
+        let verifier = self
+            .notes_thread_tools
+            .as_mut()
+            .ok_or_else(|| {
+                AgentdError::Invalid("original protected owner is not installed".into())
+            })?
+            .install_paired_verifier()?;
+        Ok((self, verifier))
+    }
+
     /// Explicit old-incarnation recovery from the trusted sealed deployment.
     /// The actual current target is taken from the already installed Session
     /// observer; no UI command supplies either target or a helper path.

@@ -82,6 +82,8 @@ pub struct AgentdNotesThreadToolRuntime {
     route: AgentdTextSessionConfig,
     session: Option<crate::AgentdNotesSessionLifetime>,
     seed: Option<crate::NotesThreadSeedReceipt>,
+    paired_turns:
+        Option<tokio::sync::mpsc::Receiver<crate::paired_original_turn::PendingPairedTurn>>,
 }
 
 impl AgentdConfig {
@@ -125,11 +127,23 @@ impl AgentdConfig {
             route,
             session: None,
             seed: None,
+            paired_turns: None,
         }
     }
 }
 
 impl AgentdNotesThreadToolRuntime {
+    pub(crate) fn install_paired_verifier(
+        &mut self,
+    ) -> Result<crate::AgentdPairedTurnVerifier, AgentdError> {
+        if self.paired_turns.is_some() {
+            return Err(invalid("original paired verifier already installed"));
+        }
+        let (handle, receiver) = crate::paired_original_turn::channel();
+        self.paired_turns = Some(receiver);
+        Ok(handle)
+    }
+
     pub(crate) async fn latest_recovery_operation(
         &self,
         previous: &codex_hepta_memory::NotesTargetIdentity,

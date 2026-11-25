@@ -417,6 +417,8 @@ mod notes_ui_queue;
 #[cfg(target_os = "linux")]
 mod notes_ui_wire;
 mod objective_runtime;
+#[cfg(target_os = "linux")]
+mod paired_original_turn;
 mod plasticity_anchor_journal;
 mod plasticity_host;
 mod plasticity_learning_producer;
@@ -931,6 +933,12 @@ pub use notes_ui_endpoint::AgentdNotesSessionLifetime;
 #[cfg(target_os = "linux")]
 pub use notes_ui_endpoint::AgentdNotesUiPeer;
 pub use objective_runtime::authbus_objective_claims;
+#[cfg(target_os = "linux")]
+pub use paired_original_turn::AgentdPairedTurnVerifier;
+#[cfg(target_os = "linux")]
+pub use paired_original_turn::PairedTurnRequest;
+#[cfg(target_os = "linux")]
+pub use paired_original_turn::VerifiedPairedTurn;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityEvidenceSourcesV1;
