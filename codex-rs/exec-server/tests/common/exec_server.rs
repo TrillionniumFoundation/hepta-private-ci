@@ -207,6 +207,25 @@ impl ExecServerHarness {
         self.next_event_with_timeout(EVENT_TIMEOUT).await
     }
 
+    pub(crate) async fn wait_for_response(
+        &mut self,
+        request_id: &RequestId,
+    ) -> anyhow::Result<JSONRPCMessage> {
+        let event = self
+            .wait_for_event(|event| match event {
+                JSONRPCMessage::Response(response) => &response.id == request_id,
+                JSONRPCMessage::Error(error) => &error.id == request_id,
+                JSONRPCMessage::Request(_) | JSONRPCMessage::Notification(_) => false,
+            })
+            .await?;
+        if let JSONRPCMessage::Error(error) = &event {
+            return Err(anyhow!(
+                "exec-server request {request_id:?} returned an error: {error:?}"
+            ));
+        }
+        Ok(event)
+    }
+
     pub(crate) async fn wait_for_event<F>(
         &mut self,
         mut predicate: F,
