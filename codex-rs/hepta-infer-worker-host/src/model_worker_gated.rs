@@ -1122,6 +1122,185 @@ mod tests {
     }
 
     #[test]
+    fn native_64_256_1024_4096_cell_gated_cpu_batches_preserve_isolation() {
+        use codex_hepta_infer_core::shared_feature_v2::{
+            SharedFeatureCacheV2, SharedFeatureIdentityV2,
+        };
+        use codex_hepta_types::{Generation, StableId};
+        use std::sync::Arc;
+
+        let id = |value: &str| StableId::new(value.to_string()).expect("stable id");
+        for cell_count in [64_usize, 256, 1_024, 4_096] {
+            let encoder = Digest32::of_bytes(b"fixed-shadow-encoder");
+            let mut candidates = Vec::with_capacity(cell_count);
+            for index in 0..cell_count {
+                let mut candidate = head(&format!("cell.{index:04}"));
+                candidate.encoder_digest = encoder.to_string();
+                // A distinct exact Q24 result per Cell catches accidental
+                // Head swaps that identical reference weights would hide.
+                candidate.gate_q24[0] = Q24 + i64::try_from(index).expect("index") * 1_024;
+                candidates.push(candidate);
+            }
+            let mut selected = manifest_for(&candidates);
+            selected.tokenizer_digest = Digest32::of_bytes(b"tokenizer").to_string();
+            selected.preprocessor_digest = Digest32::of_bytes(b"preprocessor").to_string();
+            selected.normalizer_digest = Digest32::of_bytes(b"normalizer").to_string();
+            selected.quantization_digest = Digest32::of_bytes(b"quantization").to_string();
+
+            let start_registration = Instant::now();
+            let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
+            let mut head_digests = Vec::with_capacity(cell_count);
+            for candidate in candidates {
+                head_digests.push(driver.register_head(candidate).expect("register Cell Head"));
+            }
+            let registration_micros = start_registration.elapsed().as_micros();
+            assert_eq!(driver.heads.len(), cell_count);
+            assert_eq!(driver.parameter_bytes(), cell_count * 8 * 8);
+            if cell_count == MAX_REGISTERED_HEADS {
+                assert_eq!(
+                    driver.register_head(head("cell.overflow")),
+                    Err(Error::ModelCapacity)
+                );
+            }
+
+            let grant = ResourceGrant {
+                grant_id: "grant.scale".into(),
+                authority_epoch: 2,
+                generation: 3,
+                expires_at_ms: 100_000,
+                revoked: false,
+                maximum_models: 1,
+                maximum_active_requests: 32,
+                maximum_memory_bytes: 16 * 1024 * 1024,
+                semantic_digest: "1".repeat(64),
+            };
+            let mut worker =
+                InferenceWorker::new(1, format!("worker.scale.{cell_count}"), 3, grant, driver)
+                    .expect("worker");
+            worker
+                .load_model(1, selected.clone())
+                .expect("loaded model");
+
+            let identity = SharedFeatureIdentityV2 {
+                principal_id: id("principal.shared"),
+                scope_id: id("scope.reference"),
+                purpose_id: id("purpose.prediction"),
+                generation: Generation::new(3).expect("generation"),
+                authority_epoch: 2,
+                encoder_digest: encoder,
+                tokenizer_digest: Digest32::of_bytes(b"tokenizer"),
+                preprocessor_digest: Digest32::of_bytes(b"preprocessor"),
+                normalizer_digest: Digest32::of_bytes(b"normalizer"),
+                source_frontier_digest: Digest32::of_bytes(b"reference-frontier"),
+                quantization_digest: Digest32::of_bytes(b"quantization"),
+                input_digest: Digest32::of_bytes(b"complete synthetic question-and-options"),
+            };
+            let mut cache = SharedFeatureCacheV2::new(1, 256).expect("cache");
+            let snapshot = cache
+                .insert(1, identity, 100_000, Arc::from([Q24 / 2, -Q24 / 4]))
+                .expect("snapshot");
+            let start_execution = Instant::now();
+            let mut batch_latency_micros = Vec::with_capacity(cell_count / 32);
+            for offset in (0..cell_count).step_by(32) {
+                let mut requests = Vec::with_capacity(32);
+                for (index, head_digest) in head_digests.iter().enumerate().skip(offset).take(32) {
+                    let token = format!("request.{index:04}");
+                    let mut request = SharedNeuronFeatureRequestV2 {
+                        authorization: WorkerRequest {
+                            request_id: token.clone(),
+                            reservation_id: format!("reservation.{token}"),
+                            model_digest: selected.model_digest.clone(),
+                            payload_digest: "0".repeat(64),
+                            maximum_tokens: 32,
+                            deadline_ms: 90_000,
+                            lease_payload_digest: "0".repeat(64),
+                            reservation_model_digest: selected.model_digest.clone(),
+                            reservation_maximum_tokens: 32,
+                            cancelled: false,
+                        },
+                        principal_id: id("principal.shared"),
+                        scope_id: id("scope.reference"),
+                        purpose_id: id("purpose.prediction"),
+                        cell_id: id(&format!("cell.{index:04}")),
+                        snapshot: Arc::clone(&snapshot),
+                        head_digest: head_digest.clone(),
+                        weights_digest: selected.weights_digest.clone(),
+                        expected_output_width: 1,
+                    };
+                    let digest = super::super::canonical_shared_neuron_payload_digest_v3(&request)
+                        .expect("bound request digest");
+                    request.authorization.payload_digest = digest.clone();
+                    request.authorization.lease_payload_digest = digest;
+                    requests.push(request);
+                }
+                let start_batch = Instant::now();
+                let results = worker
+                    .run_shared_neuron_features_batch_v2(100, "model.gated", requests)
+                    .expect("one genuine CPU driver batch");
+                batch_latency_micros.push(start_batch.elapsed().as_micros());
+                assert_eq!(results.len(), 32);
+                for (row, result) in results.into_iter().enumerate() {
+                    let index = offset + row;
+                    assert_eq!(result.cell_id.as_str(), format!("cell.{index:04}"));
+                    assert_eq!(result.head_digest, head_digests[index]);
+                    assert_eq!(
+                        result.drive_q24,
+                        vec![Q24 / 2 + i64::try_from(index).expect("index") * 512]
+                    );
+                    assert_eq!(result.prediction_q24, vec![-Q24 / 4]);
+                    assert!(!result.authority.grants_any());
+                    assert_eq!(result.principal_id.as_str(), "principal.shared");
+                    assert_eq!(result.purpose_id.as_str(), "purpose.prediction");
+                    assert_eq!(result.scope_id.as_str(), "scope.reference");
+                }
+            }
+            let execution_micros = start_execution.elapsed().as_micros();
+            assert_eq!(batch_latency_micros.len(), cell_count / 32);
+            batch_latency_micros.sort_unstable();
+            // Nearest-rank reference percentiles from actual driver batch calls.
+            // Two samples at 64 Cells cannot establish production p99.
+            let percentile = |percent: usize| {
+                let rank = batch_latency_micros
+                    .len()
+                    .saturating_mul(percent)
+                    .div_ceil(100);
+                batch_latency_micros[rank.saturating_sub(1)]
+            };
+            // Linux CI process RSS is explicitly not GPU or deployment-host RSS.
+            let process_rss_kib =
+                std::fs::read_to_string("/proc/self/status")
+                    .ok()
+                    .and_then(|status| {
+                        status.lines().find_map(|line| {
+                            line.strip_prefix("VmRSS:")?
+                                .split_whitespace()
+                                .next()?
+                                .parse::<u64>()
+                                .ok()
+                        })
+                    });
+            assert_eq!(worker.driver.batch_calls(), cell_count / 32);
+            assert_eq!(cache.resident_bytes(), 16);
+            assert!(worker.active_requests.is_empty());
+            assert_eq!(worker.models["model.gated"].active_requests, 0);
+            // Timing is diagnostic on this CI runner, not an acceptance
+            // threshold or production throughput/RSS measurement.
+            eprintln!(
+                "shadow_cell_cpu_scale cells={cell_count} registration_us={registration_micros} \
+                 batch_dispatch_us={execution_micros} physical_batches={} head_tensor_bytes={} \
+                 shared_input_bytes={} batch_p50_us={} batch_p95_us={} batch_p99_us={} \
+                 process_rss_kib={process_rss_kib:?} production_verified=false",
+                worker.driver.batch_calls(),
+                worker.driver.parameter_bytes(),
+                cache.resident_bytes(),
+                percentile(50),
+                percentile(95),
+                percentile(99)
+            );
+        }
+    }
+
+    #[test]
     fn immutable_digest_changes_with_cell_identity_or_learning_proposal() {
         let a = head("cell.a");
         let b = head("cell.b");
