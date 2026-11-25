@@ -1,4 +1,3 @@
-use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -7,8 +6,6 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaAgentLayout;
-use codex_state::SqliteConfig;
-use codex_utils_absolute_path::AbsolutePathBuf;
 use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
@@ -24,9 +21,11 @@ use crate::MemoryRevalidationBinding;
 use crate::RetrievalCandidate;
 use crate::RetrievalRequest;
 use crate::RevalidationStatus;
-use crate::cognitive_path::canonical_path_without_redirection;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
+
+#[path = "cognitive_federation_read_only.rs"]
+mod read_only;
 
 pub const MAX_FEDERATION_CAPABILITIES_PER_STORE: u64 = 128;
 pub const MAX_FEDERATION_CAPABILITY_REVISIONS: u64 = 1024;
@@ -559,6 +558,7 @@ impl CognitiveStore {
 pub struct FederatedMemoryReader {
     owner: Arc<CognitiveStore>,
     capability: FederationCapability,
+    _source_guard: Arc<read_only::SourceGuard>,
 }
 
 impl FederatedMemoryReader {
@@ -571,7 +571,7 @@ impl FederatedMemoryReader {
             return Ok(Vec::new());
         }
         let database_path = owner_layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
-        let pool = open_read_only_pool(&database_path).await?;
+        let (pool, source_guard) = read_only::open_pool(&database_path).await?;
         verify_read_only_store(&pool, owner_layout.agent_id()).await?;
         let rows = sqlx::query(
             "SELECT e.*, e.owner_workspace_sha256 AS workspace_sha256
@@ -605,6 +605,7 @@ impl FederatedMemoryReader {
                 readers.push(Self {
                     owner: Arc::clone(&owner),
                     capability: event.capability,
+                    _source_guard: Arc::clone(&source_guard),
                 });
             }
         }
@@ -1128,47 +1129,6 @@ fn require_authorized(
             "memory federation capability is not current ({drift:?})"
         ))),
     }
-}
-
-async fn open_read_only_pool(path: &Path) -> Result<SqlitePool, CognitiveStoreError> {
-    let metadata = std::fs::metadata(path).map_err(unavailable)?;
-    if !metadata.is_file()
-        || canonical_path_without_redirection(path)
-            .map_err(unavailable)?
-            .is_none()
-    {
-        return Err(CognitiveStoreError::Invalid(
-            "federated cognitive database must be an existing canonical regular file".to_string(),
-        ));
-    }
-    let sqlite_home = AbsolutePathBuf::try_from(
-        path.parent()
-            .ok_or_else(|| {
-                CognitiveStoreError::Invalid(
-                    "federated cognitive database has no parent directory".to_string(),
-                )
-            })?
-            .to_path_buf(),
-    )
-    .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_read_only_pool(path)
-        .await
-        .map_err(unavailable)?;
-    sqlx::query("PRAGMA query_only = ON")
-        .execute(&pool)
-        .await
-        .map_err(unavailable)?;
-    let query_only: i64 = sqlx::query_scalar("PRAGMA query_only")
-        .fetch_one(&pool)
-        .await
-        .map_err(unavailable)?;
-    if query_only != 1 {
-        return Err(CognitiveStoreError::Corrupt(
-            "federated cognitive connection is not query-only".to_string(),
-        ));
-    }
-    Ok(pool)
 }
 
 async fn verify_read_only_store(
