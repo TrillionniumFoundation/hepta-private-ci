@@ -354,6 +354,42 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
             .expect("turn recovery projection"),
         "connection reuse must not collapse request identity for recovery",
     );
+    let recovery_a = serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+        .expect("baseline recovery projection");
+    for (parent_turn_id, root_turn_id) in [
+        (Some("parent-turn-a"), None),
+        (None, Some("root-turn-a")),
+        (Some("parent-turn-b"), Some("root-turn-b")),
+    ] {
+        let mut lineage_metadata = turn_metadata.clone();
+        lineage_metadata.parent_turn_id = parent_turn_id.map(str::to_owned);
+        lineage_metadata.root_turn_id = root_turn_id.map(str::to_owned);
+        assert_eq!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &lineage_metadata,
+            )
+            .expect("turn lineage does not select a new socket"),
+        );
+        let mut expected_recovery = recovery_a.clone();
+        for (key, value) in [
+            ("parent_turn_id", parent_turn_id),
+            ("root_turn_id", root_turn_id),
+        ] {
+            if let Some(value) = value {
+                expected_recovery[key] = json!(value);
+            }
+        }
+        assert_ne!(recovery_a, expected_recovery);
+        assert_eq!(
+            serde_json::to_value(lineage_metadata.turn_recovery_compatibility_projection())
+                .expect("lineage recovery projection"),
+            expected_recovery,
+            "recovery must bind both lineage fields without changing other compatibility fields",
+        );
+    }
     let mut memory_metadata = metadata_a.clone();
     memory_metadata.request_kind = Some(CodexResponsesRequestKind::Memory);
     assert_ne!(

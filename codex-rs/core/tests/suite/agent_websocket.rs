@@ -217,6 +217,15 @@ async fn websocket_first_turn_uses_startup_prewarm_and_create() -> Result<()> {
             .expect("turn metadata"),
     )?;
     assert_eq!(turn_metadata["request_kind"].as_str(), Some("turn"));
+    assert!(warmup_metadata.get("root_turn_id").is_none());
+    let turn_id = turn_metadata["turn_id"]
+        .as_str()
+        .expect("first user turn has an identity");
+    assert_eq!(turn_metadata["root_turn_id"].as_str(), Some(turn_id));
+    assert_eq!(
+        turn["client_metadata"]["root_turn_id"].as_str(),
+        Some(turn_id)
+    );
 
     server.shutdown().await;
     Ok(())

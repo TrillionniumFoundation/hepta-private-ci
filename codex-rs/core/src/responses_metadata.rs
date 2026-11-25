@@ -385,12 +385,15 @@ impl CodexResponsesMetadata {
 
     /// Binds socket reuse to stable provider behavior without treating a
     /// completed prewarm as a different connection from its ensuing turn.
-    /// Recovery fingerprints still use the unmodified request-purpose tag.
+    /// Turn lineage is sent on each request, not fixed by the socket handshake.
+    /// Recovery fingerprints still bind the unmodified purpose and lineage.
     pub(crate) fn websocket_connection_compatibility_projection(
         &self,
     ) -> TurnRecoveryCompatibilityProjection<'_> {
         let mut projection = self.turn_recovery_compatibility_projection();
         projection.schema = "websocket-connection-compatibility:v1";
+        projection.parent_turn_id = None;
+        projection.root_turn_id = None;
         if matches!(self.request_kind, Some(CodexResponsesRequestKind::Prewarm)) {
             projection.request_kind = None;
         }
