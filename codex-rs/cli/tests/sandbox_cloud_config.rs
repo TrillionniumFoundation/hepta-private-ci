@@ -99,6 +99,22 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         .await;
 
     let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
+    // Bazel stores these executables in separate runfiles directories. Exercise
+    // the actual packaged layout that the production helper resolver expects.
+    #[cfg(windows)]
+    let package = TempDir::new()?;
+    #[cfg(windows)]
+    let codex = {
+        let packaged_codex = package.path().join("codex.exe");
+        std::fs::copy(&codex, &packaged_codex)?;
+        let resources = package.path().join("codex-resources");
+        std::fs::create_dir(&resources)?;
+        for helper in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+            let source = codex_utils_cargo_bin::cargo_bin(helper)?;
+            std::fs::copy(source, resources.join(format!("{helper}.exe")))?;
+        }
+        packaged_codex
+    };
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
     let output = Command::new(&codex)
         .current_dir(codex_home.path())
