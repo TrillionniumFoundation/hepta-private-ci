@@ -318,6 +318,22 @@ impl AgentdConfig {
         self.cognitive_ranker.clone()
     }
 
+    /// Reconstruct independent selection from complete original owner inputs,
+    /// then attach its exact published model to the ordinary cognitive request
+    /// path. Missing or invalid inputs fail installation; no default is inferred.
+    pub fn with_evaluated_cognitive_bootstrap(
+        self,
+        input: crate::EvaluatedCognitiveBootstrapV1,
+    ) -> Result<Self, AgentdError> {
+        let ranker = crate::cognitive_bootstrap::load_evaluated_cognitive_bootstrap_v1(
+            self.identity.agent_id.clone(),
+            self.identity.spawn_generation,
+            input,
+        )
+        .map_err(AgentdError::Invalid)?;
+        self.with_cognitive_ranker(ranker)
+    }
+
     /// Attach an externally-authorized long-lived production operation host.
     /// Default process-environment startup never manufactures or loads this
     /// authority; an embedding must provide the complete verified runtime
