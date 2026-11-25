@@ -190,18 +190,18 @@ jobs:
           python-version: "3.12"
 
       - name: Set up Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
 
       - name: Pin matching Cargo and rustc for native smoke
         shell: bash
         run: |
           set -euo pipefail
-          cargo_bin="$(rustup which --toolchain 1.95.0 cargo)"
-          rustc_bin="$(rustup which --toolchain 1.95.0 rustc)"
+          cargo_bin="$(rustup which --toolchain 1.96.0 cargo)"
+          rustc_bin="$(rustup which --toolchain 1.96.0 rustc)"
           if [[ ! -x "${cargo_bin}" || ! -x "${rustc_bin}" ]]; then
-            echo "The pinned Rust 1.95.0 Cargo and rustc executables must both be installed." >&2
+            echo "The pinned Rust 1.96.0 Cargo and rustc executables must both be installed." >&2
             exit 1
           fi
           printf '%s\n' "V8_SMOKE_CARGO=${cargo_bin}" "V8_SMOKE_RUSTC=${rustc_bin}" >> "${GITHUB_ENV}"
@@ -320,7 +320,7 @@ jobs:
           (
             cd codex-rs
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
-            RUSTUP_TOOLCHAIN="1.95.0" \
+            RUSTUP_TOOLCHAIN="1.96.0" \
             RUSTC="${V8_SMOKE_RUSTC}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
@@ -382,9 +382,9 @@ jobs:
           architecture: x64
 
       - name: Set up Codex Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
           targets: ${{ matrix.target }}
 
       - name: Install rusty_v8 Rust toolchain
@@ -473,7 +473,7 @@ jobs:
             cd codex-rs
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
+            cargo +1.96.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
           )
 
       - name: Upload staged artifacts

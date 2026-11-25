@@ -2013,8 +2013,7 @@ mod tests {
             .to_string(),
         ];
         std::fs::write(&rollout_path, lines.join("\n") + "\n")?;
-        let updated_at =
-            chrono::DateTime::parse_from_rfc3339(meta_rfc3339)?.with_timezone(&chrono::Utc);
+        let updated_at = codex_utils_time::Timestamp::parse_from_rfc3339(meta_rfc3339)?;
         let times = std::fs::FileTimes::new().set_modified(updated_at.into());
         std::fs::OpenOptions::new()
             .append(true)
