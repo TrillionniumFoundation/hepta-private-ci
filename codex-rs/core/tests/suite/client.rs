@@ -710,7 +710,7 @@ fn write_auth_json(
         "OPENAI_API_KEY": openai_api_key,
         "tokens": tokens,
         // RFC3339 datetime; value doesn't matter for these tests
-        "last_refresh": chrono::Utc::now(),
+        "last_refresh": codex_utils_time::Timestamp::now(),
     });
 
     std::fs::write(

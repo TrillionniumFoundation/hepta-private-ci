@@ -1,0 +1,245 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -81,8 +81,6 @@
+ [dependencies.debugserver-types]
+ version = "0.5.0"
+ 
+-[dependencies.derivative]
+-version = "2.2"
+ 
+ [dependencies.derive_more]
+ version = "1.0.0"
+--- a/src/values/types/function.rs
++++ b/src/values/types/function.rs
+@@ -18,7 +18,6 @@
+ //! Function types, including native functions and `object.member` functions.
+ 
+ use allocative::Allocative;
+-use derivative::Derivative;
+ use derive_more::Display;
+ use dupe::Dupe;
+ use starlark_derive::NoSerialize;
+@@ -108,12 +107,10 @@
+ ///
+ /// Almost always created with [`#[starlark_module]`](macro@crate::starlark_module).
+ #[derive(
+-    Derivative, ProvidesStaticType, Display, NoSerialize, Allocative, crate::StarlarkPagable,
++    ProvidesStaticType, Display, NoSerialize, Allocative, crate::StarlarkPagable,
+ )]
+-#[derivative(Debug)]
+ #[display("{}", name)]
+ pub(crate) struct NativeFunction {
+-    #[derivative(Debug = "ignore")]
+     pub(crate) function: NativeFunc,
+     pub(crate) name: String,
+     /// `.type` attribute and a type when this function is used in type expression.
+@@ -123,11 +120,22 @@
+     pub(crate) ty: Ty,
+     /// Safe to evaluate speculatively.
+     pub(crate) speculative_exec_safe: bool,
+-    #[derivative(Debug = "ignore")]
+     #[starlark_pagable(pagable)]
+     pub(crate) docs: DocItem,
+     #[starlark_pagable(pagable)]
+     pub(crate) special_builtin_function: Option<SpecialBuiltinFunction>,
++}
++
++impl std::fmt::Debug for NativeFunction {
++    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        f.debug_struct("NativeFunction")
++            .field("name", &self.name)
++            .field("as_type", &self.as_type)
++            .field("ty", &self.ty)
++            .field("speculative_exec_safe", &self.speculative_exec_safe)
++            .field("special_builtin_function", &self.special_builtin_function)
++            .finish()
++    }
+ }
+ 
+ impl AllocFrozenValue for NativeFunction {
+@@ -265,21 +273,28 @@
+ }
+ 
+ #[derive(
+-    Derivative, Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable,
++    Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable,
+ )]
+-#[derivative(Debug)]
+ #[display("{}", name)]
+ pub(crate) struct NativeMethod {
+-    #[derivative(Debug = "ignore")]
+     pub(crate) function: NativeMeth,
+     pub(crate) name: String,
+     #[starlark_pagable(pagable)]
+     pub(crate) ty: Ty,
+     /// Safe to evaluate speculatively.
+     pub(crate) speculative_exec_safe: bool,
+-    #[derivative(Debug = "ignore")]
+     #[starlark_pagable(pagable)]
+     pub(crate) docs: DocItem,
++}
++
++impl std::fmt::Debug for NativeMethod {
++    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        f.debug_struct("NativeMethod")
++            .field("name", &self.name)
++            .field("ty", &self.ty)
++            .field("speculative_exec_safe", &self.speculative_exec_safe)
++            .finish()
++    }
+ }
+ 
+ starlark_simple_value!(NativeMethod);
+@@ -298,10 +313,9 @@
+ /// Used by the `#[starlark(attribute)]` tag of [`#[starlark_module]`](macro@starlark_module)
+ /// to define a function that pretends to be an attribute.
+ #[derive(
+-    Derivative, Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable,
++    Debug, Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable,
+ )]
+ #[display("Attribute")]
+-#[derivative(Debug)]
+ pub(crate) struct NativeAttribute {
+     /// Safe to evaluate speculatively.
+     pub(crate) speculative_exec_safe: bool,
+--- a/src/values/types/enumeration/value.rs
++++ b/src/values/types/enumeration/value.rs
+@@ -19,7 +19,6 @@
+ use std::fmt::Display;
+ 
+ use allocative::Allocative;
+-use derivative::Derivative;
+ use dupe::Dupe;
+ use either::Either;
+ use starlark_derive::Coerce;
+@@ -48,17 +47,25 @@
+ 
+ /// A value from an enumeration.
+ #[derive(
+-    Clone, Derivative, Trace, Coerce, Freeze, ProvidesStaticType, Allocative, StarlarkPagable,
++    Clone, Trace, Coerce, Freeze, ProvidesStaticType, Allocative, StarlarkPagable,
+ )]
+ #[repr(C)]
+-#[derivative(Debug)]
+ pub struct EnumValueGen<V: ValueLifetimeless> {
+     // Must ignore value.typ or type.elements, since they are circular
+-    #[derivative(Debug = "ignore")]
+     pub(crate) typ: V, // Must be EnumType it points back to (so it can get the type)
+     pub(crate) value: V,   // The value of this enumeration
+     pub(crate) index: i32, // The index in the enumeration
+     pub(crate) id: TypeInstanceId,
++}
++
++impl<V: ValueLifetimeless + std::fmt::Debug> std::fmt::Debug for EnumValueGen<V> {
++    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        f.debug_struct("EnumValueGen")
++            .field("value", &self.value)
++            .field("index", &self.index)
++            .field("id", &self.id)
++            .finish()
++    }
+ }
+ 
+ impl<'v, V: ValueLike<'v>> Display for EnumValueGen<V> {
+--- a/src/eval/compiler/def.rs
++++ b/src/eval/compiler/def.rs
+@@ -24,7 +24,6 @@
+ use std::ptr;
+ 
+ use allocative::Allocative;
+-use derivative::Derivative;
+ use derive_more::Display;
+ use dupe::Dupe;
+ use starlark_derive::NoSerialize;
+@@ -331,8 +330,7 @@
+ }
+ 
+ /// Static info for `def`, `lambda` or module.
+-#[derive(Derivative, Display, StarlarkPagable)]
+-#[derivative(Debug)]
++#[derive(Display, StarlarkPagable)]
+ #[display("DefInfo")]
+ pub(crate) struct DefInfo {
+     pub(crate) name: FrozenStringValue,
+@@ -354,11 +352,9 @@
+     /// Module-level identifiers are not copied over, to avoid excess copying.
+     pub(crate) parent: FrozenAnyArray<CopySlotFromParent>,
+     /// Statement compiled for non-frozen def.
+-    #[derivative(Debug = "ignore")]
+     stmt_compiled: Bc,
+     // The compiled expression for the body of this definition, to be run
+     // after the parameters are evaluated.
+-    #[derivative(Debug = "ignore")]
+     body_stmts: StmtsCompiled,
+     /// How to compile the statement on freeze.
+     stmt_compile_context: StmtCompileContext,
+@@ -367,6 +363,24 @@
+     /// Globals captured during function or module creation.
+     /// Only needed for debugger evaluation.
+     pub(crate) globals: FrozenAnyValue<Globals>,
++}
++
++impl std::fmt::Debug for DefInfo {
++    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        f.debug_struct("DefInfo")
++            .field("name", &self.name)
++            .field("signature_span", &self.signature_span)
++            .field("parameter_captures", &self.parameter_captures)
++            .field("ty", &self.ty)
++            .field("codemap", &self.codemap)
++            .field("docstring", &self.docstring)
++            .field("used", &self.used)
++            .field("parent", &self.parent)
++            .field("stmt_compile_context", &self.stmt_compile_context)
++            .field("inline_def_body", &self.inline_def_body)
++            .field("globals", &self.globals)
++            .finish()
++    }
+ }
+ 
+ impl DefInfo {
+@@ -531,9 +545,8 @@
+ /// Starlark function internal representation and implementation of
+ /// [`StarlarkValue`].
+ #[derive(
+-    Derivative, NoSerialize, ProvidesStaticType, Trace, Allocative, starlark_derive::StarlarkPagable,
++    NoSerialize, ProvidesStaticType, Trace, Allocative, starlark_derive::StarlarkPagable,
+ )]
+-#[derivative(Debug)]
+ pub(crate) struct DefGen<V> {
+     pub(crate) parameters: ParametersSpec<V>, // The parameters, **kwargs etc including defaults (which are evaluated afresh each time)
+     /// Indices of parameters, which are captured in nested defs.
+@@ -552,20 +565,31 @@
+     /// [`ValueCaptured`] or [`FrozenValueCaptured`].
+     captured: Vec<V>,
+     // Important to ignore these field as it probably references DefGen in a cycle
+-    #[derivative(Debug = "ignore")]
+     /// A reference to the module where the function is defined after the module has been frozen.
+     /// When the module is not frozen yet, this field contains `None`, and function's module
+     /// can be accessed from evaluator's module.
+     #[allocative(skip)]
+     pub(crate) module: AtomicFrozenAnyValueOption<FrozenModuleData>,
+     /// This field is only used in `FrozenDef`. It is populated in `post_freeze`.
+-    #[derivative(Debug = "ignore")]
+     #[allocative(skip)]
+     #[starlark_pagable(
+         serialize_with = "serialize_optimized_on_freeze_stmt",
+         deserialize_with = "deserialize_optimized_on_freeze_stmt"
+     )]
+     optimized_on_freeze_stmt: StmtCompiledCell,
++}
++
++impl<V: std::fmt::Debug> std::fmt::Debug for DefGen<V> {
++    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        f.debug_struct("DefGen")
++            .field("parameters", &self.parameters)
++            .field("parameter_captures", &self.parameter_captures)
++            .field("parameter_types", &self.parameter_types)
++            .field("return_type", &self.return_type)
++            .field("def_info", &self.def_info)
++            .field("captured", &self.captured)
++            .finish()
++    }
+ }
+ 
+ fn serialize_optimized_on_freeze_stmt(

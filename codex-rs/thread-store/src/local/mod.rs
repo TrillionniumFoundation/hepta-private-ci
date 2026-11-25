@@ -879,7 +879,7 @@ mod tests {
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             stale_rollout_path,
-            chrono::Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.history_mode = ThreadHistoryMode::Paginated;

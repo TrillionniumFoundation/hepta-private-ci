@@ -12,8 +12,7 @@ use crate::TaskStatus;
 use crate::TaskSummary;
 use crate::TurnAttempt;
 use crate::api::TaskText;
-use chrono::DateTime;
-use chrono::Utc;
+use codex_utils_time::Timestamp;
 
 use codex_api::SharedAuthProvider;
 use codex_backend_client as backend;
@@ -718,11 +717,11 @@ mod api {
         }
     }
 
-    fn parse_timestamp_value(v: Option<&Value>) -> Option<DateTime<Utc>> {
+    fn parse_timestamp_value(v: Option<&Value>) -> Option<Timestamp> {
         let ts = v?.as_f64()?;
         let secs = ts as i64;
         let nanos = ((ts - secs as f64) * 1_000_000_000.0) as u32;
-        Some(DateTime::<Utc>::from(
+        Some(Timestamp::from(
             std::time::UNIX_EPOCH + std::time::Duration::new(secs.max(0) as u64, nanos),
         ))
     }
@@ -774,15 +773,15 @@ mod api {
         TaskStatus::Pending
     }
 
-    fn parse_updated_at(ts: Option<&f64>) -> DateTime<Utc> {
+    fn parse_updated_at(ts: Option<&f64>) -> Timestamp {
         if let Some(v) = ts {
             let secs = *v as i64;
             let nanos = ((*v - secs as f64) * 1_000_000_000.0) as u32;
-            return DateTime::<Utc>::from(
+            return Timestamp::from(
                 std::time::UNIX_EPOCH + std::time::Duration::new(secs.max(0) as u64, nanos),
             );
         }
-        Utc::now()
+        Timestamp::now()
     }
 
     fn env_label_from_status_display(v: Option<&HashMap<String, Value>>) -> Option<String> {
@@ -909,7 +908,7 @@ mod api {
 }
 
 fn append_error_log(message: &str) {
-    let ts = Utc::now().to_rfc3339();
+    let ts = Timestamp::now().to_rfc3339();
     if let Ok(mut f) = std::fs::OpenOptions::new()
         .create(true)
         .append(true)
