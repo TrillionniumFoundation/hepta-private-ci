@@ -103,3 +103,6 @@ The recorded patches `HEPTA-maintenance.patch`, `HEPTA-formatting.patch` are sto
 Run `python3 qa/repository-consolidation/20261115/restore_raw_evidence.py <new-output-dir>`
 from the repository root to recover the original paths and bytes before applying them.
 The source manifest retains the original patch digests.
+
+For these recorded patches, recover the original bytes before applying: `HEPTA-lint-fixes.patch`.
+See the [patch restoration instructions](../../../qa/repository-consolidation/20261125/vendor-maintenance-patches/README.md).

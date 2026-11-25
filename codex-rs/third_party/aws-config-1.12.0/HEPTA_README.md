@@ -24,3 +24,6 @@ The recorded patches `HEPTA-repository-format.patch` are stored as exact evidenc
 Run `python3 qa/repository-consolidation/20261115/restore_raw_evidence.py <new-output-dir>`
 from the repository root to recover the original paths and bytes before applying them.
 The source manifest retains the original patch digests.
+
+For these recorded patches, recover the original bytes before applying: `HEPTA-p256-0.14.patch`.
+See the [patch restoration instructions](../../../qa/repository-consolidation/20261125/vendor-maintenance-patches/README.md).

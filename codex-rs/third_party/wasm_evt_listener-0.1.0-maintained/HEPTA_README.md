@@ -22,3 +22,6 @@ backport, the recorded repository base).
 The source metadata records both pre-format and final hashes. Targeted tests
 were run before the required final fix/format step, in the order specified by
 the repository instructions.
+
+For these recorded patches, recover the original bytes before applying: `HEPTA-formatting.patch`, `HEPTA-maintenance.patch`.
+See the [patch restoration instructions](../../../qa/repository-consolidation/20261125/vendor-maintenance-patches/README.md).
