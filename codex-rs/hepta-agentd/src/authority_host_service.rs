@@ -75,6 +75,7 @@ pub struct HostAuthorityService {
     writer: Option<RegisteredWriter>,
     notes: Option<crate::RootNotesGrantAdmission>,
     calculator: Option<crate::deployment_issuer::RootCalculatorGrantAdmission>,
+    paired: Option<crate::deployment_issuer::RegisteredRootPaired>,
     // The exact Registry object opened by the original Root factory. Its Arc
     // shares the existing lock/owner; Notes registration must never reopen it.
     root_registry: Option<Arc<codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry>>,
@@ -100,6 +101,7 @@ impl HostAuthorityService {
             writer: None,
             notes: None,
             calculator: None,
+            paired: None,
             root_registry: None,
             checkpoint: None,
             consumers: None,
@@ -147,6 +149,57 @@ impl HostAuthorityService {
     ) -> Self {
         self.root_registry = Some(registry);
         self
+    }
+
+    /// Trusted Root installation only, opening exact existing records. This
+    /// adds no lane, grant route, material reader or dispatch capability.
+    pub fn with_registered_paired(
+        mut self,
+        registration: crate::HostAuthorityPairedRegistration,
+    ) -> io::Result<Self> {
+        if self.paired.is_some() {
+            return Err(io::Error::other(
+                "original paired registration already installed",
+            ));
+        }
+        let (human, _) = self
+            .human_text
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original human registration required"))?;
+        if registration.original_route != human.route
+            || registration.preparation.principal_id != human.principal_id
+            || registration.permission_revision != human.permission_revision
+            || registration.human_expires_at_ms != human.expires_at_ms
+        {
+            return Err(io::Error::other(
+                "paired registration differs from original human owner",
+            ));
+        }
+        let writer = self
+            .writer
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original writer required"))?;
+        let registry = self
+            .root_registry
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original Root Registry required"))?;
+        self.paired = Some(
+            crate::deployment_issuer::RegisteredRootPaired::from_registered(
+                Arc::clone(&self.issuer),
+                Arc::clone(registry),
+                writer.registration.clone(),
+                registration,
+            )?,
+        );
+        Ok(self)
+    }
+
+    /// Non-authorizing current readback; unavailable unless explicitly installed.
+    pub fn observe_registered_paired(&self) -> io::Result<crate::PairedRootObservation> {
+        self.paired
+            .as_ref()
+            .ok_or_else(|| io::Error::other("original paired registration unavailable"))?
+            .observe()
     }
 
     pub(crate) fn with_notes_from_original_session(
@@ -395,7 +448,13 @@ impl HostAuthorityService {
                 schema_version,
                 binding,
             } => {
-                if schema_version != 1 || bytes.len() > 16 * 1024 {
+                // Paired registration is currently observation-only. Even a
+                // preinstalled policy must not reach the generic grant issuer
+                // until the actual human/material consumer boundary exists.
+                if schema_version != 1
+                    || bytes.len() > 16 * 1024
+                    || binding.destination_id == crate::paired_preparation::DESTINATION
+                {
                     return Err(HostIssuerTransportError::InvalidRequest);
                 }
                 let result = match &self.calculator {

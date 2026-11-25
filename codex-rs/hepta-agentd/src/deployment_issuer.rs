@@ -67,6 +67,12 @@ pub use notes::RootIssuedNotesGrantObservation;
 pub use notes::RootIssuedNotesGrantSelection;
 pub use notes::RootNotesGrantAdmission;
 
+#[path = "deployment_paired.rs"]
+mod paired;
+pub use paired::HostAuthorityPairedRegistration;
+pub use paired::PairedRootObservation;
+pub(crate) use paired::RegisteredRootPaired;
+
 const STATE_OWNER: &str = "local-final-use-issuer";
 const EXCHANGE_DEADLINE: Duration = Duration::from_secs(2);
 
