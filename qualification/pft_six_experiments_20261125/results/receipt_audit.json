@@ -1,0 +1,27 @@
+{
+  "status": "PASS_RECEIPT_AUDIT_NOT_SCIENTIFIC_ACCEPTANCE",
+  "created_utc": "2026-11-25T08:43:57.176418+00:00",
+  "checks": {
+    "source_hashes_match": true,
+    "identifiability_and_transport_contracts": true,
+    "matched_data_and_independent_causality_checks": true,
+    "cross_user_isolation_and_scope": true,
+    "cost_accounting_and_ridge_rls_equivalence": true
+  },
+  "pft5_frozen_candidates_verified": 24,
+  "pft6_candidate_files_verified": 120,
+  "maximum_ridge_rls_parameter_relative_error": 4.329098207026854e-14,
+  "artifact_presence": "local candidates available",
+  "input_sha256": {
+    "pft1.json": "90108f3bf21204c8148bf554ef2cab6c441e759f5a7c5055264a5d15056b35fd",
+    "pft2.json": "af7f9c4133fd051a3d52a6bdae6c2bc8a73b4f4e71fd457f499b0fea185100a9",
+    "pft2_transport.json": "98884f2ce7c6b89a407ac58ac7574fa51ed19ed705414011bb2094e8848355a9",
+    "pft3.json": "7a5d18e575ba61d392d9c465630202f21a8ec2b947f1da142d2cf1cd150ffcdc",
+    "pft4.json": "85522b03e9b4766aeca2fd4b7cacdd35b3279811d413a39bd110e7096fa2a28e",
+    "pft34_verification.json": "e6564ec07a6063c23e5753b10286302440238c3634c5f225b05cf4627c5d893f",
+    "pft5.json": "67103c867d6f582784a464c621dabec1524496aabf05d8bf0fc09dabc63e3cd3",
+    "pft5_protocol_checks.json": "00b94744b64cdd622abc1c1194b7c785273b26a8e09857e2dec9ee36f9a2a3e2",
+    "pft6.json": "7d2f4f9c0e19b59d97c7471d3aa2203aa960753cb24f8f583b43c2734979ac0d"
+  },
+  "source_sha256": "6ed1ecdc6f4cec0fcd2bcc7d4d0591e5ce7bc8c73ec04c669ed80e0f7078cd55"
+}

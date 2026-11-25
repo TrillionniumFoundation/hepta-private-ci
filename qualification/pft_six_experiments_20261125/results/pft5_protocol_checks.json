@@ -1,0 +1,26 @@
+{
+  "all_rejected": true,
+  "checks": [
+    {
+      "check": "trainer_rejects_B_manifest",
+      "reason": "Trainer accepts exactly A and keep_train; no B path",
+      "rejected": true
+    },
+    {
+      "check": "changed_eval_commitment",
+      "reason": "Evaluation manifest changed since preregistration",
+      "rejected": true
+    },
+    {
+      "check": "copied_XY_with_changed_ids",
+      "reason": "Evaluation repeats training content under changed ids",
+      "rejected": true
+    },
+    {
+      "check": "candidate_changed_after_freeze",
+      "reason": "Candidate changed after freeze",
+      "rejected": true
+    }
+  ],
+  "schema": "pft5.isolation_checks.v1"
+}

@@ -1,0 +1,36 @@
+{
+  "status": "READ_ONLY_REFERENCE_NOT_REEXECUTION",
+  "existing_commit": "88414dda04443897def179754779aecdca6f0296",
+  "existing_branch": "research/hcsn-pft-fourstep-20261125",
+  "source_directory": "qualification/hcsn_closure_20261124",
+  "existing_evidence_directory": "qualification/hcsn_closure_20261124/pft_fourstep_evidence_20261125",
+  "read_sources": [
+    "models.py",
+    "pft_interventions.py",
+    "pft_structure_audit.py",
+    "pft_fourstep_evidence_20261125/MANIFEST.json",
+    "pft_fourstep_evidence_20261125/pft-horizon-summary.json",
+    "pft_fourstep_evidence_20261125/pft-interventions-summary.json",
+    "pft_fourstep_evidence_20261125/pft-network-public.json"
+  ],
+  "existing_horizon_summary": {
+    "episodes": 108,
+    "causal_checks": 135,
+    "maximum_full_compressed_action_error": 3.0253577421035516e-15,
+    "declared_scope": "synthetic known linear/quadratic delayed-information mechanism; no HCSN/LLM or independent learned benefit"
+  },
+  "existing_interventions_summary": {
+    "parents": 9,
+    "arms": 27,
+    "widths": [8, 32, 64],
+    "intact_accuracy": 0.9099392361111112,
+    "deleted_accuracy": 0.4830729166666667,
+    "shuffled_accuracy": 0.4848090277777778,
+    "declared_scope": "fixed architecture and frozen weights causal dependence; not learned topology superiority"
+  },
+  "new_scope": "Separate NumPy synthetic value-feature recurrent network, including width16, trained versus frozen connections, and matched-dimensional ordinary features. No production HCSN qualification is inherited.",
+  "uncovered_original_gate": "Full probability/marked-content SmallHCSN matched-cost learned topology and end-to-end PFT control remain outside this new research proxy.",
+  "toolchain": "The existing SmallHCSN source imports PyTorch; neither active local Python runtime exposes torch. New NumPy model is explicitly distinct rather than silently substituted.",
+  "original_evidence_changed": false,
+  "original_experiments_rerun": false
+}
