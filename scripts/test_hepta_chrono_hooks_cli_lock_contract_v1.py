@@ -35,7 +35,9 @@ class ChronoHooksCliLockContractTests(unittest.TestCase):
 
     def normalized_graph(self):
         value = copy.deepcopy(self.spec["expected_graph"])
-        value["workspace_member_manifests"] = self.spec["workspace_member_manifests"]
+        value["workspace_member_manifests"] = list(
+            self.spec["workspace_member_manifests"]
+        )
         return value
 
     def test_two_source_manifests_bind_exact_lock_replacements(self):
@@ -174,6 +176,7 @@ class ChronoHooksCliLockContractTests(unittest.TestCase):
                     contract.source_bindings(spec, root)
 
     def test_full_graph_gate_rejects_roster_target_kind_feature_checksum_drift(self):
+        original_spec = copy.deepcopy(self.spec)
         mutations = (
             lambda value: value.update(full_resolve_graph_sha256="0" * 64),
             lambda value: value.update(all_package_targets_sha256="0" * 64),
@@ -203,6 +206,22 @@ class ChronoHooksCliLockContractTests(unittest.TestCase):
                 "wasm_clock_edges"
             ][0].update(edge_name="unreviewed_clock"),
         )
+        expected_errors = (
+            "complete graph has unapproved identities, links, features, or edge conditions",
+            "actual Cargo target roster or target semantics changed",
+            "actual Cargo target roster or target semantics changed",
+            "actual 193-member workspace roster changed",
+            "actual Chrono inverse edges are not the accepted 31 minus the two owners",
+            "actual Chrono inverse edges are not the accepted 31 minus the two owners",
+            "actual Chrono inverse edges are not the accepted 31 minus the two owners",
+            "remaining Chrono identity, checksum, or features changed",
+            "remaining Chrono identity, checksum, or features changed",
+            "accepted prettyplease alignment changed",
+            "actual owner has not made its exact direct-edge replacement: codex-cli",
+            "actual owner has not made its exact direct-edge replacement: codex-cli",
+            "actual owner has not made its exact direct-edge replacement: codex-hooks",
+        )
+        self.assertEqual(len(mutations), len(expected_errors))
         for index, mutation in enumerate(mutations):
             with self.subTest(index=index):
                 changed = self.normalized_graph()
@@ -210,12 +229,15 @@ class ChronoHooksCliLockContractTests(unittest.TestCase):
                 with mock.patch.object(
                     contract, "normalize_graph", return_value=changed
                 ):
-                    with self.assertRaises(ValueError):
+                    with self.assertRaises(ValueError) as caught:
                         contract.graph_rebinding(
                             {}, self.spec, ROOT, self.proposed_lock(), self.bindings
                         )
+                self.assertEqual(str(caught.exception), expected_errors[index])
+                self.assertEqual(self.spec, original_spec)
 
     def test_original_time_features_and_exact_wasm_clock_closure_are_required(self):
+        original_spec = copy.deepcopy(self.spec)
         for name in ("time", "time-core", "time-macros"):
             with self.subTest(name=name):
                 changed = self.normalized_graph()
@@ -223,10 +245,15 @@ class ChronoHooksCliLockContractTests(unittest.TestCase):
                 with mock.patch.object(
                     contract, "normalize_graph", return_value=changed
                 ):
-                    with self.assertRaises(ValueError):
+                    with self.assertRaises(ValueError) as caught:
                         contract.graph_rebinding(
                             {}, self.spec, ROOT, self.proposed_lock(), self.bindings
                         )
+                self.assertEqual(
+                    str(caught.exception),
+                    "actual time feature closure differs from the accepted original three nodes",
+                )
+                self.assertEqual(self.spec, original_spec)
         for operation in ("clock-feature", "clock-checksum", "clock-edge"):
             with self.subTest(operation=operation):
                 changed = self.normalized_graph()
@@ -240,10 +267,15 @@ class ChronoHooksCliLockContractTests(unittest.TestCase):
                 with mock.patch.object(
                     contract, "normalize_graph", return_value=changed
                 ):
-                    with self.assertRaises(ValueError):
+                    with self.assertRaises(ValueError) as caught:
                         contract.graph_rebinding(
                             {}, self.spec, ROOT, self.proposed_lock(), self.bindings
                         )
+                self.assertEqual(
+                    str(caught.exception),
+                    "actual wasm clock registry identity or existing feature closure changed",
+                )
+                self.assertEqual(self.spec, original_spec)
         for operation in ("missing-wasm", "new-edge", "wrong-checksum"):
             with self.subTest(operation=operation):
                 changed = self.normalized_graph()
@@ -257,10 +289,15 @@ class ChronoHooksCliLockContractTests(unittest.TestCase):
                 with mock.patch.object(
                     contract, "normalize_graph", return_value=changed
                 ):
-                    with self.assertRaises(ValueError):
+                    with self.assertRaises(ValueError) as caught:
                         contract.graph_rebinding(
                             {}, self.spec, ROOT, self.proposed_lock(), self.bindings
                         )
+                self.assertEqual(
+                    str(caught.exception),
+                    "actual time feature closure differs from the accepted original three nodes",
+                )
+                self.assertEqual(self.spec, original_spec)
 
     def test_normalizer_keeps_target_paths_and_edge_conditions(self):
         lock = self.proposed_lock()
