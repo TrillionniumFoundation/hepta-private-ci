@@ -25,3 +25,11 @@ semantic failures and intermediate source qualifications remain in the
 This is no Darwin atomic equivalence, actual namespace-switch, native Asterinas
 or final composed Rust1.96 full workspace qualification. Missing primitives
 still advertise false and return Unsupported.
+
+## Archived source diffs
+
+Some original source-diff artifacts are stored as verified gzip carriers.
+The [original publication manifest](publication.json) still describes the
+uncompressed files. The [storage index](../../../../qa/repository-consolidation/20261125/exec-acceptance-diff-custody/raw-evidence-storage.json) records both
+identities. Use the [repository evidence restorer](../../../../qa/repository-consolidation/20261115/restore_raw_evidence.py) to
+recreate the exact original files in a separate directory.
