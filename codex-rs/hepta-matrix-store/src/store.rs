@@ -57,6 +57,8 @@ use crate::RoomThreadBinding;
 use crate::RoomThreadBindingDraft;
 use crate::model::MAX_PAGE_ITEMS;
 use crate::model::MAX_PAYLOAD_BYTES;
+use crate::prepare_matrix_storage_directory;
+use crate::validate_matrix_database_paths;
 
 use self::store_diagnostic::SqlxSite;
 
@@ -121,8 +123,9 @@ impl MatrixDurableStore {
         if !config.is_valid() {
             return Err(MatrixDurableError::Invalid);
         }
-        create_private_directory(&root)?;
+        prepare_matrix_storage_directory(&root)?;
         let path = root.join(MATRIX_DB_FILENAME);
+        validate_matrix_database_paths(&path)?;
         let sqlite_home =
             AbsolutePathBuf::try_from(root).map_err(|_| MatrixDurableError::Invalid)?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
@@ -3934,19 +3937,6 @@ fn to_u64(value: i64) -> Result<u64, MatrixDurableError> {
 
 fn unavailable(_error: impl std::fmt::Display) -> MatrixDurableError {
     MatrixDurableError::Unavailable
-}
-
-fn create_private_directory(path: &Path) -> Result<(), MatrixDurableError> {
-    fs::create_dir_all(path).map_err(unavailable)?;
-    if path.canonicalize().map_err(unavailable)? != path {
-        return Err(MatrixDurableError::Invalid);
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(path, fs::Permissions::from_mode(0o700)).map_err(unavailable)?;
-    }
-    Ok(())
 }
 
 fn protect_database_file(_path: &Path) -> Result<(), MatrixDurableError> {

@@ -22,6 +22,7 @@ use codex_hepta_matrix_sdk::MatrixOutboundTransport;
 use codex_hepta_matrix_sdk::MatrixSdkPaths;
 use codex_hepta_matrix_sdk::MatrixSendFuture;
 use codex_hepta_matrix_sdk::MatrixSidecarConfig;
+use codex_hepta_matrix_sdk::MatrixSidecarConfigError;
 use codex_hepta_matrix_sdk::MatrixTimelineEvent;
 use codex_hepta_matrix_sdk::MatrixTransportError;
 use codex_hepta_matrix_sdk::OutboxDispatchConfig;
@@ -578,5 +579,29 @@ fn sdk_store_paths_are_private_and_per_agent() -> TestResult {
             0o700
         );
     }
+    Ok(())
+}
+
+#[test]
+fn sdk_store_paths_reject_non_regular_event_and_media_sidecars() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent(FIRST_AGENT)?;
+    let layout = layout(&temp, &agent_id)?;
+    let config = sidecar_config(&agent_id)?;
+    let paths = MatrixSdkPaths::prepare(&layout, &config)?;
+    for artifact in [
+        paths.state().join("matrix-sdk-state.sqlite3"),
+        paths.state().join("matrix-sdk-crypto.sqlite3-shm"),
+        paths.cache().join("matrix-sdk-event-cache.sqlite3-wal"),
+        paths.cache().join("matrix-sdk-media.sqlite3-journal"),
+    ] {
+        fs::create_dir(&artifact)?;
+        assert_eq!(
+            MatrixSdkPaths::prepare(&layout, &config),
+            Err(MatrixSidecarConfigError::Unavailable)
+        );
+        fs::remove_dir(&artifact)?;
+    }
+    assert_eq!(MatrixSdkPaths::prepare(&layout, &config)?, paths);
     Ok(())
 }
