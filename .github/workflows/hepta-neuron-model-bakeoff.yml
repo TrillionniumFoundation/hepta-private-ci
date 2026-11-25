@@ -1,0 +1,46 @@
+name: Hepta Neuron model bakeoff contract qualification (read-only)
+
+on:
+  # Deep qualification is opt-in; aggregate workflows own default PR/main fanout.
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-neuron-bakeoff-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract-tests:
+    name: Fail-closed model evidence and lifecycle contract tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    steps:
+      - name: Check out exact source without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Show exact source identity
+        run: |
+          git rev-parse HEAD HEAD^{tree}
+          git diff --check
+      - name: Install pinned signature verification library
+        run: python3 -m pip install --user cryptography==46.0.4
+      - name: Run negative/contract tests (never model accuracy evidence)
+        run: |
+          python3 -m unittest discover -v \
+            -s qualification/neuron-model-bakeoff \
+            -p 'test_*.py'
+      - name: Keep checked out tracked source immutable
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code

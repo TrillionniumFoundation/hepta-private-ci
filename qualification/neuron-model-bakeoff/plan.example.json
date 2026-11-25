@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.neuron.bakeoff.v1",
+  "kind": "UNFROZEN_TEMPLATE_NOT_EVIDENCE",
+  "candidates": [
+    "laya-english-421m",
+    "laya-typed-421m",
+    "laya-multilingual-322m",
+    "arctic-embed-305m",
+    "harrier-270m"
+  ],
+  "baseline": "laya-english-421m",
+  "dataset_sha256": "REPLACE_WITH_INDEPENDENT_DATASET_DIGEST",
+  "independent_roles": {
+    "dataset_owner": "REPLACE_INDEPENDENT_DATA_OWNER",
+    "evaluator": "REPLACE_INDEPENDENT_EVALUATOR",
+    "selector": "REPLACE_INDEPENDENT_SELECTOR",
+    "executor": "REPLACE_INDEPENDENT_EXECUTOR"
+  },
+  "minimum_slice_size": 30,
+  "thresholds": {
+    "max_ece": 0.1,
+    "max_brier": 0.2,
+    "max_ood_false_acceptance": 0.01,
+    "max_slice_regression": 0.02,
+    "min_accuracy_gain": 0
+  },
+  "notes": "All values are example planning inputs, not selected production thresholds. Dataset owner must freeze on a prior version-controlled/signed plan before future_test starts. Never use this template as a passing receipt."
+}
