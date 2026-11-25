@@ -98,3 +98,8 @@ inventory and upstream Git blob identities are in `HEPTA_VERBATIM_FIXTURES.json`
 records the subsequent scoped `just fix` changes, without weakening original
 assertions. Final mechanical `just fmt` changes are recorded separately. Tests
 precede those final fix/format steps, following the repository instructions.
+
+The recorded patches `HEPTA-maintenance.patch`, `HEPTA-formatting.patch` are stored as exact evidence carriers.
+Run `python3 qa/repository-consolidation/20261115/restore_raw_evidence.py <new-output-dir>`
+from the repository root to recover the original paths and bytes before applying them.
+The source manifest retains the original patch digests.

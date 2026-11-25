@@ -29,3 +29,8 @@ backport, the recorded repository base).
 The source metadata records both pre-format and final hashes. Targeted tests
 were run before the required final fix/format step, in the order specified by
 the repository instructions.
+
+The recorded patches `HEPTA-formatting.patch` are stored as exact evidence carriers.
+Run `python3 qa/repository-consolidation/20261115/restore_raw_evidence.py <new-output-dir>`
+from the repository root to recover the original paths and bytes before applying them.
+The source manifest retains the original patch digests.
