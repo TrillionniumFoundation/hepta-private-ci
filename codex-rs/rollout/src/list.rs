@@ -1,6 +1,7 @@
 #![allow(warnings, clippy::all)]
 
 use codex_utils_path as path_utils;
+use codex_utils_time::Timestamp;
 use std::cmp::Reverse;
 use std::ffi::OsStr;
 use std::io;
@@ -330,10 +331,11 @@ impl<'de> serde::Deserialize<'de> for Cursor {
 
 impl From<codex_state::Anchor> for Cursor {
     fn from(anchor: codex_state::Anchor) -> Self {
-        let ts = anchor
-            .ts
-            .timestamp_nanos_opt()
-            .and_then(|nanos| OffsetDateTime::from_unix_timestamp_nanos(nanos as i128).ok())
+        let nanos = (anchor.ts - Timestamp::UNIX_EPOCH).whole_nanoseconds();
+        // Preserve the existing i64-nanosecond boundary and epoch fallback.
+        let ts = i64::try_from(nanos)
+            .ok()
+            .and_then(|nanos| OffsetDateTime::from_unix_timestamp_nanos(i128::from(nanos)).ok())
             .unwrap_or(OffsetDateTime::UNIX_EPOCH);
         Self { ts, id: anchor.id }
     }
