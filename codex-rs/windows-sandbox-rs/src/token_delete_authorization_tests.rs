@@ -1,8 +1,11 @@
 //! These experiments characterize the OS boundary; they do not enable a launcher.
 
+#[path = "token_delete_open_diagnostics.rs"]
+mod diagnostics;
 #[path = "token_delete_matrix_support.rs"]
 mod support;
 
+use anyhow::Context;
 use anyhow::Result;
 use pretty_assertions::assert_eq;
 use support::Dacl;
@@ -53,10 +56,24 @@ fn native_delete_distinguishes_target_right_from_parent_delete_child() -> Result
                 support::set_dacl(&parent, parent_policy)?;
                 support::create_target(&target, kind)?;
                 support::set_dacl(&target, target_policy)?;
+                let diagnose = matches!(
+                    (mode, kind, grant),
+                    (Restriction::Full, Kind::Directory, DeleteGrant::Target)
+                );
+                if diagnose {
+                    token.run(|| {
+                        diagnostics::observe_directory_opens(&target, "full-target", "before")
+                    })??;
+                }
                 let outcome = token
                     .run(|| support::delete(&target, kind))?
                     .err()
                     .map(|error| error.raw_os_error());
+                if diagnose && outcome.is_some() {
+                    token.run(|| {
+                        diagnostics::observe_directory_opens(&target, "full-target", "after")
+                    })??;
+                }
                 let expected = match (mode, grant) {
                     (Restriction::Full, DeleteGrant::Neither) => {
                         Some(Some(ERROR_ACCESS_DENIED as i32))
@@ -160,9 +177,25 @@ fn null_dacl_is_an_explicit_limit_of_full_restriction() -> Result<()> {
             support::set_dacl(&parent, parent_policy)?;
             support::create_target(&target, kind)?;
             support::set_dacl(&target, target_policy)?;
-            token.run(|| support::delete(&target, kind))??;
+            let diagnose = matches!((kind, grant), (Kind::Directory, DeleteGrant::Parent));
+            if diagnose {
+                token.run(|| {
+                    diagnostics::observe_directory_opens(&target, "null-parent", "before")
+                })??;
+            }
+            let outcome = token.run(|| support::delete(&target, kind))?;
+            if diagnose && outcome.is_err() {
+                token.run(|| {
+                    diagnostics::observe_directory_opens(&target, "null-parent", "after")
+                })??;
+            }
+            outcome.with_context(|| {
+                format!("delete NULL-DACL target: kind={kind:?} grant={grant:?}")
+            })?;
             assert!(!target.try_exists()?);
-            fixture.close()?;
+            fixture
+                .close()
+                .context("clean up NULL-DACL fixture after deletion")?;
             completed += 1;
             eprintln!(
                 "HEPTA_DELETE_MATRIX full_restriction_null_dacl kind={kind:?} grant={grant:?} deletion=allowed"

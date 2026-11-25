@@ -97,6 +97,35 @@ hypothesis, not an independently observed cause of that failure. New context
 records the exact object and checks the original thread identity before setup.
 The revised source still requires its own native result.
 
+## Second native execution and unchanged-policy diagnosis
+
+Run `45633358720`, source `b920292eae6999bfaf51febf6efc0c7e0a4317ae`,
+ran all four tests once: two passed and two failed, with no skipped or retried
+cases. The controlled-write scenario and both Low/NULL-DACL deletion cells
+passed. Fifteen deletion cells completed: ten normal-policy cells, three
+NULL-DACL cells and the two Low cells. Native strict Clippy passed.
+
+`Full + Directory + Target` failed its original allowed/absent assertion:
+`RemoveDirectoryW` returned OS error 5 and the directory remained. The final
+NULL-parent/directory cell also returned OS error 5, without an operation label
+in that version. Its exact stage is not inferred. Artifact `15030733251` is
+5,907 bytes, SHA-256
+`e0990616a26c289fcaab8c749318c3d28b300f55d17f5713c295918f45b5c305`.
+
+The next diagnostic leaves every ACL mask, token flag, deletion API, expected
+result and original gate unchanged. Under the same token and fixture ACL, it
+only opens and closes the two affected existing directories with four explicit
+access masks: DELETE alone, and combinations with SYNCHRONIZE and
+FILE_READ_ATTRIBUTES. Each is observed in synchronous and overlapped modes,
+before the original deletion and, if it fails, afterwards. All successful
+handles must close before deletion. No DELETE_ON_CLOSE, I/O, namespace or ACL
+mutation is performed by the diagnostic. At most 32 opens are added.
+
+These observations will distinguish authorization for a handle from behavior
+of the original path-based API. They are not a claim about that API's internal
+implementation. The original failure expectations remain failures if reproduced;
+this diagnostic cannot qualify the matrix merely by printing observations.
+
 ## Primary contracts
 
 - [CreateRestrictedToken](https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken)

@@ -26,6 +26,7 @@ SOURCES = [
     "codex-rs/.config/nextest.toml",
     "codex-rs/windows-sandbox-rs/src/token.rs",
     "codex-rs/windows-sandbox-rs/src/token_delete_matrix_support.rs",
+    "codex-rs/windows-sandbox-rs/src/token_delete_open_diagnostics.rs",
     "codex-rs/windows-sandbox-rs/src/token_delete_authorization_tests.rs",
     "codex-rs/windows-sandbox-rs/src/filesystem_isolation.rs",
     "qualification/windows-delete-authorization-20261125/probe/lib.rs",
