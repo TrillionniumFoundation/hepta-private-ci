@@ -11,8 +11,18 @@ _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
 }
 
+_PRODUCT_FEATURES = [
+    "default",
+    "production-cognitive-write",
+]
+
+# rules_rust receives the resolved feature set; it does not expand the Cargo
+# qualification feature's dependency on the product profile itself.
+_COGNITIVE_QUALIFICATION_FEATURES = _PRODUCT_FEATURES + ["qualification-cognitive-write"]
+
 codex_rust_crate(
     name = "hepta-agentd",
+    crate_features = _PRODUCT_FEATURES,
     crate_name = "codex_hepta_agentd",
     # The historical raw-event writer is qualification-only. Do not expose it
     # through the ordinary Agentd/learning-ledger production dependency graph.
@@ -32,7 +42,7 @@ rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = _COGNITIVE_QUALIFICATION_FEATURES,
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
     edition = "2024",
@@ -43,7 +53,7 @@ rust_library(
 rust_test(
     name = "hepta-agentd-cognitive-write-qualification-test-bin",
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = _COGNITIVE_QUALIFICATION_FEATURES,
     rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
@@ -75,7 +85,7 @@ rust_binary(
     name = "hepta-agentd-cognitive-product-qualification-bin",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = _COGNITIVE_QUALIFICATION_FEATURES,
     crate_name = "codex_hepta_agentd",
     crate_root = "src/main.rs",
     edition = "2024",
@@ -95,7 +105,7 @@ rust_binary(
 rust_test(
     name = "hepta-agentd-cognitive-product-qualification-test-bin",
     srcs = ["tests/cognitive_product_e2e.rs"] + glob(["tests/support/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = _COGNITIVE_QUALIFICATION_FEATURES,
     crate_name = "cognitive_product_e2e",
     crate_root = "tests/cognitive_product_e2e.rs",
     data = glob(["tests/support/**"]),
