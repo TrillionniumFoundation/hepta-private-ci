@@ -192,7 +192,9 @@ The omitted notice texts are restored byte-for-byte from
 `b30915a2498bfd98342ac1826f278b47c8855133`. All 15 match the current catalog's
 existing lengths and SHA-256 digests. The already-present CJK OFL is unchanged.
 `apps/hepta-native/resources/NOTICE_SOURCE.json` records each original Git blob,
-digest and disposition. No old native runtime, owner, backend lock, build script
+digest and disposition. Prepare their original `notices/` paths with the
+[offline packaging command](../../../hepta-native/README.md#native-packaging-notices).
+No old native runtime, owner, backend lock, build script
 or qualification receipt is imported.
 
 The old asset generator expects 30 assets including excluded artwork; its build
