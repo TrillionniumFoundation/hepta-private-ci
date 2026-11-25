@@ -1,0 +1,164 @@
+{
+  "body_cpu_seconds": 205.566472077,
+  "body_wall_seconds": 206.1888635030482,
+  "bundle_sha256": "25f2d2f41076b719cfd26f8012242762d3f5f077dc672cf9daac814136589175",
+  "by_width_mean": [
+    {
+      "deleted_accuracy": 0.4830729166666667,
+      "deletion_accuracy_drop": 0.419921875,
+      "independent_trained_parent_seeds": 3,
+      "intact_accuracy": 0.9029947916666666,
+      "neurons": 8,
+      "shuffle_accuracy_drop": 0.421875,
+      "shuffled_accuracy": 0.4811197916666667
+    },
+    {
+      "deleted_accuracy": 0.44921875,
+      "deletion_accuracy_drop": 0.466796875,
+      "independent_trained_parent_seeds": 3,
+      "intact_accuracy": 0.916015625,
+      "neurons": 32,
+      "shuffle_accuracy_drop": 0.462890625,
+      "shuffled_accuracy": 0.453125
+    },
+    {
+      "deleted_accuracy": 0.5169270833333334,
+      "deletion_accuracy_drop": 0.3938802083333333,
+      "independent_trained_parent_seeds": 3,
+      "intact_accuracy": 0.9108072916666666,
+      "neurons": 64,
+      "shuffle_accuracy_drop": 0.390625,
+      "shuffled_accuracy": 0.5201822916666666
+    }
+  ],
+  "distinct_synthetic_examples": 512,
+  "examples_per_parent_arm": 512,
+  "examples_per_source": 64,
+  "new_native_e6_runs": 0,
+  "original_checkpoint_selection": "same selected_model from each already frozen parent; no new selection or updates",
+  "outer_wall_seconds": 211.92286548600532,
+  "overall_mean": {
+    "deleted_accuracy": 0.4830729166666667,
+    "deletion_accuracy_drop": 0.4268663194444444,
+    "intact_accuracy": 0.9099392361111112,
+    "shuffle_accuracy_drop": 0.4251302083333333,
+    "shuffled_accuracy": 0.4848090277777778
+  },
+  "protocol_sha256": "830cbed30d6a9ef57fdb7e9453278a711d730585e4e00e041144dd1f76a9db0c",
+  "raw_metric_recalculation_max_cross_entropy_error": 2.220446049250313e-16,
+  "rows": [
+    {
+      "deleted_accuracy": 0.44921875,
+      "deletion_accuracy_drop": 0.451171875,
+      "intact_accuracy": 0.900390625,
+      "max_mass_error": 3.4416913763379853e-15,
+      "neurons": 8,
+      "parent": "n8-qvi-value_risk-mixed-s17011",
+      "seed": 17011,
+      "shuffle_accuracy_drop": 0.451171875,
+      "shuffled_accuracy": 0.44921875,
+      "wall_seconds": 5.699338466045447
+    },
+    {
+      "deleted_accuracy": 0.44921875,
+      "deletion_accuracy_drop": 0.45703125,
+      "intact_accuracy": 0.90625,
+      "max_mass_error": 3.9968028886505635e-15,
+      "neurons": 8,
+      "parent": "n8-qvi-value_risk-mixed-s27011",
+      "seed": 27011,
+      "shuffle_accuracy_drop": 0.462890625,
+      "shuffled_accuracy": 0.443359375,
+      "wall_seconds": 5.677431791089475
+    },
+    {
+      "deleted_accuracy": 0.55078125,
+      "deletion_accuracy_drop": 0.3515625,
+      "intact_accuracy": 0.90234375,
+      "max_mass_error": 3.552713678800501e-15,
+      "neurons": 8,
+      "parent": "n8-qvi-value_risk-mixed-s37011",
+      "seed": 37011,
+      "shuffle_accuracy_drop": 0.3515625,
+      "shuffled_accuracy": 0.55078125,
+      "wall_seconds": 5.769366325926967
+    },
+    {
+      "deleted_accuracy": 0.44921875,
+      "deletion_accuracy_drop": 0.458984375,
+      "intact_accuracy": 0.908203125,
+      "max_mass_error": 4.6629367034256575e-15,
+      "neurons": 32,
+      "parent": "n32-qvi-value_risk-mixed-s17011",
+      "seed": 17011,
+      "shuffle_accuracy_drop": 0.458984375,
+      "shuffled_accuracy": 0.44921875,
+      "wall_seconds": 20.134368409984745
+    },
+    {
+      "deleted_accuracy": 0.44921875,
+      "deletion_accuracy_drop": 0.470703125,
+      "intact_accuracy": 0.919921875,
+      "max_mass_error": 4.3298697960381105e-15,
+      "neurons": 32,
+      "parent": "n32-qvi-value_risk-mixed-s27011",
+      "seed": 27011,
+      "shuffle_accuracy_drop": 0.46875,
+      "shuffled_accuracy": 0.451171875,
+      "wall_seconds": 20.983181388000958
+    },
+    {
+      "deleted_accuracy": 0.44921875,
+      "deletion_accuracy_drop": 0.470703125,
+      "intact_accuracy": 0.919921875,
+      "max_mass_error": 4.218847493575595e-15,
+      "neurons": 32,
+      "parent": "n32-qvi-value_risk-mixed-s37011",
+      "seed": 37011,
+      "shuffle_accuracy_drop": 0.4609375,
+      "shuffled_accuracy": 0.458984375,
+      "wall_seconds": 21.2469545470085
+    },
+    {
+      "deleted_accuracy": 0.55078125,
+      "deletion_accuracy_drop": 0.357421875,
+      "intact_accuracy": 0.908203125,
+      "max_mass_error": 4.440892098500626e-15,
+      "neurons": 64,
+      "parent": "n64-qvi-value_risk-mixed-s17011",
+      "seed": 17011,
+      "shuffle_accuracy_drop": 0.455078125,
+      "shuffled_accuracy": 0.453125,
+      "wall_seconds": 40.93727537896484
+    },
+    {
+      "deleted_accuracy": 0.44921875,
+      "deletion_accuracy_drop": 0.462890625,
+      "intact_accuracy": 0.912109375,
+      "max_mass_error": 4.440892098500626e-15,
+      "neurons": 64,
+      "parent": "n64-qvi-value_risk-mixed-s27011",
+      "seed": 27011,
+      "shuffle_accuracy_drop": 0.298828125,
+      "shuffled_accuracy": 0.61328125,
+      "wall_seconds": 43.21462974802125
+    },
+    {
+      "deleted_accuracy": 0.55078125,
+      "deletion_accuracy_drop": 0.361328125,
+      "intact_accuracy": 0.912109375,
+      "max_mass_error": 4.6629367034256575e-15,
+      "neurons": 64,
+      "parent": "n64-qvi-value_risk-mixed-s37011",
+      "seed": 37011,
+      "shuffle_accuracy_drop": 0.41796875,
+      "shuffled_accuracy": 0.494140625,
+      "wall_seconds": 42.50790894799866
+    }
+  ],
+  "scope": "causal dependence of this fixed architecture and frozen weights on current message routes; no learned topology superiority or full Circuit result",
+  "source_units": 8,
+  "status": "9_PARENTS_27_ARMS_COMPLETED_AND_RAW_SCORES_VERIFIED",
+  "total_prediction_trajectories": 13824,
+  "verified_manifest_files": 45
+}

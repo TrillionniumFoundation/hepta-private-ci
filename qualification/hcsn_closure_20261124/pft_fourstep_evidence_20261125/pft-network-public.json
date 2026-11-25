@@ -1,0 +1,447 @@
+{
+  "all_frame_hashes_and_byte_counts_cross_match": true,
+  "application_bytes_transmitted_once": 4581,
+  "artifact_kind": "redacted_projection_not_complete_raw_evidence",
+  "classification": "synthetic two-owned-host E5/E6 transport support; same operator; not an independent-user or LLM-learning experiment",
+  "coordinator_timing": {
+    "distribution_completed_unix_ms": 1795575734973,
+    "distribution_elapsed_ms": 7843,
+    "launch_completed_unix_ms": 1795575777811,
+    "launch_request_elapsed_ms": 36122,
+    "launch_started_unix_ms": 1795575741689,
+    "total_trial_elapsed_ms": 85622,
+    "trial_completed_unix_ms": 1795575812752,
+    "trial_started_unix_ms": 1795575727130
+  },
+  "distribution_decoded_file_bytes": 25808,
+  "executed_protocol_sha256": "5289892c72ca64b2551649b0b99701b388590a7cc858f3691599a804f4980fe3",
+  "existing_experiment_mapping": [
+    "E5",
+    "E6"
+  ],
+  "feature_dimension": 8,
+  "limitations": [
+    "existing Tailscale private overlay; no claim that underlay avoids relay",
+    "control-plane orchestration remains centralized",
+    "same operator owns both configured hosts",
+    "no model training or data adoption",
+    "no confidential or malicious-peer secure aggregation",
+    "single tiny synthetic transfer; no performance/scalability conclusion",
+    "application bytes exclude TCP/IP/Tailscale/SSH headers; file distribution counted as decoded bytes",
+    "preflight environment checks are separate from trial elapsed; discarded invalid command-name admission retained in preflight"
+  ],
+  "objective": "0.5 * sum_all_rows (x @ w - y)^2 + 0.5 * ridge * ||w||^2; add ridge once after summation",
+  "peer_count": 2,
+  "peers": {
+    "desktop": {
+      "aggregate_sha256": "e159f2f6b7bd9f852243ee3f6b19be027b8b9f65243316cb78f4106ddb94c06f",
+      "app_bytes_received": 2271,
+      "app_bytes_sent": 2310,
+      "communication_and_wait_ns": 35842047,
+      "connect_attempts": 1,
+      "count": 30,
+      "elapsed_ns": 42854986,
+      "feature_response_ns": 226004,
+      "frame_events": [
+        {
+          "bytes": 1778,
+          "direction": "send",
+          "phase": "stats",
+          "sha256": "4fc01e95131c012e480934eb365300580d0d8c6e1842c74d3c916ff34ee082cf"
+        },
+        {
+          "bytes": 1739,
+          "direction": "receive",
+          "phase": "stats",
+          "sha256": "d3ed8b86d09cf2c60afde001c1f42dc9bd61b5a76f608302c255293f3850dd26"
+        },
+        {
+          "bytes": 532,
+          "direction": "send",
+          "phase": "agreement",
+          "sha256": "850b86339e9b686e12f08a3c0ed8c7f62e1cf64faf5e37a3d32077de8aaafe61"
+        },
+        {
+          "bytes": 532,
+          "direction": "receive",
+          "phase": "agreement",
+          "sha256": "6d1edfee41c790e662d76bb3d6fbcf2d9ab1799641157fc0d2d09e2ee215eed6"
+        }
+      ],
+      "host_alias": "desktop",
+      "independent_reference_errors": {
+        "local_stats_max_error": 0.0,
+        "normal_equation_residual": 1.7763568394002505e-15,
+        "pooled_feature_numpy_solve_error": 1.1102230246251565e-16,
+        "received_stats_numpy_solve_error": 5.551115123125783e-17
+      },
+      "local_stats_sha256": "7a2de471013982322e48e63de7ddfce1ad1f9083b1e41781c5f32495e86e4ba8",
+      "original_durable_job_ref": {
+        "host_alias": "desktop",
+        "job_id": "1a210a7dc3e-ffbe-3ca0"
+      },
+      "peer_solution_max_error": 0.0,
+      "post_probe_listener_absent": true,
+      "remote_stats_sha256": "1f3f62040d4e0ad244033ab43d774fa1ef1d0f428ce6bf10633d5656089ce056",
+      "runtime_terminal_receipt": {
+        "cancelled": false,
+        "exit_code": 0,
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "timed_out": false
+      },
+      "sockets_closed": true,
+      "solve_ns": 208095,
+      "source_stats": {
+        "count": 11,
+        "dimension": 8,
+        "gram": [
+          [
+            3.576700222246263,
+            3.513341636875732,
+            0.06009617071031974,
+            -1.660971930131039,
+            -0.006556000974001391,
+            1.9480879715447637,
+            1.8070326353134396,
+            1.0034733493040182
+          ],
+          [
+            3.513341636875732,
+            4.8887805587559825,
+            2.7937963120958913,
+            0.4059504021863799,
+            0.03974077020106702,
+            1.1560147587407787,
+            2.072603933815626,
+            2.2986154671900936
+          ],
+          [
+            0.06009617071031974,
+            2.7937963120958913,
+            5.39998976543575,
+            4.508439456997503,
+            0.9593372741137838,
+            -1.0317480903014786,
+            0.22057766711792146,
+            2.004305620641057
+          ],
+          [
+            -1.660971930131039,
+            0.4059504021863799,
+            4.508439456997503,
+            6.079134174337122,
+            3.629504445227561,
+            0.2877870176535201,
+            -0.720350852600974,
+            0.2253334217423694
+          ],
+          [
+            -0.006556000974001391,
+            0.03974077020106702,
+            0.9593372741137838,
+            3.629504445227561,
+            5.887108806142837,
+            4.872731411431886,
+            1.4098229653246848,
+            -0.6419046322283437
+          ],
+          [
+            1.9480879715447637,
+            1.1560147587407787,
+            -1.0317480903014786,
+            0.2877870176535201,
+            4.872731411431886,
+            7.42969287135235,
+            5.214089386208827,
+            1.5873611581411582
+          ],
+          [
+            1.8070326353134396,
+            2.072603933815626,
+            0.22057766711792146,
+            -0.720350852600974,
+            1.4098229653246848,
+            5.214089386208827,
+            7.13826459605735,
+            5.530336153511831
+          ],
+          [
+            1.0034733493040182,
+            2.2986154671900936,
+            2.004305620641057,
+            0.2253334217423694,
+            -0.6419046322283437,
+            1.5873611581411582,
+            5.530336153511831,
+            7.324645724626504
+          ]
+        ],
+        "rhs": [
+          -3.100467132555853,
+          -2.8008917746841124,
+          0.42476371717091976,
+          1.7901977992570113,
+          -0.04878681819560525,
+          -1.9963049712098697,
+          -1.7825481046044103,
+          -0.8871953295269698
+        ]
+      },
+      "status": "pass",
+      "stderr": {
+        "eof": true,
+        "size": 0
+      },
+      "stdout": {
+        "eof": true,
+        "size": 3734
+      },
+      "weights": [
+        -0.9848017477950225,
+        -0.004040354861124371,
+        0.3108960576384684,
+        -0.22850377340520417,
+        -0.0010990214664226652,
+        0.15687670095069475,
+        -0.1431811855773274,
+        0.004642685205096767
+      ]
+    },
+    "pocket4": {
+      "aggregate_sha256": "e159f2f6b7bd9f852243ee3f6b19be027b8b9f65243316cb78f4106ddb94c06f",
+      "app_bytes_received": 2310,
+      "app_bytes_sent": 2271,
+      "communication_and_wait_ns": 24018638268,
+      "connect_attempts": 112,
+      "count": 30,
+      "elapsed_ns": 24023382994,
+      "feature_response_ns": 100041,
+      "frame_events": [
+        {
+          "bytes": 1739,
+          "direction": "send",
+          "phase": "stats",
+          "sha256": "d3ed8b86d09cf2c60afde001c1f42dc9bd61b5a76f608302c255293f3850dd26"
+        },
+        {
+          "bytes": 1778,
+          "direction": "receive",
+          "phase": "stats",
+          "sha256": "4fc01e95131c012e480934eb365300580d0d8c6e1842c74d3c916ff34ee082cf"
+        },
+        {
+          "bytes": 532,
+          "direction": "send",
+          "phase": "agreement",
+          "sha256": "6d1edfee41c790e662d76bb3d6fbcf2d9ab1799641157fc0d2d09e2ee215eed6"
+        },
+        {
+          "bytes": 532,
+          "direction": "receive",
+          "phase": "agreement",
+          "sha256": "850b86339e9b686e12f08a3c0ed8c7f62e1cf64faf5e37a3d32077de8aaafe61"
+        }
+      ],
+      "host_alias": "pocket4",
+      "independent_reference_errors": {
+        "local_stats_max_error": 0.0,
+        "normal_equation_residual": 1.7763568394002505e-15,
+        "pooled_feature_numpy_solve_error": 1.1102230246251565e-16,
+        "received_stats_numpy_solve_error": 5.551115123125783e-17
+      },
+      "local_stats_sha256": "1f3f62040d4e0ad244033ab43d774fa1ef1d0f428ce6bf10633d5656089ce056",
+      "original_durable_job_ref": {
+        "host_alias": "pocket4",
+        "job_id": "1a210a7a803-ffbe-3c9f"
+      },
+      "peer_solution_max_error": 0.0,
+      "post_probe_listener_absent": true,
+      "remote_stats_sha256": "7a2de471013982322e48e63de7ddfce1ad1f9083b1e41781c5f32495e86e4ba8",
+      "runtime_terminal_receipt": {
+        "cancelled": false,
+        "exit_code": 0,
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "timed_out": false
+      },
+      "sockets_closed": true,
+      "solve_ns": 134366,
+      "source_stats": {
+        "count": 19,
+        "dimension": 8,
+        "gram": [
+          [
+            12.081055428874015,
+            1.550950054980981,
+            1.8934458331363604,
+            2.2833909546558626,
+            2.7175846694561536,
+            3.1823562822871496,
+            3.656629096583744,
+            4.116691412764681
+          ],
+          [
+            1.550950054980981,
+            12.690180622078149,
+            2.258711165867967,
+            2.775654755369094,
+            3.401604219587264,
+            4.105527036050381,
+            4.838839494794355,
+            5.546569571347217
+          ],
+          [
+            1.8934458331363604,
+            2.258711165867967,
+            13.572763680197811,
+            3.3607914806623893,
+            4.114979513019596,
+            4.965516969875193,
+            5.8545512928661365,
+            6.716488309744733
+          ],
+          [
+            2.2833909546558626,
+            2.775654755369094,
+            3.3607914806623893,
+            14.891888584531397,
+            4.864831857487415,
+            5.750482014217599,
+            6.6706407971885255,
+            7.574000715418971
+          ],
+          [
+            2.7175846694561536,
+            3.401604219587264,
+            4.114979513019596,
+            4.864831857487415,
+            16.48422347153718,
+            6.467134926867373,
+            7.301142737819909,
+            8.139645440327962
+          ],
+          [
+            3.1823562822871496,
+            4.105527036050381,
+            4.965516969875193,
+            5.750482014217599,
+            6.467134926867373,
+            17.972722383858283,
+            7.804540202756844,
+            8.50283718101121
+          ],
+          [
+            3.656629096583744,
+            4.838839494794355,
+            5.8545512928661365,
+            6.6706407971885255,
+            7.301142737819909,
+            7.804540202756844,
+            19.104018323669237,
+            8.802177161292958
+          ],
+          [
+            4.116691412764681,
+            5.546569571347217,
+            6.716488309744733,
+            7.574000715418971,
+            8.139645440327962,
+            8.50283718101121,
+            8.802177161292958,
+            20.028028713481923
+          ]
+        ],
+        "rhs": [
+          -12.028271033573306,
+          -1.546003707917407,
+          1.5757389121551688,
+          -4.684989116771923,
+          -2.456628326124016,
+          -1.0474155347137752,
+          -4.783680212055916,
+          -3.6073170420739067
+        ]
+      },
+      "status": "pass",
+      "stderr": {
+        "eof": true,
+        "size": 0
+      },
+      "stdout": {
+        "eof": true,
+        "size": 3705
+      },
+      "weights": [
+        -0.9848017477950225,
+        -0.004040354861124371,
+        0.3108960576384684,
+        -0.22850377340520417,
+        -0.0010990214664226652,
+        0.15687670095069475,
+        -0.1431811855773274,
+        0.004642685205096767
+      ]
+    }
+  },
+  "post_probe_listeners_absent": true,
+  "post_run_local_validation_elapsed_ns": 7675095,
+  "private_original_artifacts": {
+    "pft-network-preflight.json": {
+      "bytes": 118891,
+      "included_in_public_distribution": false,
+      "sha256": "63d2c85ab9885b4884c63a07afeab10c1f1070c0a7dc47b643fd98c09b0b1915"
+    },
+    "pft-network-preflight.json.gz": {
+      "bytes": 9343,
+      "included_in_public_distribution": false,
+      "sha256": "c8c88df32ea248f7914c1ec5b554173c0df62cbd74949e394ff028fb4950a4cd"
+    },
+    "pft-network-protocol.json": {
+      "bytes": 2510,
+      "included_in_public_distribution": false,
+      "sha256": "5289892c72ca64b2551649b0b99701b388590a7cc858f3691599a804f4980fe3"
+    },
+    "pft-network-result.json": {
+      "bytes": 132225,
+      "included_in_public_distribution": false,
+      "sha256": "218bec03cfac179cc1350227c064dbdee4b09b8ae2708a1576e23f5f3c59314d"
+    },
+    "pft-network-result.json.gz": {
+      "bytes": 16315,
+      "included_in_public_distribution": false,
+      "sha256": "c876fc7739099fff873ffa3998779dc43d759463d258deacd763769066d1cc21"
+    },
+    "pft-network-summary.json": {
+      "bytes": 3408,
+      "included_in_public_distribution": false,
+      "sha256": "df8b72d4fba0d4b3f3d8badb630d2cce86f86156897d435a20d5e808f0954377"
+    }
+  },
+  "projection_created_unix_ns": 1795576033812228923,
+  "projection_notice": "Allowlisted public projection of one already completed owned-host synthetic TCP probe. Network inventories, concrete addresses, hostnames, account paths, unrelated processes, raw stdout/hex, command arguments and PIDs are omitted. This is not a complete raw log and is not a new run. Original source/protocol/raw hashes and original durable job references are retained for authorized reconciliation.",
+  "public_protocol_template": {
+    "filename": "pft-network-protocol-template.json",
+    "is_executed_protocol": false,
+    "sha256": "6c1f75abed0cd1ad91865ee793c3673bf36b6980270d59c8916caa1bbda24226"
+  },
+  "reference_weights": [
+    -0.9848017477950224,
+    -0.004040354861124276,
+    0.31089605763846834,
+    -0.22850377340520417,
+    -0.0010990214664226333,
+    0.1568767009506947,
+    -0.14318118557732734,
+    0.004642685205096724
+  ],
+  "ridge": 0.2,
+  "rows": 30,
+  "run_id": "pft-crosshost-synthetic-20261125-a1",
+  "same_aggregate_and_solution": true,
+  "schema": "pft-crosshost-public-projection-v1",
+  "source_sha256": "3de1c89ddf6d122630eea274ff17d666ffcbf1ace130e4645c65bdc11a1c1518",
+  "status": "pass"
+}

@@ -1,0 +1,52 @@
+{
+  "acceptance": [
+    "both durable jobs exit 0 with output_complete and EOF",
+    "exact source and manifest commitment on both peers",
+    "each peer receives only the other frozen overlay IP and identity",
+    "cross-match per-direction frame hashes and application byte counts",
+    "same aggregate SHA and independently computed solutions",
+    "each solution agrees with independently assembled NumPy pooled normal equations <= 1e-10",
+    "all sockets close and no probe listener remains"
+  ],
+  "artifact_kind": "redacted_template_not_executed_protocol",
+  "data": "public deterministic synthetic feature_rows; no user documents, prompts, labels or existing model weights",
+  "executed_protocol_sha256_reference_only": "5289892c72ca64b2551649b0b99701b388590a7cc858f3691599a804f4980fe3",
+  "execution_status": "not executed; replace host address placeholders, assign a new run identity, and freeze the resulting exact bytes before any future execution",
+  "existing_experiment_mapping": [
+    "E5",
+    "E6"
+  ],
+  "max_frame_bytes": 65536,
+  "network_timeout_seconds": 120,
+  "objective": "0.5 * sum_all_rows (x @ w - y)^2 + 0.5 * ridge * ||w||^2; add ridge once after summation",
+  "ownership": "both configured hosts under the same operator; not independent people or organizations",
+  "peers": {
+    "desktop": {
+      "frequency": 0.13,
+      "ip": "<desktop_private_overlay_ipv4>",
+      "offset": -0.15,
+      "rows": 11
+    },
+    "pocket4": {
+      "frequency": 0.29,
+      "ip": "<pocket4_private_overlay_ipv4>",
+      "offset": 0.25,
+      "rows": 19
+    }
+  },
+  "port": 43861,
+  "provenance_notice": "This template is derived from the executed private protocol. It has different bytes and a different SHA256; it must never be labelled the executed protocol. The original execution remains bound to executed_protocol_sha256_reference_only.",
+  "retry": "only connection-refused/timeout during startup within original deadline; no process relaunch on unknown execution",
+  "ridge": 0.2,
+  "run_id": "REPLACE_WITH_NEW_FROZEN_RUN_ID",
+  "schema": "pft-two-owned-host-protocol-template-v1",
+  "scope": "synthetic solver transport support only; not a new HCSN confirmation or model training result",
+  "source_filename": "pft_network_probe.py",
+  "source_sha256": "3de1c89ddf6d122630eea274ff17d666ffcbf1ace130e4645c65bdc11a1c1518",
+  "supervisor_timeout_seconds": 150,
+  "timing": "coordinator full trial elapsed begins before source/manifest distribution and ends after results and post-listener inspection; per-host elapsed overlaps and must not be summed as wall time; application bytes exclude TCP/IP/Tailscale/SSH headers and provisioning bytes; no network throughput claim",
+  "tolerance": 1e-10,
+  "topology": "two symmetric TCP peers, each exchanges only its own sufficient statistics and independently solves the aggregate; control-plane launch is centralized",
+  "transport": "existing tailscale0 private overlay; physical direct routing and absence of relay are not established",
+  "width": 8
+}
