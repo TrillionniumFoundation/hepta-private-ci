@@ -82,7 +82,7 @@ jobs:
           CARGO_TARGET_DIR: ${{ runner.temp }}/http-cancellation-target
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_junit.py --execution "$RUNNER_TEMP/http-cancellation-records/controls.json" --junit "$CARGO_TARGET_DIR/nextest/local/junit.xml" --output "$RUNNER_TEMP/http-cancellation-records/controls.junit.xml"
+          python3 scripts/hepta_ci_junit.py --execution "$RUNNER_TEMP/http-cancellation-records/controls.json" --junit "$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml" --output "$RUNNER_TEMP/http-cancellation-records/controls.junit.xml"
       - name: Retain original command records and logs
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
