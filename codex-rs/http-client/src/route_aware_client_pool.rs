@@ -20,6 +20,8 @@ use serde::Serialize;
 
 use crate::BuildRouteAwareHttpClientError;
 use crate::ClientRouteClass;
+use crate::HttpAddressPolicy;
+use crate::HttpAddressPolicyError;
 use crate::HttpClient;
 use crate::HttpClientBuilder;
 use crate::HttpClientFactory;
@@ -37,6 +39,9 @@ use crate::tls_backend_fallback::has_tls_error;
 use crate::tls_backend_fallback::should_retry_with_rustls;
 
 const MAX_CACHED_ROUTES: usize = 16;
+
+#[path = "restricted_request.rs"]
+mod restricted_request;
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 enum CustomCaFallback {
@@ -100,6 +105,8 @@ pub enum RouteAwareRequestError {
     TooManyRedirects,
     #[error("route-aware request timed out")]
     Timeout,
+    #[error(transparent)]
+    AddressPolicy(#[from] HttpAddressPolicyError),
 }
 
 impl RouteAwareRequestError {
@@ -137,6 +144,7 @@ impl RouteAwareRequestError {
             | Self::Build(_)
             | Self::UnsupportedRedirectScheme(_)
             | Self::TooManyRedirects
+            | Self::AddressPolicy(_)
             | Self::Timeout => None,
         }
     }
@@ -148,6 +156,7 @@ impl RouteAwareRequestError {
             | Self::Build(_)
             | Self::UnsupportedRedirectScheme(_)
             | Self::TooManyRedirects
+            | Self::AddressPolicy(_)
             | Self::Timeout => None,
         }
     }
@@ -303,6 +312,16 @@ impl RouteAwareRequestBuilder {
 
     pub async fn send(self) -> Result<reqwest::Response, RouteAwareRequestError> {
         self.pool.send(self.request?).await
+    }
+
+    /// Enforces the original configured resource capability at each redirect
+    /// and inside the actual connector's DNS resolver. Selected proxies that
+    /// cannot enforce this capability fail explicitly without a direct fallback.
+    pub async fn send_restricted(
+        self,
+        policy: &HttpAddressPolicy,
+    ) -> Result<reqwest::Response, RouteAwareRequestError> {
+        self.pool.send_restricted(self.request?, policy).await
     }
 }
 

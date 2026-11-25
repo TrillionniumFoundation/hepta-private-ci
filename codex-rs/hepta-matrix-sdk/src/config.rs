@@ -1,3 +1,4 @@
+#[cfg(not(windows))]
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
@@ -56,6 +57,33 @@ impl MatrixSdkPaths {
         layout: &HeptaAgentLayout,
         config: &MatrixSidecarConfig,
     ) -> Result<Self, MatrixSidecarConfigError> {
+        let paths = Self::from_layout(layout, config)?;
+        #[cfg(windows)]
+        drop(crate::sdk_session_windows::RetainedSessionDirectories::prepare(paths.root())?);
+        #[cfg(not(windows))]
+        {
+            create_private_directory(paths.root())?;
+            create_private_directory(paths.state())?;
+            create_private_directory(paths.cache())?;
+        }
+        Ok(paths)
+    }
+
+    #[cfg(windows)]
+    pub(crate) fn prepare_retained(
+        layout: &HeptaAgentLayout,
+        config: &MatrixSidecarConfig,
+    ) -> Result<(Self, crate::sdk_session_windows::RetainedSessionStore), MatrixSidecarConfigError>
+    {
+        let paths = Self::from_layout(layout, config)?;
+        let owner = crate::sdk_session_windows::RetainedSessionStore::prepare(paths.root())?;
+        Ok((paths, owner))
+    }
+
+    fn from_layout(
+        layout: &HeptaAgentLayout,
+        config: &MatrixSidecarConfig,
+    ) -> Result<Self, MatrixSidecarConfigError> {
         config.validate(layout)?;
         // This label is the existing durable store identity. Upgrades reopen it
         // to retain encrypted keys and sessions instead of creating fresh stores.
@@ -63,9 +91,6 @@ impl MatrixSdkPaths {
         let state = root.join("state");
         let cache = root.join("cache");
         let session = root.join("session.json");
-        create_private_directory(&root)?;
-        create_private_directory(&state)?;
-        create_private_directory(&cache)?;
         Ok(Self {
             root,
             state,
@@ -103,6 +128,7 @@ pub enum MatrixSidecarConfigError {
     Unavailable,
 }
 
+#[cfg(not(windows))]
 fn create_private_directory(path: &Path) -> Result<(), MatrixSidecarConfigError> {
     fs::create_dir_all(path).map_err(|_| MatrixSidecarConfigError::Unavailable)?;
     #[cfg(unix)]

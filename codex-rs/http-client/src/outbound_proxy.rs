@@ -879,3 +879,7 @@ mod redirect_integration_tests;
 #[cfg(test)]
 #[path = "outbound_proxy_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "restricted_request_tests.rs"]
+mod restricted_request_tests;

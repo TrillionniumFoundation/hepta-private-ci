@@ -18,6 +18,8 @@ use crate::HttpClient;
 use crate::HttpClientFactory;
 use crate::HttpError;
 use crate::OutboundProxyRoute;
+use crate::RouteAwareRequestError;
+use crate::address_policy::RestrictedResolver;
 use crate::chatgpt_cloudflare_cookies::ChatGptCookieStore;
 use crate::client::RequestLogging;
 use crate::custom_ca::build_reqwest_client_with_custom_ca;
@@ -163,6 +165,27 @@ impl HttpClientBuilder {
             route,
         )?;
         Ok(HttpClient::from_parts(inner, request_logging))
+    }
+
+    /// Keeps destination filtering and route selection on the shared factory.
+    /// No unrestricted pool or legacy CA fallback is reused for this client.
+    pub(crate) async fn build_for_restricted_destination(
+        mut self,
+        http_client_factory: &HttpClientFactory,
+        destination: &reqwest::Url,
+        route_class: ClientRouteClass,
+        resolver: RestrictedResolver,
+    ) -> Result<(HttpClient, OutboundProxyRoute), RouteAwareRequestError> {
+        self.chatgpt_cookie_store = http_client_factory.chatgpt_cookie_store();
+        let (builder, request_logging) = self.into_reqwest_parts();
+        let (inner, route) = http_client_factory
+            .build_restricted_reqwest_client(
+                builder.dns_resolver(Arc::new(resolver)),
+                destination,
+                route_class,
+            )
+            .await?;
+        Ok((HttpClient::from_parts(inner, request_logging), route))
     }
 
     /// Builds a client using the transport's default proxy behavior.

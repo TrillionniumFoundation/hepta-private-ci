@@ -1,3 +1,4 @@
+mod address_policy;
 mod chatgpt_cloudflare_cookies;
 mod chatgpt_hosts;
 mod client;
@@ -6,11 +7,14 @@ mod custom_ca;
 mod error;
 mod outbound_proxy;
 mod request;
+mod restricted_proxy;
 mod route_aware_client_pool;
 mod route_aware_redirect;
 mod tls_backend_fallback;
 mod transport;
 
+pub use crate::address_policy::HttpAddressPolicy;
+pub use crate::address_policy::HttpAddressPolicyError;
 pub use crate::chatgpt_cloudflare_cookies::with_chatgpt_cloudflare_cookie_store;
 pub use crate::chatgpt_hosts::is_allowed_chatgpt_host;
 pub use crate::client::HttpClient;
