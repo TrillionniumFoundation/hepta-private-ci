@@ -839,6 +839,7 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
     let response =
         responses::mount_sse_once(&server, responses::sse_completed("one-cancel-safe-owner")).await;
     let test = test_codex()
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_blocking_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
@@ -950,6 +951,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
     let response =
         responses::mount_sse_once(&server, responses::sse_completed("must-not-run")).await;
     let test = test_codex()
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_blocking_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
@@ -2347,6 +2349,7 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let (installed, extensions) = registered_queue_extensions();
     let test = test_codex()
         .with_extensions(extensions)
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_rejecting_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
@@ -2401,6 +2404,7 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
     let responses =
         responses::mount_sse_once(&server, responses::sse_completed("unexpected-turn")).await;
     let test = test_codex()
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_rejecting_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
