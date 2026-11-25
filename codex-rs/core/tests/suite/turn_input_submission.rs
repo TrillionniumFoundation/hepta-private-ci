@@ -204,6 +204,9 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
             .any(|item| matches!(item, codex_rollout::RolloutItem::TurnContext(_))),
         "Ready must follow the durable TurnContext"
     );
+    let recovery_diagnostics =
+        codex_core::test_support::RecoveryDiagnostics::capture(&test.codex, &turn_id);
+    let ready_diagnostics = recovery_diagnostics.snapshot(&test.codex);
     test.codex
         .submit(Op::Interrupt)
         .await
@@ -222,7 +225,12 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         }
     })
     .await
-    .expect("interrupted idle turn should expose its recovery epoch");
+    .unwrap_or_else(|error| {
+        panic!(
+            "interrupted idle turn should expose its recovery epoch: {error}; before={ready_diagnostics}; after={}",
+            recovery_diagnostics.snapshot(&test.codex),
+        )
+    });
 
     let submission = test
         .codex

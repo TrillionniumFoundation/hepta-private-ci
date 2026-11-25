@@ -1,5 +1,6 @@
 mod compact;
 mod lifecycle;
+pub(crate) mod recovery_diagnostics;
 mod regular;
 mod review;
 mod terminal_event;
@@ -1809,9 +1810,13 @@ impl Session {
         terminal_persistence_generation: Option<u64>,
     ) -> bool {
         let Some(seed) = recovery_seed else {
+            recovery_diagnostics::record(self, "live_seed_absent", || serde_json::json!({}));
             return false;
         };
         let Some(confirmation_generation) = seed.confirmation_generation else {
+            recovery_diagnostics::record(self, "live_confirmation_generation_absent", || {
+                serde_json::json!({})
+            });
             return false;
         };
         let persistence_proven = terminal_persistence_generation.is_some_and(|generation| {
@@ -1820,6 +1825,14 @@ impl Session {
                     == seed.persistence_failure_generation
         });
         if !task_quiesced || !persistence_proven {
+            recovery_diagnostics::record(self, "live_quiescence_or_persistence", || {
+                serde_json::json!({
+                    "task_quiesced": task_quiesced, "persistence_proven": persistence_proven,
+                    "terminal_generation": terminal_persistence_generation,
+                    "seed_failure_generation": seed.persistence_failure_generation,
+                    "current_failure_generation": self.rollout_persistence_failure_generation(),
+                })
+            });
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
                 .await;
             return false;
@@ -1829,12 +1842,21 @@ impl Session {
         // turn first, then recovery authority state.
         let active_turn = self.active_turn.lock().await;
         if active_turn.is_some() || self.turn_epoch.load(Ordering::Acquire) != seed.attach_epoch {
+            recovery_diagnostics::record(self, "live_active_or_epoch", || {
+                serde_json::json!({
+                    "active": active_turn.is_some(), "seed_epoch": seed.attach_epoch,
+                    "current_epoch": self.turn_epoch.load(Ordering::Acquire),
+                })
+            });
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
                 .await;
             return false;
         }
         if self.shutdown_started() {
+            recovery_diagnostics::record(self, "live_shutdown_before_confirmation", || {
+                serde_json::json!({})
+            });
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
                 .await;
@@ -1851,6 +1873,11 @@ impl Session {
             )
             .await
         {
+            recovery_diagnostics::record(
+                self,
+                "live_confirmation_failed",
+                || serde_json::json!({}),
+            );
             warn!("failed to confirm interrupted turn recovery: {err}");
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
@@ -1858,6 +1885,9 @@ impl Session {
             return false;
         }
         if self.shutdown_started() {
+            recovery_diagnostics::record(self, "live_shutdown_after_confirmation", || {
+                serde_json::json!({})
+            });
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
                 .await;
@@ -1874,6 +1904,16 @@ impl Session {
             || seed.authority.ready.load(Ordering::Acquire)
             || self.rollout_persistence_failure_generation() != seed.persistence_failure_generation;
         if authority_invalid {
+            recovery_diagnostics::record(self, "live_confirmed_authority_invalid", || {
+                serde_json::json!({
+                    "poisoned": state.poisoned, "state": format!("{:?}", state.durable_state),
+                    "generation": state.generation, "expected_generation": confirmation_generation,
+                    "ready": seed.authority.ready.load(Ordering::Acquire),
+                    "failure_generation_matches": self.rollout_persistence_failure_generation() == seed.persistence_failure_generation,
+                    "request_matches": state.request_fingerprint_sha256.as_deref() == Some(seed.request_fingerprint_sha256.as_str()),
+                    "replay_matches": state.replay.as_ref() == Some(&seed.replay),
+                })
+            });
             drop(state);
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
@@ -1881,6 +1921,9 @@ impl Session {
             return false;
         }
         if self.shutdown_started() {
+            recovery_diagnostics::record(self, "live_shutdown_before_publication", || {
+                serde_json::json!({})
+            });
             drop(state);
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())

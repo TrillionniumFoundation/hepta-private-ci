@@ -4,6 +4,8 @@
 //! We prefer this to using a crate feature to avoid building multiple
 //! permutations of the crate.
 
+pub use crate::tasks::recovery_diagnostics::RecoveryDiagnostics;
+
 use std::path::PathBuf;
 use std::sync::Arc;
 

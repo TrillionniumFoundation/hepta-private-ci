@@ -203,6 +203,9 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         .expect("resume the suspended root on a replacement runtime");
     assert!(!Arc::ptr_eq(&test.thread_manager, &resumed.thread_manager));
     assert!(!Arc::ptr_eq(&codex, &resumed.codex));
+    let recovery_diagnostics =
+        codex_core::test_support::RecoveryDiagnostics::capture(&resumed.codex, &turn_id);
+    let before_recovery = recovery_diagnostics.snapshot(&resumed.codex);
     let expected_epoch = resumed
         .codex
         .recovery_epoch_if_idle(&turn_id)
@@ -222,6 +225,8 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         codex_core::StartIfIdleSubmission::Started {
             turn_id: turn_id.clone(),
         },
+        "recovery diagnostics: before={before_recovery}; after={}",
+        recovery_diagnostics.snapshot(&resumed.codex),
     );
     let completed = wait_for_event(&resumed.codex, |event| {
         matches!(event, EventMsg::TurnComplete(_))
