@@ -145,6 +145,8 @@ impl AgentdAutomationEffectHost {
             revocation_refresh: Arc::new(Mutex::new(())),
             #[cfg(target_os = "linux")]
             pq_gate: None,
+            #[cfg(all(test, unix))]
+            retain_predispatch_fixture: false,
             adapter: EffectProvider::Hcsn(provider),
         })
     }

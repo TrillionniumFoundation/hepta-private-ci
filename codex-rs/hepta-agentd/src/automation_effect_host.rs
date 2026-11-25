@@ -104,6 +104,8 @@ pub(crate) struct AgentdAutomationEffectHost {
     revocation_refresh: Arc<Mutex<()>>,
     #[cfg(target_os = "linux")]
     pq_gate: Option<Arc<crate::pq_final_use::PqFinalUseGate>>,
+    #[cfg(all(test, unix))]
+    retain_predispatch_fixture: bool,
     adapter: EffectProvider,
 }
 
@@ -249,8 +251,15 @@ impl AgentdAutomationEffectHost {
             revocation_refresh: Arc::new(Mutex::new(())),
             #[cfg(target_os = "linux")]
             pq_gate: None,
+            #[cfg(all(test, unix))]
+            retain_predispatch_fixture: false,
             adapter: EffectProvider::Http(adapter),
         })
+    }
+
+    #[cfg(all(test, unix))]
+    pub(crate) fn enable_predispatch_shadow_fixture(&mut self) {
+        self.retain_predispatch_fixture = true;
     }
 
     fn open_final_use_authority(
@@ -338,6 +347,10 @@ impl AgentdAutomationEffectHost {
                     });
             }
         };
+        #[cfg(all(test, unix))]
+        if self.retain_predispatch_fixture {
+            crate::automation_predispatch_export::observe(store, intent, &fence, now_ms).await;
+        }
         let mut driver = HttpAuthorizedEffectDriver {
             adapter,
             provider_scope: self.provider_scope.clone(),
@@ -832,7 +845,7 @@ fn hex_nibble(value: u8) -> Option<u8> {
 }
 
 #[cfg(all(test, unix))]
-mod tests {
+pub(crate) mod tests {
     use std::collections::BTreeSet;
     use std::os::unix::fs::PermissionsExt;
     use std::time::SystemTime;
@@ -874,16 +887,16 @@ mod tests {
     use super::*;
 
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c52";
-    pub(super) const WIRE: &[u8] = b"{\"effect\":\"deliver\"}";
+    pub(crate) const WIRE: &[u8] = b"{\"effect\":\"deliver\"}";
 
-    pub(super) struct Fixture {
+    pub(crate) struct Fixture {
         _temp: tempfile::TempDir,
-        pub(super) identity: AgentdIdentity,
-        pub(super) store: AutomationStore,
+        pub(crate) identity: AgentdIdentity,
+        pub(crate) store: AutomationStore,
     }
 
     impl Fixture {
-        pub(super) async fn new() -> Self {
+        pub(crate) async fn new() -> Self {
             let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("temp root: {error:?}"));
             let root = temp
                 .path()
@@ -935,7 +948,7 @@ mod tests {
             }
         }
 
-        fn open_effect_host(
+        pub(crate) fn open_effect_host(
             &self,
             server: &MockServer,
             scope: &Sha256Digest,
@@ -1034,7 +1047,7 @@ mod tests {
         .unwrap_or_else(|error| panic!("definition: {error:?}"))
     }
 
-    pub(super) fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
+    pub(crate) fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
         AuthorizedEffectIntent {
             run_id: "agentd-product-effect-run".to_string(),
             step_id: "effect".to_string(),
@@ -1051,7 +1064,7 @@ mod tests {
         }
     }
 
-    pub(super) async fn prepare_effect(
+    pub(crate) async fn prepare_effect(
         fixture: &Fixture,
         now_ms: u64,
         intent: &AuthorizedEffectIntent,
@@ -1136,7 +1149,7 @@ mod tests {
         fence
     }
 
-    pub(super) fn signed_final_use(
+    pub(crate) fn signed_final_use(
         intent: &AuthorizedEffectIntent,
         now_ms: u64,
         signing_key: &SigningKey,

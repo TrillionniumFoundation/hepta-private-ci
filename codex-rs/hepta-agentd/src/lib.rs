@@ -361,6 +361,8 @@ mod authbus_trust;
 mod automation;
 mod automation_effect_host;
 mod automation_effect_payload;
+#[cfg(all(test, unix))]
+mod automation_predispatch_export;
 mod automation_recovery;
 mod browser_servo;
 pub mod cell_split_owner;

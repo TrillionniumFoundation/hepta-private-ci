@@ -151,6 +151,8 @@ impl AgentdAutomationEffectHost {
             revocations_file,
             revocation_refresh: Arc::new(Mutex::new(())),
             pq_gate: Some(Arc::new(gate)),
+            #[cfg(all(test, unix))]
+            retain_predispatch_fixture: false,
             adapter: EffectProvider::Hcsn(provider),
         })
     }
