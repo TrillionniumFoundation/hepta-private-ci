@@ -1,0 +1,115 @@
+{
+  "schema": "hcsn-research-evidence-catalog-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 7067,
+  "measured_research_source_commit": "c4ae70d44613434aaf165529a6076fa3400ca431",
+  "raw_evidence_commit": "84d554300002f802e98d30ef0552ab008c2b0241",
+  "evidence_branch": "evidence/hcsn-closure-results-20261125",
+  "publication_contract": "This catalog names the immutable research source and raw evidence revision. Subsequent report or CI-repair commits have their own identity; this file does not assert that a future PR source head passed integration.",
+  "raw_archive_count": 75,
+  "raw_part_count": 488,
+  "raw_original_bytes": 206178943,
+  "raw_indices": [
+    {
+      "name": "root-wave1",
+      "first_publication_commit": "4b0f1f44a91cdb708889198d8bf510df66aa982b",
+      "index_path": "qualification/hcsn_closure_20261124/evidence/raw/root-wave1-INDEX.json",
+      "index_sha256": "b5a3ddaabb4355666e63b5afb819304cd0d2475dfcbe00ab6f280a525175e67f",
+      "status": "verified",
+      "object_count": 19,
+      "part_count": 206,
+      "original_bytes": 92273286,
+      "encoded_bytes": 92248562,
+      "maximum_part_bytes": 479168
+    },
+    {
+      "name": "wave2",
+      "first_publication_commit": "8136eea9243b2a54e054508d9d8fd8ad4898cc2a",
+      "index_path": "qualification/hcsn_closure_20261124/evidence/raw/wave2-INDEX.json",
+      "index_sha256": "54791d7d18bd5297aafddd1a9b90051800e93e1722bde7b9d5d864a7219e5d58",
+      "status": "verified",
+      "object_count": 30,
+      "part_count": 165,
+      "original_bytes": 67759779,
+      "encoded_bytes": 67728864,
+      "maximum_part_bytes": 479168
+    },
+    {
+      "name": "wave3",
+      "first_publication_commit": "84d554300002f802e98d30ef0552ab008c2b0241",
+      "index_path": "qualification/hcsn_closure_20261124/evidence/raw/wave3-INDEX.json",
+      "index_sha256": "82291845ac557a3a19510fe512f4373d2208c1fc7c9e78227f7758242c692b73",
+      "status": "verified",
+      "object_count": 26,
+      "part_count": 117,
+      "original_bytes": 46145878,
+      "encoded_bytes": 46133654,
+      "maximum_part_bytes": 479168
+    }
+  ],
+  "raw_catalog": {
+    "path": "RAW_EVIDENCE_CATALOG.json",
+    "sha256": "526411bc2deaa845fd1da0bff7dbeedaaf17d0c839a613749ddee1e4ab81b199"
+  },
+  "terminal_roster": {
+    "path": "EXPERIMENT_ROSTER.json",
+    "sha256": "623ec55046be56e52af2f2e7d332cffb43ef150de7280bf3e09e92ffba6d20b3",
+    "training_slots": 177,
+    "fit_status_counts": {
+      "censored_cpu": 0,
+      "completed": 177,
+      "failed": 0
+    },
+    "test_status_counts": {
+      "evaluated": 177,
+      "skipped_failed_fit": 0,
+      "unavailable": 0
+    },
+    "actual_updates_distribution": {
+      "256": 9,
+      "512": 168
+    },
+    "non_training": [
+      {
+        "count": 45,
+        "count_as_training_slots": false,
+        "count_field": "method_evaluations",
+        "kind": "program_candidates",
+        "scope": "Nine already trained parents times five head methods; includes KEEP and compiler candidates, not independent backbone training slots.",
+        "source_file": "PROGRAMS_AUDIT.json",
+        "source_sha256": "334ee80dada10182795a2b2be03b8e42214d7a4c9b921e25c1aa244737e72094"
+      },
+      {
+        "count": 15,
+        "count_as_training_slots": false,
+        "count_field": "workers",
+        "kind": "cold_cost_replays",
+        "scope": "Three fixed existing N8 parents times five independent cold processes; deterministic train/dev candidate replay, no new test or backbone training.",
+        "source_file": "COLD_COST_AUDIT.json",
+        "source_sha256": "b29a8767a64123f0a6859fc2912b27a4ff88fb4ccc80eacee7479e03444bc1c4"
+      },
+      {
+        "count": 72,
+        "count_as_training_slots": false,
+        "count_field": "panels_audited",
+        "kind": "long_delay_stress_panels",
+        "scope": "Thirty-six already selected parents/baselines times two evaluation-only delay panels; no new training or selection.",
+        "source_file": "STRESS_AUDIT.json",
+        "source_sha256": "2becf6b66eb2e2c857aced4fb7b9268cf713567c04cf697d60c20ef2e3628f08"
+      }
+    ]
+  },
+  "report": "../RESULTS_CLOSURE_ZH.md",
+  "reproduction": "../README.md",
+  "figure_data": "../figures/FIGURE_DATA.json",
+  "rust_scoped_validation": "../../hcsn_ci_repair_20261125/SCOPED_VALIDATION_COMPLETION.json",
+  "scientific_scope": "Execution completion, numerical admission, learned capability, relative advantage and repository integration are separate decisions. Failed trials and failed gates remain in the archives.",
+  "runtime": {
+    "python": "3.12.3",
+    "torch": "2.8.0+cpu",
+    "numpy": "2.5.4",
+    "energy_joules": null
+  },
+  "total_project_cost": null,
+  "cost_limit": "Use original per-campaign complete process receipts. Nested counters are not additive; unmeasured manual discovery, deployment, GPU and energy costs are not zero."
+}

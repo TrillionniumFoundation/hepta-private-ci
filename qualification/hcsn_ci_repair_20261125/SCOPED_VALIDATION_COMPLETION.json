@@ -1,0 +1,67 @@
+{
+  "cargo_lock_unchanged": true,
+  "empty_stdout": "Both commands produced empty stdout; complete stderr is retained in independently valid gzip files.",
+  "exact_base": "b1af67a38f8cf9cee700cc067da1e6001ce220a8",
+  "files": [
+    {
+      "bytes": 2622,
+      "git_blob_sha1": "a87635b7682094eef9773a07496b35a7ffb4267f",
+      "path": "qualification/hcsn_ci_repair_20261125/RUST_VALIDATION_RECEIPT_V4.json",
+      "sha256": "ae81ea6b9ef93da473cae5705641823c5a9b4d378c33d721cf8069637bd54977"
+    },
+    {
+      "bytes": 2391,
+      "git_blob_sha1": "e2e8111a54f77665be3f100170e1fde1d025df0f",
+      "path": "qualification/hcsn_ci_repair_20261125/STRICT_CLIPPY_RECEIPT_V1.json",
+      "sha256": "88c67a854ec99590947a83f033c0626c36863f3324616e88a695918af3693d87"
+    },
+    {
+      "bytes": 1355,
+      "git_blob_sha1": "8a501773179a89aec7c62982d4d2c7df9b6a9fd0",
+      "path": "qualification/hcsn_ci_repair_20261125/DURING_TEST_SOURCE_IDENTITY.json",
+      "sha256": "8d60f50c90b26fb3abfc472e67836084303e9cd39be3c8f9304910857a384d15"
+    },
+    {
+      "bytes": 14319,
+      "git_blob_sha1": "042ad210e7bbcd9ecb642329d5ae233f40b8b869",
+      "path": "qualification/hcsn_ci_repair_20261125/scoped_tests_v4.stderr.log.gz",
+      "sha256": "b2d49cad92084aec8bef4185279dfd5e0366f12e913d193d57266ba80aa2cde6"
+    },
+    {
+      "bytes": 6033,
+      "git_blob_sha1": "b7a86c2535868b0c7557e304124b49a0215f2229",
+      "path": "qualification/hcsn_ci_repair_20261125/strict_clippy_v1.stderr.log.gz",
+      "sha256": "d7214bace1b8b306546ef9e466334b1ed15d6b81510a349a16d016789b45a726"
+    }
+  ],
+  "format_and_diff_check": "Both exit0 as recorded in RUST_VALIDATION_RECEIPT_V4.json.",
+  "historical_receipts": "Previously published LOCAL_VALIDATION.json remains an honest in-progress snapshot; this separate completion receipt supersedes only its temporal status. All failed preparation attempts remain unchanged.",
+  "hosted_ci_claim": "No all-repository or final-head CI pass is claimed. Hosted blob, SDK, learning exact/merge and other checks must be read at their exact terminal head.",
+  "published_source_repair_commit": "10e9ee229276a7d689a6a080c1c8566662fcb8d3",
+  "schema": "hcsn-scoped-rust-validation-completion-v1",
+  "source_bytes_unchanged_after_validation": true,
+  "source_continuity": {
+    "ahead_of_repair": 8,
+    "all_changes": "Only added qualification/hcsn_closure_20261124 files; no Rust, Cargo.lock or repaired source changes.",
+    "behind": 0,
+    "net_files": 26,
+    "observed_followup_head": "b8acc244a3929d6f40919586812465f7aed2892e"
+  },
+  "source_scope": "Exact base plus only the five Rust source files listed in the raw receipts; full tracked Rust constructor-call closure was reviewed before publication. Public Rust constructor source signature changed; serialized fields, validations and wire format did not.",
+  "strict_clippy": {
+    "all_targets": true,
+    "children_cpu_seconds_including_shutdown": 652.499206,
+    "deny_warnings": true,
+    "dependency_warning_scope": "Cargo emitted pre-existing third-party deprecation warnings with dependency lint caps; the two requested workspace packages passed strict Clippy.",
+    "returncode": 0,
+    "wall_seconds": 455.0442187899025
+  },
+  "tests": {
+    "passed": 226,
+    "returncode": 0,
+    "skipped": 0,
+    "test_execution_seconds": 7.949,
+    "total_cpu_seconds": null,
+    "total_wall_seconds_including_compilation": 847.116214261041
+  }
+}

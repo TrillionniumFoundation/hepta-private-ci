@@ -1,0 +1,79 @@
+{
+  "base": "b1af67a38f8cf9cee700cc067da1e6001ce220a8",
+  "complete_rust_scan": "tracked_rust_callers_v2.stdout",
+  "scope": "9311 tracked Rust files; two constructor callsites",
+  "steps": [
+    {
+      "name": "just_fmt_v4",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "returncode": 0,
+      "wall_seconds": 1.6466308960225433
+    },
+    {
+      "name": "diff_check_v4",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.04309604689478874
+    },
+    {
+      "name": "scoped_tests_v4",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-control-plane",
+        "-p",
+        "codex-hepta-bellman-operator",
+        "--test-threads",
+        "2"
+      ],
+      "returncode": 0,
+      "wall_seconds": 847.116214261041
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+      "sha256": "76794bc6f6b61c8756aafa767a014c0b4d743b621a1c7574dc87ad4eba8c37ca",
+      "git_blob_sha1": "40ae2bfe9de093e3f3193f0f4901beecae3a1719"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/cell_split_route_digest.rs",
+      "sha256": "776adfe4bc02ca9f2b598f8c468d5600417cdc5ac8dde49e8bdaa2b7d30fa99b",
+      "git_blob_sha1": "900784c81894e9231b904892894e540fbe051c5f"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/control_runtime_owner.rs",
+      "sha256": "470f66b8ee0595076a3477ec3de7e16a232c4e62555da70d52c1bb635b19ee25",
+      "git_blob_sha1": "e7d55adc73c93593167193175ce4b3f00a7ed60c"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/control_runtime_publication.rs",
+      "sha256": "929e31df89c61fac714cdaa77b1d85f86d50358f9867bb76c954cb08a32f38ab",
+      "git_blob_sha1": "161409863e568404b6bcadffb62dbf5fe249f54a"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/lib.rs",
+      "sha256": "a75349c671219426de44161e85177f6916874f44ddd00da2e8e7a772a0ebbb00",
+      "git_blob_sha1": "101960a7d950322f9a544515a66ef2d1cb5d5023"
+    }
+  ],
+  "hydrated_original_formatter_evidence": [
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/pending-model-wire-cache/model_list.rs",
+      "sha256": "1136589db852ba45ce9bee975dd10fcf7a48a24c832aca5c0b8019db5a987177"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/memory-coverage-diagnostic-preparation/cognitive_runtime_tests.rs",
+      "sha256": "5ecb8bce0adb6d0151eb1ed23405489757354482f70b1b33d1232b35afc85d3c"
+    }
+  ],
+  "reviewed_bytes_preserved": true
+}

@@ -67,4 +67,26 @@ python -m qualification.hcsn_closure_20261124.communication_run smoke --root /ab
 python -m qualification.hcsn_closure_20261124.communication_analysis --root /absolute/new-communication-run --output /absolute/new-communication-summary
 ```
 
-正式因果/数值预检回执保存在 `evidence/communication_training_preflight/`。完整训练、测试与摘要的最终发布路径在本实验完成后追加；当前文档不把进行中的 fit 写成通过结果。
+正式因果/数值预检回执保存在 `evidence/communication_training_preflight/`。
+
+## 已完成的确认结果
+
+全部 21 个 fit 完成 512 更新、21 个 test worker 正常退出。独立 NumPy 对 selected / initial / 180CPU-prefix 共 63 份输出重算，最大指标误差 2.22e−16；验证了 24 个绑定源码及全部封存文件。完整表见 [RESULTS_COMMUNICATION.md](evidence/communication_training/summary/RESULTS_COMMUNICATION.md)，逐 source、初态与机制量见 [SUMMARY.json](evidence/communication_training/summary/SUMMARY.json)。
+
+| 通信方式 | 最终正确率，3 seed mean ± SD | 通过学习和数值门的 seeds |
+|---|---:|---:|
+| signed only | 91.960% ± 0.665% | 3/3 |
+| unsigned raw + signed | 86.751% ± 9.342% | 2/3 |
+| unsigned centered + signed | 93.717% ± 0.589% | 3/3 |
+| unsigned centered bounded + signed | 93.490% ± 0.343% | 3/3 |
+| boundary raw | 50.293% ± 0.000% | 0/3 |
+| boundary accumulate | 50.293% ± 0.000% | 0/3 |
+| boundary hold | 65.169% ± 25.767% | 1/3 |
+
+边界三臂的组门全部失败。因果路径修复能够让奇数时刻的 cue 进入物理控制，但没有自动解决本预算内的优化困难。Hold 只有一个 seed 学会，不能从其最好单次结果推出边界编码稳定有效。
+
+与原始 unsigned 相比，centered 臂的实际 unsigned 均值/RMS 从 0.379/0.411 降至 0.0373/0.100；慢控制更新时的 tanh 饱和率从 42.95% 降至 6.15%。Signed-only 为 6.19%；boundary raw / accumulate / hold 分别为 44.01% / 42.05% / 34.70%。这些是 3 个冻结模型的 test 均值，说明有可测的偏置和饱和关联。它不是“unsigned 永远有害”的证明：raw 仍有 2/3 过门，centered 两臂均稳定学会；也不构成独立于参数容量的普遍因果结论。
+
+尝试更新 CPU 共 8372.031 秒；fit body 9352.639 秒；完整 fit/test 子进程包含 import/shutdown 共 11019.126 秒；外层 run 为 2601.792 秒 wall / 11037.101 秒 subtree CPU。后两项包含前面的成本，不能相加。最大单进程峰 RSS 为 385,892,352 bytes；能量未测。
+
+五份精确成员档案覆盖正式结果、冻结源、完整 smoke、独立分析源及最初因果诊断，含全部 checkpoint、预测、错误与费用；档案索引在 [ARCHIVES.json](evidence/communication_training/ARCHIVES.json)。这 7 臂不含无 unsigned 的 boundary+signed 联用臂，不能把原来的 full 通道结果代替该对照；该问题属于另一个独立登记实验。
