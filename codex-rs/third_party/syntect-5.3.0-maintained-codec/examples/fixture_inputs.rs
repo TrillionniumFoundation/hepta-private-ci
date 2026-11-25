@@ -1,7 +1,8 @@
 use std::collections::BTreeSet;
 use std::fs;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 
 #[path = "../tests/support/fixture_projection.rs"]
 mod fixture_projection;

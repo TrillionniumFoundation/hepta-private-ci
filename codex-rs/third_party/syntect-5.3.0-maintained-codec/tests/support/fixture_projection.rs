@@ -2,11 +2,15 @@
 
 use std::fs;
 use std::io;
-use std::io::{Read, Write};
-use std::path::{Component, Path, PathBuf};
+use std::io::Read;
+use std::io::Write;
+use std::path::Component;
+use std::path::Path;
+use std::path::PathBuf;
 
 use flate2::bufread::GzDecoder;
-use sha2::{Digest, Sha256};
+use sha2::Digest;
+use sha2::Sha256;
 
 const CRATE_PREFIX: &str = "codex-rs/third_party/syntect-5.3.0-maintained-codec";
 const ARCHIVE_INDEX: &str = include_str!("../../fixture-custody/raw-evidence-storage.json");
