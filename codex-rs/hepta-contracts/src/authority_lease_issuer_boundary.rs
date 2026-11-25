@@ -2,6 +2,9 @@
 //! Pins are trusted local configuration, not transferable authorization.
 use super::*;
 
+#[path = "authority_lease_paired_boundary.rs"]
+mod paired;
+
 impl AuthorityLeaseVerifier {
     /// Keep an exact live writer fenced while distinguishing retained readback
     /// from a new issuer use. The parent result is observed under this SAME

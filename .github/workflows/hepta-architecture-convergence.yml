@@ -212,6 +212,30 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-preparation.json" --minimum-tests 8 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_preparation::tests)'
+      - name: Original paired Root registration and four-record boundary
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-root-registration.json" --minimum-tests 9 -- just test --locked -p codex-hepta-contracts -p codex-hepta-agentd --lib -E 'test(authority_lease::pair_boundary::tests::pinned_issuer::paired::) | test(deployment_issuer::paired::tests)'
+      - name: Isolated paired Root gate rejection controls
+        if: matrix.lane == 'source-head' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-root-gate-controls.json" --minimum-tests 8 --timeout-seconds 30 -- python3 -m unittest -v scripts.test_hepta_ci_paired_root
+      - name: Bind the isolated paired Root test build without Root
+        if: matrix.lane == 'source-head' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-root-build.json" --timeout-seconds 300 -- python3 scripts/hepta_ci_paired_root.py prepare --output "$RUNNER_TEMP/hepta-command-records/paired-root"
+      - name: One actual paired Root service refusal in private temporary state
+        if: matrix.lane == 'source-head' && steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        timeout-minutes: 1
+        run: |
+          set -euo pipefail
+          root_bundle="$RUNNER_TEMP/hepta-command-records/paired-root"
+          manifest_sha256="$(sha256sum "$root_bundle/BUILD.json" | cut -d ' ' -f 1)"
+          sudo -n /usr/bin/env -i PATH=/usr/bin:/bin PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 -I -B "$PWD/scripts/hepta_ci_paired_root.py" run-root --output "$root_bundle" --manifest-sha256 "$manifest_sha256" --source "$SOURCE_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-root-collection.json" --minimum-tests 0 --timeout-seconds 15 -- python3 scripts/hepta_ci_paired_root.py collect --output "$root_bundle"
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |

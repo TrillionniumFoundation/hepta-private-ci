@@ -2,6 +2,9 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
+#[path = "authority_lease_paired_boundary_tests.rs"]
+mod paired;
+
 fn issuer(f: &Fixture, expiry: u64) -> AuthorityLease {
     let lease = AuthorityLease {
         lease_id: "pinned-issuer".into(),
