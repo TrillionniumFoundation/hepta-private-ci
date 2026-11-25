@@ -12,6 +12,7 @@ on:
       - "codex-rs/hepta-intelligence/**"
       - "codex-rs/utils/path-utils/**"
       - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-operator-acceptance/**"
       - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-bao-adapter/**"
       - "codex-rs/state/src/sqlite*"
@@ -105,6 +106,14 @@ jobs:
           $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
           just test -p codex-hepta-prompt-registry --lib --locked durable::windows_tests:: 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'registry-native.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify native operator storage, locks, and OpenSSH signatures
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
+          just test -p codex-hepta-operator-acceptance --lib --locked --success-output immediate --failure-output immediate 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'operator-native.log')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Upload primitive evidence before consumer builds
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
@@ -115,6 +124,7 @@ jobs:
             ${{ runner.temp }}/hepta-durable-evidence/rustc.txt
             ${{ runner.temp }}/hepta-durable-evidence/native-primitives.log
             ${{ runner.temp }}/hepta-durable-evidence/registry-native.log
+            ${{ runner.temp }}/hepta-durable-evidence/operator-native.log
           if-no-files-found: error
           retention-days: 14
       - name: Verify native SQLite source identity and immutable cold images
@@ -170,7 +180,7 @@ jobs:
         shell: pwsh
         run: |
           $evidence = Join-Path $env:RUNNER_TEMP 'hepta-durable-evidence'
-          just fix -p codex-utils-path -p codex-hepta-prompt-registry -p codex-hepta-contracts -p codex-hepta-bao-adapter -p codex-state -p codex-hepta-memory --locked 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'native-clippy.log')
+          just fix -p codex-utils-path -p codex-hepta-prompt-registry -p codex-hepta-operator-acceptance -p codex-hepta-contracts -p codex-hepta-bao-adapter -p codex-state -p codex-hepta-memory --locked 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'native-clippy.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code 2>&1 | Tee-Object -FilePath (Join-Path $evidence 'native-clippy-diff.log')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
