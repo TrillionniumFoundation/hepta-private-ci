@@ -186,7 +186,7 @@ async fn capability_discovery_retries_executor_disconnect_within_same_request() 
     let upstream_websocket_url = server.websocket_url().to_string();
     let discovery_attempts = Arc::new(AtomicUsize::new(0));
     let proxy_discovery_attempts = Arc::clone(&discovery_attempts);
-    let _proxy_task = AbortOnDropHandle::new(tokio::spawn(async move {
+    let mut proxy_task = AbortOnDropHandle::new(tokio::spawn(async move {
         while let Ok((downstream, _)) = proxy_listener.accept().await {
             let mut downstream = accept_async(downstream).await?;
             let (mut upstream, _) = connect_async(&upstream_websocket_url).await?;
@@ -204,6 +204,10 @@ async fn capability_discovery_retries_executor_disconnect_within_same_request() 
                             {
                                 let attempt = proxy_discovery_attempts.fetch_add(1, Ordering::SeqCst);
                                 if attempt == 0 {
+                                    // Retire the proxy's upstream WebSocket before cutting the
+                                    // client leg. Dropping both TCP streams leaves old-session
+                                    // detachment dependent on the platform's socket cleanup.
+                                    upstream.close(None).await.context("close interrupted upstream")?;
                                     break;
                                 }
                                 sleep(Duration::from_secs(9)).await;
@@ -245,12 +249,17 @@ async fn capability_discovery_retries_executor_disconnect_within_same_request() 
         },
     }];
 
-    let snapshot = timeout(
-        Duration::from_secs(12),
-        cache.snapshot(&selected_roots, &HashMap::new()),
-    )
-    .await
-    .context("capability discovery did not retry within the same request")?;
+    let sandbox_contexts = HashMap::new();
+    let snapshot = tokio::select! {
+        snapshot = timeout(
+            Duration::from_secs(12),
+            cache.snapshot(&selected_roots, &sandbox_contexts),
+        ) => snapshot.context("capability discovery did not retry within the same request")?,
+        result = &mut proxy_task => {
+            result.context("capability discovery proxy task failed")??;
+            anyhow::bail!("capability discovery proxy stopped early");
+        }
+    };
     let discovery = snapshot.roots()[0]
         .result
         .as_ref()
