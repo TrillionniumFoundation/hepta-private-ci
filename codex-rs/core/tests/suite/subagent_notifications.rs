@@ -1359,9 +1359,24 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
     // Forking rewrites inherited instructions in the active context; the raw
     // rollout retains the old items, and paginated threads reject legacy full
     // history reads. Match every wire item against the completed child's
-    // actual context, preserving the full ordered content and annotations.
-    let local_items =
-        super::local_annotations::active_request_items(&child_thread, &child_request).await?;
+    // actual context, preserving the full ordered content and annotations. Lite's
+    // request-only prefix is checked separately against its protocol and the
+    // child's actual base instructions; it is never part of inherited history.
+    let child_model = test
+        .config
+        .model_catalog
+        .as_ref()
+        .expect("fixture model catalog")
+        .models
+        .iter()
+        .find(|model| model.slug == expected_model)
+        .expect("selected fixture model");
+    let local_items = super::local_annotations::active_request_items_with_model_prefix(
+        &child_thread,
+        &child_request,
+        child_model,
+    )
+    .await?;
     let misaligned_child_messages = local_items
         .iter()
         .filter(|message| {

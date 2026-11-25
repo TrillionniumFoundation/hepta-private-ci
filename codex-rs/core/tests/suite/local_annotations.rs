@@ -51,11 +51,92 @@ pub(super) async fn active_request_items(
 ) -> Result<Vec<Value>> {
     assert_wire_has_no_internal_metadata(request);
     let expected = request.input().into_iter().enumerate().collect();
-    let stored = codex_core::test_support::active_context_items(thread)
+    let stored = codex_core::test_support::active_context_snapshot(thread)
         .await
+        .items
         .into_iter()
         .map(serde_json::to_value)
         .collect::<serde_json::Result<Vec<_>>>()?;
+    items_matching_expected(&stored, expected, "active")
+}
+
+/// Lite prepends tools and base instructions during request construction, after
+/// history has been formatted. Check that exact prefix boundary before applying
+/// the unchanged ordered matcher to every history item. This does not reconstruct
+/// a ToolRouter or claim that its complete step-local tool plan is observable here.
+pub(super) async fn active_request_items_with_model_prefix(
+    thread: &CodexThread,
+    request: &ResponsesRequest,
+    model: &codex_protocol::openai_models::ModelInfo,
+) -> Result<Vec<Value>> {
+    if !model.use_responses_lite {
+        return active_request_items(thread, request).await;
+    }
+    assert_wire_has_no_internal_metadata(request);
+    let snapshot = codex_core::test_support::active_context_snapshot(thread).await;
+    let body = request.body_json();
+    assert_eq!(body["model"], model.slug);
+    assert!(body.get("instructions").is_none());
+    assert!(body.get("tools").is_none());
+    let input = request.input();
+    let first = input.first().context("Lite tools prefix")?;
+    let tools = first["tools"].as_array().context("Lite tools array")?;
+    assert_eq!(
+        first,
+        &serde_json::json!({
+            "type": "additional_tools", "role": "developer", "tools": tools,
+        })
+    );
+    assert_eq!(
+        input
+            .iter()
+            .filter(|item| item["type"] == "additional_tools")
+            .count(),
+        1,
+        "only the leading request-only tools item may be outside active history"
+    );
+    let functions = tools
+        .iter()
+        .filter(|tool| tool["type"] == "namespace" && tool["name"] == "functions")
+        .collect::<Vec<_>>();
+    assert_eq!(functions.len(), 1);
+    let functions = functions[0];
+    let leaves = functions["tools"].as_array().context("functions tools")?;
+    assert_eq!(
+        functions,
+        &serde_json::json!({
+            "type": "namespace", "name": "functions", "description": "", "tools": leaves,
+        })
+    );
+    for (name, kind) in [("exec", "custom"), ("wait", "function")] {
+        assert_eq!(
+            leaves
+                .iter()
+                .filter(|tool| tool["name"] == name && tool["type"] == kind)
+                .count(),
+            1,
+            "the Lite code-mode prefix must retain {name}"
+        );
+    }
+    let prefix_len = if snapshot.base_instructions.text.is_empty() {
+        1
+    } else {
+        assert_eq!(
+            input.get(1),
+            Some(&serde_json::json!({
+                "type": "message", "role": "developer",
+                "content": [{"type": "input_text", "text": snapshot.base_instructions.text}],
+            }))
+        );
+        2
+    };
+    let stored = snapshot
+        .items
+        .into_iter()
+        .map(serde_json::to_value)
+        .collect::<serde_json::Result<Vec<_>>>()?;
+    assert!(stored.iter().all(|item| item["type"] != "additional_tools"));
+    let expected = input.into_iter().enumerate().skip(prefix_len).collect();
     items_matching_expected(&stored, expected, "active")
 }
 

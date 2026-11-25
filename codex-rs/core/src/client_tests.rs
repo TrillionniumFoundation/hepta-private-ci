@@ -752,6 +752,30 @@ fn test_responses_metadata_for_client(
 fn responses_lite_base_instructions_are_request_only_and_obey_endpoint_metadata_policy() {
     let client = test_model_client(SessionSource::Exec);
     let prompt = Prompt {
+        input: vec![
+            serde_json::from_value(json!({
+                "type": "message", "role": "user",
+                "content": [{"type": "input_text", "text": "keep this history item"}],
+            }))
+            .expect("fixture history item"),
+        ],
+        tools: vec![codex_tools::ToolSpec::Function(
+            codex_tools::ResponsesApiTool {
+                name: "inspect".to_string(),
+                description: "Inspect a fixture value".to_string(),
+                strict: true,
+                defer_loading: None,
+                parameters: serde_json::from_value(json!({
+                    "type": "object",
+                    "properties": {"value": {"type": "string"}},
+                    "required": ["value"],
+                    "additionalProperties": false,
+                }))
+                .expect("fixture tool schema"),
+                output_schema: None,
+            },
+        )]
+        .into(),
         base_instructions: BaseInstructions {
             text: "request-only instructions".to_string(),
             provenance: None,
@@ -759,6 +783,8 @@ fn responses_lite_base_instructions_are_request_only_and_obey_endpoint_metadata_
         ..Default::default()
     };
     let original_input = prompt.input.clone();
+    let original_tools = prompt.tools.clone();
+    let original_base_instructions = prompt.base_instructions.clone();
     let mut model_info = test_model_info();
     model_info.use_responses_lite = true;
     let metadata = test_responses_metadata_for_client(
@@ -798,10 +824,34 @@ fn responses_lite_base_instructions_are_request_only_and_obey_endpoint_metadata_
         if let Some(expected_metadata) = expected_metadata {
             expected["internal_chat_message_metadata_passthrough"] = expected_metadata;
         }
-        assert_eq!(input.as_array().expect("input array").len(), 2);
-        assert_eq!(input[0]["type"], "additional_tools");
+        assert_eq!(input.as_array().expect("input array").len(), 3);
+        assert_eq!(
+            input[0],
+            json!({
+                "type": "additional_tools",
+                "role": "developer",
+                "tools": [{
+                    "type": "namespace", "name": "functions", "description": "",
+                    "tools": [{
+                        "type": "function", "name": "inspect",
+                        "description": "Inspect a fixture value", "strict": true,
+                        "parameters": {
+                            "type": "object",
+                            "properties": {"value": {"type": "string"}},
+                            "required": ["value"], "additionalProperties": false,
+                        },
+                    }],
+                }],
+            })
+        );
         assert_eq!(input[1], expected);
+        assert_eq!(
+            input[2],
+            serde_json::to_value(&original_input[0]).expect("history JSON")
+        );
         assert_eq!(prompt.input, original_input);
+        assert_eq!(prompt.tools, original_tools);
+        assert_eq!(prompt.base_instructions, original_base_instructions);
     }
 }
 
