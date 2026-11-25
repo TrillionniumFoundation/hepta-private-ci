@@ -308,7 +308,8 @@ fn websocket_transport_gate_uses_exact_active_turn_contributors() {
 }
 
 #[test]
-fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics() {
+fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
+-> anyhow::Result<()> {
     let provider = codex_api::Provider {
         name: "provider-a".to_string(),
         base_url: "https://deployment.example.test/v1".to_string(),
@@ -425,6 +426,33 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         )
         .expect("changed compatibility identity")
     );
+    for (key, value) in [
+        ("fiber_run_id", "fiber-start-123"),
+        ("origin", "gaas"),
+        ("codex_security_surface", "surface-b"),
+    ] {
+        let mut extra_metadata = metadata_a.clone();
+        extra_metadata
+            .extra
+            .insert(key.to_string(), value.to_string());
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &extra_metadata,
+            )?,
+            "changed {key} must remain a different connection identity",
+        );
+        let mut expected_recovery = recovery_a.clone();
+        expected_recovery["extra"] = json!({key: value});
+        assert_ne!(recovery_a, expected_recovery);
+        assert_eq!(
+            serde_json::to_value(extra_metadata.turn_recovery_compatibility_projection())?,
+            expected_recovery,
+            "recovery must retain the full changed {key} without changing other fields",
+        );
+    }
     assert_ne!(
         identity_a,
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-b"), &metadata_a,)
@@ -442,6 +470,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         )
         .expect("changed provider identity")
     );
+    Ok(())
 }
 
 #[test]
