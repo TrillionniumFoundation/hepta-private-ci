@@ -14,8 +14,10 @@ process marker. The native denial preconditions, cleanup guard, actual spawn
 API, and mutex behavior remain unchanged. No error is accepted merely because
 its message contains a word, and no test is skipped.
 
-`just fmt` and `git diff --check` succeeded locally. Windows execution is
-pending the new native source head. This fixture correction does not repair
+Rust formatting succeeded locally. A later full-range whitespace check
+identified the original log's CRLF line endings; `original-native-excerpt.zip`
+now preserves those exact bytes and the recorded excerpt hash. Windows
+execution is pending the new native source head. This fixture correction does not repair
 the separate outside-root deletion failure. The raw excerpt and the original
 full decoded log hash are recorded in `receipt.json`.
 

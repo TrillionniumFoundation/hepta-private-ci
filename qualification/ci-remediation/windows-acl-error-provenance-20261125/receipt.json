@@ -22,8 +22,16 @@
   ],
   "local_checks": {
     "just_fmt": 0,
-    "git_diff_check": 0
+    "git_diff_check": 0,
+    "original_git_diff_check_scope": "working tree before the raw excerpt was tracked; full range later identified original CRLF whitespace",
+    "raw_excerpt_preserved_in_archive": true
   },
   "native_qualification": "pending new source head; no Windows execution claimed",
-  "separate_open_blocker": "out-of-root deletion via WRITE_RESTRICTED token is not fixed by this fixture correction"
+  "separate_open_blocker": "out-of-root deletion via WRITE_RESTRICTED token is not fixed by this fixture correction",
+  "excerpt_archive": {
+    "file": "original-native-excerpt.zip",
+    "member": "original-native-excerpt.log",
+    "bytes": 794,
+    "sha256": "6a17727b4ac637cdee449c1c935675b565a6ca0e98598c650c76bbec81ee9613"
+  }
 }
