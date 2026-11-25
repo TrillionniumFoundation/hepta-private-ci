@@ -1,0 +1,63 @@
+{
+  "job_id": "1a210a493c1-ffbe-3c97",
+  "terminal": {
+    "at_unix_ms": 1795575774425,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a210a493c1-ffbe-3c97",
+    "launch_nonce": "37b99a678ee0295b9b2a596438d95ed9",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 741,
+        "stored": 741
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "outer_readback": {
+    "atomic_snapshot": false,
+    "encoding": "utf-8",
+    "files": [
+      {
+        "eof": true,
+        "path": "/home/qian-qi/hepta-pft-interventions-20261125-v1/OUTER_RECEIPT.json",
+        "sha256": "5813fa1a05553c40fdaec2124c6fc9ea43943ebd1d99702ee17624db1bb86b12",
+        "size": 808,
+        "text": "{\n  \"args\": [\n    \"/home/qian-qi/hcsn-e901-torch280-cpu-runtime-20261112/bin/python\",\n    \"-B\",\n    \"-m\",\n    \"qualification.hcsn_closure_20261124.pft_interventions\",\n    \"--parents-root\",\n    \"/home/qian-qi/hcsn-smallnet-20261124/closure-v1\",\n    \"--output\",\n    \"/home/qian-qi/hepta-pft-interventions-20261125-v1/evidence\",\n    \"--original-seal\",\n    \"920712b8ad5d7bff0c6556873acf7a3fb978bd8dff6be75fdcc75436fffd104f\",\n    \"--per-source\",\n    \"64\"\n  ],\n  \"end_unix\": 1795575774.395765,\n  \"returncode\": 0,\n  \"scope\": \"unit preflight plus full nine-parent intervention evaluation, including process import and shutdown; no training\",\n  \"source_installation_sha256\": \"b83db50808458a1524fa36c583f6aa76a5334273ef3a27764e95a34185f551a2\",\n  \"start_unix\": 1795575562.4729016,\n  \"wall_seconds\": 211.92286548600532\n}",
+        "version": "2050:54569079:808:1795575774396381174:1795575774396381174"
+      }
+    ],
+    "snapshot_scope": "independent_file",
+    "truncated": false
+  },
+  "archive": {
+    "path": "/home/qian-qi/hepta-pft-interventions-20261125-v1/evidence-bundle.tar.gz",
+    "files": 46,
+    "bytes": 1274471,
+    "sha256": "25f2d2f41076b719cfd26f8012242762d3f5f077dc672cf9daac814136589175",
+    "results_sha256": "d850747b580e57028ca116ab2026388d244d9d2720a1301c14b6f8952aa06cfd"
+  }
+}

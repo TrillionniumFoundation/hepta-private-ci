@@ -1,0 +1,179 @@
+{
+  "schema": "hepta.e1e6.pft-horizon-summary.v1",
+  "passed": true,
+  "groups": 9,
+  "episodes": 108,
+  "causal_checks": 135,
+  "causal_failures": 0,
+  "maximum_full_compressed_action_error": 3.0253577421035516e-15,
+  "maximum_single_action_rls_error": 1.9984014443252818e-15,
+  "group_means": [
+    {
+      "width": 8,
+      "method": "full_riccati",
+      "episodes": 36,
+      "total": 0.10027033607744427,
+      "task": 0.045998692831317495,
+      "retention": 0.0023972531792888162,
+      "effort": 0.051874390066837965
+    },
+    {
+      "width": 8,
+      "method": "pft_compressed",
+      "episodes": 36,
+      "total": 0.10027033607744429,
+      "task": 0.045998692831317495,
+      "retention": 0.002397253179288818,
+      "effort": 0.05187439006683796
+    },
+    {
+      "width": 8,
+      "method": "single_action_ridge",
+      "episodes": 36,
+      "total": 0.1585545271820043,
+      "task": 0.028493191472698003,
+      "retention": 0.0023630822842770926,
+      "effort": 0.1276982534250292
+    },
+    {
+      "width": 8,
+      "method": "full_horizon_gd",
+      "episodes": 36,
+      "total": 0.10019804350148057,
+      "task": 0.0474046854786333,
+      "retention": 0.0023879902153798546,
+      "effort": 0.050405367807467384
+    },
+    {
+      "width": 8,
+      "method": "blind_belief_ablation",
+      "episodes": 36,
+      "total": 0.4997327991017388,
+      "task": 0.483213103213222,
+      "retention": 0.0004646371796381216,
+      "effort": 0.016055058708878665
+    },
+    {
+      "width": 32,
+      "method": "full_riccati",
+      "episodes": 36,
+      "total": 0.46576091230246924,
+      "task": 0.21829974717897616,
+      "retention": 0.009017994086822,
+      "effort": 0.2384431710366711
+    },
+    {
+      "width": 32,
+      "method": "pft_compressed",
+      "episodes": 36,
+      "total": 0.4657609123024693,
+      "task": 0.21829974717897616,
+      "retention": 0.009017994086822002,
+      "effort": 0.2384431710366711
+    },
+    {
+      "width": 32,
+      "method": "single_action_ridge",
+      "episodes": 36,
+      "total": 0.7264677782307892,
+      "task": 0.13414443556062677,
+      "retention": 0.008409232689237938,
+      "effort": 0.5839141099809246
+    },
+    {
+      "width": 32,
+      "method": "full_horizon_gd",
+      "episodes": 36,
+      "total": 0.4672378003661447,
+      "task": 0.22626014711114598,
+      "retention": 0.00903112222443217,
+      "effort": 0.23194653103056664
+    },
+    {
+      "width": 32,
+      "method": "blind_belief_ablation",
+      "episodes": 36,
+      "total": 2.3601327972029704,
+      "task": 2.2829586258724763,
+      "retention": 0.0018978631211047886,
+      "effort": 0.0752763082093889
+    },
+    {
+      "width": 64,
+      "method": "full_riccati",
+      "episodes": 36,
+      "total": 0.9994446011918863,
+      "task": 0.46905263598904295,
+      "retention": 0.018698240931162603,
+      "effort": 0.5116937242716806
+    },
+    {
+      "width": 64,
+      "method": "pft_compressed",
+      "episodes": 36,
+      "total": 0.9994446011918863,
+      "task": 0.46905263598904295,
+      "retention": 0.018698240931162607,
+      "effort": 0.5116937242716807
+    },
+    {
+      "width": 64,
+      "method": "single_action_ridge",
+      "episodes": 36,
+      "total": 1.5746900350731492,
+      "task": 0.2919398335037748,
+      "retention": 0.017642597846929124,
+      "effort": 1.2651076037224451
+    },
+    {
+      "width": 64,
+      "method": "full_horizon_gd",
+      "episodes": 36,
+      "total": 1.0017449456599383,
+      "task": 0.4872652858082276,
+      "retention": 0.01880342783647441,
+      "effort": 0.4956762320152362
+    },
+    {
+      "width": 64,
+      "method": "blind_belief_ablation",
+      "episodes": 36,
+      "total": 5.082758424038291,
+      "task": 4.918906168248109,
+      "retention": 0.004054928836981522,
+      "effort": 0.15979732695320056
+    }
+  ],
+  "timing_ns": {
+    "feature_response": 389298390,
+    "solve": 721480221,
+    "validation": 425124054,
+    "communication": 0,
+    "unattributed_overhead": 81206988,
+    "total_elapsed": 1617109653,
+    "total_cpu": 11531977106
+  },
+  "timing_scope": "one ledger of nonoverlapping measured intervals; all methods and validation; shared setups counted once; no communication performed",
+  "protocol_sha256": "73634a5736333d88e9fd6bc197c3418007b0dc080e5a5802b416d38a4f0e199c",
+  "source_sha256": {
+    "pft_horizon.py": "09a0c5ee846a6108ec2372ebd5fc3d8c66990e18f02ed572b937135d4674fbff",
+    "pft_linear.py": "5c98e86379d53c2df06f684d729300b403b730073c4f21baeb9e6f12e4d00a66",
+    "pft_horizon_tests.py": "7fa3a06e0da6170a4614b703cf1fe35dee771e73e42d36ea838da3bcb998e124"
+  },
+  "raw": {
+    "path": "pft-horizon-result.json",
+    "bytes": 3375945,
+    "sha256": "794cd5344c1fc32191764a239a354943eab2a97aa907a38463fbcd637e0c551e"
+  },
+  "gzip": {
+    "path": "pft-horizon-result.json.gz",
+    "bytes": 946457,
+    "sha256": "c2d258c1f4841c1090acfb417175129bc28e344e7db3815a5a74cd47a67b7158"
+  },
+  "lossless_verified": true,
+  "scope": "synthetic known linear/quadratic delayed-information mechanism; no HCSN/LLM or independent learned benefit; blind arm removes information",
+  "primary_actions": 3240,
+  "suffix_validation_actions": 810,
+  "total_executed_actions": 4050,
+  "evidence_parts_manifest": "pft-horizon-parts.json"
+}

@@ -1,0 +1,93 @@
+{
+  "audit_scope": "existing E6 / paired-source #7029 archived engineering operation; no model training or new native run",
+  "checker_returncode": 2,
+  "checker_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "checker_stdout_sha256": "2b7f9cd38e1098a48c9b92f80bbb9865e7dfae1d76f063e4ad086e94ff538905",
+  "elapsed_seconds": 0.1320319170008588,
+  "executed_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/scratch/84f4d4e5f241/hepta-pft/qualification/hcsn_closure_20261124/pft_transfer_gate.py",
+    "original-retention",
+    "/workspace/scratch/84f4d4e5f241/pft-owner-reference-8a04316",
+    "/workspace/scratch/84f4d4e5f241/pft-owner-reference-8a04316/archived-7029/run/paired-training/86488abde2078b2827391403118c1358b5e8df6251a5a7be6a8f9453a7b89b07"
+  ],
+  "independent_candidate_binding_probe": {
+    "expected_candidate": "0000000000000000000000000000000000000000000000000000000000000000",
+    "observed_candidate": "a44f85e1484f904e1fbd5c4e6c0d5804e636073f33ade25a158ee4f94c8e0336",
+    "status": "CANDIDATE_MISMATCH"
+  },
+  "loader_coverage": {
+    "evidence_type": "AST readback of exact original loader_for; no model loaded",
+    "owner_file": "scripts/cell_experiments/paired_cold.py",
+    "owner_git_blob": "3a615b70c099ef4026b284d987ad374eae95c0c2",
+    "recognized_family_symbols": [
+      "circuit_bundle.FAMILY",
+      "coding_sft.FAMILY"
+    ],
+    "status": "ORIGINAL_LOADER_REQUIRED",
+    "unsupported_declared_families": [
+      "synthetic_frozen_readout",
+      "hepta-hcsn-pft-readout-v1"
+    ]
+  },
+  "native_e6_execution": {
+    "additional_compile_seconds": 0,
+    "additional_runs": 0,
+    "budget_action": "UNCHANGED",
+    "reason": "only Python hash validation and existing original retention checker executed"
+  },
+  "next_required_owner_actions": [
+    "original HCSN family loader and frozen actual materials",
+    "original source owner enrollment and retention pass for the actual candidate",
+    "original post-freeze B arrival and consent",
+    "original native E6 adoption/restart/fresh-task/FinalUse evidence"
+  ],
+  "original_declared_outcome": {
+    "comparisons": [
+      {
+        "candidate": false,
+        "panel": "known_A",
+        "parent": false,
+        "record_sha256": "40363c2d978f4d1cf8d6fa3cdf88a698347b4a287cbe1cabaa43c9b86dda9f3c"
+      },
+      {
+        "candidate": false,
+        "panel": "retention",
+        "parent": true,
+        "record_sha256": "072eb2d17d217faa4dc9af6544f0de14cf7ef5ce5b6bd7e5c3f5250cc37d3eb1"
+      }
+    ],
+    "decision": "no_update_retention_regressed",
+    "future_records_consumed": 0,
+    "independent_human_identity_established": false,
+    "prospective_records_read": 0,
+    "scope": "engineering_fixture"
+  },
+  "prospectively_admitted_real_pairs": {
+    "basis": "original scope engineering_fixture; independent human identity not established; future_records_consumed=0; original dispatch retention check rejected",
+    "count": 0,
+    "not_a_global_private_host_inventory": true,
+    "scope": "this archived #7029 engineering operation and this read-only audit"
+  },
+  "source_retention_check": {
+    "candidate_sha256": "a44f85e1484f904e1fbd5c4e6c0d5804e636073f33ade25a158ee4f94c8e0336",
+    "checker": "cell_experiments.paired_source_dispatch.verify_originals",
+    "error_type": "EvidenceError",
+    "freeze_sha256": "be8611542db942bfce78f8d5ce042e6d0574f70694ebb4e95683c7f3a84d9f16",
+    "owner_commit": "8a04316f6362db52b7946a48f151744f50a99fba",
+    "reason": "source retention gate did not permit prospective dispatch",
+    "remaining_owner": "paired_intake.admit and native E6 lifecycle",
+    "returncode": 2,
+    "source_scope": "engineering_fixture",
+    "status": "ORIGINAL_CHECKER_REJECTED"
+  },
+  "source_verification_path": "pft-owner-source-verification.json",
+  "unit_test_report": {
+    "elapsed_seconds": 0.004008744001112063,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "stdout_sha256": "3764204f8e97d716e96802f2f25e305e11b50fd00f31854a4ffe2eb465e7130a",
+    "tests_run": 12
+  }
+}

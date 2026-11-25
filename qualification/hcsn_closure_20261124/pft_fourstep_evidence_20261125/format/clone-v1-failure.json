@@ -1,0 +1,23 @@
+{
+  "error": "RuntimeError('shared clone failed: {\"argv\": [\"/usr/bin/git\", \"clone\", \"--shared\", \"--no-checkout\", \"/home/qian-qi/hcsn7067-publication-20261125-v1/repo\", \"/home/qian-qi/hepta-pft-format-20261125-v1/repo\"], \"cwd\": null, \"returncode\": 128, \"stdout\": \"\", \"stderr\": \"\\\\u6b63\\\\u514b\\\\u9686\\\\u5230 \\'/home/qian-qi/hepta-pft-format-20261125-v1/repo\\'...\\\\nremote: warning: lazy fetching disabled; some objects may not be available        \\\\nremote: fatal: could not fetch ee3717a92084cd5e8ef2bf62f457238897b0f523 from promisor remote        \\\\nerror: git upload-pack: git-pack-objects died with error.\\\\nfatal: git upload-pack: aborting due to possible repository corruption on the remote side.\\\\nremote: aborting due to possible repository corruption on the remote side.\\\\u0000\\\\nfatal: \\\\u8fc7\\\\u65e9\\\\u7684\\\\u6587\\\\u4ef6\\\\u7ed3\\\\u675f\\\\u7b26\\\\uff08EOF\\\\uff09\\\\nfatal: fetch-pack\\\\uff1a\\\\u65e0\\\\u6548\\\\u7684 index-pack \\\\u8f93\\\\u51fa\\\\n\", \"wall_seconds\": 2.3783617509761825}')",
+  "status": "blocked",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/home/qian-qi/hcsn7067-publication-20261125-v1/repo",
+        "/home/qian-qi/hepta-pft-format-20261125-v1/repo"
+      ],
+      "cwd": null,
+      "returncode": 128,
+      "stderr": "\u6b63\u514b\u9686\u5230 '/home/qian-qi/hepta-pft-format-20261125-v1/repo'...\nremote: warning: lazy fetching disabled; some objects may not be available        \nremote: fatal: could not fetch ee3717a92084cd5e8ef2bf62f457238897b0f523 from promisor remote        \nerror: git upload-pack: git-pack-objects died with error.\nfatal: git upload-pack: aborting due to possible repository corruption on the remote side.\nremote: aborting due to possible repository corruption on the remote side.\u0000\nfatal: \u8fc7\u65e9\u7684\u6587\u4ef6\u7ed3\u675f\u7b26\uff08EOF\uff09\nfatal: fetch-pack\uff1a\u65e0\u6548\u7684 index-pack \u8f93\u51fa\n",
+      "stdout": "",
+      "wall_seconds": 2.3783617509761825
+    }
+  ],
+  "tests_compiles_original_experiments_executed": false,
+  "wall_seconds": 2.378605786943808
+}

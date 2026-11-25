@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/home/qian-qi/hepta-pft-fourstep-20261125-structure/pft_structure_audit.py",
+    "audit",
+    "--input",
+    "main=/home/qian-qi/hcsn-smallnet-20261124/closure-v1",
+    "--input",
+    "baselines=/home/qian-qi/hcsn-smallnet-20261124/baselines-v1",
+    "--input",
+    "joint=/home/qian-qi/hcsn-smallnet-20261124/joint-training-v1",
+    "--input",
+    "communication=/home/qian-qi/hcsn-smallnet-20261124/communication-training-v1",
+    "--output",
+    "/home/qian-qi/hepta-pft-fourstep-20261125-structure/audit.json"
+  ],
+  "source_sha256": "f242410a81e6c76807e2b7750df58d1a8d46059f9900e242596d87ffbe4745f0",
+  "inputs": {
+    "main": "/home/qian-qi/hcsn-smallnet-20261124/closure-v1",
+    "baselines": "/home/qian-qi/hcsn-smallnet-20261124/baselines-v1",
+    "joint": "/home/qian-qi/hcsn-smallnet-20261124/joint-training-v1",
+    "communication": "/home/qian-qi/hcsn-smallnet-20261124/communication-training-v1"
+  },
+  "scope": "read saved originals only; independent output; no training or model deserialization"
+}

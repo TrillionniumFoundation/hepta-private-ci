@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.e1e6.pft-linear-summary.v1",
+  "scope": "synthetic mathematical prerequisites; no independent task, learning, or adoption acceptance",
+  "passed": true,
+  "lq_case_count": 54,
+  "normal_case_count": 3,
+  "max_lq_errors": {
+    "condensed_action": 3.3306690738754696e-16,
+    "compressed_action": 3.0531133177191805e-16,
+    "compressed_cost": 2.220446049250313e-16,
+    "condensed_cost": 2.220446049250313e-16,
+    "noisy_cost": 2.220446049250313e-16,
+    "noisy_state": 2.220446049250313e-16,
+    "kkt_stationarity": 3.3306690738754696e-16
+  },
+  "max_normal_errors": {
+    "shard": 1.8186840922140846e-13,
+    "rls": 2.5972279882324756e-13,
+    "kkt": 2.430694534538702e-13
+  },
+  "negative_controls": {
+    "malformed_statistics_and_indefinite_cost": {
+      "rejections": 5
+    },
+    "stale_terminal_basis": {
+      "old_rank": 1,
+      "augmented_rank": 2,
+      "full_cost": 0.25,
+      "augmented_cost": 0.25,
+      "stale_cost": 0.5
+    }
+  },
+  "normal_objectives": [
+    {
+      "dimension": 8,
+      "pooled": 128.26863008389466,
+      "average": 234.7379426038475,
+      "weighted": 154.95216384854254
+    },
+    {
+      "dimension": 32,
+      "pooled": 64.1417343276496,
+      "average": 127.88365902471688,
+      "weighted": 94.26048852282214
+    },
+    {
+      "dimension": 64,
+      "pooled": 7.424063335187222,
+      "average": 108.94161106318951,
+      "weighted": 62.829766655884605
+    }
+  ],
+  "timing_ns": {
+    "wall": 163822857,
+    "cpu": 1127962053
+  },
+  "raw": {
+    "path": "pft-linear-qualification-final.json",
+    "bytes": 734802,
+    "sha256": "f4e60ecb445bf8ce6f19ebdcf374876f72df968cd575663bd74f8de0540b6e7d"
+  },
+  "gzip": {
+    "path": "pft-linear-qualification-final.json.gz",
+    "bytes": 234731,
+    "sha256": "ef72e9da1f07afbf96d4b9b400c2a4914262d30e933ec23c6c9bdb9fec2ad774"
+  },
+  "lossless_verified": true,
+  "source_sha256": {
+    "pft_linear_tests.py": "e33688c3dec4d9f4ce8a54cebdcd589ab0bb033f26c6067440f075b8d9919e24",
+    "pft_linear.py": "5c98e86379d53c2df06f684d729300b403b730073c4f21baeb9e6f12e4d00a66"
+  }
+}

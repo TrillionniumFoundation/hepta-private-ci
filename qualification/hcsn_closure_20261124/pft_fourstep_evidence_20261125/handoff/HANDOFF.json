@@ -1,0 +1,70 @@
+{
+  "candidate": {
+    "family": "hepta-hcsn-pft-readout-v1",
+    "files": [
+      {
+        "bytes": 41605,
+        "path": "parent.pt",
+        "role": "base",
+        "sha256": "e3837d1f0e3ad9b3510eb2533588baf0e4e1b8d397a106de13265a756839e639"
+      },
+      {
+        "bytes": 1207,
+        "path": "candidate.npz",
+        "role": "weights",
+        "sha256": "30707794ac20c02a14e351972da2f129af555a6ac0341bb3bfef89dc788dc0dd"
+      },
+      {
+        "bytes": 1406,
+        "path": "features.json",
+        "role": "features",
+        "sha256": "9de0582647a3b1af728e8d7384a7faab9add99e4078b648a75b447266d023792"
+      }
+    ],
+    "parent": "7e3707a920a4845781e8111279a6d765ffd0b8f27292eba96bd7df09f619d4e3",
+    "runtime": {
+      "dtype": "float64",
+      "feature_sha256": "9de0582647a3b1af728e8d7384a7faab9add99e4078b648a75b447266d023792",
+      "interface": "pft_frozen_hcsn_pair_readout_v1",
+      "parameter_shape": [
+        41,
+        3
+      ],
+      "parent_file_sha256": "e3837d1f0e3ad9b3510eb2533588baf0e4e1b8d397a106de13265a756839e639",
+      "scope": "research-only bound files; original admission loader unavailable",
+      "source_ref": "c4ae70d44613434aaf165529a6076fa3400ca431"
+    },
+    "schema": "hepta.experimental-model.v1"
+  },
+  "parent": {
+    "family": "hepta-hcsn-pft-readout-v1",
+    "files": [
+      {
+        "bytes": 41605,
+        "path": "parent.pt",
+        "role": "base",
+        "sha256": "e3837d1f0e3ad9b3510eb2533588baf0e4e1b8d397a106de13265a756839e639"
+      },
+      {
+        "bytes": 1406,
+        "path": "features.json",
+        "role": "features",
+        "sha256": "9de0582647a3b1af728e8d7384a7faab9add99e4078b648a75b447266d023792"
+      }
+    ],
+    "parent": null,
+    "runtime": {
+      "dtype": "float64",
+      "feature_sha256": "9de0582647a3b1af728e8d7384a7faab9add99e4078b648a75b447266d023792",
+      "interface": "pft_frozen_hcsn_pair_readout_v1",
+      "parameter_shape": [
+        41,
+        3
+      ],
+      "parent_file_sha256": "e3837d1f0e3ad9b3510eb2533588baf0e4e1b8d397a106de13265a756839e639",
+      "scope": "research-only bound files; original admission loader unavailable",
+      "source_ref": "c4ae70d44613434aaf165529a6076fa3400ca431"
+    },
+    "schema": "hepta.experimental-model.v1"
+  }
+}

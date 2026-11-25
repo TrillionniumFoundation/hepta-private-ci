@@ -1,0 +1,1317 @@
+{
+  "passed": true,
+  "exact_conditional_results": [
+    {
+      "width": 8,
+      "seed": 113,
+      "origin": 0,
+      "expected": {
+        "full_riccati": {
+          "task": 0.04541739809829469,
+          "retention": 0.0017810532853494922,
+          "effort": 0.05271522847836467,
+          "total": 0.09991367986200886
+        },
+        "pft_compressed": {
+          "task": 0.045417398098294676,
+          "retention": 0.0017810532853494926,
+          "effort": 0.05271522847836465,
+          "total": 0.09991367986200882
+        },
+        "single_action_ridge": {
+          "task": 0.02844298068186888,
+          "retention": 0.001630949986136877,
+          "effort": 0.12438111986118845,
+          "total": 0.1544550505291942
+        },
+        "full_horizon_gd": {
+          "task": 0.04665888489969927,
+          "retention": 0.0017977837781150256,
+          "effort": 0.05163545415163642,
+          "total": 0.10009212282945072
+        },
+        "blind_belief_ablation": {
+          "task": 0.5729824301260565,
+          "retention": 0.00032868190174002536,
+          "effort": 0.011080468726944659,
+          "total": 0.5843915807547412
+        }
+      }
+    },
+    {
+      "width": 8,
+      "seed": 113,
+      "origin": 1,
+      "expected": {
+        "full_riccati": {
+          "task": 0.04902697347160621,
+          "retention": 0.001471061172212915,
+          "effort": 0.054183048491986074,
+          "total": 0.1046810831358052
+        },
+        "pft_compressed": {
+          "task": 0.04902697347160621,
+          "retention": 0.001471061172212914,
+          "effort": 0.05418304849198607,
+          "total": 0.1046810831358052
+        },
+        "single_action_ridge": {
+          "task": 0.030811376020767636,
+          "retention": 0.0013489842521248558,
+          "effort": 0.13121236783218318,
+          "total": 0.16337272810507567
+        },
+        "full_horizon_gd": {
+          "task": 0.05067752458706898,
+          "retention": 0.0014851052659588585,
+          "effort": 0.05277176077013744,
+          "total": 0.10493439062316527
+        },
+        "blind_belief_ablation": {
+          "task": 0.5765920054993681,
+          "retention": 1.8689788603448094e-05,
+          "effort": 0.012548288740566071,
+          "total": 0.5891589840285376
+        }
+      }
+    },
+    {
+      "width": 8,
+      "seed": 113,
+      "origin": 2,
+      "expected": {
+        "full_riccati": {
+          "task": 0.045598636054138296,
+          "retention": 0.0018474256935884666,
+          "effort": 0.05324008263484418,
+          "total": 0.10068614438257094
+        },
+        "pft_compressed": {
+          "task": 0.04559863605413829,
+          "retention": 0.0018474256935884668,
+          "effort": 0.053240082634844164,
+          "total": 0.10068614438257092
+        },
+        "single_action_ridge": {
+          "task": 0.02844459653071391,
+          "retention": 0.0016928917776883826,
+          "effort": 0.12573901246531508,
+          "total": 0.15587650077371737
+        },
+        "full_horizon_gd": {
+          "task": 0.04682164137276772,
+          "retention": 0.0018861399783009262,
+          "effort": 0.052138686515581616,
+          "total": 0.10084646786665026
+        },
+        "blind_belief_ablation": {
+          "task": 0.5731636680819001,
+          "retention": 0.00039505430997899987,
+          "effort": 0.01160532288342418,
+          "total": 0.5851640452753033
+        }
+      }
+    },
+    {
+      "width": 8,
+      "seed": 271,
+      "origin": 0,
+      "expected": {
+        "full_riccati": {
+          "task": 0.045686165081932,
+          "retention": 0.0036269740359736484,
+          "effort": 0.05477926858465823,
+          "total": 0.10409240770256388
+        },
+        "pft_compressed": {
+          "task": 0.045686165081932004,
+          "retention": 0.0036269740359736566,
+          "effort": 0.05477926858465824,
+          "total": 0.1040924077025639
+        },
+        "single_action_ridge": {
+          "task": 0.028406736780201607,
+          "retention": 0.0034249731426818555,
+          "effort": 0.124028741432205,
+          "total": 0.15586045135508847
+        },
+        "full_horizon_gd": {
+          "task": 0.04683350497330219,
+          "retention": 0.00356527844773749,
+          "effort": 0.05384257771848384,
+          "total": 0.10424136113952351
+        },
+        "blind_belief_ablation": {
+          "task": 0.5722378570717136,
+          "retention": 0.0005849252048634017,
+          "effort": 0.011009241914837972,
+          "total": 0.583832024191415
+        }
+      }
+    },
+    {
+      "width": 8,
+      "seed": 271,
+      "origin": 1,
+      "expected": {
+        "full_riccati": {
+          "task": 0.07468674379735214,
+          "retention": 0.0034127592310357266,
+          "effort": 0.07699185265185654,
+          "total": 0.1550913556802444
+        },
+        "pft_compressed": {
+          "task": 0.07468674379735216,
+          "retention": 0.003412759231035736,
+          "effort": 0.07699185265185655,
+          "total": 0.15509135568024446
+        },
+        "single_action_ridge": {
+          "task": 0.04505590587242294,
+          "retention": 0.003199767594358299,
+          "effort": 0.2001562521691168,
+          "total": 0.24841192563589806
+        },
+        "full_horizon_gd": {
+          "task": 0.07763226627087569,
+          "retention": 0.003334535469445732,
+          "effort": 0.07451999273404036,
+          "total": 0.15548679447436178
+        },
+        "blind_belief_ablation": {
+          "task": 0.6012384357871339,
+          "retention": 0.00037071039992548065,
+          "effort": 0.03322182598203628,
+          "total": 0.6348309721690957
+        }
+      }
+    },
+    {
+      "width": 8,
+      "seed": 271,
+      "origin": 2,
+      "expected": {
+        "full_riccati": {
+          "task": 0.05145413661898829,
+          "retention": 0.0037493418554884403,
+          "effort": 0.060323141972523496,
+          "total": 0.11552662044700023
+        },
+        "pft_compressed": {
+          "task": 0.051454136618988296,
+          "retention": 0.00374934185548845,
+          "effort": 0.06032314197252352,
+          "total": 0.11552662044700027
+        },
+        "single_action_ridge": {
+          "task": 0.03143609083394823,
+          "retention": 0.0035333201017969463,
+          "effort": 0.14174449740063674,
+          "total": 0.17671390833638193
+        },
+        "full_horizon_gd": {
+          "task": 0.052767089743002586,
+          "retention": 0.0036998505662729757,
+          "effort": 0.059202686393509035,
+          "total": 0.11566962670278459
+        },
+        "blind_belief_ablation": {
+          "task": 0.5780058286087699,
+          "retention": 0.0007072930243781934,
+          "effort": 0.01655311530270324,
+          "total": 0.5952662369358513
+        }
+      }
+    },
+    {
+      "width": 8,
+      "seed": 419,
+      "origin": 0,
+      "expected": {
+        "full_riccati": {
+          "task": 0.057261751363339546,
+          "retention": 0.002508595468692562,
+          "effort": 0.06369876624249506,
+          "total": 0.12346911307452717
+        },
+        "pft_compressed": {
+          "task": 0.057261751363339566,
+          "retention": 0.002508595468692563,
+          "effort": 0.06369876624249504,
+          "total": 0.12346911307452717
+        },
+        "single_action_ridge": {
+          "task": 0.03496809361003258,
+          "retention": 0.0023005346442851217,
+          "effort": 0.1575516279183179,
+          "total": 0.1948202561726356
+        },
+        "full_horizon_gd": {
+          "task": 0.05921832566022036,
+          "retention": 0.0025546936913908515,
+          "effort": 0.06197463408948302,
+          "total": 0.12374765344109423
+        },
+        "blind_belief_ablation": {
+          "task": 0.5846691120642048,
+          "retention": 0.0007531246918404327,
+          "effort": 0.02141841597050954,
+          "total": 0.6068406527265547
+        }
+      }
+    },
+    {
+      "width": 8,
+      "seed": 419,
+      "origin": 1,
+      "expected": {
+        "full_riccati": {
+          "task": 0.04034223663919651,
+          "retention": 0.0020291825842334928,
+          "effort": 0.04906866316063967,
+          "total": 0.09144008238406967
+        },
+        "pft_compressed": {
+          "task": 0.040342236639196546,
+          "retention": 0.0020291825842334954,
+          "effort": 0.04906866316063966,
+          "total": 0.0914400823840697
+        },
+        "single_action_ridge": {
+          "task": 0.025495609497446187,
+          "retention": 0.001874812464603595,
+          "effort": 0.11141816402769858,
+          "total": 0.13878858598974836
+        },
+        "full_horizon_gd": {
+          "task": 0.041217748648116545,
+          "retention": 0.00205440526496973,
+          "effort": 0.04831532046428438,
+          "total": 0.09158747437737065
+        },
+        "blind_belief_ablation": {
+          "task": 0.5677495973400619,
+          "retention": 0.0002737118073813636,
+          "effort": 0.006788312888654159,
+          "total": 0.5748116220360975
+        }
+      }
+    },
+    {
+      "width": 8,
+      "seed": 419,
+      "origin": 2,
+      "expected": {
+        "full_riccati": {
+          "task": 0.056425730720733536,
+          "retention": 0.0025050142648838838,
+          "effort": 0.06255088624221741,
+          "total": 0.12148163122783483
+        },
+        "pft_compressed": {
+          "task": 0.056425730720733557,
+          "retention": 0.0025050142648838846,
+          "effort": 0.06255088624221741,
+          "total": 0.12148163122783485
+        },
+        "single_action_ridge": {
+          "task": 0.034706629251026834,
+          "retention": 0.002271064662224459,
+          "effort": 0.153629564892225,
+          "total": 0.1906072588054763
+        },
+        "full_horizon_gd": {
+          "task": 0.05851316228274814,
+          "retention": 0.002484798108714979,
+          "effort": 0.06083644089030157,
+          "total": 0.12183440128176469
+        },
+        "blind_belief_ablation": {
+          "task": 0.5838330914215988,
+          "retention": 0.0007495434880317545,
+          "effort": 0.020270535970231915,
+          "total": 0.6048531708798625
+        }
+      }
+    },
+    {
+      "width": 32,
+      "seed": 113,
+      "origin": 0,
+      "expected": {
+        "full_riccati": {
+          "task": 0.2197969473052098,
+          "retention": 0.008155815238471895,
+          "effort": 0.2386425500262918,
+          "total": 0.4665953125699735
+        },
+        "pft_compressed": {
+          "task": 0.21979694730520993,
+          "retention": 0.008155815238471895,
+          "effort": 0.2386425500262918,
+          "total": 0.46659531256997366
+        },
+        "single_action_ridge": {
+          "task": 0.13647655815204354,
+          "retention": 0.0075732472130514965,
+          "effort": 0.586165594751142,
+          "total": 0.7302154001162371
+        },
+        "full_horizon_gd": {
+          "task": 0.22803115303648036,
+          "retention": 0.008149812803245574,
+          "effort": 0.23167060269859324,
+          "total": 0.46785156853831916
+        },
+        "blind_belief_ablation": {
+          "task": 2.32909446301639,
+          "retention": 0.0010748640132384843,
+          "effort": 0.07053593830314529,
+          "total": 2.400705265332774
+        }
+      }
+    },
+    {
+      "width": 32,
+      "seed": 113,
+      "origin": 1,
+      "expected": {
+        "full_riccati": {
+          "task": 0.18477505660092663,
+          "retention": 0.008362314107607256,
+          "effort": 0.21384949992283975,
+          "total": 0.4069868706313736
+        },
+        "pft_compressed": {
+          "task": 0.18477505660092677,
+          "retention": 0.008362314107607254,
+          "effort": 0.21384949992283975,
+          "total": 0.4069868706313738
+        },
+        "single_action_ridge": {
+          "task": 0.11552463001845788,
+          "retention": 0.0077699774872893625,
+          "effort": 0.5024409271302446,
+          "total": 0.6257355346359919
+        },
+        "full_horizon_gd": {
+          "task": 0.18993791811313138,
+          "retention": 0.008358216620010666,
+          "effort": 0.20942787948977737,
+          "total": 0.40772401422291943
+        },
+        "blind_belief_ablation": {
+          "task": 2.2940725723121074,
+          "retention": 0.0012813628823738433,
+          "effort": 0.045742888199693216,
+          "total": 2.3410968233941745
+        }
+      }
+    },
+    {
+      "width": 32,
+      "seed": 113,
+      "origin": 2,
+      "expected": {
+        "full_riccati": {
+          "task": 0.22119672382833122,
+          "retention": 0.00858357319414017,
+          "effort": 0.2438081535892522,
+          "total": 0.4735884506117236
+        },
+        "pft_compressed": {
+          "task": 0.2211967238283314,
+          "retention": 0.00858357319414017,
+          "effort": 0.24380815358925223,
+          "total": 0.4735884506117238
+        },
+        "single_action_ridge": {
+          "task": 0.1361140190721145,
+          "retention": 0.007998173288242488,
+          "effort": 0.6001851883764031,
+          "total": 0.7442973807367601
+        },
+        "full_horizon_gd": {
+          "task": 0.22857651828293696,
+          "retention": 0.008631082491582655,
+          "effort": 0.23738835120036025,
+          "total": 0.47459595197487986
+        },
+        "blind_belief_ablation": {
+          "task": 2.330494239539512,
+          "retention": 0.0015026219689067576,
+          "effort": 0.07570154186610568,
+          "total": 2.4076984033745243
+        }
+      }
+    },
+    {
+      "width": 32,
+      "seed": 271,
+      "origin": 0,
+      "expected": {
+        "full_riccati": {
+          "task": 0.2413158449611717,
+          "retention": 0.010765142939467457,
+          "effort": 0.268314425211565,
+          "total": 0.5203954131122042
+        },
+        "pft_compressed": {
+          "task": 0.2413158449611716,
+          "retention": 0.01076514293946746,
+          "effort": 0.26831442521156507,
+          "total": 0.5203954131122042
+        },
+        "single_action_ridge": {
+          "task": 0.14604830216570983,
+          "retention": 0.009956791362503908,
+          "effort": 0.6665216482513024,
+          "total": 0.8225267417795161
+        },
+        "full_horizon_gd": {
+          "task": 0.24929248008857602,
+          "retention": 0.01078609396880282,
+          "effort": 0.26138212085125556,
+          "total": 0.5214606949086344
+        },
+        "blind_belief_ablation": {
+          "task": 2.3500797103608,
+          "retention": 0.0036127486510532953,
+          "effort": 0.09832913160769553,
+          "total": 2.4520215906195486
+        }
+      }
+    },
+    {
+      "width": 32,
+      "seed": 271,
+      "origin": 1,
+      "expected": {
+        "full_riccati": {
+          "task": 0.2025896563608553,
+          "retention": 0.008723898474177151,
+          "effort": 0.23155871584366716,
+          "total": 0.4428722706786996
+        },
+        "pft_compressed": {
+          "task": 0.20258965636085519,
+          "retention": 0.008723898474177143,
+          "effort": 0.2315587158436672,
+          "total": 0.4428722706786995
+        },
+        "single_action_ridge": {
+          "task": 0.12502885498199864,
+          "retention": 0.008101994163514491,
+          "effort": 0.5560636971708401,
+          "total": 0.6891945463163532
+        },
+        "full_horizon_gd": {
+          "task": 0.20860156680284492,
+          "retention": 0.008816025734252731,
+          "effort": 0.2263276369500191,
+          "total": 0.44374522948711675
+        },
+        "blind_belief_ablation": {
+          "task": 2.3113535217604837,
+          "retention": 0.0015715041857629897,
+          "effort": 0.06157342223979765,
+          "total": 2.3744984481860443
+        }
+      }
+    },
+    {
+      "width": 32,
+      "seed": 271,
+      "origin": 2,
+      "expected": {
+        "full_riccati": {
+          "task": 0.20542225514014872,
+          "retention": 0.008524602825097349,
+          "effort": 0.23100733701594386,
+          "total": 0.44495419498118993
+        },
+        "pft_compressed": {
+          "task": 0.20542225514014859,
+          "retention": 0.008524602825097342,
+          "effort": 0.23100733701594384,
+          "total": 0.44495419498118977
+        },
+        "single_action_ridge": {
+          "task": 0.12750274405018544,
+          "retention": 0.00792599403723671,
+          "effort": 0.5554772800565587,
+          "total": 0.6909060181439809
+        },
+        "full_horizon_gd": {
+          "task": 0.21211728953276862,
+          "retention": 0.008440227843058846,
+          "effort": 0.22540444916078678,
+          "total": 0.44596196653661424
+        },
+        "blind_belief_ablation": {
+          "task": 2.314186120539777,
+          "retention": 0.001372208536683186,
+          "effort": 0.061022043412074324,
+          "total": 2.376580372488535
+        }
+      }
+    },
+    {
+      "width": 32,
+      "seed": 419,
+      "origin": 0,
+      "expected": {
+        "full_riccati": {
+          "task": 0.2404532430848627,
+          "retention": 0.010943266324138832,
+          "effort": 0.2615706587011846,
+          "total": 0.5129671681101862
+        },
+        "pft_compressed": {
+          "task": 0.24045324308486263,
+          "retention": 0.010943266324138836,
+          "effort": 0.26157065870118457,
+          "total": 0.5129671681101861
+        },
+        "single_action_ridge": {
+          "task": 0.14710496804346795,
+          "retention": 0.010017296244194293,
+          "effort": 0.6506163725490941,
+          "total": 0.8077386368367564
+        },
+        "full_horizon_gd": {
+          "task": 0.24985632167603075,
+          "retention": 0.010947421706113793,
+          "effort": 0.2536398353510861,
+          "total": 0.5144435787332307
+        },
+        "blind_belief_ablation": {
+          "task": 2.3500312410216093,
+          "retention": 0.0033566205946725953,
+          "effort": 0.09427012885445067,
+          "total": 2.4476579904707325
+        }
+      }
+    },
+    {
+      "width": 32,
+      "seed": 419,
+      "origin": 1,
+      "expected": {
+        "full_riccati": {
+          "task": 0.24751406368729803,
+          "retention": 0.00971876940812182,
+          "effort": 0.26080920450849654,
+          "total": 0.5180420376039164
+        },
+        "pft_compressed": {
+          "task": 0.24751406368729806,
+          "retention": 0.009718769408121813,
+          "effort": 0.2608092045084965,
+          "total": 0.5180420376039163
+        },
+        "single_action_ridge": {
+          "task": 0.15291770493410936,
+          "retention": 0.009006398208821997,
+          "effort": 0.6530902298582499,
+          "total": 0.8150143330011813
+        },
+        "full_horizon_gd": {
+          "task": 0.25853712541160395,
+          "retention": 0.009779461040455087,
+          "effort": 0.2514726886515174,
+          "total": 0.5197892751035764
+        },
+        "blind_belief_ablation": {
+          "task": 2.3570920616240443,
+          "retention": 0.002132123678655582,
+          "effort": 0.09350867466176259,
+          "total": 2.4527328599644624
+        }
+      }
+    },
+    {
+      "width": 32,
+      "seed": 419,
+      "origin": 2,
+      "expected": {
+        "full_riccati": {
+          "task": 0.2248796208338238,
+          "retention": 0.008763359308062572,
+          "effort": 0.2441035345865089,
+          "total": 0.47774651472839524
+        },
+        "pft_compressed": {
+          "task": 0.22487962083382382,
+          "retention": 0.008763359308062577,
+          "effort": 0.24410353458650888,
+          "total": 0.4777465147283953
+        },
+        "single_action_ridge": {
+          "task": 0.13867747735756034,
+          "retention": 0.008154857138808883,
+          "effort": 0.6052831463154562,
+          "total": 0.7521154808118254
+        },
+        "full_horizon_gd": {
+          "task": 0.23277985154633662,
+          "retention": 0.008819900752407718,
+          "effort": 0.23735848342103052,
+          "total": 0.47895823571977486
+        },
+        "blind_belief_ablation": {
+          "task": 2.33445761877057,
+          "retention": 0.0011767135785963358,
+          "effort": 0.076803004739775,
+          "total": 2.4124373370889414
+        }
+      }
+    },
+    {
+      "width": 64,
+      "seed": 113,
+      "origin": 0,
+      "expected": {
+        "full_riccati": {
+          "task": 0.3727790123183153,
+          "retention": 0.016072022594461374,
+          "effort": 0.42568317301932085,
+          "total": 0.8145342079320975
+        },
+        "pft_compressed": {
+          "task": 0.37277901231831523,
+          "retention": 0.01607202259446134,
+          "effort": 0.4256831730193209,
+          "total": 0.8145342079320975
+        },
+        "single_action_ridge": {
+          "task": 0.23379621191730693,
+          "retention": 0.014901988382367629,
+          "effort": 1.006980698319923,
+          "total": 1.2556788986195975
+        },
+        "full_horizon_gd": {
+          "task": 0.3839694700338621,
+          "retention": 0.016151168932984336,
+          "effort": 0.41615836729035816,
+          "total": 0.8162790062572046
+        },
+        "blind_belief_ablation": {
+          "task": 4.592479203848194,
+          "retention": 0.0020451623484454414,
+          "effort": 0.09254829949483276,
+          "total": 4.687072665691472
+        }
+      }
+    },
+    {
+      "width": 64,
+      "seed": 113,
+      "origin": 1,
+      "expected": {
+        "full_riccati": {
+          "task": 0.4984022463945261,
+          "retention": 0.016769623518245638,
+          "effort": 0.5158492905996923,
+          "total": 1.0310211605124642
+        },
+        "pft_compressed": {
+          "task": 0.4984022463945261,
+          "retention": 0.016769623518245604,
+          "effort": 0.5158492905996923,
+          "total": 1.031021160512464
+        },
+        "single_action_ridge": {
+          "task": 0.3098817724674189,
+          "retention": 0.015539582001653413,
+          "effort": 1.2988348539734624,
+          "total": 1.6242562084425347
+        },
+        "full_horizon_gd": {
+          "task": 0.5228615462090263,
+          "retention": 0.017006551176939676,
+          "effort": 0.49551625556153533,
+          "total": 1.0353843529475013
+        },
+        "blind_belief_ablation": {
+          "task": 4.718102437924404,
+          "retention": 0.002742763272229703,
+          "effort": 0.1827144170752043,
+          "total": 4.903559618271839
+        }
+      }
+    },
+    {
+      "width": 64,
+      "seed": 113,
+      "origin": 2,
+      "expected": {
+        "full_riccati": {
+          "task": 0.4347038286836576,
+          "retention": 0.01778983970219711,
+          "effort": 0.47511873608371147,
+          "total": 0.9276124044695662
+        },
+        "pft_compressed": {
+          "task": 0.43470382868365753,
+          "retention": 0.01778983970219708,
+          "effort": 0.47511873608371163,
+          "total": 0.9276124044695663
+        },
+        "single_action_ridge": {
+          "task": 0.27007901062016487,
+          "retention": 0.01641210524242856,
+          "effort": 1.1611198200771444,
+          "total": 1.4476109359397378
+        },
+        "full_horizon_gd": {
+          "task": 0.45189535357798094,
+          "retention": 0.018029781002855894,
+          "effort": 0.46044886893434467,
+          "total": 0.9303740035151815
+        },
+        "blind_belief_ablation": {
+          "task": 4.654404020213537,
+          "retention": 0.0037629794561811784,
+          "effort": 0.14198386255922343,
+          "total": 4.800150862228942
+        }
+      }
+    },
+    {
+      "width": 64,
+      "seed": 271,
+      "origin": 0,
+      "expected": {
+        "full_riccati": {
+          "task": 0.5110316462290178,
+          "retention": 0.020439104120693646,
+          "effort": 0.5401044815550805,
+          "total": 1.071575231904792
+        },
+        "pft_compressed": {
+          "task": 0.511031646229018,
+          "retention": 0.020439104120693656,
+          "effort": 0.5401044815550805,
+          "total": 1.0715752319047922
+        },
+        "single_action_ridge": {
+          "task": 0.31350490089312033,
+          "retention": 0.018759877916302466,
+          "effort": 1.3619062772570765,
+          "total": 1.6941710560664993
+        },
+        "full_horizon_gd": {
+          "task": 0.5338214185961399,
+          "retention": 0.02056921270190866,
+          "effort": 0.5210076343849044,
+          "total": 1.0753982656829528
+        },
+        "blind_belief_ablation": {
+          "task": 4.730124000493607,
+          "retention": 0.005800128345527842,
+          "effort": 0.20532119261242682,
+          "total": 4.941245321451562
+        }
+      }
+    },
+    {
+      "width": 64,
+      "seed": 271,
+      "origin": 1,
+      "expected": {
+        "full_riccati": {
+          "task": 0.520959817018163,
+          "retention": 0.019158534933743407,
+          "effort": 0.5474937879706521,
+          "total": 1.0876121399225585
+        },
+        "pft_compressed": {
+          "task": 0.5209598170181632,
+          "retention": 0.01915853493374342,
+          "effort": 0.547493787970652,
+          "total": 1.0876121399225585
+        },
+        "single_action_ridge": {
+          "task": 0.31856552343443184,
+          "retention": 0.0177299580391716,
+          "effort": 1.3930527128347836,
+          "total": 1.729348194308387
+        },
+        "full_horizon_gd": {
+          "task": 0.5429364241031682,
+          "retention": 0.019287707124847592,
+          "effort": 0.5287434559753983,
+          "total": 1.0909675872034141
+        },
+        "blind_belief_ablation": {
+          "task": 4.740052171282752,
+          "retention": 0.004519559158577608,
+          "effort": 0.21271049902799832,
+          "total": 4.957282229469328
+        }
+      }
+    },
+    {
+      "width": 64,
+      "seed": 271,
+      "origin": 2,
+      "expected": {
+        "full_riccati": {
+          "task": 0.4096059584681649,
+          "retention": 0.018519588356818818,
+          "effort": 0.4552659821828893,
+          "total": 0.883391529007873
+        },
+        "pft_compressed": {
+          "task": 0.4096059584681652,
+          "retention": 0.01851958835681882,
+          "effort": 0.4552659821828894,
+          "total": 0.8833915290078734
+        },
+        "single_action_ridge": {
+          "task": 0.25622299040342555,
+          "retention": 0.016981012368203853,
+          "effort": 1.090669881383867,
+          "total": 1.3638738841554963
+        },
+        "full_horizon_gd": {
+          "task": 0.42560451889305106,
+          "retention": 0.018513811791285188,
+          "effort": 0.4420524998008642,
+          "total": 0.8861708304852004
+        },
+        "blind_belief_ablation": {
+          "task": 4.6286983127327535,
+          "retention": 0.003880612581653018,
+          "effort": 0.12048269324023568,
+          "total": 4.753061618554642
+        }
+      }
+    },
+    {
+      "width": 64,
+      "seed": 419,
+      "origin": 0,
+      "expected": {
+        "full_riccati": {
+          "task": 0.4631881939401773,
+          "retention": 0.017807965500356238,
+          "effort": 0.5011421018519855,
+          "total": 0.982138261292519
+        },
+        "pft_compressed": {
+          "task": 0.46318819394017735,
+          "retention": 0.017807965500356234,
+          "effort": 0.5011421018519856,
+          "total": 0.9821382612925191
+        },
+        "single_action_ridge": {
+          "task": 0.28566163303075937,
+          "retention": 0.016375410554150906,
+          "effort": 1.2431052908272422,
+          "total": 1.5451423344121524
+        },
+        "full_horizon_gd": {
+          "task": 0.48142007713018425,
+          "retention": 0.01785066638157459,
+          "effort": 0.48578964466555175,
+          "total": 0.9850603881773106
+        },
+        "blind_belief_ablation": {
+          "task": 4.6820443661981574,
+          "retention": 0.004032700468940821,
+          "effort": 0.16484539138791618,
+          "total": 4.850922458055014
+        }
+      }
+    },
+    {
+      "width": 64,
+      "seed": 419,
+      "origin": 1,
+      "expected": {
+        "full_riccati": {
+          "task": 0.46011706050416484,
+          "retention": 0.018333378406294044,
+          "effort": 0.5039630262664532,
+          "total": 0.9824134651769121
+        },
+        "pft_compressed": {
+          "task": 0.4601170605041648,
+          "retention": 0.01833337840629406,
+          "effort": 0.5039630262664532,
+          "total": 0.982413465176912
+        },
+        "single_action_ridge": {
+          "task": 0.2824681812398699,
+          "retention": 0.016902095338513255,
+          "effort": 1.2478936334167123,
+          "total": 1.5472639099950956
+        },
+        "full_horizon_gd": {
+          "task": 0.47720318496715564,
+          "retention": 0.018619747895202227,
+          "effort": 0.4891545391325506,
+          "total": 0.9849774719949085
+        },
+        "blind_belief_ablation": {
+          "task": 4.678973232762145,
+          "retention": 0.004558113374878629,
+          "effort": 0.16766631580238384,
+          "total": 4.851197661939407
+        }
+      }
+    },
+    {
+      "width": 64,
+      "seed": 419,
+      "origin": 2,
+      "expected": {
+        "full_riccati": {
+          "task": 0.43953082053523723,
+          "retention": 0.018927605557814836,
+          "effort": 0.48619998184265273,
+          "total": 0.9446584079357048
+        },
+        "pft_compressed": {
+          "task": 0.4395308205352374,
+          "retention": 0.018927605557814836,
+          "effort": 0.4861999818426528,
+          "total": 0.944658407935705
+        },
+        "single_action_ridge": {
+          "task": 0.2717809055669889,
+          "retention": 0.01735527464449024,
+          "effort": 1.1845289248327884,
+          "total": 1.4736651050442675
+        },
+        "full_horizon_gd": {
+          "task": 0.456400092239747,
+          "retention": 0.0189397329507955,
+          "effort": 0.4722972291766186,
+          "total": 0.9476370543671611
+        },
+        "blind_belief_ablation": {
+          "task": 4.658386992793217,
+          "retention": 0.00515234052639942,
+          "effort": 0.14990327137858347,
+          "total": 4.813442604698199
+        }
+      }
+    }
+  ],
+  "group_descriptive_pairs": [
+    {
+      "width": 8,
+      "seed": 113,
+      "episode_count": 12,
+      "sample_mean": {
+        "full_riccati": 0.08742608113377393,
+        "pft_compressed": 0.08742608113377391,
+        "single_action_ridge": 0.13937046714380993,
+        "full_horizon_gd": 0.08739401389108574,
+        "blind_belief_ablation": 0.4760397031741637
+      },
+      "exact_conditional_mean": {
+        "full_riccati": 0.10176030246012834,
+        "pft_compressed": 0.10176030246012831,
+        "single_action_ridge": 0.15790142646932906,
+        "full_horizon_gd": 0.10195766043975542,
+        "blind_belief_ablation": 0.5862382033528607
+      },
+      "sample_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": -1.3877787807814457e-17,
+        "single_action_ridge": 0.05194438601003601,
+        "full_horizon_gd": -3.2067242688185726e-05,
+        "blind_belief_ablation": 0.3886136220403898
+      },
+      "expected_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": -2.7755575615628914e-17,
+        "single_action_ridge": 0.056141124009200724,
+        "full_horizon_gd": 0.000197357979627083,
+        "blind_belief_ablation": 0.48447790089273235
+      }
+    },
+    {
+      "width": 8,
+      "seed": 271,
+      "episode_count": 12,
+      "sample_mean": {
+        "full_riccati": 0.1126996310911998,
+        "pft_compressed": 0.1126996310911998,
+        "single_action_ridge": 0.16554288167043194,
+        "full_horizon_gd": 0.11331112216758649,
+        "blind_belief_ablation": 0.4589995864292531
+      },
+      "exact_conditional_mean": {
+        "full_riccati": 0.12490346127660285,
+        "pft_compressed": 0.12490346127660286,
+        "single_action_ridge": 0.1936620951091228,
+        "full_horizon_gd": 0.12513259410555663,
+        "blind_belief_ablation": 0.604643077765454
+      },
+      "sample_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 0.0,
+        "single_action_ridge": 0.05284325057923213,
+        "full_horizon_gd": 0.0006114910763866804,
+        "blind_belief_ablation": 0.3462999553380533
+      },
+      "expected_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 1.3877787807814457e-17,
+        "single_action_ridge": 0.06875863383251996,
+        "full_horizon_gd": 0.0002291328289537875,
+        "blind_belief_ablation": 0.47973961648885116
+      }
+    },
+    {
+      "width": 8,
+      "seed": 419,
+      "episode_count": 12,
+      "sample_mean": {
+        "full_riccati": 0.10068529600735915,
+        "pft_compressed": 0.10068529600735915,
+        "single_action_ridge": 0.17075023273177106,
+        "full_horizon_gd": 0.09988899444576943,
+        "blind_belief_ablation": 0.5641591077017998
+      },
+      "exact_conditional_mean": {
+        "full_riccati": 0.11213027556214389,
+        "pft_compressed": 0.1121302755621439,
+        "single_action_ridge": 0.1747387003226201,
+        "full_horizon_gd": 0.11238984303340986,
+        "blind_belief_ablation": 0.5955018152141717
+      },
+      "sample_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 0.0,
+        "single_action_ridge": 0.07006493672441191,
+        "full_horizon_gd": -0.0007963015615897184,
+        "blind_belief_ablation": 0.46347381169444063
+      },
+      "expected_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 1.3877787807814457e-17,
+        "single_action_ridge": 0.0626084247604762,
+        "full_horizon_gd": 0.0002595674712659729,
+        "blind_belief_ablation": 0.4833715396520278
+      }
+    },
+    {
+      "width": 32,
+      "seed": 113,
+      "episode_count": 12,
+      "sample_mean": {
+        "full_riccati": 0.42187558011147286,
+        "pft_compressed": 0.42187558011147286,
+        "single_action_ridge": 0.6415112476934087,
+        "full_horizon_gd": 0.4249846838799845,
+        "blind_belief_ablation": 2.1634612910497832
+      },
+      "exact_conditional_mean": {
+        "full_riccati": 0.4490568779376902,
+        "pft_compressed": 0.44905687793769045,
+        "single_action_ridge": 0.700082771829663,
+        "full_horizon_gd": 0.45005717824537284,
+        "blind_belief_ablation": 2.3831668307004907
+      },
+      "sample_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 0.0,
+        "single_action_ridge": 0.21963566758193587,
+        "full_horizon_gd": 0.003109103768511645,
+        "blind_belief_ablation": 1.7415857109383104
+      },
+      "expected_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 2.220446049250313e-16,
+        "single_action_ridge": 0.25102589389197283,
+        "full_horizon_gd": 0.0010003003076826111,
+        "blind_belief_ablation": 1.9341099527628005
+      }
+    },
+    {
+      "width": 32,
+      "seed": 271,
+      "episode_count": 12,
+      "sample_mean": {
+        "full_riccati": 0.4913319255799369,
+        "pft_compressed": 0.4913319255799369,
+        "single_action_ridge": 0.7744220816851447,
+        "full_horizon_gd": 0.491594710541887,
+        "blind_belief_ablation": 2.6343103808410557
+      },
+      "exact_conditional_mean": {
+        "full_riccati": 0.4694072929240312,
+        "pft_compressed": 0.46940729292403116,
+        "single_action_ridge": 0.7342091020799502,
+        "full_horizon_gd": 0.4703892969774552,
+        "blind_belief_ablation": 2.401033470431376
+      },
+      "sample_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 0.0,
+        "single_action_ridge": 0.2830901561052078,
+        "full_horizon_gd": 0.00026278496195014656,
+        "blind_belief_ablation": 2.142978455261119
+      },
+      "expected_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": -5.551115123125783e-17,
+        "single_action_ridge": 0.26480180915591894,
+        "full_horizon_gd": 0.0009820040534239682,
+        "blind_belief_ablation": 1.9316261775073449
+      }
+    },
+    {
+      "width": 32,
+      "seed": 419,
+      "episode_count": 12,
+      "sample_mean": {
+        "full_riccati": 0.484075231215998,
+        "pft_compressed": 0.484075231215998,
+        "single_action_ridge": 0.7634700053138146,
+        "full_horizon_gd": 0.4851340066765628,
+        "blind_belief_ablation": 2.282626719718071
+      },
+      "exact_conditional_mean": {
+        "full_riccati": 0.5029185734808327,
+        "pft_compressed": 0.5029185734808325,
+        "single_action_ridge": 0.7916228168832543,
+        "full_horizon_gd": 0.5043970298521939,
+        "blind_belief_ablation": 2.437609395841379
+      },
+      "sample_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 0.0,
+        "single_action_ridge": 0.2793947740978166,
+        "full_horizon_gd": 0.0010587754605648203,
+        "blind_belief_ablation": 1.798551488502073
+      },
+      "expected_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": -2.220446049250313e-16,
+        "single_action_ridge": 0.2887042434024216,
+        "full_horizon_gd": 0.0014784563713612364,
+        "blind_belief_ablation": 1.9346908223605461
+      }
+    },
+    {
+      "width": 64,
+      "seed": 113,
+      "episode_count": 12,
+      "sample_mean": {
+        "full_riccati": 0.9487573904267621,
+        "pft_compressed": 0.9487573904267622,
+        "single_action_ridge": 1.4821712401410867,
+        "full_horizon_gd": 0.9521610575962294,
+        "blind_belief_ablation": 5.019740311402738
+      },
+      "exact_conditional_mean": {
+        "full_riccati": 0.9243892576380426,
+        "pft_compressed": 0.9243892576380426,
+        "single_action_ridge": 1.44251534766729,
+        "full_horizon_gd": 0.9273457875732958,
+        "blind_belief_ablation": 4.796927715397417
+      },
+      "sample_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 1.1102230246251565e-16,
+        "single_action_ridge": 0.5334138497143246,
+        "full_horizon_gd": 0.0034036671694672727,
+        "blind_belief_ablation": 4.070982920975975
+      },
+      "expected_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 0.0,
+        "single_action_ridge": 0.5181260900292475,
+        "full_horizon_gd": 0.0029565299352531937,
+        "blind_belief_ablation": 3.8725384577593744
+      }
+    },
+    {
+      "width": 64,
+      "seed": 271,
+      "episode_count": 12,
+      "sample_mean": {
+        "full_riccati": 1.026197308850019,
+        "pft_compressed": 1.026197308850019,
+        "single_action_ridge": 1.6108518870594548,
+        "full_horizon_gd": 1.0299362430160943,
+        "blind_belief_ablation": 4.943288591952353
+      },
+      "exact_conditional_mean": {
+        "full_riccati": 1.0141929669450744,
+        "pft_compressed": 1.0141929669450747,
+        "single_action_ridge": 1.5957977115101276,
+        "full_horizon_gd": 1.0175122277905224,
+        "blind_belief_ablation": 4.883863056491844
+      },
+      "sample_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 0.0,
+        "single_action_ridge": 0.5846545782094359,
+        "full_horizon_gd": 0.0037389341660754027,
+        "blind_belief_ablation": 3.9170912831023337
+      },
+      "expected_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 2.220446049250313e-16,
+        "single_action_ridge": 0.5816047445650532,
+        "full_horizon_gd": 0.00331926084544798,
+        "blind_belief_ablation": 3.8696700895467693
+      }
+    },
+    {
+      "width": 64,
+      "seed": 419,
+      "episode_count": 12,
+      "sample_mean": {
+        "full_riccati": 1.0233791042988774,
+        "pft_compressed": 1.0233791042988774,
+        "single_action_ridge": 1.6310469780189056,
+        "full_horizon_gd": 1.023137536367491,
+        "blind_belief_ablation": 5.28524636875978
+      },
+      "exact_conditional_mean": {
+        "full_riccati": 0.9697367114683786,
+        "pft_compressed": 0.9697367114683786,
+        "single_action_ridge": 1.5220237831505052,
+        "full_horizon_gd": 0.97255830484646,
+        "blind_belief_ablation": 4.8385209082308736
+      },
+      "sample_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 0.0,
+        "single_action_ridge": 0.6076678737200283,
+        "full_horizon_gd": -0.0002415679313862995,
+        "blind_belief_ablation": 4.261867264460903
+      },
+      "expected_paired_delta": {
+        "full_riccati": 0.0,
+        "pft_compressed": 0.0,
+        "single_action_ridge": 0.5522870716821267,
+        "full_horizon_gd": 0.0028215933780814106,
+        "blind_belief_ablation": 3.868784196762495
+      }
+    }
+  ],
+  "minimum_competitor_expected_gap": 0.000143006255784367,
+  "maximum_expected_pft_parity_error": 4.440892098500626e-16,
+  "maximum_saved_action_reconstruction_error": 5.190292640122607e-15,
+  "maximum_forward_backward_expectation_error": 2.6645352591003757e-15,
+  "rls_interpretation": "RLS can solve the complete condensed horizon too; the single-action restriction is a planner choice, not an RLS limitation",
+  "inference_scope": "nine width/seed groups described; no confidence interval treating 108 episodes as independent sources",
+  "schema": "hepta.e1e6.pft-horizon-postrun-analytic-audit.v1",
+  "scope": "Post-run analytic validation of frozen policies; zero new sampled trajectories.\n\nExpected costs integrate the registered innovation covariance conditional on\nthe 27 previously observed initial states. They are not a new learning study.\nThe original protocol, algorithm and result remain byte-preserved.\n",
+  "new_samples": 0,
+  "new_training_runs": 0,
+  "original_result_sha256": "794cd5344c1fc32191764a239a354943eab2a97aa907a38463fbcd637e0c551e",
+  "protocol_sha256": "73634a5736333d88e9fd6bc197c3418007b0dc080e5a5802b416d38a4f0e199c",
+  "auditor_sha256": "11434726983769c8d6f365fad69219ed2319d90ccef46ff015a51f4bcdf57acf",
+  "wall_ns": 3037575236
+}

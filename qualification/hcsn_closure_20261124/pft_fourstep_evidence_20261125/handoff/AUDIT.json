@@ -1,0 +1,22 @@
+{
+  "candidate_sha256": "cab46c3ea21359cbc4336731d1be83c4ed8f77393607e5b900f7246f53beb7fb",
+  "feature_sha256": "9de0582647a3b1af728e8d7384a7faab9add99e4078b648a75b447266d023792",
+  "handoff_sha256": "af33cc4b4f850934b08d5bc7a2be6457a47f0a5a5bce04dfe5f63fea1c07f829",
+  "loader_status": "ORIGINAL_LOADER_REQUIRED",
+  "next_entrypoint": "cell_experiments.paired_freeze.freeze",
+  "parent_sha256": "7e3707a920a4845781e8111279a6d765ffd0b8f27292eba96bd7df09f619d4e3",
+  "stages": {
+    "adoption": "NATIVE_E6_ORIGINALS_REQUIRED",
+    "freeze": "ORIGINAL_PRE_ARRIVAL_FREEZE_REQUIRED",
+    "provenance": "ORIGINAL_SOURCE_OWNER_REQUIRED",
+    "restart": "NATIVE_E6_COLD_ORIGINALS_REQUIRED",
+    "retention": "ORIGINAL_COLD_RETENTION_REQUIRED"
+  },
+  "status": "ARTIFACTS_VERIFIED",
+  "unresolved": [
+    "declared family loader in original paired_cold owner",
+    "authorized source training and original cold retention",
+    "original A/B enrollment and post-freeze arrival",
+    "native E6 adoption, restart, fresh task and FinalUse"
+  ]
+}
