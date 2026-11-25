@@ -9,6 +9,7 @@ import subprocess
 import sys
 import types
 
+from . import identity
 from .identity import CRATE, REQUIRED, RUSTC_COMMIT, RUSTC_SHA256, sha
 
 ORIGINAL_TESTS = frozenset((
@@ -71,10 +72,12 @@ def compiler(rustc, commands, producer):
                               "policy_wrapper": wrapper}
 
 
-def metadata(cargo, producer, env, commands):
-    path = commands.run("cargo-metadata", [cargo, "metadata", "--locked", "--format-version=1",
-        "--filter-platform", "x86_64-unknown-linux-gnu", "--no-default-features"],
-        cwd=producer / "codex-rs", env=env, jsonl=True)
+def metadata(cargo, producer, env, commands, *, label="cargo-metadata", native=False):
+    args = [cargo, "metadata", "--locked", "--format-version=1",
+            "--filter-platform", "x86_64-unknown-linux-gnu", "--no-default-features"]
+    if native:
+        args += ["--features", "codex-apply-patch/hia-native"]
+    path = commands.run(label, args, cwd=producer / "codex-rs", env=env, jsonl=True)
     graph = json.loads(path.read_text())
     packages = {p["id"]: p for p in graph["packages"]}
     if len(packages) != len(graph["packages"]):
@@ -101,7 +104,7 @@ def metadata(cargo, producer, env, commands):
     return graph, packages, owner, dependencies, {"metadata_sha256": sha(path), "packages": source_sets}
 
 
-def capture(cargo, producer, env, native, commands):
+def capture(cargo, producer, env, native, commands, *, label=None):
     child = env.copy()
     if native:
         admitted_policy = policy_environment(producer, Path(child["RUSTC"]), child)
@@ -113,7 +116,7 @@ def capture(cargo, producer, env, native, commands):
             "--tests", "--message-format=json-render-diagnostics"]
     if native:
         args += ["--features", "hia-native"]
-    result = commands.run("cargo-native" if native else "cargo-default", args,
+    result = commands.run(label or ("cargo-native" if native else "cargo-default"), args,
                           cwd=producer / "codex-rs", env=child, jsonl=True)
     if native:
         if policy_environment(producer, Path(child["RUSTC"]), child) != admitted_policy:
@@ -361,6 +364,118 @@ def verify_graph(graph):
         verify_native_search(graph)
 
 
+def reference_environment(producer, env):
+    """The candidate-specific arithmetic wrapper is not an original source input."""
+    if policy_environment(producer, Path(env["RUSTC"]), env) is None:
+        raise RuntimeError("the candidate policy environment was not admitted")
+    if env.get("RUSTC_WORKSPACE_WRAPPER"):
+        raise RuntimeError("unexpected workspace compiler wrapper for original lane")
+    child = env.copy()
+    # Only the already admitted project-specific wrapper and its HIA inputs
+    # are removed. The original locked Cargo build retains all other flags.
+    for name in ("RUSTC_WRAPPER", "CODEX_HIA_SIMILAR_POLICY_CONFIG",
+                 "CODEX_HIA_NATIVE_LIB_DIR"):
+        child.pop(name, None)
+    return child
+
+
+def separate_lane_targets(target, output, roots):
+    """Fresh private original/default targets; native retains the existing target."""
+    target = target.resolve(strict=True)
+    output = output.resolve(strict=True)
+    identity.outside(target, roots)
+    identity.outside(output, roots)
+    if target == output or target.is_relative_to(output) or output.is_relative_to(target):
+        raise RuntimeError("oracle work and existing native target must be disjoint")
+    root = output / "isolated-cargo-targets"
+    root.mkdir()
+    lanes = {"original": root / "original", "default": root / "default", "native": target}
+    for side in ("original", "default"):
+        lanes[side].mkdir()
+    verify_lane_targets(lanes)
+    return lanes
+
+
+def verify_lane_targets(lanes):
+    if set(lanes) != {"original", "default", "native"}:
+        raise RuntimeError("the original/default/native target inventory changed")
+    for side, path in lanes.items():
+        if (not stat.S_ISDIR(path.lstat().st_mode) or path.resolve(strict=True) != path
+                or any(path == other or path.is_relative_to(other)
+                       for name, other in lanes.items() if name != side)):
+            raise RuntimeError("Cargo lane targets are not disjoint canonical directories")
+
+
+def capture_three_graphs(real_cargo, producer, original, env, commands, output, target):
+    """Build all three real graphs without sharing original/candidate Cargo targets."""
+    producer, original = producer.resolve(strict=True), original.resolve(strict=True)
+    if producer == original or producer.is_relative_to(original) or original.is_relative_to(producer):
+        raise RuntimeError("original and candidate checkouts are not disjoint")
+    sources = {"original": identity.clean_identity(original),
+               "candidate": identity.clean_identity(producer)}
+    if sources["original"]["commit"] != identity.BASE:
+        raise RuntimeError("the original graph must use the pinned complete checkout")
+    lock = identity.distinct_lock_inputs(original / "codex-rs/Cargo.lock",
+                                         producer / "codex-rs/Cargo.lock")
+    lanes = separate_lane_targets(target, output, (producer, original))
+    graphs, receipts = {}, {}
+    for side in ("original", "default", "native"):
+        native = side == "native"
+        checkout = original if side == "original" else producer
+        source_side = "original" if side == "original" else "candidate"
+        child = reference_environment(producer, env) if side == "original" else env.copy()
+        child["CARGO_TARGET_DIR"] = str(lanes[side])
+        if not native:
+            child.pop("CODEX_HIA_NATIVE_LIB_DIR", None)
+        label = "cargo-metadata" if side == "default" else "cargo-" + side + "-metadata"
+        resolved, packages, owner, dependencies, receipt = metadata(
+            real_cargo, checkout, child, commands, label=label, native=native)
+        if (Path(resolved["workspace_root"]).resolve(strict=True) != checkout / "codex-rs"
+                or Path(resolved["target_directory"]).resolve(strict=True) != lanes[side]):
+            raise RuntimeError("actual Cargo metadata escaped the requested lane")
+        captured = capture(real_cargo, checkout, child, native, commands, label="cargo-" + side)
+        graph = admit(captured, packages, owner, dependencies, lanes[side],
+                      output / (side + "-deps"), native=native)
+        graph["lane"] = {"side": side, "source": str(checkout),
+                         "identity": sources[source_side], "lock": lock[source_side],
+                         "target": str(lanes[side])}
+        graphs[side] = graph
+        receipts[side] = receipt
+        (output / (side + "-dependency-manifest.json")).write_text(
+            json.dumps(graph, indent=2) + "\n")
+        (output / (side + "-metadata-source-inputs.json")).write_text(
+            json.dumps(receipt, indent=2) + "\n")
+        verify_graph(graph)
+    verify_three_graphs(graphs, receipts, original, producer)
+    return graphs, receipts
+
+
+def verify_three_graphs(graphs, receipts, original, producer):
+    if set(graphs) != {"original", "default", "native"} or set(receipts) != set(graphs):
+        raise RuntimeError("the three actual Cargo graph lanes are incomplete")
+    sources = {"original": identity.clean_identity(original),
+               "candidate": identity.clean_identity(producer)}
+    if sources["original"]["commit"] != identity.BASE:
+        raise RuntimeError("original checkout identity changed")
+    locks = identity.distinct_lock_inputs(original / "codex-rs/Cargo.lock",
+                                          producer / "codex-rs/Cargo.lock")
+    lanes = {side: Path(graph["lane"]["target"]) for side, graph in graphs.items()}
+    verify_lane_targets(lanes)
+    for side, graph in graphs.items():
+        source_side = "original" if side == "original" else "candidate"
+        checkout = original if side == "original" else producer
+        expected = {"side": side, "source": str(checkout), "identity": sources[source_side],
+                    "lock": locks[source_side], "target": str(lanes[side])}
+        if (graph["lane"] != expected or graph["native_search_target_dir"] != str(lanes[side])
+                or any(not Path(record["source"]).is_relative_to(lanes[side])
+                       for record in graph["files"].values())):
+            raise RuntimeError("a Cargo graph lane's source, lock or target binding changed")
+        verify_graph(graph)
+        for package in receipts[side]["packages"].values():
+            if sha(package["manifest_path"]) != package["manifest_sha256"]:
+                raise RuntimeError("a real Cargo lane manifest changed")
+
+
 def flags(rustc, graph, *, original):
     args = [rustc, "--edition=2024", "-C", "opt-level=0", "-C", "debuginfo=0",
             "-C", "debug-assertions=yes", "-C", "overflow-checks=yes",
@@ -373,17 +488,17 @@ def flags(rustc, graph, *, original):
     return args
 
 
-def build_drivers(rustc, original_root, producer, driver, default, native, env, commands, output):
+def build_drivers(rustc, original_root, producer, driver, original, default, native, env, commands, output):
     for name in REQUIRED:
         left, right = default["direct"][name]["unit"], native["direct"][name]["unit"]
         for field in ("package_id", "features", "profile", "target"):
             if left[field] != right[field]:
                 raise RuntimeError(f"default/native dependency graph differs unexpectedly: {name}/{field}")
-    child = env.copy()
-    child.pop("CODEX_HIA_NATIVE_LIB_DIR", None)
+    child = reference_environment(producer, env)
+    child["CARGO_TARGET_DIR"] = original["lane"]["target"]
     child["CARGO_MANIFEST_DIR"] = str(original_root / CRATE)
     source = original_root / CRATE / "src/lib.rs"
-    common = flags(rustc, default, original=True)
+    common = flags(rustc, original, original=True)
     reference = output / "libcodex_apply_patch_original.rlib"
     commands.run("compile-whole-original-lib", common + ["--crate-name", "codex_apply_patch_original",
         "--crate-type", "rlib", source, "-o", reference], cwd=producer, env=child)

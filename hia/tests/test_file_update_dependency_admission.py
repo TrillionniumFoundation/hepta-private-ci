@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Admission regressions with local fixtures; no Git, Cargo, Wine, sockets or processes."""
 from pathlib import Path
+import hashlib
 import tempfile
 import unittest
+
+from unittest.mock import patch
 
 from file_update_oracle import cargo, identity
 
@@ -372,6 +375,58 @@ class NativeSearchSnapshotTests(unittest.TestCase):
             cargo.stage_native_search(["native=" + str(self.source)],
                                       self.target, destination)
         self.assertFalse(destination.exists())
+
+
+class SeparateGraphInputTests(unittest.TestCase):
+    def test_targets_are_distinct_and_created_outside_both_checkouts(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            original, candidate, output, native = (
+                root / name for name in ("original", "candidate", "work", "native"))
+            for path in (original, candidate, output, native):
+                path.mkdir()
+            lanes = cargo.separate_lane_targets(native, output, (original, candidate))
+            self.assertEqual(lanes["native"], native)
+            self.assertEqual(set(lanes), {"original", "default", "native"})
+            cargo.verify_lane_targets(lanes)
+            with self.assertRaises(RuntimeError):
+                cargo.verify_lane_targets({**lanes, "original": lanes["default"]})
+            with self.assertRaises(FileExistsError):
+                cargo.separate_lane_targets(native, output, (original, candidate))
+
+    def test_overlapping_native_target_is_rejected_before_creation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            original, candidate, output = (root / name for name in ("original", "candidate", "work"))
+            for path in (original, candidate, output):
+                path.mkdir()
+            native = output / "native"
+            native.mkdir()
+            with self.assertRaises(RuntimeError):
+                cargo.separate_lane_targets(native, output, (original, candidate))
+            self.assertFalse((output / "isolated-cargo-targets").exists())
+
+    def test_distinct_lock_bytes_are_pinned_independently(self):
+        def blob(data):
+            return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            original, candidate = root / "original.lock", root / "candidate.lock"
+            old, new = b"original\n", b"candidate\n"
+            original.write_bytes(old)
+            candidate.write_bytes(new)
+            with patch.object(identity, "ORIGINAL_LOCK_BLOB", blob(old)), patch.object(
+                    identity, "REVIEWED_CANDIDATE_LOCK_BLOB", blob(new)):
+                bindings = identity.distinct_lock_inputs(original, candidate)
+                self.assertNotEqual(bindings["original"]["sha256"], bindings["candidate"]["sha256"])
+                candidate.write_bytes(old)
+                with self.assertRaises(RuntimeError):
+                    identity.distinct_lock_inputs(original, candidate)
+                candidate.write_bytes(new)
+                original.write_bytes(new)
+                with self.assertRaises(RuntimeError):
+                    identity.distinct_lock_inputs(original, candidate)
 
 
 if __name__ == "__main__":

@@ -49,27 +49,23 @@ def verify(args, report):
     original_manifest = identity.snapshot(original, snapshot)
     report["original_inputs"] = original_manifest
     (output / "original-source-manifest.json").write_text(json.dumps(original_manifest, indent=2) + "\n")
-    producer = identity.producer_inputs(ROOT, snapshot, original_manifest)
+    producer = identity.producer_inputs(ROOT, snapshot, original_manifest, separate_lock=True)
     report["producer"] = producer
     native_inputs = identity.native_inputs(ROOT, library)
     report["native_inputs"] = native_inputs
     rustc, real_cargo, env, compiler = cargo.compiler(args.rustc, commands, ROOT)
     env["CODEX_HIA_NATIVE_LIB_DIR"] = str(library)
     report["toolchain"] = compiler
-    graph, packages, owner, dependencies, graph_receipt = cargo.metadata(real_cargo, ROOT, env, commands)
-    del graph
-    report["metadata"] = graph_receipt
-    (output / "metadata-source-inputs.json").write_text(json.dumps(graph_receipt, indent=2) + "\n")
-    default_capture = cargo.capture(real_cargo, ROOT, env, False, commands)
-    default = cargo.admit(default_capture, packages, owner, dependencies, target,
-                          output / "default-deps", native=False)
-    native_capture = cargo.capture(real_cargo, ROOT, env, True, commands)
-    native = cargo.admit(native_capture, packages, owner, dependencies, target,
-                         output / "native-deps", native=True)
-    for name, receipt in (("default", default), ("native", native)):
-        (output / (name + "-dependency-manifest.json")).write_text(json.dumps(receipt, indent=2) + "\n")
+    graphs, metadata = cargo.capture_three_graphs(
+        real_cargo, ROOT, original, env, commands, output, target)
+    report["metadata"] = metadata["default"]
+    report["three_way_cargo_metadata"] = metadata
+    report["three_way_cargo_graphs"] = {side: graph["lane"] for side, graph in graphs.items()}
+    (output / "metadata-source-inputs.json").write_text(
+        json.dumps(metadata["default"], indent=2) + "\n")
     binaries = cargo.build_drivers(rustc, snapshot, ROOT, SUPPORT / "driver.rs",
-                                   default, native, env, commands, output)
+                                   graphs["original"], graphs["default"], graphs["native"],
+                                   env, commands, output)
     report["original_tests"] = {"passed": 5, "skipped": 0,
         "scope": "The five unchanged file_update tests inside the complete original library test binary; not the entire crate suite."}
     binary_hashes = {name: identity.sha(path) for name, path in binaries.items()}
@@ -122,18 +118,14 @@ def verify(args, report):
     for name, path in binaries.items():
         if identity.sha(path) != binary_hashes[name]:
             raise RuntimeError("an executed binary changed during observation")
-    cargo.verify_graph(default)
-    cargo.verify_graph(native)
+    cargo.verify_three_graphs(graphs, metadata, original, ROOT)
     identity.verify_sources(snapshot, original_manifest)
-    if identity.producer_inputs(ROOT, snapshot, original_manifest) != producer:
+    if identity.producer_inputs(ROOT, snapshot, original_manifest, separate_lock=True) != producer:
         raise RuntimeError("the actual producing source changed")
     if identity.native_inputs(ROOT, library) != native_inputs:
         raise RuntimeError("the actual native source/archive changed")
     if identity.clean_identity(original)["commit"] != identity.BASE:
         raise RuntimeError("the original checkout changed")
-    for package in graph_receipt["packages"].values():
-        if identity.sha(package["manifest_path"]) != package["manifest_sha256"]:
-            raise RuntimeError("a real graph manifest changed")
     for relative, digest in report["test_inputs"].items():
         if identity.sha(ROOT / relative) != digest:
             raise RuntimeError("a harness input changed during the gate")
