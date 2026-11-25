@@ -968,12 +968,12 @@ impl TestCodex {
         prompt: &str,
         service_tier: Option<&str>,
     ) -> Result<()> {
-        self.submit_turn_with_permission_profile_context(
+        self.submit_turn_with_settings(
             prompt,
-            AskForApproval::Never,
-            PermissionProfile::Disabled,
-            Some(service_tier.map(str::to_string)),
-            /*environments*/ None,
+            ThreadSettingsOverrides {
+                service_tier: Some(service_tier.map(str::to_string)),
+                ..Default::default()
+            },
         )
         .await
     }
@@ -1061,28 +1061,40 @@ impl TestCodex {
         let turn_environment_selections = environments.map(|environments| {
             TurnEnvironmentSelections::new(self.config.cwd.clone(), environments)
         });
+        self.submit_turn_with_settings(
+            prompt,
+            ThreadSettingsOverrides {
+                environments: turn_environment_selections,
+                approval_policy: Some(approval_policy),
+                sandbox_policy: Some(sandbox_policy),
+                permission_profile,
+                service_tier,
+                collaboration_mode: Some(CollaborationMode {
+                    mode: ModeKind::Default,
+                    settings: Settings {
+                        model: session_model,
+                        reasoning_effort: None,
+                        developer_instructions: None,
+                    },
+                }),
+                ..Default::default()
+            },
+        )
+        .await
+    }
+
+    async fn submit_turn_with_settings(
+        &self,
+        prompt: &str,
+        settings: ThreadSettingsOverrides,
+    ) -> Result<()> {
         self.codex
             .start_or_steer_turn(
                 TurnInputRequest::user_input(vec![UserInput::Text {
                     text: prompt.into(),
                     text_elements: Vec::new(),
                 }])
-                .with_thread_settings(ThreadSettingsOverrides {
-                    environments: turn_environment_selections,
-                    approval_policy: Some(approval_policy),
-                    sandbox_policy: Some(sandbox_policy),
-                    permission_profile,
-                    service_tier,
-                    collaboration_mode: Some(CollaborationMode {
-                        mode: ModeKind::Default,
-                        settings: Settings {
-                            model: session_model,
-                            reasoning_effort: None,
-                            developer_instructions: None,
-                        },
-                    }),
-                    ..Default::default()
-                }),
+                .with_thread_settings(settings),
             )
             .await?;
 
