@@ -59,6 +59,23 @@ impl ParameterFamilyGuardV1 {
         self.check_current(current, consume)
     }
 
+    /// Read one complete family through the named product writer service.
+    /// A pending publication blocks family delivery. This is read-only and
+    /// does not grant authority to install parameters or perform effects.
+    pub fn with_service<T>(
+        &mut self, owner: &crate::LearningArtifactOwnerService, now: u64,
+        consume: impl FnOnce(&LoadedPinnedCandidate, &[LoadedPinnedCandidate], Digest32) -> T,
+    ) -> Result<T, PinnedCandidateLoadError> {
+        if self.unavailable { return Err(PinnedCandidateLoadError::Unavailable); }
+        self.unavailable = true;
+        if owner.recovery_required().is_some() {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        let current = owner.current_registry_view(now)
+            .map_err(|_| PinnedCandidateLoadError::Unavailable)?;
+        self.check_current(current, consume)
+    }
+
     fn check_current<T>(
         &mut self, current: VerifiedCurrentRegistryViewV1,
         consume: impl FnOnce(&LoadedPinnedCandidate, &[LoadedPinnedCandidate], Digest32) -> T,
