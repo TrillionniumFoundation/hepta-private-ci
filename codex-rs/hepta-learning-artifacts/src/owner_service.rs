@@ -196,6 +196,20 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: &LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        // Revalidate supplied bytes and historical admission identity even on
+        // acknowledged retries. This grants no current publication authority.
+        let manifest = &request.admission.validated_manifest.manifest;
+        if request.payload.len() as u64 != manifest.encoded_size_bytes
+            || Digest32::of_bytes(&request.payload) != manifest.bytes_digest
+            || crate::verify_artifact_admission_v3(
+                &request.admission,
+                request.admission.withdrawal_head_digest,
+                request.admission.admitted_at,
+            ).is_err()
+        {
+            return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+        }
+
         if request.signed_current_head.binding != self.storage_binding
             || request.signed_current_head.witness.predecessor_head_digest
                 != request.expected_registry_predecessor_head
@@ -208,6 +222,9 @@ impl LearningArtifactOwnerService {
         let checkpoint = self.host.recover_publication(&request.operation_id)?;
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
+            if phase_at_least(recovery.checkpoint.phase, ArtifactPublicationPhaseV1::WitnessDurable) {
+                self.host.verify_published_head_replay(&request.signed_current_head, &recovery.checkpoint)?;
+            }
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
                 return receipt_from_checkpoint(&recovery.checkpoint);
             }
@@ -654,6 +671,22 @@ mod tests {
         );
         assert!(!current_view.witness_digest().is_zero());
         assert!(!current_view.trust_digest().is_zero());
+        // The default CI regression must cover exact retry identity even
+        // without the optional archived PFT files.
+        let mut drift = request.clone();
+        drift.payload[0] ^= 1;
+        assert!(service.publish(drift).is_err());
+        let mut drift = request.clone();
+        drift.signed_current_head.signature[0] ^= 1;
+        assert!(service.publish(drift).is_err());
+        let mut drift = request.clone();
+        drift.admission.validated_manifest.manifest.objective_class_digest = digest("drift");
+        assert!(service.publish(drift).is_err());
+        let mut drift = request.clone();
+        drift.signed_current_head.witness.generation = Generation::new(99).unwrap();
+        assert!(service.publish(drift).is_err());
+        assert_eq!(service.publish(request.clone()).unwrap(), receipt);
+        assert!(service.recovery_required().is_none());
         let current = request.signed_current_head;
         drop(service);
 
@@ -720,6 +753,8 @@ fn pft_archived_family_public_owner_lifecycle() {
     };
     let mut service = LearningArtifactOwnerService::open(config.clone()).unwrap();
     let mut signed_final = None;
+    let mut drift_accepts=0;
+    let mut historical=Vec::new();
     for i in 0..3 {
         let mut m = manifest();
         m.artifact_id = id(entries[i].0);
@@ -749,13 +784,34 @@ fn pft_archived_family_public_owner_lifecycle() {
         let request=LearningArtifactPublishRequestV1{operation_id:op,admission,payload:payloads[i].clone(),
             signed_current_head:signed.clone(),expected_registry_predecessor_head:predecessor,now:20};
         let receipt=service.publish(request.clone()).unwrap();
-        assert_eq!(service.publish(request).unwrap(),receipt);
+        // Counterexample probe: terminal retry must not silently acknowledge a changed request.
+        let mut drift = request.clone();
+        drift.payload[0] ^= 1;
+        let payload_accepted = service.publish(drift).is_ok();
+        let mut drift = request.clone();
+        drift.signed_current_head.signature[0] ^= 1;
+        let signature_accepted = service.publish(drift).is_ok();
+        let mut drift = request.clone();
+        drift.admission.validated_manifest.manifest.objective_class_digest = digest("changed-objective");
+        let admission_accepted = service.publish(drift).is_ok();
+        let mut drift = request.clone();
+        drift.signed_current_head.witness.generation = Generation::new(99).unwrap();
+        let head_accepted = service.publish(drift).is_ok();
+        println!("RETRY_DRIFT {} payload={} signature={} admission={} head={}", entries[i].0,
+            payload_accepted, signature_accepted, admission_accepted, head_accepted);
+        drift_accepts += [payload_accepted, signature_accepted, admission_accepted, head_accepted]
+            .iter().filter(|v| **v).count();
+        assert_eq!(service.publish(request.clone()).unwrap(),receipt);
+        historical.push((request,receipt.clone()));
         let current=service.current_registry_view(20).unwrap();
         assert_eq!(current.receipt().records,i+1);
         assert_eq!(current.receipt().head_digest,receipt.registry_head_digest);
         println!("PUBLISHED {} {} records={}",entries[i].0,entries[i].2,i+1);
         signed_final=Some(signed);
     }
+    for (request,receipt) in historical {assert_eq!(service.publish(request).unwrap(),receipt);}
+    println!("DRIFT_ACCEPTS {}",drift_accepts);
+    assert_eq!(drift_accepts,0,"terminal retry accepted mutated request");
     let current=service.current_registry_view(20).unwrap();
     let receipt=current.receipt();
     let trust_digest=current.trust_digest();
