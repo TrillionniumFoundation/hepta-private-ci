@@ -6,7 +6,7 @@ use super::*;
 pub(crate) async fn original_evaluation_source(
     root: &Path,
     bundle: Digest32,
-    mut input: CircuitTaskSourceInputV1,
+    input: CircuitTaskSourceInputV1,
     record: codex_hepta_learning_ledger::RunStartRecordV1,
     selected_index: usize,
 ) -> anyhow::Result<(
@@ -18,27 +18,38 @@ pub(crate) async fn original_evaluation_source(
     let fence = fence(&identity)?;
     let store = AutomationStore::open(&identity.layout).await?;
     let mut definition = definition(bundle);
-    anyhow::ensure!(selected_index < definition.candidates.len());
-    let selected_activation = definition.candidates[selected_index].activation_index;
-    definition.candidates[selected_index].activation_index =
+    let selected = input
+        .candidates
+        .get(selected_index)
+        .ok_or_else(|| anyhow::anyhow!("selected source candidate"))?
+        .candidate_id
+        .clone();
+    // Preserve the caller's input order in the actual definition and routes.
+    // The immutable source bytes are independent of ledger canonical ordering.
+    let order = |candidate_id: &StableId| {
+        input
+            .candidates
+            .iter()
+            .position(|candidate| &candidate.candidate_id == candidate_id)
+            .expect("definition and source must have the same candidate IDs")
+    };
+    let selected_definition_index = definition
+        .candidates
+        .iter()
+        .position(|candidate| candidate.candidate_id == selected)
+        .expect("selected candidate must be in the definition");
+    let selected_activation = definition.candidates[selected_definition_index].activation_index;
+    definition.candidates[selected_definition_index].activation_index =
         definition.candidates[0].activation_index;
     definition.candidates[0].activation_index = selected_activation;
-    let selected = definition.candidates[selected_index].candidate_id.clone();
-    // The original ledger canonicalizes candidate IDs before signing and storage.
-    // Execute the actual Cell with its definition and masks in that same order.
     definition
         .candidates
-        .sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
-    input
-        .candidates
-        .sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
+        .sort_by_key(|candidate| order(&candidate.candidate_id));
     let (mut circuit, mut bindings) = configuration();
     bindings[0].cell = definition.clone();
-    // Routes share the Cell's candidate order; move each complete route so
-    // its outcome and selected edges stay attached to the same candidate ID.
     bindings[0]
         .routes
-        .sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
+        .sort_by_key(|route| order(&route.candidate_id));
     circuit.parameter_bundle_digest =
         Sha256Digest::parse(bundle.to_string()).map_err(anyhow::Error::msg)?;
     circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;
