@@ -3,7 +3,6 @@ use std::path::PathBuf;
 use std::process::Command;
 
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 
 use super::G5_ASSESSMENT_SCHEMA;
 use super::G5_REVOCATION_SCHEMA;
@@ -24,6 +23,7 @@ use super::prepare_g5_challenge;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::durable::write_private_new;
+use crate::test_support::PrivateTempDir;
 use crate::test_support::private_tempdir;
 use crate::trust::SSHSIG_NAMESPACE;
 
@@ -254,7 +254,7 @@ fn read_assessment(path: &Path) -> (G5Assessment, Vec<u8>) {
 }
 
 struct TrustFixture {
-    _temporary: TempDir,
+    _temporary: PrivateTempDir,
     allowed_signers: PathBuf,
     key: PathBuf,
     policy: PathBuf,

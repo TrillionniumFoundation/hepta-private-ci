@@ -6,7 +6,6 @@ use std::process::Command;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
-use tempfile::TempDir;
 
 use super::SSHSIG_NAMESPACE;
 use super::TRUST_POLICY_SCHEMA;
@@ -17,6 +16,7 @@ use super::TrustPolicy;
 use super::validate_ed25519_blob;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
+use crate::test_support::PrivateTempDir;
 use crate::test_support::private_tempdir;
 
 #[test]
@@ -110,7 +110,7 @@ fn weak_ed25519_public_key_is_rejected_before_openssh() {
 }
 
 struct TrustFixture {
-    _temporary: TempDir,
+    _temporary: PrivateTempDir,
     allowed_signers: PathBuf,
     key: PathBuf,
     policy: PathBuf,

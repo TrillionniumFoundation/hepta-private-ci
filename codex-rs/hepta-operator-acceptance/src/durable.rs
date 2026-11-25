@@ -7,6 +7,10 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[cfg(windows)]
+use codex_utils_path::windows_private::Access;
+#[cfg(windows)]
+use codex_utils_path::windows_private::PrivateDirectory;
 use serde::Serialize;
 use serde_json::Value;
 use sha2::Digest;
@@ -71,6 +75,8 @@ pub(crate) fn verify_secure_directory(path: &Path, label: &str) -> Result<(), Ac
     if metadata.file_type().is_symlink() || !metadata.is_dir() {
         return Err(invalid(format!("{label} must be a real directory")));
     }
+    #[cfg(windows)]
+    PrivateDirectory::inspect(path)?;
     verify_private_mode(&metadata, label)
 }
 
@@ -160,18 +166,23 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
         .ok_or_else(|| invalid("sidecar artifact has no parent"))?;
     verify_secure_directory(parent, "sidecar directory")?;
     let parent_before = std::fs::symlink_metadata(parent)?;
-    let mut options = OpenOptions::new();
-    options.create_new(true).read(true).write(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options
-            .mode(0o600)
-            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
-    }
     #[cfg(windows)]
-    windows::configure_open(&mut options);
-    let mut file = options.open(path)?;
+    let directory = PrivateDirectory::open_existing(parent)?;
+    #[cfg(windows)]
+    let mut file = directory.open(windows::leaf_name(path)?, Access::CreateNew)?;
+    #[cfg(not(windows))]
+    let mut file = {
+        let mut options = OpenOptions::new();
+        options.create_new(true).read(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+        }
+        options.open(path)?
+    };
     file.write_all(bytes)?;
     file.sync_all()?;
     let fd_after = file.metadata()?;
@@ -200,6 +211,9 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during durable write"));
     }
+    #[cfg(windows)]
+    directory.sync_all()?;
+    #[cfg(not(windows))]
     File::open(parent)?.sync_all()?;
     Ok(())
 }
@@ -218,6 +232,8 @@ pub(crate) fn write_private_atomic_replace(
         ));
     }
     verify_secure_directory(parent, "sidecar directory")?;
+    #[cfg(windows)]
+    let directory = PrivateDirectory::open_existing(parent)?;
     if let Ok(metadata) = std::fs::symlink_metadata(path) {
         verify_regular_metadata(&metadata, "replaced sidecar artifact")?;
         #[cfg(windows)]
@@ -225,6 +241,12 @@ pub(crate) fn write_private_atomic_replace(
     }
     write_private_new(temporary_path, bytes)?;
     let parent_before = std::fs::symlink_metadata(parent)?;
+    #[cfg(windows)]
+    let rename_result = directory.replace(
+        windows::leaf_name(temporary_path)?,
+        windows::leaf_name(path)?,
+    );
+    #[cfg(not(windows))]
     let rename_result = std::fs::rename(temporary_path, path);
     if rename_result.is_err() {
         let _ = std::fs::remove_file(temporary_path);
@@ -238,6 +260,9 @@ pub(crate) fn write_private_atomic_replace(
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
+    #[cfg(windows)]
+    directory.sync_all()?;
+    #[cfg(not(windows))]
     File::open(parent)?.sync_all()?;
     Ok(())
 }
