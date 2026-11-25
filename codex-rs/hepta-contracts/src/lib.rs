@@ -27,6 +27,7 @@ pub mod authority_trust_unix;
 #[cfg(test)]
 mod callers_manifest_tests;
 mod canonical;
+pub mod execution_contract_v1;
 mod final_use;
 mod final_use_control;
 mod identity;
