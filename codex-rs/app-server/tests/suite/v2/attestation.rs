@@ -135,7 +135,7 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
     timeout(DEFAULT_READ_TIMEOUT, async {
         loop {
             if pump.turn_completed {
-                break Ok(());
+                break Ok::<(), anyhow::Error>(());
             }
             match mcp.read_next_message().await? {
                 JSONRPCMessage::Request(request) => {
