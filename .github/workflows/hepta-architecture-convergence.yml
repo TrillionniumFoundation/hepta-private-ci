@@ -164,10 +164,30 @@ jobs:
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config libdbus-1-dev
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
+      - name: Qualify distro AppArmor Bubblewrap userns profile
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RUNNER_OS" = Linux
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          test "$(sysctl -n kernel.unprivileged_userns_clone)" = 1
+          before="$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)"
+          test "$before" = 1
+          sudo apt-get install -y apparmor-profiles apparmor-utils
+          distro_profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -r "$distro_profile"
+          sudo install -m 0644 "$distro_profile" /etc/apparmor.d/bwrap-userns-restrict
+          sudo apparmor_parser -r /etc/apparmor.d/bwrap-userns-restrict
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = "$before"
+          # Real user and network namespace operations, no mock or elevation
+          # of the E2E process. Fail closed before any expensive compilation.
+          bwrap --unshare-user --unshare-net --uid 0 --gid 0 \
+            --ro-bind / / --dev-bind /dev /dev --proc /proc \
+            /bin/true
+          printf 'AppArmor userns restriction remains %s; confined bwrap smoke passed\n' "$before" \
+            | tee "$RUNNER_TEMP/hepta-command-records/bwrap-apparmor.log"
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
       - name: Expose DotSlash for existing integration tests
