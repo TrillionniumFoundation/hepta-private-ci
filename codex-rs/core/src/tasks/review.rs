@@ -99,7 +99,7 @@ async fn start_review_conversation(
     ctx: Arc<TurnContext>,
     input: Vec<UserInput>,
     cancellation_token: CancellationToken,
-) -> Option<async_channel::Receiver<Event>> {
+) -> Option<crate::event_delivery::EventReceiver> {
     let config = ctx.config.clone();
     let mut sub_agent_config = config.as_ref().clone();
     // Carry over review-only feature restrictions so the delegate cannot
@@ -143,7 +143,7 @@ async fn start_review_conversation(
 async fn process_review_events(
     session: Arc<Session>,
     ctx: Arc<TurnContext>,
-    receiver: async_channel::Receiver<Event>,
+    receiver: crate::event_delivery::EventReceiver,
 ) -> Option<ReviewOutputEvent> {
     let mut prev_agent_message: Option<Event> = None;
     while let Ok(event) = receiver.recv().await {

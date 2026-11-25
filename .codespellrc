@@ -2,5 +2,6 @@
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
 skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new
 check-hidden = true
-ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b
+# Retained gzip evidence is byte-exact; check its metadata, not Base64 payloads.
+ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b|^\s*"data": "H4sI[A-Za-z0-9+/]*={0,2}",?\s*$
 ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness

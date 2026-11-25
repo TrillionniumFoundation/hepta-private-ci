@@ -1,0 +1,311 @@
+{
+  "schema": "hepta.pn0.arm-gnu-archive-runner-shutdown.v1",
+  "recorded_at_utc": "2026-10-22T09:18:27.183252+00:00",
+  "public_pr_source_at_observation": "f8f03321a000f179d7a0e01548ca987656866af2",
+  "executed_predecessor_source": "cb481bb06d2e048d9cb4d6356cf78682ea620fb2",
+  "run": 39743869108,
+  "job": 119707417490,
+  "target": "aarch64-unknown-linux-gnu",
+  "runner": "ubuntu-24.04-arm",
+  "step": {
+    "number": 18,
+    "name": "Build nextest archive",
+    "conclusion": "failure"
+  },
+  "source_identity": {
+    "checkout_and_reusable_workflow_sha": "cb481bb06d2e048d9cb4d6356cf78682ea620fb2",
+    "scope": "Exact predecessor CB archive job. This is not current-f8f full-repository acceptance."
+  },
+  "raw_log": {
+    "file": "hepta-cb-job-119707417490.decoded.log.gzip.json",
+    "file_sha256": "9f346553185d3e8724e47b551ec955a095aa94104dfaf90c761e00410aee79d6",
+    "original_decoded_bytes": 364442,
+    "original_decoded_sha256": "56fa0daa1030ab88a6e31cfcaa5d1ae8c29fbe4ef7e03c117e8482b3f83ed3bc",
+    "lossless": true
+  },
+  "terminal_observations": [
+    {
+      "line": 4460,
+      "text": "2026-10-22T09:08:43.7925689Z ##[error]The runner has received a shutdown signal. This can happen when the runner service is stopped, or a manually started runner is canceled."
+    },
+    {
+      "line": 4461,
+      "text": "2026-10-22T09:08:43.7955679Z ##[error]Process completed with exit code 143."
+    }
+  ],
+  "last_compilation_observation": {
+    "line": 4459,
+    "text": "2026-10-22T09:07:55.9854816Z \u001b[1m\u001b[92m   Compiling\u001b[0m codex-hepta-matrixd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-matrixd)"
+  },
+  "diagnostic_pattern_counts": {
+    "rust_error_code": 0,
+    "could_not_compile": 0,
+    "llvm_error": 0,
+    "enospc": 0
+  },
+  "classification": {
+    "observed_failure": "Runner shutdown interrupted the archive compilation; exit code 143.",
+    "unresolved_cause": "The log does not establish why the runner stopped. Its message lists runner-service stop or manual cancellation as possibilities, not a proven cause.",
+    "source_defect_proved": false,
+    "enospc_proved": false,
+    "archive_completed": false,
+    "archive_accepted": false,
+    "native_tests_executed": false,
+    "distinction": "This Linux failure is separate from Windows ARM job119707416797 ENOSPC and is not evidence for applying the Windows debug-info repair to Linux."
+  },
+  "dependent_shard": {
+    "id": 119738404062,
+    "name": "Tests \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Tests shard ${{ matrix.shard }}/4",
+    "status": "completed",
+    "conclusion": "skipped",
+    "run_id": 39743869108,
+    "logs_url": null,
+    "steps": null
+  },
+  "github_job_metadata": {
+    "id": 119707417490,
+    "name": "Tests \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-gnu / Build nextest archive",
+    "status": "completed",
+    "conclusion": "failure",
+    "run_id": 39743869108,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Run ./.github/actions/setup-ci",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Record compiled Windows workspace location",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 4
+      },
+      {
+        "name": "Install Linux build dependencies",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Run dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Expose MSVC SDK environment (Windows)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 7
+      },
+      {
+        "name": "Compute lockfile hash",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Restore cargo home cache",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      },
+      {
+        "name": "Install sccache",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10
+      },
+      {
+        "name": "Configure sccache backend",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11
+      },
+      {
+        "name": "Enable sccache wrapper",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12
+      },
+      {
+        "name": "Restore sccache cache (fallback)",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13
+      },
+      {
+        "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14
+      },
+      {
+        "name": "Configure verified sandbox V8 artifacts",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15
+      },
+      {
+        "name": "Configure archive-only ci-test debug information",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 16
+      },
+      {
+        "name": "Observe macOS disk before the archive build",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 17
+      },
+      {
+        "name": "Build nextest archive",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 18
+      },
+      {
+        "name": "Observe macOS disk after an archive build failure",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 19
+      },
+      {
+        "name": "Upload macOS archive disk observations",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 20
+      },
+      {
+        "name": "Build runtime test helpers",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 21
+      },
+      {
+        "name": "Upload Cargo timings (nextest)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 22
+      },
+      {
+        "name": "Upload nextest archive",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 23
+      },
+      {
+        "name": "Upload runtime test helpers",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 24
+      },
+      {
+        "name": "Save cargo home cache",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 25
+      },
+      {
+        "name": "Save sccache cache (fallback)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 26
+      },
+      {
+        "name": "sccache stats",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 27
+      },
+      {
+        "name": "sccache summary",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 28
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 56
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 57
+      }
+    ]
+  },
+  "successful_clippy_jobs_observed": [
+    {
+      "id": 119707416972,
+      "name": "Lint/Build \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119707416985,
+      "name": "Lint/Build \u2014 ubuntu-24.04 - x86_64-unknown-linux-musl",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119707417011,
+      "name": "Lint/Build \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-musl",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119707417015,
+      "name": "Lint/Build \u2014 windows-latest - x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119707417026,
+      "name": "Lint/Build \u2014 windows-11-arm - aarch64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119707417188,
+      "name": "Lint/Build \u2014 ubuntu-24.04-arm - aarch64-unknown-linux-musl (release)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 119707417217,
+      "name": "Lint/Build \u2014 windows-11-arm - aarch64-pc-windows-msvc (release)",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "patch_decision": {
+    "source_workflow_or_resource_changes": "None: no code or capacity defect is established by this runner-shutdown log.",
+    "gates_and_selectors": "All archive requirements, test inventories, shard selectors, positive/deletion/NTFS assertions and 60-second controls remain unchanged.",
+    "ci_actions": "No old-job rerun, new fullRust run or remote ref mutation performed by this review.",
+    "next_required": "A complete native ARM GNU archive producer and its original dependent shards must execute successfully on an authorized current source. The interrupted job remains failure, and the dependent shard remains skipped."
+  },
+  "relationship_to_previous_evidence": {
+    "file": "pn0-cb-archive-enospc-f8f-repair-evidence.json",
+    "scope": "The previous file is a retained earlier GitHub snapshot and 52-test audit/source validation, not a claim that only one archive failure exists now. Its Python test results and known strict-map failure remain unchanged.",
+    "strict_maps": "NOT PASS / pending actual GitHub source A, official maps migrate, plasticity sync and strict metadata-candidate verification.",
+    "production_or_windows_isolation_qualification": "Not established by either evidence record."
+  }
+}

@@ -77,11 +77,11 @@ fn trust_distribution_rotation_is_monotonic_and_content_addressed() {
                 distribution_id: id("trust-v1"),
                 generation: 1,
                 effective_at: 20,
-                trust: trust(7, 1),
+                trust: trust(/*epoch*/ 7, /*seed*/ 1),
             },
         ),
-        None,
-        50,
+        /*previous*/ None,
+        /*now*/ 50,
     )
     .unwrap();
     let second = activate_learning_trust(
@@ -92,11 +92,11 @@ fn trust_distribution_rotation_is_monotonic_and_content_addressed() {
                 distribution_id: id("trust-v2"),
                 generation: 2,
                 effective_at: 30,
-                trust: trust(8, 2),
+                trust: trust(/*epoch*/ 8, /*seed*/ 2),
             },
         ),
         Some(&first),
-        50,
+        /*now*/ 50,
     )
     .unwrap();
 
@@ -120,11 +120,11 @@ fn trust_distribution_rejects_bad_signature_generation_skips_and_epoch_rollback(
                 distribution_id: id("trust-v1"),
                 generation: 1,
                 effective_at: 20,
-                trust: trust(7, 1),
+                trust: trust(/*epoch*/ 7, /*seed*/ 1),
             },
         ),
-        None,
-        50,
+        /*previous*/ None,
+        /*now*/ 50,
     )
     .unwrap();
 
@@ -134,12 +134,12 @@ fn trust_distribution_rejects_bad_signature_generation_skips_and_epoch_rollback(
             distribution_id: id("trust-bad"),
             generation: 2,
             effective_at: 30,
-            trust: trust(8, 2),
+            trust: trust(/*epoch*/ 8, /*seed*/ 2),
         },
     );
     bad_signature.signature[0] ^= 1;
     assert_eq!(
-        activate_learning_trust(&root, bad_signature, Some(&first), 50).unwrap_err(),
+        activate_learning_trust(&root, bad_signature, Some(&first), /*now*/ 50).unwrap_err(),
         LearningTrustDistributionError::InvalidSignature
     );
 
@@ -152,11 +152,11 @@ fn trust_distribution_rejects_bad_signature_generation_skips_and_epoch_rollback(
                     distribution_id: id("trust-v3"),
                     generation: 3,
                     effective_at: 30,
-                    trust: trust(8, 2),
+                    trust: trust(/*epoch*/ 8, /*seed*/ 2),
                 },
             ),
             Some(&first),
-            50,
+            /*now*/ 50,
         )
         .unwrap_err(),
         LearningTrustDistributionError::NonMonotonicRotation
@@ -170,11 +170,11 @@ fn trust_distribution_rejects_bad_signature_generation_skips_and_epoch_rollback(
                     distribution_id: id("trust-v2"),
                     generation: 2,
                     effective_at: 30,
-                    trust: trust(6, 3),
+                    trust: trust(/*epoch*/ 6, /*seed*/ 3),
                 },
             ),
             Some(&first),
-            50,
+            /*now*/ 50,
         )
         .unwrap_err(),
         LearningTrustDistributionError::NonMonotonicRotation
@@ -191,14 +191,14 @@ fn trust_distribution_rejects_retroactive_effective_time() {
             distribution_id: id("trust-retroactive"),
             generation: 1,
             effective_at: 10,
-            trust: trust(7, 1),
+            trust: trust(/*epoch*/ 7, /*seed*/ 1),
         },
     );
     signed.issued_at = 15;
     signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
 
     assert_eq!(
-        activate_learning_trust(&root, signed, None, 50).unwrap_err(),
+        activate_learning_trust(&root, signed, /*previous*/ None, /*now*/ 50).unwrap_err(),
         LearningTrustDistributionError::DistributionWindow
     );
 }
@@ -213,7 +213,7 @@ fn trust_distribution_rejects_root_substitution_and_revocation() {
             distribution_id: id("trust-v1"),
             generation: 1,
             effective_at: 20,
-            trust: trust(7, 1),
+            trust: trust(/*epoch*/ 7, /*seed*/ 1),
         },
     );
 
@@ -227,14 +227,20 @@ fn trust_distribution_rejects_root_substitution_and_revocation() {
         revoked_at: None,
     };
     assert_eq!(
-        activate_learning_trust(&other_root, signed.clone(), None, 50).unwrap_err(),
+        activate_learning_trust(
+            &other_root,
+            signed.clone(),
+            /*previous*/ None,
+            /*now*/ 50
+        )
+        .unwrap_err(),
         LearningTrustDistributionError::RootMismatch
     );
 
     let mut revoked = root;
     revoked.revoked_at = Some(40);
     assert_eq!(
-        activate_learning_trust(&revoked, signed, None, 50).unwrap_err(),
+        activate_learning_trust(&revoked, signed, /*previous*/ None, /*now*/ 50).unwrap_err(),
         LearningTrustDistributionError::InvalidRoot
     );
 }

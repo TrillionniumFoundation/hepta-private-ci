@@ -4,7 +4,9 @@ use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+#[cfg(test)]
 use std::time::Duration;
+#[cfg(test)]
 use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -20,6 +22,7 @@ use sha2::Sha256;
 use crate::SupervisorError;
 use crate::restart_budget::RestartBudgetState;
 use crate::restart_policy::RESTART_ATTEMPT_BUDGET;
+#[cfg(test)]
 use crate::restart_policy::RESTART_RECOVERY_WINDOW;
 
 pub(crate) const RESTART_JOURNAL_SCHEMA_VERSION: u32 = 1;
@@ -310,6 +313,7 @@ pub(crate) fn write_main_restart_budget(
     write_record(run_root, record)
 }
 
+#[cfg(test)]
 pub(crate) fn read_restart_journal(
     run_root: &Path,
 ) -> Result<Option<RestartBudgetJournal>, SupervisorError> {
@@ -353,6 +357,7 @@ pub(crate) fn unix_millis_now() -> Result<u64, SupervisorError> {
     })
 }
 
+#[cfg(test)]
 pub(crate) fn restore_window(
     durable: &DurableRestartWindow,
     now: Instant,

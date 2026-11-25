@@ -11,10 +11,8 @@ const LOCAL_NAVIGATION_INPUT_SCHEMA =
   "hepta.browser.local-navigation-proposal-input.v1";
 const LOCAL_NAVIGATION_PROPOSAL_SCHEMA =
   "hepta.browser.local-navigation-proposal.v1";
-const LOCAL_PAGE_OBSERVATION_SCHEMA =
-  "hepta.browser.local-page-observation.v1";
-const LOCAL_PAGE_PROJECTION_SCHEMA =
-  "hepta.browser.local-page-projection.v1";
+const LOCAL_PAGE_OBSERVATION_SCHEMA = "hepta.browser.local-page-observation.v1";
+const LOCAL_PAGE_PROJECTION_SCHEMA = "hepta.browser.local-page-projection.v1";
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -85,7 +83,9 @@ function parseCanonicalInput(encoded, expectedKeys, name) {
     keys.length !== canonicalKeys.length ||
     keys.some((key, index) => key !== canonicalKeys[index])
   ) {
-    throw new TypeError(`${name} contains missing, unknown, or unordered fields`);
+    throw new TypeError(
+      `${name} contains missing, unknown, or unordered fields`,
+    );
   }
   const snapshot = Object.fromEntries(
     canonicalKeys.map((key) => [key, value[key]]),
@@ -112,7 +112,9 @@ function requireBoundedCanonicalWebUrl(value) {
     throw new TypeError("navigation URL must be a bounded string");
   }
   if (ASCII_CONTROL.test(value)) {
-    throw new TypeError("navigation URL cannot contain ASCII control characters");
+    throw new TypeError(
+      "navigation URL cannot contain ASCII control characters",
+    );
   }
   if (ENCODED_ASCII_CONTROL.test(value)) {
     throw new TypeError(
@@ -135,15 +137,15 @@ function requireBoundedCanonicalWebUrl(value) {
     throw new TypeError("navigation URL cannot contain credentials");
   }
   const afterScheme = value.slice(value.indexOf(":") + 1);
-  const authority = afterScheme
-    .replace(/^[\\/]+/, "")
-    .split(/[\\/?#]/, 1)[0];
+  const authority = afterScheme.replace(/^[\\/]+/, "").split(/[\\/?#]/, 1)[0];
   if (authority.includes("@")) {
     throw new TypeError("navigation URL cannot contain userinfo syntax");
   }
   const normalized = url.toString();
   if (UTF8.encode(normalized).byteLength > MAX_CANONICAL_URL_BYTES) {
-    throw new TypeError("normalized navigation URL exceeds the UTF-8 byte limit");
+    throw new TypeError(
+      "normalized navigation URL exceeds the UTF-8 byte limit",
+    );
   }
   return normalized;
 }

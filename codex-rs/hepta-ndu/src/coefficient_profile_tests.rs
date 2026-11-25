@@ -103,8 +103,13 @@ fn q24_projection_requires_exact_covariance_provenance() {
         evidence_digest: digest("z-estimate"),
         authority: AuthorityPosture::DENY_ALL,
     };
-    let projected = project_z_estimate_to_coefficient_q24(&estimate, &admitted, &conversion, 5_000)
-        .expect("projection");
+    let projected = project_z_estimate_to_coefficient_q24(
+        &estimate,
+        &admitted,
+        &conversion,
+        /*now_unix_ms*/ 5_000,
+    )
+    .expect("projection");
 
     assert_eq!(projected.q24_raw, vec![vec![3 * (1 << 24), -(1 << 24)]]);
     assert_eq!(projected.coefficient_profile_digest, admitted.digest());
@@ -116,8 +121,13 @@ fn q24_projection_requires_exact_covariance_provenance() {
         ..estimate
     };
     assert_eq!(
-        project_z_estimate_to_coefficient_q24(&wrong, &admitted, &conversion, 5_000)
-            .expect_err("wrong covariance"),
+        project_z_estimate_to_coefficient_q24(
+            &wrong,
+            &admitted,
+            &conversion,
+            /*now_unix_ms*/ 5_000
+        )
+        .expect_err("wrong covariance"),
         NduCoefficientProfileError::ProfileMismatch
     );
 }
@@ -139,8 +149,13 @@ fn expired_coefficient_profile_rejects_projection() {
         authority: AuthorityPosture::DENY_ALL,
     };
     assert_eq!(
-        project_z_estimate_to_coefficient_q24(&estimate, &admitted, &conversion, 5_000)
-            .expect_err("expiry"),
+        project_z_estimate_to_coefficient_q24(
+            &estimate,
+            &admitted,
+            &conversion,
+            /*now_unix_ms*/ 5_000
+        )
+        .expect_err("expiry"),
         NduCoefficientProfileError::Expiry
     );
 }

@@ -15,7 +15,7 @@ fn revision(value: u64) -> Revision {
 fn record(name: &str, state: RecordState) -> MemoryRecord {
     MemoryRecord {
         record_id: id(name),
-        revision: revision(1),
+        revision: revision(/*value*/ 1),
         kind: MemoryKind::Fact,
         content_digest: Digest32::of_bytes(name.as_bytes()),
         predecessor_digest: None,
@@ -25,7 +25,7 @@ fn record(name: &str, state: RecordState) -> MemoryRecord {
 }
 
 fn snapshot(records: Vec<MemoryRecord>) -> CognitiveSnapshot {
-    build_snapshot(Generation::new(1).expect("generation"), records).expect("snapshot")
+    build_snapshot(Generation::new(/*value*/ 1).expect("generation"), records).expect("snapshot")
 }
 
 #[test]

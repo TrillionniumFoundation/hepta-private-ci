@@ -13,8 +13,8 @@ fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
 fn plan() -> NeuronDeletionRebuildPlanV1 {
     NeuronDeletionRebuildPlanV1 {
         rebuild_id: checked(StableId::new("neuron-rebuild:1")),
-        predecessor_generation: checked(Generation::new(7)),
-        successor_generation: checked(Generation::new(8)),
+        predecessor_generation: checked(Generation::new(/*value*/ 7)),
+        successor_generation: checked(Generation::new(/*value*/ 8)),
         predecessor_checkpoint_digest: Digest32::of_bytes(b"checkpoint"),
         withdrawal_registry_head_digest: Digest32::of_bytes(b"withdrawal-head"),
         withdrawal_event_digest: Digest32::of_bytes(b"withdrawal-event"),
@@ -38,7 +38,7 @@ fn deletion_rebuild_is_fresh_generation_and_never_reuses_state() {
 #[test]
 fn deletion_rebuild_rejects_skipped_generation_and_missing_deletion() {
     let mut value = plan();
-    value.successor_generation = checked(Generation::new(9));
+    value.successor_generation = checked(Generation::new(/*value*/ 9));
     assert_eq!(
         validate_deletion_rebuild(&value),
         Err(DeletionRebuildError::GenerationNotExactSuccessor)

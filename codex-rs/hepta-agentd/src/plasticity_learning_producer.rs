@@ -1,9 +1,10 @@
-//! Named non-test learning/self-iteration producer for governed plasticity.
+//! Borrowed adapter used by the Agentd plasticity lifetime tests.
 //!
-//! This adapter is intentionally internal to Agentd. It owns no mutable writer,
-//! trust root, owner-evidence store or authority. AgentdState retains it as the
-//! only product-side producer façade; the long-lived runtime owner still
-//! re-resolves current owner frontiers, revalidates independent
+//! Production composition retains PlasticityRuntimeHandleV1 directly in
+//! AgentdState. A learning/self-iteration product caller is not yet composed.
+//! This test adapter owns no writer, trust root, evidence store or authority.
+//! It submits through the bounded channel to the long-lived runtime owner,
+//! which re-resolves current owner frontiers, revalidates independent
 //! Generator/Observer/Evaluator evidence and withholds success until the
 //! rollback-domain anchor commit succeeds.
 
@@ -15,17 +16,16 @@ use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
 use crate::PlasticityRuntimeCallErrorV1;
 use crate::PlasticityRuntimeHandleV1;
 
-/// Product-side learning producer bound to one Agentd generation.
+/// Borrowed test submission adapter for one Agentd generation.
 ///
-/// It contains only the bounded runtime handle and cannot access proposal
-/// writers, anchor stores, trust roots or authoritative owner stores.
-#[derive(Clone)]
-pub(crate) struct AgentdLearningPlasticityProducerV1 {
-    handle: PlasticityRuntimeHandleV1,
+/// It cannot access proposal writers, anchor stores, trust roots or authoritative
+/// owner stores, and does not clone the retained runtime handle.
+pub(crate) struct AgentdLearningPlasticityProducerV1<'a> {
+    handle: &'a PlasticityRuntimeHandleV1,
 }
 
-impl AgentdLearningPlasticityProducerV1 {
-    pub(crate) fn new(handle: PlasticityRuntimeHandleV1) -> Self {
+impl<'a> AgentdLearningPlasticityProducerV1<'a> {
+    pub(crate) fn new(handle: &'a PlasticityRuntimeHandleV1) -> Self {
         Self { handle }
     }
 

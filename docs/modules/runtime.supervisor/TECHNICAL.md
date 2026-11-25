@@ -176,6 +176,8 @@ Rollback and automatic rollback are fresh admissions. Immediately before process
 
 Ambiguous signed transitions become `recovery_required`. Supervisord remains reachable for read-only transaction/status queries and the signed recovery ceremony, but reports not-ready and rejects ordinary mutation of that Agent except emergency kill. Recovery may become `committed` or `rolled_back` only when an independently signed decision binds the grant, intent digest, transaction digest, observed immutable release bytes, current lifecycle generation and current daemon authority epoch; the current Fleet admission frontier is revalidated once more before terminalization.
 
+An owner-local `Abort` keeps the recovery fence. A distinct independently signed v2 `AbandonUnknown` can resolve that fence only after the original owner confirms that both Agentd and Matrix process handles and leases are absent, the lifecycle is Failed or Stopped, and no release transaction exists. It revalidates the exact source release, release-state generation and Fleet admission frontier before atomically publishing `Aborted` with the signed unknown-effect history. The old grant cannot be resumed or reinterpreted as successful commit/rollback; the receipt has `promotion=false`, the restart budget and unknown history remain retained, and any future spawn must pass normal lifecycle and source admission again.
+
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
 ## 9. Security, privacy and threat controls
@@ -393,7 +395,7 @@ This receipt records repository source bindings for the current documentation ca
 | `rollback_release` | `pub fn rollback(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
 | `signed_upgrade` | `pub fn apply_production_grant(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
 | `signed_rollback` | `pub fn apply_production_grant(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
-| `reconcile_signed_intent` | `pub fn resolve_production_recovery(` | `codex-rs/hepta-supervisor/src/supervisor.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs` |
+| `reconcile_signed_intent` | `pub fn resolve_production_recovery(` | `codex-rs/hepta-supervisor/src/supervisor.rs`, `unknown_recovery_owner.rs` | `codex-rs/hepta-supervisor/src/signed_authority.rs`, `release_transaction.rs`, `unknown_recovery_owner_tests.rs`, `unknown_recovery_compat_tests.rs` |
 
 - `sourceBase` in the implementation map is historical provenance. The exact source-head or deterministic merge candidate is derived from Git by Lane B verification and is never hard-coded into a self-referential candidate file. The final repository-controlled implementation observation is separately pinned in `IMPLEMENTATION_MAP.json.observedAtHead`; verification accepts it only while every declared `observedSourcePaths` path is unchanged at the candidate head.
 - The daemon product never executes unsigned `Upgrade` or `Rollback`; those wire variants are compatibility rejection surfaces. Ordinary `Supervisor::upgrade/rollback` remain library-level qualification/fault-injection APIs.

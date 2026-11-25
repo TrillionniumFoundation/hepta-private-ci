@@ -6,9 +6,9 @@ fn v2_binds_same_outcome_to_its_actual_assignment_and_artifact_metadata()
     let original = request_with(
         vec![candidate(
             "candidate:a",
-            10,
+            /*utility*/ 10,
             ProbabilityQ32::ONE.raw(),
-            0,
+            /*ood*/ 0,
             ProbabilityQ32::ONE.raw(),
         )],
         AssignmentModeV1::CounterBased {
@@ -32,7 +32,7 @@ fn v2_binds_same_outcome_to_its_actual_assignment_and_artifact_metadata()
         },
         |request| {
             if let AssignmentModeV1::CounterBased { draw, .. } = &mut request.assignment {
-                *draw = probability(1);
+                *draw = probability(/*raw*/ 1);
             }
         },
         |request| request.calibration.measured_ece_ppm += 1,
@@ -55,7 +55,7 @@ fn v2_binds_same_outcome_to_its_actual_assignment_and_artifact_metadata()
         assert_eq!(changed_receipt, bound);
     }
     let mut changed_candidate = original;
-    changed_candidate.candidates[0].utility = FixedQ32::from_raw(11);
+    changed_candidate.candidates[0].utility = FixedQ32::from_raw(/*raw*/ 11);
     changed_candidate.completeness.candidate_set_digest =
         canonical_candidate_set_digest_v1(&changed_candidate.candidates)?;
     assert_ne!(
@@ -75,9 +75,9 @@ fn v2_still_validates_the_actual_draw_and_calibration_window() {
     let mut request = request_with(
         vec![candidate(
             "candidate:a",
-            10,
+            /*utility*/ 10,
             ProbabilityQ32::ONE.raw(),
-            0,
+            /*ood*/ 0,
             ProbabilityQ32::ONE.raw(),
         )],
         AssignmentModeV1::CounterBased {
@@ -190,8 +190,20 @@ fn request_with(
 fn deterministic_profile_selects_only_supported_calibrated_candidate() {
     let request = request_with(
         vec![
-            candidate("candidate:a", 10, ProbabilityQ32::ONE.raw(), 0, 0),
-            candidate("candidate:b", 20, ProbabilityQ32::ONE.raw(), 0, 0),
+            candidate(
+                "candidate:a",
+                /*utility*/ 10,
+                ProbabilityQ32::ONE.raw(),
+                /*ood*/ 0,
+                /*assignment*/ 0,
+            ),
+            candidate(
+                "candidate:b",
+                /*utility*/ 20,
+                ProbabilityQ32::ONE.raw(),
+                /*ood*/ 0,
+                /*assignment*/ 0,
+            ),
         ],
         AssignmentModeV1::Deterministic,
     );
@@ -219,10 +231,10 @@ fn high_risk_forces_slow_path_without_candidate_propensity() {
     let mut request = request_with(
         vec![candidate(
             "candidate:a",
-            10,
+            /*utility*/ 10,
             ProbabilityQ32::ONE.raw(),
-            0,
-            0,
+            /*ood*/ 0,
+            /*assignment*/ 0,
         )],
         AssignmentModeV1::Deterministic,
     );
@@ -246,10 +258,10 @@ fn high_risk_forces_slow_path_without_candidate_propensity() {
 fn out_of_distribution_candidate_cannot_be_selected() {
     let mut value = candidate(
         "candidate:a",
-        100,
+        /*utility*/ 100,
         ProbabilityQ32::ONE.raw(),
         ProbabilityQ32::ONE.raw(),
-        0,
+        /*assignment*/ 0,
     );
     value.ood_score = ProbabilityQ32::ONE;
     let request = request_with(vec![value], AssignmentModeV1::Deterministic);
@@ -266,10 +278,10 @@ fn stale_calibration_artifact_rejects_before_selection() {
     let mut request = request_with(
         vec![candidate(
             "candidate:a",
-            10,
+            /*utility*/ 10,
             ProbabilityQ32::ONE.raw(),
-            0,
-            0,
+            /*ood*/ 0,
+            /*assignment*/ 0,
         )],
         AssignmentModeV1::Deterministic,
     );
@@ -285,10 +297,10 @@ fn candidate_set_substitution_is_rejected() {
     let mut request = request_with(
         vec![candidate(
             "candidate:a",
-            10,
+            /*utility*/ 10,
             ProbabilityQ32::ONE.raw(),
-            0,
-            0,
+            /*ood*/ 0,
+            /*assignment*/ 0,
         )],
         AssignmentModeV1::Deterministic,
     );
@@ -304,8 +316,20 @@ fn randomized_assignment_uses_exact_logged_distribution() {
     let half = ProbabilityQ32::ONE.raw() / 2;
     let request = request_with(
         vec![
-            candidate("candidate:a", 10, ProbabilityQ32::ONE.raw(), 0, half),
-            candidate("candidate:b", 20, ProbabilityQ32::ONE.raw(), 0, half),
+            candidate(
+                "candidate:a",
+                /*utility*/ 10,
+                ProbabilityQ32::ONE.raw(),
+                /*ood*/ 0,
+                half,
+            ),
+            candidate(
+                "candidate:b",
+                /*utility*/ 20,
+                ProbabilityQ32::ONE.raw(),
+                /*ood*/ 0,
+                half,
+            ),
         ],
         AssignmentModeV1::CounterBased {
             random_stream_digest: digest(b"random-stream"),
@@ -333,7 +357,7 @@ fn randomized_assignment_uses_exact_logged_distribution() {
 fn randomized_probability_for_ood_candidate_is_rejected() {
     let mut excluded = candidate(
         "candidate:a",
-        10,
+        /*utility*/ 10,
         ProbabilityQ32::ONE.raw(),
         ProbabilityQ32::ONE.raw(),
         ProbabilityQ32::ONE.raw(),
@@ -360,10 +384,10 @@ fn calibration_quality_gate_fails_closed() {
     let mut request = request_with(
         vec![candidate(
             "candidate:a",
-            10,
+            /*utility*/ 10,
             ProbabilityQ32::ONE.raw(),
-            0,
-            0,
+            /*ood*/ 0,
+            /*assignment*/ 0,
         )],
         AssignmentModeV1::Deterministic,
     );
@@ -377,8 +401,20 @@ fn calibration_quality_gate_fails_closed() {
 #[test]
 fn canonical_candidate_order_is_required() {
     let candidates = vec![
-        candidate("candidate:b", 10, ProbabilityQ32::ONE.raw(), 0, 0),
-        candidate("candidate:a", 20, ProbabilityQ32::ONE.raw(), 0, 0),
+        candidate(
+            "candidate:b",
+            /*utility*/ 10,
+            ProbabilityQ32::ONE.raw(),
+            /*ood*/ 0,
+            /*assignment*/ 0,
+        ),
+        candidate(
+            "candidate:a",
+            /*utility*/ 20,
+            ProbabilityQ32::ONE.raw(),
+            /*ood*/ 0,
+            /*assignment*/ 0,
+        ),
     ];
     let request = request_with(candidates, AssignmentModeV1::Deterministic);
     assert_eq!(
@@ -392,9 +428,9 @@ fn v2_rejects_nonzero_omitted_candidate_bound() {
     let mut request = request_with(
         vec![candidate(
             "candidate:a",
-            10,
+            /*utility*/ 10,
             ProbabilityQ32::ONE.raw(),
-            0,
+            /*ood*/ 0,
             ProbabilityQ32::ONE.raw(),
         )],
         AssignmentModeV1::Deterministic,

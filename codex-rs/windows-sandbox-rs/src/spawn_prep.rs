@@ -129,6 +129,7 @@ pub(crate) fn prepare_legacy_spawn_context(
     command: &[String],
     options: SpawnPrepOptions,
 ) -> Result<SpawnContext> {
+    crate::legacy_boundary::require_qualified_legacy_filesystem()?;
     let common = prepare_spawn_context_common(
         permission_profile,
         workspace_roots,
@@ -376,6 +377,7 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
     proxy_enforced: bool,
     proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,
 ) -> Result<ElevatedSpawnContext> {
+    crate::legacy_boundary::require_qualified_windows_filesystem()?;
     normalize_null_device_env(env_map);
     ensure_non_interactive_pager(env_map);
     inherit_path_env(env_map);
@@ -550,6 +552,38 @@ mod tests {
             env_map.get("HTTP_PROXY"),
             Some(&"http://127.0.0.1:9".to_string())
         );
+    }
+
+    #[test]
+    fn legacy_spawn_refuses_before_home_or_environment_changes() {
+        let fixture = TempDir::new().expect("tempdir");
+        let codex_home = fixture.path().join("must-not-create-home");
+        let cwd = TempDir::new().expect("tempdir");
+        let original_env = HashMap::from([("HTTP_PROXY".to_string(), "unchanged".to_string())]);
+        let mut env_map = original_env.clone();
+        let workspace_roots = workspace_roots_for(cwd.path());
+
+        let Err(error) = prepare_legacy_spawn_context(
+            &PermissionProfile::workspace_write(),
+            workspace_roots.as_slice(),
+            &codex_home,
+            cwd.path(),
+            &mut env_map,
+            &["cmd.exe".to_string()],
+            SpawnPrepOptions {
+                inherit_path: true,
+                add_git_safe_directory: false,
+            },
+        ) else {
+            panic!("legacy preparation must refuse");
+        };
+
+        assert_eq!(
+            error.downcast_ref::<crate::legacy_boundary::LegacyFilesystemIsolationUnavailable>(),
+            Some(&crate::legacy_boundary::LegacyFilesystemIsolationUnavailable)
+        );
+        assert_eq!(env_map, original_env);
+        assert!(!codex_home.exists());
     }
 
     #[test]

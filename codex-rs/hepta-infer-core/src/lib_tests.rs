@@ -18,7 +18,7 @@ fn request() -> InferenceRequest {
 }
 
 fn ledger() -> InferenceLedger {
-    let Ok(value) = InferenceLedger::new(8) else {
+    let Ok(value) = InferenceLedger::new(/*maximum_requests*/ 8) else {
         panic!("test ledger must initialize");
     };
     value

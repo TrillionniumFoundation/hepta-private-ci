@@ -28,7 +28,7 @@ fn request() -> DispatchRequest {
 fn exact_plan_grants_no_provider_authority() {
     let value = request();
     let Ok(plan) = plan(
-        1_000,
+        /*now_ms*/ 1_000,
         value,
         digest(b"request"),
         digest(b"reservation"),
@@ -45,7 +45,7 @@ fn exact_plan_grants_no_provider_authority() {
 fn lease_drift_is_rejected() {
     assert_eq!(
         plan(
-            1_000,
+            /*now_ms*/ 1_000,
             request(),
             digest(b"request"),
             digest(b"reservation"),
@@ -60,7 +60,7 @@ fn lease_drift_is_rejected() {
 fn expired_dispatch_is_rejected() {
     assert_eq!(
         plan(
-            2_000,
+            /*now_ms*/ 2_000,
             request(),
             digest(b"request"),
             digest(b"reservation"),

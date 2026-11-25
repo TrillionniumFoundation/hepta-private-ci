@@ -255,7 +255,7 @@ async fn guardian_test_session_turn_and_rx(
 ) -> (
     Arc<Session>,
     Arc<TurnContext>,
-    async_channel::Receiver<Event>,
+    crate::event_delivery::EventReceiver,
 ) {
     let (mut session, mut turn, rx) =
         crate::session::tests::make_session_and_context_with_rx().await;

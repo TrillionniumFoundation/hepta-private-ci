@@ -236,7 +236,8 @@ async fn state_db_init_backfills_before_returning() -> anyhow::Result<()> {
         .join("\n");
     fs::write(&rollout_path, format!("{jsonl}\n"))?;
 
-    let runtime = crate::state_db::init(&test_config(home.path()))
+    let mut config = test_config(home.path());
+    let runtime = crate::state_db::init(&mut config)
         .await
         .expect("state db should initialize");
 
@@ -1157,7 +1158,7 @@ async fn list_threads_db_disabled_does_not_skip_paginated_items() -> std::io::Re
 async fn list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths()
 -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
-    let config = test_config(home.path());
+    let mut config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9010);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1171,6 +1172,7 @@ async fn list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths()
     )
     .await
     .expect("state db should initialize");
+    config.sqlite = runtime.sqlite().clone();
     runtime
         .mark_backfill_complete(/*last_watermark*/ None)
         .await
@@ -1251,7 +1253,7 @@ async fn list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths()
 #[tokio::test]
 async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
-    let config = test_config(home.path());
+    let mut config = test_config(home.path());
 
     let runtime = codex_state::StateRuntime::init(
         codex_state::SqliteConfig::new_for_testing(home.path().abs()),
@@ -1259,6 +1261,7 @@ async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result
     )
     .await
     .expect("state db should initialize");
+    config.sqlite = runtime.sqlite().clone();
     runtime
         .mark_backfill_complete(/*last_watermark*/ None)
         .await
@@ -1350,7 +1353,7 @@ async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result
 #[tokio::test]
 async fn list_threads_default_filter_returns_filesystem_scan_results() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
-    let config = test_config(home.path());
+    let mut config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9013);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1363,6 +1366,7 @@ async fn list_threads_default_filter_returns_filesystem_scan_results() -> std::i
     )
     .await
     .expect("state db should initialize");
+    config.sqlite = runtime.sqlite().clone();
     runtime
         .mark_backfill_complete(/*last_watermark*/ None)
         .await
@@ -1441,7 +1445,7 @@ async fn list_threads_default_filter_returns_filesystem_scan_results() -> std::i
 #[tokio::test]
 async fn list_threads_metadata_filter_overlays_state_db_list_metadata() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
-    let config = test_config(home.path());
+    let mut config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9015);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1453,6 +1457,7 @@ async fn list_threads_metadata_filter_overlays_state_db_list_metadata() -> std::
     )
     .await
     .expect("state db should initialize");
+    config.sqlite = runtime.sqlite().clone();
     runtime
         .mark_backfill_complete(/*last_watermark*/ None)
         .await
@@ -1597,7 +1602,7 @@ fn fill_missing_thread_item_metadata_preserves_identity_and_prefers_state_git_fi
 #[tokio::test]
 async fn list_threads_search_repairs_stale_state_db_hits_before_returning() -> std::io::Result<()> {
     let home = TempDir::new().expect("temp dir");
-    let config = test_config(home.path());
+    let mut config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9014);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1609,6 +1614,7 @@ async fn list_threads_search_repairs_stale_state_db_hits_before_returning() -> s
     )
     .await
     .expect("state db should initialize");
+    config.sqlite = runtime.sqlite().clone();
     runtime
         .mark_backfill_complete(/*last_watermark*/ None)
         .await

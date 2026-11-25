@@ -73,8 +73,8 @@ fn proposal(proposal_id: &str, window_digest: &[u8]) -> ParameterProposalV2 {
             window_id: id("window:durable"),
             window_digest: digest(window_digest),
         },
-        baseline_generation: generation(1),
-        candidate_generation: generation(2),
+        baseline_generation: generation(/*value*/ 1),
+        candidate_generation: generation(/*value*/ 2),
         dataset_digest: digest(b"dataset"),
         update_rule_digest: digest(b"update-rule"),
         modulator_digest: digest(b"modulator"),
@@ -98,9 +98,9 @@ fn proposal(proposal_id: &str, window_digest: &[u8]) -> ParameterProposalV2 {
                 parameter_deltas: vec![ParameterDeltaV2 {
                     layer_id: id("layer:adapter"),
                     parameter_id: id("parameter:adapter"),
-                    delta: FixedQ32::from_raw(1),
-                    lower_bound: FixedQ32::from_raw(-10),
-                    upper_bound: FixedQ32::from_raw(10),
+                    delta: FixedQ32::from_raw(/*raw*/ 1),
+                    lower_bound: FixedQ32::from_raw(/*raw*/ -10),
+                    upper_bound: FixedQ32::from_raw(/*raw*/ 10),
                     evidence_digest: digest(b"delta-evidence"),
                 }],
             },
@@ -115,8 +115,13 @@ fn append_reopen_and_anchor_preserve_exact_record() {
     let scope = digest(b"registry-scope");
     let expected = proposal("proposal:durable:1", b"window-a");
     let anchor = {
-        let mut store = DurableProposalRegistry::open(fixture.create(), scope, 7, 8)
-            .unwrap_or_else(|error| panic!("open: {error:?}"));
+        let mut store = DurableProposalRegistry::open(
+            fixture.create(),
+            scope,
+            /*writer_fence*/ 7,
+            /*maximum_records*/ 8,
+        )
+        .unwrap_or_else(|error| panic!("open: {error:?}"));
         let receipt = store
             .append_v2(Digest32::ZERO, expected.clone())
             .unwrap_or_else(|error| panic!("append: {error:?}"));
@@ -129,8 +134,14 @@ fn append_reopen_and_anchor_preserve_exact_record() {
             .unwrap_or_else(|| panic!("anchor must exist"))
     };
 
-    let store = DurableProposalRegistry::open_anchored(fixture.open(), scope, 7, 8, anchor)
-        .unwrap_or_else(|error| panic!("reopen: {error:?}"));
+    let store = DurableProposalRegistry::open_anchored(
+        fixture.open(),
+        scope,
+        /*writer_fence*/ 7,
+        /*maximum_records*/ 8,
+        anchor,
+    )
+    .unwrap_or_else(|error| panic!("reopen: {error:?}"));
     assert_eq!(
         store
             .record_count()
@@ -151,7 +162,12 @@ fn resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state()
     let fixture = TestFile::new("resume-unacknowledged-bootstrap");
     let scope = digest(b"registry-scope");
     {
-        let store = DurableProposalRegistry::open_bootstrap_empty(fixture.create(), scope, 29, 4)?;
+        let store = DurableProposalRegistry::open_bootstrap_empty(
+            fixture.create(),
+            scope,
+            /*writer_fence*/ 29,
+            /*maximum_records*/ 4,
+        )?;
         drop(store);
     }
     {
@@ -160,16 +176,24 @@ fn resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state()
         file.sync_all()?;
     }
     {
-        let store =
-            DurableProposalRegistry::resume_unacknowledged_bootstrap(fixture.open(), scope, 29, 4)?;
+        let store = DurableProposalRegistry::resume_unacknowledged_bootstrap(
+            fixture.open(),
+            scope,
+            /*writer_fence*/ 29,
+            /*maximum_records*/ 4,
+        )?;
         assert_eq!(store.record_count(), Ok(0));
         drop(store);
     }
     assert_eq!(std::fs::metadata(&fixture.path)?.len(), HEADER_SIZE as u64);
 
     {
-        let mut store =
-            DurableProposalRegistry::resume_unacknowledged_bootstrap(fixture.open(), scope, 29, 4)?;
+        let mut store = DurableProposalRegistry::resume_unacknowledged_bootstrap(
+            fixture.open(),
+            scope,
+            /*writer_fence*/ 29,
+            /*maximum_records*/ 4,
+        )?;
         store.append_v2(
             Digest32::ZERO,
             proposal("proposal:unacknowledged-complete", b"window-a"),
@@ -177,8 +201,13 @@ fn resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state()
     }
     let complete = std::fs::read(&fixture.path)?;
     assert_eq!(
-        DurableProposalRegistry::resume_unacknowledged_bootstrap(fixture.open(), scope, 29, 4,)
-            .err(),
+        DurableProposalRegistry::resume_unacknowledged_bootstrap(
+            fixture.open(),
+            scope,
+            /*writer_fence*/ 29,
+            /*maximum_records*/ 4,
+        )
+        .err(),
         Some(DurableProposalRegistryError::UnacknowledgedHistoryPresent)
     );
     assert_eq!(std::fs::read(&fixture.path)?, complete);
@@ -188,9 +217,13 @@ fn resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state()
 #[test]
 fn identical_retry_is_unchanged_and_does_not_consume_capacity() {
     let fixture = TestFile::new("retry");
-    let mut store =
-        DurableProposalRegistry::open(fixture.create(), digest(b"registry-scope"), 9, 1)
-            .unwrap_or_else(|error| panic!("open: {error:?}"));
+    let mut store = DurableProposalRegistry::open(
+        fixture.create(),
+        digest(b"registry-scope"),
+        /*writer_fence*/ 9,
+        /*maximum_records*/ 1,
+    )
+    .unwrap_or_else(|error| panic!("open: {error:?}"));
     let value = proposal("proposal:durable:retry", b"window-a");
     let first = store
         .append_v2(Digest32::ZERO, value.clone())
@@ -206,9 +239,13 @@ fn identical_retry_is_unchanged_and_does_not_consume_capacity() {
 #[test]
 fn stale_predecessor_and_slot_drift_fail_closed() {
     let fixture = TestFile::new("conflict");
-    let mut store =
-        DurableProposalRegistry::open(fixture.create(), digest(b"registry-scope"), 11, 4)
-            .unwrap_or_else(|error| panic!("open: {error:?}"));
+    let mut store = DurableProposalRegistry::open(
+        fixture.create(),
+        digest(b"registry-scope"),
+        /*writer_fence*/ 11,
+        /*maximum_records*/ 4,
+    )
+    .unwrap_or_else(|error| panic!("open: {error:?}"));
     let first = proposal("proposal:durable:first", b"window-a");
     let receipt = store
         .append_v2(Digest32::ZERO, first)
@@ -231,8 +268,13 @@ fn context_and_external_anchor_mismatch_reject_reopen() {
     let fixture = TestFile::new("anchor");
     let scope = digest(b"registry-scope");
     let anchor = {
-        let mut store = DurableProposalRegistry::open(fixture.create(), scope, 13, 4)
-            .unwrap_or_else(|error| panic!("open: {error:?}"));
+        let mut store = DurableProposalRegistry::open(
+            fixture.create(),
+            scope,
+            /*writer_fence*/ 13,
+            /*maximum_records*/ 4,
+        )
+        .unwrap_or_else(|error| panic!("open: {error:?}"));
         store
             .append_v2(
                 Digest32::ZERO,
@@ -245,11 +287,21 @@ fn context_and_external_anchor_mismatch_reject_reopen() {
             .unwrap_or_else(|| panic!("anchor must exist"))
     };
     assert!(matches!(
-        DurableProposalRegistry::open(fixture.open(), digest(b"other-scope"), 13, 4),
+        DurableProposalRegistry::open(
+            fixture.open(),
+            digest(b"other-scope"),
+            /*writer_fence*/ 13,
+            /*maximum_records*/ 4
+        ),
         Err(DurableProposalRegistryError::ContextMismatch)
     ));
     assert!(matches!(
-        DurableProposalRegistry::open(fixture.open(), scope, 14, 4),
+        DurableProposalRegistry::open(
+            fixture.open(),
+            scope,
+            /*writer_fence*/ 14,
+            /*maximum_records*/ 4
+        ),
         Err(DurableProposalRegistryError::ContextMismatch)
     ));
     let wrong = DurableRegistryAnchorV1 {
@@ -257,7 +309,13 @@ fn context_and_external_anchor_mismatch_reject_reopen() {
         frame_digest: digest(b"wrong-anchor"),
     };
     assert!(matches!(
-        DurableProposalRegistry::open_anchored(fixture.open(), scope, 13, 4, wrong),
+        DurableProposalRegistry::open_anchored(
+            fixture.open(),
+            scope,
+            /*writer_fence*/ 13,
+            /*maximum_records*/ 4,
+            wrong
+        ),
         Err(DurableProposalRegistryError::AnchorMismatch)
     ));
 }
@@ -267,8 +325,13 @@ fn incomplete_tail_is_removed_before_recovery_returns() {
     let fixture = TestFile::new("tail");
     let scope = digest(b"registry-scope");
     let anchor = {
-        let mut store = DurableProposalRegistry::open(fixture.create(), scope, 15, 4)
-            .unwrap_or_else(|error| panic!("open: {error:?}"));
+        let mut store = DurableProposalRegistry::open(
+            fixture.create(),
+            scope,
+            /*writer_fence*/ 15,
+            /*maximum_records*/ 4,
+        )
+        .unwrap_or_else(|error| panic!("open: {error:?}"));
         store
             .append_v2(
                 Digest32::ZERO,
@@ -293,8 +356,14 @@ fn incomplete_tail_is_removed_before_recovery_returns() {
         file.sync_all()
             .unwrap_or_else(|error| panic!("sync tail: {error}"));
     }
-    let store = DurableProposalRegistry::open_anchored(fixture.open(), scope, 15, 4, anchor)
-        .unwrap_or_else(|error| panic!("recover: {error:?}"));
+    let store = DurableProposalRegistry::open_anchored(
+        fixture.open(),
+        scope,
+        /*writer_fence*/ 15,
+        /*maximum_records*/ 4,
+        anchor,
+    )
+    .unwrap_or_else(|error| panic!("recover: {error:?}"));
     assert_eq!(store.record_count(), Ok(1));
     assert_eq!(
         std::fs::metadata(&fixture.path)
@@ -307,10 +376,20 @@ fn incomplete_tail_is_removed_before_recovery_returns() {
 #[test]
 fn a_second_writer_cannot_open_the_same_file() {
     let fixture = TestFile::new("lock");
-    let first = DurableProposalRegistry::open(fixture.create(), digest(b"registry-scope"), 17, 4)
-        .unwrap_or_else(|error| panic!("first open: {error:?}"));
+    let first = DurableProposalRegistry::open(
+        fixture.create(),
+        digest(b"registry-scope"),
+        /*writer_fence*/ 17,
+        /*maximum_records*/ 4,
+    )
+    .unwrap_or_else(|error| panic!("first open: {error:?}"));
     assert!(matches!(
-        DurableProposalRegistry::open(fixture.open(), digest(b"registry-scope"), 17, 4,),
+        DurableProposalRegistry::open(
+            fixture.open(),
+            digest(b"registry-scope"),
+            /*writer_fence*/ 17,
+            /*maximum_records*/ 4,
+        ),
         Err(DurableProposalRegistryError::Busy)
     ));
     drop(first);
@@ -322,7 +401,12 @@ fn rejected_anchor_does_not_truncate_recoverable_bytes() -> Result<(), Box<dyn S
         let fixture = TestFile::new("rejected-anchor-tail");
         let scope = digest(b"registry-scope");
         let anchor = {
-            let mut store = DurableProposalRegistry::open(fixture.create(), scope, 19, 4)?;
+            let mut store = DurableProposalRegistry::open(
+                fixture.create(),
+                scope,
+                /*writer_fence*/ 19,
+                /*maximum_records*/ 4,
+            )?;
             let receipt = store.append_v2(
                 Digest32::ZERO,
                 proposal("proposal:anchor-tail", b"window-a"),
@@ -354,13 +438,23 @@ fn rejected_anchor_does_not_truncate_recoverable_bytes() -> Result<(), Box<dyn S
                 DurableProposalRegistryError::AcknowledgedHistoryMissing,
             ),
         ] {
-            let rejected =
-                DurableProposalRegistry::open_anchored(fixture.open(), scope, 19, 4, wrong);
+            let rejected = DurableProposalRegistry::open_anchored(
+                fixture.open(),
+                scope,
+                /*writer_fence*/ 19,
+                /*maximum_records*/ 4,
+                wrong,
+            );
             assert_eq!(rejected.err(), Some(expected));
             assert_eq!(std::fs::read(&fixture.path)?, incomplete_bytes);
         }
-        let recovered =
-            DurableProposalRegistry::open_anchored(fixture.open(), scope, 19, 4, anchor)?;
+        let recovered = DurableProposalRegistry::open_anchored(
+            fixture.open(),
+            scope,
+            /*writer_fence*/ 19,
+            /*maximum_records*/ 4,
+            anchor,
+        )?;
         assert_eq!(recovered.current_anchor()?, Some(anchor));
         drop(recovered);
         assert_eq!(std::fs::read(&fixture.path)?, valid_bytes);
@@ -374,7 +468,12 @@ fn a_full_registry_can_recover_an_incomplete_tail() -> Result<(), Box<dyn StdErr
     let scope = digest(b"registry-scope");
     let expected = proposal("proposal:full-tail", b"window-a");
     let receipt = {
-        let mut store = DurableProposalRegistry::open(fixture.create(), scope, 23, 1)?;
+        let mut store = DurableProposalRegistry::open(
+            fixture.create(),
+            scope,
+            /*writer_fence*/ 23,
+            /*maximum_records*/ 1,
+        )?;
         store.append_v2(Digest32::ZERO, expected.clone())?
     };
     let valid_bytes = std::fs::read(&fixture.path)?;
@@ -386,8 +485,13 @@ fn a_full_registry_can_recover_an_incomplete_tail() -> Result<(), Box<dyn StdErr
         sequence: receipt.sequence,
         frame_digest: receipt.frame_digest,
     };
-    let mut recovered =
-        DurableProposalRegistry::open_anchored(fixture.open(), scope, 23, 1, anchor)?;
+    let mut recovered = DurableProposalRegistry::open_anchored(
+        fixture.open(),
+        scope,
+        /*writer_fence*/ 23,
+        /*maximum_records*/ 1,
+        anchor,
+    )?;
     assert_eq!(
         recovered.get_v2_by_proposal_id(&expected.proposal_id)?,
         Some(&expected)

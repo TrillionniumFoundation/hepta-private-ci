@@ -29,6 +29,11 @@ use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 
+#[path = "owner_revocation_service.rs"]
+mod revocation;
+pub use revocation::ArtifactRevocationReceiptV1;
+pub use revocation::LearningArtifactRevokeRequestV1;
+
 #[derive(Clone, Debug)]
 pub struct LearningArtifactOwnerServiceConfigV1 {
     pub root: PathBuf,
@@ -56,6 +61,9 @@ pub struct LearningArtifactOwnerService {
     registry: ArtifactRegistry,
     storage_binding: Digest32,
     recovery_required: Option<StableId>,
+    // Writer -> observation lock order. Retained while any publication is
+    // uncertain so another process cannot turn a readable ACK into success.
+    observation_guard: Option<std::fs::File>,
 }
 
 impl fmt::Debug for LearningArtifactOwnerService {
@@ -96,6 +104,10 @@ impl LearningArtifactOwnerService {
                 config.now,
             )?,
         };
+        let observation_guard = host.acquire_current_observation_exclusive()?;
+        // A crash can leave complete ACK bytes after a failed sync. Reestablish
+        // their durability before interpreting a readable ACK as settled.
+        host.reconcile_readable_acknowledgements()?;
         let registry = host.recover_current_registry(config.now)?;
         let recovery = host.recovery_required_operations()?;
         if recovery.len() > 1 {
@@ -109,6 +121,7 @@ impl LearningArtifactOwnerService {
             withdrawal_registry: config.withdrawal_registry,
             registry,
             storage_binding: config.storage_binding,
+            observation_guard: recovery_required.as_ref().map(|_| observation_guard),
             recovery_required,
         })
     }
@@ -125,6 +138,11 @@ impl LearningArtifactOwnerService {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
+        if let Some(operation_id) = &self.recovery_required {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                operation_id.clone(),
+            ));
+        }
         Ok(self.host.current_registry_view(now)?)
     }
 
@@ -174,22 +192,55 @@ impl LearningArtifactOwnerService {
                 blocked.clone(),
             ));
         }
+        self.ensure_observation_guard()?;
         let operation_id = request.operation_id.clone();
+        let fenced_retry = self.recovery_required.as_ref() == Some(&operation_id);
         let result = self.publish_inner(&request);
-        match result {
+        let result = match result {
             Ok(receipt) => {
                 self.recovery_required = None;
                 Ok(receipt)
             }
             Err(error) => {
-                if let Some(recovery) = self.host.recover_publication(&operation_id)?
-                    && recovery.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged
-                {
-                    self.recovery_required = Some(operation_id);
+                // Reconciliation can itself fail after an uncertain write. Fence
+                // readers and unrelated writers before inspecting that outcome.
+                self.recovery_required = Some(operation_id.clone());
+                let uncertain = matches!(
+                    error,
+                    LearningArtifactOwnerServiceError::Host(ArtifactOwnerHostError::Indeterminate)
+                        | LearningArtifactOwnerServiceError::Host(ArtifactOwnerHostError::Storage(
+                            crate::ArtifactStorageError::Indeterminate
+                        ))
+                );
+                match self.host.recover_publication(&operation_id)? {
+                    Some(recovery) => {
+                        if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged
+                            && !uncertain
+                            && !fenced_retry
+                        {
+                            self.recovery_required = None;
+                        }
+                    }
+                    None => {
+                        if !uncertain && !fenced_retry {
+                            self.recovery_required = None;
+                        }
+                    }
                 }
                 Err(error)
             }
+        };
+        if self.recovery_required.is_none() {
+            self.observation_guard = None;
         }
+        result
+    }
+
+    fn ensure_observation_guard(&mut self) -> Result<(), LearningArtifactOwnerServiceError> {
+        if self.observation_guard.is_none() {
+            self.observation_guard = Some(self.host.acquire_current_observation_exclusive()?);
+        }
+        Ok(())
     }
 
     fn publish_inner(
@@ -209,6 +260,11 @@ impl LearningArtifactOwnerService {
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
+                self.host
+                    .reconcile_acknowledged_publication(&recovery.checkpoint)?;
+                if self.recovery_required.as_ref() == Some(&request.operation_id) {
+                    self.registry = self.host.recover_current_registry(request.now)?;
+                }
                 return receipt_from_checkpoint(&recovery.checkpoint);
             }
         }
@@ -281,7 +337,8 @@ fn validate_request_against_checkpoint(
     request: &LearningArtifactPublishRequestV1,
     checkpoint: &ArtifactOwnerPublicationCheckpointV1,
 ) -> Result<(), LearningArtifactOwnerServiceError> {
-    if checkpoint.operation_id != request.operation_id
+    if checkpoint.revocation.is_some()
+        || checkpoint.operation_id != request.operation_id
         || checkpoint.admission_digest != request.admission.admission_digest
         || checkpoint.withdrawal_scope_digest != request.admission.withdrawal_scope_digest
         || checkpoint.withdrawal_head_digest != request.admission.withdrawal_head_digest
@@ -424,6 +481,14 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 }
 
 #[cfg(test)]
+#[path = "owner_revocation_tests.rs"]
+mod revocation_tests;
+
+#[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
+#[path = "owner_reader_tests.rs"]
+mod reader_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -446,10 +511,10 @@ mod tests {
 
     static NEXT_TEST_DIR: AtomicU64 = AtomicU64::new(1);
 
-    struct TestDir(PathBuf);
+    pub(super) struct TestDir(pub(super) PathBuf);
 
     impl TestDir {
-        fn new() -> Self {
+        pub(super) fn new() -> Self {
             let id = NEXT_TEST_DIR.fetch_add(1, Ordering::Relaxed);
             let path = std::env::temp_dir().join(format!(
                 "hepta-learning-artifact-service-{}-{id}",
@@ -467,19 +532,19 @@ mod tests {
         }
     }
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).fixture("stable id")
     }
 
-    fn digest(value: &str) -> Digest32 {
+    pub(super) fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn key() -> SigningKey {
+    pub(super) fn key() -> SigningKey {
         SigningKey::from_bytes(&[9u8; 32])
     }
 
-    fn scope() -> DatasetWithdrawalScopeV1 {
+    pub(super) fn scope() -> DatasetWithdrawalScopeV1 {
         DatasetWithdrawalScopeV1 {
             authority_domain_id: id("dataset-authority"),
             registry_id: id("withdrawals"),
@@ -499,11 +564,11 @@ mod tests {
         }
     }
 
-    fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
+    pub(super) fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
         ArtifactOwnerTrustV1 {
             registry_id: id("learning-artifacts"),
             withdrawal_scope_digest: scope_digest,
-            minimum_registry_generation: Generation::new(1).fixture("generation"),
+            minimum_registry_generation: Generation::new(/*value*/ 1).fixture("generation"),
             genesis_predecessor_head_digest: Digest32::ZERO,
             minimum_authority_epoch: 1,
             writer_signers: vec![signer(key)],
@@ -511,7 +576,7 @@ mod tests {
         }
     }
 
-    fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
+    pub(super) fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
         let mut lease = SignedArtifactWriterLeaseV1 {
             lease_id: id("writer-lease"),
             producer_id: id("trainer"),
@@ -529,11 +594,11 @@ mod tests {
         lease
     }
 
-    fn manifest() -> LearningArtifactManifestV2 {
+    pub(super) fn manifest() -> LearningArtifactManifestV2 {
         LearningArtifactManifestV2 {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,
-            generation: Generation::new(1).fixture("generation"),
+            generation: Generation::new(/*value*/ 1).fixture("generation"),
             provenance_mode: ProvenanceModeV1::DatasetDerived,
             source_dataset_digests: vec![digest("dataset")],
             lineage_digests: vec![digest("lineage")],
@@ -554,7 +619,7 @@ mod tests {
         }
     }
 
-    fn publish_request(
+    pub(super) fn publish_request(
         key: &SigningKey,
         withdrawals: &DatasetWithdrawalRegistry,
         predecessor: Digest32,
@@ -564,7 +629,7 @@ mod tests {
             withdrawals,
             withdrawals.head_digest(),
             manifest(),
-            20,
+            /*now*/ 20,
         )
         .fixture("admission");
         let mut signed = SignedCurrentArtifactHeadV1 {
@@ -572,7 +637,7 @@ mod tests {
             binding: digest("binding"),
             witness: RegistryHeadWitnessV1 {
                 registry_id: id("learning-artifacts"),
-                generation: Generation::new(1).fixture("generation"),
+                generation: Generation::new(/*value*/ 1).fixture("generation"),
                 head_digest: head,
                 predecessor_head_digest: predecessor,
                 authority_epoch: 1,
@@ -618,7 +683,7 @@ mod tests {
             &withdrawals,
             withdrawals.head_digest(),
             manifest(),
-            20,
+            /*now*/ 20,
         )
         .fixture("admission for head calculation");
         let mut staged = ArtifactRegistry::new();
@@ -628,12 +693,12 @@ mod tests {
             &withdrawals,
             &staged,
             predecessor,
-            20,
+            /*now*/ 20,
         )
         .fixture("preview");
         service
             .host
-            .stage_compatibility_registration(&preview, &mut staged, 20)
+            .stage_compatibility_registration(&preview, &mut staged, /*now*/ 20)
             .fixture("preview registration");
         let request = publish_request(
             &key,
@@ -642,11 +707,67 @@ mod tests {
             staged.snapshot().head_digest,
         );
 
-        let receipt = service.publish(request.clone()).fixture("publish");
+        service
+            .host
+            .acknowledgement_sync_fault
+            .store(true, Ordering::Relaxed);
+        assert!(matches!(
+            service.publish(request.clone()),
+            Err(LearningArtifactOwnerServiceError::Host(
+                ArtifactOwnerHostError::Indeterminate
+            ))
+        ));
+        assert_eq!(
+            service
+                .host
+                .recover_publication(&request.operation_id)
+                .fixture("read uncertain acknowledgement")
+                .fixture("acknowledgement exists")
+                .checkpoint
+                .phase,
+            ArtifactPublicationPhaseV1::Acknowledged
+        );
+        assert!(matches!(
+            service.current_registry_view(/*now*/ 20),
+            Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation_id))
+                if operation_id == request.operation_id
+        ));
+        let mut mismatched_retry = request.clone();
+        mismatched_retry.signed_current_head.binding = digest("foreign-binding");
+        assert!(matches!(
+            service.publish(mismatched_retry),
+            Err(LearningArtifactOwnerServiceError::RequestMismatch)
+        ));
+        assert_eq!(service.recovery_required(), Some(&request.operation_id));
+        assert!(matches!(
+            service.current_registry_view(/*now*/ 20),
+            Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation_id))
+                if operation_id == request.operation_id
+        ));
+        // An exact retry must actually sync existing ACK bytes; readable equality
+        // alone cannot settle the uncertainty. Inject failure at that retry sync.
+        service
+            .host
+            .acknowledgement_sync_fault
+            .store(true, Ordering::Relaxed);
+        assert!(matches!(
+            service.publish(request.clone()),
+            Err(LearningArtifactOwnerServiceError::Host(
+                ArtifactOwnerHostError::Indeterminate
+            ))
+        ));
+        assert_eq!(service.recovery_required(), Some(&request.operation_id));
+        let receipt = service
+            .publish(request.clone())
+            .fixture("reconcile and sync acknowledgement");
+        assert_eq!(
+            service.registry().snapshot().head_digest,
+            receipt.registry_head_digest
+        );
         let retry = service.publish(request.clone()).fixture("terminal retry");
         assert_eq!(retry, receipt);
         let current_view = service
-            .current_registry_view(20)
+            .current_registry_view(/*now*/ 20)
             .fixture("authenticated current registry view");
         assert_eq!(
             current_view.receipt().head_digest,
@@ -674,11 +795,188 @@ mod tests {
         assert!(reopened.recovery_required().is_none());
         assert_eq!(
             reopened
-                .current_registry_view(21)
+                .current_registry_view(/*now*/ 21)
                 .fixture("reopened authenticated current view")
                 .receipt()
                 .head_digest,
             receipt.registry_head_digest
         );
+    }
+
+    #[test]
+    fn current_view_is_fenced_until_unacknowledged_publication_is_reconciled() {
+        let directory = TestDir::new();
+        let key = key();
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+        let scope_digest = withdrawals.scope_digest().fixture("scope digest");
+        let config = LearningArtifactOwnerServiceConfigV1 {
+            root: directory.0.clone(),
+            trust: trust(&key, scope_digest),
+            writer_lease: lease(&key, scope_digest),
+            required_current_head: None,
+            withdrawal_registry: withdrawals.clone(),
+            storage_binding: digest("binding"),
+            now: 20,
+        };
+        let service = LearningArtifactOwnerService::open(config.clone()).fixture("open service");
+        let predecessor = service.registry().snapshot().head_digest;
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            /*now*/ 20,
+        )
+        .fixture("admission");
+        let mut staged = service.registry().clone();
+        let mut transaction = service
+            .host
+            .begin_publication(
+                id("operation"),
+                admission,
+                &withdrawals,
+                &staged,
+                predecessor,
+                /*now*/ 20,
+            )
+            .fixture("durable publication intent");
+        service
+            .host
+            .stage_compatibility_registration(&transaction, &mut staged, /*now*/ 20)
+            .fixture("stage registration");
+        let request = publish_request(
+            &key,
+            &withdrawals,
+            predecessor,
+            staged.snapshot().head_digest,
+        );
+        service
+            .host
+            .ensure_payload_durable(&mut transaction, &staged, &request.payload, /*now*/ 20)
+            .fixture("durable payload");
+        service
+            .host
+            .ensure_registry_durable(
+                &mut transaction,
+                &staged,
+                &withdrawals,
+                digest("binding"),
+                /*now*/ 20,
+            )
+            .fixture("durable registry");
+        service
+            .host
+            .ensure_witness_durable(
+                &mut transaction,
+                &request.signed_current_head,
+                &withdrawals,
+                /*now*/ 20,
+            )
+            .fixture("durable CURRENT before acknowledgement");
+        drop(service);
+
+        let mut reopened = LearningArtifactOwnerService::open(config).fixture("reopen service");
+        // CURRENT is authentic, but the durable operation still needs its ACK.
+        reopened
+            .host
+            .current_registry_view(/*now*/ 20)
+            .fixture("host CURRENT exists");
+        assert!(matches!(
+            reopened.current_registry_view(/*now*/ 20),
+            Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation_id))
+                if operation_id == id("operation")
+        ));
+        reopened
+            .publish(request)
+            .fixture("reconcile exact publication");
+        reopened
+            .current_registry_view(/*now*/ 20)
+            .fixture("CURRENT after reconciliation");
+    }
+
+    #[test]
+    fn corrupt_checkpoint_reconciliation_keeps_current_use_and_restart_closed() {
+        let directory = TestDir::new();
+        let key = key();
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+        let scope_digest = withdrawals.scope_digest().fixture("scope digest");
+        let config = LearningArtifactOwnerServiceConfigV1 {
+            root: directory.0.clone(),
+            trust: trust(&key, scope_digest),
+            writer_lease: lease(&key, scope_digest),
+            required_current_head: None,
+            withdrawal_registry: withdrawals.clone(),
+            storage_binding: digest("binding"),
+            now: 20,
+        };
+        let mut service =
+            LearningArtifactOwnerService::open(config.clone()).fixture("open service");
+        let predecessor = service.registry().snapshot().head_digest;
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            /*now*/ 20,
+        )
+        .fixture("admission");
+        let mut staged = service.registry().clone();
+        let transaction = service
+            .host
+            .begin_publication(
+                id("operation"),
+                admission,
+                &withdrawals,
+                &staged,
+                predecessor,
+                /*now*/ 20,
+            )
+            .fixture("durable prepared intent");
+        service
+            .host
+            .stage_compatibility_registration(&transaction, &mut staged, /*now*/ 20)
+            .fixture("stage registration");
+        let request = publish_request(
+            &key,
+            &withdrawals,
+            predecessor,
+            staged.snapshot().head_digest,
+        );
+        let operation_digest = Digest32::of_bytes(request.operation_id.as_str().as_bytes());
+        let checkpoint = directory
+            .0
+            .join("transactions")
+            .join(format!("{operation_digest}-0.checkpoint"));
+        let original = fs::read(&checkpoint).fixture("read prepared checkpoint");
+        fs::write(&checkpoint, b"corrupt prepared checkpoint").fixture("inject corrupt write");
+        assert!(matches!(
+            service.publish(request.clone()),
+            Err(LearningArtifactOwnerServiceError::Host(
+                ArtifactOwnerHostError::CheckpointMismatch
+            ))
+        ));
+        assert_eq!(service.recovery_required(), Some(&id("operation")));
+        assert!(matches!(
+            service.current_registry_view(/*now*/ 20),
+            Err(LearningArtifactOwnerServiceError::RecoveryRequired(operation_id))
+                if operation_id == id("operation")
+        ));
+        drop(service);
+        assert!(matches!(
+            LearningArtifactOwnerService::open(config.clone()),
+            Err(LearningArtifactOwnerServiceError::Host(
+                ArtifactOwnerHostError::CheckpointMismatch
+            ))
+        ));
+        // An independently retained exact checkpoint repairs the test fault;
+        // startup still requires reconciliation instead of forgetting the intent.
+        fs::write(checkpoint, original).fixture("restore exact fixture checkpoint");
+        let mut reopened =
+            LearningArtifactOwnerService::open(config).fixture("reopen repaired store");
+        assert_eq!(reopened.recovery_required(), Some(&id("operation")));
+        reopened
+            .publish(request)
+            .fixture("reconcile exact publication");
+        reopened
+            .current_registry_view(/*now*/ 20)
+            .fixture("use reconciled CURRENT");
     }
 }

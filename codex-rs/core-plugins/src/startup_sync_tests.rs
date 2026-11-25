@@ -1382,3 +1382,103 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
 
     writer.finish().expect("finish zip writer").into_inner()
 }
+
+#[test]
+fn extract_zipball_rejects_symlink_entries() {
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    writer
+        .add_symlink(
+            "root/link",
+            "../../outside",
+            SimpleFileOptions::default().system(zip::System::Unix),
+        )
+        .expect("write symlink entry");
+    let bytes = writer.finish().expect("finish zip writer").into_inner();
+
+    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read zip fixture");
+    assert!(
+        archive
+            .by_name("root/link")
+            .expect("read symlink entry")
+            .is_symlink()
+    );
+
+    let destination = tempdir().expect("create destination");
+    let err = extract_zipball_to_dir(&bytes, destination.path())
+        .expect_err("symlink entries must be rejected");
+
+    assert!(err.contains("is a symlink"));
+    assert!(
+        std::fs::symlink_metadata(destination.path().join("link")).is_err(),
+        "the extractor must not materialize a rejected entry"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn extract_zipball_masks_special_permission_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    let archived_mode = 0o107755;
+    // unix_permissions() strips the bits this regression needs to exercise.
+    let options = SimpleFileOptions::default()
+        .system(zip::System::Unix)
+        .external_attributes(archived_mode << 16);
+    writer
+        .start_file("root/plugin", options)
+        .expect("start plugin entry");
+    writer.write_all(b"plugin").expect("write plugin");
+    let bytes = writer.finish().expect("finish zip writer").into_inner();
+
+    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read zip fixture");
+    let entry = archive.by_name("root/plugin").expect("read plugin entry");
+    assert_eq!(entry.system(), zip::System::Unix);
+    assert_eq!(entry.external_attributes(), archived_mode << 16);
+    // Zip 9 normalizes special bits on read; the raw fixture must retain them.
+    assert_eq!(entry.unix_mode(), Some(0o100755));
+
+    let destination = tempdir().expect("create destination");
+    extract_zipball_to_dir(&bytes, destination.path()).expect("extract regular file");
+
+    let mode = std::fs::metadata(destination.path().join("plugin"))
+        .expect("read extracted plugin metadata")
+        .permissions()
+        .mode();
+    assert_eq!(mode & 0o7777, 0o755);
+}
+
+#[test]
+fn extract_zipball_preserves_bzip2_archive_compatibility() {
+    let payload = br#"{"name":"bzip2-compatibility"}"#;
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    let options = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Bzip2);
+    writer
+        .start_file("root/plugin.json", options)
+        .expect("start bzip2 plugin entry");
+    writer.write_all(payload).expect("write bzip2 plugin");
+    let bytes = writer
+        .finish()
+        .expect("finish bzip2 zip writer")
+        .into_inner();
+
+    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read zip fixture");
+    assert_eq!(
+        archive
+            .by_name("root/plugin.json")
+            .expect("read bzip2 plugin entry")
+            .compression(),
+        zip::CompressionMethod::Bzip2
+    );
+
+    let destination = tempdir().expect("create destination");
+    extract_zipball_to_dir(&bytes, destination.path()).expect("extract bzip2 archive");
+
+    assert_eq!(
+        std::fs::read(destination.path().join("plugin.json")).expect("read extracted plugin"),
+        payload.to_vec()
+    );
+}

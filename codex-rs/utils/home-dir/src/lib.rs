@@ -245,9 +245,12 @@ mod tests {
     fn hepta_home_uses_legacy_codex_home_as_compatibility_fallback() {
         let codex_home = TempDir::new().expect("temp Codex home");
         let user_home = TempDir::new().expect("temp user home");
-        let resolved =
-            find_hepta_home_from_env(None, codex_home.path().to_str(), Some(user_home.path()))
-                .expect("resolve legacy home");
+        let resolved = find_hepta_home_from_env(
+            /*hepta_home_env*/ None,
+            codex_home.path().to_str(),
+            Some(user_home.path()),
+        )
+        .expect("resolve legacy home");
         let canonical = codex_home.path().canonicalize().expect("canonicalize");
         let expected = AbsolutePathBuf::from_absolute_path(canonical).expect("absolute home");
         assert_eq!(resolved, expected);
@@ -256,8 +259,12 @@ mod tests {
     #[test]
     fn hepta_home_defaults_to_dot_hepta_without_creating_it() {
         let user_home = TempDir::new().expect("temp user home");
-        let resolved = find_hepta_home_from_env(None, None, Some(user_home.path()))
-            .expect("resolve default Hepta home");
+        let resolved = find_hepta_home_from_env(
+            /*hepta_home_env*/ None,
+            /*legacy_codex_home_env*/ None,
+            Some(user_home.path()),
+        )
+        .expect("resolve default Hepta home");
         let expected = user_home.path().join(".hepta");
         assert_eq!(resolved.as_path(), expected);
         assert!(!expected.exists());
@@ -267,8 +274,12 @@ mod tests {
     fn invalid_explicit_hepta_home_is_fatal() {
         let user_home = TempDir::new().expect("temp user home");
         let missing = user_home.path().join("missing");
-        let error = find_hepta_home_from_env(missing.to_str(), None, Some(user_home.path()))
-            .expect_err("invalid HEPTA_HOME must fail");
+        let error = find_hepta_home_from_env(
+            missing.to_str(),
+            /*legacy_codex_home_env*/ None,
+            Some(user_home.path()),
+        )
+        .expect_err("invalid HEPTA_HOME must fail");
         assert_eq!(error.kind(), ErrorKind::NotFound);
         assert!(error.to_string().contains("HEPTA_HOME"));
     }

@@ -1,0 +1,203 @@
+[
+  {
+    "name": "hepta-combined-metadata",
+    "command": [
+      "cargo",
+      "metadata",
+      "--offline",
+      "--format-version",
+      "1"
+    ],
+    "returncode": 101,
+    "seconds": 1.19532426900696,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-metadata.log",
+    "log_sha256": "fe2d5f3d142849a0eb5705a2487144689b35db00d71610dbeb4f88d1fcfad59b"
+  },
+  {
+    "name": "hepta-combined-workspace-metadata",
+    "command": [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--offline",
+      "--no-deps",
+      "--format-version",
+      "1"
+    ],
+    "returncode": 0,
+    "seconds": 0.2123208330012858,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-workspace-metadata.log",
+    "log_sha256": "130b31269e375cdfdfec5d9576e569fd6aa8683130c26faa62a7420a8ba459b2"
+  },
+  {
+    "name": "hepta-combined-bazel-lock-update",
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "returncode": 0,
+    "seconds": 203.17062101198826,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-bazel-lock-update.log",
+    "log_sha256": "c2009087f5ccfbc075a97766476cfd6530c2f40bdff83c04aa91e20af04134ba"
+  },
+  {
+    "name": "hepta-combined-bazel-lock-check",
+    "command": [
+      "just",
+      "bazel-lock-check"
+    ],
+    "returncode": 0,
+    "seconds": 1.117584923049435,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-bazel-lock-check.log",
+    "log_sha256": "190d0ac85f4d019ffac48071328bfb009876399c10bfead67b31628692dc7191"
+  },
+  {
+    "name": "hepta-combined-fmt-before",
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "returncode": 0,
+    "seconds": 1.974458593991585,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-fmt-before.log",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "hepta-combined-fix",
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "--locked",
+      "--offline"
+    ],
+    "returncode": 0,
+    "seconds": 621.1251614378998,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-fix.log",
+    "log_sha256": "97306a76dc0c6ee4e553993d22cd0430086b8bf8b60621f65cd58d0ba9a2f394"
+  },
+  {
+    "name": "hepta-combined-fmt-after",
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "returncode": 0,
+    "seconds": 1.787887257989496,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-fmt-after.log",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "hepta-combined-protocol",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "--lib",
+      "-E",
+      "test(automation_chain_observation::tests::)",
+      "--no-capture"
+    ],
+    "returncode": 0,
+    "seconds": 285.90462521102745,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-protocol.log",
+    "log_sha256": "c6c7e3ef030acb5a0ebae5122be772ba1262559f24b257a4c1107e446c1f2259"
+  },
+  {
+    "name": "hepta-combined-effect-host",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "-E",
+      "test(automation_effect_host)",
+      "--no-capture"
+    ],
+    "returncode": 0,
+    "seconds": 95.70356729300693,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-effect-host.log",
+    "log_sha256": "44b79fe68ba4000cb0e886d1cc6d873f2fb18930d18935b72a88f54b17da59c9"
+  },
+  {
+    "name": "hepta-combined-neural-host",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "--lib",
+      "-E",
+      "test(smollm_cognitive_)",
+      "--no-capture"
+    ],
+    "returncode": 0,
+    "seconds": 59.3935378639726,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-neural-host.log",
+    "log_sha256": "f832db5c424fbdf320e586af84f7186b7422a7b04eee52c2f7220283cd96553c"
+  },
+  {
+    "name": "hepta-combined-neural-session",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "--lib",
+      "-E",
+      "test(smollm_neural_read::driver::session::tests::)",
+      "--no-capture"
+    ],
+    "returncode": 0,
+    "seconds": 2.5057272149715573,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-neural-session.log",
+    "log_sha256": "390f4902112422756ad33b14a48a8c9983e0a6ad48b8d604f3eb1e717d195b78"
+  },
+  {
+    "name": "hepta-combined-neural-qualification",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "--test",
+      "neural_cognitive_bootstrap",
+      "--no-capture"
+    ],
+    "returncode": 0,
+    "seconds": 22.559050841024145,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-neural-qualification.log",
+    "log_sha256": "67e37e782a3b0cd6110ead223e3fd05f2f4715b03194eac0696734b3bb4f72c5"
+  },
+  {
+    "name": "hepta-combined-neural-cli",
+    "command": [
+      "cargo",
+      "run",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "--bin",
+      "hepta-neural-agentd",
+      "--",
+      "--help"
+    ],
+    "returncode": 0,
+    "seconds": 545.841131273075,
+    "log": "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-combined-neural-cli.log",
+    "log_sha256": "3b681efa5f18ba88f25113c9952e84f41dd1c7e312ad856f7a9caa91e5a896b9"
+  }
+]

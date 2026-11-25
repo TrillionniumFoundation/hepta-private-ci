@@ -103,7 +103,7 @@ async fn split_homes_support_backfill_listing_and_paginated_history() {
     let sqlite_home = root.path().join("sqlite");
     let thread_id = ThreadId::new();
     let sqlite = codex_state::SqliteConfig::new_for_testing(sqlite_home.as_path().abs());
-    let rollout_config = RolloutConfig {
+    let mut rollout_config = RolloutConfig {
         codex_home: codex_home.clone(),
         sqlite: sqlite.clone(),
         cwd: codex_home.clone(),
@@ -140,7 +140,7 @@ async fn split_homes_support_backfill_listing_and_paginated_history() {
     let rollout_path = recorder.rollout_path().to_path_buf();
     recorder.shutdown().await.expect("close paginated rollout");
 
-    let runtime = codex_rollout::state_db::try_init(&rollout_config)
+    let runtime = codex_rollout::state_db::try_init(&mut rollout_config)
         .await
         .expect("backfill state from Codex home");
     assert!(

@@ -13,6 +13,17 @@ pub mod model_worker;
 pub mod final_use_authorizer;
 pub mod native_app_server;
 
+// This profile uses the existing Linux pidfd/wait4 CPU supervisor. Other
+// platforms remain unavailable until they have equivalent process evidence.
+#[cfg(target_os = "linux")]
+pub mod smollm_neural_read;
+
+#[cfg(target_os = "linux")]
+pub mod smollm_cognitive_host;
+
+#[cfg(target_os = "linux")]
+pub mod smollm_cognitive_process;
+
 use std::error::Error as StdError;
 use std::fmt;
 

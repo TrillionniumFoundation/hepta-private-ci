@@ -120,7 +120,7 @@ mod tests {
         ArtifactManifest {
             artifact_id: id(name),
             kind,
-            generation: generation(1),
+            generation: generation(/*value*/ 1),
             predecessor_id: None,
             content_digest: Digest32::of_bytes(format!("bytes-{name}").as_bytes()),
             objective_digest: Digest32::of_bytes(b"objective"),

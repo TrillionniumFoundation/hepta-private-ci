@@ -266,14 +266,37 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     let path = find_session_file_containing_marker(&sessions_dir, &marker)
         .expect("no session file found after first run");
     let thread_id = ThreadId::from_string(&extract_conversation_id(&path))?;
-    let config = ConfigBuilder::default()
+    let mut config = ConfigBuilder::default()
         .codex_home(test.home_path().to_path_buf())
         .build()
         .await?;
-    let state_db = init_state_db(&config)
+    let state_db = init_state_db(&mut config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    // Lose only the rebuildable index row. Hard deletion permanently seals the
+    // independent admission queue, which must remain resumable in this fixture.
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
+    let sqlite = state_db.sqlite();
+    let pool = sqlite.open_read_write_pool(&sqlite.state_db_path()).await?;
+    let deleted = sqlx::query("DELETE FROM threads WHERE id = ?")
+        .bind(thread_id.to_string())
+        .execute(&pool)
+        .await?
+        .rows_affected();
+    pool.close().await;
+    assert_eq!(deleted, 1);
+    assert!(state_db.get_thread(thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -329,11 +352,11 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
         .expect("no unindexed session file after second run");
     let newer_thread_id = ThreadId::from_string(&extract_conversation_id(&newer_path))?;
 
-    let config = ConfigBuilder::default()
+    let mut config = ConfigBuilder::default()
         .codex_home(test.home_path().to_path_buf())
         .build()
         .await?;
-    let state_db = init_state_db(&config)
+    let state_db = init_state_db(&mut config)
         .await
         .expect("state DB should initialize");
     assert_eq!(state_db.delete_thread(newer_thread_id).await?, 1);
@@ -400,11 +423,11 @@ async fn exec_resume_last_skips_mismatched_state_db_candidate() -> anyhow::Resul
         .expect("no mismatched session file after second run");
     let newer_thread_id = ThreadId::from_string(&extract_conversation_id(&newer_path))?;
 
-    let config = ConfigBuilder::default()
+    let mut config = ConfigBuilder::default()
         .codex_home(test.home_path().to_path_buf())
         .build()
         .await?;
-    let state_db = init_state_db(&config)
+    let state_db = init_state_db(&mut config)
         .await
         .expect("state DB should initialize");
     let mut mismatched = state_db
@@ -975,11 +998,11 @@ async fn exec_fork_creates_distinct_threads_with_and_without_a_prompt() -> anyho
     assert_eq!(response_mock.requests().len(), 1);
 
     let source_name = format!("fork-named-{}", Uuid::new_v4());
-    let config = ConfigBuilder::default()
+    let mut config = ConfigBuilder::default()
         .codex_home(test.home_path().to_path_buf())
         .build()
         .await?;
-    let state_db = init_state_db(&config)
+    let state_db = init_state_db(&mut config)
         .await
         .expect("state DB should initialize");
     assert!(

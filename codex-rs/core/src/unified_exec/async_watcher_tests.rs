@@ -13,7 +13,6 @@ use crate::unified_exec::process::NoopSpawnLifecycle;
 use crate::unified_exec::process::UnifiedExecProcess;
 use codex_protocol::items::CommandExecutionStatus;
 use codex_protocol::items::TurnItem;
-use codex_protocol::protocol::Event;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::ExecCommandOutputDeltaEvent;
 use codex_protocol::protocol::ExecOutputStream;
@@ -29,7 +28,7 @@ struct StreamingOutputHarness {
     exit_tx: tokio::sync::oneshot::Sender<i32>,
     transcript: Arc<tokio::sync::Mutex<HeadTailBuffer>>,
     context: UnifiedExecContext,
-    rx_event: async_channel::Receiver<Event>,
+    rx_event: crate::event_delivery::EventReceiver,
 }
 
 async fn streaming_output_harness() -> anyhow::Result<StreamingOutputHarness> {

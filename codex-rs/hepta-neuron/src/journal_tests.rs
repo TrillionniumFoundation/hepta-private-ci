@@ -116,7 +116,7 @@ fn committed_checkpoint_and_receipt_survive_reopen() {
     let fixture = Fixture::new();
     let receipt = {
         let mut journal = fixture.open();
-        checked(journal.commit(Digest32::ZERO, &tick(1)))
+        checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)))
     };
     // Independent integer/SHA256 oracle for this complete first committed file.
     assert_eq!(
@@ -134,7 +134,10 @@ fn committed_checkpoint_and_receipt_survive_reopen() {
         checked(reopened.current()).map(SparseCheckpoint::digest),
         Some(receipt.checkpoint_after)
     );
-    assert_eq!(checked(reopened.commit(Digest32::ZERO, &tick(1))), receipt);
+    assert_eq!(
+        checked(reopened.commit(Digest32::ZERO, &tick(/*sequence*/ 1))),
+        receipt
+    );
     assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
     assert!(receipt.requires_calibration);
 }
@@ -143,10 +146,13 @@ fn committed_checkpoint_and_receipt_survive_reopen() {
 fn equal_retry_after_later_commit_does_not_append() {
     let fixture = Fixture::new();
     let mut journal = fixture.open();
-    let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
-    let second = checked(journal.commit(first.checkpoint_after, &tick(2)));
+    let first = checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
+    let second = checked(journal.commit(first.checkpoint_after, &tick(/*sequence*/ 2)));
     let before = journal_bytes(&mut journal);
-    assert_eq!(checked(journal.commit(Digest32::ZERO, &tick(1))), first);
+    assert_eq!(
+        checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1))),
+        first
+    );
     assert_eq!(journal_bytes(&mut journal), before);
     assert_eq!(
         checked(journal.current()).map(SparseCheckpoint::digest),
@@ -158,16 +164,20 @@ fn equal_retry_after_later_commit_does_not_append() {
 fn complete_unacknowledged_frame_is_reconciled_on_reopen() {
     let fixture = Fixture::new();
     drop(fixture.open());
-    let (_, expected) = checked(sparse_tick(&config(), &tick(1), /*previous*/ None));
+    let (_, expected) = checked(sparse_tick(
+        &config(),
+        &tick(/*sequence*/ 1),
+        /*previous*/ None,
+    ));
     let mut writer = fixture.file();
     checked(writer.seek(SeekFrom::End(0)));
-    checked(writer.write_all(&encode_frame(&tick(1), &expected)));
+    checked(writer.write_all(&encode_frame(&tick(/*sequence*/ 1), &expected)));
     // Simulate a writer that exits before acknowledging or syncing a full frame.
     drop(writer);
     let before = checked(fs::read(fixture.path()));
     let mut recovered = fixture.open();
     assert_eq!(
-        checked(recovered.commit(Digest32::ZERO, &tick(1))),
+        checked(recovered.commit(Digest32::ZERO, &tick(/*sequence*/ 1))),
         expected
     );
     drop(recovered);
@@ -178,16 +188,16 @@ fn complete_unacknowledged_frame_is_reconciled_on_reopen() {
 fn changed_retry_and_stale_compare_and_swap_do_not_mutate_file() {
     let fixture = Fixture::new();
     let mut journal = fixture.open();
-    checked(journal.commit(Digest32::ZERO, &tick(1)));
+    checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
     let before = journal_bytes(&mut journal);
-    let mut changed = tick(1);
+    let mut changed = tick(/*sequence*/ 1);
     changed.drive_q24[0] -= 1;
     assert_eq!(
         journal.commit(Digest32::ZERO, &changed),
         Err(JournalError::Conflict)
     );
     assert_eq!(
-        journal.commit(Digest32::ZERO, &tick(2)),
+        journal.commit(Digest32::ZERO, &tick(/*sequence*/ 2)),
         Err(JournalError::Conflict)
     );
     assert_eq!(journal_bytes(&mut journal), before);
@@ -211,8 +221,8 @@ fn every_partial_frame_boundary_recovers_only_the_predecessor() {
     let fixture = Fixture::new();
     let (first, second) = {
         let mut journal = fixture.open();
-        let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
-        let second = checked(journal.commit(first.checkpoint_after, &tick(2)));
+        let first = checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
+        let second = checked(journal.commit(first.checkpoint_after, &tick(/*sequence*/ 2)));
         (first, second)
     };
     let full = checked(fs::read(fixture.path()));
@@ -240,7 +250,7 @@ fn every_partial_frame_boundary_recovers_only_the_predecessor() {
 #[test]
 fn complete_corruption_is_rejected_without_truncation() {
     let fixture = Fixture::new();
-    checked(fixture.open().commit(Digest32::ZERO, &tick(1)));
+    checked(fixture.open().commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
     let original = checked(fs::read(fixture.path()));
     for offset in [0, 12, HEADER - 1, HEADER, original.len() - 1] {
         let mut bytes = original.clone();
@@ -257,7 +267,7 @@ fn complete_corruption_is_rejected_without_truncation() {
 #[test]
 fn valid_frame_checksum_cannot_hide_invalid_checkpoint_chain() {
     let fixture = Fixture::new();
-    checked(fixture.open().commit(Digest32::ZERO, &tick(1)));
+    checked(fixture.open().commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
     let mut bytes = checked(fs::read(fixture.path()));
     let tick_length = 176 + 16 * config().width;
     bytes[HEADER + tick_length] = 1;
@@ -274,7 +284,7 @@ fn valid_frame_checksum_cannot_hide_invalid_checkpoint_chain() {
 #[test]
 fn wrong_generation_and_scope_do_not_reinitialize_journal() {
     let fixture = Fixture::new();
-    checked(fixture.open().commit(Digest32::ZERO, &tick(1)));
+    checked(fixture.open().commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
     let before = checked(fs::read(fixture.path()));
     let mut other = config();
     let generation = 2;
@@ -301,18 +311,21 @@ fn invalid_tick_and_record_cap_do_not_append() {
         scope(),
         /*max_records*/ 1,
     ));
-    let mut bad = tick(1);
+    let mut bad = tick(/*sequence*/ 1);
     bad.drive_q24.push(0);
     assert_eq!(
         journal.commit(Digest32::ZERO, &bad),
         Err(JournalError::Mechanism(SparseError::InvalidInput))
     );
-    let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
+    let first = checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
     assert_eq!(
-        journal.commit(first.checkpoint_after, &tick(2)),
+        journal.commit(first.checkpoint_after, &tick(/*sequence*/ 2)),
         Err(JournalError::Capacity)
     );
-    assert_eq!(checked(journal.commit(Digest32::ZERO, &tick(1))), first);
+    assert_eq!(
+        checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1))),
+        first
+    );
 }
 
 #[test]
@@ -345,11 +358,11 @@ fn write_error_requires_reopen_and_reconciliation() {
         /*max_records*/ 16,
     ));
     assert_eq!(
-        journal.commit(Digest32::ZERO, &tick(1)),
+        journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)),
         Err(JournalError::Indeterminate)
     );
     assert_eq!(
-        journal.commit(Digest32::ZERO, &tick(1)),
+        journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)),
         Err(JournalError::Poisoned)
     );
     assert_eq!(journal.current().err(), Some(JournalError::Poisoned));
@@ -373,7 +386,7 @@ fn process_exit_without_destructors_releases_lock_and_keeps_committed_frame() {
     assert!(status.success());
     let mut recovered = fixture.open();
     assert!(checked(recovered.current()).is_some());
-    let replay = checked(recovered.commit(Digest32::ZERO, &tick(1)));
+    let replay = checked(recovered.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
     assert_eq!(
         checked(recovered.current()).map(SparseCheckpoint::digest),
         Some(replay.checkpoint_after)
@@ -390,7 +403,7 @@ fn child_process_commit_and_exit() {
             scope(),
             /*max_records*/ 16,
         ));
-        checked(journal.commit(Digest32::ZERO, &tick(1)));
+        checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
         std::process::exit(0);
     }
 }
@@ -400,7 +413,7 @@ fn child_process_commit_and_exit() {
 fn owner_drop_releases_lock_with_a_transient_duplicate_alive() {
     let fixture = Fixture::new();
     let mut journal = fixture.open();
-    let receipt = checked(journal.commit(Digest32::ZERO, &tick(1)));
+    let receipt = checked(journal.commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
     // Simulate the shared open description temporarily retained during fork.
     // This is not permission for an application to share writable handles.
     let transient = checked(journal.file.try_clone());
@@ -410,7 +423,10 @@ fn owner_drop_releases_lock_with_a_transient_duplicate_alive() {
     );
     drop(journal);
     let mut reopened = fixture.open();
-    assert_eq!(checked(reopened.commit(Digest32::ZERO, &tick(1))), receipt);
+    assert_eq!(
+        checked(reopened.commit(Digest32::ZERO, &tick(/*sequence*/ 1))),
+        receipt
+    );
     drop(transient);
     assert_eq!(
         SparseJournal::open(fixture.file(), config(), scope(), /*max_records*/ 16).err(),
@@ -422,7 +438,7 @@ fn owner_drop_releases_lock_with_a_transient_duplicate_alive() {
 #[test]
 fn failed_recovery_releases_acquired_lock_before_journal_exists() {
     let fixture = Fixture::new();
-    let receipt = checked(fixture.open().commit(Digest32::ZERO, &tick(1)));
+    let receipt = checked(fixture.open().commit(Digest32::ZERO, &tick(/*sequence*/ 1)));
     let original = checked(fs::read(fixture.path()));
     for bytes in [Vec::new(), b"broken".to_vec(), {
         let mut bad = original;

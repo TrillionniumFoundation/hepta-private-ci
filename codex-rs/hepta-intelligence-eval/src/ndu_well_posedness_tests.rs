@@ -30,17 +30,17 @@ fn evidence() -> NduWellPosednessEvidenceV1 {
         artifact_manifest_digest: digest("artifact-manifest"),
         objective_class_digest: digest("objective-class"),
         operating_domain_digest: digest("operating-domain"),
-        square_integrability: assumption("square-integrability", true),
+        square_integrability: assumption("square-integrability", /*satisfied*/ true),
         conditional_mean: NduConditionalMeanEvidenceV1 {
             evidence_digest: digest("conditional-mean"),
             standardized_absolute_mean_q32: (1_i64 << 32) / 100,
         },
-        coefficient_bounds: assumption("coefficient-bounds", true),
-        lipschitz: assumption("lipschitz", true),
-        generator_monotonicity: assumption("generator-monotonicity", true),
-        terminal_lipschitz: assumption("terminal-lipschitz", true),
+        coefficient_bounds: assumption("coefficient-bounds", /*satisfied*/ true),
+        lipschitz: assumption("lipschitz", /*satisfied*/ true),
+        generator_monotonicity: assumption("generator-monotonicity", /*satisfied*/ true),
+        terminal_lipschitz: assumption("terminal-lipschitz", /*satisfied*/ true),
         continuity_scope: NduContinuityScopeV1::DeclaredOperatingDomain,
-        solver_stability: assumption("solver-stability", true),
+        solver_stability: assumption("solver-stability", /*satisfied*/ true),
         expires_unix_ms: 90,
     }
 }
@@ -138,8 +138,9 @@ fn signed_pair(
 fn complete_signed_independent_evidence_is_accepted_without_authority() {
     let evidence = evidence();
     let (verifier, producer, evaluator) = signed_pair(&evidence);
-    let certificate = decide_ndu_well_posedness_v1(evidence, &producer, &evaluator, &verifier, 50)
-        .expect("decision");
+    let certificate =
+        decide_ndu_well_posedness_v1(evidence, &producer, &evaluator, &verifier, /*now*/ 50)
+            .expect("decision");
     assert_eq!(certificate.decision(), NduWellPosednessDecisionV1::Accepted);
     assert_eq!(certificate.candidate_producer_identity(), &id("producer"));
     assert_eq!(certificate.evaluator_identity(), &id("evaluator"));
@@ -153,7 +154,7 @@ fn missing_support_is_unavailable_and_failed_assumption_rejects() {
     missing.lipschitz.evidence_digest = Digest32::ZERO;
     let (verifier, producer, evaluator) = signed_pair(&missing);
     assert_eq!(
-        decide_ndu_well_posedness_v1(missing, &producer, &evaluator, &verifier, 50)
+        decide_ndu_well_posedness_v1(missing, &producer, &evaluator, &verifier, /*now*/ 50)
             .expect("decision")
             .decision(),
         NduWellPosednessDecisionV1::Unavailable
@@ -163,7 +164,7 @@ fn missing_support_is_unavailable_and_failed_assumption_rejects() {
     failed.generator_monotonicity.satisfied = false;
     let (verifier, producer, evaluator) = signed_pair(&failed);
     assert_eq!(
-        decide_ndu_well_posedness_v1(failed, &producer, &evaluator, &verifier, 50)
+        decide_ndu_well_posedness_v1(failed, &producer, &evaluator, &verifier, /*now*/ 50)
             .expect("decision")
             .decision(),
         NduWellPosednessDecisionV1::Rejected
@@ -176,7 +177,7 @@ fn conditional_mean_threshold_and_expiry_fail_closed() {
     threshold.conditional_mean.standardized_absolute_mean_q32 = (2_i64 * (1_i64 << 32)) / 100;
     let (verifier, producer, evaluator) = signed_pair(&threshold);
     assert_eq!(
-        decide_ndu_well_posedness_v1(threshold, &producer, &evaluator, &verifier, 50)
+        decide_ndu_well_posedness_v1(threshold, &producer, &evaluator, &verifier, /*now*/ 50)
             .expect("decision")
             .decision(),
         NduWellPosednessDecisionV1::Rejected
@@ -185,7 +186,7 @@ fn conditional_mean_threshold_and_expiry_fail_closed() {
     let expired = evidence();
     let (verifier, producer, evaluator) = signed_pair(&expired);
     assert_eq!(
-        decide_ndu_well_posedness_v1(expired, &producer, &evaluator, &verifier, 90)
+        decide_ndu_well_posedness_v1(expired, &producer, &evaluator, &verifier, /*now*/ 90)
             .expect_err("expired"),
         NduWellPosednessError::Expired
     );

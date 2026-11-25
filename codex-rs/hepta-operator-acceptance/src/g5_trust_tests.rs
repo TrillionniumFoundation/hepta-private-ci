@@ -29,7 +29,7 @@ use crate::trust::SSHSIG_NAMESPACE;
 
 #[test]
 fn fresh_head_scoped_challenge_reaches_ready_without_authority() {
-    let fixture = TrustFixture::new(false);
+    let fixture = TrustFixture::new(/*revoked*/ false);
     let challenge_path = fixture.root.join("g5-challenge.json");
     let prepared = prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -83,7 +83,7 @@ fn fresh_head_scoped_challenge_reaches_ready_without_authority() {
 
 #[test]
 fn exact_head_and_predecessor_binding_is_required() {
-    let fixture = TrustFixture::new(false);
+    let fixture = TrustFixture::new(/*revoked*/ false);
     let challenge_path = fixture.root.join("g5-challenge.json");
     prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -113,7 +113,7 @@ fn exact_head_and_predecessor_binding_is_required() {
 
 #[test]
 fn expiry_is_half_open_and_never_creates_acceptance() {
-    let fixture = TrustFixture::new(false);
+    let fixture = TrustFixture::new(/*revoked*/ false);
     let challenge_path = fixture.root.join("g5-challenge.json");
     let prepared = prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -140,7 +140,7 @@ fn expiry_is_half_open_and_never_creates_acceptance() {
 
 #[test]
 fn independently_signed_challenge_is_verified_but_not_accepted() {
-    let fixture = TrustFixture::new(false);
+    let fixture = TrustFixture::new(/*revoked*/ false);
     let challenge_path = fixture.root.join("g5-challenge.json");
     prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -168,7 +168,7 @@ fn independently_signed_challenge_is_verified_but_not_accepted() {
 
 #[test]
 fn revocation_is_external_and_fail_closed_before_challenge_issuance() {
-    let fixture = TrustFixture::new(true);
+    let fixture = TrustFixture::new(/*revoked*/ true);
     let challenge_path = fixture.root.join("g5-challenge.json");
     let error = prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -185,7 +185,7 @@ fn revocation_is_external_and_fail_closed_before_challenge_issuance() {
 
 #[test]
 fn revocation_digest_change_invalidates_existing_challenge() {
-    let mut fixture = TrustFixture::new(false);
+    let mut fixture = TrustFixture::new(/*revoked*/ false);
     let challenge_path = fixture.root.join("g5-challenge.json");
     prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -215,7 +215,7 @@ fn revocation_digest_change_invalidates_existing_challenge() {
 
 #[test]
 fn policy_and_revocation_files_must_be_canonical() {
-    let mut fixture = TrustFixture::new(false);
+    let mut fixture = TrustFixture::new(/*revoked*/ false);
     let policy_bytes = std::fs::read(&fixture.policy).expect("read policy");
     std::fs::remove_file(&fixture.policy).expect("remove policy");
     write_private_new(

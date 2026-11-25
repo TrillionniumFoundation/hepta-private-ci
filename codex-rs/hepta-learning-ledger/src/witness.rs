@@ -6,6 +6,7 @@
 //! the ledger file it is meant to protect.
 
 use std::fs::File;
+use std::io;
 use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
@@ -77,7 +78,17 @@ impl LedgerWitnessStore {
 
     /// Recover the independently retained witness. Only an incomplete final
     /// frame can be truncated; complete invalid history is corruption.
+    /// Sync all validated bytes before publishing the recovered frontier, even
+    /// when a prior process left a complete frame without completing its sync.
     pub fn recover(file: File, binding: Digest32) -> Result<Self, DurableLedgerError> {
+        Self::recover_with_sync(file, binding, File::sync_all)
+    }
+
+    fn recover_with_sync(
+        file: File,
+        binding: Digest32,
+        sync: impl FnOnce(&File) -> io::Result<()>,
+    ) -> Result<Self, DurableLedgerError> {
         validate_binding(binding)?;
         let mut file = LockedFile::acquire(file)?;
         let length = file.metadata()?.len();
@@ -109,9 +120,9 @@ impl LedgerWitnessStore {
         }
         if cursor != length {
             file.set_len(cursor)
-                .and_then(|()| file.sync_all())
                 .map_err(|_| DurableLedgerError::Indeterminate)?;
         }
+        sync(&file).map_err(|_| DurableLedgerError::Indeterminate)?;
         file.seek(SeekFrom::Start(cursor))?;
         Ok(Self {
             file,

@@ -49,7 +49,7 @@ fn context(subject_id: &str) -> NduIterationContextV1 {
         subject_id: id(subject_id),
         subject_class: SubjectClass::Agent,
         objective_digest: Digest32::of_bytes(b"objective"),
-        generation: must(Generation::new(4)),
+        generation: must(Generation::new(/*value*/ 4)),
         event_digest: Digest32::of_bytes(b"event"),
         coefficient_digest: Digest32::of_bytes(b"coefficient"),
     }

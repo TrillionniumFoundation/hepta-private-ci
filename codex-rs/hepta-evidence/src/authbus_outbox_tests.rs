@@ -407,14 +407,21 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .await
         .unwrap();
     let id = enqueue(&store, 1).await.delivery_id;
-    // Fill active capacity using copies with independent fixture identities;
-    // admission hashing/signatures are exercised separately, not 4096 times.
+    // Fill GLOBAL row capacity with distinct synthetic issuers, not the 512
+    // active-delivery quota for the original issuer. These fixture-only rows
+    // are never claimed or authenticated; signed admission is tested above.
     sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
-        INSERT INTO authbus_outbox SELECT randomblob(32), issuer_id, key_epoch, 'fixture:' || x,
+        INSERT INTO authbus_outbox SELECT randomblob(32), 'issuer:capacity:' || x, key_epoch, 'fixture:' || x,
         subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
         state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
         updated_at_ms, terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
         .bind(id.as_array().as_slice()).execute(&store.pool).await.unwrap();
+    let (total, independent_issuers): (i64, i64) =
+        sqlx::query_as("SELECT COUNT(*), COUNT(DISTINCT issuer_id) FROM authbus_outbox")
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
+    assert_eq!((total, independent_issuers), (4096, 4096));
     let (issuer, message) = fixture(2, u64::MAX);
     assert!(matches!(
         store

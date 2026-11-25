@@ -100,6 +100,7 @@ mod windows_impl {
     pub fn run_windows_sandbox_capture_for_permission_profile(
         request: ElevatedSandboxProfileCaptureRequest<'_>,
     ) -> Result<CaptureResult> {
+        crate::legacy_boundary::require_qualified_windows_filesystem()?;
         let ElevatedSandboxProfileCaptureRequest {
             permission_profile,
             workspace_roots,

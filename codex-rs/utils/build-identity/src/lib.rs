@@ -135,7 +135,8 @@ mod tests {
     #[test]
     fn ordinary_build_is_explicitly_unbound() {
         assert_eq!(
-            BuildIdentity::resolve(None, None).expect("resolve local build"),
+            BuildIdentity::resolve(/*release_source_sha*/ None, /*source_dirty*/ None)
+                .expect("resolve local build"),
             BuildIdentity {
                 binding: SourceBinding::Unbound,
                 source_sha: None,
@@ -146,7 +147,8 @@ mod tests {
 
     #[test]
     fn local_dirty_marker_never_creates_an_exact_binding() {
-        let identity = BuildIdentity::resolve(None, Some("true")).expect("resolve dirty build");
+        let identity = BuildIdentity::resolve(/*release_source_sha*/ None, Some("true"))
+            .expect("resolve dirty build");
         assert_eq!(identity.binding, SourceBinding::Unbound);
         assert_eq!(identity.source_dirty, SourceDirty::Dirty);
         assert_eq!(identity.summary(), "source=unbound;sha=none;dirty=dirty");
@@ -179,7 +181,7 @@ mod tests {
     #[test]
     fn malformed_or_dirty_exact_binding_is_rejected() {
         assert_eq!(
-            BuildIdentity::resolve(Some("abc123"), None),
+            BuildIdentity::resolve(Some("abc123"), /*source_dirty*/ None),
             Err(BuildIdentityError::InvalidExactSourceSha)
         );
         assert_eq!(
@@ -189,13 +191,13 @@ mod tests {
             ))
         );
         assert_eq!(
-            BuildIdentity::resolve(Some(&"a".repeat(40)), None),
+            BuildIdentity::resolve(Some(&"a".repeat(40)), /*source_dirty*/ None),
             Err(BuildIdentityError::ExactSourceNotVerifiedClean(
                 SourceDirty::Unknown
             ))
         );
         assert_eq!(
-            BuildIdentity::resolve(None, Some("yes")),
+            BuildIdentity::resolve(/*release_source_sha*/ None, Some("yes")),
             Err(BuildIdentityError::InvalidDirtyValue("yes".to_string()))
         );
     }

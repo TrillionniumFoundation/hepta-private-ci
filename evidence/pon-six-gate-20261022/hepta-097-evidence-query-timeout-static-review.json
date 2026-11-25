@@ -1,0 +1,131 @@
+{
+  "source_head": "097d97137a43aee84fb96be12e44135278776748",
+  "sources": [
+    {
+      "path": "codex-rs/hepta-evidence/src/qualification.rs",
+      "blob": "5198a9bfc98ae6e30aec94b758a1641ded07fa43",
+      "sha256": "b76aa30c6985b1697f6e51842e1b6a6a8889a1a60819ff5ef433aff2ec3e8a36",
+      "own_tree_bytes_equal_exact_097": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "blob": "cf8ff628aebfb7cc64ef28e4b33b36c28c7f73f0",
+      "sha256": "d19c60046a771717c56358fc233e480d9c3666df48f633067cd71c267767d125",
+      "own_tree_bytes_equal_exact_097": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/canonical.rs",
+      "blob": "9ee33a1605894e25135569658690c0bbe432aa17",
+      "sha256": "09e9aca8b74126cac11cf0e46e23c68b4ddfb673a0ee1173ab0a03e821fc8593",
+      "own_tree_bytes_equal_exact_097": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/store.rs",
+      "blob": "04faa323b52369e257d58f131be25eb9945f31d7",
+      "sha256": "a0f41b879075201ae62430fdd8ee269dc8fe2bf50421f5efc29ff79d89874b63",
+      "own_tree_bytes_equal_exact_097": true
+    },
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "blob": "c687edbf6bad547ab342fb7269f3b4b1e8f51773",
+      "sha256": "2de55524f4ac31174770d961883921183a17de8a6199b1105bf145026b4136c0",
+      "own_tree_bytes_equal_exact_097": true
+    }
+  ],
+  "job": 119685152180,
+  "run": 39727948126,
+  "log_path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/hepta-097-job-119685152180.raw.log",
+  "log_file_sha256": "de57b37442e3feb53ec075d4a95dcd63600b3fb18540c6838cf294695b1cbbec",
+  "observed_test": "qualification_tests::claim_query_rejects_more_than_512_references",
+  "observed_timeouts_seconds": [
+    60.045,
+    60.151
+  ],
+  "observed_phase_progress": "none in retained timeout output",
+  "proven_work": {
+    "appends": 513,
+    "old_receipt_rows_decoded": 131328,
+    "reason": "Each successful fresh append unconditionally reads and canonical-decodes every previous non-independent receipt for the same candidate; this fixture uses one candidate and 513 MandatoryTests receipts.",
+    "callgraph": [
+      {
+        "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "line": 1182,
+        "step": "loop 0..=512; fresh append call1192"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "line": 467,
+        "step": "BEGIN IMMEDIATE starts before digest scan"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "line": 523,
+        "step": "unconditional candidate digest"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "line": 954,
+        "step": "SELECT candidate non-independent rows, ORDER BY seq, LIMIT8193"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "line": 984,
+        "step": "check8192 bound then decode every returned row and materialize references"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "line": 1055,
+        "step": "decode validates canonical envelope, payload and digest projections"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "line": 780,
+        "step": "clone reference vector, sort evidence identity/digest, canonicalize and hash"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "line": 874,
+        "step": "MandatoryTests validation immediately returns Ok without reading computed digest"
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "line": 594,
+        "step": "commit after replay advance and insertion"
+      }
+    ],
+    "complexity": "Cumulative row decoding is quadratic up to the candidate-set bound; sorting/canonicalization and513 full synchronous commits add work. No measured stage timing or proven dominant cost."
+  },
+  "query_bound": {
+    "path": "codex-rs/hepta-evidence/src/qualification.rs",
+    "function_line": 1000,
+    "sql_limit": 513,
+    "reject_line": 1027,
+    "decode_line": 1032,
+    "behavior": "More than512 rows rejected before decode; the final query does not unboundedly traverse all history."
+  },
+  "wait_and_fixture_review": {
+    "sqlite_path": "codex-rs/state/src/sqlite.rs",
+    "pool_line": 299,
+    "mode": "WAL+FULL synchronous evidence pool, busy_timeout5s,max_connections5",
+    "fixture": "Fresh unique TempDir and SqliteConfig::new_for_testing(temp.path()) per test;513 sequential awaits in one owner store. No same-db fixture collision or explicit sleep/global application mutex demonstrated in this path.",
+    "limits": "SQLx scheduling, disk flush latency and host-wide CPU/disk contention remain unmeasured."
+  },
+  "safety_scope": {
+    "no_change_authorized_or_made": true,
+    "do_not_skip_scan_without_contract_review": "Although the digest value is unused for MandatoryTests, current scan also rejects preexisting corrupt rows and a preinsert candidate set exceeding8192. A lazy-only-decision branch changes these observable rejection cases. Preserve authentication, replay fence, lineage checks and transaction atomicity.",
+    "existing_tamper_tests": "Corrupted canonical payload and broken predecessor tests require failure on reopen; no specific ordinary-append-after-damage or8192 capacity test was found in qualification_tests alone. This absence does not authorize weakening current behavior.",
+    "bound_precision": "Current check is on the existing preinsert set;8192 previous rows may admit an8193rd row. Do not describe it as a proven strict8192 persisted storage cap.",
+    "no_budget_change": "No60s relaxation, test batch shortcut, SQL synchronous weakening, gate or selector change."
+  },
+  "baseline_copy_discrepancy": {
+    "path": "/workspace/scratch/b29eed737707/hepta-ci-followup/codex-rs/hepta-evidence/src/qualification.rs",
+    "difference": "Only removal of /*index*/ before literal0 at097 line1268; no expression change. Exact097 Git object used for this review."
+  },
+  "next_measurement": [
+    "Retain same exact097+synthetic merge source tuple, same test and60s gate.",
+    "Obtain stage counters/timing for open/migrations, sign/authenticate, BEGIN wait, candidate fetch/decode/hash, replay/insert and commit, plus completed append index and final query.",
+    "Bind concurrency/architecture/disk profile and retain actual SQLx/SQLite failure if any; do not infer phase from nextest timeout alone.",
+    "Only after measurement and security contract review choose an optimization that retains corruption/capacity rejection semantics."
+  ],
+  "build_or_native_execution_performed": false
+}

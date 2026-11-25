@@ -4,13 +4,13 @@
   "module": "learning.plasticity",
   "generatedFrom": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "c927ca0e86258c0e4eca8004b2ed4d1b709310ea",
+    "tree": "2505bf2709731af13b22eb80511592f9a43ee943"
   },
   "current": {
     "sourceRootPresent": true,
     "productionImplementation": false,
-    "productCallerState": "agentd_process_bootstrap_and_named_learning_producer_source_composed_self_iteration_trigger_not_product_composed_or_target_host_qualified",
+    "productCallerState": "agentd_process_bootstrap_and_state_held_runtime_handle_source_composed_test_only_learning_submission_adapter_product_trigger_not_composed_or_target_host_qualified",
     "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved",
     "claimBoundary": {
       "nativeSourceMappingComplete": true,
@@ -124,7 +124,7 @@
     },
     {
       "operation": "agentd_plasticity_runtime_owner",
-      "state": "named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified",
+      "state": "named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_handle_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_queue_capacity_is_bounded",
@@ -133,7 +133,7 @@
     },
     {
       "operation": "agentd_named_parameter_submission",
-      "state": "named_non_test_agentd_learning_producer_source_implemented_calls_state_submission_final_owner_revalidation_not_target_host_executed_or_qualified",
+      "state": "test_only_borrowed_agentd_parameter_submission_adapter_calls_runtime_handle_final_owner_revalidation_no_production_learning_caller_or_target_host_qualification",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
@@ -141,7 +141,7 @@
     },
     {
       "operation": "agentd_named_topology_submission",
-      "state": "named_non_test_agentd_learning_topology_producer_source_implemented_calls_state_submission_final_owner_revalidation_not_target_host_executed_or_qualified",
+      "state": "test_only_borrowed_agentd_topology_submission_adapter_calls_runtime_handle_final_owner_revalidation_no_production_learning_caller_or_target_host_qualification",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
@@ -279,7 +279,7 @@
   ],
   "remainingToTarget": {
     "repositoryControlledGaps": [
-      "Compose a real non-test control.engineering/self-iteration coordinator that submits frozen, independently evaluated next-generation parameter/topology requests through AgentdLearningPlasticityProducerV1; the repository now has process bootstrap, the named producer and lifetime E2E, but IterationEnvelopeV1 still has no production caller.",
+      "Compose a real non-test control.engineering/self-iteration coordinator for frozen, independently evaluated next-generation parameter/topology requests. Process bootstrap and the state-held PlasticityRuntimeHandleV1 are composed, but AgentdLearningPlasticityProducerV1 and the AgentdState submit adapters are test-only; IterationEnvelopeV1 still has no production caller.",
       "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head.",
       "Execute exact unified-candidate descriptor recovery, proposal lifetime and independent live-topology canary tests."
     ],

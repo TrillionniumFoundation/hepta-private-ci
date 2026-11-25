@@ -83,7 +83,7 @@ fn elicitation_fixture(
         ElicitationRequestRouter::default(),
     );
     let (tx_event, events) = async_channel::bounded(1);
-    let sender = manager.make_sender("independent-mcp".to_string(), Some(tx_event));
+    let sender = manager.make_sender("independent-mcp".to_string(), Some(tx_event.into()));
     (manager, events, sender)
 }
 

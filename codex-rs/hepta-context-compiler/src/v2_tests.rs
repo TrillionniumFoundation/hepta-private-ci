@@ -206,8 +206,8 @@ fn verified_snapshot(
         observed_unix_ms,
         revocation_epoch,
         revoked,
-        true,
-        None,
+        /*revocation_set_complete*/ true,
+        /*predecessor_snapshot_digest*/ None,
     )
     .unwrap_or_else(|error| panic!("valid snapshot: {error}"));
     verify_admission_snapshot_v2(raw, &verifier())
@@ -228,7 +228,7 @@ fn verified_successor_snapshot(
         observed_unix_ms,
         revocation_epoch,
         revoked,
-        true,
+        /*revocation_set_complete*/ true,
         Some(predecessor.snapshot_digest()),
     )?;
     verify_admission_snapshot_successor_v2(raw, predecessor, &verifier())
@@ -270,8 +270,8 @@ fn candidate(
             authority_domain_digest: digest("authority-domain"),
             contains_secret: false,
         },
-        1,
-        1_000,
+        /*issued_unix_ms*/ 1,
+        /*expires_unix_ms*/ 1_000,
     )
     .unwrap_or_else(|_| panic!("admission record fixture must be structurally valid"));
     let admission = verify_admission_v2(record, snapshot, &verifier())
@@ -314,32 +314,37 @@ fn request(candidates: Vec<ContextCandidateV2>, token_budget: u64) -> ContextCom
 
 #[test]
 fn deterministic_value_per_token_preserves_mandatory_floors() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (trusted, _) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        40,
+        /*token_count*/ 40,
         FixedQ32::ONE,
         &snapshot,
     );
     let (schema, _) = candidate(
         "item:schema",
         ContextRoleV2::Schema,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
     let (high_ratio, _) = candidate(
         "item:high-ratio",
         ContextRoleV2::UntrustedEvidence,
-        20,
+        /*token_count*/ 20,
         FixedQ32::from_raw(1_i64 << 31),
         &snapshot,
     );
     let (low_ratio, _) = candidate(
         "item:low-ratio",
         ContextRoleV2::UntrustedEvidence,
-        40,
+        /*token_count*/ 40,
         FixedQ32::from_raw(1_i64 << 31),
         &snapshot,
     );
@@ -352,9 +357,9 @@ fn deterministic_value_per_token_preserves_mandatory_floors() {
     let mut reversed = candidates.clone();
     reversed.reverse();
 
-    let left = compile_v2(request(candidates, 80))
+    let left = compile_v2(request(candidates, /*token_budget*/ 80))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
-    let right = compile_v2(request(reversed, 80))
+    let right = compile_v2(request(reversed, /*token_budget*/ 80))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
 
     assert_eq!(left, right);
@@ -368,23 +373,28 @@ fn deterministic_value_per_token_preserves_mandatory_floors() {
 
 #[test]
 fn tiny_budget_refuses_instead_of_truncating_instruction_or_schema() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (trusted, _) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        40,
+        /*token_count*/ 40,
         FixedQ32::ONE,
         &snapshot,
     );
     let (schema, _) = candidate(
         "item:schema",
         ContextRoleV2::Schema,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
     assert_eq!(
-        compile_v2(request(vec![trusted, schema], 50)),
+        compile_v2(request(vec![trusted, schema], /*token_budget*/ 50)),
         Err(ContextCompilerV2Error::InsufficientMandatoryBudget {
             required_tokens: 60,
             token_budget: 50,
@@ -394,25 +404,33 @@ fn tiny_budget_refuses_instead_of_truncating_instruction_or_schema() {
 
 #[test]
 fn mandatory_group_policy_is_bound_even_when_selected_set_is_identical() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (first, _) = candidate(
         "item:citation",
         ContextRoleV2::UntrustedEvidence,
-        30,
+        /*token_count*/ 30,
         FixedQ32::ONE,
         &snapshot,
     );
     let (second, _) = candidate(
         "item:contradiction",
         ContextRoleV2::UntrustedEvidence,
-        30,
+        /*token_count*/ 30,
         FixedQ32::ONE,
         &snapshot,
     );
 
-    let ungrouped = compile_v2(request(vec![first.clone(), second.clone()], 60))
-        .unwrap_or_else(|error| panic!("valid ungrouped compilation: {error}"));
-    let mut grouped_request = request(vec![first, second], 60);
+    let ungrouped = compile_v2(request(
+        vec![first.clone(), second.clone()],
+        /*token_budget*/ 60,
+    ))
+    .unwrap_or_else(|error| panic!("valid ungrouped compilation: {error}"));
+    let mut grouped_request = request(vec![first, second], /*token_budget*/ 60);
     grouped_request.mandatory_groups = vec![MandatoryContextGroupV2 {
         group_id: id("group:evidence"),
         item_ids: vec![id("item:citation"), id("item:contradiction")],
@@ -437,8 +455,13 @@ fn mandatory_group_policy_is_bound_even_when_selected_set_is_identical() {
 
 #[test]
 fn well_formed_admission_digest_is_not_enough_without_verifier_acceptance() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
-    let content = content_bytes("item:trusted", 20);
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
+    let content = content_bytes("item:trusted", /*token_count*/ 20);
     let record = ContextAdmissionRecordV2::new(
         id("admission:item:trusted"),
         ContextAdmissionBindingV2 {
@@ -451,8 +474,8 @@ fn well_formed_admission_digest_is_not_enough_without_verifier_acceptance() {
             authority_domain_digest: digest("authority-domain"),
             contains_secret: false,
         },
-        1,
-        1_000,
+        /*issued_unix_ms*/ 1,
+        /*expires_unix_ms*/ 1_000,
     )
     .unwrap_or_else(|_| panic!("admission record fixture must be structurally valid"));
     let rejecting = TestAdmissionVerifier {
@@ -470,18 +493,23 @@ fn well_formed_admission_digest_is_not_enough_without_verifier_acceptance() {
 
 #[test]
 fn admission_role_binding_prevents_evidence_instruction_confusion() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (mut trusted, _) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
     trusted.role = ContextRoleV2::UntrustedEvidence;
 
     assert_eq!(
-        compile_v2(request(vec![trusted], 100)),
+        compile_v2(request(vec![trusted], /*token_budget*/ 100)),
         Err(ContextCompilerV2Error::AdmissionBindingMismatch(
             "item:trusted".to_string()
         ))
@@ -490,8 +518,13 @@ fn admission_role_binding_prevents_evidence_instruction_confusion() {
 
 #[test]
 fn admission_expires_at_the_exact_expiry_instant() {
-    let snapshot = verified_snapshot("snapshot:expiry", 1_000, 1, Vec::new());
-    let content = content_bytes("item:expiry", 20);
+    let snapshot = verified_snapshot(
+        "snapshot:expiry",
+        /*observed_unix_ms*/ 1_000,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
+    let content = content_bytes("item:expiry", /*token_count*/ 20);
     let record = ContextAdmissionRecordV2::new(
         id("admission:item:expiry"),
         ContextAdmissionBindingV2 {
@@ -504,8 +537,8 @@ fn admission_expires_at_the_exact_expiry_instant() {
             authority_domain_digest: digest("authority-domain"),
             contains_secret: false,
         },
-        1,
-        1_000,
+        /*issued_unix_ms*/ 1,
+        /*expires_unix_ms*/ 1_000,
     )
     .unwrap_or_else(|_| panic!("admission record fixture must be structurally valid"));
 
@@ -519,15 +552,20 @@ fn admission_expires_at_the_exact_expiry_instant() {
 
 #[test]
 fn verified_admission_cannot_be_reused_across_request_scope() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (candidate, _) = candidate(
         "item:scoped",
         ContextRoleV2::UntrustedEvidence,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let mut scoped_request = request(vec![candidate], 100);
+    let mut scoped_request = request(vec![candidate], /*token_budget*/ 100);
     scoped_request.scope_digest = digest("other-scope");
 
     assert_eq!(
@@ -540,8 +578,13 @@ fn verified_admission_cannot_be_reused_across_request_scope() {
 
 #[test]
 fn snapshot_scope_and_authority_domain_are_part_of_admission_truth() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
-    let content = content_bytes("item:domain", 20);
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
+    let content = content_bytes("item:domain", /*token_count*/ 20);
     let record = ContextAdmissionRecordV2::new(
         id("admission:item:domain"),
         ContextAdmissionBindingV2 {
@@ -554,8 +597,8 @@ fn snapshot_scope_and_authority_domain_are_part_of_admission_truth() {
             authority_domain_digest: digest("different-authority-domain"),
             contains_secret: false,
         },
-        1,
-        1_000,
+        /*issued_unix_ms*/ 1,
+        /*expires_unix_ms*/ 1_000,
     )
     .unwrap_or_else(|error| panic!("valid record: {error}"));
 
@@ -570,9 +613,20 @@ fn snapshot_scope_and_authority_domain_are_part_of_admission_truth() {
 #[test]
 fn successor_snapshot_rejects_revocation_resurrection() {
     let revoked = id("admission:revoked");
-    let predecessor = verified_snapshot("snapshot:revoked", 10, 1, vec![revoked.clone()]);
+    let predecessor = verified_snapshot(
+        "snapshot:revoked",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        vec![revoked.clone()],
+    );
     assert_eq!(
-        verified_successor_snapshot("snapshot:resurrected", 20, 2, Vec::new(), &predecessor),
+        verified_successor_snapshot(
+            "snapshot:resurrected",
+            /*observed_unix_ms*/ 20,
+            /*revocation_epoch*/ 2,
+            Vec::new(),
+            &predecessor
+        ),
         Err(ContextCompilerV2Error::RevocationResurrection(
             revoked.to_string()
         ))
@@ -589,24 +643,29 @@ fn revocation_and_mandatory_reference_bounds_fail_closed() {
             id("snapshot:oversized"),
             digest("scope"),
             digest("authority-domain"),
-            10,
-            1,
+            /*observed_unix_ms*/ 10,
+            /*revocation_epoch*/ 1,
             too_many_revocations,
-            true,
-            None,
+            /*revocation_set_complete*/ true,
+            /*predecessor_snapshot_digest*/ None,
         ),
         Err(ContextCompilerV2Error::RevocationLimitExceeded)
     );
 
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (candidate, _) = candidate(
         "item:required",
         ContextRoleV2::UntrustedEvidence,
-        1,
+        /*token_count*/ 1,
         FixedQ32::ONE,
         &snapshot,
     );
-    let mut bounded_request = request(vec![candidate], 100);
+    let mut bounded_request = request(vec![candidate], /*token_budget*/ 100);
     bounded_request.mandatory_groups = vec![MandatoryContextGroupV2 {
         group_id: id("group:oversized"),
         item_ids: (0..=MAX_MANDATORY_REFERENCES_V2)
@@ -630,15 +689,20 @@ fn raw_candidate_and_realization_bytes_are_bounded_before_serialization() {
         ))
     );
 
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (candidate, mut realized) = candidate(
         "item:realized",
         ContextRoleV2::UntrustedEvidence,
-        1,
+        /*token_count*/ 1,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![candidate], 100))
+    let compiled = compile_v2(request(vec![candidate], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     realized.content = vec![b'x'; MAX_CONTEXT_ITEM_BYTES_V2 + 1];
     assert_eq!(
@@ -658,16 +722,21 @@ fn raw_candidate_and_realization_bytes_are_bounded_before_serialization() {
 
 #[test]
 fn attachment_revalidation_rejects_compile_then_revoke_toc_tou() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (trusted, realized) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
     let admission_id = trusted.admission.admission_id().clone();
-    let compiled = compile_v2(request(vec![trusted], 100))
+    let compiled = compile_v2(request(vec![trusted], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -678,7 +747,12 @@ fn attachment_revalidation_rejects_compile_then_revoke_toc_tou() {
         &ByteTokenizer,
     )
     .unwrap_or_else(|error| panic!("valid serialization: {error}"));
-    let revoked_snapshot = verified_snapshot("snapshot:2", 20, 2, vec![admission_id.clone()]);
+    let revoked_snapshot = verified_snapshot(
+        "snapshot:2",
+        /*observed_unix_ms*/ 20,
+        /*revocation_epoch*/ 2,
+        vec![admission_id.clone()],
+    );
 
     assert_eq!(
         build_attachment(
@@ -696,15 +770,20 @@ fn attachment_revalidation_rejects_compile_then_revoke_toc_tou() {
 
 #[test]
 fn serialization_validates_real_bytes_and_tokenizes_final_payload() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (trusted, realized) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![trusted], 100))
+    let compiled = compile_v2(request(vec![trusted], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
 
     let serialization = record_serialization(
@@ -727,15 +806,20 @@ fn serialization_validates_real_bytes_and_tokenizes_final_payload() {
 
 #[test]
 fn serialization_rejects_payload_realization_that_does_not_match_selected_digest() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (trusted, mut realized) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![trusted], 100))
+    let compiled = compile_v2(request(vec![trusted], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     realized.content[0] ^= 1;
 
@@ -756,15 +840,20 @@ fn serialization_rejects_payload_realization_that_does_not_match_selected_digest
 
 #[test]
 fn final_serialized_token_count_must_fit_budget_including_framing() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (trusted, realized) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![trusted], 20))
+    let compiled = compile_v2(request(vec![trusted], /*token_budget*/ 20))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
 
     assert_eq!(
@@ -785,15 +874,20 @@ fn final_serialized_token_count_must_fit_budget_including_framing() {
 
 #[test]
 fn provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_delivery_receipt() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (trusted, realized) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![trusted], 100))
+    let compiled = compile_v2(request(vec![trusted], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -826,20 +920,22 @@ fn provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_deli
         &preparation,
         "provider",
         "model",
-        None,
-        None,
+        /*input_override*/ None,
+        /*witness_override*/ None,
         completed_terminal(),
     );
 
     let delivery = observe_delivery(
         &preparation,
-        &attachment,
-        &serialization,
-        &profile(),
+        ContextDeliveryBindingV2 {
+            attachment: &attachment,
+            serialization: &serialization,
+            profile: &profile(),
+        },
         id("delivery:1"),
         &provider,
         &delivery_verifier(),
-        25,
+        /*observed_unix_ms*/ 25,
     )
     .unwrap_or_else(|error| panic!("valid delivery evidence: {error}"));
 
@@ -872,15 +968,20 @@ fn provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_deli
 
 #[test]
 fn provider_owned_attempt_witness_is_authenticated_by_delivery_verifier() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (trusted, realized) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![trusted], 100))
+    let compiled = compile_v2(request(vec![trusted], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -914,7 +1015,7 @@ fn provider_owned_attempt_witness_is_authenticated_by_delivery_verifier() {
         &preparation,
         "provider",
         "model",
-        None,
+        /*input_override*/ None,
         Some(provider_owned_witness.clone()),
         completed_terminal(),
     );
@@ -926,13 +1027,15 @@ fn provider_owned_attempt_witness_is_authenticated_by_delivery_verifier() {
 
     let delivery = observe_delivery(
         &preparation,
-        &attachment,
-        &serialization,
-        &profile(),
+        ContextDeliveryBindingV2 {
+            attachment: &attachment,
+            serialization: &serialization,
+            profile: &profile(),
+        },
         id("delivery:1"),
         &provider,
         &verifier,
-        25,
+        /*observed_unix_ms*/ 25,
     )
     .unwrap_or_else(|error| panic!("provider-owned witness should verify: {error}"));
 
@@ -944,15 +1047,20 @@ fn provider_owned_attempt_witness_is_authenticated_by_delivery_verifier() {
 
 #[test]
 fn provider_payload_binding_must_match_exact_serialized_payload() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (candidate, realized) = candidate(
         "item:evidence",
         ContextRoleV2::UntrustedEvidence,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![candidate], 100))
+    let compiled = compile_v2(request(vec![candidate], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -986,20 +1094,22 @@ fn provider_payload_binding_must_match_exact_serialized_payload() {
         "provider",
         "model",
         Some(Sha256Digest::for_bytes(b"different-payload")),
-        None,
+        /*witness_override*/ None,
         completed_terminal(),
     );
 
     assert_eq!(
         observe_delivery(
             &preparation,
-            &attachment,
-            &serialization,
-            &profile(),
+            ContextDeliveryBindingV2 {
+                attachment: &attachment,
+                serialization: &serialization,
+                profile: &profile(),
+            },
             id("delivery:1"),
             &provider,
             &delivery_verifier(),
-            25,
+            /*observed_unix_ms*/ 25,
         ),
         Err(ContextCompilerV2Error::DeliveryMismatch)
     );
@@ -1007,15 +1117,20 @@ fn provider_payload_binding_must_match_exact_serialized_payload() {
 
 #[test]
 fn provider_input_witness_must_bind_current_pre_dispatch_revalidation() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (candidate, realized) = candidate(
         "item:evidence",
         ContextRoleV2::UntrustedEvidence,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![candidate], 100))
+    let compiled = compile_v2(request(vec![candidate], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -1048,7 +1163,7 @@ fn provider_input_witness_must_bind_current_pre_dispatch_revalidation() {
         &preparation,
         "provider",
         "model",
-        None,
+        /*input_override*/ None,
         Some(Sha256Digest::for_bytes(b"stale-preparation")),
         completed_terminal(),
     );
@@ -1056,13 +1171,15 @@ fn provider_input_witness_must_bind_current_pre_dispatch_revalidation() {
     assert_eq!(
         observe_delivery(
             &preparation,
-            &attachment,
-            &serialization,
-            &profile(),
+            ContextDeliveryBindingV2 {
+                attachment: &attachment,
+                serialization: &serialization,
+                profile: &profile(),
+            },
             id("delivery:1"),
             &provider,
             &delivery_verifier(),
-            25,
+            /*observed_unix_ms*/ 25,
         ),
         Err(ContextCompilerV2Error::ProviderEvidenceInvalid(
             "delivery witness rejected".to_string()
@@ -1072,15 +1189,20 @@ fn provider_input_witness_must_bind_current_pre_dispatch_revalidation() {
 
 #[test]
 fn provider_and_model_identity_must_match_exact_model_profile() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (candidate, realized) = candidate(
         "item:evidence",
         ContextRoleV2::UntrustedEvidence,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![candidate], 100))
+    let compiled = compile_v2(request(vec![candidate], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -1113,21 +1235,23 @@ fn provider_and_model_identity_must_match_exact_model_profile() {
         &preparation,
         "different-provider",
         "model",
-        None,
-        None,
+        /*input_override*/ None,
+        /*witness_override*/ None,
         completed_terminal(),
     );
 
     assert_eq!(
         observe_delivery(
             &preparation,
-            &attachment,
-            &serialization,
-            &profile(),
+            ContextDeliveryBindingV2 {
+                attachment: &attachment,
+                serialization: &serialization,
+                profile: &profile(),
+            },
             id("delivery:1"),
             &provider,
             &delivery_verifier(),
-            25,
+            /*observed_unix_ms*/ 25,
         ),
         Err(ContextCompilerV2Error::ProviderModelProfileMismatch)
     );
@@ -1135,15 +1259,20 @@ fn provider_and_model_identity_must_match_exact_model_profile() {
 
 #[test]
 fn independent_provider_evidence_verifier_is_required() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (candidate, realized) = candidate(
         "item:evidence",
         ContextRoleV2::UntrustedEvidence,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![candidate], 100))
+    let compiled = compile_v2(request(vec![candidate], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -1176,8 +1305,8 @@ fn independent_provider_evidence_verifier_is_required() {
         &preparation,
         "provider",
         "model",
-        None,
-        None,
+        /*input_override*/ None,
+        /*witness_override*/ None,
         completed_terminal(),
     );
     let rejecting = TestDeliveryVerifier {
@@ -1189,13 +1318,15 @@ fn independent_provider_evidence_verifier_is_required() {
     assert!(matches!(
         observe_delivery(
             &preparation,
-            &attachment,
-            &serialization,
-            &profile(),
+            ContextDeliveryBindingV2 {
+                attachment: &attachment,
+                serialization: &serialization,
+                profile: &profile(),
+            },
             id("delivery:1"),
             &provider,
             &rejecting,
-            25,
+            /*observed_unix_ms*/ 25,
         ),
         Err(ContextCompilerV2Error::ProviderEvidenceInvalid(_))
     ));
@@ -1203,15 +1334,20 @@ fn independent_provider_evidence_verifier_is_required() {
 
 #[test]
 fn delivery_preparation_rejects_snapshot_time_rollback_even_with_same_epoch() {
-    let initial_snapshot = verified_snapshot("snapshot:initial", 10, 1, Vec::new());
+    let initial_snapshot = verified_snapshot(
+        "snapshot:initial",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (trusted, realized) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &initial_snapshot,
     );
-    let compiled = compile_v2(request(vec![trusted], 100))
+    let compiled = compile_v2(request(vec![trusted], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -1222,7 +1358,12 @@ fn delivery_preparation_rejects_snapshot_time_rollback_even_with_same_epoch() {
         &ByteTokenizer,
     )
     .unwrap_or_else(|error| panic!("valid serialization: {error}"));
-    let attachment_snapshot = verified_snapshot("snapshot:attachment", 20, 2, Vec::new());
+    let attachment_snapshot = verified_snapshot(
+        "snapshot:attachment",
+        /*observed_unix_ms*/ 20,
+        /*revocation_epoch*/ 2,
+        Vec::new(),
+    );
     let attachment = build_attachment(
         &compiled,
         &serialization,
@@ -1231,7 +1372,12 @@ fn delivery_preparation_rejects_snapshot_time_rollback_even_with_same_epoch() {
         id("attachment:1"),
     )
     .unwrap_or_else(|error| panic!("valid attachment: {error}"));
-    let rollback_snapshot = verified_snapshot("snapshot:rollback", 15, 2, Vec::new());
+    let rollback_snapshot = verified_snapshot(
+        "snapshot:rollback",
+        /*observed_unix_ms*/ 15,
+        /*revocation_epoch*/ 2,
+        Vec::new(),
+    );
 
     assert_eq!(
         prepare_delivery_v2(
@@ -1248,16 +1394,21 @@ fn delivery_preparation_rejects_snapshot_time_rollback_even_with_same_epoch() {
 
 #[test]
 fn delivery_preparation_revalidates_and_rejects_revocation_after_attachment() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (trusted, realized) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
     let admission_id = trusted.admission.admission_id().clone();
-    let compiled = compile_v2(request(vec![trusted], 100))
+    let compiled = compile_v2(request(vec![trusted], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -1276,7 +1427,12 @@ fn delivery_preparation_revalidates_and_rejects_revocation_after_attachment() {
         id("attachment:1"),
     )
     .unwrap_or_else(|error| panic!("valid attachment: {error}"));
-    let revoked_snapshot = verified_snapshot("snapshot:2", 20, 2, vec![admission_id.clone()]);
+    let revoked_snapshot = verified_snapshot(
+        "snapshot:2",
+        /*observed_unix_ms*/ 20,
+        /*revocation_epoch*/ 2,
+        vec![admission_id.clone()],
+    );
 
     assert_eq!(
         prepare_delivery_v2(
@@ -1295,15 +1451,20 @@ fn delivery_preparation_revalidates_and_rejects_revocation_after_attachment() {
 
 #[test]
 fn indeterminate_provider_terminal_remains_indeterminate() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
     let (candidate, realized) = candidate(
         "item:evidence",
         ContextRoleV2::UntrustedEvidence,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![candidate], 100))
+    let compiled = compile_v2(request(vec![candidate], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -1336,8 +1497,8 @@ fn indeterminate_provider_terminal_remains_indeterminate() {
         &preparation,
         "provider",
         "model",
-        None,
-        None,
+        /*input_override*/ None,
+        /*witness_override*/ None,
         ProviderTerminal::Indeterminate {
             reason_code: "lost_terminal_ack".to_string(),
             partial_response_sha256: None,
@@ -1346,13 +1507,15 @@ fn indeterminate_provider_terminal_remains_indeterminate() {
 
     let delivery = observe_delivery(
         &preparation,
-        &attachment,
-        &serialization,
-        &profile(),
+        ContextDeliveryBindingV2 {
+            attachment: &attachment,
+            serialization: &serialization,
+            profile: &profile(),
+        },
         id("delivery:1"),
         &provider,
         &delivery_verifier(),
-        25,
+        /*observed_unix_ms*/ 25,
     )
     .unwrap_or_else(|error| panic!("valid indeterminate evidence: {error}"));
     assert_eq!(
@@ -1363,24 +1526,29 @@ fn indeterminate_provider_terminal_remains_indeterminate() {
 
 #[test]
 fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
-    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let snapshot = verified_snapshot(
+        "snapshot:1",
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 1,
+        Vec::new(),
+    );
 
     let (mut stale, _) = candidate(
         "item:stale",
         ContextRoleV2::UntrustedEvidence,
-        10,
+        /*token_count*/ 10,
         FixedQ32::ONE,
         &snapshot,
     );
     stale.generation_vector_digest = digest("stale-vector");
     assert_eq!(
-        compile_v2(request(vec![stale], 100)),
+        compile_v2(request(vec![stale], /*token_budget*/ 100)),
         Err(ContextCompilerV2Error::GenerationVectorMismatch(
             "item:stale".to_string()
         ))
     );
 
-    let secret_content = content_bytes("item:secret", 10);
+    let secret_content = content_bytes("item:secret", /*token_count*/ 10);
     let secret_record = ContextAdmissionRecordV2::new(
         id("admission:item:secret"),
         ContextAdmissionBindingV2 {
@@ -1393,8 +1561,8 @@ fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
             authority_domain_digest: digest("authority-domain"),
             contains_secret: true,
         },
-        1,
-        1_000,
+        /*issued_unix_ms*/ 1,
+        /*expires_unix_ms*/ 1_000,
     )
     .unwrap_or_else(|_| {
         panic!("secret test fixture admission record should be structurally valid")
@@ -1407,11 +1575,11 @@ fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
     let (candidate, realized) = candidate(
         "item:profile",
         ContextRoleV2::UntrustedEvidence,
-        10,
+        /*token_count*/ 10,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![candidate], 100))
+    let compiled = compile_v2(request(vec![candidate], /*token_budget*/ 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let mut wrong_profile = profile();
     wrong_profile.template_digest = digest("different-template");

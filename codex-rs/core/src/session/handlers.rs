@@ -414,10 +414,13 @@ pub async fn thread_rollback(sess: &Arc<Session>, sub_id: String, num_turns: u32
     sess.settle_and_clear_reserved_idle_turn(&rollback_reservation)
         .await;
 
-    sess.deliver_event_raw(Event {
-        id: turn_context.sub_id.clone(),
-        msg: rollback_msg,
-    })
+    sess.deliver_event_raw(
+        Event {
+            id: turn_context.sub_id.clone(),
+            msg: rollback_msg,
+        }
+        .into(),
+    )
     .await;
 }
 
@@ -578,7 +581,7 @@ pub async fn shutdown(sess: &Arc<Session>, sub_id: String) -> bool {
     sess.services
         .rollout_thread_trace
         .record_protocol_event(&event.msg);
-    sess.deliver_event_raw(event).await;
+    sess.deliver_event_raw(event.into()).await;
     sess.services
         .rollout_thread_trace
         .record_ended(codex_rollout_trace::RolloutStatus::Completed);

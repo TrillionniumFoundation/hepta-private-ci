@@ -1,0 +1,280 @@
+{
+  "captured_utc": "2026-10-22T07:37:33.823270+00:00",
+  "causality": {
+    "actual_windows_timeout_cause": "UNKNOWN",
+    "late_source_or_linux_measurement_promoted_to_windows_result": false,
+    "quadratic_prior_receipt_processing_proved": true,
+    "test_has_source_visible_repeated_costs": true,
+    "windows_cpu_profile_provided": false,
+    "windows_database_wait_profile_provided": false,
+    "windows_fsync_latency_provided": false
+  },
+  "corroborating_independent_review": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/hepta-097-evidence-query-timeout-static-review.json",
+  "fixture_isolation": {
+    "cross_test_path_interference_proved": false,
+    "evidence": "Each test creates its own TempDir and SqliteConfig::new_for_testing home.",
+    "matrix": "Each test creates its own TempDir, canonical fleet root and per-agent layout; no fixed shared database path in this fixture.",
+    "private_path_or_acl_wait_proved": false,
+    "runner_cpu_or_storage_contention_proved": false
+  },
+  "matrix": {
+    "callgraph": [
+      "durable_core::ten_thousand_deltas_are_bounded_and_final_is_exact",
+      "MatrixDurableStore::open -> SqliteConfig::open_durable_evidence_pool",
+      "loop -> enqueue_outbox -> BEGIN IMMEDIATE -> duplicate/quarantine/tombstone/binding checks -> coalesce_candidate SUM(fragment lengths)",
+      "complete prefix append/validate/SHA256 -> UPDATE or INSERT -> insert_outbox_txn -> append_change -> COMMIT"
+    ],
+    "coalescing": "256-byte raw fragment budget and150ms logical timestamp window; no explicit wall sleep in fixture. Each published row retains complete stream prefix; expected40 rows and final exact bytes are original controls.",
+    "complete_prefix_payload_hash_input_bytes_if_loop_completes": 50005000,
+    "completed_append_count_in_failed_windows_run": null,
+    "correlated_sum_index": "Migration0001 creates outbox_txns_by_message(outbox_id,txn_id); no claim of an unindexed whole-table SUM was established.",
+    "evidence": [
+      {
+        "excerpt": "459: #[tokio::test]\n460: async fn ten_thousand_deltas_are_bounded_and_final_is_exact() -> TestResult {\n461:     let temp = TempDir::new()?;\n462:     let agent_id = agent(FIRST_AGENT)?;\n463:     let layout = layout(&temp, &agent_id)?;\n464:     let store = MatrixDurableStore::open(\n465:         &layout,\n466:         MatrixDurableConfig {\n467:             delta_coalesce_window_ms: 150,\n468:             max_delta_batch_bytes: 256,\n469:             event_capacity: 65_536,\n470:         },\n471:     )\n472:     .await?;\n473:     let room_id = room(\"!bounded:example.test\")?;\n474:     bind_room(&store, &room_id, &user(\"@agent:example.test\")?, 10).await?;\n475: \n476:     let logical_delta = protocol_outbox_id(\n477:         &agent_id,\n478:         &room_id,\n479:         \"thread-1\",\n480:         \"turn-1\",\n481:         \"delta-stream\",\n482:         \"text_delta\",\n483:     );\n484:     for index in 0..10_000_u64 {\n485:         let revision = index + 1;\n486:         let draft = OutboxDraft {\n487:             logical_outbox_id: logical_delta.clone(),\n488:             revision,\n489:             txn_id: transaction_id(&logical_delta, revision)?,\n490:             room_id: room_id.clone(),\n491:             kind: OutboxKind::TextDelta,\n492:             payload: vec![b'x'],\n493:             binding_revision: 1,\n494:             generation: 1,\n495:             created_at_ms: 20,\n496:         };\n497:         store.enqueue_outbox(&draft).await?;\n498:     }\n499:     let final_draft = outbox_draft(\n500:         &agent_id,\n501:         &room_id,\n502:         \"final\",\n503:         OutboxKind::Final,\n504:         b\"EXACT-FINAL\",\n505:         21,\n506:     )?;\n507:     store.enqueue_outbox(&final_draft).await?;\n508: \n509:     let records = store.pending_outbox(100).await?;\n510:     let deltas: Vec<_> = records\n511:         .iter()\n512:         .filter(|record| record.kind == OutboxKind::TextDelta)",
+        "first_line": 459,
+        "last_line": 512,
+        "path": "codex-rs/hepta-matrix-store/tests/durable_core.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-matrix-store/tests/durable_core.rs#L459-L512"
+      },
+      {
+        "excerpt": "1301:     pub async fn enqueue_outbox(\n1302:         &self,\n1303:         draft: &OutboxDraft,\n1304:     ) -> Result<OutboxDisposition, MatrixDurableError> {\n1305:         validate_payload(&draft.payload)?;\n1306:         validate_local_identity(&draft.logical_outbox_id)?;\n1307:         if draft.revision == 0\n1308:             || draft.binding_revision == 0\n1309:             || draft.generation == 0\n1310:             || transaction_id(&draft.logical_outbox_id, draft.revision)\n1311:                 .map_err(|_| MatrixDurableError::Invalid)?\n1312:                 != draft.txn_id\n1313:         {\n1314:             return Err(MatrixDurableError::Invalid);\n1315:         }\n1316:         // Read/modify/write outbox operations must reserve the SQLite writer\n1317:         // before reading. Otherwise a concurrent claim can leave this\n1318:         // transaction on a stale WAL snapshot and make the later coalesce or\n1319:         // insert fail with SQLITE_BUSY_SNAPSHOT.\n1320:         let mut transaction = self\n1321:             .pool\n1322:             .begin_with(\"BEGIN IMMEDIATE\")\n1323:             .await\n1324:             .map_err(unavailable)?;\n1325:         if let Some((existing, fragment)) =\n1326:             outbox_by_logical_txn_tx(&mut transaction, &draft.txn_id).await?\n1327:         {\n1328:             if outbox_fragment_matches(&existing, &fragment, draft) {\n1329:                 transaction.commit().await.map_err(unavailable)?;\n1330:                 return Ok(OutboxDisposition::Duplicate(existing));\n1331:             }\n1332:             return Err(MatrixDurableError::Conflict);\n1333:         }\n1334:         if crate::quarantine::is_scope_quarantined_tx(",
+        "first_line": 1301,
+        "last_line": 1334,
+        "path": "codex-rs/hepta-matrix-store/src/store.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-matrix-store/src/store.rs#L1301-L1334"
+      },
+      {
+        "excerpt": "1408:             return Ok(OutboxDisposition::Coalesced(record));\n1409:         }\n1410: \n1411:         if draft.kind == OutboxKind::TextDelta\n1412:             && let Some(existing) = self.coalesce_candidate(&mut transaction, draft).await?\n1413:         {\n1414:             let mut payload = existing.payload;\n1415:             payload.extend_from_slice(&draft.payload);\n1416:             validate_payload(&payload)?;\n1417:             let payload_sha256 = Sha256Digest::for_bytes(&payload);\n1418:             sqlx::query(\n1419:                 \"UPDATE outbox_messages\n1420:                  SET payload = ?, payload_sha256 = ?, logical_txn_count = logical_txn_count + 1,\n1421:                      updated_at_ms = ?\n1422:                  WHERE outbox_id = ? AND state = 'pending'\",\n1423:             )\n1424:             .bind(&payload)\n1425:             .bind(payload_sha256.as_str())\n1426:             .bind(to_i64(draft.created_at_ms)?)\n1427:             .bind(to_i64(existing.outbox_id)?)\n1428:             .execute(&mut *transaction)\n1429:             .await\n1430:             .map_err(unavailable)?;\n1431:             insert_outbox_txn(&mut transaction, existing.outbox_id, draft).await?;\n1432:             self.append_change(\n1433:                 &mut transaction,\n1434:                 ChangeKind::OutboxCoalesced,\n1435:                 Some(&draft.room_id),\n1436:                 /*event_id*/ None,\n1437:                 Some(&draft.txn_id),\n1438:                 draft.created_at_ms,\n1439:             )\n1440:             .await?;\n1441:             let record = OutboxRecord {\n1442:                 payload,\n1443:                 logical_txn_count: existing.logical_txn_count + 1,\n1444:                 updated_at_ms: draft.created_at_ms,\n1445:                 ..existing\n1446:             };\n1447:             transaction.commit().await.map_err(unavailable)?;\n1448:             return Ok(OutboxDisposition::Coalesced(record));\n1449:         }\n1450: ",
+        "first_line": 1408,
+        "last_line": 1450,
+        "path": "codex-rs/hepta-matrix-store/src/store.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-matrix-store/src/store.rs#L1408-L1450"
+      },
+      {
+        "excerpt": "1652:             .max_delta_batch_bytes\n1653:             .checked_sub(draft.payload.len())\n1654:             .ok_or(MatrixDurableError::Invalid)?;\n1655:         sqlx::query(\n1656:             \"SELECT outbox_messages.outbox_id, outbox_messages.stable_txn_id,\n1657:                     outbox_messages.room_id, outbox_messages.kind,\n1658:                     outbox_messages.payload, outbox_messages.payload_sha256,\n1659:                     outbox_messages.logical_txn_count,\n1660:                     outbox_messages.binding_revision, outbox_messages.generation,\n1661:                     outbox_messages.state, outbox_messages.attempts,\n1662:                     outbox_messages.next_attempt_at_ms, outbox_messages.lease_until_ms,\n1663:                     outbox_messages.created_at_ms, outbox_messages.updated_at_ms,\n1664:                     outbox_messages.sent_event_id\n1665:              FROM matrix_sendable_outbox_v2 AS outbox_messages\n1666:              WHERE outbox_messages.logical_outbox_id = ?\n1667:                AND outbox_messages.room_id = ?\n1668:                AND outbox_messages.kind = 'text_delta'\n1669:                AND outbox_messages.state = 'pending'\n1670:                AND outbox_messages.binding_revision = ?\n1671:                AND outbox_messages.generation = ?\n1672:                AND outbox_messages.created_at_ms BETWEEN ? AND ?\n1673:                AND (\n1674:                    SELECT COALESCE(SUM(length(fragment)), 0)\n1675:                    FROM outbox_txns\n1676:                    WHERE outbox_txns.outbox_id = outbox_messages.outbox_id\n1677:                ) <= ?\n1678:              ORDER BY outbox_messages.outbox_id DESC LIMIT 1\",\n1679:         )\n1680:         .bind(&draft.logical_outbox_id)\n1681:         .bind(draft.room_id.as_str())\n1682:         .bind(to_i64(draft.binding_revision)?)\n1683:         .bind(to_i64(draft.generation)?)\n1684:         .bind(to_i64(earliest)?)\n1685:         .bind(to_i64(draft.created_at_ms)?)\n1686:         .bind(to_i64(remaining as u64)?)\n1687:         .fetch_optional(&mut **transaction)\n1688:         .await\n1689:         .map_err(unavailable)?\n1690:         .map(|row| outbox_from_row(&row))\n1691:         .transpose()\n1692:     }\n1693: \n1694:     pub async fn claim_outbox(",
+        "first_line": 1652,
+        "last_line": 1694,
+        "path": "codex-rs/hepta-matrix-store/src/store.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-matrix-store/src/store.rs#L1652-L1694"
+      },
+      {
+        "excerpt": "3050: async fn insert_outbox_txn(\n3051:     transaction: &mut Transaction<'_, Sqlite>,\n3052:     outbox_id: u64,\n3053:     draft: &OutboxDraft,\n3054: ) -> Result<(), MatrixDurableError> {\n3055:     let fragment_sha256 = Sha256Digest::for_bytes(&draft.payload);\n3056:     sqlx::query(\n3057:         \"INSERT INTO outbox_txns (\n3058:             txn_id, logical_outbox_id, revision, outbox_id, room_id, kind, fragment, fragment_sha256,\n3059:             binding_revision, generation\n3060:          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\",\n3061:     )\n3062:     .bind(draft.txn_id.as_str())\n3063:     .bind(&draft.logical_outbox_id)\n3064:     .bind(to_i64(draft.revision)?)\n3065:     .bind(to_i64(outbox_id)?)\n3066:     .bind(draft.room_id.as_str())\n3067:     .bind(draft.kind.as_str())\n3068:     .bind(&draft.payload)\n3069:     .bind(fragment_sha256.as_str())\n3070:     .bind(to_i64(draft.binding_revision)?)\n3071:     .bind(to_i64(draft.generation)?)\n3072:     .execute(&mut **transaction)\n3073:     .await\n3074:     .map_err(unavailable)?;\n3075:     Ok(())\n3076: }\n3077: \n3078: async fn pending_stream_record_tx(\n3079:     transaction: &mut Transaction<'_, Sqlite>,\n3080:     logical_outbox_id: &str,\n3081:     room_id: &MatrixRoomId,\n3082:     binding_revision: u64,\n3083:     generation: u64,\n3084: ) -> Result<Option<OutboxRecord>, MatrixDurableError> {\n3085:     sqlx::query(",
+        "first_line": 3050,
+        "last_line": 3085,
+        "path": "codex-rs/hepta-matrix-store/src/store.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-matrix-store/src/store.rs#L3050-L3085"
+      },
+      {
+        "excerpt": "299:     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {\n300:         let options = SqliteConnectOptions::new()\n301:             .filename(path)\n302:             .create_if_missing(true)\n303:             .journal_mode(SqliteJournalMode::Wal)\n304:             .synchronous(SqliteSynchronous::Full)\n305:             .foreign_keys(true)\n306:             .busy_timeout(Duration::from_secs(5))\n307:             .log_statements(LevelFilter::Off);\n308:         SqlitePoolOptions::new()\n309:             .max_connections(5)\n310:             .connect_with(options)\n311:             .await\n312:     }",
+        "first_line": 299,
+        "last_line": 312,
+        "path": "codex-rs/state/src/sqlite.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/state/src/sqlite.rs#L299-L312"
+      },
+      {
+        "excerpt": "145:     generation INTEGER NOT NULL CHECK (generation > 0),\n146:     FOREIGN KEY (outbox_id) REFERENCES outbox_messages(outbox_id) ON DELETE RESTRICT,\n147:     FOREIGN KEY (room_id) REFERENCES room_bindings(room_id) ON DELETE RESTRICT\n148: ) STRICT;\n149: \n150: CREATE INDEX outbox_txns_by_message ON outbox_txns(outbox_id, txn_id);\n151: CREATE UNIQUE INDEX outbox_txns_by_logical_revision\n152: ON outbox_txns(logical_outbox_id, revision);",
+        "first_line": 145,
+        "last_line": 152,
+        "path": "codex-rs/hepta-matrix-store/migrations/0001_matrix_durable.sql",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-matrix-store/migrations/0001_matrix_durable.sql#L145-L152"
+      }
+    ],
+    "prefix_cost_scope": "Source-derived sum of new complete-prefix payload lengths1..10000; excludes additional reads, old-payload integrity hashes, metadata, SQLite pages and filesystem work. It is not a Windows measured byte/CPU count.",
+    "scheduled_delta_appends": 10000,
+    "scheduled_durable_transaction_count_if_delta_loop_completes": 10000,
+    "subsequent_final_append": 1,
+    "synchronization": "Each enqueue_outbox begins BEGIN IMMEDIATE and commits its own transaction; pool uses WAL, synchronous FULL, 5-second SQLite busy timeout and at most5 connections. A COMMIT is not an independently measured physical device flush count."
+  },
+  "mutations": {
+    "native_durability_or_performance_pass_claimed": false,
+    "new_large_build_run": false,
+    "source_changed": false,
+    "timeouts_or_controls_changed": false,
+    "windows_execution_claimed": false
+  },
+  "original_observations": [
+    {
+      "bytes": 2142939,
+      "cpu_time_or_io_latency_profile": null,
+      "job_id": 119685152120,
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/hepta-097-job-119685152120.raw.log",
+      "progress_counter_before_timeout": null,
+      "sha256": "5da2cc58a1f3fcb1b2ca606d1a212a3f1984ee253e48eb3671adb9c0a0980ca8",
+      "test": "ten_thousand_deltas_are_bounded_and_final_is_exact",
+      "timeout_lines": [
+        {
+          "raw_line": 5992,
+          "text": "2026-10-22T07:11:50.8717346Z    TRY 1 TMT [  60.277s] (\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500) codex-hepta-matrix-store::durable_core ten_thousand_deltas_are_bounded_and_final_is_exact"
+        },
+        {
+          "raw_line": 6055,
+          "text": "2026-10-22T07:12:51.0239208Z    TRY 2 TMT [  60.144s] (3080/4488) codex-hepta-matrix-store::durable_core ten_thousand_deltas_are_bounded_and_final_is_exact"
+        },
+        {
+          "raw_line": 19851,
+          "text": "2026-10-22T07:15:12.9393147Z    TRY 2 TMT [  60.144s] (3080/4488) codex-hepta-matrix-store::durable_core ten_thousand_deltas_are_bounded_and_final_is_exact"
+        }
+      ]
+    },
+    {
+      "bytes": 2041296,
+      "cpu_time_or_io_latency_profile": null,
+      "job_id": 119685152180,
+      "path": "/workspace/scratch/ff4dad3c0eb8/tmp/current-ci-20261022/hepta-097-job-119685152180.raw.log",
+      "progress_counter_before_timeout": null,
+      "sha256": "de57b37442e3feb53ec075d4a95dcd63600b3fb18540c6838cf294695b1cbbec",
+      "test": "claim_query_rejects_more_than_512_references",
+      "timeout_lines": [
+        {
+          "raw_line": 5575,
+          "text": "2026-10-22T07:12:24.3454430Z    TRY 1 TMT [  60.045s] (\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500) codex-hepta-evidence qualification_tests::claim_query_rejects_more_than_512_references"
+        },
+        {
+          "raw_line": 6166,
+          "text": "2026-10-22T07:13:24.5165487Z    TRY 2 TMT [  60.151s] (3169/4612) codex-hepta-evidence qualification_tests::claim_query_rejects_more_than_512_references"
+        },
+        {
+          "raw_line": 19057,
+          "text": "2026-10-22T07:16:38.2713833Z    TRY 2 TMT [  60.151s] (3169/4612) codex-hepta-evidence qualification_tests::claim_query_rejects_more_than_512_references"
+        }
+      ]
+    }
+  ],
+  "qualification": {
+    "callgraph": [
+      "claim_query_rejects_more_than_512_references -> loop513 append -> qualification.append_receipt",
+      "BEGIN IMMEDIATE -> authentication/expiry/idempotency -> unconditional candidate_evidence_set_digest_in_transaction",
+      "SELECT non-independent candidate rows LIMIT8193 -> decision_digest_from_rows -> decode_row -> evidence_set_digest clone/sort/canonical",
+      "validate_independent_decision immediately returns for MandatoryTests -> lineage/replay -> INSERT -> COMMIT",
+      "after loop: query_claim -> load_claim_rows SELECT LIMIT513 -> iflen>512 reject -> decode occurs only below that guard"
+    ],
+    "candidate_old_rows_decoded_if_fixture_completes": 131328,
+    "completed_append_count_in_failed_windows_run": null,
+    "evidence": [
+      {
+        "excerpt": "1172: #[tokio::test]\n1173: async fn claim_query_rejects_more_than_512_references() {\n1174:     let temp = TempDir::new().expect(\"temp\");\n1175:     let store = HeptaEvidenceStore::open(&config(&temp))\n1176:         .await\n1177:         .expect(\"open evidence\");\n1178:     let candidate = candidate('b');\n1179:     let observed = now_ms();\n1180:     let (issuer, key) = issuer(\"principal:query-bound\", 51);\n1181: \n1182:     for index in 0_u64..=512 {\n1183:         let receipt = evidence(\n1184:             &format!(\"evidence:query-bound:{index}\"),\n1185:             candidate.clone(),\n1186:             EvidenceClaimClassV1::MandatoryTests,\n1187:             EvidenceIssuerRoleV1::Evaluator,\n1188:             observed,\n1189:             None,\n1190:             json!({\"index\": index}),\n1191:         );\n1192:         append(&store, &issuer, &key, &receipt, index + 1)\n1193:             .await\n1194:             .expect(\"append bounded evidence\");\n1195:     }\n1196: \n1197:     assert!(matches!(\n1198:         store\n1199:             .qualification()\n1200:             .query_claim(&candidate, EvidenceClaimClassV1::MandatoryTests)\n1201:             .await,\n1202:         Err(EvidenceError::InvalidRecord(message))\n1203:             if message.contains(\"exceeds 512 references\")\n1204:     ));\n1205: }\n1206: ",
+        "first_line": 1172,
+        "last_line": 1206,
+        "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-evidence/src/qualification_tests.rs#L1172-L1206"
+      },
+      {
+        "excerpt": "449:     pub async fn append_receipt(\n450:         &self,\n451:         issuer: &IssuerRegistration,\n452:         message: &SignedMessage,\n453:         envelope: &QualificationEvidenceEnvelopeV1,\n454:     ) -> Result<EvidenceId, EvidenceError> {\n455:         envelope.validate().map_err(EvidenceError::InvalidRecord)?;\n456:         let envelope_bytes = qualification_envelope_bytes(envelope)?;\n457:         let payload_bytes = canonical_json(&envelope.payload)?;\n458:         let payload_sha256 = Sha256Digest::for_bytes(&payload_bytes);\n459:         let envelope_sha256 = Sha256Digest::for_bytes(&envelope_bytes);\n460:         let signing_identity_sha256 = Sha256Digest::for_bytes(issuer.verifying_key.as_bytes());\n461:         let expected_scope = qualification_append_scope_digest();\n462:         let expected_subject = qualification_subject(&envelope.candidate, envelope.issuer_role)?;\n463: \n464:         let mut transaction = self\n465:             .store\n466:             .pool\n467:             .begin_with(\"BEGIN IMMEDIATE\")\n468:             .await\n469:             .map_err(classify_sqlx_error)?;\n470:         let now = u64::try_from(now_millis()?)\n471:             .map_err(|_| EvidenceError::Unavailable(\"clock predates Unix epoch\".into()))?;",
+        "first_line": 449,
+        "last_line": 471,
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-evidence/src/qualification.rs#L449-L471"
+      },
+      {
+        "excerpt": "523:         let candidate_evidence_set_digest =\n524:             candidate_evidence_set_digest_in_transaction(&mut transaction, &envelope.candidate)\n525:                 .await?;\n526:         validate_independent_decision(\n527:             envelope,\n528:             issuer,\n529:             &signing_identity_sha256,\n530:             &candidate_evidence_set_digest,\n531:             now,\n532:         )?;\n533: \n534:         validate_lineage_references(&mut transaction, envelope, issuer).await?;\n535:         advance_replay(&mut transaction, &authenticated)\n536:             .await\n537:             .map_err(|error| {\n538:                 EvidenceError::InvalidRecord(format!(\n539:                     \"qualification issuer replay admission failed: {error}\"\n540:                 ))\n541:             })?;",
+        "first_line": 523,
+        "last_line": 541,
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-evidence/src/qualification.rs#L523-L541"
+      },
+      {
+        "excerpt": "867: fn validate_independent_decision(\n868:     envelope: &QualificationEvidenceEnvelopeV1,\n869:     issuer: &IssuerRegistration,\n870:     signing_identity_sha256: &Sha256Digest,\n871:     expected_evidence_set_digest: &Sha256Digest,\n872:     now: u64,\n873: ) -> Result<(), EvidenceError> {\n874:     if envelope.claim_class != EvidenceClaimClassV1::IndependentDecision {\n875:         return Ok(());\n876:     }\n877:     if envelope.receipt_kind == EvidenceReceiptKindV1::Revocation {\n878:         return Ok(());\n879:     }\n880:     let receipt: IndependentDecisionReceiptV1 = serde_json::from_value(envelope.payload.clone())\n881:         .map_err(|error| {\n882:             EvidenceError::InvalidRecord(format!(\n883:                 \"independent decision payload does not match IndependentDecisionReceiptV1: {error}\"\n884:             ))",
+        "first_line": 867,
+        "last_line": 884,
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-evidence/src/qualification.rs#L867-L884"
+      },
+      {
+        "excerpt": "954: async fn candidate_evidence_set_digest_in_transaction(\n955:     transaction: &mut Transaction<'_, Sqlite>,\n956:     candidate: &EvidenceCandidateV1,\n957: ) -> Result<Sha256Digest, EvidenceError> {\n958:     let rows = sqlx::query(\n959:         \"SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,\n960:                 claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,\n961:                 issuer_signing_identity_sha256, auth_message_id, auth_sequence,\n962:                 auth_expires_at_ms, payload_sha256, envelope_sha256,\n963:                 predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,\n964:                 asset_count, envelope_json\n965:          FROM qualification_evidence\n966:          WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?\n967:            AND claim_class != 'independent_decision'\n968:          ORDER BY seq ASC LIMIT ?\",\n969:     )\n970:     .bind(&candidate.candidate_id)\n971:     .bind(&candidate.source_commit)\n972:     .bind(&candidate.source_tree)\n973:     .bind(\n974:         i64::try_from(MAX_DECISION_EVIDENCE_REFERENCES + 1).map_err(|_| {\n975:             EvidenceError::InvalidRecord(\"independent evidence-set bound overflow\".into())\n976:         })?,\n977:     )\n978:     .fetch_all(&mut **transaction)\n979:     .await\n980:     .map_err(classify_sqlx_error)?;\n981:     decision_digest_from_rows(&rows)\n982: }\n983: \n984: fn decision_digest_from_rows(rows: &[SqliteRow]) -> Result<Sha256Digest, EvidenceError> {\n985:     if rows.len() > MAX_DECISION_EVIDENCE_REFERENCES {\n986:         return Err(EvidenceError::InvalidRecord(\n987:             \"independent decision evidence set exceeds bounded verification capacity\".to_string(),\n988:         ));\n989:     }\n990:     let references = rows\n991:         .iter()\n992:         .map(decode_row)\n993:         .collect::<Result<Vec<_>, _>>()?\n994:         .iter()\n995:         .map(StoredQualificationEvidence::reference)\n996:         .collect::<Vec<_>>();\n997:     evidence_set_digest(&references)\n998: }\n999: \n1000: async fn load_claim_rows(\n1001:     pool: &SqlitePool,\n1002:     candidate: &EvidenceCandidateV1,\n1003:     claim_class: EvidenceClaimClassV1,\n1004: ) -> Result<Vec<StoredQualificationEvidence>, EvidenceError> {\n1005:     let rows = sqlx::query(\n1006:         \"SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,\n1007:                 claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,\n1008:                 issuer_signing_identity_sha256, auth_message_id, auth_sequence,\n1009:                 auth_expires_at_ms, payload_sha256, envelope_sha256,\n1010:                 predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,\n1011:                 asset_count, envelope_json\n1012:          FROM qualification_evidence\n1013:          WHERE candidate_id = ? AND source_commit = ? AND source_tree = ? AND claim_class = ?\n1014:          ORDER BY seq ASC LIMIT ?\",\n1015:     )\n1016:     .bind(&candidate.candidate_id)\n1017:     .bind(&candidate.source_commit)\n1018:     .bind(&candidate.source_tree)\n1019:     .bind(claim_class.as_str())\n1020:     .bind(\n1021:         i64::try_from(QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS + 1)\n1022:             .map_err(|_| EvidenceError::InvalidRecord(\"query bound overflow\".into()))?,\n1023:     )\n1024:     .fetch_all(pool)\n1025:     .await\n1026:     .map_err(classify_sqlx_error)?;\n1027:     if rows.len() > QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS {\n1028:         return Err(EvidenceError::InvalidRecord(\n1029:             \"qualification claim query exceeds 512 references\".to_string(),\n1030:         ));\n1031:     }\n1032:     rows.iter().map(decode_row).collect()\n1033: }\n1034: ",
+        "first_line": 954,
+        "last_line": 1034,
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-evidence/src/qualification.rs#L954-L1034"
+      },
+      {
+        "excerpt": "780: pub fn evidence_set_digest(\n781:     evidence: &[EvidenceReferenceV1],\n782: ) -> Result<Sha256Digest, EvidenceError> {\n783:     let mut ordered = evidence.to_vec();\n784:     ordered.sort_by(|left, right| {\n785:         left.evidence_id.cmp(&right.evidence_id).then(\n786:             left.envelope_sha256\n787:                 .as_str()\n788:                 .cmp(right.envelope_sha256.as_str()),\n789:         )\n790:     });\n791:     Ok(Sha256Digest::for_bytes(&canonical_json(&ordered)?))\n792: }\n793: \n794: pub(crate) async fn verify_qualification_evidence_rows(\n795:     pool: &SqlitePool,\n796: ) -> Result<(), EvidenceError> {\n797:     let rows = sqlx::query(\n798:         \"SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,\n799:                 claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,\n800:                 issuer_signing_identity_sha256, auth_message_id, auth_sequence,",
+        "first_line": 780,
+        "last_line": 800,
+        "path": "codex-rs/hepta-evidence/src/qualification.rs",
+        "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/097d97137a43aee84fb96be12e44135278776748/codex-rs/hepta-evidence/src/qualification.rs#L780-L800"
+      }
+    ],
+    "math": "0+1+...+512 =513*512/2 =131328 prior rows. Actual failed-run loop progress was not recorded.",
+    "precise_lines": {
+      "begin_immediate": 467,
+      "decision_digest_function": 984,
+      "evidence_set_digest_function": 780,
+      "fixture_append": 1192,
+      "nondecision_return": [
+        874,
+        875
+      ],
+      "query_decode_after_guard": 1032,
+      "query_limit_overflow_reject": 1027,
+      "row_decode": 993,
+      "unconditional_digest": 523
+    },
+    "prior_set_guard": "decision_digest_from_rows rejects pre-insert prior row count greater than8192. A prior count of8192 can admit one further ordinary receipt; this is not a strict8192 retained-record cap.",
+    "query_bound": "load_claim_rows binds QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS+1=513, fetches that finite row set and rejects rows.len()>512 before decode_row. The final bound rejection query is not an unbounded scan into owned decoded records.",
+    "removal_is_not_proved_semantics_preserving": "Although the digest value is unused for MandatoryTests, the scan also rejects previously corrupt retained rows and evidence-set capacity overflow. Skipping it can change nondecision append admission under damaged/over-cap history. No approval to remove this protection or alter existing controls is implied.",
+    "scheduled_appends": 513,
+    "source_cost": "Every nonduplicate append unconditionally calculates same-candidate non-independent evidence-set digest within BEGIN IMMEDIATE; decode_row validates canonical retained envelope/payload and hashes, then evidence_set_digest clones/sorts/canonicalizes references. The non-IndependentDecision validator returns immediately. This proves repeated quadratic prior-row processing in the scheduled fixture, not its measured timeout share."
+  },
+  "required_next_measurement": [
+    "Retain original60-second nextest limit,513-reference/10000-delta fixtures and all corruption/lineage/replay/final-byte controls.",
+    "On the exact source/target runner, record bounded per-stage progress and monotonic/CPU time: open/migrations, append index, writer acquisition, candidate-row select/decode/digest, SQL mutations and commit, final query.",
+    "Record process CPU, SQLite busy/lock errors, transaction/commit count, durable I/O latency and runner concurrency rather than infer them from a60-second wall timeout.",
+    "Separate a component-only run from the original shard only as an additional diagnostic cohort; keep the failed full shard and source/runtime identities unchanged.",
+    "Before any lazy digest optimization, explicitly determine whether live corruption and8192-set-cap checks are required for every append. Preserve equivalent fail-closed validation, authentication, replay, lineage and atomicity; validate every existing corruption control.",
+    "Run existing target tests on the actual Windows ARM target after any approved implementation change. Linux/source analysis alone cannot close these failures."
+  ],
+  "schema": "readonly-hepta-097-windows-arm-database-timeout-source-review-v1",
+  "source": {
+    "baseline_qualification_difference": "The inspected b29 worktree omits only the argument-name comment /*index*/ at 097 line1268; report excerpts and hashes use exact 097 blob.",
+    "files": {
+      "codex-rs/hepta-evidence/src/qualification.rs": {
+        "bytes": 51541,
+        "git_blob": "5198a9bfc98ae6e30aec94b758a1641ded07fa43",
+        "sha256": "b76aa30c6985b1697f6e51842e1b6a6a8889a1a60819ff5ef433aff2ec3e8a36",
+        "worktree_exact": false
+      },
+      "codex-rs/hepta-evidence/src/qualification_tests.rs": {
+        "bytes": 44573,
+        "git_blob": "cf8ff628aebfb7cc64ef28e4b33b36c28c7f73f0",
+        "sha256": "d19c60046a771717c56358fc233e480d9c3666df48f633067cd71c267767d125",
+        "worktree_exact": true
+      },
+      "codex-rs/hepta-matrix-store/migrations/0001_matrix_durable.sql": {
+        "bytes": 6262,
+        "git_blob": "2d0e43e9fc98755283bae225a28ed95660fb1fdf",
+        "sha256": "078308b5eb738f2f3fd34ec169dd0fa5f45abbc2cdf6f7a2c1525dcbb4e604ee",
+        "worktree_exact": true
+      },
+      "codex-rs/hepta-matrix-store/migrations/0003_outbox_logical_stream.sql": {
+        "bytes": 328,
+        "git_blob": "b0ff781758d4a9e581879ddfa3ac3125c53f718c",
+        "sha256": "a927a0fda1558d5cb0306210773076d55dace19e3d93e51c232898c9a60cdc28",
+        "worktree_exact": true
+      },
+      "codex-rs/hepta-matrix-store/src/store.rs": {
+        "bytes": 157434,
+        "git_blob": "b38c461bd4c5e8c2f6047b6af1e8916c81a4320d",
+        "sha256": "34ad4dcec0d4fe734af70f2a85ae421ffc00fc4ed9945f47655c814d5c73fc20",
+        "worktree_exact": true
+      },
+      "codex-rs/hepta-matrix-store/tests/durable_core.rs": {
+        "bytes": 39713,
+        "git_blob": "9fc1e3c8a02998de0a6d445c6c3d412f38d5ab98",
+        "sha256": "d1f790016cc3b9de7439d5316ab75e1d879c8ed0f51347e46f313ff8d4110960",
+        "worktree_exact": true
+      },
+      "codex-rs/state/src/sqlite.rs": {
+        "bytes": 12463,
+        "git_blob": "c687edbf6bad547ab342fb7269f3b4b1e8f51773",
+        "sha256": "2de55524f4ac31174770d961883921183a17de8a6199b1105bf145026b4136c0",
+        "worktree_exact": true
+      }
+    },
+    "head": "097d97137a43aee84fb96be12e44135278776748",
+    "read_method": "exact git show blobs; no source edit, build or Windows re-execution",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run": 39727948126,
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39727948126",
+    "tree": "c3c4a1dce2622df239f6dd7d6a77674b1c17de6a"
+  }
+}

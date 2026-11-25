@@ -45,7 +45,7 @@ fn input(sequence: u64) -> SparseTick {
 #[test]
 fn tie_uses_canonical_unit_and_homeostasis_is_exact() {
     let cfg = config();
-    let tick = input(1);
+    let tick = input(/*sequence*/ 1);
     let (state, receipt) = checked(sparse_tick(&cfg, &tick, /*previous*/ None));
     assert_eq!(receipt.activation_q24, vec![Q, 0, 0, 0, 0]);
     assert_eq!(
@@ -62,7 +62,7 @@ fn tie_uses_canonical_unit_and_homeostasis_is_exact() {
 #[test]
 fn tick_is_replay_deterministic_and_inputs_are_immutable() {
     let cfg = config();
-    let tick = input(1);
+    let tick = input(/*sequence*/ 1);
     let original = (cfg.clone(), tick.clone());
     let first = checked(sparse_tick(&cfg, &tick, /*previous*/ None));
     assert_eq!(checked(sparse_tick(&cfg, &tick, /*previous*/ None)), first);
@@ -72,9 +72,13 @@ fn tick_is_replay_deterministic_and_inputs_are_immutable() {
 #[test]
 fn ticks_advance_sequence_without_changing_artifact_generation() {
     let cfg = config();
-    let (previous, _) = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
+    let (previous, _) = checked(sparse_tick(
+        &cfg,
+        &input(/*sequence*/ 1),
+        /*previous*/ None,
+    ));
     let original = previous.clone();
-    let (next, receipt) = checked(sparse_tick(&cfg, &input(2), Some(&previous)));
+    let (next, receipt) = checked(sparse_tick(&cfg, &input(/*sequence*/ 2), Some(&previous)));
     assert_eq!(receipt.checkpoint_before, original.digest());
     assert_eq!(next.config, previous.config);
     assert_eq!(next.sequence, 2);
@@ -90,8 +94,12 @@ fn lateral_inhibition_changes_winner() {
         target: 1,
         weight_q24: Q,
     }];
-    let (state, _) = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
-    let mut tick = input(2);
+    let (state, _) = checked(sparse_tick(
+        &cfg,
+        &input(/*sequence*/ 1),
+        /*previous*/ None,
+    ));
+    let mut tick = input(/*sequence*/ 2);
     tick.drive_q24 = vec![0, Q / 2, 0, 0, 0];
     let (_, inhibited) = checked(sparse_tick(&cfg, &tick, Some(&state)));
     assert_eq!(inhibited.activation_q24, vec![Q / 2, 0, 0, 0, 0]);
@@ -101,7 +109,7 @@ fn lateral_inhibition_changes_winner() {
 fn silent_input_has_zero_activation_with_nonnegative_thresholds() {
     let mut cfg = config();
     cfg.threshold_min_q24 = 0;
-    let mut tick = input(1);
+    let mut tick = input(/*sequence*/ 1);
     tick.drive_q24.fill(-Q);
     let (_, receipt) = checked(sparse_tick(&cfg, &tick, /*previous*/ None));
     assert_eq!(receipt.activation_q24, vec![0; 5]);
@@ -113,7 +121,7 @@ fn saturation_and_eligibility_l1_projection_are_counted() {
     let mut cfg = config();
     cfg.threshold_rate_q24 = 0;
     cfg.temporal_decay_q24 = Q;
-    let mut tick = input(1);
+    let mut tick = input(/*sequence*/ 1);
     tick.drive_q24.fill(H);
     let (state, receipt) = checked(sparse_tick(&cfg, &tick, /*previous*/ None));
     assert_eq!(
@@ -143,9 +151,13 @@ fn signed_multiply_rounds_half_to_even() {
 #[test]
 fn replay_or_skipped_sequence_is_rejected() {
     let cfg = config();
-    let (state, _) = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
+    let (state, _) = checked(sparse_tick(
+        &cfg,
+        &input(/*sequence*/ 1),
+        /*previous*/ None,
+    ));
     for sequence in [0, 1, 3, u64::MAX] {
-        let mut tick = input(2);
+        let mut tick = input(/*sequence*/ 2);
         tick.sequence = sequence;
         assert_eq!(
             sparse_tick(&cfg, &tick, Some(&state)),
@@ -157,8 +169,12 @@ fn replay_or_skipped_sequence_is_rejected() {
 #[test]
 fn clock_regression_is_rejected() {
     let cfg = config();
-    let (state, _) = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
-    let mut tick = input(2);
+    let (state, _) = checked(sparse_tick(
+        &cfg,
+        &input(/*sequence*/ 1),
+        /*previous*/ None,
+    ));
+    let mut tick = input(/*sequence*/ 2);
     tick.monotonic_micros = state.monotonic_micros;
     assert_eq!(
         sparse_tick(&cfg, &tick, Some(&state)),
@@ -169,9 +185,13 @@ fn clock_regression_is_rejected() {
 #[test]
 fn changed_scope_or_objective_is_rejected() {
     let cfg = config();
-    let (state, _) = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
+    let (state, _) = checked(sparse_tick(
+        &cfg,
+        &input(/*sequence*/ 1),
+        /*previous*/ None,
+    ));
     for field in ["scope", "objective"] {
-        let mut tick = input(2);
+        let mut tick = input(/*sequence*/ 2);
         let changed = Digest32::of_bytes(format!("changed-{field}").as_bytes());
         assert_ne!(changed, tick.scope_digest);
         assert_ne!(changed, tick.objective_digest);
@@ -189,10 +209,14 @@ fn changed_scope_or_objective_is_rejected() {
 #[test]
 fn changed_config_is_rejected() {
     let mut cfg = config();
-    let (state, _) = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
+    let (state, _) = checked(sparse_tick(
+        &cfg,
+        &input(/*sequence*/ 1),
+        /*previous*/ None,
+    ));
     cfg.threshold_rate_q24 += 1;
     assert_eq!(
-        sparse_tick(&cfg, &input(2), Some(&state)),
+        sparse_tick(&cfg, &input(/*sequence*/ 2), Some(&state)),
         Err(SparseError::ConfigDrift)
     );
 }
@@ -200,10 +224,14 @@ fn changed_config_is_rejected() {
 #[test]
 fn damaged_checkpoint_is_rejected() {
     let cfg = config();
-    let (mut state, _) = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
+    let (mut state, _) = checked(sparse_tick(
+        &cfg,
+        &input(/*sequence*/ 1),
+        /*previous*/ None,
+    ));
     state.eligibility[0] += 1;
     assert_eq!(
-        sparse_tick(&cfg, &input(2), Some(&state)),
+        sparse_tick(&cfg, &input(/*sequence*/ 2), Some(&state)),
         Err(SparseError::InvalidCheckpoint)
     );
 }
@@ -285,10 +313,18 @@ fn edge_order_does_not_change_config_or_output() {
             weight_q24: Q / 2,
         },
     ];
-    let first = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
+    let first = checked(sparse_tick(
+        &cfg,
+        &input(/*sequence*/ 1),
+        /*previous*/ None,
+    ));
     cfg.inhibition.reverse();
     assert_eq!(
-        checked(sparse_tick(&cfg, &input(1), /*previous*/ None)),
+        checked(sparse_tick(
+            &cfg,
+            &input(/*sequence*/ 1),
+            /*previous*/ None
+        )),
         first
     );
 }
@@ -296,7 +332,7 @@ fn edge_order_does_not_change_config_or_output() {
 #[test]
 fn missing_digest_invalid_width_and_unbounded_input_are_rejected() {
     let cfg = config();
-    let mut ticks = vec![input(1); 3];
+    let mut ticks = vec![input(/*sequence*/ 1); 3];
     ticks[0].body_digest = Digest32::ZERO;
     ticks[1].drive_q24.push(0);
     ticks[2].prediction_q24[0] = i64::MIN;
@@ -311,7 +347,7 @@ fn missing_digest_invalid_width_and_unbounded_input_are_rejected() {
 #[test]
 fn supplied_numeric_values_are_bound_not_just_caller_digest() {
     let cfg = config();
-    let mut tick = input(1);
+    let mut tick = input(/*sequence*/ 1);
     let before = checked(sparse_tick(&cfg, &tick, /*previous*/ None));
     tick.prediction_q24[0] += 1;
     let after = checked(sparse_tick(&cfg, &tick, /*previous*/ None));

@@ -23,7 +23,7 @@ fn probability(raw: u64) -> ProbabilityQ32 {
 fn support(label: &str, tombstoned: bool) -> KnowledgeSupportV2 {
     KnowledgeSupportV2 {
         source_id: id(&format!("source:{label}")),
-        source_revision: revision(1),
+        source_revision: revision(/*value*/ 1),
         source_fact_digest: digest(&format!("fact:{label}")),
         validity_digest: digest(&format!("validity:{label}")),
         valid_from_unix_seconds: None,
@@ -37,7 +37,7 @@ fn node(label: &str, payload: &str) -> KnowledgeNodeV2 {
         node_id: id(&format!("node:{label}")),
         node_kind_id: id("kind:entity"),
         payload_digest: digest(payload),
-        supports: vec![support(label, false)],
+        supports: vec![support(label, /*tombstoned*/ false)],
     }
 }
 
@@ -55,7 +55,7 @@ fn edge(
         },
         confidence: probability(1_u64 << 31),
         validity_digest: digest("edge-validity"),
-        supports: vec![support(support_label, false)],
+        supports: vec![support(support_label, /*tombstoned*/ false)],
     }
 }
 
@@ -73,7 +73,7 @@ fn input(nodes: Vec<KnowledgeNodeV2>, edges: Vec<KnowledgeEdgeV2>) -> KnowledgeP
 #[test]
 fn incremental_and_full_rebuilds_are_semantically_equal() {
     let first = build_complete_generation(
-        generation(1),
+        generation(/*value*/ 1),
         input(
             vec![node("a", "a-v1"), node("b", "b-v1")],
             vec![edge(
@@ -98,11 +98,11 @@ fn incremental_and_full_rebuilds_are_semantically_equal() {
         remove_edge_identities: Vec::new(),
         upsert_edges: vec![updated_edge.clone()],
     };
-    let incremental = apply_incremental_delta(&first, generation(2), delta)
+    let incremental = apply_incremental_delta(&first, generation(/*value*/ 2), delta)
         .unwrap_or_else(|error| panic!("valid incremental generation: {error}"));
 
     let full = build_complete_generation(
-        generation(2),
+        generation(/*value*/ 2),
         KnowledgeProjectionInputV2 {
             source_snapshot_digest: digest("snapshot:2"),
             generation_vector_digest: digest("vector:2"),
@@ -122,7 +122,7 @@ fn tombstoning_last_edge_support_removes_relation() {
     let mut removed = edge("a", "b", KnowledgeRelationKindV2::Contradicts, "edge-ab");
     removed.supports[0].tombstoned = true;
     let generation = build_complete_generation(
-        generation(1),
+        generation(/*value*/ 1),
         input(vec![node("a", "a"), node("b", "b")], vec![removed]),
     )
     .unwrap_or_else(|error| panic!("valid deletion projection: {error}"));
@@ -134,15 +134,17 @@ fn incomplete_generation_and_wrong_predecessor_cannot_publish() {
     let mut incomplete = input(vec![node("a", "a")], Vec::new());
     incomplete.complete_source_cut = false;
     assert_eq!(
-        build_complete_generation(generation(1), incomplete),
+        build_complete_generation(generation(/*value*/ 1), incomplete),
         Err(KnowledgeGenerationErrorV2::IncompleteSourceCut)
     );
 
-    let candidate =
-        build_complete_generation(generation(2), input(vec![node("a", "a")], Vec::new()))
-            .unwrap_or_else(|error| panic!("valid candidate: {error}"));
+    let candidate = build_complete_generation(
+        generation(/*value*/ 2),
+        input(vec![node("a", "a")], Vec::new()),
+    )
+    .unwrap_or_else(|error| panic!("valid candidate: {error}"));
     assert_eq!(
-        publish_generation(None, &candidate),
+        publish_generation(/*predecessor*/ None, &candidate),
         Err(KnowledgeGenerationErrorV2::InvalidPredecessor)
     );
 }
@@ -150,7 +152,7 @@ fn incomplete_generation_and_wrong_predecessor_cannot_publish() {
 #[test]
 fn publication_is_predecessor_bound_and_query_is_generation_bound() {
     let first = build_complete_generation(
-        generation(1),
+        generation(/*value*/ 1),
         input(
             vec![node("a", "a"), node("b", "b")],
             vec![edge("a", "b", KnowledgeRelationKindV2::Causes, "edge-ab")],
@@ -158,7 +160,7 @@ fn publication_is_predecessor_bound_and_query_is_generation_bound() {
     )
     .unwrap_or_else(|error| panic!("valid first: {error}"));
     let second = build_complete_generation(
-        generation(2),
+        generation(/*value*/ 2),
         KnowledgeProjectionInputV2 {
             source_snapshot_digest: digest("snapshot:2"),
             generation_vector_digest: digest("vector:2"),
@@ -211,7 +213,7 @@ fn publication_is_predecessor_bound_and_query_is_generation_bound() {
 #[test]
 fn supports_and_contradicts_remain_distinct_edges() {
     let generation = build_complete_generation(
-        generation(1),
+        generation(/*value*/ 1),
         input(
             vec![node("a", "a"), node("b", "b")],
             vec![
@@ -235,7 +237,7 @@ fn custom_relation_identities_are_lossless_and_queryable() {
     let studies = KnowledgeRelationKindV2::Custom(id("relation-kind:studies"));
     let teaches = KnowledgeRelationKindV2::Custom(id("relation-kind:teaches"));
     let generation = build_complete_generation(
-        generation(1),
+        generation(/*value*/ 1),
         input(
             vec![node("a", "a"), node("b", "b")],
             vec![
@@ -271,10 +273,13 @@ fn custom_relation_identities_are_lossless_and_queryable() {
 fn composed_owner_can_retain_more_than_sixty_four_supports() {
     let mut canonical = node("shared", "shared");
     canonical.supports = (1..=65)
-        .map(|index| support(&format!("shared-{index}"), false))
+        .map(|index| support(&format!("shared-{index}"), /*tombstoned*/ false))
         .collect();
-    let generation = build_complete_generation(generation(1), input(vec![canonical], Vec::new()))
-        .unwrap_or_else(|error| panic!("65 explicit supports remain within owner bounds: {error}"));
+    let generation =
+        build_complete_generation(generation(/*value*/ 1), input(vec![canonical], Vec::new()))
+            .unwrap_or_else(|error| {
+                panic!("65 explicit supports remain within owner bounds: {error}")
+            });
     assert_eq!(generation.nodes[0].supports.len(), 65);
 }
 
@@ -284,7 +289,7 @@ fn temporal_visibility_matches_inclusive_start_and_exclusive_end() {
     timed.supports[0].valid_from_unix_seconds = Some(100);
     timed.supports[0].valid_to_unix_seconds = Some(200);
     let generation = build_complete_generation(
-        generation(1),
+        generation(/*value*/ 1),
         input(vec![node("a", "a"), node("b", "b")], vec![timed]),
     )
     .unwrap_or_else(|error| panic!("valid timed graph: {error}"));
@@ -329,7 +334,7 @@ fn invalid_temporal_support_window_is_rejected() {
     invalid.supports[0].valid_from_unix_seconds = Some(200);
     invalid.supports[0].valid_to_unix_seconds = Some(200);
     assert_eq!(
-        build_complete_generation(generation(1), input(vec![invalid], Vec::new())),
+        build_complete_generation(generation(/*value*/ 1), input(vec![invalid], Vec::new())),
         Err(KnowledgeGenerationErrorV2::InvalidValidityWindow)
     );
 }
@@ -337,7 +342,7 @@ fn invalid_temporal_support_window_is_rejected() {
 #[test]
 fn duplicate_incremental_upserts_are_rejected_before_last_write_wins() {
     let first = build_complete_generation(
-        generation(1),
+        generation(/*value*/ 1),
         input(
             vec![node("a", "a-v1"), node("b", "b-v1")],
             vec![edge("a", "b", KnowledgeRelationKindV2::Supports, "edge-ab")],
@@ -356,7 +361,7 @@ fn duplicate_incremental_upserts_are_rejected_before_last_write_wins() {
         upsert_edges: Vec::new(),
     };
     assert_eq!(
-        apply_incremental_delta(&first, generation(2), duplicate_node),
+        apply_incremental_delta(&first, generation(/*value*/ 2), duplicate_node),
         Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity)
     );
 
@@ -372,7 +377,7 @@ fn duplicate_incremental_upserts_are_rejected_before_last_write_wins() {
         upsert_edges: vec![duplicate_edge_value.clone(), duplicate_edge_value],
     };
     assert_eq!(
-        apply_incremental_delta(&first, generation(2), duplicate_edge),
+        apply_incremental_delta(&first, generation(/*value*/ 2), duplicate_edge),
         Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity)
     );
 }
@@ -380,7 +385,7 @@ fn duplicate_incremental_upserts_are_rejected_before_last_write_wins() {
 #[test]
 fn adversarial_mixed_delta_matches_full_rebuild_canonically() {
     let first = build_complete_generation(
-        generation(1),
+        generation(/*value*/ 1),
         input(
             vec![node("c", "c-v1"), node("a", "a-v1"), node("b", "b-v1")],
             vec![
@@ -412,7 +417,7 @@ fn adversarial_mixed_delta_matches_full_rebuild_canonically() {
 
     let incremental = apply_incremental_delta(
         &first,
-        generation(2),
+        generation(/*value*/ 2),
         KnowledgeProjectionDeltaV2 {
             expected_predecessor_digest: first.generation_digest,
             source_snapshot_digest: digest("snapshot:adversarial:2"),
@@ -427,7 +432,7 @@ fn adversarial_mixed_delta_matches_full_rebuild_canonically() {
     .unwrap_or_else(|error| panic!("valid mixed delta: {error}"));
 
     let full = build_complete_generation(
-        generation(2),
+        generation(/*value*/ 2),
         KnowledgeProjectionInputV2 {
             source_snapshot_digest: digest("snapshot:adversarial:2"),
             generation_vector_digest: digest("vector:adversarial:2"),
@@ -446,7 +451,7 @@ fn adversarial_mixed_delta_matches_full_rebuild_canonically() {
 #[test]
 fn query_result_digest_binds_complete_request_even_when_edges_match() {
     let graph = build_complete_generation(
-        generation(1),
+        generation(/*value*/ 1),
         input(
             vec![node("a", "a"), node("b", "b")],
             vec![edge("a", "b", KnowledgeRelationKindV2::Causes, "edge-ab")],

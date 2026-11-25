@@ -183,8 +183,8 @@ impl AgentControlHarness {
         Self::new_with_config(home, config).await
     }
 
-    async fn new_with_config(home: TempDir, config: Config) -> Self {
-        let state_db = init_state_db(&config).await;
+    async fn new_with_config(home: TempDir, mut config: Config) -> Self {
+        let state_db = init_state_db(&mut config).await;
         let manager = ThreadManager::with_models_provider_home_and_state_for_tests(
             CodexAuth::from_api_key("dummy"),
             config.model_provider.clone(),

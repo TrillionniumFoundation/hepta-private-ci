@@ -125,7 +125,10 @@ impl ArtifactPublicationTransactionV1 {
             intent_digest,
         };
         let phase = ArtifactPublicationPhaseV1::Prepared;
-        let state_digest = digest_state(&intent, phase, None, None, None);
+        let state_digest = digest_state(
+            &intent, phase, /*registry_receipt*/ None, /*witness_receipt*/ None,
+            /*acknowledged_at*/ None,
+        );
         Ok(Self {
             intent,
             phase,
@@ -206,17 +209,13 @@ impl ArtifactPublicationTransactionV1 {
         if record.predecessor_chain_digest != self.intent.expected_registry_predecessor_head {
             return Err(ArtifactPublicationError::RegistryPredecessorMismatch);
         }
-        let v2 = &self.intent.admission.validated_manifest.manifest;
         let ArtifactEvent::Register { manifest: v1, .. } = &record.event else {
             return Err(ArtifactPublicationError::RegistryProjectionMismatch);
         };
-        if v1.artifact_id != v2.artifact_id
-            || v1.kind != v2.kind
-            || v1.generation != v2.generation
-            || v1.content_digest != v2.bytes_digest
-            || v1.producer_id != v2.producer_id
-            || v1.compatibility_digest != v2.compatibility_digest
-            || v1.encoded_size_bytes != v2.encoded_size_bytes
+        if v1
+            != &crate::published_manifest::project_published_manifest_v2(
+                &self.intent.admission.validated_manifest,
+            )
         {
             return Err(ArtifactPublicationError::RegistryProjectionMismatch);
         }
@@ -551,7 +550,7 @@ mod tests {
         LearningArtifactManifestV2 {
             artifact_id: id("artifact-v2"),
             kind: ArtifactKind::Model,
-            generation: generation(2),
+            generation: generation(/*value*/ 2),
             provenance_mode: ProvenanceModeV1::DatasetDerived,
             source_dataset_digests: vec![digest("dataset-a"), digest("dataset-b")],
             lineage_digests: vec![digest("lineage-a"), digest("lineage-b")],
@@ -579,18 +578,10 @@ mod tests {
         }
         let event = ArtifactEvent::Register {
             event_id: id("register-v2"),
-            manifest: ArtifactManifest {
-                artifact_id: id("artifact-v2"),
-                kind: ArtifactKind::Model,
-                generation: generation(2),
-                predecessor_id: None,
-                content_digest: digest("payload"),
-                objective_digest: digest("objective-index"),
-                support_digest: digest("support-index"),
-                producer_id: id("producer"),
-                compatibility_digest: digest("compatibility"),
-                encoded_size_bytes: 7,
-            },
+            manifest: crate::published_manifest::project_published_manifest_v2(
+                &crate::validate_artifact_manifest_v2(v2_manifest(), /*now*/ 20)
+                    .unwrap_or_else(|error| panic!("original V2 fixture: {error}")),
+            ),
         };
         if let Err(error) = registry.append(event) {
             panic!("registry fixture append failed: {error}");
@@ -611,7 +602,7 @@ mod tests {
     fn head_witness(registry: &ArtifactRegistry) -> RegistryHeadWitnessV1 {
         RegistryHeadWitnessV1 {
             registry_id: id("artifact-registry"),
-            generation: generation(2),
+            generation: generation(/*value*/ 2),
             head_digest: registry.snapshot().head_digest,
             predecessor_head_digest: Digest32::ZERO,
             authority_epoch: 5,
@@ -625,7 +616,7 @@ mod tests {
     fn head_requirement() -> RegistryHeadRequirementV1 {
         RegistryHeadRequirementV1 {
             registry_id: id("artifact-registry"),
-            minimum_generation: generation(2),
+            minimum_generation: generation(/*value*/ 2),
             expected_predecessor_head_digest: Digest32::ZERO,
             minimum_authority_epoch: 5,
             now: 20,
@@ -651,7 +642,7 @@ mod tests {
             &withdrawal,
             withdrawal.head_digest(),
             v2_manifest(),
-            20,
+            /*now*/ 20,
         ) {
             Ok(value) => value,
             Err(error) => panic!("valid admission fixture failed: {error}"),
@@ -663,7 +654,7 @@ mod tests {
             &withdrawal,
             &registry,
             Digest32::ZERO,
-            20,
+            /*now*/ 20,
         ) {
             Ok(value) => value,
             Err(error) => panic!("publication preparation failed: {error}"),
@@ -674,14 +665,16 @@ mod tests {
     fn art_07_publication_requires_ordered_durable_phases_before_ack() {
         let mut transaction = prepared();
         assert_eq!(
-            transaction.acknowledge(&withdrawal_registry(), 20),
+            transaction.acknowledge(&withdrawal_registry(), /*now*/ 20),
             Err(ArtifactPublicationError::InvalidPhase)
         );
-        if let Err(error) = transaction.record_payload_durable(digest("payload"), 7) {
+        if let Err(error) =
+            transaction.record_payload_durable(digest("payload"), /*encoded_bytes*/ 7)
+        {
             panic!("payload durability failed: {error}");
         }
         assert_eq!(
-            transaction.acknowledge(&withdrawal_registry(), 20),
+            transaction.acknowledge(&withdrawal_registry(), /*now*/ 20),
             Err(ArtifactPublicationError::InvalidPhase)
         );
 
@@ -691,12 +684,12 @@ mod tests {
             &registry,
             registry_receipt,
             &withdrawal_registry(),
-            20,
+            /*now*/ 20,
         ) {
             panic!("registry durability failed: {error}");
         }
         assert_eq!(
-            transaction.acknowledge(&withdrawal_registry(), 20),
+            transaction.acknowledge(&withdrawal_registry(), /*now*/ 20),
             Err(ArtifactPublicationError::InvalidPhase)
         );
 
@@ -706,11 +699,11 @@ mod tests {
             &head_requirement(),
             witness_receipt(&witness),
             &withdrawal_registry(),
-            20,
+            /*now*/ 20,
         ) {
             panic!("witness durability failed: {error}");
         }
-        let receipt = match transaction.acknowledge(&withdrawal_registry(), 21) {
+        let receipt = match transaction.acknowledge(&withdrawal_registry(), /*now*/ 21) {
             Ok(value) => value,
             Err(error) => panic!("acknowledgement failed: {error}"),
         };
@@ -730,6 +723,48 @@ mod tests {
     }
 
     #[test]
+    fn published_v2_source_cannot_be_substituted_behind_equal_v1_bytes() {
+        let registry = registry_with_candidate(Digest32::ZERO);
+        let indexed = registry.manifest(&id("artifact-v2")).unwrap();
+        let full =
+            crate::validate_published_artifact_manifest_v2(indexed, v2_manifest(), /*now*/ 20)
+                .unwrap();
+        assert_eq!(indexed.support_digest, full.manifest_digest);
+        for field in ["dataset", "training", "runtime", "lineage"] {
+            let mut altered = full.manifest.clone();
+            match field {
+                "dataset" => altered.source_dataset_digests = vec![digest("wrong-dataset")],
+                "training" => altered.training_code_digest = digest("wrong-training"),
+                "runtime" => altered.runtime_tuple_digest = digest("wrong-runtime"),
+                "lineage" => altered.lineage_digests = vec![digest("wrong-lineage")],
+                other => panic!("unexpected fixture: {other}"),
+            }
+            assert_eq!(
+                crate::validate_published_artifact_manifest_v2(indexed, altered, /*now*/ 20),
+                Err(ArtifactPublicationError::RegistryProjectionMismatch),
+                "same V1 bytes and identity must not bind altered {field}",
+            );
+        }
+        for field in ["support", "objective", "predecessor"] {
+            let mut altered = indexed.clone();
+            match field {
+                "support" => altered.support_digest = digest("wrong-support"),
+                "objective" => altered.objective_digest = digest("wrong-objective"),
+                "predecessor" => altered.predecessor_id = Some(id("wrong-predecessor")),
+                other => panic!("unexpected fixture: {other}"),
+            }
+            assert_eq!(
+                crate::validate_published_artifact_manifest_v2(
+                    &altered,
+                    full.manifest.clone(),
+                    /*now*/ 20
+                ),
+                Err(ArtifactPublicationError::RegistryProjectionMismatch),
+            );
+        }
+    }
+
+    #[test]
     fn art_07_crash_snapshots_never_promote_partial_publication() {
         let mut transaction = prepared();
         let prepared = match ArtifactPublicationTransactionV1::from_snapshot(transaction.snapshot())
@@ -739,7 +774,9 @@ mod tests {
         };
         assert_eq!(prepared.phase(), ArtifactPublicationPhaseV1::Prepared);
 
-        if let Err(error) = transaction.record_payload_durable(digest("payload"), 7) {
+        if let Err(error) =
+            transaction.record_payload_durable(digest("payload"), /*encoded_bytes*/ 7)
+        {
             panic!("payload durability failed: {error}");
         }
         let mut recovered =
@@ -748,7 +785,7 @@ mod tests {
                 Err(error) => panic!("payload recovery failed: {error}"),
             };
         assert_eq!(
-            recovered.acknowledge(&withdrawal_registry(), 20),
+            recovered.acknowledge(&withdrawal_registry(), /*now*/ 20),
             Err(ArtifactPublicationError::InvalidPhase)
         );
 
@@ -757,7 +794,7 @@ mod tests {
             &registry,
             snapshot_receipt(&registry),
             &withdrawal_registry(),
-            20,
+            /*now*/ 20,
         ) {
             panic!("registry durability failed: {error}");
         }
@@ -767,7 +804,7 @@ mod tests {
                 Err(error) => panic!("registry recovery failed: {error}"),
             };
         assert_eq!(
-            recovered.acknowledge(&withdrawal_registry(), 20),
+            recovered.acknowledge(&withdrawal_registry(), /*now*/ 20),
             Err(ArtifactPublicationError::InvalidPhase)
         );
 
@@ -777,7 +814,7 @@ mod tests {
             &head_requirement(),
             witness_receipt(&witness),
             &withdrawal_registry(),
-            20,
+            /*now*/ 20,
         ) {
             panic!("witness durability failed: {error}");
         }
@@ -786,13 +823,19 @@ mod tests {
                 Ok(value) => value,
                 Err(error) => panic!("witness recovery failed: {error}"),
             };
-        assert!(recovered.acknowledge(&withdrawal_registry(), 21).is_ok());
+        assert!(
+            recovered
+                .acknowledge(&withdrawal_registry(), /*now*/ 21)
+                .is_ok()
+        );
     }
 
     #[test]
     fn art_07_withdrawal_advance_blocks_recovered_publication() {
         let mut transaction = prepared();
-        if let Err(error) = transaction.record_payload_durable(digest("payload"), 7) {
+        if let Err(error) =
+            transaction.record_payload_durable(digest("payload"), /*encoded_bytes*/ 7)
+        {
             panic!("payload durability failed: {error}");
         }
 
@@ -816,7 +859,7 @@ mod tests {
                 &registry,
                 snapshot_receipt(&registry),
                 &withdrawal,
-                21,
+                /*now*/ 21,
             ),
             Err(ArtifactPublicationError::Admission(
                 ArtifactAdmissionError::WithdrawalHeadChanged
@@ -831,7 +874,9 @@ mod tests {
     #[test]
     fn art_07_registry_projection_cannot_swap_payload_or_identity() {
         let mut transaction = prepared();
-        if let Err(error) = transaction.record_payload_durable(digest("payload"), 7) {
+        if let Err(error) =
+            transaction.record_payload_durable(digest("payload"), /*encoded_bytes*/ 7)
+        {
             panic!("payload durability failed: {error}");
         }
         let mut registry = ArtifactRegistry::new();
@@ -840,7 +885,7 @@ mod tests {
             manifest: ArtifactManifest {
                 artifact_id: id("artifact-v2"),
                 kind: ArtifactKind::Model,
-                generation: generation(2),
+                generation: generation(/*value*/ 2),
                 predecessor_id: None,
                 content_digest: digest("wrong-payload"),
                 objective_digest: digest("objective-index"),
@@ -857,7 +902,7 @@ mod tests {
                 &registry,
                 snapshot_receipt(&registry),
                 &withdrawal_registry(),
-                20,
+                /*now*/ 20,
             ),
             Err(ArtifactPublicationError::RegistryProjectionMismatch)
         );

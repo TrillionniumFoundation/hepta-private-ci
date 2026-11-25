@@ -1,3 +1,4 @@
+mod event_sender;
 pub use binding::McpBinding;
 pub use binding::PreparedMcpCall;
 pub use binding::SelectedPluginIdentity;
@@ -9,6 +10,7 @@ pub use elicitation::ElicitationLifecycle;
 pub use elicitation::ElicitationReviewRequest;
 pub use elicitation::ElicitationReviewer;
 pub use elicitation::ElicitationReviewerHandle;
+pub use event_sender::McpEventSender;
 pub use resource_client::McpEventCatalogSnapshot;
 pub use resource_client::McpEventDefinition;
 pub use resource_client::McpEventNotification;

@@ -18,7 +18,7 @@ fn revision(value: u64) -> Revision {
 }
 
 fn generation() -> Generation {
-    let Ok(value) = Generation::new(1) else {
+    let Ok(value) = Generation::new(/*value*/ 1) else {
         panic!("test generation must be valid");
     };
     value
@@ -38,8 +38,16 @@ fn record(revision_value: u64, predecessor: Option<Digest32>, state: RecordState
 
 #[test]
 fn latest_revision_and_tombstone_are_preserved() {
-    let first = record(1, None, RecordState::Live);
-    let second = record(2, Some(first.record_digest()), RecordState::Tombstone);
+    let first = record(
+        /*revision_value*/ 1,
+        /*predecessor*/ None,
+        RecordState::Live,
+    );
+    let second = record(
+        /*revision_value*/ 2,
+        Some(first.record_digest()),
+        RecordState::Tombstone,
+    );
     let Ok(checkpoint) = compact(
         generation(),
         Digest32::of_bytes(b"snapshot"),
@@ -53,8 +61,16 @@ fn latest_revision_and_tombstone_are_preserved() {
 
 #[test]
 fn broken_lineage_is_rejected() {
-    let first = record(1, None, RecordState::Live);
-    let second = record(2, Some(Digest32::of_bytes(b"wrong")), RecordState::Live);
+    let first = record(
+        /*revision_value*/ 1,
+        /*predecessor*/ None,
+        RecordState::Live,
+    );
+    let second = record(
+        /*revision_value*/ 2,
+        Some(Digest32::of_bytes(b"wrong")),
+        RecordState::Live,
+    );
     assert_eq!(
         compact(
             generation(),
@@ -67,7 +83,11 @@ fn broken_lineage_is_rejected() {
 
 #[test]
 fn missing_initial_revision_is_rejected() {
-    let second = record(2, Some(Digest32::of_bytes(b"prior")), RecordState::Live);
+    let second = record(
+        /*revision_value*/ 2,
+        Some(Digest32::of_bytes(b"prior")),
+        RecordState::Live,
+    );
     assert_eq!(
         compact(generation(), Digest32::of_bytes(b"snapshot"), vec![second]),
         Err(Error::BrokenLineage("memory:1".to_string()))

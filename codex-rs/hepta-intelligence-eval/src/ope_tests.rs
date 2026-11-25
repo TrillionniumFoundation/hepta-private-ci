@@ -272,16 +272,16 @@ fn missing_evidence_and_out_of_range_outcomes_are_rejected() {
     rows[0].outcome_evidence = Digest32::ZERO;
     assert_eq!(estimate_ope(&plan, &rows), Err(OpeError::MissingEvidence));
     rows[0].outcome_evidence = Digest32::of_bytes(b"observer");
-    rows[0].finalized_outcome = Some(FixedQ32::from_raw(-1));
+    rows[0].finalized_outcome = Some(FixedQ32::from_raw(/*raw*/ -1));
     assert_eq!(estimate_ope(&plan, &rows), Err(OpeError::InvalidOutcome));
 }
 
 #[test]
 fn signed_rounding_is_ties_to_even() {
-    assert_eq!(must(round_ratio(5, 2)), 2);
-    assert_eq!(must(round_ratio(7, 2)), 4);
-    assert_eq!(must(round_ratio(-5, 2)), -2);
-    assert_eq!(must(round_ratio(-7, 2)), -4);
+    assert_eq!(must(round_ratio(/*numerator*/ 5, /*denominator*/ 2)), 2);
+    assert_eq!(must(round_ratio(/*numerator*/ 7, /*denominator*/ 2)), 4);
+    assert_eq!(must(round_ratio(/*numerator*/ -5, /*denominator*/ 2)), -2);
+    assert_eq!(must(round_ratio(/*numerator*/ -7, /*denominator*/ 2)), -4);
 }
 
 #[test]
@@ -289,9 +289,9 @@ fn tiny_supported_weights_retain_exact_ess() {
     let (mut plan, mut rows) = fixture();
     plan.minimum_ess = FixedQ32::from_raw(4 << 32);
     for row in &mut rows {
-        row.actions[0].behavior_probability = probability(2);
-        row.actions[1].behavior_probability = probability(2);
-        row.actions[0].evaluation_probability = must(ProbabilityQ32::from_raw(1));
+        row.actions[0].behavior_probability = probability(/*quarters*/ 2);
+        row.actions[1].behavior_probability = probability(/*quarters*/ 2);
+        row.actions[0].evaluation_probability = must(ProbabilityQ32::from_raw(/*raw*/ 1));
         row.actions[1].evaluation_probability = must(ProbabilityQ32::from_raw((1 << 32) - 1));
         row.finalized_outcome = Some(FixedQ32::ONE);
     }

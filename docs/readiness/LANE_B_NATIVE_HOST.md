@@ -8,7 +8,7 @@ This page describes executable behavior in the source, including gaps that requi
 | --- | --- | --- |
 | Agent admission and private memory context | `hepta-agentd` | `CognitiveContext` uses the attached canonical SQLite `CognitiveStore` |
 | Hosted model execution | `hepta-infer-worker --profile native-app-server` | Calls the owning Agent's existing App Server provider |
-| Local model driver contract | Host still required | `codex_hepta_infer_worker_host::model_worker` exposes the manifest/grant state machine |
+| Local model driver contract | `model_worker`; explicit qualified SmolLM CPU composition through `hepta-neural-agentd` | The generic manifest/grant state machine remains reusable; the bounded neural read host requires original qualification, CURRENT and FinalUse owners as described below |
 | Inference reservation and settlement | The native worker calls `DurableInferenceControl` | One journal and lock own local slot admission, dispatch identity and real observed settlement; economic quota remains external |
 | Automation | Agentd `AutomationScheduler` + schema-v16 `AutomationStore`/TaskFlow/step/effect ledger | Codex activity is source-composed through stable App Server reconciliation; Calendar V2 creation is capability-negotiated on the existing Agentd control plane; terminal recovery scans at most 16×100 turns per pass and durably CAS-persists the opaque continuation cursor so older known turns remain eventually reachable without unbounded history reads. The final-use external-effect seam is durable, but concrete downstream product callers/owners remain independent authority, activation and evidence gates. |
 | Fleet lifecycle | Existing supervisor-owned `FleetRegistry` | `lease_ledger` remains an in-memory component pending durable grants and physical observations |
@@ -172,6 +172,97 @@ task utility. The deterministic HNMF assignment propensity is not the propensity
 of this separately learned reranker; causal claims about learned ranking require
 their own selected-policy propensity and independently observed outcomes.
 
+### Qualified neural read host entry point
+
+On Linux, `hepta-neural-agentd` composes the registered SmolLM CPU read profile
+with the ordinary Agentd runtime. The implementation is
+[`smollm_cognitive_host.rs`](../../codex-rs/hepta-infer-worker-host/src/smollm_cognitive_host.rs),
+with strict host-file decoding in
+[`smollm_cognitive_process.rs`](../../codex-rs/hepta-infer-worker-host/src/smollm_cognitive_process.rs).
+It replays the original neural bootstrap v3 qualification and artifact/CURRENT
+selection before opening inference owners or loading a model. Qualified parameter
+bytes come from the original validated payload FD. The attached ranker executes
+through the normal `CognitiveContext` read; it retains the existing currentness
+and final-use checks. Preparation alone does not establish a later task used it.
+
+Build from the repository, then launch the installed binary from the registered
+Agent workspace with the existing supervisor-provided `HEPTA_FLEET_ROOT`,
+`HEPTA_AGENT_ID`, `HEPTA_AGENT_GENERATION`, `HEPTA_AGENT_HOME`,
+`HEPTA_AGENT_RUN_ROOT` and `CODEX_HOME` identity. The Fleet record must admit that
+Starting generation and its exact roots/workspace; this command creates no Fleet
+identity or permission. `HEPTA_NEURAL_HOST_SHA256` below is a shell substitution
+for the independently retained expected digest, not a new daemon environment API.
+
+```sh
+cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --bin hepta-neural-agentd
+hepta-neural-agentd --host-config /absolute/operator/neural-host.json --host-config-sha256 "$HEPTA_NEURAL_HOST_SHA256"
+```
+
+The host file is at most 64 KiB and has schema
+`hepta-smollm-cognitive-host-v1`. All listed fields are required; unknown fields
+are rejected, including nested objects. The file must be canonical, regular,
+unaliased, root/owner-owned and not group/world-writable. Its SHA256 must match
+the independently authorized value supplied to the CLI; hashing an untrusted
+download does not authorize it.
+
+| Host field | Required meaning |
+| --- | --- |
+| `schema` | Exact host schema above. |
+| `descriptor` | `{path, sha256}` for the original `hepta.agentd.cognitive-bootstrap.v3` descriptor with profile `published_neural_product_qualification_v1`; the original loader verifies its identity, original ledger/holdout evidence, selection and CURRENT bindings. |
+| `worker` | The immutable execution/material configuration listed below. |
+| `worker_id` | Stable worker identity bound into the original control and FinalUse requests. |
+| `resource_grant` | Existing owner-provided `grant_id`, `authority_epoch`, `generation`, `expires_at_ms`, `revoked`, `maximum_models`, `maximum_active_requests`, `maximum_memory_bytes`, `semantic_digest`. These are checked resource inputs, not an issuer key or a qualification receipt. The registered profile requires one model, one active request, 8 GiB and at least 720 seconds of remaining grant lifetime at startup. |
+| `inference_journal`, `inference_journal_capacity` | Original durable inference-control file and record capacity, in `1..=16384`; no separate settlement ledger is created. |
+| `final_use_authorizer_config` | Protected original `FinalUseAuthorizerConfig` file for an independently operated Unix issuer, public verification key, peer UID and retained authority/revocation state. Its original owner remains responsible for configuration and revocation freshness. |
+
+The `worker` object requires absolute `python`, `script`, `materials` and new
+`run_directory` paths; `source_pins` maps absolute source paths to nonzero SHA256
+digests. The complete required source-name set is `llm_adapter_contract.py`,
+`llm_inherited_runtime.py`, `llm_neural_read_worker.py`, `llm_parent_material.py`,
+`llm_runtime_pilot.py` and `model-family-smollm2-135m-v1.json`. Source bytes are
+rechecked by the original driver. `target_contract` and `wrapped_adapter` are
+each `{path, sha256}` for protected canonical files, each at most 1 MiB.
+`contract_digest`, `adapter_digest`, `backbone_digest` and `tokenizer_digest`
+must match the original qualified material/profile. `action_completions` maps
+stable action IDs to the complete registered single-token vocabulary, not
+per-query expected answers. Those sources, material digests and action labels
+participate in the original execution-profile commitment; changing them requires
+a compatible qualified selection. Parameter bytes are limited to 2 MiB and cannot
+be replaced by a host-file parameter path.
+
+Inference journal and authorizer-config paths must have canonical protected
+parents outside Agent home/run/workspace roots. The original
+[`UnixFinalUseAuthorizer`](../../codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs)
+validates the issuer socket/peer and verifies and consumes a signed exact-use
+grant. The neural host does not carry an issuer private key, issue a grant or
+substitute a test issuer. Each physical load/read remains subject to the original
+authorization and resource checks. An absent, untrusted, expired or Ineligible
+qualification fails closed; a zero-gain candidate, transported Cell bytes or a
+Chain acceptance observation cannot bypass those original owners. No fallback
+model or synthetic installation-success receipt is emitted.
+
+Preparation uses the blocking executor with cancellation propagated from the
+awaiting future. Cancellation is checked before inference-owner entry/process
+spawn and during cold-load waits; the 20ms polling interval is not a physical
+process-release guarantee. If loading already completed, cleanup calls the
+original unload path. Otherwise the original driver session retains its
+supervisor/reaper, and the control record stays indeterminate without a terminal
+observation. Drop retries cooperative STOP only within the fixed 600-second
+cleanup window recorded at session creation. Each nonblocking socket connect
+plus write has a shared bound of at most 250ms and no more than the remaining
+window; retries do not renew it. After that window, only the original supervisor
+wait/reap remains. A worker that has not published its socket still relies on
+the original supervisor's child budget for termination. Drop is not a successful
+terminal receipt. Normal Agentd exit requires explicit shutdown and the original
+successful supervisor/owned-child terminal observation.
+
+The existing native-pair workflow invokes the host boundary/session tests and
+`neural_cognitive_bootstrap` qualification-rejection tests, and builds/runs the
+fixed CLI with `--help`. These are entry-point and refusal controls, not a claim
+that a product-qualified descriptor, real issuer, ordinary task consumption or
+neural improvement has been observed. Exact-candidate execution results and
+actual consumer evidence remain required separately.
+
 ## Explicit HNMF memory retrieval composition
 
 `AgentdConfig::with_cognitive_retrieval_context` attaches an externally supplied
@@ -217,3 +308,7 @@ owner supplies typed causal, procedural and contradiction-support channels; gene
 graph evidence remains separate. Target
 host timing/resource measurements, independent semantic review, longitudinal
 outcomes, canary/promotion and release remain separate gates.
+
+### 2026-10-23 convergence evidence
+
+The [recorded local PN0–PN6 convergence cohort](../../evidence/pon-six-gate-20261022/pn-convergence-20261023/SCOPE.md) preserves original failures, source overlays, the 39-case live effect-host result and the ordinary neural-entry component scope. Final paired head/merge execution and qualification remain separate receipts; this index grants no readiness or activation authority.

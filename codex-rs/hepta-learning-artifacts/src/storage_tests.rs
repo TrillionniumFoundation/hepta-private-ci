@@ -75,7 +75,7 @@ fn binding() -> Digest32 {
 fn head_witness() -> RegistryHeadWitnessV1 {
     RegistryHeadWitnessV1 {
         registry_id: id("artifact-registry"),
-        generation: Generation::new(2).fixture("test fixture"),
+        generation: Generation::new(/*value*/ 2).fixture("test fixture"),
         head_digest: Digest32::of_bytes(b"current-head"),
         predecessor_head_digest: Digest32::ZERO,
         authority_epoch: 3,
@@ -89,7 +89,7 @@ fn head_witness() -> RegistryHeadWitnessV1 {
 fn head_requirement(now: u64) -> RegistryHeadRequirementV1 {
     RegistryHeadRequirementV1 {
         registry_id: id("artifact-registry"),
-        minimum_generation: Generation::new(1).fixture("test fixture"),
+        minimum_generation: Generation::new(/*value*/ 1).fixture("test fixture"),
         expected_predecessor_head_digest: Digest32::ZERO,
         minimum_authority_epoch: 2,
         now,
@@ -103,12 +103,12 @@ fn current_head_witness_round_trips_only_with_current_requirement() {
     let receipt = write_registry_head_witness(
         file.create().fixture("test fixture"),
         &witness,
-        &head_requirement(20),
+        &head_requirement(/*now*/ 20),
         binding(),
     )
     .fixture("test fixture");
     assert_eq!(
-        read_registry_head_witness(file.open(), receipt, &head_requirement(20))
+        read_registry_head_witness(file.open(), receipt, &head_requirement(/*now*/ 20))
             .fixture("test fixture"),
         witness
     );
@@ -118,7 +118,7 @@ fn current_head_witness_round_trips_only_with_current_requirement() {
             receipt,
             &RegistryHeadRequirementV1 {
                 expected_predecessor_head_digest: Digest32::of_bytes(b"new-predecessor"),
-                ..head_requirement(20)
+                ..head_requirement(/*now*/ 20)
             },
         )
         .fixture_error("expected storage rejection"),
@@ -133,19 +133,19 @@ fn current_head_witness_rejects_stale_or_tampered_receipts() {
     let receipt = write_registry_head_witness(
         file.create().fixture("test fixture"),
         &witness,
-        &head_requirement(20),
+        &head_requirement(/*now*/ 20),
         binding(),
     )
     .fixture("test fixture");
     let mut tampered = receipt;
     tampered.file_digest = Digest32::of_bytes(b"tampered");
     assert_eq!(
-        read_registry_head_witness(file.open(), tampered, &head_requirement(20))
+        read_registry_head_witness(file.open(), tampered, &head_requirement(/*now*/ 20))
             .fixture_error("expected storage rejection"),
         ArtifactStorageError::Corrupt
     );
     assert_eq!(
-        read_registry_head_witness(file.open(), receipt, &head_requirement(101))
+        read_registry_head_witness(file.open(), receipt, &head_requirement(/*now*/ 101))
             .fixture_error("expected storage rejection"),
         ArtifactStorageError::HeadWitnessMismatch
     );
@@ -154,7 +154,7 @@ fn current_head_witness_rejects_stale_or_tampered_receipts() {
 #[test]
 fn snapshot_reopens_exact_history_and_revoked_ancestors() {
     let mut registry = ArtifactRegistry::new();
-    register(&mut registry, "old", None, b"old");
+    register(&mut registry, "old", /*predecessor*/ None, b"old");
     register(&mut registry, "new", Some("old"), b"new");
     registry
         .append(ArtifactEvent::Revoke(StateChange {
@@ -177,7 +177,12 @@ fn snapshot_reopens_exact_history_and_revoked_ancestors() {
 #[test]
 fn payload_rejects_wrong_bytes_without_reusing_its_created_target() {
     let mut registry = ArtifactRegistry::new();
-    register(&mut registry, "policy", None, b"policy-v1");
+    register(
+        &mut registry,
+        "policy",
+        /*predecessor*/ None,
+        b"policy-v1",
+    );
 
     let rejected = TestFile::new();
     assert_eq!(
@@ -348,7 +353,12 @@ fn bytes_appearing_after_atomic_creation_are_indeterminate() {
 #[test]
 fn every_truncation_and_wrong_external_witness_rejects_without_repair() {
     let mut registry = ArtifactRegistry::new();
-    register(&mut registry, "policy", None, b"policy");
+    register(
+        &mut registry,
+        "policy",
+        /*predecessor*/ None,
+        b"policy",
+    );
     let file = TestFile::new();
     let receipt =
         write_registry_snapshot(file.create().fixture("test fixture"), &registry, binding())
@@ -391,7 +401,7 @@ fn sensor_core_kind_survives_durable_registry_roundtrip() {
             manifest: ArtifactManifest {
                 artifact_id: id("sensor-core"),
                 kind: ArtifactKind::SensorCore,
-                generation: Generation::new(1).fixture("test fixture"),
+                generation: Generation::new(/*value*/ 1).fixture("test fixture"),
                 predecessor_id: None,
                 content_digest: Digest32::of_bytes(b"sensor-core-bytes"),
                 objective_digest: Digest32::of_bytes(b"objective"),
@@ -419,7 +429,12 @@ fn sensor_core_kind_survives_durable_registry_roundtrip() {
 #[test]
 fn revoked_payload_cannot_be_loaded_from_current_registry() {
     let mut registry = ArtifactRegistry::new();
-    register(&mut registry, "policy", None, b"policy");
+    register(
+        &mut registry,
+        "policy",
+        /*predecessor*/ None,
+        b"policy",
+    );
     let file = TestFile::new();
     write_candidate_payload(
         file.create().fixture("test fixture"),
@@ -445,7 +460,12 @@ fn revoked_payload_cannot_be_loaded_from_current_registry() {
 #[test]
 fn payload_corruption_and_invalid_receipt_reject() {
     let mut registry = ArtifactRegistry::new();
-    register(&mut registry, "policy", None, b"policy");
+    register(
+        &mut registry,
+        "policy",
+        /*predecessor*/ None,
+        b"policy",
+    );
     let file = TestFile::new();
     write_candidate_payload(
         file.create().fixture("test fixture"),
@@ -491,7 +511,12 @@ fn contained_write_rejects_escape_and_validates_before_create() {
     let root = TestFile::new();
     fs::create_dir(&root.0).fixture("test fixture");
     let mut registry = ArtifactRegistry::new();
-    register(&mut registry, "policy", None, b"policy-v1");
+    register(
+        &mut registry,
+        "policy",
+        /*predecessor*/ None,
+        b"policy-v1",
+    );
 
     assert_eq!(
         CreateOnlyArtifactFile::create_beneath_trusted_root(&root.0, "../escape").err(),

@@ -1,4 +1,4 @@
-//! Filesystem-backed canonical identity checks for the legacy store opener.
+//! Filesystem-backed canonical identity checks for cognitive stores and workspaces.
 //!
 //! This checks an existing path; it is not a descriptor-bound recovery guard.
 

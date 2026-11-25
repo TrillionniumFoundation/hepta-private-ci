@@ -36,7 +36,9 @@ fn fixture() -> (FederatedReadRequest, FederatedReadLease) {
 #[test]
 fn missing_terminal_observation_is_indeterminate() {
     let (request, lease) = fixture();
-    let Ok(receipt) = observe(1_000, request, lease, None) else {
+    let Ok(receipt) = observe(
+        /*now_ms*/ 1_000, request, lease, /*observation*/ None,
+    ) else {
         panic!("bounded unknown outcome must be representable");
     };
     assert_eq!(receipt.status, FederatedStatus::Indeterminate);
@@ -49,7 +51,9 @@ fn revoked_lease_is_rejected() {
     let (request, mut lease) = fixture();
     lease.revoked = true;
     assert_eq!(
-        observe(1_000, request, lease, None),
+        observe(
+            /*now_ms*/ 1_000, request, lease, /*observation*/ None
+        ),
         Err(Error::LeaseRevoked)
     );
 }
@@ -59,7 +63,9 @@ fn snapshot_drift_is_rejected() {
     let (request, mut lease) = fixture();
     lease.source_snapshot_digest = digest(b"drift");
     assert_eq!(
-        observe(1_000, request, lease, None),
+        observe(
+            /*now_ms*/ 1_000, request, lease, /*observation*/ None
+        ),
         Err(Error::DigestMismatch("snapshot"))
     );
 }
@@ -71,7 +77,7 @@ fn terminal_response_is_bound() {
         response_digest: digest(b"response"),
         terminal_observed: true,
     };
-    let Ok(receipt) = observe(1_000, request, lease, Some(observation)) else {
+    let Ok(receipt) = observe(/*now_ms*/ 1_000, request, lease, Some(observation)) else {
         panic!("terminal observation must succeed");
     };
     assert_eq!(receipt.status, FederatedStatus::Succeeded);

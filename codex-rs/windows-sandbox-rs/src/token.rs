@@ -360,9 +360,7 @@ pub unsafe fn create_readonly_token_with_cap(
 
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
-/// # Safety
-/// Caller must close the returned token handle; base_token must be a valid primary token.
-pub unsafe fn create_readonly_token_with_cap_from(
+pub(crate) unsafe fn create_readonly_token_with_cap_from(
     base_token: HANDLE,
     psid_capability: *mut c_void,
 ) -> Result<(HANDLE, *mut c_void)> {
@@ -375,11 +373,14 @@ pub unsafe fn create_readonly_token_with_cap_from(
     Ok((new_token, psid_capability))
 }
 
-/// Restrict legacy workspace writes to the provided capability SIDs alone.
+/// Construct an unqualified legacy token for internal diagnostics only.
+///
+/// This primitive does not constrain ambient parent `FILE_DELETE_CHILD` grants
+/// and must not be exposed as a filesystem sandbox entrypoint.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
-pub unsafe fn create_workspace_write_token_with_caps_from(
+pub(crate) unsafe fn create_workspace_write_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
@@ -391,14 +392,19 @@ pub unsafe fn create_workspace_write_token_with_caps_from(
     )
 }
 
-/// Create a restricted token that includes all provided capability SIDs, the token user SID, and
-/// any additional restricting SIDs.
+/// Construct a raw `WRITE_RESTRICTED` token including capability, user and additional SIDs.
 ///
-/// This is intended for the elevated sandbox backend, where the token user is the dedicated
-/// sandbox account rather than the real signed-in user.
+/// This FFI helper does not verify a dedicated sandbox identity and provides no
+/// filesystem isolation guarantee. The input can be the current user's token.
+/// Its restricting set also includes the logon SID and `Everyone`; outside ACL
+/// grants, including parent `FILE_DELETE_CHILD`, remain possible. Using this
+/// helper does not qualify or authorize a managed sandbox launch.
 ///
 /// # Safety
-/// Caller must close the returned token handle; base_token must be a valid primary token.
+/// `base_token` must be a valid primary token with `TOKEN_DUPLICATE` access.
+/// All supplied SID pointers must remain valid during the call. The caller
+/// must close the returned token handle. These are FFI validity requirements,
+/// not a filesystem security contract.
 pub unsafe fn create_workspace_write_token_with_caps_and_user_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
@@ -415,7 +421,8 @@ pub unsafe fn create_workspace_write_token_with_caps_and_user_from(
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
-pub unsafe fn create_readonly_token_with_caps_from(
+#[cfg(test)]
+pub(crate) unsafe fn create_readonly_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
@@ -427,14 +434,19 @@ pub unsafe fn create_readonly_token_with_caps_from(
     )
 }
 
-/// Create a restricted token that includes all provided capability SIDs, the token user SID, and
-/// any additional restricting SIDs.
+/// Construct a raw `WRITE_RESTRICTED` token including capability, user and additional SIDs.
 ///
-/// This is intended for the elevated sandbox backend, where the token user is the dedicated
-/// sandbox account rather than the real signed-in user.
+/// This FFI helper does not verify a dedicated sandbox identity and provides no
+/// read-only filesystem guarantee. The input can be the current user's token.
+/// Its restricting set also includes the logon SID and `Everyone`; outside ACL
+/// grants, including parent `FILE_DELETE_CHILD`, remain possible. Using this
+/// helper does not qualify or authorize a managed sandbox launch.
 ///
 /// # Safety
-/// Caller must close the returned token handle; base_token must be a valid primary token.
+/// `base_token` must be a valid primary token with `TOKEN_DUPLICATE` access.
+/// All supplied SID pointers must remain valid during the call. The caller
+/// must close the returned token handle. These are FFI validity requirements,
+/// not a filesystem security contract.
 pub unsafe fn create_readonly_token_with_caps_and_user_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],

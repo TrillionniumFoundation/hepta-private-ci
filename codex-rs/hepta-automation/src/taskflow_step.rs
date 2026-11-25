@@ -528,7 +528,7 @@ impl AutomationStore {
         step_id: &str,
         attempt: u32,
     ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
-        self.read_verified_step(run_id, step_id, attempt, None)
+        self.read_verified_step(run_id, step_id, attempt, /*fence*/ None)
             .await
     }
 

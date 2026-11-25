@@ -12,7 +12,7 @@ fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
 fn request() -> NeuronFeatureRequestV1 {
     NeuronFeatureRequestV1 {
         request_id: checked(StableId::new("request:neuron:1")),
-        generation: checked(Generation::new(3)),
+        generation: checked(Generation::new(/*value*/ 3)),
         model_id: checked(StableId::new("model.1")),
         encoder_digest: Digest32::of_bytes(b"encoder"),
         head_digest: Digest32::of_bytes(b"head"),

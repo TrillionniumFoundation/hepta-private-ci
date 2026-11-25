@@ -6,6 +6,9 @@
 //! (`tty=true`) or pipes (`tty=false`). It then streams output frames back to the parent,
 //! accepts stdin/terminate frames, and emits a final exit frame. The legacy restricted‑token
 //! path spawns the child directly and does not use this runner.
+//!
+//! Managed child launches currently fail closed: the account broker's token
+//! mechanism has not qualified a filesystem isolation boundary.
 
 #![allow(unsafe_op_in_unsafe_fn)]
 
@@ -41,6 +44,7 @@ use codex_windows_sandbox::hide_current_user_profile_dir;
 use codex_windows_sandbox::log_note;
 use codex_windows_sandbox::read_frame;
 use codex_windows_sandbox::read_handle_loop;
+use codex_windows_sandbox::require_qualified_windows_filesystem;
 use codex_windows_sandbox::spawn_process_with_pipes;
 use codex_windows_sandbox::to_wide;
 use codex_windows_sandbox::token_mode_for_permission_profile;
@@ -79,6 +83,10 @@ const FS_HELPER_ARG: &str = "--codex-run-as-fs-helper";
 const READ_ACL_MUTEX_NAME: &str = "Local\\CodexSandboxReadAcl";
 const TERMINATION_WAIT_MS: u32 = 5_000;
 const WAIT_TIMEOUT: u32 = 0x0000_0102;
+
+#[cfg(test)]
+#[path = "win_boundary_tests.rs"]
+mod boundary_tests;
 
 struct IpcSpawnedProcess {
     log_dir: PathBuf,
@@ -232,6 +240,7 @@ fn effective_cwd(req_cwd: &Path, log_dir: Option<&Path>) -> PathBuf {
 }
 
 fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
+    require_qualified_windows_filesystem()?;
     let log_dir = req.codex_home.clone();
     hide_current_user_profile_dir(req.codex_home.as_path());
     let token_mode = token_mode_for_permission_profile(

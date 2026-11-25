@@ -43,13 +43,13 @@ fn trust() -> LearningEvidenceTrustV1 {
             signer(
                 "generator",
                 "controller-a",
-                1,
+                /*seed*/ 1,
                 LearningEvidenceRoleV1::Generator,
             ),
             signer(
                 "evaluator",
                 "controller-b",
-                2,
+                /*seed*/ 2,
                 LearningEvidenceRoleV1::Evaluator,
             ),
         ],
@@ -88,7 +88,7 @@ fn signed_evidence_binds_actual_bytes_and_credential_not_digest_claims() {
         &verifier,
         "evaluator",
         LearningEvidenceRoleV1::Evaluator,
-        2,
+        /*seed*/ 2,
         b"observed metrics",
     );
     let admitted = verifier
@@ -96,7 +96,7 @@ fn signed_evidence_binds_actual_bytes_and_credential_not_digest_claims() {
             LearningEvidenceRoleV1::Evaluator,
             &signed,
             b"observed metrics",
-            50,
+            /*now*/ 50,
         )
         .expect("authentic evidence");
     assert_eq!(admitted.principal(), &trust().signers[1].principal);
@@ -105,7 +105,7 @@ fn signed_evidence_binds_actual_bytes_and_credential_not_digest_claims() {
             LearningEvidenceRoleV1::Evaluator,
             &signed,
             b"edited metrics",
-            50
+            /*now*/ 50
         ),
         Err(SignedEvidenceError::PayloadMismatch)
     );
@@ -113,7 +113,7 @@ fn signed_evidence_binds_actual_bytes_and_credential_not_digest_claims() {
         &verifier,
         "evaluator",
         LearningEvidenceRoleV1::Evaluator,
-        1,
+        /*seed*/ 1,
         b"observed metrics",
     );
     assert_eq!(
@@ -121,7 +121,7 @@ fn signed_evidence_binds_actual_bytes_and_credential_not_digest_claims() {
             LearningEvidenceRoleV1::Evaluator,
             &forged,
             b"observed metrics",
-            50
+            /*now*/ 50
         ),
         Err(SignedEvidenceError::InvalidSignature)
     );
@@ -132,7 +132,7 @@ fn signed_evidence_binds_actual_bytes_and_credential_not_digest_claims() {
             LearningEvidenceRoleV1::Evaluator,
             &edited,
             b"observed metrics",
-            50
+            /*now*/ 50
         ),
         Err(SignedEvidenceError::InvalidSignature)
     );
@@ -145,7 +145,7 @@ fn trust_epoch_revocation_scope_and_expiry_fail_closed() {
         &verifier,
         "evaluator",
         LearningEvidenceRoleV1::Evaluator,
-        2,
+        /*seed*/ 2,
         b"metrics",
     );
     let mut new_trust = trust();
@@ -155,7 +155,12 @@ fn trust_epoch_revocation_scope_and_expiry_fail_closed() {
     }
     let rotated = LearningEvidenceVerifierV1::new(new_trust).expect("rotated trust");
     assert_eq!(
-        rotated.verify(LearningEvidenceRoleV1::Evaluator, &signed, b"metrics", 50),
+        rotated.verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &signed,
+            b"metrics",
+            /*now*/ 50
+        ),
         Err(SignedEvidenceError::ContextMismatch)
     );
     let mut revoked_trust = trust();
@@ -165,15 +170,25 @@ fn trust_epoch_revocation_scope_and_expiry_fail_closed() {
         &revoked,
         "evaluator",
         LearningEvidenceRoleV1::Evaluator,
-        2,
+        /*seed*/ 2,
         b"metrics",
     );
     assert_eq!(
-        revoked.verify(LearningEvidenceRoleV1::Evaluator, &resigned, b"metrics", 50),
+        revoked.verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &resigned,
+            b"metrics",
+            /*now*/ 50
+        ),
         Err(SignedEvidenceError::Revoked)
     );
     let observer_before_revocation = revoked
-        .verify(LearningEvidenceRoleV1::Evaluator, &resigned, b"metrics", 30)
+        .verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &resigned,
+            b"metrics",
+            /*now*/ 30,
+        )
         .expect("not yet revoked");
     let generator_before_revocation = revoked
         .verify(
@@ -182,18 +197,18 @@ fn trust_epoch_revocation_scope_and_expiry_fail_closed() {
                 &revoked,
                 "generator",
                 LearningEvidenceRoleV1::Generator,
-                1,
+                /*seed*/ 1,
                 b"plan",
             ),
             b"plan",
-            30,
+            /*now*/ 30,
         )
         .expect("generator");
     assert_eq!(
         verify_signed_role_separation(
             &generator_before_revocation,
             &observer_before_revocation,
-            50
+            /*now*/ 50
         ),
         Err(SignedEvidenceError::Revoked)
     );
@@ -201,12 +216,17 @@ fn trust_epoch_revocation_scope_and_expiry_fail_closed() {
         verify_signed_role_separation(
             &generator_before_revocation,
             &observer_before_revocation,
-            15
+            /*now*/ 15
         ),
         Err(SignedEvidenceError::ValidityWindow)
     );
     assert_eq!(
-        verifier.verify(LearningEvidenceRoleV1::Evaluator, &signed, b"metrics", 91),
+        verifier.verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &signed,
+            b"metrics",
+            /*now*/ 91
+        ),
         Err(SignedEvidenceError::ValidityWindow)
     );
     let mut wrong_scope = signed.clone();
@@ -216,12 +236,17 @@ fn trust_epoch_revocation_scope_and_expiry_fail_closed() {
             LearningEvidenceRoleV1::Evaluator,
             &wrong_scope,
             b"metrics",
-            50
+            /*now*/ 50
         ),
         Err(SignedEvidenceError::ContextMismatch)
     );
     assert_eq!(
-        verifier.verify(LearningEvidenceRoleV1::Observer, &signed, b"metrics", 50),
+        verifier.verify(
+            LearningEvidenceRoleV1::Observer,
+            &signed,
+            b"metrics",
+            /*now*/ 50
+        ),
         Err(SignedEvidenceError::RoleMismatch)
     );
 }
@@ -238,11 +263,11 @@ fn distinct_keys_do_not_make_one_controller_independent() {
                 &verifier,
                 "generator",
                 LearningEvidenceRoleV1::Generator,
-                1,
+                /*seed*/ 1,
                 b"plan",
             ),
             b"plan",
-            50,
+            /*now*/ 50,
         )
         .expect("generator");
     let evaluator = verifier
@@ -252,15 +277,15 @@ fn distinct_keys_do_not_make_one_controller_independent() {
                 &verifier,
                 "evaluator",
                 LearningEvidenceRoleV1::Evaluator,
-                2,
+                /*seed*/ 2,
                 b"metrics",
             ),
             b"metrics",
-            50,
+            /*now*/ 50,
         )
         .expect("evaluator");
     assert_eq!(
-        verify_signed_role_separation(&generator, &evaluator, 50),
+        verify_signed_role_separation(&generator, &evaluator, /*now*/ 50),
         Err(SignedEvidenceError::ControllerCollision)
     );
     let verifier = LearningEvidenceVerifierV1::new(trust()).expect("independent trust");
@@ -271,11 +296,11 @@ fn distinct_keys_do_not_make_one_controller_independent() {
                 &verifier,
                 "generator",
                 LearningEvidenceRoleV1::Generator,
-                1,
+                /*seed*/ 1,
                 b"plan",
             ),
             b"plan",
-            50,
+            /*now*/ 50,
         )
         .expect("generator");
     let evaluator = verifier
@@ -285,15 +310,15 @@ fn distinct_keys_do_not_make_one_controller_independent() {
                 &verifier,
                 "evaluator",
                 LearningEvidenceRoleV1::Evaluator,
-                2,
+                /*seed*/ 2,
                 b"metrics",
             ),
             b"metrics",
-            50,
+            /*now*/ 50,
         )
         .expect("evaluator");
     assert_eq!(
-        verify_signed_role_separation(&generator, &evaluator, 50),
+        verify_signed_role_separation(&generator, &evaluator, /*now*/ 50),
         Ok(())
     );
 }
@@ -304,7 +329,7 @@ fn observer_and_evaluator_require_pairwise_independence() {
     independent.signers.push(signer(
         "observer",
         "controller-c",
-        3,
+        /*seed*/ 3,
         LearningEvidenceRoleV1::Observer,
     ));
     let verifier = LearningEvidenceVerifierV1::new(independent).expect("host trust");
@@ -315,11 +340,11 @@ fn observer_and_evaluator_require_pairwise_independence() {
                 &verifier,
                 "observer",
                 LearningEvidenceRoleV1::Observer,
-                3,
+                /*seed*/ 3,
                 b"frontier",
             ),
             b"frontier",
-            50,
+            /*now*/ 50,
         )
         .expect("observer");
     let evaluator = verifier
@@ -329,15 +354,15 @@ fn observer_and_evaluator_require_pairwise_independence() {
                 &verifier,
                 "evaluator",
                 LearningEvidenceRoleV1::Evaluator,
-                2,
+                /*seed*/ 2,
                 b"metrics",
             ),
             b"metrics",
-            50,
+            /*now*/ 50,
         )
         .expect("evaluator");
     assert_eq!(
-        verify_signed_independent_roles_v1(&observer, &evaluator, 50),
+        verify_signed_independent_roles_v1(&observer, &evaluator, /*now*/ 50),
         Ok(())
     );
 
@@ -345,7 +370,7 @@ fn observer_and_evaluator_require_pairwise_independence() {
     shared.signers.push(signer(
         "observer",
         "controller-b",
-        3,
+        /*seed*/ 3,
         LearningEvidenceRoleV1::Observer,
     ));
     let verifier = LearningEvidenceVerifierV1::new(shared).expect("shared controller trust");
@@ -356,11 +381,11 @@ fn observer_and_evaluator_require_pairwise_independence() {
                 &verifier,
                 "observer",
                 LearningEvidenceRoleV1::Observer,
-                3,
+                /*seed*/ 3,
                 b"frontier",
             ),
             b"frontier",
-            50,
+            /*now*/ 50,
         )
         .expect("observer");
     let evaluator = verifier
@@ -370,15 +395,15 @@ fn observer_and_evaluator_require_pairwise_independence() {
                 &verifier,
                 "evaluator",
                 LearningEvidenceRoleV1::Evaluator,
-                2,
+                /*seed*/ 2,
                 b"metrics",
             ),
             b"metrics",
-            50,
+            /*now*/ 50,
         )
         .expect("evaluator");
     assert_eq!(
-        verify_signed_independent_roles_v1(&observer, &evaluator, 50),
+        verify_signed_independent_roles_v1(&observer, &evaluator, /*now*/ 50),
         Err(SignedEvidenceError::ControllerCollision)
     );
 }

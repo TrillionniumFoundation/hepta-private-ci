@@ -254,8 +254,8 @@ mod tests {
             parameter_id: id("parameter:1"),
             layer_id: id("layer:1"),
             surface,
-            minimum_delta: FixedQ32::from_raw(-100),
-            maximum_delta: FixedQ32::from_raw(100),
+            minimum_delta: FixedQ32::from_raw(/*raw*/ -100),
+            maximum_delta: FixedQ32::from_raw(/*raw*/ 100),
         }
     }
 
@@ -276,8 +276,8 @@ mod tests {
             &window(),
             &id("layer:1"),
             &id("parameter:1"),
-            FixedQ32::from_raw(-10),
-            FixedQ32::from_raw(10),
+            FixedQ32::from_raw(/*raw*/ -10),
+            FixedQ32::from_raw(/*raw*/ 10),
         )
         .expect("authorized");
     }

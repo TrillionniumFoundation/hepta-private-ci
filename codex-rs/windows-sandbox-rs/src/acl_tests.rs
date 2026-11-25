@@ -79,7 +79,8 @@ fn complete_denies_compare_mapped_masks_and_require_every_right() -> Result<()> 
         let mut acl = NativeAcl::new()?;
         acl.deny(&sid, mask, inheritance)?;
         // SAFETY: both arguments point into live, initialized native objects.
-        let complete = unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) };
+        let complete =
+            unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Recursive) };
         assert_eq!(complete, expected, "mask={mask:#x}");
     }
     Ok(())
@@ -102,7 +103,9 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
             acl.deny(&sid, kind.mask(), flags)?;
             // SAFETY: the ACL and SID are valid and retained for this query.
             assert!(
-                !unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) },
+                !unsafe {
+                    kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Recursive)
+                },
                 "flags={flags:#x}",
             );
         }
@@ -123,7 +126,97 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
         }
         acl.deny(&sid, kind.mask(), inheritance)?;
         // SAFETY: the ACL and SID remain valid through the query.
-        assert!(!unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) });
+        assert!(!unsafe {
+            kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Recursive)
+        });
+    }
+    Ok(())
+}
+
+#[test]
+fn complete_denies_accept_native_effective_and_inherit_only_components() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
+    let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
+        let mut acl = NativeAcl::new()?;
+        acl.deny(&sid, kind.mask(), /*flags*/ 0)?;
+        // SAFETY: the initialized ACL and validated SID stay live for each query.
+        assert!(!unsafe {
+            kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Recursive)
+        });
+        acl.deny(&sid, kind.mask(), inheritance | u32::from(INHERIT_ONLY_ACE))?;
+        // SAFETY: Windows' separate effective and recursive components together
+        // cover this object and both kinds of descendants.
+        assert!(unsafe {
+            kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Recursive)
+        });
+    }
+    Ok(())
+}
+
+#[test]
+fn complete_denies_do_not_borrow_missing_scope_from_another_sid() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
+    let other = LocalSid::from_string("S-1-5-21-191-292-393-494")?;
+    let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
+        for flags in [
+            OBJECT_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE),
+            CONTAINER_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE),
+            inheritance | u32::from(INHERIT_ONLY_ACE) | NO_PROPAGATE_INHERIT_ACE,
+        ] {
+            let mut acl = NativeAcl::new()?;
+            acl.deny(&sid, kind.mask(), /*flags*/ 0)?;
+            acl.deny(&sid, kind.mask(), flags)?;
+            acl.deny(&other, kind.mask(), inheritance)?;
+            // SAFETY: all native objects remain live; another SID's complete
+            // deny cannot supply the queried SID's missing recursive scope.
+            assert!(!unsafe {
+                kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Recursive)
+            });
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn complete_denies_require_all_rights_in_each_split_scope() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-201-302-403-504")?;
+    let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    for (effective, descendants) in [
+        (FILE_GENERIC_WRITE, DenyAceKind::Write.mask()),
+        (DenyAceKind::Write.mask(), FILE_GENERIC_WRITE),
+    ] {
+        let mut acl = NativeAcl::new()?;
+        acl.deny(&sid, effective, /*flags*/ 0)?;
+        acl.deny(&sid, descendants, inheritance | u32::from(INHERIT_ONLY_ACE))?;
+        // SAFETY: valid native inputs; complete rights in only one component
+        // must not hide missing DELETE/DELETE_CHILD in the other component.
+        assert!(!unsafe {
+            DenyAceKind::Write.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Recursive)
+        });
+    }
+    Ok(())
+}
+
+#[test]
+fn complete_file_denies_need_effective_rights_but_no_inheritance() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-211-312-413-514")?;
+    let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
+        for (flags, expected) in [
+            (0, true),
+            (inheritance | u32::from(INHERIT_ONLY_ACE), false),
+            (u32::from(INHERITED_ACE), false),
+        ] {
+            let mut acl = NativeAcl::new()?;
+            acl.deny(&sid, kind.mask(), flags)?;
+            // SAFETY: native ACL and SID remain valid. An inherited deny is
+            // not a substitute for the explicit repair owned by this function.
+            let complete =
+                unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Object) };
+            assert_eq!(complete, expected, "flags={flags:#x}");
+        }
     }
     Ok(())
 }

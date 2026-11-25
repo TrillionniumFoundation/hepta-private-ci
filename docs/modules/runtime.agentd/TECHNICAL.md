@@ -155,6 +155,161 @@ artifact revocation and support withdrawal after loading. This is an owner-path
 behavioral test, not a real-task transfer study, process-isolation proof or
 production Laya service. Selected model state and effect authority are unchanged.
 
+### PoN executable and bounded exchange boundary
+
+The explicit `trillionnium-pon-local-v1` provider still uses the existing
+TaskFlow effect owner and FinalUseAuthority. Before dispatch, its compiled
+adapter copies bounded native executable bytes into one operation-local
+sealed object, seals before hashing, and compares the immutable bytes with
+the signed provider-contract binary digest. Invocation executes that held
+object, not a second lookup of the original installation path. This closes
+pathname replacement and original-inode rewriting after preparation.
+
+The current PoN immutable-executable implementation explicitly requires
+Linux x86_64/aarch64 and kernel support for executable memfd and execute-bit
+sealing (Linux 6.3+). Missing platform/kernel support refuses before dispatch;
+there is no pathname or interpreter-script fallback. This restriction is
+specific to this PoN provider, not a change to other Agentd providers.
+The kernel, process environment, dynamic loader and shared libraries remain
+trusted host inputs; the binary digest is not a dependency-closure or
+arbitrary local-administrator isolation claim. The 256 MiB binary bound
+also bounds the operation-local image, not total host memory under load.
+File reads and kernel calls are not physically preemptible; deadline checks
+between bounded reads prevent a late preparation from starting execution.
+
+The same original deadline covers stdin, bounded stdout/stderr and direct
+child completion. Expired pre-entry preparation is NotDispatched; incomplete
+output, timeout or failure after spawn is Unknown. The bounded cleanup grace
+does not create extra success time. Descendant-held pipes cannot extend the
+exchange indefinitely, but this adapter does not supervise arbitrary
+descendants. Exact durable effect/payload identity and the separately
+validated height/work observation remain required. Chain generations and
+local final-use generations are different namespaces, not equal integers.
+
+Native ELF fixture tests run through the real invoke/dispatch methods for
+blocked stdin, EOF, independent output limits, descendant-held pipes,
+nonzero exits, partial JSON and payload mismatch. Separate object tests cover
+replacement, rewriting and seal enforcement. Fixture compilation requires
+the native C compiler already used by the host build; absence is a failure,
+not a skipped success. These fixtures are not Chain nodes or ordinary model
+installation evidence. Existing script fixtures explicitly exercise only
+the lower pipe boundary and cannot qualify an executable for deployment.
+
+Model parameters still require artifact/evaluation/selection/withdrawal,
+final-use and resource owners. Topology/executable upgrades additionally
+require existing runtime/release/capability and compatibility/recovery
+decisions. Consensus/verifier/root changes require an explicit protocol
+context and migration/replay. A better score, vote, sealed binary or chain
+confirmation alone cannot authorize any higher-level upgrade.
+
+### Live PNP2 provider contract and credential handoff
+
+Schema 4, `trillionnium-pon-growth-local-v1`, retains the explicit cold local
+Node/store contract. A resident writer can make that local observer unavailable
+with `WRITER_BUSY`. Schema 5, `trillionnium-pon-growth-remote-v1`, instead invokes
+the pinned Chain executable's ordinary `push` and `packet-status` client with
+`public-protected-growth-development-v1`. It opens no local Chain store and
+rejects `chain_store`, legacy backend and recovery fields. The existing TaskFlow
+intent, effect journal, reconciliation and FinalUseAuthority remain the owners.
+
+The V5 signed provider contract fixes these operator-selected inputs:
+
+| Inputs | Binding |
+| --- | --- |
+| `chain_binary`, `chain_binary_sha256` | Original sealed executable identity. |
+| `chain_transport_profile`, `chain_peer`, `chain_server_public_key_hex`, `chain_resource_profile_sha256` | Explicit profile, canonical numeric IP:port, server identity and independently retained resource policy. |
+| `chain_client_secret_file`, `chain_client_secret_sha256`, `chain_client_public_key_hex` | Credential source, exact file bytes and derived Ed25519 caller identity. |
+| `chain_admission_bits`, `chain_admission_ttl_ms` | Original admission policy: 8–20 bits and 100–2000 ms; no additional execution credit. |
+| `chain_growth_namespace`, `chain_network_sha256`, `chain_parameters_sha256`, `chain_genesis_sha256`, `chain_genesis_time` | Exact growth context, PNP2 and permanent-account-growth-native-v2. |
+| Confirmation depth/work, `timeout_ms`, provider/destination/scope and FinalUse signer/key/revocations path | Existing admission thresholds, one operation deadline of at most 30000 ms, and existing local authority roots. |
+
+Resource policy and server/context pins are not learned from an unverified
+response on each request. The fixed CLI verifies its original signed cookie and
+response, including request/body and caller binding. Agentd then strictly checks
+`pon-native-growth-remote-client-result-v1`, the declared operation, outer pins,
+verified success and false authority flags, before applying the original exact
+growth observation parser and its 8193 SQL budget. This is a trusted pinned
+provider's signed view, not trustless Chain verification, SPV or global finality.
+The stdout wrapper contains no independently transferable signature certificate.
+`local_target_only` still means the selected provider's view; absence never
+proves global absence. Maintenance packets still have no accepted external task.
+
+The source credential is opened without following its final symlink and with
+nonblocking flags, then checked on the opened descriptor for regular-file,
+single-link, current-user and owner-only permissions. Exact SHA256 and the
+derived caller key must match the signed pins. The child receives a new 0600
+snapshot inside an operation-private 0700 directory under the existing Agentd
+automation root, rather than reopening the original checked pathname. Only the
+fixed transport credential is copied; no FinalUse or model-qualification issuer
+is generated. Host-owner and kernel trust remain as above. Unsupported platforms
+fail closed through the original immutable-executable boundary.
+
+Executable preparation, credential handoff, read preflight and submission share
+one original deadline. The child receives only its remaining milliseconds;
+cookie TTL and admission policy are separate limits. Expired preparation or a
+failed read preflight cannot start a mutation here. A failed or incomplete
+submission after entry remains Unknown, and recovery uses exact status lookup
+without automatic redispatch. Status uses the owner's original paid lane.
+After the direct child's actual reap, snapshot deletion is best-effort. If reap
+is unconfirmed after the original 250 ms cleanup grace, or the exchange future
+is cancelled, the private snapshot is retained rather than removed under a
+possibly live child. Existing host operations must clean such residual files
+after process termination; no extra supervisor or success deadline is created.
+This does not promise arbitrary-descendant cleanup, preemptible filesystem I/O
+or zero residual credentials after an abnormal termination.
+
+The existing paired workflow explicitly executes
+`real_growth_remote_chain_resident_task_lost_ack_confirm_reorg_restart` and
+requires at least one passed test. It checks the actual resident service and
+ordinary client, V4 lock refusal, independent tag-5 identity, maintenance
+exclusion, reorganization and clean same-endpoint restart. Its lost-ACK case
+discards a real consumer acknowledgement and reconciles by lookup while checking
+actual submit counts; it does not claim TCP ACK-drop fault injection. These
+checks do not qualify throughput, independent operators or model installation.
+
+### Ordinary PoN-to-model composition remediation
+
+Use existing `P0.8D-VERTICAL-SLICE` and `INT-2-AGENTD-CODEX-COMPOSITION` with
+`TASKFLOW-1-EXECUTION-BOUNDARY` co-ownership. agent-runtime hosts the ordinary
+caller; automation-platform owns effect intent/terminal reconciliation;
+learning-platform owns artifact/evaluation/selection facts and inference-platform
+owns loading. Agentd adds no durable product journal or self-issued authority.
+The required path and three-round acceptance are in the
+[Lane E sequence](../../lane-e/END_TO_END_LEARNING_SEQUENCE.md#8-real-neural-model-upgrade-through-the-ordinary-product-path).
+
+Bind `ProviderEffectIntent` and independently retained
+`ExpectedAutomationTaskAcceptanceV1` to the original task/output/packet and policy;
+consume the bounded `AutomationEffectChainObservation` version rather than a
+boolean success or height alone. Register a named non-test product caller for
+settlement → current artifact/withdrawal checks → independent local selection →
+verified closure fetch → safe loader → generation-fenced route/readback.
+Keep chain generation/work policy separate from local authority generations.
+I08 settlement cannot issue FinalUse, installation, export or replay permission.
+I10 admission consumes the actual owner-issued selection and required fresh
+`VerifiedUseToken<C>` at its governed boundary, never one minted by observation.
+
+After spawn, timeout, partial output and lost acknowledgement remain Unknown.
+Reconcile with the existing durable TaskFlow logical-effect key and exact payload;
+local retries do not create another semantic effect. A reorg invalidates the
+current chain observation and blocks new admission until re-observed; it cannot
+erase an already performed local/external effect or authorize duplicate replay.
+The artifact/selector owner records quarantine or an explicitly authorized
+continuation/rollback; already admitted Unknown effects stay under their original
+reconciler. Withdrawal invalidates future use even if chain settlement persists.
+Exercise crash before/after load/route/ack, reorg after install, stale token,
+revocation during fetch and ambiguous effect recovery through that real caller.
+
+Chain PN1 work correctness/effective-cost/honest-service and PN2 witness/state
+qualification remain upstream public-deployment prerequisites. Chain's existing
+node owns I03/I04 parent/witness execution. Agentd consumes bounded I08 task
+observations under their explicit verifier/trust contract, current root and
+unavailable/rejected outcomes; it adds no second Chain state executor, per-task
+full-history replay or unbounded fallback. Under
+`P0.8C-RESOURCE-BUDGETS`, measure preparation copy/hash/process overhead separately
+from load/inference and preserve total concurrency/deadline limits. Batching or
+caching requires authenticated freshness/invalidation and immutable-executable
+semantics; faster unsafe reuse cannot qualify the P2 throughput target.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

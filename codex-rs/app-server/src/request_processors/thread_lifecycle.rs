@@ -304,20 +304,21 @@ pub(super) async fn ensure_listener_task_running(
                     )
                     .await;
                 }
-                event = conversation.next_event() => {
-                    let event = match event {
-                        Ok(event) => event,
+                delivery = conversation.next_event_with_completion() => {
+                    let delivery = match delivery {
+                        Ok(delivery) => delivery,
                         Err(err) => {
                             tracing::warn!("thread.next_event() failed with: {err}");
                             break;
                         }
                     };
 
+                    let event = &delivery.event;
                     if let Some(worker) = &turn_cost_worker {
                         worker.observe_event(
                             conversation_id,
                             config.as_ref(),
-                            &event,
+                            event,
                             || conversation.session_telemetry(),
                         );
                     }
@@ -346,8 +347,8 @@ pub(super) async fn ensure_listener_task_running(
                         conversation_id,
                     );
 
-                    apply_bespoke_event_handling(
-                        event.clone(),
+                    if apply_bespoke_event_handling(
+                        delivery.clone(),
                         conversation_id,
                         conversation.clone(),
                         thread_manager.clone(),
@@ -356,8 +357,15 @@ pub(super) async fn ensure_listener_task_running(
                         thread_watch_manager.clone(),
                         thread_list_state_permit.clone(),
                         fallback_model_provider.clone(),
+                        &mut cancel_rx,
                     )
-                    .await;
+                    .await
+                    .is_break()
+                    {
+                        // Cancellation retires this listener, not the Core terminal owner.
+                        // Do not poll its consumed oneshot again or publish a completion.
+                        break;
+                    }
                     if matches!(event.msg, EventMsg::ShutdownComplete)
                         && let Some(completion_tx) = thread_state
                             .lock()

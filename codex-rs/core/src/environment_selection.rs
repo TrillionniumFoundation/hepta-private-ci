@@ -5,7 +5,6 @@ use std::sync::Arc;
 use std::sync::OnceLock;
 
 use arc_swap::ArcSwap;
-use async_channel::Sender;
 use codex_exec_server::Environment;
 use codex_exec_server::EnvironmentConnectionState;
 use codex_exec_server::EnvironmentManager;
@@ -212,7 +211,7 @@ pub(crate) struct ThreadEnvironments {
     shell_snapshot: ShellSnapshot,
     non_blocking_snapshots: bool,
     environments: ArcSwap<Vec<SelectedTurnEnvironment>>,
-    connection_event_tx: OnceLock<Sender<Event>>,
+    connection_event_tx: OnceLock<crate::event_delivery::EventSender>,
 }
 
 impl ThreadEnvironments {
@@ -500,7 +499,7 @@ impl ThreadEnvironments {
     fn spawn_connection_event_listener(
         environment: &Environment,
         environment_id: String,
-        tx_event: Sender<Event>,
+        tx_event: crate::event_delivery::EventSender,
     ) -> Option<Arc<AbortOnDropHandle<()>>> {
         let mut connection_state = environment.subscribe_connection_state()?;
         let task = tokio::spawn(async move {
@@ -541,7 +540,10 @@ impl ThreadEnvironments {
         Some(Arc::new(AbortOnDropHandle::new(task)))
     }
 
-    pub(crate) fn start_connection_event_forwarding(&self, tx_event: Sender<Event>) {
+    pub(crate) fn start_connection_event_forwarding(
+        &self,
+        tx_event: crate::event_delivery::EventSender,
+    ) {
         let tx_event = self.connection_event_tx.get_or_init(|| tx_event);
         let current = self.environments.load_full();
         let environments = current
@@ -1543,7 +1545,7 @@ url = "ws://127.0.0.1:8765"
             workspace_roots: Vec::new(),
             config: EnvironmentConfigState::FromThread,
         };
-        let (tx_event, rx_event) = async_channel::unbounded();
+        let (tx_event, rx_event) = crate::event_delivery::unbounded();
         let environments = Arc::new(ThreadEnvironments::new(
             Arc::clone(&manager),
             crate::shell::default_user_shell(),

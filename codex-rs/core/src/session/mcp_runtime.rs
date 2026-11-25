@@ -384,7 +384,13 @@ impl Session {
             ready_selected_capability_roots: ready_selected_capability_roots.to_vec(),
             mcp_servers,
             submit_id: desired.submit_id.clone(),
-            tx_event: Some(self.get_tx_event()),
+            tx_event: Some({
+                let sender = self.get_tx_event();
+                codex_mcp::McpEventSender::new(move |event| {
+                    let sender = sender.clone();
+                    async move { sender.send(event).await }
+                })
+            }),
             startup_cancellation_token: CancellationToken::new(),
             runtime_context,
             codex_apps_tools_cache: self.services.mcp_manager.codex_apps_tools_cache(),

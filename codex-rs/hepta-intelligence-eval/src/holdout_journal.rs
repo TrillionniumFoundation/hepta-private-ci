@@ -360,7 +360,8 @@ mod tests {
     fn capacity_failure_does_not_consume_holdout_or_break_full_journal_retry() {
         let first_plan = frozen_plan("first-plan");
         let next_plan = frozen_plan("next-plan");
-        let mut journal = FinalHoldoutJournalV1::with_record_limit(1).expect("valid capacity");
+        let mut journal =
+            FinalHoldoutJournalV1::with_record_limit(/*record_limit*/ 1).expect("valid capacity");
         journal
             .consume(Digest32::ZERO, &first_plan)
             .expect("first admission");
@@ -381,8 +382,9 @@ mod tests {
             HoldoutUseDispositionV1::IdempotentReplay
         );
         assert_eq!(journal.snapshot(), before);
-        let mut reopened = FinalHoldoutJournalV1::from_snapshot_with_record_limit(before, 2)
-            .expect("host raises capacity");
+        let mut reopened =
+            FinalHoldoutJournalV1::from_snapshot_with_record_limit(before, /*record_limit*/ 2)
+                .expect("host raises capacity");
         assert_eq!(
             reopened
                 .consume(reopened.head_digest(), &next_plan)

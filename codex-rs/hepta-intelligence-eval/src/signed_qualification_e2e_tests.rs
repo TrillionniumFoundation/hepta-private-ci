@@ -114,7 +114,7 @@ fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
     let roles = vec![MetricRoleContractV2 {
         metric_id: id("task-utility"),
         role: MetricRoleV2::PrimarySuperiority {
-            minimum_improvement: FixedQ32::from_raw(5),
+            minimum_improvement: FixedQ32::from_raw(/*raw*/ 5),
         },
     }];
     let frozen_plan = freeze_cross_fold_plan_v2(
@@ -129,11 +129,11 @@ fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
             metric_contracts: vec![MetricContractV1 {
                 metric_id: id("task-utility"),
                 direction: EvaluationDirectionV1::Maximize,
-                safety_floor: Some(FixedQ32::from_raw(80)),
+                safety_floor: Some(FixedQ32::from_raw(/*raw*/ 80)),
             }],
             family_alpha_ppm: 50_000,
             simultaneous_comparisons: 1,
-            folds: vec![fold(1), fold(2)],
+            folds: vec![fold(/*index*/ 1), fold(/*index*/ 2)],
             final_holdout_window_id: id("holdout-window-2"),
             final_holdout_digest: digest("final-holdout"),
         },
@@ -167,14 +167,14 @@ fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
             metric_id: id("task-utility"),
             direction: EvaluationDirectionV1::Maximize,
             candidate: EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(100),
-                upper: FixedQ32::from_raw(110),
+                lower: FixedQ32::from_raw(/*raw*/ 100),
+                upper: FixedQ32::from_raw(/*raw*/ 110),
             },
             baseline: EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(80),
-                upper: FixedQ32::from_raw(90),
+                lower: FixedQ32::from_raw(/*raw*/ 80),
+                upper: FixedQ32::from_raw(/*raw*/ 90),
             },
-            safety_floor: Some(FixedQ32::from_raw(80)),
+            safety_floor: Some(FixedQ32::from_raw(/*raw*/ 80)),
             support_digest: digest("metric-support"),
         }],
     };
@@ -222,9 +222,14 @@ fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
         ),
     };
 
-    let decision =
-        decide_with_signed_evidence_v2(bundle.clone(), roles.clone(), &evidence, &verifier, 50)
-            .unwrap();
+    let decision = decide_with_signed_evidence_v2(
+        bundle.clone(),
+        roles.clone(),
+        &evidence,
+        &verifier,
+        /*now*/ 50,
+    )
+    .unwrap();
     assert_eq!(
         decision.decision.disposition,
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
@@ -232,6 +237,8 @@ fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
     assert!(!decision.decision.authority.grants_any());
 
     let mut tampered = bundle;
-    tampered.metrics[0].candidate.lower = FixedQ32::from_raw(99);
-    assert!(decide_with_signed_evidence_v2(tampered, roles, &evidence, &verifier, 50).is_err());
+    tampered.metrics[0].candidate.lower = FixedQ32::from_raw(/*raw*/ 99);
+    assert!(
+        decide_with_signed_evidence_v2(tampered, roles, &evidence, &verifier, /*now*/ 50).is_err()
+    );
 }

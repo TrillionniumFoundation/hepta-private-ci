@@ -88,7 +88,7 @@ fn engram_node() -> EngramNodeV1 {
         confidence_ppm: 900_000,
         valid_from_unix_ms: 1,
         valid_to_unix_ms: None,
-        snapshot_generation: generation(1),
+        snapshot_generation: generation(/*value*/ 1),
     }
 }
 
@@ -102,7 +102,7 @@ fn synapse() -> SynapseV1 {
         plasticity_class: PlasticityClassV1::EligibilityGated,
         eligibility_ppm: 0,
         support_manifest_sha256: digest('2'),
-        snapshot_generation: generation(1),
+        snapshot_generation: generation(/*value*/ 1),
     }
 }
 
@@ -181,8 +181,8 @@ fn replay_receipt() -> ReplaySelectionReceiptV1 {
 
 fn plasticity() -> PlasticityBatchV1 {
     PlasticityBatchV1 {
-        predecessor_generation: generation(1),
-        next_generation: generation(2),
+        predecessor_generation: generation(/*value*/ 1),
+        next_generation: generation(/*value*/ 2),
         outcome_signal_digest: digest('c'),
         weight_proposals: vec![WeightProposalV1 {
             source_node_id: id("node:1"),
@@ -232,8 +232,8 @@ fn topology() -> TopologyProposalV1 {
 fn forget() -> ForgetPropagationReceiptV1 {
     ForgetPropagationReceiptV1 {
         event_id: id("event:1"),
-        predecessor_generation: generation(1),
-        next_generation: generation(2),
+        predecessor_generation: generation(/*value*/ 1),
+        next_generation: generation(/*value*/ 2),
         retired_node_ids: vec![id("node:1")],
         retired_synapses: Vec::new(),
         projection_rebuild_required: true,

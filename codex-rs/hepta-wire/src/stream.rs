@@ -150,22 +150,22 @@ fn inspect_header(header: &[u8]) -> Result<FrameHeader, StreamDecodeError> {
     if header[..4] != *b"HPTA" {
         return Err(StreamDecodeError::Magic);
     }
-    let raw_version = read_u16(header, 4)?;
+    let raw_version = read_u16(header, /*start*/ 4)?;
     let _version = match raw_version {
         1 => WireVersion::V1,
         2 => WireVersion::V2,
         other => return Err(StreamDecodeError::Version(other)),
     };
-    let schema_length = usize::from(read_u16(header, 6)?);
-    let producer_length = usize::from(read_u16(header, 8)?);
+    let schema_length = usize::from(read_u16(header, /*start*/ 6)?);
+    let producer_length = usize::from(read_u16(header, /*start*/ 8)?);
     if !(1..=128).contains(&schema_length) || !(1..=128).contains(&producer_length) {
         return Err(StreamDecodeError::IdentityLength);
     }
-    if read_u64(header, 10)? == 0 {
+    if read_u64(header, /*start*/ 10)? == 0 {
         return Err(StreamDecodeError::Generation);
     }
-    let payload_length =
-        usize::try_from(read_u32(header, 50)?).map_err(|_| StreamDecodeError::PayloadLength)?;
+    let payload_length = usize::try_from(read_u32(header, /*start*/ 50)?)
+        .map_err(|_| StreamDecodeError::PayloadLength)?;
     if payload_length == 0 || payload_length > MAX_WIRE_PAYLOAD_BYTES {
         return Err(StreamDecodeError::PayloadLength);
     }

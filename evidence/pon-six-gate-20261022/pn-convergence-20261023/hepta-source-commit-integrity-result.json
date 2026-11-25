@@ -1,0 +1,18 @@
+{
+  "head": "50e9a5f9654dcc360af2d0467f00c413c1203526",
+  "command": [
+    "python3",
+    "scripts/hepta-repository-integrity.py",
+    "verify",
+    "--base",
+    "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "--head",
+    "50e9a5f9654dcc360af2d0467f00c413c1203526",
+    "--output",
+    "/tmp/trnm-pn-convergence-20261023/evidence-root/hepta-source-commit-integrity.json"
+  ],
+  "returncode": 0,
+  "seconds": 2.057543279021047,
+  "scope": "Committed source check; final workflow pins and final combined head still require their own check.",
+  "log_sha256": "f0e20c87baa46efec1c976a54069a66b5a767170b592b238ddf35cd0f67e8b63"
+}

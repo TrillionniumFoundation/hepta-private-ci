@@ -86,6 +86,8 @@ const DEFAULT_CHALLENGE_LIFETIME_SECONDS: u64 = 900;
 pub enum AcceptanceError {
     #[error("operator acceptance rejected: {0}")]
     Invalid(String),
+    #[error("private operator acceptance directory owner is not qualified on this platform")]
+    UnsupportedPrivateDirectoryOwner,
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error("operator acceptance serialization failed: {0}")]

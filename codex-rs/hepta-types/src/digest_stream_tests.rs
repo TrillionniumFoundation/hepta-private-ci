@@ -51,7 +51,9 @@ impl Read for BrokenReader {
 #[test]
 fn stream_error_never_returns_a_partial_digest() {
     assert_eq!(
-        Digest32::of_reader(BrokenReader, 4096).unwrap_err().kind(),
+        Digest32::of_reader(BrokenReader, /*maximum_bytes*/ 4096)
+            .unwrap_err()
+            .kind(),
         io::ErrorKind::PermissionDenied
     );
 }

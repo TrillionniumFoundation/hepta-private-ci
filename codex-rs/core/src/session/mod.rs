@@ -48,7 +48,6 @@ use crate::skills_load_input_from_config;
 use crate::tools::lifecycle::has_active_tool_policy;
 use crate::turn_metadata::TurnMetadataState;
 use crate::turn_timing::now_unix_timestamp_ms;
-use async_channel::Receiver;
 use async_channel::Sender;
 use chrono::Local;
 use chrono::Utc;
@@ -387,7 +386,7 @@ use codex_utils_stream_parser::ProposedPlanSegment;
 /// completion future observes that shutdown.
 pub(crate) struct SessionIo {
     pub(crate) tx_sub: Sender<Submission>,
-    pub(crate) rx_event: Receiver<Event>,
+    pub(crate) rx_event: crate::event_delivery::EventReceiver,
     // Last known status of the agent.
     pub(crate) agent_status: watch::Receiver<AgentStatus>,
     // Shared future for the background submission loop completion so multiple
@@ -557,7 +556,7 @@ impl Session {
             windows_sandbox_proxy_settings_mode,
         } = args;
         let (tx_sub, rx_sub) = async_channel::bounded(SUBMISSION_CHANNEL_CAPACITY);
-        let (tx_event, rx_event) = async_channel::unbounded();
+        let (tx_event, rx_event) = crate::event_delivery::unbounded();
 
         let LoadedUserInstructions {
             instructions: user_instructions,
@@ -939,12 +938,14 @@ impl SessionIo {
     }
 
     pub(crate) async fn next_event(&self) -> CodexResult<Event> {
-        let event = self
-            .rx_event
-            .recv()
+        Ok(self.next_event_with_completion().await?.event)
+    }
+
+    pub(crate) async fn next_event_with_completion(&self) -> CodexResult<crate::EventDelivery> {
+        self.rx_event
+            .recv_delivery()
             .await
-            .map_err(|_| CodexErr::InternalAgentDied)?;
-        Ok(event)
+            .map_err(|_| CodexErr::InternalAgentDied)
     }
 
     pub(crate) async fn agent_status(&self) -> AgentStatus {
@@ -1324,7 +1325,7 @@ impl Session {
         }
     }
 
-    pub(crate) fn get_tx_event(&self) -> Sender<Event> {
+    pub(crate) fn get_tx_event(&self) -> crate::event_delivery::EventSender {
         self.tx_event.clone()
     }
 
@@ -2172,6 +2173,20 @@ impl Session {
 
     /// Persist the event to rollout and send it to clients.
     pub(crate) async fn send_event(&self, turn_context: &TurnContext, msg: EventMsg) {
+        self.send_event_with_terminalization(
+            turn_context,
+            msg,
+            crate::event_delivery::TerminalEventCompletion::default(),
+        )
+        .await;
+    }
+
+    pub(crate) async fn send_event_with_terminalization(
+        &self,
+        turn_context: &TurnContext,
+        msg: EventMsg,
+        terminalization: crate::event_delivery::TerminalEventCompletion,
+    ) {
         let legacy_source = msg.clone();
         if let EventMsg::Error(error) = &legacy_source
             && error
@@ -2195,7 +2210,14 @@ impl Session {
             id: turn_context.sub_id.clone(),
             msg,
         };
-        self.send_event_raw(event).await;
+        self.send_event_raw_with_persistence(
+            crate::EventDelivery {
+                event,
+                terminalization,
+            },
+            /*persist*/ true,
+        )
+        .await;
         self.maybe_notify_parent_of_terminal_turn(turn_context, &legacy_source)
             .await;
         self.maybe_mirror_event_text_to_realtime(&legacy_source)
@@ -2435,7 +2457,7 @@ impl Session {
     }
 
     pub(crate) async fn send_event_raw(&self, event: Event) {
-        self.send_event_raw_with_persistence(event, /*persist*/ true)
+        self.send_event_raw_with_persistence(event.into(), /*persist*/ true)
             .await;
     }
 
@@ -2449,28 +2471,29 @@ impl Session {
                 true
             }
         };
-        self.send_event_raw_with_persistence(event, persist).await;
+        self.send_event_raw_with_persistence(event.into(), persist)
+            .await;
     }
 
-    async fn send_event_raw_with_persistence(&self, event: Event, persist: bool) {
-        self.services.mcp_runtime.observe_event(&event.msg);
+    async fn send_event_raw_with_persistence(&self, event: crate::EventDelivery, persist: bool) {
+        self.services.mcp_runtime.observe_event(&event.event.msg);
         // Persist the event into rollout storage; the store applies its persistence policy.
         if persist {
-            let rollout_items = vec![RolloutItem::EventMsg(event.msg.clone())];
+            let rollout_items = vec![RolloutItem::EventMsg(event.event.msg.clone())];
             self.persist_rollout_items(&rollout_items).await;
         }
         self.services
             .rollout_thread_trace
-            .record_protocol_event(&event.msg);
+            .record_protocol_event(&event.event.msg);
         self.deliver_event_raw(event).await;
     }
 
-    async fn deliver_event_raw(&self, event: Event) {
+    async fn deliver_event_raw(&self, event: crate::EventDelivery) {
         // Record the last known agent status.
-        if let Some(status) = agent_status_from_event(&event.msg) {
+        if let Some(status) = agent_status_from_event(&event.event.msg) {
             self.agent_status.send_replace(status);
         }
-        if let Err(e) = self.tx_event.send(event).await {
+        if let Err(e) = self.tx_event.send_delivery(event).await {
             debug!("dropping event because channel is closed: {e}");
         }
     }

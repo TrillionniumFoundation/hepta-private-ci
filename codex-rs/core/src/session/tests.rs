@@ -256,6 +256,8 @@ impl StepContext {
 #[path = "configuration_tests.rs"]
 mod configuration_tests;
 mod guardian_tests;
+#[path = "terminal_admission_tests.rs"]
+mod terminal_admission_tests;
 
 struct InstructionsTestCase {
     slug: &'static str,
@@ -1198,10 +1200,35 @@ async fn cancelled_after_start_transition_promotes_detached_terminalizer() {
             .is_err(),
         "shutdown drain must include post-clear lifecycle side effects"
     );
+    let mut terminalization = None;
+    let mut saw_turn_started = false;
+    let mut saw_turn_aborted = false;
+    for _ in 0..16 {
+        let event = timeout(StdDuration::from_secs(2), rx.recv_delivery())
+            .await
+            .expect("expected detached terminal event")
+            .expect("event channel open");
+        match event.event.msg {
+            EventMsg::TurnStarted(_) => saw_turn_started = true,
+            EventMsg::TurnAborted(payload) => {
+                assert_eq!(Some(turn_context.sub_id.clone()), payload.turn_id);
+                assert_eq!(TurnAbortReason::Interrupted, payload.reason);
+                saw_turn_aborted = true;
+                terminalization = Some(event.terminalization);
+                break;
+            }
+            _ => {}
+        }
+    }
+    let terminalization = terminalization.expect("start abort must carry its owner witness");
+    assert!(futures::poll!(Box::pin(terminalization.wait())).is_pending());
     idle_release.notify_waiters();
     transition_drain
         .await
         .expect("shutdown transition drain should join after terminalization");
+    timeout(Duration::from_secs(2), terminalization.wait())
+        .await
+        .expect("start abort delivery must retain completion through registry retirement");
 
     timeout(StdDuration::from_secs(2), async {
         loop {
@@ -1214,24 +1241,6 @@ async fn cancelled_after_start_transition_promotes_detached_terminalizer() {
     .await
     .expect("detached terminalizer should clear the promoted transition");
 
-    let mut saw_turn_started = false;
-    let mut saw_turn_aborted = false;
-    for _ in 0..16 {
-        let event = timeout(StdDuration::from_secs(2), rx.recv())
-            .await
-            .expect("expected detached terminal event")
-            .expect("event channel open");
-        match event.msg {
-            EventMsg::TurnStarted(_) => saw_turn_started = true,
-            EventMsg::TurnAborted(event) => {
-                assert_eq!(Some(turn_context.sub_id.clone()), event.turn_id);
-                assert_eq!(TurnAbortReason::Interrupted, event.reason);
-                saw_turn_aborted = true;
-                break;
-            }
-            _ => {}
-        }
-    }
     assert!(
         !saw_turn_started,
         "a cancelled owner must not attach a task"
@@ -6047,7 +6056,9 @@ fn success_flag_true_with_no_error_and_content_used() {
     assert_eq!(expected, got);
 }
 
-async fn wait_for_thread_rolled_back(rx: &async_channel::Receiver<Event>) -> ThreadRolledBackEvent {
+async fn wait_for_thread_rolled_back(
+    rx: &crate::event_delivery::EventReceiver,
+) -> ThreadRolledBackEvent {
     let deadline = StdDuration::from_secs(2);
     let start = std::time::Instant::now();
     loop {
@@ -6063,7 +6074,7 @@ async fn wait_for_thread_rolled_back(rx: &async_channel::Receiver<Event>) -> Thr
     }
 }
 
-async fn wait_for_thread_rollback_failed(rx: &async_channel::Receiver<Event>) -> ErrorEvent {
+async fn wait_for_thread_rollback_failed(rx: &crate::event_delivery::EventReceiver) -> ErrorEvent {
     let deadline = StdDuration::from_secs(2);
     let start = std::time::Instant::now();
     loop {
@@ -6569,7 +6580,7 @@ async fn session_new_fails_when_zsh_fork_enabled_without_packaged_zsh() {
         user_shell_override: None,
     };
 
-    let (tx_event, _rx_event) = async_channel::unbounded();
+    let (tx_event, _rx_event) = crate::event_delivery::unbounded();
     let (agent_status_tx, _agent_status_rx) = watch::channel(AgentStatus::PendingInit);
     let plugins_manager = Arc::new(plugins_manager_for_config(
         &config,
@@ -6652,7 +6663,7 @@ pub(crate) async fn build_world_state_from_turn_context(
 
 // todo: use online model info
 pub(crate) async fn make_session_and_context() -> (Session, TurnContext) {
-    let (tx_event, _rx_event) = async_channel::unbounded();
+    let (tx_event, _rx_event) = crate::event_delivery::unbounded();
     let codex_home = tempfile::tempdir().expect("create temp dir");
     let config = build_test_config(codex_home.path()).await;
     let config = Arc::new(config);
@@ -6955,7 +6966,7 @@ async fn load_latest_config_for_session(session: &Session) -> Config {
 
 async fn make_session_with_config_and_rx(
     mutator: impl FnOnce(&mut Config),
-) -> anyhow::Result<(Arc<Session>, async_channel::Receiver<Event>)> {
+) -> anyhow::Result<(Arc<Session>, crate::event_delivery::EventReceiver)> {
     let codex_home = tempfile::tempdir().expect("create temp dir");
     let mut config = build_test_config(codex_home.path()).await;
     mutator(&mut config);
@@ -7016,7 +7027,7 @@ async fn make_session_with_config_and_rx(
         user_shell_override: None,
     };
 
-    let (tx_event, rx_event) = async_channel::unbounded();
+    let (tx_event, rx_event) = crate::event_delivery::unbounded();
     let (agent_status_tx, _agent_status_rx) = watch::channel(AgentStatus::PendingInit);
     let plugins_manager = Arc::new(plugins_manager_for_config(
         &config,
@@ -7076,7 +7087,7 @@ async fn make_session_with_history_source_and_agent_control_and_rx(
     initial_history: InitialHistory,
     session_source: SessionSource,
     agent_control: AgentControl,
-) -> anyhow::Result<(Arc<Session>, async_channel::Receiver<Event>)> {
+) -> anyhow::Result<(Arc<Session>, crate::event_delivery::EventReceiver)> {
     let codex_home = tempfile::tempdir().expect("create temp dir");
     let mut config = build_test_config(codex_home.path()).await;
     config.ephemeral = true;
@@ -7137,7 +7148,7 @@ async fn make_session_with_history_source_and_agent_control_and_rx(
         user_shell_override: None,
     };
 
-    let (tx_event, rx_event) = async_channel::unbounded();
+    let (tx_event, rx_event) = crate::event_delivery::unbounded();
     let (agent_status_tx, _agent_status_rx) = watch::channel(AgentStatus::PendingInit);
     let plugins_manager = Arc::new(plugins_manager_for_config(
         &config,
@@ -7892,7 +7903,7 @@ async fn request_permissions_is_auto_denied_when_granular_policy_blocks_tool_req
 async fn submit_with_trace_captures_current_span_trace_context() {
     let (_session, _turn_context) = make_session_and_context().await;
     let (tx_sub, rx_sub) = async_channel::bounded(1);
-    let (_tx_event, rx_event) = async_channel::unbounded();
+    let (_tx_event, rx_event) = crate::event_delivery::unbounded();
     let io = SessionIo {
         tx_sub,
         rx_event,
@@ -8634,7 +8645,7 @@ async fn submission_loop_channel_close_aborts_active_turn_before_thread_stop_lif
 async fn shutdown_and_wait_allows_multiple_waiters() {
     let (_session, _turn_context) = make_session_and_context().await;
     let (tx_sub, rx_sub) = async_channel::bounded::<Submission>(4);
-    let (_tx_event, rx_event) = async_channel::unbounded();
+    let (_tx_event, rx_event) = crate::event_delivery::unbounded();
     let session_loop_handle = tokio::spawn(async move {
         let shutdown = rx_sub.recv().await.expect("shutdown submission");
         assert!(matches!(shutdown.op, Op::Shutdown));
@@ -8671,7 +8682,7 @@ async fn shutdown_and_wait_waits_when_shutdown_is_already_in_progress() {
     let (_session, _turn_context) = make_session_and_context().await;
     let (tx_sub, rx_sub) = async_channel::bounded(4);
     drop(rx_sub);
-    let (_tx_event, rx_event) = async_channel::unbounded();
+    let (_tx_event, rx_event) = crate::event_delivery::unbounded();
     let (shutdown_complete_tx, shutdown_complete_rx) = tokio::sync::oneshot::channel();
     let session_loop_handle = tokio::spawn(async move {
         let _ = shutdown_complete_rx.await;
@@ -8707,7 +8718,7 @@ async fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {
     let parent_session = Arc::new(parent_session);
     let parent_config = Arc::clone(&parent_turn_context.config);
     let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);
-    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();
+    let (_parent_tx_event, parent_rx_event) = crate::event_delivery::unbounded();
     let parent_session_for_loop = Arc::clone(&parent_session);
     let parent_session_loop_handle = tokio::spawn(async move {
         submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;
@@ -8721,7 +8732,7 @@ async fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {
 
     let (child_session, _child_turn_context) = make_session_and_context().await;
     let (child_tx_sub, child_rx_sub) = async_channel::bounded::<Submission>(4);
-    let (_child_tx_event, child_rx_event) = async_channel::unbounded();
+    let (_child_tx_event, child_rx_event) = crate::event_delivery::unbounded();
     let (child_shutdown_tx, child_shutdown_rx) = tokio::sync::oneshot::channel();
     let child_session_loop_handle = tokio::spawn(async move {
         let shutdown = child_rx_sub
@@ -8763,7 +8774,7 @@ async fn cached_guardian_subagent_exposes_its_rollout_path() {
     let (mut child_session, _child_turn_context) = make_session_and_context().await;
     let child_rollout_path = attach_thread_persistence(&mut child_session).await;
     let (child_tx_sub, _child_rx_sub) = async_channel::bounded(4);
-    let (_child_tx_event, child_rx_event) = async_channel::unbounded();
+    let (_child_tx_event, child_rx_event) = crate::event_delivery::unbounded();
     let child_session_loop_handle = tokio::spawn(async {});
     let child_session = Arc::new(child_session);
     let child_io = SessionIo {
@@ -8792,7 +8803,7 @@ async fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {
     let parent_session = Arc::new(parent_session);
     let parent_config = Arc::clone(&parent_turn_context.config);
     let (parent_tx_sub, parent_rx_sub) = async_channel::bounded(4);
-    let (_parent_tx_event, parent_rx_event) = async_channel::unbounded();
+    let (_parent_tx_event, parent_rx_event) = crate::event_delivery::unbounded();
     let parent_session_for_loop = Arc::clone(&parent_session);
     let parent_session_loop_handle = tokio::spawn(async move {
         submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;
@@ -8806,7 +8817,7 @@ async fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {
 
     let (child_session, _child_turn_context) = make_session_and_context().await;
     let (child_tx_sub, child_rx_sub) = async_channel::bounded::<Submission>(4);
-    let (_child_tx_event, child_rx_event) = async_channel::unbounded();
+    let (_child_tx_event, child_rx_event) = crate::event_delivery::unbounded();
     let (child_shutdown_tx, child_shutdown_rx) = tokio::sync::oneshot::channel();
     let child_session_loop_handle = tokio::spawn(async move {
         let shutdown = child_rx_sub
@@ -8847,7 +8858,7 @@ async fn make_session_and_context_with_auth_and_config_and_rx<F>(
 ) -> (
     Arc<Session>,
     Arc<TurnContext>,
-    async_channel::Receiver<Event>,
+    crate::event_delivery::EventReceiver,
 )
 where
     F: FnOnce(&mut Config),
@@ -8870,12 +8881,12 @@ async fn make_session_and_context_with_auth_config_home_and_rx<F>(
 ) -> (
     Arc<Session>,
     Arc<TurnContext>,
-    async_channel::Receiver<Event>,
+    crate::event_delivery::EventReceiver,
 )
 where
     F: FnOnce(&mut Config),
 {
-    let (tx_event, rx_event) = async_channel::unbounded();
+    let (tx_event, rx_event) = crate::event_delivery::unbounded();
     let mut config = build_test_config(codex_home).await;
     configure_config(&mut config);
     let state_db = None;
@@ -9164,7 +9175,7 @@ pub(crate) async fn make_session_and_context_with_dynamic_tools_and_rx(
 ) -> (
     Arc<Session>,
     Arc<TurnContext>,
-    async_channel::Receiver<Event>,
+    crate::event_delivery::EventReceiver,
 ) {
     make_session_and_context_with_auth_and_config_and_rx(
         CodexAuth::from_api_key("Test API Key"),
@@ -9179,7 +9190,7 @@ pub(crate) async fn make_session_and_context_with_dynamic_tools_and_rx(
 pub(crate) async fn make_session_and_context_with_rx() -> (
     Arc<Session>,
     Arc<TurnContext>,
-    async_channel::Receiver<Event>,
+    crate::event_delivery::EventReceiver,
 ) {
     make_session_and_context_with_dynamic_tools_and_rx(Vec::new()).await
 }
@@ -11184,17 +11195,24 @@ async fn wait_for_flush_count(
 }
 
 async fn recv_terminal_event(
-    rx: &async_channel::Receiver<Event>,
+    rx: &crate::event_delivery::EventReceiver,
     expected: TerminalEventKind,
 ) -> Event {
+    recv_terminal_delivery(rx, expected).await.event
+}
+
+async fn recv_terminal_delivery(
+    rx: &crate::event_delivery::EventReceiver,
+    expected: TerminalEventKind,
+) -> crate::EventDelivery {
     timeout(Duration::from_secs(2), async {
         loop {
-            let event = rx.recv().await.expect("event");
-            match (&event.msg, expected) {
+            let event = rx.recv_delivery().await.expect("event");
+            match (&event.event.msg, expected) {
                 (EventMsg::TurnComplete(_), TerminalEventKind::TurnComplete)
                 | (EventMsg::TurnAborted(_), TerminalEventKind::TurnAborted) => return event,
                 (EventMsg::TurnComplete(_) | EventMsg::TurnAborted(_), _) => {
-                    panic!("unexpected terminal event: {:?}", event.msg)
+                    panic!("unexpected terminal event: {:?}", event.event.msg)
                 }
                 _ => {}
             }
@@ -11453,11 +11471,40 @@ async fn turn_complete_flushes_terminal_event_after_delivery() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn turn_aborted_flushes_terminal_event_after_delivery() {
+    struct BlockingAbortLifecycle {
+        entered: Arc<Notify>,
+        release: Arc<Notify>,
+    }
+
+    impl codex_extension_api::TurnLifecycleContributor for BlockingAbortLifecycle {
+        fn on_turn_abort<'a>(
+            &'a self,
+            _input: codex_extension_api::TurnAbortInput<'a>,
+        ) -> codex_extension_api::ExtensionFuture<'a, ()> {
+            Box::pin(async move {
+                self.entered.notify_one();
+                self.release.notified().await;
+            })
+        }
+    }
+
     let (mut sess, tc, rx) = make_session_and_context_with_rx().await;
     let store = attach_in_memory_thread_store(
         Arc::get_mut(&mut sess).expect("session should be uniquely owned"),
     )
     .await;
+
+    let abort_entered = Arc::new(Notify::new());
+    let abort_release = Arc::new(Notify::new());
+    let mut builder = codex_extension_api::ExtensionRegistryBuilder::<crate::config::Config>::new();
+    builder.turn_lifecycle_contributor(Arc::new(BlockingAbortLifecycle {
+        entered: Arc::clone(&abort_entered),
+        release: Arc::clone(&abort_release),
+    }));
+    Arc::get_mut(&mut sess)
+        .expect("session uniquely owned")
+        .services
+        .extensions = Arc::new(builder.build());
 
     let input = vec![TurnInput::UserInput {
         content: vec![UserInput::Text {
@@ -11484,12 +11531,21 @@ async fn turn_aborted_flushes_terminal_event_after_delivery() {
         }
     });
 
-    let event = recv_terminal_event(&rx, TerminalEventKind::TurnAborted).await;
-    match event.msg {
+    let delivery = recv_terminal_delivery(&rx, TerminalEventKind::TurnAborted).await;
+    match delivery.event.msg {
         EventMsg::TurnAborted(e) => assert_eq!(TurnAbortReason::Interrupted, e.reason),
         other => panic!("unexpected event: {other:?}"),
     }
+    timeout(Duration::from_secs(2), abort_entered.notified())
+        .await
+        .expect("abort owner must reach its post-event lifecycle callback");
+    assert!(futures::poll!(Box::pin(delivery.terminalization.wait())).is_pending());
+    assert!(sess.has_pending_task_terminalization());
+    abort_release.notify_one();
     abort_task.await.expect("abort task should finish");
+    timeout(Duration::from_secs(2), delivery.terminalization.wait())
+        .await
+        .expect("aborted event must retain its exact completion until cleanup finishes");
     // Expected flushes:
     // 1. Task-runner flush after the task body observes cancellation.
     // 2. Interrupted-marker flush before TurnAborted so abort observers can reread it.
@@ -12111,7 +12167,7 @@ async fn cancelled_finish_owner_keeps_terminalizer_alive() {
         }
     }
 
-    let (mut session, turn_context, _rx) = make_session_and_context_with_rx().await;
+    let (mut session, turn_context, rx) = make_session_and_context_with_rx().await;
     let idle_entered = Arc::new(Notify::new());
     let idle_release = Arc::new(Notify::new());
     let idle_calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
@@ -12149,6 +12205,8 @@ async fn cancelled_finish_owner_keeps_terminalizer_alive() {
         .await
         .expect("finish terminalizer should reach idle lifecycle");
     assert!(session.has_pending_task_terminalization());
+    let delivery = recv_terminal_delivery(&rx, TerminalEventKind::TurnComplete).await;
+    assert!(futures::poll!(Box::pin(delivery.terminalization.wait())).is_pending());
 
     finish_owner.abort();
     let _ = finish_owner.await;
@@ -12166,6 +12224,9 @@ async fn cancelled_finish_owner_keeps_terminalizer_alive() {
     })
     .await
     .expect("detached finish terminalizer should clear its exact fence");
+    timeout(Duration::from_secs(2), delivery.terminalization.wait())
+        .await
+        .expect("terminal event must retain the exact detached finish completion");
     assert_eq!(1, idle_calls.load(std::sync::atomic::Ordering::SeqCst));
 
     // Let the original runner observe completion after the direct finish owner

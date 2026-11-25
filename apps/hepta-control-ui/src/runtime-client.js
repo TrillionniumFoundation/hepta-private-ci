@@ -26,7 +26,11 @@ function stableId(value, name) {
 }
 
 function digest(value, name) {
-  if (typeof value !== "string" || !DIGEST.test(value) || value === ZERO_DIGEST) {
+  if (
+    typeof value !== "string" ||
+    !DIGEST.test(value) ||
+    value === ZERO_DIGEST
+  ) {
     throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
   }
   return value;
@@ -71,9 +75,16 @@ export class RuntimeClient {
       endpointManifest.protocolVersion,
       "protocolVersion",
     );
-    const manifestDigest = digest(endpointManifest.manifestDigest, "manifestDigest");
+    const manifestDigest = digest(
+      endpointManifest.manifestDigest,
+      "manifestDigest",
+    );
     const observed = record(
-      await this.#transport.connect({ endpointId, protocolVersion, manifestDigest }),
+      await this.#transport.connect({
+        endpointId,
+        protocolVersion,
+        manifestDigest,
+      }),
       "connection observation",
     );
     if (observed.authenticated !== true) {
@@ -208,7 +219,9 @@ export class RuntimeClient {
   async #submit(method, input) {
     this.#requireSession();
     if (!this.#snapshot) {
-      throw new TypeError("mutating request requires a coherent runtime snapshot");
+      throw new TypeError(
+        "mutating request requires a coherent runtime snapshot",
+      );
     }
     record(input, "input");
     const operationId = stableId(input.operationId, "operationId");
@@ -223,7 +236,9 @@ export class RuntimeClient {
     const prior = this.#pending.get(operationId);
     if (prior) {
       if (prior.semanticDigest !== semanticDigest) {
-        throw new TypeError("operation identity was reused with changed semantics");
+        throw new TypeError(
+          "operation identity was reused with changed semantics",
+        );
       }
       return prior.acknowledgement;
     }

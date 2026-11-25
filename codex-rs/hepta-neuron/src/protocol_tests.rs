@@ -32,7 +32,7 @@ fn native_config() -> SparseConfig {
     SparseConfig {
         model_digest: Digest32::of_bytes(b"head"),
         normalization_digest: Digest32::of_bytes(b"normalization"),
-        generation: generation(1),
+        generation: generation(/*value*/ 1),
         width: 5,
         top_k: 1,
         temporal_decay_q24: Q / 2,
@@ -108,7 +108,7 @@ fn committed() -> (NeuronRuntimeConfigV1, SparseCheckpoint, NeuronTickReceiptV1)
         drive_q24: vec![Q, Q / 2, 0, 0, 0],
         prediction_q24: vec![0; 5],
     };
-    let (checkpoint, receipt) = checked(sparse_tick(&native, &input, None));
+    let (checkpoint, receipt) = checked(sparse_tick(&native, &input, /*previous*/ None));
     let active_indices = receipt
         .activation_q24
         .iter()
@@ -177,7 +177,7 @@ fn checkpoint_is_derived_from_committed_state_and_roundtrips() {
         &config,
         &checkpoint,
         &tick,
-        1_900_000_000_000,
+        /*expires_unix_ms*/ 1_900_000_000_000,
     ));
     assert_eq!(value.logical_sequence, 1);
     assert_eq!(value.predecessor_id, None);
@@ -207,7 +207,13 @@ fn checkpoint_publication_rejects_forged_owner_summary() {
     let (config, checkpoint, mut tick) = committed();
     tick.eligibility_digest = Digest32::of_bytes(b"forged");
     assert_eq!(
-        canonical_checkpoint_v1(&config, &checkpoint, &tick, 1_900_000_000_000).err(),
+        canonical_checkpoint_v1(
+            &config,
+            &checkpoint,
+            &tick,
+            /*expires_unix_ms*/ 1_900_000_000_000
+        )
+        .err(),
         Some(NeuronProtocolError::BindingMismatch("checkpoint summaries"))
     );
 }

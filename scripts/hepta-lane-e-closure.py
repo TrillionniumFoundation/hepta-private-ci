@@ -12,6 +12,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hepta_workflow_commands import workflow_commands
+from hepta_lane_e_writer_source import product_source
+from hepta_lane_e_writer_source import qualification_is_disabled
+from hepta_lane_e_writer_source import writer_uses
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -583,13 +586,7 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
         "codex-rs/hepta-learning-ledger",
         "codex-rs/hepta-shadow-qualification",
     }
-    forbidden = {
-        r"\bDurableLearningJournal\b": "legacy durable journal trait",
-        r"LedgerEvent::Decision\b": "raw V1 Decision append",
-        r"LedgerEvent::Outcome\b": "raw V1 Outcome append",
-        r"LedgerEvent::Credit\b": "raw V1 Credit append",
-        r"LedgerEvent::Revocation\b": "raw V1 Revocation append",
-    }
+    qualification_boundaries = {}
 
     for path in (ROOT / "codex-rs").rglob("*.rs"):
         relative = path.relative_to(ROOT).as_posix()
@@ -606,12 +603,36 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
             continue
 
         text = path.read_text(encoding="utf-8")
-        for pattern, description in forbidden.items():
-            findings.require(
-                re.search(pattern, text) is None,
-                "legacy_learning_writer_product_bypass",
-                f"{relative} uses {description}; product learning writes must use LedgerWriter",
+        if not any(
+            token in text
+            for token in (
+                "LedgerEvent",
+                "DurableLearningJournal",
+                "append_qualification",
             )
+        ):
+            continue
+        try:
+            manifest = next(
+                (
+                    parent / "Cargo.toml"
+                    for parent in path.parents
+                    if (parent / "Cargo.toml").is_file()
+                ),
+                None,
+            )
+            if manifest is not None and manifest not in qualification_boundaries:
+                qualification_boundaries[manifest] = qualification_is_disabled(
+                    ROOT, manifest
+                )
+            code = product_source(text, qualification_boundaries.get(manifest, False))
+            for description in sorted(writer_uses(code)):
+                findings.add(
+                    "legacy_learning_writer_product_bypass",
+                    f"{relative} uses {description}; product learning writes must use LedgerWriter",
+                )
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            findings.add("learning_writer_source_unclassified", f"{relative}: {error}")
 
 
 def verify_authority_posture(findings: Findings) -> None:

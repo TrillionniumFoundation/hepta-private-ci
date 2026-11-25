@@ -197,6 +197,23 @@ pub trait ThreadLifecycleContributor<C: Sync>: Send + Sync {
         })
     }
 
+    /// Best-effort admission recheck after an exact terminal owner has completed.
+    ///
+    /// The earlier `on_thread_idle` housekeeping can still run behind that
+    /// owner's admission fence. This separate hint does not repeat that work,
+    /// grant an idle lease, or acknowledge durable delivery. Another owner may
+    /// win before a submission, so implementations must use ordinary host
+    /// admission and retain their durable retry/recovery paths.
+    fn on_thread_admission_recheck<'a>(
+        &'a self,
+        input: ThreadIdleInput<'a>,
+    ) -> ExtensionFuture<'a, ()> {
+        Box::pin(async move {
+            let _self = self;
+            let _input = input;
+        })
+    }
+
     /// Called before the host drops the thread runtime and thread-scoped store.
     fn on_thread_stop<'a>(&'a self, input: ThreadStopInput<'a>) -> ExtensionFuture<'a, ()> {
         Box::pin(async move {

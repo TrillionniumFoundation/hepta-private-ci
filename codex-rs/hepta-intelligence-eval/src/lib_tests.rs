@@ -75,16 +75,16 @@ fn every_registered_threshold_is_enforced() {
 #[test]
 fn registered_hard_regression_allowance_is_enforced_exactly() {
     let mut at_floor = request();
-    at_floor.comparisons[0].minimum_delta = FixedQ32::from_raw(-2);
-    at_floor.comparisons[0].candidate = FixedQ32::from_raw(2);
+    at_floor.comparisons[0].minimum_delta = FixedQ32::from_raw(/*raw*/ -2);
+    at_floor.comparisons[0].candidate = FixedQ32::from_raw(/*raw*/ 2);
     at_floor.comparisons[0].baseline = FixedQ32::ZERO;
     let receipt = must(evaluate(at_floor));
     assert_eq!(receipt.disposition, Disposition::EligibleForFurtherReview);
     assert!(receipt.failed_metrics.is_empty());
 
     let mut below_floor = request();
-    below_floor.comparisons[0].minimum_delta = FixedQ32::from_raw(-2);
-    below_floor.comparisons[0].candidate = FixedQ32::from_raw(3);
+    below_floor.comparisons[0].minimum_delta = FixedQ32::from_raw(/*raw*/ -2);
+    below_floor.comparisons[0].candidate = FixedQ32::from_raw(/*raw*/ 3);
     below_floor.comparisons[0].baseline = FixedQ32::ZERO;
     let receipt = must(evaluate(below_floor));
     assert_eq!(receipt.disposition, Disposition::Ineligible);
@@ -126,7 +126,7 @@ fn receipt_digest_binds_threshold_metadata_in_canonical_order() {
     assert_eq!(reclassified.disposition, original.disposition);
     assert_ne!(reclassified.evidence_digest, original.evidence_digest);
 
-    value.comparisons[0].minimum_delta = FixedQ32::from_raw(-1);
+    value.comparisons[0].minimum_delta = FixedQ32::from_raw(/*raw*/ -1);
     let relaxed = must(evaluate(value));
     assert_eq!(relaxed.disposition, original.disposition);
     assert_ne!(relaxed.evidence_digest, original.evidence_digest);

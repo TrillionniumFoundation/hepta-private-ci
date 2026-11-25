@@ -47,10 +47,15 @@ function optionalPositiveInteger(name, fallback) {
 }
 
 if (process.platform !== "linux") {
-  throw new TypeError("current Agentd Browser service requires the qualified Linux launcher");
+  throw new TypeError(
+    "current Agentd Browser service requires the qualified Linux launcher",
+  );
 }
 
-const channel = new AgentdBrowserChannel({ input: process.stdin, output: process.stdout });
+const channel = new AgentdBrowserChannel({
+  input: process.stdin,
+  output: process.stdout,
+});
 const authority = new ParentFinalUseAuthority(channel);
 const driver = new SubprocessBrowserDriver({
   workerPath: requiredAbsolutePath("HEPTA_BROWSER_WORKER_PATH"),
@@ -67,13 +72,18 @@ const host = new BrowserProfileHost({
   driver,
   authority,
   journal,
-  driverCallTimeoutMs: optionalPositiveInteger("HEPTA_BROWSER_DRIVER_TIMEOUT_MS", 30_000),
+  driverCallTimeoutMs: optionalPositiveInteger(
+    "HEPTA_BROWSER_DRIVER_TIMEOUT_MS",
+    30_000,
+  ),
 });
 const service = new BrowserAgentdService({ host, channel, authority });
 
 try {
   await service.run();
 } catch (error) {
-  process.stderr.write(`hepta-browser Agentd service failed: ${String(error?.message ?? error)}\n`);
+  process.stderr.write(
+    `hepta-browser Agentd service failed: ${String(error?.message ?? error)}\n`,
+  );
   process.exitCode = 1;
 }

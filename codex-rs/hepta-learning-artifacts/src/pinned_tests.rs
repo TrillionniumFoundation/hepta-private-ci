@@ -132,7 +132,9 @@ fn load(
 fn loads_exact_pinned_manifest_and_payload() {
     let directory = TestDirectory::new("valid");
     let bytes = b"policy-v1";
-    let expected_manifest = manifest("policy", 1, None, bytes);
+    let expected_manifest = manifest(
+        "policy", /*generation*/ 1, /*predecessor_id*/ None, bytes,
+    );
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "register-policy", expected_manifest.clone());
     write_payload(&directory, &registry, &expected_manifest, bytes);
@@ -156,7 +158,9 @@ fn loads_exact_pinned_manifest_and_payload() {
 fn wrong_epoch_binding_is_rejected() {
     let directory = TestDirectory::new("epoch");
     let bytes = b"policy-v1";
-    let expected_manifest = manifest("policy", 1, None, bytes);
+    let expected_manifest = manifest(
+        "policy", /*generation*/ 1, /*predecessor_id*/ None, bytes,
+    );
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "register-policy", expected_manifest.clone());
     write_payload(&directory, &registry, &expected_manifest, bytes);
@@ -175,7 +179,9 @@ fn wrong_epoch_binding_is_rejected() {
 fn objective_and_compatibility_drift_are_pin_mismatches() {
     let directory = TestDirectory::new("manifest-drift");
     let bytes = b"policy-v1";
-    let expected_manifest = manifest("policy", 1, None, bytes);
+    let expected_manifest = manifest(
+        "policy", /*generation*/ 1, /*predecessor_id*/ None, bytes,
+    );
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "register-policy", expected_manifest.clone());
     write_payload(&directory, &registry, &expected_manifest, bytes);
@@ -200,8 +206,13 @@ fn objective_and_compatibility_drift_are_pin_mismatches() {
 fn revoked_ancestor_blocks_loading() {
     let directory = TestDirectory::new("ancestor-revoked");
     let bytes = b"policy-v2";
-    let predecessor = manifest("policy-v1", 1, None, b"policy-v1");
-    let expected_manifest = manifest("policy-v2", 2, Some("policy-v1"), bytes);
+    let predecessor = manifest(
+        "policy-v1",
+        /*generation*/ 1,
+        /*predecessor_id*/ None,
+        b"policy-v1",
+    );
+    let expected_manifest = manifest("policy-v2", /*generation*/ 2, Some("policy-v1"), bytes);
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "register-v1", predecessor);
     register(&mut registry, "register-v2", expected_manifest.clone());
@@ -230,7 +241,9 @@ fn revoked_ancestor_blocks_loading() {
 fn quarantined_candidate_blocks_loading() {
     let directory = TestDirectory::new("quarantined");
     let bytes = b"policy-v1";
-    let expected_manifest = manifest("policy", 1, None, bytes);
+    let expected_manifest = manifest(
+        "policy", /*generation*/ 1, /*predecessor_id*/ None, bytes,
+    );
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "register-policy", expected_manifest.clone());
     write_payload(&directory, &registry, &expected_manifest, bytes);
@@ -254,7 +267,9 @@ fn quarantined_candidate_blocks_loading() {
 fn tampered_payload_is_rejected() {
     let directory = TestDirectory::new("payload-tamper");
     let bytes = b"policy-v1";
-    let expected_manifest = manifest("policy", 1, None, bytes);
+    let expected_manifest = manifest(
+        "policy", /*generation*/ 1, /*predecessor_id*/ None, bytes,
+    );
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "register-policy", expected_manifest.clone());
     write_payload(&directory, &registry, &expected_manifest, bytes);
@@ -286,7 +301,9 @@ fn write_view(
 fn cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup() {
     let directory = TestDirectory::new("cached-revoke");
     let bytes = b"cached-policy";
-    let selected = manifest("policy", 1, None, bytes);
+    let selected = manifest(
+        "policy", /*generation*/ 1, /*predecessor_id*/ None, bytes,
+    );
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "register", selected.clone());
     write_payload(&directory, &registry, &selected, bytes);
@@ -322,20 +339,40 @@ fn cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup(
 fn cached_consumer_rejects_longer_fork_and_backwards_frontier() {
     for fork in [false, true] {
         let directory = TestDirectory::new("cached-history");
-        let selected = manifest("policy", 1, None, b"value");
+        let selected = manifest(
+            "policy", /*generation*/ 1, /*predecessor_id*/ None, b"value",
+        );
         let mut registry = ArtifactRegistry::new();
         register(&mut registry, "register", selected.clone());
         write_payload(&directory, &registry, &selected, b"value");
         let old = write_snapshot(&directory, &registry);
         let mut cached = RevalidatingCandidate::new(must(load(&directory, old, selected.clone())));
-        register(&mut registry, "other", manifest("other", 1, None, b"other"));
+        register(
+            &mut registry,
+            "other",
+            manifest(
+                "other", /*generation*/ 1, /*predecessor_id*/ None, b"other",
+            ),
+        );
         let (file, current) = write_view(&directory, &registry, "extended");
         must(cached.with_unverified_current(file, current, |_| ()));
         let (file, receipt) = if fork {
             let mut forked = ArtifactRegistry::new();
             register(&mut forked, "different-event", selected);
-            register(&mut forked, "fork-2", manifest("fork-2", 1, None, b"two"));
-            register(&mut forked, "fork-3", manifest("fork-3", 1, None, b"three"));
+            register(
+                &mut forked,
+                "fork-2",
+                manifest(
+                    "fork-2", /*generation*/ 1, /*predecessor_id*/ None, b"two",
+                ),
+            );
+            register(
+                &mut forked,
+                "fork-3",
+                manifest(
+                    "fork-3", /*generation*/ 1, /*predecessor_id*/ None, b"three",
+                ),
+            );
             write_view(&directory, &forked, "fork")
         } else {
             (must(File::open(directory.path("snapshot"))), old)
@@ -351,7 +388,9 @@ fn cached_consumer_rejects_longer_fork_and_backwards_frontier() {
 fn cached_consumer_rejects_new_scope_and_corrupt_current_file_without_calling_consumer() {
     for scope_change in [false, true] {
         let directory = TestDirectory::new("cached-corrupt");
-        let selected = manifest("policy", 1, None, b"value");
+        let selected = manifest(
+            "policy", /*generation*/ 1, /*predecessor_id*/ None, b"value",
+        );
         let mut registry = ArtifactRegistry::new();
         register(&mut registry, "register", selected.clone());
         write_payload(&directory, &registry, &selected, b"value");

@@ -44,24 +44,35 @@ fn assignment() -> Assignment {
 fn reopens_exact_committed_state() {
     let path = path("reopen");
     {
-        let mut control = DurableInferenceControl::open(&path, 32).expect("open");
-        assert_eq!(control.submit(100, request()).expect("submit").revision, 1);
+        let mut control = DurableInferenceControl::open(&path, /*capacity*/ 32).expect("open");
         assert_eq!(
             control
-                .reserve(100, "request.1", 1, reservation())
+                .submit(/*now_ms*/ 100, request())
+                .expect("submit")
+                .revision,
+            1
+        );
+        assert_eq!(
+            control
+                .reserve(
+                    /*now_ms*/ 100,
+                    "request.1",
+                    /*expected_revision*/ 1,
+                    reservation()
+                )
                 .expect("reserve")
                 .revision,
             2
         );
         assert_eq!(
             control
-                .assign("request.1", 2, assignment())
+                .assign("request.1", /*expected_revision*/ 2, assignment())
                 .expect("assign")
                 .revision,
             3
         );
     }
-    let reopened = DurableInferenceControl::open(&path, 32).expect("reopen");
+    let reopened = DurableInferenceControl::open(&path, /*capacity*/ 32).expect("reopen");
     let record = reopened.get("request.1").expect("record");
     assert_eq!(record.state, RequestState::Assigned);
     assert_eq!(record.revision, 3);
@@ -71,16 +82,24 @@ fn reopens_exact_committed_state() {
 #[test]
 fn cancellation_after_assignment_waits_for_observation_and_accounts_usage() {
     let path = path("cancel-race");
-    let mut control = DurableInferenceControl::open(&path, 32).expect("open");
-    control.submit(100, request()).expect("submit");
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 32).expect("open");
+    control.submit(/*now_ms*/ 100, request()).expect("submit");
     control
-        .reserve(100, "request.1", 1, reservation())
+        .reserve(
+            /*now_ms*/ 100,
+            "request.1",
+            /*expected_revision*/ 1,
+            reservation(),
+        )
         .expect("reserve");
     control
-        .assign("request.1", 2, assignment())
+        .assign("request.1", /*expected_revision*/ 2, assignment())
         .expect("assign");
     assert_eq!(
-        control.cancel("request.1", 3).expect("cancel").state,
+        control
+            .cancel("request.1", /*expected_revision*/ 3)
+            .expect("cancel")
+            .state,
         RequestState::Cancelling
     );
     let observation = TerminalObservation {
@@ -97,7 +116,12 @@ fn cancellation_after_assignment_waits_for_observation_and_accounts_usage() {
         usage_units: 50,
     };
     let receipt = control
-        .settle("request.1", 4, "6".repeat(64), observation)
+        .settle(
+            "request.1",
+            /*expected_revision*/ 4,
+            "6".repeat(64),
+            observation,
+        )
         .expect("settle");
     assert_eq!(receipt.state, RequestState::Completed);
     let record = control.get("request.1").expect("record");
@@ -109,13 +133,18 @@ fn cancellation_after_assignment_waits_for_observation_and_accounts_usage() {
 #[test]
 fn missing_terminal_observation_becomes_indeterminate() {
     let path = path("indeterminate");
-    let mut control = DurableInferenceControl::open(&path, 32).expect("open");
-    control.submit(100, request()).expect("submit");
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 32).expect("open");
+    control.submit(/*now_ms*/ 100, request()).expect("submit");
     control
-        .reserve(100, "request.1", 1, reservation())
+        .reserve(
+            /*now_ms*/ 100,
+            "request.1",
+            /*expected_revision*/ 1,
+            reservation(),
+        )
         .expect("reserve");
     control
-        .assign("request.1", 2, assignment())
+        .assign("request.1", /*expected_revision*/ 2, assignment())
         .expect("assign");
     let observation = TerminalObservation {
         request_id: "request.1".to_string(),
@@ -131,7 +160,12 @@ fn missing_terminal_observation_becomes_indeterminate() {
         usage_units: 8,
     };
     let receipt = control
-        .settle("request.1", 3, "6".repeat(64), observation)
+        .settle(
+            "request.1",
+            /*expected_revision*/ 3,
+            "6".repeat(64),
+            observation,
+        )
         .expect("settle");
     assert_eq!(receipt.state, RequestState::Indeterminate);
     assert!(!receipt.terminal_observed);
@@ -141,13 +175,14 @@ fn missing_terminal_observation_becomes_indeterminate() {
 #[test]
 fn one_writer_is_held_until_owner_drop() {
     let path = path("single-writer");
-    let control = DurableInferenceControl::open(&path, 32).expect("first owner");
+    let control = DurableInferenceControl::open(&path, /*capacity*/ 32).expect("first owner");
     assert!(matches!(
-        DurableInferenceControl::open(&path, 32),
+        DurableInferenceControl::open(&path, /*capacity*/ 32),
         Err(Error::WriterUnavailable)
     ));
     drop(control);
-    let reopened = DurableInferenceControl::open(&path, 32).expect("owner releases on drop");
+    let reopened =
+        DurableInferenceControl::open(&path, /*capacity*/ 32).expect("owner releases on drop");
     drop(reopened);
     std::fs::remove_file(path).expect("cleanup");
 }
@@ -155,7 +190,7 @@ fn one_writer_is_held_until_owner_drop() {
 #[test]
 fn invalid_event_is_rejected_before_append() {
     let path = path("rejected-event");
-    let mut control = DurableInferenceControl::open(&path, 32).expect("owner");
+    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 32).expect("owner");
     assert_eq!(
         control.commit(Event::Cancel {
             request_id: "missing".to_string(),
@@ -165,8 +200,8 @@ fn invalid_event_is_rejected_before_append() {
     );
     assert_eq!(std::fs::metadata(&path).expect("metadata").len(), 0);
     drop(control);
-    let reopened =
-        DurableInferenceControl::open(&path, 32).expect("rejected event did not corrupt replay");
+    let reopened = DurableInferenceControl::open(&path, /*capacity*/ 32)
+        .expect("rejected event did not corrupt replay");
     drop(reopened);
     std::fs::remove_file(path).expect("cleanup");
 }

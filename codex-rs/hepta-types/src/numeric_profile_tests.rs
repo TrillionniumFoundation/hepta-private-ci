@@ -18,7 +18,12 @@ fn profile_definition_binds_identity_version_scale_and_rounding() {
     assert!(!definition.digest().is_zero());
 
     assert_eq!(
-        NumericProfileDefinitionV1::new(profile, 2, profile.scale(), profile.rounding()),
+        NumericProfileDefinitionV1::new(
+            profile,
+            /*version*/ 2,
+            profile.scale(),
+            profile.rounding()
+        ),
         Err(NumericProfileDefinitionError::UnsupportedVersion(2))
     );
     assert_eq!(
@@ -34,7 +39,7 @@ fn profile_definition_binds_identity_version_scale_and_rounding() {
         NumericProfileDefinitionV1::new(
             profile,
             NUMERIC_PROFILE_DEFINITION_VERSION_V1,
-            0,
+            /*scale*/ 0,
             profile.rounding(),
         ),
         Err(NumericProfileDefinitionError::ZeroScale)

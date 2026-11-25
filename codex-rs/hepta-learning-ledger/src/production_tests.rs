@@ -70,31 +70,31 @@ fn trust() -> LearningEvidenceTrustV1 {
             trusted(
                 "generator",
                 "generator-controller",
-                1,
+                /*seed*/ 1,
                 LearningEvidenceRoleV1::Generator,
             ),
             trusted(
                 "observer",
                 "observer-controller",
-                2,
+                /*seed*/ 2,
                 LearningEvidenceRoleV1::Observer,
             ),
             trusted(
                 "allocator",
                 "allocator-controller",
-                3,
+                /*seed*/ 3,
                 LearningEvidenceRoleV1::CreditAllocator,
             ),
             trusted(
                 "evaluator",
                 "evaluator-controller",
-                4,
+                /*seed*/ 4,
                 LearningEvidenceRoleV1::Evaluator,
             ),
             trusted(
                 "privacy-owner",
                 "privacy-controller",
-                5,
+                /*seed*/ 5,
                 LearningEvidenceRoleV1::UnlearningAuthority,
             ),
         ],
@@ -137,7 +137,7 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
         signature: [0; 64],
     };
     signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
-    activate_learning_trust(&root, signed, None, 50).unwrap()
+    activate_learning_trust(&root, signed, /*previous*/ None, /*now*/ 50).unwrap()
 }
 
 fn seed(name: &str) -> u8 {
@@ -220,7 +220,8 @@ impl Fixture {
     }
 
     fn writer(&self) -> LedgerWriter {
-        let ledger = DurableLedger::create(self.file("ledger"), binding(), 64).unwrap();
+        let ledger =
+            DurableLedger::create(self.file("ledger"), binding(), /*max_records*/ 64).unwrap();
         let witness = LedgerWitnessStore::create(self.file("witness"), binding()).unwrap();
         let trust = activated_trust();
         let ledger_directory = self.directory();
@@ -303,18 +304,18 @@ fn credit_batch() -> CreditAllocationBatchV1 {
         episode_id: id("episode"),
         outcome_id: id("outcome-2"),
         allocator: principal("allocator"),
-        terminal_outcome: FixedQ32::from_raw(120),
+        terminal_outcome: FixedQ32::from_raw(/*raw*/ 120),
         allocations: vec![
             CreditAllocationV1 {
                 target_id: id("artifact-a"),
-                credit: FixedQ32::from_raw(60),
+                credit: FixedQ32::from_raw(/*raw*/ 60),
             },
             CreditAllocationV1 {
                 target_id: id("artifact-b"),
-                credit: FixedQ32::from_raw(50),
+                credit: FixedQ32::from_raw(/*raw*/ 50),
             },
         ],
-        conservation_residual: FixedQ32::from_raw(10),
+        conservation_residual: FixedQ32::from_raw(/*raw*/ 10),
         support_digest: digest("credit-support"),
         finalized: true,
     }
@@ -333,10 +334,15 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         &decision_payload,
     );
     let decision_receipt = writer
-        .append_decision(Digest32::ZERO, request, &decision_evidence, 50)
+        .append_decision(Digest32::ZERO, request, &decision_evidence, /*now*/ 50)
         .unwrap();
 
-    let first = outcome("outcome-record-1", "outcome-1", None, 100);
+    let first = outcome(
+        "outcome-record-1",
+        "outcome-1",
+        /*predecessor*/ None,
+        /*value*/ 100,
+    );
     let first_evidence = sign(
         writer.verifier(),
         "observer",
@@ -344,10 +350,20 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         &outcome_signing_payload_v2(&first),
     );
     let first_receipt = writer
-        .append_outcome(decision_receipt.chain_digest, first, &first_evidence, 50)
+        .append_outcome(
+            decision_receipt.chain_digest,
+            first,
+            &first_evidence,
+            /*now*/ 50,
+        )
         .unwrap();
 
-    let corrected = outcome("outcome-record-2", "outcome-2", Some("outcome-1"), 120);
+    let corrected = outcome(
+        "outcome-record-2",
+        "outcome-2",
+        Some("outcome-1"),
+        /*value*/ 120,
+    );
     let corrected_evidence = sign(
         writer.verifier(),
         "observer",
@@ -359,12 +375,12 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
             first_receipt.chain_digest,
             corrected,
             &corrected_evidence,
-            50,
+            /*now*/ 50,
         )
         .unwrap();
 
     let batch = credit_batch();
-    let batch_digest = finalize_credit_batch(batch.clone(), 50)
+    let batch_digest = finalize_credit_batch(batch.clone(), /*now*/ 50)
         .unwrap()
         .batch_digest;
     let credit_evidence = sign(
@@ -374,7 +390,12 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         &credit_batch_signing_payload_v2(&batch, batch_digest),
     );
     let credit_receipt = writer
-        .append_credit_batch(corrected_receipt.chain_digest, batch, &credit_evidence, 50)
+        .append_credit_batch(
+            corrected_receipt.chain_digest,
+            batch,
+            &credit_evidence,
+            /*now*/ 50,
+        )
         .unwrap();
 
     let plan = DatasetFreezePlanV2 {
@@ -390,12 +411,14 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         LearningEvidenceRoleV1::Evaluator,
         &freeze_payload,
     );
-    let dataset = writer.freeze_dataset(plan, &freeze_evidence, 50).unwrap();
+    let dataset = writer
+        .freeze_dataset(plan, &freeze_evidence, /*now*/ 50)
+        .unwrap();
     assert_eq!(dataset.snapshot.source_record_digests.len(), 3);
     assert_eq!(dataset.snapshot.pending_outcomes, 0);
     assert_eq!(dataset.snapshot.censored_outcomes, 0);
     writer
-        .revalidate_dataset_snapshot(&dataset, 50)
+        .revalidate_dataset_snapshot(&dataset, /*now*/ 50)
         .expect("fresh dataset remains current");
 
     let stale_source = UnlearningLineageRequestV1 {
@@ -419,7 +442,7 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
             stale_source,
             &dataset,
             &stale_evidence,
-            50,
+            /*now*/ 50,
         ),
         Err(ProductionLedgerError::Binding(
             "unlearning source not in dataset"
@@ -447,7 +470,7 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
             unlearning,
             &dataset,
             &unlearning_evidence,
-            50,
+            /*now*/ 50,
         )
         .unwrap();
 
@@ -463,7 +486,7 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
     );
 
     assert!(matches!(
-        writer.revalidate_dataset_snapshot(&dataset, 50),
+        writer.revalidate_dataset_snapshot(&dataset, /*now*/ 50),
         Err(ProductionLedgerError::Binding(
             "dataset source revoked, corrected or unavailable"
         ))
@@ -492,14 +515,14 @@ fn dataset_freeze_counts_decisions_without_any_outcome_as_pending() {
         &first_payload,
     );
     let first_receipt = writer
-        .append_decision(Digest32::ZERO, first, &first_evidence, 50)
+        .append_decision(Digest32::ZERO, first, &first_evidence, /*now*/ 50)
         .unwrap();
 
     let observed = outcome(
         "outcome-record-pending-test",
         "outcome-pending-test",
-        None,
-        100,
+        /*predecessor*/ None,
+        /*value*/ 100,
     );
     let observed_evidence = sign(
         writer.verifier(),
@@ -508,7 +531,12 @@ fn dataset_freeze_counts_decisions_without_any_outcome_as_pending() {
         &outcome_signing_payload_v2(&observed),
     );
     let observed_receipt = writer
-        .append_outcome(first_receipt.chain_digest, observed, &observed_evidence, 50)
+        .append_outcome(
+            first_receipt.chain_digest,
+            observed,
+            &observed_evidence,
+            /*now*/ 50,
+        )
         .unwrap();
 
     let mut pending = decision();
@@ -528,7 +556,7 @@ fn dataset_freeze_counts_decisions_without_any_outcome_as_pending() {
             observed_receipt.chain_digest,
             pending,
             &pending_evidence,
-            50,
+            /*now*/ 50,
         )
         .unwrap();
 
@@ -545,7 +573,9 @@ fn dataset_freeze_counts_decisions_without_any_outcome_as_pending() {
         LearningEvidenceRoleV1::Evaluator,
         &freeze_payload,
     );
-    let dataset = writer.freeze_dataset(plan, &freeze_evidence, 50).unwrap();
+    let dataset = writer
+        .freeze_dataset(plan, &freeze_evidence, /*now*/ 50)
+        .unwrap();
 
     assert_eq!(dataset.snapshot.pending_outcomes, 1);
     assert_eq!(dataset.snapshot.censored_outcomes, 0);
@@ -565,7 +595,7 @@ fn production_writer_recovers_against_independent_witness() {
         &payload,
     );
     let receipt = writer
-        .append_decision(Digest32::ZERO, request, &evidence, 50)
+        .append_decision(Digest32::ZERO, request, &evidence, /*now*/ 50)
         .unwrap();
     let frontier = writer.witness_frontier().unwrap();
     drop(writer);
@@ -573,7 +603,7 @@ fn production_writer_recovers_against_independent_witness() {
     let ledger = DurableLedger::recover(
         fixture.file("ledger"),
         binding(),
-        64,
+        /*max_records*/ 64,
         LedgerRecovery::Acknowledged(frontier.anchor),
     )
     .unwrap();
@@ -610,7 +640,12 @@ fn lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness() {
     );
     let verified = trust
         .verifier()
-        .verify(LearningEvidenceRoleV1::Generator, &evidence, &payload, 50)
+        .verify(
+            LearningEvidenceRoleV1::Generator,
+            &evidence,
+            &payload,
+            /*now*/ 50,
+        )
         .unwrap();
     let principal = verified.principal().clone();
     let event = LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {
@@ -633,7 +668,8 @@ fn lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness() {
         authentication_digest: signed_evidence_digest(&evidence),
     });
 
-    let mut raw = DurableLedger::create(fixture.file("ledger"), binding(), 64).unwrap();
+    let mut raw =
+        DurableLedger::create(fixture.file("ledger"), binding(), /*max_records*/ 64).unwrap();
     let committed = raw.append(Digest32::ZERO, event).unwrap();
     drop(raw);
     drop(LedgerWitnessStore::create(fixture.file("witness"), binding()).unwrap());
@@ -641,7 +677,7 @@ fn lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness() {
     let ledger = DurableLedger::recover(
         fixture.file("ledger"),
         binding(),
-        64,
+        /*max_records*/ 64,
         LedgerRecovery::Unacknowledged,
     )
     .unwrap();
@@ -659,7 +695,7 @@ fn lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness() {
     assert_eq!(writer.witness_frontier().unwrap().anchor.sequence, 0);
 
     let reconciled = writer
-        .append_decision(Digest32::ZERO, request, &evidence, 50)
+        .append_decision(Digest32::ZERO, request, &evidence, /*now*/ 50)
         .unwrap();
     assert_eq!(reconciled.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(reconciled.chain_digest, committed.chain_digest);
@@ -682,7 +718,7 @@ fn corrupt_or_missing_witness_history_never_falls_back_to_reinitialization() {
             &payload,
         );
         writer
-            .append_decision(Digest32::ZERO, request, &evidence, 50)
+            .append_decision(Digest32::ZERO, request, &evidence, /*now*/ 50)
             .unwrap();
     }
     let mut bytes = fs::read(corrupt.root.join("witness")).unwrap();
@@ -728,7 +764,12 @@ fn crash_after_ledger_sync_before_witness_child() {
     );
     let verified = trust
         .verifier()
-        .verify(LearningEvidenceRoleV1::Generator, &evidence, &payload, 50)
+        .verify(
+            LearningEvidenceRoleV1::Generator,
+            &evidence,
+            &payload,
+            /*now*/ 50,
+        )
         .unwrap();
     let principal = verified.principal().clone();
     let event = LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {
@@ -752,7 +793,7 @@ fn crash_after_ledger_sync_before_witness_child() {
     });
 
     drop(LedgerWitnessStore::create(open("witness"), binding()).unwrap());
-    let mut ledger = DurableLedger::create(open("ledger"), binding(), 64).unwrap();
+    let mut ledger = DurableLedger::create(open("ledger"), binding(), /*max_records*/ 64).unwrap();
     ledger.append(Digest32::ZERO, event).unwrap();
     std::process::exit(31);
 }
@@ -779,7 +820,7 @@ fn process_death_between_ledger_and_witness_reconciles_without_redispatch() {
     let ledger = DurableLedger::recover(
         fixture.file("ledger"),
         binding(),
-        64,
+        /*max_records*/ 64,
         LedgerRecovery::Unacknowledged,
     )
     .unwrap();
@@ -806,7 +847,7 @@ fn process_death_between_ledger_and_witness_reconciles_without_redispatch() {
         &payload,
     );
     let receipt = writer
-        .append_decision(Digest32::ZERO, request, &evidence, 50)
+        .append_decision(Digest32::ZERO, request, &evidence, /*now*/ 50)
         .unwrap();
     assert_eq!(receipt.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(writer.witness_frontier().unwrap().anchor.sequence, 1);
@@ -858,7 +899,9 @@ fn production_writer_rotates_root_signed_trust_and_rejects_revocation_and_rollba
         signature: [0; 64],
     };
     signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
-    let second = writer.rotate_trust(&root, signed.clone(), 50).unwrap();
+    let second = writer
+        .rotate_trust(&root, signed.clone(), /*now*/ 50)
+        .unwrap();
     assert_ne!(first, second);
     let payload = decision_signing_payload_v2(&decision()).unwrap();
     let evidence = sign(
@@ -868,13 +911,13 @@ fn production_writer_rotates_root_signed_trust_and_rejects_revocation_and_rollba
         &payload,
     );
     assert!(matches!(
-        writer.append_decision(Digest32::ZERO, decision(), &evidence, 50),
+        writer.append_decision(Digest32::ZERO, decision(), &evidence, /*now*/ 50),
         Err(ProductionLedgerError::Evidence(
             SignedEvidenceError::Revoked
         ))
     ));
     assert!(matches!(
-        writer.rotate_trust(&root, signed, 50),
+        writer.rotate_trust(&root, signed, /*now*/ 50),
         Err(crate::LearningTrustDistributionError::NonMonotonicRotation)
     ));
     assert_eq!(writer.trust_distribution_digest(), second);
@@ -885,7 +928,8 @@ fn production_writer_rotates_root_signed_trust_and_rejects_revocation_and_rollba
 #[test]
 fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
     let fixture = Fixture::new();
-    let ledger = DurableLedger::create(fixture.file("ledger"), binding(), 512).unwrap();
+    let ledger =
+        DurableLedger::create(fixture.file("ledger"), binding(), /*max_records*/ 512).unwrap();
     let witness = LedgerWitnessStore::create(fixture.file("witness"), binding()).unwrap();
     let directory = fixture.directory();
     let mut writer =
@@ -899,7 +943,7 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
         &decision_signing_payload_v2(&first).unwrap(),
     );
     let original = writer
-        .append_decision(Digest32::ZERO, first.clone(), &evidence, 50)
+        .append_decision(Digest32::ZERO, first.clone(), &evidence, /*now*/ 50)
         .unwrap();
     let mut predecessor = original.chain_digest;
     for index in 1..256 {
@@ -913,13 +957,13 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
             &decision_signing_payload_v2(&next).unwrap(),
         );
         predecessor = writer
-            .append_decision(predecessor, next, &signed, 50)
+            .append_decision(predecessor, next, &signed, /*now*/ 50)
             .unwrap()
             .chain_digest;
     }
     let before = writer.witness_frontier().unwrap();
     let retry = writer
-        .append_decision(Digest32::ZERO, first.clone(), &evidence, 50)
+        .append_decision(Digest32::ZERO, first.clone(), &evidence, /*now*/ 50)
         .unwrap();
     assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(writer.witness_frontier().unwrap(), before);
@@ -932,7 +976,7 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
     let ledger = DurableLedger::recover(
         fixture.file("ledger"),
         binding(),
-        512,
+        /*max_records*/ 512,
         LedgerRecovery::Acknowledged(before.anchor),
     )
     .unwrap();
@@ -942,7 +986,7 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
             .unwrap();
     assert_eq!(recovered.records().unwrap(), records);
     let retry = recovered
-        .append_decision(Digest32::ZERO, first, &evidence, 50)
+        .append_decision(Digest32::ZERO, first, &evidence, /*now*/ 50)
         .unwrap();
     assert_eq!(retry.chain_digest, original.chain_digest);
     assert_eq!(recovered.witness_frontier().unwrap(), before);

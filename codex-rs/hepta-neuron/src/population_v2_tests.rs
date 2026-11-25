@@ -15,7 +15,7 @@ fn config() -> PopulationSparseConfigV2 {
     PopulationSparseConfigV2 {
         model_digest: Digest32::of_bytes(b"population-head"),
         normalization_digest: Digest32::of_bytes(b"population-normalization"),
-        generation: generation(7),
+        generation: generation(/*value*/ 7),
         temporal_width: 2,
         activation_width: 6,
         global_top_k: 1,
@@ -92,7 +92,11 @@ fn tick(sequence: u64, micros: u64) -> PopulationSparseTickV2 {
 #[test]
 fn distinct_temporal_and_activation_dimensions_use_population_then_global_competition() {
     let config = config();
-    let (checkpoint, receipt) = checked(population_sparse_tick_v2(&config, &tick(1, 10), None));
+    let (checkpoint, receipt) = checked(population_sparse_tick_v2(
+        &config,
+        &tick(/*sequence*/ 1, /*micros*/ 10),
+        /*previous*/ None,
+    ));
     assert_eq!(checkpoint.temporal_q24().len(), 2);
     assert_eq!(checkpoint.activation_q24().len(), 6);
     assert_eq!(receipt.population_candidate_counts, vec![1, 1]);
@@ -113,14 +117,22 @@ fn distinct_temporal_and_activation_dimensions_use_population_then_global_compet
 #[test]
 fn population_profile_is_deterministic_and_supports_recurrent_successors() {
     let config = config();
-    let first = checked(population_sparse_tick_v2(&config, &tick(1, 10), None));
+    let first = checked(population_sparse_tick_v2(
+        &config,
+        &tick(/*sequence*/ 1, /*micros*/ 10),
+        /*previous*/ None,
+    ));
     assert_eq!(
-        checked(population_sparse_tick_v2(&config, &tick(1, 10), None)),
+        checked(population_sparse_tick_v2(
+            &config,
+            &tick(/*sequence*/ 1, /*micros*/ 10),
+            /*previous*/ None
+        )),
         first
     );
     let second = checked(population_sparse_tick_v2(
         &config,
-        &tick(2, 20),
+        &tick(/*sequence*/ 2, /*micros*/ 20),
         Some(&first.0),
     ));
     assert_eq!(second.0.sequence(), 2);

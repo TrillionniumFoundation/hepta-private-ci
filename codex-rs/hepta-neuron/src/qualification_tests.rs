@@ -45,7 +45,7 @@ fn config() -> SparseConfig {
     SparseConfig {
         model_digest: Digest32::of_bytes(b"model"),
         normalization_digest: Digest32::of_bytes(b"normalization"),
-        generation: checked(Generation::new(1)),
+        generation: checked(Generation::new(/*value*/ 1)),
         width: 5,
         top_k: 1,
         temporal_decay_q24: Q / 2,
@@ -78,7 +78,7 @@ fn supplied_resource_samples_have_deterministic_percentiles_without_claiming_aut
 
 #[test]
 fn resource_summary_rejects_mixed_host_profiles() {
-    let mut samples = vec![sample(0), sample(1)];
+    let mut samples = vec![sample(/*index*/ 0), sample(/*index*/ 1)];
     samples[1].host_profile_digest = Digest32::of_bytes(b"other-host");
     assert_eq!(
         summarize_resource_samples(&samples, &envelope()),

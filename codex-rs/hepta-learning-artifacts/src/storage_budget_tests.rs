@@ -139,18 +139,38 @@ fn pre_read_and_post_read_metadata_use_the_same_error_priority() {
         (MAX_PAYLOAD, ArtifactStorageError::PayloadMismatch),
     ] {
         assert_eq!(
-            validate_read_length(limit as u64 + 1, 1, limit, mismatch),
+            validate_read_length(limit as u64 + 1, /*expected_bytes*/ 1, limit, mismatch),
             Err(ArtifactStorageError::Capacity),
         );
-        assert_eq!(validate_read_length(2, 1, limit, mismatch), Err(mismatch));
-        assert_eq!(validate_read_length(1, 1, limit, mismatch), Ok(()));
+        assert_eq!(
+            validate_read_length(
+                /*observed_bytes*/ 2, /*expected_bytes*/ 1, limit, mismatch
+            ),
+            Err(mismatch)
+        );
+        assert_eq!(
+            validate_read_length(
+                /*observed_bytes*/ 1, /*expected_bytes*/ 1, limit, mismatch
+            ),
+            Ok(())
+        );
     }
     assert_eq!(
-        validate_read_length(0, 1, MAX_PAYLOAD, ArtifactStorageError::PayloadMismatch),
+        validate_read_length(
+            /*observed_bytes*/ 0,
+            /*expected_bytes*/ 1,
+            MAX_PAYLOAD,
+            ArtifactStorageError::PayloadMismatch
+        ),
         Err(ArtifactStorageError::Capacity),
     );
     assert_eq!(
-        validate_read_length(0, 1, MAX_SNAPSHOT, ArtifactStorageError::Corrupt),
+        validate_read_length(
+            /*observed_bytes*/ 0,
+            /*expected_bytes*/ 1,
+            MAX_SNAPSHOT,
+            ArtifactStorageError::Corrupt
+        ),
         Err(ArtifactStorageError::Corrupt),
     );
 }

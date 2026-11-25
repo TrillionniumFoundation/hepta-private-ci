@@ -145,12 +145,15 @@ fn newer_generation_fences_out_the_old_writer() {
     let mut old = FencedFinalHoldoutOwnerV1::initialize(
         store.clone(),
         binding,
-        fence("owner-a", 1, "lease-a"),
+        fence("owner-a", /*generation*/ 1, "lease-a"),
     )
     .expect("initialize");
-    let mut current =
-        FencedFinalHoldoutOwnerV1::recover(store, binding, fence("owner-b", 2, "lease-b"))
-            .expect("take over");
+    let mut current = FencedFinalHoldoutOwnerV1::recover(
+        store,
+        binding,
+        fence("owner-b", /*generation*/ 2, "lease-b"),
+    )
+    .expect("take over");
 
     assert_eq!(
         old.consume(&plan("stale")),
@@ -164,15 +167,27 @@ fn newer_generation_fences_out_the_old_writer() {
 fn stale_or_same_generation_different_fence_cannot_take_over() {
     let binding = digest("production-holdout-scope");
     let store = MemoryCas::default();
-    FencedFinalHoldoutOwnerV1::initialize(store.clone(), binding, fence("owner-a", 3, "lease-a"))
-        .expect("initialize");
+    FencedFinalHoldoutOwnerV1::initialize(
+        store.clone(),
+        binding,
+        fence("owner-a", /*generation*/ 3, "lease-a"),
+    )
+    .expect("initialize");
 
     assert!(matches!(
-        FencedFinalHoldoutOwnerV1::recover(store.clone(), binding, fence("owner-b", 2, "lease-b"),),
+        FencedFinalHoldoutOwnerV1::recover(
+            store.clone(),
+            binding,
+            fence("owner-b", /*generation*/ 2, "lease-b"),
+        ),
         Err(FencedHoldoutError::StaleFence)
     ));
     assert!(matches!(
-        FencedFinalHoldoutOwnerV1::recover(store, binding, fence("owner-b", 3, "lease-b"),),
+        FencedFinalHoldoutOwnerV1::recover(
+            store,
+            binding,
+            fence("owner-b", /*generation*/ 3, "lease-b"),
+        ),
         Err(FencedHoldoutError::StaleFence)
     ));
 }
@@ -184,7 +199,7 @@ fn indeterminate_write_poison_requires_recovery_and_preserves_history() {
     let mut owner = FencedFinalHoldoutOwnerV1::initialize(
         store.clone(),
         binding,
-        fence("owner-a", 1, "lease-a"),
+        fence("owner-a", /*generation*/ 1, "lease-a"),
     )
     .expect("initialize");
     let intended = plan("accepted-unknown");
@@ -197,9 +212,12 @@ fn indeterminate_write_poison_requires_recovery_and_preserves_history() {
     assert!(owner.is_poisoned());
     assert_eq!(owner.consume(&intended), Err(FencedHoldoutError::Poisoned));
 
-    let mut recovered =
-        FencedFinalHoldoutOwnerV1::recover(store, binding, fence("owner-b", 2, "lease-b"))
-            .expect("reconcile accepted unknown");
+    let mut recovered = FencedFinalHoldoutOwnerV1::recover(
+        store,
+        binding,
+        fence("owner-b", /*generation*/ 2, "lease-b"),
+    )
+    .expect("reconcile accepted unknown");
     let head = recovered.head_digest();
     let retry = recovered.consume(&intended).expect("exact retry");
     assert_eq!(retry.disposition, HoldoutUseDispositionV1::IdempotentReplay);
@@ -213,15 +231,19 @@ fn state_digest_changes_on_fence_takeover_without_rewriting_journal_head() {
     let mut first = FencedFinalHoldoutOwnerV1::initialize(
         store.clone(),
         binding,
-        fence("owner-a", 1, "lease-a"),
+        fence("owner-a", /*generation*/ 1, "lease-a"),
     )
     .expect("initialize");
     first.consume(&plan("recorded")).expect("consume");
     let old_state = first.state_digest();
     let old_head = first.head_digest();
 
-    let second = FencedFinalHoldoutOwnerV1::recover(store, binding, fence("owner-b", 2, "lease-b"))
-        .expect("take over");
+    let second = FencedFinalHoldoutOwnerV1::recover(
+        store,
+        binding,
+        fence("owner-b", /*generation*/ 2, "lease-b"),
+    )
+    .expect("take over");
     assert_ne!(second.state_digest(), old_state);
     assert_eq!(second.head_digest(), old_head);
 }

@@ -128,6 +128,18 @@ impl ThreadLifecycleContributor<codex_core::config::Config> for InstalledQueue {
             None => Box::pin(async {}),
         }
     }
+
+    fn on_thread_admission_recheck<'a>(
+        &'a self,
+        input: ThreadIdleInput<'a>,
+    ) -> ExtensionFuture<'a, ()> {
+        match self.service.get() {
+            Some(service) => <QueuedItemService as ThreadLifecycleContributor<
+                codex_core::config::Config,
+            >>::on_thread_admission_recheck(service.as_ref(), input),
+            None => Box::pin(async {}),
+        }
+    }
 }
 
 fn registered_queue_extensions() -> (

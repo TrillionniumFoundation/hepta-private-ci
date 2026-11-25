@@ -50,7 +50,7 @@ fn outcome() -> AuthenticatedOutcomeRecordV2 {
         observer_scope_digest: digest("scope"),
         observer_authority_epoch: 7,
         observed_at: Some(40),
-        value: Some(FixedQ32::from_raw(120)),
+        value: Some(FixedQ32::from_raw(/*raw*/ 120)),
         unit_profile_digest: digest("unit"),
         support_digest: digest("outcome-support"),
         latest_observable_at: 45,
@@ -75,18 +75,18 @@ fn batch() -> CreditAllocationBatchRecordV2 {
         allocator_signing_key_digest: digest("allocator-key"),
         allocator_scope_digest: digest("scope"),
         allocator_authority_epoch: 7,
-        terminal_outcome: FixedQ32::from_raw(120),
+        terminal_outcome: FixedQ32::from_raw(/*raw*/ 120),
         allocations: vec![
             CreditAllocationRecordV2 {
                 target_artifact_id: id("artifact-a"),
-                credit: FixedQ32::from_raw(60),
+                credit: FixedQ32::from_raw(/*raw*/ 60),
             },
             CreditAllocationRecordV2 {
                 target_artifact_id: id("artifact-b"),
-                credit: FixedQ32::from_raw(50),
+                credit: FixedQ32::from_raw(/*raw*/ 50),
             },
         ],
-        conservation_residual: FixedQ32::from_raw(10),
+        conservation_residual: FixedQ32::from_raw(/*raw*/ 10),
         support_digest: digest("credit-rule"),
         authentication_digest: digest("credit-auth"),
     }
@@ -188,7 +188,7 @@ fn dataset_v3_has_deterministic_registered_v1_compatibility_view() {
             pending_outcomes: 0,
             censored_outcomes: 0,
         },
-        50,
+        /*now*/ 50,
     )
     .unwrap();
     let wire = DatasetSnapshotV1::try_from(&receipt).unwrap();

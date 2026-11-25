@@ -295,7 +295,7 @@ fn predecessor_and_binding_are_fenced() {
         DurableRunStartJournal::recover(
             fixture.file(),
             digest("wrong-binding"),
-            16,
+            /*max_records*/ 16,
             RunStartRecovery::Acknowledged(RunStartAnchor {
                 sequence: 1,
                 chain_digest: first.chain_digest,

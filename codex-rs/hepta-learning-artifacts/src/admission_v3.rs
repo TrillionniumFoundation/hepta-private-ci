@@ -191,7 +191,7 @@ mod tests {
         LearningArtifactManifestV2 {
             artifact_id: id("artifact-v3"),
             kind: ArtifactKind::Model,
-            generation: Generation::new(1).fixture("valid generation"),
+            generation: Generation::new(/*value*/ 1).fixture("valid generation"),
             provenance_mode: ProvenanceModeV1::DatasetDerived,
             source_dataset_digests: vec![dataset],
             lineage_digests: vec![digest("lineage")],
@@ -216,10 +216,14 @@ mod tests {
     fn art_05_admission_binds_exact_withdrawal_head() {
         let registry = DatasetWithdrawalRegistry::new_scoped(scope("a"));
         let head = registry.head_digest();
-        let admission =
-            admit_manifest_at_withdrawal_head_v3(&registry, head, manifest(digest("dataset")), 20)
-                .fixture("admission succeeds");
-        validate_artifact_publication_v3(&admission, &registry, 20)
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &registry,
+            head,
+            manifest(digest("dataset")),
+            /*now*/ 20,
+        )
+        .fixture("admission succeeds");
+        validate_artifact_publication_v3(&admission, &registry, /*now*/ 20)
             .fixture("unchanged head remains valid");
         assert!(!admission.authority.grants_any());
     }
@@ -232,7 +236,7 @@ mod tests {
                 &registry,
                 registry.head_digest(),
                 manifest(digest("dataset")),
-                20,
+                /*now*/ 20,
             ),
             Err(ArtifactAdmissionError::WithdrawalScopeRequired)
         );
@@ -248,11 +252,11 @@ mod tests {
             &registry_a,
             registry_a.head_digest(),
             manifest(digest("dataset")),
-            20,
+            /*now*/ 20,
         )
         .fixture("scoped admission succeeds");
         assert_eq!(
-            validate_artifact_publication_v3(&admission, &registry_b, 20),
+            validate_artifact_publication_v3(&admission, &registry_b, /*now*/ 20),
             Err(ArtifactAdmissionError::WithdrawalScopeChanged)
         );
     }
@@ -265,7 +269,7 @@ mod tests {
             &registry,
             registry.head_digest(),
             manifest(dataset),
-            20,
+            /*now*/ 20,
         )
         .fixture("initial admission succeeds");
         registry
@@ -281,7 +285,7 @@ mod tests {
             })
             .fixture("withdrawal appends");
         assert_eq!(
-            validate_artifact_publication_v3(&admission, &registry, 21),
+            validate_artifact_publication_v3(&admission, &registry, /*now*/ 21),
             Err(ArtifactAdmissionError::WithdrawalHeadChanged)
         );
     }

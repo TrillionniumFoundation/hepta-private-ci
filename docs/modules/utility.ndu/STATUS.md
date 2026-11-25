@@ -22,7 +22,7 @@ The accurate capability description is:
 
 > deterministic NDU / preference-utility source candidate with stochastic numerical building blocks.
 
-The repository contains a deterministic policy-bound evaluator, bounded preference solver, recursive utility support, owner-local protocol binding, conditional covariance/backward-regression numerical support, semantic projection journal, crash-bounded `NduProjectionStoreV1` durable-writer source candidate, and explicit original/whitened Z-coordinate to signed-Q24 conversion evidence. A real request-local read-only call chain is established through Agentd and Control. The stochastic/FBSDE material remains a separately qualified candidate design and numerical substrate; this page does not claim a production learned-FBSDE policy.
+The repository contains a deterministic policy-bound evaluator, bounded preference solver, recursive utility support, owner-local protocol binding, conditional covariance/backward-regression numerical support, semantic projection journal, crash-bounded `NduProjectionStoreV1` durable-writer source candidate, and explicit original/whitened Z-coordinate to signed-Q24 conversion evidence. The request-local read-only call chain is source-composed through Agentd `read_with_retrieval_context_and_learning` and Control; its current product-execution declaration is false/pending until exact-candidate execution is retained. The stochastic/FBSDE material remains a separately qualified candidate design and numerical substrate; this page does not claim a production learned-FBSDE policy.
 
 Preference fixed-point exhaustion is unavailable after the registered 64-iteration bound. A bounded solver may publish a successful local termination receipt only when it converges within that bound.
 
@@ -30,13 +30,14 @@ Staged hierarchy validation is identity-based: parent/child conflicts are determ
 
 The owner-local projection journal is a durability reference. Reopen must replay the journal state machine, not only verify the hash chain; a correctly rehashed but semantically invalid selection or revocation is rejected. Revocation is scoped by objective and subject.
 
-The source truth is intentionally two-level: `sourceBase` remains the canonical repository baseline used by the closed-world implementation-map set, while `currentSourceEvidence` records the post-base current-main implementation commit and scope. These must not be conflated, and neither field substitutes for an exact-head passing qualification receipt.
+The current path-only source observation is identified by `sourceBase` and `observedAtHead`, with `sourceObjects` binding its complete reviewed source and evidence paths. `currentSourceEvidence` records the source-only review scope and pending exact-candidate and named-host qualification. Earlier source identities, call-chain descriptions and execution declarations are retained in an explicitly historical map record; retaining an earlier `true` does not revalidate it. Neither the current observation nor the historical record substitutes for an exact-head passing qualification receipt.
 
 ## Production closure is not established
 
 The following remain separate gates and must stay false/not-established until evidence exists:
 
-- authenticated production NDU owner/caller beyond the established request-local read-only caller;
+- current exact-candidate execution of the source-composed request-local read-only caller;
+- authenticated production NDU owner/caller;
 - governed selection and activation of the `NduProjectionStoreV1` writer candidate on the target host;
 - target-host filesystem/fsync/directory-durability and recovery qualification;
 - explicit future-schema migration policy (V1 is the initial on-disk schema and rejects unknown/corrupt images rather than silently migrating them);

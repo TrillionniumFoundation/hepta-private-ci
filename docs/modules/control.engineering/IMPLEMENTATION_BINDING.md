@@ -32,6 +32,27 @@ every `HEAD:<sourcePath>` blob and rejects a missing or stale current observatio
 mapping migration updates the exact blobs and current observation without rewriting
 `sourceBase`. Exact candidate commit/tree execution identity remains the responsibility
 of source-head and deterministic synthetic-merge execution receipts.
+
+The current provenance correction uses the actual PR #1000 integration commit
+`a126987b84737dbc2ee2592442a314117bddb4a2` (tree
+`a22fd0074c45ae6f3cef2092cd6e273bf9c26c30`) as the immutable `sourceBase`.
+Earlier maps retained candidate-branch pointers `1133f7e5a5afd348e6fbed5694144572dda59a9a`
+and then `e8e81b7d541a81e75635cc1c0a713edaedb999d5`; neither is an ancestor of the
+current integration line. The separately recorded `integrationBaseline` remains
+`331b81d385a88837e252bd80fda8b8ac35ea4191`. The current review was performed at
+`acbae58fd8ff380f78cae644c3a7d601b7654b28`; the source observation is pinned to the
+already integrated commit `997e7beef8151160065df36b024bc8da5c989e93` (tree
+`22f350ac7e3884403b00c4b69caeec158c130aa4`). All mapped source, test, delegate and
+caller objects, including the complete engineering-control source tree, are identical
+at `a126987b84737dbc2ee2592442a314117bddb4a2`, that observation and the review commit.
+Both integrated anchors are ancestors of the existing integration base
+`75531105b27329abaeb955e77c2c04a6d14f3bcb`; they do not depend on retaining a candidate
+branch through squash integration. The 25 operations, two callers and existing claim
+boundaries are retained.
+This explicit source-navigation correction does not use migration to validate the old
+anchors or renew any historical execution result. Prior values remain in Git history;
+current runtime qualification still requires new exact-source and synthetic-merge evidence.
+
 Historical `HARDENING.json`, `CLOSURE_V4.json`, `MATURITY.json` and copied package
 registries are retired; their useful behavior is in the current source, schema,
 implementation guide and behavioral regressions. No historical materializer,

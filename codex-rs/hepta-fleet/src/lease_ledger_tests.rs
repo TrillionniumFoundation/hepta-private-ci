@@ -40,15 +40,18 @@ fn grant(id: &str, cpu: u64) -> AllocationGrant {
 fn conserves_capacity_and_reuses_identical_grant() {
     let mut ledger = LeaseLedger::new();
     ledger.admit_host(host()).expect("host");
-    let first = grant("one", 600);
-    let receipt = ledger.issue(200, first.clone()).expect("grant");
+    let first = grant("one", /*cpu*/ 600);
+    let receipt = ledger.issue(/*now_ms*/ 200, first.clone()).expect("grant");
     assert_eq!(receipt.outcome, LeaseOutcome::Issued);
     assert_eq!(
-        ledger.issue(200, first).expect("identical").outcome,
+        ledger
+            .issue(/*now_ms*/ 200, first)
+            .expect("identical")
+            .outcome,
         LeaseOutcome::Unchanged
     );
     assert_eq!(
-        ledger.issue(200, grant("two", 500)),
+        ledger.issue(/*now_ms*/ 200, grant("two", /*cpu*/ 500)),
         Err(Error::CapacityExceeded)
     );
 }
@@ -57,22 +60,38 @@ fn conserves_capacity_and_reuses_identical_grant() {
 fn renewal_and_revocation_are_generation_fenced() {
     let mut ledger = LeaseLedger::new();
     ledger.admit_host(host()).expect("host");
-    ledger.issue(200, grant("one", 500)).expect("grant");
+    ledger
+        .issue(/*now_ms*/ 200, grant("one", /*cpu*/ 500))
+        .expect("grant");
     assert_eq!(
-        ledger.renew_or_revoke(300, "one", 2, 3, &"1".repeat(64), LeaseDisposition::Revoke,),
+        ledger.renew_or_revoke(
+            /*now_ms*/ 300,
+            "one",
+            /*expected_lease_generation*/ 2,
+            /*authority_epoch*/ 3,
+            &"1".repeat(64),
+            LeaseDisposition::Revoke,
+        ),
         Err(Error::StaleLease)
     );
     let revoked = ledger
-        .renew_or_revoke(300, "one", 1, 3, &"1".repeat(64), LeaseDisposition::Revoke)
+        .renew_or_revoke(
+            /*now_ms*/ 300,
+            "one",
+            /*expected_lease_generation*/ 1,
+            /*authority_epoch*/ 3,
+            &"1".repeat(64),
+            LeaseDisposition::Revoke,
+        )
         .expect("revoke");
     assert!(revoked.revoked);
     assert_eq!(revoked.lease_generation, 2);
     assert_eq!(
         ledger.renew_or_revoke(
-            300,
+            /*now_ms*/ 300,
             "one",
-            2,
-            3,
+            /*expected_lease_generation*/ 2,
+            /*authority_epoch*/ 3,
             &"1".repeat(64),
             LeaseDisposition::Renew { expires_at_ms: 900 },
         ),

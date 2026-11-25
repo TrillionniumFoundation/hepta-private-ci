@@ -40,7 +40,8 @@ fn optional_number(value: Option<u64>) -> String {
 fn signed_product_history_curve_append_lookup_reopen_and_exact_retry() {
     let fixture = Fixture::new();
     let directory = fixture.directory();
-    let ledger = DurableLedger::create(fixture.file("ledger"), binding(), 8192).unwrap();
+    let ledger =
+        DurableLedger::create(fixture.file("ledger"), binding(), /*max_records*/ 8192).unwrap();
     let witness = LedgerWitnessStore::create(fixture.file("witness"), binding()).unwrap();
     let mut writer =
         LedgerWriter::from_durable(ledger, witness, activated_trust(), &directory, &directory)
@@ -53,7 +54,7 @@ fn signed_product_history_curve_append_lookup_reopen_and_exact_retry() {
         &decision_signing_payload_v2(&first).unwrap(),
     );
     let original = writer
-        .append_decision(Digest32::ZERO, first.clone(), &signed, 50)
+        .append_decision(Digest32::ZERO, first.clone(), &signed, /*now*/ 50)
         .unwrap();
     let mut predecessor = original.chain_digest;
     let mut committed = 1;
@@ -73,7 +74,7 @@ fn signed_product_history_curve_append_lookup_reopen_and_exact_retry() {
             );
             let started = Instant::now();
             let receipt = writer
-                .append_decision(predecessor, last.clone(), &evidence, 50)
+                .append_decision(predecessor, last.clone(), &evidence, /*now*/ 50)
                 .unwrap();
             append_samples.push(started.elapsed().as_nanos());
             predecessor = receipt.chain_digest;
@@ -98,7 +99,7 @@ fn signed_product_history_curve_append_lookup_reopen_and_exact_retry() {
         for _ in 0..32 {
             let started = Instant::now();
             let retry = writer
-                .append_decision(Digest32::ZERO, first.clone(), &signed, 50)
+                .append_decision(Digest32::ZERO, first.clone(), &signed, /*now*/ 50)
                 .unwrap();
             retry_samples.push(started.elapsed().as_nanos());
             assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
@@ -120,7 +121,7 @@ fn signed_product_history_curve_append_lookup_reopen_and_exact_retry() {
         let ledger = DurableLedger::recover(
             fixture.file("ledger"),
             binding(),
-            8192,
+            /*max_records*/ 8192,
             LedgerRecovery::Acknowledged(frontier.anchor),
         )
         .unwrap();
@@ -133,7 +134,7 @@ fn signed_product_history_curve_append_lookup_reopen_and_exact_retry() {
             .verify_active_decision_binding(&first.record_id, &first.episode_id)
             .unwrap();
         let retry = writer
-            .append_decision(Digest32::ZERO, first.clone(), &signed, 50)
+            .append_decision(Digest32::ZERO, first.clone(), &signed, /*now*/ 50)
             .unwrap();
         assert_eq!(retry.chain_digest, original.chain_digest);
         // A recovered cache must not admit a same-ID, different-body replay.
@@ -147,7 +148,7 @@ fn signed_product_history_curve_append_lookup_reopen_and_exact_retry() {
         );
         assert!(
             writer
-                .append_decision(Digest32::ZERO, changed, &changed_evidence, 50)
+                .append_decision(Digest32::ZERO, changed, &changed_evidence, /*now*/ 50)
                 .is_err()
         );
         assert_eq!(writer.witness_frontier().unwrap(), frontier);
@@ -161,12 +162,12 @@ fn signed_product_history_curve_append_lookup_reopen_and_exact_retry() {
             ),
             records,
             append_samples.len(),
-            percentile_ns(&mut append_samples, 50),
-            percentile_ns(&mut append_samples, 95),
-            percentile_ns(&mut append_samples, 99),
-            percentile_ns(&mut lookup_samples, 50),
-            percentile_ns(&mut lookup_samples, 99),
-            percentile_ns(&mut retry_samples, 99),
+            percentile_ns(&mut append_samples, /*percentile*/ 50),
+            percentile_ns(&mut append_samples, /*percentile*/ 95),
+            percentile_ns(&mut append_samples, /*percentile*/ 99),
+            percentile_ns(&mut lookup_samples, /*percentile*/ 50),
+            percentile_ns(&mut lookup_samples, /*percentile*/ 99),
+            percentile_ns(&mut retry_samples, /*percentile*/ 99),
             reopen_ns,
             before_disk,
             before_witness,

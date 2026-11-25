@@ -149,7 +149,7 @@ fn append(ledger: &mut SegmentedLedger, event: LedgerEvent) -> AppendReceipt {
 fn cross_segment_causality_revocation_and_historical_retry_keep_one_identity() {
     let f = Fixture::new();
     let mut ledger = f.create();
-    let original = append(&mut ledger, decision(0));
+    let original = append(&mut ledger, decision(/*number*/ 0));
     let anchor = must(ledger.anchor());
     must(ledger.rotate(f.new_file("1"), anchor));
     append(&mut ledger, outcome());
@@ -157,19 +157,19 @@ fn cross_segment_causality_revocation_and_historical_retry_keep_one_identity() {
     let checkpoint = must(ledger.checkpoint());
     let snapshot = must(ledger.snapshot());
     let mut expected = LearningLedger::new();
-    for event in [decision(0), outcome(), revoke()] {
+    for event in [decision(/*number*/ 0), outcome(), revoke()] {
         must(expected.append(event));
     }
     assert_eq!(snapshot, expected.snapshot());
     assert_eq!(must(ledger.active_records()).len(), 1);
     drop(ledger);
-    let mut reopened = must(f.recover(2, checkpoint));
-    let retry = must(reopened.append(Digest32::ZERO, decision(0)));
+    let mut reopened = must(f.recover(/*count*/ 2, checkpoint));
+    let retry = must(reopened.append(Digest32::ZERO, decision(/*number*/ 0)));
     assert_eq!(retry.chain_digest, original.chain_digest);
     assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(must(reopened.snapshot()), snapshot);
     assert_eq!(must(reopened.active_records()), expected.active_records());
-    let mut changed = decision(0);
+    let mut changed = decision(/*number*/ 0);
     if let LedgerEvent::Decision(ref mut row) = changed {
         row.support_digest = Digest32::of_bytes(b"substituted");
     }
@@ -180,14 +180,14 @@ fn cross_segment_causality_revocation_and_historical_retry_keep_one_identity() {
 fn sealed_prefix_is_readable_while_the_new_segment_writer_remains_active() {
     let f = Fixture::new();
     let mut ledger = f.create();
-    append(&mut ledger, decision(0));
+    append(&mut ledger, decision(/*number*/ 0));
     let prefix_anchor = must(ledger.anchor());
     let prefix = must(ledger.snapshot());
     must(ledger.rotate(f.new_file("1"), prefix_anchor));
     append(&mut ledger, outcome());
     assert_eq!(
         must(inspect_ledger_segments(
-            f.files(1),
+            f.files(/*count*/ 1),
             binding(),
             limits(),
             prefix_anchor
@@ -195,15 +195,25 @@ fn sealed_prefix_is_readable_while_the_new_segment_writer_remains_active() {
         prefix
     );
     assert!(matches!(
-        inspect_ledger_segments(f.files(2), binding(), limits(), must(ledger.anchor())),
+        inspect_ledger_segments(
+            f.files(/*count*/ 2),
+            binding(),
+            limits(),
+            must(ledger.anchor())
+        ),
         Err(DurableLedgerError::Busy)
     ));
     assert!(matches!(
-        inspect_ledger_segments(f.files(1), binding(), limits(), must(ledger.anchor())),
+        inspect_ledger_segments(
+            f.files(/*count*/ 1),
+            binding(),
+            limits(),
+            must(ledger.anchor())
+        ),
         Err(DurableLedgerError::AcknowledgedHistoryMissing)
     ));
     assert!(matches!(
-        f.recover(1, must(ledger.checkpoint())),
+        f.recover(/*count*/ 1, must(ledger.checkpoint())),
         Err(DurableLedgerError::Busy)
     ));
 }
@@ -212,7 +222,7 @@ fn sealed_prefix_is_readable_while_the_new_segment_writer_remains_active() {
 fn checkpoint_prevents_missing_empty_successor_and_seal_resurrection() {
     let f = Fixture::new();
     let mut ledger = f.create();
-    append(&mut ledger, decision(0));
+    append(&mut ledger, decision(/*number*/ 0));
     let anchor = must(ledger.anchor());
     must(ledger.seal(anchor));
     let sealed = must(ledger.checkpoint());
@@ -220,7 +230,7 @@ fn checkpoint_prevents_missing_empty_successor_and_seal_resurrection() {
     let successor = must(ledger.checkpoint());
     drop(ledger);
     assert!(matches!(
-        f.recover(1, successor),
+        f.recover(/*count*/ 1, successor),
         Err(DurableLedgerError::AcknowledgedHistoryMissing)
     ));
     let file = f.file("0");
@@ -228,11 +238,11 @@ fn checkpoint_prevents_missing_empty_successor_and_seal_resurrection() {
     must(file.set_len(length - segment_codec::FOOTER as u64));
     drop(file);
     assert!(matches!(
-        f.recover(1, sealed),
+        f.recover(/*count*/ 1, sealed),
         Err(DurableLedgerError::AcknowledgedHistoryMissing)
     ));
     assert!(matches!(
-        f.recover(2, successor),
+        f.recover(/*count*/ 2, successor),
         Err(DurableLedgerError::IncompleteTail)
     ));
 }
@@ -241,12 +251,12 @@ fn checkpoint_prevents_missing_empty_successor_and_seal_resurrection() {
 fn capacity_rejection_and_wrong_successor_never_mutate_the_owner() {
     let f = Fixture::new();
     let mut ledger = f.create();
-    append(&mut ledger, decision(0));
+    append(&mut ledger, decision(/*number*/ 0));
     append(&mut ledger, outcome());
     let checkpoint = must(ledger.checkpoint());
     let before = must(ledger.snapshot());
     assert_eq!(
-        ledger.append(checkpoint.anchor.chain_digest, decision(1)),
+        ledger.append(checkpoint.anchor.chain_digest, decision(/*number*/ 1)),
         Err(DurableLedgerError::Capacity)
     );
     let mut nonempty = f.new_file("bad");
@@ -272,7 +282,7 @@ fn capacity_rejection_and_wrong_successor_never_mutate_the_owner() {
 fn reordered_history_wrong_limits_and_corruption_fail_without_repair() {
     let f = Fixture::new();
     let mut ledger = f.create();
-    append(&mut ledger, decision(0));
+    append(&mut ledger, decision(/*number*/ 0));
     let anchor = must(ledger.anchor());
     must(ledger.rotate(f.new_file("1"), anchor));
     append(&mut ledger, outcome());
@@ -291,7 +301,7 @@ fn reordered_history_wrong_limits_and_corruption_fail_without_repair() {
     assert!(
         SegmentedLedger::recover(
             f.file("owner"),
-            f.files(2),
+            f.files(/*count*/ 2),
             binding(),
             LedgerSegmentLimits {
                 records: 3,
@@ -306,7 +316,7 @@ fn reordered_history_wrong_limits_and_corruption_fail_without_repair() {
     bytes[segment_codec::HEADER + 50] ^= 1;
     must(fs::write(&path, &bytes));
     assert!(matches!(
-        f.recover(2, checkpoint),
+        f.recover(/*count*/ 2, checkpoint),
         Err(DurableLedgerError::Corrupt)
     ));
     assert_eq!(must(fs::read(path)), bytes);
@@ -315,13 +325,13 @@ fn reordered_history_wrong_limits_and_corruption_fail_without_repair() {
 #[test]
 fn incomplete_final_frame_is_repaired_only_after_minimum_anchor_validation() {
     let mut core = LearningLedger::new();
-    must(core.append(decision(0)));
+    must(core.append(decision(/*number*/ 0)));
     let prepared = must(core.prepare(outcome()));
     let frame = must(encode_frame(&prepared.record));
     for cut in [1, 7, 8, 48, frame.len() - 1, frame.len()] {
         let f = Fixture::new();
         let mut ledger = f.create();
-        append(&mut ledger, decision(0));
+        append(&mut ledger, decision(/*number*/ 0));
         let checkpoint = must(ledger.checkpoint());
         let before = must(ledger.snapshot());
         drop(ledger);
@@ -334,11 +344,11 @@ fn incomplete_final_frame_is_repaired_only_after_minimum_anchor_validation() {
         let mut wrong = checkpoint;
         wrong.anchor.chain_digest = Digest32::of_bytes(b"wrong-independent-anchor");
         assert!(matches!(
-            f.recover(1, wrong),
+            f.recover(/*count*/ 1, wrong),
             Err(DurableLedgerError::AnchorMismatch)
         ));
         assert_eq!(must(fs::read(&path)), torn);
-        let recovered = must(f.recover(1, checkpoint));
+        let recovered = must(f.recover(/*count*/ 1, checkpoint));
         let after = must(recovered.snapshot());
         if cut == frame.len() {
             assert_eq!(after.records().len(), 2);
@@ -352,12 +362,12 @@ fn incomplete_final_frame_is_repaired_only_after_minimum_anchor_validation() {
 fn witnessed_sealed_last_segment_can_rotate_but_never_append_after_restart() {
     let f = Fixture::new();
     let mut ledger = f.create();
-    append(&mut ledger, decision(0));
+    append(&mut ledger, decision(/*number*/ 0));
     let anchor = must(ledger.anchor());
     must(ledger.seal(anchor));
     let checkpoint = must(ledger.checkpoint());
     drop(ledger);
-    let mut reopened = must(f.recover(1, checkpoint));
+    let mut reopened = must(f.recover(/*count*/ 1, checkpoint));
     assert!(must(reopened.is_sealed()));
     assert_eq!(
         reopened.append(anchor.chain_digest, outcome()),
@@ -371,19 +381,33 @@ fn witnessed_sealed_last_segment_can_rotate_but_never_append_after_restart() {
 #[test]
 fn original_v1_and_segmented_v2_share_the_real_durable_port_not_a_fixture() {
     let f = Fixture::new();
-    let mut v1 = must(DurableLedger::create(f.new_file("legacy"), binding(), 2));
+    let mut v1 = must(DurableLedger::create(
+        f.new_file("legacy"),
+        binding(),
+        /*max_records*/ 2,
+    ));
     let mut v2 = f.create();
-    must(DurableLedger::append(&mut v1, Digest32::ZERO, decision(0)));
+    must(DurableLedger::append(
+        &mut v1,
+        Digest32::ZERO,
+        decision(/*number*/ 0),
+    ));
     must(SegmentedLedger::append(
         &mut v2,
         Digest32::ZERO,
-        decision(0),
+        decision(/*number*/ 0),
     ));
     assert_eq!(must(v1.snapshot()), must(v2.snapshot()));
     drop(v1);
     drop(v2);
     assert!(
-        DurableLedger::recover(f.file("0"), binding(), 2, LedgerRecovery::Unacknowledged).is_err()
+        DurableLedger::recover(
+            f.file("0"),
+            binding(),
+            /*max_records*/ 2,
+            LedgerRecovery::Unacknowledged
+        )
+        .is_err()
     );
 }
 
@@ -440,7 +464,7 @@ fn crash_child() {
         },
         sealed: false,
     };
-    let mut ledger = must(f.recover(1, minimum));
+    let mut ledger = must(f.recover(/*count*/ 1, minimum));
     append(&mut ledger, outcome());
     let anchor = must(ledger.anchor());
     must(ledger.seal(anchor));
@@ -457,7 +481,7 @@ fn process_exit_after_seal_or_successor_preserves_unknown_outcome_without_redisp
     for phase in ["after-seal", "after-successor"] {
         let f = Fixture::new();
         let mut ledger = f.create();
-        append(&mut ledger, decision(0));
+        append(&mut ledger, decision(/*number*/ 0));
         let minimum = must(ledger.checkpoint());
         must(fs::write(
             f.root.join("retained-anchor"),

@@ -1,3 +1,4 @@
+use super::persisted_resume_settings::PersistedResumeEnvironment;
 use super::persisted_resume_settings::PersistedResumeSettings;
 use super::persisted_resume_settings::latest_persisted_resume_settings;
 use super::thread_enrichment::enrich_loaded_threads;
@@ -4058,10 +4059,18 @@ impl ThreadRequestProcessor {
             )
             .await;
 
+        // Load cwd-dependent configuration for the selected persisted environment so
+        // Core's fallback cwd agrees with the environment restored below.
+        let resume_cwd = persisted_runtime_environment
+            .as_ref()
+            .and_then(|environment| environment.cwd.as_ref())
+            .map(codex_utils_absolute_path::AbsolutePathBuf::to_path_buf)
+            .or(history_cwd);
+
         // Derive a Config using the same logic as new conversation, honoring overrides if provided.
         let mut config = match self
             .config_manager
-            .load_for_cwd(request_overrides, typesafe_overrides, history_cwd)
+            .load_for_cwd(request_overrides, typesafe_overrides, resume_cwd)
             .await
         {
             Ok(config) => config,
@@ -4080,9 +4089,12 @@ impl ThreadRequestProcessor {
         }
 
         let response_history = thread_history.clone();
-        let resume_environments = persisted_runtime_environment.map(|(cwd, workspace_roots)| {
-            self.thread_manager
-                .default_environment_selections(&cwd, &workspace_roots)
+        let resume_environments = persisted_runtime_environment.and_then(|environment| {
+            let cwd = environment.restore_workspace_roots(&mut config)?;
+            Some(
+                self.thread_manager
+                    .default_environment_selections(&cwd, &config.workspace_roots),
+            )
         });
 
         match self
@@ -4324,10 +4336,7 @@ impl ThreadRequestProcessor {
         thread_history: &InitialHistory,
         request_overrides: &mut Option<HashMap<String, serde_json::Value>>,
         typesafe_overrides: &mut ConfigOverrides,
-    ) -> (
-        Option<ThreadMetadata>,
-        Option<(AbsolutePathBuf, Vec<AbsolutePathBuf>)>,
-    ) {
+    ) -> (Option<ThreadMetadata>, Option<PersistedResumeEnvironment>) {
         let InitialHistory::Resumed(resumed_history) = thread_history else {
             return (None, None);
         };
@@ -4340,19 +4349,18 @@ impl ThreadRequestProcessor {
             let has_raw_workspace_roots_override = request_overrides
                 .as_ref()
                 .is_some_and(|overrides| overrides.contains_key("workspace_roots"));
-            if typesafe_overrides.cwd.is_none()
-                && typesafe_overrides.workspace_roots.is_none()
-                && !has_raw_cwd_override
+            if typesafe_overrides.workspace_roots.is_none()
                 && !has_raw_workspace_roots_override
+                && let Some(workspace_roots) = persisted_settings.runtime_workspace_roots.clone()
             {
-                persisted_runtime_environment = persisted_settings
-                    .runtime_cwd
-                    .clone()
-                    .zip(persisted_settings.runtime_workspace_roots.clone());
-            }
-            if typesafe_overrides.workspace_roots.is_none() && !has_raw_workspace_roots_override {
-                typesafe_overrides.workspace_roots =
-                    persisted_settings.runtime_workspace_roots.clone();
+                persisted_runtime_environment = Some(PersistedResumeEnvironment {
+                    cwd: persisted_settings
+                        .runtime_cwd
+                        .clone()
+                        .filter(|_| typesafe_overrides.cwd.is_none() && !has_raw_cwd_override),
+                    workspace_roots,
+                    active_permission_profile: persisted_settings.active_permission_profile.clone(),
+                });
             }
             if typesafe_overrides.approval_policy.is_none() {
                 typesafe_overrides.approval_policy = Some(persisted_settings.approval_policy);

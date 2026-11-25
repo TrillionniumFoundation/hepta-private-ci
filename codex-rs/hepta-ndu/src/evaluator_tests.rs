@@ -75,7 +75,7 @@ fn contribution_from(
         candidate_id: id(candidate),
         organ_id: id(organ),
         objective_digest: Digest32::of_bytes(b"objective"),
-        generation: must(Generation::new(1)),
+        generation: must(Generation::new(/*value*/ 1)),
         feasibility: FeasibilityPosture::Feasible,
         utility: vec![
             AxisValue {
@@ -93,7 +93,7 @@ fn contribution_from(
         }],
         resource: vec![AxisValue {
             axis: id("compute"),
-            value: q32(1),
+            value: q32(/*value*/ 1),
         }],
         uncertainty: vec![
             AxisValue {
@@ -128,7 +128,7 @@ fn profile() -> UtilityProfile {
         }],
         resource_ceilings: vec![AxisLimit {
             axis: id("compute"),
-            maximum: q32(10),
+            maximum: q32(/*value*/ 10),
         }],
         required_organs: RequiredOrganSet {
             organ_ids: vec![id("planner")],
@@ -139,21 +139,25 @@ fn profile() -> UtilityProfile {
 fn set(contributions: Vec<UtilityContribution>) -> ContributionSet {
     ContributionSet {
         objective_digest: Digest32::of_bytes(b"objective"),
-        generation: must(Generation::new(1)),
+        generation: must(Generation::new(/*value*/ 1)),
         contributions,
     }
 }
 
 #[test]
 fn hard_violation_is_filtered_before_utility() {
-    let abstain = contribution("abstain", 0, 0);
-    let mut unsafe_candidate = contribution("unsafe-high-score", 100, 0);
+    let abstain = contribution("abstain", /*success*/ 0, /*latency*/ 0);
+    let mut unsafe_candidate = contribution(
+        "unsafe-high-score",
+        /*success*/ 100,
+        /*latency*/ 0,
+    );
     unsafe_candidate.feasibility = FeasibilityPosture::HardConstraintViolation;
 
     let receipt = must(evaluate_candidates(
         set(vec![abstain, unsafe_candidate]),
         profile(),
-        None,
+        /*scalarization*/ None,
     ));
 
     assert_eq!(
@@ -168,12 +172,12 @@ fn hard_violation_is_filtered_before_utility() {
 fn non_dominated_candidates_without_scalarization_require_slow_path() {
     let receipt = must(evaluate_candidates(
         set(vec![
-            contribution("abstain", 0, 0),
-            contribution("fast", 1, 1),
-            contribution("accurate", 2, 2),
+            contribution("abstain", /*success*/ 0, /*latency*/ 0),
+            contribution("fast", /*success*/ 1, /*latency*/ 1),
+            contribution("accurate", /*success*/ 2, /*latency*/ 2),
         ]),
         profile(),
-        None,
+        /*scalarization*/ None,
     ));
 
     assert_eq!(
@@ -201,9 +205,9 @@ fn registered_scalarization_produces_advisory_recommendation() {
     };
     let receipt = must(evaluate_candidates(
         set(vec![
-            contribution("abstain", 0, 0),
-            contribution("fast", 1, 1),
-            contribution("accurate", 2, 2),
+            contribution("abstain", /*success*/ 0, /*latency*/ 0),
+            contribution("fast", /*success*/ 1, /*latency*/ 1),
+            contribution("accurate", /*success*/ 2, /*latency*/ 2),
         ]),
         profile(),
         Some(scalarization),
@@ -223,9 +227,11 @@ fn missing_required_contribution_is_not_treated_as_zero() {
     required.required_organs.organ_ids.push(id("risk-observer"));
 
     let error = must_err(evaluate_candidates(
-        set(vec![contribution("abstain", 0, 0)]),
+        set(vec![contribution(
+            "abstain", /*success*/ 0, /*latency*/ 0,
+        )]),
         required,
-        None,
+        /*scalarization*/ None,
     ));
 
     assert_eq!(error.code(), "NDU-E003");
@@ -233,13 +239,16 @@ fn missing_required_contribution_is_not_treated_as_zero() {
 
 #[test]
 fn infeasible_abstain_is_rejected_before_any_recommendation() {
-    let mut abstain = contribution("abstain", 0, 0);
+    let mut abstain = contribution("abstain", /*success*/ 0, /*latency*/ 0);
     abstain.feasibility = FeasibilityPosture::HardConstraintViolation;
 
     let error = must_err(evaluate_candidates(
-        set(vec![abstain, contribution("safe", 1, 1)]),
+        set(vec![
+            abstain,
+            contribution("safe", /*success*/ 1, /*latency*/ 1),
+        ]),
         profile(),
-        None,
+        /*scalarization*/ None,
     ));
 
     assert_eq!(error.code(), "NDU-E005");
@@ -284,13 +293,15 @@ fn policy_selects_axis_specific_aggregation_instead_of_implicit_sum() {
     .operator = AggregationOperator::Maximum;
     let receipt = must(evaluate_candidates_with_policy(
         set(vec![
-            contribution_from("abstain", "planner", 0, 0),
-            contribution_from("abstain", "observer", 0, 0),
-            contribution_from("work", "planner", 1, 0),
-            contribution_from("work", "observer", 2, 0),
+            contribution_from("abstain", "planner", /*success*/ 0, /*latency*/ 0),
+            contribution_from(
+                "abstain", "observer", /*success*/ 0, /*latency*/ 0,
+            ),
+            contribution_from("work", "planner", /*success*/ 1, /*latency*/ 0),
+            contribution_from("work", "observer", /*success*/ 2, /*latency*/ 0),
         ]),
         profile,
-        None,
+        /*scalarization*/ None,
         policy,
     ));
     let work = must_some(
@@ -308,7 +319,7 @@ fn policy_selects_axis_specific_aggregation_instead_of_implicit_sum() {
         "success axis",
     );
 
-    assert_eq!(success.value, q32(2));
+    assert_eq!(success.value, q32(/*value*/ 2));
     assert!(!receipt.evaluation_policy_digest.is_zero());
     assert!(!receipt.evaluation_digest_v2.is_zero());
 }
@@ -329,13 +340,15 @@ fn require_equal_aggregation_rejects_conflicting_owners() {
 
     let error = must_err(evaluate_candidates_with_policy(
         set(vec![
-            contribution_from("abstain", "planner", 0, 0),
-            contribution_from("abstain", "observer", 0, 0),
-            contribution_from("work", "planner", 1, 0),
-            contribution_from("work", "observer", 2, 0),
+            contribution_from("abstain", "planner", /*success*/ 0, /*latency*/ 0),
+            contribution_from(
+                "abstain", "observer", /*success*/ 0, /*latency*/ 0,
+            ),
+            contribution_from("work", "planner", /*success*/ 1, /*latency*/ 0),
+            contribution_from("work", "observer", /*success*/ 2, /*latency*/ 0),
         ]),
         profile,
-        None,
+        /*scalarization*/ None,
         policy,
     ));
 
@@ -346,14 +359,14 @@ fn require_equal_aggregation_rejects_conflicting_owners() {
 fn pareto_tolerance_is_digest_bound_and_changes_dominance() {
     let profile = profile();
     let contributions = vec![
-        contribution("abstain", 0, 0),
-        contribution("near", 1, 0),
-        contribution("better", 2, 0),
+        contribution("abstain", /*success*/ 0, /*latency*/ 0),
+        contribution("near", /*success*/ 1, /*latency*/ 0),
+        contribution("better", /*success*/ 2, /*latency*/ 0),
     ];
     let exact = must(evaluate_candidates(
         set(contributions.clone()),
         profile.clone(),
-        None,
+        /*scalarization*/ None,
     ));
     assert_eq!(exact.pareto_frontier.len(), 1);
 
@@ -365,11 +378,11 @@ fn pareto_tolerance_is_digest_bound_and_changes_dominance() {
             .find(|value| value.axis == id("success")),
         "success tolerance",
     )
-    .value = q32(1);
+    .value = q32(/*value*/ 1);
     let tolerant = must(evaluate_candidates_with_policy(
         set(contributions),
         profile,
-        None,
+        /*scalarization*/ None,
         policy,
     ));
 
@@ -399,14 +412,14 @@ fn policy_digest_is_permutation_invariant() {
 
 #[test]
 fn missing_uncertainty_axis_is_unavailable() {
-    let abstain = contribution("abstain", 0, 0);
-    let mut work = contribution("work", 1, 1);
+    let abstain = contribution("abstain", /*success*/ 0, /*latency*/ 0);
+    let mut work = contribution("work", /*success*/ 1, /*latency*/ 1);
     work.uncertainty.retain(|value| value.axis == id("success"));
 
     let error = must_err(evaluate_candidates(
         set(vec![abstain, work]),
         profile(),
-        None,
+        /*scalarization*/ None,
     ));
     assert_eq!(error.code(), "NDU-E004");
 }
@@ -417,11 +430,11 @@ fn candidate_support_digest_binds_organ_and_contribution_semantics() {
     open_profile.required_organs.organ_ids.clear();
     let first = must(evaluate_candidates(
         set(vec![
-            contribution("abstain", 0, 0),
-            contribution("work", 1, 1),
+            contribution("abstain", /*success*/ 0, /*latency*/ 0),
+            contribution("work", /*success*/ 1, /*latency*/ 1),
         ]),
         open_profile.clone(),
-        None,
+        /*scalarization*/ None,
     ));
     let first_support = must_some(
         first
@@ -432,12 +445,15 @@ fn candidate_support_digest_binds_organ_and_contribution_semantics() {
     )
     .support_digest;
 
-    let mut changed = contribution("work", 1, 1);
+    let mut changed = contribution("work", /*success*/ 1, /*latency*/ 1);
     changed.organ_id = id("other-organ");
     let second = must(evaluate_candidates(
-        set(vec![contribution("abstain", 0, 0), changed]),
+        set(vec![
+            contribution("abstain", /*success*/ 0, /*latency*/ 0),
+            changed,
+        ]),
         open_profile,
-        None,
+        /*scalarization*/ None,
     ));
     let second_support = must_some(
         second

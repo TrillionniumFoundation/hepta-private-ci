@@ -220,7 +220,7 @@ pub fn admit_ndu_stochastic_candidate_v1(
     }
     let registry_head_digest = current_registry_view.receipt().head_digest;
     let artifact_bytes_digest =
-        candidate.with_current(current_registry_view, Digest32::of_bytes)?;
+        candidate.with_current(current_registry_view, now, Digest32::of_bytes)?;
     if artifact_bytes_digest != manifest.bytes_digest {
         return Err(NduStochasticAdmissionError::ArtifactMismatch(
             "payload digest",

@@ -22,7 +22,7 @@ fn manifest(dataset: Digest32) -> LearningArtifactManifestV2 {
     LearningArtifactManifestV2 {
         artifact_id: id("artifact-2"),
         kind: ArtifactKind::Model,
-        generation: generation(2),
+        generation: generation(/*value*/ 2),
         provenance_mode: ProvenanceModeV1::DatasetDerived,
         source_dataset_digests: vec![dataset],
         lineage_digests: vec![digest("evaluation"), digest("support")],
@@ -61,7 +61,7 @@ fn art_01_manifest_v2_normalizes_complete_lineage() {
     let dataset = digest("dataset");
     let mut value = manifest(dataset);
     value.lineage_digests.reverse();
-    let validated = match validate_artifact_manifest_v2(value, 50) {
+    let validated = match validate_artifact_manifest_v2(value, /*now*/ 50) {
         Ok(validated) => validated,
         Err(error) => panic!("valid V2 manifest failed: {error}"),
     };
@@ -81,7 +81,7 @@ fn art_02_persistent_withdrawal_blocks_future_admission_and_replays() {
     assert_eq!(first.disposition, WithdrawalAppendDispositionV1::Appended);
     assert!(registry.is_withdrawn(dataset));
     assert_eq!(
-        registry.admit_manifest(manifest(dataset), 50),
+        registry.admit_manifest(manifest(dataset), /*now*/ 50),
         Err(ArtifactClosureError::WithdrawnDataset)
     );
 
@@ -98,7 +98,7 @@ fn art_02_persistent_withdrawal_blocks_future_admission_and_replays() {
 fn art_03_registry_head_witness_rejects_rollback() {
     let witness = RegistryHeadWitnessV1 {
         registry_id: id("learning-artifacts"),
-        generation: generation(4),
+        generation: generation(/*value*/ 4),
         head_digest: digest("head-4"),
         predecessor_head_digest: digest("head-3"),
         authority_epoch: 12,
@@ -109,7 +109,7 @@ fn art_03_registry_head_witness_rejects_rollback() {
     };
     let requirement = RegistryHeadRequirementV1 {
         registry_id: id("learning-artifacts"),
-        minimum_generation: generation(4),
+        minimum_generation: generation(/*value*/ 4),
         expected_predecessor_head_digest: digest("head-3"),
         minimum_authority_epoch: 12,
         now: 50,
@@ -121,7 +121,7 @@ fn art_03_registry_head_witness_rejects_rollback() {
     assert!(!receipt.witness_digest.is_zero());
 
     let mut stale = witness;
-    stale.generation = generation(3);
+    stale.generation = generation(/*value*/ 3);
     assert_eq!(
         validate_registry_head_witness(&stale, &requirement),
         Err(ArtifactClosureError::RegistryGenerationRollback)
@@ -165,14 +165,14 @@ fn artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent() {
     let mut duplicate = manifest(dataset);
     duplicate.lineage_digests = vec![digest("same"), digest("same")];
     assert_eq!(
-        validate_artifact_manifest_v2(duplicate, 50),
+        validate_artifact_manifest_v2(duplicate, /*now*/ 50),
         Err(ArtifactClosureError::DuplicateLineage)
     );
 
     let mut missing = manifest(dataset);
     missing.rollback_predecessor = Some(id("not-a-parent"));
     assert_eq!(
-        validate_artifact_manifest_v2(missing, 50),
+        validate_artifact_manifest_v2(missing, /*now*/ 50),
         Err(ArtifactClosureError::RollbackPredecessorMissing)
     );
 }

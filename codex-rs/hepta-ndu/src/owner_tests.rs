@@ -96,7 +96,7 @@ fn policy() -> NduProductionPolicyV1 {
 
 fn contributions() -> ContributionSet {
     let objective = digest("objective");
-    let generation = must(Generation::new(1));
+    let generation = must(Generation::new(/*value*/ 1));
     ContributionSet {
         objective_digest: objective,
         generation,

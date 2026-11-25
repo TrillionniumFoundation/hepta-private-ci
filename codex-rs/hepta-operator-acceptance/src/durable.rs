@@ -155,6 +155,7 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
 }
 
 pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), AcceptanceError> {
+    require_private_directory_owner()?;
     let parent = path
         .parent()
         .ok_or_else(|| invalid("sidecar artifact has no parent"))?;
@@ -209,6 +210,7 @@ pub(crate) fn write_private_atomic_replace(
     temporary_path: &Path,
     bytes: &[u8],
 ) -> Result<(), AcceptanceError> {
+    require_private_directory_owner()?;
     let parent = path
         .parent()
         .ok_or_else(|| invalid("sidecar artifact has no parent"))?;
@@ -255,6 +257,7 @@ pub(crate) fn lock_existing_sidecar(root: &Path) -> Result<SidecarLock, Acceptan
 }
 
 fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, AcceptanceError> {
+    require_private_directory_owner()?;
     verify_secure_directory(root, "sidecar directory")?;
     let path = root.join(".operator-acceptance.lock");
     let mut options = OpenOptions::new();
@@ -301,6 +304,20 @@ fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, Acceptanc
         }
     }
     Ok(SidecarLock { _file: file })
+}
+
+fn require_private_directory_owner() -> Result<(), AcceptanceError> {
+    #[cfg(unix)]
+    {
+        Ok(())
+    }
+    #[cfg(not(unix))]
+    {
+        // Regular-file identity checks do not qualify private directory
+        // ownership, durable root binding, or exclusive sidecar locking.
+        // Refuse before any create/write/rename/lock side effect.
+        Err(AcceptanceError::UnsupportedPrivateDirectoryOwner)
+    }
 }
 
 impl Drop for SidecarLock {
@@ -425,3 +442,7 @@ fn sort_value(value: &mut Value) {
 fn invalid(message: impl Into<String>) -> AcceptanceError {
     AcceptanceError::Invalid(message.into())
 }
+
+#[cfg(all(test, windows))]
+#[path = "private_directory_owner_windows_tests.rs"]
+mod private_directory_owner_windows_tests;

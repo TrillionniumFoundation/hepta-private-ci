@@ -70,9 +70,11 @@ fn two_agents_reload_with_isolated_paths_and_generations() -> Result<(), FleetRe
 
     let first_id = AgentId::parse(FIRST_AGENT_ID)
         .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?;
-    fleet
-        .registry
-        .compare_and_transition(&first_id, 0, AgentLifecycle::Starting)?;
+    fleet.registry.compare_and_transition(
+        &first_id,
+        /*expected_generation*/ 0,
+        AgentLifecycle::Starting,
+    )?;
     let expected = fleet.registry.load()?;
     let reopened = FleetRegistry::open_existing(fleet.root)?;
     let actual = reopened.load()?;
@@ -105,13 +107,19 @@ fn stale_generation_is_rejected_without_appending_state() -> Result<(), FleetReg
     let manifest = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;
     let agent_id = manifest.agent_id.clone();
     fleet.registry.register(manifest)?;
-    let first = fleet
-        .registry
-        .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)?;
+    let first = fleet.registry.compare_and_transition(
+        &agent_id,
+        /*expected_generation*/ 0,
+        AgentLifecycle::Starting,
+    )?;
 
     let error = fleet
         .registry
-        .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)
+        .compare_and_transition(
+            &agent_id,
+            /*expected_generation*/ 0,
+            AgentLifecycle::Starting,
+        )
         .expect_err("stale generation must fail");
     assert!(matches!(
         error,
@@ -135,7 +143,7 @@ fn corrupt_lifecycle_state_fails_closed() -> Result<(), FleetRegistryError> {
     let agent_id = manifest.agent_id.clone();
     let record = fleet.registry.register(manifest)?;
     fs::write(
-        lifecycle_path(record.layout.run_root(), 0),
+        lifecycle_path(record.layout.run_root(), /*generation*/ 0),
         format!(
             "{{\"schema_version\":1,\"agent_id\":\"{agent_id}\",\"generation\":0,\"lifecycle\":\"running\"}}\n"
         ),
@@ -272,6 +280,7 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
         .map(|name| {
             let path = fleet._temp.path().join("sweep").join(name);
             fs::create_dir_all(&path)?;
+            let path = path.canonicalize()?;
             WorkspaceBinding::new(&path, &fleet.root)
         })
         .collect::<Result<Vec<_>, FleetRegistryError>>()?;

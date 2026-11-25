@@ -41,12 +41,14 @@ test("file journal fsyncs dispatch intent and restores latest observation", asyn
   const path = join(root, "operations.jsonl");
   const journal = new FileBrowserOperationJournal(path);
   await journal.recordDispatch(record());
-  await journal.recordObservation(record({
-    status: "succeeded",
-    outcomeDigest: D1,
-    terminalObserved: true,
-    observationReason: "terminal_observed",
-  }));
+  await journal.recordObservation(
+    record({
+      status: "succeeded",
+      outcomeDigest: D1,
+      terminalObserved: true,
+      observationReason: "terminal_observed",
+    }),
+  );
   const reopened = new FileBrowserOperationJournal(path);
   const stored = await reopened.getOperation("profile.1", 1, "operation.1");
   assert.equal(stored.status, "succeeded");
@@ -63,7 +65,9 @@ test("file journal fails closed on tampering", async () => {
   const journal = new FileBrowserOperationJournal(path);
   await journal.recordDispatch(record());
   const source = await readFile(path, "utf8");
-  await writeFile(path, source.replace("dispatching", "tampered___"), { mode: 0o600 });
+  await writeFile(path, source.replace("dispatching", "tampered___"), {
+    mode: 0o600,
+  });
   const reopened = new FileBrowserOperationJournal(path);
   await assert.rejects(
     reopened.getOperation("profile.1", 1, "operation.1"),

@@ -26,8 +26,29 @@ use crate::common::exec_server::test_codex_helper_paths;
 
 pub(crate) struct FileSystemContext {
     pub(crate) file_system: Arc<dyn ExecutorFileSystem>,
+    _remote_environment: Option<Environment>,
     _helper_paths: Option<TestCodexHelperPaths>,
     _server: Option<ExecServerHarness>,
+}
+
+impl FileSystemContext {
+    #[cfg(unix)]
+    pub(crate) async fn bounded_authorized_read_supported(&self) -> Result<bool> {
+        match &self._remote_environment {
+            Some(environment) => Ok(environment
+                .info()
+                .await?
+                .capabilities
+                .stable_handle_authorized_read),
+            // Non-macOS local reads retain the trait's bounded sandbox-stream
+            // contract; only the RPC and macOS implementation require the
+            // stronger stable-handle provenance capability.
+            None => Ok(!cfg!(target_os = "macos")
+                || codex_exec_server::local_environment_info()
+                    .capabilities
+                    .stable_handle_authorized_read),
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -57,6 +78,7 @@ pub(crate) async fn create_file_system_context(
             )?;
             Ok(FileSystemContext {
                 file_system: Arc::new(LocalFileSystem::with_runtime_paths(runtime_paths)),
+                _remote_environment: None,
                 _helper_paths: Some(helper_paths),
                 _server: None,
             })
@@ -67,6 +89,7 @@ pub(crate) async fn create_file_system_context(
                 Environment::create_for_tests(Some(server.websocket_url().to_string()))?;
             Ok(FileSystemContext {
                 file_system: environment.get_filesystem(),
+                _remote_environment: Some(environment),
                 _helper_paths: None,
                 _server: Some(server),
             })

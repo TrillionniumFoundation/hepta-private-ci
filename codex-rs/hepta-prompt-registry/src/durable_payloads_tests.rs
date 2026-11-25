@@ -52,7 +52,7 @@ fn add_payload(core: &mut PromptRegistry, index: usize) -> Result<RegistryReceip
             expires_unix_ms: None,
         },
         payload,
-        None,
+        /*supersedes_realization_id*/ None,
     )
 }
 
@@ -60,7 +60,8 @@ fn add_payload(core: &mut PromptRegistry, index: usize) -> Result<RegistryReceip
 fn metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifest() {
     let temp = tempfile::tempdir().must("temp");
     let path = temp.path().join("owner");
-    let mut owner = DurablePromptRegistry::open_state_dir(&path, 512).must("owner");
+    let mut owner =
+        DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 512).must("owner");
     owner
         .commit(|core| {
             for index in 0..64 {
@@ -75,7 +76,7 @@ fn metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifes
         .must("legacy serialization")
         .len();
     owner
-        .register_factor(factor(65))
+        .register_factor(factor(/*index*/ 65))
         .must("small metadata mutation");
     owner
         .retire_factor(&id("factor:0"), &id("operator:test"), digest("retirement"))
@@ -109,7 +110,8 @@ fn metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifes
     ));
     let manifest_inode = std::fs::metadata(&manifest).must("manifest").ino();
     drop(owner);
-    let reopened = DurablePromptRegistry::open_state_dir(&path, 512).must("reopen");
+    let reopened =
+        DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 512).must("reopen");
     assert_eq!(reopened.registry().must("registry"), &expected);
     assert_eq!(
         std::fs::metadata(&manifest).must("manifest").ino(),
@@ -125,9 +127,10 @@ fn metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifes
 fn incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validation() {
     let temp = tempfile::tempdir().must("temp");
     let path = temp.path().join("owner");
-    let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
+    let mut owner =
+        DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64).must("owner");
     owner
-        .commit(|core| add_payload(core, 0))
+        .commit(|core| add_payload(core, /*index*/ 0))
         .must("initial payload");
     let expected = owner.registry().must("registry").clone();
     let file_path = path.join(payloads::FILE_NAME);
@@ -141,11 +144,12 @@ fn incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validatio
     file.sync_all().must("tail sync");
     drop(owner);
     assert!(matches!(
-        DurablePromptRegistry::open_state_dir(&path, 65),
+        DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 65),
         Err(DurableRegistryError::ConfigurationMismatch)
     ));
     assert!(std::fs::metadata(&file_path).must("metadata").len() > committed_length);
-    let reopened = DurablePromptRegistry::open_state_dir(&path, 64).must("reopen");
+    let reopened =
+        DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64).must("reopen");
     assert_eq!(reopened.registry().must("registry"), &expected);
     assert_eq!(
         std::fs::metadata(file_path).must("metadata").len(),
@@ -157,10 +161,11 @@ fn incomplete_unselected_payload_tail_is_discarded_only_after_semantic_validatio
 fn post_rename_unknown_commit_keeps_new_payload_and_requires_reopen() {
     let temp = tempfile::tempdir().must("temp");
     let path = temp.path().join("owner");
-    let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
+    let mut owner =
+        DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64).must("owner");
     owner.fail_directory_sync_after_rename_once();
     assert!(matches!(
-        owner.commit(|core| add_payload(core, 1)),
+        owner.commit(|core| add_payload(core, /*index*/ 1)),
         Err(DurableRegistryError::IndeterminateDurability)
     ));
     assert!(owner.requires_reopen());
@@ -169,8 +174,8 @@ fn post_rename_unknown_commit_keeps_new_payload_and_requires_reopen() {
         Err(DurableRegistryError::ReopenRequired)
     ));
     drop(owner);
-    let reopened =
-        DurablePromptRegistry::open_state_dir(&path, 64).must("reconcile selected snapshot");
+    let reopened = DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64)
+        .must("reconcile selected snapshot");
     assert!(
         reopened
             .registry()
@@ -185,8 +190,11 @@ fn missing_truncated_or_modified_committed_payload_is_never_repaired() {
     for fault in ["missing", "truncated", "modified"] {
         let temp = tempfile::tempdir().must("temp");
         let path = temp.path().join("owner");
-        let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
-        owner.commit(|core| add_payload(core, 1)).must("payload");
+        let mut owner =
+            DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64).must("owner");
+        owner
+            .commit(|core| add_payload(core, /*index*/ 1))
+            .must("payload");
         let file_path = path.join(payloads::FILE_NAME);
         let metadata = std::fs::read(path.join("registry.json")).must("snapshot");
         drop(owner);
@@ -209,7 +217,7 @@ fn missing_truncated_or_modified_committed_payload_is_never_repaired() {
             _ => unreachable!(),
         }
         assert!(
-            DurablePromptRegistry::open_state_dir(&path, 64).is_err(),
+            DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64).is_err(),
             "{fault}"
         );
         assert_eq!(
@@ -224,14 +232,15 @@ fn v2_migration_preserves_payloads_frontiers_and_semantic_identity() {
     let temp = tempfile::tempdir().must("temp");
     let path = temp.path().join("owner");
     let directory = prepare_directory(&path).must("directory");
-    let mut core = PromptRegistry::new(64).must("core");
-    add_payload(&mut core, 0).must("legacy payload");
+    let mut core = PromptRegistry::new(/*maximum_records*/ 64).must("core");
+    add_payload(&mut core, /*index*/ 0).must("legacy payload");
     let bytes = serde_json::to_vec(&stored_v2(&core)).must("legacy snapshot");
     let mut file = open_private(&directory, "registry.json", Access::Create).must("legacy file");
     file.write_all(&bytes).must("legacy bytes");
     file.sync_all().must("legacy sync");
     directory.sync_all().must("legacy directory sync");
-    let owner = DurablePromptRegistry::open_state_dir(&path, 64).must("migration");
+    let owner =
+        DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64).must("migration");
     assert_eq!(owner.registry().must("registry"), &core);
     let manifest: serde_json::Value =
         serde_json::from_slice(&std::fs::read(path.join("registry.json")).must("manifest"))
@@ -245,17 +254,21 @@ fn v2_migration_preserves_payloads_frontiers_and_semantic_identity() {
 fn failed_manifest_publication_never_selects_new_payload_bytes() {
     let temp = tempfile::tempdir().must("temp");
     let path = temp.path().join("owner");
-    let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
-    owner.commit(|core| add_payload(core, 0)).must("initial");
+    let mut owner =
+        DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64).must("owner");
+    owner
+        .commit(|core| add_payload(core, /*index*/ 0))
+        .must("initial");
     let expected = owner.registry().must("registry").clone();
     let payload_file = path.join(payloads::FILE_NAME);
     let committed_end = std::fs::metadata(&payload_file).must("metadata").len();
     std::fs::create_dir(path.join("registry.next")).must("block manifest staging");
-    assert!(owner.commit(|core| add_payload(core, 1)).is_err());
+    assert!(owner.commit(|core| add_payload(core, /*index*/ 1)).is_err());
     assert_eq!(owner.registry().must("unchanged registry"), &expected);
     assert!(std::fs::metadata(&payload_file).must("metadata").len() > committed_end);
     drop(owner);
-    let reopened = DurablePromptRegistry::open_state_dir(&path, 64).must("reopen predecessor");
+    let reopened = DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64)
+        .must("reopen predecessor");
     assert_eq!(reopened.registry().must("registry"), &expected);
     assert_eq!(
         std::fs::metadata(payload_file).must("metadata").len(),
@@ -267,10 +280,11 @@ fn failed_manifest_publication_never_selects_new_payload_bytes() {
 fn metadata_mutation_rejects_a_missing_committed_extent_file() {
     let temp = tempfile::tempdir().must("temp");
     let path = temp.path().join("owner");
-    let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
+    let mut owner =
+        DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64).must("owner");
     let before = std::fs::read(path.join("registry.json")).must("snapshot");
     std::fs::remove_file(path.join(payloads::FILE_NAME)).must("remove extent file");
-    assert!(owner.register_factor(factor(0)).is_err());
+    assert!(owner.register_factor(factor(/*index*/ 0)).is_err());
     assert_eq!(
         std::fs::read(path.join("registry.json")).must("snapshot"),
         before
@@ -288,8 +302,11 @@ fn malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes() {
     ] {
         let temp = tempfile::tempdir().must("temp");
         let path = temp.path().join("owner");
-        let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
-        owner.commit(|core| add_payload(core, 0)).must("payload");
+        let mut owner =
+            DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64).must("owner");
+        owner
+            .commit(|core| add_payload(core, /*index*/ 0))
+            .must("payload");
         drop(owner);
         let manifest = path.join("registry.json");
         let mut value: serde_json::Value =
@@ -316,7 +333,7 @@ fn malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes() {
         let payload_path = path.join(payloads::FILE_NAME);
         let before = std::fs::read(&payload_path).must("payload file");
         assert!(
-            DurablePromptRegistry::open_state_dir(&path, 64).is_err(),
+            DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 64).is_err(),
             "{fault}"
         );
         assert_eq!(

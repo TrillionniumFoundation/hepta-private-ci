@@ -493,8 +493,8 @@ mod tests {
                 window_id: id("window:1"),
                 window_digest: digest(b"window"),
             },
-            baseline_generation: generation(10),
-            candidate_generation: generation(11),
+            baseline_generation: generation(/*value*/ 10),
+            candidate_generation: generation(/*value*/ 11),
             evaluation_digest: digest(b"evaluation"),
             rollback_predecessor_digest: artifact,
             changes: vec![TopologyChangeV2 {

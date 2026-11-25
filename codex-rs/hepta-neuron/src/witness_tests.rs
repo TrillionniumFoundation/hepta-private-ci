@@ -60,7 +60,7 @@ fn scope() -> JournalScope {
 }
 
 fn generation() -> Generation {
-    checked(Generation::new(1))
+    checked(Generation::new(/*value*/ 1))
 }
 
 fn anchor(sequence: u64) -> JournalAnchor {
@@ -80,9 +80,9 @@ fn witness_history_survives_reopen_and_fences_stale_cas() {
             generation(),
             /*max_records*/ 8,
         ));
-        checked(store.compare_and_swap(None, anchor(1)));
-        checked(store.compare_and_swap(Some(anchor(1)), anchor(2)));
-        assert_eq!(checked(store.current()), Some(anchor(2)));
+        checked(store.compare_and_swap(/*expected*/ None, anchor(/*sequence*/ 1)));
+        checked(store.compare_and_swap(Some(anchor(/*sequence*/ 1)), anchor(/*sequence*/ 2)));
+        assert_eq!(checked(store.current()), Some(anchor(/*sequence*/ 2)));
     }
     let mut reopened = checked(FileAnchorWitnessStore::open(
         fixture.file(),
@@ -90,12 +90,12 @@ fn witness_history_survives_reopen_and_fences_stale_cas() {
         generation(),
         /*max_records*/ 8,
     ));
-    assert_eq!(checked(reopened.current()), Some(anchor(2)));
+    assert_eq!(checked(reopened.current()), Some(anchor(/*sequence*/ 2)));
     assert_eq!(
-        reopened.compare_and_swap(Some(anchor(1)), anchor(2)),
+        reopened.compare_and_swap(Some(anchor(/*sequence*/ 1)), anchor(/*sequence*/ 2)),
         Err(WitnessStoreError::Conflict)
     );
-    assert_eq!(checked(reopened.current()), Some(anchor(2)));
+    assert_eq!(checked(reopened.current()), Some(anchor(/*sequence*/ 2)));
 }
 
 #[test]
@@ -108,7 +108,7 @@ fn wrong_scope_generation_and_corruption_never_reinitialize_history() {
             generation(),
             /*max_records*/ 8,
         ));
-        checked(store.compare_and_swap(None, anchor(1)));
+        checked(store.compare_and_swap(/*expected*/ None, anchor(/*sequence*/ 1)));
     }
     let original = checked(fs::read(fixture.path()));
     let mut changed_scope = scope();
@@ -125,7 +125,7 @@ fn wrong_scope_generation_and_corruption_never_reinitialize_history() {
     );
     assert_eq!(checked(fs::read(fixture.path())), original);
 
-    let generation_two = checked(Generation::new(2));
+    let generation_two = checked(Generation::new(/*value*/ 2));
     assert_eq!(
         FileAnchorWitnessStore::open(
             fixture.file(),
@@ -172,9 +172,9 @@ fn witness_capacity_and_independent_writer_are_bounded() {
         .err(),
         Some(WitnessStoreError::Busy)
     );
-    checked(store.compare_and_swap(None, anchor(1)));
+    checked(store.compare_and_swap(/*expected*/ None, anchor(/*sequence*/ 1)));
     assert_eq!(
-        store.compare_and_swap(Some(anchor(1)), anchor(2)),
+        store.compare_and_swap(Some(anchor(/*sequence*/ 1)), anchor(/*sequence*/ 2)),
         Err(WitnessStoreError::Capacity)
     );
 }

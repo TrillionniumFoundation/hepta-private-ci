@@ -28,9 +28,9 @@ fn snapshot_key() -> CognitiveSnapshotKeyV1 {
         knowledge_fact_frontier: 14,
         tombstone_frontier: 6,
         source_ledger_frontier: 21,
-        knowledge_graph_generation: generation(3),
-        compact_checkpoint_generation: generation(1),
-        prompt_registry_revision: revision(4),
+        knowledge_graph_generation: generation(/*value*/ 3),
+        compact_checkpoint_generation: generation(/*value*/ 1),
+        prompt_registry_revision: revision(/*value*/ 4),
         retrieval_profile_digest: digest("retrieval"),
         encoder_preprocessor_digest: digest("encoder"),
         authority_epoch: 8,
@@ -79,14 +79,27 @@ fn policy(maximum: u32, protected: Vec<StableId>) -> CompactionPolicyV2 {
 
 #[test]
 fn protected_live_reference_is_retained_before_higher_priority_optional_record() {
-    let protected = record("memory:protected", 1, None, RecordState::Live);
-    let optional = record("memory:optional", 1, None, RecordState::Live);
+    let protected = record(
+        "memory:protected",
+        /*revision_value*/ 1,
+        /*predecessor_digest*/ None,
+        RecordState::Live,
+    );
+    let optional = record(
+        "memory:optional",
+        /*revision_value*/ 1,
+        /*predecessor_digest*/ None,
+        RecordState::Live,
+    );
     let candidate = build_qualified_candidate(
         snapshot_key(),
-        generation(2),
+        generation(/*value*/ 2),
         Some(digest("predecessor-checkpoint")),
-        &policy(1, vec![id("memory:protected")]),
-        vec![input(optional, 100), input(protected, 1)],
+        &policy(/*maximum*/ 1, vec![id("memory:protected")]),
+        vec![
+            input(optional, /*priority*/ 100),
+            input(protected, /*priority*/ 1),
+        ],
     )
     .unwrap_or_else(|error| panic!("valid candidate: {error}"));
     assert_eq!(candidate.retained_records.len(), 1);
@@ -100,19 +113,27 @@ fn protected_live_reference_is_retained_before_higher_priority_optional_record()
 
 #[test]
 fn tombstoned_head_is_never_replayed_or_retained() {
-    let live = record("memory:deleted", 1, None, RecordState::Live);
+    let live = record(
+        "memory:deleted",
+        /*revision_value*/ 1,
+        /*predecessor_digest*/ None,
+        RecordState::Live,
+    );
     let tombstone = record(
         "memory:deleted",
-        2,
+        /*revision_value*/ 2,
         Some(live.record_digest()),
         RecordState::Tombstone,
     );
     let candidate = build_qualified_candidate(
         snapshot_key(),
-        generation(2),
+        generation(/*value*/ 2),
         Some(digest("predecessor-checkpoint")),
-        &policy(4, vec![id("memory:deleted")]),
-        vec![input(live, 10), input(tombstone, 10)],
+        &policy(/*maximum*/ 4, vec![id("memory:deleted")]),
+        vec![
+            input(live, /*priority*/ 10),
+            input(tombstone, /*priority*/ 10),
+        ],
     )
     .unwrap_or_else(|error| panic!("valid deleted candidate: {error}"));
     assert!(candidate.retained_records.is_empty());
@@ -123,26 +144,35 @@ fn tombstoned_head_is_never_replayed_or_retained() {
 
 #[test]
 fn explicit_resurrection_after_tombstone_is_rejected() {
-    let live = record("memory:resurrected", 1, None, RecordState::Live);
+    let live = record(
+        "memory:resurrected",
+        /*revision_value*/ 1,
+        /*predecessor_digest*/ None,
+        RecordState::Live,
+    );
     let tombstone = record(
         "memory:resurrected",
-        2,
+        /*revision_value*/ 2,
         Some(live.record_digest()),
         RecordState::Tombstone,
     );
     let resurrected = record(
         "memory:resurrected",
-        3,
+        /*revision_value*/ 3,
         Some(tombstone.record_digest()),
         RecordState::Live,
     );
     assert_eq!(
         build_qualified_candidate(
             snapshot_key(),
-            generation(2),
+            generation(/*value*/ 2),
             Some(digest("predecessor-checkpoint")),
-            &policy(4, Vec::new()),
-            vec![input(live, 1), input(tombstone, 1), input(resurrected, 1)],
+            &policy(/*maximum*/ 4, Vec::new()),
+            vec![
+                input(live, /*priority*/ 1),
+                input(tombstone, /*priority*/ 1),
+                input(resurrected, /*priority*/ 1)
+            ],
         ),
         Err(QualifiedCompactionError::ResurrectionDenied(
             "memory:resurrected".to_string()
@@ -153,25 +183,49 @@ fn explicit_resurrection_after_tombstone_is_rejected() {
 #[test]
 fn candidate_is_order_independent() {
     let inputs = vec![
-        input(record("memory:a", 1, None, RecordState::Live), 3),
-        input(record("memory:b", 1, None, RecordState::Live), 2),
-        input(record("memory:c", 1, None, RecordState::Live), 1),
+        input(
+            record(
+                "memory:a",
+                /*revision_value*/ 1,
+                /*predecessor_digest*/ None,
+                RecordState::Live,
+            ),
+            /*priority*/ 3,
+        ),
+        input(
+            record(
+                "memory:b",
+                /*revision_value*/ 1,
+                /*predecessor_digest*/ None,
+                RecordState::Live,
+            ),
+            /*priority*/ 2,
+        ),
+        input(
+            record(
+                "memory:c",
+                /*revision_value*/ 1,
+                /*predecessor_digest*/ None,
+                RecordState::Live,
+            ),
+            /*priority*/ 1,
+        ),
     ];
     let mut reversed = inputs.clone();
     reversed.reverse();
     let left = build_qualified_candidate(
         snapshot_key(),
-        generation(2),
+        generation(/*value*/ 2),
         Some(digest("predecessor-checkpoint")),
-        &policy(2, Vec::new()),
+        &policy(/*maximum*/ 2, Vec::new()),
         inputs,
     )
     .unwrap_or_else(|error| panic!("valid left candidate: {error}"));
     let right = build_qualified_candidate(
         snapshot_key(),
-        generation(2),
+        generation(/*value*/ 2),
         Some(digest("predecessor-checkpoint")),
-        &policy(2, Vec::new()),
+        &policy(/*maximum*/ 2, Vec::new()),
         reversed,
     )
     .unwrap_or_else(|error| panic!("valid right candidate: {error}"));
@@ -182,10 +236,18 @@ fn candidate_is_order_independent() {
 fn proof_requires_all_loss_and_deletion_obligations() {
     let candidate = build_qualified_candidate(
         snapshot_key(),
-        generation(2),
+        generation(/*value*/ 2),
         Some(digest("predecessor-checkpoint")),
-        &policy(2, Vec::new()),
-        vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
+        &policy(/*maximum*/ 2, Vec::new()),
+        vec![input(
+            record(
+                "memory:a",
+                /*revision_value*/ 1,
+                /*predecessor_digest*/ None,
+                RecordState::Live,
+            ),
+            /*priority*/ 1,
+        )],
     )
     .unwrap_or_else(|error| panic!("valid candidate: {error}"));
     let qualification = CompactionQualificationV2 {
@@ -216,15 +278,25 @@ fn proof_requires_all_loss_and_deletion_obligations() {
 
 #[test]
 fn protected_set_cannot_exceed_checkpoint_capacity() {
-    let first = record("memory:a", 1, None, RecordState::Live);
-    let second = record("memory:b", 1, None, RecordState::Live);
+    let first = record(
+        "memory:a",
+        /*revision_value*/ 1,
+        /*predecessor_digest*/ None,
+        RecordState::Live,
+    );
+    let second = record(
+        "memory:b",
+        /*revision_value*/ 1,
+        /*predecessor_digest*/ None,
+        RecordState::Live,
+    );
     assert_eq!(
         build_qualified_candidate(
             snapshot_key(),
-            generation(2),
+            generation(/*value*/ 2),
             Some(digest("predecessor-checkpoint")),
-            &policy(1, vec![id("memory:a"), id("memory:b")]),
-            vec![input(first, 1), input(second, 1)],
+            &policy(/*maximum*/ 1, vec![id("memory:a"), id("memory:b")]),
+            vec![input(first, /*priority*/ 1), input(second, /*priority*/ 1)],
         ),
         Err(QualifiedCompactionError::ProtectedReferencesExceedCapacity)
     );

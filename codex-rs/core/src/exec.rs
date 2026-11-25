@@ -10,7 +10,6 @@ use std::process::ExitStatus;
 use std::time::Duration;
 use std::time::Instant;
 
-use async_channel::Sender;
 use tokio::io::AsyncRead;
 use tokio::io::AsyncReadExt;
 use tokio::io::BufReader;
@@ -284,7 +283,7 @@ impl ExecCapturePolicy {
 pub struct StdoutStream {
     pub sub_id: String,
     pub call_id: String,
-    pub tx_event: Sender<Event>,
+    pub tx_event: crate::event_delivery::EventSender,
 }
 
 #[allow(clippy::too_many_arguments)]

@@ -29,7 +29,7 @@ fn factor(source: FactorSource) -> PromptFactor {
 }
 
 fn registry() -> PromptRegistry {
-    let Ok(registry) = PromptRegistry::new(32) else {
+    let Ok(registry) = PromptRegistry::new(/*maximum_records*/ 32) else {
         panic!("test registry must initialize");
     };
     registry
@@ -222,7 +222,7 @@ fn exhausted_revision_preserves_realizations_during_retirement_and_revocation() 
 
 #[test]
 fn governed_factor_relations_are_owner_bound_and_rebuildable() {
-    let mut registry = PromptRegistry::new(64).expect("registry");
+    let mut registry = PromptRegistry::new(/*maximum_records*/ 64).expect("registry");
     for (factor_id, proposer) in [("factor:a", "proposer:a"), ("factor:b", "proposer:b")] {
         registry
             .register_factor(PromptFactor {
@@ -276,7 +276,7 @@ fn governed_factor_relations_are_owner_bound_and_rebuildable() {
 
 #[test]
 fn factor_relation_requires_live_governed_canonical_endpoints() {
-    let mut registry = PromptRegistry::new(64).expect("registry");
+    let mut registry = PromptRegistry::new(/*maximum_records*/ 64).expect("registry");
     registry
         .register_factor(PromptFactor {
             factor_id: id("factor:a"),
@@ -360,10 +360,10 @@ fn signed_admission_persists_scope_evidence_and_grant_lineage() {
         .to_vec();
     let signed = SignedAdmissionGrantV1 { grant, signature };
     let verified = authority
-        .verify(&signed, &value, digest(b"scope"), 20)
+        .verify(&signed, &value, digest(b"scope"), /*now_unix_ms*/ 20)
         .unwrap_or_else(|error| panic!("verify admission: {error}"));
     registry
-        .admit_factor_verified(verified, 20)
+        .admit_factor_verified(verified, /*now_unix_ms*/ 20)
         .unwrap_or_else(|error| panic!("admit verified: {error}"));
 
     let event = registry
@@ -422,11 +422,11 @@ fn verified_admission_cannot_be_used_after_expiry() {
             &SignedAdmissionGrantV1 { grant, signature },
             &value,
             digest(b"scope:2"),
-            20,
+            /*now_unix_ms*/ 20,
         )
         .unwrap_or_else(|error| panic!("verify admission: {error}"));
     assert_eq!(
-        registry.admit_factor_verified(verified, 30),
+        registry.admit_factor_verified(verified, /*now_unix_ms*/ 30),
         Err(Error::InvalidTransition)
     );
     assert_eq!(
@@ -478,11 +478,11 @@ fn verified_admission_rejects_clock_rollback_between_verify_and_commit() {
             &SignedAdmissionGrantV1 { grant, signature },
             &value,
             digest(b"scope:3"),
-            20,
+            /*now_unix_ms*/ 20,
         )
         .unwrap_or_else(|error| panic!("verify admission: {error}"));
     assert_eq!(
-        registry.admit_factor_verified(verified, 19),
+        registry.admit_factor_verified(verified, /*now_unix_ms*/ 19),
         Err(Error::InvalidTransition)
     );
     assert_eq!(
@@ -495,7 +495,7 @@ fn verified_admission_rejects_clock_rollback_between_verify_and_commit() {
 
 #[test]
 fn record_capacity_rejects_atomically() {
-    let mut registry = PromptRegistry::new(1).must("bounded registry");
+    let mut registry = PromptRegistry::new(/*maximum_records*/ 1).must("bounded registry");
     let first = factor(FactorSource::GovernedInternal);
     registry
         .register_factor(first)

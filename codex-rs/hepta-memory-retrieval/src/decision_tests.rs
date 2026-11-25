@@ -47,9 +47,9 @@ fn snapshot_key() -> CognitiveSnapshotKeyV1 {
         knowledge_fact_frontier: 8,
         tombstone_frontier: 4,
         source_ledger_frontier: 11,
-        knowledge_graph_generation: generation(2),
-        compact_checkpoint_generation: generation(1),
-        prompt_registry_revision: revision(3),
+        knowledge_graph_generation: generation(/*value*/ 2),
+        compact_checkpoint_generation: generation(/*value*/ 1),
+        prompt_registry_revision: revision(/*value*/ 3),
         retrieval_profile_digest: digest("retrieval-profile"),
         encoder_preprocessor_digest: digest("encoder-profile"),
         authority_epoch: 5,
@@ -76,7 +76,7 @@ fn cue() -> MemoryCueV1 {
 fn record(number: u64) -> MemoryRecord {
     MemoryRecord {
         record_id: id(&format!("memory:{number}")),
-        revision: revision(1),
+        revision: revision(/*value*/ 1),
         kind: MemoryKind::Fact,
         content_digest: digest(&format!("content:{number}")),
         predecessor_digest: None,
@@ -151,7 +151,7 @@ fn engram() -> EngramSnapshotV1 {
                 population: EngramPopulationV1::SemanticConcept,
                 support: vec![EngramSupportV1 {
                     record_id: id("memory:1"),
-                    record_revision: revision(1),
+                    record_revision: revision(/*value*/ 1),
                 }],
                 threshold: FixedQ32::ZERO,
                 confidence: ProbabilityQ32::ONE,
@@ -162,7 +162,7 @@ fn engram() -> EngramSnapshotV1 {
                 population: EngramPopulationV1::EpisodicBinding,
                 support: vec![EngramSupportV1 {
                     record_id: id("memory:2"),
-                    record_revision: revision(1),
+                    record_revision: revision(/*value*/ 1),
                 }],
                 threshold: FixedQ32::ZERO,
                 confidence: ProbabilityQ32::ONE,
@@ -188,16 +188,32 @@ fn recalled(
         batch(
             RetrievalGeneratorOwnerV1::CognitiveLexical,
             vec![
-                candidate(1, RetrievalChannelV1::Lexical, 1),
-                candidate(2, RetrievalChannelV1::Lexical, 2),
+                candidate(
+                    /*number*/ 1,
+                    RetrievalChannelV1::Lexical,
+                    /*rank*/ 1,
+                ),
+                candidate(
+                    /*number*/ 2,
+                    RetrievalChannelV1::Lexical,
+                    /*rank*/ 2,
+                ),
             ],
             completeness,
         ),
         batch(
             RetrievalGeneratorOwnerV1::CognitiveEntity,
             vec![
-                candidate(1, RetrievalChannelV1::Entity, 1),
-                candidate(2, RetrievalChannelV1::Entity, 2),
+                candidate(
+                    /*number*/ 1,
+                    RetrievalChannelV1::Entity,
+                    /*rank*/ 1,
+                ),
+                candidate(
+                    /*number*/ 2,
+                    RetrievalChannelV1::Entity,
+                    /*rank*/ 2,
+                ),
             ],
             RetrievalSourceCompletenessV1::Exhausted,
         ),
@@ -243,14 +259,26 @@ fn policy_channel_limit_is_recorded_separately_from_source_completeness() {
         batch(
             RetrievalGeneratorOwnerV1::CognitiveLexical,
             vec![
-                candidate(1, RetrievalChannelV1::Lexical, 1),
-                candidate(2, RetrievalChannelV1::Lexical, 2),
+                candidate(
+                    /*number*/ 1,
+                    RetrievalChannelV1::Lexical,
+                    /*rank*/ 1,
+                ),
+                candidate(
+                    /*number*/ 2,
+                    RetrievalChannelV1::Lexical,
+                    /*rank*/ 2,
+                ),
             ],
             RetrievalSourceCompletenessV1::Exhausted,
         ),
         batch(
             RetrievalGeneratorOwnerV1::CognitiveEntity,
-            vec![candidate(1, RetrievalChannelV1::Entity, 1)],
+            vec![candidate(
+                /*number*/ 1,
+                RetrievalChannelV1::Entity,
+                /*rank*/ 1,
+            )],
             RetrievalSourceCompletenessV1::Exhausted,
         ),
     ])

@@ -49,6 +49,13 @@ fn initialize_v8_with_mode(jit_mode: V8JitMode) -> Result<V8Initialization, Stri
     let platform = v8::new_default_platform(0, false).make_shared();
     v8::V8::initialize_platform(platform.clone());
     v8::V8::initialize();
+    // V8 150 initializes the default isolate group's sandbox ArrayBuffer
+    // allocator lazily, without synchronizing its first construction. Prime
+    // it while this process-wide OnceLock still excludes concurrent runtime
+    // starts, before their default CreateParams can race to initialize the
+    // PartitionAlloc configurable pool. The isolate group owns the backend;
+    // dropping this API wrapper does not tear down that process-wide pool.
+    drop(v8::new_default_allocator());
     Ok(V8Initialization {
         _platform: platform,
         jit_mode,

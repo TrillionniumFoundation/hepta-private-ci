@@ -136,13 +136,6 @@ fn command() -> Result<AgentCommand, SupervisorError> {
     AgentCommand::new(fake_program("hepta-agentd"), Vec::new())
 }
 
-fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorError> {
-    AgentRelease::new(
-        identity,
-        AgentCommand::new(fake_program(program), Vec::new())?,
-    )
-}
-
 fn config() -> SupervisorConfig {
     SupervisorConfig {
         health_timeout: Duration::from_millis(10),
@@ -173,6 +166,9 @@ struct FakeWorld {
     processes: BTreeMap<u64, FakeState>,
     reject_adoption: BTreeSet<AgentId>,
     reject_spawn_programs: BTreeSet<PathBuf>,
+    reject_kill: BTreeSet<AgentId>,
+    reject_stop: BTreeSet<AgentId>,
+    adoption_requests: usize,
 }
 
 struct FakeState {
@@ -366,7 +362,8 @@ impl ProcessDriver for FakeDriver {
     }
 
     fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
-        let world = self.world.lock().expect("fake world lock");
+        let mut world = self.world.lock().expect("fake world lock");
+        world.adoption_requests += 1;
         if world.reject_adoption.contains(&spec.agent_id) {
             return Ok(Adoption::Rejected);
         }
@@ -425,7 +422,8 @@ impl ProcessDriver for FakeDriver {
         &mut self,
         spec: &MatrixAdoptSpec,
     ) -> Result<Adoption<Self::Process>, ProcessDriverError> {
-        let world = self.world.lock().expect("fake world lock");
+        let mut world = self.world.lock().expect("fake world lock");
+        world.adoption_requests += 1;
         let Some((&id, _)) = world.processes.iter().find(|(_, state)| {
             state.agent_id == spec.agent_id
                 && state.role == FakeRole::Matrixd
@@ -473,24 +471,24 @@ impl ManagedProcess for FakeProcess {
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
-        self.world
-            .lock()
-            .expect("fake world lock")
-            .processes
-            .get_mut(&self.id)
-            .expect("fake process")
-            .stop_requests += 1;
+        let mut world = self.world.lock().expect("fake world lock");
+        let state = world.processes.get_mut(&self.id).expect("fake process");
+        state.stop_requests += 1;
+        let agent_id = state.agent_id.clone();
+        if world.reject_stop.contains(&agent_id) {
+            return Err(ProcessDriverError::new("injected stop failure"));
+        }
         Ok(())
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
-        self.world
-            .lock()
-            .expect("fake world lock")
-            .processes
-            .get_mut(&self.id)
-            .expect("fake process")
-            .kill_requests += 1;
+        let mut world = self.world.lock().expect("fake world lock");
+        let state = world.processes.get_mut(&self.id).expect("fake process");
+        state.kill_requests += 1;
+        let agent_id = state.agent_id.clone();
+        if world.reject_kill.contains(&agent_id) {
+            return Err(ProcessDriverError::new("injected kill failure"));
+        }
         Ok(())
     }
 }
@@ -880,6 +878,14 @@ fn recovery_adopts_one_orphan_and_rejects_another() -> Result<(), SupervisorErro
     assert_eq!(report, TickReport::default());
     assert!(supervisor.snapshot(&fleet.first).unwrap().active);
     assert!(!supervisor.snapshot(&fleet.second).unwrap().active);
+    let rejected = fleet
+        .registry
+        .load()?
+        .agent(&fleet.second)
+        .cloned()
+        .unwrap();
+    assert!(crate::lease::read_lease(rejected.layout.run_root())?.is_some());
+    assert_eq!(control.counts(&fleet.second).2, 0);
     assert!(
         supervisor
             .snapshot(&fleet.first)
@@ -1034,7 +1040,8 @@ fn recovery_ignores_revoked_previous_release_and_adopts_current() -> Result<(), 
 }
 
 #[test]
-fn process_recovery_fault_does_not_hide_signed_recovery_required() -> Result<(), SupervisorError> {
+fn process_recovery_fault_does_not_hide_signed_recovery_or_consume_abort()
+-> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let source = fleet.write_release_source()?;
     let release_id = ReleaseId::parse("recovery-signed-revoked-current")?;
@@ -1074,6 +1081,11 @@ fn process_recovery_fault_does_not_hide_signed_recovery_required() -> Result<(),
     .expect("queued signed intent");
     crate::signed_intent::write_intent(record.layout.run_root(), &intent)
         .expect("write queued intent");
+    crate::signed_intent::write_recovery_directive(
+        record.layout.run_root(),
+        &crate::SignedIntentRecoveryDirective::abort(intent.intent_sha256).expect("exact abort"),
+    )
+    .expect("write abort directive");
     fleet.registry.revoke_release(&fleet.first, &release_id)?;
 
     let (recovered, report) =
@@ -1087,6 +1099,13 @@ fn process_recovery_fault_does_not_hide_signed_recovery_required() -> Result<(),
     assert!(
         recovered.production_recovery_required(&fleet.first)?,
         "process recovery fault must not hide durable signed recovery"
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .expect("read intent")
+            .expect("durable intent")
+            .status,
+        crate::SignedIntentStatus::RecoveryRequired,
     );
     assert_eq!(control.counts(&fleet.first).2, 1);
     Ok(())
@@ -2300,3 +2319,12 @@ fn finish_release_drain(
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
 }
+
+#[path = "signed_intent_recovery_owner_tests.rs"]
+mod signed_intent_recovery_owner_tests;
+
+#[path = "signed_admission_owner_tests.rs"]
+mod signed_admission_owner_tests;
+
+#[path = "unknown_recovery_owner_tests.rs"]
+mod unknown_recovery_owner_tests;

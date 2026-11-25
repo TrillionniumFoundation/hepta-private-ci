@@ -17,7 +17,6 @@ use crate::mcp::mcp_permission_prompt_is_auto_approved;
 use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
-use async_channel::Sender;
 use codex_protocol::approvals::ElicitationRequest;
 use codex_protocol::approvals::ElicitationRequestEvent;
 use codex_protocol::mcp::RequestId as ProtocolRequestId;
@@ -206,7 +205,7 @@ impl ElicitationRequestManager {
     pub(crate) fn make_sender(
         &self,
         server_name: String,
-        tx_event: Option<Sender<Event>>,
+        tx_event: Option<crate::McpEventSender>,
     ) -> SendElicitation {
         let router = self.router.clone();
         let authority = self.authority.clone();
