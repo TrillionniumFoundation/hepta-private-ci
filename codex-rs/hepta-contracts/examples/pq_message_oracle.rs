@@ -22,11 +22,12 @@ fn hex(bytes: &[u8]) -> String {
 }
 fn unhex(value: &Value, name: &str) -> Result<Vec<u8>> {
     let text = value[name].as_str().ok_or("missing hex field")?;
-    if !text.len().is_multiple_of(2) || text.len() > 140_000 {
+    let (pairs, remainder) = text.as_bytes().as_chunks::<2>();
+    if !remainder.is_empty() || text.len() > 140_000 {
         return Err("hex input length".into());
     }
-    text.as_bytes()
-        .chunks_exact(2)
+    pairs
+        .iter()
         .map(|pair| {
             let digit = |b: u8| match b {
                 b'0'..=b'9' => Ok(b - b'0'),
