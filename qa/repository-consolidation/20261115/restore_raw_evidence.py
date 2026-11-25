@@ -56,7 +56,9 @@ ORDINARY_HISTORICAL_REVIEW_INDEX = "qa/repository-consolidation/20261125/ordinar
 VERIFY2_IMAGE_LOG_INDEX = "qa/repository-consolidation/20261125/verify2-image-log-custody/raw-evidence-storage.json"
 ORDINARY_REVIEWED_PATCH_CONTINUATION_INDEX = "qa/repository-consolidation/20261125/ordinary-reviewed-patch-continuation/raw-evidence-storage.json"
 N128_ORIGINAL_HOSTED_LOG_INDEX = "qa/repository-consolidation/20261125/hosted-n128-original-log-custody/raw-evidence-storage.json"
+OWNER_QUALIFICATION_LOG_INDEX = "qa/repository-consolidation/20261125/owner-qualification-log-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    OWNER_QUALIFICATION_LOG_INDEX: "537852f987f9fb7d45347cf24a8923fa682925be0e616d27f56d912edfcd9c55",
     N128_ORIGINAL_HOSTED_LOG_INDEX: "f47e63042c169db4b0a326e16c9024913e217166ba8ef6c642c8a2346edb56cc",
     ORDINARY_REVIEWED_PATCH_CONTINUATION_INDEX: "40a153c55cf813e57a1a7a0ffc9e8f2e589781da048ba012b6828cf41474c3a4",
     VERIFY2_IMAGE_LOG_INDEX: "4a9fb5de9eeddd2f1375434e14d8d8a7815e9f61913da12bb6f29890321d76db",
