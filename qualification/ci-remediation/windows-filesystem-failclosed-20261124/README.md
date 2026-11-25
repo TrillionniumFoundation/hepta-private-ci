@@ -49,7 +49,7 @@ been executed for this draft.
 | Legacy capture, with or without overrides | First statement of the shared capture implementation |
 | Elevated capture | First statement of its implementation |
 | Legacy preflight | Before capability files or ACL installation for managed profiles |
-| Setup refresh and extra read grants | Shared refresh implementation, before payload construction and helper setup |
+| Setup refresh and extra read grants | Public managed-profile wrappers, before read-root collection; shared implementation also retains its guard |
 | Elevated setup | Shared setup implementation, before directories, ACLs, or an elevation request |
 | Account acquisition or refresh | Before marker loading, reconciliation, or account setup |
 | TUI world-writable ACL preparation | Before scanning or installing capability denies |
@@ -80,10 +80,35 @@ and previously absent Codex home must remain absent. The source places the guard
 before the first mutation; the native state checks are its regression coverage.
 Unexpectedly returned token handles are owned and closed before the test fails.
 
-Executed locally: repository `just fmt` and `git diff --check`.
-**Not executed:** native Windows tests, the complete Windows crate build, or the
-new source's workspace CI. The changes are an isolated review draft based on
-`676d59ef602e59790a58614541bfb92325bdc71f`; there is no claimed native pass.
+### Actual original-head native result and preparation fix
+
+The original head `79b1ef2a39ea587247f593c4f44d6d7e9b9dd5f2` did execute
+on Windows in [run 45429499868, job 138609508679](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45429499868/job/138609508679).
+The GitHub merge checkout has the same tree as that head. Three of the four
+new cases passed; `automatic_preparation_refuses_before_acl_or_account_setup`
+failed because the previously absent Codex home already existed. Therefore the
+original run did **not** complete the required 40 checked entry attempts.
+`native-79b1-receipt.json` and the normalized first unit-execution excerpt preserve
+the exact source binding, counts, failure, and original raw byte hashes. The
+excerpt only normalizes line endings and trailing whitespace; its own hash is
+recorded separately. Reprinted failure
+tails are not additional executions.
+
+The extra-read-roots wrapper collected helper read roots before reaching its
+shared refusal guard. That collection called `create_dir_all` for the helper
+binary directory. The follow-up puts the same guard in both public refresh
+wrappers immediately after successful managed-profile resolution, before any
+root preparation. The existing non-managed no-op and shared inner guard remain.
+No cleanup after an unauthorized mutation is substituted for prevention.
+
+The four original cases and all their error, byte, namespace, DACL, and no-child
+assertions remain. Each case now also checks its actual successful refusal-call
+count (8, 16, 10, and 6 respectively) and emits that count only after its final
+state checks. All four must pass to establish the 40-attempt qualification.
+
+Executed for this follow-up: repository `just fmt` and `git diff --check`.
+The follow-up's native execution is still pending. A passing refusal subset will
+not restore managed execution or make the complete Windows matrix pass.
 
 ## Preserved requirements and expected CI impact
 

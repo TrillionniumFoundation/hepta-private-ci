@@ -1,0 +1,304 @@
+2026-11-24T16:57:38.1540303Z FAIL: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log)
+2026-11-24T16:57:38.1541693Z INFO: From Testing //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests:
+2026-11-24T16:57:38.1542789Z ==================== Test output for //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests:
+2026-11-24T16:57:38.1543486Z
+2026-11-24T16:57:38.1546490Z running 91 tests
+2026-11-24T16:57:38.1547291Z test acl::tests::deny_ace_update_failure_is_an_error ... ok
+2026-11-24T16:57:38.1548184Z test acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows ... ok
+2026-11-24T16:57:38.1549566Z test acl::tests::complete_denies_compare_mapped_masks_and_require_every_right ... ok
+2026-11-24T16:57:38.1574420Z test acl::tests::partial_read_deny_is_repaired_before_native_file_data_access ... ok
+2026-11-24T16:57:38.1575427Z test allow::tests::excludes_tmp_env_vars_when_requested ... ok
+2026-11-24T16:57:38.1596244Z test allow::tests::denies_git_file_inside_writable_root ... ok
+2026-11-24T16:57:38.1597031Z test allow::tests::denies_git_dir_inside_writable_root ... ok
+2026-11-24T16:57:38.1614148Z test allow::tests::ignores_unix_slash_tmp_for_windows_allow_roots ... ok
+2026-11-24T16:57:38.1630899Z test allow::tests::denies_codex_and_agents_inside_writable_root ... ok
+2026-11-24T16:57:38.1632968Z test allow::tests::includes_additional_writable_roots ... ok
+2026-11-24T16:57:38.1635599Z test allow::tests::skips_protected_subdirs_when_missing ... ok
+2026-11-24T16:57:38.1720281Z test allow::tests::includes_tmp_env_vars_when_requested ... ok
+2026-11-24T16:57:38.1729895Z test allow::tests::uses_runtime_workspace_roots_for_workspace_root ... ok
+2026-11-24T16:57:38.1750668Z test audit::tests::deny_ace_failure_is_propagated_after_other_paths_are_attempted ... ok
+2026-11-24T16:57:38.1859323Z test audit::tests::gathers_path_entries_by_list_separator ... ok
+2026-11-24T16:57:38.1862344Z test deny_read_acl::tests::plan_preserves_missing_paths ... ok
+2026-11-24T16:57:38.1863426Z test deny_read_acl::tests::plan_includes_existing_canonical_targets ... ok
+2026-11-24T16:57:38.1865627Z test deny_read_resolver::tests::configured_depth_caps_recursive_glob_scans ... ok
+2026-11-24T16:57:38.2000129Z test cap::tests::equivalent_cwd_spellings_share_workspace_sid_key ... ok
+2026-11-24T16:57:38.2017399Z test cap::tests::write_roots_get_path_scoped_sids ... ok
+2026-11-24T16:57:38.2019303Z test deny_read_resolver::tests::configured_depth_bounds_root_recursive_glob_scans ... ok
+2026-11-24T16:57:38.2020471Z test deny_read_resolver::tests::invalid_glob_patterns_fail_before_expansion ... ok
+2026-11-24T16:57:38.2022168Z test deny_read_resolver::tests::glob_patterns_expand_to_existing_matches ... ok
+2026-11-24T16:57:38.2079851Z test deny_read_resolver::tests::non_recursive_globs_do_not_expand_nested_matches ... ok
+2026-11-24T16:57:38.2089870Z test deny_read_resolver::tests::exact_missing_paths_are_preserved ... ok
+2026-11-24T16:57:38.2095089Z test deny_read_resolver::tests::scan_depth_is_bounded_for_non_recursive_globs ... ok
+2026-11-24T16:57:38.2170879Z test deny_read_resolver::tests::scan_root_uses_literal_prefix_before_glob ... ok
+2026-11-24T16:57:38.2290070Z test desktop::tests::desktop_rejects_unrestricted_and_invalid_tokens ... ok
+2026-11-24T16:57:38.2313784Z test deny_read_resolver::tests::root_recursive_globs_without_depth_fail_before_expansion ... ok
+2026-11-24T16:57:38.2315999Z test desktop::tests::workspace_private_desktop_checks_the_exact_capability ... FAILED
+2026-11-24T16:57:38.2508086Z test elevated::ipc_framed::tests::error_payload_serializes_stage_and_windows_error_code ... ok
+2026-11-24T16:57:38.2563232Z test elevated::ipc_framed::tests::framed_round_trip ... ok
+2026-11-24T16:57:38.2629828Z test desktop::tests::readonly_preserves_private_and_default_desktop_access ... FAILED
+2026-11-24T16:57:38.2694679Z test elevated::runner_client::tests::refreshable_sandbox_creds_error_recognizes_credential_and_child_start_failures ... ok
+2026-11-24T16:57:38.2754595Z test filesystem_isolation::tests::automatic_preparation_refuses_before_acl_or_account_setup ... FAILED
+2026-11-24T16:57:38.2839993Z test elevated::ipc_framed::tests::spawn_request_serializes_permission_profile ... ok
+2026-11-24T16:57:38.2854443Z test filesystem_isolation::tests::managed_capture_and_preflight_refuse_before_acl_setup_or_child_launch ... ok
+2026-11-24T16:57:38.2936632Z test filesystem_isolation::tests::public_token_factories_cannot_bypass_managed_execution_refusal ... ok
+2026-11-24T16:57:38.2941707Z test helper_materialization::tests::copy_from_source_if_needed_copies_missing_destination ... ok
+2026-11-24T16:57:38.2982533Z test helper_materialization::tests::copy_from_source_if_needed_reuses_fresh_destination ... ok
+2026-11-24T16:57:38.2988652Z test helper_materialization::tests::copy_runner_into_shared_bin_dir ... ok
+2026-11-24T16:57:38.2990047Z test filesystem_isolation::tests::managed_session_entrypoints_refuse_without_backend_fallback_or_mutation ... ok
+2026-11-24T16:57:38.2992400Z test helper_materialization::tests::helper_bin_dir_is_under_sandbox_bin ... ok
+2026-11-24T16:57:38.3085669Z test helper_materialization::tests::helper_source_lookup_checks_resource_dir ... ok
+2026-11-24T16:57:38.3137742Z test helper_materialization::tests::helper_source_lookup_checks_package_resource_dir_for_bin_exe ... ok
+2026-11-24T16:57:38.3141586Z test helper_materialization::tests::helper_source_lookup_prefers_package_resource_dir_over_bin_resource_dir ... ok
+2026-11-24T16:57:38.3277549Z test helper_materialization::tests::helper_source_lookup_prefers_direct_sibling_over_resource_dir ... ok
+2026-11-24T16:57:38.3359892Z test helper_materialization::tests::materialized_file_name_adds_suffix_before_extension ... ok
+2026-11-24T16:57:38.3390838Z test helper_materialization::tests::helper_version_suffix_uses_cli_version_or_dev_build_metadata ... ok
+2026-11-24T16:57:38.3431376Z test identity::tests::guardian_preserve_mode_does_not_churn_marker_with_empty_proxy_ports ... ok
+2026-11-24T16:57:38.3546305Z test identity::tests::preserving_proxy_settings_uses_the_existing_marker ... ok
+2026-11-24T16:57:38.3583995Z test identity::tests::remove_sandbox_users_file_deletes_existing_file ... ok
+2026-11-24T16:57:38.3586215Z test helper_materialization::tests::helper_source_lookup_resolves_bin_junctions ... ok
+2026-11-24T16:57:38.3587610Z test logging::tests::current_log_file_path_for_codex_home_uses_sandbox_dir ... ok
+2026-11-24T16:57:38.3600923Z test logging::tests::log_file_path_for_utc_date_matches_rolling_appender_name ... ok
+2026-11-24T16:57:38.3608849Z test identity::tests::remove_sandbox_users_file_ignores_missing_file ... ok
+2026-11-24T16:57:38.3611973Z test logging::tests::preview_does_not_panic_on_utf8_boundary ... ok
+2026-11-24T16:57:38.3612920Z test path_normalization::tests::canonical_path_key_normalizes_case_and_separators ... ok
+2026-11-24T16:57:38.3621868Z test logging::tests::log_note_writes_to_daily_rolling_log ... ok
+2026-11-24T16:57:38.3672151Z test resolved_permissions::tests::permission_profile_rejects_disabled_profiles ... ok
+2026-11-24T16:57:38.3792356Z test resolved_permissions::tests::permission_profile_rejects_unrestricted_managed_filesystem ... ok
+2026-11-24T16:57:38.3937864Z test resolved_permissions::tests::permission_profile_workspace_root_uses_runtime_workspace_roots ... ok
+2026-11-24T16:57:38.3943248Z test resolved_permissions::tests::permission_profile_workspace_roots_expand_all_runtime_workspace_roots ... ok
+2026-11-24T16:57:38.3992251Z test resolved_permissions::tests::permission_profile_workspace_write_uses_windows_temp_env_vars ... ok
+2026-11-24T16:57:38.4111802Z test resolved_permissions::tests::token_mode_for_profile_with_writable_roots_uses_write_capabilities ... ok
+2026-11-24T16:57:38.4127870Z test resolved_permissions::tests::token_mode_rejects_full_disk_write_entries ... ok
+2026-11-24T16:57:38.4130388Z test resolved_permissions::tests::token_mode_for_profile_without_writable_roots_uses_readonly_capability ... ok
+2026-11-24T16:57:38.4132088Z test sandbox_utils::tests::injects_safe_directory_for_git_directory ... ok
+2026-11-24T16:57:38.4261795Z test setup::tests::build_payload_deny_read_paths_preserves_explicit_paths ... ok
+2026-11-24T16:57:38.4284217Z test setup::tests::build_payload_roots_preserves_helper_roots_when_read_override_is_provided ... ok
+2026-11-24T16:57:38.4321572Z test setup::tests::build_payload_roots_replaces_full_read_policy_when_read_override_is_provided ... ok
+2026-11-24T16:57:38.4431742Z test sandbox_utils::tests::injects_worktree_root_for_gitfile ... ok
+2026-11-24T16:57:38.4458259Z test setup::tests::effective_write_roots_match_payload_filtering_for_overrides ... ok
+2026-11-24T16:57:38.4459960Z test setup::tests::expand_user_profile_root_for_replaces_profile_root_with_children ... ok
+2026-11-24T16:57:38.4582299Z test setup::tests::effective_write_roots_use_runtime_workspace_roots_for_workspace_root ... ok
+2026-11-24T16:57:38.4601551Z test setup::tests::full_read_roots_preserve_legacy_platform_defaults ... ok
+2026-11-24T16:57:38.4745025Z test setup::tests::gather_read_roots_includes_helper_bin_dir ... ok
+2026-11-24T16:57:38.4751784Z test setup::tests::expanded_write_roots_still_drop_protected_codex_home ... ok
+2026-11-24T16:57:38.4771412Z test setup::tests::is_ssh_config_dependency_root_blocks_config_dependencies ... ok
+2026-11-24T16:57:38.4901873Z test setup::tests::is_user_profile_root_exclusion_blocks_configured_children ... ok
+2026-11-24T16:57:38.4921667Z test setup::tests::loopback_proxy_url_parsing_rejects_non_loopback_and_zero_port ... ok
+2026-11-24T16:57:38.5071620Z test setup::tests::loopback_proxy_url_parsing_supports_common_forms ... ok
+2026-11-24T16:57:38.5134408Z test setup::tests::offline_proxy_settings_ignore_proxy_env_when_online_identity_selected ... ok
+2026-11-24T16:57:38.5136287Z test setup::tests::offline_proxy_settings_capture_proxy_ports_and_local_binding_for_offline_identity ... ok
+2026-11-24T16:57:38.5137683Z test setup::tests::identical_setup_requests_share_one_in_flight_run ... ok
+2026-11-24T16:57:38.5140313Z test setup::tests::profile_read_roots_falls_back_to_profile_root_when_enumeration_fails ... ok
+2026-11-24T16:57:38.5142837Z test setup::tests::profile_read_roots_excludes_configured_top_level_entries ... ok
+2026-11-24T16:57:38.5144203Z test setup::tests::report_helper_failure_ignores_setup_error_report_when_clear_failed ... ok
+2026-11-24T16:57:38.5145335Z test setup::tests::proxy_ports_from_env_dedupes_and_sorts ... ok
+2026-11-24T16:57:38.5146347Z test setup::tests::payload_deny_write_paths_merge_explicit_and_protected_children ... ok
+2026-11-24T16:57:38.5147419Z test helper_materialization::tests::destination_is_fresh_uses_size_and_mtime ... ok
+2026-11-24T16:57:38.5177908Z
+2026-11-24T16:57:38.5194802Z failures:
+2026-11-24T16:57:38.5196089Z
+2026-11-24T16:57:38.5221978Z ---- desktop::tests::workspace_private_desktop_checks_the_exact_capability stdout ----
+2026-11-24T16:57:38.5242209Z Error: Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.5293298Z
+2026-11-24T16:57:38.5294848Z ---- desktop::tests::readonly_preserves_private_and_default_desktop_access stdout ----
+2026-11-24T16:57:38.5297421Z Error: Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.5302783Z
+2026-11-24T16:57:38.5370165Z ---- filesystem_isolation::tests::automatic_preparation_refuses_before_acl_or_account_setup stdout ----
+2026-11-24T16:57:38.5372022Z
+2026-11-24T16:57:38.5373191Z thread 'filesystem_isolation::tests::automatic_preparation_refuses_before_acl_or_account_setup' (5196) panicked at windows-sandbox-rs/src\filesystem_isolation_tests.rs:90:9:
+2026-11-24T16:57:38.5386547Z refusal must precede setup, ACL state, capabilities, and logs
+2026-11-24T16:57:38.5398493Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-24T16:57:38.5406236Z
+2026-11-24T16:57:38.5411136Z
+2026-11-24T16:57:38.5411890Z failures:
+2026-11-24T16:57:38.5415072Z     desktop::tests::readonly_preserves_private_and_default_desktop_access
+2026-11-24T16:57:38.5416010Z     desktop::tests::workspace_private_desktop_checks_the_exact_capability
+2026-11-24T16:57:38.5417010Z     filesystem_isolation::tests::automatic_preparation_refuses_before_acl_or_account_setup
+2026-11-24T16:57:38.5417682Z
+2026-11-24T16:57:38.5418224Z test result: FAILED. 88 passed; 3 failed; 0 ignored; 0 measured; 62 filtered out; finished in 1.06s
+2026-11-24T16:57:38.5418911Z
+2026-11-24T16:57:38.5419039Z
+2026-11-24T16:57:38.5419724Z running 62 tests
+2026-11-24T16:57:38.5420816Z test setup::tests::setup_marker_request_mismatch_reason_ignores_proxy_drift_for_online_identity ... ok
+2026-11-24T16:57:38.5421761Z test setup::tests::setup_completion_requires_ready_artifacts ... ok
+2026-11-24T16:57:38.5422586Z test setup::tests::setup_exe_lookup_checks_package_resource_dir_for_bin_exe ... ok
+2026-11-24T16:57:38.5423547Z test setup::tests::report_helper_failure_uses_setup_error_report_when_clear_succeeded ... ok
+2026-11-24T16:57:38.5424575Z test setup::tests::setup_refresh_skips_profiles_without_managed_filesystem_permissions ... ok
+2026-11-24T16:57:38.5425405Z test setup::tests::setup_refresh_rejects_invalid_deny_read_globs ... ok
+2026-11-24T16:57:38.5426274Z test setup::tests::setup_marker_request_mismatch_reason_reports_offline_firewall_drift ... ok
+2026-11-24T16:57:38.5427361Z test setup::tests::setup_refresh_preserves_workspace_scoped_deny_read_paths ... ok
+2026-11-24T16:57:38.5428260Z test setup_error::tests::sanitize_tag_value_leaves_unknown_segments ... ok
+2026-11-24T16:57:38.5429087Z test setup::tests::setup_request_prefers_explicit_proxy_settings ... ok
+2026-11-24T16:57:38.5429851Z test setup::tests::workspace_write_roots_remain_readable ... ok
+2026-11-24T16:57:38.5431042Z test setup_error::tests::sanitize_tag_value_redacts_multiple_occurrences ... ok
+2026-11-24T16:57:38.5432292Z test setup_error::tests::sanitize_tag_value_redacts_username_segments ... ok
+2026-11-24T16:57:38.5433134Z test spawn_prep::tests::common_spawn_env_keeps_network_env_unchanged ... ok
+2026-11-24T16:57:38.5434135Z test spawn_prep::tests::legacy_session_capability_roots_use_runtime_workspace_roots_for_workspace_root ... ok
+2026-11-24T16:57:38.5435087Z test spawn_prep::tests::no_network_env_rewrite_applies_for_workspace_write ... ok
+2026-11-24T16:57:38.5435965Z test spawn_prep::tests::legacy_deny_path_includes_nested_active_root_sid ... ok
+2026-11-24T16:57:38.5436913Z test spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite ... ok
+2026-11-24T16:57:38.5437818Z test spawn_prep::tests::legacy_capability_roots_use_effective_write_roots ... ok
+2026-11-24T16:57:38.5438710Z test spawn_prep::tests::no_network_env_rewrite_skips_when_network_access_is_allowed ... ok
+2026-11-24T16:57:38.5439687Z test ssh_config_dependencies::tests::collects_path_directive_profile_entries ... ok
+2026-11-24T16:57:38.5440964Z test spawn_prep::tests::root_capability_sids_only_include_active_roots ... ok
+2026-11-24T16:57:38.5442036Z test token::tests::elevated_token_includes_network_proxy_restricting_sid ... FAILED
+2026-11-24T16:57:38.5442980Z test stdio_bridge::tests::input_forwarder_sends_chunks_and_reports_eof ... ok
+2026-11-24T16:57:38.5443814Z test stdio_bridge::tests::output_forwarder_writes_all_chunks ... ok
+2026-11-24T16:57:38.5444502Z test ssh_config_dependencies::tests::recursively_collects_include_dependencies ... ok
+2026-11-24T16:57:38.5445432Z test unified_exec::backend_selection_tests::deny_write_override_is_forced_through_elevated_broker ... FAILED
+2026-11-24T16:57:38.5446499Z test unified_exec::backend_selection_tests::explicit_elevated_level_always_uses_elevated_broker ... FAILED
+2026-11-24T16:57:38.5447488Z test token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes ... FAILED
+2026-11-24T16:57:38.5448565Z test unified_exec::backend_selection_tests::managed_networking_still_requires_explicit_elevated_configuration ... FAILED
+2026-11-24T16:57:38.5449683Z test token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces ... FAILED
+2026-11-24T16:57:38.5451038Z test unified_exec::backend_selection_tests::explicit_write_root_override_is_forced_through_elevated_broker ... FAILED
+2026-11-24T16:57:38.5452123Z test unified_exec::backend_selection_tests::read_only_profile_without_overrides_keeps_restricted_token_backend ... FAILED
+2026-11-24T16:57:38.5453292Z test unified_exec::backends::elevated::tests::retry_uses_original_unified_exec_request_and_stops_after_second_failure ... ok
+2026-11-24T16:57:38.5454793Z test unified_exec::backend_selection_tests::workspace_write_profile_is_forced_through_elevated_broker ... FAILED
+2026-11-24T16:57:38.5455853Z test unified_exec::tests::finish_driver_spawn_closes_stdin_when_not_requested ... ok
+2026-11-24T16:57:38.5456899Z test unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn ... FAILED
+2026-11-24T16:57:38.5457908Z test unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit ... FAILED
+2026-11-24T16:57:38.5458891Z test unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn ... FAILED
+2026-11-24T16:57:38.5459876Z test unified_exec::tests::finish_driver_spawn_keeps_stdin_open_when_requested ... ok
+2026-11-24T16:57:38.5570951Z test unified_exec::tests::legacy_capture_emits_output_and_preserves_descendant_after_normal_exit ... ok
+2026-11-24T16:57:38.5651773Z test unified_exec::tests::legacy_non_tty_cmd_emits_output ... FAILED
+2026-11-24T16:57:38.5862453Z test unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides ... FAILED
+2026-11-24T16:57:38.5901985Z test unified_exec::tests::legacy_tty_cmd_default_desktop_emits_output_and_accepts_input ... ignored, TODO: legacy ConPTY cmd.exe exits with STATUS_DLL_INIT_FAILED in CI
+2026-11-24T16:57:38.5975993Z test unified_exec::tests::legacy_capture_cancellation_terminates_descendants_without_timeout ... ok
+2026-11-24T16:57:38.6087313Z test unified_exec::tests::legacy_tty_cmd_emits_output_and_accepts_input ... ignored, TODO: legacy ConPTY cmd.exe exits with STATUS_DLL_INIT_FAILED in CI
+2026-11-24T16:57:38.6232250Z test unified_exec::tests::legacy_tty_job_terminates_and_preserves_descendants ... ok
+2026-11-24T16:57:38.6567842Z test unified_exec::tests::legacy_non_tty_powershell_interrupt_terminates_process ... ok
+2026-11-24T16:57:38.6732603Z test unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input ... ok
+2026-11-24T16:57:38.6771490Z test unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots ... FAILED
+2026-11-24T16:57:38.7082482Z test wfp::tests::filter_keys_are_unique ... ok
+2026-11-24T16:57:38.7104682Z test unified_exec::tests::restricted_token_rejects_managed_network_before_spawn ... FAILED
+2026-11-24T16:57:38.7412070Z test wfp::tests::filter_names_are_unique ... ok
+2026-11-24T16:57:38.7562909Z test windows_impl::tests::applies_network_block_for_read_only ... ok
+2026-11-24T16:57:38.7578528Z test windows_impl::tests::applies_network_block_when_access_is_disabled ... ok
+2026-11-24T16:57:38.7580322Z test unified_exec::tests::runner_stdin_writer_sends_close_stdin_after_input_eof ... ok
+2026-11-24T16:57:38.7581614Z test windows_impl::tests::skips_network_block_when_access_is_allowed ... ok
+2026-11-24T16:57:38.7583556Z test winutil::tests::argv_to_command_line_quotes_each_argument_independently ... ok
+2026-11-24T16:57:38.7586478Z test windows_impl::tests::legacy_preflight_skips_profiles_without_managed_filesystem_permissions ... ok
+2026-11-24T16:57:38.7597950Z test wrapper::tests::windows_wrapper_args_round_trip ... ok
+2026-11-24T16:57:38.7599317Z test winutil::tests::argv_to_command_line_quotes_regular_program_args ... ok
+2026-11-24T16:57:38.7600401Z test unified_exec::tests::runner_resizer_sends_resize_frame ... ok
+2026-11-24T16:57:38.7602584Z
+2026-11-24T16:57:38.7607550Z failures:
+2026-11-24T16:57:38.7608450Z
+2026-11-24T16:57:38.7609077Z ---- token::tests::elevated_token_includes_network_proxy_restricting_sid stdout ----
+2026-11-24T16:57:38.7611435Z Error: Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.7617402Z
+2026-11-24T16:57:38.7618705Z ---- unified_exec::backend_selection_tests::deny_write_override_is_forced_through_elevated_broker stdout ----
+2026-11-24T16:57:38.7619535Z
+2026-11-24T16:57:38.7622179Z thread 'unified_exec::backend_selection_tests::deny_write_override_is_forced_through_elevated_broker' (4112) panicked at windows-sandbox-rs/src\unified_exec\backend_selection_tests.rs:150:50:
+2026-11-24T16:57:38.7629413Z select backend: Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.7632282Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-24T16:57:38.7632964Z
+2026-11-24T16:57:38.7634521Z ---- unified_exec::backend_selection_tests::explicit_elevated_level_always_uses_elevated_broker stdout ----
+2026-11-24T16:57:38.7639476Z
+2026-11-24T16:57:38.7642420Z thread 'unified_exec::backend_selection_tests::explicit_elevated_level_always_uses_elevated_broker' (4064) panicked at windows-sandbox-rs/src\unified_exec\backend_selection_tests.rs:173:50:
+2026-11-24T16:57:38.7645030Z select backend: Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.7647511Z
+2026-11-24T16:57:38.7732237Z ---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----
+2026-11-24T16:57:38.7735854Z Error: Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.7738859Z
+2026-11-24T16:57:38.7745398Z ---- unified_exec::backend_selection_tests::managed_networking_still_requires_explicit_elevated_configuration stdout ----
+2026-11-24T16:57:38.7803232Z
+2026-11-24T16:57:38.7805114Z thread 'unified_exec::backend_selection_tests::managed_networking_still_requires_explicit_elevated_configuration' (2628) panicked at windows-sandbox-rs/src\unified_exec\backend_selection_tests.rs:195:5:
+2026-11-24T16:57:38.7806487Z assertion failed: `(left == right)`
+2026-11-24T16:57:38.7810646Z
+2026-11-24T16:57:38.7818348Z Diff < left / right > :
+2026-11-24T16:57:38.7819657Z <managed networking requires the elevated Windows sandbox backend
+2026-11-24T16:57:38.7822881Z >Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.7826666Z
+2026-11-24T16:57:38.7830760Z
+2026-11-24T16:57:38.7834610Z
+2026-11-24T16:57:38.7836041Z ---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----
+2026-11-24T16:57:38.7837815Z Error: Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.7841788Z
+2026-11-24T16:57:38.7849997Z ---- unified_exec::backend_selection_tests::explicit_write_root_override_is_forced_through_elevated_broker stdout ----
+2026-11-24T16:57:38.7851585Z
+2026-11-24T16:57:38.7852730Z thread 'unified_exec::backend_selection_tests::explicit_write_root_override_is_forced_through_elevated_broker' (2224) panicked at windows-sandbox-rs/src\unified_exec\backend_selection_tests.rs:122:50:
+2026-11-24T16:57:38.7856917Z select backend: Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.7915986Z
+2026-11-24T16:57:38.7927085Z ---- unified_exec::backend_selection_tests::read_only_profile_without_overrides_keeps_restricted_token_backend stdout ----
+2026-11-24T16:57:38.7928409Z
+2026-11-24T16:57:38.7950342Z thread 'unified_exec::backend_selection_tests::read_only_profile_without_overrides_keeps_restricted_token_backend' (3068) panicked at windows-sandbox-rs/src\unified_exec\backend_selection_tests.rs:72:50:
+2026-11-24T16:57:38.7973364Z select backend: Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.7991668Z
+2026-11-24T16:57:38.8017673Z ---- unified_exec::backend_selection_tests::workspace_write_profile_is_forced_through_elevated_broker stdout ----
+2026-11-24T16:57:38.8024064Z
+2026-11-24T16:57:38.8025225Z thread 'unified_exec::backend_selection_tests::workspace_write_profile_is_forced_through_elevated_broker' (1744) panicked at windows-sandbox-rs/src\unified_exec\backend_selection_tests.rs:95:50:
+2026-11-24T16:57:38.8027348Z select backend: Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.8028576Z
+2026-11-24T16:57:38.8029178Z ---- unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn stdout ----
+2026-11-24T16:57:38.8029911Z
+2026-11-24T16:57:38.8030913Z thread 'unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn' (1976) panicked at windows-sandbox-rs/src\unified_exec\acl_setup_tests.rs:346:9:
+2026-11-24T16:57:38.8032413Z assertion failed: `(left == right)`
+2026-11-24T16:57:38.8032755Z
+2026-11-24T16:57:38.8033038Z Diff < left / right > :
+2026-11-24T16:57:38.8033549Z  (
+2026-11-24T16:57:38.8034678Z <    "Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted",
+2026-11-24T16:57:38.8036595Z <    "Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted",
+2026-11-24T16:57:38.8046310Z >    "apply legacy deny-write ACL to D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpJRGMOK\\protected.txt",
+2026-11-24T16:57:38.8049764Z >    "SetNamedSecurityInfoW failed for D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpJRGMOK\\protected.txt: 5",
+2026-11-24T16:57:38.8062029Z      false,
+2026-11-24T16:57:38.8068854Z  )
+2026-11-24T16:57:38.8069449Z
+2026-11-24T16:57:38.8097121Z
+2026-11-24T16:57:38.8102335Z
+2026-11-24T16:57:38.8121760Z ---- unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit stdout ----
+2026-11-24T16:57:38.8123392Z
+2026-11-24T16:57:38.8128467Z thread 'unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit' (2072) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:59:10:
+2026-11-24T16:57:38.8142443Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
+2026-11-24T16:57:38.8143381Z
+2026-11-24T16:57:38.8144079Z ---- unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn stdout ----
+2026-11-24T16:57:38.8147855Z
+2026-11-24T16:57:38.8173613Z thread 'unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn' (7352) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:59:10:
+2026-11-24T16:57:38.8218912Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
+2026-11-24T16:57:38.8219786Z
+2026-11-24T16:57:38.8221395Z ---- unified_exec::tests::legacy_non_tty_cmd_emits_output stdout ----
+2026-11-24T16:57:38.8224918Z
+2026-11-24T16:57:38.8226225Z thread 'unified_exec::tests::legacy_non_tty_cmd_emits_output' (1216) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:59:10:
+2026-11-24T16:57:38.8229054Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
+2026-11-24T16:57:38.8231047Z
+2026-11-24T16:57:38.8234333Z ---- unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides stdout ----
+2026-11-24T16:57:38.8235367Z
+2026-11-24T16:57:38.8236457Z thread 'unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides' (7392) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:59:10:
+2026-11-24T16:57:38.8239186Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
+2026-11-24T16:57:38.8242131Z
+2026-11-24T16:57:38.8271159Z ---- unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots stdout ----
+2026-11-24T16:57:38.8272128Z
+2026-11-24T16:57:38.8292783Z thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (2420) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:59:10:
+2026-11-24T16:57:38.8305540Z legacy Windows sandbox process test lock poisoned: PoisonError { .. }
+2026-11-24T16:57:38.8306384Z
+2026-11-24T16:57:38.8310416Z ---- unified_exec::tests::restricted_token_rejects_managed_network_before_spawn stdout ----
+2026-11-24T16:57:38.8337399Z
+2026-11-24T16:57:38.8354118Z thread 'unified_exec::tests::restricted_token_rejects_managed_network_before_spawn' (7928) panicked at windows-sandbox-rs/src\unified_exec\tests.rs:260:9:
+2026-11-24T16:57:38.8355650Z assertion failed: `(left == right)`
+2026-11-24T16:57:38.8386012Z
+2026-11-24T16:57:38.8405307Z Diff < left / right > :
+2026-11-24T16:57:38.8407014Z <Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted
+2026-11-24T16:57:38.8415276Z >managed networking requires the elevated Windows sandbox backend
+2026-11-24T16:57:38.8420463Z
+2026-11-24T16:57:38.8420764Z
+2026-11-24T16:57:38.8445903Z
+2026-11-24T16:57:38.8446468Z
+2026-11-24T16:57:38.8447071Z failures:
+2026-11-24T16:57:38.8467685Z     token::tests::elevated_token_includes_network_proxy_restricting_sid
+2026-11-24T16:57:38.8472953Z     token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes
+2026-11-24T16:57:38.8476259Z     token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces
+2026-11-24T16:57:38.8477412Z     unified_exec::backend_selection_tests::deny_write_override_is_forced_through_elevated_broker
+2026-11-24T16:57:38.8497631Z     unified_exec::backend_selection_tests::explicit_elevated_level_always_uses_elevated_broker
+2026-11-24T16:57:38.8500673Z     unified_exec::backend_selection_tests::explicit_write_root_override_is_forced_through_elevated_broker
+2026-11-24T16:57:38.8501879Z     unified_exec::backend_selection_tests::managed_networking_still_requires_explicit_elevated_configuration
+2026-11-24T16:57:38.8505077Z     unified_exec::backend_selection_tests::read_only_profile_without_overrides_keeps_restricted_token_backend
+2026-11-24T16:57:38.8509340Z     unified_exec::backend_selection_tests::workspace_write_profile_is_forced_through_elevated_broker
+2026-11-24T16:57:38.8510724Z     unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn
+2026-11-24T16:57:38.8511972Z     unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn
+2026-11-24T16:57:38.8520330Z     unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit
+2026-11-24T16:57:38.8521877Z     unified_exec::tests::legacy_non_tty_cmd_emits_output
+2026-11-24T16:57:38.8522883Z     unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides
+2026-11-24T16:57:38.8528003Z     unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots
+2026-11-24T16:57:38.8529264Z     unified_exec::tests::restricted_token_rejects_managed_network_before_spawn
+2026-11-24T16:57:38.8529857Z
+2026-11-24T16:57:38.8534126Z test result: FAILED. 44 passed; 16 failed; 2 ignored; 0 measured; 91 filtered out; finished in 0.07s
