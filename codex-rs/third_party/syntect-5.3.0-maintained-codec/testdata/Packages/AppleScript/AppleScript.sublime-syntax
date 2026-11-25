@@ -32,13 +32,12 @@ contexts:
             1: keyword.control.script.applescript
           pop: true
         - include: main
-    - match: |-
-        ^(?x)
-        	\s*(to|on)\s+ 					# "on" or "to"
-        	(\w+)							# function name
-        	(\()							# opening paren
-        		((?:[\s,:\{\}]*(?:\w+)?)*)	# parameters
-        	(\))							# closing paren
+    - match: "^(?x)\n\
+             \t\\s*(to|on)\\s+ \t\t\t\t\t# \"on\" or \"to\"\n\
+             \t(\\w+)\t\t\t\t\t\t\t# function name\n\
+             \t(\\()\t\t\t\t\t\t\t# opening paren\n\
+             \t\t((?:[\\s,:\\{\\}]*(?:\\w+)?)*)\t# parameters\n\
+             \t(\\))\t\t\t\t\t\t\t# closing paren"
       comment: |
         This is not a very well-designed rule.  For now,
                                 we can leave it like this though, as it sorta works.
@@ -55,15 +54,14 @@ contexts:
             1: keyword.control.function.applescript
           pop: true
         - include: main
-    - match: |-
-        ^(?x)
-        	\s*(to|on)\s+ 					# "on" or "to"
-        	(\w+)							# function name
-        	(?:\s+
-        		(of|in)\s+					# "of" or "in"
-        		(\w+)						# direct parameter
-        	)?
-        	(?=\s+(above|against|apart\s+from|around|aside\s+from|at|below|beneath|beside|between|by|for|from|instead\s+of|into|on|onto|out\s+of|over|thru|under)\b)
+    - match: "^(?x)\n\
+             \t\\s*(to|on)\\s+ \t\t\t\t\t# \"on\" or \"to\"\n\
+             \t(\\w+)\t\t\t\t\t\t\t# function name\n\
+             \t(?:\\s+\n\
+             \t\t(of|in)\\s+\t\t\t\t\t# \"of\" or \"in\"\n\
+             \t\t(\\w+)\t\t\t\t\t\t# direct parameter\n\
+             \t)?\n\
+             \t(?=\\s+(above|against|apart\\s+from|around|aside\\s+from|at|below|beneath|beside|between|by|for|from|instead\\s+of|into|on|onto|out\\s+of|over|thru|under)\\b)"
       comment: "TODO: match `given` parameters"
       captures:
         1: keyword.control.function.applescript
@@ -81,11 +79,10 @@ contexts:
             1: keyword.control.preposition.applescript
             2: variable.parameter.handler.applescript
         - include: main
-    - match: |-
-        ^(?x)
-        	\s*(to|on)\s+ 					# "on" or "to"
-        	(\w+)							# function name
-        	(?=\s*(--.*?)?$)				# nothing else
+    - match: "^(?x)\n\
+             \t\\s*(to|on)\\s+ \t\t\t\t\t# \"on\" or \"to\"\n\
+             \t(\\w+)\t\t\t\t\t\t\t# function name\n\
+             \t(?=\\s*(--.*?)?$)\t\t\t\t# nothing else"
       captures:
         1: keyword.control.function.applescript
         2: entity.name.function.handler.applescript
@@ -461,20 +458,18 @@ contexts:
       scope: keyword.operator.arithmetic.applescript
     - match: (=|≠|>|<|≥|>=|≤|<=)
       scope: keyword.operator.comparison.applescript
-    - match: |-
-        (?ix)\b
-        	(and|or|div|mod|as|not
-        	|(a\s+)?(ref(\s+to)?|reference\s+to)
-        	|equal(s|\s+to)|contains?|comes\s+(after|before)|(start|begin|end)s?\s+with
-        	)
-        \b
+    - match: "(?ix)\\b\n\
+             \t(and|or|div|mod|as|not\n\
+             \t|(a\\s+)?(ref(\\s+to)?|reference\\s+to)\n\
+             \t|equal(s|\\s+to)|contains?|comes\\s+(after|before)|(start|begin|end)s?\\s+with\n\
+             \t)\n\
+             \\b"
       scope: keyword.operator.word.applescript
-    - match: |-
-        (?ix)\b
-        	(is(n't|\s+not)?(\s+(equal(\s+to)?|(less|greater)\s+than(\s+or\s+equal(\s+to)?)?|in|contained\s+by))?
-        	|does(n't|\s+not)\s+(equal|come\s+(before|after)|contain)
-        	)
-        \b
+    - match: "(?ix)\\b\n\
+             \t(is(n't|\\s+not)?(\\s+(equal(\\s+to)?|(less|greater)\\s+than(\\s+or\\s+equal(\\s+to)?)?|in|contained\\s+by))?\n\
+             \t|does(n't|\\s+not)\\s+(equal|come\\s+(before|after)|contain)\n\
+             \t)\n\
+             \\b"
       comment: In double quotes so we can use a single quote in the keywords.
       scope: keyword.operator.word.applescript
     - match: \b(?i:some|every|whose|where|that|id|index|\d+(st|nd|rd|th)|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|last|front|back|middle|named|beginning|end|from|to|thr(u|ough)|before|(front|back|beginning|end)\s+of|after|behind|in\s+(front|back|beginning|end)\s+of)\b
@@ -505,15 +500,14 @@ contexts:
       scope: support.class.built-in.applescript
     - match: \b(?i:app(lication)?|boolean|character|constant|date|event|file(\s+specification)?|handler|integer|item|keystroke|linked\s+list|list|machine|number|picture|preposition|POSIX\s+file|real|record|reference(\s+form)?|RGB\s+color|script|sound|text\s+item|type\s+class|vector|writing\s+code(\s+info)?|zone|((international|styled(\s+(Clipboard|Unicode))?|Unicode)\s+)?text|((C|encoded|Pascal)\s+)?string)s?\b
       scope: support.class.built-in.applescript
-    - match: |-
-        (?ix)\b
-        	(	(cubic\s+(centi)?|square\s+(kilo)?|centi|kilo)met(er|re)s
-        	|	square\s+(yards|feet|miles)|cubic\s+(yards|feet|inches)|miles|inches
-        	|	lit(re|er)s|gallons|quarts
-        	|	(kilo)?grams|ounces|pounds
-        	|	degrees\s+(Celsius|Fahrenheit|Kelvin)
-        	)
-        \b
+    - match: "(?ix)\\b\n\
+             \t(\t(cubic\\s+(centi)?|square\\s+(kilo)?|centi|kilo)met(er|re)s\n\
+             \t|\tsquare\\s+(yards|feet|miles)|cubic\\s+(yards|feet|inches)|miles|inches\n\
+             \t|\tlit(re|er)s|gallons|quarts\n\
+             \t|\t(kilo)?grams|ounces|pounds\n\
+             \t|\tdegrees\\s+(Celsius|Fahrenheit|Kelvin)\n\
+             \t)\n\
+             \\b"
       scope: support.class.built-in.unit.applescript
     - match: \b(?i:seconds|minutes|hours|days)\b
       scope: support.class.built-in.time.applescript

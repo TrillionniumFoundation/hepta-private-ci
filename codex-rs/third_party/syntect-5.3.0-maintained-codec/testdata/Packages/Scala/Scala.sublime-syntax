@@ -132,11 +132,9 @@ contexts:
         - match: \*/
           pop: true
         - include: block-comments
-        - match: |-
-            (?x)
-            			(?! /\*)
-            			(?! \*/)
-
+        - match: "(?x)\n\
+                 \t\t\t(?! /\\*)\n\
+                 \t\t\t(?! \\*/)"
   char-literal:
     - match: '''({{escaped_char}}|.)'''
       scope: constant.character.literal.scala
