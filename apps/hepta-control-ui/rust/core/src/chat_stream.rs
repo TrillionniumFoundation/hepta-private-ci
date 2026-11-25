@@ -372,11 +372,27 @@ fn item_message(item: &Value, turn_id: &str, phase: MessagePhase) -> Result<Mess
                 .ok_or(E::Invalid)?;
             let text = content
                 .iter()
-                .map(|part| {
-                    if string(part, "type")? != "text" {
-                        return Err(E::Invalid);
+                .map(|part| match string(part, "type")? {
+                    "text" => string(part, "text").map(str::to_owned),
+                    // Existing original history may contain input from other
+                    // clients. These fixed labels preserve a readable page
+                    // without opening paths, fetching URLs, expanding encoded
+                    // media, invoking skills, or granting attachment support.
+                    "image" => Ok("[Original image attachment; preview unavailable]".into()),
+                    "localImage" => {
+                        Ok("[Original local image attachment; preview unavailable]".into())
                     }
-                    string(part, "text").map(str::to_owned)
+                    "audio" => Ok("[Original audio attachment; preview unavailable]".into()),
+                    "localAudio" => {
+                        Ok("[Original local audio attachment; preview unavailable]".into())
+                    }
+                    "skill" => {
+                        Ok("[Original skill reference; details remain in App Server]".into())
+                    }
+                    "mention" => {
+                        Ok("[Original mention reference; details remain in App Server]".into())
+                    }
+                    _ => Ok("[Unsupported original content; retained by App Server]".into()),
                 })
                 .collect::<Result<Vec<_>, E>>()?
                 .join("\n");

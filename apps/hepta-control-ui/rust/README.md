@@ -32,3 +32,13 @@ selected only by a later authenticated `install_owner` call. The archive's
 principal strings are routing labels and provide no authority. The host owns
 private file storage, atomic replacement and migration, while an active IME
 composition defers checkpointing.
+
+The original App Server history can contain input from another client, including
+images, local images, audio, local audio, skills and mentions. The text projection
+retains the original item/turn identity and text while showing fixed inert labels
+for these nontext parts. It never expands media, opens a path, fetches a URL,
+invokes a skill or derives permission from a reference. Unknown input variants
+are explicitly labelled unsupported. This observation support does not add
+attachment composition or execution support. Original history/turn/notification
+byte bounds still apply before projection; oversized content is not made small
+by merely replacing its eventual display with a label.

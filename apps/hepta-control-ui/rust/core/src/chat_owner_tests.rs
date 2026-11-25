@@ -119,12 +119,10 @@ fn unavailable_or_read_only_owner_cannot_turn_clicks_into_admission() {
         adapter.begin_submit(envelope("one"), 1000),
         Err(ChatOwnerError::PermissionDenied)
     );
-    for capability in [ChatCapability::CreateThread] {
-        assert_eq!(
-            adapter.require_capability(capability, 1000),
-            Err(ChatOwnerError::Unsupported)
-        );
-    }
+    assert_eq!(
+        adapter.require_capability(ChatCapability::CreateThread, 1000),
+        Err(ChatOwnerError::Unsupported)
+    );
     assert_eq!(
         adapter.require_capability(ChatCapability::InterruptTurn, 1000),
         Err(ChatOwnerError::PermissionDenied)
