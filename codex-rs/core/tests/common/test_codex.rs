@@ -1093,9 +1093,14 @@ impl TestCodex {
         .await;
         wait_for_event_with_timeout(
             &self.codex,
-            |event| match event {
-                EventMsg::TurnComplete(event) => event.turn_id == turn_id,
-                _ => false,
+            |event| {
+                if matches!(event, EventMsg::Error(_) | EventMsg::StreamError(_)) {
+                    eprintln!("test turn {turn_id} received provider error: {event:?}");
+                }
+                match event {
+                    EventMsg::TurnComplete(event) => event.turn_id == turn_id,
+                    _ => false,
+                }
             },
             SUBMIT_TURN_COMPLETE_TIMEOUT,
         )
