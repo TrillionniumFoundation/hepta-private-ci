@@ -1,0 +1,2717 @@
+{
+  "frozen_utc": "2026-11-25T11:09:28.889801+00:00",
+  "git_anchor_verification": "provided by orchestrator; independently checked through GitHub receipts",
+  "protocol_sha256": "aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8",
+  "rows": [
+    {
+      "candidate_sha256": "3f3f1a3e75108ea1318ffcbbfa0ae20b9684802deb444c554c98235368f2e6a8",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "84a3e258ba033a7790636291fbb23be7e8bd4670a8baf216514987bd5564f228",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "7e0cffa1775f2610dbb86ef8c4b7663ab10847b75d4f0f751dff8dcd17ca45c0",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "c49e39039df6134a613e17f64ef9d120c892d30472d940bbca953444e3bcbd36",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "47b8605f710ae2983a9535ae3f8af59ebcb13cbe0aacf9b2f03b3cba34a9b944",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "b08294b72165412d3f42085270cceb9c4cffd4c6fb45781746f15a617d5d987d",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "72973c177c499456e856dbe3b64f5c9b7fa0a5d1f463672101e4577b0b2ea4c1",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "6fee74c86571ad4cd870c1d42a7b95ee18aeb69fd67c1c4b780c5a68bdec295d",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "2eeda94ea29a02119b8d7b73b2f1c355e9a052a802a5867ca5092782adc44513",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "8252baabb3eabbace0d3932edb1212ee4a9a32a8f79b76e2447f9823d8c893bc",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "ba024436801df3e795d174c6a47cc342d6eb7ad58743add7127d298f3cae3084",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "fc0ea3b8e0d55cf62f5b02b763922b958c55711d101ab71ca798bb921cccea1f",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "f2a8d4107469c6947bf2d93fbeec9db11aca9799ea3b452c8c31d8b35b09a18f",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "0c7240c3f8dbf429c077bf14a99c41558bef8fc823f664f179ffad7ec6a4e378",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "1deeaf3deade617d0500f48564ce16caaa238986b1870d9c02d84d9a4e53d534",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "88d4a868438e4719edc0b120c4e40b99b0aa542bb35ed67aacde3cb77ad02ee2",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "9dc127adc8e8f3ca057cdf5d6ae9b0a99ac577a31fadb7e680e8fa08bd4e0b15",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "13903487a4433598243bcc39904b073a8974b060da8df72b8c85876f4ad5e699",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "c81bc43fbcb6c2341324485fd2d755f1f32e264037694ba90c1da4f70dbd60ef",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "451d197959a020dbe6657bdea2569bf3435be26c51661cec9cec1e7b8eef1c05",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "6e75a74ba9d60d0f927d473c501a8b01765e68a50fed593e94f919bf6fbe3666",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "bacc168014f35ea252fe3f2a544fd4d266e69dd292f5823b9362d94d7483dc37",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "d8c6f6dedc14a5f9a9b226f732c0974993a58c4597dbd64fe687404727c07fe5",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2101-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "2af9809ae462c64896c69b46a4b657d588df9e1cb7d61d3b39dfca3a38be82ba",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "f487f9ee31468c620f71e747b2d6ba15c0112a168398122ce1a40a4c7edd8dc0",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "57f31536a8c5046f050a8ecbfcb9bd91d46fe269ee4bccd5e316fbf7874cf619",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "ded7ae6eacfe278fe5985308ecc8797874c20f449bdceaeadff6da3810a58e4c",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "a2e5dc1c6439b50eb217bcfbcab00f3bc750f758651c6849e962eb06897b7190",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "a8efd41454ba246b0715eafb31138aca73fb9940b5530593e485ccb940fa6957",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "f2dd287685187fd756d674dfba65f496088a417a0a4dd37355d2f2fac835f6d5",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "acca1b602ccb4c982f5809231de06b7d20fe878a034f8dd67e9dd21ffeded32d",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "54a9d8dcc7691fc440f3e96a3ba3c330a5c4ae07c73e9366ecf865172ac387cb",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "1604e7843e81c1211c69fc6ff3bca8e470976648635ac533cfeb3bedeb9356d9",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "692a3fdda167d285707fd7b8133830396084bb871a3f763b00bd3923c4aaa6d5",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "e3ec9ac752bd1111b080f79ebab2736b17cf50cbb5da445ce1ebd0204861f14e",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "eaecf583bfda86409c2ea29b17d523b5e04c093aaf45ba555ce16a55cb4a2bf6",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "cc4fa9b27b0ec852422966bdaa9e34e67e01b384b1989cc3ab3a91a789efcb95",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "56857f9b6e9a75602f6e4bd1bf0455f3a914c33e248ea177c424c2e643723a11",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "4542c7918e67717c75a5a086d59dfd9c4e9345cd99670798fd24a00c61e8dc69",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "8f4f7e3d4e64d0bd62581fa46724f8505e3008023f1b33ff0f9605cc34ecb5e0",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "e57df82543353276956e131b48eb1c6ea25192408642b19b2bcb5bb30849ad33",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "adab5d5d903efb94d7eebeda2a51529a5037f16494277126f01eb6f96aa5ca30",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "322e0e7fc6f358b3122852a247b61a1bfd3df9e44b778a2984306c240c487ff7",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "62bd37e3a1ebb9453554a2a5d953f68b1e0cb5a934cf5afd6197c43fca13b37d",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "4743cadfccc251d7e772042a45ccd9d605384816ae9a22e5291870c33f78a620",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "42f3f6042571f2bd147f138f3fbea61fcf42168ff2561760cdba1aaf21e1a91e",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "0d185e5a172d215d63a92a33596637fcd6ad402f14452ffde2cdeb761dbdded1",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2102-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "67c6248077a915210135e75339b9e45aba7c4ac713e64d80f30fcdccce1b74ea",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "b6052f26ee9bb32cfb343e764ceeb501808224d7846b6973b96d207322b26dd1",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "6c3ce989037b116705d36977788df81b5f91eb0811e715f6f7c03402219051f0",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "89748f7a1797bdb8feebd8fbd83676e865aa70b47383cad99cea979ff47ca5ee",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "e0325fba0eb564fcc134bcae700bb294edaf5f5766a29d2804094a29beb5e52a",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "45cb0ac066fd7775946736ba8cbfb5e6bcc27a1c531f876032c0a0cb75105a98",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "911fdfe017ea6b46128c066c5af92d17f34ce46a34482acfad83f708350b009d",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "b050ebe0c06cb5bc81cfb4e5c78c260621d2a4e6d89d9e92b5ca4d54727c98a1",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "41836da8f5e119a8dba45cf79d168bc39d6854ed08b2c2b36007950bf89a1c5c",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "bc1ee812fa78955e571850b2d888a4fc17f7708eb9070d49695ba89165481a2f",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "b730da35c0714755e6c39f4dcb482c85df85790e5bb7c94d4a7e0bfa6d285784",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "66ab3e6a786935efd19f5fa032fc2c0d89038583950d9a2bddb3c73c36a92a15",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "b3921125dc031a2eff0d557ba70c7a500d7b9f4ab5fc0f6f562b4b76d1c02a07",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "01bbd3b62f3244e2a95af15f6abd0485d5ab905fcff06605bf310ce6cfa4fa30",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "1676034dfb8d7d937176518e0f8a6234123306a15d40281af261cfd0b711357a",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "75887b906678c66e18ae9443549537668f5e75119f72ce3250dd0764d2c5716c",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "5193058841429eabdcfea9b9b3a2a6206a4c47ffeeafadbfeae2e9936cba5d02",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "d8e3e352a98326038d7631dab8c2dabd441f5d61e169ea4d02d61ed220b67625",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "8c888ee587e31990cff279f4095f72e298cea38d769e184fb701c0111e36e2a5",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "5a0e4e1b8375370f82c4aed6dfd927cd5cda08517a86b2f3d741c7b376582016",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "0ff3e19201ac94a2e82c4943309f28388c79d383613b085695f00d6a20f0e75d",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "c73a7715b895334d025c63bc989c7c212bebdbd878dfe7352211b24f24f5915f",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "f4dc3cacecec456d75144d9f90d47765038c92bed2fdc4891d0b78872073913e",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "59abec09613f68751acb70bd2928867eeeb8200aa47ef7a45c918b03b768ee22",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 8
+      },
+      "name": "n8-s2103-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "5b12b598e4c22c8c4d0ddae852dc308f212099887ff48cd5505c6001a6c76fc6",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "df9a8b062e4e226b54e66479d4f18380c84417db5643bb713cffd00079ef1bd2",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "e76e26124ca9192bc18b44e6041ba2d05c96399afd425196a9a2c48a99fd22c3",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "9efbec243d17cf15f98030fe72cf2165eb319669876da18a4107e53962e447aa",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "4589ee3e7f601a6083c50b089339ea30c87833e5fbae12d578db7d7334343904",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "bcaf0b391f781af9a3a0f8d3f6f3fd50c70c53bbca3ba1fd2ec0f1f55cdd0cb5",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "bd8f386c9506cb919b2df4f7209eda8e62200455119fe7deb7e50c0567858168",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "9e218e4ce5fa86208e05c5a942cbea6c53f6003754617caaab6fc1e10508e8b4",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "ff063be90d253f1ecde9c90bdd5257bb3521672a40d93ff6399420738f538f2f",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "04ab2a0b9cb1e0c2c951729c55e501ec32b4c01d76a2aeb9c6c6fa52f8925c27",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "5b1317798d89ad50ea4417cf6f96ea9012da54750950c82a44204a04a7fcc936",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "d85b05f0b2595ee3fef49040a8c3ec3fc4a56dbbef16058589b0856e16f75d5a",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "0ed2668b5ecc77cf31b6b18c536ae1344801789c802e87b1b2d61b9f56da33c5",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "9501fb245a9b26cfefc4398137addad868ed9a5d37f2aa2cdce5107aa1e3be14",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "c1b2d764b8e7d3b056b48f4b77857360c238422dc091905d10cc344b1ee127d7",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "38d882dce5515255d2b6c471c7a885b0302c3b6893aad631defd960fee8a049e",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "da99e256d2a538997da5b307ff907a55119f9093ab057c7739723c7aa0921d29",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "07ad7a8cfb23e9b9c0fcaa36bd311900ee5bcf6a1e1083d59189ad3dcf56abee",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "28ef0b04ea2f168206bf0bbd37e28509c1d855201c32d92e60c83cb684b4438e",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "848fa8f59fe5c0b04a3bcfcb976095765a484daaba9a4d43ca25f96e1dd537a1",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "5d73658110e664a9ed58291ec2442ed9dda721b8db74d6e8a5fc3cc74606caab",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "3638d65da6f541b5d51939e6a78cb19b052887a6d8ec5abb4c5242d4e7cc4978",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "f13578aa47765a176be7434cd7179538e6506fc49fffe52c5fd0edb45d9fe580",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "521ce71cca469a6e3d7d93419a2bf670d2f5bdb5b49cd668ae68bcaaa3e7951f",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2101-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "7bd17ff3f053efef16775b656e0bdcf15761cdf9551dc74db278048de0e9b17b",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "8cc49df1cb442267ee5d6a8691750100df2aacf8fa385ad19265b5550faf2b7e",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "36c28c7db21644bf1e769f580c16bc3f3b9aa6c2019aad863ae61a7dcb181a6f",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "d4d396ced7be0c9edbd4ba798b706f9400b4870d1f4f7de120e6305362df5631",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "db1e24c3c876ecb60c0a76dfa493fa1df7c87bc006af9b387b8ef780aa1608c5",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "309c3dddad5d5b41f2aa19e363d77d1cf88deb068a6f71a0a23c6cf8b6d12ec4",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "f2271791e37bbc58809ee380b42d499a6484aae62327af4ad36d9444e35d333c",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "b51666ed5d7559ddfa31389ed21d7cd6101b0e06d296a09288ff8d5a5ddc7cce",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "a06507ffe6658611c4ef378bd393a6863360e52006d62486c6d833d3f8766254",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "0bf7e538281751e8b1e17d1e3358051fcd08ecb08187188e0c180238f5b4dc7e",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "334fbefd4b0ec4cfb0c16a809a9d76ca10fc1b25535f6ebc01baae3ca1faa215",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "f590bd2920a4d26490d2dc4a0b0774d68d0b18e3b90ed032872e6744dd9bf1d2",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "806765d9ae1b44eb6053e3fe1a37bbbf2c03ca9109830e840e69ecab703d52b4",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "38dd571d7f17b5fdcbac9ea68091586ffcceda70371a4d675d37291e6f2ec368",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "07b385773a6d2e805a2970d9060b6c26e04b958a0258576a5623bfe701603770",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "5f77d8fcb4fa338d02cda022982d33086e3fd6be9ae4bea06b6ed5ff8de852a5",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "bc5faf40f57b033a7f33e303db7c6e072c542f6fafe42447d0b827f0faf3affc",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "23e079f131c0621e3658f4957518b07f3ebec11cdbc6d18e9cf93e6f0fd207b3",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "edb74635a0d16129a3dd37c71093cbc37944e4d40132056d8b0dd54ba68561fb",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "80b3d6e7e3235986feb971527a6bf1ab97a8618d676b155fbdfd9c98bb8a2afa",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "cfef37a8da687c1a66b31624a083c1ffd81d5beb7c8d54a27b6ebbe7e7b64dbe",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "d2a0a53d6dcb1072f9948860bbccd91b11e601125ade0a6b69db02496cc41191",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "31f785fff7686e935d6e9da5b363ae123de16fe335997ccae5b4741caf02b9c8",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "154e2afa33e349a05ec677aa90e7cd02cedd58588653eedd063087894b76911c",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2102-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "16f3ad1fb7cc0b84e14a6d3cd6ca775e9ab2b46a1c423fe9dc15151d0f33f376",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "3225027a8e7906d5b979ea9450c725c19b01c6f43d0d66a6a2aa4b429ec3b5f8",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "df64841267ac5ee3a914c22812c14c90b3ecd351cfeb775d6a0a061e0bc0b772",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "0d5c096bfb0f053ae3950dc9473ce69c4159cab9ab53165ca0340d2ed21724ba",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "ce41690d53b24496eda2b712ad9a1bb8094de5b0644ed5cf5832936182151382",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "279b271833cce1a94cc84e40a56331cc700380e4fc55a06e2a6886c30e93d31c",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "d9f4f3c436793ca6696b820b644b63ad07f0771662864f3a788fe0bf2b172eaa",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "7fc8b3d4489b8a55691b60d339085ca4655d0adec3b909f3800e38487f06877e",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "76ddf79501d07b4572c17c9e6267811301d0671deb1064ce41a3452f73554eb7",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "a72b3eaa588c275306246d02468cdd28c506951659b67f8e044f1f8aa9e34ddf",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "ecb2ada500a618b2549df1db1971445370eda18134336ddfe1f7dcf740ec32d9",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "8dd90d6832bc6c3228c92ecfe8be32659de253efde48456d2996dff542b10f43",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "f32bfae3c1fb82a96eeaa8ad3540ebc3f8fa70e0a991f9125210b99d50f159bd",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "be94c949580d59a0acd2852af4d3a532d71d9e7c97a9cc9da798d98d40bce63c",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "86c39e41f89ac62338675260816b4329788ae92fc7fcfc8936a0ac875b90f7c5",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "a0007c332fddc48e4fd29bf7acecdc9f80fef077a404b997acfe5478fea29c5a",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "91f5ed758c682a00b29c36e64d46226ef448326ab2f3ec3c01a8aff34e9f2210",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "744a5837f54345025096423abbcf201cf946be3db23a72dc9a6d5626f1c2acf0",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "f23777aa7c8850690e2c3776b5a9cf24cd347e1d4f23bbb061b2c282ae362126",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "f4d11e516f5fb39c539ef6445f8679d58016dcac8ca6d8c8c15fb10c39eb2abf",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "1c340411ebea2824a9dab3418ba1bf4cff7770d6d73b3f490aba7db8f6ec2d5d",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "5a1ff8cbe94be630b8c997c00cb3045bf455a4d3877ea76b2264700116da9a6b",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "bd31fb74b3f17c95de95ea237e0ca6805fa2b6aacc1dfebfb524327edc35f0b4",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "aca8e855a4efe19dcb80192c750bafd8e10883b6e1ae47b468e94cc06f56ab8f",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 16
+      },
+      "name": "n16-s2103-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "cd70492c972960c3617eb1304d647d50354b6d64cefcae9ed6c7aa812858c858",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "543ac608039601688c3756404f17afcdab0c957a3c1395b182d0bc6f723a595d",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "f82ca97257369c1fc1bd172964e34aee2bb1886b99467ca2118aa818b9d7955e",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "1af42420942525d71952cf55948695c345912c943899cf72ddb32ac45e498a08",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "69bdff4fe534d28f506c14235093b68eb367af76b9178b8b552d06ea038a3e4b",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "343150290e02b1815d12821881d7387da204c54584007703c7badb4d172d5f6a",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "e9606dd58edc1faa38b08a042482a52f71594a8f68eab4ba90f0ff49225772f9",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "62d7f4f56f81ddb7ce0c257af28f910360f32809bf0ee62bd05d85b30c3e1a23",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "4f395e06f324dd39e4b87fb2f4a26c83f3719556702f69ab78013467d52ab340",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "c3233a6abde0d3561dce85f4318dc9321774051c7a6f8270d877ce926465ac0b",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "ab9c1938165ca5e1f8d283e6ec2e0651c82dd909315228cf52d86dafd7a53e50",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "c343adf19ddc21626b1a6244e8bf885a2fd6ec572b31d6fe156623ea9aafa0d9",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "70979b0123555ab5d141c73823fff1ac44414d7a8d7c7196ee149ac46b3dc820",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "908b8dce162d0416a97674ee077810d1bc195c73f655a04e1fb78752c7a615a1",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "6d132567cef36d7859deb1ae4dca7cd44df172024e32581b68011669dd53e773",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "d63ed1468ed6f229dc2fbf9c6653d25ca704e4590996ee50c36afceb690bce38",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "aab4770edee4b0959ea1aef86693989b968c8fe1cf495c86a4121f6db489a5a7",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "359835db7ee0f21eb4f0f909dd64b312b54d8b677dd297d2eddbab3eac102562",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "9913f93fafbd918a4fda1c086d3121a2c6f1fcdd0ee67e4e21c95c6867e34cad",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "ad81ce041bf8c7a54ed4a6701b3668451b205e2b69f6641162ad06a8a97f7a04",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "350b904ef9abef7f585b41ede3f07d29f09012d6be3d6a083a88ac8ca3511e2e",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "28620e7d1deb84190e3b6c405bdaa850aa07eb97c46dcecee6a6eba08de0f9b0",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "b384b0e5e9e0dad35833efc4a2fdf96ca084accd74524254e35d9fc2c3cbbdd7",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "ea8c036ac6aad2e66c2e8e400825db1c509c9dd721d1387f14fdfe3e0f229e1a",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2101-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "11066eb802d4b71af6b1de561b8e18dd83d7b8780ec030777df8de1e03c414a4",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "627b4b3de43c642c1c1bfb641473d4320de139abbf3d0faacf9b1cb1ba36faef",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "980f8e8ff41244c96667224037003cec36814471b686d372ca0971540d3515f5",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "4f2c8f51b4505bb740862b3f5fbb594565745cd4d08ff68ada9f02e576e7e197",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "2cef57bc9618d0bfe1d3a654038af9a6ba6e446b05bb3eaceacddba2b2dc49be",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "f24f8b44034b8826b78a44e92869f65681939735f6bcf9a3dd172ffc4690ab03",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "c32c834a92da54ca3db69fa19f041976e863a6aa016345da1760ac4745b2e5d4",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "fbe913f63f622e37954e5becd872b13037978aea8b1d9a76050d357233b7c825",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "1d8dfbff98f8443ec7b95c213f3c4aa8af130049e414be384e47289e4fb969da",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "bba99da0f5255ab4eb9759e7402c0253245707567ab9f7fbac9823da5167fbc3",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "9ae8a8627cb2cced3ed7880ffb9312aa27e127e409ac5f2411121d04e686acb5",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "85e62524dc4de61063cf65e0bfcfa77415381cffec2e8b66c3a36908e7189391",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "5951e4e90ffe73866330b625827a5f8373d811a8f7a38f8028ef97d292152a3c",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "f6a73e0358a9926b1007d1040383280ccff3e624a81033033a569edfa55ed082",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "fd73d375bf3c91447d1ab76ed65e41f6d906fe7f11c5f616ed2b302fcad79ca0",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "31f2fd50e90aa9f09475b015d25826bddf753f1fc148f350045a13f305eece3a",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "ac793d27580205fdd7fe1c1199da9a9177e362937a9e5bda991ee66884eaa7a9",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "2e82c65dee3915683e33554eb554ffaa4383ba74d29fd28767558c137a96b953",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "5e562dc01c89fd2dcb0d1e53a176841a1b52b9ac72a656006a85e3a8ef22cb5c",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "e54ddbbe37e104eaea5b33e27457dc54a8cca8224b9c58a246be6f2ac27f8d38",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "5e42381e487992b877520a0322d82dd9b020f1b1f760605202a68a4fb0564d48",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "e335533eb3a38af4cbabc16e19bc91c322d4cd32e0d7ba78a2eb068ae7c7aa22",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "dcdf6269e89b07e69825a91f4aafa225b3fea371f45cb231bbc84b3861b89196",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "b3d2dd665b9b2a0a2959d747e09776f63b3f5b32e601c68bdf3c9740cc983ef2",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2102-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "c87faa4cc6596daf31f539db61c1a7789204a0ba027f3ed80d29fefbbe4359c3",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "550f12102864494c8d0d7cf96ee912f7cff9199132e87774f35a75cac89b6a35",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "12918e93b9f89e36361c9b68e875df2caf660bb2a6ae7166c2ead49b52d7ac1b",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "02daa8d87460048f1abbc774c68267d6bbe906a7c133124b22eaeb6d43039996",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "638a61053c3d54cb9342eca7907cbfd54837b5de550142f496dfd3ca55b7d3ac",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "43db7d7a45ea9a6d4d7050efc4286924c56841f24122c71c183b632d7f235539",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "e33a20ee67fd23f33b7b930721c1085560f8ddf9e3e5a24e6502e195ca56c5a8",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "ef2edc7471038abd8abe0236e6d13de3b7caf0e71e6214778576ee91b6dcbceb",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "cf670d1c2c7feaa0f68938433e12156c655aa129748d16dc65e5741b84365d63",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "5d46149a5a2e65c3bd003a3b1b56ec5f052c1c81be38845e794e308a99ad96ab",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "e58fdff7c518aed724befda4b82481e28de995f463c67b437c029632c8d4e4a8",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "7d6cc59decf5b221c42754e0f3dafe3ce9194e7914369800dcf21ad8c3edfcda",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "4f054fdddd9cb3aad6b2fb73881bce0320b619eac538f20227f5b49fb4bf9fe7",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "b421a9b355047aaf97482183b4c54dfe11d735a2f487cf005a1db5cf45eda2d1",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "d99ef9596c44e077990f78259b997434f672dcbd99ffead1f6b21a7e7c4ca733",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "8573a0463871dd48570875f1dc44d87f7534fd16ce121d8de77bd877c5937be5",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "c6024d5948f7a59e3c680453ad4699a3dcf694a8b35681a92134d1b4a9618f7d",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "a08d00f68410e5891f6e4855aa1180498864d469bfc83f8a5dad727375ff8b3b",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "dc4508fed67260c51d69647a206d9f6d4ba46db4934d60e7f5848c2e86e336b0",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "afa94f963cca2b19521019c310d530ae49631eb6377127e8306509a4406193ed",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "99e86fbc8c477cf2f5675035b0eef0a16354283ce446be6561b776125977e962",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "3b8eaa191a1f9e89282edf24b3efb94848825c11d41a7fc284c2603aeb922011",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "3bd39c77f0a19f26dacc8d5aff1c73f63b1d01581fb9325c4bee91949d13d85b",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "757c7df351e91f3f95cef14d74c71d245a536e91afa86bc1121c0f11b4b08d2b",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 32
+      },
+      "name": "n32-s2103-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "c37c95d25d5e7659cb761915dbd247b3e1ca0a80208585b9ae058bb195da722a",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "0eb9b50c9e74fa39d9eb3cab7793707e30e4f81cb5203a30903c1ec25885f96d",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "5210a36e3704c8865d7b7c4f9b20dbb203d098e4a391a54da2f72c21feabe1ff",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "856f65e8c91f18c560fd2b072f1b5e4daf3ba8d58877df8060dda7251e95f561",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "87443253db0c9362b2ae0618e98226729ca047dee8825373253b4488b610a430",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "5fe31bb1cbffa1d788a9deddd7d6b90f3b53e529cf826577f2f7adc6afe69544",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "3e6927f2d55ebcda0cf7bccde956f21f31d5155c2ccd8da5cd24c854002087eb",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "8820d7ed7c0689e0ae18bcf57d6ae8b58ec26e04ca55d6bc3eb83aef3db85efc",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "481ba20863e81ef5de09a075b4d4c2aedcf029bff719a279762065b950db8bcc",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "2fcb8d48be690cce8ab10746b31f4f9ba41ebd6950d954e433bc29dd6df33d2f",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "4484234a2573df38dcdbee883c470ef098c3a84e0b76ca587f86d71c92a17f37",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "97852143ad20b232c4616c170de3fd1d86adc5b4bacd58698e8140f887087714",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "61b625cedbe1977da3434ccc79d57de18d19fdfc771c5ab7f322585290edcdf5",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "04f6755638648886ff40ada8663f12901e8e85a41bfd30276d191708f6dd7cd9",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "c12ab14c6142eeca8e3eeb32064ce38d824632019e577eea49df61a4ba8b7bcb",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "0245e4f2496d1a4dcb78b1bf06be3064d4b875d1a6f11c4b9a85a92181f7468e",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "382a3ae2c39fba94828677b0a8acce4e819526c9eea54ab7f9f25988c4103eda",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "4f0e164d780047355ab59214074e00a5643be30758f5035e3999aaa17fecf244",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "f1d2da7e208800fe66dc3fe23b0c4d86f20ec90c454f2363cd8facf4866d1c02",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "f30646c1d6cf433fe87e254e44945b346cfe239a426abd6a96e76bc0407c3c60",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "10b07cfd53d9bfa9916c07fdfaa6d5167f9aa31ea28334fc7c330fde73308cd6",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "c9882fbcd4be668c300995b93a1a63ad834b9d1fb33dfdf1464444d493063630",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "578fe118b9d70446cd702f7fdfbfc127412552ad8a2d2e86b1de3b4b70e201d2",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "c0c9ed8b508c8a537feb237ff1c641c91e0a57e16accfb26f7df0cef45828052",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2101-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "d98fdda8f05a9c5e8d10c6b52a670087d8922f099f7a80fa1c6ef2a3970f1977",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "cfde776c1d2abd93edf7be0e7930f9928fb43ad2d53e917b6b9c3827f62f3a83",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "421b9cf61cbdf3cf6da2c0cb5eef59e2ce3ee9fd53a2ddca9972e648c5db274d",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "3a8e319234dfcc771e1310813a0dda24169d6ef9ec75bfae4ddb9e156161fd1b",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "ea583b6a0cd8da397d77300fbd2f5d5f769d18c14cefaddd84530a41fb70c253",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "c724d5600e8d68b6153bed6b3fece0da194bd53d0a78c95930855b64050cf095",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "7a249f02e2a4576d10917cf5a31790715680a33cb1abcf3f0e597243d9d270ff",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "682f5fb77a277d57b2aea982e2e4db8e306f79f0c0abc1dd16c75cfc97388b4b",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "8ad92d669e3e918e60d4e2ffe961fe28d9dd8c23a7357e12b54987e803649b63",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "d57f4d80997f81f5af040a3e1a84024be18250e3386559f53680ac2947ee39ce",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "a00bf5d0aaed16ea605b1b5f6c7f3b2dfd6b1fd684862d4f96a66bf05a11414e",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "8c4481fb1c7b4a1ef6e8f325adcbf07ade1f1ba90135ec76427032dba37cdc94",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "f3f7c4580f78beb95e57cd8c963fc00cc44ff77990a9a0345cfcd03ff881a695",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "ad91d9077af4c408f2b21004e811bfc253d63de12da4fa9b04bc0afd3d91ab94",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "e3b620c84de1413e19d03cc95d7d84025bbfb5a1e877799f2e6d145795c0e01d",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "5e3dc5a420da5e766e5e2bbc5ae33f7f5476a9e4ae60cc94a48f7be3692c9731",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "e65cd9a3ad4a9279670361c7800ba513ef0c8665b8f6f4d58ee963f1fe90099b",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "6b4ef634205e438ba28cb3d002102cb78878e7580bfda69ffff1b373d73c60a0",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "4f9411d37ea535f83950164b1024641e9ced7b8dcf7820189dbd0e2929333ae8",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "a487d8c66f0f3c493eccaa23e79bf65111123f528ab3b1280ecaa3eb69d1e801",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "fd2ee827844761f4d7865d9ae0b481f0a26bb7354d480bf60efaf5c290dd5650",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "1b16063a719dc3abbcf4e1508270bdd0449acd9607e2f097ccd311799594565c",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "0cd83f76733db99827ba728194d1f11d9380272099c7e6dce7ebd2fd04b52f28",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "391760e601030c757b80abcc11c3c1942e6f913b3efd2951c703ea9193680211",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2102-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "be13c756e8ce57ea041f24424a975269bd5bc8b706fe671937789e1dcc34966f",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "221614fdfea5e4fc6bb2b0633dbcbff926b8ed8ad8c215548e19a1b8ff852c10",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-value_risk-boundary-learned-m64-lr1e-05",
+      "result_sha256": "3d1d700a0dcffbe7dd55726d392670e977ab9d98f2a1bd5c3bc5eecc67900fbe",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "152e671c7538809585e407d57846809b8a1c35e43813e402c026a05292f2b7ea",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-value_risk-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "b19919f07d2d5585b30c72ed5edee171425786e38e87ea7f5079314fa6e9ebdf",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "da75a8e46e461d9d6f56ac4aca31c76dd5927c6eba5ea2726961ebcb073e064a",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-value_risk-flow-learned-m64-lr1e-05",
+      "result_sha256": "26f0e55aee774c9937799dcc5f8f3959855d4606d26b6ca1bf6e6f77e4bfa94e",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "9298973f6fcc1323ab7a7b6fb815d14908a8c4f71e4a420e710c9615e260b780",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-value_risk-flow-fixed-m64-lr1e-05",
+      "result_sha256": "13ec9bcba53d38afcc93fc27dbebf51dd0471d523f7b62f88fd4337879403aff",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "3bd4699da33e8d4cdde05a8439d8f05bccb34b783630c7ec4509a8f0feec66d6",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-value_risk-full-learned-m64-lr1e-05",
+      "result_sha256": "8884e2738fd252b7a34d8fe47e24e5d472e6d03e46fa288815c8d8833a2958c1",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "38875ae0a6fe3a5571a2de5f2cc110ec3776f38d26a5f3e745122c9f7c02ff93",
+      "case": {
+        "bank": "value_risk",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-value_risk-full-fixed-m64-lr1e-05",
+      "result_sha256": "dbd60191535559475e1da3c2bbc204d3ddb91bb9985750eb6d9619171fc8f60d",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "e429c0801d7733f2425976a8b1f71cf039cd91fdf4fa84792f35d00db8ebdc52",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-tanh-boundary-learned-m64-lr1e-05",
+      "result_sha256": "b61ba88b3ce185d2bc1794ebb841219bbd3482e08a50375b53c36c089fb01a99",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "08d39847a70eb01a13fdcfbf570e2d45745860c2b58ec00cae66eb9712a867a3",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "boundary",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-tanh-boundary-fixed-m64-lr1e-05",
+      "result_sha256": "f903b5f99da21abf4eaa783b53bd6050eeb45c354a85d1f563a93f77a0907c80",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "6c44e8b99d1c8c3575e9a3eab5f130f05f3491f7175c6c5dbfc5a7fc255a9fff",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-tanh-flow-learned-m64-lr1e-05",
+      "result_sha256": "9578592dfe10c3297a186ae24b80c513d74c0737aa8cbc36a8176130ba383fc8",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "bc231e00953594374d697891c107ef6dfd028e0d081b28c88bcb221c985588ac",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "flow",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-tanh-flow-fixed-m64-lr1e-05",
+      "result_sha256": "24b78574b3caf1b05c777bfe92621bfe48972334aa913a77a9a7a645872880a2",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "4f1a86de6d7af9a79f21c71db654b60a7570d45dbe946a6fd7a6e01af9d7670c",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-tanh-full-learned-m64-lr1e-05",
+      "result_sha256": "c968e49d4c60df80609a2bb52c22d43102e0209de6d0e1b5bb882c00f6cd8a40",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "5369d0ca6b0dbbe4d5c76cc9a138ee541627a110f5db884d051e0b7e2a8492c9",
+      "case": {
+        "bank": "tanh",
+        "connection": "fixed",
+        "group": "main_factorial",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 64,
+        "width": 64
+      },
+      "name": "n64-s2103-tanh-full-fixed-m64-lr1e-05",
+      "result_sha256": "e5d3ef474eb05fee302e72b1e3c705cc8040f153414c209898b87e1fe3a917d7",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "e29e30b53767bdfb35f41b35cdb3255a508b60e72d184eb88b80a0bcbbd987df",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 16,
+        "width": 16
+      },
+      "name": "n16-s2101-value_risk-full-learned-m16-lr1e-05",
+      "result_sha256": "58749571bc96ab092a91577b0ec46ff60299300a728bd16c59e5887980849387",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "f9d7ce546e032f7aa9a5d70eaf105415a826859748fd4b0b4d28719d654c7155",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 32,
+        "width": 16
+      },
+      "name": "n16-s2101-value_risk-full-learned-m32-lr1e-05",
+      "result_sha256": "4cb78ff6c996eb1f13af3e30816f18afc9be48b3c7c54f3127e104ec420295f1",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "79d856ce9bc5f06e74020d49dcf600490d03ec26ff2efae6d8a043974bd1e26d",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 16,
+        "width": 16
+      },
+      "name": "n16-s2101-tanh-full-learned-m16-lr1e-05",
+      "result_sha256": "6c203469d292d320c3cf19cd97b140df2b9abbb2baa6464abbe834925df004ad",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "8f466215f272020ab02bcacee84a7577c8889bb1ee421b14b67403d0d6cd2680",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 32,
+        "width": 16
+      },
+      "name": "n16-s2101-tanh-full-learned-m32-lr1e-05",
+      "result_sha256": "57e707395618d84b95c2f604292be7d17dfca616b1300df0928c6fb2a762a37b",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "a253b58ba9b21ab05df97e74faa501979c4722656d2915d23f23a2bc3fcf6f3d",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 16,
+        "width": 16
+      },
+      "name": "n16-s2102-value_risk-full-learned-m16-lr1e-05",
+      "result_sha256": "b99d054ea5bfd736bb97a61c5c3db4a8a2350918867694fa62ea47c2520d5d55",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "dc2360d6eaba27d5936790c7bdf9bc71d4fa57ed9ca63e77c0813785a17484ff",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 32,
+        "width": 16
+      },
+      "name": "n16-s2102-value_risk-full-learned-m32-lr1e-05",
+      "result_sha256": "8fee359a162565999def1d6bfec27d3be546a3c88a859e81e7728908cc77bf80",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "788c26aecfd024575b98bd77938ddfcb77953b2bc30e5ee0e4b5e280c345d735",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 16,
+        "width": 16
+      },
+      "name": "n16-s2102-tanh-full-learned-m16-lr1e-05",
+      "result_sha256": "a5e34ce7f187aa70fcc8c5d9644c8015ed43bf9f0cd7fc8b4f9bc15f07d23f79",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "91c8a441f6d9420780b84dad17c51d3bd27ed6752d5a592c98e0e1bf1085b811",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 32,
+        "width": 16
+      },
+      "name": "n16-s2102-tanh-full-learned-m32-lr1e-05",
+      "result_sha256": "6e30ca71de8b97853dabb3fa7fe00b2def1c73dd788200e2fab345b1723cdcb8",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "b569ed1e40e46f9b3d3bd02085a2ccbc92ab58b9bd55fe230ca00c58ad911e17",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 16,
+        "width": 16
+      },
+      "name": "n16-s2103-value_risk-full-learned-m16-lr1e-05",
+      "result_sha256": "ee936eb1b594fe24883266224103933aaf92b291568efed6ffdd8ff3d359fdff",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "bbd2191331113744dfcac42ff21344e1dfe214ea826faf766f8d1acef92dfc9a",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 32,
+        "width": 16
+      },
+      "name": "n16-s2103-value_risk-full-learned-m32-lr1e-05",
+      "result_sha256": "5dbf70ecdf0bde655d9f8e37ef5a4947c8963d95a4741064c7fb49c0a53645aa",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "18b4b636dbe7dddf4e4fce5b42e2feaef46b5c4af398967292d01684878918ab",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 16,
+        "width": 16
+      },
+      "name": "n16-s2103-tanh-full-learned-m16-lr1e-05",
+      "result_sha256": "1280ba23908cfca09a393d8bbc3d08c3bdffaa42befb75c73baa5aed43b47164",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "b9ad25537c78950239cae6b632e73751a6692836b0ad975555409c675ee8b102",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 32,
+        "width": 16
+      },
+      "name": "n16-s2103-tanh-full-learned-m32-lr1e-05",
+      "result_sha256": "e70d28eca81f954f8c1912cfa878ee7b1edb8e1e815d259072f2ba4e338cb107",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "4fce693e36df1ffad198cf04e036df8d0c16de7897b26807d2d0f05eaa794a91",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 16,
+        "width": 32
+      },
+      "name": "n32-s2101-value_risk-full-learned-m16-lr1e-05",
+      "result_sha256": "cf86261963f5b0c097ff1a54df1aad3a011310672f1b646a132ffc12ed2c7aaa",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "febc3fdf8206a94fb6b277f9f39cc226f86b68dc6878e2f6fd0d7472db048a62",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 32,
+        "width": 32
+      },
+      "name": "n32-s2101-value_risk-full-learned-m32-lr1e-05",
+      "result_sha256": "89711d8524e445ac31b88d705ee5ed078f11a848aabc296bdb0322bfaffcb132",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "1e7eff18cd2f45ac7c82dd3b09c8a02b39a673700cf214f4bc35fb0197c76850",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 16,
+        "width": 32
+      },
+      "name": "n32-s2101-tanh-full-learned-m16-lr1e-05",
+      "result_sha256": "fd7cee60e92268aefa06c6f823206007df902f1b4584fcad0c63d2817d3aaa20",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "c66c6f39d2cd954c11d5f749677c1825ea91d6cf6501b3e7b6c4989443e96168",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2101,
+        "train_n": 32,
+        "width": 32
+      },
+      "name": "n32-s2101-tanh-full-learned-m32-lr1e-05",
+      "result_sha256": "7637a6dd730060ee3dffd0d9847e970ab84ffedb1ccf990e6cb3a76798d35ae4",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "653c4df4377f69a155bae9b2519f484363ef7cbbe7864854c48687e7b0dcac3c",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 16,
+        "width": 32
+      },
+      "name": "n32-s2102-value_risk-full-learned-m16-lr1e-05",
+      "result_sha256": "f209d7202aaa1ed7e2c7bcaf5b78d5887d10616274e7d3549ee1709dbff00c78",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "418158caef08ac5b6ad1e6d32196b2f79b96975f95c4c4ee3c20d4e639526c49",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 32,
+        "width": 32
+      },
+      "name": "n32-s2102-value_risk-full-learned-m32-lr1e-05",
+      "result_sha256": "63321b94ced23c339eb54bb4074edd29c3850f45261909669317e4550183da7b",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "b1cb29ce8516fa6e1d0e29b0494c9cd264a645ba850f2e716b4d7988d6d7cab1",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 16,
+        "width": 32
+      },
+      "name": "n32-s2102-tanh-full-learned-m16-lr1e-05",
+      "result_sha256": "ddad943936e162b970109803655cc1f9e52bf65cf48af6491d1c5af68d714f74",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "2c8c91104301f23d15ec59a5e9ffeff69b8d581ee77b6386c65cc4fdbd0eab28",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2102,
+        "train_n": 32,
+        "width": 32
+      },
+      "name": "n32-s2102-tanh-full-learned-m32-lr1e-05",
+      "result_sha256": "a4e8b67b254c22e99c6ddf93082a1b960bdfa3ff09d16476b4b2c0fb8549a92b",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "f9044f5ea407d617677f92d9640bdfbedd98b7d573ddd16fd54c9256ba8d25b3",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 16,
+        "width": 32
+      },
+      "name": "n32-s2103-value_risk-full-learned-m16-lr1e-05",
+      "result_sha256": "325a74e3ef83b7999df86f9968f46afd9707ee431d2565b145244e76e2032172",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "3cacdf03c498d51711c74ea9d5918b36d5c7dcee255669bcf3dfa07a9198eabc",
+      "case": {
+        "bank": "value_risk",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 32,
+        "width": 32
+      },
+      "name": "n32-s2103-value_risk-full-learned-m32-lr1e-05",
+      "result_sha256": "cc507c63050ff122799932cc42d2e8241f10e57c34daca4a850300a794b01382",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "b6a16e9b03cd2a1c81e006ee888f5e0e87c45f9a312452c23476497ca302763a",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 16,
+        "width": 32
+      },
+      "name": "n32-s2103-tanh-full-learned-m16-lr1e-05",
+      "result_sha256": "df663d739fa058edc9426464b5a5162e98c8d5b8b0428704099d480c82320553",
+      "status": "COMPLETED_MAX_UPDATES"
+    },
+    {
+      "candidate_sha256": "d60c678a8b116966e8207f7fb86a99b14e931d491cf9a9a31e54571c92ac34c6",
+      "case": {
+        "bank": "tanh",
+        "connection": "learned",
+        "group": "sample_efficiency",
+        "message": "full",
+        "physical_lr": 1e-05,
+        "seed": 2103,
+        "train_n": 32,
+        "width": 32
+      },
+      "name": "n32-s2103-tanh-full-learned-m32-lr1e-05",
+      "result_sha256": "b72e113a7eddbb876aa012b1d3a63f04bbcfa3b72b85f44d82df33e184bb24be",
+      "status": "COMPLETED_MAX_UPDATES"
+    }
+  ],
+  "source_git_anchor": "221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3",
+  "source_hashes": {
+    "common.py": "b14f1d47e3a8635aa781b5b983e84eca7634f9d1e26cbf7674fb697645d7759a",
+    "evaluate.py": "3cc009afd4241e0fbf9906e663b5127f11c0447a014c89d3717b82e7b47d858d",
+    "optimized.py": "c481cc23fe3953bcbb6a5e82dff28344d7cb4c0c4703cb74d14500b5b33c60d3",
+    "register.py": "a73f3a9dd80277c932d824b32f3bf995ebbfa9a00f1991caf26d4d9b6756e2d9",
+    "runner.py": "d92ba8a2c7c755ce10ad2b1b2eae548cef344a587225d0b9b2d2078717ac948f"
+  },
+  "test_descriptor": {
+    "per_source_dev": 16,
+    "per_source_test": 32,
+    "per_source_train": 16,
+    "pre_late_Bayes_accuracy": 0.75,
+    "seed": 31415,
+    "test_source_ids": [
+      540200,
+      540201,
+      540202,
+      540203
+    ]
+  },
+  "test_generated": false
+}
