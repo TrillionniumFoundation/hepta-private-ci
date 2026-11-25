@@ -41,8 +41,10 @@ use crate::protocol::FsWriteFileParams;
 use crate::protocol::HTTP_REQUEST_CANCEL_METHOD;
 use crate::protocol::HTTP_REQUEST_CANCELLABLE_METHOD;
 use crate::protocol::HTTP_REQUEST_METHOD;
+use crate::protocol::HTTP_REQUEST_RESTRICTED_METHOD;
 use crate::protocol::HttpRequestCancelParams;
 use crate::protocol::HttpRequestParams;
+use crate::protocol::HttpRequestRestrictedParams;
 use crate::protocol::INITIALIZE_METHOD;
 use crate::protocol::INITIALIZED_METHOD;
 use crate::protocol::InitializeParams;
@@ -93,6 +95,21 @@ pub(crate) fn build_router() -> RpcRouter<ExecServerHandler> {
         HTTP_REQUEST_CANCEL_METHOD,
         |handler: Arc<ExecServerHandler>, params: HttpRequestCancelParams| async move {
             handler.cancel_http_request(params).await
+        },
+    );
+    router.request_with_id(
+        HTTP_REQUEST_RESTRICTED_METHOD,
+        |handler: Arc<ExecServerHandler>, request_id, params: HttpRequestRestrictedParams| {
+            let stream_response = params.request.stream_response;
+            let request = handler.http_request_restricted(request_id, params);
+            async move {
+                if !stream_response {
+                    return Err(invalid_params(
+                        "restricted HTTP requires streamResponse".to_string(),
+                    ));
+                }
+                request.await
+            }
         },
     );
     router.request(

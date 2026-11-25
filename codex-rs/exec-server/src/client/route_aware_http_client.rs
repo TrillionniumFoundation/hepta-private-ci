@@ -9,6 +9,7 @@ use std::time::Duration;
 
 use codex_exec_server_protocol::JSONRPCErrorError;
 use codex_http_client::ClientRouteClass;
+use codex_http_client::HttpAddressPolicy;
 use codex_http_client::HttpClientFactory;
 use codex_http_client::RouteAwareClientPool;
 use codex_http_client::RouteAwareRequestError;
@@ -35,6 +36,7 @@ use crate::protocol::HttpRedirectPolicy;
 use crate::protocol::HttpRequestBodyDeltaNotification;
 use crate::protocol::HttpRequestParams;
 use crate::protocol::HttpRequestResponse;
+use crate::protocol::HttpRequestRestrictedParams;
 use crate::protocol::MAX_HTTP_BODY_DELTA_BYTES;
 use crate::rpc::RpcNotificationSender;
 use crate::rpc::internal_error;
@@ -76,6 +78,12 @@ pub(crate) struct PendingRouteAwareHttpBodyStream {
 /// by the exec-server route and the local [`HttpClient`] backend.
 pub(crate) struct RouteAwareHttpRequestRunner {
     client: RouteAwareClientPool,
+    address_mode: HttpAddressMode,
+}
+
+enum HttpAddressMode {
+    Unrestricted,
+    Restricted(HttpAddressPolicy),
 }
 
 impl RouteAwareHttpClient {
@@ -114,11 +122,53 @@ impl RouteAwareHttpClient {
             HttpRedirectPolicy::Follow => self.follow_redirects.clone(),
             HttpRedirectPolicy::Stop => self.stop_redirects.clone(),
         };
-        RouteAwareHttpRequestRunner { client }
+        RouteAwareHttpRequestRunner {
+            client,
+            address_mode: HttpAddressMode::Unrestricted,
+        }
+    }
+
+    pub(crate) fn restricted_runner(
+        &self,
+        redirect_policy: HttpRedirectPolicy,
+        policy: HttpAddressPolicy,
+    ) -> RouteAwareHttpRequestRunner {
+        let mut runner = self.runner(redirect_policy);
+        runner.address_mode = HttpAddressMode::Restricted(policy);
+        runner
     }
 }
 
 impl HttpClient for RouteAwareHttpClient {
+    fn http_request_stream_restricted(
+        &self,
+        params: HttpRequestRestrictedParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        async move {
+            let policy =
+                HttpAddressPolicy::from_configured_resource(&params.configured_resource_origin)
+                    .map_err(|error| ExecServerError::HttpRequest(error.to_string()))?;
+            let runner = self.restricted_runner(params.request.redirect_policy, policy);
+            let (response, pending_stream) = runner
+                .run(HttpRequestParams {
+                    stream_response: true,
+                    ..params.request
+                })
+                .await
+                .map_err(|error| ExecServerError::HttpRequest(error.message))?;
+            let pending_stream = pending_stream.ok_or_else(|| {
+                ExecServerError::Protocol(
+                    "restricted HTTP response omitted its body stream".to_string(),
+                )
+            })?;
+            Ok((
+                response,
+                HttpResponseBodyStream::local(pending_stream.response),
+            ))
+        }
+        .boxed()
+    }
+
     fn supports_single_attempt_requests(&self) -> bool {
         true
     }
@@ -136,6 +186,7 @@ impl HttpClient for RouteAwareHttpClient {
             let runner = RouteAwareHttpRequestRunner {
                 // with_tls_backend_fallback deliberately never changes this pool.
                 client: self.single_attempt.clone(),
+                address_mode: HttpAddressMode::Unrestricted,
             };
             let (response, pending_stream) = runner
                 .run(HttpRequestParams {
@@ -240,7 +291,13 @@ impl RouteAwareHttpRequestRunner {
             request = request.timeout(Duration::from_millis(timeout_ms));
         }
 
-        let response = match request.send().instrument(request_span.clone()).await {
+        let sending = async {
+            match &self.address_mode {
+                HttpAddressMode::Unrestricted => request.send().await,
+                HttpAddressMode::Restricted(policy) => request.send_restricted(policy).await,
+            }
+        };
+        let response = match sending.instrument(request_span.clone()).await {
             Ok(response) => response,
             Err(error) => {
                 request_span.record("error.type", "request");

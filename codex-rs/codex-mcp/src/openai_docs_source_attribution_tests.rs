@@ -6,6 +6,7 @@ use codex_exec_server::HttpClient;
 use codex_exec_server::HttpRedirectPolicy;
 use codex_exec_server::HttpRequestParams;
 use codex_exec_server::HttpRequestResponse;
+use codex_exec_server::HttpRequestRestrictedParams;
 use codex_exec_server::HttpResponseBodyStream;
 use futures::FutureExt;
 use futures::future::BoxFuture;
@@ -18,9 +19,18 @@ use super::maybe_with_openai_docs_source_attribution;
 #[derive(Default)]
 struct RecordingHttpClient {
     urls: Mutex<Vec<String>>,
+    restricted: Mutex<Vec<HttpRequestRestrictedParams>>,
 }
 
 impl HttpClient for RecordingHttpClient {
+    fn http_request_stream_restricted(
+        &self,
+        params: HttpRequestRestrictedParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        self.restricted.lock().unwrap().push(params);
+        async { Err(ExecServerError::HttpRequest("test response".to_string())) }.boxed()
+    }
+
     fn http_request(
         &self,
         params: HttpRequestParams,
@@ -89,4 +99,36 @@ fn leaves_other_mcp_clients_unwrapped() {
         &http_client,
         &(recording_client as Arc<dyn HttpClient>)
     ));
+}
+
+#[tokio::test]
+async fn restricted_docs_attribution_preserves_original_resource_capability() {
+    let recording_client = Arc::new(RecordingHttpClient::default());
+    let http_client = maybe_with_openai_docs_source_attribution(
+        OPENAI_DEVELOPER_DOCS_MCP_URL,
+        recording_client.clone(),
+    );
+    let original_origin = "https://developers.openai.com";
+    let mut expected = Vec::new();
+    for url in [
+        OPENAI_DEVELOPER_DOCS_MCP_URL,
+        "https://developers.openai.com/.well-known/oauth-protected-resource/mcp",
+        "https://issuer.example/token",
+    ] {
+        let mut params = HttpRequestRestrictedParams {
+            request: request(url),
+            configured_resource_origin: original_origin.to_string(),
+        };
+        params.request.timeout_ms = Some(1234);
+        params.request.redirect_policy = HttpRedirectPolicy::Stop;
+        let _ = http_client
+            .http_request_stream_restricted(params.clone())
+            .await;
+        if url == OPENAI_DEVELOPER_DOCS_MCP_URL {
+            params.request.url = OPENAI_DEVELOPER_DOCS_MCP_CODEX_URL.to_string();
+        }
+        expected.push(params);
+    }
+    assert_eq!(*recording_client.restricted.lock().unwrap(), expected);
+    assert!(recording_client.urls.lock().unwrap().is_empty());
 }

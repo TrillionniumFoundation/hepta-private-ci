@@ -6,6 +6,7 @@ use std::sync::atomic::Ordering;
 
 use codex_exec_server_protocol::JSONRPCErrorError;
 use codex_exec_server_protocol::RequestId;
+use codex_http_client::HttpAddressPolicy;
 use codex_http_client::HttpClientFactory;
 use serde_json::to_value;
 use tokio_util::sync::CancellationToken;
@@ -54,6 +55,7 @@ use crate::protocol::FsWriteFileResponse;
 use crate::protocol::HttpRequestCancelParams;
 use crate::protocol::HttpRequestCancelResponse;
 use crate::protocol::HttpRequestParams;
+use crate::protocol::HttpRequestRestrictedParams;
 use crate::protocol::InitializeParams;
 use crate::protocol::InitializeResponse;
 use crate::protocol::ReadParams;
@@ -88,6 +90,11 @@ pub(crate) struct ExecServerHandler {
     initialize_requested: AtomicBool,
     initialized: AtomicBool,
     process_exit_observation: AtomicBool,
+}
+
+enum RequestedHttpAddressPolicy {
+    Unrestricted,
+    ConfiguredResource(String),
 }
 
 impl ExecServerHandler {
@@ -263,21 +270,56 @@ impl ExecServerHandler {
         request_id: RequestId,
         params: HttpRequestParams,
     ) -> impl Future<Output = Result<(), JSONRPCErrorError>> + Send + 'static + use<> {
+        self.http_request_with_address_policy(
+            request_id,
+            params,
+            RequestedHttpAddressPolicy::Unrestricted,
+        )
+    }
+
+    pub(crate) fn http_request_restricted(
+        self: &Arc<Self>,
+        request_id: RequestId,
+        params: HttpRequestRestrictedParams,
+    ) -> impl Future<Output = Result<(), JSONRPCErrorError>> + Send + 'static + use<> {
+        self.http_request_with_address_policy(
+            request_id,
+            params.request,
+            RequestedHttpAddressPolicy::ConfiguredResource(params.configured_resource_origin),
+        )
+    }
+
+    fn http_request_with_address_policy(
+        self: &Arc<Self>,
+        request_id: RequestId,
+        params: HttpRequestParams,
+        requested_policy: RequestedHttpAddressPolicy,
+    ) -> impl Future<Output = Result<(), JSONRPCErrorError>> + Send + 'static + use<> {
         let admission = self.require_initialized_for("http").and_then(|_| {
-            params
+            let policy = match requested_policy {
+                RequestedHttpAddressPolicy::Unrestricted => None,
+                RequestedHttpAddressPolicy::ConfiguredResource(origin) => Some(
+                    HttpAddressPolicy::from_configured_resource(&origin)
+                        .map_err(|error| invalid_params(error.to_string()))?,
+                ),
+            };
+            let scope = params
                 .stream_response
                 .then(|| self.http_request_scopes.reserve(&params.request_id))
-                .transpose()
+                .transpose()?;
+            Ok((scope, policy))
         });
         let handler = Arc::clone(self);
         async move {
-            let scope = admission?;
+            let (scope, policy) = admission?;
             let send_headers = async {
-                let (response, pending_stream) = handler
-                    .http_client
-                    .runner(params.redirect_policy)
-                    .run(params)
-                    .await?;
+                let runner = match policy {
+                    Some(policy) => handler
+                        .http_client
+                        .restricted_runner(params.redirect_policy, policy),
+                    None => handler.http_client.runner(params.redirect_policy),
+                };
+                let (response, pending_stream) = runner.run(params).await?;
                 let result =
                     to_value(response).map_err(|error| internal_error(error.to_string()))?;
                 handler.notifications.response(request_id, result).await?;

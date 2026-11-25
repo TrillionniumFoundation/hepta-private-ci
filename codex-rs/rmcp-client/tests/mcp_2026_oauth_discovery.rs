@@ -24,6 +24,8 @@ use wiremock::matchers::header;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
 
+use oauth_fixture_capability::fixture_http_client;
+
 const RESOURCE_AUTHORIZATION: &str = "Bearer resource-only-secret";
 const RESOURCE_API_KEY: &str = "resource-api-key-secret";
 const RESOURCE_USER_AGENT: &str = "resource-only-user-agent";
@@ -65,12 +67,13 @@ fn local_http_client() -> Arc<dyn HttpClient> {
 async fn discover_with_local_http_client(
     resource_url: &str,
     redirect_mode: StreamableHttpRedirectMode,
+    http_client: Arc<dyn HttpClient>,
 ) -> DiscoveryResult {
     discover_streamable_http_oauth(
         resource_url,
         resource_headers(),
         /*env_http_headers*/ None,
-        local_http_client(),
+        http_client,
         OAuthDiscoveryTimeout::LOCAL,
         redirect_mode,
     )
@@ -223,7 +226,36 @@ async fn assert_legacy_oauth_without_starting_an_mcp_session(
         StreamableHttpRedirectMode::Legacy,
         StreamableHttpRedirectMode::AgentPluginV1,
     ] {
-        let discovery = discover_with_local_http_client(&resource_url, redirect_mode).await;
+        let discovery = discover_with_local_http_client(
+            &resource_url,
+            redirect_mode,
+            fixture_http_client(
+                &resource_url,
+                &[
+                    ("GET", resource_url.clone()),
+                    ("GET", resource_metadata_url.clone()),
+                    (
+                        "GET",
+                        format!("{}{resource_metadata_path}", resource_server.uri()),
+                    ),
+                    (
+                        "GET",
+                        format!(
+                            "{}/.well-known/oauth-authorization-server",
+                            authorization_server.uri()
+                        ),
+                    ),
+                    (
+                        "GET",
+                        format!(
+                            "{}{authorization_metadata_path}",
+                            authorization_server.uri()
+                        ),
+                    ),
+                ],
+            ),
+        )
+        .await;
         match metadata_issuer {
             AuthorizationMetadataIssuer::Matching | AuthorizationMetadataIssuer::Missing => {
                 assert_eq!(
@@ -328,8 +360,32 @@ async fn legacy_oauth_discovery_rejects_cross_origin_authorization_metadata_redi
         .mount(&redirect_target)
         .await;
 
-    let discovery =
-        discover_with_local_http_client(&resource_url, StreamableHttpRedirectMode::Legacy).await;
+    let discovery = discover_with_local_http_client(
+        &resource_url,
+        StreamableHttpRedirectMode::Legacy,
+        fixture_http_client(
+            &resource_url,
+            &[
+                ("GET", resource_url.clone()),
+                ("GET", resource_metadata_url.clone()),
+                (
+                    "GET",
+                    format!(
+                        "{}/.well-known/oauth-authorization-server",
+                        authorization_server.uri()
+                    ),
+                ),
+                (
+                    "GET",
+                    format!(
+                        "{}/redirected-authorization-metadata",
+                        redirect_target.uri()
+                    ),
+                ),
+            ],
+        ),
+    )
+    .await;
 
     assert_cross_origin_redirect_rejected(discovery, &redirect_target.uri())?;
     assert!(
@@ -393,7 +449,24 @@ async fn legacy_oauth_discovery_rejects_authorization_metadata_redirect_cycles()
 
     let discovery = timeout(
         REDIRECT_DISCOVERY_TEST_TIMEOUT,
-        discover_with_local_http_client(&resource_url, StreamableHttpRedirectMode::Legacy),
+        discover_with_local_http_client(
+            &resource_url,
+            StreamableHttpRedirectMode::Legacy,
+            fixture_http_client(
+                &resource_url,
+                &[
+                    ("GET", resource_url.clone()),
+                    ("GET", resource_metadata_url.clone()),
+                    (
+                        "GET",
+                        format!(
+                            "{}/.well-known/oauth-authorization-server",
+                            authorization_server.uri()
+                        ),
+                    ),
+                ],
+            ),
+        ),
     )
     .await
     .context("OAuth metadata redirect cycles must fail within the bounded discovery timeout")?;
@@ -454,8 +527,12 @@ async fn legacy_oauth_discovery_rejects_cross_origin_resource_metadata_redirects
         .mount(&redirect_target)
         .await;
 
-    let discovery =
-        discover_with_local_http_client(&resource_url, StreamableHttpRedirectMode::Legacy).await;
+    let discovery = discover_with_local_http_client(
+        &resource_url,
+        StreamableHttpRedirectMode::Legacy,
+        local_http_client(),
+    )
+    .await;
 
     assert_cross_origin_redirect_rejected(discovery, &redirect_target.uri())?;
     assert!(
@@ -682,3 +759,4 @@ async fn interactive_oauth_rejects_untrusted_authorization_metadata() -> anyhow:
     }
     Ok(())
 }
+mod oauth_fixture_capability;

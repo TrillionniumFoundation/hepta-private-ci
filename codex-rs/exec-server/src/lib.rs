@@ -185,6 +185,7 @@ pub use protocol::HttpRequestCancelParams;
 pub use protocol::HttpRequestCancelResponse;
 pub use protocol::HttpRequestParams;
 pub use protocol::HttpRequestResponse;
+pub use protocol::HttpRequestRestrictedParams;
 pub use protocol::InitializeParams;
 pub use protocol::InitializeResponse;
 pub use protocol::NetworkPolicyRequestParams;

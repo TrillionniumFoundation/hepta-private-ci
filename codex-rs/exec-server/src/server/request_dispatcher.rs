@@ -24,6 +24,7 @@ use crate::protocol::EXEC_TERMINATE_METHOD;
 use crate::protocol::FS_CLOSE_METHOD;
 use crate::protocol::HTTP_REQUEST_CANCEL_METHOD;
 use crate::protocol::HTTP_REQUEST_CANCELLABLE_METHOD;
+use crate::protocol::HTTP_REQUEST_RESTRICTED_METHOD;
 use crate::protocol::INITIALIZE_METHOD;
 use crate::protocol::INITIALIZED_METHOD;
 use crate::rpc::RpcCallError;
@@ -210,16 +211,18 @@ impl RequestDispatcher {
         };
 
         request_span.record("otel.name", method);
-        let http_request_id = (method == HTTP_REQUEST_CANCELLABLE_METHOD)
-            .then(|| {
-                request
-                    .params
-                    .as_ref()?
-                    .get("requestId")?
-                    .as_str()
-                    .map(str::to_string)
-            })
-            .flatten();
+        let http_params = match method {
+            HTTP_REQUEST_CANCELLABLE_METHOD => request.params.as_ref(),
+            HTTP_REQUEST_RESTRICTED_METHOD => request
+                .params
+                .as_ref()
+                .and_then(|params| params.get("request")),
+            _ => None,
+        };
+        let http_request_id = http_params
+            .and_then(|params| params.get("requestId"))
+            .and_then(serde_json::Value::as_str)
+            .map(str::to_string);
         let route_setup_started_at = Instant::now();
         let route = route(Arc::clone(&self.handler), request);
         let cancelled = http_request_id
@@ -282,7 +285,13 @@ impl RequestDispatcher {
                     Arc::clone(ordinary)
                 }
             }
-            None if method == HTTP_REQUEST_CANCELLABLE_METHOD => Arc::clone(&self.inline_http_lane),
+            None if matches!(
+                method,
+                HTTP_REQUEST_CANCELLABLE_METHOD | HTTP_REQUEST_RESTRICTED_METHOD
+            ) =>
+            {
+                Arc::clone(&self.inline_http_lane)
+            }
             None => return task.await,
         };
 

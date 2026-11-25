@@ -18,6 +18,7 @@ use wiremock::matchers::path;
 use super::MAX_OAUTH_HTTP_RESPONSE_BODY_BYTES;
 use super::OAuthHttpClientAdapter;
 use crate::http_client_adapter::StreamableHttpRedirectMode;
+use crate::oauth_fixture_capability::fixture_http_client;
 use crate::utils::MCP_USER_AGENT;
 use crate::utils::build_default_headers;
 
@@ -73,10 +74,24 @@ async fn oauth_registration_redirects_never_forward_resource_only_headers() -> R
                 "resource-only-content-type".to_string(),
             )])
         };
-        let adapter = OAuthHttpClientAdapter::new_with_redirect_mode(
+        let http_client: Arc<dyn codex_exec_server::HttpClient> = if has_resource_only_headers {
             Arc::new(RouteAwareHttpClient::new(HttpClientFactory::new(
                 OutboundProxyPolicy::ReqwestDefault,
-            ))),
+            )))
+        } else {
+            fixture_http_client(
+                &resource_url,
+                &[
+                    ("POST", format!("{}/register", resource_server.uri())),
+                    (
+                        "POST",
+                        format!("{}/redirected-register", redirect_target.uri()),
+                    ),
+                ],
+            )
+        };
+        let adapter = OAuthHttpClientAdapter::new_with_redirect_mode(
+            http_client,
             build_default_headers(Some(configured_headers), /*env_http_headers*/ None)?,
             &resource_url,
             /*has_configured_headers*/ true,

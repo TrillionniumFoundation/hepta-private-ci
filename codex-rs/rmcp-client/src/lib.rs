@@ -11,6 +11,9 @@ mod logging_client_handler;
 mod mrtr;
 mod oauth;
 mod oauth_client_registration;
+#[cfg(test)]
+#[path = "../tests/oauth_fixture_capability/mod.rs"]
+mod oauth_fixture_capability;
 mod oauth_http_client;
 mod perform_oauth_login;
 mod program_resolver;

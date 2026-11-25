@@ -4,6 +4,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
+use codex_exec_server::HttpClient;
 use codex_exec_server::RouteAwareHttpClient;
 use codex_http_client::HttpClientFactory;
 use codex_http_client::OutboundProxyPolicy;
@@ -25,6 +26,7 @@ use wiremock::matchers::path;
 use super::McpOAuthClientRegistration;
 use super::start_authorization;
 use crate::oauth::validate_authorization_server_endpoints;
+use crate::oauth_fixture_capability::fixture_http_client;
 use crate::oauth_http_client::OAuthHttpClientAdapter;
 use crate::utils::MCP_USER_AGENT;
 use crate::utils::build_default_headers;
@@ -103,12 +105,27 @@ async fn authorization(
     redirect_uri: &str,
     registration: McpOAuthClientRegistration,
 ) -> Result<(OAuthState, HashMap<String, String>)> {
+    authorization_with_http_client(
+        server,
+        redirect_uri,
+        registration,
+        Arc::new(RouteAwareHttpClient::new(HttpClientFactory::new(
+            OutboundProxyPolicy::ReqwestDefault,
+        ))),
+    )
+    .await
+}
+
+async fn authorization_with_http_client(
+    server: &MockServer,
+    redirect_uri: &str,
+    registration: McpOAuthClientRegistration,
+    http_client: Arc<dyn HttpClient>,
+) -> Result<(OAuthState, HashMap<String, String>)> {
     let prepared = start_authorization(
         &format!("{}/mcp", server.uri()),
         Arc::new(OAuthHttpClientAdapter::new(
-            Arc::new(RouteAwareHttpClient::new(HttpClientFactory::new(
-                OutboundProxyPolicy::ReqwestDefault,
-            ))),
+            http_client,
             HeaderMap::new(),
             &format!("{}/mcp", server.uri()),
         )),
@@ -315,10 +332,48 @@ async fn verified_issuer_can_delegate_authorization_and_token_to_one_origin() ->
         .mount(&endpoint_server)
         .await;
 
-    let (mut state, query) = authorization(
+    let (mut state, query) = authorization_with_http_client(
         &issuer_server,
         &redirect_uri,
         McpOAuthClientRegistration::Dcr,
+        fixture_http_client(
+            &issuer,
+            &[
+                ("GET", issuer.clone()),
+                // The original mock returns 404 for each protected-resource guess
+                // before direct authorization metadata succeeds.
+                (
+                    "GET",
+                    format!(
+                        "{}/.well-known/oauth-protected-resource/mcp",
+                        issuer_server.uri()
+                    ),
+                ),
+                (
+                    "GET",
+                    format!(
+                        "{}/mcp/.well-known/oauth-protected-resource",
+                        issuer_server.uri()
+                    ),
+                ),
+                (
+                    "GET",
+                    format!(
+                        "{}/.well-known/oauth-protected-resource",
+                        issuer_server.uri()
+                    ),
+                ),
+                (
+                    "GET",
+                    format!(
+                        "{}/.well-known/oauth-authorization-server/mcp",
+                        issuer_server.uri()
+                    ),
+                ),
+                ("POST", format!("{}/register", endpoint_server.uri())),
+                ("POST", format!("{}/token", endpoint_server.uri())),
+            ],
+        ),
     )
     .await?;
     assert_eq!(query["client_id"], "delegated-provider-client");
@@ -442,9 +497,23 @@ async fn resource_headers_follow_same_origin_registration_redirect_and_sdk_auth_
     let prepared = start_authorization(
         &resource_url,
         Arc::new(OAuthHttpClientAdapter::new(
-            Arc::new(RouteAwareHttpClient::new(HttpClientFactory::new(
-                OutboundProxyPolicy::ReqwestDefault,
-            ))),
+            fixture_http_client(
+                &resource_url,
+                &[
+                    ("GET", resource_url.clone()),
+                    ("GET", resource_metadata_url.clone()),
+                    (
+                        "GET",
+                        format!(
+                            "{}/.well-known/oauth-authorization-server",
+                            authorization_server.uri()
+                        ),
+                    ),
+                    ("POST", format!("{}/register", server.uri())),
+                    ("POST", format!("{}/register/", server.uri())),
+                    ("POST", format!("{}/token", server.uri())),
+                ],
+            ),
             default_headers,
             &resource_url,
         )),

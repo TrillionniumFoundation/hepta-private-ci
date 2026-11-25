@@ -12,6 +12,7 @@ use codex_exec_server::HttpRequestCancelParams;
 use codex_exec_server::HttpRequestCancelResponse;
 use codex_exec_server::HttpRequestParams;
 use codex_exec_server::HttpRequestResponse;
+use codex_exec_server::HttpRequestRestrictedParams;
 use codex_exec_server::InitializeParams;
 use codex_exec_server::InitializeResponse;
 use codex_exec_server::RemoteExecServerConnectArgs;
@@ -47,6 +48,7 @@ use tokio_tungstenite::tungstenite::Message;
 const CLIENT_NAME: &str = "test-exec-server-client";
 const HTTP_REQUEST_METHOD: &str = "http/request";
 const HTTP_REQUEST_CANCELLABLE_METHOD: &str = "http/requestCancellableV1";
+const HTTP_REQUEST_RESTRICTED_METHOD: &str = "http/requestRestrictedV1";
 const HTTP_REQUEST_CANCEL_METHOD: &str = "http/cancelRequestV1";
 const HTTP_REQUEST_BODY_DELTA_METHOD: &str = "http/request/bodyDelta";
 const INITIALIZE_METHOD: &str = "initialize";
@@ -1445,6 +1447,63 @@ async fn malformed_header_response_cancels_the_original_request() -> Result<()> 
             redirect_policy: HttpRedirectPolicy::Stop,
             request_id: "ignored".to_string(),
             stream_response: true,
+        }),
+    )
+    .await?;
+    assert!(result.is_err());
+    server.finish().await?;
+    drop(client);
+    Ok(())
+}
+
+#[tokio::test]
+async fn older_executor_rejects_restricted_method_without_plain_or_cancellable_fallback()
+-> Result<()> {
+    let server = spawn_scripted_exec_server(|mut peer| async move {
+        let request = peer.read_request(HTTP_REQUEST_RESTRICTED_METHOD).await?;
+        let params: HttpRequestRestrictedParams = decode_request_params(&request)?;
+        assert_eq!(
+            (
+                params.configured_resource_origin.as_str(),
+                params.request.url.as_str()
+            ),
+            (
+                "https://resource.example",
+                "https://authorization.example/token"
+            )
+        );
+        peer.write_message(JSONRPCMessage::Error(JSONRPCError {
+            id: request.id,
+            error: JSONRPCErrorError {
+                code: -32601,
+                message: "restricted HTTP method not supported".to_string(),
+                data: None,
+            },
+        }))
+        .await?;
+        let cancel = peer.read_request(HTTP_REQUEST_CANCEL_METHOD).await?;
+        let cancelled: HttpRequestCancelParams = decode_request_params(&cancel)?;
+        assert_eq!(cancelled.request_id, params.request.request_id);
+        // This scripted old peer has no HTTP owner; absence is not cancellation proof.
+        peer.write_response(cancel.id, HttpRequestCancelResponse::NotActive)
+            .await
+    })
+    .await?;
+    let client = server.connect_client().await?;
+    let result = timeout(
+        TEST_TIMEOUT,
+        client.http_request_stream_restricted(HttpRequestRestrictedParams {
+            request: HttpRequestParams {
+                method: "POST".to_string(),
+                url: "https://authorization.example/token".to_string(),
+                headers: Vec::new(),
+                body: None,
+                timeout_ms: None,
+                redirect_policy: HttpRedirectPolicy::Stop,
+                request_id: String::new(),
+                stream_response: true,
+            },
+            configured_resource_origin: "https://resource.example".to_string(),
         }),
     )
     .await?;

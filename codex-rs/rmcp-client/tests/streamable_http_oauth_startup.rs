@@ -1,3 +1,4 @@
+mod oauth_fixture_capability;
 mod streamable_http_test_support;
 
 use std::collections::HashMap;
@@ -11,6 +12,7 @@ use std::time::UNIX_EPOCH;
 use codex_config::types::AuthKeyringBackendKind;
 use codex_config::types::OAuthCredentialsStoreMode;
 use codex_exec_server::Environment;
+use codex_exec_server::HttpClient;
 use codex_rmcp_client::McpAuthState;
 use codex_rmcp_client::McpLoginRequirement;
 use codex_rmcp_client::OAuthDiscoveryTimeout;
@@ -42,6 +44,7 @@ use wiremock::matchers::header;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
 
+use oauth_fixture_capability::fixture_http_client;
 use streamable_http_test_support::initialize_client;
 
 const SERVER_NAME: &str = "test-streamable-http-oauth-startup";
@@ -56,6 +59,7 @@ const CHILD_HELPER_COMMAND_ENV: &str = "MCP_TEST_OAUTH_STARTUP_HELPER_COMMAND";
 const CHILD_RESOURCE_API_KEY_ENV: &str = "MCP_TEST_OAUTH_STARTUP_RESOURCE_API_KEY";
 const CHILD_STORED_ISSUER_ENV: &str = "MCP_TEST_OAUTH_STARTUP_STORED_ISSUER";
 const CHILD_ACCESS_TOKEN_EXPIRY_ENV: &str = "MCP_TEST_OAUTH_STARTUP_ACCESS_TOKEN_EXPIRY";
+const CHILD_FIXTURE_ENDPOINTS_ENV: &str = "MCP_TEST_OAUTH_STARTUP_FIXTURE_ENDPOINTS";
 const LEGACY_REFRESHABLE_SERVER_URL: &str = "https://legacy-refreshable.example/mcp";
 const UNEXPIRED_SERVER_URL: &str = "https://unexpired.example/mcp";
 const REFRESHABLE_SERVER_URL: &str = "https://refreshable.example/mcp";
@@ -220,11 +224,51 @@ async fn assert_expired_token_refresh(scenario: OAuthStartupScenario) -> anyhow:
     // Run the client half of the test in an ignored helper test so it can use
     // an isolated home without mutating the parent test runner's environment.
     let mut command = Command::new(std::env::current_exe()?);
+    let mut fixture_endpoints = vec![
+        ("GET", server_url.clone()),
+        ("POST", server_url.clone()),
+        ("DELETE", server_url.clone()),
+        (
+            "GET",
+            format!("{}{authorization_metadata_path}", server.uri()),
+        ),
+        ("GET", format!("{}/resource-metadata", server.uri())),
+        (
+            "POST",
+            format!("{}/oauth/token", authorization_server.uri()),
+        ),
+    ];
+    if matches!(
+        scenario,
+        OAuthStartupScenario::DirectAuthorizationMetadata
+            | OAuthStartupScenario::GatewayHeadersHelper
+    ) {
+        // Preserve the SDK's real 404 fallback requests before the fixture's
+        // direct authorization metadata response, with no wildcard paths.
+        fixture_endpoints.extend([
+            (
+                "GET",
+                format!("{}/.well-known/oauth-protected-resource/mcp", server.uri()),
+            ),
+            (
+                "GET",
+                format!("{}/mcp/.well-known/oauth-protected-resource", server.uri()),
+            ),
+            (
+                "GET",
+                format!("{}/.well-known/oauth-protected-resource", server.uri()),
+            ),
+        ]);
+    }
     command
         .args(["oauth_startup_child", "--exact", "--ignored", "--nocapture"])
         .env("CODEX_HOME", codex_home.path())
         .env(CHILD_SERVER_URL_ENV, server_url)
         .env(CHILD_STORED_ISSUER_ENV, authorization_server_issuer)
+        .env(
+            CHILD_FIXTURE_ENDPOINTS_ENV,
+            serde_json::to_string(&fixture_endpoints)?,
+        )
         .env(CHILD_RESOURCE_API_KEY_ENV, RESOURCE_API_KEY)
         .env("MCP_TEST_AMBIENT_SECRET", "must-not-reach-helper");
     if with_headers_helper {
@@ -343,6 +387,17 @@ async fn assert_issuer_mismatch_startup(
             IssuerMismatchAccessToken::Expired => "expired",
             IssuerMismatchAccessToken::Unexpired => "unexpired",
         },
+        &[
+            ("GET", server_url.clone()),
+            ("POST", server_url.clone()),
+            ("DELETE", server_url.clone()),
+            ("GET", resource_metadata_url.clone()),
+            (
+                "GET",
+                format!("{}/.well-known/oauth-authorization-server", issuer_b.uri()),
+            ),
+            ("POST", format!("{}/oauth/token", issuer_b.uri())),
+        ],
     )
     .await?;
 
@@ -366,6 +421,7 @@ async fn run_issuer_startup_child(
     server_url: &str,
     stored_issuer: &str,
     access_token_expiry: &str,
+    fixture_endpoints: &[(&str, String)],
 ) -> anyhow::Result<std::process::ExitStatus> {
     let codex_home = TempDir::new()?;
     Ok(Command::new(std::env::current_exe()?)
@@ -379,6 +435,10 @@ async fn run_issuer_startup_child(
         .env(CHILD_SERVER_URL_ENV, server_url)
         .env(CHILD_STORED_ISSUER_ENV, stored_issuer)
         .env(CHILD_ACCESS_TOKEN_EXPIRY_ENV, access_token_expiry)
+        .env(
+            CHILD_FIXTURE_ENDPOINTS_ENV,
+            serde_json::to_string(fixture_endpoints)?,
+        )
         .status()
         .await?)
 }
@@ -477,7 +537,28 @@ async fn does_not_refresh_against_metadata_from_second_discovery() -> anyhow::Re
         .mount(&issuer_b)
         .await;
 
-    let status = run_issuer_startup_child(&server_url, &issuer_a_url, "unexpired").await?;
+    let status = run_issuer_startup_child(
+        &server_url,
+        &issuer_a_url,
+        "unexpired",
+        &[
+            ("GET", server_url.clone()),
+            ("POST", server_url.clone()),
+            ("DELETE", server_url.clone()),
+            ("GET", resource_metadata_url.clone()),
+            (
+                "GET",
+                format!("{}/.well-known/oauth-authorization-server", issuer_a.uri()),
+            ),
+            (
+                "GET",
+                format!("{}/.well-known/oauth-authorization-server", issuer_b.uri()),
+            ),
+            ("POST", format!("{}/oauth/token", issuer_a.uri())),
+            ("POST", format!("{}/oauth/token", issuer_b.uri())),
+        ],
+    )
+    .await?;
 
     assert!(
         status.success(),
@@ -659,6 +740,23 @@ async fn auth_status(server_url: &str) -> anyhow::Result<McpAuthState> {
     .await
 }
 
+fn startup_fixture_http_client(server_url: &str) -> anyhow::Result<Arc<dyn HttpClient>> {
+    // This is data for this ignored test child, never a product environment switch.
+    // The parent names each exact method/URL owned by its live mock servers.
+    let raw = std::env::var(CHILD_FIXTURE_ENDPOINTS_ENV)?;
+    anyhow::ensure!(
+        raw.len() <= 16 * 1024,
+        "fixture registration exceeded its bound"
+    );
+    let endpoints: Vec<(String, String)> = serde_json::from_str(&raw)?;
+    anyhow::ensure!(endpoints.len() <= 64, "too many fixture endpoints");
+    let borrowed = endpoints
+        .iter()
+        .map(|(method, url)| (method.as_str(), url.clone()))
+        .collect::<Vec<_>>();
+    Ok(fixture_http_client(server_url, &borrowed))
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 #[ignore = "spawned by refreshes_expired_persisted_token_before_initialize"]
 async fn oauth_startup_child() -> anyhow::Result<()> {
@@ -691,7 +789,7 @@ async fn oauth_startup_child() -> anyhow::Result<()> {
     // This mirrors create_client's transport and initialization setup, except
     // it omits the direct bearer token. Supplying that token would bypass the
     // persisted OAuth credentials and the startup refresh under test.
-    let mut http_client = Environment::default_for_tests().get_http_client();
+    let mut http_client = startup_fixture_http_client(&server_url)?;
     if let Ok(helper_command) = std::env::var(CHILD_HELPER_COMMAND_ENV) {
         http_client = with_http_headers_helper(
             http_client,
@@ -812,7 +910,7 @@ async fn issuer_startup_child() -> anyhow::Result<()> {
         /*env_http_headers*/ None,
         OAuthCredentialsStoreMode::File,
         AuthKeyringBackendKind::default(),
-        Environment::default_for_tests().get_http_client(),
+        startup_fixture_http_client(&server_url)?,
         /*auth_provider*/ None,
     )
     .await;

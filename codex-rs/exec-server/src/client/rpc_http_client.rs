@@ -20,11 +20,18 @@ use crate::client::ExecServerClient;
 use crate::client::ExecServerError;
 use crate::protocol::HTTP_REQUEST_CANCELLABLE_METHOD;
 use crate::protocol::HTTP_REQUEST_METHOD;
+use crate::protocol::HTTP_REQUEST_RESTRICTED_METHOD;
 use crate::protocol::HttpRequestParams;
 use crate::protocol::HttpRequestResponse;
+use crate::protocol::HttpRequestRestrictedParams;
 
 /// Maximum queued body frames per streamed HTTP response.
 const HTTP_BODY_DELTA_CHANNEL_CAPACITY: usize = 256;
+
+enum HttpStreamAccess {
+    Unrestricted,
+    ConfiguredResource(String),
+}
 
 impl ExecServerClient {
     /// Performs an HTTP request and buffers the response body.
@@ -44,7 +51,29 @@ impl ExecServerClient {
     /// reject the versioned method; there is no unrestricted streaming fallback.
     pub async fn http_request_stream(
         &self,
+        params: HttpRequestParams,
+    ) -> Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError> {
+        self.http_request_stream_with_access(params, HttpStreamAccess::Unrestricted)
+            .await
+    }
+
+    /// Sends a mandatory restricted request over the same connection that owns
+    /// its cancellation. A missing method is an error, never an ordinary retry.
+    pub async fn http_request_stream_restricted(
+        &self,
+        params: HttpRequestRestrictedParams,
+    ) -> Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError> {
+        self.http_request_stream_with_access(
+            params.request,
+            HttpStreamAccess::ConfiguredResource(params.configured_resource_origin),
+        )
+        .await
+    }
+
+    async fn http_request_stream_with_access(
+        &self,
         mut params: HttpRequestParams,
+        access: HttpStreamAccess,
     ) -> Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError> {
         let rpc_client = self.rpc_client().await?;
         params.stream_response = true;
@@ -63,10 +92,24 @@ impl ExecServerClient {
             request_id.clone(),
             Arc::clone(&cancellation),
         );
-        let response = match self
-            .call_rpc(&rpc_client, HTTP_REQUEST_CANCELLABLE_METHOD, &params)
-            .await
-        {
+        let result = match access {
+            HttpStreamAccess::Unrestricted => {
+                self.call_rpc(&rpc_client, HTTP_REQUEST_CANCELLABLE_METHOD, &params)
+                    .await
+            }
+            HttpStreamAccess::ConfiguredResource(configured_resource_origin) => {
+                self.call_rpc(
+                    &rpc_client,
+                    HTTP_REQUEST_RESTRICTED_METHOD,
+                    &HttpRequestRestrictedParams {
+                        request: params,
+                        configured_resource_origin,
+                    },
+                )
+                .await
+            }
+        };
+        let response = match result {
             Ok(response) => response,
             Err(error) => {
                 cancellation.cancel();
@@ -84,6 +127,13 @@ impl ExecServerClient {
 }
 
 impl HttpClient for ExecServerClient {
+    fn http_request_stream_restricted(
+        &self,
+        params: HttpRequestRestrictedParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        async move { ExecServerClient::http_request_stream_restricted(self, params).await }.boxed()
+    }
+
     /// Orchestrator-side adapter that forwards buffered HTTP requests to the
     /// remote runtime over the shared JSON-RPC connection.
     fn http_request(

@@ -14,6 +14,7 @@ use codex_exec_server::HttpHeader;
 use codex_exec_server::HttpRedirectPolicy;
 use codex_exec_server::HttpRequestParams;
 use codex_exec_server::HttpRequestResponse;
+use codex_exec_server::HttpRequestRestrictedParams;
 use codex_exec_server::HttpResponseBodyStream;
 use futures::FutureExt;
 use futures::future::BoxFuture;
@@ -32,6 +33,11 @@ enum RedirectResponse {
     Streaming(HttpRequestResponse, HttpResponseBodyStream),
 }
 
+enum HttpRequestAccess {
+    Ordinary,
+    Restricted { configured_resource_origin: String },
+}
+
 impl SameOriginRedirectHttpClient {
     pub(crate) fn new(inner: Arc<dyn HttpClient>) -> Self {
         Self { inner }
@@ -40,6 +46,7 @@ impl SameOriginRedirectHttpClient {
     async fn execute(
         &self,
         mut params: HttpRequestParams,
+        access: HttpRequestAccess,
     ) -> Result<RedirectResponse, ExecServerError> {
         // Inspect each Location ourselves before the underlying client can send
         // sensitive request data to the redirect destination.
@@ -67,11 +74,26 @@ impl SameOriginRedirectHttpClient {
                 );
             }
 
-            let result = if params.stream_response {
-                let (response, stream) = self.inner.http_request_stream(params.clone()).await?;
-                RedirectResponse::Streaming(response, stream)
-            } else {
-                RedirectResponse::Buffered(self.inner.http_request(params.clone()).await?)
+            let result = match &access {
+                HttpRequestAccess::Restricted {
+                    configured_resource_origin,
+                } => {
+                    let (response, stream) = self
+                        .inner
+                        .http_request_stream_restricted(HttpRequestRestrictedParams {
+                            request: params.clone(),
+                            configured_resource_origin: configured_resource_origin.clone(),
+                        })
+                        .await?;
+                    RedirectResponse::Streaming(response, stream)
+                }
+                HttpRequestAccess::Ordinary if params.stream_response => {
+                    let (response, stream) = self.inner.http_request_stream(params.clone()).await?;
+                    RedirectResponse::Streaming(response, stream)
+                }
+                HttpRequestAccess::Ordinary => {
+                    RedirectResponse::Buffered(self.inner.http_request(params.clone()).await?)
+                }
             };
             let response = match &result {
                 RedirectResponse::Buffered(response) | RedirectResponse::Streaming(response, _) => {
@@ -178,6 +200,33 @@ impl SameOriginRedirectHttpClient {
 }
 
 impl HttpClient for SameOriginRedirectHttpClient {
+    fn http_request_stream_restricted(
+        &self,
+        mut params: HttpRequestRestrictedParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        async move {
+            params.request.stream_response = true;
+            if params.request.redirect_policy == HttpRedirectPolicy::Stop {
+                return self.inner.http_request_stream_restricted(params).await;
+            }
+            match self
+                .execute(
+                    params.request,
+                    HttpRequestAccess::Restricted {
+                        configured_resource_origin: params.configured_resource_origin,
+                    },
+                )
+                .await?
+            {
+                RedirectResponse::Streaming(response, stream) => Ok((response, stream)),
+                RedirectResponse::Buffered(_) => Err(ExecServerError::Protocol(
+                    "MCP restricted HTTP request returned a buffered response".to_string(),
+                )),
+            }
+        }
+        .boxed()
+    }
+
     fn supports_single_attempt_requests(&self) -> bool {
         self.inner.supports_single_attempt_requests()
     }
@@ -199,7 +248,7 @@ impl HttpClient for SameOriginRedirectHttpClient {
             if params.redirect_policy == HttpRedirectPolicy::Stop {
                 return self.inner.http_request(params).await;
             }
-            match self.execute(params).await? {
+            match self.execute(params, HttpRequestAccess::Ordinary).await? {
                 RedirectResponse::Buffered(response) => Ok(response),
                 RedirectResponse::Streaming(_, _) => Err(ExecServerError::Protocol(
                     "MCP buffered HTTP request returned a streamed response".to_string(),
@@ -218,7 +267,7 @@ impl HttpClient for SameOriginRedirectHttpClient {
             if params.redirect_policy == HttpRedirectPolicy::Stop {
                 return self.inner.http_request_stream(params).await;
             }
-            match self.execute(params).await? {
+            match self.execute(params, HttpRequestAccess::Ordinary).await? {
                 RedirectResponse::Streaming(response, stream) => Ok((response, stream)),
                 RedirectResponse::Buffered(_) => Err(ExecServerError::Protocol(
                     "MCP streamed HTTP request returned a buffered response".to_string(),

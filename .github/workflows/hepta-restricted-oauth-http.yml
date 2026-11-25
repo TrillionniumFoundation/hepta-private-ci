@@ -1,0 +1,180 @@
+name: Hepta restricted OAuth HTTP
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/http-client/**"
+      - "codex-rs/exec-server/**"
+      - "codex-rs/exec-server-protocol/**"
+      - "codex-rs/rmcp-client/**"
+      - "codex-rs/codex-mcp/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/hepta_ci_junit.py"
+      - "scripts/run-nextest.py"
+      - "codex-rs/.config/nextest.toml"
+      - "justfile"
+      - ".github/workflows/hepta-restricted-oauth-http.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-restricted-oauth-http-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+
+jobs:
+  restricted-http:
+    name: Original restricted HTTP and OAuth controls (source-head)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+    steps:
+      - name: Check out the exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install native build prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev libssl-dev
+      - name: Select this job's private Cargo target directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_TARGET_DIR=%s/restricted-oauth-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Nine connector and address controls
+        id: connector
+        shell: bash
+        run: |
+          set -euo pipefail
+          filters='test(=address_policy::tests::configured_local_authority_does_not_authorize_other_ports_hosts_or_schemes)'
+          filters+=' | test(=address_policy::tests::discovered_private_and_translated_literals_cannot_expand_public_capability)'
+          filters+=' | test(=address_policy::tests::actual_resolver_filters_mixed_results_and_rebinding_without_reusing_old_admission)'
+          filters+=' | test(=address_policy::tests::configured_hostname_does_not_gain_private_dns_and_localhost_accepts_only_loopback)'
+          filters+=' | test(=address_policy::tests::reqwest_connector_never_receives_rejected_loopback_dns_answer)'
+          filters+=' | test(=restricted_proxy::tests::canonical_proxy_matching_never_turns_a_parse_failure_into_direct_egress)'
+          filters+=' | test(=restricted_proxy::tests::unsupported_proxy_normalization_and_invalid_destinations_stay_refusals)'
+          filters+=' | test(=outbound_proxy::restricted_request_tests::configured_local_redirect_keeps_exact_authority_and_rejects_a_new_private_port)'
+          filters+=' | test(=outbound_proxy::restricted_request_tests::configured_proxy_refusal_never_falls_back_to_direct_http)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/restricted-oauth-records/connector.json" --minimum-tests 9 --timeout-seconds 2400 -- just test --locked -p codex-http-client --lib --retries 0 --test-threads 1 -E "$filters"
+          jq -e '.observed_passed_tests == 9 and .observed_failed_tests == 0' "$RUNNER_TEMP/restricted-oauth-records/connector.json"
+      - name: Retain the fresh connector native names
+        if: always() && !cancelled() && steps.connector.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_junit.py --execution "$RUNNER_TEMP/restricted-oauth-records/connector.json" --junit "$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml" --output "$RUNNER_TEMP/restricted-oauth-records/connector.junit.xml"
+      - name: Three actual remote request controls
+        id: remote
+        shell: bash
+        run: |
+          set -euo pipefail
+          filters='(binary(=http_request_restricted) & test(=remote_restricted_request_keeps_original_authority_through_redirect_and_body_drop))'
+          filters+=' | (binary(=http_request_restricted) & test(=queued_restricted_request_cancels_its_nested_id_without_http_or_affecting_other_owner))'
+          filters+=' | (binary(=http_client) & test(=older_executor_rejects_restricted_method_without_plain_or_cancellable_fallback))'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/restricted-oauth-records/remote.json" --minimum-tests 3 --timeout-seconds 2400 -- just test --locked -p codex-exec-server --test http_request_restricted --test http_client --retries 0 --test-threads 1 -E "$filters"
+          jq -e '.observed_passed_tests == 3 and .observed_failed_tests == 0' "$RUNNER_TEMP/restricted-oauth-records/remote.json"
+      - name: Retain the fresh remote native names
+        if: always() && !cancelled() && steps.remote.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_junit.py --execution "$RUNNER_TEMP/restricted-oauth-records/remote.json" --junit "$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml" --output "$RUNNER_TEMP/restricted-oauth-records/remote.junit.xml"
+      - name: Three capability and nine original OAuth unit controls
+        id: oauth
+        shell: bash
+        run: |
+          set -euo pipefail
+          filters='test(=oauth_http_client::address_capability_tests::oauth_capability_always_carries_original_configured_origin_and_keeps_header_scoping)'
+          filters+=' | test(=oauth_http_client::address_capability_tests::missing_restricted_capability_rejects_without_invoking_ordinary_http)'
+          filters+=' | test(=oauth_http_client::address_capability_tests::protocol_fixture_cannot_expand_resource_method_path_or_query)'
+          filters+=' | test(=oauth_client_registration::tests::verified_issuer_can_delegate_authorization_and_token_to_one_origin)'
+          filters+=' | test(=oauth_client_registration::tests::resource_headers_follow_same_origin_registration_redirect_and_sdk_auth_wins)'
+          filters+=' | test(=oauth_http_client::security_tests::oauth_registration_redirects_never_forward_resource_only_headers)'
+          filters+=' | test(=oauth_http_client::security_tests::same_origin_redirects_preserve_timeout_and_response_body_limits)'
+          filters+=' | test(=auth_status::tests::routed_oauth_discovery_caps_local_discovery_timeout)'
+          filters+=' | test(=auth_status::tests::routed_oauth_discovery_preserves_requested_timeout)'
+          filters+=' | test(=auth_status::tests::routed_agent_plugin_oauth_discovery_stops_with_configured_headers)'
+          filters+=' | test(=perform_oauth_login::tests::interactive_oauth_login_uses_supplied_http_client)'
+          filters+=' | test(=perform_oauth_login::tests::silent_oauth_login_uses_supplied_http_client)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/restricted-oauth-records/oauth.json" --minimum-tests 12 --timeout-seconds 2400 -- just test --locked -p codex-rmcp-client --lib --retries 0 --test-threads 1 -E "$filters"
+          jq -e '.observed_passed_tests == 12 and .observed_failed_tests == 0' "$RUNNER_TEMP/restricted-oauth-records/oauth.json"
+      - name: Retain the fresh oauth native names
+        if: always() && !cancelled() && steps.oauth.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_junit.py --execution "$RUNNER_TEMP/restricted-oauth-records/oauth.json" --junit "$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml" --output "$RUNNER_TEMP/restricted-oauth-records/oauth.junit.xml"
+      - name: Nineteen original OAuth and recovery integration controls
+        id: fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          filters='(binary(=mcp_2026_oauth_discovery) & test(=oauth_discovery_uses_get_first_without_starting_a_legacy_mcp_session))'
+          filters+=' | (binary(=mcp_2026_oauth_discovery) & test(=legacy_oauth_discovery_follows_same_origin_metadata_redirects))'
+          filters+=' | (binary(=mcp_2026_oauth_discovery) & test(=legacy_oauth_discovery_rejects_cross_origin_authorization_metadata_redirects))'
+          filters+=' | (binary(=mcp_2026_oauth_discovery) & test(=legacy_oauth_discovery_rejects_authorization_metadata_redirect_cycles))'
+          filters+=' | (binary(=mcp_2026_oauth_discovery) & test(=legacy_oauth_discovery_rejects_cross_origin_resource_metadata_redirects))'
+          filters+=' | (binary(=mcp_2026_oauth_discovery) & test(=legacy_oauth_discovery_accepts_authorization_metadata_without_an_issuer))'
+          filters+=' | (binary(=mcp_2026_oauth_discovery) & test(=legacy_oauth_discovery_rejects_an_explicit_mismatched_issuer))'
+          filters+=' | (binary(=mcp_2026_oauth_discovery) & test(=oauth_discovery_does_not_invent_support_for_an_unauthenticated_legacy_server))'
+          filters+=' | (binary(=mcp_2026_oauth_discovery) & test(=interactive_oauth_rejects_untrusted_authorization_metadata))'
+          filters+=' | (binary(=streamable_http_oauth_startup) & test(=refreshes_expired_persisted_token_before_initialize))'
+          filters+=' | (binary(=streamable_http_oauth_startup) & test(=refreshes_oauth_with_gateway_headers_helper))'
+          filters+=' | (binary(=streamable_http_oauth_startup) & test(=refresh_uses_discovered_protected_resource_audience))'
+          filters+=' | (binary(=streamable_http_oauth_startup) & test(=rejects_refresh_when_authorization_server_issuer_changes_before_startup))'
+          filters+=' | (binary(=streamable_http_oauth_startup) & test(=does_not_refresh_unexpired_token_after_issuer_change_401))'
+          filters+=' | (binary(=streamable_http_oauth_startup) & test(=does_not_refresh_against_metadata_from_second_discovery))'
+          filters+=' | (binary(=streamable_http_oauth_store_pinning) & test(=transport_provided_bearer_token_avoids_placeholder_headers_and_redirects))'
+          filters+=' | (binary(=streamable_http_oauth_store_pinning) & test(=auto_store_remains_pinned_across_session_recovery))'
+          filters+=' | (binary(=streamable_http_recovery) & test(=streamable_http_initialize_retries_remote_no_response_error))'
+          filters+=' | (binary(=streamable_http_recovery) & test(=streamable_http_session_recovery_retries_initialize_failure))'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/restricted-oauth-records/fixtures.json" --minimum-tests 19 --timeout-seconds 2400 -- just test --locked -p codex-rmcp-client --test mcp_2026_oauth_discovery --test streamable_http_oauth_startup --test streamable_http_oauth_store_pinning --test streamable_http_recovery --retries 0 --test-threads 1 -E "$filters"
+          jq -e '.observed_passed_tests == 19 and .observed_failed_tests == 0' "$RUNNER_TEMP/restricted-oauth-records/fixtures.json"
+      - name: Retain the fresh fixtures native names
+        if: always() && !cancelled() && steps.fixtures.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_junit.py --execution "$RUNNER_TEMP/restricted-oauth-records/fixtures.json" --junit "$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml" --output "$RUNNER_TEMP/restricted-oauth-records/fixtures.junit.xml"
+      - name: Original docs attribution and restricted wrapper identity
+        id: wrappers
+        shell: bash
+        run: |
+          set -euo pipefail
+          filters='test(=openai_docs_source_attribution::tests::attributes_only_docs_mcp_requests)'
+          filters+=' | test(=openai_docs_source_attribution::tests::leaves_other_mcp_clients_unwrapped)'
+          filters+=' | test(=openai_docs_source_attribution::tests::restricted_docs_attribution_preserves_original_resource_capability)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/restricted-oauth-records/wrappers.json" --minimum-tests 3 --timeout-seconds 2400 -- just test --locked -p codex-mcp --lib --retries 0 --test-threads 1 -E "$filters"
+          jq -e '.observed_passed_tests == 3 and .observed_failed_tests == 0' "$RUNNER_TEMP/restricted-oauth-records/wrappers.json"
+      - name: Retain the fresh wrappers native names
+        if: always() && !cancelled() && steps.wrappers.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_junit.py --execution "$RUNNER_TEMP/restricted-oauth-records/wrappers.json" --junit "$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml" --output "$RUNNER_TEMP/restricted-oauth-records/wrappers.junit.xml"
+      - name: Retain all original commands and outputs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: restricted-oauth-source-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/restricted-oauth-records
+          if-no-files-found: error
+      - name: Check for a clean source checkout
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
