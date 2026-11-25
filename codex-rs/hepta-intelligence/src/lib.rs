@@ -329,5 +329,8 @@ mod tests;
 mod vertical_tests;
 
 #[cfg(test)]
+mod directory_test_support;
+
+#[cfg(test)]
 #[path = "plasticity_product_tests.rs"]
 mod plasticity_product_tests;
