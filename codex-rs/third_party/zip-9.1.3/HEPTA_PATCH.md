@@ -7,6 +7,11 @@ Cargo registry index checksum
 Upstream commit: `af2ed2a3e12af1fdd733b1886b3e9067bf510be5`.
 The original MIT license and all 66 registry files are retained.
 
+The vendored `SECURITY.md` removes seven trailing spaces without changing
+its rendered policy. The exact original text is available from the
+checksummed registry archive above (file SHA-256
+`ac1630e1d2329e74e6d3e690bae60d05190febdd639c6b930091246c99849f40`).
+
 The only dependency behavior changes are one character in each of `Cargo.toml` and
 `Cargo.toml.orig`: the `bzip2-rs` feature forwards `bzip2?/bzip2-sys` instead of
 `bzip2/bzip2-sys`. The feature already explicitly activates `dep:bzip2`.
