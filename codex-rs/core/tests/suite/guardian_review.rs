@@ -2,9 +2,6 @@
 
 use anyhow::Context;
 use anyhow::Result;
-use chrono::DateTime;
-use chrono::Local;
-use chrono::Utc;
 use codex_config::types::McpServerConfig;
 use codex_core::SleepFuture;
 use codex_core::TimeFuture;
@@ -115,8 +112,10 @@ impl TimeProvider for RecordingTimeProvider {
             .expect("time-provider thread ids lock should not be poisoned")
             .push(thread_id);
         Box::pin(async {
-            Ok(DateTime::<Utc>::from_timestamp(CURRENT_TIME_AT, 0)
-                .expect("test timestamp should be valid"))
+            Ok(
+                codex_utils_time::Timestamp::from_timestamp(CURRENT_TIME_AT, 0)
+                    .expect("test timestamp should be valid"),
+            )
         })
     }
 
@@ -417,11 +416,9 @@ async fn guardian_session_prewarms_and_is_reused_for_first_review(
     assert!(guardian_review_text.contains("tokens truncated"));
     assert!(guardian_review_text.contains("policy-justification-end"));
     assert!(!guardian_review_text.contains(&"x".repeat(4_096)));
-    let current_date = DateTime::<Utc>::from_timestamp(CURRENT_TIME_AT, 0)
+    let current_date = codex_utils_time::Timestamp::from_timestamp(CURRENT_TIME_AT, 0)
         .expect("test timestamp should be valid")
-        .with_timezone(&Local)
-        .format("%Y-%m-%d")
-        .to_string();
+        .format_local(codex_utils_time::LocalFormat::Date);
     assert!(
         guardian_review
             .to_string()

@@ -38,11 +38,13 @@ fn signed_cache_file(
 }
 
 fn valid_signed_payload() -> CloudConfigBundleCacheSignedPayload {
-    let cached_at = Utc::now();
+    let cached_at = Timestamp::now();
     CloudConfigBundleCacheSignedPayload {
         version: CLOUD_CONFIG_BUNDLE_CACHE_VERSION,
         cached_at,
-        expires_at: cached_at + ChronoDuration::minutes(30),
+        expires_at: cached_at
+            .expires_after(Duration::from_secs(30 * 60))
+            .expect("expiry"),
         chatgpt_user_id: Some("user-12345".to_string()),
         account_id: Some("account-12345".to_string()),
         bundle: test_bundle(),
@@ -81,7 +83,11 @@ async fn save_writes_signed_payload_and_loads_for_matching_identity() {
             .expect("parse cache");
     assert!(
         cache_file.signed_payload.expires_at
-            <= cache_file.signed_payload.cached_at + ChronoDuration::minutes(60)
+            <= cache_file
+                .signed_payload
+                .cached_at
+                .expires_after(Duration::from_secs(60 * 60))
+                .expect("expiry")
     );
     assert!(cache_file.signed_payload.expires_at > cache_file.signed_payload.cached_at);
     assert_eq!(
@@ -182,7 +188,8 @@ async fn load_rejects_expired_cache() {
     let codex_home = tempdir().expect("tempdir");
     let cache = create_test_cache(codex_home.path());
     let mut signed_payload = valid_signed_payload();
-    signed_payload.expires_at = Utc::now() - ChronoDuration::seconds(1);
+    signed_payload.expires_at =
+        Timestamp::from_datetime(OffsetDateTime::now_utc() - time::Duration::seconds(1));
     write_cache_file(&cache, &signed_cache_file(signed_payload));
 
     assert_eq!(
@@ -202,5 +209,53 @@ async fn load_rejects_unsupported_cache_version() {
     assert_eq!(
         cache.load(Some("user-12345"), Some("account-12345")).await,
         Err(CacheLoadStatus::CacheVersionUnsupported(2))
+    );
+}
+
+#[tokio::test]
+async fn original_signed_timestamp_bytes_survive_normalization_and_reject_tampering() {
+    // Version-one canonical payload and HMAC were calculated independently with
+    // Python's json/hmac/hashlib, using the original fixed field order.
+    let original_payload = br#"{"version":1,"cached_at":"2026-11-19T12:34:56.100000001Z","expires_at":"2036-11-19T12:34:56.123400Z","chatgpt_user_id":"user-12345","account_id":"account-12345","bundle":{"config_toml":{"enterprise_managed":[]},"requirements_toml":{"enterprise_managed":[]}}}"#;
+    let original_signature = "4if0RROVNa6Mh4PEa/WNt9q1eB39Wa+pM7bpHShCe5o=";
+    let mut stored_payload: serde_json::Value =
+        serde_json::from_slice(original_payload).expect("original JSON");
+    stored_payload["cached_at"] = "2026-11-19T13:34:56.100000001+01:00".into();
+    stored_payload["expires_at"] = "2036-11-19T12:34:56.1234UTC".into();
+    let stored =
+        serde_json::json!({"signed_payload":stored_payload,"signature":original_signature});
+    let cache_file: CloudConfigBundleCacheFile =
+        serde_json::from_value(stored.clone()).expect("legacy cache");
+    assert_eq!(
+        cache_payload_bytes(&cache_file.signed_payload).expect("payload"),
+        original_payload
+    );
+    assert_eq!(
+        sign_cache_payload(original_payload).expect("HMAC"),
+        original_signature
+    );
+
+    let codex_home = tempdir().expect("tempdir");
+    let cache = create_test_cache(codex_home.path());
+    std::fs::write(
+        cache.path(),
+        serde_json::to_vec(&stored).expect("stored bytes"),
+    )
+    .expect("write cache");
+    assert_eq!(
+        cache.load(Some("user-12345"), Some("account-12345")).await,
+        Ok(cache_file.signed_payload),
+    );
+
+    let mut tampered = stored;
+    tampered["signed_payload"]["cached_at"] = "2026-11-19T13:34:56.100000002+01:00".into();
+    std::fs::write(
+        cache.path(),
+        serde_json::to_vec(&tampered).expect("tampered bytes"),
+    )
+    .expect("write cache");
+    assert_eq!(
+        cache.load(Some("user-12345"), Some("account-12345")).await,
+        Err(CacheLoadStatus::CacheSignatureInvalid),
     );
 }

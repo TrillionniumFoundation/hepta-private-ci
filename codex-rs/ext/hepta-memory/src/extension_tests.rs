@@ -1,15 +1,3 @@
-use std::fs;
-use std::future::pending;
-use std::path::Path;
-use std::path::PathBuf;
-use std::sync::Arc;
-use std::sync::Mutex;
-use std::sync::PoisonError;
-use std::sync::atomic::AtomicUsize;
-use std::sync::atomic::Ordering;
-
-use chrono::DateTime;
-use chrono::Utc;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES;
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS;
 use codex_extension_api::EphemeralModelInputContributor;
@@ -32,6 +20,15 @@ use codex_protocol::protocol::SessionSource;
 use codex_protocol::user_input::UserInput;
 use codex_state::Stage1RecallCandidate;
 use codex_utils_path_uri::PathUri;
+use std::fs;
+use std::future::pending;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::PoisonError;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 use tempfile::TempDir;
 
 use super::*;
@@ -134,8 +131,8 @@ fn extension(backend: Arc<FakeBackend>) -> TestExtension {
     )
 }
 
-fn timestamp(seconds: i64) -> DateTime<Utc> {
-    DateTime::from_timestamp(seconds, 0).expect("valid timestamp")
+fn timestamp(seconds: i64) -> codex_utils_time::Timestamp {
+    codex_utils_time::Timestamp::from_timestamp(seconds, 0).expect("valid timestamp")
 }
 
 fn candidate(thread_id: &str, summary: &str) -> Stage1RecallCandidate {
