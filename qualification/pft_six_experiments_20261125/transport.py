@@ -26,9 +26,13 @@ def pack(packet):
     return struct.pack("!I", len(body)) + body, time.perf_counter() - start
 
 
-def read_exact(connection, length):
+def read_exact(connection, length, deadline):
     pieces = []
     while length:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("Absolute application-frame deadline exceeded")
+        connection.settimeout(remaining)
         part = connection.recv(length)
         if not part:
             raise ConnectionError("Connection closed before complete frame")
@@ -37,12 +41,13 @@ def read_exact(connection, length):
     return b"".join(pieces)
 
 
-def receive(connection):
-    prefix = read_exact(connection, 4)
+def receive(connection, *, deadline=None):
+    deadline = time.monotonic() + 2.0 if deadline is None else deadline
+    prefix = read_exact(connection, 4, deadline)
     length = struct.unpack("!I", prefix)[0]
     if length > 8_000_000:
         raise ValueError("Oversized application frame")
-    body = read_exact(connection, length)
+    body = read_exact(connection, length, deadline)
     start = time.perf_counter()
     packet = json.loads(body)
     return packet, prefix + body, time.perf_counter() - start
@@ -64,23 +69,54 @@ class Peer:
         self.done = {self.identity}
         self.crash = config["crash_once"] and not resume
 
-    def record(self, direction, peer, frame, elapsed, serialization=0.0, status="ok"):
+    def record(self, direction, peer, frame, elapsed, serialization=0.0, status="ok", connection=None, endpoints=None, error=None):
         with self.lock:
-            self.metrics.append({"direction": direction, "peer": peer, "frame_bytes": len(frame),
+            event = {"direction": direction, "peer": peer, "frame_bytes": len(frame),
                                  "wire_sha256": hashlib.sha256(frame).hexdigest(),
-                                 "elapsed_seconds": elapsed, "serialization_seconds": serialization, "status": status})
+                                 "elapsed_seconds": elapsed, "serialization_seconds": serialization, "status": status}
+            if connection is not None:
+                event["socket_local"] = list(connection.getsockname())
+                event["socket_peer"] = list(connection.getpeername())
+            if endpoints is not None:
+                event.update(endpoints)
+            if error is not None:
+                event["error"] = {"type": type(error).__name__, "message": str(error)[:200]}
+            if self.config.get("retain_frames") and frame:
+                folder = self.directory / "frames"
+                folder.mkdir(exist_ok=True)
+                path = folder / event["wire_sha256"]
+                try:
+                    with path.open("xb") as stream:
+                        stream.write(frame)
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                except FileExistsError:
+                    if path.read_bytes() != frame:
+                        raise ValueError("Retained frame bytes differ")
+            self.metrics.append(event)
             durable_write(self.metrics_path, self.metrics)
 
     def incoming(self, connection):
-        connection.settimeout(2.0)
         started = time.perf_counter()
-        packet, frame, decode_time = receive(connection)
-        sender = packet["sender"]
-        if packet["recipient"] != self.identity or packet["round_id"] != self.config["round_id"]:
+        deadline = time.monotonic() + 2.0
+        packet, frame, decode_time = receive(connection, deadline=deadline)
+        if not isinstance(packet, dict):
+            raise ValueError("A peer packet must be an object")
+        sender = packet.get("sender")
+        if type(sender) is not int or not 0 <= sender < len(self.config["addresses"]) or sender == self.identity:
+            raise ValueError("Unregistered sender")
+        if connection.getpeername()[0] != self.config["addresses"][sender][0]:
+            raise ValueError("Peer source address differs from the registered endpoint")
+        if type(packet.get("recipient")) is not int or packet["recipient"] != self.identity or packet["round_id"] != self.config["round_id"]:
             raise ValueError("Peer or experiment round mismatch")
-        self.record("receive", sender, frame, time.perf_counter() - started, decode_time)
+        self.record("receive", sender, frame, time.perf_counter() - started, decode_time, connection=connection)
         with self.lock:
             if packet["kind"] == "contribution":
+                if packet["message"].get("client_id") != str(sender):
+                    raise ValueError("Contribution owner differs from the sender")
+                expected = self.config.get("expected_contributions")
+                if expected is not None and packet["message"].get("payload_sha256") != expected[sender]:
+                    raise ValueError("Contribution differs from the registered snapshot")
                 status = self.receiver.accept(packet["message"])
                 if status == "accepted":
                     self.receiver.checkpoint(self.ledger)
@@ -95,31 +131,43 @@ class Peer:
                 raise ValueError("Unknown packet kind")
         acknowledgement, encode_time = pack({"sender": self.identity, "status": status,
                                              "received_wire_sha256": hashlib.sha256(frame).hexdigest()})
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("Absolute incoming-exchange deadline exceeded")
+        connection.settimeout(remaining)
         connection.sendall(acknowledgement)
-        self.record("ack_send", sender, acknowledgement, time.perf_counter() - started, encode_time, status)
+        self.record("ack_send", sender, acknowledgement, time.perf_counter() - started, encode_time, status, connection)
 
-    def send(self, recipient, kind):
+    def send(self, recipient, kind, *, deadline=None):
         packet = {"sender": self.identity, "recipient": recipient, "round_id": self.config["round_id"], "kind": kind}
         if kind == "contribution":
             packet["message"] = self.config["message"]
         frame, encode_time = pack(packet)
-        start, sent = time.perf_counter(), False
+        start, sent, endpoints = time.perf_counter(), False, None
         try:
-            with socket.create_connection(tuple(self.config["addresses"][recipient]), timeout=0.3) as connection:
-                connection.settimeout(2.0)
+            remaining = 2.0 if deadline is None else min(2.0, deadline - time.monotonic())
+            if remaining <= 0:
+                raise TimeoutError("Peer delivery deadline exceeded before connect")
+            with socket.create_connection(tuple(self.config["addresses"][recipient]), timeout=min(.3, remaining),
+                                          source_address=(self.config["addresses"][self.identity][0], 0)) as connection:
+                endpoints = {"socket_local": list(connection.getsockname()), "socket_peer": list(connection.getpeername())}
+                exchange_deadline = time.monotonic() + 2.0
+                if deadline is not None:
+                    exchange_deadline = min(exchange_deadline, deadline)
+                connection.settimeout(max(.001, exchange_deadline - time.monotonic()))
                 connection.sendall(frame)
                 sent = True
-                answer, ack_frame, decode_time = receive(connection)
+                answer, ack_frame, decode_time = receive(connection, deadline=exchange_deadline)
                 if answer["received_wire_sha256"] != hashlib.sha256(frame).hexdigest() or answer["sender"] != recipient:
                     raise ValueError("Acknowledgement hash or peer mismatch")
-                self.record("ack_receive", recipient, ack_frame, time.perf_counter() - start, decode_time, answer["status"])
+                self.record("ack_receive", recipient, ack_frame, time.perf_counter() - start, decode_time, answer["status"], connection)
                 if answer["status"] not in {"accepted", "duplicate", "done"}:
                     raise ValueError("Receiver rejected a valid contribution")
-            self.record("send", recipient, frame, time.perf_counter() - start, encode_time, "acknowledged")
+                self.record("send", recipient, frame, time.perf_counter() - start, encode_time, "acknowledged", connection)
             return True
         except (OSError, ConnectionError) as error:
             self.record("send" if sent else "connect_failed", recipient, frame if sent else b"",
-                        time.perf_counter() - start, encode_time, type(error).__name__)
+                        time.perf_counter() - start, encode_time, type(error).__name__, endpoints=endpoints, error=error)
             return False
 
 
@@ -136,48 +184,63 @@ def worker(config_path, resume):
         raise ValueError("A finite parent in the frozen coordinates is required")
     if array_hash(parent) != config["header"]["parent_id"]:
         raise ValueError("The actual parent differs from the frozen parent")
+    expected = config.get("expected_contributions")
+    if expected is not None and (len(expected) != len(config["addresses"])
+                                or config["message"]["payload_sha256"] != expected[config["node"]]):
+        raise ValueError("Local contribution differs from the registered snapshot")
+    duration = config.get("deadline_seconds", 30)
+    interval = config.get("retry_interval_seconds", .02)
+    if type(duration) not in (int, float) or not 0 < duration <= 60:
+        raise ValueError("A delivery deadline between zero and sixty seconds is required")
+    if type(interval) not in (int, float) or not .02 <= interval <= 2:
+        raise ValueError("A bounded retry interval is required")
     peer = Peer(config, resume)
     if not resume:
         time.sleep(config["startup_delay_seconds"])
     class Handler(socketserver.BaseRequestHandler):
         def handle(self):
+            started = time.perf_counter()
             try:
                 peer.incoming(self.request)
-            except (ConnectionError, OSError):
-                pass
+            except (ConnectionError, OSError, ValueError, TypeError, KeyError) as error:
+                peer.record("rejected", None, b"", time.perf_counter() - started,
+                            status=type(error).__name__, connection=self.request, error=error)
     class Server(socketserver.ThreadingTCPServer):
         allow_reuse_address = True
         daemon_threads = False
     server = Server(tuple(config["addresses"][config["node"]]), Handler)
     thread = threading.Thread(target=server.serve_forever, kwargs={"poll_interval": 0.02}, daemon=True)
     thread.start()
-    deadline = time.monotonic() + 30
-    if peer.crash:
-        while time.monotonic() < deadline:
-            time.sleep(0.02)
-        raise TimeoutError("Expected crash-triggering packet was not received")
-    recipients = [node for node in range(len(config["addresses"])) if node != config["node"]]
-    for kind, repetitions in [("contribution", 2), ("done", 1)]:
-        pending = {node: repetitions for node in recipients}
-        while any(pending.values()):
-            for node in recipients:
-                if pending[node] and peer.send(node, kind):
-                    pending[node] -= 1
+    deadline = time.monotonic() + duration
+    try:
+        if peer.crash:
+            while time.monotonic() < deadline:
+                time.sleep(interval)
+            raise TimeoutError("Expected crash-triggering packet was not received")
+        recipients = [node for node in range(len(config["addresses"])) if node != config["node"]]
+        for kind, repetitions in [("contribution", 2), ("done", 1)]:
+            pending = {node: repetitions for node in recipients}
+            while any(pending.values()):
+                for node in recipients:
+                    if pending[node] and peer.send(node, kind, deadline=deadline):
+                        pending[node] -= 1
+                if time.monotonic() > deadline:
+                    raise TimeoutError("Peer delivery deadline exceeded")
+                if any(pending.values()):
+                    time.sleep(min(interval, max(0., deadline - time.monotonic())))
+        while True:
+            with peer.lock:
+                complete = len(peer.receiver.messages) == len(config["addresses"]) and len(peer.done) == len(config["addresses"])
+            if complete:
+                break
             if time.monotonic() > deadline:
-                raise TimeoutError("Peer delivery deadline exceeded")
+                raise TimeoutError("Peer convergence deadline exceeded")
             time.sleep(0.02)
-    while True:
-        with peer.lock:
-            complete = len(peer.receiver.messages) == len(config["addresses"]) and len(peer.done) == len(config["addresses"])
-        if complete:
-            break
-        if time.monotonic() > deadline:
-            raise TimeoutError("Peer convergence deadline exceeded")
-        time.sleep(0.02)
-    time.sleep(0.3)
-    server.shutdown()
-    server.server_close()
-    thread.join()
+        time.sleep(0.3)
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()
     snapshot = peer.receiver.freeze(config["round_id"])
     peer.receiver.checkpoint(peer.ledger)
     gram, moment = peer.receiver.sums()
