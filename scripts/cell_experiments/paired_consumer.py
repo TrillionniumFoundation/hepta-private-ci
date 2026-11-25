@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import secrets
+import stat
 import subprocess
 import sys
 
@@ -197,6 +198,29 @@ def private_material(cfg, basename, limit):
     return raw
 
 
+def require_reservation(path, operation):
+    """Observe the original single-use fence without repairing or recreating it."""
+    expected = data.canonical(dict(operation=field(operation))) + b"\n"
+    try:
+        descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except OSError as error:
+        raise ValueError("original single-use reservation unavailable") from error
+    try:
+        info = os.fstat(descriptor)
+        require(
+            stat.S_ISREG(info.st_mode)
+            and info.st_uid == os.geteuid()
+            and info.st_mode & 0o077 == 0,
+            "original single-use reservation must be a private regular file",
+        )
+        require(
+            os.read(descriptor, len(expected) + 1) == expected,
+            "original single-use reservation differs",
+        )
+    finally:
+        os.close(descriptor)
+
+
 def read_run(path, scope, selection, req, materials):
     run = adoption.read_json(path / "RUN.json")
     started = adoption.read_json(path / "STARTED.json")
@@ -212,6 +236,16 @@ def read_run(path, scope, selection, req, materials):
         and started["request"] == scope
         and started["local_selection_sha256"] == selection,
         "retained worker input, selection or nonce differs",
+    )
+    require_reservation(
+        path.parent
+        / ("request-delivery-" + field(started["grant"]["delivery_id"]) + ".json"),
+        scope["operation"],
+    )
+    _, _, input_ids = cold.encoding(req, task, materials)
+    require_reservation(
+        path.parent / ("tokens-" + data.digest(input_ids) + ".json"),
+        scope["operation"],
     )
     output = cold.inspect(req, task, materials, pred)
     require(
