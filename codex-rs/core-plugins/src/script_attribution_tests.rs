@@ -511,6 +511,30 @@ operations:
         r#"version: 1
 operations:
   scan:
+    path: scripts/run.py
+    measurements:
+      count:
+        dimensions:
+          status: [ok]
+          status: [failed]
+"#,
+        r#"version: 1
+operations: {scan: {path: scripts/run.py, measurements: {count: {}}}, "sc\u0061n": {path: scripts/run.py, measurements: {count: {}}}}
+"#,
+        r#"version: 2
+version: 1
+operations: {scan: {path: scripts/run.py, measurements: {count: {}}}}
+"#,
+        r#"version: 1
+operations:
+  scan:
+    path: ../outside.py
+    path: scripts/run.py
+    measurements: {count: {}}
+"#,
+        r#"version: 1
+operations:
+  scan:
     path: ../outside.py
     measurements:
       count: {}

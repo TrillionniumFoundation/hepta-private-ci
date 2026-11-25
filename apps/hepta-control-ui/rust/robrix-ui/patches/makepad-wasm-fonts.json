@@ -1,0 +1,22 @@
+{
+  "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+  "patchSha256": "feb3322cde462863097a695d7e72ea2115f7e8972bd581fd50fecda1eea61e03",
+  "files": [
+    {
+      "path": "src/text/fonts.rs",
+      "beforeSha256": "5664e8eb982715e9dbf4731df27ea00c7cf3100f6b252224cdff26cb9917f056",
+      "afterSha256": "033718a5958d5e066e45910fce026f0b150b3d29cfdd2d7d02ce16b9f96d3c9b"
+    },
+    {
+      "path": "src/shader/draw_text.rs",
+      "beforeSha256": "21395f32f71dc8d9872975cc1498002407573f1b4b614ab943888c6dc7b7ddb0",
+      "afterSha256": "23603d4c6a7f898a2636fa6088993961e16556845c04fb5c94fec7811a375add"
+    },
+    {
+      "path": "src/text/rasterizer.rs",
+      "beforeSha256": "50bb32eb2c59a58727575f69083d206617cc08230de8ca83c2f03e4bd2063a24",
+      "afterSha256": "c8058b4f41d037de20afac8609dfd50fc91bddbcc027323af7fc9c65697e50d0"
+    }
+  ],
+  "reason": "On non-atomic WASM skip the blocking MSDF worker and route every outline through the existing synchronous SDF path, including explicit MSDF mode overrides. Native/atomic behavior is unchanged. Defer missing-font diagnostics only while the matching registered resource is Loading; terminal absence and errors remain visible and HTTP completion redraws the incomplete family."
+}

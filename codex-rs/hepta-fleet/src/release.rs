@@ -293,8 +293,16 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
+            #[cfg(not(target_vendor = "apple"))]
             set_mode(&staging, /*mode*/ 0o555)?;
             std::fs::rename(&staging, &final_root)?;
+            #[cfg(target_vendor = "apple")]
+            {
+                // Darwin requires write access to the directory being renamed.
+                // Catalog resolution rejects this root until it is sealed.
+                set_mode(&final_root, /*mode*/ 0o555)?;
+                sync_directory(&final_root)?;
+            }
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
@@ -548,6 +556,7 @@ pub(crate) fn load_release_state(
     releases_root: &Path,
     agent_id: &AgentId,
 ) -> Result<AgentReleaseState, FleetRegistryError> {
+    let control = crate::control_file::ControlOwner::for_child(releases_root)?;
     let mut states = Vec::new();
     for entry in std::fs::read_dir(releases_root)? {
         let entry = entry?;
@@ -561,7 +570,7 @@ pub(crate) fn load_release_state(
         }
         let generation = parse_release_state_generation(&name)?;
         let state: AgentReleaseState =
-            read_bounded_json(&entry.path(), MAX_RELEASE_MANIFEST_BYTES)?;
+            control.read_json(&entry.path(), MAX_RELEASE_MANIFEST_BYTES)?;
         if state.schema_version != AGENT_RELEASE_STATE_SCHEMA_VERSION
             || state.agent_id != *agent_id
             || state.generation != generation
@@ -842,7 +851,7 @@ fn publish_release_state(
         std::process::id(),
         RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
     ));
-    write_new_json(&temp_path, state)?;
+    crate::control_file::ControlOwner::for_child(releases_root)?.write_json(&temp_path, state)?;
     match std::fs::hard_link(&temp_path, &final_path) {
         Ok(()) => {}
         Err(error) if error.kind() == ErrorKind::AlreadyExists => {
@@ -902,18 +911,8 @@ fn read_bounded_json<T: for<'de> Deserialize<'de>>(
     path: &Path,
     max_bytes: u64,
 ) -> Result<T, FleetRegistryError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.file_type().is_file()
-        || metadata.file_type().is_symlink()
-        || metadata.len() > max_bytes
-    {
-        return Err(FleetRegistryError::Corrupt(format!(
-            "release control path is not a bounded regular file: {}",
-            path.display()
-        )));
-    }
-    serde_json::from_slice(&std::fs::read(path)?)
-        .map_err(|error| FleetRegistryError::Corrupt(format!("invalid release JSON: {error}")))
+    // Both metadata and bytes come from one actual no-follow descriptor.
+    crate::control_file::read_json(crate::control_file::open_regular(path)?, max_bytes)
 }
 
 fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), FleetRegistryError> {

@@ -1142,3 +1142,135 @@ async fn turn_metadata_state_git_enrichment_cancellation_is_retryable_and_errors
     .expect("failed git enrichment should complete");
     assert!(invalid_state.current_workspaces().is_empty());
 }
+
+fn websocket_metadata_state() -> (TempDir, TurnMetadataState) {
+    let temp_dir = TempDir::new().expect("temp dir");
+    let state = TurnMetadataState::new(
+        "session-a".to_string(),
+        "thread-a".to_string(),
+        /*forked_from_thread_id*/ None,
+        /*parent_thread_id*/ None,
+        &SessionSource::Exec,
+        /*thread_source*/ None,
+        "turn-a".to_string(),
+        temp_dir.path().abs(),
+        &PermissionProfile::read_only(),
+        WindowsSandboxLevel::Disabled,
+        /*enforce_managed_network*/ false,
+        /*auto_review_enabled*/ false,
+        &model_info_from_slug("gpt-5.4"),
+    );
+    (temp_dir, state)
+}
+
+#[test]
+fn websocket_metadata_preserves_complete_configured_extra_provenance() {
+    let (_temp_dir, state) = websocket_metadata_state();
+    let configured = BTreeMap::from([
+        ("codex_security_surface".to_string(), "sdk".to_string()),
+        (
+            "future_product_boundary".to_string(),
+            "account-a".to_string(),
+        ),
+    ]);
+    state.set_responses_api_metadata(configured.clone());
+    state.set_responsesapi_client_metadata(HashMap::from([
+        (
+            "codex_security_surface".to_string(),
+            "untrusted".to_string(),
+        ),
+        ("fiber_run_id".to_string(), "first".to_string()),
+    ]));
+    let first = state.responses_metadata_template();
+    assert_eq!(first.websocket_connection_extra, Some(configured.clone()));
+    assert_eq!(first.extra["codex_security_surface"], "sdk");
+    assert_eq!(first.extra["fiber_run_id"], "first");
+
+    state.set_responsesapi_client_metadata(HashMap::from([
+        (
+            "codex_security_surface".to_string(),
+            "different-untrusted".to_string(),
+        ),
+        ("fiber_run_id".to_string(), "second".to_string()),
+    ]));
+    let second = state.responses_metadata_template();
+    assert_eq!(
+        serde_json::to_value(first.websocket_connection_compatibility_projection()).unwrap(),
+        serde_json::to_value(second.websocket_connection_compatibility_projection()).unwrap(),
+    );
+    assert_ne!(
+        serde_json::to_value(first.turn_recovery_compatibility_projection()).unwrap(),
+        serde_json::to_value(second.turn_recovery_compatibility_projection()).unwrap(),
+    );
+    assert_eq!(
+        second.turn_metadata_value().unwrap()["fiber_run_id"],
+        "second"
+    );
+    assert_eq!(
+        second.turn_metadata_value().unwrap()["codex_security_surface"],
+        "sdk"
+    );
+    assert!(
+        state
+            .mcp_metadata_template()
+            .extra
+            .get("codex_security_surface")
+            .is_none()
+    );
+
+    let mut changed_configured = configured;
+    changed_configured.insert(
+        "future_product_boundary".to_string(),
+        "account-b".to_string(),
+    );
+    state.set_responses_api_metadata(changed_configured);
+    let changed = state.responses_metadata_template();
+    assert_ne!(
+        serde_json::to_value(second.websocket_connection_compatibility_projection()).unwrap(),
+        serde_json::to_value(changed.websocket_connection_compatibility_projection()).unwrap(),
+        "all configured keys bind the connection, including names unknown to Core",
+    );
+}
+
+#[test]
+fn recovered_metadata_without_provenance_binds_all_extra() {
+    let (_temp_dir, state) = websocket_metadata_state();
+    state.set_responses_api_metadata(BTreeMap::from([(
+        "codex_security_surface".to_string(),
+        "sdk".to_string(),
+    )]));
+    state.set_responsesapi_client_metadata(HashMap::from([(
+        "fiber_run_id".to_string(),
+        "historical".to_string(),
+    )]));
+    let original = state.responses_metadata_template();
+    let recovery_json =
+        serde_json::to_value(original.turn_recovery_compatibility_projection()).unwrap();
+    let start = original.turn_recovery_start_state(/*final_output_json_schema*/ None);
+    state.set_responses_api_metadata(BTreeMap::from([(
+        "codex_security_surface".to_string(),
+        "current-config".to_string(),
+    )]));
+    state.apply_recovery_start_state(&start);
+    let recovered = state.responses_metadata_template();
+    assert!(recovered.websocket_connection_extra.is_none());
+    assert_eq!(recovered.extra, original.extra);
+    assert_eq!(
+        serde_json::to_value(recovered.turn_recovery_compatibility_projection()).unwrap(),
+        recovery_json,
+        "the persisted merged metadata and recovery identity remain unchanged",
+    );
+    assert_eq!(
+        serde_json::to_value(recovered.websocket_connection_compatibility_projection()).unwrap()["extra"],
+        serde_json::to_value(&original.extra).unwrap(),
+    );
+    let mut changed = recovered.clone();
+    changed
+        .extra
+        .insert("fiber_run_id".to_string(), "different".to_string());
+    assert_ne!(
+        serde_json::to_value(recovered.websocket_connection_compatibility_projection()).unwrap(),
+        serde_json::to_value(changed.websocket_connection_compatibility_projection()).unwrap(),
+        "unclassified recovered keys cannot be treated as caller-only attribution",
+    );
+}

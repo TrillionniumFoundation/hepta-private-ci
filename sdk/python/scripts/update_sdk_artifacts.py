@@ -415,9 +415,14 @@ def _set_discriminator_titles(props: dict[str, Any], owner: str) -> None:
         prop = props.get(key)
         if not isinstance(prop, dict):
             continue
-        if _string_literal(prop) is None or "title" in prop:
+        literal = _string_literal(prop)
+        if literal is None:
             continue
-        prop["title"] = f"{owner}{_to_pascal_case(key)}"
+        # Const keeps discriminator fields as Literal values in current codegen.
+        if "const" not in prop:
+            prop["const"] = literal
+            prop.pop("enum", None)
+        prop.setdefault("title", f"{owner}{_to_pascal_case(key)}")
 
 
 def _annotate_variant_list(variants: list[Any], base: str | None) -> None:
@@ -588,6 +593,8 @@ def generate_v2_all(schema_dir: Path) -> None:
                 "--use-standard-collections",
                 "--enum-field-as-literal",
                 "one",
+                # Preserve the Enum API and Python 3.10 support instead of StrEnum.
+                "--no-use-specialized-enum",
                 "--field-constraints",
                 "--use-default-kwarg",
                 "--snake-case-field",
@@ -623,6 +630,8 @@ def _require_nullable_chatgpt_account_email(out_path: Path) -> None:
         class_end = len(source)
 
     class_source = source[class_start:class_end]
+    if class_source.count("    email: str | None\n") == 1:
+        return
     nullable_with_default = "    email: str | None = None"
     if class_source.count(nullable_with_default) != 1:
         raise RuntimeError(

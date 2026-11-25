@@ -102,6 +102,52 @@ async fn create_client(
     server: &MockServer,
     elicitation_modes: Arc<Mutex<Vec<String>>>,
 ) -> anyhow::Result<RmcpClient> {
+    initialize_client(
+        server,
+        Box::new(move |request_id, request| {
+            let elicitation_modes = Arc::clone(&elicitation_modes);
+            async move {
+                assert_eq!(request_id.to_string(), "confirmation");
+                let Elicitation::Mcp(request) = request else {
+                    anyhow::bail!("MRTR input must be a standard MCP elicitation");
+                };
+                let mode = match request {
+                    ElicitRequestParams::FormElicitationParams { meta, .. } => {
+                        assert_eq!(
+                            meta.and_then(|meta| meta.get("inputContext").cloned()),
+                            Some(json!("server-context"))
+                        );
+                        "form"
+                    }
+                    ElicitRequestParams::UrlElicitationParams { meta, .. } => {
+                        assert_eq!(
+                            meta.and_then(|meta| meta.get("inputContext").cloned()),
+                            Some(json!("server-context"))
+                        );
+                        "url"
+                    }
+                    _ => anyhow::bail!("unsupported elicitation mode"),
+                };
+                elicitation_modes
+                    .lock()
+                    .map_err(|_| anyhow::anyhow!("elicitation lock was poisoned"))?
+                    .push(mode.to_owned());
+                Ok(ElicitationResponse {
+                    action: ElicitationAction::Accept,
+                    content: Some(json!({"confirmed": true})),
+                    meta: Some(json!({"clientContext": "preserved"})),
+                })
+            }
+            .boxed()
+        }),
+    )
+    .await
+}
+
+async fn initialize_client(
+    server: &MockServer,
+    send_elicitation: codex_rmcp_client::SendElicitation,
+) -> anyhow::Result<RmcpClient> {
     let client = RmcpClient::new_streamable_http_client_with_protocol_mode(
         "mrtr-test",
         &format!("{}/mcp", server.uri()),
@@ -130,42 +176,7 @@ async fn create_client(
             )
             .with_protocol_version(ProtocolVersion::V_2025_06_18),
             Some(Duration::from_secs(5)),
-            Box::new(move |request_id, request| {
-                let elicitation_modes = Arc::clone(&elicitation_modes);
-                async move {
-                    assert_eq!(request_id.to_string(), "confirmation");
-                    let Elicitation::Mcp(request) = request else {
-                        anyhow::bail!("MRTR input must be a standard MCP elicitation");
-                    };
-                    let mode = match request {
-                        ElicitRequestParams::FormElicitationParams { meta, .. } => {
-                            assert_eq!(
-                                meta.and_then(|meta| meta.get("inputContext").cloned()),
-                                Some(json!("server-context"))
-                            );
-                            "form"
-                        }
-                        ElicitRequestParams::UrlElicitationParams { meta, .. } => {
-                            assert_eq!(
-                                meta.and_then(|meta| meta.get("inputContext").cloned()),
-                                Some(json!("server-context"))
-                            );
-                            "url"
-                        }
-                        _ => anyhow::bail!("unsupported elicitation mode"),
-                    };
-                    elicitation_modes
-                        .lock()
-                        .map_err(|_| anyhow::anyhow!("elicitation lock was poisoned"))?
-                        .push(mode.to_owned());
-                    Ok(ElicitationResponse {
-                        action: ElicitationAction::Accept,
-                        content: Some(json!({"confirmed": true})),
-                        meta: Some(json!({"clientContext": "preserved"})),
-                    })
-                }
-                .boxed()
-            }),
+            send_elicitation,
         )
         .await?;
     Ok(client)
@@ -731,3 +742,6 @@ async fn modern_tool_mrtr_preserves_state_only_rounds_without_elicitation() -> a
     client.shutdown().await;
     Ok(())
 }
+
+#[path = "support/mrtr_budget.rs"]
+mod budget_tests;

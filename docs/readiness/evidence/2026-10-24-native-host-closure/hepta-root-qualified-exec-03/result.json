@@ -1,0 +1,78 @@
+{
+  "passed": false,
+  "native_qualification": false,
+  "retries": 0,
+  "test_threads": 1,
+  "original_seven_crate_failures_preserved": "hepta-original-seven-crates/result.json",
+  "steps": [
+    {
+      "label": "cargo-metadata",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "metadata",
+        "--locked",
+        "--offline",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.17955252795945853
+    },
+    {
+      "label": "binaries-metadata",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "nextest",
+        "list",
+        "--cargo-metadata",
+        "/data/trillionnium-closure-20261024/native-evidence/hepta-root-qualified-exec-03/cargo-metadata.json",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-fleet",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-types",
+        "--lib",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.577908969949931
+    },
+    {
+      "label": "root-original-tests",
+      "argv": [
+        "/usr/bin/sudo",
+        "-n",
+        "/usr/bin/python3",
+        "-u",
+        "/data/trillionnium-closure-20261024/native-evidence/hepta-root-qualified-exec-03/root-environment-run.py"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge/codex-rs",
+      "exit_code": 100,
+      "elapsed_seconds": 28.683521341066808
+    }
+  ],
+  "source_head": "b53003fc102032120faaf00887219dafddd3a9d8",
+  "source_tree": "e965d4d2735486f2c1a59bd0f686014086e3ddd2",
+  "previous_root_attempt": "hepta-root-qualified-exec-02/result.json",
+  "original_libtest": {
+    "path": "/data/trillionnium-closure-20261024/hepta-host-target/debug/deps/codex_hepta_agentd-94412a79be494444",
+    "bytes": 166717112,
+    "sha256": "47c56333d560712ec6818043c207ca91d1a958b50e181a1d12d33ef56fa456e6"
+  },
+  "error": "RuntimeError('root-original-tests failed')",
+  "source_bytes_unchanged": true
+}

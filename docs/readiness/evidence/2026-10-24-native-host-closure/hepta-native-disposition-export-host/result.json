@@ -1,0 +1,104 @@
+{
+  "passed": false,
+  "native_qualification": false,
+  "retries": 0,
+  "test_threads": 2,
+  "source_batch_sha256": "49a436ffa15184e1a83626c89315fc078ad941475efc60655ef426671d05c29a",
+  "original_seven_crate_failures_preserved": "hepta-original-seven-crates/result.json",
+  "steps": [
+    {
+      "label": "fmt",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge/codex-rs",
+      "exit_code": 0,
+      "elapsed_seconds": 0.29762736905831844
+    },
+    {
+      "label": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge",
+      "exit_code": 0,
+      "elapsed_seconds": 0.012715009041130543
+    },
+    {
+      "label": "stage",
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-memory/src/lib.rs"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge",
+      "exit_code": 0,
+      "elapsed_seconds": 0.022328171064145863
+    },
+    {
+      "label": "commit",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "Expose the original dispatch disposition for native receipt validation"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge",
+      "exit_code": 0,
+      "elapsed_seconds": 0.05004323390312493
+    },
+    {
+      "label": "converge-integration",
+      "argv": [
+        "git",
+        "merge",
+        "--ff-only",
+        "b53003fc102032120faaf00887219dafddd3a9d8"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-integration",
+      "exit_code": 0,
+      "elapsed_seconds": 0.05970462993718684
+    },
+    {
+      "label": "original-seven-package-tests",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-fleet",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-types",
+        "--lib",
+        "--retries",
+        "0",
+        "--test-threads",
+        "2"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge/codex-rs",
+      "exit_code": 100,
+      "elapsed_seconds": 343.9029918379383
+    }
+  ],
+  "changed_paths": [
+    "codex-rs/hepta-memory/src/lib.rs"
+  ],
+  "source_head": "b53003fc102032120faaf00887219dafddd3a9d8",
+  "source_tree": "e965d4d2735486f2c1a59bd0f686014086e3ddd2",
+  "error": "RuntimeError('original-seven-package-tests failed')",
+  "source_bytes_unchanged": true
+}

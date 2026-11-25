@@ -1054,9 +1054,21 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         let Some(relative_path) = entry.enclosed_name() else {
             return Err(format!(
                 "curated plugins zip entry `{}` escapes extraction root",
-                entry.name()
+                entry
+                    .name()
+                    .map(std::borrow::Cow::into_owned)
+                    .unwrap_or_else(|_| "<invalid>".to_string())
             ));
         };
+        if entry.is_symlink() {
+            return Err(format!(
+                "curated plugins zip entry `{}` is a symlink",
+                entry
+                    .name()
+                    .map(std::borrow::Cow::into_owned)
+                    .unwrap_or_else(|_| "<invalid>".to_string())
+            ));
+        }
 
         let mut components = relative_path.components();
         let Some(std::path::Component::Normal(_)) = components.next() else {
@@ -1111,7 +1123,10 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
 }
 
 #[cfg(unix)]
-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
+fn apply_zip_permissions<R: std::io::Read + ?Sized>(
+    entry: &zip::read::ZipFile<'_, R>,
+    output_path: &Path,
+) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
 
     let Some(mode) = entry.unix_mode() else {
@@ -1127,7 +1142,7 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
 
 #[cfg(not(unix))]
 fn apply_zip_permissions(
-    _entry: &zip::read::ZipFile<'_>,
+    _entry: &zip::read::ZipFile<'_, impl std::io::Read + ?Sized>,
     _output_path: &Path,
 ) -> Result<(), String> {
     Ok(())

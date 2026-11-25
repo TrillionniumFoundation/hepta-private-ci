@@ -11,7 +11,16 @@ pub mod authbus_b5;
 #[cfg(test)]
 #[path = "authbus_tests.rs"]
 mod authbus_tests;
+mod authority_consumer_wire;
+#[cfg(target_os = "linux")]
+mod authority_host_clock;
+#[cfg(target_os = "linux")]
+mod authority_host_issuer_transport;
+#[cfg(unix)]
+mod authority_host_store;
 pub mod authority_lease;
+#[cfg(target_os = "linux")]
+mod authority_root_frontier;
 pub mod authority_trust;
 #[cfg(test)]
 mod callers_manifest_tests;
@@ -27,8 +36,45 @@ mod receipt;
 mod stable_id;
 mod verified_use_witness;
 
+pub use authority_consumer_wire::HostConsumerFrontierRequestV1;
+pub use authority_consumer_wire::HostConsumerFrontierResponseV1;
+pub use authority_consumer_wire::HostConsumerFrontierStatusV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_clock::HostAuthorityClock;
+#[cfg(target_os = "linux")]
+pub use authority_host_clock::HostAuthorityClockObservation;
+#[cfg(target_os = "linux")]
+pub use authority_host_clock::HostAuthorityClockProjection;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostAuthorityPeerChannel;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostAuthorityPeerPolicy;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerPeer;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerSession;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerSessionPolicy;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::HostIssuerTransportError;
+#[cfg(target_os = "linux")]
+pub use authority_host_issuer_transport::channel::HostAuthorityOwnerLifetime;
+#[cfg(unix)]
+pub use authority_host_store::HostAuthorityFrontierStore;
+#[cfg(unix)]
+pub use authority_host_store::HostFinalUseIssuer;
+#[cfg(unix)]
+pub use authority_host_store::HostIssuerError;
+#[cfg(unix)]
+pub use authority_host_store::RootAuthorityDirectory;
+#[cfg(unix)]
+pub use authority_host_store::RootStoredObservation;
 pub use authority_lease::deliver_authority_lease_with_witness;
 pub use authority_lease::dispatch_authority_lease_with_witness;
+#[cfg(target_os = "linux")]
+pub use authority_root_frontier::RootFinalUseFrontierClient;
+#[cfg(target_os = "linux")]
+pub use authority_root_frontier::RootPeerIdentity;
 pub use authority_trust::AuthorityClock;
 pub use authority_trust::AuthorityFrontierStore;
 pub use authority_trust::AuthorityTrustError;

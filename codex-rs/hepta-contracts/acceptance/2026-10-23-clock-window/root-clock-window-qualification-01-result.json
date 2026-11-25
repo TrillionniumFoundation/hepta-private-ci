@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.root-clock-window-qualification.v1",
+  "source_head": "efadc8f1a67512f9dfc89eb4db9223845b441f62",
+  "source_tree": "bcbda8dbb4115b4b74d607f3c9562edd18b20d2c",
+  "commands": [
+    {
+      "stage": "manifest-metadata",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "metadata",
+        "--no-deps",
+        "--format-version=1",
+        "--offline",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "seconds": 0.165
+    },
+    {
+      "stage": "compile-original-test-binaries",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "nextest",
+        "list",
+        "--cargo-profile",
+        "dev",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-clock-window-qualification-01/cargo-metadata.json",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 42.335
+    },
+    {
+      "stage": "original-complete-contracts",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-clock-window-qualification-01/cargo-metadata.json",
+        "--binaries-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-clock-window-qualification-01/binaries-metadata.json",
+        "--test-threads",
+        "2"
+      ],
+      "exit_code": 0,
+      "seconds": 35.318
+    },
+    {
+      "stage": "actual-root-clock-tests",
+      "argv": [
+        "sudo",
+        "-n",
+        "/usr/bin/env",
+        "PATH=/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/home/qian-qi/.cargo/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "RUSTUP_TOOLCHAIN=1.96.0",
+        "RUSTC=/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "CARGO_TARGET_DIR=/data/asterinas-audit-build.8tdrjboi/root-clock-window-target",
+        "TMPDIR=/data/clock-window-tmp.v19m_sn2",
+        "CARGO_NET_OFFLINE=true",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "CARGO_HOME=/home/qian-qi/.cargo",
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "import os,sys; os.umask(0o077); os.execv(sys.argv[1],sys.argv[1:])",
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-clock-window-qualification-01/cargo-metadata.json",
+        "--binaries-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-clock-window-qualification-01/binaries-metadata.json",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(authority_host_clock::slow_tests::)",
+        "--test-threads",
+        "2"
+      ],
+      "exit_code": 0,
+      "seconds": 5.28
+    }
+  ],
+  "status": "complete",
+  "passed": true,
+  "fresh_target": true,
+  "production_authority": false,
+  "service_wire_qualified": false,
+  "qualification_phase": "actual original clock window and durable-renewal contract",
+  "scope": "Original complete contracts package, then original2 slow-durability/FinalUse negatives and3 actual Root protected-record window/load/corruption cases. Root slow tests retain their original /run fixture; not physical power-loss qualification.",
+  "source_inputs_unchanged": true
+}

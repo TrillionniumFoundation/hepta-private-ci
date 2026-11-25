@@ -1,9 +1,7 @@
 use std::collections::BTreeMap;
 #[cfg(unix)]
 use std::fs::File;
-use std::fs::OpenOptions;
 use std::io::ErrorKind;
-use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
@@ -20,6 +18,7 @@ use crate::AgentLifecycleState;
 use crate::AgentManifest;
 use crate::AgentReleaseState;
 use crate::FleetRegistryError;
+use crate::control_file::ControlOwner;
 use crate::release::initialize_release_state;
 use crate::release::load_release_state;
 
@@ -214,6 +213,7 @@ impl FleetRegistry {
         staging_root: &Path,
         manifest: &AgentManifest,
     ) -> Result<(), FleetRegistryError> {
+        let control = ControlOwner::at(staging_root)?;
         for name in [
             "home",
             "run",
@@ -227,12 +227,12 @@ impl FleetRegistry {
         }
         let matrix_secrets_root = staging_root.join("matrix/secrets");
         create_private_directory(&matrix_secrets_root)?;
-        write_new_file(
+        control.write_new(
             &staging_root.join("agent.toml"),
             toml::to_string(manifest)?.as_bytes(),
         )?;
         let initial = AgentLifecycleState::initial(manifest.agent_id.clone());
-        write_new_file(
+        control.write_new(
             &lifecycle_path(&staging_root.join("run"), initial.generation),
             &lifecycle_json(&initial)?,
         )?;
@@ -255,6 +255,7 @@ impl FleetRegistry {
     /// fleet size. History compaction is a separate owner-controlled operation.
     pub fn load_agent(&self, agent_id: &AgentId) -> Result<AgentRecord, FleetRegistryError> {
         let layout = self.layout.agent(agent_id);
+        let control = ControlOwner::at(layout.agent_root())?;
         for directory in [
             layout.agent_root(),
             layout.home_root(),
@@ -270,7 +271,7 @@ impl FleetRegistry {
         }
         validate_private_directory(layout.matrix_root())?;
         validate_private_directory(layout.matrix_secrets_root())?;
-        let manifest: AgentManifest = toml::from_str(&read_regular_file(layout.agent_config())?)
+        let manifest: AgentManifest = toml::from_str(&control.read_text(layout.agent_config())?)
             .map_err(|error| {
                 FleetRegistryError::Corrupt(format!("invalid agent manifest: {error}"))
             })?;
@@ -308,7 +309,7 @@ fn publish_lifecycle(
         std::process::id(),
         STAGING_SEQUENCE.fetch_add(1, Ordering::Relaxed)
     ));
-    write_new_file(&temp_path, &lifecycle_json(state)?)?;
+    ControlOwner::for_child(run_root)?.write_new(&temp_path, &lifecycle_json(state)?)?;
     let outcome = match std::fs::hard_link(&temp_path, &final_path) {
         Ok(()) => PublishOutcome::Published,
         Err(error) if error.kind() == ErrorKind::AlreadyExists => PublishOutcome::AlreadyExists,
@@ -326,6 +327,7 @@ fn load_lifecycle(
     run_root: &Path,
     agent_id: &AgentId,
 ) -> Result<AgentLifecycleState, FleetRegistryError> {
+    let control = ControlOwner::for_child(run_root)?;
     let mut states = BTreeMap::new();
     for entry in std::fs::read_dir(run_root)? {
         let entry = entry?;
@@ -339,7 +341,7 @@ fn load_lifecycle(
             continue;
         }
         let generation = parse_lifecycle_generation(name)?;
-        let state: AgentLifecycleState = serde_json::from_str(&read_regular_file(&entry.path())?)
+        let state: AgentLifecycleState = serde_json::from_str(&control.read_text(&entry.path())?)
             .map_err(|error| {
             FleetRegistryError::Corrupt(format!("invalid lifecycle state: {error}"))
         })?;
@@ -461,24 +463,6 @@ fn staging_root(agents_root: &Path, agent_id: &AgentId) -> PathBuf {
         std::process::id(),
         STAGING_SEQUENCE.fetch_add(1, Ordering::Relaxed)
     ))
-}
-
-fn write_new_file(path: &Path, contents: &[u8]) -> Result<(), FleetRegistryError> {
-    let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
-    file.write_all(contents)?;
-    file.sync_all()?;
-    Ok(())
-}
-
-fn read_regular_file(path: &Path) -> Result<String, FleetRegistryError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
-        return Err(FleetRegistryError::Corrupt(format!(
-            "control path is not a regular file: {}",
-            path.display()
-        )));
-    }
-    std::fs::read_to_string(path).map_err(Into::into)
 }
 
 fn validate_physical_directory(path: &Path) -> Result<(), FleetRegistryError> {

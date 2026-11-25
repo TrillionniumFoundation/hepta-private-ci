@@ -1,0 +1,27 @@
+{
+  "name": "linux-readable-pin-chain-focused",
+  "cwd": "/data/hepta-mcp-implementation-closure",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-exec-server",
+    "--locked",
+    "--test-threads",
+    "2",
+    "-E",
+    "test(local_file_system::authorized_read_tests::) | test(linux_authorized_read::tests::) | test(file_system_bounded_authorized_read) | test(remote_file_system::path_uri_tests::authorized_) | test(authorized_read_rpc_is_capability_gated_and_denies_outside_root)"
+  ],
+  "baseSha": "44b4820a43ee9a34d4c0fddb7762e94fed59a9b1",
+  "workingDiffSha256": "13c0b429f300d754e1508a415402228f4ce78ef089fe222a444f1a019c21722a",
+  "startedAt": "2026-10-23T20:33:18.349711+00:00",
+  "finishedAt": "2026-10-23T20:39:33.077524+00:00",
+  "elapsedSeconds": 374.72780857398175,
+  "exitCode": 0,
+  "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-readable-pin-chain-focused.log",
+  "environment": {
+    "CARGO_TARGET_DIR": "/data/hepta-mcp-integer-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0"
+  }
+}

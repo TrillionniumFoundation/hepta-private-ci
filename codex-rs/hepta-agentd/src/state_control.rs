@@ -130,6 +130,14 @@ impl AgentdState {
                         crate::AgentdCapability::new("objective.start", 1, 0)
                             .map_err(AgentdError::Protocol)?,
                     );
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            "objective.admission.read",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
                 }
                 if self.canonical_intelligence_enabled() {
                     capabilities.push(
@@ -226,6 +234,15 @@ impl AgentdState {
                         conflict_digest,
                     },
                 }
+            }
+            crate::AgentdMethod::ObjectiveAdmission { query } => {
+                let outcome = match self.objective_runtime.get() {
+                    Some(host) => host.admission_history(self.identity(), query),
+                    None => crate::ObjectiveAdmissionOutcome::Unknown {
+                        reason: crate::ObjectiveAdmissionUnknownReason::OwnerUnavailable,
+                    },
+                };
+                AgentdPayload::ObjectiveAdmission { outcome }
             }
             crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
                 crate::authbus_ingress::submit(self, request).await?,
@@ -487,19 +504,7 @@ impl AgentdState {
                 run_id,
                 expected_revision,
                 reason,
-            } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let (disposition, receipt) = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .cancel_run(now_ms()?, &run_id, expected_revision, &reason)
-                    .map_err(run_error)?;
-                AgentdPayload::RunCancellation(crate::AgentRunCancellation {
-                    disposition: wire_cancellation_disposition(disposition),
-                    receipt: wire_run_receipt(receipt),
-                })
-            }
+            } => self.run_cancellation_payload(run_id, expected_revision, reason)?,
             crate::AgentdMethod::RunObserveTerminal {
                 run_id,
                 expected_revision,
@@ -520,16 +525,7 @@ impl AgentdState {
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
-            crate::AgentdMethod::RunStatus { run_id } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let run = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .run(&run_id)
-                    .map(wire_run_receipt);
-                AgentdPayload::RunStatus { run }
-            }
+            crate::AgentdMethod::RunStatus { run_id } => self.run_status_payload(run_id)?,
             crate::AgentdMethod::RunReleaseClosed {
                 run_id,
                 expected_revision,
@@ -1233,7 +1229,7 @@ fn require_run_admission_ready(
     }
 }
 
-fn require_run_reconciliation_ready(
+pub(super) fn require_run_reconciliation_ready(
     lifecycle: AgentLifecycle,
     fenced: bool,
 ) -> Result<(), AgentdError> {
@@ -1331,7 +1327,7 @@ fn wire_run_phase(value: crate::RunPhase) -> crate::AgentRunPhase {
     }
 }
 
-fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
+pub(super) fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
     crate::AgentRunReceipt {
         run_id: value.run_id,
         revision: value.revision,
@@ -1349,7 +1345,7 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
     }
 }
 
-fn wire_cancellation_disposition(
+pub(super) fn wire_cancellation_disposition(
     value: crate::CancellationDisposition,
 ) -> crate::AgentCancellationDisposition {
     match value {
@@ -1390,7 +1386,7 @@ fn require_automation_ready(
     }
 }
 
-fn now_ms() -> Result<u64, AgentdError> {
+pub(super) fn now_ms() -> Result<u64, AgentdError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|_| AgentdError::Protocol("system clock precedes Unix epoch".to_string()))?

@@ -1,0 +1,77 @@
+{
+  "passed": true,
+  "native_qualification": false,
+  "retries": 0,
+  "test_threads": 1,
+  "original_seven_crate_failures_preserved": "hepta-original-seven-crates/result.json",
+  "steps": [
+    {
+      "label": "cargo-metadata",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "metadata",
+        "--locked",
+        "--offline",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.18546223803423345
+    },
+    {
+      "label": "binaries-metadata",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "nextest",
+        "list",
+        "--cargo-metadata",
+        "/data/trillionnium-closure-20261024/native-evidence/hepta-root-qualified-exec-05/cargo-metadata.json",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-fleet",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-types",
+        "--lib",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.47429489903152
+    },
+    {
+      "label": "root-original-tests",
+      "argv": [
+        "/usr/bin/sudo",
+        "-n",
+        "/usr/bin/python3",
+        "-u",
+        "/data/trillionnium-closure-20261024/native-evidence/hepta-root-qualified-exec-05/root-environment-run.py"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge/codex-rs",
+      "exit_code": 0,
+      "elapsed_seconds": 13.646593625075184
+    }
+  ],
+  "source_head": "bb886c81f876d26eaa26a3ae214f084edb0c5a70",
+  "source_tree": "b6e172d933595b080be620fb1d7601a848dc4f9b",
+  "previous_root_attempt": "hepta-root-qualified-exec-02/result.json",
+  "original_libtest": {
+    "path": "/data/trillionnium-closure-20261024/hepta-host-target/debug/deps/codex_hepta_agentd-94412a79be494444",
+    "bytes": 166757272,
+    "sha256": "dd48eb1ba44432f21ff0cbe5cf22cbc9eb5b45d6bef6b7187bbb2a8f6e3f1cf9"
+  },
+  "source_bytes_unchanged": true
+}

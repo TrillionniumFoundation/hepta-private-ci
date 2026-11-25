@@ -9,7 +9,6 @@ use crate::PreverifiedAuthEnvelope;
 use crate::ReplayWindow;
 use crate::TrustedReplayContext;
 use crate::VerificationReceipt;
-use crate::push_id;
 
 /// Registration obtained from the host's trusted identity/policy store, never
 /// from the message being admitted. Revocation must be refreshed for each call.
@@ -20,35 +19,7 @@ pub struct IssuerRegistration {
     pub revoked: bool,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct SignedMessageClaims {
-    pub issuer_id: StableId,
-    pub key_epoch: Generation,
-    pub message_id: StableId,
-    pub subject_id: StableId,
-    pub scope_digest: Digest32,
-    pub payload_digest: Digest32,
-    pub sequence: u64,
-    pub expires_at_ms: u64,
-}
-
-impl SignedMessageClaims {
-    /// Canonical, length-delimited signed preimage. The domain and every replay
-    /// field are signed; signatures cannot be moved between issuers or epochs.
-    pub fn signing_bytes(&self) -> Vec<u8> {
-        let mut bytes = Vec::with_capacity(640);
-        bytes.extend_from_slice(b"hepta.authbus.signed-message.v1\0");
-        push_id(&mut bytes, &self.issuer_id);
-        bytes.extend_from_slice(&self.key_epoch.get().to_be_bytes());
-        push_id(&mut bytes, &self.message_id);
-        push_id(&mut bytes, &self.subject_id);
-        bytes.extend_from_slice(self.scope_digest.as_array());
-        bytes.extend_from_slice(self.payload_digest.as_array());
-        bytes.extend_from_slice(&self.sequence.to_be_bytes());
-        bytes.extend_from_slice(&self.expires_at_ms.to_be_bytes());
-        bytes
-    }
-}
+pub use codex_hepta_authority_types::SignedMessageClaims;
 
 pub struct SignedMessage {
     pub claims: SignedMessageClaims,

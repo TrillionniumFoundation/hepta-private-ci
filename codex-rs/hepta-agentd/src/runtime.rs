@@ -79,6 +79,16 @@ pub async fn run(
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    let notes_objective = config.notes_objective();
+    if notes_objective.is_some()
+        && (production_writer_host.is_none()
+            || intelligence_product.is_some()
+            || intelligence_invocation.is_some())
+    {
+        return Err(AgentdError::Invalid(
+            "Notes Objective requires original operations and a dedicated finite profile".into(),
+        ));
+    }
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -93,6 +103,12 @@ pub async fn run(
         registry,
         EVENT_CAPACITY,
     )?);
+    if let Some(notes) = notes_objective {
+        state
+            .notes_objective
+            .set(notes)
+            .map_err(|_| AgentdError::Invalid("Notes Objective already attached".into()))?;
+    }
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
     if let Some(host) = intuition_policy_host {
@@ -210,12 +226,23 @@ pub async fn run(
                 )
             })?;
             let (host, interval) = operations.attach(Arc::clone(recovered_host)).await?;
-            state.attach_production_operations(Arc::clone(&host))?;
-            production_writer_host = Some(Arc::clone(&host));
             Some((host, interval))
+        }
+        None if state.notes_objective.get().is_some() => {
+            let host = production_writer_host.as_ref().ok_or_else(|| {
+                AgentdError::Protocol("Notes requires its precomposed original owner".into())
+            })?;
+            Some((Arc::clone(host), GENERATION_POLL_INTERVAL))
         }
         None => None,
     };
+    if let Some((host, _)) = &production_operations {
+        if let Some(notes) = state.notes_objective.get() {
+            notes.validate_host(host)?;
+        }
+        state.attach_production_operations(Arc::clone(host))?;
+        production_writer_host = Some(Arc::clone(host));
+    }
     let cognitive_runtime = attach_federation_after_generation_fence(
         &state,
         cognitive_runtime,
@@ -403,15 +430,66 @@ where
     Ok(cognitive_runtime)
 }
 
-async fn run_production_operation_reconciler(
+enum OperationReconcileProfile {
+    Full,
+    Notes(crate::AgentdNotesObjectiveConfig),
+}
+
+pub(crate) async fn run_production_operation_reconciler(
     host: Arc<crate::AgentdProductionWriterHost>,
     interval: Duration,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
+    run_operation_reconciler(
+        host,
+        OperationReconcileProfile::Full,
+        interval,
+        cancellation,
+    )
+    .await
+}
+
+pub(crate) async fn run_notes_operation_reconciler(
+    host: Arc<crate::AgentdProductionWriterHost>,
+    notes: crate::AgentdNotesObjectiveConfig,
+    interval: Duration,
+    cancellation: CancellationToken,
+) -> Result<(), AgentdError> {
+    notes.validate_host(&host)?;
+    run_operation_reconciler(
+        host,
+        OperationReconcileProfile::Notes(notes),
+        interval,
+        cancellation,
+    )
+    .await
+}
+
+async fn run_operation_reconciler(
+    host: Arc<crate::AgentdProductionWriterHost>,
+    profile: OperationReconcileProfile,
+    interval: Duration,
+    cancellation: CancellationToken,
+) -> Result<(), AgentdError> {
     loop {
-        // Reconcile immediately after startup/restart, then at a bounded
-        // cadence. Agentd never dispatches from this recovery loop.
-        host.reconcile(256).await?;
+        // Native pre-boundary proofs require a fresh external grant even on
+        // restart. The separate observer below never resends unknown effects.
+        if cancellation.is_cancelled() {
+            return Ok(());
+        }
+        match &profile {
+            OperationReconcileProfile::Full => {
+                host.reauthorize_pending(/*limit*/ 256).await?;
+                host.reconcile(/*limit*/ 256).await?;
+            }
+            OperationReconcileProfile::Notes(notes) => {
+                let destination = notes.target.destination_id();
+                host.reauthorize_pending_for_destination(&destination, /*limit*/ 256)
+                    .await?;
+                host.reconcile_for_destination(&destination, /*limit*/ 256)
+                    .await?;
+            }
+        }
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
             _ = tokio::time::sleep(interval) => {}
@@ -459,6 +537,9 @@ async fn monitor_runtime(
                 Err(_not_ready) => {}
             }
         }
+        if app_server_ready && let Some(host) = state.objective_runtime.get() {
+            host.reconcile_notes(&state).await?;
+        }
         tokio::select! {
             () = cancellation.cancelled() => return Ok(()),
             () = tokio::time::sleep(GENERATION_POLL_INTERVAL) => {}
@@ -494,7 +575,7 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
     Ok(())
 }
 
-async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
+pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
     state.mark_draining()?;
     let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
     loop {
@@ -531,7 +612,7 @@ async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
 }
 
 #[cfg(unix)]
-async fn shutdown_signal() -> Result<(), AgentdError> {
+pub(crate) async fn shutdown_signal() -> Result<(), AgentdError> {
     let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
     let mut interrupt = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())?;
     tokio::select! {
@@ -546,10 +627,14 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
 }
 
 #[cfg(not(unix))]
-async fn shutdown_signal() -> Result<(), AgentdError> {
+pub(crate) async fn shutdown_signal() -> Result<(), AgentdError> {
     tokio::signal::ctrl_c().await.map_err(Into::into)
 }
 
 #[cfg(test)]
 #[path = "runtime_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "production_hos2_host_tests.rs"]
+mod hos2_recovery_tests;

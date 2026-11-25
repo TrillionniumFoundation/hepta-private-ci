@@ -1,0 +1,17 @@
+//! Original memory paths retain the same canonical checkpoint records.
+
+pub use codex_hepta_authority_types::COGNITIVE_CHECKPOINT_FRAME_LIMIT;
+pub use codex_hepta_authority_types::CognitiveCheckpointCommand;
+pub use codex_hepta_authority_types::CognitiveCheckpointHead;
+pub use codex_hepta_authority_types::CognitiveCheckpointPeerLifetime;
+pub use codex_hepta_authority_types::CognitiveCheckpointPhase;
+pub use codex_hepta_authority_types::CognitiveCheckpointProposal;
+pub use codex_hepta_authority_types::CognitiveCheckpointReason;
+pub use codex_hepta_authority_types::CognitiveCheckpointReceipt;
+pub use codex_hepta_authority_types::CognitiveCheckpointRequest;
+pub use codex_hepta_authority_types::CognitiveCheckpointResponse;
+pub use codex_hepta_authority_types::CognitiveCheckpointRetainedProposal;
+pub use codex_hepta_authority_types::CognitiveCheckpointRetainedRequest;
+pub use codex_hepta_authority_types::CognitiveCheckpointStatus;
+pub use codex_hepta_authority_types::CognitiveCheckpointToken;
+pub use codex_hepta_authority_types::CognitiveCheckpointWriterBinding;

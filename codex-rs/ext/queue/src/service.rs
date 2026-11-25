@@ -10,6 +10,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_core::CodexThread;
+use codex_core::IdleWorkPriority;
 use codex_core::StartIfIdleSubmission;
 use codex_core::ThreadManager;
 use codex_core::TurnInput;
@@ -1079,6 +1080,24 @@ impl QueuedItemService {
         Ok(())
     }
 
+    async fn dispatch_idle_notification(&self, thread_id: ThreadId, thread: &CodexThread) {
+        let _guard = self.dispatch_guard(thread_id).await;
+        // A deferred wake may outlive the status that caused its callback.
+        // In particular, it must not resume a subsequently interrupted thread.
+        if matches!(
+            thread.agent_status().await,
+            AgentStatus::Running
+                | AgentStatus::Interrupted
+                | AgentStatus::Shutdown
+                | AgentStatus::NotFound
+        ) {
+            return;
+        }
+        if let Err(error) = self.dispatch_if_idle(thread_id).await {
+            tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");
+        }
+    }
+
     async fn dispatch_if_idle(&self, thread_id: ThreadId) -> Result<(), QueueServiceError> {
         let Some(manager) = self.thread_manager.upgrade() else {
             return Ok(());
@@ -1347,10 +1366,31 @@ where
                 );
                 return;
             };
-            let _guard = self.dispatch_guard(thread_id).await;
-            if let Err(error) = self.dispatch_if_idle(thread_id).await {
-                tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");
+            let Some(manager) = self.thread_manager.upgrade() else {
+                return;
+            };
+            let Ok(thread) = manager.get_thread(thread_id).await else {
+                return;
+            };
+            if let Some(completion) = thread.pending_admission_fence_completion() {
+                // The callback's terminalizer cannot retire its fence until
+                // this callback returns. Keep the wake alive independently,
+                // then use ordinary admission after that exact cleanup ends.
+                let service = self.clone();
+                let dispatch_thread = Arc::clone(&thread);
+                if let Err(error) =
+                    thread.defer_idle_work(IdleWorkPriority::QueuedInput, completion, async move {
+                        service
+                            .dispatch_idle_notification(thread_id, dispatch_thread.as_ref())
+                            .await;
+                    })
+                {
+                    tracing::warn!(%thread_id, %error, "could not defer queued idle work");
+                }
+                return;
             }
+            self.dispatch_idle_notification(thread_id, thread.as_ref())
+                .await;
         })
     }
 }

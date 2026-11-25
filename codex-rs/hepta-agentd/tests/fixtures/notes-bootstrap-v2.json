@@ -1,0 +1,11 @@
+{
+  "schema_version": 2,
+  "provenance": "Fixed private inherited descriptor bootstrap fixture; no authority or runtime execution.",
+  "offer_utf8": "{\"schema_version\":2,\"action\":\"offer_notes_target\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\"}",
+  "attached_ack_utf8": "{\"schema_version\":2,\"action\":\"notes_target_registration\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\",\"status\":\"attached\"}",
+  "rejected_ack_utf8": "{\"schema_version\":2,\"action\":\"notes_target_registration\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\",\"status\":\"rejected\"}",
+  "descriptor_roles": [
+    "effect",
+    "recovery"
+  ]
+}

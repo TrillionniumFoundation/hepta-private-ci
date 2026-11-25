@@ -227,6 +227,15 @@ pub(crate) fn require_ready(state: &AgentdState) -> Result<(), AgentdError> {
     Ok(())
 }
 
+/// Objective execution may use the original App Server profile or the explicit
+/// finite Notes Organ. Text ingress still requires the actual App Server.
+pub(crate) fn require_objective_ready(state: &AgentdState) -> Result<(), AgentdError> {
+    if !state.objective_admission_ready()? {
+        return Err(invalid("Objective generation is not ready"));
+    }
+    Ok(())
+}
+
 pub(crate) fn payload(body: &AuthBusTextBody) -> Result<Vec<u8>, AgentdError> {
     if body.spawn_generation == 0
         || body.thread_id.is_empty()

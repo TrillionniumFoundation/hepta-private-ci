@@ -6,6 +6,20 @@ use sqlx::Transaction;
 use crate::CognitiveStore;
 use crate::LocalLeaseOutboxError;
 
+#[path = "operation_claim_entry.rs"]
+mod entry;
+pub(crate) use entry::require_entered_transaction;
+
+#[path = "operation_pre_boundary.rs"]
+mod pre_boundary;
+pub(crate) use pre_boundary::ReauthorizationBinding;
+pub(crate) use pre_boundary::RejectionStage;
+pub(crate) use pre_boundary::awaiting_reauthorization;
+pub(crate) use pre_boundary::claim_reauthorization;
+pub(crate) use pre_boundary::enter_reauthorization;
+pub(crate) use pre_boundary::has_rejection_proof;
+pub(crate) use pre_boundary::record_rejection;
+
 pub(crate) const MAX_DURABLE_DISPATCH_ATTEMPTS: u32 = 64;
 pub(crate) const MAX_DURABLE_CLAIM_LEASE_MS: u64 = 60_000;
 const MAX_RETRY_BACKOFF_MS: u64 = 5_000;

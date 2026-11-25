@@ -1,0 +1,27 @@
+{
+  "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+  "patchSha256": "694a54d1087bd004456a49ff742f7ff94d46df4803ab52c96bc6898f41bf89d4",
+  "files": [
+    {
+      "path": "src/os/web/from_wasm.rs",
+      "beforeSha256": "79119659a29c28da0da68bc71dc01902b70e00305b6992cbf862b25ca9febff5",
+      "afterSha256": "077f9caaa091643cbf85e8a90268953c2403b22c1414e5869a783814bedef374"
+    },
+    {
+      "path": "src/os/web/to_wasm.rs",
+      "beforeSha256": "63656088bcf248d906df60d896bb343ef38c81b584968cc6deb65895c2ce29e0",
+      "afterSha256": "28c93d58d964f9be1f50c91ff12b26460ed2043a031f07b7308504e8547c7b89"
+    },
+    {
+      "path": "src/os/web/web.rs",
+      "beforeSha256": "af79a3f236e6c5fd77ac9ee27ca5de45af7e70831d22edf22db24268bfb8a384",
+      "afterSha256": "b5ab8e398b047150272892c55efca102167a06da184b4983c68d55a77ac1d5b2"
+    },
+    {
+      "path": "src/os/web/web.js",
+      "beforeSha256": "0404897d76bbd81e2225ab62b2fde1c4832e34331706b94c4c00aa71640fe765",
+      "afterSha256": "f2decc893fc78e346e35e61fef83f136088005b04e9f901adffbf2a063a24646"
+    }
+  ],
+  "reason": "Add real full-state Web IME synchronization, UTF-16 caret/selection with scalar-safe wire text, native composition and clipboard lifecycle, and an owner-draw sync boundary without changing product state ownership."
+}

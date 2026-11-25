@@ -60,6 +60,9 @@ use crate::MAX_RETRIEVAL_RESULTS;
 use crate::RehydrationPlan;
 use crate::RetrievalRequest;
 
+#[cfg(test)]
+#[path = "cognitive_runtime_diagnostics.rs"]
+pub(crate) mod diagnostics;
 #[path = "cognitive_runtime_identity.rs"]
 mod identity;
 
@@ -479,18 +482,54 @@ async fn retrieve_federated_product(
     access: &FederationConsumerAccess,
     request: &RetrievalRequest,
 ) -> Result<(FederatedRetrievalBatch, FederatedCoverageV2), CognitiveStoreError> {
+    let original = retrieve_federated_product_original(
+        consumer_agent_id,
+        owner_layouts,
+        omitted_owner_candidates,
+        access,
+        request,
+    );
+    #[cfg(test)]
+    {
+        let trace = diagnostics::Trace::new();
+        let result = diagnostics::capture(Arc::clone(&trace), original).await;
+        let failure = match &result {
+            Ok((_, coverage)) if coverage.failed_peers != 0 => Some(format!("{coverage:?}")),
+            Err(_) => Some("original_product_returned_error".to_string()),
+            _ => None,
+        };
+        if let Some(failure) = failure {
+            trace.emit_failure(&failure, PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis());
+        }
+        result
+    }
+    #[cfg(not(test))]
+    original.await
+}
+
+async fn retrieve_federated_product_original(
+    consumer_agent_id: &AgentId,
+    owner_layouts: &[HeptaAgentLayout],
+    omitted_owner_candidates: u32,
+    access: &FederationConsumerAccess,
+    request: &RetrievalRequest,
+) -> Result<(FederatedRetrievalBatch, FederatedCoverageV2), CognitiveStoreError> {
     if access.agent_id() != consumer_agent_id {
         return Err(CognitiveStoreError::AccessDenied(
             "memory federation caller does not match the product consumer".to_string(),
         ));
     }
 
+    #[cfg(test)]
+    let mut diagnostic = diagnostics::Phase::start("product_attempt", consumer_agent_id.as_str());
     let logical_start_ms = seconds_to_ms(request.now_unix_seconds())?;
     let started_at = Instant::now();
     let global_deadline_ms = logical_start_ms
         .checked_add(u64::try_from(PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()).unwrap_or(u64::MAX))
         .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
 
+    #[cfg(test)]
+    diagnostic.stage("discovery_start");
     let discovery = async {
         let outcomes = join_all(owner_layouts.iter().map(|owner_layout| async move {
             (
@@ -533,6 +572,8 @@ async fn retrieve_federated_product(
                     "memory federation discovery timed out".to_string(),
                 )
             })?;
+    #[cfg(test)]
+    diagnostic.stage("discovery_end");
     readers.sort_by(|(_, left), (_, right)| {
         left.capability()
             .owner_agent_id()
@@ -607,6 +648,8 @@ async fn retrieve_federated_product(
     }))
     .await;
 
+    #[cfg(test)]
+    diagnostic.stage("all_peer_attempts_end");
     for attempt in attempts {
         let (result, captured) = attempt?;
         let result = match result {
@@ -677,6 +720,8 @@ async fn retrieve_federated_product(
         u32::try_from(before_truncation.saturating_sub(candidates.len())).unwrap_or(u32::MAX),
     );
 
+    #[cfg(test)]
+    diagnostic.finish();
     Ok((
         FederatedRetrievalBatch {
             query_sha256,
@@ -905,6 +950,11 @@ struct ProductReaderTransport<'a> {
 impl FederationTransportV2 for ProductReaderTransport<'_> {
     fn send_once<'a>(&'a self, query: &'a FederatedQueryV2) -> FederationTransportFuture<'a> {
         Box::pin(async move {
+            #[cfg(test)]
+            let mut diagnostic = diagnostics::Phase::start(
+                "transport",
+                self.reader.capability().owner_agent_id().as_str(),
+            );
             let (batch, observed_frontier) = self
                 .reader
                 .retrieve_with_frontier(self.access, self.request)
@@ -941,6 +991,8 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
                 .lock()
                 .map_err(|_| FederationV2Error::TransportRejected)?;
             *guard = Some(batch);
+            #[cfg(test)]
+            diagnostic.finish();
             Ok(FederationTransportResultV2::Terminal(response))
         })
     }
@@ -961,6 +1013,11 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
         _lease: &'a FederatedLeaseV2,
     ) -> FederationAuthorityFuture<'a> {
         Box::pin(async move {
+            #[cfg(test)]
+            let mut diagnostic = diagnostics::Phase::authority(
+                self.expected_capability.owner_agent_id().as_str(),
+                self.expected_capability.id().as_str(),
+            );
             let observed_unix_ms = elapsed_logical_ms(self.logical_start_ms, self.started_at);
             let now_unix_seconds = i64::try_from(observed_unix_ms / 1_000)
                 .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
@@ -985,6 +1042,8 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
                 current.map_or(self.expected_capability, |reader| reader.capability());
             let authority_expires_unix_ms = capability_expiry_ms(authority_capability)
                 .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
+            #[cfg(test)]
+            diagnostic.finish();
             Ok(FederationAuthorityObservationV2 {
                 query_binding_digest: query.binding_digest(),
                 lease_epoch: query.lease_epoch,
@@ -1013,6 +1072,12 @@ impl FederationAttemptControlV2 for ProductAttemptControl {
         Box::pin(async move {
             if remaining > 0 {
                 tokio::time::sleep(Duration::from_millis(remaining)).await;
+            }
+            #[cfg(test)]
+            {
+                let mut diagnostic =
+                    diagnostics::Phase::start("original_deadline", query.peer_id.as_str());
+                diagnostic.finish();
             }
             FederationStopReasonV2::DeadlineExpired
         })

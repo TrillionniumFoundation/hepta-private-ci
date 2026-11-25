@@ -296,7 +296,7 @@ toolchains.toolchain(
         "aarch64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
         "x86_64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
     },
-    version = "1.95.0",
+    version = "1.96.0",
 )
 use_repo(toolchains, "default_rust_toolchains")
 
@@ -362,14 +362,6 @@ crate.annotation(
     crate_features_select = {
         "x86_64-pc-windows-gnullvm": ["pure"],
     },
-)
-crate.annotation(
-    crate = "zstd-sys",
-    gen_build_script = "on",
-    patch_args = ["-p1"],
-    patches = [
-        "//patches:zstd-sys_windows_msvc_include_dirs.patch",
-    ],
 )
 crate.annotation(
     crate = "ring",

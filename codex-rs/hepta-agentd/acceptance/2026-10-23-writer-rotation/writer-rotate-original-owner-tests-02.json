@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--locked",
+    "-E",
+    "test(deployment_) | test(authority_host_service) | test(authority_host_wire) | test(root_writer_proof) | test(production_composition::objective_sender_tests)",
+    "--test-threads",
+    "2"
+  ],
+  "exit": 0,
+  "seconds": 113.58320435800124,
+  "cache_reused": true,
+  "source_before": {
+    "head": "6393714e0bf3c619562dd5764273755ec29ddf62",
+    "tree": "215609d59079ea9e5c3f29f4bf719501144f7ea0",
+    "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/deployment_issuer_root.rs\n M codex-rs/hepta-agentd/src/deployment_writer.rs\n M codex-rs/hepta-agentd/src/deployment_writer_tests.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate.rs\n?? codex-rs/hepta-agentd/src/deployment_writer_rotate_tests.rs",
+    "index_flags": [
+      "H"
+    ],
+    "files": 9336,
+    "live_source_sha256": "34a8a291b37a094439efaa31a997ecfa8dc46a2ca1d8ec2e73d4cd10923756c8"
+  },
+  "toolchain": "1.96.0"
+}

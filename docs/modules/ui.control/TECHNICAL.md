@@ -143,7 +143,13 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-JavaScript presentation/client boundary, not a server or authority issuer. Connect an authenticated versioned backend, preserve request IDs over reconnect and visibly distinguish stale/pending/indeterminate states. Browser packaging, real backend integration and accessibility acceptance must match the selected host deployment.
+The product presentation and bounded client state are Rust/Makepad. Generated
+JavaScript loads the verified WASM artifact and transports platform input and
+resources. The retained JavaScript protocol fixtures are compatibility test
+oracles, with no authority or product entry. Connect an authenticated versioned
+owner through its registered port; preserve request identities and visibly
+distinguish stale, pending and indeterminate states. Browser packaging, real owner
+integration and accessibility acceptance must match the selected host deployment.
 
 Current operating and state-format references:
 
@@ -154,12 +160,22 @@ Current operating and state-format references:
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Retained JavaScript compatibility oracle tests (source references, not product
+execution receipts):
 
 - [apps/hepta-control-ui/test/control.test.js](../../../apps/hepta-control-ui/test/control.test.js); named case: `runtime projection exposes only registered safe fields`.
 - [apps/hepta-control-ui/test/runtime-client.test.js](../../../apps/hepta-control-ui/test/runtime-client.test.js); named case: `submits and reconciles a generation-bound stop request`.
 
 From the repository root, run `node --test apps/hepta-control-ui/test/control.test.js apps/hepta-control-ui/test/runtime-client.test.js`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md) separately labels target acceptance designs.
+
+The current Rust product source map, build entrypoints and real browser checks
+are listed in [MAIN_INTEGRATION.md](../../../apps/hepta-control-ui/MAIN_INTEGRATION.md).
+The dedicated `.github/workflows/ui-product-foundation.yml` rebuilds the exact PR
+source and its separately identified merge with the current base. It runs the
+shared Rust tests and actual Makepad renderer, then the real gateway and browser
+status/cancellation checks. Font transport diagnostics cannot replace Rust
+adoption, natural glyph use or screenshot verification. The legacy JavaScript
+operation mappings do not establish an attached product owner.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -241,3 +257,40 @@ The bootstrap source-location obligation for `ui.control` is implemented by work
 - `apps/hepta-control-ui`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Selective Rust product foundation (2026-10-05)
+
+The owning standalone workspace is now `apps/hepta-control-ui/rust`, with
+explicit Rust1.95.0 UI tooling. The gateway follows the canonical backend
+`rust-toolchain.toml` pin, now Rust1.96.0 for Rama0.3 compatibility (Rust1.95.0 at
+the 2026-10-19 main import base); the
+historical port record describes its older backend pin. The shared
+Makepad renderer, typed bounded core, exact lock, SDK transformations, resource
+provenance and actual-host regressions are selectively imported; see the module
+README, `MAIN_INTEGRATION.md` and historical `PORT_SOURCE.json` for source
+identities and the selected dependency boundary. The internal Rust DOM
+compatibility member remains only to preserve the locked workspace graph.
+
+The additive product-entry candidate replaces gateway `GET /` with the verified
+Rust bundle. See the module README's completion ledger and developer commands.
+The old schema-v5 read adapter is preserved; no verified production initializer
+for that legacy layout is present. A bundle-enabled degraded entry can report
+actual NotAttached and legacy 503 without manufacturing databases or credentials.
+
+The modern owner-status endpoint is a separate versioned, token-free observation:
+generation/disposition only, with fixed sanitized failures. It does not reuse
+legacy schema5 labels for CognitiveStore model schema1. Its weak async adapter
+must be composed by an already-owning higher layer; no new Agentd dependency,
+store reopen or authority acquisition is added to the gateway. A response deadline
+does not cancel a still-running owner scan, and an active read may temporarily
+retain the owner until completion. Single-flight admission bounds that work.
+
+The Rust Console performs bounded reads only on explicit refresh and clears them
+on navigation/background/epoch changes. Numeric generations stay lossless through
+raw HTTP bytes and Rust serde. Host/Origin validation is a loopback browser boundary,
+not user authentication. The user sees a point-in-time observation, never writable
+or current-authority status. Chat principal/signing/Agentd dispatch, actual attached
+owner composition, native-host closure and installed-package qualification remain
+separate work. Send and Console mutation controls stay disabled. New gateway/status
+source needs its own execution and pixels; no foundation or historical receipt is
+rewritten or transferred as its proof.

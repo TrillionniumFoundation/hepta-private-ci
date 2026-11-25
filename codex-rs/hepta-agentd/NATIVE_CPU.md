@@ -1,0 +1,168 @@
+# Native CPU owner profile
+
+`hepta-native-cpu` is one frozen ELF for the reviewed Asterinas
+`g2-trusted-daemon` initial transaction and restricted successor factory. The
+initial HOS2BOOT v3 page names the fixed Root/Manager/Workload/Recovery images;
+actual later images use the complete HOS2BOOT v4 page and kernel launch receipt.
+The original 8 MiB file / 16 MiB load limits remain mandatory. Ordinary execution has no supported fallback.
+This module is separate from ordinary Agentd's full App Server profile.
+
+## Authority and lifecycle
+
+Root mounts devtmpfs, proc, sysfs, cgroup2 and the retained `/dev/vda` ext2 state
+before publishing its private startup marker. Manager and Recovery each open
+`/dev/hepta-control` in their own final kernel-created Process, then drop to
+UID/GID 60001 with empty groups, zero capability sets, NNP and no dumpability.
+The workload retains its independent UID 60002 and session. No device descriptor
+is transferred across processes, and no child exec inherits an HOS2 role.
+
+The original FleetRegistry registers the Agent. Only the original Supervisor
+allocates Starting generations and retains process leases. Its
+`KernelInitialProcessDriver` consumes the two initial slots, then uses the
+original restricted kernel factory to obtain actual successor images. It
+saves and verifies the full kernel retirement observation before ACK and child
+activation. It retains real pidfds, boot/start identity and exclusive
+child-reaper custody. No ordinary fork/exec gains a role. Original exact
+Agentd Health checks perform promotion. The native profile never reports
+AppServerReady.
+
+Root initializes a fresh explicit installation under `/state/hepta-native`.
+Existing or partial state is refused. The original Root authority directory,
+clock, lease registry, key, issuer sequence, protected checkpoint, physical
+material archive and two consumer frontiers are the only authority owners.
+The acceptance-plan JSON contains only scenario and nonce; it cannot choose
+registrations, keys, paths, leases or a recovery cut.
+
+The same retained HostAuthorityService captures a sealed bootstrap, serves all
+five original lanes and confirms the zero-argument recovered-owner readiness
+notification. The Host connects all five lanes before awaiting the live Root
+feed, activates its two original FinalUse owners, reads an actual opaque
+Current receipt and opens the sole writer through
+the shared body of `open_with_protected_recovery_and_ready`, using the original
+validated identity through `NativeCpuConfig`. The finite profile never first
+constructs a full App Server configuration. No JSON-derived token or local-state
+hash substitutes for protected Current.
+
+The actual compressed Agent control/Matrix/App Server socket paths live in
+Fleet/run, while the writer lock and lifecycle files live in Agent/run. Both
+runtime directories retain Root ownership, explicit Host group 60001 and
+03770 sticky/setgid mode. Root control files retain their original owner and
+read-only Host access; private cognitive/home/Matrix data belong to the Host.
+See [NATIVE_PERMISSIONS.md](NATIVE_PERMISSIONS.md) for the control-file boundary.
+The real UID60001 test must bind the original socket paths and fail to modify,
+remove or replace Root supervisor endpoints.
+
+## Exact CPU operations
+
+The native Root installs a typed admission for one exact native boot/capability
+space/manage-slot scope. The existing Notes exact-effect lease algorithm is
+shared as a stateless helper: it retains one short exact payload-bound effect
+lease in the original AuthorityLeaseRegistry, then signs only under the original
+joint writer/effect dispatch boundary. Notes lease IDs and domain bytes remain
+unchanged. CPU effects use the same canonical key, revocation head and sequence.
+No protected lease check is bypassed or weakened into a wildcard.
+
+The writer's candidate-D read queries the original immutable outbox. It reserves
+nothing. `prepare_operation` still atomically verifies the next original D,
+exact K-to-D binding and terminal predecessor. Dispatch uses the attached
+ProductionHos2Target and original FinalUse path; reconciliation only observes
+an existing D. Native history is retired only through `retire_hos2_through`,
+which rebuilds and publishes the actual durable terminal prefix first.
+
+Native command admission closes before drain. A process-local serial gate joins
+already entered work without owning any operation ledger. Drain also inspects
+original durable HOS2 pending state, so queued, indeterminate or corrupt state
+cannot become an empty-work claim. Shutdown waits for the existing command
+future and joins the original RuntimeTasks before writer release and SQLite
+pool closure. Unknown effects retain the existing fail-closed recovery path.
+Once shutdown has stopped the monitor, pending work may remain unresolved.
+The bounded shutdown then returns an error and does not release the writer;
+a timeout is never reported as successful drain. The retained original ledger
+and protected material must be recovered by a legitimate successor. The final
+completion record is emitted only after the original Supervisor has actually
+reaped this owner with exit code zero, shutdown polling has no driver fault,
+and the workload has been reaped. Its Current token remains the last observed
+operation cut; writer release may publish a later terminal owner cut.
+
+Root joins an old lane group only after independently observing its exact
+publisher's retirement. An inner lane error is retained in bounded diagnostics;
+it never proves that the service was previously healthy or shut down cleanly.
+The crash path refuses a lane group already finished before the actual fault.
+Readiness, operation, frontier and material evidence come from their separate
+actual pre-fault observations.
+
+## Acceptance and remaining scope
+
+The current entry implements `steady-state-v1`: lower to 25 ms, pause at zero,
+and resume to 50 ms per original 100 ms period. Root transcribes actual prepared
+payloads, terminal receipts, Current and physical material, consumer frontiers,
+history retirement and measured CPU/heartbeat windows. Store device/inode
+come from the running writer's actual active database path after its original
+recovery factory, not the earlier fresh-administration database. It also reports actual
+role credentials and privilege-boundary refusals. The final VM return must be
+the original kernel poweroff/debug-exit result; a transcript alone is not a pass.
+
+`manager-exit-after-terminal-v1` retains the Manager's complete actual Current,
+physical image and both complete consumer frontiers before an actual pidfd
+SIGKILL. Root observes `POLLIN` and `waitid(WNOWAIT)` for that same child; the
+original Supervisor remains the exclusive reaper and owns Failed, restart
+budget, the actual next Starting generation and Health promotion. Root waits
+for the independent original watchdog and the original local lease's real
+expiry. Process death alone never retires a local writer lease.
+
+The trusted fresh installation issues 20-second writer authority leases. This
+leaves recovery headroom within the unchanged native Recovery grace of 30
+seconds after Manager closure. A successor receives a new original lease,
+never an extension of the old lease; the 5-second watchdog/effect policy and
+300-second native grant retain their original bounds. Actual guest execution
+must verify that startup, physical material and operation timing fit these
+bounds. Expiry or a missed window fails acceptance.
+
+The same canonical issuer rotates the actual retained writer proof. The
+original recovered-checkpoint CAS and physical installer adopt only the retained
+Current image, retain the original owner lock through checks, then release that
+lock before the same Host factory and zero-argument Ready handshake. Recovery
+opens its own native descriptor, queries the original D using the complete
+immutable request, and compares it with the original ledger's verified terminal
+and event ID. The read-only terminal accessor adds no event or effect. Only
+then does the original writer retire the durable prefix. A fresh request after
+the watchdog has consumed the recovery allowance must retain an actual native
+refusal without another CPU revision.
+
+The original copyout scenarios are `lost-copyout-live-v1` and
+`manager-exit-before-terminal-v1`; their actual FileTransport fault and original
+Current/recovery requirements are documented in
+[NATIVE_COPYOUT_SCENARIOS.md](NATIVE_COPYOUT_SCENARIOS.md).
+
+The additional `history-only-after-both-owner-exit-v1` and
+`successor-renewal-v1` scenarios exercise actual restricted successor images.
+The renewal endpoint requires a new Manager Applied time beyond the initial
+sample plus 330 seconds, at least two fresh pairs, original finite lease
+handoffs and real workload usage windows. Only that scenario has a 600-second
+outer acceptance window; no authority or kernel lifetime is enlarged.
+[NATIVE_CONTINUITY.md](NATIVE_CONTINUITY.md) specifies the actual release
+observation, policy CAS, persisted Root receipts and complete event contracts.
+
+These implemented scenarios are not native qualification results. Actual
+same-source ELF-size admission, each strict guest oracle and retained state
+verification remain required. Cross-boot adoption, interrupted activation and
+physical power-loss recovery have independent requirements and are not implied
+by any one finite scenario.
+
+Compile and test the affected original crates with `just test --locked -p
+codex-hepta-agentd -p codex-hepta-memory -p codex-hepta-supervisor --lib`.
+The supervisor's `kernel_initial::child::tests` exercise real Linux pidfd,
+identity, termination and reap behavior. Existing exact Notes lease tests must
+remain green after the shared-admission extraction. Then build the real binary
+with unchanged default features, the unchanged original release profile and
+the original image limits, and pass that exact frozen ELF/build receipt to the
+native owner runner. Do not use environment profile overrides or reduced
+features to present a different build as the required owner. A successful host build is
+neither ELF-size admission nor a native owner-cycle result.
+
+The `native_profile_tests` use the original SQLite fixture and device fixture.
+Handoff cases issue a fresh 20-second fixture lease, finish real setup and
+operations, read the actual persisted original expiry, and wait for the real
+clock to pass it before opening a successor. They never renew an issued lease
+or inject time. Run acceptance with retries disabled and two test threads;
+a retried pass does not satisfy the handoff qualification.

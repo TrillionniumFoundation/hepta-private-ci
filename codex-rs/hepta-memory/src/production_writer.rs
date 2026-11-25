@@ -27,8 +27,6 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_operations::OperationIntentV1;
 use serde::Deserialize;
 use serde::Serialize;
-use sha2::Digest;
-use sha2::Sha256;
 
 use crate::CognitiveAccess;
 use crate::CognitiveStore;
@@ -57,6 +55,61 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_retained_operation.rs"]
+mod retained_operation;
+pub use retained_operation::ProductionRetainedOperation;
+
+#[path = "objective_sender.rs"]
+mod objective_sender;
+pub use objective_sender::ObjectiveSenderCheckpoint;
+pub use objective_sender::ObjectiveSenderCheckpointError;
+pub use objective_sender::ObjectiveSenderError;
+pub use objective_sender::ObjectiveSenderIdentity;
+pub use objective_sender::ObjectiveSenderInputError;
+pub use objective_sender::ObjectiveSenderObservation;
+pub use objective_sender::ObjectiveSenderObservationKind;
+pub use objective_sender::ObjectiveSenderOrigin;
+pub use objective_sender::ObjectiveSenderRequest;
+pub use objective_sender::ObjectiveSenderRetainedCursor;
+pub use objective_sender::ObjectiveSenderRetainedPage;
+pub use objective_sender::ObjectiveSenderRetainedPosition;
+pub use objective_sender::ObjectiveSenderSnapshot;
+pub use objective_sender::ObjectiveSenderTicket;
+pub use objective_sender::ObjectiveSenderWriterFence;
+pub use objective_sender::ProductionObjectiveSender;
+pub(crate) use objective_sender::verify_sender_store;
+
+#[path = "production_reauthorization.rs"]
+mod reauthorization;
+pub(crate) use reauthorization::PreBoundaryRejected;
+
+#[path = "production_hos2_owner.rs"]
+mod hos2_owner;
+pub use hos2_owner::Hos2RetirementObservation;
+pub use hos2_owner::Hos2RetirementPermit;
+
+#[path = "production_effect_entry.rs"]
+mod effect_entry;
+
+#[path = "production_owner_publication.rs"]
+mod owner_publication;
+#[path = "production_terminal_publication.rs"]
+mod terminal_publication;
+
+#[path = "production_notes_owner.rs"]
+mod notes_owner;
+pub(crate) use notes_owner::NotesPreDispatchRejection;
+pub use notes_owner::NotesRetirementPermit;
+
+#[path = "production_hos2_execution.rs"]
+mod hos2_execution;
+use hos2_execution::Hos2OwnerGate;
+use hos2_execution::Hos2OwnerUse;
+
+#[cfg(all(test, unix))]
+#[path = "production_hos2_tests.rs"]
+mod hos2_tests;
+
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
 /// Stable provenance namespace for production writer receipts.
@@ -72,211 +125,28 @@ pub const PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL: i64 = 2;
 /// from retryable/pre-dispatch state into the irreversible Indeterminate fence.
 pub const PRODUCTION_DISPATCH_CLAIM_LEASE_MS: u64 = 30_000;
 
-/// Errors returned by the production writer and dispatcher boundary.
-#[derive(Debug, thiserror::Error)]
-pub enum ProductionWriterError {
-    #[error(transparent)]
-    Local(#[from] LocalLeaseOutboxError),
-    #[error("production authority rejected: {0}")]
-    AuthorityRejected(String),
-    #[error("production authority lease expired at {deadline}")]
-    AuthorityExpired { deadline: u64 },
-    #[error("production authority lease does not match Agent {0}")]
-    AuthorityAgentMismatch(AgentId),
-    #[error("production writer input is invalid: {0}")]
-    Invalid(String),
-    #[error("production writer durability precondition failed: {0}")]
-    Durability(String),
-    #[error("production writer receipt is stale or belongs to another authority")]
-    StaleReceipt,
-    #[error("production writer already has an active owner for this local lease")]
-    WriterBusy,
-    #[error("final-use authority rejected dispatch: {0}")]
-    FinalUse(#[from] FinalUseError),
-    #[error("production semantic mutation requires a retained live authority verifier")]
-    LiveVerifierRequired,
-}
+pub use codex_hepta_authority_types::ProductionAuthorityLease;
+pub use codex_hepta_authority_types::ProductionAuthorityToken;
+pub use codex_hepta_authority_types::ProductionAuthorityVerifier;
+pub use codex_hepta_authority_types::ProductionWriterError;
 
-/// Opaque authority token supplied by an external grant verifier.
-///
-/// There is deliberately no seed/random/default constructor. The only public
-/// constructor is named `from_verified_bytes`; callers are expected to obtain
-/// the bytes from a supervisor/grant verifier. The token is never rendered or
-/// serialized; only a one-way digest is used as the local SQLite fencing token.
-#[derive(Clone, Eq, PartialEq)]
-pub struct ProductionAuthorityToken(Arc<[u8]>);
-
-impl ProductionAuthorityToken {
-    pub fn from_verified_bytes(bytes: impl Into<Vec<u8>>) -> Result<Self, ProductionWriterError> {
-        let bytes = bytes.into();
-        if bytes.is_empty() || bytes.len() > 4096 || bytes.contains(&0) {
-            return Err(ProductionWriterError::Invalid(
-                "authority token must contain 1..=4096 non-NUL bytes".to_string(),
-            ));
-        }
-        Ok(Self(Arc::from(bytes)))
+pub(crate) fn validate_authority_for_agent(
+    authority: &ProductionAuthorityLease,
+    agent_id: &AgentId,
+) -> Result<(), ProductionWriterError> {
+    if &authority.agent_id != agent_id {
+        return Err(ProductionWriterError::AuthorityAgentMismatch(
+            agent_id.clone(),
+        ));
     }
-
-    fn fencing_digest(&self) -> Sha256Digest {
-        let mut hasher = Sha256::new();
-        hasher.update(b"hepta:production-authority-token:v1\0");
-        hasher.update(self.0.as_ref());
-        Sha256Digest::for_bytes(&hasher.finalize())
+    let now = now_unix_seconds()?;
+    if authority.is_expired_at(now) {
+        return Err(ProductionWriterError::AuthorityExpired {
+            deadline: authority.lease_expires_at_unix_seconds,
+        });
     }
-
-    /// Bind the local fence to both the opaque verifier token and the exact
-    /// signed grant it authorizes. Persisting only a token digest would let a
-    /// lease be reopened under a different grant that reused the same
-    /// token/epochs. The grant-bound digest makes that cross-grant reopen fail
-    /// closed without adding a mutable column to the append-only lease journal.
-    fn fencing_digest_for_grant(&self, grant_digest: &Sha256Digest) -> Sha256Digest {
-        let mut hasher = Sha256::new();
-        hasher.update(b"hepta:production-authority-token-grant:v2\0");
-        hasher.update(grant_digest.as_str().as_bytes());
-        hasher.update(self.0.as_ref());
-        Sha256Digest::for_bytes(&hasher.finalize())
-    }
-}
-
-impl fmt::Debug for ProductionAuthorityToken {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter
-            .debug_struct("ProductionAuthorityToken")
-            .field("digest", &self.fencing_digest())
-            .finish()
-    }
-}
-
-/// Minimum externally supplied authority material needed by H4.
-///
-/// `grant_digest` identifies the signed supervisor/OPE grant. The opaque token
-/// is supplied by that verifier and is not derived from a local seed. Epochs
-/// and expiry are persisted in the lease chain and checked on each mutation.
-#[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct ProductionAuthorityLease {
-    pub agent_id: AgentId,
-    pub grant_digest: Sha256Digest,
-    pub authority_epoch: u64,
-    pub owner_epoch: u64,
-    pub lease_expires_at_unix_seconds: u64,
-    #[serde(skip)]
-    token: Option<ProductionAuthorityToken>,
-}
-
-impl fmt::Debug for ProductionAuthorityLease {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter
-            .debug_struct("ProductionAuthorityLease")
-            .field("agent_id", &self.agent_id)
-            .field("grant_digest", &self.grant_digest)
-            .field("authority_epoch", &self.authority_epoch)
-            .field("owner_epoch", &self.owner_epoch)
-            .field(
-                "lease_expires_at_unix_seconds",
-                &self.lease_expires_at_unix_seconds,
-            )
-            .field(
-                "token",
-                &self
-                    .token
-                    .as_ref()
-                    .map(ProductionAuthorityToken::fencing_digest),
-            )
-            .finish()
-    }
-}
-
-impl ProductionAuthorityLease {
-    /// Construct lease material after an external verifier has checked the
-    /// signed grant and supplied its opaque token. This performs shape checks
-    /// only; `ProductionDurableWriter::open` still requires a verifier.
-    pub fn from_verified_parts(
-        agent_id: AgentId,
-        grant_digest: Sha256Digest,
-        authority_epoch: u64,
-        owner_epoch: u64,
-        lease_expires_at_unix_seconds: u64,
-        token: ProductionAuthorityToken,
-    ) -> Result<Self, ProductionWriterError> {
-        if authority_epoch == 0 || owner_epoch == 0 {
-            return Err(ProductionWriterError::Invalid(
-                "authority and owner epochs must be non-zero".to_string(),
-            ));
-        }
-        if lease_expires_at_unix_seconds == 0 {
-            return Err(ProductionWriterError::Invalid(
-                "authority lease expiry must be non-zero".to_string(),
-            ));
-        }
-        Ok(Self {
-            agent_id,
-            grant_digest,
-            authority_epoch,
-            owner_epoch,
-            lease_expires_at_unix_seconds,
-            token: Some(token),
-        })
-    }
-
-    pub fn fencing_token_digest(&self) -> Result<Sha256Digest, ProductionWriterError> {
-        self.token
-            .as_ref()
-            .map(|token| token.fencing_digest_for_grant(&self.grant_digest))
-            .ok_or_else(|| {
-                ProductionWriterError::AuthorityRejected(
-                    "deserialized authority lease has no opaque token".to_string(),
-                )
-            })
-    }
-
-    pub fn is_expired_at(&self, now_unix_seconds: u64) -> bool {
-        now_unix_seconds >= self.lease_expires_at_unix_seconds
-    }
-
-    pub(crate) fn validate_for_agent(
-        &self,
-        agent_id: &AgentId,
-    ) -> Result<(), ProductionWriterError> {
-        if &self.agent_id != agent_id {
-            return Err(ProductionWriterError::AuthorityAgentMismatch(
-                agent_id.clone(),
-            ));
-        }
-        let now = now_unix_seconds()?;
-        if self.is_expired_at(now) {
-            return Err(ProductionWriterError::AuthorityExpired {
-                deadline: self.lease_expires_at_unix_seconds,
-            });
-        }
-        let _ = self.fencing_token_digest()?;
-        Ok(())
-    }
-}
-
-/// External verifier hook. Implementations should verify the signed grant,
-/// scope, epoch, and opaque token before returning `Ok(())`.
-///
-/// The writer never treats a boolean field on the lease as authority and has
-/// no built-in/self-signing implementation of this trait.
-pub trait ProductionAuthorityVerifier: Send + Sync {
-    fn verify(
-        &self,
-        authority: &ProductionAuthorityLease,
-        expected_agent: &AgentId,
-    ) -> Result<(), String>;
-}
-
-impl<F> ProductionAuthorityVerifier for F
-where
-    F: Fn(&ProductionAuthorityLease, &AgentId) -> Result<(), String> + Send + Sync,
-{
-    fn verify(
-        &self,
-        authority: &ProductionAuthorityLease,
-        expected_agent: &AgentId,
-    ) -> Result<(), String> {
-        self(authority, expected_agent)
-    }
+    let _ = authority.fencing_token_digest()?;
+    Ok(())
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -406,6 +276,7 @@ pub struct ProductionDurableWriter {
 struct DurableWriterLock {
     _file: File,
     _path: PathBuf,
+    hos2_uses: Hos2OwnerGate,
 }
 
 impl DurableWriterLock {
@@ -457,6 +328,7 @@ impl DurableWriterLock {
             Ok(()) => Ok(Arc::new(Self {
                 _file: file,
                 _path: path,
+                hos2_uses: Hos2OwnerGate::default(),
             })),
             Err(std::fs::TryLockError::WouldBlock) => Err(ProductionWriterError::WriterBusy),
             Err(std::fs::TryLockError::Error(error)) => Err(ProductionWriterError::Durability(
@@ -496,7 +368,7 @@ impl ProductionDurableWriter {
         verifier
             .verify(&authority, store.owner_agent_id())
             .map_err(ProductionWriterError::AuthorityRejected)?;
-        authority.validate_for_agent(store.owner_agent_id())?;
+        validate_authority_for_agent(&authority, store.owner_agent_id())?;
         verify_durable_store(&store).await?;
         let fencing_token = authority.fencing_token_digest()?.as_str().to_string();
         let binding = (
@@ -635,10 +507,28 @@ impl ProductionDurableWriter {
     /// Revalidate the external authority immediately before a semantic owner
     /// mutation. Legacy qualification writers fail closed at this boundary.
     pub async fn verify_current_authority(&self) -> Result<(), ProductionWriterError> {
+        self.store
+            .commit_gate
+            .require_open()
+            .map_err(|_| ProductionWriterError::CheckpointFenced)?;
         if self.live_verifier.is_none() {
             return Err(ProductionWriterError::LiveVerifierRequired);
         }
-        self.verify_authority().await
+        self.verify_authority().await?;
+        // An asynchronous pool checkout may discover that protected Dirty
+        // invalidation is unknown. Do not return a live write capability after
+        // that checkout has synchronously fenced this entire owner.
+        self.store
+            .commit_gate
+            .require_open()
+            .map_err(|_| ProductionWriterError::CheckpointFenced)
+    }
+
+    /// Whether this entire store generation stopped accepting commits after
+    /// an uncertain checkpoint. Every clone/capability shares the same fence;
+    /// a new facade cannot clear it. Read-only inspection remains available.
+    pub fn checkpoint_fenced(&self) -> bool {
+        self.store.commit_gate.is_fenced()
     }
 
     /// Mint the only production cognitive mutation capability. A legacy writer
@@ -902,6 +792,33 @@ impl ProductionDurableWriter {
                 "reconcile batch limit must be 1..=256".to_string(),
             ));
         }
+        if target.destination_id() != crate::HOS2_DESTINATION_V1 {
+            return self
+                .reconcile_target_batch_with_owner(target, limit, /*hos2_owner*/ None)
+                .await;
+        }
+        // The retained writer already excludes another process. Its clones
+        // must also exclude live dispatch from observation and settlement.
+        // A busy batch yields to the next bounded product recovery pass.
+        let Some(mut owner) = self._writer_lock.hos2_uses.observe()? else {
+            return Ok(0);
+        };
+        let result = self
+            .reconcile_target_batch_with_owner(target, limit, Some(&mut owner))
+            .await;
+        owner.complete();
+        result
+    }
+
+    async fn reconcile_target_batch_with_owner<T>(
+        &self,
+        target: &T,
+        limit: usize,
+        mut hos2_owner: Option<&mut Hos2OwnerUse<'_>>,
+    ) -> Result<usize, ProductionWriterError>
+    where
+        T: FinalUseProductionOutboxTarget + ?Sized,
+    {
         let operation_ids = sqlx::query_scalar::<_, String>(
             "SELECT o.operation_id
              FROM cognitive_operation_ledger o
@@ -922,7 +839,7 @@ impl ProductionDurableWriter {
         .bind(i64::try_from(limit).map_err(|_| {
             ProductionWriterError::Invalid("reconcile batch limit overflow".to_string())
         })?)
-        .fetch_all(&self.store.pool)
+        .fetch_all(self.store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
 
@@ -931,16 +848,76 @@ impl ProductionDurableWriter {
             let request = self
                 .reconciliation_request(&operation_id, target.destination_id())
                 .await?;
+            if request.topic == crate::HOS2_INSTALL_TOPIC_V1
+                && operation_claims::has_rejection_proof(
+                    &self.store,
+                    &self.reauthorization_binding(&request),
+                )
+                .await?
+            {
+                continue;
+            }
             match target.observe_terminal(&request).await {
-                ProductionTerminalObservation::Applied { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
+                ProductionTerminalObservation::Hos2ProtocolConflict { evidence } => {
+                    if let Some(owner) = hos2_owner.as_deref_mut() {
+                        owner.contradiction_observed();
+                    }
+                    self.settle_hos2_protocol_conflict(request, &evidence)
                         .await?;
+                    if let Some(owner) = hos2_owner.as_deref_mut() {
+                        owner.contradiction_recorded();
+                    }
                     reconciled += 1;
                 }
-                ProductionTerminalObservation::NotApplied { .. }
-                | ProductionTerminalObservation::Quarantined { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
+                ProductionTerminalObservation::Applied { receipt } => {
+                    if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+                        self.settle_hos2_terminal(
+                            &request,
+                            &receipt,
+                            LocalReconcileOutcome::Committed,
+                        )
                         .await?;
+                    } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                        self.settle_notes_terminal(
+                            &request,
+                            &receipt,
+                            LocalReconcileOutcome::Committed,
+                        )
+                        .await?;
+                    } else {
+                        self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
+                            .await?;
+                    }
+                    reconciled += 1;
+                }
+                ProductionTerminalObservation::NotApplied { reason } => {
+                    if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+                        self.settle_hos2_terminal(
+                            &request,
+                            &reason,
+                            LocalReconcileOutcome::Rejected,
+                        )
+                        .await?;
+                    } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                        self.settle_notes_terminal(
+                            &request,
+                            &reason,
+                            LocalReconcileOutcome::Rejected,
+                        )
+                        .await?;
+                    } else {
+                        self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
+                            .await?;
+                    }
+                    reconciled += 1;
+                }
+                ProductionTerminalObservation::Quarantined { .. } => {
+                    let outcome = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+                        LocalReconcileOutcome::StillIndeterminate
+                    } else {
+                        LocalReconcileOutcome::Rejected
+                    };
+                    self.reconcile(&operation_id, outcome).await?;
                     reconciled += 1;
                 }
                 ProductionTerminalObservation::Indeterminate { .. } => {
@@ -951,6 +928,8 @@ impl ProductionDurableWriter {
                 ProductionTerminalObservation::Unavailable { .. } => {}
             }
         }
+        // Failure retains source terminality and permits a later exact ACK.
+        let _ = self.retry_notes_retirement(target).await;
         Ok(reconciled)
     }
 
@@ -977,7 +956,7 @@ impl ProductionDurableWriter {
         )
         .bind(self.lease_id())
         .bind(occurrence_key)
-        .fetch_optional(&self.store.pool)
+        .fetch_optional(self.store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?
         .ok_or_else(|| {
@@ -1061,7 +1040,16 @@ impl ProductionDurableWriter {
 
     pub async fn release(&self) -> Result<ProductionLeaseReceipt, ProductionWriterError> {
         self.verify_authority().await?;
+        let attempt = self
+            .store
+            .commit_gate
+            .is_managed()
+            .then(|| self.store.commit_gate.transition_attempt());
         let head = self.lease.release().await?;
+        self.acknowledge_terminal_owner_cut(&head).await?;
+        if let Some(attempt) = attempt {
+            attempt.acknowledge();
+        }
         Ok(ProductionLeaseReceipt::new(
             &self.authority,
             head,
@@ -1071,7 +1059,16 @@ impl ProductionDurableWriter {
 
     pub async fn rollback_lease(&self) -> Result<ProductionLeaseReceipt, ProductionWriterError> {
         self.verify_authority().await?;
+        let attempt = self
+            .store
+            .commit_gate
+            .is_managed()
+            .then(|| self.store.commit_gate.transition_attempt());
         let head = self.lease.rollback_lease().await?;
+        self.acknowledge_terminal_owner_cut(&head).await?;
+        if let Some(attempt) = attempt {
+            attempt.acknowledge();
+        }
         Ok(ProductionLeaseReceipt::new(
             &self.authority,
             head,
@@ -1080,8 +1077,7 @@ impl ProductionDurableWriter {
     }
 
     async fn verify_authority(&self) -> Result<(), ProductionWriterError> {
-        self.authority
-            .validate_for_agent(self.store.owner_agent_id())?;
+        validate_authority_for_agent(&self.authority, self.store.owner_agent_id())?;
         if let Some(verifier) = &self.live_verifier {
             verifier
                 .verify(&self.authority, self.store.owner_agent_id())
@@ -1197,26 +1193,39 @@ impl ProductionDurableWriter {
         expected: &FinalUseBinding,
         receipt: ProductionQueuedReceipt,
     ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
+        if receipt.topic != crate::HOS2_INSTALL_TOPIC_V1 {
+            return self
+                .dispatch_final_use_target_with_owner(
+                    final_use, target, signed, expected, receipt, /*hos2_owner*/ None,
+                )
+                .await;
+        }
+        let mut owner = self._writer_lock.hos2_uses.dispatch().await?;
+        let result = self
+            .dispatch_final_use_target_with_owner(
+                final_use,
+                target,
+                signed,
+                expected,
+                receipt,
+                Some(&mut owner),
+            )
+            .await;
+        owner.complete();
+        result
+    }
+
+    async fn dispatch_final_use_target_with_owner<T: FinalUseProductionOutboxTarget + ?Sized>(
+        &self,
+        final_use: &FinalUseAuthority,
+        target: &T,
+        signed: &SignedFinalUseGrant,
+        expected: &FinalUseBinding,
+        receipt: ProductionQueuedReceipt,
+        mut hos2_owner: Option<&mut Hos2OwnerUse<'_>>,
+    ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
         self.verify_authority().await?;
         self.validate_queued_receipt(&receipt)?;
-        if receipt.inherited_from_generation.is_none() {
-            self.lease
-                .verify_queued_receipt_binding(
-                    &receipt.occurrence_key,
-                    &receipt.event_id,
-                    &receipt.outbox_id,
-                    &receipt.topic,
-                    &receipt.payload_json,
-                    &receipt.payload_sha256,
-                )
-                .await
-                .map_err(|error| match error {
-                    LocalLeaseOutboxError::StaleFence(_)
-                    | LocalLeaseOutboxError::IllegalTransition(_)
-                    | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
-                    other => ProductionWriterError::Local(other),
-                })?;
-        }
         let durable_operation = self
             .lease
             .verify_operation_dispatch_binding(&receipt.occurrence_key, target.destination_id())
@@ -1252,62 +1261,162 @@ impl ProductionDurableWriter {
             expected,
         )?;
 
-        // Acquire the retryable owner-local lease first. This claim may be
-        // renewed or taken over after expiry only while the operation has not
-        // crossed the one-shot Indeterminate/effect-entry fence.
-        let owner_claim = self
-            .claim_dispatch_lease(&receipt, PRODUCTION_DISPATCH_CLAIM_LEASE_MS)
-            .await?;
+        // A pre-boundary proof can authorize only the same original HOS2
+        // request under this exact owner fence. A new claim atomically consumes
+        // that proof; ordinary unknown operations still use the one-shot gate.
+        let reauthorized = if request.topic == crate::HOS2_INSTALL_TOPIC_V1
+            && receipt.inherited_from_generation.is_none()
+        {
+            operation_claims::claim_reauthorization(
+                &self.store,
+                &self.reauthorization_binding(&request),
+                &receipt,
+                signed.grant.nonce,
+                now_unix_ms()?,
+                PRODUCTION_DISPATCH_CLAIM_LEASE_MS,
+            )
+            .await?
+        } else {
+            None
+        };
+        let owner_claim = match reauthorized.as_ref() {
+            Some(reauthorized) => reauthorized.claim.clone(),
+            None => {
+                // Only an exact current internal proof can bypass Queued.
+                // The proof branch verifies this same immutable receipt
+                // before consuming it. Every ordinary, proof-less or raced
+                // unknown request still meets the original one-shot gate.
+                if receipt.inherited_from_generation.is_none() {
+                    self.lease
+                        .verify_queued_receipt_binding(
+                            &receipt.occurrence_key,
+                            &receipt.event_id,
+                            &receipt.outbox_id,
+                            &receipt.topic,
+                            &receipt.payload_json,
+                            &receipt.payload_sha256,
+                        )
+                        .await
+                        .map_err(|error| match error {
+                            LocalLeaseOutboxError::StaleFence(_)
+                            | LocalLeaseOutboxError::IllegalTransition(_)
+                            | LocalLeaseOutboxError::CasConflict(_) => {
+                                ProductionWriterError::StaleReceipt
+                            }
+                            other => ProductionWriterError::Local(other),
+                        })?;
+                }
+                self.claim_dispatch_lease(&receipt, PRODUCTION_DISPATCH_CLAIM_LEASE_MS)
+                    .await?
+            }
+        };
+        let is_reauthorization = reauthorized.is_some();
+        #[cfg(all(test, unix))]
+        if is_reauthorization {
+            hos2_tests::checkpoint("new-claimed")
+                .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+        }
 
         // Now make the ambiguous external boundary durable. A crash from this
         // point onward reopens as Indeterminate and must reconcile; the
         // per-operation claim is no longer allowed to authorize a resend.
         let inherited_from_generation = receipt.inherited_from_generation;
-        let dispatch_claim_event_id = match inherited_from_generation {
-            Some(source_generation) => {
-                self.lease
-                    .claim_inherited_dispatch(
-                        &receipt.occurrence_key,
-                        &receipt.event_id,
-                        &receipt.outbox_id,
-                        source_generation,
-                        &receipt.topic,
-                        &receipt.payload_json,
-                        &receipt.payload_sha256,
-                        &self.authority.grant_digest,
-                        &request.operation_digest,
-                    )
-                    .await
+        let dispatch_claim_event_id = if let Some(reauthorized) = reauthorized {
+            reauthorized.dispatch_event_id
+        } else {
+            match inherited_from_generation {
+                Some(source_generation) => {
+                    self.lease
+                        .claim_inherited_dispatch(
+                            &receipt.occurrence_key,
+                            &receipt.event_id,
+                            &receipt.outbox_id,
+                            source_generation,
+                            &receipt.topic,
+                            &receipt.payload_json,
+                            &receipt.payload_sha256,
+                            &self.authority.grant_digest,
+                            &request.operation_digest,
+                        )
+                        .await
+                }
+                None => {
+                    self.lease
+                        .claim_dispatch(
+                            &receipt.occurrence_key,
+                            &self.authority.grant_digest,
+                            &request.operation_digest,
+                        )
+                        .await
+                }
             }
-            None => {
-                self.lease
-                    .claim_dispatch(
-                        &receipt.occurrence_key,
-                        &self.authority.grant_digest,
-                        &request.operation_digest,
-                    )
-                    .await
-            }
+            .map_err(|error| match error {
+                LocalLeaseOutboxError::StaleFence(_)
+                | LocalLeaseOutboxError::IllegalTransition(_)
+                | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
+                other => ProductionWriterError::Local(other),
+            })?
+            .event_id
+        };
+        let entered_claim = if is_reauthorization {
+            operation_claims::enter_reauthorization(
+                &self.store,
+                &self.reauthorization_binding(&request),
+                &owner_claim,
+                &dispatch_claim_event_id,
+                now_unix_ms()?,
+            )
+            .await?
+        } else {
+            operation_claims::mark_entered(&self.store, &owner_claim, now_unix_ms()?).await?
+        };
+
+        #[cfg(all(test, unix))]
+        if is_reauthorization {
+            hos2_tests::checkpoint("new-entered")
+                .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         }
-        .map_err(|error| match error {
-            LocalLeaseOutboxError::StaleFence(_)
-            | LocalLeaseOutboxError::IllegalTransition(_)
-            | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
-            other => ProductionWriterError::Local(other),
-        })?
-        .event_id;
-        let entered_claim =
-            operation_claims::mark_entered(&self.store, &owner_claim, now_unix_ms()?).await?;
+
+        let mut bound_entry = self
+            .begin_bound_effect_entry(&entered_claim, &request, &dispatch_claim_event_id)
+            .await?;
 
         // Then consume the single-use grant and revalidate it immediately at
         // target entry. If either check fails before the adapter is entered we
-        // know no external effect happened, so settle local state as Rejected.
+        // know no external effect happened. HOS2 retains an internal proof
+        // for fresh authorization of the same K/D; other destinations retain
+        // their existing terminal Rejected behavior.
         let token = match final_use.claim(signed, expected) {
             Ok(token) => token,
             Err(error) => {
+                if let Some(entry) = bound_entry.take() {
+                    entry.release().await?;
+                }
+                if request.topic == crate::HOS2_INSTALL_TOPIC_V1
+                    && inherited_from_generation.is_none()
+                {
+                    let proof = PreBoundaryRejected::at_rejected_entry(
+                        self.reauthorization_binding(&request),
+                        entered_claim,
+                        dispatch_claim_event_id,
+                        operation_claims::RejectionStage::Claim,
+                        signed.grant.nonce,
+                    );
+                    // If this transaction fails, no proof exists: preserve the
+                    // original Indeterminate state and never infer non-entry.
+                    #[cfg(all(test, unix))]
+                    hos2_tests::checkpoint("before-proof")
+                        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+                    operation_claims::record_rejection(&self.store, proof, now_unix_ms()?).await?;
+                    #[cfg(all(test, unix))]
+                    hos2_tests::checkpoint("after-proof")
+                        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+                    return Err(ProductionWriterError::FinalUse(error));
+                }
                 if self
                     .settle_pre_dispatch_rejection(
-                        &receipt.occurrence_key,
+                        &request,
+                        &dispatch_claim_event_id,
                         inherited_from_generation.is_some(),
                         format!("final-use claim rejected: {error}"),
                     )
@@ -1324,14 +1433,45 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let future = match final_use
-            .with_verified_use(token, expected, || target.dispatch(request.clone()))
-        {
-            Ok(future) => future,
+        let future = match final_use.with_verified_use(token, expected, || {
+            if bound_entry.is_some() {
+                self.effect_entry_live_check(&entered_claim)?;
+            }
+            Ok::<_, ProductionWriterError>(target.dispatch(request.clone()))
+        }) {
+            Ok(Ok(future)) => future,
+            // This is an original owner/TTL failure, not a FinalUse proof of
+            // non-entry. Dropping the retained guard fences every writer clone.
+            Ok(Err(error)) => return Err(error),
             Err(error) => {
+                if let Some(entry) = bound_entry.take() {
+                    entry.release().await?;
+                }
+                if request.topic == crate::HOS2_INSTALL_TOPIC_V1
+                    && inherited_from_generation.is_none()
+                {
+                    let proof = PreBoundaryRejected::at_rejected_entry(
+                        self.reauthorization_binding(&request),
+                        entered_claim,
+                        dispatch_claim_event_id,
+                        operation_claims::RejectionStage::Entry,
+                        signed.grant.nonce,
+                    );
+                    // If this transaction fails, no proof exists: preserve the
+                    // original Indeterminate state and never infer non-entry.
+                    #[cfg(all(test, unix))]
+                    hos2_tests::checkpoint("before-proof")
+                        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+                    operation_claims::record_rejection(&self.store, proof, now_unix_ms()?).await?;
+                    #[cfg(all(test, unix))]
+                    hos2_tests::checkpoint("after-proof")
+                        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+                    return Err(ProductionWriterError::FinalUse(error));
+                }
                 if self
                     .settle_pre_dispatch_rejection(
-                        &receipt.occurrence_key,
+                        &request,
+                        &dispatch_claim_event_id,
                         inherited_from_generation.is_some(),
                         format!("final-use entry rejected: {error}"),
                     )
@@ -1348,7 +1488,17 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
+        if let Some(entry) = bound_entry {
+            entry.release().await?;
+        }
         let outcome = future.await;
+        let observed_contradiction = matches!(
+            &outcome,
+            ProductionTargetOutcome::Hos2ProtocolConflict { .. }
+        );
+        if observed_contradiction && let Some(owner) = hos2_owner.as_deref_mut() {
+            owner.contradiction_observed();
+        }
         let settled = if inherited_from_generation.is_some() {
             self.settle_inherited_dispatch_outcome(
                 request,
@@ -1366,6 +1516,12 @@ impl ProductionDurableWriter {
             )
             .await
         };
+        if observed_contradiction
+            && settled.is_ok()
+            && let Some(owner) = hos2_owner
+        {
+            owner.contradiction_recorded();
+        }
         if let Ok(dispatch_receipt) = settled.as_ref()
             && dispatch_receipt.target_disposition != ProductionTargetDisposition::Indeterminate
         {
@@ -1379,20 +1535,38 @@ impl ProductionDurableWriter {
             )
             .await;
         }
+        if let Ok(receipt) = &settled
+            && receipt.request.topic == crate::NOTES_REPLACE_TOPIC_V1
+            && receipt.state == LocalOutcomeState::Committed
+        {
+            let _ = self
+                .retire_notes_receipt(target, &receipt.request.occurrence_key)
+                .await;
+        }
         settled
     }
 
     async fn settle_pre_dispatch_rejection(
         &self,
-        occurrence_key: &str,
+        request: &ProductionDispatchRequest,
+        dispatch_event_id: &str,
         inherited: bool,
         reason: String,
     ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
-        if inherited {
-            self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+        if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+            self.verify_authority().await?;
+            let proof =
+                NotesPreDispatchRejection::at_rejected_entry(request, dispatch_event_id, reason);
+            Ok(self
+                .lease
+                .reject_notes_before_dispatch(&proof)
+                .await?
+                .into())
+        } else if inherited {
+            self.reconcile(&request.occurrence_key, LocalReconcileOutcome::Rejected)
                 .await
         } else {
-            self.reject(occurrence_key, reason).await
+            self.reject(&request.occurrence_key, reason).await
         }
     }
 
@@ -1404,10 +1578,20 @@ impl ProductionDurableWriter {
         outcome: ProductionTargetOutcome,
     ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
         match outcome {
+            ProductionTargetOutcome::Hos2ProtocolConflict { evidence } => {
+                self.settle_hos2_protocol_conflict(request, &evidence).await
+            }
             ProductionTargetOutcome::Committed { receipt } => {
-                let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Committed)
-                    .await?;
+                let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+                    self.settle_hos2_terminal(&request, &receipt, LocalReconcileOutcome::Committed)
+                        .await?
+                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                    self.settle_notes_terminal(&request, &receipt, LocalReconcileOutcome::Committed)
+                        .await?
+                } else {
+                    self.reconcile(occurrence_key, LocalReconcileOutcome::Committed)
+                        .await?
+                };
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Committed,
@@ -1419,9 +1603,16 @@ impl ProductionDurableWriter {
                 })
             }
             ProductionTargetOutcome::NotApplied { reason } => {
-                let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
-                    .await?;
+                let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+                    self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
+                        .await?
+                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                    self.settle_notes_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
+                        .await?
+                } else {
+                    self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                        .await?
+                };
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Rejected,
@@ -1466,10 +1657,29 @@ impl ProductionDurableWriter {
         outcome: ProductionTargetOutcome,
     ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
         match outcome {
+            ProductionTargetOutcome::Hos2ProtocolConflict { evidence } => {
+                self.settle_hos2_protocol_conflict(request, &evidence).await
+            }
             ProductionTargetOutcome::Committed {
                 receipt: target_receipt,
             } => {
-                let applied = self.apply(occurrence_key, target_receipt.clone()).await;
+                let applied = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+                    self.settle_hos2_terminal(
+                        &request,
+                        &target_receipt,
+                        LocalReconcileOutcome::Committed,
+                    )
+                    .await
+                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                    self.settle_notes_terminal(
+                        &request,
+                        &target_receipt,
+                        LocalReconcileOutcome::Committed,
+                    )
+                    .await
+                } else {
+                    self.apply(occurrence_key, target_receipt.clone()).await
+                };
                 match applied {
                     Ok(local) => Ok(ProductionDispatchReceipt {
                         request,
@@ -1486,7 +1696,15 @@ impl ProductionDurableWriter {
                 }
             }
             ProductionTargetOutcome::NotApplied { reason } => {
-                let local = self.reject(occurrence_key, &reason).await?;
+                let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+                    self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
+                        .await?
+                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                    self.settle_notes_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
+                        .await?
+                } else {
+                    self.reject(occurrence_key, &reason).await?
+                };
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Rejected,
@@ -2046,6 +2264,11 @@ pub struct ProductionDispatchRequest {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProductionTargetOutcome {
+    /// The native adapter observed a contradiction for this exact K/D. This
+    /// disables only the local intent; the external effect remains unknown.
+    Hos2ProtocolConflict {
+        evidence: Box<crate::Hos2ProtocolConflict>,
+    },
     Committed {
         receipt: String,
     },
@@ -2078,16 +2301,32 @@ pub type ProductionDispatchFuture<'a> =
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProductionTerminalObservation {
-    Applied { receipt: String },
-    NotApplied { reason: String },
-    Quarantined { reason: String },
-    Indeterminate { reason: String },
-    Unavailable { reason: String },
+    Hos2ProtocolConflict {
+        evidence: Box<crate::Hos2ProtocolConflict>,
+    },
+    Applied {
+        receipt: String,
+    },
+    NotApplied {
+        reason: String,
+    },
+    Quarantined {
+        reason: String,
+    },
+    Indeterminate {
+        reason: String,
+    },
+    Unavailable {
+        reason: String,
+    },
 }
 
 pub type ProductionTerminalObservationFuture<'a> =
     Pin<Box<dyn Future<Output = ProductionTerminalObservation> + Send + 'a>>;
 
+/// Base dispatch interface. A returned future alone does not specify when an
+/// effect enters; production authority composition must bind the actual entry
+/// boundary, not merely construction of an asynchronous future.
 pub trait ProductionOutboxTarget: Send + Sync {
     fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a>;
 }
@@ -2095,8 +2334,22 @@ pub trait ProductionOutboxTarget: Send + Sync {
 /// Production target with a stable destination identity and an independent
 /// terminal observer. The default observer is deliberately unavailable so a
 /// target cannot accidentally turn transport acknowledgement into terminality.
+///
+/// The original FinalUse dispatcher holds its protected owner barrier only
+/// through the synchronous `dispatch` invocation, then releases it before
+/// polling the returned future. Native Notes and HOS2 perform actual entry in
+/// that invocation; their returned futures carry an already observed outcome.
+/// A target that defers entry until polling needs its own authority-bound
+/// consumer-entry protocol. This interface does not extend the synchronous
+/// Notes/HOS2 guarantee across arbitrary asynchronous work.
 pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
     fn destination_id(&self) -> &str;
+
+    /// Notes-only metadata retirement. A caller cannot construct this permit;
+    /// the original writer derives it from its existing durable terminal event.
+    fn retire_notes_receipt(&self, _permit: &NotesRetirementPermit) -> Result<(), String> {
+        Err("target does not provide Notes receipt retirement".to_string())
+    }
 
     fn observe_terminal<'a>(
         &'a self,
@@ -2406,11 +2659,11 @@ fn operation_digest(
 
 async fn verify_durable_store(store: &CognitiveStore) -> Result<(), ProductionWriterError> {
     let journal_mode: String = sqlx::query_scalar("PRAGMA journal_mode")
-        .fetch_one(&store.pool)
+        .fetch_one(store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
     let synchronous: i64 = sqlx::query_scalar("PRAGMA synchronous")
-        .fetch_one(&store.pool)
+        .fetch_one(store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
     if !journal_mode.eq_ignore_ascii_case(PRODUCTION_DURABLE_WRITER_JOURNAL_MODE)
@@ -3493,18 +3746,18 @@ mod final_use_dispatch_tests {
     use std::sync::atomic::Ordering;
     use tempfile::TempDir;
 
-    fn agent() -> AgentId {
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").expect("agent")
+    fn agent() -> Result<AgentId, String> {
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").map_err(|error| error.to_string())
     }
 
-    async fn store(temp: &TempDir) -> CognitiveStore {
+    async fn store(temp: &TempDir) -> Result<CognitiveStore, String> {
         let root = temp.path().join("fleet-final-use");
-        std::fs::create_dir_all(&root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root"))
-            .expect("fleet root");
-        CognitiveStore::open(&fleet.layout().agent(&agent()))
+        std::fs::create_dir_all(&root).map_err(|error| error.to_string())?;
+        let root = root.canonicalize().map_err(|error| error.to_string())?;
+        let fleet = HeptaFleetRoot::parse(root).map_err(|error| error.to_string())?;
+        CognitiveStore::open(&fleet.layout().agent(&agent()?))
             .await
-            .expect("store")
+            .map_err(|error| error.to_string())
     }
 
     struct FinalUseVerifier;
@@ -3563,40 +3816,42 @@ mod final_use_dispatch_tests {
         operation_id: &str,
         destination: &str,
         payload: &str,
-    ) -> OperationIntentV1 {
+    ) -> Result<OperationIntentV1, String> {
         OperationIntentV1::new(
-            StableId::new(operation_id).expect("operation id"),
-            StableId::new(owner.as_str()).expect("subject"),
-            StableId::new(destination).expect("destination"),
+            StableId::new(operation_id).map_err(|error| error.to_string())?,
+            StableId::new(owner.as_str()).map_err(|error| error.to_string())?,
+            StableId::new(destination).map_err(|error| error.to_string())?,
             Digest32::of_bytes(payload.as_bytes()),
             Digest32::of_bytes(b"scope:production-test"),
-            codex_hepta_types::Generation::new(1).expect("policy generation"),
+            codex_hepta_types::Generation::new(1).map_err(|error| error.to_string())?,
             None,
         )
-        .expect("operation intent")
+        .map_err(|error| error.to_string())
     }
 
-    fn production_authority(owner: AgentId) -> ProductionAuthorityLease {
+    fn production_authority(owner: AgentId) -> Result<ProductionAuthorityLease, String> {
+        let expires_at = now_unix_seconds().map_err(|error| error.to_string())? + 3_600;
+        let token = ProductionAuthorityToken::from_verified_bytes(b"production-token".to_vec())
+            .map_err(|error| error.to_string())?;
         ProductionAuthorityLease::from_verified_parts(
             owner,
             Sha256Digest::for_bytes(b"production-grant"),
             31,
             41,
-            now_unix_seconds().expect("clock") + 3_600,
-            ProductionAuthorityToken::from_verified_bytes(b"production-token".to_vec())
-                .expect("token"),
+            expires_at,
+            token,
         )
-        .expect("authority")
+        .map_err(|error| error.to_string())
     }
 
-    fn test_nonce(label: &str) -> [u8; 32] {
+    fn test_nonce(label: &str) -> Result<[u8; 32], String> {
         let now_nanos = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .expect("clock")
+            .map_err(|error| error.to_string())?
             .as_nanos();
         let material = format!("{label}:{now_nanos}:{}", std::process::id());
         let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
-        digest.into()
+        Ok(digest.into())
     }
 
     fn signed_final_use(
@@ -3604,10 +3859,10 @@ mod final_use_dispatch_tests {
         binding: FinalUseBinding,
         grant_id: &str,
         nonce: [u8; 32],
-    ) -> SignedFinalUseGrant {
+    ) -> Result<SignedFinalUseGrant, String> {
         let now_ms = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .expect("clock")
+            .map_err(|error| error.to_string())?
             .as_millis() as u64;
         let grant = FinalUseGrant {
             schema_version: 1,
@@ -3619,21 +3874,19 @@ mod final_use_dispatch_tests {
             not_before_unix_ms: now_ms.saturating_sub(1_000),
             expires_at_unix_ms: now_ms + 30_000,
         };
-        let signature = issuer
-            .sign(&grant.signing_bytes().expect("signing bytes"))
-            .to_bytes()
-            .to_vec();
-        SignedFinalUseGrant { grant, signature }
+        let signing_bytes = grant.signing_bytes().map_err(|error| error.to_string())?;
+        let signature = issuer.sign(&signing_bytes).to_bytes().to_vec();
+        Ok(SignedFinalUseGrant { grant, signature })
     }
 
     #[tokio::test]
     async fn final_use_is_consumed_at_target_entry_and_binding_mismatch_never_calls_target() {
         let temp = TempDir::new().expect("temp");
-        let store = store(&temp).await;
+        let store = store(&temp).await.expect("fixture store");
         let owner = store.owner_agent_id().clone();
         let writer = ProductionDurableWriter::open(
             store,
-            production_authority(owner.clone()),
+            production_authority(owner.clone()).expect("fixture authority"),
             &FinalUseVerifier,
             "production:h4:final-use",
             1,
@@ -3669,7 +3922,8 @@ mod final_use_dispatch_tests {
                     "occurrence:final-use:1",
                     target.destination_id(),
                     payload_one,
-                ),
+                )
+                .expect("fixture operation"),
                 "memory.write",
                 payload_one,
             )
@@ -3683,8 +3937,9 @@ mod final_use_dispatch_tests {
             &issuer,
             binding.clone(),
             "final-use-good",
-            test_nonce("final-use-good"),
-        );
+            test_nonce("final-use-good").expect("fixture nonce"),
+        )
+        .expect("signed final-use fixture");
         let dispatched = dispatcher
             .dispatch(&writer, &signed, &binding, queued)
             .await
@@ -3700,7 +3955,8 @@ mod final_use_dispatch_tests {
                     "occurrence:final-use:2",
                     target.destination_id(),
                     payload_two,
-                ),
+                )
+                .expect("fixture operation"),
                 "memory.write",
                 payload_two,
             )
@@ -3715,8 +3971,9 @@ mod final_use_dispatch_tests {
             &issuer,
             bad_binding.clone(),
             "final-use-bad-destination",
-            test_nonce("final-use-bad-destination"),
-        );
+            test_nonce("final-use-bad-destination").expect("fixture nonce"),
+        )
+        .expect("signed final-use fixture");
         assert!(matches!(
             dispatcher
                 .dispatch(&writer, &bad_signed, &bad_binding, queued_bad.clone())
@@ -3749,11 +4006,11 @@ mod final_use_dispatch_tests {
     #[tokio::test]
     async fn durable_dispatch_claim_is_idempotent_and_renewable_before_entry() {
         let temp = TempDir::new().expect("temp");
-        let store = store(&temp).await;
+        let store = store(&temp).await.expect("fixture store");
         let owner = store.owner_agent_id().clone();
         let writer = ProductionDurableWriter::open(
             store,
-            production_authority(owner.clone()),
+            production_authority(owner.clone()).expect("fixture authority"),
             &FinalUseVerifier,
             "production:h4:claim-lease",
             1,
@@ -3768,7 +4025,8 @@ mod final_use_dispatch_tests {
                     "occurrence:claim-lease",
                     "destination:cognitive-store",
                     payload,
-                ),
+                )
+                .expect("fixture operation"),
                 "memory.write",
                 payload,
             )
@@ -3797,11 +4055,11 @@ mod final_use_dispatch_tests {
     #[tokio::test]
     async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use() {
         let temp = TempDir::new().expect("temp");
-        let store = store(&temp).await;
+        let store = store(&temp).await.expect("fixture store");
         let owner = store.owner_agent_id().clone();
         let old = ProductionDurableWriter::open(
             store.clone(),
-            production_authority(owner.clone()),
+            production_authority(owner.clone()).expect("fixture authority"),
             &FinalUseVerifier,
             "production:h4:queued-handoff",
             1,
@@ -3816,7 +4074,8 @@ mod final_use_dispatch_tests {
                     "occurrence:queued-handoff",
                     "destination:cognitive-store",
                     handoff_payload,
-                ),
+                )
+                .expect("fixture operation"),
                 "memory.write",
                 handoff_payload,
             )
@@ -3890,8 +4149,9 @@ mod final_use_dispatch_tests {
             &issuer,
             binding.clone(),
             "final-use-handoff",
-            test_nonce("final-use-handoff"),
-        );
+            test_nonce("final-use-handoff").expect("fixture nonce"),
+        )
+        .expect("signed final-use fixture");
         let result = dispatcher
             .dispatch(&successor, &signed, &binding, inherited)
             .await

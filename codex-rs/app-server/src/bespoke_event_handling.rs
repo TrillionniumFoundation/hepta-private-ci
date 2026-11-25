@@ -190,6 +190,19 @@ pub(crate) async fn apply_bespoke_event_handling(
             // All per-thread requests are bound to a turn, so abort them.
             outgoing.abort_pending_server_requests().await;
             respond_to_pending_interrupts(&thread_state, &outgoing).await;
+            // Core publishes this event before its finish owner releases the
+            // admission fence. Publish the external completion only after that
+            // same normal turn finishes; a delayed event must ignore later
+            // turns, and interrupt RPCs must remain immediately responsive.
+            if let Some(completion) =
+                conversation.pending_normal_turn_finish_completion(&turn_complete_event.turn_id)
+            {
+                tokio::select! {
+                    biased;
+                    () = conversation.wait_until_terminated() => return,
+                    () = completion => {}
+                }
+            }
             let turn_failed = thread_state.lock().await.turn_summary.last_error.is_some();
             thread_watch_manager
                 .note_turn_completed(&conversation_id.to_string(), turn_failed)

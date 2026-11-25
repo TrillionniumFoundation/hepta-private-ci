@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.root-notes-admission-qualification.v1",
+  "source_head": "4fc49e85c2b09fa7df7ffe76b1413313cff4e341",
+  "source_tree": "ff0406b22f8be4fb3d948fc96eec6b476471df01",
+  "target": "/data/hepta-root-service-196-target.e3i3hcbg",
+  "commands": [
+    {
+      "stage": "manifest-metadata",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "metadata",
+        "--no-deps",
+        "--format-version=1",
+        "--offline",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "seconds": 0.215
+    },
+    {
+      "stage": "compile-original-test-binaries",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "nextest",
+        "list",
+        "--cargo-profile",
+        "dev",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-positive-01/cargo-metadata.json",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 630.139
+    },
+    {
+      "stage": "original-owner-tests",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-positive-01/cargo-metadata.json",
+        "--binaries-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-positive-01/binaries-metadata.json",
+        "-E",
+        "test(deployment_) | test(authority_host_service) | test(authority_host_consumer_frontier) | test(authority_host_wire) | test(root_writer_proof) | test(production_composition::objective_sender_tests)",
+        "--test-threads",
+        "2"
+      ],
+      "exit_code": 100,
+      "seconds": 24.329
+    }
+  ],
+  "negative_control": false,
+  "passed": false,
+  "status": "complete",
+  "production_authority": false,
+  "actual_session_reserved_qualified": false,
+  "actual_five_lane_dynamic_notes_qualified": false,
+  "source_inputs_unchanged": true
+}

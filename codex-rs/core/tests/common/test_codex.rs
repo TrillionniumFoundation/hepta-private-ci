@@ -77,7 +77,6 @@ use crate::responses::output_value_to_text;
 use crate::responses::start_mock_server;
 use crate::streaming_sse::StreamingSseServer;
 use crate::test_environment;
-use crate::wait_for_event;
 use crate::wait_for_event_match;
 use crate::wait_for_event_with_timeout;
 use wiremock::Match;
@@ -937,7 +936,18 @@ impl TestCodex {
             }]))
             .await?;
 
-        wait_for_event(&self.codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
+        tokio::time::timeout(Duration::from_secs(10), async {
+            let turn_id = wait_for_event_match(&self.codex, |event| match event {
+                EventMsg::TurnComplete(event) => Some(event.turn_id.clone()),
+                _ => None,
+            })
+            .await;
+            if let Some(completion) = self.codex.pending_normal_turn_finish_completion(&turn_id) {
+                completion.await;
+            }
+        })
+        .await
+        .context("text turn completion and finish owner exceeded the original event budget")?;
         Ok(())
     }
 
@@ -1091,15 +1101,25 @@ impl TestCodex {
             _ => None,
         })
         .await;
-        wait_for_event_with_timeout(
-            &self.codex,
-            |event| match event {
-                EventMsg::TurnComplete(event) => event.turn_id == turn_id,
-                _ => false,
-            },
-            SUBMIT_TURN_COMPLETE_TIMEOUT,
-        )
-        .await;
+        tokio::time::timeout(SUBMIT_TURN_COMPLETE_TIMEOUT, async {
+            wait_for_event_with_timeout(
+                &self.codex,
+                |event| match event {
+                    EventMsg::TurnComplete(event) => event.turn_id == turn_id,
+                    _ => false,
+                },
+                SUBMIT_TURN_COMPLETE_TIMEOUT,
+            )
+            .await;
+            // TurnComplete precedes the finish owner's post-terminal work.
+            // Observe that exact owner before the fixture starts another turn;
+            // this grants no admission authority and shares the original budget.
+            if let Some(completion) = self.codex.pending_normal_turn_finish_completion(&turn_id) {
+                completion.await;
+            }
+        })
+        .await
+        .context("turn completion and its finish owner exceeded the original fixture budget")?;
         Ok(())
     }
 }

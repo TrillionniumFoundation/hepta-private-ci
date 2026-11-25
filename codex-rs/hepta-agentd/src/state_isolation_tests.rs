@@ -668,3 +668,103 @@ fn private_owner_trust_refuses_unsupported_platform_ownership() {
         "AuthBus text: private owner configuration currently requires Unix ownership checks"
     );
 }
+
+#[cfg(target_os = "linux")]
+fn native_cpu_core_fixture() -> anyhow::Result<(
+    tempfile::TempDir,
+    FleetRegistry,
+    AgentdState<NativeCpuRuntimeOwners>,
+)> {
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().canonicalize()?;
+    #[cfg(unix)]
+    fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;
+    let fleet_path = root.join("fleet");
+    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())?;
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    let workspace = root.join("workspace");
+    fs::create_dir(&workspace)?;
+    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+    let manifest = AgentManifest::new(
+        agent_id.clone(),
+        WorkspaceBinding::new(&workspace, &fleet_root)?,
+        ResourceBudget::local_default(),
+    )?;
+    let record = registry.register(manifest)?;
+    registry.compare_and_transition(
+        &agent_id,
+        /*expected_generation*/ 0,
+        AgentLifecycle::Starting,
+    )?;
+    let identity = AgentdIdentity {
+        agent_id,
+        layout: record.layout.clone(),
+        spawn_generation: 1,
+        fleet_root: fleet_path,
+        workspace,
+        resources: record.manifest.resources,
+        home_root: record.layout.home_root().to_path_buf(),
+        run_root: record.layout.run_root().to_path_buf(),
+        control_socket: record.layout.agentd_control_socket().to_path_buf(),
+        app_server_socket: record.layout.app_server_socket().to_path_buf(),
+    };
+    let state =
+        AgentdState::<NativeCpuRuntimeOwners>::new_native_cpu(identity, registry.clone(), 16)?;
+    Ok((temp, registry, state))
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn native_cpu_core_retains_registered_lifecycle_without_unused_runtime_owners() {
+    let (_temp, registry, state) = native_cpu_core_fixture().unwrap();
+    assert_eq!(state.current_generation().unwrap(), 1);
+    assert!(!state.identity.home_root.join("prompt-registry").exists());
+    assert!(!state.identity.run_root.join("prompt-runtime").exists());
+    assert!(state.mark_native_cpu_ready().is_err());
+    assert!(state.require_native_cpu_admission().is_err());
+    registry
+        .compare_and_transition(&state.identity.agent_id, 1, AgentLifecycle::Running)
+        .unwrap();
+    assert_eq!(state.current_generation().unwrap(), 2);
+    assert!(state.require_native_cpu_admission().is_err());
+    registry
+        .compare_and_transition(&state.identity.agent_id, 2, AgentLifecycle::Draining)
+        .unwrap();
+    state.mark_draining().unwrap();
+    let blocked = state.drain_snapshot(1).unwrap();
+    assert_eq!(blocked.lifecycle, AgentLifecycle::Draining);
+    assert_eq!(blocked.running_turns, 0);
+    assert!(blocked.admission_closed);
+    assert!(!blocked.drained);
+    assert!(!state.identity.home_root.join("prompt-registry").exists());
+    assert!(!state.identity.run_root.join("prompt-runtime").exists());
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn native_cpu_core_refuses_a_restarted_registry_generation() {
+    let (_temp, registry, state) = native_cpu_core_fixture().unwrap();
+    let id = &state.identity.agent_id;
+    registry
+        .compare_and_transition(id, 1, AgentLifecycle::Running)
+        .unwrap();
+    state.refresh_generation().unwrap();
+    registry
+        .compare_and_transition(id, 2, AgentLifecycle::Draining)
+        .unwrap();
+    registry
+        .compare_and_transition(id, 3, AgentLifecycle::Stopped)
+        .unwrap();
+    registry
+        .compare_and_transition(id, 4, AgentLifecycle::Starting)
+        .unwrap();
+    assert!(matches!(
+        state.refresh_generation(),
+        Err(AgentdError::GenerationFenced(_))
+    ));
+    state.mark_fenced();
+    assert!(state.is_fenced().unwrap());
+    assert!(state.require_native_cpu_admission().is_err());
+    assert_eq!(state.identity.spawn_generation, 1);
+    assert_eq!(registry.load_agent(id).unwrap().lifecycle.generation, 5);
+}

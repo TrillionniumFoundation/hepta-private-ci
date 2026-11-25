@@ -38,11 +38,29 @@ use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
+use crate::grant_provider_worker::GrantProviderWorker;
+
+#[path = "production_protected_host.rs"]
+mod protected_host;
+
+#[path = "production_writer_reconcile.rs"]
+mod reconcile;
+pub use protected_host::AgentdProtectedCheckpointInputs;
 
 /// Externally owned grant source. Agentd asks for a grant bound to the exact
 /// FinalUseBinding; it never receives or constructs the issuer signing key.
+/// Implementations must bound their synchronous work. The original host runs
+/// one request on a blocking worker, retaining that capacity across cancellation.
 pub trait AgentdFinalUseGrantProvider: Send + Sync {
     fn signed_grant(&self, binding: &FinalUseBinding) -> Result<SignedFinalUseGrant, AgentdError>;
+}
+
+#[cfg(target_os = "linux")]
+impl AgentdFinalUseGrantProvider for crate::AgentdUnixFinalUseGrantProvider {
+    fn signed_grant(&self, binding: &FinalUseBinding) -> Result<SignedFinalUseGrant, AgentdError> {
+        self.request_grant(binding)
+            .map_err(|error| AgentdError::Protocol(format!("final-use issuer transport: {error}")))
+    }
 }
 
 /// Explicit runtime composition input for the production operation service.
@@ -150,27 +168,15 @@ impl AgentdProductionOperationRuntimeConfig {
         Ok(())
     }
 
-    /// Attach operation dispatch to the same independently recovered owner
-    /// used for semantic mutations. This never opens a second writer or falls
-    /// back to an unauthenticated legacy store after recovery failure.
-    pub(crate) async fn attach(
-        self,
-        recovered_host: Arc<AgentdProductionWriterHost>,
-    ) -> Result<(Arc<AgentdProductionWriterHost>, Duration), AgentdError> {
-        let Self {
-            authority,
-            verifier,
-            lease_id,
-            lease_generation,
-            final_use,
-            target,
-            grants,
-            reconcile_interval,
-            additional_targets,
-        } = self;
-        if recovered_host.writer.authority() != &authority
-            || recovered_host.writer.lease_id() != lease_id
-            || recovered_host.writer.generation() != lease_generation
+    /// Reuse the same owner check before accepting an inherited destination
+    /// and again at runtime attachment. This check cannot mint a writer.
+    pub(crate) async fn validate_recovered_host(
+        &self,
+        recovered_host: &AgentdProductionWriterHost,
+    ) -> Result<(), AgentdError> {
+        if recovered_host.writer.authority() != &self.authority
+            || recovered_host.writer.lease_id() != self.lease_id
+            || recovered_host.writer.generation() != self.lease_generation
             || recovered_host.production_mutation().is_none()
         {
             return Err(AgentdError::GenerationFenced(
@@ -178,14 +184,33 @@ impl AgentdProductionOperationRuntimeConfig {
                     .to_string(),
             ));
         }
-        verifier
-            .verify(&authority, recovered_host.writer.owner_agent_id())
+        self.verifier
+            .verify(&self.authority, recovered_host.writer.owner_agent_id())
             .map_err(|reason| {
                 AgentdError::GenerationFenced(format!(
                     "production operation authority rejected: {reason}"
                 ))
             })?;
         recovered_host.writer.verify_current_authority().await?;
+        Ok(())
+    }
+
+    /// Attach operation dispatch to the same independently recovered owner
+    /// used for semantic mutations. This never opens a second writer or falls
+    /// back to an unauthenticated legacy store after recovery failure.
+    pub(crate) async fn attach(
+        self,
+        recovered_host: Arc<AgentdProductionWriterHost>,
+    ) -> Result<(Arc<AgentdProductionWriterHost>, Duration), AgentdError> {
+        self.validate_recovered_host(&recovered_host).await?;
+        let Self {
+            final_use,
+            target,
+            grants,
+            reconcile_interval,
+            additional_targets,
+            ..
+        } = self;
         let mut host = recovered_host.as_ref().clone().attach_target(
             final_use,
             target,
@@ -202,9 +227,15 @@ impl AgentdProductionOperationRuntimeConfig {
 /// mutate Agentd's runtime configuration; callers explicitly attach/use it.
 #[derive(Clone)]
 pub struct AgentdProductionWriterHost {
+    // Fixed by the original Agentd configuration, independently of local lease CAS.
+    spawn_generation: u64,
     writer: Arc<ProductionDurableWriter>,
     dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
-    grants: Option<Arc<dyn AgentdFinalUseGrantProvider>>,
+    grants: Option<Arc<GrantProviderWorker>>,
+    previous_notes: Option<(
+        String,
+        Arc<codex_hepta_memory::ProductionNotesRecoveryTarget>,
+    )>,
     // Private read-side clone of the exact recovered generation. Runtime
     // composition can reuse the same fenced owner without reopening by path or
     // exposing ProductionDurableWriter's crate-private raw-store handle.
@@ -229,6 +260,10 @@ impl fmt::Debug for AgentdProductionWriterHost {
 }
 
 impl AgentdProductionWriterHost {
+    pub(crate) fn spawn_generation(&self) -> u64 {
+        self.spawn_generation
+    }
+
     /// Open a production writer only from an independently authenticated exact
     /// current cut. No ordinary writable `CognitiveStore::open` fallback exists
     /// at this product boundary.
@@ -263,6 +298,16 @@ impl AgentdProductionWriterHost {
         lease_id: impl Into<String>,
         lease_generation: u64,
     ) -> Result<Self, AgentdError> {
+        let lease_id = lease_id.into();
+        verifier
+            .verify_sender_process_binding(
+                &authority,
+                &config.identity().agent_id,
+                &lease_id,
+                lease_generation,
+                config.identity().spawn_generation,
+            )
+            .map_err(AgentdError::GenerationFenced)?;
         let store = CognitiveStore::open_with_recovery(
             &config.identity().layout,
             requirement,
@@ -273,19 +318,48 @@ impl AgentdProductionWriterHost {
         .map_err(|error| {
             AgentdError::Protocol(format!("recover production cognitive store: {error}"))
         })?;
+        Self::from_recovered_store(
+            config.identity().spawn_generation,
+            store,
+            authority,
+            verifier,
+            lease_id,
+            lease_generation,
+        )
+        .await
+    }
+
+    async fn from_recovered_store(
+        spawn_generation: u64,
+        store: CognitiveStore,
+        authority: ProductionAuthorityLease,
+        verifier: Arc<dyn ProductionAuthorityVerifier>,
+        lease_id: String,
+        lease_generation: u64,
+    ) -> Result<Self, AgentdError> {
         let runtime_store = store.clone();
         let writer = Arc::new(
             ProductionDurableWriter::open_with_live_verifier(
                 store,
                 authority,
-                verifier,
+                Arc::clone(&verifier),
                 lease_id,
                 lease_generation,
             )
             .await?,
         );
+        verifier
+            .verify_sender_process_binding(
+                writer.authority(),
+                writer.owner_agent_id(),
+                writer.lease_id(),
+                writer.generation(),
+                spawn_generation,
+            )
+            .map_err(AgentdError::GenerationFenced)?;
         let mutation = Arc::new(writer.cognitive_mutation_capability()?);
         Ok(Self {
+            spawn_generation,
             writer,
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
                 runtime_store,
@@ -293,6 +367,7 @@ impl AgentdProductionWriterHost {
             mutation: Some(mutation),
             dispatchers: BTreeMap::new(),
             grants: None,
+            previous_notes: None,
         })
     }
 
@@ -316,9 +391,11 @@ impl AgentdProductionWriterHost {
             ProductionDurableWriter::open(store, authority, verifier, lease_id, lease_generation)
                 .await?;
         Ok(Self {
+            spawn_generation: lease_generation,
             writer: Arc::new(writer),
             dispatchers: BTreeMap::new(),
             grants: None,
+            previous_notes: None,
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
                 runtime_store,
             )),
@@ -420,7 +497,7 @@ impl AgentdProductionWriterHost {
             destination,
             ProductionFinalUseOutboxDispatcher::attach(final_use, target),
         );
-        self.grants = Some(grants);
+        self.grants = Some(Arc::new(GrantProviderWorker::new(grants)));
         Ok(self)
     }
 
@@ -444,6 +521,10 @@ impl AgentdProductionWriterHost {
 
     pub fn has_target(&self) -> bool {
         !self.dispatchers.is_empty() && self.grants.is_some()
+    }
+
+    pub(crate) fn has_destination(&self, destination: &str) -> bool {
+        self.dispatchers.contains_key(destination) && self.grants.is_some()
     }
 
     pub fn destination_count(&self) -> usize {
@@ -496,35 +577,33 @@ impl AgentdProductionWriterHost {
             .writer
             .final_use_binding(&receipt, dispatcher.destination_id())
             .await?;
-        let signed = grants.signed_grant(&binding)?;
+        let signed = grants.signed_grant(&binding).await?;
         Ok(dispatcher
             .dispatch(self.writer.as_ref(), &signed, &binding, receipt)
             .await?)
     }
 
-    /// Bounded observer-only reconciliation. This never invokes target
-    /// dispatch, so an acknowledgement-loss/restart cannot become a resend.
-    pub async fn reconcile(&self, limit: usize) -> Result<usize, AgentdError> {
-        if !(1..=256).contains(&limit) {
-            return Err(AgentdError::Protocol(
-                "production operation reconcile limit must be 1..=256".to_string(),
+    /// Discover one older pending receipt through the already attached current
+    /// Notes observer. The original writer validates every retained binding.
+    /// This adds no dispatcher or grant provider and never changes the current
+    /// destination used for new Notes intents. Call on the trusted worker.
+    pub async fn attach_previous_notes_recovery(
+        mut self,
+        observer: &crate::AgentdNotesDocumentObserver,
+    ) -> Result<Self, AgentdError> {
+        if self.previous_notes.is_some()
+            || !self.has_destination(&observer.target().destination_id())
+        {
+            return Err(AgentdError::Invalid(
+                "previous Notes recovery requires its fixed current target and a single attachment"
+                    .into(),
             ));
         }
-        if self.dispatchers.is_empty() {
-            return Err(AgentdError::Protocol(
-                "production final-use outbox dispatcher is not explicitly attached".to_string(),
-            ));
-        }
-        let mut total = 0_usize;
-        for dispatcher in self.dispatchers.values() {
-            if total >= limit {
-                break;
-            }
-            total += dispatcher
-                .reconcile(self.writer.as_ref(), limit - total)
-                .await?;
-        }
-        Ok(total)
+        self.previous_notes = observer
+            .previous_recovery_target(self.writer.as_ref())
+            .await?
+            .map(|previous| (observer.target().destination_id(), Arc::new(previous)));
+        Ok(self)
     }
 
     pub async fn dispatch(

@@ -1,0 +1,113 @@
+{
+  "passed": false,
+  "native_qualification": false,
+  "retries": 0,
+  "test_threads": 1,
+  "source_batch_sha256": "4ead6224043d39a899659a2845a231c79a0e2044a9a8fa761dfd74d0021853c8",
+  "original_seven_crate_failures_preserved": "hepta-original-seven-crates/result.json",
+  "steps": [
+    {
+      "label": "fmt",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge/codex-rs",
+      "exit_code": 0,
+      "elapsed_seconds": 0.4203648209804669
+    },
+    {
+      "label": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge",
+      "exit_code": 0,
+      "elapsed_seconds": 0.013464321033097804
+    },
+    {
+      "label": "stage",
+      "argv": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-fleet/src/control_file.rs",
+        "codex-rs/hepta-fleet/src/control_file_create_tests.rs",
+        "codex-rs/hepta-agent-protocol/src/lifecycle.rs",
+        "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/native_cpu_permissions_tests.rs"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge",
+      "exit_code": 0,
+      "elapsed_seconds": 0.02453661197796464
+    },
+    {
+      "label": "commit",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "Close controller creation permissions and validate strict lifecycle decoding"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge",
+      "exit_code": 0,
+      "elapsed_seconds": 0.05880977399647236
+    },
+    {
+      "label": "converge-integration",
+      "argv": [
+        "git",
+        "merge",
+        "--ff-only",
+        "9f581f04e3d650c18bebb741b569d8d86cd46dac"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-integration",
+      "exit_code": 0,
+      "elapsed_seconds": 0.06312278297264129
+    },
+    {
+      "label": "targeted-regression-tests",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-fleet",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-types",
+        "--lib",
+        "-E",
+        "test(lifecycle::tests::) | test(product_v2_) | test(control_file::creation_tests::) | test(registry_control_owner_tests::)",
+        "--retries",
+        "0",
+        "--test-threads",
+        "1"
+      ],
+      "cwd": "/data/trillionnium-closure-20261024/hepta-types-merge/codex-rs",
+      "exit_code": 100,
+      "elapsed_seconds": 147.0556426330004
+    }
+  ],
+  "changed_paths": [
+    "codex-rs/hepta-agent-protocol/src/lifecycle.rs",
+    "codex-rs/hepta-agentd/src/native_cpu_permissions_tests.rs",
+    "codex-rs/hepta-fleet/src/control_file.rs",
+    "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs"
+  ],
+  "source_head": "9f581f04e3d650c18bebb741b569d8d86cd46dac",
+  "source_tree": "d674ad97659f07b56e3fd389c06f933b9594d79c",
+  "error": "RuntimeError('targeted-regression-tests failed')",
+  "source_bytes_unchanged": true
+}
