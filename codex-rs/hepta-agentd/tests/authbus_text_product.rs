@@ -395,6 +395,7 @@ async fn cancellation_reconnect_and_duplicate_keep_the_original_real_turn() -> R
     )?;
     let checkpoint_file = checkpoint_root
         .path()
+        .canonicalize()?
         .join("authbus-replay-checkpoint.json");
     let home = AbsolutePathBuf::from_absolute_path(agent.layout.home_root())?;
     let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;
