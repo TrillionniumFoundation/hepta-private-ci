@@ -36,11 +36,18 @@ const DEFAULT_CONTENTION_READERS: usize = 4;
 const DEFAULT_CONTENTION_ROUNDS: usize = 10;
 
 fn configured_count(name: &str, default: usize, maximum: usize) -> usize {
-    std::env::var(name)
-        .ok()
-        .and_then(|value| value.parse::<usize>().ok())
-        .filter(|value| *value > 0 && *value <= maximum)
-        .unwrap_or(default)
+    match std::env::var(name) {
+        Ok(raw) => {
+            let value = raw.parse::<usize>().expect("invalid KG benchmark count");
+            assert!(
+                (1..=maximum).contains(&value),
+                "{name} must be in 1..={maximum}"
+            );
+            value
+        }
+        Err(std::env::VarError::NotPresent) => default,
+        Err(error) => panic!("invalid {name}: {error}"),
+    }
 }
 
 fn facts() -> KgFactSetDraft {
@@ -542,3 +549,6 @@ async fn qualification_knowledge_graph_capacity_receipt() {
         serde_json::to_string(&receipt).expect("serialize KG performance receipt")
     );
 }
+
+#[path = "cognitive_kg_history_tests.rs"]
+mod history;

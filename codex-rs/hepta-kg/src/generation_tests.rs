@@ -531,3 +531,6 @@ fn query_result_digest_binds_complete_request_even_when_edges_match() {
         assert_ne!(baseline.result_digest, changed.result_digest);
     }
 }
+
+#[path = "query_closure_tests.rs"]
+mod query_closure;

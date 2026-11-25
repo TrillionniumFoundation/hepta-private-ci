@@ -11,6 +11,10 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
+#[path = "indexed_query.rs"]
+mod indexed_query;
+pub use indexed_query::VerifiedKnowledgeGenerationV2;
+
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -427,24 +431,7 @@ fn query_relations_impl<const MEASURE_WORK: bool>(
             )
             .fold(0_u64, u64::saturating_add);
     }
-    if query.generation_digest != generation.generation_digest {
-        return Err(KnowledgeGenerationErrorV2::DigestMismatch(
-            "query_generation",
-        ));
-    }
-    ensure_unique_ids("query_seed", &query.seed_node_ids)?;
-    let seeds = query.seed_node_ids.iter().cloned().collect::<BTreeSet<_>>();
-    let mut relation_kinds = BTreeSet::new();
-    for kind in query.relation_kinds.iter().cloned() {
-        if !relation_kinds.insert(kind) {
-            return Err(KnowledgeGenerationErrorV2::DuplicateRelationKind);
-        }
-    }
-    let maximum_edges = usize::try_from(query.maximum_edges).unwrap_or(usize::MAX);
-    if maximum_edges == 0 || maximum_edges > MAX_KNOWLEDGE_EDGES_V2 {
-        return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit);
-    }
-    let request_digest = compute_query_request_digest(&query, &seeds, &relation_kinds);
+    let plan = relation_query_plan(generation.generation_digest, &query)?;
     let visible_nodes = query.valid_at_unix_seconds.map(|at| {
         let mut visible = BTreeSet::new();
         for node in &generation.nodes {
@@ -469,17 +456,90 @@ fn query_relations_impl<const MEASURE_WORK: bool>(
         visible
     });
     let (edges, omitted_count) = collect_relation_query_edges::<MEASURE_WORK>(
-        generation,
-        &seeds,
-        &relation_kinds,
-        visible_nodes.as_ref(),
+        generation.edges.iter(),
+        |edge, _work| {
+            let identity = &edge.identity;
+            (plan.seeds.contains(&identity.source_node_id)
+                || plan.seeds.contains(&identity.target_node_id))
+                && (plan.relation_kinds.is_empty()
+                    || plan.relation_kinds.contains(&identity.relation))
+                && visible_nodes.as_ref().is_none_or(|visible| {
+                    visible.contains(&identity.source_node_id)
+                        && visible.contains(&identity.target_node_id)
+                })
+        },
         query.valid_at_unix_seconds,
-        maximum_edges,
+        plan.maximum_edges,
         &mut work,
     );
+    if MEASURE_WORK {
+        debug_assert_eq!(work.omitted_edges, saturating_u64(omitted_count));
+    }
+    Ok((
+        assemble_relation_query_result(
+            query,
+            generation.generation_digest,
+            plan.request_digest,
+            edges,
+            omitted_count,
+        ),
+        work,
+    ))
+}
+
+struct RelationQueryPlan {
+    seeds: BTreeSet<StableId>,
+    relation_kinds: BTreeSet<KnowledgeRelationKindV2>,
+    maximum_edges: usize,
+    request_digest: Digest32,
+}
+
+fn relation_query_plan(
+    generation_digest: Digest32,
+    query: &KnowledgeRelationQueryV2,
+) -> Result<RelationQueryPlan, KnowledgeGenerationErrorV2> {
+    if query.generation_digest != generation_digest {
+        return Err(KnowledgeGenerationErrorV2::DigestMismatch(
+            "query_generation",
+        ));
+    }
+    if query.seed_node_ids.len() > MAX_KNOWLEDGE_NODES_V2
+        || query.relation_kinds.len() > MAX_KNOWLEDGE_EDGES_V2
+    {
+        return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit);
+    }
+    ensure_unique_ids("query_seed", &query.seed_node_ids)?;
+    let seeds = query.seed_node_ids.iter().cloned().collect::<BTreeSet<_>>();
+    let mut relation_kinds = BTreeSet::new();
+    for kind in query.relation_kinds.iter().cloned() {
+        if !relation_kinds.insert(kind) {
+            return Err(KnowledgeGenerationErrorV2::DuplicateRelationKind);
+        }
+    }
+    let maximum_edges = usize::try_from(query.maximum_edges).unwrap_or(usize::MAX);
+    if maximum_edges == 0 || maximum_edges > MAX_KNOWLEDGE_EDGES_V2 {
+        return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit);
+    }
+    let request_digest = compute_query_request_digest(query, &seeds, &relation_kinds);
+
+    Ok(RelationQueryPlan {
+        seeds,
+        relation_kinds,
+        maximum_edges,
+        request_digest,
+    })
+}
+
+fn assemble_relation_query_result(
+    query: KnowledgeRelationQueryV2,
+    generation_digest: Digest32,
+    request_digest: Digest32,
+    edges: Vec<KnowledgeEdgeV2>,
+    omitted_count: usize,
+) -> KnowledgeRelationResultV2 {
     let mut result = KnowledgeRelationResultV2 {
         query_id: query.query_id,
-        generation_digest: generation.generation_digest,
+        generation_digest,
         valid_at_unix_seconds: query.valid_at_unix_seconds,
         request_digest,
         edges,
@@ -488,35 +548,23 @@ fn query_relations_impl<const MEASURE_WORK: bool>(
         authority: AuthorityPosture::DENY_ALL,
     };
     result.result_digest = compute_query_result_digest(&result);
-    if MEASURE_WORK {
-        debug_assert_eq!(work.omitted_edges, saturating_u64(omitted_count));
-    }
-    Ok((result, work))
+    result
 }
 
-fn collect_relation_query_edges<const MEASURE_WORK: bool>(
-    generation: &KnowledgeGenerationV2,
-    seeds: &BTreeSet<StableId>,
-    relation_kinds: &BTreeSet<KnowledgeRelationKindV2>,
-    visible_nodes: Option<&BTreeSet<StableId>>,
+fn collect_relation_query_edges<'a, const MEASURE_WORK: bool>(
+    edges: impl ExactSizeIterator<Item = &'a KnowledgeEdgeV2>,
+    mut include_edge: impl FnMut(&'a KnowledgeEdgeV2, &mut KnowledgeRelationQueryWorkV2) -> bool,
     valid_at_unix_seconds: Option<i64>,
     maximum_edges: usize,
     work: &mut KnowledgeRelationQueryWorkV2,
 ) -> (Vec<KnowledgeEdgeV2>, usize) {
-    let mut selected_edges = Vec::with_capacity(maximum_edges.min(generation.edges.len()));
+    let mut selected_edges = Vec::with_capacity(maximum_edges.min(edges.len()));
     let mut omitted_count = 0usize;
-    for edge in &generation.edges {
+    for edge in edges {
         if MEASURE_WORK {
             work.relation_edges_scanned = work.relation_edges_scanned.saturating_add(1);
         }
-        let identity = &edge.identity;
-        if !(seeds.contains(&identity.source_node_id) || seeds.contains(&identity.target_node_id))
-            || !(relation_kinds.is_empty() || relation_kinds.contains(&identity.relation))
-            || visible_nodes.is_some_and(|visible| {
-                !visible.contains(&identity.source_node_id)
-                    || !visible.contains(&identity.target_node_id)
-            })
-        {
+        if !include_edge(edge, work) {
             continue;
         }
 
@@ -629,15 +677,15 @@ fn canonicalize_generation(
     let mut canonical_edges = BTreeMap::<KnowledgeEdgeIdentityV2, KnowledgeEdgeV2>::new();
     for mut edge in edges {
         ensure_digest("edge_validity", edge.validity_digest)?;
-        if !node_ids.contains(&edge.identity.source_node_id)
-            || !node_ids.contains(&edge.identity.target_node_id)
-        {
-            return Err(KnowledgeGenerationErrorV2::UnknownEdgeNode);
-        }
         canonicalize_supports(&mut edge.supports)?;
         edge.supports.retain(|support| !support.tombstoned);
         if edge.supports.is_empty() {
             continue;
+        }
+        if !node_ids.contains(&edge.identity.source_node_id)
+            || !node_ids.contains(&edge.identity.target_node_id)
+        {
+            return Err(KnowledgeGenerationErrorV2::UnknownEdgeNode);
         }
         let identity = edge.identity.clone();
         if canonical_edges.insert(identity.clone(), edge).is_some() {
@@ -675,6 +723,18 @@ fn validate_generation_fields(
     }
     if edges.len() > MAX_KNOWLEDGE_EDGES_V2 {
         return Err(KnowledgeGenerationErrorV2::EdgeLimitExceeded);
+    }
+    if nodes
+        .windows(2)
+        .any(|pair| pair[0].node_id > pair[1].node_id)
+    {
+        return Err(KnowledgeGenerationErrorV2::NonCanonicalNodeOrder);
+    }
+    if edges
+        .windows(2)
+        .any(|pair| pair[0].identity > pair[1].identity)
+    {
+        return Err(KnowledgeGenerationErrorV2::NonCanonicalEdgeOrder);
     }
     let mut node_ids = BTreeSet::new();
     for node in nodes {
@@ -734,6 +794,11 @@ fn validate_live_supports(
     let mut previous: Option<&KnowledgeSupportV2> = None;
     for support in supports {
         support.validate()?;
+        if previous.is_some_and(|value| {
+            value.source_id == support.source_id && value.source_revision == support.source_revision
+        }) {
+            return Err(KnowledgeGenerationErrorV2::DuplicateSupport);
+        }
         if previous.is_some_and(|value| value >= support) {
             return Err(KnowledgeGenerationErrorV2::NonCanonicalSupportOrder);
         }
@@ -911,6 +976,8 @@ pub enum KnowledgeGenerationErrorV2 {
     InvalidValidityWindow,
     TombstonedSupportVisible,
     NonCanonicalSupportOrder,
+    NonCanonicalNodeOrder,
+    NonCanonicalEdgeOrder,
     InvalidPredecessor,
     ProfileChangedInDelta,
     DuplicateRelationKind,

@@ -51,7 +51,7 @@ def git(*args: str) -> str:
 
 def positive_int(value: Any, field: str, *, allow_zero: bool = False) -> int:
     lower = 0 if allow_zero else 1
-    if not isinstance(value, int) or value < lower:
+    if type(value) is not int or value < lower:
         fail(f"{field} must be an integer >= {lower}")
     return value
 
