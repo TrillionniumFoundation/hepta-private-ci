@@ -6,7 +6,8 @@ on:
     branches: [main]
 
 concurrency:
-  group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}
+  # Preserve each exact PR candidate while deduplicating runs of that candidate.
+  group: blocking-ci::${{ github.event.pull_request.head.repo.full_name || github.repository }}::${{ github.event.pull_request.number || github.ref_name }}::${{ github.event.pull_request.head.sha || 'main' }}
   cancel-in-progress: true
 
 permissions:
