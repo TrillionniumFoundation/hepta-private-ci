@@ -8,6 +8,9 @@ on:
       - qualification/pft_six_experiments_20261125/test_distributed_admission.py
       - qualification/pft_six_experiments_20261125/direct_snapshot.py
       - qualification/pft_six_experiments_20261125/test_direct_snapshot.py
+      - qualification/pft_six_experiments_20261125/ssh_snapshot.py
+      - qualification/pft_six_experiments_20261125/ssh_framed_io.py
+      - qualification/pft_six_experiments_20261125/test_ssh_snapshot.py
       - .github/workflows/pft-statistics-admission.yml
 
 permissions:
@@ -37,5 +40,6 @@ jobs:
         run: |
           python -m unittest discover -s qualification/pft_six_experiments_20261125 -p test_distributed_admission.py -v
           python -m unittest discover -s qualification/pft_six_experiments_20261125 -p test_direct_snapshot.py -v
+          python -m unittest discover -s qualification/pft_six_experiments_20261125 -p test_ssh_snapshot.py -v
       - name: Check source stayed unchanged
         run: git diff --exit-code
