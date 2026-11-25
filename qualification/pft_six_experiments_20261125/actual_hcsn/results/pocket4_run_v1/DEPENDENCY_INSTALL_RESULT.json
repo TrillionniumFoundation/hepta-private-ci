@@ -1,0 +1,59 @@
+{
+  "status": "READY",
+  "runtime": {
+    "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "numpy": "2.5.5",
+    "torch": "2.15.0+cpu",
+    "cuda_available": false
+  },
+  "stages": [
+    {
+      "stage": "create_venv",
+      "wall_s": 3.2480194449890405
+    },
+    {
+      "stage": "numpy",
+      "index": "https://pypi.org/simple",
+      "argv": [
+        "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-cache-dir",
+        "--index-url",
+        "https://pypi.org/simple",
+        "--report",
+        "/home/alex/pft-six-actual-hcsn-20261125/numpy-pip-report.json",
+        "numpy"
+      ],
+      "exit_code": 0,
+      "wall_s": 20.87291463697329
+    },
+    {
+      "stage": "torch_cpu",
+      "index": "https://download.pytorch.org/whl/cpu",
+      "argv": [
+        "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-cache-dir",
+        "--index-url",
+        "https://download.pytorch.org/whl/cpu",
+        "--report",
+        "/home/alex/pft-six-actual-hcsn-20261125/torch_cpu-pip-report.json",
+        "torch"
+      ],
+      "exit_code": 0,
+      "wall_s": 271.67136433301494
+    }
+  ],
+  "wall_s": 297.0111398509471,
+  "children_cpu_s": 23.359759,
+  "executable": "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+  "old_frozen_runtime_identity_inherited": false
+}

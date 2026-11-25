@@ -1,0 +1,289 @@
+{
+  "scope": "Observed durable remote jobs; installation, study and post-freeze collection are separate.",
+  "host": "pocket4",
+  "dependency": {
+    "launch": {
+      "audit_recorded": true,
+      "job": {
+        "args": [
+          "-c",
+          "import pathlib,json,sys,subprocess,time,resource,venv,traceback\nroot=pathlib.Path('/home/alex/pft-six-actual-hcsn-20261125'); envdir=root/'venv'\nstart=time.perf_counter(); before=resource.getrusage(resource.RUSAGE_CHILDREN); stages=[]\ntry:\n if envdir.exists(): raise FileExistsError('refuse to reuse an unknown existing venv')\n t=time.perf_counter(); venv.EnvBuilder(with_pip=True).create(envdir); stages.append({'stage':'create_venv','wall_s':time.perf_counter()-t})\n py=str(envdir/'bin/python')\n for name,index,packages in [('numpy','https://pypi.org/simple',['numpy']),('torch_cpu','https://download.pytorch.org/whl/cpu',['torch'])]:\n  cmd=[py,'-m','pip','--isolated','--disable-pip-version-check','install','--no-cache-dir','--index-url',index,'--report',str(root/(name+'-pip-report.json'))]+packages\n  t=time.perf_counter()\n  with (root/(name+'-install.log')).open('w') as log: r=subprocess.run(cmd,stdout=log,stderr=subprocess.STDOUT,timeout=720)\n  stages.append({'stage':name,'index':index,'argv':cmd,'exit_code':r.returncode,'wall_s':time.perf_counter()-t})\n  print(json.dumps(stages[-1]),flush=True)\n  if r.returncode: print((root/(name+'-install.log')).read_text()[-12000:],flush=True); raise RuntimeError(name+' install failed')\n test=subprocess.run([py,'-c','import json,sys,numpy,torch; print(json.dumps({\"python\":sys.version,\"numpy\":numpy.__version__,\"torch\":torch.__version__,\"cuda_available\":torch.cuda.is_available()}))'],capture_output=True,text=True,timeout=60)\n print(test.stdout,flush=True)\n if test.returncode: raise RuntimeError(test.stderr)\n result={'status':'READY','runtime':json.loads(test.stdout)}\nexcept Exception as exc:\n result={'status':'FAILED','error':repr(exc)}; print(traceback.format_exc(),flush=True)\nafter=resource.getrusage(resource.RUSAGE_CHILDREN); result.update(stages=stages,wall_s=time.perf_counter()-start,children_cpu_s=(after.ru_utime+after.ru_stime-before.ru_utime-before.ru_stime),executable=str(envdir/'bin/python'),old_frozen_runtime_identity_inherited=False)\n(root/'DEPENDENCY_INSTALL_RESULT.json').write_text(json.dumps(result,indent=2)+'\\n'); print(json.dumps(result,indent=2),flush=True)\nsys.exit(0 if result['status']=='READY' else 1)\n"
+        ],
+        "created_unix_ms": 1795596598250,
+        "cwd": "/home/alex/pft-six-actual-hcsn-20261125",
+        "env_keys": [],
+        "executable": "/usr/bin/python3",
+        "execution_mode": "operator",
+        "host": "pocket4",
+        "id": "1a211e5bbea-ffbe-3e79",
+        "idempotency_key": "pft-six-actual-hcsn-isolated-dependencies-20261125-v1",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a211e5bbea-ffbe-3e79",
+        "request_digest": "71417e914907334a68561b7951b85e50c65d0f83b06967444159066ee7a48c3a",
+        "request_fingerprint": 8160943162232616000,
+        "ssh_target": "hepta-pocket4",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a211e5bbea-ffbe-3e79"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a211e5bbea-ffbe-3e79"
+      },
+      "local_record_pending": false,
+      "reused": false
+    },
+    "terminal": {
+      "at_unix_ms": 1795596896425,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a211e5bbea-ffbe-3e79",
+      "launch_nonce": "a94dab710b797e1bdc6d377be8208e0f",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 2498,
+          "stored": 2498
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "tail": {
+      "audit_recorded": true,
+      "job_id": "1a211e5bbea-ffbe-3e79",
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0,
+        "text": ""
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 2498,
+        "offset": 384,
+        "size": 2498,
+        "text": "{\"stage\": \"torch_cpu\", \"index\": \"https://download.pytorch.org/whl/cpu\", \"argv\": [\"/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python\", \"-m\", \"pip\", \"--isolated\", \"--disable-pip-version-check\", \"install\", \"--no-cache-dir\", \"--index-url\", \"https://download.pytorch.org/whl/cpu\", \"--report\", \"/home/alex/pft-six-actual-hcsn-20261125/torch_cpu-pip-report.json\", \"torch\"], \"exit_code\": 0, \"wall_s\": 271.67136433301494}\n{\"python\": \"3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]\", \"numpy\": \"2.5.5\", \"torch\": \"2.15.0+cpu\", \"cuda_available\": false}\n\n{\n  \"status\": \"READY\",\n  \"runtime\": {\n    \"python\": \"3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]\",\n    \"numpy\": \"2.5.5\",\n    \"torch\": \"2.15.0+cpu\",\n    \"cuda_available\": false\n  },\n  \"stages\": [\n    {\n      \"stage\": \"create_venv\",\n      \"wall_s\": 3.2480194449890405\n    },\n    {\n      \"stage\": \"numpy\",\n      \"index\": \"https://pypi.org/simple\",\n      \"argv\": [\n        \"/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python\",\n        \"-m\",\n        \"pip\",\n        \"--isolated\",\n        \"--disable-pip-version-check\",\n        \"install\",\n        \"--no-cache-dir\",\n        \"--index-url\",\n        \"https://pypi.org/simple\",\n        \"--report\",\n        \"/home/alex/pft-six-actual-hcsn-20261125/numpy-pip-report.json\",\n        \"numpy\"\n      ],\n      \"exit_code\": 0,\n      \"wall_s\": 20.87291463697329\n    },\n    {\n      \"stage\": \"torch_cpu\",\n      \"index\": \"https://download.pytorch.org/whl/cpu\",\n      \"argv\": [\n        \"/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python\",\n        \"-m\",\n        \"pip\",\n        \"--isolated\",\n        \"--disable-pip-version-check\",\n        \"install\",\n        \"--no-cache-dir\",\n        \"--index-url\",\n        \"https://download.pytorch.org/whl/cpu\",\n        \"--report\",\n        \"/home/alex/pft-six-actual-hcsn-20261125/torch_cpu-pip-report.json\",\n        \"torch\"\n      ],\n      \"exit_code\": 0,\n      \"wall_s\": 271.67136433301494\n    }\n  ],\n  \"wall_s\": 297.0111398509471,\n  \"children_cpu_s\": 23.359759,\n  \"executable\": \"/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python\",\n  \"old_frozen_runtime_identity_inherited\": false\n}\n"
+      }
+    }
+  },
+  "study": {
+    "launch": {
+      "audit_recorded": true,
+      "job": {
+        "args": [
+          "-c",
+          "import pathlib,json,sys,hashlib,tarfile,subprocess,time,traceback,resource\nroot=pathlib.Path('/home/alex/pft-six-actual-hcsn-20261125'); cap=root/'capsule'; started=time.perf_counter(); stages=[]; result={}\ntry:\n packed=root/'runtime_capsule.tar.gz'; expected='7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96'\n if hashlib.sha256(packed.read_bytes()).hexdigest()!=expected: raise ValueError('capsule digest mismatch')\n if cap.exists(): raise FileExistsError('refuse to overwrite existing capsule')\n cap.mkdir()\n with tarfile.open(packed,'r:gz') as tar:\n  for member in tar.getmembers():\n   rel=pathlib.Path(member.name)\n   if rel.is_absolute() or '..' in rel.parts or not member.isfile(): raise ValueError('nonregular or escaping capsule member')\n   dst=cap/rel; dst.parent.mkdir(parents=True,exist_ok=True); dst.write_bytes(tar.extractfile(member).read())\n manifest=json.loads((cap/'CAPSULE_MANIFEST.json').read_text())\n for f in manifest['files']:\n  p=cap/f['path']\n  if p.stat().st_size!=f['bytes'] or hashlib.sha256(p.read_bytes()).hexdigest()!=f['sha256']: raise ValueError('capsule member verification failed')\n print(json.dumps({'stage':'capsule_verified','files':len(manifest['files']),'sha256':expected}),flush=True)\n wait_start=time.perf_counter(); dependency=root/'DEPENDENCY_INSTALL_RESULT.json'\n while not dependency.exists():\n  if time.perf_counter()-wait_start>1000: raise TimeoutError('dependency preparation not terminal after wait budget')\n  time.sleep(5)\n dep=json.loads(dependency.read_text()); stages.append({'stage':'dependency_wait','wall_s':time.perf_counter()-wait_start,'status':dep['status']})\n if dep['status']!='READY': raise RuntimeError('isolated dependencies failed')\n command=[str(root/'venv/bin/python'),str(cap/'study.py'),'run','--out',str(root/'run_v1'),'--widths','8,16,32,64','--data-seed','731','--train-per-source','16','--dev-per-source','16','--test-per-source','24','--bootstrap-steps','24','--bootstrap-cpu-seconds','30']\n print(json.dumps({'stage':'study_started','command':command}),flush=True)\n t=time.perf_counter(); before=resource.getrusage(resource.RUSAGE_CHILDREN)\n with (root/'study.stdout.log').open('w') as stdout,(root/'study.stderr.log').open('w') as stderr:\n  child=subprocess.run(command,cwd=cap,stdout=stdout,stderr=stderr,timeout=700)\n after=resource.getrusage(resource.RUSAGE_CHILDREN)\n stages.append({'stage':'study','wall_s':time.perf_counter()-t,'children_cpu_s':after.ru_utime+after.ru_stime-before.ru_utime-before.ru_stime,'exit_code':child.returncode})\n print((root/'study.stdout.log').read_text()[-15000:],flush=True)\n if child.returncode: print((root/'study.stderr.log').read_text()[-12000:],flush=True)\n result={'status':'COMPLETED' if child.returncode==0 else 'STUDY_FAILED','study_exit_code':child.returncode,'study_result_exists':(root/'run_v1/RESULT.json').exists()}\nexcept Exception as exc:\n result={'status':'FAILED','error':repr(exc)}; print(traceback.format_exc(),flush=True)\nresult.update(stages=stages,wall_s=time.perf_counter()-started,capsule_sha256='7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96',old_qualification_transferred=False)\n(root/'EXECUTION_RECEIPT.json').write_text(json.dumps(result,indent=2)+'\\n');print(json.dumps(result,indent=2),flush=True)\nsys.exit(0 if result['status']=='COMPLETED' else 1)\n"
+        ],
+        "created_unix_ms": 1795596911791,
+        "cwd": "/home/alex/pft-six-actual-hcsn-20261125",
+        "env_keys": [],
+        "executable": "/usr/bin/python3",
+        "execution_mode": "operator",
+        "host": "pocket4",
+        "id": "1a211ea84af-ffbe-3e84",
+        "idempotency_key": "pft-six-actual-hcsn-verified-capsule-run-20261125-v1",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a211ea84af-ffbe-3e84",
+        "request_digest": "6bd1db91d411cc8c334295a53435549aaa768c7b9a2bdb05347234b5a8eea5d4",
+        "request_fingerprint": 7769232251565493000,
+        "ssh_target": "hepta-pocket4",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a211ea84af-ffbe-3e84"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a211ea84af-ffbe-3e84"
+      },
+      "local_record_pending": false,
+      "reused": false
+    },
+    "terminal": {
+      "at_unix_ms": 1795596931144,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a211ea84af-ffbe-3e84",
+      "launch_nonce": "2bf9cd5392528296f0b9c72031c1144e",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 3100,
+          "stored": 3100
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "output": {
+      "audit_recorded": true,
+      "job_id": "1a211ea84af-ffbe-3e84",
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0,
+        "text": ""
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 3100,
+        "offset": 0,
+        "size": 3100,
+        "text": "{\"stage\": \"capsule_verified\", \"files\": 30, \"sha256\": \"7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96\"}\n{\"stage\": \"study_started\", \"command\": [\"/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python\", \"/home/alex/pft-six-actual-hcsn-20261125/capsule/study.py\", \"run\", \"--out\", \"/home/alex/pft-six-actual-hcsn-20261125/run_v1\", \"--widths\", \"8,16,32,64\", \"--data-seed\", \"731\", \"--train-per-source\", \"16\", \"--dev-per-source\", \"16\", \"--test-per-source\", \"24\", \"--bootstrap-steps\", \"24\", \"--bootstrap-cpu-seconds\", \"30\"]}\n{\"status\": \"COMPLETED_MEASUREMENTS\", \"gates\": {\"real_population_kernel_executed\": true, \"all_requested_cases_completed\": true, \"cold_replays_passed\": true, \"feature_controls_same_final_population_states\": true, \"real_cross_user\": \"BLOCKED_SYNTHETIC_DATA\", \"learned_circuit_superiority\": \"NOT_TESTED\", \"N16_formal_qualification\": \"NOT_INHERITED_NEW_RESEARCH_EXTENSION\"}, \"failures\": [], \"rows\": [{\"width\": 8, \"bank\": \"value_risk\", \"status\": \"MEASURED\", \"test\": {\"accuracy\": 0.9375, \"pre_late_accuracy\": 0.7708333333333334, \"brier\": 0.11319050161542778, \"n\": 96, \"final_minus_pre_late_accuracy\": 0.16666666666666663}}, {\"width\": 8, \"bank\": \"tanh\", \"status\": \"MEASURED\", \"test\": {\"accuracy\": 0.9375, \"pre_late_accuracy\": 0.7708333333333334, \"brier\": 0.11457866973384012, \"n\": 96, \"final_minus_pre_late_accuracy\": 0.16666666666666663}}, {\"width\": 16, \"bank\": \"value_risk\", \"status\": \"MEASURED\", \"test\": {\"accuracy\": 0.46875, \"pre_late_accuracy\": 0.46875, \"brier\": 0.5155354300077941, \"n\": 96, \"final_minus_pre_late_accuracy\": 0.0}}, {\"width\": 16, \"bank\": \"tanh\", \"status\": \"MEASURED\", \"test\": {\"accuracy\": 0.46875, \"pre_late_accuracy\": 0.46875, \"brier\": 0.5153702737224884, \"n\": 96, \"final_minus_pre_late_accuracy\": 0.0}}, {\"width\": 32, \"bank\": \"value_risk\", \"status\": \"MEASURED\", \"test\": {\"accuracy\": 0.90625, \"pre_late_accuracy\": 0.625, \"brier\": 0.2129756696679456, \"n\": 96, \"final_minus_pre_late_accuracy\": 0.28125}}, {\"width\": 32, \"bank\": \"tanh\", \"status\": \"MEASURED\", \"test\": {\"accuracy\": 0.9166666666666666, \"pre_late_accuracy\": 0.6770833333333334, \"brier\": 0.19061488224513612, \"n\": 96, \"final_minus_pre_late_accuracy\": 0.23958333333333326}}, {\"width\": 64, \"bank\": \"value_risk\", \"status\": \"MEASURED\", \"test\": {\"accuracy\": 0.46875, \"pre_late_accuracy\": 0.5, \"brier\": 0.5165443449386514, \"n\": 96, \"final_minus_pre_late_accuracy\": -0.03125}}, {\"width\": 64, \"bank\": \"tanh\", \"status\": \"MEASURED\", \"test\": {\"accuracy\": 0.46875, \"pre_late_accuracy\": 0.4895833333333333, \"brier\": 0.5160228887532855, \"n\": 96, \"final_minus_pre_late_accuracy\": -0.020833333333333315}}]}\n\n{\n  \"status\": \"COMPLETED\",\n  \"study_exit_code\": 0,\n  \"study_result_exists\": true,\n  \"stages\": [\n    {\n      \"stage\": \"dependency_wait\",\n      \"wall_s\": 3.610900603234768e-05,\n      \"status\": \"READY\"\n    },\n    {\n      \"stage\": \"study\",\n      \"wall_s\": 18.52368544100318,\n      \"children_cpu_s\": 18.375334,\n      \"exit_code\": 0\n    }\n  ],\n  \"wall_s\": 18.530676899012178,\n  \"capsule_sha256\": \"7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96\",\n  \"old_qualification_transferred\": false\n}\n"
+      }
+    }
+  },
+  "collection": {
+    "launch": {
+      "audit_recorded": true,
+      "job": {
+        "args": [
+          "/home/alex/pft-six-actual-hcsn-20261125/collect_evidence.py",
+          "--root",
+          "/home/alex/pft-six-actual-hcsn-20261125"
+        ],
+        "created_unix_ms": 1795597188753,
+        "cwd": "/home/alex/pft-six-actual-hcsn-20261125",
+        "env_keys": [],
+        "executable": "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+        "execution_mode": "operator",
+        "host": "pocket4",
+        "id": "1a211eebe91-ffbe-3e8b",
+        "idempotency_key": "pft-six-actual-hcsn-inventory-archives-20261125-v1",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a211eebe91-ffbe-3e8b",
+        "request_digest": "019c9ae19a2f7b4ad208261c3bb49892b23d65192765def1ac802501a922cb39",
+        "request_fingerprint": 116137984149912400,
+        "ssh_target": "hepta-pocket4",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a211eebe91-ffbe-3e8b"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a211eebe91-ffbe-3e8b"
+      },
+      "local_record_pending": false,
+      "reused": false
+    },
+    "terminal": {
+      "at_unix_ms": 1795597190782,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a211eebe91-ffbe-3e8b",
+      "launch_nonce": "874468a4209e2551fc3d30c0c23a0951",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 8646,
+          "stored": 8646
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "output": {
+      "audit_recorded": true,
+      "job_id": "1a211eebe91-ffbe-3e8b",
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0,
+        "text": ""
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 8646,
+        "offset": 0,
+        "size": 8646,
+        "text": "{\"inventory\": {\"scope\": \"post-freeze tensor inventory; no training, selection or candidate mutation\", \"source_sha256\": \"20d97569e8382ad0f737c8df97441279eb671199542c78198a8f8e323ac6e067\", \"study_sha256\": \"3007f64b548671f2f372ae9db4f48459d2795a68f0154fbeb1a6579994719678\", \"rows\": [{\"width\": 8, \"parent_sha256\": \"dbb2e8385e52e426a1ad4d11320215a788b0069d5dd1fb9df21ab895888892ff\", \"total_parameters\": 306, \"requires_grad_parameters\": 298, \"active_trainable_parameters\": 250, \"recurrent_allocated\": 192, \"recurrent_active_mask_entries\": 144, \"readout_parameters_updated_per_candidate\": 42, \"physical_parent_tensors_unchanged_by_readout_fit\": {\"value_risk\": true, \"tanh\": true}, \"config\": {\"input_size\": 6, \"neurons\": 8, \"bins\": 6, \"stages\": 3, \"dt\": 0.25, \"extent\": 2.0, \"sigma\": 0.55, \"base_drift\": -0.2, \"drift_scale\": 0.15, \"discount\": 0.3, \"refractory\": 0.2, \"reset_absolute\": 1.2, \"gain\": 0.8, \"maintenance\": 0.25, \"cost\": 0.15, \"cost_span\": 0.02, \"boundary_span\": 0.1, \"write_fraction\": 0.5, \"slow_every\": 2, \"boundary_mode\": \"qvi\", \"message_mode\": \"full\", \"feature_bank\": \"value_risk\", \"feature_normalization\": \"none\", \"precision\": \"mixed\", \"backend\": \"dense\"}, \"named_parameters\": [{\"name\": \"raw_cost\", \"shape\": [8], \"count\": 8, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"raw_boundary\", \"shape\": [8], \"count\": 8, \"requires_grad\": false, \"dtype\": \"torch.float32\"}, {\"name\": \"input_drive.weight\", \"shape\": [4, 6], \"count\": 24, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_drive.bias\", \"shape\": [4], \"count\": 4, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_mark.weight\", \"shape\": [4, 6], \"count\": 24, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_mark.bias\", \"shape\": [4], \"count\": 4, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"recurrent.weight\", \"shape\": [8, 24], \"count\": 192, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"readout.weight\", \"shape\": [2, 20], \"count\": 40, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"readout.bias\", \"shape\": [2], \"count\": 2, \"requires_grad\": true, \"dtype\": \"torch.float32\"}]}, {\"width\": 16, \"parent_sha256\": \"db257d6e66939e0279d15fc7f096008d092d85081ef83e5bd4a68ea1e2e054c3\", \"total_parameters\": 994, \"requires_grad_parameters\": 978, \"active_trainable_parameters\": 786, \"recurrent_allocated\": 768, \"recurrent_active_mask_entries\": 576, \"readout_parameters_updated_per_candidate\": 82, \"physical_parent_tensors_unchanged_by_readout_fit\": {\"value_risk\": true, \"tanh\": true}, \"config\": {\"input_size\": 6, \"neurons\": 16, \"bins\": 6, \"stages\": 3, \"dt\": 0.25, \"extent\": 2.0, \"sigma\": 0.55, \"base_drift\": -0.2, \"drift_scale\": 0.15, \"discount\": 0.3, \"refractory\": 0.2, \"reset_absolute\": 1.2, \"gain\": 0.8, \"maintenance\": 0.25, \"cost\": 0.15, \"cost_span\": 0.02, \"boundary_span\": 0.1, \"write_fraction\": 0.5, \"slow_every\": 2, \"boundary_mode\": \"qvi\", \"message_mode\": \"full\", \"feature_bank\": \"value_risk\", \"feature_normalization\": \"none\", \"precision\": \"mixed\", \"backend\": \"dense\"}, \"named_parameters\": [{\"name\": \"raw_cost\", \"shape\": [16], \"count\": 16, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"raw_boundary\", \"shape\": [16], \"count\": 16, \"requires_grad\": false, \"dtype\": \"torch.float32\"}, {\"name\": \"input_drive.weight\", \"shape\": [8, 6], \"count\": 48, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_drive.bias\", \"shape\": [8], \"count\": 8, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_mark.weight\", \"shape\": [8, 6], \"count\": 48, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_mark.bias\", \"shape\": [8], \"count\": 8, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"recurrent.weight\", \"shape\": [16, 48], \"count\": 768, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"readout.weight\", \"shape\": [2, 40], \"count\": 80, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"readout.bias\", \"shape\": [2], \"count\": 2, \"requires_grad\": true, \"dtype\": \"torch.float32\"}]}, {\"width\": 32, \"parent_sha256\": \"0db75cbd98d45f9f8f5b46d180c6050ed63445faa1f1496e0b51b9a78849a19b\", \"total_parameters\": 3522, \"requires_grad_parameters\": 3490, \"active_trainable_parameters\": 2722, \"recurrent_allocated\": 3072, \"recurrent_active_mask_entries\": 2304, \"readout_parameters_updated_per_candidate\": 162, \"physical_parent_tensors_unchanged_by_readout_fit\": {\"value_risk\": true, \"tanh\": true}, \"config\": {\"input_size\": 6, \"neurons\": 32, \"bins\": 6, \"stages\": 3, \"dt\": 0.25, \"extent\": 2.0, \"sigma\": 0.55, \"base_drift\": -0.2, \"drift_scale\": 0.15, \"discount\": 0.3, \"refractory\": 0.2, \"reset_absolute\": 1.2, \"gain\": 0.8, \"maintenance\": 0.25, \"cost\": 0.15, \"cost_span\": 0.02, \"boundary_span\": 0.1, \"write_fraction\": 0.5, \"slow_every\": 2, \"boundary_mode\": \"qvi\", \"message_mode\": \"full\", \"feature_bank\": \"value_risk\", \"feature_normalization\": \"none\", \"precision\": \"mixed\", \"backend\": \"dense\"}, \"named_parameters\": [{\"name\": \"raw_cost\", \"shape\": [32], \"count\": 32, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"raw_boundary\", \"shape\": [32], \"count\": 32, \"requires_grad\": false, \"dtype\": \"torch.float32\"}, {\"name\": \"input_drive.weight\", \"shape\": [16, 6], \"count\": 96, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_drive.bias\", \"shape\": [16], \"count\": 16, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_mark.weight\", \"shape\": [16, 6], \"count\": 96, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_mark.bias\", \"shape\": [16], \"count\": 16, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"recurrent.weight\", \"shape\": [32, 96], \"count\": 3072, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"readout.weight\", \"shape\": [2, 80], \"count\": 160, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"readout.bias\", \"shape\": [2], \"count\": 2, \"requires_grad\": true, \"dtype\": \"torch.float32\"}]}, {\"width\": 64, \"parent_sha256\": \"7f6c9f0760fc7f77f29c1ec61da9fa59f59b716d744de9b376909870924c3746\", \"total_parameters\": 13186, \"requires_grad_parameters\": 13122, \"active_trainable_parameters\": 10050, \"recurrent_allocated\": 12288, \"recurrent_active_mask_entries\": 9216, \"readout_parameters_updated_per_candidate\": 322, \"physical_parent_tensors_unchanged_by_readout_fit\": {\"value_risk\": true, \"tanh\": true}, \"config\": {\"input_size\": 6, \"neurons\": 64, \"bins\": 6, \"stages\": 3, \"dt\": 0.25, \"extent\": 2.0, \"sigma\": 0.55, \"base_drift\": -0.2, \"drift_scale\": 0.15, \"discount\": 0.3, \"refractory\": 0.2, \"reset_absolute\": 1.2, \"gain\": 0.8, \"maintenance\": 0.25, \"cost\": 0.15, \"cost_span\": 0.02, \"boundary_span\": 0.1, \"write_fraction\": 0.5, \"slow_every\": 2, \"boundary_mode\": \"qvi\", \"message_mode\": \"full\", \"feature_bank\": \"value_risk\", \"feature_normalization\": \"none\", \"precision\": \"mixed\", \"backend\": \"uniformized\"}, \"named_parameters\": [{\"name\": \"raw_cost\", \"shape\": [64], \"count\": 64, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"raw_boundary\", \"shape\": [64], \"count\": 64, \"requires_grad\": false, \"dtype\": \"torch.float32\"}, {\"name\": \"input_drive.weight\", \"shape\": [32, 6], \"count\": 192, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_drive.bias\", \"shape\": [32], \"count\": 32, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_mark.weight\", \"shape\": [32, 6], \"count\": 192, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"input_mark.bias\", \"shape\": [32], \"count\": 32, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"recurrent.weight\", \"shape\": [64, 192], \"count\": 12288, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"readout.weight\", \"shape\": [2, 160], \"count\": 320, \"requires_grad\": true, \"dtype\": \"torch.float32\"}, {\"name\": \"readout.bias\", \"shape\": [2], \"count\": 2, \"requires_grad\": true, \"dtype\": \"torch.float32\"}]}], \"wall_s\": 0.027199987089261413, \"trainable_flags_are_capacity_not_an_assertion_all_parameters_updated\": true, \"active_connections_are_fixed_mask_not_learned_topology\": true}, \"bundles\": [{\"path\": \"evidence_archives/n8.tar.gz\", \"bytes\": 19535, \"sha256\": \"e5bf0a38d9c2fc99ff1f7d6dc5e58912dc6394f031522ddbd2a336f09113c1d3\"}, {\"path\": \"evidence_archives/n16.tar.gz\", \"bytes\": 32944, \"sha256\": \"e56b55e9bc15217eceb56e02b86e9d69a19ca928f7b113dd7f13c44702a38ecb\"}, {\"path\": \"evidence_archives/n32.tar.gz\", \"bytes\": 79282, \"sha256\": \"8a217d46a886c02cb6606cf41ebbb3024085b1a266821764cb72b01f75c8600e\"}, {\"path\": \"evidence_archives/n64.tar.gz\", \"bytes\": 214849, \"sha256\": \"6515afc1d1cae355d2f60571be8285f1ead901d2c864d4ea95e5294f604bbc8b\"}, {\"path\": \"evidence_archives/metadata.tar.gz\", \"bytes\": 45566, \"sha256\": \"d4699889dd3cd924347d83d32db85149a3de05a15bae143f16fb92a8990d8a8c\"}]}\n"
+      }
+    }
+  },
+  "capsule_transfer": {
+    "mode": 384,
+    "sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+    "size": 406079,
+    "version": "66306:48153278:406079:1795596741525062647:1795596741525365034",
+    "written": 406079
+  },
+  "collection_source_transfer": {
+    "mode": 384,
+    "sha256": "20d97569e8382ad0f737c8df97441279eb671199542c78198a8f8e323ac6e067",
+    "size": 6577,
+    "version": "66306:48155586:6577:1795597169985573488:1795597169986371680",
+    "written": 6577
+  }
+}

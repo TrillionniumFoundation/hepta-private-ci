@@ -1,0 +1,700 @@
+{
+  "candidates": [
+    {
+      "bank": "value_risk",
+      "dev_metrics": {
+        "accuracy": 1.0,
+        "brier": 0.08748749553102642,
+        "n": 32,
+        "pre_late_accuracy": 0.71875
+      },
+      "dev_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.8207657603852567e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          8,
+          2,
+          10
+        ],
+        "wall_s": 0.09731195401400328
+      },
+      "feature_dim": 20,
+      "max_population_state_difference_to_value_risk": 0.0,
+      "path": "/home/alex/pft-six-actual-hcsn-20261125/run_v1/n8/value_risk_candidate.pt",
+      "sha256": "be813b5458b7d565007fae182e87e0f3680dc8253a266314bd8859606782d388",
+      "solve_s": 0.0012999569298699498,
+      "train_features_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.6653345369377348e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          8,
+          2,
+          10
+        ],
+        "wall_s": 0.19977586599998176
+      },
+      "width": 8
+    },
+    {
+      "bank": "tanh",
+      "dev_metrics": {
+        "accuracy": 1.0,
+        "brier": 0.07667198348230628,
+        "n": 32,
+        "pre_late_accuracy": 0.8125
+      },
+      "dev_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.8207657603852567e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          8,
+          2,
+          10
+        ],
+        "wall_s": 0.11036534490995109
+      },
+      "feature_dim": 20,
+      "max_population_state_difference_to_value_risk": 0.0,
+      "path": "/home/alex/pft-six-actual-hcsn-20261125/run_v1/n8/tanh_candidate.pt",
+      "sha256": "6741593bb99d716429873c3371b965b19593097068509f9c77569da33a8bf32b",
+      "solve_s": 0.00029551004990935326,
+      "train_features_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.6653345369377348e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          8,
+          2,
+          10
+        ],
+        "wall_s": 0.2229288100497797
+      },
+      "width": 8
+    },
+    {
+      "bank": "value_risk",
+      "dev_metrics": {
+        "accuracy": 0.46875,
+        "brier": 0.5145591500866882,
+        "n": 32,
+        "pre_late_accuracy": 0.53125
+      },
+      "dev_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.3988810110276972e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          16,
+          2,
+          10
+        ],
+        "wall_s": 0.15440907003358006
+      },
+      "feature_dim": 40,
+      "max_population_state_difference_to_value_risk": 0.0,
+      "path": "/home/alex/pft-six-actual-hcsn-20261125/run_v1/n16/value_risk_candidate.pt",
+      "sha256": "9c9a458bbf654800d01633a8739bcc164d76247853223f398e6e20dc2569100c",
+      "solve_s": 0.00032462598755955696,
+      "train_features_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.5987211554602254e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          16,
+          2,
+          10
+        ],
+        "wall_s": 0.3128784350119531
+      },
+      "width": 16
+    },
+    {
+      "bank": "tanh",
+      "dev_metrics": {
+        "accuracy": 0.46875,
+        "brier": 0.515010979506648,
+        "n": 32,
+        "pre_late_accuracy": 0.46875
+      },
+      "dev_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.3988810110276972e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          16,
+          2,
+          10
+        ],
+        "wall_s": 0.12404824094846845
+      },
+      "feature_dim": 40,
+      "max_population_state_difference_to_value_risk": 0.0,
+      "path": "/home/alex/pft-six-actual-hcsn-20261125/run_v1/n16/tanh_candidate.pt",
+      "sha256": "34e72eb08c105c8dea719aedf25c19f19a54f25a1e4c0fdaeea32d22d1e91399",
+      "solve_s": 0.00025090400595217943,
+      "train_features_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.5987211554602254e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          16,
+          2,
+          10
+        ],
+        "wall_s": 0.26899314601905644
+      },
+      "width": 16
+    },
+    {
+      "bank": "value_risk",
+      "dev_metrics": {
+        "accuracy": 0.8125,
+        "brier": 0.2421158376848258,
+        "n": 32,
+        "pre_late_accuracy": 0.65625
+      },
+      "dev_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.5987211554602254e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          32,
+          2,
+          10
+        ],
+        "wall_s": 0.19437245302833617
+      },
+      "feature_dim": 80,
+      "max_population_state_difference_to_value_risk": 0.0,
+      "path": "/home/alex/pft-six-actual-hcsn-20261125/run_v1/n32/value_risk_candidate.pt",
+      "sha256": "1cf1e815cd7a68d626961bbb8f99eb6b95dcead8384485daaef258087aefa864",
+      "solve_s": 0.00033376296050846577,
+      "train_features_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.6653345369377348e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          32,
+          2,
+          10
+        ],
+        "wall_s": 0.4295667710248381
+      },
+      "width": 32
+    },
+    {
+      "bank": "tanh",
+      "dev_metrics": {
+        "accuracy": 0.875,
+        "brier": 0.2287052518478337,
+        "n": 32,
+        "pre_late_accuracy": 0.6875
+      },
+      "dev_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.5987211554602254e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          32,
+          2,
+          10
+        ],
+        "wall_s": 0.2029530629515648
+      },
+      "feature_dim": 80,
+      "max_population_state_difference_to_value_risk": 0.0,
+      "path": "/home/alex/pft-six-actual-hcsn-20261125/run_v1/n32/tanh_candidate.pt",
+      "sha256": "e2bfdab192ffc43c814bcab62b7058ebb407764881ba1b48212fcf566676f537",
+      "solve_s": 0.00031277304515242577,
+      "train_features_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 1.6653345369377348e-14,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          32,
+          2,
+          10
+        ],
+        "wall_s": 0.39881529891863465
+      },
+      "width": 32
+    },
+    {
+      "bank": "value_risk",
+      "dev_metrics": {
+        "accuracy": 0.46875,
+        "brier": 0.5139287235787174,
+        "n": 32,
+        "pre_late_accuracy": 0.5
+      },
+      "dev_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 3.4416913763379853e-15,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          64,
+          2,
+          10
+        ],
+        "wall_s": 0.24139275902416557
+      },
+      "feature_dim": 160,
+      "max_population_state_difference_to_value_risk": 0.0,
+      "path": "/home/alex/pft-six-actual-hcsn-20261125/run_v1/n64/value_risk_candidate.pt",
+      "sha256": "bdfec6f728c8b6c71900d8015cd774f40af351f0260bbfe9f05eb7cae86a2885",
+      "solve_s": 0.0005869519663974643,
+      "train_features_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 4.3298697960381105e-15,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          64,
+          2,
+          10
+        ],
+        "wall_s": 0.49850180302746594
+      },
+      "width": 64
+    },
+    {
+      "bank": "tanh",
+      "dev_metrics": {
+        "accuracy": 0.46875,
+        "brier": 0.514121393872013,
+        "n": 32,
+        "pre_late_accuracy": 0.5625
+      },
+      "dev_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 3.4416913763379853e-15,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          64,
+          2,
+          10
+        ],
+        "wall_s": 0.2565042609348893
+      },
+      "feature_dim": 160,
+      "max_population_state_difference_to_value_risk": 0.0,
+      "path": "/home/alex/pft-six-actual-hcsn-20261125/run_v1/n64/tanh_candidate.pt",
+      "sha256": "a92f252116d394ff33dff79112764a56e9f01191f5d973bdc1d34fefe9a5f880",
+      "solve_s": 0.0004738440038636327,
+      "train_features_timing": {
+        "absolute_final_step": 12,
+        "complete_state_fields": [
+          "density",
+          "boundary",
+          "drift",
+          "cost",
+          "message"
+        ],
+        "max_probability_mass_error": 4.3298697960381105e-15,
+        "max_signed_mark_excess": 0.0,
+        "min_probability": 0.0,
+        "population_state_shape_per_batch": [
+          8,
+          64,
+          2,
+          10
+        ],
+        "wall_s": 0.48392810695804656
+      },
+      "width": 64
+    }
+  ],
+  "dev_data_sha256": "e610432078861fc6d0e1ed5c2356483993c514a2c8c06dd2060fc7c186eae8e5",
+  "failures": [],
+  "frozen_utc": "2026-11-25T08:55:26.368877+00:00",
+  "parents": [
+    {
+      "cold_replay": {
+        "input_sha256": "49bd63e36ce16ef851f00520cb6aef877064a5fdb8d1e418516593c29d035f3f",
+        "max_errors": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "output_sha256": "651650de65983fd997f3ff177d4d3859717fc31d1a1e81483636929c94285ee7",
+        "pass": true,
+        "scope": "fresh_Python_process_full_state_continuation",
+        "step_equal": true,
+        "wall_s": 0.8600322350393981
+      },
+      "config": {
+        "backend": "dense",
+        "base_drift": -0.2,
+        "bins": 6,
+        "boundary_mode": "qvi",
+        "boundary_span": 0.1,
+        "cost": 0.15,
+        "cost_span": 0.02,
+        "discount": 0.3,
+        "drift_scale": 0.15,
+        "dt": 0.25,
+        "extent": 2.0,
+        "feature_bank": "value_risk",
+        "feature_normalization": "none",
+        "gain": 0.8,
+        "input_size": 6,
+        "maintenance": 0.25,
+        "message_mode": "full",
+        "neurons": 8,
+        "precision": "mixed",
+        "refractory": 0.2,
+        "reset_absolute": 1.2,
+        "sigma": 0.55,
+        "slow_every": 2,
+        "stages": 3,
+        "write_fraction": 0.5
+      },
+      "kind": "archived_trained_qvi_full_parent",
+      "parameter_count": 306,
+      "parent_sha256": "dbb2e8385e52e426a1ad4d11320215a788b0069d5dd1fb9df21ab895888892ff",
+      "seed": 1101,
+      "selected_step": 512,
+      "trainable_parameters": 298,
+      "width": 8
+    },
+    {
+      "cold_replay": {
+        "input_sha256": "58c3f8fd4c60d2654698e2f3dc1f95d60a0ed47aa25f521f8e3da19b697a95a6",
+        "max_errors": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "output_sha256": "49753fb53d2f405b9fe21e9aa4538ca06a099f1565b2b10a1dedecdc765aeda0",
+        "pass": true,
+        "scope": "fresh_Python_process_full_state_continuation",
+        "step_equal": true,
+        "wall_s": 1.4485168209066615
+      },
+      "config": {
+        "backend": "dense",
+        "base_drift": -0.2,
+        "bins": 6,
+        "boundary_mode": "qvi",
+        "boundary_span": 0.1,
+        "cost": 0.15,
+        "cost_span": 0.02,
+        "discount": 0.3,
+        "drift_scale": 0.15,
+        "dt": 0.25,
+        "extent": 2.0,
+        "feature_bank": "value_risk",
+        "feature_normalization": "none",
+        "gain": 0.8,
+        "input_size": 6,
+        "maintenance": 0.25,
+        "message_mode": "full",
+        "neurons": 16,
+        "precision": "mixed",
+        "refractory": 0.2,
+        "reset_absolute": 1.2,
+        "sigma": 0.55,
+        "slow_every": 2,
+        "stages": 3,
+        "write_fraction": 0.5
+      },
+      "cpu_budget_s": 30.0,
+      "cpu_s": 4.042285813,
+      "kind": "new_N16_parent_research_bootstrap",
+      "losses": [
+        0.6618373394012451,
+        0.7170355319976807,
+        0.6673166155815125,
+        0.7740058898925781,
+        0.8571696281433105,
+        0.6617227792739868,
+        0.6706305742263794,
+        0.6739330291748047,
+        0.6773227453231812,
+        0.6356244683265686,
+        0.5412420630455017,
+        0.7685607075691223,
+        0.56175696849823,
+        0.8432446122169495,
+        0.5611265301704407,
+        0.7022756934165955,
+        0.5616443157196045,
+        0.4346179664134979,
+        0.6917822360992432,
+        0.5647138357162476,
+        0.9272395372390747,
+        0.672685444355011,
+        0.6620710492134094,
+        0.5985521078109741
+      ],
+      "parameter_count": 994,
+      "parent_sha256": "db257d6e66939e0279d15fc7f096008d092d85081ef83e5bd4a68ea1e2e054c3",
+      "qualified_as_converged": false,
+      "requested_steps": 24,
+      "trainable_parameters": 978,
+      "updates": 24,
+      "wall_s": 4.051640789955854,
+      "width": 16
+    },
+    {
+      "cold_replay": {
+        "input_sha256": "64612afba4de0de9bdfaed0c2938d781fc7d931991aacca24841e89705b3689b",
+        "max_errors": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "output_sha256": "c1f740487b02c318645a9faf834b83ab6364aaa7fe05343d1d6b392c5e64c88d",
+        "pass": true,
+        "scope": "fresh_Python_process_full_state_continuation",
+        "step_equal": true,
+        "wall_s": 0.8792835869826376
+      },
+      "config": {
+        "backend": "dense",
+        "base_drift": -0.2,
+        "bins": 6,
+        "boundary_mode": "qvi",
+        "boundary_span": 0.1,
+        "cost": 0.15,
+        "cost_span": 0.02,
+        "discount": 0.3,
+        "drift_scale": 0.15,
+        "dt": 0.25,
+        "extent": 2.0,
+        "feature_bank": "value_risk",
+        "feature_normalization": "none",
+        "gain": 0.8,
+        "input_size": 6,
+        "maintenance": 0.25,
+        "message_mode": "full",
+        "neurons": 32,
+        "precision": "mixed",
+        "refractory": 0.2,
+        "reset_absolute": 1.2,
+        "sigma": 0.55,
+        "slow_every": 2,
+        "stages": 3,
+        "write_fraction": 0.5
+      },
+      "kind": "archived_trained_qvi_full_parent",
+      "parameter_count": 3522,
+      "parent_sha256": "0db75cbd98d45f9f8f5b46d180c6050ed63445faa1f1496e0b51b9a78849a19b",
+      "seed": 1101,
+      "selected_step": 239,
+      "trainable_parameters": 3490,
+      "width": 32
+    },
+    {
+      "cold_replay": {
+        "input_sha256": "b16ec21538af9c63d9e83c3d110feda4e23e0faac8d1700b5b6340a64d7fcc3b",
+        "max_errors": {
+          "boundary": 0.0,
+          "cost": 0.0,
+          "density": 0.0,
+          "drift": 0.0,
+          "features": 0.0,
+          "logits": 0.0,
+          "message": 0.0
+        },
+        "output_sha256": "6445209c38e87d6fcfe801800a43efe2e2899c8cee14de37ce0f0bccf3d4e3bc",
+        "pass": true,
+        "scope": "fresh_Python_process_full_state_continuation",
+        "step_equal": true,
+        "wall_s": 0.8880957160145044
+      },
+      "config": {
+        "backend": "uniformized",
+        "base_drift": -0.2,
+        "bins": 6,
+        "boundary_mode": "qvi",
+        "boundary_span": 0.1,
+        "cost": 0.15,
+        "cost_span": 0.02,
+        "discount": 0.3,
+        "drift_scale": 0.15,
+        "dt": 0.25,
+        "extent": 2.0,
+        "feature_bank": "value_risk",
+        "feature_normalization": "none",
+        "gain": 0.8,
+        "input_size": 6,
+        "maintenance": 0.25,
+        "message_mode": "full",
+        "neurons": 64,
+        "precision": "mixed",
+        "refractory": 0.2,
+        "reset_absolute": 1.2,
+        "sigma": 0.55,
+        "slow_every": 2,
+        "stages": 3,
+        "write_fraction": 0.5
+      },
+      "kind": "archived_trained_qvi_full_parent",
+      "parameter_count": 13186,
+      "parent_sha256": "7f6c9f0760fc7f77f29c1ec61da9fa59f59b716d744de9b376909870924c3746",
+      "seed": 1101,
+      "selected_step": 64,
+      "trainable_parameters": 13122,
+      "width": 64
+    }
+  ],
+  "protocol_sha256": "4cd9a08592f7c9fbc6843ba5fcf04816ce02ff1bb025a33dd3c618aba16e3dcf",
+  "test_generation_seed": 731,
+  "test_source_ids": [
+    93000,
+    93001,
+    93002,
+    93003
+  ],
+  "train_data_sha256": "61a9a65c32b3fa3153522bf33788445d377542b3a78cd492346b6477ec47c2fc"
+}

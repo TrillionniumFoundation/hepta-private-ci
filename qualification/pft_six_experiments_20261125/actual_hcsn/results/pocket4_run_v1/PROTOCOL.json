@@ -1,0 +1,66 @@
+{
+  "arguments": {
+    "bootstrap_cpu_seconds": 30.0,
+    "bootstrap_steps": 24,
+    "command": "run",
+    "data_seed": 731,
+    "dev_per_source": 16,
+    "out": "/home/alex/pft-six-actual-hcsn-20261125/run_v1",
+    "ridge": 0.01,
+    "test_per_source": 24,
+    "train_per_source": 16,
+    "widths": "8,16,32,64"
+  },
+  "cross_width_budget_matched": false,
+  "experiment": "PFT6-ACTUAL-SMALLHCSN-NEW-SOURCES-v1",
+  "full_network_retraining_gate_claimed": false,
+  "imported_qualification_module_paths": {
+    "qualification": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/__init__.py",
+    "qualification.hcsn_adaptive": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/hcsn_adaptive/__init__.py",
+    "qualification.hcsn_adaptive.batched_flow": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/hcsn_adaptive/batched_flow.py",
+    "qualification.hcsn_adaptive.finite_control": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/hcsn_adaptive/finite_control.py",
+    "qualification.hcsn_adaptive.flow_semantics": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/hcsn_adaptive/flow_semantics.py",
+    "qualification.hcsn_adaptive.impulse_execution": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/hcsn_adaptive/impulse_execution.py",
+    "qualification.hcsn_adaptive.uniformized_flow": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/hcsn_adaptive/uniformized_flow.py",
+    "qualification.hcsn_smallnet_20261124": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/hcsn_smallnet_20261124/__init__.py",
+    "qualification.hcsn_smallnet_20261124.model": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/hcsn_smallnet_20261124/model.py",
+    "qualification.hcsn_training": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/hcsn_training/__init__.py",
+    "qualification.hcsn_training.population_generator": "/home/alex/pft-six-actual-hcsn-20261125/capsule/src/qualification/hcsn_training/population_generator.py"
+  },
+  "old_parent_training_cost_included_in_new_timings": false,
+  "old_qualification_transferred": false,
+  "ordinary_control": "same_population_dynamics; only value/risk replaced by tanh(drive)/tanh(raw_mark)",
+  "origin_commit": "88414dda04443897def179754779aecdca6f0296",
+  "post_information_Bayes_accuracy": 1.0,
+  "pre_late_Bayes_accuracy": 0.75,
+  "registered_utc": "2026-11-25T08:55:13.170316+00:00",
+  "runtime": {
+    "device": "cpu",
+    "numpy": "2.5.5",
+    "python": "3.14.4",
+    "threads": 1,
+    "torch": "2.15.0+cpu"
+  },
+  "scope": "real_SmallHCSN_new_synthetic_tasks_fixed_parent_readout_and_replay",
+  "source_ids": {
+    "dev": [
+      92000,
+      92001
+    ],
+    "test": [
+      93000,
+      93001,
+      93002,
+      93003
+    ],
+    "train": [
+      91000,
+      91001,
+      91002,
+      91003
+    ]
+  },
+  "source_provenance_sha256": "72194249d27b8af51cf95f89f5db494fa525e44c156eaf11b56e417ccc8c3b55",
+  "study_sha256": "3007f64b548671f2f372ae9db4f48459d2795a68f0154fbeb1a6579994719678",
+  "test_labels_created_before_global_freeze": false
+}
