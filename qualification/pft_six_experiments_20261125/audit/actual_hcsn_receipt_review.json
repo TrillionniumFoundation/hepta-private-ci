@@ -1,0 +1,78 @@
+{
+  "bound_artifact_sha256": {
+    "EXECUTION_RECEIPT.json": "bfb1e2b7f7ad7e15a2a49a3efcaf03b2b5dff96dff06cf25d52001664a16b975",
+    "GLOBAL_CANDIDATE_FREEZE.json": "bdbbcb7f5f93661bd3140ce11036170516f5b345149bbd175140125f787ee1db",
+    "PROTOCOL.json": "4cd9a08592f7c9fbc6843ba5fcf04816ce02ff1bb025a33dd3c618aba16e3dcf",
+    "RESULT.json": "f1795c758a178c5841e3e9c30ae064a2b773859e9f57f3a5d9cae6f826a62dd7",
+    "RETRIEVAL_RECEIPT.json": "33d7ce216a28f38b65ba15097df77113b0689ab8a3650956f31a0694b39cdefe"
+  },
+  "checks": {
+    "all_archive_parent_hashes_match_pinned_extraction": true,
+    "all_final_train_state_differences_zero": true,
+    "all_frozen_candidate_metadata_preserved": true,
+    "all_test_counts_96": true,
+    "candidate_freeze_precedes_test_open": true,
+    "declared_limits_preserved": true,
+    "durable_study_success": true,
+    "eight_distinct_candidate_cases": true,
+    "eight_distinct_measured_result_cases": true,
+    "equal_dimension_per_width": true,
+    "execution_exit_zero": true,
+    "four_complete_cold_replays_exact": true,
+    "four_parents_preserved": true,
+    "freeze_protocol_hash": true,
+    "result_freeze_hash": true,
+    "retrieved_file_hashes_match_native_receipt": true,
+    "same_source_provenance": true,
+    "same_study_source_as_reviewed": true,
+    "test_mass_signed_mark_nonnegative_invariants": true
+  },
+  "interpretation": "Real population-kernel execution and cold replay are evidenced. This test does not show consistent value/risk superiority; N16/N64 both banks score 45/96. Keep all outcomes and scope restrictions.",
+  "limits": [
+    "Audit checks receipts and reviewed source; it is not an independent Torch rerun.",
+    "Candidate and replay payload hashes agree across freeze/results, but raw payload bytes are not yet part of this local receipt review.",
+    "N64 uses uniformized backend; N8/N16/N32 use dense backend, in addition to unequal parent training budgets.",
+    "One data seed and 96 test examples per case do not establish production/generalization or cross-width superiority.",
+    "The same-state comparison is on final training population states; it is not a measurement of every test trajectory."
+  ],
+  "observations": {
+    "accuracy": [
+      {
+        "tanh": 0.9375,
+        "value_risk": 0.9375,
+        "width": 8
+      },
+      {
+        "tanh": 0.46875,
+        "value_risk": 0.46875,
+        "width": 16
+      },
+      {
+        "tanh": 0.9166666666666666,
+        "value_risk": 0.90625,
+        "width": 32
+      },
+      {
+        "tanh": 0.46875,
+        "value_risk": 0.46875,
+        "width": 64
+      }
+    ],
+    "backends": {
+      "16": "dense",
+      "32": "dense",
+      "64": "uniformized",
+      "8": "dense"
+    },
+    "cold_replay_max_error": 0.0,
+    "max_test_probability_mass_error": 1.7319479184152442e-14,
+    "n16_bootstrap_updates": 24,
+    "source_seed": 731,
+    "test_count_per_case": 96,
+    "wall_s": 17.343991596950218
+  },
+  "reviewer": "primary_literature independent audit subagent",
+  "scientific_experiments_rerun": false,
+  "scientific_source_modified": false,
+  "status": "PASS_RECEIPT_CONSISTENCY_NOT_SCIENTIFIC_ACCEPTANCE"
+}
