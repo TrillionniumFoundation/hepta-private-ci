@@ -89,6 +89,18 @@ class CheckoutIdentityTests(unittest.TestCase):
         self.assertEqual(identity["parents"], [self.base, self.source])
         qualification.verify_checkout_identity(identity, self.source)
 
+    def test_ordered_parents_do_not_authorize_a_different_merge_tree(self) -> None:
+        identity = self.identity("merge")
+        other_tree = self.git("rev-parse", f"{self.base}^{{tree}}")
+        candidate = self.git(
+            "commit-tree", other_tree, "-p", self.base, "-p", self.source,
+            "-m", "Fixture with correct parents but wrong tree",
+        )
+        self.git("checkout", "--detach", candidate)
+        identity.update(candidate=candidate, candidateTree=other_tree)
+        with self.assertRaisesRegex(ValueError, "actual ordered merge"):
+            qualification.verify_checkout_identity(identity, self.source)
+
     def test_changed_merge_parent_order_is_rejected(self) -> None:
         identity = self.identity("merge")
         identity["parents"] = [self.source, self.base]
@@ -121,6 +133,40 @@ class NextestOutputTests(unittest.TestCase):
             "PASS [0.032s] package tests::one extra-token\n"
         )
         self.assertEqual(qualification.passed_tests(text), [])
+
+
+class TraceabilityIdentityTests(unittest.TestCase):
+    def test_declared_regression_requires_its_exact_binary_and_test_name(self) -> None:
+        test_case = {
+            "source": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
+            "function": "seals_receipt",
+            "binaryId": qualification.CRATE,
+            "testName": "storage::tests::seals_receipt",
+        }
+        declaration = {
+            "cases": [{
+                "id": "ART-03",
+                "module": "learning.artifacts",
+                "tests": [test_case],
+            }]
+        }
+        rows = [
+            {"binary": "different-binary", "function": test_case["testName"]},
+            {"binary": qualification.CRATE, "function": "other::seals_receipt"},
+        ]
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        trace = root / "qualification/lane-e/TEST_TRACEABILITY.json"
+        trace.parent.mkdir(parents=True)
+        trace.write_text(json.dumps(declaration))
+        result = {"name": "owner-regression", "status": "passed", "passedTests": rows}
+        with mock.patch.object(qualification, "ROOT", root), mock.patch.object(
+            qualification, "git", return_value="fixture-source-oid"
+        ):
+            self.assertEqual(qualification.traceability([result])[0]["execution"], "unproven")
+            rows.append({"binary": qualification.CRATE, "function": test_case["testName"]})
+            self.assertEqual(qualification.traceability([result])[0]["execution"], "passed")
 
 
 class QueueIdentityTests(unittest.TestCase):

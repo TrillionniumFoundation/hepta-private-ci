@@ -224,6 +224,20 @@ impl LearningArtifactOwnerService {
         self.draining = true;
     }
 
+    /// Whether the current owner is draining with no local write left unresolved.
+    ///
+    /// This is lifecycle observation only. It does not prove deployment readiness,
+    /// a current witness, or an authorization to reopen the writer. The writer
+    /// remains fenced until the service is dropped.
+    #[must_use]
+    pub fn is_drained(&self) -> bool {
+        self.draining
+            && self.recovery_required.is_none()
+            && !self.original_preparation_active
+            && !self.original_preparation_fenced.load(Ordering::Acquire)
+            && self.require_original_withdrawal().is_ok()
+    }
+
     /// Install an authenticated newer withdrawal frontier. The service accepts
     /// only an exact monotonic prefix extension in the same scope.
     pub fn install_withdrawal_frontier(

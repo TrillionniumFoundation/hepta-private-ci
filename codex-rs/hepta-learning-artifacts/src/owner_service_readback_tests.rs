@@ -284,7 +284,10 @@ fn owner_drain_closes_admission_but_preserves_original_readback_and_fence() {
     assert!(!status.authority.grants_any());
     assert!(!fixture.service.status(lease.expires_at + 1).ready);
 
+    assert!(!fixture.service.is_drained());
     fixture.service.begin_shutdown();
+    fixture.service.begin_shutdown();
+    assert!(fixture.service.is_drained());
     let status = fixture.service.status(fixture.config.now);
     assert!(status.draining);
     assert!(!status.ready);
@@ -321,6 +324,7 @@ fn owner_drain_closes_admission_but_preserves_original_readback_and_fence() {
             .is_ok()
     );
     assert_eq!(fixture.bytes(), before);
+    assert!(fixture.service.is_drained());
 }
 
 #[test]

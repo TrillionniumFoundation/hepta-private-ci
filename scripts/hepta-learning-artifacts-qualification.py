@@ -261,6 +261,9 @@ def verify_checkout_identity(identity: dict, expected: str) -> None:
     elif identity["lane"] == "merge":
         if identity["parents"] != [identity["base"], expected]:
             raise ValueError("ordered merge parent mismatch")
+        merged = git("merge-tree", "--write-tree", identity["base"], expected)
+        if merged.splitlines() != [identity["candidateTree"]]:
+            raise ValueError("checkout tree differs from the actual ordered merge")
     elif identity["lane"] == "queue":
         if (
             identity["candidate"] != expected
@@ -349,7 +352,7 @@ def traceability(results: list[dict]) -> list[dict]:
     )
     observed = {
         result["name"]: {
-            item["function"].split("::")[-1] for item in result["passedTests"]
+            (item["binary"], item["function"]) for item in result["passedTests"]
         }
         for result in results
         if result["status"] == "passed"
@@ -363,27 +366,33 @@ def traceability(results: list[dict]) -> list[dict]:
             path = test["source"]
             own = path.startswith("codex-rs/hepta-learning-artifacts/")
             step = "owner-regression" if own else "selected-reload"
+            test_identity = (test["binaryId"], test["testName"])
             mapped.append(
                 {
                     "requirement": case["id"],
                     "source": path,
                     "sourceBlob": git("rev-parse", f"HEAD:{path}"),
                     "function": test["function"],
+                    "binaryId": test_identity[0],
+                    "testName": test_identity[1],
                     "execution": "passed"
-                    if test["function"] in observed.get(step, set())
+                    if test_identity in observed.get(step, set())
                     else "unproven",
                     "step": step,
                 }
             )
     for name in NEW_TESTS:
         path = "codex-rs/hepta-learning-artifacts/src/admission_v3.rs"
+        test_name = f"admission_v3::tests::{name}"
         mapped.append(
             {
                 "requirement": "ART-13",
                 "source": path,
                 "sourceBlob": git("rev-parse", f"HEAD:{path}"),
                 "function": name,
-                "execution": "passed" if name in native else "unproven",
+                "binaryId": CRATE,
+                "testName": test_name,
+                "execution": "passed" if (CRATE, test_name) in native else "unproven",
                 "step": "owner-regression",
             }
         )

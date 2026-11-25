@@ -3,6 +3,7 @@ use super::*;
 use crate::DatasetWithdrawalNoticeV1;
 use crate::DatasetWithdrawalRegistry;
 use crate::LearningArtifactOwnerServiceConfigV1;
+use crate::LearningArtifactOwnerServiceError;
 use crate::RegistryHeadWitnessV1;
 use crate::admit_manifest_at_withdrawal_head_v3;
 use crate::test_support::FixtureValue;
@@ -137,6 +138,38 @@ fn original_registry_preparation_stops_before_head_and_finishes_same_writer_once
         Err(OriginalArtifactPreparationErrorV1::ReadbackRequired)
     ));
     assert_eq!(files(&directory.0), after);
+}
+
+#[test]
+fn owner_drain_waits_for_the_exact_inflight_continuation() {
+    let directory = fixture::TestDir::new();
+    let config = configuration(&directory);
+    let mut service = LearningArtifactOwnerService::open(config.clone()).fixture("open");
+    let context = context(&service);
+    let prepared = service
+        .prepare_original_registry_with_clock(context.clone(), b"payload", &|| Ok(20))
+        .fixture("prepare");
+    let original = files(&directory.0);
+    service.begin_shutdown();
+    assert!(!service.is_drained());
+    assert!(matches!(
+        service.prepare_original_registry_with_clock(context, b"payload", &|| Ok(21)),
+        Err(OriginalArtifactPreparationErrorV1::ShuttingDown)
+    ));
+    assert_eq!(files(&directory.0), original);
+    let head = signed(prepared.registry_durable());
+    let receipt = service
+        .finish_original_registry_with_clock(prepared, head, &|| Ok(30))
+        .fixture("finish only the original continuation");
+    assert!(!receipt.authority.grants_any());
+    assert!(service.is_drained());
+    assert!(!service.status(30).ready);
+    assert!(matches!(
+        LearningArtifactOwnerService::open(config),
+        Err(LearningArtifactOwnerServiceError::Host(
+            ArtifactOwnerHostError::WriterFenceBusy
+        ))
+    ));
 }
 
 #[test]
@@ -447,6 +480,8 @@ fn original_registry_preparation_preserves_failed_withdrawal_install_fence() {
         ))
     ));
     assert!(service.recovery_required().is_none());
+    service.begin_shutdown();
+    assert!(!service.is_drained());
     assert_eq!(files(&directory.0), before);
     assert_eq!(
         fs::read(directory.0.join("withdrawal.CURRENT")).fixture("frontier after refusal"),

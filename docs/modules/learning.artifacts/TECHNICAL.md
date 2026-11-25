@@ -209,6 +209,15 @@ Create-only file writers hold an exclusive advisory file lock through the empty-
 
 Iteration bookkeeping is separately bounded and authority-free. `IterationLedgerV1` can record typed externally produced evidence and replay candidate state, but it does not execute a sandbox, evaluate code, select a candidate, merge source or release an artifact.
 
+Before shutdown, the host closes its routes and records its own durable stop intent.
+The existing owner's `begin_shutdown()` then refuses new mutations without releasing
+the writer fence. The same live owner may finish only a previously issued, exact
+continuation, and immutable acknowledged receipts remain available through readback.
+`is_drained()` reports whether shutdown was requested and no unresolved local write
+or withdrawal fence remains. It is not a readiness or authorization decision; the
+writer fence stays held until drop. A replacement owner must obey the host's durable
+stop intent rather than relying on the previous process's in-memory flag.
+
 ## 8. Failure semantics, recovery and rollback
 
 The module fails closed on digest mismatch, scope mismatch, predecessor mismatch, stale withdrawal head, invalid lifecycle transition, expired mutation credentials, invalid current-head witness, non-canonical durable bytes, capacity exhaustion and publication phase skips.
