@@ -233,4 +233,3 @@ execution order/sample seeds, runtime environment, exact source/protocol/freeze
 identities and full process/child receipts. Report what failed or remained unrun
 and the stated evidence/accounting limits. H1, D1, all r2/CORE failures and their
 test states remain unchanged; no merge, deployment or permissions change.
-

@@ -471,4 +471,3 @@ No new model speed, actual task gain, future generalization or production
 qualification is established until a fresh exact-source hosted run completes
 and the independent verifier checks the generated answers and runtime
 receipts.
-

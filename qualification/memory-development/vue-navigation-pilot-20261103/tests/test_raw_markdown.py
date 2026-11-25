@@ -163,4 +163,3 @@ class RawMarkdownTests(unittest.TestCase):
             self.assertEqual(rm.pack_primary(['a'], {'a': doc})['bytes'], 8192)
             doc['text'] += 'x'
             self.assertEqual(rm.pack_primary(['a'], {'a': doc})['ids'], [])
-

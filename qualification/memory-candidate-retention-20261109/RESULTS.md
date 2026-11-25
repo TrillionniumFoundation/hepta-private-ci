@@ -266,4 +266,3 @@ The original terminal evidence remains under
 [^run]: `run-002/RUN_RECEIPT.json`, exact SHA-256 in the evidence table. Its attempt roster has the same 108 operation IDs as the report. Original preflight costs are retained in [preflight-attempt-001.json](observations/preflight-attempt-001.json).
 [^bootstrap]: `BOOTSTRAP_RECEIPT-v2.json`, exact SHA-256 in the evidence table. It records the original preflight receipt SHA, absent PLAN, empty journal, correction relationship and zero new fits/repeats.
 [^request]: The executed `request-v2.json` has SHA-256 `2ad28975785858d77780e8b7c333154282916ff330c09b2f3d4aa211a8812f98`, as bound by the correction bootstrap. It preserves the original selection salt, model/data configuration and source-group design.
-

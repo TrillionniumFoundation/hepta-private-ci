@@ -80,4 +80,3 @@ There is no proof of scientific improvement, plasticity attribution, genuine
 NoUpdate/Adopt, seven-lineage training, sparse/dense ACT/CTRL outcome,
 MEM deletion, independent evaluator, Core × NDU 2×2, or production permission.
 The original negative clock comparison and HOLD_NO_GO remain unchanged.
-

@@ -47,4 +47,3 @@ MEM run 43002359609 的 11 个 memory 和 6 个 Agentd 用例已通过；随后 
 本阶段新增 scored actor episode 为 0；没有重放原 admitted provider turn；原 provider terminal 仍 UNKNOWN。没有新增 source exposure 准入。档案恢复、测试 owner fixture、源码门禁或 CI 部分成功，都不能替代真实 owner/独立信任域/实际效果状态的冷恢复和后继任务收益。全部 10 项采用 blocker 继续按原门槛保留。
 
 详见本目录的 CHECKPOINT_REPAIR_V13.json、ROOT_BAZEL_READBACK_AUDIT.json、ROOT_EXTRA_READBACK_AUDIT.json、ROOT_CI189_READBACK_AUDIT.json 与对应不可变原始档案。历史 v12 的当时 pending 状态保留，由本检查点补记后续观察，不回写历史。
-

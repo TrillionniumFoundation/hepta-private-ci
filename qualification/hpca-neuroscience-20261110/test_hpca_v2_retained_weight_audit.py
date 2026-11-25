@@ -45,4 +45,3 @@ class TestRetainedWeights(unittest.TestCase):
         self.assertTrue(all(p["tensor_count"]>0 for p in x["pairs"]))
         self.assertTrue(all(sum(v["elements"] for v in p["groups"].values())>0 for p in x["pairs"]))
 if __name__=="__main__": unittest.main()
-
