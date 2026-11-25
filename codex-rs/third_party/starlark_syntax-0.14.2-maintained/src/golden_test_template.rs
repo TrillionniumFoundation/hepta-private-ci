@@ -53,14 +53,36 @@ pub fn golden_test_template(golden_rel_path: &str, output: &str) {
 
     let output_with_prefix = make_golden(output);
 
+    // Select the explicit JSON representation only for fixtures stored in that
+    // form. The decoded string still contains every original whitespace byte.
+    let json_golden_file_path = format!("{golden_file_path}.json");
+    let encoded = fs::exists(&json_golden_file_path)
+        .with_context(|| format!("Finding `{json_golden_file_path}`"))
+        .unwrap();
+    let path = if encoded {
+        &json_golden_file_path
+    } else {
+        &golden_file_path
+    };
+
     if env::var(REGENERATE_VAR_NAME).is_ok() {
-        fs::write(&golden_file_path, &output_with_prefix)
-            .with_context(|| format!("Writing `{golden_file_path}`"))
+        let payload = if encoded {
+            serde_json::to_string(&output_with_prefix).unwrap() + "\n"
+        } else {
+            output_with_prefix
+        };
+        fs::write(path, payload)
+            .with_context(|| format!("Writing `{path}`"))
             .unwrap();
     } else {
-        let expected = fs::read_to_string(&golden_file_path)
-            .with_context(|| format!("Reading `{golden_file_path}`"))
+        let mut expected = fs::read_to_string(path)
+            .with_context(|| format!("Reading `{path}`"))
             .unwrap();
+        if encoded {
+            expected = serde_json::from_str(&expected)
+                .with_context(|| format!("Decoding `{path}`"))
+                .unwrap();
+        }
 
         let expected = if cfg!(windows) {
             // Git may check out files on Windows with \r\n as line separator.

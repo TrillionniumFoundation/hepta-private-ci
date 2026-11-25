@@ -1,0 +1,1 @@
+"# @generated\n# To regenerate, run:\n# ```\n# STARLARK_RUST_REGENERATE_GOLDEN_TESTS=1 cargo test -p starlark --lib\n# ```\n\nProgram:\n_ = a if b\n\nError:\nerror: Parse error: unexpected new line, expected keyword 'else'\n --> error_missing_else:1:11\n  |\n1 | _ = a if b\n  |           \n  |\n"
