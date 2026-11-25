@@ -55,7 +55,7 @@ class Peer:
         self.ledger = self.directory / "ledger.json"
         self.metrics_path = self.directory / "metrics.json"
         self.lock = threading.RLock()
-        self.receiver = Receiver.restore(self.ledger) if resume else Receiver(config["header"])
+        self.receiver = Receiver.restore(self.ledger, expected_header=config["header"]) if resume else Receiver(config["header"])
         self.restored_count = len(self.receiver.messages)
         if not resume:
             self.receiver.accept(config["message"])
@@ -125,6 +125,17 @@ class Peer:
 
 def worker(config_path, resume):
     config = json.loads(Path(config_path).read_text())
+    ridge = config["ridge"]
+    if type(ridge) not in (int, float) or not np.isfinite(ridge) or ridge <= 0:
+        raise ValueError("A finite positive ridge cost is required")
+    objective = {"ridge": ridge, "loss": "sum squared residual", "version": 1}
+    if config["header"]["objective_id"] != hashed(objective):
+        raise ValueError("The actual solve differs from the frozen objective")
+    parent = np.asarray(config["parent"], dtype=float)
+    if parent.shape != (config["header"]["size"],) or not np.isfinite(parent).all():
+        raise ValueError("A finite parent in the frozen coordinates is required")
+    if array_hash(parent) != config["header"]["parent_id"]:
+        raise ValueError("The actual parent differs from the frozen parent")
     peer = Peer(config, resume)
     if not resume:
         time.sleep(config["startup_delay_seconds"])
@@ -167,12 +178,15 @@ def worker(config_path, resume):
     server.shutdown()
     server.server_close()
     thread.join()
+    snapshot = peer.receiver.freeze(config["round_id"])
+    peer.receiver.checkpoint(peer.ledger)
     gram, moment = peer.receiver.sums()
     action = np.linalg.solve(gram + config["ridge"] * np.eye(len(moment)), moment)
-    candidate = np.asarray(config["parent"]) + action
+    candidate = parent + action
     result = {"node": config["node"], "pid": os.getpid(), "restored_contributions": peer.restored_count,
               "accepted_ids": sorted(peer.receiver.messages), "candidate": candidate.tolist(),
               "candidate_sha256": array_hash(candidate), "ledger_sha256": hashlib.sha256(peer.ledger.read_bytes()).hexdigest(),
+              "statistics_snapshot_id": snapshot["snapshot_id"],
               "transfers": peer.metrics}
     durable_write(Path(config["directory"]) / "result.json", result)
 
