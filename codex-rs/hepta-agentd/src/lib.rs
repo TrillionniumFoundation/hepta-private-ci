@@ -419,6 +419,8 @@ mod notes_ui_wire;
 mod objective_runtime;
 #[cfg(target_os = "linux")]
 mod paired_original_turn;
+#[cfg(target_os = "linux")]
+mod paired_preparation;
 mod plasticity_anchor_journal;
 mod plasticity_host;
 mod plasticity_learning_producer;
@@ -939,6 +941,16 @@ pub use paired_original_turn::AgentdPairedTurnVerifier;
 pub use paired_original_turn::PairedTurnRequest;
 #[cfg(target_os = "linux")]
 pub use paired_original_turn::VerifiedPairedTurn;
+#[cfg(target_os = "linux")]
+pub use paired_preparation::AgentdPairedPreparation;
+#[cfg(target_os = "linux")]
+pub use paired_preparation::PairedPreparationObservation;
+#[cfg(target_os = "linux")]
+pub use paired_preparation::PairedPreparationRegistration;
+#[cfg(target_os = "linux")]
+pub use paired_preparation::PairedPreparationRequest;
+#[cfg(target_os = "linux")]
+pub use paired_preparation::PairedPreparationResponse;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityEvidenceSourcesV1;

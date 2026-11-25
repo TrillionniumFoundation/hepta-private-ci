@@ -571,6 +571,32 @@ impl AgentdConfig {
         Ok((self, verifier))
     }
 
+    /// Install preparation on the already attached original turn/writer owner.
+    /// Frozen metadata is not material custody or a Root permission. This stage
+    /// must have no material dispatcher, and never enables the Python intake.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_paired_preparation(
+        mut self,
+        registration: crate::PairedPreparationRegistration,
+    ) -> Result<(Self, crate::AgentdPairedPreparation), AgentdError> {
+        let host = self
+            .production_writer_host()
+            .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?;
+        if host.has_registered_destination(crate::paired_preparation::DESTINATION) {
+            return Err(AgentdError::Invalid(
+                "paired preparation cannot attach to an effect destination".into(),
+            ));
+        }
+        let preparation = self
+            .notes_thread_tools
+            .as_mut()
+            .ok_or_else(|| {
+                AgentdError::Invalid("original protected owner is not installed".into())
+            })?
+            .install_paired_preparation(registration)?;
+        Ok((self, preparation))
+    }
+
     /// Explicit old-incarnation recovery from the trusted sealed deployment.
     /// The actual current target is taken from the already installed Session
     /// observer; no UI command supplies either target or a helper path.

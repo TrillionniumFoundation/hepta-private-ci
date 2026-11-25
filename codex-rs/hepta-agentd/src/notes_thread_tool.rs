@@ -84,6 +84,7 @@ pub struct AgentdNotesThreadToolRuntime {
     seed: Option<crate::NotesThreadSeedReceipt>,
     paired_turns:
         Option<tokio::sync::mpsc::Receiver<crate::paired_original_turn::PendingPairedTurn>>,
+    paired_preparation: Option<crate::paired_preparation::PreparationLane>,
 }
 
 impl AgentdConfig {
@@ -128,11 +129,29 @@ impl AgentdConfig {
             session: None,
             seed: None,
             paired_turns: None,
+            paired_preparation: None,
         }
     }
 }
 
 impl AgentdNotesThreadToolRuntime {
+    pub(crate) fn install_paired_preparation(
+        &mut self,
+        registration: crate::PairedPreparationRegistration,
+    ) -> Result<crate::AgentdPairedPreparation, AgentdError> {
+        if self.paired_preparation.is_some() {
+            return Err(invalid("original paired preparation already installed"));
+        }
+        self.adapter.check_available()?;
+        let (handle, lane) = crate::paired_preparation::channel(
+            Arc::clone(&self.adapter.writer),
+            registration,
+            self.route.clone(),
+        )?;
+        self.paired_preparation = Some(lane);
+        Ok(handle)
+    }
+
     pub(crate) fn install_paired_verifier(
         &mut self,
     ) -> Result<crate::AgentdPairedTurnVerifier, AgentdError> {
