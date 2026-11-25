@@ -194,17 +194,17 @@ jobs:
         with:
           toolchain: "1.95.0"
 
-      - name: Pin installed Cargo binary
+      - name: Pin matching Cargo and rustc for native smoke
         shell: bash
         run: |
           set -euo pipefail
-          rustup_home="${RUSTUP_HOME:-${HOME}/.rustup}"
-          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.95.0-*/bin/cargo' -type f -print -quit)"
-          if [[ -z "${cargo_bin}" || ! -x "${cargo_bin}" ]]; then
-            echo "Rust 1.95.0 Cargo binary is not installed under ${rustup_home}." >&2
+          cargo_bin="$(rustup which --toolchain 1.95.0 cargo)"
+          rustc_bin="$(rustup which --toolchain 1.95.0 rustc)"
+          if [[ ! -x "${cargo_bin}" || ! -x "${rustc_bin}" ]]; then
+            echo "The pinned Rust 1.95.0 Cargo and rustc executables must both be installed." >&2
             exit 1
           fi
-          echo "CARGO_1_95=${cargo_bin}" >> "${GITHUB_ENV}"
+          printf '%s\n' "V8_SMOKE_CARGO=${cargo_bin}" "V8_SMOKE_RUSTC=${rustc_bin}" >> "${GITHUB_ENV}"
 
       - name: Build Bazel V8 release pair
         env:
@@ -320,9 +320,11 @@ jobs:
           (
             cd codex-rs
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
+            RUSTUP_TOOLCHAIN="1.95.0" \
+            RUSTC="${V8_SMOKE_RUSTC}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            "${CARGO_1_95}" "${cargo_args[@]}"
+            "${V8_SMOKE_CARGO}" "${cargo_args[@]}"
           )
 
       - name: Upload staged artifacts
