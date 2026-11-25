@@ -543,3 +543,7 @@ unsafe fn create_token_with_caps_from(
 #[cfg(test)]
 #[path = "token_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "token_delete_authorization_tests.rs"]
+mod delete_authorization_tests;
