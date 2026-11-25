@@ -1738,7 +1738,7 @@ fn write_auth_file(params: AuthFileParams, codex_home: &Path) -> std::io::Result
             "access_token": "test-access-token",
             "refresh_token": "test-refresh-token"
         },
-        "last_refresh": Utc::now(),
+        "last_refresh": codex_utils_time::Timestamp::now(),
     });
     let auth_json = serde_json::to_string_pretty(&auth_json_data)?;
     std::fs::write(auth_file, auth_json)?;

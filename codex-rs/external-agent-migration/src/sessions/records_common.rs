@@ -1,5 +1,8 @@
 use super::truncate;
 use serde_json::Value as JsonValue;
+use std::borrow::Cow;
+use time::OffsetDateTime;
+use time::format_description::well_known::Rfc3339;
 
 const NOTE_MAX_LEN: usize = 2_000;
 const TOOL_RESULT_MAX_LEN: usize = 4_000;
@@ -59,9 +62,26 @@ pub(super) fn extract_message_text(content: &JsonValue) -> Option<ExtractedMessa
 }
 
 pub(super) fn parse_timestamp(timestamp: &str) -> Option<i64> {
-    chrono::DateTime::parse_from_rfc3339(timestamp)
+    // Keep the import grammar narrower than time's arbitrary-byte separator.
+    if !matches!(timestamp.as_bytes().get(10), Some(b'T' | b't' | b' ')) {
+        return None;
+    }
+
+    let mut normalized = Cow::Borrowed(timestamp);
+    // The existing parser also accepts U+2212 as the timezone's minus sign.
+    if let Some((prefix, offset)) = timestamp.rsplit_once('−')
+        && offset.len() == 5
+    {
+        normalized = Cow::Owned(format!("{prefix}-{offset}"));
+    }
+    // Imported leap-second values have always used the preceding Unix second,
+    // even outside a real UTC month-end leap second. Keep that integer contract.
+    if normalized.get(17..19) == Some("60") {
+        normalized.to_mut().replace_range(17..19, "59");
+    }
+    OffsetDateTime::parse(&normalized, &Rfc3339)
         .ok()
-        .map(|value| value.timestamp())
+        .map(OffsetDateTime::unix_timestamp)
 }
 
 fn content_blocks(content: &JsonValue) -> Vec<JsonValue> {
