@@ -33,7 +33,9 @@ RUNNER_CONSOLE_INDEX = "qa/repository-consolidation/20261125/qualified-runner-co
 HISTORICAL_PATCH_INDEX = "qa/repository-consolidation/20261125/review-only-source-diffs/raw-evidence-storage.json"
 QUALIFICATION_TRANSFER_MANIFEST_INDEX = "qa/repository-consolidation/20261125/qualification-transfer-manifest/raw-evidence-storage.json"
 VENDOR_MAINTENANCE_PATCH_INDEX = "qa/repository-consolidation/20261125/vendor-maintenance-patches/raw-evidence-storage.json"
+HCSN_HOSTED_CONSOLE_INDEX = "qa/repository-consolidation/20261125/hcsn-hosted-console-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    HCSN_HOSTED_CONSOLE_INDEX: "cd356ec2c924596980da39e9d55156c6be4d003df4b62d535168e2619095db54",
     VENDOR_MAINTENANCE_PATCH_INDEX: "61ac9fe9f6c92be15a21e276f574a37b223ef14653b78976e337e60a495cede9",
     QUALIFICATION_TRANSFER_MANIFEST_INDEX: "2b5ae403edfb29877d4766ac002e516b3593607d0e65092836fe28328759ea98",
     HISTORICAL_PATCH_INDEX: "cfdcb1368689f07a2de282e19fd40ee8d782993d7ea4f6eb2bebbf2a0f3d7b4d",
