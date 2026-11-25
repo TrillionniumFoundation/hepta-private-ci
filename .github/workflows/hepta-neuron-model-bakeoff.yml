@@ -1,0 +1,34 @@
+name: Hepta NEU-1 model-bakeoff contracts (source-only)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/neuron-model-bakeoff/**'
+      - '.github/workflows/hepta-neuron-model-bakeoff.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact source and contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          python3 -m compileall -q qualification/neuron-model-bakeoff
+          python3 -m unittest discover -s qualification/neuron-model-bakeoff -p 'test_*.py' -v
+          git diff --check
+      - name: Explicit boundary
+        run: |
+          echo 'Only synthetic source contracts were tested.'
+          echo 'Real weight loads, training, target-host GPU measurements, and independent lifecycle acceptance remain OPEN.'
