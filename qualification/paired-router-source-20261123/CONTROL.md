@@ -1,0 +1,5 @@
+# Mechanical replay of the two published training controls
+
+The earlier draft of this note listed the original `later` control. That item's archived authorization is evaluation-only. Its parent/candidate outputs can be checked by a cold reader. It cannot become a new training example by assigning another fixture identity. The primary amber measurement is unchanged.
+
+Exercise both already authorized `training_task` cases from the historical fixture, covering the source Cell's `train` and the reader Cell's `1` input. Use each original Cell's own registered before/after answers and recorded target. Reapply the existing router-only producer to separate engineering operations under the archived candidate Circuit, with unchanged Cells, original graph inventory and the `keep` retention panel. These already exposed tasks are checks on freeze, restart and original-source gate handling. Record every rejection and allow the pre-arrival dispatcher to refuse fictional identity, even if a router corrects a known old example. No registrations, prospective B tasks, adoption or fees are counted.

@@ -1,8 +1,7 @@
-"""Source-retention commitment through the enrollment CLI, SQLite and publication."""
+"""A source-retention commitment cannot repair the legacy native consent boundary."""
 
 import contextlib
 import hashlib
-import importlib.util
 import io
 import json
 import os
@@ -116,67 +115,29 @@ class SourceDispatchPublicationTests(unittest.TestCase):
                 )
         self.assertFalse((self.inbox / "freeze.json").exists())
         self.assertEqual(self.anchor()["source_retention_sha256"], self.gate)
-        paired_intake.install(self.opts)
-        with contextlib.closing(paired_intake.open_database(self.home)) as db:
-            self.assertEqual(
-                json.loads(db.execute("select value from settings").fetchone()[0])[
-                    "qualified_source_retention"
-                ],
-                self.gate,
-            )
+        with self.assertRaisesRegex(ValueError, "ORIGINAL_TURN_VERIFIER_REQUIRED"):
+            paired_intake.install(self.opts)
+        self.assertFalse(self.home.exists())
 
-    @unittest.skipUnless(
-        sys.platform == "linux" and importlib.util.find_spec("transformers"),
-        "requires Linux and frozen tokenizer",
-    )
-    def test_qualified_source_digest_reaches_normal_admission_and_same_release(self):
+    def test_qualified_source_digest_cannot_enable_the_legacy_owner_cli(self):
         self.anchor()
-        paired_intake.install(self.opts)
-        row = artificial(14146)
-        future = self.root / "future.json"
-        future.write_bytes(data.canonical([row]))
-        arrival, delivery, principal = [
-            data.digest(x)
-            for x in ("simulated arrival", "simulated consent", "simulated person")
-        ]
-        paired_observation.observe(
-            self.inbox,
-            self.study,
-            self.freeze,
-            3,
-            arrival=arrival,
-            record=data.record_digest(row),
-            delivery=delivery,
-            principal=principal,
-        )
-        # The exact source-verifier and live human issuer fixtures here are
-        # outside the scope of this transaction wiring test. No enrollment is counted.
-        prog = """from unittest.mock import patch
-from cell_experiments import paired_intake
-with patch.object(paired_intake, 'verify_live', return_value={'scope':'synthetic process-boundary control'}):
-    paired_intake.main()
-"""
-        cmd = [
-            str(self.home),
-            "admit",
-            arrival,
-            str(self.snapshot_path),
-            str(SNAPSHOT.parent),
-            str(future),
-            "1",
-            "unused",
-            "unused",
-        ]
         run = subprocess.run(
             [
-                "/bin/sh",
-                "-c",
-                'exec 3</dev/null 4</dev/null; exec "$@"',
-                "test",
                 sys.executable,
-                "-c",
-                prog,
-                *cmd,
+                "-m",
+                "cell_experiments.paired_intake",
+                str(self.home),
+                "install",
+                str(self.snapshot_path),
+                self.study,
+                self.freeze,
+                str(self.inbox),
+                str(self.native),
+                self.opts.native_sha256,
+                "--source-retention",
+                str(self.report_path),
+                "--scope",
+                "owner_intake",
             ],
             capture_output=True,
             text=True,
@@ -187,26 +148,21 @@ with patch.object(paired_intake, 'verify_live', return_value={'scope':'synthetic
                 "HF_HUB_OFFLINE": "1",
             },
         )
-        self.assertEqual(run.returncode, 0, run.stderr)
-        admission = run.stdout.strip()
-        one = paired_intake.release(self.home, admission)
-        self.assertEqual(one["source_retention_sha256"], self.gate)
-        self.assertEqual(one, paired_intake.release(self.home, admission))
-        with contextlib.closing(paired_intake.open_database(self.home)) as db:
-            binding = json.loads(
-                db.execute(
-                    "select binding from admissions where id=?", (admission,)
-                ).fetchone()[0]
-            )
-        self.assertEqual(binding["release"]["source_retention_sha256"], self.gate)
-        self.assertEqual(data.digest(binding), one["admission_sha256"])
+        self.assertNotEqual(run.returncode, 0)
+        self.assertIn("ORIGINAL_TURN_VERIFIER_REQUIRED", run.stderr)
+        self.assertEqual(run.stdout, "")
+        self.assertFalse(self.home.exists())
 
     def test_legacy_ready_publishing_and_released_stay_historical(self):
         self.anchor()
+        # Reconstruct the shape of a historical owner store as an explicit
+        # negative fixture; no native owner or person is enrolled by this test.
+        self.opts.scope = "engineering_fixture"
         paired_intake.install(self.opts)
         with contextlib.closing(paired_intake.open_database(self.home)) as db:
             cfg = json.loads(db.execute("select value from settings").fetchone()[0])
-            cfg.pop("qualified_source_retention")
+            cfg["scope"] = "owner_intake"
+            cfg["qualified_source_retention"] = self.gate
             db.execute("update settings set value=?", (json.dumps(cfg),))
             for i, state in enumerate(("ready", "publishing", "released")):
                 request = {
@@ -238,7 +194,9 @@ with patch.object(paired_intake, 'verify_live', return_value={'scope':'synthetic
                 if state == "released":
                     dest.mkdir()
                     (dest / "release.json").write_bytes(b"original historical release")
-                with self.assertRaisesRegex(ValueError, "historical only"):
+                with self.assertRaisesRegex(
+                    ValueError, "ORIGINAL_TURN_VERIFIER_REQUIRED"
+                ):
                     paired_intake.release(self.home, prior)
                 self.assertEqual(
                     db.execute(

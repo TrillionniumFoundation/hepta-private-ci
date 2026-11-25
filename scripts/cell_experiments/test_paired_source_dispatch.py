@@ -31,7 +31,7 @@ class SourceDispatchTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not committed"):
             paired_source_dispatch.authorize(snap, {}, CASE / "RETENTION.json")
 
-    def test_declared_win_must_match_all_baseline_rows_and_owner_scope(self):
+    def test_legacy_owner_refused_and_engineering_quality_checks_retained(self):
         snap = {
             "parent": {"test": "parent"},
             "candidate": {"test": "candidate"},
@@ -66,17 +66,20 @@ class SourceDispatchTests(unittest.TestCase):
                     snap, {"source_retention_sha256": data.digest(report)}, path
                 )
 
-            self.assertEqual(run(good), data.digest(good))
+            with self.assertRaisesRegex(ValueError, "ORIGINAL_TURN_VERIFIER_REQUIRED"):
+                run(good)
+            good["scope"] = "engineering_fixture"
+            with self.assertRaisesRegex(ValueError, "lacks original owner scope"):
+                run(good)
             bad = copy.deepcopy(good)
             bad["comparisons"][0]["candidate"] = False
             with self.assertRaisesRegex(ValueError, "did not permit"):
                 run(bad)
-            for changes in (
-                {"scope": "engineering_fixture"},
-                {"comparisons": [row(1)]},
-                {"freeze_sha256": "f" * 64},
+            for changes, reason in (
+                ({"comparisons": [row(1)]}, "coverage differs"),
+                ({"freeze_sha256": "f" * 64}, "does not identify"),
             ):
-                with self.assertRaises(ValueError):
+                with self.assertRaisesRegex(ValueError, reason):
                     run({**good, **changes})
 
     def test_freeze_observer_rechecks_original_scores_and_receipts(self):

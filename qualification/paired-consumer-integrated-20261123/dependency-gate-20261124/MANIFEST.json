@@ -1,0 +1,216 @@
+{
+  "schema": "hepta.paired-dependency-gate-evidence.v1",
+  "observed_date_utc": "2026-11-24",
+  "scope": "Original dependency-gate failures and bounded public-input preparation; no dependency update or gate qualification.",
+  "native_source_sha": "9917930245b184cba7ded078221fe90a2335eab7",
+  "native_source_tree": "7c7bd46198c1dbff84f6e0781ec6ff08970718ca",
+  "evidence_parent_sha": "442f6fc48dbf80ad6f1dbfa5a1f9ba65e14a64a6",
+  "candidate_created": false,
+  "bazel_lock_generation_passed": false,
+  "cargo_deny_passed": false,
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "unchanged": true,
+      "sha256": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+      "bytes": 421418
+    },
+    "MODULE.bazel.lock": {
+      "unchanged": true,
+      "sha256": "2be801e80e41fc993798e133a168c8202c73ed8c8e4e06f419779e317f7c0679",
+      "bytes": 1786971
+    }
+  },
+  "manifest_sha256": {
+    "codex-rs/Cargo.toml": "6ac9ba7db88aefd65f20d3e917913e1723b4fb93444ffcfce278b8ae5a38e144"
+  },
+  "ci": {
+    "run_id": 45401112182,
+    "job_id": 138473844454,
+    "associated_pr_head": "9917930245b184cba7ded078221fe90a2335eab7",
+    "checked_out_sha": null,
+    "checked_out_tree": null,
+    "checkout_identity_limit": "Run head metadata is not proof of the checkout used by a pull_request job; retained tail lacks checkout header.",
+    "partial_original_log": true,
+    "raw_range": "bytes 16429577-20623880/20623881",
+    "full_log_advertised_bytes": 20623881,
+    "retained_raw_bytes": 4194304,
+    "retained_raw_sha256": "eab3a16aab7c6ab2a4b642d6cf63aeedcc4d07bfb35be5ea49e7d3246d18f751",
+    "retrieval_job_id": "1a20e024b6d-ffbe-3a06",
+    "retrieval_exit_code": 0,
+    "summary_original": [
+      "2026-11-24T13:26:05.2250074Z advisories FAILED, bans ok, licenses ok, sources ok"
+    ]
+  },
+  "native_archive": {
+    "original_files": 280,
+    "members_including_manifest": 281,
+    "member_hashes": "ORIGINALS_MANIFEST.json in NATIVE_SECURITY_INPUTS_ORIGINALS.tar.gz",
+    "all_original_member_bytes_and_sha256_verified": true,
+    "phase_jobs": [
+      {
+        "original_member": "baseline-cargo-deny.json",
+        "job_id": "1a20dcd04c3-ffbe-39a3",
+        "exit_code": 124,
+        "seconds": 900.0106635090197,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      },
+      {
+        "original_member": "cargo-update.json",
+        "job_id": "1a20ddf60ed-ffbe-39c0",
+        "exit_code": 124,
+        "seconds": 900.0164246229688,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      },
+      {
+        "original_member": "public-git-import-rules-rust.json",
+        "job_id": "1a20deeec82-ffbe-39dd",
+        "exit_code": 0,
+        "seconds": 0.46539113,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      },
+      {
+        "original_member": "public-git-import-rules-rust-fsck.json",
+        "job_id": "1a20deeec82-ffbe-39dd",
+        "exit_code": 0,
+        "seconds": 0.416160457,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      },
+      {
+        "original_member": "cargo-update-git-cli.json",
+        "job_id": "1a20deeec82-ffbe-39dd",
+        "exit_code": 101,
+        "seconds": 238.856755839,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      },
+      {
+        "original_member": "cargo-update-http1.json",
+        "job_id": "1a20df4cb97-ffbe-39ec",
+        "exit_code": 101,
+        "seconds": 44.484797039,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      },
+      {
+        "original_member": "cargo-update-offline.json",
+        "job_id": "1a20df657eb-ffbe-39ef",
+        "exit_code": 101,
+        "seconds": 0.729883577,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      },
+      {
+        "original_member": "cargo-cache-info-icu-segmenter-data.json",
+        "job_id": "1a20df97a78-ffbe-39f7",
+        "exit_code": 0,
+        "seconds": 48.337755491,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      },
+      {
+        "original_member": "cargo-update-offline-after-icu.json",
+        "job_id": "1a20dfb50d9-ffbe-39fb",
+        "exit_code": 101,
+        "seconds": 0.716865261,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      },
+      {
+        "original_member": "rustsec-guard-tests.json",
+        "job_id": "1a20de94055-ffbe-39d3",
+        "exit_code": 0,
+        "seconds": 0.164851977,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      },
+      {
+        "original_member": "rustsec-advisory-guard.json",
+        "job_id": "1a20de94055-ffbe-39d3",
+        "exit_code": 0,
+        "seconds": 0.115283544,
+        "resource_scope": "waited subprocesses only; full original metrics retained in member"
+      }
+    ]
+  },
+  "cache_fill": {
+    "cache_fill_job_id": "1a20dfcea1a-ffbe-39ff",
+    "cache_fill_job_exit": 124,
+    "cache_fill_outcome": "bounded 600 second cache preparation budget exhausted; no gate qualification",
+    "cache_fill_native_commands": 81,
+    "cache_fill_exit_counts": {
+      "0": 81
+    },
+    "cache_fill_first_started_unix_ms": 1795531032728,
+    "cache_fill_last_finished_unix_ms": 1795531629253,
+    "cache_fill_command_seconds": 596.436201077,
+    "cache_fill_user_cpu_seconds": 6.458917,
+    "cache_fill_system_cpu_seconds": 3.285781,
+    "cache_fill_max_rss_kib": 30868,
+    "resource_scope": "sum of waited native command subprocesses; excludes full orchestration and complete process-tree accounting",
+    "initial_inventory_records": 232,
+    "initial_inventory_unique_names": 210,
+    "remaining_missing_records": 151,
+    "remaining_missing_unique_names": 138,
+    "index_path_normalization": "crates.io names lowercased in final inspection, including Inflector; original inventory retained verbatim"
+  },
+  "caller_receipt": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "raw_bytes": 84890,
+    "raw_sha256": "ea50b804a14d25c4f98fea33a51cd006bab43c8886823e99a47aca036aa6cac1",
+    "rust_files_scanned": 6180,
+    "boundaries": 182,
+    "protected_files": 166,
+    "authority_granted": false,
+    "associated_native_source_commit": "276aca492803e9cb9a7c84a19fdec4e92daeb7cd",
+    "source_sha_embedded_in_original_receipt": false,
+    "scope": "Local prepared source validation retained separately from CI and native binary tests; original receipt has no commit SHA.",
+    "native_binary_tests_run": false
+  },
+  "auxiliary_archive_process": {
+    "idempotency_key": "hepta7047-cache-fill-final-archive-20261124-v1",
+    "job_id": null,
+    "terminal_state": null,
+    "dispatch_response": "MCP request timed out",
+    "reconciliation": "process_list_page exceeded durable inventory source entry bound",
+    "filesystem_readback": "Original archive and every member verified independently; no process completion inferred."
+  },
+  "credential_scan": {
+    "schema": "hepta.dependency-evidence-scan.v1",
+    "files_scanned": 283,
+    "patterns": [
+      "github_pat",
+      "github_classic",
+      "aws_access_key",
+      "private_key",
+      "unmasked_authorization",
+      "signed_url",
+      "url_user_password"
+    ],
+    "matches": [],
+    "credential_or_configuration_files_included": false,
+    "limitation": "A pattern scan is not a proof against every possible secret encoding."
+  },
+  "cost_scope": "Engineering dependency acquisition and diagnostics only; incomplete total process-tree accounting; not model training cost.",
+  "original_q24_restarted": false,
+  "files": [
+    {
+      "path": "ADVISORY_DIAGNOSTIC.json",
+      "bytes": 4775,
+      "sha256": "803788fd24c59d23e0439506c0dd8db0a69196f0eb8f091da4d8c9acb772c582"
+    },
+    {
+      "path": "CALLER_PROOF.json.gz",
+      "bytes": 8318,
+      "sha256": "47358cd9394c4a9d504f01006a194cbab409b52f4d3d28c0d06a2462ca0e29f2"
+    },
+    {
+      "path": "CALLER_VALIDATION.json",
+      "bytes": 694,
+      "sha256": "9e615634bc49612c25e689e7a285b783c967483caac521e144f536e3d99d20d3"
+    },
+    {
+      "path": "NATIVE_SECURITY_INPUTS_ORIGINALS.tar.gz",
+      "bytes": 68281,
+      "sha256": "0bb05acbcbf6a0a49937e2cb7758eb2b3274e3df6e073765b7542e12233ca68e"
+    },
+    {
+      "path": "cargo-deny-138473844454-tail.log.gz",
+      "bytes": 362191,
+      "sha256": "9394f0c76ba79880cdad96db9ed34464a1aab0afe384e5af63aef94ee3e739f0"
+    }
+  ]
+}

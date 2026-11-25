@@ -1,8 +1,7 @@
-"""Train one new Hepta candidate from an admitted private A, then freeze it before any B.
+"""Train an explicitly authored engineering fixture, then freeze it before evaluation.
 
-Trusted Linux launcher: python -m cell_experiments.paired_source_train MATERIALS SPEC
-SPEC_SHA BINARY BINARY_SHA ROOT_PID SQLITE_HOME ROUTE. Preserve original Root fds 3/4.
-The incoming record files stay closed until the live native consent check returns.
+The production CLI refuses historical native v1 consent. It cannot read the private
+training records or perform a fit until the protected original-turn verifier exists.
 """
 
 import argparse
@@ -189,7 +188,15 @@ def executable_exposures(materials, parent, records, example, spec):
 
 
 def _fit_after_verification(materials, spec, owner):
-    """Private host or qualification driver after the original scope has been checked."""
+    """Qualification driver only; the original runtime verifier is not connected."""
+    from .paired_intake import ORIGINAL_TURN_VERIFIER_REQUIRED
+
+    require(
+        owner.get("scope") == "authored_engineering_fixture"
+        and owner.get("authenticated_human") is False
+        and "schema" not in owner,
+        ORIGINAL_TURN_VERIFIER_REQUIRED,
+    )
     check_spec(spec)
     require(source_hash() == spec["trainer_source_sha256"], "trainer source changed")
     root = Path(materials)
@@ -278,14 +285,9 @@ def _fit_after_verification(materials, spec, owner):
             data.digest(adoption.read_json(frozen)) == data.digest(expected),
             "stored freeze differs",
         )
-        scope = (
-            "owner_intake"
-            if owner.get("schema") == "hepta.paired-learning.consent-readback.v1"
-            else "engineering_fixture"
-        )
         result = {
             "schema": "hepta.paired-learning.source-completion.v1",
-            "scope": scope,
+            "scope": "engineering_fixture",
             "independent_human_identity_established": False,
             "study_sha256": spec["study"],
             "source_plan_sha256": data.digest(spec),

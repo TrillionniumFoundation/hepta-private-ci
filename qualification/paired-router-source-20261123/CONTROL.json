@@ -1,0 +1,65 @@
+{
+  "cases": [
+    {
+      "case": "source",
+      "cold_comparisons": [],
+      "decision": "no_update_unchanged_router",
+      "freeze_sha256": null,
+      "original_training_receipt_sha256": "4485cccff360df805e2c85668a666b45e5a4ebca593051d15474e243de2daf7d",
+      "prospective_dispatch": false,
+      "scores": [
+        {
+          "graph": "connected",
+          "raw_result_sha256": "ae6c878be23bca70d01f0f18cc9f2299b89020ffc64679d9be30bafdc482c0b3",
+          "success": true
+        },
+        {
+          "graph": "disconnected",
+          "raw_result_sha256": "7666672136b7758a2d1c016e526951b1065ce175ba337062752b43497c4d1879",
+          "success": false
+        }
+      ],
+      "source": "train"
+    },
+    {
+      "case": "reader",
+      "cold_comparisons": [
+        {
+          "candidate": true,
+          "panel": "known_A",
+          "parent": false,
+          "record_sha256": "21b773c5c134b20766d39a55e82cf763fa4e260a071f5c9252e87604c492925b"
+        },
+        {
+          "candidate": true,
+          "panel": "retention",
+          "parent": true,
+          "record_sha256": "1ba00d5d7671d65cc685f1014e95f1474049efcb58b272b8351e06e09d05e954"
+        }
+      ],
+      "decision": "eligible_for_prospective_evaluation",
+      "freeze_sha256": "633208ee6ced040cb874386175354c91d0394bcb1318eee6f02cc517ad94d398",
+      "original_training_receipt_sha256": "650b2158247acc3094b6eada8a27129f6cadd547c8f3410ce4b462fb5372db1f",
+      "prospective_dispatch": false,
+      "scores": [
+        {
+          "graph": "connected",
+          "raw_result_sha256": "1b4a980d58c4285ec60c2d3b3cda4528e4f893c1dd7b1b38ddae64dbb2ed8383",
+          "success": false
+        },
+        {
+          "graph": "disconnected",
+          "raw_result_sha256": "f1c7d5b102adca27c112838d674f40cb902db1f1b0b1934a4ede806c1eef84e6",
+          "success": true
+        }
+      ],
+      "source": "1"
+    }
+  ],
+  "enrolled_people": 0,
+  "payments": 0,
+  "primary_measurement": false,
+  "prospective_admissions": 0,
+  "scope": "engineering_fixture_already_exposed",
+  "trained_cells": 0
+}

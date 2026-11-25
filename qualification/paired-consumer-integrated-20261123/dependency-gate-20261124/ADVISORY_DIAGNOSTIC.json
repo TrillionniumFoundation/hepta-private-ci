@@ -1,0 +1,101 @@
+{
+  "associated_pr_head": "9917930245b184cba7ded078221fe90a2335eab7",
+  "run_id": 45401112182,
+  "job_id": 138473844454,
+  "checked_out_sha": null,
+  "checked_out_sha_status": "not yet read back; workflow checkout has no explicit ref",
+  "partial_original_log": true,
+  "range": "bytes 16429577-20623880/20623881",
+  "raw_bytes": 4194304,
+  "raw_sha256": "eab3a16aab7c6ab2a4b642d6cf63aeedcc4d07bfb35be5ea49e7d3246d18f751",
+  "final_category_lines_original": [
+    "2026-11-24T13:26:05.2250074Z advisories FAILED, bans ok, licenses ok, sources ok"
+  ],
+  "errors": [
+    {
+      "id": "RUSTSEC-2026-0543",
+      "class": "unmaintained",
+      "package": "chrono",
+      "version": "0.4.45",
+      "title_original": "2026-11-24T13:26:05.1148875Z error[unmaintained]: chrono is unmaintained",
+      "key_lines_original": [
+        "2026-11-24T13:26:05.1151009Z     ├ ID: RUSTSEC-2026-0543",
+        "2026-11-24T13:26:05.1151403Z     ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0543",
+        "2026-11-24T13:26:05.1153276Z     ├ Solution: No safe upgrade is available!"
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0594",
+      "class": "vulnerability",
+      "package": "cookie",
+      "version": "0.18.2",
+      "title_original": "2026-11-24T13:26:05.1328075Z error[vulnerability]: Private cookie nonces can repeat in processes that fork",
+      "key_lines_original": [
+        "2026-11-24T13:26:05.1329822Z     ├ ID: RUSTSEC-2026-0594",
+        "2026-11-24T13:26:05.1330083Z     ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0594",
+        "2026-11-24T13:26:05.1353404Z     ├ Solution: Upgrade to >=0.18.3 (try `cargo update -p cookie`)"
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0459",
+      "class": "vulnerability",
+      "package": "libsqlite3-sys",
+      "version": "0.37.0",
+      "title_original": "2026-11-24T13:26:05.1514859Z error[vulnerability]: `libsqlite3-sys` via C SQLite CVE-2026-119375",
+      "key_lines_original": [
+        "2026-11-24T13:26:05.1516754Z     ├ ID: RUSTSEC-2026-0459",
+        "2026-11-24T13:26:05.1517061Z     ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0459",
+        "2026-11-24T13:26:05.1524846Z     ├ Solution: Upgrade to >=0.39.0 (try `cargo update -p libsqlite3-sys`)"
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0457",
+      "class": "vulnerability",
+      "package": "rmcp",
+      "version": "3.1.3",
+      "title_original": "2026-11-24T13:26:05.1631669Z error[vulnerability]: OAuth client SSRF filter checks host strings, not resolved addresses",
+      "key_lines_original": [
+        "2026-11-24T13:26:05.1633460Z     ├ ID: RUSTSEC-2026-0457",
+        "2026-11-24T13:26:05.1633717Z     ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0457",
+        "2026-11-24T13:26:05.1642228Z     ├ Solution: Upgrade to >=3.7.0 (try `cargo update -p rmcp`)"
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0461",
+      "class": "vulnerability",
+      "package": "rmcp",
+      "version": "3.1.3",
+      "title_original": "2026-11-24T13:26:05.1721503Z error[vulnerability]: Unbounded tool schema cache in Streamable HTTP server transport",
+      "key_lines_original": [
+        "2026-11-24T13:26:05.1722933Z     ├ ID: RUSTSEC-2026-0461",
+        "2026-11-24T13:26:05.1723178Z     ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0461",
+        "2026-11-24T13:26:05.1727441Z     ├ Solution: Upgrade to >=3.6.0 (try `cargo update -p rmcp`)"
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0462",
+      "class": "vulnerability",
+      "package": "rmcp",
+      "version": "3.1.3",
+      "title_original": "2026-11-24T13:26:05.1797780Z error[vulnerability]: Unbounded response body buffering in Streamable HTTP clients",
+      "key_lines_original": [
+        "2026-11-24T13:26:05.1799245Z     ├ ID: RUSTSEC-2026-0462",
+        "2026-11-24T13:26:05.1799503Z     ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0462",
+        "2026-11-24T13:26:05.1804899Z     ├ Solution: Upgrade to >=3.9.0 (try `cargo update -p rmcp`)"
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0592",
+      "class": "vulnerability",
+      "package": "url",
+      "version": "2.5.8",
+      "title_original": "2026-11-24T13:26:05.1878555Z error[vulnerability]: Stack overflow in `Url::origin()` on nested `blob:` URLs",
+      "key_lines_original": [
+        "2026-11-24T13:26:05.1880023Z      ├ ID: RUSTSEC-2026-0592",
+        "2026-11-24T13:26:05.1880272Z      ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0592",
+        "2026-11-24T13:26:05.1884849Z      ├ Solution: Upgrade to >=2.5.9 (try `cargo update -p url`)"
+      ]
+    }
+  ],
+  "dependency_trees": "Retained in the original raw log tail; this small diagnostic does not enumerate reverse dependencies."
+}

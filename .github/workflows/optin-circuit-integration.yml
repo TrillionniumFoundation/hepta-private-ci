@@ -1,0 +1,55 @@
+name: Run explicit MCP session through frozen Circuit source qualification
+on:
+  push:
+    branches: [research/optin-cell-integrated-readout-20261123]
+    paths:
+      - 'scripts/cell_experiments/**'
+      - 'qualification/paired-consumer-circuit-20261123/**'
+      - 'qualification/paired-consumer-use-20261123/**'
+      - 'qualification/paired-source-training-20261123/**'
+      - 'qualification/public-historical-a-qwen2-052-20261123/**'
+      - 'qualification/selected-session-mcp-20261123/**'
+      - 'qualification/optin-circuit-integration-20261123/**'
+      - '.github/workflows/optin-circuit-integration.yml'
+permissions:
+  contents: read
+jobs:
+  combined:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          sparse-checkout: |
+            scripts/cell_experiments
+            qualification/paired-consumer-circuit-20261123
+            qualification/paired-consumer-use-20261123
+            qualification/paired-source-training-20261123
+            qualification/public-historical-a-qwen2-052-20261123
+            qualification/selected-session-mcp-20261123
+            qualification/optin-circuit-integration-20261123
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned public runtime
+        run: |
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu torch==2.9.1+cpu
+          python -m pip install --only-binary=:all: mcp==1.29.0 cryptography==50.0.0 numpy==2.3.5 transformers==4.57.3 peft==0.18.0 tokenizers==0.22.2 accelerate==1.16.0 safetensors==0.7.0 huggingface-hub==0.36.2
+      - name: Check bound identity, interrupted costs and original consumer regressions
+        env:
+          PYTHONPATH: ${{ github.workspace }}/scripts
+        run: python -m unittest cell_experiments.test_paired_loop cell_experiments.test_paired_loop_process cell_experiments.test_paired_consumer_fresh cell_experiments.test_paired_consumer cell_experiments.test_paired_consent_boundary cell_experiments.test_paired_source_dispatch cell_experiments.test_paired_source_dispatch_intake cell_experiments.test_paired_intake -v
+      - name: Capture the actual bounded effect and exercise the declared router
+        env:
+          PYTHONPATH: ${{ github.workspace }}/scripts
+          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: '1'
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: python qualification/optin-circuit-integration-20261123/check.py "$RUNNER_TEMP/combined"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: original-joined-engineering-run
+          path: ${{ runner.temp }}/combined
+          if-no-files-found: error

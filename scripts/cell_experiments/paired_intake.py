@@ -1,4 +1,4 @@
-"""Join protected human consent, original source order and single-request publication."""
+"""Engineering intake and publication; production original-turn consent is unavailable."""
 
 import argparse
 import contextlib
@@ -14,10 +14,21 @@ import tempfile
 
 from . import data, paired_cold, paired_freeze
 
+ORIGINAL_TURN_VERIFIER_REQUIRED = (
+    "ORIGINAL_TURN_VERIFIER_REQUIRED: owner intake requires the protected "
+    "original-turn consent verifier; historical native v1 receipts remain unqualified"
+)
+
 
 def require(value, message):
     if not value:
         raise ValueError(message)
+
+
+def require_engineering_scope(scope):
+    # Historical ELF pins cannot acquire the missing original-runtime boundary
+    # from a new Python wrapper. This has no operator override or legacy fallback.
+    require(scope == "engineering_fixture", ORIGINAL_TURN_VERIFIER_REQUIRED)
 
 
 def digest_field(value):
@@ -114,6 +125,7 @@ def install(args):
     require(
         args.scope in ("owner_intake", "engineering_fixture"), "invalid intake scope"
     )
+    require_engineering_scope(args.scope)
     snapshot = json.loads(args.snapshot.read_bytes())
     require(
         data.digest(snapshot) == digest_field(args.freeze),
@@ -206,8 +218,10 @@ def verify_live(
     launch,
     *,
     expected_principal=None,
+    evidence_scope="owner_intake",
 ):
-    """Run the pinned original-owner CLI on its inherited Root socket and pidfd."""
+    """Exercise a pinned fixture; production v1 owner verification is unavailable."""
+    require_engineering_scope(evidence_scope)
     for fd in (3, 4):
         os.fstat(fd)
     study = digest_field(study_sha256)
@@ -301,6 +315,7 @@ def admit(args):
         os.fstat(fd)
     with contextlib.closing(open_database(args.home)) as db:
         config = json.loads(db.execute("SELECT value FROM settings").fetchone()[0])
+        require_engineering_scope(config["scope"])
         require(
             witness(config, "freeze") == config["anchor"],
             "original freeze observation changed",
@@ -353,6 +368,7 @@ def admit(args):
             ),
             [args.root_pid, str(args.sqlite_home), str(args.route)],
             expected_principal=arrival["study_principal_sha256"],
+            evidence_scope=config["scope"],
         )
         # The record is first read after live consent verification. Stage those exact bytes.
         with args.future.open("rb") as stream:
@@ -472,10 +488,13 @@ def release(home, admission):
 
     digest_field(admission)
     with contextlib.closing(open_database(home)) as db:
-        require(
-            db.execute("SELECT 1 FROM admissions WHERE id=?", (admission,)).fetchone(),
-            "admission does not exist",
-        )
+        config = json.loads(db.execute("SELECT value FROM settings").fetchone()[0])
+        require_engineering_scope(config["scope"])
+        stored = db.execute(
+            "SELECT binding FROM admissions WHERE id=?", (admission,)
+        ).fetchone()
+        require(stored is not None, "admission does not exist")
+        require_engineering_scope(json.loads(stored[0])["release"]["scope"])
         with (home / (admission + ".lock")).open("ab") as lease:
             fcntl.flock(lease, fcntl.LOCK_EX)
             row = db.execute(
@@ -485,6 +504,11 @@ def release(home, admission):
             require(row is not None, "admission does not exist")
             request_sha, request, binding_bytes, state = row
             binding = json.loads(binding_bytes)
+            require_engineering_scope(binding["release"]["scope"])
+            require(
+                binding["release"]["scope"] == config["scope"],
+                "retained release scope differs from intake settings",
+            )
             original_request = json.loads(request)
             require(
                 data.digest(binding) == admission
@@ -492,7 +516,6 @@ def release(home, admission):
                 and binding["release"]["request_sha256"] == request_sha,
                 "retained admission changed",
             )
-            config = json.loads(db.execute("SELECT value FROM settings").fetchone()[0])
             if (
                 config["scope"] == "owner_intake"
                 and "paired_source_exposure" in original_request["candidate"]
@@ -554,13 +577,14 @@ def people_status(home, admission):
         require(row is not None, "admission does not exist")
         binding = json.loads(row[0])
         require(data.digest(binding) == admission, "retained admission changed")
-        checked = "enrollment" in binding
         return dict(
             admission_sha256=admission,
             state=row[1],
-            original_enrollment_bindings_checked=checked,
-            site_attested_distinct_people=checked
-            and binding["release"]["scope"] == "owner_intake",
+            retained_enrollment_binding_present="enrollment" in binding,
+            original_enrollment_bindings_checked=False,
+            site_attested_distinct_people=False,
+            original_turn_consent_verified=False,
+            production_authorization_available=False,
             scope=binding["release"]["scope"],
         )
 

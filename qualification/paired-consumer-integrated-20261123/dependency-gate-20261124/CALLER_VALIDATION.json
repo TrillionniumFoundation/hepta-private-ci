@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.consent-refusal.caller-validation.v1",
+  "command": [
+    "python3",
+    "-B",
+    "scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "cwd": "/workspace/scratch/45298b306bdb/work/hepta-loop",
+  "exit_code": 0,
+  "full_output_path": "/workspace/scratch/45298b306bdb/audit/hepta-consent-refusal-20261124/CALLER_PROOF.json",
+  "full_output_sha256": "ea50b804a14d25c4f98fea33a51cd006bab43c8886823e99a47aca036aa6cac1",
+  "full_output_bytes": 84890,
+  "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "rust_files_scanned": 6180,
+  "boundaries": 182,
+  "protected_files": 166,
+  "authority_granted": false,
+  "native_build_test": "not_run",
+  "remote_fmt_exit_status": "unknown"
+}
