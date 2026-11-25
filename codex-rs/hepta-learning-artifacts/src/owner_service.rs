@@ -803,6 +803,96 @@ mod tests {
     }
 
 
+
+    // Reuse the existing process-fault worker, but actually reconcile its
+    // interrupted publications through the named public service after death.
+    #[test]
+    fn named_service_reconciles_process_death_between_effect_and_checkpoint() {
+        use std::process::{Command, Stdio};
+        use std::time::Duration;
+        let executable = std::env::current_exe().unwrap();
+        let key = SigningKey::from_bytes(&[7u8; 32]); // existing host worker fixture
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+        let scope_digest = withdrawals.scope_digest().unwrap();
+        let preview_dir = TestDir::new();
+        let preview_config = LearningArtifactOwnerServiceConfigV1 {
+            root: preview_dir.0.clone(),
+            trust: trust(&key, scope_digest),
+            writer_lease: lease(&key, scope_digest),
+            required_current_head: None,
+            withdrawal_registry: withdrawals.clone(),
+            storage_binding: digest("binding"),
+            now: 20,
+        };
+        let preview = LearningArtifactOwnerService::open(preview_config.clone()).unwrap();
+        let predecessor = preview.registry().snapshot().head_digest;
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawals, withdrawals.head_digest(), manifest(), 20,
+        ).unwrap();
+        let mut staged = preview.registry().clone();
+        let transaction = ArtifactPublicationTransactionV1::begin(
+            id("process-operation"), admission, &withdrawals, &staged, predecessor, 20,
+        ).unwrap();
+        preview.host.stage_compatibility_registration(&transaction, &mut staged, 20).unwrap();
+        let mut request = publish_request(&key, &withdrawals, predecessor, staged.snapshot().head_digest);
+        request.operation_id = id("process-operation");
+        drop(preview);
+        for (stage, expected_phase) in [
+            ("payload-effect", ArtifactPublicationPhaseV1::Prepared),
+            ("registry-effect", ArtifactPublicationPhaseV1::PayloadDurable),
+            ("head-effect", ArtifactPublicationPhaseV1::RegistryDurable),
+            ("acknowledged", ArtifactPublicationPhaseV1::Acknowledged),
+        ] {
+            let directory = TestDir::new();
+            let mut child = Command::new(&executable)
+                .args(["--ignored", "--exact", "owner_host::tests::owner_host_process_fault_worker", "--nocapture"])
+                .env("HEPTA_ARTIFACT_OWNER_WORKER", "1")
+                .env("HEPTA_ARTIFACT_OWNER_ROOT", &directory.0)
+                .env("HEPTA_ARTIFACT_OWNER_STAGE", stage)
+                .stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null())
+                .spawn().unwrap();
+            let marker = directory.0.join(format!("worker-{stage}.ready"));
+            let mut ready = false;
+            for _ in 0..500 {
+                if marker.is_file() { ready = true; break; }
+                if child.try_wait().unwrap().is_some() { break; }
+                std::thread::sleep(Duration::from_millis(10));
+            }
+            if !ready {
+                let _ = child.kill();
+                let _ = child.wait();
+                panic!("worker failed before durable marker: {stage}");
+            }
+            child.kill().unwrap();
+            let exit = child.wait().unwrap();
+            assert!(!exit.success());
+            let mut service = LearningArtifactOwnerService::open(
+                LearningArtifactOwnerServiceConfigV1 {
+                    root: directory.0.clone(), now:21, ..preview_config.clone()
+                }
+            ).unwrap();
+            let cp = service.host.recover_publication(&request.operation_id).unwrap().unwrap().checkpoint;
+            assert_eq!(cp.phase, expected_phase);
+            if expected_phase != ArtifactPublicationPhaseV1::Acknowledged {
+                assert_eq!(service.recovery_required(), Some(&request.operation_id));
+                let mut unrelated = request.clone();
+                unrelated.operation_id = id("unrelated");
+                assert!(matches!(service.publish(unrelated), Err(LearningArtifactOwnerServiceError::RecoveryRequired(_))));
+            }
+            let mut bad = request.clone();
+            bad.payload[0] ^= 1;
+            assert!(service.publish(bad).is_err());
+            let receipt = service.publish(request.clone()).unwrap();
+            assert_eq!(service.publish(request.clone()).unwrap(), receipt);
+            assert!(service.recovery_required().is_none());
+            assert_eq!(service.current_registry_view(21).unwrap().receipt().head_digest, receipt.registry_head_digest);
+            assert_eq!(service.host.recover_publication(&request.operation_id).unwrap().unwrap().checkpoint.phase,
+                ArtifactPublicationPhaseV1::Acknowledged);
+            println!("PROCESS_DEATH {stage} checkpoint={expected_phase:?} exact public reconciliation");
+        }
+    }
+
+
 // Append within owner_service::tests. Explicit opt-in archived-data qualification.
 // This is a disposable research registry; metadata and local trust are test-scoped.
 // No evaluation signature or activation is created.
