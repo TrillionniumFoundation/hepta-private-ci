@@ -1,0 +1,93 @@
+name: Hepta HTTP request cancellation
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/exec-server/**"
+      - "codex-rs/exec-server-protocol/**"
+      - "codex-rs/http-client/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/hepta_ci_junit.py"
+      - "scripts/run-nextest.py"
+      - "codex-rs/.config/nextest.toml"
+      - "justfile"
+      - ".github/workflows/hepta-http-request-cancellation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-http-request-cancellation-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+
+jobs:
+  cancellation:
+    name: Nine original HTTP cancellation controls (source-head)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/http-cancellation-target
+    steps:
+      - name: Check out the exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install native build prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev libssl-dev
+      - name: Execute the nine exact original controls once
+        id: controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          filters='test(=server::http_request_scope::tests::cancellation_waits_for_original_owner_and_does_not_cancel_another_scope)'
+          filters+=' | test(=server::http_request_scope::tests::admission_is_bounded_and_owner_drop_releases_capacity)'
+          filters+=' | test(=server::http_request_scope::tests::unpolled_producer_drops_network_before_completion_acknowledgement)'
+          filters+=' | test(=client::http_client::stream_cancellation::tests::absent_ack_closes_only_original_transport_without_retry)'
+          filters+=' | test(=client::http_client::stream_cancellation::tests::unpolled_cleanup_task_drop_closes_its_original_transport)'
+          filters+=' | (binary(=http_request_cancellation) & test(=delete_body_drop_and_header_future_drop_close_the_actual_remote_request))'
+          filters+=' | (binary(=http_request_cancellation) & test(=queued_request_cancels_without_network_and_unknown_id_is_not_success))'
+          filters+=' | (binary(=http_client) & test(=unsupported_cancellable_rpc_never_falls_back_to_unowned_http))'
+          filters+=' | (binary(=http_client) & test(=malformed_header_response_cancels_the_original_request))'
+          # One source-bound invocation retains real output and owns the entire
+          # command group. Compilation, ignored tests and zero matches do not
+          # satisfy the count. No retry may replace the original observation.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/http-cancellation-records/controls.json" --minimum-tests 9 --timeout-seconds 2400 -- just test --locked -p codex-exec-server --lib --test http_client --test http_request_cancellation --retries 0 --test-threads 1 -E "$filters"
+          jq -e '.observed_passed_tests == 9 and .observed_failed_tests == 0' "$RUNNER_TEMP/http-cancellation-records/controls.json"
+      - name: Retain the fresh nine-name native JUnit original
+        if: always() && !cancelled() && steps.controls.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_junit.py --execution "$RUNNER_TEMP/http-cancellation-records/controls.json" --junit "$CARGO_TARGET_DIR/nextest/local/junit.xml" --output "$RUNNER_TEMP/http-cancellation-records/controls.junit.xml"
+      - name: Retain original command records and logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: http-cancellation-source-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/http-cancellation-records
+          if-no-files-found: error
+      - name: Check for a clean source checkout
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree

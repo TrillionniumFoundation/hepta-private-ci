@@ -138,6 +138,33 @@ processes for that client connection.
 
 ## API
 
+### Cancellable HTTP streams
+
+`http/requestCancellableV1` uses the existing HTTP request envelope and requires
+`streamResponse: true`. The Rust streaming client uses this versioned method
+and never falls back to ordinary `http/request` on an older executor. Buffered
+HTTP requests retain their existing method, route, headers and proxy policy.
+
+The client generates a stream ID that is never reused during its lifetime and
+captures the physical RPC connection that owns it. `http/cancelRequestV1`
+accepts `{ "requestId": "http-1" }` on that same connection. Its result is
+`"cancelled"` only after the original request future or body producer has been
+dropped. `"notActive"` means no owner matched; it does not attest to cancellation.
+The registry admits at most 256 simultaneous streams and bounds IDs to 128 bytes.
+
+Consumer drop, cancellation before headers, malformed sequencing, local
+recovery failure and body backpressure schedule this cleanup. A failed cleanup RPC closes the captured
+connection without reconnecting. Dropping an unpolled or interrupted cleanup
+task also closes only that original connection. The acknowledgement deadline is
+five seconds from scheduling cleanup; expiry is recorded as an unknown cancellation outcome
+and closes only that captured connection. It does not change the HTTP timeout.
+Dropping a client stream schedules cleanup;
+it does not synchronously acknowledge completion. Cancellable HTTP requests
+remain cancellable while queued and run on a single HTTP lane in Inline mode,
+so the connection can process their cleanup without waiting for HTTP headers.
+Existing configured concurrent request limits still govern ordinary admission.
+These lifecycle guarantees do not provide an OAuth destination-address policy.
+
 ### `initialize`
 
 Initial handshake request.

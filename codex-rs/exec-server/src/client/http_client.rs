@@ -19,6 +19,8 @@ pub(crate) mod response_body_stream;
 mod route_aware_http_client;
 #[path = "rpc_http_client.rs"]
 mod rpc_http_client;
+#[path = "http_stream_cancellation.rs"]
+mod stream_cancellation;
 
 pub use response_body_stream::HttpResponseBodyStream;
 pub(crate) use route_aware_http_client::PendingRouteAwareHttpBodyStream;

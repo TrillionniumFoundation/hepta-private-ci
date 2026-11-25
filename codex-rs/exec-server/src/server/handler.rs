@@ -1,3 +1,4 @@
+use std::future::Future;
 use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use std::sync::atomic::AtomicBool;
@@ -7,8 +8,6 @@ use codex_exec_server_protocol::JSONRPCErrorError;
 use codex_exec_server_protocol::RequestId;
 use codex_http_client::HttpClientFactory;
 use serde_json::to_value;
-use std::collections::HashSet;
-use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
 use tokio_util::task::TaskTracker;
 
@@ -52,6 +51,8 @@ use crate::protocol::FsWalkParams;
 use crate::protocol::FsWalkResponse;
 use crate::protocol::FsWriteFileParams;
 use crate::protocol::FsWriteFileResponse;
+use crate::protocol::HttpRequestCancelParams;
+use crate::protocol::HttpRequestCancelResponse;
 use crate::protocol::HttpRequestParams;
 use crate::protocol::InitializeParams;
 use crate::protocol::InitializeResponse;
@@ -68,6 +69,9 @@ use crate::rpc::internal_error;
 use crate::rpc::invalid_params;
 use crate::rpc::invalid_request;
 use crate::server::file_system_handler::FileSystemHandler;
+use crate::server::http_request_scope::HttpRequestScope;
+use crate::server::http_request_scope::HttpRequestScopes;
+use crate::server::http_request_scope::ScopedHttpFuture;
 use crate::server::session_registry::SessionHandle;
 use crate::server::session_registry::SessionRegistry;
 
@@ -75,7 +79,7 @@ pub(crate) struct ExecServerHandler {
     session_registry: Arc<SessionRegistry>,
     notifications: RpcNotificationSender,
     session: StdMutex<Option<SessionHandle>>,
-    active_body_stream_ids: Mutex<HashSet<String>>,
+    http_request_scopes: HttpRequestScopes,
     background_task_shutdown: CancellationToken,
     background_tasks: TaskTracker,
     file_system: FileSystemHandler,
@@ -97,7 +101,7 @@ impl ExecServerHandler {
             session_registry,
             notifications,
             session: StdMutex::new(None),
-            active_body_stream_ids: Mutex::new(HashSet::new()),
+            http_request_scopes: HttpRequestScopes::default(),
             background_task_shutdown: CancellationToken::new(),
             background_tasks: TaskTracker::new(),
             file_system: FileSystemHandler::new(runtime_paths.clone()),
@@ -254,47 +258,59 @@ impl ExecServerHandler {
         session.process().terminate(params).await
     }
 
-    pub(crate) async fn http_request(
+    pub(crate) fn http_request(
         self: &Arc<Self>,
         request_id: RequestId,
         params: HttpRequestParams,
-    ) -> Result<(), JSONRPCErrorError> {
-        self.require_initialized_for("http")?;
-        let stream_response = params.stream_response;
-        let http_request_id = params.request_id.clone();
-        if stream_response {
-            self.reserve_http_body_stream(&http_request_id).await?;
-        }
-        let response = self
-            .http_client
-            .runner(params.redirect_policy)
-            .run(params)
-            .await;
-        if response.is_err() && stream_response {
-            self.release_http_body_stream(&http_request_id).await;
-        }
-        let (response, mut pending_stream) = response?;
-        let result = match to_value(response) {
-            Ok(result) => result,
-            Err(err) => {
-                if let Some(pending_stream) = pending_stream.take() {
-                    self.release_http_body_stream(&pending_stream.request_id)
-                        .await;
+    ) -> impl Future<Output = Result<(), JSONRPCErrorError>> + Send + 'static + use<> {
+        let admission = self.require_initialized_for("http").and_then(|_| {
+            params
+                .stream_response
+                .then(|| self.http_request_scopes.reserve(&params.request_id))
+                .transpose()
+        });
+        let handler = Arc::clone(self);
+        async move {
+            let scope = admission?;
+            let send_headers = async {
+                let (response, pending_stream) = handler
+                    .http_client
+                    .runner(params.redirect_policy)
+                    .run(params)
+                    .await?;
+                let result =
+                    to_value(response).map_err(|error| internal_error(error.to_string()))?;
+                handler.notifications.response(request_id, result).await?;
+                Ok::<_, JSONRPCErrorError>(pending_stream)
+            };
+            let pending_stream = if let Some(scope) = &scope {
+                let cancelled = scope.cancellation();
+                tokio::select! {
+                    biased;
+                    _ = cancelled.cancelled() => return Err(internal_error("HTTP request cancelled".to_string())),
+                    response = send_headers => response?,
                 }
-                return Err(internal_error(err.to_string()));
+            } else {
+                send_headers.await?
+            };
+            if let Some(pending_stream) = pending_stream {
+                let scope = scope.expect("streamed response has its original request scope");
+                handler.start_http_body_stream(pending_stream, scope);
             }
-        };
-        if let Err(error) = self.notifications.response(request_id, result).await {
-            if let Some(pending_stream) = pending_stream.take() {
-                self.release_http_body_stream(&pending_stream.request_id)
-                    .await;
-            }
-            return Err(error);
+            Ok(())
         }
-        if let Some(pending_stream) = pending_stream {
-            self.start_http_body_stream(pending_stream).await;
-        }
-        Ok(())
+    }
+
+    pub(crate) fn http_request_cancellation(&self, request_id: &str) -> Option<CancellationToken> {
+        self.http_request_scopes.cancellation(request_id)
+    }
+
+    pub(crate) async fn cancel_http_request(
+        &self,
+        params: HttpRequestCancelParams,
+    ) -> Result<HttpRequestCancelResponse, JSONRPCErrorError> {
+        self.require_initialized_for("http")?;
+        Ok(self.http_request_scopes.cancel(&params.request_id).await)
     }
 
     pub(crate) async fn fs_read_file(
@@ -449,42 +465,30 @@ impl ExecServerHandler {
             .clone()
     }
 
-    async fn start_http_body_stream(
+    fn start_http_body_stream(
         self: &Arc<Self>,
         pending_stream: PendingRouteAwareHttpBodyStream,
+        scope: HttpRequestScope,
     ) {
-        let request_id = pending_stream.request_id.clone();
+        let cancelled = scope.cancellation();
         if self.background_task_shutdown.is_cancelled() {
-            self.release_http_body_stream(&request_id).await;
+            drop(pending_stream);
             return;
         }
-        let finished_request_id = request_id.clone();
-        let handler = Arc::clone(self);
         let notifications = self.notifications.clone();
         let shutdown = self.background_task_shutdown.clone();
+        let producer = ScopedHttpFuture::new(
+            RouteAwareHttpRequestRunner::stream_body(pending_stream, notifications),
+            scope,
+        );
         self.background_tasks.spawn(async move {
             tokio::select! {
+                biased;
                 _ = shutdown.cancelled() => {}
-                _ = RouteAwareHttpRequestRunner::stream_body(pending_stream, notifications) => {}
+                _ = cancelled.cancelled() => {}
+                _ = producer => {}
             }
-            handler.release_http_body_stream(&finished_request_id).await;
         });
-    }
-
-    async fn release_http_body_stream(&self, request_id: &str) {
-        let mut active_body_stream_ids = self.active_body_stream_ids.lock().await;
-        active_body_stream_ids.remove(request_id);
-    }
-
-    async fn reserve_http_body_stream(&self, request_id: &str) -> Result<(), JSONRPCErrorError> {
-        let mut active_body_stream_ids = self.active_body_stream_ids.lock().await;
-        if active_body_stream_ids.contains(request_id) {
-            return Err(invalid_params(format!(
-                "http/request streamResponse requestId `{request_id}` is already active"
-            )));
-        }
-        active_body_stream_ids.insert(request_id.to_string());
-        Ok(())
     }
 }
 
