@@ -359,6 +359,7 @@ impl PreparedHostAuthoritySession {
             config,
             profile,
             profile_file,
+            /*protect_installer_lock*/ false,
             ready,
         )
     }
