@@ -1,12 +1,17 @@
 use super::SqliteConfig;
+use crate::runtime::test_support::create_private_test_directory;
+use crate::runtime::test_support::unique_temp_dir;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 use sqlx::Connection;
 
 #[tokio::test]
 async fn existing_index_connection_does_not_create_a_missing_database() -> anyhow::Result<()> {
-    let temp = tempfile::tempdir()?;
-    let config = SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(temp.path())?);
+    let temp = scopeguard::guard(unique_temp_dir(), |path| {
+        let _ = std::fs::remove_dir_all(path);
+    });
+    create_private_test_directory(&temp)?;
+    let config = SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(temp.as_path())?);
 
     assert!(config.open_existing_state_db_connection().await.is_err());
     assert!(!config.state_db_path().exists());
@@ -16,8 +21,11 @@ async fn existing_index_connection_does_not_create_a_missing_database() -> anyho
 #[tokio::test]
 async fn existing_index_connection_preserves_journal_and_enforces_foreign_keys()
 -> anyhow::Result<()> {
-    let temp = tempfile::tempdir()?;
-    let config = SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(temp.path())?);
+    let temp = scopeguard::guard(unique_temp_dir(), |path| {
+        let _ = std::fs::remove_dir_all(path);
+    });
+    create_private_test_directory(&temp)?;
+    let config = SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(temp.as_path())?);
     let pool = config.open_read_write_pool(&config.state_db_path()).await?;
     sqlx::raw_sql(
         "CREATE TABLE parent (id INTEGER PRIMARY KEY);
