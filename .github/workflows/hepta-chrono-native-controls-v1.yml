@@ -1,0 +1,122 @@
+name: Chrono migration exact native controls
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - ".github/workflows/hepta-chrono-native-controls-v1.yml"
+      - "scripts/run_chrono_native_controls_v1.py"
+      - "scripts/hepta_chrono_native_inputs_v1.json"
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha }}
+  HEPTA_CI_LANE: source-head
+  CHRONO_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+  CHRONO_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+  CHRONO_PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+  CHRONO_PR_DRAFT: ${{ github.event.pull_request.draft }}
+  CHRONO_EVENT_ACTION: ${{ github.event.action }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+
+jobs:
+  native-controls:
+    name: Twenty-five original Chrono migration controls (source-head)
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'ProfHepta' &&
+      github.event.pull_request.draft == true &&
+      github.event.pull_request.head.ref == 'fix/hepta-chrono-native-20261125-7c9e' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    steps:
+      - name: Claim the unique original native evidence directory
+        id: scope
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, time
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          suffix = '-'.join(os.environ[key] for key in ('SOURCE_SHA', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT'))
+          evidence = root / ('chrono-native-' + suffix)
+          evidence.mkdir()
+          with (evidence / 'job-start.json').open('x') as stream:
+              json.dump({'source': os.environ['SOURCE_SHA'], 'run_id': os.environ['GITHUB_RUN_ID'],
+                         'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'], 'native_command_cap_seconds': 2400,
+                         'whole_job_cap_seconds': 3600, 'monotonic_seconds': time.monotonic(),
+                         'unix_seconds': time.time(), 'original_E1_E6_budget_used': 0,
+                         'old_lock_scope_reopened': False}, stream, indent=2)
+              stream.write('\n')
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write(f'CHRONO_NATIVE_EVIDENCE={evidence}\n')
+          PY
+
+      - name: Check out the exact accepted-lock candidate
+        id: checkout
+        timeout-minutes: 2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install the exact repository Rust version
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+
+      - name: Install the original just and nextest versions
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install native build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev libssl-dev
+
+      - name: Execute the 25 fixed controls once with accepted locks
+        id: controls
+        timeout-minutes: 42
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/chrono-native-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/run_chrono_native_controls_v1.py execute
+
+      - name: Retain and verify the fresh 25-name native JUnit original
+        id: collection
+        if: always() && !cancelled() && steps.controls.outcome != 'skipped'
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/run_chrono_native_controls_v1.py collect
+
+      - name: Retain original admission, command, failures, and native JUnit
+        if: always() && steps.scope.outcome == 'success'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: chrono-native-source-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CHRONO_NATIVE_EVIDENCE }}/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Check for a clean source checkout
+        if: always() && !cancelled() && steps.checkout.outcome == 'success'
+        uses: ./.github/actions/check-clean-worktree

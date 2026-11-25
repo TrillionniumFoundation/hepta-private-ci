@@ -1,0 +1,462 @@
+{
+  "accepted_locks": {
+    "MODULE.bazel.lock": {
+      "bytes": 1792663,
+      "git_blob": "bb7fb6827f138ca47c750d6c88aec6f5c3bb2775",
+      "sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 421782,
+      "git_blob": "1322b6b2ad3d201ed99ecad1e1f7c5708febe80c",
+      "sha256": "74f3c2c1ab1c9a42ce79e32a8fb9b49f790f3f596cc84d6724265b618e95005c"
+    }
+  },
+  "activated": true,
+  "activation_blockers": [],
+  "branch": "fix/hepta-chrono-native-20261125-7c9e",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-agent-identity",
+    "-p",
+    "codex-external-agent-migration",
+    "-p",
+    "codex-git-utils",
+    "-p",
+    "codex-network-proxy",
+    "-p",
+    "codex-otel",
+    "--lib",
+    "--retries",
+    "0",
+    "--test-threads",
+    "1",
+    "-E",
+    "(package(=codex-agent-identity) & test(=timestamp::tests::seconds_timestamp_preserves_utc_bytes_and_truncates_fraction)) | (package(=codex-agent-identity) & test(=timestamp::tests::timestamp_bytes_remain_bound_to_both_original_signed_payloads)) | (package(=codex-agent-identity) & test(=timestamp::tests::seconds_timestamp_preserves_native_pre_epoch_refusal)) | (package(=codex-otel) & test(=events::shared::timestamp_tests::event_timestamp_preserves_fixed_millisecond_utc_bytes)) | (package(=codex-otel) & test(=events::shared::timestamp_tests::event_timestamp_preserves_native_pre_epoch_refusal)) | (package(=codex-network-proxy) & test(=network_policy::tests::audit_timestamp_preserves_fixed_millisecond_utc_bytes)) | (package(=codex-network-proxy) & test(=network_policy::tests::audit_timestamp_preserves_native_pre_epoch_refusal)) | (package(=codex-git-utils) & test(=baseline::tests::codex_signature_preserves_epoch_seconds_and_zero_offset)) | (package(=codex-git-utils) & test(=baseline::tests::codex_signature_preserves_native_pre_epoch_refusal)) | (package(=codex-agent-identity) & test(=tests::authorization_header_for_agent_task_serializes_signed_agent_assertion)) | (package(=codex-agent-identity) & test(=tests::register_task_request_uses_single_run_task_shape)) | (package(=codex-network-proxy) & test(=network_policy::tests::evaluate_host_policy_emits_domain_event_for_decider_allow_override)) | (package(=codex-network-proxy) & test(=network_policy::tests::policy_audit_observer_receives_domain_and_non_domain_decisions)) | (package(=codex-git-utils) & test(=baseline::tests::reset_creates_fresh_baseline)) | (package(=codex-external-agent-migration) & test(=timestamp::tests::current_timestamp_preserves_unix_seconds_and_utc_offset)) | (package(=codex-external-agent-migration) & test(=timestamp::tests::fixture_timestamp_preserves_seconds_utc_bytes)) | (package(=codex-external-agent-migration) & test(=timestamp::tests::current_timestamp_preserves_native_pre_epoch_refusal)) | (package(=codex-external-agent-migration) & test(=sessions::records_common::tests::timestamp_parser_preserves_unix_seconds_across_epoch_offsets_and_fraction)) | (package(=codex-external-agent-migration) & test(=sessions::records_common::tests::timestamp_parser_preserves_original_leap_second_integer_mapping)) | (package(=codex-external-agent-migration) & test(=sessions::records_common::tests::timestamp_parser_preserves_unicode_offset_minus_and_negative_zero)) | (package(=codex-external-agent-migration) & test(=sessions::records_common::tests::timestamp_parser_preserves_original_syntax_and_range_refusals)) | (package(=codex-external-agent-migration) & test(=detect::sessions::cla::tests::detects_sessions_in_batches)) | (package(=codex-external-agent-migration) & test(=service::tests::general::detection::detect_home_lists_recent_sessions)) | (package(=codex-external-agent-migration) & test(=sessions::export::tests::loads_custom_title_for_imported_session)) | (package(=codex-external-agent-migration) & test(=sessions::records_cla::tests::reads_session_import_in_one_pass))"
+  ],
+  "controls": [
+    {
+      "name": "timestamp::tests::seconds_timestamp_preserves_utc_bytes_and_truncates_fraction",
+      "origin": "new",
+      "package": "codex-agent-identity",
+      "purpose": "SecsZ literal bytes, leap day, no fraction rounding, UTC offset normalization"
+    },
+    {
+      "name": "timestamp::tests::timestamp_bytes_remain_bound_to_both_original_signed_payloads",
+      "origin": "new",
+      "package": "codex-agent-identity",
+      "purpose": "Both real signing functions verify against original literal payload bytes at fixed timestamp"
+    },
+    {
+      "name": "timestamp::tests::seconds_timestamp_preserves_native_pre_epoch_refusal",
+      "origin": "new",
+      "package": "codex-agent-identity",
+      "purpose": "Original native pre-epoch clock refusal"
+    },
+    {
+      "name": "events::shared::timestamp_tests::event_timestamp_preserves_fixed_millisecond_utc_bytes",
+      "origin": "new",
+      "package": "codex-otel",
+      "purpose": "MillisZ fixed width incl .000 and truncation across calendar boundary"
+    },
+    {
+      "name": "events::shared::timestamp_tests::event_timestamp_preserves_native_pre_epoch_refusal",
+      "origin": "new",
+      "package": "codex-otel",
+      "purpose": "Original native pre-epoch clock refusal"
+    },
+    {
+      "name": "network_policy::tests::audit_timestamp_preserves_fixed_millisecond_utc_bytes",
+      "origin": "new",
+      "package": "codex-network-proxy",
+      "purpose": "Real audit formatter retains .000/.999/.123 byte strings and UTC normalization"
+    },
+    {
+      "name": "network_policy::tests::audit_timestamp_preserves_native_pre_epoch_refusal",
+      "origin": "new",
+      "package": "codex-network-proxy",
+      "purpose": "Original native pre-epoch clock refusal"
+    },
+    {
+      "name": "baseline::tests::codex_signature_preserves_epoch_seconds_and_zero_offset",
+      "origin": "new",
+      "package": "codex-git-utils",
+      "purpose": "Entire Git signature, same name/mail/zero offset and floor-to-whole-second behavior"
+    },
+    {
+      "name": "baseline::tests::codex_signature_preserves_native_pre_epoch_refusal",
+      "origin": "new",
+      "package": "codex-git-utils",
+      "purpose": "Original native pre-epoch clock refusal"
+    },
+    {
+      "name": "tests::authorization_header_for_agent_task_serializes_signed_agent_assertion",
+      "origin": "existing_retained",
+      "package": "codex-agent-identity"
+    },
+    {
+      "name": "tests::register_task_request_uses_single_run_task_shape",
+      "origin": "existing_retained",
+      "package": "codex-agent-identity"
+    },
+    {
+      "name": "network_policy::tests::evaluate_host_policy_emits_domain_event_for_decider_allow_override",
+      "origin": "existing_retained",
+      "package": "codex-network-proxy"
+    },
+    {
+      "name": "network_policy::tests::policy_audit_observer_receives_domain_and_non_domain_decisions",
+      "origin": "existing_retained",
+      "package": "codex-network-proxy"
+    },
+    {
+      "name": "baseline::tests::reset_creates_fresh_baseline",
+      "origin": "existing_retained",
+      "package": "codex-git-utils"
+    },
+    {
+      "name": "timestamp::tests::current_timestamp_preserves_unix_seconds_and_utc_offset",
+      "origin": "new",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/timestamp_tests.rs",
+      "source_sha256": "cb1178bf8fcf2c6b5fb935bd792f8f7e7f6c7d9578252d84a6c1dac8acd6804f"
+    },
+    {
+      "name": "timestamp::tests::fixture_timestamp_preserves_seconds_utc_bytes",
+      "origin": "new",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/timestamp_tests.rs",
+      "source_sha256": "cb1178bf8fcf2c6b5fb935bd792f8f7e7f6c7d9578252d84a6c1dac8acd6804f"
+    },
+    {
+      "name": "timestamp::tests::current_timestamp_preserves_native_pre_epoch_refusal",
+      "origin": "new",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/timestamp_tests.rs",
+      "source_sha256": "cb1178bf8fcf2c6b5fb935bd792f8f7e7f6c7d9578252d84a6c1dac8acd6804f"
+    },
+    {
+      "name": "sessions::records_common::tests::timestamp_parser_preserves_unix_seconds_across_epoch_offsets_and_fraction",
+      "origin": "new",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/sessions/records_common_tests.rs",
+      "source_sha256": "877bdbf48662a7ed1f02047616274f130f794295602da414853cdf509c5d6503"
+    },
+    {
+      "name": "sessions::records_common::tests::timestamp_parser_preserves_original_leap_second_integer_mapping",
+      "origin": "new",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/sessions/records_common_tests.rs",
+      "source_sha256": "877bdbf48662a7ed1f02047616274f130f794295602da414853cdf509c5d6503"
+    },
+    {
+      "name": "sessions::records_common::tests::timestamp_parser_preserves_unicode_offset_minus_and_negative_zero",
+      "origin": "new",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/sessions/records_common_tests.rs",
+      "source_sha256": "877bdbf48662a7ed1f02047616274f130f794295602da414853cdf509c5d6503"
+    },
+    {
+      "name": "sessions::records_common::tests::timestamp_parser_preserves_original_syntax_and_range_refusals",
+      "origin": "new",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/sessions/records_common_tests.rs",
+      "source_sha256": "877bdbf48662a7ed1f02047616274f130f794295602da414853cdf509c5d6503"
+    },
+    {
+      "name": "detect::sessions::cla::tests::detects_sessions_in_batches",
+      "origin": "existing_retained",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/detect/sessions/cla.rs",
+      "source_sha256": "cb302ce298e92c817a5dcc3b1e715050d2d3f035613849158219cce75a510863"
+    },
+    {
+      "name": "service::tests::general::detection::detect_home_lists_recent_sessions",
+      "origin": "existing_retained",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/service_tests/general/detection.rs",
+      "source_sha256": "8fa6128682385a0fb0cda577a157f27bd4c1fde43f75d79aa7bc7b1f9f751b48"
+    },
+    {
+      "name": "sessions::export::tests::loads_custom_title_for_imported_session",
+      "origin": "existing_retained",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/sessions/export.rs",
+      "source_sha256": "d6745023ca264b25ed24a716bde80084a143979467c71a39be6818354ad37acb"
+    },
+    {
+      "name": "sessions::records_cla::tests::reads_session_import_in_one_pass",
+      "origin": "existing_retained",
+      "package": "codex-external-agent-migration",
+      "source": "codex-rs/external-agent-migration/src/sessions/records_cla_tests.rs",
+      "source_sha256": "aeaaafdc32e8e05d1032103afef9753bf4f59f2ee3c9d99c24abe30381f2cff3"
+    }
+  ],
+  "exact_count": 25,
+  "frozen_source_manifest": {
+    "bytes": 14566,
+    "git_blob": "98e886e1ec4485f282e98ee86d652e94461a544f",
+    "path": "chrono_combined_validation_v1/source_v1/SOURCE_REVIEW.json",
+    "sha256": "31cee35d3ed7b2d9735a75136e86967e8a3adecf7424838c86a8643a097d1d26"
+  },
+  "junit_classname_basis": {
+    "bytes": 2597,
+    "git_blob": "e3cefbdee4b5ddbbacc93c34e146b99d62bb8b0d",
+    "observation": "Existing nextest 0.9.103 library testcase classname equals the package name; no integration binaries are selected here.",
+    "original_native_artifact": "http7102_authorization_readback_v1/artifact/controls.junit.xml",
+    "sha256": "f7c942e1473771308b2a0dfff80b5017c995dedf269d3a71d690cc24c20d1cf1"
+  },
+  "junit_original_path": "codex-rs/target/nextest/local/junit.xml",
+  "lock_acceptance_review_sha256": "0864360fbc9130625fd45133442bc9fbe355a88f1076eeb8e7f79324e3e6768e",
+  "lock_generation_source": "1ff974dfa99f1f5e406f9033f2a633bc09d02ff7",
+  "native_cap_seconds": 2400,
+  "new_count": 16,
+  "parent": "1ff974dfa99f1f5e406f9033f2a633bc09d02ff7",
+  "retained_count": 9,
+  "reviewed_sources": [
+    {
+      "bytes": 596,
+      "git_blob": "5a7bdddcf8f560d20fcd6639761a500b7ef12cf3",
+      "mode": "100644",
+      "path": ".github/actions/check-clean-worktree/action.yml",
+      "sha256": "58844cf1afb11d5cdbdfe577e4227ea3361ce495960c2d0cce94ca0da3da82a5"
+    },
+    {
+      "bytes": 4851,
+      "git_blob": "a4c741ae40f3cf766cab240aa8ba04ad3f0c2247",
+      "mode": "100644",
+      "path": ".github/workflows/hepta-chrono-native-controls-v1.yml",
+      "sha256": "590e30921ffb744a3eede248740b778b64352d6c64f6b29cadd8e9fa33c6872d"
+    },
+    {
+      "bytes": 6617,
+      "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "mode": "100644",
+      "path": "codex-rs/.config/nextest.toml",
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    {
+      "bytes": 23124,
+      "git_blob": "949cc8b52f89e5efef8b35387f0df1376b1398d8",
+      "mode": "100644",
+      "path": "codex-rs/Cargo.toml",
+      "sha256": "f8d784ee95b8568f032b3138bf9b520ee7f7e6d5708194c9c72bbab2f167d4a5"
+    },
+    {
+      "bytes": 788,
+      "git_blob": "2164ce91b851b000ecf82e7b489275c71e523b16",
+      "mode": "100644",
+      "path": "codex-rs/agent-identity/Cargo.toml",
+      "sha256": "ec93613b32819f4e27049d84ae094091d54231a694ee1735a459981d1e48fb1c"
+    },
+    {
+      "bytes": 36939,
+      "git_blob": "a9e33307d70f21382c72c7315cbe251a7c3d8013",
+      "mode": "100644",
+      "path": "codex-rs/agent-identity/src/lib.rs",
+      "sha256": "13cb793704e1ccb7e8c8f69c468254c312764a29e51639d206d47c68bfeb1d55"
+    },
+    {
+      "bytes": 778,
+      "git_blob": "ff4d38409972b10dde999019b65dfaec609aeea2",
+      "mode": "100644",
+      "path": "codex-rs/agent-identity/src/timestamp.rs",
+      "sha256": "c4406d5f2bdad7eee253f7ac3c5f61b9627219ec549385eede08621310a18b96"
+    },
+    {
+      "bytes": 2667,
+      "git_blob": "566d95b4fe6cf404a60efdfb8a77ca95a1e1b22a",
+      "mode": "100644",
+      "path": "codex-rs/agent-identity/src/timestamp_tests.rs",
+      "sha256": "9a2b58fcb28b83b2471c84522b619dc480bcb30bc9de266dbc6c695abe744f46"
+    },
+    {
+      "bytes": 1387,
+      "git_blob": "f1985a166dc4599e701eaf81fbe127246b948843",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/Cargo.toml",
+      "sha256": "339d8f3f6d79c5daebd730037a1a67d837997705e49c5550707d13c87315a527"
+    },
+    {
+      "bytes": 14738,
+      "git_blob": "84a0af370866ad583ffe0f2f776b22e403e6a12b",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/src/detect/sessions/cla.rs",
+      "sha256": "cb302ce298e92c817a5dcc3b1e715050d2d3f035613849158219cce75a510863"
+    },
+    {
+      "bytes": 3062,
+      "git_blob": "496f84172b157ebd58889c0f51213510202c147c",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/src/lib.rs",
+      "sha256": "886cfb2e097697a9314a4678a4671fe76f773375ded8942f3158f6e88e5a2117"
+    },
+    {
+      "bytes": 15579,
+      "git_blob": "2b2026ee2046bd8c92ab11efb3bddea002dda860",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/src/memory_import.rs",
+      "sha256": "94ca37a962c17d89e1692f580902618fddf935d2b77bcc502cccf9c67f5179db"
+    },
+    {
+      "bytes": 25010,
+      "git_blob": "9889a5f4c036361e5884ee57aea5a611c08b0e48",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/src/service_tests/general/detection.rs",
+      "sha256": "8fa6128682385a0fb0cda577a157f27bd4c1fde43f75d79aa7bc7b1f9f751b48"
+    },
+    {
+      "bytes": 19899,
+      "git_blob": "29690af14490a7949b9c276013f8dca061ac54c0",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/src/sessions/export.rs",
+      "sha256": "d6745023ca264b25ed24a716bde80084a143979467c71a39be6818354ad37acb"
+    },
+    {
+      "bytes": 1354,
+      "git_blob": "d0a7704dfd450332f99fad82d638faca8d722a2d",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/src/sessions/records_cla_tests.rs",
+      "sha256": "aeaaafdc32e8e05d1032103afef9753bf4f59f2ee3c9d99c24abe30381f2cff3"
+    },
+    {
+      "bytes": 6028,
+      "git_blob": "abc0fabbfb9d39d06f79355b5009bc65668e0350",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/src/sessions/records_common.rs",
+      "sha256": "33148d4dcf134888b6affe527d2b229e045bec89a2b7e38f5cca256ae3551605"
+    },
+    {
+      "bytes": 4506,
+      "git_blob": "ce00e59cddb774f6f32c659f6d5a40924b98a3dd",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/src/sessions/records_common_tests.rs",
+      "sha256": "877bdbf48662a7ed1f02047616274f130f794295602da414853cdf509c5d6503"
+    },
+    {
+      "bytes": 617,
+      "git_blob": "fa036bfaa230fa8f3ca27c0b3aeb2d7c73a83928",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/src/timestamp.rs",
+      "sha256": "39b240e11d6edcef15730cf6e9469641dcd1c189e00ce2a1a246d961023cda59"
+    },
+    {
+      "bytes": 2051,
+      "git_blob": "56425bfbe5e68ac964a70f9ef93024c5d67f2a89",
+      "mode": "100644",
+      "path": "codex-rs/external-agent-migration/src/timestamp_tests.rs",
+      "sha256": "cb1178bf8fcf2c6b5fb935bd792f8f7e7f6c7d9578252d84a6c1dac8acd6804f"
+    },
+    {
+      "bytes": 1078,
+      "git_blob": "5ce2bf30d19d9915ef4ea97436fa92025f8d885e",
+      "mode": "100644",
+      "path": "codex-rs/git-utils/Cargo.toml",
+      "sha256": "cb9cf280262283d1717fd67498bd0e998433222de4b4f84978fc4c8016bdcc9a"
+    },
+    {
+      "bytes": 27570,
+      "git_blob": "92a8e754f7940ceb9431cdc8a9f795fe68762960",
+      "mode": "100644",
+      "path": "codex-rs/git-utils/src/baseline.rs",
+      "sha256": "1bc7eca1e196620cf4ca62d66895f05fdfa334517dd29b2987eb99c049395284"
+    },
+    {
+      "bytes": 2083,
+      "git_blob": "606571744f3c1a3374178190f780402ad8290f74",
+      "mode": "100644",
+      "path": "codex-rs/network-proxy/Cargo.toml",
+      "sha256": "656dce95d264bff38fefe3bf5c88cbcb5b5c8df471c00f387551259e4a070dec"
+    },
+    {
+      "bytes": 38817,
+      "git_blob": "2dd83c1a54420798e3a5d2877010cfd5c3032d54",
+      "mode": "100644",
+      "path": "codex-rs/network-proxy/src/network_policy.rs",
+      "sha256": "beb97c56a88d583f1dcec15fc23e6a1840946e9c1aa2dd4a61645f52f84dad39"
+    },
+    {
+      "bytes": 1990,
+      "git_blob": "3c8c38f3ff08c5340e3ac32fa16307346f77e594",
+      "mode": "100644",
+      "path": "codex-rs/otel/Cargo.toml",
+      "sha256": "714895a267b809ccf2a8adb9b7bedbfecb6b465b9c23c4495cd4911b3ce5e366"
+    },
+    {
+      "bytes": 2836,
+      "git_blob": "960e8c68fe9c99efed616676b4df60cc51f19923",
+      "mode": "100644",
+      "path": "codex-rs/otel/src/events/shared.rs",
+      "sha256": "db9fbaf9c764265f3e9dc010ec08707ed472be3ef00b7c88e1741f771711789f"
+    },
+    {
+      "bytes": 993,
+      "git_blob": "de96647627f8b08c60c57b7d6e9066f1b0df9c6b",
+      "mode": "100644",
+      "path": "codex-rs/otel/src/events/shared_timestamp_tests.rs",
+      "sha256": "236f5ce380638d6f8a97848511fb01b9fafae26fba3cb155737b5679cadefcb3"
+    },
+    {
+      "bytes": 78,
+      "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "mode": "100644",
+      "path": "codex-rs/rust-toolchain.toml",
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    {
+      "bytes": 7838,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "mode": "100644",
+      "path": "justfile",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "bytes": 17064,
+      "git_blob": "491caed67eda5d820473d05717aaaa03b1828609",
+      "mode": "100644",
+      "path": "scripts/hepta_ci_exec.py",
+      "sha256": "ccabe2e8066c01a612a378d42cd7580ab183870b59921442a0d208b5ac528cba"
+    },
+    {
+      "bytes": 6613,
+      "git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+      "mode": "100644",
+      "path": "scripts/hepta_ci_junit.py",
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    {
+      "bytes": 2030,
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "mode": "100644",
+      "path": "scripts/just-shell.py",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    {
+      "bytes": 10206,
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "mode": "100644",
+      "path": "scripts/run-nextest.py",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "bytes": 13211,
+      "git_blob": "1d0c1fc533b081cc2668f1bd5cee17ce27aea632",
+      "mode": "100644",
+      "path": "scripts/run_chrono_native_controls_v1.py",
+      "sha256": "81e74da7e68a9c1dbb58a8485911aad62db2d2674cc61439a98fe0eac47ab7e3"
+    }
+  ],
+  "schema": "hepta.chrono-native-accepted-inputs.v1",
+  "scope_limits": {
+    "application_command_attempts": 1,
+    "cargo_update_calls": 0,
+    "native_retries": 0,
+    "old_E1_E6_budget_used": 0,
+    "old_lock_scope_reopened": false,
+    "old_pass_results_transferred": false,
+    "unmaintained_chrono_qualification": false
+  },
+  "whole_job_cap_seconds": 3600
+}
