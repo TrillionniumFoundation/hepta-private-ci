@@ -188,7 +188,9 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             "      - name: Determine whether the shared-core regression gate applies\n",
             1,
         )[1].split("      - name: Prepare native workspace prerequisites\n", 1)[0]
-        inputs = scope.split('elif git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- \\\n', 1)[1]
+        inputs = scope.split(
+            'elif git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- \\\n', 1
+        )[1]
         inputs = inputs.split("; then", 1)[0].split()
         self.assertIn("scripts/hepta_workspace.py", inputs)
         self.assertIn("scripts/test_hepta_native_feedback.py", inputs)
