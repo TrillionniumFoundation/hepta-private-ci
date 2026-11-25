@@ -93,8 +93,14 @@ class CheckoutIdentityTests(unittest.TestCase):
         identity = self.identity("merge")
         other_tree = self.git("rev-parse", f"{self.base}^{{tree}}")
         candidate = self.git(
-            "commit-tree", other_tree, "-p", self.base, "-p", self.source,
-            "-m", "Fixture with correct parents but wrong tree",
+            "commit-tree",
+            other_tree,
+            "-p",
+            self.base,
+            "-p",
+            self.source,
+            "-m",
+            "Fixture with correct parents but wrong tree",
         )
         self.git("checkout", "--detach", candidate)
         identity.update(candidate=candidate, candidateTree=other_tree)
@@ -144,11 +150,13 @@ class TraceabilityIdentityTests(unittest.TestCase):
             "testName": "storage::tests::seals_receipt",
         }
         declaration = {
-            "cases": [{
-                "id": "ART-03",
-                "module": "learning.artifacts",
-                "tests": [test_case],
-            }]
+            "cases": [
+                {
+                    "id": "ART-03",
+                    "module": "learning.artifacts",
+                    "tests": [test_case],
+                }
+            ]
         }
         rows = [
             {"binary": "different-binary", "function": test_case["testName"]},
@@ -161,12 +169,19 @@ class TraceabilityIdentityTests(unittest.TestCase):
         trace.parent.mkdir(parents=True)
         trace.write_text(json.dumps(declaration))
         result = {"name": "owner-regression", "status": "passed", "passedTests": rows}
-        with mock.patch.object(qualification, "ROOT", root), mock.patch.object(
-            qualification, "git", return_value="fixture-source-oid"
+        with (
+            mock.patch.object(qualification, "ROOT", root),
+            mock.patch.object(qualification, "git", return_value="fixture-source-oid"),
         ):
-            self.assertEqual(qualification.traceability([result])[0]["execution"], "unproven")
-            rows.append({"binary": qualification.CRATE, "function": test_case["testName"]})
-            self.assertEqual(qualification.traceability([result])[0]["execution"], "passed")
+            self.assertEqual(
+                qualification.traceability([result])[0]["execution"], "unproven"
+            )
+            rows.append(
+                {"binary": qualification.CRATE, "function": test_case["testName"]}
+            )
+            self.assertEqual(
+                qualification.traceability([result])[0]["execution"], "passed"
+            )
 
 
 class QueueIdentityTests(unittest.TestCase):

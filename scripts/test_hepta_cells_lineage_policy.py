@@ -214,13 +214,9 @@ class LineagePolicyTests(unittest.TestCase):
         # A separate run may enroll its own separately named pool. The
         # original owner and its native partition remain unchanged.
         isolated = replace(cross_run, feature_share_group="perception-run-b")
-        bounded = CellRoster(
-            tuple(isolated if c is mem else c for c in original.cells)
-        )
+        bounded = CellRoster(tuple(isolated if c is mem else c for c in original.cells))
         self.assertEqual(bounded.cell(isolated.partition), isolated)
-        self.assertEqual(
-            sum(c.trainable_scope is not None for c in bounded.cells), 2
-        )
+        self.assertEqual(sum(c.trainable_scope is not None for c in bounded.cells), 2)
 
     def test_shared_feature_abi_is_explicit_and_not_self_authorizing(self):
         with self.assertRaisesRegex(LineagePolicyError, "feature_abi"):

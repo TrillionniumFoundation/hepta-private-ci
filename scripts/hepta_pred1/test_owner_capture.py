@@ -46,9 +46,7 @@ class OwnerCaptureTests(unittest.TestCase):
                 "command",
                 index,
             )
-            self.db.execute(
-                "INSERT INTO taskflow_runs VALUES (?, ?)", values[:2]
-            )
+            self.db.execute("INSERT INTO taskflow_runs VALUES (?, ?)", values[:2])
             self.db.execute(
                 "INSERT INTO taskflow_effect_dispatch_attempts ("
                 + ",".join(ATTEMPT_FIELDS)
