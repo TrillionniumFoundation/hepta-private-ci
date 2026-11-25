@@ -10,6 +10,7 @@ use codex_core::TurnInputRequest;
 use codex_core::X_CODEX_ROUTING_HINT_HEADER;
 use codex_core::X_RESPONSESAPI_INCLUDE_TIMING_METRICS_HEADER;
 use codex_core::test_support::with_parent_turn;
+use codex_core::test_support::with_root_turn;
 use codex_features::Feature;
 use codex_http_client::OutboundProxyPolicy;
 use codex_login::CodexAuth;
@@ -1845,10 +1846,14 @@ async fn responses_websocket_forwards_turn_metadata_on_initial_and_incremental_c
         prior_assistant_output,
         message_item("second"),
     ]);
-    let first_responses_metadata =
-        with_parent_turn(turn_metadata(&harness, Some("turn-123")), "parent-turn-123");
-    let second_responses_metadata =
-        with_parent_turn(turn_metadata(&harness, Some("turn-456")), "parent-turn-456");
+    let first_responses_metadata = with_root_turn(
+        with_parent_turn(turn_metadata(&harness, Some("turn-123")), "parent-turn-123"),
+        "root-turn-123",
+    );
+    let second_responses_metadata = with_root_turn(
+        with_parent_turn(turn_metadata(&harness, Some("turn-456")), "parent-turn-456"),
+        "root-turn-456",
+    );
 
     stream_until_complete_with_metadata(
         &mut client_session,
@@ -1890,6 +1895,14 @@ async fn responses_websocket_forwards_turn_metadata_on_initial_and_incremental_c
 
     assert_eq!(first_metadata["turn_id"].as_str(), Some("turn-123"));
     assert_eq!(second_metadata["turn_id"].as_str(), Some("turn-456"));
+    assert_eq!(
+        first_metadata["root_turn_id"].as_str(),
+        Some("root-turn-123")
+    );
+    assert_eq!(
+        second_metadata["root_turn_id"].as_str(),
+        Some("root-turn-456")
+    );
     core_test_support::responses::assert_parent_turn(&first, Some("parent-turn-123"))
         .expect("initial WebSocket parent-turn metadata");
     core_test_support::responses::assert_parent_turn(&second, Some("parent-turn-456"))

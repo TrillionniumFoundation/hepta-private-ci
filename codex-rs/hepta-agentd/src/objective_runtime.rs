@@ -52,6 +52,9 @@ const MAX_RUN_START_RECORDS: usize = 4_096;
 const RUN_START_DIRECTORY: &str = "objective-run-start-v1";
 const RUN_START_FILE: &str = "journal.bin";
 
+#[path = "objective_history.rs"]
+mod history;
+
 pub(crate) enum ObjectiveStartResult {
     Admitted(ObjectiveRunAdmission),
     Conflict {
@@ -333,10 +336,16 @@ fn objective_payload(
     body: &AuthBusObjectiveBody,
     current_generation: u64,
 ) -> Result<Vec<u8>, AgentdError> {
-    if body.spawn_generation != identity.spawn_generation
+    if body.spawn_generation != identity.spawn_generation || current_generation == 0 {
+        return Err(invalid("objective generation is invalid"));
+    }
+    objective_body_payload(body)
+}
+
+fn objective_body_payload(body: &AuthBusObjectiveBody) -> Result<Vec<u8>, AgentdError> {
+    if body.spawn_generation == 0
         || body.objective_revision == 0
         || body.authority_epoch == 0
-        || current_generation == 0
         || body.source_envelope_json.is_empty()
         || body.source_envelope_json.len() > PRODUCT_SOURCE_JSON_BYTES
     {

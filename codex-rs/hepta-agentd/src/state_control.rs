@@ -130,6 +130,14 @@ impl AgentdState {
                         crate::AgentdCapability::new("objective.start", 1, 0)
                             .map_err(AgentdError::Protocol)?,
                     );
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            "objective.admission.read",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
                 }
                 if self.canonical_intelligence_enabled() {
                     capabilities.push(
@@ -226,6 +234,15 @@ impl AgentdState {
                         conflict_digest,
                     },
                 }
+            }
+            crate::AgentdMethod::ObjectiveAdmission { query } => {
+                let outcome = match self.objective_runtime.get() {
+                    Some(host) => host.admission_history(self.identity(), query),
+                    None => crate::ObjectiveAdmissionOutcome::Unknown {
+                        reason: crate::ObjectiveAdmissionUnknownReason::OwnerUnavailable,
+                    },
+                };
+                AgentdPayload::ObjectiveAdmission { outcome }
             }
             crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
                 crate::authbus_ingress::submit(self, request).await?,

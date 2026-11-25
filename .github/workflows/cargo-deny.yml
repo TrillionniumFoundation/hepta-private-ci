@@ -19,6 +19,12 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Enforce tracked RustSec no-suppression policy
+        working-directory: .
+        run: |
+          python3 -m unittest -v scripts.tests.test_hepta_rustsec_guard
+          python3 scripts/check_hepta_rustsec_advisories.py --repo-root .
+
       - uses: ./.github/actions/setup-ci-build
 
       - name: Install Rust toolchain

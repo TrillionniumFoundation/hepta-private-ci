@@ -2061,6 +2061,214 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
 }
 
 #[test]
+fn signed_recovery_requires_pinned_key_and_persists_verified_decision()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = ReleaseId::parse("verified-recovery-source")?;
+    let target = ReleaseId::parse("verified-recovery-target")?;
+    let source_program = fleet.write_release_source()?;
+    for release_id in [&source, &target] {
+        fleet
+            .registry
+            .install_release(release_id.clone(), &source_program, Vec::new())?;
+        fleet.registry.allow_release(&fleet.first, release_id)?;
+    }
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(target.clone()),
+        Some(source.clone()),
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Failed,
+    )?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let grant = Sha256Digest::for_bytes(b"verified-recovery-grant");
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant.clone(),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        source.to_string(),
+        target.to_string(),
+        4,
+        record.lifecycle.generation,
+        9,
+        crate::signed_intent::SignedIntentStatus::RecoveryRequired,
+    )
+    .expect("quarantined signed intent");
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .expect("persist signed intent");
+    let binding = fleet
+        .registry
+        .resolve_release_binding(&fleet.first, &target)?;
+    let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+        fleet.first.to_string(),
+        crate::release_transaction::ReleaseTransactionKind::Upgrade,
+        source.to_string(),
+        target.to_string(),
+        None,
+        Some(
+            fleet
+                .registry
+                .resolve_release_binding(&fleet.first, &source)?,
+        ),
+        Some(binding.clone()),
+        record.release_state.generation,
+        record.lifecycle.generation,
+    )
+    .expect("release transaction")
+    .with_authority(grant.clone(), 9)
+    .expect("bind original grant")
+    .with_phase(crate::release_transaction::ReleaseTransactionPhase::RecoveryRequired)
+    .expect("quarantine transaction");
+    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
+        .expect("persist transaction");
+    let (mut recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(recovered.production_recovery_required(&fleet.first)?);
+    let recovered_record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("recovered agent");
+    let recovered_intent = crate::signed_intent::read_intent(record.layout.run_root())
+        .expect("read recovered intent")
+        .expect("recovered intent");
+    let recovered_transaction =
+        crate::release_transaction::read_release_transaction(record.layout.run_root())
+            .expect("read recovered transaction")
+            .expect("recovered transaction");
+
+    let signer = crate::H7H89ProductionGrantSigner::from_seed("recovery-authority", 3, [51; 32])
+        .expect("test authority");
+    let untrusted_signer =
+        crate::H7H89ProductionGrantSigner::from_seed("recovery-authority", 3, [52; 32])
+            .expect("untrusted test authority with the same identity");
+    let verifier = crate::H7H89ProductionGrantVerifier::new(
+        signer.signer_id(),
+        signer.signer_epoch(),
+        signer.verifying_key(),
+    )
+    .expect("externally pinned verifier");
+    let sign = |authority: &crate::H7H89ProductionGrantSigner| {
+        authority
+            .sign_recovery(
+                &fleet.first,
+                grant.clone(),
+                recovered_intent.intent_sha256.clone(),
+                recovered_transaction.transaction_sha256.clone(),
+                target.to_string(),
+                Sha256Digest::parse(binding.manifest_sha256.clone()).expect("manifest digest"),
+                Sha256Digest::parse(binding.agentd_program_sha256.clone()).expect("agentd digest"),
+                binding
+                    .matrixd_program_sha256
+                    .clone()
+                    .map(|digest| Sha256Digest::parse(digest).expect("matrixd digest")),
+                crate::ProductionRecoveryOutcome::Committed,
+                recovered_record.lifecycle.generation,
+                10,
+                100,
+                200,
+            )
+            .expect("signed recovery decision")
+    };
+    let wrong_key = sign(&untrusted_signer);
+    let intent_path = record
+        .layout
+        .run_root()
+        .join(crate::signed_intent::SIGNED_INTENT_FILE);
+    let transaction_path = record
+        .layout
+        .run_root()
+        .join(crate::release_transaction::RELEASE_TRANSACTION_FILE);
+    let intent_before = std::fs::read(&intent_path)?;
+    let transaction_before = std::fs::read(&transaction_path)?;
+    assert!(matches!(
+        recovered.resolve_production_recovery(&fleet.first, &wrong_key, &verifier, 10, 150),
+        Err(SupervisorError::ProductionAuthority(message))
+            if message == "production authority grant signature verification failed"
+    ));
+    assert!(recovered.production_recovery_required(&fleet.first)?);
+    assert_eq!(std::fs::read(&intent_path)?, intent_before);
+    assert_eq!(std::fs::read(&transaction_path)?, transaction_before);
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root()).expect("read rejected intent"),
+        Some(recovered_intent.clone())
+    );
+    assert_eq!(
+        crate::release_transaction::read_release_transaction(record.layout.run_root())
+            .expect("read rejected transaction"),
+        Some(recovered_transaction.clone())
+    );
+
+    let decision = sign(&signer);
+    let receipt =
+        recovered.resolve_production_recovery(&fleet.first, &decision, &verifier, 10, 150)?;
+    assert_eq!(receipt.status, crate::ProductionMutationStatus::Committed);
+    assert!(!recovered.production_recovery_required(&fleet.first)?);
+    assert!(
+        recovered
+            .resolve_production_recovery(&fleet.first, &decision, &verifier, 10, 150)
+            .is_err(),
+        "a terminalized recovery decision must not be applied twice"
+    );
+    let terminal = crate::release_transaction::read_release_transaction(record.layout.run_root())
+        .expect("read terminal transaction")
+        .expect("terminal transaction");
+    assert_eq!(
+        terminal.phase,
+        crate::release_transaction::ReleaseTransactionPhase::Committed
+    );
+    assert_eq!(
+        terminal.recovery_decision_sha256.as_ref(),
+        Some(decision.digest())
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .expect("read terminal intent")
+            .expect("terminal intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::Committed
+    );
+    drop(recovered);
+    let (reopened, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert_eq!(report, TickReport::default());
+    assert!(!reopened.production_recovery_required(&fleet.first)?);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .release_state,
+        record.release_state
+    );
+    Ok(())
+}
+
+#[test]
 fn recovery_reconciles_terminal_signed_rollback_to_target() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let source = ReleaseId::parse("signed-rollback-source")?;
