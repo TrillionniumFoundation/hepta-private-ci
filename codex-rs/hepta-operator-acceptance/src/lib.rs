@@ -8,7 +8,7 @@ mod preflight;
 mod qualification_evidence;
 mod qualification_runs;
 mod receipt_store;
-#[cfg(windows)]
+#[cfg(any(windows, test))]
 mod sshsig;
 mod trust;
 

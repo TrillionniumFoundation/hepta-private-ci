@@ -18,6 +18,7 @@ use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::test_support::PrivateTempDir;
 use crate::test_support::private_tempdir;
+use crate::test_support::ssh_keygen;
 
 #[test]
 fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
@@ -127,7 +128,7 @@ impl TrustFixture {
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
+        let generated = Command::new(ssh_keygen())
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -144,7 +145,7 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = Command::new(ssh_keygen())
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -209,7 +210,7 @@ impl TrustFixture {
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new("/usr/bin/ssh-keygen")
+        let signed = Command::new(ssh_keygen())
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", namespace])

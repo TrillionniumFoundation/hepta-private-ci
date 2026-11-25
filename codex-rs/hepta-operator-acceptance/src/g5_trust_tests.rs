@@ -25,6 +25,7 @@ use crate::durable::sha256;
 use crate::durable::write_private_new;
 use crate::test_support::PrivateTempDir;
 use crate::test_support::private_tempdir;
+use crate::test_support::ssh_keygen;
 use crate::trust::SSHSIG_NAMESPACE;
 
 #[test]
@@ -270,7 +271,7 @@ impl TrustFixture {
         let temporary = private_tempdir("G5 trust fixture");
         let root = temporary.path().canonicalize().expect("canonical root");
         let key = root.join("operator-key");
-        let status = Command::new("/usr/bin/ssh-keygen")
+        let status = Command::new(ssh_keygen())
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -285,7 +286,7 @@ impl TrustFixture {
             format!("operator@example {} {}\n", fields[0], fields[1]).as_bytes(),
         )
         .expect("write allowed signers");
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = Command::new(ssh_keygen())
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -369,7 +370,7 @@ impl TrustFixture {
     }
 
     fn sign(&self, challenge: &Path) -> PathBuf {
-        let status = Command::new("/usr/bin/ssh-keygen")
+        let status = Command::new(ssh_keygen())
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", SSHSIG_NAMESPACE])

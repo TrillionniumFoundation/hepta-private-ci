@@ -210,3 +210,7 @@ impl<'a> Reader<'a> {
 fn invalid(message: impl Into<String>) -> AcceptanceError {
     AcceptanceError::Invalid(message.into())
 }
+
+#[cfg(test)]
+#[path = "sshsig_tests.rs"]
+mod tests;

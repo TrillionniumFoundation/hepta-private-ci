@@ -33,3 +33,18 @@ pub(crate) fn private_tempdir(label: &str) -> PrivateTempDir {
         root,
     }
 }
+
+// Production verification never resolves an executable through PATH. These
+// synthetic signing fixtures use the platform's installed OpenSSH explicitly.
+pub(crate) fn ssh_keygen() -> std::path::PathBuf {
+    #[cfg(windows)]
+    {
+        let system_root = std::env::var_os("SystemRoot")
+            .unwrap_or_else(|| panic!("Windows OpenSSH fixture requires SystemRoot"));
+        std::path::PathBuf::from(system_root).join("System32/OpenSSH/ssh-keygen.exe")
+    }
+    #[cfg(not(windows))]
+    {
+        std::path::PathBuf::from("/usr/bin/ssh-keygen")
+    }
+}
