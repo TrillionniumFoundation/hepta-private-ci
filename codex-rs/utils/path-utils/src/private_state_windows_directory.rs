@@ -32,7 +32,6 @@ const FILE_CREATE: u32 = 2;
 const FILE_OPEN_IF: u32 = 3;
 const FILE_DIRECTORY_FILE: u32 = 1;
 const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x20;
-const FILE_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
 const STATUS_REPARSE_POINT_ENCOUNTERED: NTSTATUS = 0xC000_050B_u32 as i32;
 
 // Match the existing windows-sandbox no_reparse_dir NtCreateFile ABI. Keep the
@@ -126,7 +125,10 @@ pub(super) fn open(root: &Path, access: DirectoryDisposition) -> io::Result<File
                 // Retain the original no-delete-sharing pin until File drops.
                 FILE_SHARE_READ | FILE_SHARE_WRITE,
                 disposition,
-                FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT | FILE_OPEN_REPARSE_POINT,
+                // FILE_DIRECTORY_FILE does not allow FILE_OPEN_REPARSE_POINT.
+                // OBJ_DONT_REPARSE still rejects redirections during lookup,
+                // and the caller checks attributes on this exact handle.
+                FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT,
                 ptr::null(),
                 /*ea_length*/ 0,
             )
