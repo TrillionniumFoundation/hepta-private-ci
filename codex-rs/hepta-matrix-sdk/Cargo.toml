@@ -29,6 +29,9 @@ tokio = { workspace = true, features = ["macros", "rt-multi-thread", "sync", "ti
 tokio-util = { workspace = true, features = ["rt"] }
 url = { workspace = true }
 
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
+
 [dev-dependencies]
 matrix-sdk-crypto = { version = "=0.19.1", default-features = false }
 pretty_assertions = { workspace = true }

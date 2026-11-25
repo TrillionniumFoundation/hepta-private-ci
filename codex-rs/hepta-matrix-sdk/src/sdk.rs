@@ -1,4 +1,6 @@
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
+#[cfg(not(windows))]
 use std::io::Write;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
@@ -42,12 +44,18 @@ const MATRIX_ROOM_ENCRYPTED_EVENT_TYPE: &str = "m.room.encrypted";
 // startup paths may otherwise consume several transport attempts and their
 // individual timeouts before matrixd can bind its control socket.
 const MATRIX_STARTUP_REQUEST_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
-const MATRIX_SESSION_MAX_BYTES: u64 = 16 * 1024;
+pub(super) const MATRIX_SESSION_MAX_BYTES: u64 = 16 * 1024;
+
+#[cfg(windows)]
+type SessionOwner = std::sync::Arc<crate::sdk_session_windows::RetainedSessionStore>;
+#[cfg(not(windows))]
+type SessionOwner = std::path::PathBuf;
 
 pub struct MatrixSdkClient {
     client: Client,
     config: MatrixSidecarConfig,
     paths: MatrixSdkPaths,
+    session: SessionOwner,
     sync_fenced: AtomicBool,
 }
 
@@ -70,7 +78,7 @@ impl MatrixSdkClient {
             .restore_session(session.clone())
             .await
             .map_err(|_| MatrixSdkError::Authentication)?;
-        persist_session(sidecar.paths.session(), &session)?;
+        persist_session(&sidecar.session, &session)?;
         sidecar.verify_authenticated_identity()?;
         sidecar.enable_event_cache()?;
         Ok(sidecar)
@@ -108,7 +116,7 @@ impl MatrixSdkClient {
             .map_err(|_| MatrixSdkError::Authentication)?;
         let session = MatrixSession::from(&response);
         verify_session_identity(&sidecar.config, &session)?;
-        persist_session(sidecar.paths.session(), &session)?;
+        persist_session(&sidecar.session, &session)?;
         sidecar.verify_authenticated_identity()?;
         sidecar.enable_event_cache()?;
         Ok((sidecar, session))
@@ -133,7 +141,7 @@ impl MatrixSdkClient {
         .await
         .map_err(|_| MatrixSdkError::Initialization)??;
 
-        if let Some(session) = load_session(sidecar.paths.session())? {
+        if let Some(session) = load_session(&sidecar.session)? {
             verify_session_identity(&sidecar.config, &session)?;
             let restore = tokio::time::timeout(
                 MATRIX_STARTUP_REQUEST_TIMEOUT,
@@ -163,7 +171,14 @@ impl MatrixSdkClient {
         config: MatrixSidecarConfig,
         store_passphrase: Option<&str>,
     ) -> Result<Self, MatrixSdkError> {
+        #[cfg(windows)]
+        let (paths, session) = MatrixSdkPaths::prepare_retained(layout, &config)?;
+        #[cfg(windows)]
+        let session = std::sync::Arc::new(session);
+        #[cfg(not(windows))]
         let paths = MatrixSdkPaths::prepare(layout, &config)?;
+        #[cfg(not(windows))]
+        let session = paths.session().to_path_buf();
         let client = Client::builder()
             .homeserver_url(config.binding.homeserver.as_str())
             .sqlite_store_with_cache_path(paths.state(), paths.cache(), store_passphrase)
@@ -182,12 +197,14 @@ impl MatrixSdkClient {
             .remove_kv_data(StateStoreDataKey::SyncToken)
             .await
             .map_err(|_| MatrixSdkError::Initialization)?;
-        let save_session_path = paths.session().to_path_buf();
-        let reload_session_path = paths.session().to_path_buf();
+        // Refresh callbacks retain the same owner even if an SDK Client clone
+        // outlives this wrapper. On Windows this includes the private handles.
+        let save_session_owner = session.clone();
+        let reload_session_owner = session.clone();
         client
             .set_session_callbacks(
                 Box::new(move |_client| {
-                    let session = load_session(&reload_session_path)
+                    let session = load_session(&reload_session_owner)
                         .map_err(|error| {
                             Box::new(error) as Box<dyn std::error::Error + Send + Sync>
                         })?
@@ -202,7 +219,7 @@ impl MatrixSdkClient {
                         Box::new(MatrixSdkError::Authentication)
                             as Box<dyn std::error::Error + Send + Sync>
                     })?;
-                    persist_session(&save_session_path, &session).map_err(|error| {
+                    persist_session(&save_session_owner, &session).map_err(|error| {
                         Box::new(error) as Box<dyn std::error::Error + Send + Sync>
                     })
                 }),
@@ -213,6 +230,7 @@ impl MatrixSdkClient {
             client,
             config,
             paths,
+            session,
             sync_fenced: AtomicBool::new(false),
         })
     }
@@ -493,6 +511,17 @@ fn verify_homeserver(config: &MatrixSidecarConfig, client: &Client) -> Result<()
     Ok(())
 }
 
+#[cfg(windows)]
+fn load_session(owner: &SessionOwner) -> Result<Option<MatrixSession>, MatrixSdkError> {
+    owner.load()
+}
+
+#[cfg(windows)]
+fn persist_session(owner: &SessionOwner, session: &MatrixSession) -> Result<(), MatrixSdkError> {
+    owner.persist(session)
+}
+
+#[cfg(not(windows))]
 fn load_session(path: &std::path::Path) -> Result<Option<MatrixSession>, MatrixSdkError> {
     let metadata = match std::fs::symlink_metadata(path) {
         Ok(metadata) => metadata,
@@ -512,6 +541,7 @@ fn load_session(path: &std::path::Path) -> Result<Option<MatrixSession>, MatrixS
         .map_err(|_| MatrixSdkError::Initialization)
 }
 
+#[cfg(not(windows))]
 fn persist_session(path: &std::path::Path, session: &MatrixSession) -> Result<(), MatrixSdkError> {
     let parent = path.parent().ok_or(MatrixSdkError::Initialization)?;
     let parent_metadata =
@@ -586,12 +616,12 @@ fn session_file_is_single_link(metadata: &std::fs::Metadata) -> bool {
     metadata.nlink() == 1
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn session_file_is_single_link(_metadata: &std::fs::Metadata) -> bool {
     true
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn session_file_mode_is_private(_metadata: &std::fs::Metadata) -> bool {
     true
 }

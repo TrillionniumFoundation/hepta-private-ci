@@ -14,6 +14,8 @@ mod outbound;
 #[cfg(feature = "qualification-failpoints")]
 mod qualification;
 mod sdk;
+#[cfg(windows)]
+mod sdk_session_windows;
 mod sync;
 
 pub use config::MatrixSdkPaths;
