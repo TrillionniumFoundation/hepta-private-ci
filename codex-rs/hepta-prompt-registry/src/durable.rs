@@ -41,7 +41,7 @@ use crate::PromptRegistryV2Error;
 use crate::PromptRoleV2;
 use crate::RealizationDeliveryV2;
 use crate::RegistryReceipt;
-#[cfg(test)]
+#[cfg(all(test, unix))]
 use crate::VerifiedAdmission;
 use crate::admission::map_final_use_error;
 use crate::final_use_realization_binding;
@@ -109,7 +109,7 @@ impl DurablePromptRegistry {
         Ok(&self.registry)
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn diagnostic_registry(&self) -> &PromptRegistry {
         &self.registry
     }
@@ -126,12 +126,12 @@ impl DurablePromptRegistry {
         Ok(())
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn fail_directory_sync_after_rename_once(&self) {
         self.store.fail_directory_sync_after_rename_once.set(true);
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn fail_storage_full_before_rename_once(&self) {
         self.store.fail_storage_full_before_rename_once.set(true);
     }
@@ -143,7 +143,7 @@ impl DurablePromptRegistry {
         self.commit(|registry| registry.register_factor(factor))
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn admit_factor_verified(
         &mut self,
         admission: VerifiedAdmission,
@@ -180,7 +180,7 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn register_realization_payload_v2(
         &mut self,
         binding: PromptRealizationBindingV2,
@@ -243,7 +243,7 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn retire_factor(
         &mut self,
         factor_id: &StableId,
@@ -257,7 +257,7 @@ impl DurablePromptRegistry {
         })
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn revoke_factor(
         &mut self,
         factor_id: &StableId,
@@ -550,7 +550,7 @@ struct StoredLifecycleEvent {
     event_digest: [u8; 32],
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 fn stored_v2(registry: &PromptRegistry) -> StoredV2 {
     let mut stored = stored_metadata(registry);
     stored.payloads = registry
@@ -1240,6 +1240,14 @@ struct Store {
     fail_directory_sync_after_rename_once: Cell<bool>,
     #[cfg(test)]
     fail_storage_full_before_rename_once: Cell<bool>,
+}
+
+impl Drop for Store {
+    fn drop(&mut self) {
+        // A concurrent fork may retain this file description until exec.
+        // The lock belongs to this owner, not to the inherited descriptor.
+        let _ = self._lock.unlock();
+    }
 }
 
 impl Store {
@@ -2518,6 +2526,31 @@ mod tests {
         ));
         drop(first);
         DurablePromptRegistry::open_state_dir(&root, 64).must("reopen after owner exit");
+    }
+
+    #[test]
+    fn owner_drop_releases_retained_descriptor_without_releasing_successor_lock() {
+        let temporary = tempfile::tempdir().must("tempdir");
+        let root = temporary.path().join("registry-retained-descriptor");
+        let first = DurablePromptRegistry::open_state_dir(&root, 64).must("first owner");
+        let before = first.registry().must("first registry").snapshot_digest();
+        // A duplicate retains the same open file description as a forked child.
+        let retained = first.store._lock.try_clone().must("retain descriptor");
+        assert!(matches!(
+            DurablePromptRegistry::open_state_dir(&root, 64),
+            Err(DurableRegistryError::StateLocked)
+        ));
+        drop(first);
+        let successor =
+            DurablePromptRegistry::open_state_dir(&root, 64).must("successor owner");
+        assert_eq!(successor.registry().must("registry").snapshot_digest(), before);
+        drop(retained);
+        assert!(matches!(
+            DurablePromptRegistry::open_state_dir(&root, 64),
+            Err(DurableRegistryError::StateLocked)
+        ));
+        drop(successor);
+        DurablePromptRegistry::open_state_dir(&root, 64).must("reopen after successor exit");
     }
 
     #[test]
