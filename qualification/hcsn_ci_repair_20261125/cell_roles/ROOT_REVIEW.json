@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-11-25T03:33:23.806030+00:00",
+  "reviewer": "/root",
+  "decision": "PASS_SCOPED_STATIC_REVIEW",
+  "changes": {
+    "control_wal": "Private enum only; four hunks introduce Box and explicitly clone the underlying intent. Original encode function, tags, decode validation, bounds and public method signatures unchanged. Adds a heap allocation to Prepare construction/decode.",
+    "action_proposal": "Retains the same false execution-allowed invariant using const assertion; it now also fails compilation if the invariant is violated. Test remains registered.",
+    "metric_policy": "Both original branches return AtMost. Removed predicate is a pure const matches!(self, Self::ValueBias) with no mutation, fallibility or side effect. Original metric iterator, values and assertions remain unchanged."
+  },
+  "validation_review": "Read v2 driver, receipt and strict-Clippy raw stderr. Driver compares the full tracked codex-rs worktree to a638 before and after steps, allowing only the three listed paths. Final 119 named original tests are rerun and recorded as passed; independent case inventory check belongs to repository audit agent. Root did not rerun tests.",
+  "limits": "This is scoped cell-roles repair validation; remaining Bellman/Agentd/shadow strict lane and hosted exact/merge CI are separate pending checks. No Windows Core or musl timing closure is claimed.",
+  "source_manifest": {
+    "schema": 1,
+    "base_commit": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+    "base_tree": "4963be2d879bf1a91eac3567e20e10bf30e92147",
+    "files": [
+      {
+        "path": "codex-rs/hepta-cell-roles/src/control_wal.rs",
+        "local_file": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/candidate/codex-rs/hepta-cell-roles/src/control_wal.rs",
+        "base_blob": "1fd90550fe8ba3cc7b3056a5df7c15352fa31118",
+        "bytes": 38783,
+        "sha256": "c543e7466239736a4aa65a541c9ce3f563994614e1c466c122146579367349f6",
+        "git_blob_sha1": "69835d091f90487ba93a39e7e32bd1f43af7e129",
+        "base64_file": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/control_wal.rs.b64",
+        "base64_chars": 51712
+      },
+      {
+        "path": "codex-rs/hepta-cell-roles/src/action_proposal.rs",
+        "local_file": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/candidate/codex-rs/hepta-cell-roles/src/action_proposal.rs",
+        "base_blob": "849479696f6f2da35e0428ad528b1642bf3fdea6",
+        "bytes": 18242,
+        "sha256": "d0839ee6d2b9dac3d907ce79a7bc76e21174db2912c3e5b47f99c06dbec7c4ff",
+        "git_blob_sha1": "047f487c5acfa6541b64a7657a719e7ce544cfb6",
+        "base64_file": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/action_proposal.rs.b64",
+        "base64_chars": 24324
+      },
+      {
+        "path": "codex-rs/hepta-cell-roles/src/metric_policy.rs",
+        "local_file": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/candidate/codex-rs/hepta-cell-roles/src/metric_policy.rs",
+        "base_blob": "695568a7c991ac94062d5d03ef6bb2ab7e6e6b6a",
+        "bytes": 18489,
+        "sha256": "ff8793f17851d0fe13d353e3452a1475de9c350e880ac5fdb880f11115f5ad15",
+        "git_blob_sha1": "8bfdc3ca8edd56aaa3e8ed6d93cc97c50d3fa6a2",
+        "base64_file": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/metric_policy.rs.b64",
+        "base64_chars": 24652
+      }
+    ]
+  }
+}

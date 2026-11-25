@@ -1,0 +1,76 @@
+{
+  "total_error_blocks": 9,
+  "located": 7,
+  "by_file": {
+    "rmcp-client/src/elicitation_client_service.rs": 3,
+    "rmcp-client/src/logging_client_handler.rs": 4
+  },
+  "by_lint": {
+    "deprecated": 7
+  },
+  "errors": [
+    {
+      "message": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead",
+      "file": "rmcp-client/src/elicitation_client_service.rs",
+      "line": 4,
+      "lint": "deprecated",
+      "detail": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead\n --> rmcp-client/src/elicitation_client_service.rs:4:18\n  |\n4 | use rmcp::model::ClientInfo;\n  |                  ^^^^^^^^^^\n  |\n  = note: `-D deprecated` implied by `-D warnings`\n  = help: to override `-D warnings` add `#[allow(deprecated)]`\n\n"
+    },
+    {
+      "message": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead",
+      "file": "rmcp-client/src/elicitation_client_service.rs",
+      "line": 55,
+      "lint": "deprecated",
+      "detail": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead\n  --> rmcp-client/src/elicitation_client_service.rs:55:22\n   |\n55 |         client_info: ClientInfo,\n   |                      ^^^^^^^^^^\n\n"
+    },
+    {
+      "message": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead",
+      "file": "rmcp-client/src/elicitation_client_service.rs",
+      "line": 191,
+      "lint": "deprecated",
+      "detail": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead\n   --> rmcp-client/src/elicitation_client_service.rs:191:27\n    |\n191 |     fn get_info(&self) -> ClientInfo {\n    |                           ^^^^^^^^^^\n\n"
+    },
+    {
+      "message": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead",
+      "file": "rmcp-client/src/logging_client_handler.rs",
+      "line": 6,
+      "lint": "deprecated",
+      "detail": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead\n --> rmcp-client/src/logging_client_handler.rs:6:18\n  |\n6 | use rmcp::model::ClientInfo;\n  |                  ^^^^^^^^^^\n\n"
+    },
+    {
+      "message": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead",
+      "file": "rmcp-client/src/logging_client_handler.rs",
+      "line": 27,
+      "lint": "deprecated",
+      "detail": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead\n  --> rmcp-client/src/logging_client_handler.rs:27:18\n   |\n27 |     client_info: ClientInfo,\n   |                  ^^^^^^^^^^\n\n"
+    },
+    {
+      "message": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead",
+      "file": "rmcp-client/src/logging_client_handler.rs",
+      "line": 32,
+      "lint": "deprecated",
+      "detail": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead\n  --> rmcp-client/src/logging_client_handler.rs:32:36\n   |\n32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {\n   |                                    ^^^^^^^^^^\n\n"
+    },
+    {
+      "message": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead",
+      "file": "rmcp-client/src/logging_client_handler.rs",
+      "line": 94,
+      "lint": "deprecated",
+      "detail": "error: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead\n  --> rmcp-client/src/logging_client_handler.rs:94:27\n   |\n94 |     fn get_info(&self) -> ClientInfo {\n   |                           ^^^^^^^^^^\n\n    Checking codex-exec-server-test-support v0.0.0 (/home/qian-qi/hcsn7067-strict-source-20261125-v1/repo/codex-rs/exec-server/tests/support)\n    Checking codex-diagnostics v0.0.0 (/home/qian-qi/hcsn7067-strict-source-20261125-v1/repo/codex-rs/diagnostics)\n    Checking jsonptr v0.7.1\n    Checking codex-tools v0.0.0 (/home/qian-qi/hcsn7067-strict-source-20261125-v1/repo/codex-rs/tools)\n    Checking symphonia-core v0.6.1\n"
+    },
+    {
+      "message": "error: could not compile `codex-rmcp-client` (lib) due to 7 previous errors",
+      "file": null,
+      "line": null,
+      "lint": null,
+      "detail": "error: could not compile `codex-rmcp-client` (lib) due to 7 previous errors\nwarning: build failed, waiting for other jobs to finish...\n"
+    },
+    {
+      "message": "error: recipe `clippy` failed on line 61 with exit code 101",
+      "file": null,
+      "line": null,
+      "lint": null,
+      "detail": "error: recipe `clippy` failed on line 61 with exit code 101\n"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "status": "verification_parser_failure",
+  "verifier_sha256": "b1e5ace1c3ce5f29279ef23066ff062c172eae5db29d93141f0380fad1357a42",
+  "failed_assertion": "all terminal rows equal the two selected cases repeated twice",
+  "observed": "Original --status-level all also prints 27 unselected SKIP cases twice. None of the two selected guards is skipped.",
+  "repair": "Require 27 distinct unselected skipped cases exactly twice plus each of two selected cases exactly twice, and exact original summary. Archives and original tests unchanged."
+}

@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-11-25 03:20:27 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+  "tested_merge_commit": "92b4e21db61532622d39a14f29e01bfe81a6e715",
+  "tree": "4963be2d879bf1a91eac3567e20e10bf30e92147",
+  "identity_manifest": "LOG_AND_SOURCE_IDENTITIES.json",
+  "bazel_clippy": {
+    "job_id": 138938833969,
+    "result": "success",
+    "target_count": 1446,
+    "total_actions": 39329,
+    "invocation": "run-bazel-ci.sh --print-failed-action-summary -- build --config=clippy [native targets from scripts/list-bazel-clippy-targets.sh]",
+    "scope": "Native Bazel Clippy selection and configured warning/deny levels; not cargo clippy --all-targets -- -D warnings.",
+    "strict_all_warnings_gate": false,
+    "observed_warnings": "The original successful log includes Agentd warning diagnostics; .bazelrc explicitly uses warn levels for multiple lint families.",
+    "sources": {
+      ".bazelrc": "9bf1ee45be9065fc94907d921cde0204b16b8d55",
+      "scripts/list-bazel-clippy-targets.sh": "de897fdc72cb3019edda75f8c0ba367f5bae50bf"
+    },
+    "not_closed_by_this_result": "Historical Agentd all-warnings-denied qualification on other source graphs."
+  },
+  "repository_checks": {
+    "job_id": 138938832647,
+    "result": "success",
+    "caller_proof_self_test": "PASS_HEPTA_CALLER_PROOF_SELF_TEST",
+    "caller_proof_verify": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "caller_proof_scanned_rust_files": 9140,
+    "caller_proof_authority_granted": false,
+    "qa_runs": [
+      {
+        "path": "qa/b4-no-bypass",
+        "tests": 1352,
+        "seconds": 279.948,
+        "result": "OK"
+      },
+      {
+        "path": "qa/fault-matrix",
+        "tests": 5,
+        "result": "OK"
+      },
+      {
+        "path": "qa/performance",
+        "tests": 5,
+        "result": "OK"
+      },
+      {
+        "path": "qa/vertical-slice",
+        "tests": 5,
+        "result": "OK"
+      }
+    ],
+    "scope": "Exact a638 tree and its current QA inventory. Does not retroactively qualify another branch, remove prior failed holdouts, or grant production execution authority."
+  },
+  "read_only": true,
+  "new_test_dispatch": false,
+  "source_or_gate_changes": false
+}

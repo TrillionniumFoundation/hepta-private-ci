@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-11-25 03:35:00 UTC",
+  "status": "SCOPED_REPAIR_VALIDATED_FULL_LEARNING_LANE_PENDING",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent_source": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+  "failed_hosted_jobs": [
+    {
+      "id": 138938833510,
+      "lane": "deterministic merge",
+      "exit": 101
+    },
+    {
+      "id": 138938833814,
+      "lane": "exact source",
+      "exit": 101
+    }
+  ],
+  "failure": "clippy::large_enum_variant in private ControlWalEventV1::Prepare; 304-byte payload versus 64-byte next-largest variant under -D warnings",
+  "patch_provenance": {
+    "control_wal_rs": {
+      "source_commit": "356877c2d1d5225e97e0417683a5e5a7f8e2c1fc",
+      "source_pr": 6799,
+      "exact_blob": "69835d091f90487ba93a39e7e32bd1f43af7e129",
+      "source_scope": "Only this file's four Box hunks. Other PR6799 changes were not imported."
+    },
+    "other_changes": "Two independent pre-existing lib-test lint errors surfaced by the first scoped strict run and were minimally repaired."
+  },
+  "review": {
+    "private_enum": "ControlWalEventV1 is private; all 17 tracked type references are within control_wal.rs. Its dispatch intent payload is boxed and constructors/decode/apply dereference are updated.",
+    "wire_and_authority": "WAL tags, encode_intent, field order, frame domains, frame digests, cursor EOF validation, scope/cell checks, live-writer identity checks, inverse rollback and public trait signatures are byte-unchanged.",
+    "allocation_limit": "The change adds a heap allocation for a Prepare payload. No speed or overall memory improvement is claimed.",
+    "constant_assertion": "The existing static execution-denied assertion is evaluated in an inline const block. The adjacent runtime execution_mode rejection assertion remains and the original case remains registered.",
+    "metric_predicate": "The former identical branches both returned AtMost. permits_negative is a pure pub const fn with only matches!(self, Self::ValueBias), so replacing that test-fixture expression with AtMost removes no effects, validation, or ordering. Production threshold validation is untouched.",
+    "policy": "No allow lint attributes, skip filters, retry policy, test denominator, timeout, safety guard, or Cargo.lock change."
+  },
+  "validation": {
+    "first_attempt": "119/119 original Linux tests passed; strict lib-test lint failed on the constant assertion and identical branches. The failure receipt/log remain preserved.",
+    "final_attempt": "After both test-only repairs, just fmt and diff check passed; all original 119 tests were rerun and passed with zero skips; strict cell-roles --all-targets -- -D warnings passed.",
+    "identity": "Before/after Git diff to a638 confirmed all codex-rs bytes matched that source except the three repair files, and candidate hashes/Cargo.lock were unchanged.",
+    "scope": "Reused sparse checkout HEAD remains b1af; compiled codex-rs source closure was verified against a638. Other research evidence outside codex-rs is not this Rust run's input.",
+    "commands": [
+      "just fmt",
+      "git diff --check",
+      "just test -p codex-hepta-cell-roles --test-threads 2",
+      "just clippy -p codex-hepta-cell-roles --all-targets -- -D warnings"
+    ]
+  },
+  "remaining": "The three-package Bellman + Agentd + shadow strict learning qualification is being executed separately after this scoped repair. This receipt alone does not qualify that full lane, Windows Core production isolation, or the whole PR.",
+  "peer_review": "WEIGHT_AGENT_REVIEW.json"
+}

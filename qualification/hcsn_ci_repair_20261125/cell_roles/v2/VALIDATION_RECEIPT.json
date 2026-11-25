@@ -1,0 +1,101 @@
+{
+  "schema": 2,
+  "status": "success",
+  "source": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+  "scope": "All codex-rs files match exact a638 except the three reviewed local repair files. The reused checkout HEAD remains b1af; research evidence outside codex-rs is not this scoped Rust validation input.",
+  "files": {
+    "codex-rs/hepta-cell-roles/src/control_wal.rs": {
+      "sha256": "c543e7466239736a4aa65a541c9ce3f563994614e1c466c122146579367349f6",
+      "git_blob": "69835d091f90487ba93a39e7e32bd1f43af7e129",
+      "bytes": 38783
+    },
+    "codex-rs/hepta-cell-roles/src/action_proposal.rs": {
+      "sha256": "d0839ee6d2b9dac3d907ce79a7bc76e21174db2912c3e5b47f99c06dbec7c4ff",
+      "git_blob": "047f487c5acfa6541b64a7657a719e7ce544cfb6",
+      "bytes": 18242
+    },
+    "codex-rs/hepta-cell-roles/src/metric_policy.rs": {
+      "sha256": "ff8793f17851d0fe13d353e3452a1475de9c350e880ac5fdb880f11115f5ad15",
+      "git_blob": "8bfdc3ca8edd56aaa3e8ed6d93cc97c50d3fa6a2",
+      "bytes": 18489
+    }
+  },
+  "steps": [
+    {
+      "name": "just_fmt",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.9607191500253975,
+      "children_cpu_seconds": 1.022738
+    },
+    {
+      "name": "diff_check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.043648015009239316,
+      "children_cpu_seconds": 0.08968200000000004
+    },
+    {
+      "name": "cell_roles_tests",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-cell-roles",
+        "--test-threads",
+        "2"
+      ],
+      "returncode": 0,
+      "wall_seconds": 4.309414540999569,
+      "children_cpu_seconds": 6.238003
+    },
+    {
+      "name": "strict_clippy",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "clippy",
+        "-p",
+        "codex-hepta-cell-roles",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "wall_seconds": 4.896931222057901,
+      "children_cpu_seconds": 6.160927
+    }
+  ],
+  "wall_seconds": 10.660215702024288,
+  "test_denominator_unchanged": true,
+  "cargo_lock_unchanged": true,
+  "logs": {
+    "strict_clippy.stderr": {
+      "sha256": "7449cf3223045c37b932854893cf6b3935d654bbc942e14fccecf73c984f7524",
+      "git_blob": "ed4d8d161bced44db281bf2097cf1fefd5701057",
+      "bytes": 225
+    },
+    "cell_roles_tests.stderr": {
+      "sha256": "a1e5dc554a2c90f67fffe33b05334639ba8eefa20ef5999e399bb1a055240586",
+      "git_blob": "0ed01b4414cafa605f94479d4784f0be655f5932",
+      "bytes": 18340
+    },
+    "just_fmt.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    },
+    "diff_check.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    }
+  }
+}

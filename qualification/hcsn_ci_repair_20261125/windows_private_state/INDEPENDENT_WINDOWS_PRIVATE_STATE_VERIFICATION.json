@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "status": "VERIFIED",
+  "source": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+  "tree": "4963be2d879bf1a91eac3567e20e10bf30e92147",
+  "run_id": 45534615741,
+  "job_id": 138938029815,
+  "archives": {
+    "14989095158": "5a8c9805fe37ac40d58310e2ab84e716df66d606d5a2642eadeb66f089c444db",
+    "14988991140": "240091ea7d9055dd6a2d720dc1198760cf05540ca0b831c5fe1e78afcb007c15",
+    "14987818577": "05d9ba6de1b391d65b1fea29179d9da22ce886c8346a0ee4f61d9f213dba42f4"
+  },
+  "registered_native_cases": 36,
+  "group_counts": {
+    "original_windows_21": 21,
+    "ledger_current_7": 7,
+    "original_owner_current_4": 4,
+    "dataset_materialization": 4
+  },
+  "exact_registered_inventory_vs_junit_vs_log": true,
+  "selected_failed_or_skipped_cases": 0,
+  "retries": 0,
+  "separate_credit_case_repeated_within_36": true,
+  "directory_acquisition": "Two positive guards pass; each of two original mutations fails its intended guard.",
+  "scope": "Native private-state acquisition, credit/ledger/current-state regressions only. Not Core elevated process isolation qualification, not restoration of the three still-failed Core positives, and not retroactive qualification of PR7068.",
+  "verifier_sha256": "392a4df363407a14df46f0b6cc91d28e051cb092be3cc0a3ef27450c0498d661"
+}

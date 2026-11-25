@@ -1,0 +1,7 @@
+{
+  "status": "verification_parser_failure",
+  "verifier_sha256": "5f0638e063c54f42130c4176ec4f0051bccbcf6f266d3ae2825518b9c16f3a8c",
+  "failed_assertion": "len(rows)==2 for acquisition mutation logs",
+  "observed": "Each of the two test terminal rows is printed twice because the original invocation enables final-status-level all. No execution, archive or expected case inventory changed.",
+  "repair": "Check exactly two distinct registered cases, each printed exactly twice, and one matching terminal summary."
+}

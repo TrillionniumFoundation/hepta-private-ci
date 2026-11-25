@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-11-25 03:14:43 UTC",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+  "tested_merge_commit": "92b4e21db61532622d39a14f29e01bfe81a6e715",
+  "tested_tree": "4963be2d879bf1a91eac3567e20e10bf30e92147",
+  "run": 45534615882,
+  "job": 138938834073,
+  "conclusion": "failure",
+  "raw_log": {
+    "bytes": 1320570,
+    "sha256": "fdd65207367fffbee626e6a97a3fe423503835ce5ebc60f3e2a13d300cd15569"
+  },
+  "gzip_log": {
+    "path": "A638_MUSL_138938834073.log.gz",
+    "bytes": 163976,
+    "sha256": "f8df60abccc3e89496d26a5fc4c3c80e66b38458daa801e824a3c3490e596871"
+  },
+  "failing_step": "bazel test //...",
+  "failing_target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+  "failing_test": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::original_next_use_evidence_timing_diagnostic",
+  "failure": "OwnerUnavailable(\"original learning evidence owner\")",
+  "timing": {
+    "command_readback_us": 493505,
+    "command_result": "Ok(())",
+    "evidence_readback_us": 501036,
+    "evidence_result": "Err(OwnerUnavailable(\"original learning evidence owner\"))",
+    "evidence_peer_terminal": "Err(Transport(DeadlineElapsed))"
+  },
+  "shard4": {
+    "passed": 395,
+    "failed": 1,
+    "ignored": 44,
+    "filtered": 1283,
+    "duration_seconds": 95.52
+  },
+  "native_core_and_app_server": {
+    "step_conclusion": "success",
+    "core_target": "FLAKY",
+    "first_attempt_failure": "suite::network_approval::guardian_network_approval_preserves_action_and_outcome_routing",
+    "retry_policy": "existing workflow/Bazel retry; no manual rerun requested",
+    "summary": "Executed 2 out of 2 tests: 2 tests pass."
+  },
+  "scope": "Timing observations establish the exact failing contract, not a causal diagnosis. No timeout, measurement window, source, guard, or retry policy was changed."
+}

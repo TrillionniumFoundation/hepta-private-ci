@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "reviewed_utc": "2026-11-25T03:32:50.382526+00:00",
+  "reviewer": "weight_edit_research",
+  "decision": "PASS_READ_ONLY_SEMANTIC_REVIEW_RUNTIME_GATE_SEPARATE",
+  "source_commit": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+  "source_files_fetched_independently": true,
+  "files": [
+    {
+      "file": "control_wal.rs",
+      "original": {
+        "path": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/review_originals/control_wal.rs",
+        "bytes": 38710,
+        "sha256": "815247d66057e8b58a32528b1bde95d8cb744c33700873d2549a9609f6a9ae3e",
+        "git_blob_sha1": "1fd90550fe8ba3cc7b3056a5df7c15352fa31118"
+      },
+      "candidate": {
+        "path": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/candidate/codex-rs/hepta-cell-roles/src/control_wal.rs",
+        "bytes": 38783,
+        "sha256": "c543e7466239736a4aa65a541c9ce3f563994614e1c466c122146579367349f6",
+        "git_blob_sha1": "69835d091f90487ba93a39e7e32bd1f43af7e129"
+      },
+      "diff": "--- a/control_wal.rs\n+++ b/control_wal.rs\n@@ -31,7 +31,7 @@\n \n #[derive(Clone, Debug)]\n enum ControlWalEventV1 {\n-    Prepare(ControlDispatchIntentV1),\n+    Prepare(Box<ControlDispatchIntentV1>),\n     Forward(StableId),\n     Terminal(StableId, Digest32),\n     Reconcile(StableId),\n@@ -185,7 +185,9 @@\n                 if &intent.cell_id != expected_cell || intent.scope_digest != expected_scope {\n                     return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);\n                 }\n-                Ok(ControlWalOutputV1::Receipt(owner.prepare(intent.clone())?))\n+                Ok(ControlWalOutputV1::Receipt(\n+                    owner.prepare(intent.as_ref().clone())?,\n+                ))\n             }\n             Self::Forward(id) => Ok(ControlWalOutputV1::Receipt(owner.forward(id)?)),\n             Self::Terminal(id, digest) => Ok(ControlWalOutputV1::Receipt(\n@@ -252,7 +254,7 @@\n     fn decode(bytes: &[u8]) -> Result<Self, ControlOwnerErrorV1> {\n         let mut cursor = ControlCursor::new(bytes);\n         let event = match cursor.byte()? {\n-            0 => Self::Prepare(decode_intent(&mut cursor)?),\n+            0 => Self::Prepare(Box::new(decode_intent(&mut cursor)?)),\n             1 => Self::Forward(cursor.id()?),\n             2 => Self::Terminal(cursor.id()?, cursor.digest()?),\n             3 => Self::Reconcile(cursor.id()?),\n@@ -681,7 +683,7 @@\n         &mut self,\n         intent: ControlDispatchIntentV1,\n     ) -> Result<ControlDispatchReceiptV1, ControlOwnerErrorV1> {\n-        match self.apply_event(ControlWalEventV1::Prepare(intent))? {\n+        match self.apply_event(ControlWalEventV1::Prepare(Box::new(intent)))? {\n             ControlWalOutputV1::Receipt(receipt) => Ok(receipt),\n             _ => Err(ControlOwnerErrorV1::InvalidDurableSnapshot),\n         }\n"
+    },
+    {
+      "file": "action_proposal.rs",
+      "original": {
+        "path": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/review_originals/action_proposal.rs",
+        "bytes": 18232,
+        "sha256": "3cfd2a82706ba6a28bb081a56bb2f0786a8f57fe7477597a1ee9ca6cd1dbcf6c",
+        "git_blob_sha1": "849479696f6f2da35e0428ad528b1642bf3fdea6"
+      },
+      "candidate": {
+        "path": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/candidate/codex-rs/hepta-cell-roles/src/action_proposal.rs",
+        "bytes": 18242,
+        "sha256": "d0839ee6d2b9dac3d907ce79a7bc76e21174db2912c3e5b47f99c06dbec7c4ff",
+        "git_blob_sha1": "047f487c5acfa6541b64a7657a719e7ce544cfb6"
+      },
+      "diff": "--- a/action_proposal.rs\n+++ b/action_proposal.rs\n@@ -434,7 +434,7 @@\n                 .is_zero()\n         );\n         assert!(!step.result.execution_mode().execution_allowed());\n-        assert!(!ACTION_PROPOSAL_EXECUTION_ALLOWED_V1);\n+        const { assert!(!ACTION_PROPOSAL_EXECUTION_ALLOWED_V1) };\n     }\n \n     #[test]\n"
+    },
+    {
+      "file": "metric_policy.rs",
+      "original": {
+        "path": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/review_originals/metric_policy.rs",
+        "bytes": 18647,
+        "sha256": "b2b5c3845b1133fbbed0edeaca5434d18e5e03617afac92606f3cc3cdbe40c04",
+        "git_blob_sha1": "695568a7c991ac94062d5d03ef6bb2ab7e6e6b6a"
+      },
+      "candidate": {
+        "path": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/candidate/codex-rs/hepta-cell-roles/src/metric_policy.rs",
+        "bytes": 18489,
+        "sha256": "ff8793f17851d0fe13d353e3452a1475de9c350e880ac5fdb880f11115f5ad15",
+        "git_blob_sha1": "8bfdc3ca8edd56aaa3e8ed6d93cc97c50d3fa6a2"
+      },
+      "diff": "--- a/metric_policy.rs\n+++ b/metric_policy.rs\n@@ -407,11 +407,7 @@\n                 .iter()\n                 .map(|kind| RoleMetricThresholdV1 {\n                     kind: *kind,\n-                    direction: if kind.permits_negative() {\n-                        RoleMetricDirectionV1::AtMost\n-                    } else {\n-                        RoleMetricDirectionV1::AtMost\n-                    },\n+                    direction: RoleMetricDirectionV1::AtMost,\n                     threshold_value: 900_000,\n                     tolerance: 0,\n                     minimum_sample_count: 2,\n"
+    }
+  ],
+  "predicate_source": {
+    "path": "/workspace/scratch/2b121527ffda/next_hcsn/audit_current/cell_wal/review_originals/role_gates.rs",
+    "bytes": 36896,
+    "sha256": "d0c5b73a9eba85d9bbfc3f83f8c6a8d7e6485cccf21ea6c12f25f1eca157d0c7",
+    "git_blob_sha1": "6b216add4a5de9864617b40f689d5edc136cf05d"
+  },
+  "findings": [
+    {
+      "location": "control_wal.rs: private ControlWalEventV1::Prepare, apply, decode, prepare",
+      "judgment": "No wire or authorization semantic blocker found.",
+      "reason": "Only four Box-related hunks differ. The enum remains private. Manual encoder tags 0..5, encode_intent, frame bounds, decode_intent field order, trailing-byte rejection, scope/cell checks, rollback capture and durable apply pipeline are unchanged. as_ref().clone() explicitly yields the original owned intent type; Box cloning remains a deep clone. Candidate bytes equal the separately retained356877 parallel WAL.",
+      "qualification": "Adds one heap allocation for Prepare storage/clone and changes private memory layout; no runtime performance or allocation-failure equivalence claim."
+    },
+    {
+      "location": "action_proposal.rs:437 under cfg(test)",
+      "judgment": "Preserves the denied-execution assertion.",
+      "reason": "The literal constant assertion moves to an inline const block, making a future true value a compile failure; the adjacent runtime step.result.execution_mode().execution_allowed() assertion remains intact. No production permission path or existing test case is removed."
+    },
+    {
+      "location": "metric_policy.rs:410 test fixture helper",
+      "judgment": "Preserves the exact AtMost fixture direction for every enumerated metric.",
+      "reason": "Both previous branches produced AtMost. Independently fetched role_gates.rs shows permits_negative() is a pure const matches!(self,Self::ValueBias) with no mutation/panic path; eliminating that unused predicate call cannot change this fixture value. All surrounding thresholds and cases remain."
+    }
+  ],
+  "blockers": [],
+  "runtime_scope": "No compiler, formatter, or tests were run by this reviewer. Owner must bind real fmt,119 project tests and strict Clippy to these candidate hashes; earlier failures remain preserved.",
+  "source_mutations_by_reviewer": 0,
+  "remote_ref_mutations_by_reviewer": 0
+}

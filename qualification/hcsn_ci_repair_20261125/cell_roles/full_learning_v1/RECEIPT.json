@@ -1,0 +1,38 @@
+{
+  "source": "a638030ee1f57a11c101d68f2537af17b38a5dcd",
+  "scope": "Exact a638 codex-rs with the three reviewed cell-roles fixes; reused sparse checkout HEAD is b1af.",
+  "files": {
+    "codex-rs/hepta-cell-roles/src/control_wal.rs": "c543e7466239736a4aa65a541c9ce3f563994614e1c466c122146579367349f6",
+    "codex-rs/hepta-cell-roles/src/action_proposal.rs": "d0839ee6d2b9dac3d907ce79a7bc76e21174db2912c3e5b47f99c06dbec7c4ff",
+    "codex-rs/hepta-cell-roles/src/metric_policy.rs": "ff8793f17851d0fe13d353e3452a1475de9c350e880ac5fdb880f11115f5ad15"
+  },
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "clippy",
+    "-p",
+    "codex-hepta-bellman-operator",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-shadow-qualification",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "returncode": 101,
+  "error": null,
+  "wall_seconds": 430.19701474998146,
+  "children_cpu_seconds": 710.921959,
+  "source_and_lock_identity_before_and_after": true,
+  "logs": {
+    "stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr.log": {
+      "bytes": 53314,
+      "sha256": "901bdce2b46261374898d60ce0de4bdd5948d2bb8106f6a0783a6707c8d0ea83"
+    }
+  }
+}
