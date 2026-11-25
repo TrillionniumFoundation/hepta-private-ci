@@ -371,11 +371,26 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
-    sibling_thread.flush_rollout().await?;
-    worker_thread.flush_rollout().await?;
-    initial.codex.flush_rollout().await?;
-    sibling_thread.shutdown_and_wait().await?;
-    worker_thread.shutdown_and_wait().await?;
+    sibling_thread.flush_rollout().await.with_context(|| {
+        format!("flush initial sibling {sibling_thread_id} before cold restart")
+    })?;
+    worker_thread
+        .flush_rollout()
+        .await
+        .with_context(|| format!("flush initial worker {worker_thread_id} after sibling spawn"))?;
+    initial
+        .codex
+        .flush_rollout()
+        .await
+        .with_context(|| format!("flush initial root {root_thread_id} before cold restart"))?;
+    sibling_thread
+        .shutdown_and_wait()
+        .await
+        .with_context(|| format!("shut down initial sibling {sibling_thread_id}"))?;
+    worker_thread
+        .shutdown_and_wait()
+        .await
+        .with_context(|| format!("shut down initial worker {worker_thread_id}"))?;
     drop(sibling_thread);
     drop(worker_thread);
 
@@ -430,7 +445,10 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     let mut resume_builder = test_codex().with_config(move |config| {
         configure_multi_agent_v2_with_role(config, &resumed_model_provider_base_url);
     });
-    let resumed = resume_builder.restart(&server, &initial).await?;
+    let resumed = resume_builder
+        .restart(&server, &initial)
+        .await
+        .with_context(|| format!("cold restart root {root_thread_id}"))?;
     drop(initial);
     assert_eq!(
         resumed.thread_manager.list_thread_ids().await,
