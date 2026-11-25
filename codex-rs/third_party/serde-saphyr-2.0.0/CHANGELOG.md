@@ -28,7 +28,7 @@
   an existing value tree and per-call formatting context, composing with `Tagged<T>` and
   style wrappers without building a second container tree or using thread-local state.
 - Added `SerializerOptions::no_lang_directive` (default `false`) to suppress the
-  `%YAML 1.2` directive and its leading `---` marker independently of `yaml_12`'s quoting. 
+  `%YAML 1.2` directive and its leading `---` marker independently of `yaml_12`'s quoting.
 - Added `from_str_multiple`, `from_bytes_multiple`, and their `_with_options` variants to
   deserialize multiple YAML documents into any `C: Default + Extend<T>`, including vectors,
   queues, sets, and custom accumulators. Values can borrow from the input string or UTF-8 byte
@@ -139,7 +139,7 @@
 - Preserve string scalars across YAML 1.1 readers (PR #90, thanks @NiklasRosenstein)
 - The version increased to 1.3 because it uses granit-parser 1.3, and that is because granit-parser
   added two methods to `Input` for performance improvements. As serde-saphyr re-exports it,
-   the version number must be increased to 1.3 as well, even if no new features are added to 
+   the version number must be increased to 1.3 as well, even if no new features are added to
    this crate itself.
 
 ## 1.2.0 Maintenance release
