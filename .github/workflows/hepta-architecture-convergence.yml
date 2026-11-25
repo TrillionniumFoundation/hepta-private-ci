@@ -202,6 +202,11 @@ jobs:
             echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
           fi
           exit "$locked_status"
+      - name: Original paired turn owner and admission controls
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-original-turn.json" --minimum-tests 10 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_original_turn::tests) | test(notes_thread_tool::human::tests)'
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |

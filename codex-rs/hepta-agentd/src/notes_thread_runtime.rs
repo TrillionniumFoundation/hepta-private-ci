@@ -336,6 +336,36 @@ impl AgentdNotesThreadToolRuntime {
         loop {
             let event = tokio::select! {
                 _ = cancellation.cancelled() => return connection.client.shutdown().await.map_err(AgentdError::from),
+                pending = async {
+                    match self.paired_turns.as_mut() {
+                        Some(receiver) => receiver.recv().await,
+                        None => std::future::pending().await,
+                    }
+                } => {
+                    let Some(pending) = pending else {
+                        self.paired_turns = None;
+                        continue;
+                    };
+                    let request = pending.request.clone();
+                    pending.verify_on_owner(&cancellation, async {
+                        let human = connection.verify_human_turn(
+                            &state, &self.adapter, &request.turn_id,
+                        ).await?;
+                        request.match_original(
+                            human.delivery_id(), &human.ingress().body.text, human.owner(),
+                        )?;
+                        let host = crate::authbus_ingress::attached(&state)?;
+                        host.sync_replay_checkpoint().await?;
+                        crate::authbus_ingress::require_ready(&state)?;
+                        let current = self.adapter.verify_original_human_text(
+                            human.ingress(), human.route(),
+                        ).await?;
+                        crate::authbus_ingress::require_ready(&state)?;
+                        self.adapter.check_available()?;
+                        crate::VerifiedPairedTurn::from_original(request, &human, current)
+                    }).await;
+                    continue;
+                }
                 event = connection.client.next_observed_event() => event.ok_or_else(|| invalid("original Notes thread disconnected; retained operations cannot resend"))?,
             };
             if event.connection_id() != connection.client.connection_id() {
