@@ -62,7 +62,9 @@ HISTORICAL_HOSTED_READBACK_INDEX = "qa/repository-consolidation/20261125/histori
 PEER_REVIEWED_DIFF_INDEX = "qa/repository-consolidation/20261125/reviewed-diff-custody/raw-evidence-storage.json"
 STANDALONE_QUALIFICATION_LOG_INDEX = "qa/repository-consolidation/20261125/standalone-qualification-log-custody/raw-evidence-storage.json"
 REVIEWED_QUALIFICATION_DIFF_INDEX = "qa/repository-consolidation/20261125/reviewed-qualification-diff-custody/raw-evidence-storage.json"
+NATIVE_BRIDGE_JUNIT_INDEX = "qa/repository-consolidation/20261125/frozen-native-bridge-junit/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    NATIVE_BRIDGE_JUNIT_INDEX: "e84e9ef3c80c88006d03f7bf810a81e498fec995dbf9258a6d6216924697b418",
     REVIEWED_QUALIFICATION_DIFF_INDEX: "2870ed2e62467322cca523716f73b5f6af64c862f09749a4c2000ce5f4f19df9",
     PEER_REVIEWED_DIFF_INDEX: "5060f74c596e407a8f6157079c89e0458b15363724204129f16a9beef032866b",
     STANDALONE_QUALIFICATION_LOG_INDEX: "ed2ead4783a4bc1bca1baf1ca46e6e38d11dc7dcef8df92cbf36e3b03b1a7d48",
