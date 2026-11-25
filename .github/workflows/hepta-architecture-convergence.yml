@@ -211,7 +211,7 @@ jobs:
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-preparation.json" --minimum-tests 8 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_preparation::tests)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/paired-preparation.json" --minimum-tests 12 -- just test --locked -p codex-hepta-agentd --lib -E 'test(paired_preparation::tests)'
       - name: Original paired Root registration and four-record boundary
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |

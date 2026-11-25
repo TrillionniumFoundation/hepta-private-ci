@@ -29,6 +29,12 @@ use crate::VerifiedPairedTurn;
 use crate::notes_literal_adapter::invalid;
 use crate::text_session::AgentdTextSessionConfig;
 
+#[path = "paired_preparation_continuation.rs"]
+mod continuation;
+use continuation::FreshJournalPreparation;
+pub(crate) use continuation::OriginalPairedContinuation;
+pub(crate) use continuation::PreparedOriginal;
+
 pub(crate) const DESTINATION: &str = "paired.learning.material.v1";
 const TOPIC: &str = "hepta.paired-learning.prepare.v1";
 const DEADLINE: Duration = Duration::from_secs(10);
@@ -338,11 +344,35 @@ impl PreparationJournal {
         verified: &VerifiedPairedTurn,
         preparing: &AtomicBool,
     ) -> Result<PairedPreparationResponse, AgentdError> {
+        match self
+            .prepare_original_continuation(request, verified, preparing)
+            .await?
+        {
+            PreparedOriginal::Fresh {
+                observation,
+                continuation,
+            } => {
+                continuation.finish_read_only()?;
+                Ok(PairedPreparationResponse::FreshPrepared(observation))
+            }
+            PreparedOriginal::Retained(observation) => {
+                Ok(PairedPreparationResponse::RetainedReadOnly(observation))
+            }
+        }
+    }
+
+    pub(crate) async fn prepare_original_continuation<'a>(
+        &self,
+        request: &PairedPreparationRequest,
+        verified: &'a VerifiedPairedTurn,
+        preparing: &AtomicBool,
+    ) -> Result<PreparedOriginal<OriginalPairedContinuation<'a>>, AgentdError> {
         if verified.request() != &request.original || verified.route() != &self.route {
             return Err(invalid(
                 "paired preparation did not receive this original owner observation",
             ));
         }
+        verified.original_ingress()?;
         let payload = PreparationPayload {
             schema: "hepta.paired-learning.native-preparation.v1".into(),
             identity: request.identity(&self.registration)?,
@@ -351,17 +381,29 @@ impl PreparationJournal {
             expires_at_ms: verified.expires_at_ms(),
             statement_sha256: verified.statement_sha256().to_string(),
         };
-        self.retain_payload(request, payload, preparing).await
+        match self
+            .retain_original_receipt(request, payload, preparing)
+            .await?
+        {
+            PreparedOriginal::Fresh {
+                observation,
+                continuation,
+            } => Ok(PreparedOriginal::Fresh {
+                observation,
+                continuation: continuation.bind_original(verified)?,
+            }),
+            PreparedOriginal::Retained(observation) => Ok(PreparedOriginal::Retained(observation)),
+        }
     }
 
-    async fn retain_payload(
+    async fn retain_original_receipt(
         &self,
         request: &PairedPreparationRequest,
         payload: PreparationPayload,
         preparing: &AtomicBool,
-    ) -> Result<PairedPreparationResponse, AgentdError> {
+    ) -> Result<PreparedOriginal<FreshJournalPreparation>, AgentdError> {
         if let Some(retained) = self.retained(request).await? {
-            return Ok(PairedPreparationResponse::RetainedReadOnly(retained));
+            return Ok(PreparedOriginal::Retained(retained));
         }
         let payload = serde_json::to_string(&payload)?;
         let intent = self.intent(request, &payload)?;
@@ -375,9 +417,20 @@ impl PreparationJournal {
             .await?
             .ok_or_else(|| invalid("paired preparation acknowledgement is unknown"))?;
         if receipt.replayed {
-            Ok(PairedPreparationResponse::RetainedReadOnly(retained))
+            Ok(PreparedOriginal::Retained(retained))
+        } else if retained.state != LocalOutcomeState::Queued {
+            Err(invalid(
+                "fresh paired preparation changed before private handoff",
+            ))
         } else {
-            Ok(PairedPreparationResponse::FreshPrepared(retained))
+            Ok(PreparedOriginal::Fresh {
+                observation: retained,
+                continuation: FreshJournalPreparation::from_original_commit(
+                    Arc::clone(&self.writer),
+                    receipt,
+                    request.clone(),
+                )?,
+            })
         }
     }
 }
