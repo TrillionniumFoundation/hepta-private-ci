@@ -75,9 +75,10 @@ class ConsumerJournalTests(unittest.TestCase):
     def read_run(self):
         # Only numerical model work is isolated. Real consumer readback reads
         # the retained files and the same exclusive markers written by execute.
-        with (
-            patch.object(owner.cold, "encoding", return_value=(None, "", self.tokens)),
-            patch.object(owner.cold, "inspect", return_value=self.answer),
+        with patch.object(
+            owner.cold,
+            "_inspect_with_encoding",
+            return_value=(self.answer, tuple(self.tokens)),
         ):
             return owner.read_run(
                 self.path, self.scope, self.selection, self.req, self.root
@@ -135,7 +136,7 @@ class ConsumerJournalTests(unittest.TestCase):
                     path.mkdir(mode=0o700)
                 with (
                     patch.object(owner.cold, "encoding") as encode,
-                    patch.object(owner.cold, "inspect") as inspect,
+                    patch.object(owner.cold, "_inspect_with_encoding") as inspect,
                 ):
                     with self.assertRaisesRegex(ValueError, "single-use reservation"):
                         owner.read_run(
@@ -176,7 +177,7 @@ class ConsumerJournalTests(unittest.TestCase):
         (self.path / "worker-input.json").write_bytes(data.canonical(payload))
         with (
             patch.object(owner.cold, "encoding") as encode,
-            patch.object(owner.cold, "inspect") as inspect,
+            patch.object(owner.cold, "_inspect_with_encoding") as inspect,
         ):
             with self.assertRaisesRegex(ValueError, "retained worker input"):
                 owner.read_run(
