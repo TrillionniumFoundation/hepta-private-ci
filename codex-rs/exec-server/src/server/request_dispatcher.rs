@@ -22,6 +22,8 @@ use crate::protocol::ENVIRONMENT_STATUS_METHOD;
 use crate::protocol::EXEC_SIGNAL_METHOD;
 use crate::protocol::EXEC_TERMINATE_METHOD;
 use crate::protocol::FS_CLOSE_METHOD;
+use crate::protocol::HTTP_REQUEST_CANCEL_METHOD;
+use crate::protocol::HTTP_REQUEST_CANCELLABLE_METHOD;
 use crate::protocol::INITIALIZE_METHOD;
 use crate::protocol::INITIALIZED_METHOD;
 use crate::rpc::RpcCallError;
@@ -41,6 +43,7 @@ pub(super) struct RequestDispatcher {
     requests: RpcServerRequestSender,
     telemetry: ExecServerTelemetry,
     lanes: Option<RequestLanes>,
+    inline_http_lane: Arc<Semaphore>,
     tasks: JoinSet<RequestTaskResult>,
     initialized: bool,
 }
@@ -73,6 +76,7 @@ impl RequestDispatcher {
             requests,
             telemetry,
             lanes,
+            inline_http_lane: Arc::new(Semaphore::new(1)),
             tasks: JoinSet::new(),
             initialized: false,
         }
@@ -206,8 +210,21 @@ impl RequestDispatcher {
         };
 
         request_span.record("otel.name", method);
+        let http_request_id = (method == HTTP_REQUEST_CANCELLABLE_METHOD)
+            .then(|| {
+                request
+                    .params
+                    .as_ref()?
+                    .get("requestId")?
+                    .as_str()
+                    .map(str::to_string)
+            })
+            .flatten();
         let route_setup_started_at = Instant::now();
         let route = route(Arc::clone(&self.handler), request);
+        let cancelled = http_request_id
+            .as_deref()
+            .and_then(|request_id| self.handler.http_request_cancellation(request_id));
         let route_setup_duration = route_setup_started_at.elapsed();
         let outgoing_tx = self.outgoing_tx.clone();
         let mut disconnected_rx = self.disconnected_rx.clone();
@@ -243,32 +260,46 @@ impl RequestDispatcher {
             RequestTaskResult::Completed
         };
 
-        let Some(RequestLanes { ordinary, control }) = &self.lanes else {
-            // Keep requests ordered when concurrent dispatch is not enabled.
-            return task.await;
-        };
         // Finish the handshake before concurrent requests can observe session state.
         if method == INITIALIZE_METHOD || !self.initialized {
             return task.await;
         }
 
         // Reserve capacity for health checks and cleanup while ordinary requests are blocked.
-        let admission = if matches!(
-            method,
-            ENVIRONMENT_INFO_METHOD
-                | ENVIRONMENT_STATUS_METHOD
-                | EXEC_SIGNAL_METHOD
-                | EXEC_TERMINATE_METHOD
-                | FS_CLOSE_METHOD
-        ) {
-            Arc::clone(control)
-        } else {
-            Arc::clone(ordinary)
+        let admission = match &self.lanes {
+            Some(RequestLanes { ordinary, control }) => {
+                if matches!(
+                    method,
+                    ENVIRONMENT_INFO_METHOD
+                        | ENVIRONMENT_STATUS_METHOD
+                        | EXEC_SIGNAL_METHOD
+                        | EXEC_TERMINATE_METHOD
+                        | FS_CLOSE_METHOD
+                        | HTTP_REQUEST_CANCEL_METHOD
+                ) {
+                    Arc::clone(control)
+                } else {
+                    Arc::clone(ordinary)
+                }
+            }
+            None if method == HTTP_REQUEST_CANCELLABLE_METHOD => Arc::clone(&self.inline_http_lane),
+            None => return task.await,
         };
 
         // TODO(anp) bound queued request bytes without blocking later responses or cleanup.
         self.tasks.spawn(async move {
-            let Ok(_permit) = admission.acquire_owned().await else {
+            let permit = if let Some(cancelled) = cancelled {
+                tokio::select! {
+                    biased;
+                    // The router already owns this scope. Poll its cancellation branch
+                    // without admission so a queued request can finish without HTTP I/O.
+                    _ = cancelled.cancelled() => return task.await,
+                    permit = admission.acquire_owned() => permit,
+                }
+            } else {
+                admission.acquire_owned().await
+            };
+            let Ok(_permit) = permit else {
                 return RequestTaskResult::ConnectionClosed;
             };
             task.await

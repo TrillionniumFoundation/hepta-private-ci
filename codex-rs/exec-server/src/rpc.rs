@@ -498,12 +498,16 @@ impl RpcClient {
         self.closed.load(Ordering::Acquire) || *self.disconnected_rx.borrow()
     }
 
-    pub(crate) async fn close_transport(&self) {
+    pub(crate) fn request_transport_close(&self) {
         self.closed.store(true, Ordering::Release);
         self.transport.terminate();
         for task in &self.transport_tasks {
             task.abort();
         }
+    }
+
+    pub(crate) async fn close_transport(&self) {
+        self.request_transport_close();
         drain_pending(&self.pending).await;
     }
 

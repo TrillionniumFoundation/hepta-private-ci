@@ -1,6 +1,8 @@
 //! Synthetic registrations, actual journal transactions and original owner
 //! cancellation. These controls never construct VerifiedHumanTurn or a
 //! VerifiedPairedTurn, mint a grant, or provide material/participant authority.
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 #[tokio::test]

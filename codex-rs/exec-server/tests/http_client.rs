@@ -8,11 +8,15 @@ use codex_exec_server::ExecServerClient;
 use codex_exec_server::HttpHeader;
 use codex_exec_server::HttpRedirectPolicy;
 use codex_exec_server::HttpRequestBodyDeltaNotification;
+use codex_exec_server::HttpRequestCancelParams;
+use codex_exec_server::HttpRequestCancelResponse;
 use codex_exec_server::HttpRequestParams;
 use codex_exec_server::HttpRequestResponse;
 use codex_exec_server::InitializeParams;
 use codex_exec_server::InitializeResponse;
 use codex_exec_server::RemoteExecServerConnectArgs;
+use codex_exec_server_protocol::JSONRPCError;
+use codex_exec_server_protocol::JSONRPCErrorError;
 use codex_exec_server_protocol::JSONRPCMessage;
 use codex_exec_server_protocol::JSONRPCNotification;
 use codex_exec_server_protocol::JSONRPCRequest;
@@ -42,6 +46,8 @@ use tokio_tungstenite::tungstenite::Message;
 
 const CLIENT_NAME: &str = "test-exec-server-client";
 const HTTP_REQUEST_METHOD: &str = "http/request";
+const HTTP_REQUEST_CANCELLABLE_METHOD: &str = "http/requestCancellableV1";
+const HTTP_REQUEST_CANCEL_METHOD: &str = "http/cancelRequestV1";
 const HTTP_REQUEST_BODY_DELTA_METHOD: &str = "http/request/bodyDelta";
 const INITIALIZE_METHOD: &str = "initialize";
 const INITIALIZED_METHOD: &str = "initialized";
@@ -1361,6 +1367,93 @@ async fn http_response_body_stream_reports_backpressure_truncation() -> Result<(
     Ok(())
 }
 
+#[tokio::test]
+async fn unsupported_cancellable_rpc_never_falls_back_to_unowned_http() -> Result<()> {
+    let (finished_tx, mut finished_rx) = oneshot::channel();
+    let server = spawn_scripted_exec_server(|mut peer| async move {
+        let request = peer.read_request(HTTP_REQUEST_CANCELLABLE_METHOD).await?;
+        peer.write_message(JSONRPCMessage::Error(JSONRPCError {
+            id: request.id,
+            error: JSONRPCErrorError {
+                code: -32601,
+                message: "method not found".to_string(),
+                data: None,
+            },
+        }))
+        .await?;
+        loop {
+            tokio::select! {
+                done = &mut finished_rx => { done?; break; }
+                request = peer.read_request(HTTP_REQUEST_CANCEL_METHOD) => {
+                    let request = request?;
+                    let params: HttpRequestCancelParams = decode_request_params(&request)?;
+                    assert_eq!(params.request_id, "http-1");
+                    peer.write_response(request.id, HttpRequestCancelResponse::NotActive).await?;
+                }
+            }
+        }
+        Ok(())
+    })
+    .await?;
+    let client = server.connect_client().await?;
+    let result = timeout(
+        TEST_TIMEOUT,
+        client.http_request_stream(HttpRequestParams {
+            method: "GET".to_string(),
+            url: "https://example.test/no-fallback".to_string(),
+            headers: Vec::new(),
+            body: None,
+            timeout_ms: None,
+            redirect_policy: HttpRedirectPolicy::Stop,
+            request_id: "ignored".to_string(),
+            stream_response: true,
+        }),
+    )
+    .await?;
+    assert!(result.is_err());
+    finished_tx
+        .send(())
+        .expect("scripted executor still connected");
+    server.finish().await?;
+    drop(client);
+    Ok(())
+}
+
+#[tokio::test]
+async fn malformed_header_response_cancels_the_original_request() -> Result<()> {
+    let server = spawn_scripted_exec_server(|mut peer| async move {
+        let request = peer.read_request(HTTP_REQUEST_CANCELLABLE_METHOD).await?;
+        let params: HttpRequestParams = decode_request_params(&request)?;
+        peer.write_response(request.id, serde_json::json!({"status":"invalid"}))
+            .await?;
+        let cancel = peer.read_request(HTTP_REQUEST_CANCEL_METHOD).await?;
+        let actual: HttpRequestCancelParams = decode_request_params(&cancel)?;
+        assert_eq!(actual.request_id, params.request_id);
+        peer.write_response(cancel.id, HttpRequestCancelResponse::NotActive)
+            .await
+    })
+    .await?;
+    let client = server.connect_client().await?;
+    let result = timeout(
+        TEST_TIMEOUT,
+        client.http_request_stream(HttpRequestParams {
+            method: "GET".to_string(),
+            url: "https://example.test/malformed".to_string(),
+            headers: Vec::new(),
+            body: None,
+            timeout_ms: None,
+            redirect_policy: HttpRedirectPolicy::Stop,
+            request_id: "ignored".to_string(),
+            stream_response: true,
+        }),
+    )
+    .await?;
+    assert!(result.is_err());
+    server.finish().await?;
+    drop(client);
+    Ok(())
+}
+
 /// Fake WebSocket exec-server used by the integration tests.
 ///
 /// The helper exercises `ExecServerClient::connect_websocket`, including the
@@ -1450,11 +1543,31 @@ impl JsonRpcPeer {
         Ok(())
     }
 
-    /// Reads one typed `http/request` call from the client.
+    /// These scripted peers have no network producer. They acknowledge cleanup
+    /// as NotActive, while real producer termination is tested separately.
     async fn read_http_request(&mut self) -> Result<(RequestId, HttpRequestParams)> {
-        let request = self.read_request(HTTP_REQUEST_METHOD).await?;
-        let params = decode_request_params(&request)?;
-        Ok((request.id, params))
+        loop {
+            let message = self.read_message().await?;
+            let JSONRPCMessage::Request(request) = message else {
+                bail!("expected an HTTP request or cleanup call, got {message:?}");
+            };
+            if request.method == HTTP_REQUEST_CANCEL_METHOD {
+                let _: HttpRequestCancelParams = decode_request_params(&request)?;
+                self.write_response(request.id, HttpRequestCancelResponse::NotActive)
+                    .await?;
+                continue;
+            }
+            let params: HttpRequestParams = decode_request_params(&request)?;
+            assert_eq!(
+                request.method.as_str(),
+                if params.stream_response {
+                    HTTP_REQUEST_CANCELLABLE_METHOD
+                } else {
+                    HTTP_REQUEST_METHOD
+                }
+            );
+            return Ok((request.id, params));
+        }
     }
 
     /// Reads a JSON-RPC request and validates its method.

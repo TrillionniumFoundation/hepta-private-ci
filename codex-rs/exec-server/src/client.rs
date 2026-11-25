@@ -31,7 +31,7 @@ use tracing::instrument::WithSubscriber;
 
 use crate::ProcessId;
 use crate::client::http_client::response_body_stream::MAX_QUEUED_HTTP_BODY_BYTES;
-use crate::client::http_client::response_body_stream::QueuedHttpBodyDelta;
+use crate::client::http_client::response_body_stream::RegisteredHttpBodyStream;
 use crate::client_api::ExecServerClientConnectOptions;
 use crate::client_api::ExecServerTransportParams;
 use crate::client_api::HttpClient;
@@ -264,7 +264,7 @@ struct Inner {
     // because they share the same connection-global notification channel as
     // process output. Keep the routing table local to the client so higher
     // layers can consume body chunks like a normal byte stream.
-    http_body_streams: ArcSwap<HashMap<String, mpsc::Sender<QueuedHttpBodyDelta>>>,
+    http_body_streams: ArcSwap<HashMap<String, RegisteredHttpBodyStream>>,
     http_body_stream_failures: ArcSwap<HashMap<String, String>>,
     http_body_streams_write_lock: Mutex<()>,
     http_body_stream_byte_budget: Arc<Semaphore>,

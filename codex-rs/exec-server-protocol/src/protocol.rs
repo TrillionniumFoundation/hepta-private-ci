@@ -55,6 +55,10 @@ pub const DISCOVERABLE_PLUGIN_MANIFEST_PATHS: &[&str] = &[
 ];
 /// JSON-RPC request method for executor-side HTTP requests.
 pub const HTTP_REQUEST_METHOD: &str = "http/request";
+/// Streaming HTTP with executor-owned, connection-scoped cancellation.
+pub const HTTP_REQUEST_CANCELLABLE_METHOD: &str = "http/requestCancellableV1";
+/// Cancels one original request and waits for its network owner to finish.
+pub const HTTP_REQUEST_CANCEL_METHOD: &str = "http/cancelRequestV1";
 /// JSON-RPC notification method for streamed executor HTTP response bodies.
 pub const HTTP_REQUEST_BODY_DELTA_METHOD: &str = "http/request/bodyDelta";
 /// Maximum decoded response-body bytes carried by one streamed HTTP notification.
@@ -782,6 +786,23 @@ pub struct HttpRequestResponse {
     /// Buffered response body bytes. Empty when `streamResponse` is true.
     #[serde(rename = "bodyBase64")]
     pub body: ByteChunk,
+}
+
+/// Identifies a cancellable request on the same physical RPC connection.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct HttpRequestCancelParams {
+    pub request_id: String,
+}
+
+/// Cancellation acknowledgement, not an inference from an unknown stream id.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum HttpRequestCancelResponse {
+    /// The original request/response producer has been dropped.
+    Cancelled,
+    /// No active owner matched; this does not attest to a cancellation.
+    NotActive,
 }
 
 /// Ordered response-body frame for `streamResponse` HTTP requests.

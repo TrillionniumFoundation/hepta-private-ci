@@ -181,6 +181,8 @@ pub use protocol::FsWriteFileResponse;
 pub use protocol::HttpHeader;
 pub use protocol::HttpRedirectPolicy;
 pub use protocol::HttpRequestBodyDeltaNotification;
+pub use protocol::HttpRequestCancelParams;
+pub use protocol::HttpRequestCancelResponse;
 pub use protocol::HttpRequestParams;
 pub use protocol::HttpRequestResponse;
 pub use protocol::InitializeParams;

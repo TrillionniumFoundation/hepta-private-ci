@@ -1,5 +1,6 @@
 mod file_system_handler;
 mod handler;
+mod http_request_scope;
 mod process_handler;
 mod processor;
 mod registry;

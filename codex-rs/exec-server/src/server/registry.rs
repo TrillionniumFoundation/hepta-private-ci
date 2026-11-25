@@ -38,7 +38,10 @@ use crate::protocol::FsReadFileParams;
 use crate::protocol::FsRemoveParams;
 use crate::protocol::FsWalkParams;
 use crate::protocol::FsWriteFileParams;
+use crate::protocol::HTTP_REQUEST_CANCEL_METHOD;
+use crate::protocol::HTTP_REQUEST_CANCELLABLE_METHOD;
 use crate::protocol::HTTP_REQUEST_METHOD;
+use crate::protocol::HttpRequestCancelParams;
 use crate::protocol::HttpRequestParams;
 use crate::protocol::INITIALIZE_METHOD;
 use crate::protocol::INITIALIZED_METHOD;
@@ -48,6 +51,7 @@ use crate::protocol::SignalParams;
 use crate::protocol::TerminateParams;
 use crate::protocol::WriteParams;
 use crate::rpc::RpcRouter;
+use crate::rpc::invalid_params;
 use crate::server::ExecServerHandler;
 
 pub(crate) fn build_router() -> RpcRouter<ExecServerHandler> {
@@ -66,8 +70,29 @@ pub(crate) fn build_router() -> RpcRouter<ExecServerHandler> {
     );
     router.request_with_id(
         HTTP_REQUEST_METHOD,
-        |handler: Arc<ExecServerHandler>, request_id, params: HttpRequestParams| async move {
-            handler.http_request(request_id, params).await
+        |handler: Arc<ExecServerHandler>, request_id, params: HttpRequestParams| {
+            handler.http_request(request_id, params)
+        },
+    );
+    router.request_with_id(
+        HTTP_REQUEST_CANCELLABLE_METHOD,
+        |handler: Arc<ExecServerHandler>, request_id, params: HttpRequestParams| {
+            let stream_response = params.stream_response;
+            let request = handler.http_request(request_id, params);
+            async move {
+                if !stream_response {
+                    return Err(invalid_params(
+                        "cancellable HTTP requires streamResponse".to_string(),
+                    ));
+                }
+                request.await
+            }
+        },
+    );
+    router.request(
+        HTTP_REQUEST_CANCEL_METHOD,
+        |handler: Arc<ExecServerHandler>, params: HttpRequestCancelParams| async move {
+            handler.cancel_http_request(params).await
         },
     );
     router.request(
