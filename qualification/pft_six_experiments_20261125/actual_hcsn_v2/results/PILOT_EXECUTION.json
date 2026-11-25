@@ -1,0 +1,39 @@
+{
+  "status": "COMPLETED",
+  "stages": [
+    {
+      "command": [
+        "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/register.py",
+        "--mode",
+        "pilot",
+        "--out",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/PILOT_PROTOCOL.json",
+        "--diagnosis",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/diagnosis_v1/RESULT.json",
+        "--max-updates",
+        "96",
+        "--cpu-budget",
+        "30",
+        "--wall-budget",
+        "45"
+      ],
+      "exit_code": 0,
+      "wall_s": 1.165980851976201
+    },
+    {
+      "command": [
+        "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/runner.py",
+        "--protocol",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/PILOT_PROTOCOL.json",
+        "--out",
+        "/home/alex/pft-six-actual-hcsn-v2-20261125/pilot_v1"
+      ],
+      "exit_code": 0,
+      "wall_s": 310.3372617699206
+    }
+  ],
+  "total_wall_s": 311.5039575139526,
+  "test_created": false
+}

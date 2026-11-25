@@ -1,0 +1,33 @@
+{
+  "candidate_git_anchor": "7dfd1deb8b70867a7875ef1fc99cd1a6b20f4953",
+  "candidate_seal_sha256": "a447b724f6459625b0e9c5e15e9dca5bbaad439af5c433391c7b34e9a9df88ee",
+  "child_cpu_s": 317.736882,
+  "child_peak_rss_kib": 257440,
+  "command": [
+    "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+    "/home/alex/pft-six-actual-hcsn-v2-20261125/evaluate.py",
+    "test",
+    "--protocol",
+    "/home/alex/pft-six-actual-hcsn-v2-20261125/FORMAL_PROTOCOL_v2.json",
+    "--root",
+    "/home/alex/pft-six-actual-hcsn-v2-20261125/formal_v2_training",
+    "--seal",
+    "/home/alex/pft-six-actual-hcsn-v2-20261125/GLOBAL_CANDIDATE_SEAL.json",
+    "--out",
+    "/home/alex/pft-six-actual-hcsn-v2-20261125/formal_v2_test"
+  ],
+  "completed_utc": "2026-11-25T11:16:37.662522+00:00",
+  "error": null,
+  "exit_code": 0,
+  "git_anchors_checked_by_orchestrator_receipts": true,
+  "independent_evaluation_process": true,
+  "launcher_sha256": "fca43ffcc52092479d9d21a46474e1bfa0d3b95b288b5a2bbb17ecf02ad5bba9",
+  "protocol_sha256": "aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8",
+  "source_git_anchor": "221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3",
+  "started_utc": "2026-11-25T11:11:17.623083+00:00",
+  "status": "COMPLETED",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "f523c90aa00bc1caabb2c2d58f623e1de58a8d686e5939d53b42e9cbadb21af4",
+  "test_used_for_selection": false,
+  "wall_s": 320.03962161007803
+}
