@@ -11,7 +11,7 @@ The original baseline package must be materialized from commit `28a61d14ea7d4c3b
 | `rematerialization_candidate/check_rematerialization.py` | Fixed 16-case small-shape forward/gradient/optimizer parity fixture, separately on CPU and CUDA. |
 | `audit_population_separable.py` | Original three smoke B checkpoints; full original 48-record receipt and 23 source hashes required. Separate spatial/time sensitivity and final-prediction RMS. No retraining or selection. |
 | `probe_numpy_separable.py` | Untrained FP64 constant-drive operator diagnostic; not trained-model qualification. |
-| `execution-candidate.patch` | Reviewable isolated implementation proposal. Not automatically applied by any probe. |
+| [`execution-candidate.patch.evidence.gz`](execution-candidate.patch.evidence.gz) | Byte-preserved, review-only implementation proposal. Not automatically applied by any probe. |
 | `artifact-retention.patch` | Workflow repair retaining smoke `.runs/` weights and immutable attempt journals with JSON. |
 
 Example original probe, using an already validated CUDA environment:
