@@ -279,6 +279,7 @@ impl CognitiveRuntime {
                     *omitted_owner_candidates,
                     access,
                     request,
+                    PRODUCT_FEDERATION_TOTAL_BUDGET,
                 )
                 .await
             }
@@ -310,6 +311,7 @@ impl CognitiveRuntime {
                     *omitted_owner_candidates,
                     access,
                     request,
+                    PRODUCT_FEDERATION_TOTAL_BUDGET,
                 )
                 .await
             }
@@ -472,12 +474,13 @@ impl CognitiveRuntime {
     }
 }
 
-async fn retrieve_federated_product(
+pub(super) async fn retrieve_federated_product(
     consumer_agent_id: &AgentId,
     owner_layouts: &[HeptaAgentLayout],
     omitted_owner_candidates: u32,
     access: &FederationConsumerAccess,
     request: &RetrievalRequest,
+    total_budget: Duration,
 ) -> Result<(FederatedRetrievalBatch, FederatedCoverageV2), CognitiveStoreError> {
     if access.agent_id() != consumer_agent_id {
         return Err(CognitiveStoreError::AccessDenied(
@@ -488,7 +491,7 @@ async fn retrieve_federated_product(
     let logical_start_ms = seconds_to_ms(request.now_unix_seconds())?;
     let started_at = Instant::now();
     let global_deadline_ms = logical_start_ms
-        .checked_add(u64::try_from(PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()).unwrap_or(u64::MAX))
+        .checked_add(u64::try_from(total_budget.as_millis()).unwrap_or(u64::MAX))
         .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
 
     let discovery = async {
@@ -525,14 +528,11 @@ async fn retrieve_federated_product(
         }
         (readers, discovery_failures)
     };
-    let (mut readers, discovery_failures) =
-        tokio::time::timeout(PRODUCT_FEDERATION_TOTAL_BUDGET, discovery)
-            .await
-            .map_err(|_| {
-                CognitiveStoreError::Unavailable(
-                    "memory federation discovery timed out".to_string(),
-                )
-            })?;
+    let (mut readers, discovery_failures) = tokio::time::timeout(total_budget, discovery)
+        .await
+        .map_err(|_| {
+            CognitiveStoreError::Unavailable("memory federation discovery timed out".to_string())
+        })?;
     readers.sort_by(|(_, left), (_, right)| {
         left.capability()
             .owner_agent_id()

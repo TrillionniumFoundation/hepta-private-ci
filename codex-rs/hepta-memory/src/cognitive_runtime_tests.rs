@@ -456,11 +456,28 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
 
     let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
         .with_federation_sources(consumer_id.clone(), owner_layouts);
+    let CognitiveRuntime::AvailableFederatedV2 {
+        consumer_agent_id,
+        owner_layouts,
+        omitted_owner_candidates,
+        ..
+    } = runtime
+    else {
+        panic!("expected V2 runtime");
+    };
     let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
-    let (batch, coverage) = runtime
-        .retrieve_product_federated(&access, &RetrievalRequest::new("anything", 150))
-        .await
-        .expect("bounded product retrieval");
+    // Measure the peer cap rather than disk throughput on a loaded runner.
+    // The public entry points still enforce the same two-second budget.
+    let (batch, coverage) = super::cognitive_runtime::retrieve_federated_product(
+        &consumer_agent_id,
+        &owner_layouts,
+        omitted_owner_candidates,
+        &access,
+        &RetrievalRequest::new("anything", 150),
+        std::time::Duration::from_secs(15),
+    )
+    .await
+    .expect("bounded product retrieval");
     assert!(batch.candidates.is_empty());
     assert_eq!(coverage.requested_peers, 16);
     assert_eq!(coverage.completed_peers, 16, "coverage: {coverage:?}");
