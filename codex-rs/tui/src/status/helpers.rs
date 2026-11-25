@@ -182,7 +182,7 @@ pub(crate) fn format_reset_timestamp(
     dt: codex_utils_time::OffsetTimestamp,
     captured_at: codex_utils_time::OffsetTimestamp,
 ) -> String {
-    let time = dt.format("%H:%M").to_string();
+    let time = dt.format("%H:%M");
     if dt.date() == captured_at.date() {
         time
     } else {

@@ -79,7 +79,7 @@ impl RateLimitWindowDisplay {
         let resets_at_utc = window
             .resets_at
             .and_then(|seconds| codex_utils_time::Timestamp::from_parts(seconds, 0))
-            .map(|dt| dt.to_local());
+            .map(codex_utils_time::Timestamp::to_local);
         let resets_at = resets_at_utc.map(|dt| format_reset_timestamp(dt, captured_at));
 
         Self {
