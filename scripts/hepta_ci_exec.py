@@ -78,6 +78,66 @@ def observed_test_counts(text: str) -> tuple[int, int]:
     return passed, failed
 
 
+def _leader_has_exited(process) -> bool:
+    """Observe our direct child while retaining its PID and process-group ID."""
+    if process.returncode is not None:
+        raise ChildProcessError("CI command leader was already reaped")
+    while True:
+        try:
+            status = os.waitid(
+                os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT
+            )
+            break
+        except InterruptedError:
+            continue
+    if status is None:
+        return False
+    if status.si_pid != process.pid or status.si_code not in (
+        os.CLD_EXITED,
+        os.CLD_KILLED,
+        os.CLD_DUMPED,
+    ):
+        raise RuntimeError("Unexpected CI command wait status")
+    return True
+
+
+def _darwin_exited_leader_only(process) -> bool:
+    """Distinguish macOS's zombie-only EPERM from a live permission failure.
+
+    Darwin's group signal can ignore zombies and report EPERM for our reserved
+    leader. The system libproc census includes live and zombie group members.
+    Exactly our one PID in a two-PID buffer proves a complete singleton census;
+    zero, overflow, foreign PIDs, errors, or a live leader never waive EPERM.
+    No discovered PID is signalled, and no dependency or permission is added.
+    """
+    if sys.platform != "darwin":
+        return False
+    try:
+        if not _leader_has_exited(process):
+            return False
+        import ctypes
+
+        library = ctypes.CDLL("/usr/lib/libproc.dylib", use_errno=True)
+        census = library.proc_listpids
+        census.argtypes = [
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_void_p,
+            ctypes.c_int,
+        ]
+        census.restype = ctypes.c_int
+        members = (ctypes.c_int * 2)()
+        ctypes.set_errno(0)
+        size = census(2, process.pid, members, ctypes.sizeof(members))
+        return (
+            size == ctypes.sizeof(ctypes.c_int)
+            and members[0] == process.pid
+            and ctypes.get_errno() == 0
+        )
+    except (OSError, AttributeError, ValueError):
+        return False
+
+
 def execute_logged(
     command: list[str],
     log: Path,
@@ -87,8 +147,12 @@ def execute_logged(
 ) -> dict:
     """Bound a POSIX command group, retain raw output, and reap its direct child.
 
-    EOF is not process completion; parent exit is not pipe completion. Escaped
-    sessions require an external sandbox and are not claimed to be terminated.
+    EOF is not process completion; parent exit is not pipe completion. The caller
+    must be the sole reaper. WNOWAIT reserves the leader until the last group
+    signal on success and failure. Escaped sessions require an external sandbox
+    and are not claimed to be terminated. The final reap has one extra second;
+    refusal or a missing terminal status remains failed, without a signal retry.
+    OS spawn, signal and filesystem operations are not hard real time.
     """
     if (
         not command
@@ -101,8 +165,23 @@ def execute_logged(
         raise ValueError(
             "command output and deadline bounds must be positive and finite"
         )
-    if os.name != "posix":
-        raise ValueError("bounded CI execution requires a POSIX process-group host")
+    if os.name != "posix" or not all(
+        hasattr(os, name)
+        for name in (
+            "waitid",
+            "P_PID",
+            "WEXITED",
+            "WNOHANG",
+            "WNOWAIT",
+            "CLD_EXITED",
+            "CLD_KILLED",
+            "CLD_DUMPED",
+            "killpg",
+        )
+    ):
+        raise ValueError("bounded CI execution requires POSIX waitid/WNOWAIT ownership")
+    if signal.getsignal(signal.SIGCHLD) != signal.SIG_DFL:
+        raise ValueError("CI command owner requires the original SIGCHLD wait status")
     timed_out = exceeded = False
     data = bytearray()
     started = time.monotonic()
@@ -115,13 +194,15 @@ def execute_logged(
         )
         assert process.stdout is not None
         descriptor = process.stdout.fileno()
-        completed = False
         try:
             os.set_blocking(descriptor, False)
             with selectors.DefaultSelector() as selector:
                 selector.register(descriptor, selectors.EVENT_READ)
                 eof = False
-                while not (eof and process.poll() is not None):
+                while True:
+                    exited = _leader_has_exited(process)
+                    if eof and exited:
+                        break
                     if time.monotonic() - started >= timeout_seconds:
                         timed_out = True
                         break
@@ -155,22 +236,46 @@ def execute_logged(
                             break
                     if exceeded:
                         break
-                completed = (
-                    eof
-                    and process.poll() is not None
-                    and not timed_out
-                    and not exceeded
-                )
         finally:
-            if not completed:
+            owned = False
+            cleanup_refusal = None
+            try:
+                # This check fails closed if another waiter consumed the child.
+                # A successful leader may still have silent group descendants.
+                _leader_has_exited(process)
+                owned = True
                 try:
                     os.killpg(process.pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
-            process.wait()
-            process.stdout.close()
-            stream.flush()
-            os.fsync(stream.fileno())
+                except PermissionError as error:
+                    if not _darwin_exited_leader_only(process):
+                        cleanup_refusal = error
+                        raise
+                except OSError as error:
+                    cleanup_refusal = error
+                    raise
+            finally:
+                try:
+                    if owned:
+                        # The only reap is after the LAST group signal. There
+                        # must never be a later signal using this numeric ID.
+                        try:
+                            process.wait(timeout=1)
+                        except subprocess.TimeoutExpired as error:
+                            cause = (
+                                f"{type(cleanup_refusal).__name__}: {cleanup_refusal}"
+                                if cleanup_refusal is not None
+                                else "final group signal did not yield a terminal child"
+                            )
+                            raise ValueError(
+                                "CI command cleanup unresolved after the one-second reap limit; "
+                                + cause
+                            ) from error
+                finally:
+                    process.stdout.close()
+                    stream.flush()
+                    os.fsync(stream.fileno())
     passed, failed = observed_test_counts(data.decode("utf-8", errors="replace"))
     return {
         "returncode": process.returncode,
