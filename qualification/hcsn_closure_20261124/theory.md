@@ -66,7 +66,7 @@ Risk and value must use the same G, event rule, reset geometry, and refractory p
 
 ## Regenerative affine QVI and its derivative
 
-For dY = μdt + σdW, running reward αY − ℓ, discount ρ > 0, cost K > 0, fixed absolute reset a, and independent refractory time D, write η = E[e^(−ρD)]. With R Erlang phases of total mean d,
+For dY = μdt + σdW with σ > 0, running reward αY − ℓ with α > 0, discount ρ > 0, cost K > 0, fixed absolute reset a, and independent refractory time D, write η = E[e^(−ρD)]. With R ≥ 1 Erlang phases of total mean d > 0,
 
 \[
 \eta=\left(\frac{R/d}{R/d+\rho}\right)^R\in(0,1).

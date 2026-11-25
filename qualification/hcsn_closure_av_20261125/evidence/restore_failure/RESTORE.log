@@ -1,0 +1,17 @@
+{"stage": "restore", "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hcsn-smallnet-20261124/av-closure-v1-source/qualification/hcsn_closure_av_20261125/acquire.py\", line 191, in stage\n    function(root)\n  File \"/home/qian-qi/hcsn-smallnet-20261124/av-closure-v1-source/qualification/hcsn_closure_av_20261125/acquire.py\", line 77, in restore\n    value = b\"\".join(base64.b64decode((parts[p[\"path\"]]).read_bytes().strip(), validate=True) for p in row[\"parts\"])\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hcsn-smallnet-20261124/av-closure-v1-source/qualification/hcsn_closure_av_20261125/acquire.py\", line 77, in <genexpr>\n    value = b\"\".join(base64.b64decode((parts[p[\"path\"]]).read_bytes().strip(), validate=True) for p in row[\"parts\"])\n                                       ~~~~~^^^^^^^^^^^\nTypeError: 'PosixPath' object is not subscriptable\n", "wall_seconds": 61.8957953780191, "parent_cpu_seconds": 1.189669818, "child_cpu_seconds": 0.0, "energy_joules": null, "scope": "stage body, including all failed attempts; nested decoder cost is not added twice"}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/qian-qi/hcsn-smallnet-20261124/av-closure-v1-source/qualification/hcsn_closure_av_20261125/acquire.py", line 215, in <module>
+    main()
+  File "/home/qian-qi/hcsn-smallnet-20261124/av-closure-v1-source/qualification/hcsn_closure_av_20261125/acquire.py", line 211, in main
+    stage(args.root, args.action, {"restore": restore, "register": register, "acquire": acquire}[args.action])
+  File "/home/qian-qi/hcsn-smallnet-20261124/av-closure-v1-source/qualification/hcsn_closure_av_20261125/acquire.py", line 191, in stage
+    function(root)
+  File "/home/qian-qi/hcsn-smallnet-20261124/av-closure-v1-source/qualification/hcsn_closure_av_20261125/acquire.py", line 77, in restore
+    value = b"".join(base64.b64decode((parts[p["path"]]).read_bytes().strip(), validate=True) for p in row["parts"])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hcsn-smallnet-20261124/av-closure-v1-source/qualification/hcsn_closure_av_20261125/acquire.py", line 77, in <genexpr>
+    value = b"".join(base64.b64decode((parts[p["path"]]).read_bytes().strip(), validate=True) for p in row["parts"])
+                                       ~~~~~^^^^^^^^^^^
+TypeError: 'PosixPath' object is not subscriptable

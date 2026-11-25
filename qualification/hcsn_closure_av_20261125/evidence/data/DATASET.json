@@ -1,0 +1,97 @@
+{
+  "base_dataset_sha256": "2096f8a3da7c5540062506c9a38aa6251ad0a0b103968cc120ba508c8309e051",
+  "base_normalization_sha256": "5ff1e0a8c267bd8ff251eac3565ddfb67cf102343560b58c9575df54dc761869",
+  "decode_sha256": "16de29fbdf1c214a4c48257d62c5864fa60101d12243a6bfdbba7707c4002ead",
+  "design_revision": "Pre-freeze replacement of shared real timing inputs, before any AV fit/test. Original proposal cache and all receipts preserved.",
+  "independence_scope": "8 actors outside three audited prior manifests; not a global every-branch novelty claim",
+  "input_time_moments": "none; all clips use exactly the same two deterministic clock channels",
+  "license_contents": "DbCL-1.0",
+  "license_database": "ODbL-1.0",
+  "media_manifest_sha256": "64174349f47bf5bc3065b7ba7741ebbe7cd32fb181fbc957213002af2b688035",
+  "roster_sha256": "dc0b551b58ed9f4e2e342a94622dbd4a1df7c85010e3c891c7b933de38c7d6de",
+  "schema": "hcsn-av-closure-offline-v1",
+  "shape_per_modality": [
+    32,
+    130
+  ],
+  "splits": {
+    "dev": {
+      "actors": [
+        "1008",
+        "1024",
+        "1032",
+        "1038",
+        "1065",
+        "1083"
+      ],
+      "examples": 144,
+      "labels": [
+        24,
+        24,
+        24,
+        24,
+        24,
+        24
+      ],
+      "path": "dev.npz",
+      "sha256": "1b015fa267f1673a0aff2826376263a15e213af7c175deddcc9ffd7531b9ec46"
+    },
+    "test": {
+      "actors": [
+        "1006",
+        "1007",
+        "1009",
+        "1018",
+        "1021",
+        "1030",
+        "1074",
+        "1075"
+      ],
+      "examples": 192,
+      "labels": [
+        32,
+        32,
+        32,
+        32,
+        32,
+        32
+      ],
+      "path": "test.npz",
+      "sha256": "d129cbf577f4eb7f228c32339fd6b978e52efe3cf394116ccfe02fe29878576f"
+    },
+    "train": {
+      "actors": [
+        "1002",
+        "1010",
+        "1014",
+        "1022",
+        "1035",
+        "1044",
+        "1048",
+        "1052",
+        "1057",
+        "1059",
+        "1067",
+        "1073",
+        "1080",
+        "1084",
+        "1086",
+        "1091"
+      ],
+      "examples": 384,
+      "labels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "path": "train.npz",
+      "sha256": "3299ec433416eec75eec3593bc153ac61a5debf5503eaf1bb9343c2b5f422c3e"
+    }
+  },
+  "superseded_data_descriptor_sha256": "a8c80509ebc5ce4f205a6337a7d0d8ded877251faa037ff6a250e33f3e745ee9",
+  "target_contract": "6 acted emotions and same-recording audiovisual match; no language/generative task",
+  "time_contract": "Normalized model dt=.25, common model-input t/31 and1/32; actual elapsed/dt audit metadata only."
+}

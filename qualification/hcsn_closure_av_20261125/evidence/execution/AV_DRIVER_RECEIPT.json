@@ -1,0 +1,45 @@
+{
+  "stages": [
+    {
+      "phase": "TESTS",
+      "returncode": 0,
+      "wall_seconds": 20.908812509966083,
+      "subtree_cpu_seconds": 7.2364
+    },
+    {
+      "phase": "RETIME",
+      "returncode": 0,
+      "wall_seconds": 4.930486485012807,
+      "subtree_cpu_seconds": 4.906359999999999
+    },
+    {
+      "phase": "PREFLIGHT_PREPARE",
+      "returncode": 0,
+      "wall_seconds": 4.364396829041652,
+      "subtree_cpu_seconds": 3.6247369999999988
+    },
+    {
+      "phase": "SMOKE",
+      "returncode": 0,
+      "wall_seconds": 15.729308290057816,
+      "subtree_cpu_seconds": 27.211412000000003
+    },
+    {
+      "phase": "FORMAL_PREPARE",
+      "returncode": 0,
+      "wall_seconds": 2.92578139109537,
+      "subtree_cpu_seconds": 3.2977949999999945
+    },
+    {
+      "phase": "FORMAL_RUN",
+      "returncode": 0,
+      "wall_seconds": 538.2246605500113,
+      "subtree_cpu_seconds": 1586.047111
+    }
+  ],
+  "error": null,
+  "wall_seconds": 1172.5258808600483,
+  "driver_cpu_seconds": 0.33658217,
+  "scope": "outer coordinator; stages count disjoint children, nested in its own launch receipt; waiting wall explicit",
+  "energy_joules": null
+}

@@ -1,0 +1,269 @@
+{
+  "analysis_policy": "3 training seeds and8 test actors are distinct axes; descriptive means/SD and paired per-seed differences, no iid clip p-values or general multimodal-model superiority. All test metrics reported; no post-test best-arm adoption.",
+  "base_protocol_sha256": "adefa9ce9ced611ef7d9a4aca7e1d120ff6bdfcd41af4f1f0068c4b16a45b6a2",
+  "cohort": {
+    "dev": {
+      "actors": [
+        "1038",
+        "1032",
+        "1083",
+        "1008",
+        "1065",
+        "1024"
+      ],
+      "examples": 144
+    },
+    "test": {
+      "actors": [
+        "1074",
+        "1021",
+        "1007",
+        "1075",
+        "1018",
+        "1009",
+        "1030",
+        "1006"
+      ],
+      "examples": 192
+    },
+    "train": {
+      "actors": [
+        "1080",
+        "1067",
+        "1052",
+        "1002",
+        "1059",
+        "1084",
+        "1022",
+        "1048",
+        "1035",
+        "1014",
+        "1073",
+        "1044",
+        "1057",
+        "1086",
+        "1091",
+        "1010"
+      ],
+      "examples": 384
+    }
+  },
+  "cost_policy": "Equal256 updates;600 attempted-update CPU cap yields censoring. Report active parameters, logical/physical state bytes, peakprocessRSS, all dev/setup/import/shutdown/failures separately. Body/worker/stage are nested and never added twice; joules unknown.",
+  "data_root": "/home/qian-qi/hcsn-smallnet-20261124/av-closure-v1-data/prepared_model_clock_v2",
+  "dataset": {
+    "base_dataset_sha256": "2096f8a3da7c5540062506c9a38aa6251ad0a0b103968cc120ba508c8309e051",
+    "base_normalization_sha256": "5ff1e0a8c267bd8ff251eac3565ddfb67cf102343560b58c9575df54dc761869",
+    "decode_sha256": "16de29fbdf1c214a4c48257d62c5864fa60101d12243a6bfdbba7707c4002ead",
+    "design_revision": "Pre-freeze replacement of shared real timing inputs, before any AV fit/test. Original proposal cache and all receipts preserved.",
+    "independence_scope": "8 actors outside three audited prior manifests; not a global every-branch novelty claim",
+    "input_time_moments": "none; all clips use exactly the same two deterministic clock channels",
+    "license_contents": "DbCL-1.0",
+    "license_database": "ODbL-1.0",
+    "media_manifest_sha256": "64174349f47bf5bc3065b7ba7741ebbe7cd32fb181fbc957213002af2b688035",
+    "roster_sha256": "dc0b551b58ed9f4e2e342a94622dbd4a1df7c85010e3c891c7b933de38c7d6de",
+    "schema": "hcsn-av-closure-offline-v1",
+    "shape_per_modality": [
+      32,
+      130
+    ],
+    "splits": {
+      "dev": {
+        "actors": [
+          "1008",
+          "1024",
+          "1032",
+          "1038",
+          "1065",
+          "1083"
+        ],
+        "examples": 144,
+        "labels": [
+          24,
+          24,
+          24,
+          24,
+          24,
+          24
+        ],
+        "path": "dev.npz",
+        "sha256": "1b015fa267f1673a0aff2826376263a15e213af7c175deddcc9ffd7531b9ec46"
+      },
+      "test": {
+        "actors": [
+          "1006",
+          "1007",
+          "1009",
+          "1018",
+          "1021",
+          "1030",
+          "1074",
+          "1075"
+        ],
+        "examples": 192,
+        "labels": [
+          32,
+          32,
+          32,
+          32,
+          32,
+          32
+        ],
+        "path": "test.npz",
+        "sha256": "d129cbf577f4eb7f228c32339fd6b978e52efe3cf394116ccfe02fe29878576f"
+      },
+      "train": {
+        "actors": [
+          "1002",
+          "1010",
+          "1014",
+          "1022",
+          "1035",
+          "1044",
+          "1048",
+          "1052",
+          "1057",
+          "1059",
+          "1067",
+          "1073",
+          "1080",
+          "1084",
+          "1086",
+          "1091"
+        ],
+        "examples": 384,
+        "labels": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "path": "train.npz",
+        "sha256": "3299ec433416eec75eec3593bc153ac61a5debf5503eaf1bb9343c2b5f422c3e"
+      }
+    },
+    "superseded_data_descriptor_sha256": "a8c80509ebc5ce4f205a6337a7d0d8ded877251faa037ff6a250e33f3e745ee9",
+    "target_contract": "6 acted emotions and same-recording audiovisual match; no language/generative task",
+    "time_contract": "Normalized model dt=.25, common model-input t/31 and1/32; actual elapsed/dt audit metadata only."
+  },
+  "dataset_sha256": "ac4af73f1ae24b0bdae90e8a4556013a1a001f80012eacc823c7de99fb43a6dc",
+  "experiment_id": "HCSN-REAL-AV-CLOSURE-20261125-v2",
+  "holdout_policy": "8 actors outside three inspected prior actor manifests; official192 clip roster fixed before download. All9 terminal fits and checkpoints globally sealed before any test scoring. No test-driven selection/retry. Data decoded offline before fitting; all source/cache hashes bound. Failed/censored attempts remain denominators.",
+  "model": {
+    "classes": 6,
+    "embedding": 32,
+    "frontend": "independent modality Linear(130,8) + tanh; same seeded frontend across arms",
+    "hcsn": "qualified FastSignedHCSN a92d7cc45af0ccf1e1c2629ee9fe8ef1d4b0bc6dba335bbdc53cd909c42d80b3; QVI/value-risk, signed-only, mixed, uniformized, scripted action, interval cache, no core classifier",
+    "lif": "binary threshold/reset, .9 leak, recurrent width8; fast-sigmoid surrogate, detached reset; mean pool",
+    "projection": "time mean -> modality Linear to32; shared6-class classifier; fused mean logits",
+    "time": "32 normalized offline positions; dt=.25; final two input channels t/31 and1/32 identical across clips; real elapsed/dt never read by model",
+    "transformer": "one causal 8-wide 2-head block, FF16, dropout0; mean pool",
+    "width": 8
+  },
+  "negative_control": "Duration-only nearest neighbor after all9 seal; metadata are excluded from every learned model input.",
+  "numerical_gate": {
+    "all_outputs_and_gradients_finite": true,
+    "hcsn_max_mass_error": 2e-09
+  },
+  "primary_metrics": [
+    "fused/audio/video six-class accuracy, macroF1,CE,Brier,ECE10",
+    "paired recording retrieval R@1,R@5,MRR both directions, all and withinactor",
+    "cross-actor emotion retrieval classR@1 and mAP, same actor removed from entire gallery",
+    "initial vs selected differences"
+  ],
+  "revision": "Before any AV fitting/test scoring, discarded real-duration inputs that could directly identify pairs; originalproposal/data/source/error receipts retained.",
+  "runtime": {
+    "device": "cpu",
+    "numpy": "2.5.4",
+    "python": "3.12.3",
+    "threads": 1,
+    "torch": "2.8.0+cpu"
+  },
+  "scope": "Genuine paired audiovisual low-level offline encoder on acted-emotion clips. Not a foundation model, online timing benchmark, raw-media end-to-end encoder, or generative all-modality training claim.",
+  "slots": [
+    {
+      "arm": "hcsn",
+      "id": "hcsn-s31011",
+      "seed": 31011
+    },
+    {
+      "arm": "hcsn",
+      "id": "hcsn-s41011",
+      "seed": 41011
+    },
+    {
+      "arm": "hcsn",
+      "id": "hcsn-s51011",
+      "seed": 51011
+    },
+    {
+      "arm": "transformer",
+      "id": "transformer-s31011",
+      "seed": 31011
+    },
+    {
+      "arm": "transformer",
+      "id": "transformer-s41011",
+      "seed": 41011
+    },
+    {
+      "arm": "transformer",
+      "id": "transformer-s51011",
+      "seed": 51011
+    },
+    {
+      "arm": "lif",
+      "id": "lif-s31011",
+      "seed": 31011
+    },
+    {
+      "arm": "lif",
+      "id": "lif-s41011",
+      "seed": 41011
+    },
+    {
+      "arm": "lif",
+      "id": "lif-s51011",
+      "seed": 51011
+    }
+  ],
+  "source_hashes": {
+    "qualification.hcsn_adaptive": "c37db704e4d83d9d92fe8964017d637912399357329676e9fa7ece896aa908c4",
+    "qualification.hcsn_adaptive.batched_flow": "6910d146a9138ae5a109285a5c68102c870a248b1f69fe93f0b55c7789348495",
+    "qualification.hcsn_adaptive.finite_control": "5410243f27c886c332f53b7d36b50724044a15307dcd34f7fcca6c2dbce4dc4e",
+    "qualification.hcsn_adaptive.flow_semantics": "7426362010c6eb808a5072ceda4531f6238c3ff3db8ca0cfe541c9ded5fc0a0b",
+    "qualification.hcsn_adaptive.impulse_execution": "9762d40383607989b3f1af4e6468ab9b56703ee7e9a688d1208060c885fc6d88",
+    "qualification.hcsn_adaptive.uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae",
+    "qualification.hcsn_closure_20261124": "aa3a0c1117ab5a880ec632c13c2c026719d1feeb772d967182a73c34f207b4c9",
+    "qualification.hcsn_closure_20261124.fast_kernel": "a92d7cc45af0ccf1e1c2629ee9fe8ef1d4b0bc6dba335bbdc53cd909c42d80b3",
+    "qualification.hcsn_closure_20261124.models": "84340ea2367b9ccdeec3a68d2726e66549680334ea2fc4de3e501b46eef7dde8",
+    "qualification.hcsn_closure_av_20261125": "e45c8648cd1f75094b779d72ab8bedebe69e555d87b50669b2e3d957c4d8168b",
+    "qualification.hcsn_closure_av_20261125.acquire": "a658e315b7437d868d2e30fe8209807f686010bfcb1840fc05b99f7636f1fbbf",
+    "qualification.hcsn_closure_av_20261125.campaign": "7aab1249f4d50d832f0d4df51e2c5847711c846d568fb045245aaf1cf47ada6b",
+    "qualification.hcsn_closure_av_20261125.decoder_original": "02fc21d1f3f1b98320659421f6ed03450fbe042eed25d91ae2bc93e50bde485f",
+    "qualification.hcsn_closure_av_20261125.metrics": "e0d424c91548c9182dcfeb73822ab87839af7b07fe8a00c00f08f6c91ba0358b",
+    "qualification.hcsn_closure_av_20261125.models": "1a250d619fdb92dd5ab1df8914627ddb62bd16001139fdcec6f32bb063196b2d",
+    "qualification.hcsn_closure_av_20261125.prepare": "dea4839f37087c12213a0b5cf20010956b04248fa2521fc973abe7d569555cc6",
+    "qualification.hcsn_closure_av_20261125.provenance": "f14450187b9b494f7ed2c7b521bb4a95a020343e6ab12ee06676cddd73039750",
+    "qualification.hcsn_closure_av_20261125.retime": "7b64c0b94e921f64227bbf1c584ddc19b6662ffa4847554931d2bf4629c68f6d",
+    "qualification.hcsn_closure_av_20261125.runner": "0b50fcdbe8e10034aa54a148c7a61052d83ce5bae0cb0ffacdefb8a7da60f329",
+    "qualification.hcsn_closure_av_20261125.tests": "9772c1af8bbc5fa6692fafca67a2c1be093846dd6120d41169ea47d4a488b41f",
+    "qualification.hcsn_smallnet_20261124": "e2e135cf52891d1af6adaffc80310b27ad57029ef94955a3f03e6250c38ee142",
+    "qualification.hcsn_smallnet_20261124.cost": "634563482f14f10ef63a98bc23b5b93ef0bc8ade5641157c4d9ae542a064bcda",
+    "qualification.hcsn_smallnet_20261124.model": "d553eadb085b79b55eb2088356a2d7daaf91e553deaf3b9fe2a5b0493b3bb239",
+    "qualification.hcsn_training": "6b32a890838e811a36ce3e2c5e430e31f0ad7d2f8c84078f6139402d4f466806",
+    "qualification.hcsn_training.population_generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"
+  },
+  "training": {
+    "batch_size": 16,
+    "development_every": 64,
+    "gradient_clip": 2.0,
+    "learning_rate": 0.003,
+    "loss": "fused CE + .25(audio CE + video CE) + .5 symmetric InfoNCE, temperature .1",
+    "max_updates": 256,
+    "selection": "minimum development fused CE, including initialization step0; first occurrence wins ties",
+    "threads": 1,
+    "train_cpu_limit": 600.0
+  }
+}

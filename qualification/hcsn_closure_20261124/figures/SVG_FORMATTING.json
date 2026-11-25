@@ -1,0 +1,29 @@
+{
+  "schema": "hcsn-svg-publication-whitespace-v1",
+  "scope": "Only trailing horizontal whitespace in derived SVG line serialization is removed; newline token separators, geometry, style and outlined glyphs remain equivalent. PNG, figure data, model, predictions and renderer source are unchanged.",
+  "transformation": "new = (\"\\n\".join(line.rstrip(\" \\t\") for line in old.decode().splitlines()) + \"\\n\").encode()",
+  "objects": [
+    {
+      "file": "kernel_acceleration.svg",
+      "original_bytes": 60888,
+      "original_sha256": "60685657ba076792eb990266ab0da1756a9d707db4e8ad9e0304a23fa0f11184",
+      "normalized_bytes": 59731,
+      "normalized_sha256": "ab29a276cb653a5b41619eae795131b8e79966d46f4d0c75e71e4bb2609fc7e4",
+      "original_gzip_file": "original_rendered_svg/kernel_acceleration.svg.gz",
+      "original_gzip_sha256": "fded4981013f8755f592d4a5691db234f0838c8bedee4d5e814c1fa1707f034b",
+      "svg_tree_equal_after_attribute_whitespace_normalization": true,
+      "rendered_text_elements": 0
+    },
+    {
+      "file": "quality_cost.svg",
+      "original_bytes": 99564,
+      "original_sha256": "d0ba4bdad9d0ce3497deb605e48f0055ba645d04e508554bd7ce77680e2579b8",
+      "normalized_bytes": 97815,
+      "normalized_sha256": "d073b48264586779dfcc9d922bb17141a1fc57aaed5959eab6c75cbfbb795c6c",
+      "original_gzip_file": "original_rendered_svg/quality_cost.svg.gz",
+      "original_gzip_sha256": "9c3427e19c2a929ff3230dce97a70cba69bbd23377a88520641bbfc26570a251",
+      "svg_tree_equal_after_attribute_whitespace_normalization": true,
+      "rendered_text_elements": 0
+    }
+  ]
+}
