@@ -39,10 +39,13 @@ use crate::protocol::FsWriteFileParams;
 
 const INVALID_REQUEST_ERROR_CODE: i64 = -32600;
 const METHOD_NOT_FOUND_ERROR_CODE: i64 = -32601;
+const INTERNAL_ERROR_CODE: i64 = -32603;
 const NOT_FOUND_ERROR_CODE: i64 = -32004;
 const INVALID_READ_BOUND: &str =
     "authorized file read bound must leave room for an overflow sentinel";
 const READ_EXCEEDED: &str = "remote authorized file read exceeded its bound";
+const AUTHORIZED_READ_EXCEEDED: &str = "authorized file read exceeds bound";
+const PERMISSION_DENIED: &str = "Permission denied";
 
 #[path = "remote_file_stream.rs"]
 mod file_stream;
@@ -513,6 +516,20 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
             unsupported_authorized_read()
         }
+        // Preserve only known, path-free error contracts. Arbitrary server
+        // messages still go through the redacted fallbacks below.
+        ExecServerError::Server {
+            code: INVALID_REQUEST_ERROR_CODE,
+            message,
+        } if message == PERMISSION_DENIED => {
+            io::Error::new(io::ErrorKind::PermissionDenied, PERMISSION_DENIED)
+        }
+        ExecServerError::Server {
+            code: INTERNAL_ERROR_CODE,
+            message,
+        } if message == AUTHORIZED_READ_EXCEEDED => {
+            invalid_authorized_read_data(AUTHORIZED_READ_EXCEEDED)
+        }
         ExecServerError::Server {
             code: INVALID_REQUEST_ERROR_CODE | -32602,
             ..
@@ -530,6 +547,10 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
         _ => io::Error::other("remote authorized file read failed"),
     }
 }
+
+#[cfg(test)]
+#[path = "remote_file_system_authorized_read_tests.rs"]
+mod authorized_read_tests;
 
 #[cfg(all(test, any(unix, windows)))]
 #[path = "remote_file_system_path_uri_tests.rs"]
