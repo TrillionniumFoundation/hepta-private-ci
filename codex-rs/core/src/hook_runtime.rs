@@ -516,7 +516,7 @@ pub(crate) async fn run_legacy_after_agent_hook(
             #[allow(deprecated)]
             cwd: turn_context.cwd.clone(),
             client: turn_context.app_server_client_name.clone(),
-            triggered_at: chrono::Utc::now(),
+            triggered_at: codex_hooks::HookTimestamp::now_utc(),
             hook_event: codex_hooks::HookEvent::AfterAgent {
                 event: codex_hooks::HookEventAfterAgent {
                     thread_id: sess.thread_id,

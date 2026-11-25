@@ -33,7 +33,7 @@ pub(crate) async fn run_mcp_tool(
     hook_event_json: &str,
     metadata: Option<&Map<String, Value>>,
 ) -> HandlerRunResult {
-    let started_at = chrono::Utc::now().timestamp();
+    let started_at = crate::HookTimestamp::now_utc().timestamp();
     let started = Instant::now();
     let result = async {
         let hook_event: Value =
@@ -63,7 +63,7 @@ pub(crate) async fn run_mcp_tool(
     };
     HandlerRunResult {
         started_at,
-        completed_at: chrono::Utc::now().timestamp(),
+        completed_at: crate::HookTimestamp::now_utc().timestamp(),
         duration_ms: started.elapsed().as_millis().try_into().unwrap_or(i64::MAX),
         exit_code,
         stdout,

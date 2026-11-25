@@ -7,12 +7,15 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::time::SystemTime;
 
-use chrono::DateTime;
-use chrono::FixedOffset;
-use chrono::Utc;
-
 use super::CheckStatus;
 use super::DoctorCheck;
+
+#[path = "../timestamp.rs"]
+mod timestamp;
+
+#[cfg(test)]
+#[path = "desktop_time_tests.rs"]
+mod timestamp_tests;
 
 #[cfg(target_os = "macos")]
 mod macos_security;
@@ -40,7 +43,7 @@ struct DesktopLog {
 }
 
 struct HandshakeEvent {
-    timestamp: DateTime<FixedOffset>,
+    timestamp: (i64, u32),
     outcome: HandshakeOutcome,
     websocket: bool,
 }
@@ -77,10 +80,21 @@ pub(super) async fn collect() -> Option<DesktopDiagnostics> {
 
     let directory = desktop_log_root(application.identity);
     let (running, handshake) = match &directory {
-        Some(root) => inspect_desktop_session(
-            &root.join(Utc::now().format("%Y/%m/%d").to_string()),
-            |pid| platform::application_running(&application, pid),
-        ),
+        Some(root) => {
+            #[cfg(not(all(
+                target_arch = "wasm32",
+                not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
+            )))]
+            let now = native_clock_seconds(SystemTime::now());
+            #[cfg(all(
+                target_arch = "wasm32",
+                not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
+            ))]
+            let now = (js_sys::Date::new_0().get_time() as i64).div_euclid(1_000);
+            inspect_desktop_session(&root.join(utc_log_day(now)), |pid| {
+                platform::application_running(&application, pid)
+            })
+        }
         None => (false, stopped_desktop_check()),
     };
     let log_directory = directory
@@ -107,6 +121,30 @@ pub(super) async fn collect() -> Option<DesktopDiagnostics> {
         #[cfg(any(target_os = "macos", target_os = "windows"))]
         application: Some(application),
     })
+}
+
+#[cfg(not(all(
+    target_arch = "wasm32",
+    not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
+)))]
+fn native_clock_seconds(now: SystemTime) -> i64 {
+    let elapsed = now
+        .duration_since(std::time::UNIX_EPOCH)
+        .expect("system time before Unix epoch");
+    i64::try_from(elapsed.as_secs()).expect("system time outside desktop log timestamp range")
+}
+
+fn utc_log_day(now: i64) -> String {
+    #[cfg(not(all(
+        target_arch = "wasm32",
+        not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
+    )))]
+    assert!(now >= 0, "system time before Unix epoch");
+    let utc = timestamp::checked_utc(now).expect("system time outside desktop log timestamp range");
+    let year = timestamp::format_year(utc.year);
+    let month = u8::from(utc.within_cycle.month());
+    let day = utc.within_cycle.day();
+    format!("{year}/{month:02}/{day:02}")
 }
 
 pub(super) fn inspect_desktop_session(
@@ -235,7 +273,7 @@ fn read_log_segment(path: &Path) -> io::Result<Vec<u8>> {
 impl DesktopLogEvent {
     fn parse(line: &str) -> Option<Self> {
         let (timestamp, line) = line.split_once(' ')?;
-        let timestamp = DateTime::parse_from_rfc3339(timestamp).ok()?;
+        let timestamp = timestamp::parse_rfc3339(timestamp).ok()?;
         let (_, message) = line.split_once(" [AppServerConnection] ")?;
 
         if let Some(fields) = message
