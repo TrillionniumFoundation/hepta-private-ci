@@ -33,7 +33,7 @@ WHERE migration_id = ?
         migration_id: &str,
         last_checked_thread: Option<&crate::RolloutMigrationCursor>,
     ) -> anyhow::Result<()> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().timestamp();
         let (thread_created_at, thread_id) = last_checked_thread.map_or((None, None), |cursor| {
             (
                 Some(cursor.thread_created_at),
@@ -99,7 +99,7 @@ WHERE migration_id = ?
         migration_id: &str,
         skipped_rollout: &crate::RolloutMigrationSkippedRollout,
     ) -> anyhow::Result<()> {
-        let now = Utc::now().timestamp();
+        let now = codex_utils_time::Timestamp::now().timestamp();
         sqlx::query(
             r#"
 INSERT INTO rollout_migration_skipped_rollouts (
