@@ -12,7 +12,7 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-from . import data, paired_loop as loop
+from . import data, paired_loop as loop, runtime_artifacts
 
 ARCHIVE = (
     Path(__file__).resolve().parents[2]
@@ -104,6 +104,85 @@ class PairedLoopTests(unittest.TestCase):
             self.config, self.binding, self.request, {"source": "another evaluator"}
         )
         self.assertNotEqual(data.digest(altered), self.pin)
+
+    def artifact_runtime(self):
+        directory = self.root / "runtime"
+        directory.mkdir()
+        (directory / "fixture.py").write_bytes(b"value = 1\n")
+        return dict(
+            package_sha256="1" * 64,
+            python=sys.version,
+            executable_sha256="2" * 64,
+            packages={name: "engineering-fixture" for name in loop.PACKAGES},
+            dependency_identity_kind="verified_runtime_artifacts_v1",
+            runtime_closure_complete=False,
+            runtime_artifacts=runtime_artifacts.snapshot(self.root, ["runtime"]),
+        )
+
+    def test_artifact_identity_and_readback_use_v2_without_granting_authority(self):
+        self.runtime = self.artifact_runtime()
+        self.manifest = loop.identity(
+            self.config, self.binding, self.request, self.runtime
+        )
+        self.pin = data.digest(self.manifest)
+        self.assertEqual(
+            self.manifest["schema"], "hepta.paired-learning.loop-identity.v2"
+        )
+        folder, outcome = self.make_stages()
+        result = loop.readback(
+            folder, self.pin, outcome["scope"]["task"], self.binding, outcome
+        )
+        self.assertEqual(result["schema"], "hepta.paired-learning.loop-readback.v2")
+        self.assertFalse(result["production_authorization_available"])
+        self.assertFalse(result["settlement_authorized"])
+        self.assertEqual(result["site_attested_independent_adopted_improvements"], 0)
+
+    def test_artifact_inventory_change_changes_loop_and_complete_claim_is_refused(self):
+        runtime = self.artifact_runtime()
+        original = loop.identity(self.config, self.binding, self.request, runtime)
+        original_pin = data.digest(original)
+        (self.root / "runtime/fixture.py").write_bytes(b"value = 2\n")
+        runtime["runtime_artifacts"] = runtime_artifacts.snapshot(
+            self.root, ["runtime"]
+        )
+        changed = loop.identity(self.config, self.binding, self.request, runtime)
+        self.assertNotEqual(original_pin, data.digest(changed))
+        runtime["runtime_closure_complete"] = True
+        with self.assertRaisesRegex(ValueError, "closure is not established"):
+            loop.identity(self.config, self.binding, self.request, runtime)
+
+    def test_dependency_change_during_action_is_retained_as_failed_stage(self):
+        runtime = self.artifact_runtime()
+        manifest = loop.identity(self.config, self.binding, self.request, runtime)
+        args = SimpleNamespace(
+            home=self.root / "home",
+            admission=data.digest(self.binding),
+            materials=self.root,
+            cmd="select",
+            expected_loop=data.digest(manifest),
+        )
+        (args.home / args.admission).mkdir(parents=True)
+        changed = copy.deepcopy(runtime)
+        changed["executable_sha256"] = "3" * 64
+        with (
+            patch.object(
+                loop.consumer,
+                "context",
+                return_value=(self.config, self.binding, self.request),
+            ),
+            patch.object(loop, "implementation_for", side_effect=[runtime, changed]),
+            patch.object(
+                loop.consumer, "operate", return_value={"fixture": True}
+            ) as dispatch,
+        ):
+            with self.assertRaisesRegex(ValueError, "implementation changed during"):
+                loop.operate(args)
+        dispatch.assert_called_once()
+        path = args.home / args.admission / "bound-loop" / args.expected_loop / "select"
+        self.assertEqual(
+            json.loads((path / "END.json").read_bytes())["status"], "FAILED"
+        )
+        self.assertFalse((path / "RESULT.json").exists())
 
     def test_failed_real_child_is_charged_and_not_redispatched(self):
         path = self.root / "failed"
