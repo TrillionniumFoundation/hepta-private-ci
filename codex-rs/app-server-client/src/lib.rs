@@ -760,6 +760,9 @@ impl AppServerClient {
     }
 }
 
+#[cfg(all(test, unix))]
+mod transport_probe_tests;
+
 #[cfg(test)]
 mod tests {
     use super::*;

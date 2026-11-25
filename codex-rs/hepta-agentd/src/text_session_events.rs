@@ -159,6 +159,7 @@ impl TextEventReader {
                         pending.envelope.message_id.clone(),
                         pending.delivery_id.clone(),
                         pending.cancellation_requested
+                            && pending.interrupt_attempt == InterruptAttempt::NotSent
                             && matches!(notification, ServerNotification::ItemStarted(value) if matches!(&value.item, ThreadItem::UserMessage { .. })),
                     )
                 } else {
@@ -181,7 +182,7 @@ impl TextEventReader {
                     handle: self.client.request_handle(),
                     shared: self.shared.clone(),
                 };
-                requests.interrupt_turn(turn_id.clone()).await?;
+                requests.interrupt_turn(&event.message_id, turn_id).await?;
             }
             return Ok(Some(AgentdTextObservation::Notification(Box::new(event))));
         }

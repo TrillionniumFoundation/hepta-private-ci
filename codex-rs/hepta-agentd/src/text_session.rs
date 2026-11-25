@@ -129,6 +129,13 @@ pub struct TextReconciliation {
     pub turn: Option<Turn>,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum InterruptAttempt {
+    NotSent,
+    Sent,
+    Acknowledged,
+}
+
 #[derive(Clone)]
 struct Pending {
     envelope: AuthBusTextIngress,
@@ -138,6 +145,7 @@ struct Pending {
     input_digest: String,
     turn_id: Option<String>,
     cancellation_requested: bool,
+    interrupt_attempt: InterruptAttempt,
     terminal: bool,
     recovered: bool,
 }
@@ -292,6 +300,9 @@ impl AgentdTextSession {
             let mut retained = state.pending.clone();
             for pending in retained.values_mut() {
                 pending.recovered = true;
+                if pending.interrupt_attempt == InterruptAttempt::Sent {
+                    pending.interrupt_attempt = InterruptAttempt::NotSent;
+                }
             }
             retained
         };
@@ -340,6 +351,7 @@ fn prepare(
         input_digest,
         turn_id: None,
         cancellation_requested: false,
+        interrupt_attempt: InterruptAttempt::NotSent,
         terminal: false,
         recovered: false,
     })

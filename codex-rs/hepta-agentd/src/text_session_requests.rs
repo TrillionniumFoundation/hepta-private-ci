@@ -232,7 +232,7 @@ impl AgentdTextRequests {
                         .as_ref()
                         .is_none_or(|turn| turn.status == TurnStatus::InProgress)
                 {
-                    self.interrupt_turn(turn_id.clone()).await?;
+                    self.interrupt_turn(message_id, turn_id).await?;
                 }
             }
             ThreadQueueReconcileOutcome::Cancelled => {
@@ -400,17 +400,45 @@ impl AgentdTextRequests {
         }
     }
 
-    pub(super) async fn interrupt_turn(&self, turn_id: String) -> Result<(), TextSessionError> {
+    pub(super) async fn interrupt_turn(
+        &self,
+        message_id: &str,
+        turn_id: &str,
+    ) -> Result<(), TextSessionError> {
         self.check_current_ingress().await?;
+        {
+            let mut state = self.shared.current()?;
+            let pending = state
+                .pending
+                .get_mut(message_id)
+                .ok_or(TextSessionError::UnknownRequest)?;
+            if pending.turn_id.as_deref() != Some(turn_id) {
+                return Err(TextSessionError::Identity);
+            }
+            if pending.terminal || pending.interrupt_attempt != InterruptAttempt::NotSent {
+                return Ok(());
+            }
+            // Reconciliation and a buffered event can see the same turn.
+            // Claim the attempt before I/O; an unknown ACK is retried only
+            // after a fenced reattach to the same ingress.
+            pending.interrupt_attempt = InterruptAttempt::Sent;
+        }
         let _: TurnInterruptResponse = self
             .call(ClientRequest::TurnInterrupt {
                 request_id: self.id(),
                 params: TurnInterruptParams {
                     thread_id: self.shared.config.thread_id.clone(),
-                    turn_id,
+                    turn_id: turn_id.to_string(),
                 },
             })
             .await?;
+        if let Some(pending) = self.shared.current()?.pending.get_mut(message_id)
+            && pending.turn_id.as_deref() == Some(turn_id)
+        {
+            // ACK is not a terminal receipt; only the original event or an
+            // authoritative snapshot can terminalize this presentation slot.
+            pending.interrupt_attempt = InterruptAttempt::Acknowledged;
+        }
         Ok(())
     }
 
