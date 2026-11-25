@@ -18,6 +18,7 @@ import sys
 import time
 
 from . import data, paired_consumer as consumer, paired_intake as intake
+from . import runtime_artifacts as artifacts
 
 require = consumer.require
 field = consumer.field
@@ -25,8 +26,8 @@ COMMANDS = ("select", "run", "report", "verify-request", "verify")
 PACKAGES = ("torch", "transformers", "peft", "tokenizers", "safetensors")
 
 
-def implementation():
-    """Commit source/interpreter bytes and installed versions; mark the remaining closure gap."""
+def implementation(*, runtime_artifacts_manifest=None, runtime_artifacts_root=None):
+    """Commit observed bytes; declared artifacts still leave loader/host closure open."""
     root = Path(__file__).parent
     files = {}
     for path in sorted(root.rglob("*.py")):
@@ -37,13 +38,41 @@ def implementation():
     require(0 < len(files) <= 2048, "unbounded or empty loop implementation")
     with Path(sys.executable).resolve(strict=True).open("rb") as stream:
         executable = hashlib.file_digest(stream, "sha256").hexdigest()
-    return dict(
+    result = dict(
         package_sha256=data.digest(files),
         python=sys.version,
         executable_sha256=executable,
         packages={name: importlib.metadata.version(name) for name in PACKAGES},
         dependency_identity_kind="installed_versions_only",
         runtime_closure_complete=False,
+    )
+    require(
+        (runtime_artifacts_manifest is None) == (runtime_artifacts_root is None),
+        "runtime artifact manifest and root are required together",
+    )
+    if runtime_artifacts_manifest is not None:
+        result["runtime_artifacts"] = artifacts.verify_installed(
+            runtime_artifacts_manifest, runtime_artifacts_root, PACKAGES
+        )
+        result["dependency_identity_kind"] = "verified_runtime_artifacts_v1"
+    return result
+
+
+def implementation_for(args):
+    """Require a separately retained manifest pin on every artifact-bound operation."""
+    path = getattr(args, "runtime_artifacts", None)
+    root = getattr(args, "runtime_artifacts_root", None)
+    expected = getattr(args, "expected_runtime_artifacts", None)
+    require(
+        all(value is None for value in (path, root, expected))
+        or all(value is not None for value in (path, root, expected)),
+        "runtime artifacts, root and expected commitment are required together",
+    )
+    if path is None:
+        return implementation()
+    return implementation(
+        runtime_artifacts_manifest=artifacts.load(path, field(expected)),
+        runtime_artifacts_root=root,
     )
 
 
@@ -82,8 +111,16 @@ def identity(config, binding, request, runtime):
         "request_sha256",
     ):
         field(release[key])
+    version = "v1"
+    if runtime.get("dependency_identity_kind") == "verified_runtime_artifacts_v1":
+        artifacts.validate(runtime["runtime_artifacts"])
+        require(
+            runtime["runtime_closure_complete"] is False,
+            "complete runtime closure is not established",
+        )
+        version = "v2"
     return dict(
-        schema="hepta.paired-learning.loop-identity.v1",
+        schema="hepta.paired-learning.loop-identity." + version,
         release=release,
         release_sha256=data.digest(release),
         family=candidate["family"],
@@ -242,7 +279,9 @@ def readback(folder, expected_identity, task, binding, verified, *, retained=Fal
         else None
     )
     return dict(
-        schema="hepta.paired-learning.loop-readback.v1",
+        schema="hepta.paired-learning.loop-readback.v2"
+        if manifest["schema"] == "hepta.paired-learning.loop-identity.v2"
+        else "hepta.paired-learning.loop-readback.v1",
         loop_identity=manifest,
         loop_sha256=expected_identity,
         stages=stages,
@@ -289,7 +328,7 @@ def operate(args):
             "explicit consumer decision required",
         )
     config, binding, request = consumer.context(args.home, args.admission)
-    manifest = identity(config, binding, request, implementation())
+    manifest = identity(config, binding, request, implementation_for(args))
     commitment = data.digest(manifest)
     if args.cmd == "identity":
         return dict(loop_sha256=commitment, identity=manifest)
@@ -345,7 +384,7 @@ def operate(args):
         def action():
             result = consumer.operate(args, require_new=True)
             require(
-                implementation() == manifest["implementation"],
+                implementation_for(args) == manifest["implementation"],
                 "implementation changed during operation",
             )
             return result
@@ -365,6 +404,9 @@ def main():
     parser.add_argument("materials", type=Path)
     parser.add_argument("cmd", choices=("identity", "readback", *COMMANDS))
     parser.add_argument("--expected-loop")
+    parser.add_argument("--runtime-artifacts", type=Path)
+    parser.add_argument("--runtime-artifacts-root", type=Path)
+    parser.add_argument("--expected-runtime-artifacts")
     parser.add_argument("--task")
     parser.add_argument("--effect")
     parser.add_argument("--outcome", choices=("accepted", "rejected"))
