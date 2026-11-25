@@ -62,6 +62,13 @@ impl AgentdControlServer {
                 _ = self.cancellation.cancelled() => return Ok(()),
                 accepted = self.listener.accept() => accepted?,
             };
+            // Socket path permissions protect rendezvous, but same-UID peers
+            // still need a kernel-authenticated identity check before they can
+            // consume a connection slot or submit any control frame.
+            if let Err(error) = ensure_control_peer(&stream) {
+                eprintln!("rejecting unauthenticated Agentd control peer: {error}");
+                continue;
+            }
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 let mut stream = stream;
                 let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
@@ -229,4 +236,50 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 #[cfg(not(unix))]
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
+}
+
+fn ensure_control_peer(stream: &UnixStream) -> Result<(), AgentdError> {
+    stream
+        .ensure_current_user_peer()
+        .map_err(AgentdError::Io)
+}
+
+#[cfg(all(test, unix))]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn control_peer_check_runs_before_control_frames() {
+        let temp_dir = tempfile::tempdir().expect("temporary directory");
+        let socket_path = temp_dir.path().join("agentd-control.sock");
+        let mut listener = UnixListener::bind(&socket_path)
+            .await
+            .expect("control listener should bind");
+        let client_path = socket_path.clone();
+        let client_task = tokio::spawn(async move { UnixStream::connect(client_path).await });
+        let server_stream = listener
+            .accept()
+            .await
+            .expect("control peer should connect");
+        ensure_control_peer(&server_stream).expect("same-UID control peer should pass");
+        let _client_stream = client_task
+            .await
+            .expect("client task should join")
+            .expect("client should connect");
+    }
+
+    #[test]
+    fn accept_path_authenticates_before_consuming_a_permit() {
+        let source = include_str!("control.rs");
+        let peer_check = source
+            .find("ensure_control_peer(&stream)")
+            .expect("accept path must authenticate the peer");
+        let permit = source
+            .find("try_acquire_owned")
+            .expect("accept path must retain the bounded permit");
+        assert!(
+            peer_check < permit,
+            "peer authentication must precede permit allocation"
+        );
+    }
 }
