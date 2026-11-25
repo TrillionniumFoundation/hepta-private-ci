@@ -16,7 +16,6 @@ path = "src/bin/config_schema.rs"
 workspace = true
 
 [dependencies]
-time = { workspace = true }
 codex-utils-time = { workspace = true }
 codex-exec-server-test-support = { path = "../exec-server/tests/support" }
 anyhow = { workspace = true }
@@ -141,6 +140,7 @@ openssl-sys = { workspace = true, features = ["vendored"] }
 codex-shell-escalation = { workspace = true }
 
 [dev-dependencies]
+time = { workspace = true }
 codex-arg0 = { path = "../arg0" }
 assert_cmd = { workspace = true }
 assert_matches = { workspace = true }
