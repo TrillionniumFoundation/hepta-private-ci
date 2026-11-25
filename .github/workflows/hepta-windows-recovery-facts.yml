@@ -1,0 +1,82 @@
+name: Windows private-copy and parent-rename facts (observation only)
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-windows-recovery-facts.yml
+      - .github/scripts/windows_recovery_admission_facts.ps1
+      - .github/scripts/windows_recovery_rust_probe.rs
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-facts:
+    name: Observe actual private directory flush and retained-parent rename
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Observe exact ab59 native copy/rename prerequisites
+        shell: pwsh
+        run: |
+          ./.github/scripts/windows_recovery_admission_facts.ps1 -ExpectedHead "${{ github.event.pull_request.head.sha || github.sha }}" -OutputRoot "$env:RUNNER_TEMP/recovery-admission-facts"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: recovery-admission-facts-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/recovery-admission-facts/facts.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Install exact native compiler for a bounded utility and SQLx probe
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+      - name: Observe original path normalization and actual SQLx file ACLs
+        shell: pwsh
+        env:
+          RUSTUP_TOOLCHAIN: 1.96.0
+          CARGO_BUILD_JOBS: "1"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $probe = Join-Path $env:RUNNER_TEMP 'recovery-rust-utility-probe'
+          New-Item -ItemType Directory -Path (Join-Path $probe 'src') | Out-Null
+          $repo = (Get-Location).Path.Replace('\', '/')
+          @"
+          [workspace]
+          [package]
+          name = "hepta-native-path-sqlx-observation"
+          version = "0.0.0"
+          edition = "2024"
+          [dependencies]
+          codex-utils-absolute-path = { path = "$repo/codex-rs/utils/absolute-path" }
+          codex-utils-path = { path = "$repo/codex-rs/utils/path-utils" }
+          serde_json = "=1.0.154"
+          sqlx = { version = "=0.9.0", default-features = false, features = ["runtime-tokio", "sqlite"] }
+          tokio = { version = "=1.53.3", features = ["macros", "rt"] }
+          "@ | Set-Content -Encoding utf8 (Join-Path $probe 'Cargo.toml')
+          Copy-Item .github/scripts/windows_recovery_rust_probe.rs (Join-Path $probe 'src/main.rs')
+          Copy-Item codex-rs/Cargo.lock (Join-Path $probe 'Cargo.lock')
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP 'recovery-rust-utility-target'
+          $env:HEPTA_PROBE_POWERSHELL = (Get-Process -Id $PID).Path
+          cargo run --quiet --manifest-path (Join-Path $probe 'Cargo.toml') -- "$env:RUNNER_TEMP/recovery-admission-facts/actual-sqlx-private-home" 1> "$env:RUNNER_TEMP/recovery-admission-facts/rust-probe.json" 2> "$env:RUNNER_TEMP/recovery-admission-facts/rust-probe.stderr.log"
+          $probeExit = $LASTEXITCODE
+          Copy-Item (Join-Path $probe 'Cargo.lock') "$env:RUNNER_TEMP/recovery-admission-facts/rust-probe.Cargo.lock"
+          if ($probeExit -ne 0) { Get-Content "$env:RUNNER_TEMP/recovery-admission-facts/rust-probe.stderr.log"; exit $probeExit }
+          if ((git status --porcelain --untracked-files=no | Measure-Object).Count -ne 0) { throw 'Measured source changed.' }
+          Get-Content "$env:RUNNER_TEMP/recovery-admission-facts/rust-probe.json"
+      - name: Preserve actual utility and SQLx observations separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: recovery-rust-utility-facts-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/recovery-admission-facts/rust-probe.json
+            ${{ runner.temp }}/recovery-admission-facts/rust-probe.stderr.log
+            ${{ runner.temp }}/recovery-admission-facts/rust-probe.Cargo.lock
+          if-no-files-found: error
+          retention-days: 14
