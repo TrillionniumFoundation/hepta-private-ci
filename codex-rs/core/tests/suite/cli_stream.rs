@@ -478,7 +478,8 @@ async fn integration_creates_and_checks_session_file() -> anyhow::Result<()> {
     let server = MockServer::start().await;
     let resp_mock =
         responses::mount_sse_sequence(&server, vec![cli_sse_response(), cli_sse_response()]).await;
-    let repo_root = repo_root();
+    // This test verifies a session rollout, not the repository's startup scans.
+    let working_dir = TempDir::new()?;
 
     // 4. Run the codex CLI and invoke `exec`, which is what records a session.
     let bin = codex_utils_cargo_bin::cargo_bin("codex").unwrap();
@@ -488,12 +489,13 @@ async fn integration_creates_and_checks_session_file() -> anyhow::Result<()> {
         .arg("-c")
         .arg(format!("openai_base_url=\"{}/v1\"", server.uri()))
         .arg("-C")
-        .arg(&repo_root)
+        .arg(working_dir.path())
         .arg(&prompt);
-    cmd.env("CODEX_HOME", home.path())
+    cmd.current_dir(working_dir.path())
+        .env("CODEX_HOME", home.path())
         .env(CODEX_API_KEY_ENV_VAR, "dummy");
 
-    let output = run_cli_command(&mut cmd).unwrap();
+    let output = run_cli_command(&mut cmd)?;
     assert!(
         output.status.success(),
         "codex-cli exec failed: {}",
@@ -604,14 +606,15 @@ async fn integration_creates_and_checks_session_file() -> anyhow::Result<()> {
         .arg("-c")
         .arg(format!("openai_base_url=\"{}/v1\"", server.uri()))
         .arg("-C")
-        .arg(&repo_root)
+        .arg(working_dir.path())
         .arg(&prompt2)
         .arg("resume")
         .arg("--last");
-    cmd2.env("CODEX_HOME", home.path())
+    cmd2.current_dir(working_dir.path())
+        .env("CODEX_HOME", home.path())
         .env("OPENAI_API_KEY", "dummy");
 
-    let output2 = run_cli_command(&mut cmd2).unwrap();
+    let output2 = run_cli_command(&mut cmd2)?;
     assert!(output2.status.success(), "resume codex-cli run failed");
     assert_eq!(resp_mock.requests().len(), 2);
 
