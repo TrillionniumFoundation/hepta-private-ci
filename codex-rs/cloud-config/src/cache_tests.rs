@@ -188,8 +188,7 @@ async fn load_rejects_expired_cache() {
     let codex_home = tempdir().expect("tempdir");
     let cache = create_test_cache(codex_home.path());
     let mut signed_payload = valid_signed_payload();
-    signed_payload.expires_at =
-        Timestamp::from_datetime(OffsetDateTime::now_utc() - time::Duration::seconds(1));
+    signed_payload.expires_at = Timestamp::now() - time::Duration::seconds(1);
     write_cache_file(&cache, &signed_cache_file(signed_payload));
 
     assert_eq!(
