@@ -1,0 +1,415 @@
+{
+  "schema": 1,
+  "version": "dependency-evidence-v1",
+  "frozen_utc": "2026-11-25T03:35:50.519718+00:00",
+  "member_count_excluding_manifest": 81,
+  "manifest_self_excluded": true,
+  "payload_bytes_excluding_manifest": 4263143,
+  "members": [
+    {
+      "path": "BUNDLE_STATUS.json",
+      "bytes": 1691,
+      "sha256": "f8e834090a16449cd4b9588346cac9cdab61ab6a2dfe3a3969c23ee02ad445bd"
+    },
+    {
+      "path": "DEPENDENCY_BLOCKER_STATUS.json",
+      "bytes": 20062,
+      "sha256": "a0641036f8d8291fcc7ddcfb8606658b7d872a583f01ca409e1fbecc65674a2d"
+    },
+    {
+      "path": "README_ZH.md",
+      "bytes": 2545,
+      "sha256": "ef52528d447ce770f92d80749a5ca975d0df44865d0bfa20790abd40dcdb989e"
+    },
+    {
+      "path": "dependency_readback/6799-cargo.lock",
+      "bytes": 424588,
+      "sha256": "118d0471e42b2fca912a713e03c7391640fc10b650d425004274e98d5a71db91"
+    },
+    {
+      "path": "dependency_readback/6799-check-runs-RECEIPT.json",
+      "bytes": 1168,
+      "sha256": "082ab1f48c3a9b95c12efafa269e65cf54850fc3e5d7e876b4fc359612302688"
+    },
+    {
+      "path": "dependency_readback/6799-lock-history-obj.json",
+      "bytes": 14384,
+      "sha256": "e52621bcb04ee73cb074110c99e89db64cd9cb77a76c673b9b2d29ffb377b3a7"
+    },
+    {
+      "path": "dependency_readback/6799-package.json",
+      "bytes": 1696,
+      "sha256": "42e74d43f7a889064b14472215677b1aa6e6556cdcb1b357d3ce6010a943119a"
+    },
+    {
+      "path": "dependency_readback/6799-pnpm-workspace.yaml",
+      "bytes": 603,
+      "sha256": "8b90bc1ff8f630f155bace92c14d5255353ccd096aca517ddee216847fcfc233"
+    },
+    {
+      "path": "dependency_readback/6799-pnpm.yaml",
+      "bytes": 189254,
+      "sha256": "3420eebef4d909ad259280ca2934a8424c1d6a0d9060b0466619e4c82b5096ee"
+    },
+    {
+      "path": "dependency_readback/6799-uv.lock",
+      "bytes": 140764,
+      "sha256": "c212c08818ad1a2b4016862d27e22e77b950296b3ed382594233535fdc5ba258"
+    },
+    {
+      "path": "dependency_readback/7068-jobs-obj.json",
+      "bytes": 123775,
+      "sha256": "cefb883af7eba6af3a2cec9815c719ccab6fc1caa00877bef799601b11c553e3"
+    },
+    {
+      "path": "dependency_readback/7068-pnpm.yaml",
+      "bytes": 180148,
+      "sha256": "a41609fc3fd36a174c97f516fbfa9a276598d441f091366726a4dd5c8262ae81"
+    },
+    {
+      "path": "dependency_readback/7068-run-obj.json",
+      "bytes": 18321,
+      "sha256": "5dcf29fd3ba3f2778ec67fc22f85fce430b81290fb6a2786de7cdfd6710b61d1"
+    },
+    {
+      "path": "dependency_readback/7068-uv.lock",
+      "bytes": 140667,
+      "sha256": "5acd3f885149d258ca8a3d583dcf70d12b4805aeb46e2ee2009acb435cf91c4a"
+    },
+    {
+      "path": "dependency_readback/ACCESS_RECEIPT.json",
+      "bytes": 831,
+      "sha256": "74a0b9f0a7e2bb2c731cdb0aaf77096e05df4194ff720154427cb1e836aef275"
+    },
+    {
+      "path": "dependency_readback/ALERT_LOCK_CORRELATION.json",
+      "bytes": 266002,
+      "sha256": "1e7110ed6823a0a4b4ded8cbaaa5ea7a3313f396fba8a7bb3b581027f0a229eb"
+    },
+    {
+      "path": "dependency_readback/CURRENT_ZH.md",
+      "bytes": 84490,
+      "sha256": "a5a8de90ef9b8ea122eb126bbd79931b59ac8948958187d3d54db7fa184d4cbb"
+    },
+    {
+      "path": "dependency_readback/GITHUB_READ_RECEIPTS.json",
+      "bytes": 6423,
+      "sha256": "3db541f26696366ca671b13021825a56491f05478b553536d332579440edc8e2"
+    },
+    {
+      "path": "dependency_readback/HISTORICAL_RUSTSEC_LOCK_MAPPING.json",
+      "bytes": 18484,
+      "sha256": "275a62059b19be15bcd2dfa761f4eaa1fdc1d7aef99c7d99d4e49811fb7944cf"
+    },
+    {
+      "path": "dependency_readback/NATIVE_RUN_POINTER.json",
+      "bytes": 1349,
+      "sha256": "863a5712e62cfea3edd0fce47d799ad507e89d0d82492d79350b78080228bf36"
+    },
+    {
+      "path": "dependency_readback/PARENT_CI_REFRESH.json",
+      "bytes": 11625,
+      "sha256": "e1335c12cbdd594baaf6e59ce3f057c929ea97c9c2e5ed6be07b0658eadbb0f0"
+    },
+    {
+      "path": "dependency_readback/PARENT_GIT_COMMIT.json",
+      "bytes": 2016,
+      "sha256": "bd96936ffbedc0d02a200b580062465318ee715563067f519262dd514ec044c1"
+    },
+    {
+      "path": "dependency_readback/PATCH_REVIEW.json",
+      "bytes": 73064,
+      "sha256": "d9b7fa537a3c2368ba2eb4c6b8949ebf1ca1407adc709dc528d753debba89ab1"
+    },
+    {
+      "path": "dependency_readback/PUBLICATION_READY.json",
+      "bytes": 5229,
+      "sha256": "d5340dede904637663288d3957c1fd51b5e04311d67cd083e8a6caa57680409c"
+    },
+    {
+      "path": "dependency_readback/PUBLICATION_READY_POST_FORMAT.json",
+      "bytes": 6169,
+      "sha256": "728b82e6b35da2910fd394de84b501362f7317d27fe350f54b86a4e569530931"
+    },
+    {
+      "path": "dependency_readback/PUBLISHED_CANDIDATE_COMMIT.json",
+      "bytes": 1575,
+      "sha256": "3f3252c947b63b7161d60361e2a5a20fb88e6bd75c22d9297c42e69965c5463f"
+    },
+    {
+      "path": "dependency_readback/RESIDUAL_CANDIDATE_STATIC_AUDIT.json",
+      "bytes": 2710,
+      "sha256": "726875ffac8a50758e7c8a369884b75b4e6a4c54bf7fb6c92103337f82d42878"
+    },
+    {
+      "path": "dependency_readback/RESIDUAL_PEER_METADATA_DIFF.json",
+      "bytes": 5978,
+      "sha256": "df951c2246fbfca3ae155a8b7a9ecbf2720d556dd9d8a094d2deb743ae23eaba"
+    },
+    {
+      "path": "dependency_readback/SOURCE_PR_PUBLICATION.json",
+      "bytes": 72615,
+      "sha256": "81006a4138bf351def625ac8aef83b9c9d8df6ededcadf738c4ba73e714409c5"
+    },
+    {
+      "path": "dependency_readback/VERIFIED_GITHUB_READ_RECEIPTS.json",
+      "bytes": 10355,
+      "sha256": "686531ca6b7fb18b016f41ef290f3e4670963793edf185663b80eca7a3aebdfe"
+    },
+    {
+      "path": "dependency_readback/alerts.raw.json.gz",
+      "bytes": 174603,
+      "sha256": "0394c740790ba34b3756291e691f4576981cf181711c7694b3a6e7cc180ff680"
+    },
+    {
+      "path": "dependency_readback/audit_dependency_metadata.py",
+      "bytes": 11642,
+      "sha256": "0fc3ac54e1f1c69139a1223e268f84daff26954e997fe071405f82c6da247bd9"
+    },
+    {
+      "path": "dependency_readback/cookie-7032-paired-security-20261123.md",
+      "bytes": 4599,
+      "sha256": "5eb0218c2130716ea7a55a56bfd3a4394879606c9fc5303c90c989c1a52e825c"
+    },
+    {
+      "path": "dependency_readback/default-cargo-deny-residual-20261123.md",
+      "bytes": 3288,
+      "sha256": "7f6c26df6983ab8f6eda50353ad3ae4b20e17643c9bf0bc9405fb56285690544"
+    },
+    {
+      "path": "dependency_readback/format_exact_driver.py",
+      "bytes": 7210,
+      "sha256": "acc0f0a0a430b2297c3b1fc64ccbe6d6b931319f321e9853096744e2de785c2a"
+    },
+    {
+      "path": "dependency_readback/formatter_hydration_manifest.json",
+      "bytes": 29058,
+      "sha256": "a22312850fabac8b2a00c84ffff5b7025828a7c08654ffb7686b642278e2b343"
+    },
+    {
+      "path": "dependency_readback/formatter_hydration_payload.json.gz",
+      "bytes": 356879,
+      "sha256": "f8d0dfbe94f72b650e903ae86f0f3165e7ef8a391ccba69d1e1c79e4c888b315"
+    },
+    {
+      "path": "dependency_readback/main-Cargo.lock",
+      "bytes": 418038,
+      "sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389"
+    },
+    {
+      "path": "dependency_readback/main-package.json",
+      "bytes": 1242,
+      "sha256": "0d0a78ff2f703abad442de6e99e127076ad40f85912692a82ec21d968944b368"
+    },
+    {
+      "path": "dependency_readback/main-pnpm-workspace.yaml",
+      "bytes": 545,
+      "sha256": "adbc41c7c9a71b7bdf4b370bbd75c573e0da2d632ab98bf7d9020cd2df852069"
+    },
+    {
+      "path": "dependency_readback/main-pnpm.yaml",
+      "bytes": 180148,
+      "sha256": "a41609fc3fd36a174c97f516fbfa9a276598d441f091366726a4dd5c8262ae81"
+    },
+    {
+      "path": "dependency_readback/main-security-graph-delta-20261124.md",
+      "bytes": 7351,
+      "sha256": "0b848dac6f7c6192dc2281a6ed59d28c67e602e8c9c010832931f61967814516"
+    },
+    {
+      "path": "dependency_readback/main-ts-package.json",
+      "bytes": 1934,
+      "sha256": "bc908b2ca2823217d19e56fc472b895b18a451a57411046b131992b34977b02c"
+    },
+    {
+      "path": "dependency_readback/main-uv.lock",
+      "bytes": 140667,
+      "sha256": "5acd3f885149d258ca8a3d583dcf70d12b4805aeb46e2ee2009acb435cf91c4a"
+    },
+    {
+      "path": "dependency_readback/native-sdk-in-progress-RECEIPT.snapshot.json",
+      "bytes": 6205,
+      "sha256": "1ba4193519f669dcaf24f4e692ae5cd30ae44ff7ed1e12ba7735154f10b0e3aa"
+    },
+    {
+      "path": "dependency_readback/native_progress_monitor.py",
+      "bytes": 1390,
+      "sha256": "a23fe4cc2e6bcf966bfddbae377077773864d45c9a9a67fbc06bd7bbd0c7bedf"
+    },
+    {
+      "path": "dependency_readback/native_sdk_driver.py",
+      "bytes": 7832,
+      "sha256": "0026840ad0583f506dd992b3c5d56149d752dfde650eef2c3c3abc30ef2ff669"
+    },
+    {
+      "path": "dependency_readback/original-format.py",
+      "bytes": 30773,
+      "sha256": "374839d73d51cddde230f514888cd05532f791534bdd35c1842df19b8b2e2be9"
+    },
+    {
+      "path": "dependency_readback/patch-CHECKOUT_RECEIPT.json",
+      "bytes": 2844,
+      "sha256": "8d6d85f68fe50c96893881de4cc75d6ae1cb05f4f4cb6394b67760fab7f53807"
+    },
+    {
+      "path": "dependency_readback/patch-FORMAT_RECEIPT.json",
+      "bytes": 19072,
+      "sha256": "6697bb6f796786b93885f8fc1c1a88c9f1f655601fb1bc690450412f0de28844"
+    },
+    {
+      "path": "dependency_readback/patch-HYDRATION_TIMEOUT_INVENTORY.json",
+      "bytes": 5093,
+      "sha256": "af8415675b03c7c673cebaa081fd4a7216ac53452cfcc31b8ec434db954f8b54"
+    },
+    {
+      "path": "dependency_readback/patch-PACKAGE_MANAGER.json",
+      "bytes": 902,
+      "sha256": "0e91c6b08dc5bf1a508cac8843c2e99e3a0ca09abfe9e0a53c5023deb85383cf"
+    },
+    {
+      "path": "dependency_readback/patch-RESIDUAL_DEPENDENCIES.patch",
+      "bytes": 34124,
+      "sha256": "a6f0446cdcc5b9753e8a9672f0c503791c0145136dbc8c50c2663b548150eada"
+    },
+    {
+      "path": "dependency_readback/patch-RESOLUTION_RECEIPT.json",
+      "bytes": 2017,
+      "sha256": "a91d33e222ef463baaf4d5fd114cc0956519ca7ee12f026ae7ed564dc985792f"
+    },
+    {
+      "path": "dependency_readback/patch-TOOLS.json",
+      "bytes": 700,
+      "sha256": "ef45470c06b442d3b488a071abe3d2155614a72fd06bef0b76b612a000dedffb"
+    },
+    {
+      "path": "dependency_readback/patch-VALIDATION_RECEIPT.json",
+      "bytes": 2193,
+      "sha256": "11f4c9e9a1cf917c506dabc5ee99202eae9f602f7d1475cf247eb4a9df3d0bff"
+    },
+    {
+      "path": "dependency_readback/patch-exact-formatter-fixtures.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "dependency_readback/patch-exact-tool-hydration.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "dependency_readback/patch-format-manifests.log",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "dependency_readback/patch-frozen-install.log",
+      "bytes": 36516,
+      "sha256": "a1117fe5ba2db22211d0803e52e2059aecbc0d26d7765fe1567187c1cb2b97ba"
+    },
+    {
+      "path": "dependency_readback/patch-frozen-lockfile-check.log",
+      "bytes": 66,
+      "sha256": "5d8f6912bbc215bd287ddd93dea2fc673a5013464df1db4a81b653a8d4f623d4"
+    },
+    {
+      "path": "dependency_readback/patch-initial-hydration-pty.log",
+      "bytes": 5528,
+      "sha256": "d615bc2fa29e8e9eaa3259bca96d2d0a7507fa26b61729ac0ac392ebc231171e"
+    },
+    {
+      "path": "dependency_readback/patch-initial-hydration-pty.log.receipt.json",
+      "bytes": 940,
+      "sha256": "05d8d7d75ce48f0f1e18deab041db20a726e4a5a04a3dc04d005be1e72d91459"
+    },
+    {
+      "path": "dependency_readback/patch-jest.config.cjs",
+      "bytes": 838,
+      "sha256": "c5babef9cbbbf1e3ada6fec43c56415fee9f3e6562fc8db9103f3afba52e4b0c"
+    },
+    {
+      "path": "dependency_readback/patch-just-fmt.log",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "path": "dependency_readback/patch-resolve.log",
+      "bytes": 9925,
+      "sha256": "5194de4a0ab612189ea2a444883414539ee45fa0afe75df83291ba399f896b46"
+    },
+    {
+      "path": "dependency_readback/patch-sdk-build.log",
+      "bytes": 575,
+      "sha256": "105ba1d69728d9b639ef1e0ef80aa6c681d096748e58b0f3a3d3ab5f895d4948"
+    },
+    {
+      "path": "dependency_readback/patch-sdk-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "dependency_readback/patch-sdk-tests.log",
+      "bytes": 7901,
+      "sha256": "a05f66b997f7aa275a85bfc6fb9003c868e35059084c2cd8f172cceda91e24be"
+    },
+    {
+      "path": "dependency_readback/patch-source-AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "path": "dependency_readback/pr-6799.json",
+      "bytes": 53278,
+      "sha256": "409aa11416bb15eeb5e652695b0324dbf1b056babb543d38221d6e5b57d0698c"
+    },
+    {
+      "path": "dependency_readback/pr-7032.json",
+      "bytes": 24288,
+      "sha256": "ef066d83e5bfbaef9bf272c6beae12c50475e01dd2048c6bfe67672b45e2efa0"
+    },
+    {
+      "path": "dependency_readback/pr-7063.json",
+      "bytes": 22767,
+      "sha256": "2ba61a089a253954b641e02302a525c6005a817d4bb6c2c4714247e96ddb1bfc"
+    },
+    {
+      "path": "dependency_readback/pr-7068.json",
+      "bytes": 29740,
+      "sha256": "5d44b82c5797107e78efb2e0be7e35589bbcdf6078dec9d48bd34b4bc618bbd6"
+    },
+    {
+      "path": "dependency_readback/pr7068-Cargo.lock",
+      "bytes": 421612,
+      "sha256": "0596dc4ca12f87645a6ca9893686e9fe82075b2a256eef2a05c4bb2e1d377622"
+    },
+    {
+      "path": "dependency_readback/pr7068-stage-3-integration.json",
+      "bytes": 6567,
+      "sha256": "4f8f9d6c9acfb636844364e3ab305efd710d667ee2e7b9360513964931a21825"
+    },
+    {
+      "path": "dependency_readback/pr7068-stage-5-private-consumers.json",
+      "bytes": 9719,
+      "sha256": "01a4a6d07f0ea2dac534eb4d8b63e283b410ce68c9111d28d369167e1ca84e64"
+    },
+    {
+      "path": "dependency_readback/residual-candidate-package.json",
+      "bytes": 1792,
+      "sha256": "09814870b8df15595b9546b8a041a1791ca419cce1389e5a5d3da7afa126c513"
+    },
+    {
+      "path": "dependency_readback/residual-candidate-pnpm.yaml",
+      "bytes": 191384,
+      "sha256": "b2dc81d2d55a2f48ba88cbcfd34cdf162bc30bd168b09ee504424a16f6a30cd3"
+    },
+    {
+      "path": "dependency_readback/security-commit-obj.json",
+      "bytes": 133241,
+      "sha256": "d901fc7b61b2c2a656b40dfff807bc6e6b065ba425da7ba22dca9fd8f6424679"
+    },
+    {
+      "path": "dependency_readback/verify_dependency_bundle.py",
+      "bytes": 4878,
+      "sha256": "36075afd35e7ef8fae7e0452f1c2612995c887304b5245bcbfa8882edda761bc"
+    }
+  ]
+}

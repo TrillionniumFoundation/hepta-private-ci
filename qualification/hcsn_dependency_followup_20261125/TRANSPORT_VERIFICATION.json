@@ -1,0 +1,28 @@
+{
+  "format": "hcsn-evidence-transport-v2",
+  "status": "verified",
+  "source_commit": "e4f2cfa6f4f6bbc356ae20200eda3cd78ab92dd1",
+  "index_sha256": "cac19dd7c9489951c420230ee22d852922122f30c64986c36b9590910725578d",
+  "object_count": 1,
+  "part_count": 3,
+  "original_bytes": 1430436,
+  "maximum_part_bytes": 479159,
+  "encoded_bytes": 1430179,
+  "maximum_decoded_part_bytes": 479000,
+  "restored": true,
+  "objects": [
+    {
+      "logical_path": "qualification/hcsn_dependency_followup_20261125/raw/dependency-evidence-v1.tar.gz",
+      "bytes": 1430436,
+      "sha256": "ce8dba04e69968376d2fb8ac71881caa60cfa6b0b5f0aca0c8b681816dbc3cef",
+      "source_git_blob_sha1": "06b1a322a5e6bdefaea7097d85077a9105c21ead"
+    }
+  ],
+  "scope": "Exact byte transport only; no metric, threshold, source model, or experiment change.",
+  "root_verified_tar_members": 82,
+  "root_verified_payload_sha256_count": 81,
+  "original_archive_sha256": "ce8dba04e69968376d2fb8ac71881caa60cfa6b0b5f0aca0c8b681816dbc3cef",
+  "archive_version_frozen": true,
+  "native_sdk_status": "PENDING_AT_BUNDLE_FREEZE; no success claimed",
+  "verification_utc": "2026-11-25T03:38:04.074395+00:00"
+}
