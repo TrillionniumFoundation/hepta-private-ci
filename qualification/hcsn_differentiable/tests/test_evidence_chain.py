@@ -1,4 +1,5 @@
 """Regression controls for the P0 evidence-link/HOLD gate."""
+import gzip
 import hashlib
 import json
 from pathlib import Path
@@ -97,6 +98,48 @@ class ArtifactEvidenceIntegrityTests(unittest.TestCase):
         report = self.verify()
         self.assertFalse(report["passed"])
         self.assertGreaterEqual(len(report["errors"]), 2)
+
+    def test_svg_archive_preserves_original_manifest_digest_and_detects_tampering(self):
+        svg = self.evidence / "figure.svg"
+        stored = self.evidence / "figure.svg.gz"
+        original = b"<svg>original figure</svg>\n"
+        svg.write_bytes(original)
+        self.manifest(["figure.svg"])
+        svg.unlink()
+
+        stored.write_bytes(gzip.compress(original, mtime=0))
+        report = self.verify()
+        self.assertTrue(report["passed"], report["errors"])
+        self.assertEqual(
+            report["verified_files"]["evidence/figure.svg"]["sha256"],
+            hashlib.sha256(original).hexdigest(),
+        )
+        self.assertEqual(
+            report["archived_files"]["evidence/figure.svg"]["path"],
+            "evidence/figure.svg.gz",
+        )
+
+        for data in (
+            gzip.compress(original.replace(b"original", b"modified"), mtime=0),
+            gzip.compress(original + b"x", mtime=0),
+            gzip.compress(original, mtime=0)[:-5],
+        ):
+            with self.subTest(archive=data):
+                stored.write_bytes(data)
+                self.assertFalse(self.verify()["passed"])
+
+    def test_svg_archive_never_masks_an_existing_raw_file(self):
+        svg = self.evidence / "figure.svg"
+        original = b"<svg>original figure</svg>\n"
+        svg.write_bytes(original)
+        self.manifest(["figure.svg"])
+        (self.evidence / "figure.svg.gz").write_bytes(gzip.compress(original, mtime=0))
+        svg.write_bytes(b"<svg>changed figure</svg>\n")
+        self.assertFalse(self.verify()["passed"])
+
+        svg.unlink()
+        svg.symlink_to("missing.svg")
+        self.assertFalse(self.verify()["passed"])
 
     def test_zip_crc_duplicate_and_traversal_are_checked_after_outer_hash(self):
         archive = self.evidence / "source.zip"

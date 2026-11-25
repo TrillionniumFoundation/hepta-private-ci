@@ -3,9 +3,14 @@
 This is an integrity check, not scientific acceptance, repository CI status,
 or proof that a producer's source/run claims are truthful. ZIPs are inspected
 without extraction. Markdown fragments and external URLs are not validated.
+
+An archived figure named `figure.svg.gz` supplies the original manifest
+member `figure.svg` when the raw path is absent. Use `gzip -dc figure.svg.gz`
+to recover the original SVG bytes.
 """
 
 import argparse
+import gzip
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
@@ -18,7 +23,8 @@ import zlib
 
 
 def _sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
 def _strict_pairs(pairs):
@@ -78,6 +84,30 @@ def _zip_check(path):
         return dict(members=len(members), expanded_bytes=expanded, crc_passed=True)
 
 
+def _manifest_member(root, manifest_dir, name, expected_size):
+    logical = manifest_dir / name
+    logical.resolve().relative_to(manifest_dir)
+    if logical.suffix != ".svg" or logical.exists() or logical.is_symlink():
+        stored = _contained(root, logical)
+        stored.relative_to(manifest_dir)
+        return stored, dict(bytes=stored.stat().st_size, sha256=_sha(stored)), None
+
+    # Published manifests still bind the original SVG bytes. Only a sibling
+    # archive may supply those bytes, and an existing raw file is never masked.
+    stored = _contained(root, logical.with_suffix(".svg.gz"))
+    stored.relative_to(manifest_dir)
+    transport_sha = _sha(stored)
+    digest = hashlib.sha256()
+    size = 0
+    with gzip.open(stored, "rb") as stream:
+        while chunk := stream.read(min(64 * 1024, expected_size - size + 1)):
+            size += len(chunk)
+            if size > expected_size:
+                raise ValueError("archived SVG exceeds the declared byte count")
+            digest.update(chunk)
+    return stored, dict(bytes=size, sha256=digest.hexdigest()), transport_sha
+
+
 def _source_map(root):
     source = root / "qualification/hcsn_differentiable"
     return {
@@ -95,6 +125,7 @@ def verify_evidence(repo_root, manifests, markdown=()):
     root = Path(repo_root).resolve()
     before = _source_map(root)
     inputs, files, archives, links, errors = {}, {}, {}, [], []
+    file_locations, archived_files = {}, {}
     manifests = tuple(manifests)
     if not manifests:
         errors.append(dict(error="at least one evidence manifest is required"))
@@ -110,8 +141,6 @@ def verify_evidence(repo_root, manifests, markdown=()):
             for member, expected in entries.items():
                 try:
                     relative_member = _relative_name(member)
-                    path = _contained(root, manifest.parent / relative_member)
-                    path.relative_to(manifest.parent)
                     if (
                         not isinstance(expected, dict)
                         or isinstance(expected.get("bytes"), bool)
@@ -122,14 +151,31 @@ def verify_evidence(repo_root, manifests, markdown=()):
                         )
                     ):
                         raise ValueError("invalid expected bytes/sha256")
-                    actual = dict(bytes=path.stat().st_size, sha256=_sha(path))
-                    files[str(path.relative_to(root))] = actual
+                    path, actual, transport_sha = _manifest_member(
+                        root, manifest.parent, relative_member, expected["bytes"]
+                    )
+                    logical = manifest.parent / relative_member
+                    logical_name = str(logical.relative_to(root))
+                    physical_name = str(path.relative_to(root))
+                    location = (physical_name, transport_sha)
+                    if logical_name in files and (
+                        files[logical_name] != actual
+                        or file_locations[logical_name] != location
+                    ):
+                        raise ValueError("evidence changed between manifests")
+                    files[logical_name] = actual
+                    file_locations[logical_name] = location
+                    if transport_sha is not None:
+                        archived_files[logical_name] = dict(
+                            path=physical_name, sha256=transport_sha, encoding="gzip"
+                        )
                     if actual != {key: expected[key] for key in ("bytes", "sha256")}:
                         raise ValueError("file byte count or SHA256 mismatch")
                     if path.suffix.lower() == ".zip":
                         archives[str(path.relative_to(root))] = _zip_check(path)
                 except (
                     OSError,
+                    EOFError,
                     ValueError,
                     KeyError,
                     RuntimeError,
@@ -169,10 +215,20 @@ def verify_evidence(repo_root, manifests, markdown=()):
         if not (root / name).is_file() or _sha(root / name) != digest:
             errors.append(dict(input=name, error="input changed during verification"))
     for name, record in files.items():
-        if not (root / name).is_file() or _sha(root / name) != record["sha256"]:
-            errors.append(
-                dict(input=name, error="evidence changed during verification")
-            )
+        physical_name, transport_sha = file_locations[name]
+        try:
+            path = _contained(root, physical_name)
+            if transport_sha is not None:
+                logical = root / name
+                if logical.exists() or logical.is_symlink():
+                    raise ValueError("raw evidence appeared during archive verification")
+            if _sha(path) == (transport_sha or record["sha256"]):
+                continue
+        except (OSError, ValueError, RuntimeError):
+            pass
+        errors.append(
+            dict(input=name, error="evidence changed during verification")
+        )
     try:
         head, tree = subprocess.check_output(
             ["git", "-C", str(root), "rev-parse", "HEAD", "HEAD^{tree}"],
@@ -193,6 +249,7 @@ def verify_evidence(repo_root, manifests, markdown=()):
         ).hexdigest(),
         input_sha256=inputs,
         verified_files=files,
+        archived_files=archived_files,
         archives=archives,
         relative_links=links,
         atomic_snapshot=False,
