@@ -38,6 +38,10 @@ async fn absent_ack_closes_only_original_transport_without_retry() {
     });
     let owner = HttpStreamCancellation::new(Arc::clone(&client), "http-7".to_string());
     owner.cancel();
+    assert!(
+        !client.is_disconnected(),
+        "the original transport must stay open while its cleanup task awaits an acknowledgement"
+    );
     owner.cancel();
     let JSONRPCMessage::Request(request) = outgoing_rx.recv().await.expect("cleanup request")
     else {
