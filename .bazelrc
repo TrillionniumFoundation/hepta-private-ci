@@ -36,6 +36,8 @@ common:windows --test_env=COMSPEC
 common:windows --test_env=WINDIR
 # Win32 OpenSSH resolves its shared data directory before entering main.
 # Inherit the host value; do not substitute a guessed system-drive path.
+# Bazel preserves this variable's host casing and resolves inherited names exactly.
+common:windows --test_env=ProgramData
 common:windows --test_env=PROGRAMDATA
 # Rust's libtest harness runs test bodies on std-spawned threads. The default
 # 2 MiB stack can be too small for large async test futures on Windows CI; see
