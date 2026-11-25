@@ -16,7 +16,7 @@ An earlier 1,089-byte snapshot containing only the first two suggestions is also
 retained in the qualification evidence. The reviewed changes apply those same
 three edits and normalize their whitespace with the repository formatter.
 They leave the production `MultiAgentMode` import and all
-test bodies, assertions, waits, retries, and resource limits unchanged.
+test assertions, waits, retries, and resource limits unchanged.
 
 The actual scoped Clippy command exited successfully in 357.716667 seconds. Its
 38,568-byte log has SHA-256
