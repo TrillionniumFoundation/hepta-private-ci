@@ -636,6 +636,12 @@ impl TestCodexBuilder {
             .exec_server_url
             .clone()
             .or_else(|| test_env.exec_server_url.clone());
+        #[cfg(windows)]
+        if config.permissions.windows_sandbox_mode.is_some()
+            && (exec_server_url.is_none() || include_local_environment)
+        {
+            crate::windows_sandbox_helpers::stage_windows_sandbox_helpers()?;
+        }
         #[cfg(target_os = "linux")]
         let codex_linux_sandbox_exe = Some(
             crate::find_codex_linux_sandbox_exe()

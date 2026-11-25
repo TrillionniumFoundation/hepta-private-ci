@@ -23,6 +23,7 @@ use core_test_support::responses::mount_sse_sequence;
 use core_test_support::responses::sse;
 use core_test_support::test_codex::TestCodexHarness;
 use core_test_support::test_codex::test_codex;
+use core_test_support::windows_sandbox_helpers::stage_windows_sandbox_helpers;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use serial_test::serial;
@@ -84,44 +85,6 @@ fn codex_home_for_windows_sandbox_test(name: &str) -> anyhow::Result<TestCodexHo
     }
 
     Ok(TestCodexHome::Temporary(TempDir::new()?))
-}
-
-fn stage_windows_sandbox_helpers() -> anyhow::Result<()> {
-    let test_exe = std::env::current_exe().context("resolve current Windows test executable")?;
-    let test_exe_dir = test_exe
-        .parent()
-        .context("Windows test executable should have a parent directory")?;
-    let resources_dir = test_exe_dir.join("codex-resources");
-    match std::fs::create_dir_all(&resources_dir) {
-        Ok(()) => {}
-        Err(err)
-            if err.kind() == std::io::ErrorKind::PermissionDenied && resources_dir.is_dir() => {}
-        Err(err) => {
-            return Err(err)
-                .with_context(|| format!("create resources dir {}", resources_dir.display()));
-        }
-    }
-    for helper_name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
-        let helper = codex_utils_cargo_bin::cargo_bin(helper_name)?;
-        let file_name = Path::new(helper_name).with_extension("exe");
-        let destination = resources_dir.join(file_name);
-        if let Err(err) = std::fs::copy(&helper, &destination) {
-            // A sandbox helper can briefly remain alive after the sandboxed
-            // command exits. Bazel may retry the test while that process still
-            // has the staged executable open, so keep the already-staged copy.
-            if err.kind() == std::io::ErrorKind::PermissionDenied && destination.exists() {
-                continue;
-            }
-            return Err(err).with_context(|| {
-                format!(
-                    "stage Windows sandbox helper {} at {}",
-                    helper.display(),
-                    destination.display()
-                )
-            });
-        }
-    }
-    Ok(())
 }
 
 #[tokio::test]
