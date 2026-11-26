@@ -260,6 +260,8 @@ mod status_command_tests;
 mod status_surface_previews;
 mod terminal_title;
 mod usage;
+#[path = "tests/windows_sandbox_support_tests.rs"]
+mod windows_sandbox_support_tests;
 
 pub(crate) use helpers::make_chatwidget_manual_with_sender;
 pub(crate) use helpers::set_chatgpt_auth;

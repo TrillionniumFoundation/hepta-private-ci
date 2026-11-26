@@ -54,7 +54,7 @@ fn app_server_workspace_write_profile(extra_root: AbsolutePathBuf) -> Permission
     }
 }
 
-fn windows_sandbox_requirements_stack(
+pub(super) fn windows_sandbox_requirements_stack(
     allowed_sandbox_implementations: Vec<WindowsSandboxModeToml>,
 ) -> ConfigLayerStack {
     let requirements_toml = codex_config::ConfigRequirementsToml {
@@ -309,16 +309,16 @@ async fn approvals_selection_popup_snapshot_windows_degraded_sandbox() {
 
     let popup = render_bottom_popup(&chat, /*width*/ 80);
     assert!(
-        popup.contains("Ask for approval (non-admin sandbox)"),
-        "expected degraded sandbox label in approvals popup: {popup}"
+        popup.contains("Ask for approval (sandbox unavailable)"),
+        "expected unavailable sandbox label in approvals popup: {popup}"
     );
     assert!(
         popup.contains("/setup-default-sandbox"),
         "expected setup hint in approvals popup: {popup}"
     );
     assert!(
-        popup.contains("non-admin sandbox"),
-        "expected degraded sandbox note in approvals popup: {popup}"
+        popup.contains("non-admin sandbox is unavailable"),
+        "expected unavailable sandbox note in approvals popup: {popup}"
     );
 }
 
@@ -425,8 +425,8 @@ async fn windows_auto_mode_prompt_requests_enabling_sandbox_feature() {
         "expected auto mode prompt to mention Administrator permissions, popup: {popup}"
     );
     assert!(
-        popup.contains("Use non-admin sandbox"),
-        "expected auto mode prompt to include non-admin fallback option, popup: {popup}"
+        !popup.contains("Use non-admin sandbox"),
+        "unavailable non-admin setup must not be offered, popup: {popup}"
     );
 }
 
@@ -450,8 +450,8 @@ async fn startup_prompts_for_windows_sandbox_when_agent_requested() {
         "expected startup prompt to offer default sandbox setup: {popup}"
     );
     assert!(
-        popup.contains("Use non-admin sandbox"),
-        "expected startup prompt to offer non-admin fallback: {popup}"
+        !popup.contains("Use non-admin sandbox"),
+        "startup must not offer the unavailable non-admin sandbox: {popup}"
     );
     assert!(
         popup.contains("Quit"),
