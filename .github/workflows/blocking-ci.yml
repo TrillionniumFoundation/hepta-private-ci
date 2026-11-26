@@ -126,6 +126,13 @@ jobs:
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
+    # Reverse-consumer closure compiles significantly more crates than the
+    # focused owner CI. Keep every test while bounding Cargo build artifacts.
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -133,6 +140,28 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Reclaim unused hosted SDKs for full reverse-consumer tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Hosted runner disk before prerequisite installation"
+          df -h "$GITHUB_WORKSPACE"
+          # These are preinstalled on Ubuntu images, but are not required by
+          # this Linux Cargo/just native owner qualification. No repo files,
+          # compiler installations, test selection, or grant policy are altered.
+          for sdk in /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/share/powershell; do
+            if [ -d "$sdk" ] && [ ! -L "$sdk" ]; then
+              sudo rm -rf -- "$sdk"
+            fi
+          done
+          echo "Hosted runner disk after SDK reclamation"
+          df -h "$GITHUB_WORKSPACE"
+          free_kib="$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR == 2 {print $4}')"
+          if [ "$free_kib" -lt "$((12 * 1024 * 1024))" ]; then
+            echo "::error::Insufficient disk for mandatory reverse-consumer tests (need 12 GiB free)"
+            exit 1
+          fi
 
       - name: Prepare native test prerequisites before compilation
         run: |
