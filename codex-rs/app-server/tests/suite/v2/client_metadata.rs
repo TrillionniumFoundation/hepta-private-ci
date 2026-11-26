@@ -511,19 +511,17 @@ async fn turn_start_forwards_client_metadata_to_responses_websocket_request_body
 {
     skip_if_no_network!(Ok(()));
 
-    // Automation metadata is supplied with the turn, not with prewarm.
-    // Serve the different connection context on a second scripted socket.
-    let websocket_server = responses::start_websocket_server(vec![
-        vec![vec![
+    let websocket_server = responses::start_websocket_server(vec![vec![
+        vec![
             responses::ev_response_created("warm-1"),
             responses::ev_completed("warm-1"),
-        ]],
-        vec![vec![
+        ],
+        vec![
             responses::ev_response_created("resp-1"),
             responses::ev_assistant_message("msg-1", "Done"),
             responses::ev_completed("resp-1"),
-        ]],
-    ])
+        ],
+    ]])
     .await;
 
     let codex_home = TempDir::new()?;
@@ -570,19 +568,29 @@ async fn turn_start_forwards_client_metadata_to_responses_websocket_request_body
     )
     .await??;
 
-    let warmup = websocket_server
-        .wait_for_request(/*connection_index*/ 0, /*request_index*/ 0)
-        .await
-        .body_json();
-    let request = websocket_server
-        .wait_for_request(/*connection_index*/ 1, /*request_index*/ 0)
-        .await
-        .body_json();
+    let warmup = timeout(
+        DEFAULT_READ_TIMEOUT,
+        websocket_server.wait_for_request(/*connection_index*/ 0, /*request_index*/ 0),
+    )
+    .await?
+    .body_json();
+    let request = timeout(
+        DEFAULT_READ_TIMEOUT,
+        websocket_server.wait_for_request(/*connection_index*/ 0, /*request_index*/ 1),
+    )
+    .await?
+    .body_json();
 
+    assert_eq!(websocket_server.handshakes().len(), 1);
     assert_eq!(warmup["type"].as_str(), Some("response.create"));
     assert_eq!(warmup["generate"].as_bool(), Some(false));
+    let warmup_metadata = warmup["client_metadata"]["x-codex-turn-metadata"]
+        .as_str()
+        .map(parse_json_header)
+        .unwrap_or_default();
+    assert!(warmup_metadata.get("fiber_run_id").is_none());
     assert_eq!(request["type"].as_str(), Some("response.create"));
-    assert!(request["previous_response_id"].is_null());
+    assert_eq!(request["previous_response_id"].as_str(), Some("warm-1"));
 
     let metadata = request["client_metadata"]["x-codex-turn-metadata"]
         .as_str()
