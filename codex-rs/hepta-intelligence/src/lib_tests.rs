@@ -1,5 +1,24 @@
 use super::*;
 
+pub(super) fn open_durable_fixture_directory(root: &std::path::Path) -> std::fs::File {
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+            .open(root)
+            .expect("open flushable ledger fixture directory")
+    }
+    #[cfg(not(windows))]
+    {
+        std::fs::File::open(root).expect("open ledger fixture directory")
+    }
+}
+
 fn id(value: &str) -> StableId {
     let Ok(value) = StableId::new(value) else {
         panic!("test identifier must be valid");

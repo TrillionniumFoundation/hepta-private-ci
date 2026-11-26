@@ -387,6 +387,13 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         .session
         .abort_all_tasks(TurnAbortReason::Interrupted)
         .await;
+    // An existing finish/abort owner intentionally outlives ordinary abort callers.
+    // Observe its completion before writing this durable, idle-only fixture.
+    if let Some(completion) = thread.pending_admission_fence_completion() {
+        timeout(Duration::from_secs(10), completion)
+            .await
+            .expect("terminal cleanup should finish before persisting resume context");
+    }
     thread
         .inject_response_items(vec![user_message(message)])
         .await
@@ -2715,34 +2722,59 @@ async fn spawn_agent_fork_last_n_turns_strips_parent_usage_hints() {
         .await
         .expect("parent rollout should flush");
 
-    let child_thread_id = harness
-        .control
-        .spawn_agent_with_metadata(
-            child_config,
-            text_input("child task"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id,
-                depth: 1,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: None,
-            })),
-            SpawnAgentOptions {
-                fork_parent_spawn_call_id: Some(parent_spawn_call_id),
-                fork_mode: Some(SpawnAgentForkMode::LastNTurns(2)),
-                ..Default::default()
-            },
-        )
+    // Pause delivery before spawn submits the child's first prompt, so this
+    // snapshot precedes the child's canonical context rebuild.
+    let delivery_hook = harness.manager.pause_next_startup_before_delivery();
+    let child_spawn = harness.control.spawn_agent_with_metadata(
+        child_config,
+        text_input("child task"),
+        Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
+            parent_thread_id,
+            depth: 1,
+            agent_path: None,
+            agent_nickname: None,
+            agent_role: None,
+        })),
+        SpawnAgentOptions {
+            fork_parent_spawn_call_id: Some(parent_spawn_call_id),
+            fork_mode: Some(SpawnAgentForkMode::LastNTurns(2)),
+            ..Default::default()
+        },
+    );
+    tokio::pin!(child_spawn);
+    tokio::select! {
+        _ = delivery_hook.wait_until_entered() => {}
+        result = &mut child_spawn => panic!("fork returned before startup delivery paused: {result:?}"),
+    }
+    let history_snapshot = async {
+        let child_thread_ids: Vec<_> = harness
+            .manager
+            .list_thread_ids()
+            .await
+            .into_iter()
+            .filter(|thread_id| *thread_id != parent_thread_id)
+            .collect();
+        let [child_thread_id] = child_thread_ids.as_slice() else {
+            return Err(format!(
+                "expected one published child, got {child_thread_ids:?}"
+            ));
+        };
+        let child_thread = harness
+            .manager
+            .get_thread(*child_thread_id)
+            .await
+            .map_err(|error| error.to_string())?;
+        Ok((*child_thread_id, child_thread.session.clone_history().await))
+    }
+    .await;
+    delivery_hook.release();
+    let child_thread_id = child_spawn
         .await
         .expect("bounded forked spawn should sanitize parent usage hints")
         .thread_id;
-
-    let child_thread = harness
-        .manager
-        .get_thread(child_thread_id)
-        .await
-        .expect("child thread should be registered");
-    let history = child_thread.session.clone_history().await;
+    let (snapshot_thread_id, history) =
+        history_snapshot.expect("capture forked history before the first child turn");
+    assert_eq!(snapshot_thread_id, child_thread_id);
     assert!(
         history_contains_text(history.raw_items(), "parent task"),
         "bounded fork should retain the requested recent parent turn"

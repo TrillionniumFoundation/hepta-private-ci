@@ -116,8 +116,31 @@ enum SetupMode {
     ReadAclsOnly,
 }
 
+fn format_utc_timestamp(timestamp: jiff::Timestamp) -> String {
+    // Preserve the existing UTC offset spelling and AutoSi precision in logs
+    // and setup markers: zero, three, six, or nine fractional digits.
+    let date_format = if timestamp.to_zoned(jiff::tz::TimeZone::UTC).year() < 0 {
+        "%05Y-%m-%dT"
+    } else {
+        "%Y-%m-%dT"
+    };
+    let time_format = match timestamp.subsec_nanosecond() {
+        0 => "%H:%M:%S%:z",
+        nanos if nanos % 1_000_000 == 0 => "%H:%M:%S%.3f%:z",
+        nanos if nanos % 1_000 == 0 => "%H:%M:%S%.6f%:z",
+        _ => "%H:%M:%S%.9f%:z",
+    };
+    timestamp
+        .strftime(&format!("{date_format}{time_format}"))
+        .to_string()
+}
+
+fn utc_timestamp() -> String {
+    format_utc_timestamp(jiff::Timestamp::now())
+}
+
 fn log_line(log: &mut dyn Write, msg: &str) -> Result<()> {
-    let ts = chrono::Utc::now().to_rfc3339();
+    let ts = utc_timestamp();
     writeln!(log, "[{ts}] {msg}").map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperLogFailed,
@@ -424,12 +447,7 @@ pub fn main() -> Result<()> {
             let sbx_dir = sandbox_dir(Path::new(&codex_home));
             let _ = std::fs::create_dir_all(&sbx_dir);
             if let Some(mut f) = log_writer(&sbx_dir) {
-                let _ = writeln!(
-                    f,
-                    "[{}] top-level error: {}",
-                    chrono::Utc::now().to_rfc3339(),
-                    e
-                );
+                let _ = writeln!(f, "[{}] top-level error: {}", utc_timestamp(), e);
             }
         }
     }
