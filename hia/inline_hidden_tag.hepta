@@ -64,7 +64,7 @@ block other(b5_source:readbuf,b5_output:mutbuf,b5_needle:mutbuf,b5_mode:u64,b5_c
 block check_fold(b6_source:readbuf,b6_output:mutbuf,b6_needle:mutbuf,b6_mode:u64,b6_count:u64,b6_position:u64,b6_length:u64,b6_index:u64,b6_keep:u64)
   b6_size:usize = buffer.len(b6_source)
   b6_size_word:u64 = int.cast(b6_size) {"mode":"checked"}
-  b6_valid:bool = call(b6_size_word,b6_count,b6_position,b6_length,b6_index,b6_keep) {"function":"valid_state"}
+  b6_valid:bool = call(b6_source,b6_size,b6_size_word,b6_count,b6_position,b6_length,b6_index,b6_keep) {"function":"valid_fold_state"}
   branch b6_valid folded_dispatch(b6_source,b6_output,b6_needle,b6_mode,b6_count,b6_position,b6_length,b6_index,b6_keep) invalid()
 block folded_dispatch(b7_source:readbuf,b7_output:mutbuf,b7_needle:mutbuf,b7_mode:u64,b7_count:u64,b7_position:u64,b7_length:u64,b7_index:u64,b7_keep:u64)
   b7_one:u64 = const() {"value":1}
@@ -234,6 +234,53 @@ block invalid()
   b6_value:bool = const() {"value":false}
   ret(b6_value)
 end
+fn valid_fold_state(b1_source:readbuf,b1_size:usize,b1_size_word:u64,b1_count:u64,b1_position:u64,b1_length:u64,b1_index:u64,b1_keep:u64) -> (bool) effects(read,trap) entry(entry)
+block entry(b1_source:readbuf,b1_size:usize,b1_size_word:u64,b1_count:u64,b1_position:u64,b1_length:u64,b1_index:u64,b1_keep:u64)
+  b1_valid:bool = call(b1_size_word,b1_count,b1_position,b1_length,b1_index,b1_keep) {"function":"valid_state"}
+  branch b1_valid suffix(b1_source,b1_size,b1_position,b1_length,b1_keep) invalid()
+block suffix(b2_source:readbuf,b2_size:usize,b2_position:u64,b2_length:u64,b2_keep:u64)
+  b2_keep_usize:usize = int.cast(b2_keep) {"mode":"checked"}
+  b2_cut:usize = int.sub.checked(b2_size,b2_keep_usize)
+  b2_valid:bool = call(b2_source,b2_size,b2_cut) {"function":"scalar_boundary"}
+  branch b2_valid classify(b2_source,b2_size,b2_position,b2_length) invalid()
+block classify(b3_source:readbuf,b3_size:usize,b3_position:u64,b3_length:u64)
+  b3_none:u64 = const() {"value":18446744073709551615}
+  b3_absent:bool = compare.eq(b3_position,b3_none)
+  branch b3_absent valid() opener(b3_source,b3_size,b3_position,b3_length)
+block opener(b4_source:readbuf,b4_size:usize,b4_position:u64,b4_length:u64)
+  b4_start:usize = int.cast(b4_position) {"mode":"checked"}
+  b4_end_word:u64 = int.add.checked(b4_position,b4_length)
+  b4_end:usize = int.cast(b4_end_word) {"mode":"checked"}
+  b4_start_ok:bool = call(b4_source,b4_size,b4_start) {"function":"scalar_boundary"}
+  b4_end_ok:bool = call(b4_source,b4_size,b4_end) {"function":"scalar_boundary"}
+  b4_valid:bool = bool.and(b4_start_ok,b4_end_ok)
+  ret(b4_valid)
+block valid()
+  b5_true:bool = const() {"value":true}
+  ret(b5_true)
+block invalid()
+  b6_false:bool = const() {"value":false}
+  ret(b6_false)
+end
+fn scalar_boundary(b1_source:readbuf,b1_size:usize,b1_offset:usize) -> (bool) effects(read,trap) entry(entry)
+block entry(b1_source:readbuf,b1_size:usize,b1_offset:usize)
+  b1_end:bool = compare.eq(b1_offset,b1_size)
+  branch b1_end valid() inspect(b1_source,b1_offset)
+block inspect(b2_source:readbuf,b2_offset:usize)
+  b2_byte:u8 = buffer.load(b2_source,b2_offset)
+  b2_low:u8 = const() {"value":128}
+  b2_high:u8 = const() {"value":192}
+  b2_above:bool = compare.ge(b2_byte,b2_low)
+  b2_below:bool = compare.lt(b2_byte,b2_high)
+  b2_continuation:bool = bool.and(b2_above,b2_below)
+  branch b2_continuation invalid() valid()
+block valid()
+  b3_true:bool = const() {"value":true}
+  ret(b3_true)
+block invalid()
+  b4_false:bool = const() {"value":false}
+  ret(b4_false)
+end
 fn find_or_suffix(b1_source:readbuf,b1_needle:mutbuf) -> (usize,usize) effects(read,trap) entry(entry)
 block entry(b1_source:readbuf,b1_needle:mutbuf)
   b1_position:usize = call(b1_source,b1_needle) {"function":"find_first"}
@@ -311,7 +358,22 @@ end
 fn equal_slice(b1_source:readbuf,b1_start:usize,b1_needle:mutbuf,b1_length:usize) -> (bool) effects(read,trap) entry(entry)
 block entry(b1_source:readbuf,b1_start:usize,b1_needle:mutbuf,b1_length:usize)
   b1_zero:usize = const() {"value":0}
-  jump scan(b1_source,b1_start,b1_needle,b1_length,b1_zero)
+  jump word_scan(b1_source,b1_start,b1_needle,b1_length,b1_zero)
+block word_scan(w_source:readbuf,w_start:usize,w_needle:mutbuf,w_length:usize,w_index:usize)
+  w_remaining:usize = int.sub.checked(w_length,w_index)
+  w_eight:usize = const() {"value":8}
+  w_complete:bool = compare.ge(w_remaining,w_eight)
+  branch w_complete word_compare(w_source,w_start,w_needle,w_length,w_index) scan(w_source,w_start,w_needle,w_length,w_index)
+block word_compare(c_source:readbuf,c_start:usize,c_needle:mutbuf,c_length:usize,c_index:usize)
+  c_position:usize = int.add.checked(c_start,c_index)
+  c_left:u64 = buffer.load.u64.le(c_source,c_position)
+  c_right:u64 = buffer.load.u64.le(c_needle,c_index)
+  c_same:bool = compare.eq(c_left,c_right)
+  branch c_same word_advance(c_source,c_start,c_needle,c_length,c_index) different()
+block word_advance(a_source:readbuf,a_start:usize,a_needle:mutbuf,a_length:usize,a_index:usize)
+  a_eight:usize = const() {"value":8}
+  a_next:usize = int.add.checked(a_index,a_eight)
+  jump word_scan(a_source,a_start,a_needle,a_length,a_next)
 block scan(b2_source:readbuf,b2_start:usize,b2_needle:mutbuf,b2_length:usize,b2_index:usize)
   b2_more:bool = compare.lt(b2_index,b2_length)
   branch b2_more compare(b2_source,b2_start,b2_needle,b2_length,b2_index) equal()

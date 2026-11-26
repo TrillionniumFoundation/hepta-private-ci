@@ -26,10 +26,10 @@
   "return_success": 96,
   "return_invalid": 4294967295,
   "return_short_output": 4294967294,
-  "error_effects": "Output capacity precedes all request/input reads. Invalid request/state and short output leave every byte unchanged. Only output[0..96] changes on success; both strings and output tail remain unchanged.",
+  "error_effects": "Output capacity precedes all request/input reads. Invalid request/state (including prior folded suffix or opener offsets that split a UTF-8 scalar) and short output leave every byte unchanged. Only output[0..96] changes on success; both strings and output tail remain unchanged.",
   "caller_preconditions": "The two input slices are valid UTF-8 strings and remain unchanged across an opener fold. Output is disjoint from input slices. Their lengths and spec count retain the original Rust public domain.",
   "public_owner": "The original fields, Vec specs, pending String, ActiveTag content, per-public-call output and exact Clone/effect/drain order remain in Rust. HIA owns matching, tie order, suffix retention, open/close/stop and EOF decisions.",
   "scope": "Linux x86-64 GNU opt-in public generic library. Other product/platform/installed/performance/retirement qualification is separate.",
-  "source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
-  "source_bytes": 21641
+  "source_sha256": "8cc0ffc82a283c46d154ce3a2a20fcb0e11bd7358a84e39ede67914fbad51ead",
+  "source_bytes": 25198
 }
