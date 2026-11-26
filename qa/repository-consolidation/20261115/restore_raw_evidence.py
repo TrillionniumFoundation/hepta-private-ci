@@ -71,7 +71,9 @@ REGISTERED_HISTORICAL_CONSOLE_INDEX = "qa/repository-consolidation/20261125/regi
 REGISTERED_NATIVE_READBACK_CONSOLE_INDEX = "qa/repository-consolidation/20261125/registered-native-readback-console/raw-evidence-storage.json"
 ORIGINAL_NATIVE_QUALIFICATION_EVIDENCE_INDEX = "qa/repository-consolidation/20261125/original-native-qualification-evidence/raw-evidence-storage.json"
 OCTOBER_AUDIT_INVENTORY_INDEX = "qa/repository-consolidation/20261125/october-audit-inventory-custody/raw-evidence-storage.json"
+HCSN_PATCH_CUSTODY_INDEX = "qa/repository-consolidation/20261125/hcsn-patch-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    HCSN_PATCH_CUSTODY_INDEX: "978ac665f70befa9494c84e1ea93566a35d1ff4bea058c35c051e0adf7edf46c",
     OCTOBER_AUDIT_INVENTORY_INDEX: "fc341ba4f1988f25a55d07d1c1006869ed8323ee8dc372426d38f2ed1c593817",
     ORIGINAL_NATIVE_QUALIFICATION_EVIDENCE_INDEX: "68bdb29cac60b51d6809c20d9a81f2afd173aaba123c8508310ccf91e047a26f",
     REGISTERED_NATIVE_READBACK_CONSOLE_INDEX: "8e0a2e13c7854389c2718ac5a38e0d8acf10205e11237fb513607848d1d6defa",
