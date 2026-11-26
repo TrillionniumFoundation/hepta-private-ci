@@ -15,6 +15,10 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 
+#[cfg(unix)]
+#[path = "sqlite_bootstrap.rs"]
+mod bootstrap;
+
 #[path = "sqlite_recovery_image.rs"]
 mod image;
 

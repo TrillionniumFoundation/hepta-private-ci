@@ -25,6 +25,7 @@ use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -142,8 +143,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )?;
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    let expected = store.recovery_anchor().await?;
-    drop(store);
+    let before_acquisition = store.recovery_anchor().await?;
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -173,6 +173,43 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    let predecessor = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await?;
+    let expected = predecessor.recovery_anchor().await?;
+    assert_eq!(expected.profile, before_acquisition.profile);
+    assert_eq!(expected.owner_agent_id, before_acquisition.owner_agent_id);
+    assert_eq!(expected.schema_digest, before_acquisition.schema_digest);
+    assert_ne!(expected.state_digest, before_acquisition.state_digest);
+    // Reopen the same active lease rather than creating a new generation.
+    let source_path = store.path().to_path_buf();
+    drop(predecessor);
+    store.close().await;
+    let retained_source = fs::read(&source_path)?;
+
+    let stale = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&before_acquisition),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await;
+    let stale_error = stale.err().ok_or("pre-acquisition cut was accepted")?;
+    assert!(
+        stale_error
+            .to_string()
+            .contains("recovery candidate differs from independently retained current cut"),
+        "unexpected stale cut rejection: {stale_error}"
+    );
+    assert_eq!(fs::read(&source_path)?, retained_source);
+
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -184,6 +221,10 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
     assert_eq!(recovered_anchor, expected);
+    assert_eq!(host.writer().generation(), 1);
+    assert_eq!(host.writer().lease_id(), "agentd-product-recovery-test");
+    host.writer().verify_current_authority().await?;
+    assert_eq!(host.writer().recovery_anchor().await?, expected);
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
