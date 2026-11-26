@@ -1,0 +1,54 @@
+name: Windows production token deletion observations
+
+on:
+  push:
+    branches:
+      - research/windows-production-delete-observer-20261126-87d09924
+    paths:
+      - .github/workflows/hepta-windows-production-delete-observer.yml
+      - qualification/ci-remediation/windows-production-token-observer-20261126/**
+      - codex-rs/windows-sandbox-rs/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-production-delete-observer-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      EXPECTED_HEAD: ${{ github.sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc
+        with:
+          toolchain: 1.96.0
+          components: clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Observe the original production cases without changing their verdicts
+        shell: pwsh
+        run: |
+          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP 'hepta-production-delete-target'
+          python qualification/ci-remediation/windows-production-token-observer-20261126/run_native.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Retain original failures and exact-source observations
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: windows-production-delete-${{ env.EXPECTED_HEAD }}
+          path: ${{ runner.temp }}/hepta-production-delete-evidence
+          if-no-files-found: error
+          retention-days: 14

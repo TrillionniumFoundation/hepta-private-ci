@@ -1,0 +1,269 @@
+"""Run the original production-token failures once; never promote observations to a fix."""
+
+from collections import Counter
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import time
+import tomllib
+
+ROOT = Path(__file__).resolve().parents[3]
+PACKAGE = "codex-windows-sandbox"
+BRANCH = "research/windows-production-delete-observer-20261126-87d09924"
+TESTS = (
+    "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+)
+FILTER = " | ".join(f"test(={name})" for name in TESTS)
+REQUESTS = (("target", 0x10000), ("parent", 0x40), ("target", 0x10002),
+            ("parent", 0x42), ("target", 0x2), ("target", 0x1))
+OBSERVER_BLOBS = {
+    "codex-rs/windows-sandbox-rs/src/token_delete_product_facts_tests.rs": "6a23b3fa53f64a97d0dac9dbadc9f0aab10dddbc",
+    "codex-rs/windows-sandbox-rs/src/token_delete_product_observer_tests.rs": "ea05c5177b5c822edb97433748aac1b5d2a21362",
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs": "d6cb6be7dac762a209a7f7f52dd6e626fa446c0b",
+    "qualification/ci-remediation/windows-production-token-observer-20261126/README.md": "fa5fd1a46412360abb94f4dbdcfdf95862108517",
+}
+SOURCES = (
+    "codex-rs/windows-sandbox-rs", "codex-rs/Cargo.toml", "codex-rs/Cargo.lock",
+    "codex-rs/rust-toolchain.toml", "codex-rs/.cargo/config.toml",
+    "codex-rs/.config/nextest.toml", "justfile", "scripts/just-shell.py",
+    "scripts/run-nextest.py", "MODULE.bazel", "MODULE.bazel.lock",
+    ".github/workflows/hepta-windows-production-delete-observer.yml",
+    "qualification/ci-remediation/windows-production-token-observer-20261126",
+)
+ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def sha256(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def binary_identity(path):
+    data = path.read_bytes()
+    return {"path": str(path), "bytes": len(data), "sha256": sha256(data)}
+
+
+def record_binary_after(report):
+    if "test_binary" not in report:
+        return
+    try:
+        report["test_binary_after"] = binary_identity(Path(report["test_binary"]["path"]))
+        report["test_binary_unchanged"] = report["test_binary_after"] == report["test_binary"]
+        require(report["test_binary_unchanged"], "selected test binary changed after native command")
+    except Exception as error:
+        report["test_binary_unchanged"] = False
+        report["errors"].append(f"binary-final: {type(error).__name__}: {error}")
+        if isinstance(report["native"], dict):
+            report["native"]["observation_complete"] = False
+
+
+def write_json(path, value):
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+    os.replace(temporary, path)
+
+
+def git(*args):
+    return subprocess.check_output(["git", *args], cwd=ROOT)
+
+
+def source_snapshot(expected):
+    require(git("rev-parse", "HEAD").decode().strip() == expected, "checkout head mismatch")
+    require(not git("status", "--porcelain"), "checkout is not clean")
+    rows = []
+    for path in git("ls-files", "-z", "--", *SOURCES).decode().split("\0"):
+        if not path:
+            continue
+        canonical = git("show", f"HEAD:{path}")
+        actual = (ROOT / path).read_bytes()
+        require(actual == canonical or actual.replace(b"\r\n", b"\n") == canonical,
+                f"unexpected checkout bytes: {path}")
+        blob = hashlib.sha1(b"blob " + str(len(canonical)).encode() + b"\0" + canonical).hexdigest()
+        if path in OBSERVER_BLOBS:
+            require(blob == OBSERVER_BLOBS[path], f"reviewed observer changed: {path}")
+        rows.append({"path": path, "bytes": len(actual), "sha256": sha256(actual),
+                     "git_blob": blob, "checkout_is_git_bytes": actual == canonical})
+    require(set(OBSERVER_BLOBS) <= {row["path"] for row in rows}, "missing frozen observer file")
+    return rows
+
+
+def verify_list(data):
+    require(len(data["rust-suites"]) == 1, "expected one production library test binary")
+    suite = next(iter(data["rust-suites"].values()))
+    require(suite["package-name"] == PACKAGE and suite["kind"] == "lib"
+            and suite["status"] == "listed", "unexpected test binary")
+    cases = suite["testcases"]
+    require(data["test-count"] == len(cases), "list test count mismatch")
+    selected, excluded = [], Counter()
+    for name, case in cases.items():
+        match = case["filter-match"]
+        if match["status"] == "matches":
+            require(not case["ignored"], "selected test is ignored")
+            selected.append(name)
+        else:
+            require(match["status"] == "mismatch"
+                    and match["reason"] in {"expression", "ignored"}, "unknown exclusion")
+            excluded[match["reason"]] += 1
+    require(sorted(selected) == sorted(TESTS), "original selected identities changed")
+    return {"binary_id": suite["binary-id"], "binary_path": suite["binary-path"],
+            "selected": selected, "discovered": len(cases), "excluded_by_reason": dict(excluded),
+            "excluded_total": sum(excluded.values())}
+
+
+def verify_native(texts, listing):
+    attempts, summaries, records, unknown = [], [], [], []
+    for text in texts:
+        text = ANSI.sub("", text)
+        require(not re.search(r"(?m)^\s*(?:TRY\s*\d+|RETRY|FLAKY)\b", text),
+                "unexpected retry or flaky attempt")
+        before_summary = re.split(r"(?m)^\s*Summary\s+\[", text, maxsplit=1)[0]
+        pattern = (r"(?m)^\s*(PASS|FAIL|TIMEOUT|ABORT|LEAK)\s+\[[^\]\r\n]+\]\s+"
+                   + re.escape(listing["binary_id"]) + r"\s+(\S+)\s*$")
+        attempts.extend(re.findall(pattern, before_summary))
+        summaries.extend(re.findall(r"(?m)^\s*Summary\s+\[[^\]\r\n]+\]\s+(.*)$", text))
+        for line in before_summary.splitlines():
+            if "HEPTA_PRODUCTION_DELETE_UNKNOWN" in line:
+                unknown.append(line.strip()[:1024])
+            match = re.fullmatch(r"\s*HEPTA_PRODUCTION_DELETE (\{.*\})", line)
+            if match:
+                records.append(json.loads(match[1]))
+    require(Counter(name for _, name in attempts) == Counter(TESTS), "missing/duplicate test attempt")
+    require(len(summaries) == 1 and re.match(r"2 tests run:", summaries[0])
+            and "flaky" not in summaries[0], "unexpected native summary")
+    skipped = re.search(r", (\d+) skipped", summaries[0])
+    require((int(skipped[1]) if skipped else 0) == listing["excluded_total"], "excluded count mismatch")
+    require(not unknown, "observer emitted unknown or truncated output")
+    tokens = [row for row in records if row["kind"] == "token"]
+    accesses = [row for row in records if row["kind"] == "access"]
+    fresh = [row for row in records if row["kind"] == "fresh_post_impersonation_readback"]
+    require(len(records) == 15 and len(tokens) == 2 and len(accesses) == 12 and len(fresh) == 1,
+            "observer record count is incomplete")
+    require([row["phase"] for row in tokens] == ["before", "after"], "token phase mismatch")
+    expected = [(phase, obj, mask) for phase in ("before", "after") for obj, mask in REQUESTS]
+    require([(r["phase"], r["object"], r["requested"]) for r in accesses] == expected,
+            "six-query order/count mismatch")
+    for row in accesses:
+        result = row["result"]
+        require(row["descriptor_source"] == "pre_action_memory" and result["api_success"] is True
+                and type(result["allowed"]) is bool and type(result["granted"]) is int,
+                "AccessCheck API outcome is unknown")
+    require(all(t["exact_expected_capabilities"] is True and t["sd_memory_unchanged"] is True
+                for t in tokens), "token/descriptor provenance mismatch")
+    require(tokens[1]["same_semantic_token_as_before"] is True, "captured raw token facts changed")
+    require(fresh[0]["parent_sd_same"] is True, "fresh parent SD changed")
+    require((fresh[0]["target_exists"] is False and fresh[0]["target_sd_same_if_present"] is None)
+            or (fresh[0]["target_exists"] is True and fresh[0]["target_sd_same_if_present"] is True),
+            "fresh target SD is unknown or changed")
+    return {"attempts": attempts, "summary": summaries[0], "records": records,
+            "observation_complete": True, "production_confinement_qualified": False,
+            "raw_privilege_attributes_note": "Equality includes usage bits; inequality is not proof of an authorization change."}
+
+
+def main():
+    evidence = Path(os.environ["RUNNER_TEMP"]) / "hepta-production-delete-evidence"
+    evidence.mkdir(parents=True, exist_ok=True)
+    expected = os.environ["EXPECTED_HEAD"]
+    report = {"expected_head": expected, "commands": [], "errors": [], "native": "not started"}
+    env = os.environ.copy()
+    env.update({"NEXTEST_PROFILE": "local", "CARGO_TERM_COLOR": "never", "NO_COLOR": "1"})
+
+    def run(label, command):
+        stdout, stderr = evidence / f"{label}.stdout.log", evidence / f"{label}.stderr.log"
+        item = {"label": label, "command": command, "status": "started"}
+        report["commands"].append(item)
+        write_json(evidence / "receipt.json", report)
+        started = time.monotonic()
+        with stdout.open("wb") as out, stderr.open("wb") as err:
+            completed = subprocess.run(command, cwd=ROOT / "codex-rs", env=env, stdout=out, stderr=err)
+        item.update({"status": "completed", "exit": completed.returncode,
+                     "elapsed_seconds": time.monotonic() - started,
+                     "stdout": {"path": stdout.name, "sha256": sha256(stdout.read_bytes())},
+                     "stderr": {"path": stderr.name, "sha256": sha256(stderr.read_bytes())}})
+        write_json(evidence / "receipt.json", report)
+        print(f"{label}: exit {completed.returncode}", flush=True)
+        return completed.returncode, stdout, stderr
+
+    before = None
+    try:
+        require(sys.platform == "win32" and os.environ["GITHUB_EVENT_NAME"] == "push", "wrong host/event")
+        before = source_snapshot(expected)
+        write_json(evidence / "source-before.json", before)
+        commit = git("cat-file", "-p", "HEAD")
+        (evidence / "git-commit.raw").write_bytes(commit)
+        report["event"] = {key: os.environ.get(key) for key in
+                           ("GITHUB_SHA", "GITHUB_REF", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT",
+                            "RUNNER_OS", "RUNNER_ARCH", "ImageOS", "ImageVersion")}
+        require(os.environ["GITHUB_SHA"] == expected and os.environ["GITHUB_RUN_ATTEMPT"] == "1"
+                and os.environ["GITHUB_REF"] == f"refs/heads/{BRANCH}",
+                "event identity or attempt changed")
+        versions = {}
+        for label, command in (("rustc", ["rustc", "-Vv"]), ("cargo", ["cargo", "-V"]),
+                               ("just", ["just", "--version"]), ("nextest", ["cargo", "nextest", "--version"])):
+            code, out, _ = run(label, command)
+            require(code == 0, f"{label} identity query failed")
+            versions[label] = out.read_text(encoding="utf-8")
+        require("release: 1.96.0" in versions["rustc"]
+                and "host: x86_64-pc-windows-msvc" in versions["rustc"], "wrong Rust toolchain")
+        require(versions["cargo"].startswith("cargo 1.96.0 ")
+                and versions["just"].strip() == "just 1.51.0"
+                and versions["nextest"].startswith("cargo-nextest 0.9.103 "), "wrong tools")
+        config_bytes = (ROOT / "codex-rs/.config/nextest.toml").read_bytes()
+        config = tomllib.loads(config_bytes.decode())
+        require(config["profile"]["default"]["slow-timeout"] == {"period": "30s", "terminate-after": 2}
+                and config["profile"]["local"]["inherits"] == "default", "original profile changed")
+        (evidence / "nextest-original.toml").write_bytes(config_bytes)
+        write_json(evidence / "effective-config-inputs.json", {
+            "source_config": config, "profile": "local", "cli_retries": 0, "cli_test_threads": 1,
+            "filter": FILTER, "RUST_MIN_STACK_from_original_just_recipe": "8388608",
+            "note": "Declared effective inputs, not an invented nextest show-config response.",
+            "environment": {k: env.get(k) for k in ("RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS",
+                "CARGO_TARGET_DIR", "CARGO_INCREMENTAL", "CARGO_BUILD_JOBS", "CARGO_PROFILE_DEV_DEBUG",
+                "CARGO_PROFILE_TEST_DEBUG", "NEXTEST_PROFILE")}})
+        code, out, _ = run("metadata", ["cargo", "metadata", "--locked", "--no-deps", "--format-version=1"])
+        require(code == 0, "workspace manifest metadata failed")
+        metadata = json.loads(out.read_bytes())
+        require(PACKAGE in {p["name"] for p in metadata["packages"]}, "missing production package")
+        metadata_path = out
+        run("clippy", ["cargo", "clippy", "-p", PACKAGE, "--lib", "--tests", "--locked", "--", "-D", "warnings"])
+        code, out, _ = run("list", ["cargo", "nextest", "list", "-p", PACKAGE, "--lib", "--locked",
+                                   "-E", FILTER, "--message-format", "json", "--cargo-metadata", str(metadata_path)])
+        require(code == 0, "original test enumeration/build failed; native bodies not started")
+        listing = verify_list(json.loads(out.read_bytes()))
+        write_json(evidence / "selected-and-excluded.json", listing)
+        binary = Path(listing["binary_path"])
+        report["test_binary"] = binary_identity(binary)
+        report["native"] = {"status": "started"}
+        code, out, err = run("native", ["just", "test", "-p", PACKAGE, "--lib", "--locked",
+            "-E", FILTER, "--test-threads", "1", "--retries", "0",
+            "--success-output", "immediate", "--failure-output", "immediate"])
+        report["native"] = {"status": "command_completed", "exit": code, "observation": "unverified"}
+        report["native"].update(verify_native(
+            [out.read_text(encoding="utf-8"), err.read_text(encoding="utf-8")], listing))
+    except Exception as error:
+        report["errors"].append(f"{type(error).__name__}: {error}")
+    finally:
+        record_binary_after(report)
+        try:
+            after = source_snapshot(expected)
+            write_json(evidence / "source-after.json", after)
+            require(before is not None and after == before, "source-before/after mismatch")
+        except Exception as error:
+            report["errors"].append(f"source-final: {type(error).__name__}: {error}")
+        exits = [item["exit"] for item in report["commands"] if item.get("exit", 0) != 0]
+        report["controller_exit"] = exits[0] if exits else (1 if report["errors"] else 0)
+        report["production_confinement_qualified"] = False
+        write_json(evidence / "receipt.json", report)
+    return report["controller_exit"]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
