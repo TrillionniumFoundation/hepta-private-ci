@@ -1,0 +1,183 @@
+{
+  "schema": "hepta.vendor.repository-formatting.v1",
+  "package_directory": "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1",
+  "formatting_input_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+  "formatted_source_commit": "f7353f648d4d59444d2496c0dbee3f0cd80479a2",
+  "kind": "repository Rust formatting",
+  "source_files": [
+    {
+      "path": "examples/cleanup.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "0ad09998779d223001fd919e43c6ec844fae3dd5",
+        "sha256": "4ec7ff8060c02153f7e21a2e82f0a140c0fe181885c67774546278c6f3d261ab",
+        "bytes": 3292
+      },
+      "after": {
+        "oid": "c29c98458144e326ad89dedbc530d6baab779841",
+        "sha256": "6bed35f3c702eb86a22c368a3e44aac40f600a57a2366bbdb8392d1e5d5e12bd",
+        "bytes": 3344
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "examples/example.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "50ae45faffe2602c3cf5286b7c6a6eedf4e9a986",
+        "sha256": "9970c40b7bf485252861efdb1dd71de2bc2745c34fd070ba8a23b013dc5bcb1f",
+        "bytes": 1707
+      },
+      "after": {
+        "oid": "6e6a0c21a84c7489b11db7747018c10f90679d78",
+        "sha256": "d3c8a1c4aeb33638ec48fdbb01cbee10664fcf707ab269d6db8637228531edb0",
+        "bytes": 1760
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/cred.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "da7d9e8f72128d202a9784aa3dc8e99f4d0e2dfd",
+        "sha256": "984684ded82e0de2ccd0385e09a9324d5804ab8a7065f6ac66a35c852b88348f",
+        "bytes": 8979
+      },
+      "after": {
+        "oid": "4a9963776e4856e36fe3210f55d11e5c693ed4c7",
+        "sha256": "cb5e9b81dd13c9d1226b90727b755ee1f7594f3561ba57cd753db8772f05fd59",
+        "bytes": 9023
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/service.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "2e02527c3db22138131861bc98b2e2c59fce5255",
+        "sha256": "4e5b1ba1eab9589d8fb688b8443c7758173784a552b26057e1be5801afe2495b",
+        "bytes": 8477
+      },
+      "after": {
+        "oid": "187eff622b6ece6e9b7578d6a748a88090a0b8c6",
+        "sha256": "cf86ff21566b32d0e316db61d77fdf507bc46a994cdb73b29edc0df4182e6640",
+        "bytes": 8608
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/store.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "8855b8589d87816beb41fa65ec48009f6057e3f1",
+        "sha256": "cbe6d04c9d4a142d1e85c4e5a296418531d394be7374734da103885a7b1fdee5",
+        "bytes": 4023
+      },
+      "after": {
+        "oid": "8ae8816157e5a76c916809ff650584a7e5830b6e",
+        "sha256": "7232a41380087c548759a89ba28d91d4ccc29646ac37471166b3b1b7d2a6e690",
+        "bytes": 4085
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    }
+  ],
+  "source_file_count": 5,
+  "original_control_records": [
+    {
+      "path": "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/Cargo.toml",
+      "mode": "100644",
+      "oid": "fbb4cc4da7852f4310e60310d3608730f7b76836",
+      "size": 2048,
+      "sha256": "2ea88a46cf735e638bb8bc89db26b38d75e1375ddbc03192a58b4faa9fd25992"
+    },
+    {
+      "path": "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/HEPTA.md",
+      "mode": "100644",
+      "oid": "40b331181a256bb0463f0c204ea5e23a2e42cdca",
+      "size": 1537,
+      "sha256": "6dc91aaf283401dec27abdc30540911423e228367773256b21cbf10454f28c78"
+    },
+    {
+      "path": "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/README.md",
+      "mode": "100644",
+      "oid": "53acc974bf860ec8bbc99d3fa8265485a5a6db76",
+      "size": 2607,
+      "sha256": "f29206b0de056f7f24df9034163727831d35157ddebd515beadb7f3a636f04af"
+    }
+  ],
+  "preserved_license_files": [
+    {
+      "path": "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/LICENSE-APACHE",
+      "mode": "100644",
+      "oid": "47f6e38f542232e602b77a4c61d86621b3ba8684",
+      "bytes": 10842,
+      "sha256": "78ebc2ea2a1cec9cbec2e1a6fc15e73474fe22bdad7575518e7f4628651d49c4"
+    },
+    {
+      "path": "codex-rs/third_party/zbus-secret-service-keyring-store-1.0.1/LICENSE-MIT",
+      "mode": "100644",
+      "oid": "c32f440ba5ca5030d7893c150d4b8206b729995d",
+      "bytes": 1062,
+      "sha256": "157cc607717b1b372a69f6b4526f6ad18c1279af9f3267835cca2943f37bc07d"
+    }
+  ],
+  "formatter": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "732e934ba496d90fbe042b8d41d479ef901643e5"
+    ],
+    "original_command_checkout": "fcff463449abc987a8552b29102cd3e196214b99",
+    "input_files_equal_at_c213": true,
+    "rust_toolchain": "1.96.0",
+    "configuration": [
+      {
+        "path": "codex-rs/rustfmt.toml",
+        "oid": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+        "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+      },
+      {
+        "path": "codex-rs/rust-toolchain.toml",
+        "oid": "917d2492264a35bc9c0feaef41878d8825870866",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      {
+        "path": "scripts/format.py",
+        "oid": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "path": "justfile",
+        "oid": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      }
+    ],
+    "original_run_receipt_sha256": "c42cc5dfd146c96d9138dc8ead8e89ece58a849a69f9022389a7122606fc6ec2",
+    "original_changed_path_manifest_sha256": "b362d3ceecdfb901241b0469e078cf462f42db0eb65c49789df97d8e81375046",
+    "original_full_command_exit": 1,
+    "original_full_command_failure": "A separate historical source archive lacked its Rust edition context; this is not a full-repository formatting-pass receipt."
+  },
+  "review": {
+    "import_targets_aliases_visibility_and_attached_attributes_equal": true,
+    "comments_byte_equal": true,
+    "non_import_literals_equal": true,
+    "remaining_changes": "Trailing commas, single-expression closure/match block layout, return semicolons, and same-order adjacent derive grouping as emitted by rustfmt.",
+    "method": "Exact Git/SHA/mode checks and complete normalized changed-token classification; not a compiler AST equivalence proof or a new whole-package functional audit.",
+    "runtime_tests_run_for_this_formatting_change": false,
+    "new_runtime_or_scientific_qualification": false
+  },
+  "dependencies_and_features_changed_by_this_formatting_change": false,
+  "minimal_dependency_patch_files_rewritten": false,
+  "license_or_upstream_readme_files_rewritten": false
+}

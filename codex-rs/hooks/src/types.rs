@@ -1,13 +1,10 @@
-use std::sync::Arc;
-
-use chrono::DateTime;
-use chrono::SecondsFormat;
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use codex_utils_time::SecondsFormat;
 use futures::future::BoxFuture;
 use serde::Serialize;
 use serde::Serializer;
+use std::sync::Arc;
 
 pub type HookFn = Arc<dyn for<'a> Fn(&'a HookPayload) -> BoxFuture<'a, HookResult> + Send + Sync>;
 
@@ -67,7 +64,7 @@ pub struct HookPayload {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub client: Option<String>,
     #[serde(serialize_with = "serialize_triggered_at")]
-    pub triggered_at: DateTime<Utc>,
+    pub triggered_at: codex_utils_time::Timestamp,
     pub hook_event: HookEvent,
 }
 
@@ -80,7 +77,10 @@ pub struct HookEventAfterAgent {
     pub last_assistant_message: Option<String>,
 }
 
-fn serialize_triggered_at<S>(value: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
+fn serialize_triggered_at<S>(
+    value: &codex_utils_time::Timestamp,
+    serializer: S,
+) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
@@ -98,8 +98,6 @@ pub enum HookEvent {
 
 #[cfg(test)]
 mod tests {
-    use chrono::TimeZone;
-    use chrono::Utc;
     use codex_protocol::ThreadId;
     use codex_utils_absolute_path::test_support::PathBufExt;
     use codex_utils_absolute_path::test_support::test_path_buf;
@@ -119,9 +117,7 @@ mod tests {
             session_id,
             cwd: cwd.clone(),
             client: None,
-            triggered_at: Utc
-                .with_ymd_and_hms(2025, 1, 1, 0, 0, 0)
-                .single()
+            triggered_at: codex_utils_time::Timestamp::from_ymd_hms(2025, 1, 1, 0, 0, 0)
                 .expect("valid timestamp"),
             hook_event: HookEvent::AfterAgent {
                 event: HookEventAfterAgent {

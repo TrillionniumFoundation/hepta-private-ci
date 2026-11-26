@@ -1,0 +1,65 @@
+{
+  "baseCommit": "d997f1817d3f4fd1d1d1a0b3bcb0a6288a85fead",
+  "upstreamPackage": "starlark 0.14.2",
+  "existingBackportPreserved": "BLAKE3 compatibility in the existing vendored tree",
+  "maintenanceAdvisory": "https://rustsec.org/advisories/RUSTSEC-2024-0388.html",
+  "patchPurpose": "Replace derivative with standard Debug implementations preserving exact field order and cycle-sensitive omissions. NativeAttribute uses standard derive(Debug).",
+  "changedFiles": {
+    "Cargo.toml": {
+      "beforeSha256": "abdd0c39609dcfec0f2d5057587bab53a48dae717ebe5360c85d5e43b030cfd5",
+      "afterSha256": "a2262e73e477feab4cfb791b0c1ad64a38c5caffb0bf115e9b015ed39e33f3d6"
+    },
+    "src/values/types/function.rs": {
+      "beforeSha256": "be662e4c63babc6d9ff72231c3bcd4b9bb2014a1055efd3faf78ef3d0e272e55",
+      "afterSha256": "37f9f8d8cd95e222e06fe1d94fa4cc6ae6fee2d89467945416a68180d1c1a176"
+    },
+    "src/values/types/enumeration/value.rs": {
+      "beforeSha256": "9deece8eeabe9032ee70e83416233bc27e09b778bd6834e9c0b058026731be55",
+      "afterSha256": "cdf01910f1e78cddd2928afa283296c84fafe4d37584dc356380facca6a1927a"
+    },
+    "src/eval/compiler/def.rs": {
+      "beforeSha256": "d876f050f44cd067114dc1d0a4a8f9c55bf89ad9cbdb2e0d8533d00d4982778c",
+      "afterSha256": "7895d3456c4cc901a86c4ef94f0e86a42b097983207feaf0696a25c941d63f09"
+    }
+  },
+  "functionalChangedFiles": {
+    "Cargo.toml": {
+      "beforeSha256": "abdd0c39609dcfec0f2d5057587bab53a48dae717ebe5360c85d5e43b030cfd5",
+      "afterSha256": "a2262e73e477feab4cfb791b0c1ad64a38c5caffb0bf115e9b015ed39e33f3d6"
+    },
+    "src/values/types/function.rs": {
+      "beforeSha256": "be662e4c63babc6d9ff72231c3bcd4b9bb2014a1055efd3faf78ef3d0e272e55",
+      "afterSha256": "144be781523c2920472b213478a790a7bc541148d847836a13ab80e274666ada"
+    },
+    "src/values/types/enumeration/value.rs": {
+      "beforeSha256": "9deece8eeabe9032ee70e83416233bc27e09b778bd6834e9c0b058026731be55",
+      "afterSha256": "25b951a8d095e2891eb91b3b43d0f1e8853d461121fa2567809f74f116352e47"
+    },
+    "src/eval/compiler/def.rs": {
+      "beforeSha256": "d876f050f44cd067114dc1d0a4a8f9c55bf89ad9cbdb2e0d8533d00d4982778c",
+      "afterSha256": "6d2d128ba7e9b20b25f52a9a46171f8f5586cc36aa7b633b2f2bfd6fb09e34c3"
+    }
+  },
+  "maintenancePatch": "HEPTA-maintenance.patch",
+  "maintenancePatchSha256": "e38947a879259752563dea3a24f487d9379bfcf9fee3f3634d51d381ff0d4d66",
+  "mechanicalFormatting": {
+    "command": "just fmt",
+    "scope": "Repository-mandated mechanical Rust formatting after scoped tests and just fix",
+    "changedFiles": {
+      "src/eval/compiler/def.rs": {
+        "beforeSha256": "6d2d128ba7e9b20b25f52a9a46171f8f5586cc36aa7b633b2f2bfd6fb09e34c3",
+        "afterSha256": "7895d3456c4cc901a86c4ef94f0e86a42b097983207feaf0696a25c941d63f09"
+      },
+      "src/values/types/enumeration/value.rs": {
+        "beforeSha256": "25b951a8d095e2891eb91b3b43d0f1e8853d461121fa2567809f74f116352e47",
+        "afterSha256": "cdf01910f1e78cddd2928afa283296c84fafe4d37584dc356380facca6a1927a"
+      },
+      "src/values/types/function.rs": {
+        "beforeSha256": "144be781523c2920472b213478a790a7bc541148d847836a13ab80e274666ada",
+        "afterSha256": "37f9f8d8cd95e222e06fe1d94fa4cc6ae6fee2d89467945416a68180d1c1a176"
+      }
+    },
+    "patch": "HEPTA-formatting.patch",
+    "patchSha256": "0babfe859f889c4bef80cdb6e1f6bb4527353fa0e909d83f61c8fa0122a75837"
+  }
+}
