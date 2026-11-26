@@ -153,4 +153,3 @@ numerical gate. Numerical qualification, true continuum filtering,
 whole-training-trajectory qualification, rare-tail relative precision and
 formal confirmation remain false. The existing actual-gap finite-horizon
 shadow oracle was not invoked by this particular audit.
-

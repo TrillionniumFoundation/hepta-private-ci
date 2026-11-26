@@ -9,4 +9,3 @@ This establishes implementation-level separation for the three exact sources. It
 The review parses source only. It performs zero N256 dynamics, sparse actions, Poisson recurrences, candidate/oracle/provider executions, model calls, optimizer calls, or training. No idempotency key exists.
 
 This does not close actual tail/rounding certificates, every roster operator, external reviewer independence, provider admission, the 18,225,028-record stream, three-way comparison, saved-state pairs, resources, migration, fullnetwork/equal-budget benefit, asynchronous cost, C2 full replay, HPCA external custody, or production adoption. Historical RED/UNKNOWN and #6247 finite-domain failure remain unchanged.
-

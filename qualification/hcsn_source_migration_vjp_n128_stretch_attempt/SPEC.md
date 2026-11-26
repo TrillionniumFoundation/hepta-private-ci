@@ -21,4 +21,3 @@ Every eligible directional coordinate must pass its predeclared absolute-or-rela
 ## Nonclaims
 
 A PASS would cover only this one N128 law and first-cycle bounded VJP. It would not qualify N256/N512, the full posterior domain, trainable physics/support/delay, migration across checkpoints, a second feedback cycle, full-network training, task benefit, HPCA external custody, C2 full replay, production adoption, or `all_closed`.
-

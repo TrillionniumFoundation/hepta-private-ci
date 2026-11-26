@@ -9,4 +9,3 @@ The declared provider-only upper bound may not understate the outward sum and ma
 The policy also requires immutable provider/admission/operator/roster/segment identities and all six scientific certifications required by #6337. No actual certificate is created or admitted here. Tests use one synthetic certificate record; there are zero N256 provider, candidate, oracle, model, optimizer, or training calls.
 
 This does not close actual FP64/tail certification, provider admission or external independence, every roster operator, the 18,225,028-record stream, three-way comparison, saved-state byte pairs, resources, migration, fullnetwork/equal-budget benefit, asynchronous cost, C2 full replay, HPCA external custody, or production adoption. Historical RED/UNKNOWN and #6247 finite-domain failure remain unchanged.
-

@@ -97,4 +97,3 @@ model superiority, rare-tail relative precision, or independent-source
 generalization. All numerical, continuum-domain, whole-training-trajectory and
 product-adoption qualification flags remain false. The pilot does not establish
 training adequacy or convergence.
-
