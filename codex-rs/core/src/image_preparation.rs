@@ -22,7 +22,7 @@ use codex_protocol::openai_models::ModelInfo;
 use codex_utils_image::ImageProcessingError;
 use codex_utils_image::PromptImageMode;
 use codex_utils_image::PromptImageResizeLimits;
-use codex_utils_image::load_data_url_for_prompt;
+use codex_utils_image::load_data_url_for_prompt_with_observer;
 use tracing::warn;
 
 pub(crate) const IMAGE_PROCESSING_ERROR_PLACEHOLDER: &str =
@@ -301,7 +301,17 @@ fn prepare_image(
     };
     let load_started = Instant::now();
     tracing::trace!(phase = "image_load_begin", "conversation image phase");
-    let image = load_data_url_for_prompt(image_url, PromptImageMode::ResizeWithLimits(limits));
+    let image = load_data_url_for_prompt_with_observer(
+        image_url,
+        PromptImageMode::ResizeWithLimits(limits),
+        |phase| {
+            tracing::trace!(
+                phase = phase.as_str(),
+                elapsed_ms = load_started.elapsed().as_secs_f64() * 1_000.0,
+                "conversation image phase"
+            );
+        },
+    );
     tracing::trace!(
         phase = if image.is_ok() {
             "image_load_ready"
