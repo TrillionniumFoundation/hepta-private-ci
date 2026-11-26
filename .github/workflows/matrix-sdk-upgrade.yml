@@ -1,0 +1,163 @@
+name: Matrix SDK compatibility
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-matrix*/**"
+      - "codex-rs/third_party/**"
+      - "codex-rs/Cargo.*"
+      - "codex-rs/rust-toolchain.toml"
+      - "qualification/matrix-sdk-019/**"
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - "scripts/hepta_ci_exec.py"
+      - ".github/workflows/matrix-sdk-upgrade.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sdk-protocol:
+    name: Matrix SDK (${{ matrix.qualification }}, ${{ matrix.source }})
+    strategy:
+      fail-fast: false
+      matrix:
+        qualification: [crypto-migration, synapse-protocol]
+        source: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      TESTED_SHA: ${{ matrix.source == 'base-merge' && github.sha || github.event.pull_request.head.sha || github.sha }}
+      SOURCE_KIND: ${{ matrix.source }}
+      HEPTA_CI_LANE: ${{ matrix.source }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify exact source and actual integration parents
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_SDK_ARTIFACTS="$RUNNER_TEMP/sdk-qualification-artifacts"
+          printf 'CARGO_TARGET_DIR=%s/matrix-sdk-target\nHEPTA_SDK_ARTIFACTS=%s\n' "$RUNNER_TEMP" "$HEPTA_SDK_ARTIFACTS" >> "$GITHUB_ENV"
+          mkdir -p "$HEPTA_SDK_ARTIFACTS"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          if test "$SOURCE_KIND" = base-merge; then
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+            test "$(git rev-parse HEAD^{tree})" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          else
+            test "$SOURCE_KIND" = source-head
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          fi
+          git rev-parse HEAD HEAD^{tree} > "$HEPTA_SDK_ARTIFACTS/source-before.txt"
+          printf 'source=%s\nbase=%s\ntested=%s\nlane=%s\n' "$SOURCE_SHA" "$BASE_SHA" "$TESTED_SHA" "$SOURCE_KIND" > "$HEPTA_SDK_ARTIFACTS/tuple.txt"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          components: clippy,rust-src
+      - name: Install pinned official test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Real SDK 0.18 data-bearing crypto migration
+        if: matrix.qualification == 'crypto-migration'
+        run: python3 scripts/hepta_ci_exec.py --output "$HEPTA_SDK_ARTIFACTS/crypto-migration.json" --minimum-tests 1 -- bash qualification/matrix-sdk-019/run-crypto-migration.sh
+      - name: Real isolated encrypted send, sync and store reopen
+        if: matrix.qualification == 'synapse-protocol'
+        run: python3 scripts/hepta_ci_exec.py --output "$HEPTA_SDK_ARTIFACTS/synapse-protocol.json" --minimum-tests 1 -- bash codex-rs/hepta-matrix-sdk/tests/support/run-synapse-sdk.sh
+      - name: Strict final-source Matrix lint
+        if: matrix.qualification == 'synapse-protocol'
+        run: python3 scripts/hepta_ci_exec.py --output "$HEPTA_SDK_ARTIFACTS/clippy.json" -- just clippy -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrix-protocol --features crypto-migration-qualification,synapse-sdk-qualification --no-deps -- -D warnings
+      - name: Verify unchanged tested source and preserve scope
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HEPTA_SDK_ARTIFACTS"
+          printf 'Synthetic isolated Matrix SDK migration/protocol qualification on the recorded source only. No live accounts, PoN model installation, independent operators, WAN or production activation.\n' > "$HEPTA_SDK_ARTIFACTS/SCOPE.txt"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$HEPTA_SDK_ARTIFACTS/source-after.txt"
+          cmp "$HEPTA_SDK_ARTIFACTS/source-before.txt" "$HEPTA_SDK_ARTIFACTS/source-after.txt"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Preserve protocol evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-sdk-${{ matrix.qualification }}-${{ matrix.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/sdk-qualification-artifacts
+          if-no-files-found: error
+
+  current-main:
+    name: Matrix exact-source regressions (${{ matrix.source }})
+    strategy:
+      fail-fast: false
+      matrix:
+        source: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      TESTED_SHA: ${{ matrix.source == 'base-merge' && github.sha || github.event.pull_request.head.sha || github.sha }}
+      SOURCE_KIND: ${{ matrix.source }}
+      HEPTA_CI_LANE: ${{ matrix.source }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify exact source and actual integration parents
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_SDK_ARTIFACTS="$RUNNER_TEMP/matrix-source-artifacts"
+          printf 'CARGO_TARGET_DIR=%s/matrix-sdk-target\nHEPTA_SDK_ARTIFACTS=%s\n' "$RUNNER_TEMP" "$HEPTA_SDK_ARTIFACTS" >> "$GITHUB_ENV"
+          mkdir -p "$HEPTA_SDK_ARTIFACTS"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          if test "$SOURCE_KIND" = base-merge; then
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+            test "$(git rev-parse HEAD^{tree})" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          else
+            test "$SOURCE_KIND" = source-head
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          fi
+          git rev-parse HEAD HEAD^{tree} > "$HEPTA_SDK_ARTIFACTS/source-before.txt"
+          printf 'source=%s\nbase=%s\ntested=%s\nlane=%s\n' "$SOURCE_SHA" "$BASE_SHA" "$TESTED_SHA" "$SOURCE_KIND" > "$HEPTA_SDK_ARTIFACTS/tuple.txt"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run original complete Matrix package regressions
+        run: python3 scripts/hepta_ci_exec.py --output "$HEPTA_SDK_ARTIFACTS/matrix-packages.json" --minimum-tests 1 -- just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
+      - name: Verify tracked candidate remains unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$HEPTA_SDK_ARTIFACTS/source-after.txt"
+          cmp "$HEPTA_SDK_ARTIFACTS/source-before.txt" "$HEPTA_SDK_ARTIFACTS/source-after.txt"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Preserve source and all package outcomes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-sdk-packages-${{ matrix.source }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-source-artifacts
+          if-no-files-found: error
