@@ -14,7 +14,13 @@ def store(path,obj):
 def audit(source,runs,evidence,out):
  t0=time.perf_counter();out.mkdir(parents=True,exist_ok=False)
  sys.path.insert(0,str(source.resolve()))
- import model,run,fitters,global_interval
+ # Load R20 run before model inserts its R18 dependency directory.
+ import run,model,fitters,global_interval,problem
+ for module in (run,model,fitters,global_interval):
+  need(Path(module.__file__).resolve()==source.resolve()/(module.__name__+'.py'),
+       'audit module source mismatch: '+module.__name__)
+ need(Path(problem.__file__).resolve()==source.resolve().parent/'asymmetric_2d'/'problem.py',
+      'audit parent problem source mismatch')
  plan=load(runs/'PLAN.json');done=load(runs/'COMPLETE.json')
  need(plan['source_sha']==run.sources(),'source SHA drift')
  need(done['plan_sha']==sha(runs/'PLAN.json'),'root plan SHA mismatch')
