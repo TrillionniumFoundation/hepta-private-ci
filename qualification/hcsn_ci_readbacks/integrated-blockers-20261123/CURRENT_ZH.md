@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 21:33 UTC 后：当前 graded 物理梯度原生与保留向量独立复算
+
+- #6799 真实 head `c167d16d2ef9064e1f9de5cce2f0fd987aaabcf2`、base732e934、draft未合并；首屏100条65 success/22 failure/6 skipped/1 cancelled/6 in_progress。前一923c7b首屏终局70 success/23 failure/7 skipped。非全分页，不跨版本转移资格。
+- [graded physical 原生 run45897914186/job140176287739](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45897914186/job/140176287739) success，原433行日志、8/8、32.930s，源保持。直接从原日志两个完整 JSON 向量组独立逐坐标比较变分导数与粗/细FD：uniform 15组585坐标、graded 20组1635坐标（含训练范围profile 5×138）；合计35组2220坐标，每组两种FD，共4440次配对比较，35项细FD最大误差与原报告差均0。两组细FD最大误差1.1111814757214233e-7 / 7.034624804891365e-8，容差归一化最大.00615359741/.00267378089；粗FD对应最大4.4195461690321736e-7/2.8774679006193793e-7，归一化.02445672131/.01076533064。只独立复算保留向量，不重新生成FD/前向。
+- 原 graded CPU FP64 custom VJP replay 实际4 Adam更新（连续2、首段1、冷恢复1），full_state_exact、gradcheck、parameter_version_guard、unsafe_data_mutation_guard、trainable_initial_state_refused 均真；source/runtime mismatch 各退出1，三正常子进程退出0，原 wall19.074556357s，Python3.12.16/NumPy2.3.5/SciPy1.17.0/Torch2.10.0+cpu。仅固定初始概率/内容下五物理参数一阶VJP与受限训练恢复，不是网络/先验AD，complete_hcsn_training_replay=false、task_efficacy=false、production_qualified=false。原ZIP15155012309上传39866B，未独立下载。
+- [stdlib ledger faults](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45897913520/job/140176285911) 原13 controller进程、10 toy进程、数值forward/adjoint/Adam均0，PASS；ZIP15154158560登记72486B。[second feedback](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45897913987/job/140176287141)、[augmented selector](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45897912704/job/140176283933)、[N256 FP64 sequence](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45897913588/job/140176286195) 普通/-O各3/3、3/3、4/4，合计20次fixture执行，均原SOURCE_ONLY，保留真实动态和资源准入HOLD。
+- [本轮原始JSON与逐组独立复算](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6c29b2e7934291251654d72acd6a82e7bd246f4e/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/graded-physical-independent-readback-20261126-2133Z.json) 已完整回读一致（375255文本字符）。本次审计新增模型/优化器调用0；Common历史视图仍待全29独立身份与消耗台账，未重派120更新。全仓HOLD，未改变产品、冻结摘要、原500ms、安全权限或科学判据，未合并红门。
+
 ## 2026-11-26 20:42 UTC 后：Common 原生红门完整源集合定位（仍 HOLD）
 
 - #6799 真实新 head `923c7b1815c4798ee9d42328b8b67fb742655fcf`，draft、未合并、base732e934；首屏100条45 success/16 queued/7 skipped/1 pending/10 failure/21 in_progress。前一9b3406首屏终态64 success/12 skipped/24 failure，非全分页终局。#7016/#7021/#7032 仍为未合并草案。
