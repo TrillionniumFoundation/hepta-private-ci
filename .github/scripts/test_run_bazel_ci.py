@@ -37,6 +37,9 @@ command = next(arg for arg in sys.argv[1:] if not arg.startswith('-'))
 if command == 'info':
     print(os.environ['BAZEL_PROBE_TESTLOGS'])
 elif command == 'query':
+    if os.environ.get('BAZEL_PROBE_QUERY_FAIL') == '1':
+        print('//codex-rs/fake:partial-output')
+        sys.exit(37)
     if os.environ.get('BAZEL_PROBE_QUERY_FILE'):
         sys.stdout.buffer.write(Path(os.environ['BAZEL_PROBE_QUERY_FILE']).read_bytes())
     elif os.environ.get('BAZEL_PROBE_QUERY_CRLF') == '1':
@@ -122,6 +125,84 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             for line in self.log.read_text(encoding="utf-8").splitlines()
         ]
         return result, calls
+
+    def run_clippy_target_list(self, *args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                self.bash,
+                str(SCRIPTS.parent.parent / "scripts/list-bazel-clippy-targets.sh"),
+                *args,
+            ],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+
+    def test_clippy_target_list_preserves_platform_applicable_helpers(self) -> None:
+        unit = "//codex-rs/core:core-unit-tests-bin"
+        binary_unit = "//codex-rs/cli:codex-bin-unit-tests-bin"
+        native = "//codex-rs/core:core-all-test-bin"
+        cross = "//codex-rs/core:core-all-test-windows-cross-bin"
+        other = "//codex-rs/fake:other-manual-test"
+        unix_only = "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
+        writer = "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin"
+        roster = self.root / "manual-query.txt"
+        for newline in ("\n", "\r\n"):
+            roster.write_bytes(
+                (
+                    newline.join(
+                        [unit, binary_unit, native, cross, other, unix_only, writer]
+                    )
+                    + newline
+                ).encode()
+            )
+            self.env["BAZEL_PROBE_QUERY_FILE"] = str(roster)
+            cases = [
+                ("Linux", [], [unit, binary_unit, native, other, unix_only, writer]),
+                ("macOS", [], [unit, binary_unit, native, other, unix_only, writer]),
+                ("Windows", [], [unit, binary_unit, native, cross, other, writer]),
+                (
+                    "Windows",
+                    ["--windows-cross-compile"],
+                    [unit, binary_unit, cross, other],
+                ),
+                (
+                    "Windows",
+                    ["--windows-msvc"],
+                    [unit, binary_unit, native, other, writer],
+                ),
+            ]
+            for runner_os, args, helpers in cases:
+                with self.subTest(runner_os=runner_os, args=args, newline=newline):
+                    self.env["RUNNER_OS"] = runner_os
+                    result = self.run_clippy_target_list(*args)
+                    self.assertEqual(
+                        result.returncode, 0, result.stdout + result.stderr
+                    )
+                    self.assertEqual(
+                        result.stdout.splitlines(),
+                        ["//codex-rs/...", "-//codex-rs/v8-poc:all", *helpers],
+                    )
+
+    def test_clippy_target_list_query_failure_emits_no_partial_roster(self) -> None:
+        self.env["BAZEL_PROBE_QUERY_FAIL"] = "1"
+        result = self.run_clippy_target_list("--windows-msvc")
+        self.assertEqual(result.returncode, 37, result.stderr)
+        self.assertEqual(result.stdout, "")
+
+    def test_clippy_target_list_rejects_conflicting_platform_modes(self) -> None:
+        for args in (
+            ["--windows-msvc", "--windows-cross-compile"],
+            ["--windows-cross-compile", "--windows-msvc"],
+        ):
+            with self.subTest(args=args):
+                result = self.run_clippy_target_list(*args)
+                self.assertEqual(result.returncode, 1)
+                self.assertEqual(result.stdout, "")
+                self.assertIn("mutually exclusive", result.stderr)
+        self.assertFalse(self.log.exists())
 
     def test_keyless_cross_uses_msvc_exec_and_gnullvm_target(self) -> None:
         result, calls = self.run_wrapper(

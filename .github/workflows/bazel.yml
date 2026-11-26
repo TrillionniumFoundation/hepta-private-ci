@@ -391,6 +391,7 @@ jobs:
             # ABI while preserving the complete Bazel clippy target set.
             bazel_wrapper_args+=(--windows-msvc-host-platform)
             bazel_clippy_args+=(--platforms=//:windows_x86_64_msvc)
+            bazel_target_list_args+=(--windows-msvc)
           fi
 
           bazel_target_lines="$(./scripts/list-bazel-clippy-targets.sh "${bazel_target_list_args[@]}")"
