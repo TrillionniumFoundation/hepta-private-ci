@@ -1,0 +1,127 @@
+name: SQLx official Cargo successor first attempt
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - ".github/workflows/hepta-sqlx-unused-patch-successor-v1.yml"
+      - "scripts/run_sqlx_unused_patch_successor_v1.py"
+      - "scripts/hepta_sqlx_unused_patch_successor_contract_v1.py"
+      - "scripts/hepta_sqlx_unused_patch_successor_phases_v1.py"
+      - "scripts/hepta_sqlx_unused_patch_successor_inputs_v1.json"
+      - "qualification/sqlx_unused_patch_successor_admission_v1.json"
+      - "qa/b4-no-bypass/test_sqlx_unused_patch_successor_v1.py"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  successor:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'ProfHepta' &&
+      github.event.pull_request.draft == true &&
+      github.event.pull_request.head.ref == 'fix/hepta-sqlx-unused-patch-successor-20261126-7c9e' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 19
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      LOCK_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      LOCK_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+      LOCK_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+      LOCK_PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+      LOCK_PR_DRAFT: ${{ github.event.pull_request.draft }}
+      LOCK_EVENT_ACTION: ${{ github.event.action }}
+    steps:
+      - name: Record one attempt before checkout
+        id: job_scope
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -B - <<'PY'
+          import json, os, pathlib, re, time
+          head, run = os.environ["LOCK_EXPECTED_HEAD"], os.environ["GITHUB_RUN_ID"]
+          assert re.fullmatch(r"[0-9a-f]{40}", head) and run.isdigit()
+          assert os.environ["GITHUB_RUN_ATTEMPT"] == "1"
+          stage = pathlib.Path(os.environ["RUNNER_TEMP"]) / f"sqlx-order-{head}-{run}-1"
+          stage.mkdir(mode=0o700)
+          evidence = stage / "evidence"
+          evidence.mkdir(mode=0o700)
+          value = {"head": head, "run_id": run, "run_attempt": "1",
+                   "monotonic_seconds": time.monotonic(),
+                   "boot_id": pathlib.Path("/proc/sys/kernel/random/boot_id").read_text().strip()}
+          with (evidence / "job-start.json").open("x") as output:
+              output.write(json.dumps(value, indent=2) + "\n")
+          with open(os.environ["GITHUB_ENV"], "a") as output:
+              output.write(f"LOCK_STAGE={stage}\n")
+          PY
+      - name: Acquire exact successor and immutable 5b9 parent
+        id: checkout
+        timeout-minutes: 1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.LOCK_EXPECTED_HEAD }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Admit independent successor without replaying original stages
+        id: begin
+        timeout-minutes: 2
+        run: python3 -I -B scripts/run_sqlx_unused_patch_successor_v1.py begin
+      - name: Restore only original Rust 1.96 compiler
+        id: rust
+        timeout-minutes: 1
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+      - name: Verify original failure inputs and official secondary Cargo
+        id: prepare
+        if: always() && steps.begin.outcome == 'success'
+        timeout-minutes: 2
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LOCK_ALL_STEPS: ${{ toJSON(steps) }}
+        run: python3 -I -B scripts/run_sqlx_unused_patch_successor_v1.py prepare
+      - name: Generate one successor and finish original compatibility stages
+        id: generation
+        if: steps.prepare.outcome == 'success'
+        timeout-minutes: 13
+        run: python3 -I -B scripts/run_sqlx_unused_patch_successor_v1.py generation
+      - name: Check preserved four locks and two graphs
+        id: readback
+        if: always() && steps.job_scope.outcome == 'success' && steps.checkout.outcome == 'success'
+        timeout-minutes: 1
+        env:
+          LOCK_ALL_STEPS: ${{ toJSON(steps) }}
+        run: python3 -I -B scripts/run_sqlx_unused_patch_successor_v1.py readback
+      - name: Retain original commands and failed or candidate successor
+        id: upload
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sqlx-unused-patch-successor-${{ env.LOCK_EXPECTED_HEAD }}-${{ github.run_id }}-1
+          path: ${{ env.LOCK_STAGE }}/evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Account through upload without resetting the 1129 second cap
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 1
+        env:
+          LOCK_ALL_STEPS: ${{ toJSON(steps) }}
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os, pathlib, time
+          job = json.loads((pathlib.Path(os.environ["LOCK_STAGE"]) / "evidence/job-start.json").read_bytes())
+          elapsed = time.monotonic() - job["monotonic_seconds"]
+          steps = json.loads(os.environ["LOCK_ALL_STEPS"])
+          print(json.dumps({"whole_seconds_through_upload": elapsed,
+                            "frozen_new_whole_cap_seconds": 1129,
+                            "prior_complete_jobs_seconds": 169,
+                            "cumulative_seconds_through_upload": 169 + elapsed,
+                            "final_GitHub_job_cost_still_required": True}))
+          assert 0 <= elapsed <= 1129 and steps["upload"]["outcome"] == "success"
+          PY
