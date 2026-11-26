@@ -105,6 +105,33 @@ class Source53LogCustodyTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             storage.restore(REPOSITORY, destination)
 
+    def test_archive_notice_allows_only_exact_indexed_summary_bytes(self):
+        inventory = storage.entries(REPOSITORY)
+        for name in storage.ARCHIVE_NOTICE_SHA256:
+            with self.subTest(name=name):
+                entry = inventory[name]
+                live_notice = self.repository / name
+                live_notice.parent.mkdir(parents=True, exist_ok=True)
+                live_notice.write_bytes((REPOSITORY / name).read_bytes())
+                carrier = self.repository / entry["stored_path"]
+                shutil.copyfile(REPOSITORY / entry["stored_path"], carrier)
+                def read_original():
+                    return storage.read_verified(
+                        self.repository,
+                        name,
+                        entry["original_bytes"],
+                        entry["original_sha256"],
+                    )
+
+                self.assertEqual(
+                    custody.identity(read_original())["oid"], entry["original_git_blob"]
+                )
+                live_notice.write_bytes(live_notice.read_bytes() + b"tampered")
+                with self.assertRaisesRegex(
+                    ValueError, "original evidence length or checksum mismatch"
+                ):
+                    read_original()
+
     def test_original_source53_manifests_are_bound_without_rehashing(self):
         transport = json.loads((REPOSITORY / storage.EXTENSION_INDEX).read_bytes())
         for entry in transport["prior_controls"]:
