@@ -80,4 +80,3 @@ class TrainingDomainAdapterTests(unittest.TestCase):
                     self.assertEqual(report["status"], "HOLD")
                 else:
                     self.assertLessEqual(max(errors), 5e-11)
-
