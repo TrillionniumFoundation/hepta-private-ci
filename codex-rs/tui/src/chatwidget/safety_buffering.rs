@@ -22,6 +22,7 @@ struct ActiveSafetyBuffering {
 pub(super) struct SafetyBufferingState {
     submitted_turn: Option<(String, AppCommand)>,
     active: Option<ActiveSafetyBuffering>,
+    last_observed_user_item: Option<(String, String)>,
 }
 
 impl ChatWidget {
@@ -61,6 +62,56 @@ impl ChatWidget {
                 .active
                 .as_ref()
                 .is_some_and(|active| active.turn_id == turn_id && !active.agent_message_started)
+    }
+
+    pub(super) fn note_safety_retry_user_item(&mut self, turn_id: &str, item_id: String) {
+        if self.turn_lifecycle.last_turn_id.as_deref() == Some(turn_id) {
+            self.safety_buffering.last_observed_user_item = Some((turn_id.to_owned(), item_id));
+        }
+    }
+
+    pub(crate) fn reconcile_safety_retry_steers(
+        &self,
+        input_state: &mut ThreadInputState,
+        turn: &codex_app_server_protocol::Turn,
+    ) {
+        if input_state.pending_steers.is_empty() {
+            return;
+        }
+        let mut user_items = turn.items.iter().filter_map(|item| match item {
+            ThreadItem::UserMessage { id, content, .. } => Some((id, content)),
+            _ => None,
+        });
+        if let Some((_, observed_id)) = self
+            .safety_buffering
+            .last_observed_user_item
+            .as_ref()
+            .filter(|(turn_id, _)| turn_id == &turn.id)
+        {
+            if user_items
+                .find(|(item_id, _)| *item_id == observed_id)
+                .is_none()
+            {
+                return;
+            }
+        } else {
+            // The first user item is the original prompt, not a steer.
+            user_items.next();
+        }
+
+        // An app-server steer can be durable before its notification reaches
+        // the widget. It is already included in the retried input and must not
+        // also be queued as a follow-up. Use the normal FIFO echo match.
+        for (_, content) in user_items {
+            let Some(front) = input_state.pending_steer_compare_keys.front() else {
+                break;
+            };
+            if *front == Self::pending_steer_compare_key_from_items(content) {
+                input_state.pending_steers.pop_front();
+                input_state.pending_steer_history_records.pop_front();
+                input_state.pending_steer_compare_keys.pop_front();
+            }
+        }
     }
 
     pub(crate) fn prepare_safety_buffered_retry_submission(&mut self, prompt: UserMessage) {
