@@ -1,6 +1,7 @@
 //! Real dispatcher regressions. Synthetic targets do not certify provider behavior.
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 async fn prepare_operations(
     writer: &ProductionDurableWriter,

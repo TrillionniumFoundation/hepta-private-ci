@@ -1,6 +1,7 @@
 //! Deterministic scheduling fixtures and actual concurrent settlement controls.
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 async fn fixture_times(store: &CognitiveStore, lease_id: &str, times: &[(&str, i64)]) {
     // Test-only scheduling metadata construction. Preserve the exact immutable
