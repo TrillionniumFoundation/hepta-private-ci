@@ -4,33 +4,35 @@ Status: source recovery protocol and qualification plan. This document does not 
 
 ## 1. Automatic restart policy
 
-The native supervisor applies one bounded automatic restart policy to the main agent process and the optional Matrix companion:
+The default main-process configuration and the separate Matrix companion policy use:
 
 - recovery window: 300 seconds;
-- automatic restart attempt budget: 3;
+- restart attempt budget: 3;
 - exponential delay: 250 ms, 500 ms, 1 s for attempts 1-3;
-- the delay function is capped at 30 seconds if the fixed budget is changed in a future reviewed revision;
-- a fourth restart request inside the active window is not executed. The main agent records `AutomaticRestartBudgetExhausted`; Matrix records `MatrixRestartBudgetExhausted` and remains degraded;
-- explicit operator restart/new release start resets the recovery budget for that release;
-- explicit stop/kill never schedules an automatic restart;
-- an unexpected main-process exit while Starting/AwaitingHealth or Running schedules restart; a health-deadline failure schedules restart after the failed child exits;
-- a missing/rejected live child discovered during supervisor recovery enters the same bounded restart path;
+- Matrix's scheduling helper caps its delay at 30 seconds. The canonical main-process port uses checked exponential multiplication of its configured base; custom settings must be reviewed against that implementation;
+- a new main restart claim after three consumed attempts inside the active window is rejected; replay of an existing pending claim within that active window retains its recorded attempt. The automatic main-exit path records `AutomaticRestartBudgetExhausted` after successful exit finalization; Matrix records `MatrixRestartBudgetExhausted` and remains degraded;
+- an admitted explicit main `Restart` uses the same durable claim and backoff, so it counts against the same main budget;
+- new automatic main claims are admitted for an unexpected, unfenced `Running` exit with no release change or already-pending restart. `Starting`/`AwaitingHealth`, health-timeout shutdown and `Draining`/`Stopping`/`Killing` exits are outside that branch;
+- recovery validates/adopts the existing lease and requeues an already-persisted main pending claim when no runtime was adopted. A missing or rejected child alone does not establish a new restart claim;
 - Matrix readiness recovery does not immediately zero the flap counter, preventing short healthy intervals from bypassing the fixed budget.
 
-### Durable restart counter
+### Durable restart record and local deadlines
 
-The restart counter is persisted in the agent run root as `supervisor-restart-budget.json`. The journal:
+`supervisor-restart-budget.json` has one bounded, digest-protected schema-2 codec for two separate records:
 
-- is bound to the exact `agent_id` and active `release_id`;
-- stores independent main-agent and Matrix restart windows;
-- is bounded in size and digest-protected;
-- is written to a same-directory staging file, file-synchronized, and atomically published with a durable same-directory replacement;
-- is restored before daemon recovery decides whether a missing/rejected live child may consume another automatic attempt;
-- is reset when an explicit start/restart begins a new operator-directed recovery sequence or when the active release identity changes;
-- treats wall-clock rollback conservatively: rollback cannot buy additional attempts and restores the affected window as exhausted;
-- fails safe on journal persistence failure: the automatic retry is disabled/exhausted rather than proceeding without a durable counter witness.
+- the canonical per-Agent main record stores its attempt count, wall-clock window origin, `pending` flag and `next_eligible_unix_ms`;
+- the companion projection stores an Agent/release binding and Matrix window. Its legacy main-window projection must be empty; ordinary companion writes preserve the canonical main record;
+- the codec reads supported legacy records conservatively, preserving acknowledged main attempts, and rejects malformed, oversized or digest-inconsistent records;
+- publication writes a same-directory staging file, synchronizes that file and calls the existing durable same-directory publisher. Publication failures remain errors and require reconciliation of the retained state;
+- a new main claim is published before lifecycle/lease exit finalization. Process adoption is attempted during recovery, then the main pending record is hydrated before normal ticking;
+- a healthy replacement completes the main pending claim while retaining its attempt history. Neither a companion projection update nor a daemon restart supplies a fresh main budget;
+- main-path persistence errors propagate. A Matrix restart-scheduling persistence failure clears its local retry time and marks its retry state exhausted.
 
-The restart-attempt count therefore survives supervisord process restart. The exact pending retry timer is intentionally not a durable command queue: a supervisord crash may lose a future retry deadline and therefore perform **fewer** automatic restarts, but it must not gain an additional attempt. Target-host SIGKILL/fault-injection evidence is still required before claiming this behavior is deployment-qualified.
+The main pending claim survives supervisord restart: `pending_restart` returns the recorded attempt and computes the remaining delay from `next_eligible_unix_ms` and the current wall clock. Recovery rebuilds an in-process `Instant` deadline from that delay; an already-adopted runtime satisfies the same pending attempt instead of being queued as a second replacement. Thus the serialized claim and eligibility time are durable state even though an `Instant` value cannot be carried across processes. A lost process-local timer is not an instruction to discard an acknowledged pending claim.
+
+The main claim path rejects a wall clock earlier than its stored window origin. Pending recovery uses a saturating remaining-time calculation, so a wall-clock jump can change the reconstructed wait; the record is not a promise of exact elapsed real time or a successful process start. The companion window/restoration helper has its own conservative rollback rules and does not define the main pending-claim protocol. Inspect the current [main budget port](../../../codex-rs/hepta-supervisor/src/restart_budget.rs), [recovery path](../../../codex-rs/hepta-supervisor/src/recovery.rs) and [shared record codec](../../../codex-rs/hepta-supervisor/src/restart_journal.rs) when qualifying these boundaries.
+
+Target-host SIGKILL, clock-change and publication-failure evidence remains required. These source rules do not establish power-loss durability, exact scheduling or successful restart on an unqualified host.
 
 ## 2. Signed production mutation effect boundary
 
@@ -46,56 +48,34 @@ The `Prepared` publication is the effect boundary. Before that boundary, validat
 
 The signed path runs inside `with_slot()`, which temporarily removes the agent slot from `Supervisor::slots`. Signed preflight and revision arithmetic therefore operate directly on the borrowed slot. They must not call helpers that re-query `self.slots` for the same agent.
 
-## 3. Explicit signed-intent recovery ceremony
+## 3. Independently signed recovery of a quarantined transition
 
-The supervisor deliberately does not infer success from `Running + target release`. An unresolved signed intent remains fail-closed because those observations do not independently prove that the exact grant caused the current state.
+The current recovery contract is defined by the [technical guide](TECHNICAL.md#8-failure-semantics-recovery-and-rollback) and the signed recovery owner entrypoints. An ambiguous signed transition remains `recovery_required`. Supervisord stays reachable for status and the recovery ceremony, reports not-ready, quarantines the affected Agent generation and rejects its ordinary mutations. Emergency kill retains its existing lifecycle checks. Corrupt or unreadable durable control state still fails startup closed.
 
-The repository-controlled recovery ceremony currently supports one conservative terminal action: **abort the ambiguous grant after fencing its effects**. It does not support an operator command that simply marks the target successful.
+The supervisor does not infer success from `Running + target release`. A matching already-terminal release transaction can close only the exact transaction-to-intent crash cut after checking grant, transition, source/target and Fleet release-state bindings.
 
-### 3.1 Inspect
+### 3.1 Inspect the current owner observations
 
-Run while supervisord is stopped or has failed closed:
+Query `Health`, `Snapshot`, `ProductionMutationStatus` and `ReleaseSelection` through the current supervisord control socket. Record the exact Agent identity, control fence, lifecycle generation, grant digest, intent digest, release-transaction digest, observed immutable release bytes and daemon authority epoch. The affected process is fenced or absent; a requested kill does not itself prove exit.
 
-```text
-hepta-supervisor-intent-recovery inspect <agent-run-root>
-```
+The legacy `hepta-supervisor-intent-recovery inspect` command can display a persisted intent. Its digest-only `abort` directive is not an independently signed recovery decision and does not terminalize an ambiguous intent in the current owner path. Publishing a matching legacy directive must leave `recovery_required`, the quarantine and the ordinary-mutation fence intact.
 
-Record at minimum:
+### 3.2 Obtain an independent recovery decision
 
-- `agent_id`;
-- `grant_sha256`;
-- `source_release` / `target_release`;
-- `expected_control_revision`;
-- `expected_lifecycle_generation`;
-- `authority_epoch`;
-- `status`;
-- `intent_sha256`.
+An authorized external signer supplies a `ProductionRecoveryDecision`. The decision binds:
 
-Do not proceed if the run root or agent binding is uncertain.
+- the Agent, original grant, current intent and current release transaction;
+- the observed release and its manifest, Agentd and optional Matrixd program digests;
+- the current lifecycle generation and daemon authority epoch;
+- the signer identity/epoch, validity interval and requested terminal outcome.
 
-### 3.2 Authorize abort
+The decision cannot select or move a release. It can terminalize only an already observed durable source/target outcome. An upgrade may recover as `committed` at its target or `rolled_back` at its source; a rollback may recover only as `rolled_back` at its target. A matching digest alone does not supply signing authority.
 
-Use the exact `intent_sha256` returned by the immediately preceding inspection:
+### 3.3 Submit and verify the terminal state
 
-```text
-hepta-supervisor-intent-recovery abort <agent-run-root> <intent-sha256>
-```
+Submit the current control fence and signed decision through `ResolveProductionRecovery`. The daemon requires the `production-authority` build feature and an externally pinned verifier. The owner revalidates the fence, unresolved intent and transaction, fenced-or-absent process, observed immutable release binding, current Fleet admission frontier, signature, signer epoch and validity interval before terminalization.
 
-The tool publishes `supervisor-signed-intent-recovery.json`. The directive is digest-bound to the exact unresolved intent; if the intent changes, the stale directive does not apply.
-
-### 3.3 Restart supervisord and reconcile
-
-On recovery, supervisord:
-
-- refuses to infer target success;
-- fences/kills an adopted main child and Matrix companion if either is still present;
-- remains fail-closed while an ambiguous adopted process is still present;
-- only when no ambiguous process remains, persists the intent as terminal `Aborted` and clears pending automatic main restart state;
-- then permits normal supervisor recovery to continue.
-
-If startup still reports `signed_intent_recovery_required`, verify that the fenced child actually exited and start supervisord again. Do not delete the intent or lease by hand merely to make startup pass.
-
-`Aborted` means “this grant is terminal and must not be resumed or inferred successful.” It does **not** assert that the source release remained active. A subsequent desired release state must go through a fresh independently authorized transition.
+Re-query the production-mutation and release-selection records after the response. A rejected, unavailable or indeterminate result does not establish terminality; preserve the durable records and reconcile the observed state before any further action. Do not delete the intent, lease or transaction to make readiness pass. These repository protocols do not themselves provide external signer custody, deployment qualification or operator acceptance.
 
 ## 4. Crash-consistency qualification matrix
 
@@ -103,7 +83,7 @@ The following are required target-host tests. Source/unit tests are not substitu
 
 | Fault point | Required invariant after restart/recovery |
 | --- | --- |
-| after `Prepared` intent publication | daemon fails closed; request outcome is not reported as a safe rejection |
+| after `Prepared` intent publication | the Agent remains quarantined; status/recovery remains reachable when durable state is readable; request outcome is not reported as a safe rejection |
 | after control revision advance | unresolved intent fences replay; revision/state digest cannot imply a clean rejection |
 | before child spawn | lifecycle/release state is reconcilable and no stale live lease is accepted |
 | after spawn, before process-lease publication | orphan cannot be silently treated as the authorized current child |
@@ -157,7 +137,8 @@ Repository-controlled verification for this change includes at least:
 - `restart_policy` unit tests for exponential delay, fixed budget and window reset;
 - `restart_journal` unit tests for durable round-trip and conservative clock rollback handling;
 - `tests/restart_budget.rs` for real supervisor crash/restart scheduling behavior inside one daemon lifetime;
-- `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and exact-digest abort terminalization;
+- `tests/signed_intent_recovery.rs` for queryable unresolved intent, preserved quarantine and rejection of exact-digest unsigned abort as terminal authority;
+- the real-socket daemon recovery test for not-ready health, isolated Agent state and an unchanged control fence/intent after ordinary mutation is rejected;
 - the existing release-transition, Matrix companion, lease/adoption, daemon protocol and production-authority tests.
 
 These are test identities, not target-host deployment receipts. CI must pass on the final source commit, and the target-host matrix in section 4 remains required.

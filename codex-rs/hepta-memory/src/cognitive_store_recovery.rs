@@ -93,6 +93,20 @@ pub enum CognitiveRecoveryError {
 }
 
 impl CognitiveStore {
+    /// Close the shared SQLite pool while retaining any owner fence held here.
+    ///
+    /// All clones share this pool. New operations stop acquiring connections;
+    /// this waits for checked-out connections and the pool's close work to finish.
+    /// Callers must finish their outstanding operations before awaiting closure.
+    /// Owner fences remain held until every store clone is dropped.
+    ///
+    /// For a planned recovery handoff, retain the independent recovery anchor,
+    /// await this method, then drop every store clone before recovery. Closing
+    /// neither replaces that anchor nor grants recovery authority.
+    pub async fn close(&self) {
+        self.pool.close().await;
+    }
+
     /// Capture one coherent bounded owner cut. The host retains/authenticates it
     /// independently; this method does not publish an acknowledgement witness.
     pub async fn recovery_anchor(&self) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {
