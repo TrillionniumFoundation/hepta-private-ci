@@ -1,5 +1,15 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 12:10 UTC 后：Split Mesh 全清单独立复算，历史双文件精确复原
+
+- #6799 精确 head `1d4eb60cfe2516d132c68d01bed083fcbdc39437`，draft=true/merged=false；本轮首屏100条51 success/19 failure/13 skipped/16 in_progress/1 queued，非全分页终局。
+- [Joint delay-reset 原生作业 45814937462/job139892104661](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45814937462/job/139892104661) 在该精确源码实际14/14、16.176秒、success；无上传归档。仅签原具名有限模型测试，不替代连续极限、Split 或科学采用。
+- [Split 45814938692/job139892108664](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45814938692/job/139892108664) 原 dedicated manifest 拒绝，四个原控制未执行；原失败归档15115791644登记1746B及SHA256，未独立下载。独立对该精确 head 的全部33个清单文件取GitHub UTF-8文本逐项SHA256复算（abc标准向量通过，三批覆盖全部条目），31/33匹配。除已登记的 model.py 缺一末尾LF外，新完整扫描发现 audit_graded.py 多一行 `"state_io.py",`，不是末尾LF。两个原历史文件均从 manifest base a12f564d 精确取回并匹配原SHA256。
+- 已发布**仅限历史复算**的独立分支 evidence/hcsn-split-exact-historical-source-20261126-1210，最终 [c440d2ba](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c440d2baff9c2befaef3ea96148b77f2ae3582b6)，相对1d4 ahead2/behind0、两个文件+1/-1；两替换 blob 和内容与历史原件完全相同，manifest blob及全文不变。由原31匹配及两精确替换、仅两文件差异，可确认33条冻结身份满足。**不得把历史 audit_graded.py 的旧范围移回当前产品分支**；当前额外 state_io.py 记录保持。未执行新候选四原控制，Mac/ai395/main进程接口均返回内部错误且无可验证作业ID，完整 Split 数值验收仍HOLD。
+- Dense sweep 与 First-cycle 仍分别在原SHA断言失败；独立读回确认它们需要不同历史 model.py（98335129 的54d2a29c…），不能用 Split 的3b437186…替代，不能把任一历史版本强行覆盖当前产品或重写冻结摘要。
+- 原 N256 precision policy 10条清单及父源独立复算7/10匹配，README/init/test三处均仅少一个LF；逐个回读既有035cad4d候选三个原对象，全部精确匹配原冻结SHA。未创建重复修补、未重新派发原已完成验证。FP64 input conversion/independence/corrected t0 仍由旧README摘要/长度拦截。主会话继续负责集成，不抢写。
+- [独立复算及原作业固定记录](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cc4e5e408d88ac8244c3b574f09f2e54f4ab5867/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/split-mesh-exact-source-readback-20261126-1210Z.json) 已逐字回读一致。全仓HOLD，Windows生产隔离、严格构建、500ms、真实动态准入及科学采用继续开放；未改原判据、安全权限或冻结摘要，未合并红门。
+
 ## 2026-11-26 10:50 UTC 后：三条 N256 冻结源红门定位及九文件恢复；稀疏动态源码门独立保全
 
 - #6799 当前精确 head `a89cbbf509410ff3f7b5beb70a58176ada0c1d03`，base 732e934，draft=true/merged=false，原合并 e437d82a。初次首屏100条75 queued/11 skipped/8 in_progress/3 pending/3 success，非全分页终局。前一精确 4ffa56f6 首屏100条66 success/10 skipped/23 failure/1 in_progress，亦非全分页终局。其他草案 #7016/#7021/#7032/#7052/#7122/#7123/#7127 均未合并。
