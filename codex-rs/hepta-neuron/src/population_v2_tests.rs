@@ -399,7 +399,7 @@ fn compact_validated_v2_shadow_digest_is_one_digest_and_exact_64_tick_parity() {
         old = Some(a.0);
         compact = Some(b.0);
     }
-    let mut different = base.clone();
+    let mut different = base;
     different.generation = generation(9);
     let rotated = checked(PreparedPopulationSparseDigestV2::new(&different));
     assert_eq!(

@@ -143,6 +143,15 @@ class PreparedPairedSmokeTests(unittest.TestCase):
             with patch.object(pair.subprocess, "run", side_effect=fake_run):
                 output = pair.run(binary, trace)
             self.assertEqual(len(called), 40)
+            first_order = called.copy()
+            called.clear()
+            with patch.object(pair.subprocess, "run", side_effect=fake_run):
+                pair.run(binary, trace, order_offset=1)
+            self.assertEqual(len(called), 40)
+            for index in range(0, len(called), 2):
+                self.assertEqual(called[index:index + 2], first_order[index:index + 2][::-1])
+            with self.assertRaisesRegex(ValueError, "only preregistered"):
+                pair.run(binary, trace, order_offset=2)
             self.assertEqual(output["pair_count"], 20)
             self.assertEqual(output["native_subprocess_count"], 40)
             self.assertEqual(output["source_binary_sha256_claim"], sha(binary.read_bytes()))
