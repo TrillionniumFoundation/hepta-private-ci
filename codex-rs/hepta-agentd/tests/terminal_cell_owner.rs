@@ -358,9 +358,10 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     use std::sync::Arc;
 
     let temp = tempfile::tempdir().unwrap();
-    let fleet = HeptaFleetRoot::parse(temp.path().to_path_buf())
-        .unwrap()
-        .layout();
+    let root = temp.path().to_path_buf();
+    #[cfg(unix)]
+    let root = root.canonicalize().unwrap();
+    let fleet = HeptaFleetRoot::parse(root).unwrap().layout();
     let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000011").unwrap();
     let receiver_id = AgentId::parse("00000000-0000-4000-8000-000000000012").unwrap();
     let source = Arc::new(CognitiveStore::open(&fleet.agent(&owner_id)).await.unwrap());

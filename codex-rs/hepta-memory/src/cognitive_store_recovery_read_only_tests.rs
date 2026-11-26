@@ -218,13 +218,18 @@ async fn crash_reopen_refuses_pending_wal() {
     let (store, _, _) = seeded(&temp, &owner).await;
     let anchor = store.recovery_anchor().await.expect("independent witness");
     store.pool.close().await;
+    let fleet_root = temp.path().join("fleet");
+    #[cfg(unix)]
+    let fleet_root = fleet_root
+        .canonicalize()
+        .expect("canonical child fleet root");
     let status = std::process::Command::new(std::env::current_exe().expect("test binary"))
         .args([
             "--exact",
             "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
             "--nocapture",
         ])
-        .env(CHILD_ROOT, temp.path().join("fleet"))
+        .env(CHILD_ROOT, fleet_root)
         .status()
         .expect("child process");
     assert_eq!(status.code(), Some(73));

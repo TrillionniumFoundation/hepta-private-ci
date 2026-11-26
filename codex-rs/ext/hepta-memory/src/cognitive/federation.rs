@@ -1214,6 +1214,8 @@ mod tests {
         let temp = tempfile::tempdir().expect("tempdir");
         let fleet_root = temp.path().join("fleet");
         std::fs::create_dir_all(&fleet_root).expect("fleet root");
+        #[cfg(unix)]
+        let fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
         let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet").layout();
         let owner_id = AgentId::parse(OWNER_ID).expect("owner id");
         let consumer_id = AgentId::parse(CONSUMER_ID).expect("consumer id");

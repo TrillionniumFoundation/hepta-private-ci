@@ -84,6 +84,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
     )?;
     let checkpoint_file = checkpoint_root
         .path()
+        .canonicalize()?
         .join("authbus-replay-checkpoint.json");
     let home = AbsolutePathBuf::from_absolute_path(agent.layout.home_root())?;
     let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;

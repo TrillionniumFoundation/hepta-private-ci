@@ -439,6 +439,11 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let response_mock = responses::mount_sse_once(&server, response).await;
 
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
+    #[cfg(target_os = "macos")]
+    let directory = tempfile::Builder::new().prefix("hiw-").tempdir_in("/tmp")?;
+    #[cfg(target_os = "macos")]
+    let root = directory.path().to_path_buf();
+    #[cfg(not(target_os = "macos"))]
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
     let host = CognitiveTestHost::start(
