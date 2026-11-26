@@ -673,7 +673,7 @@ where
         .as_ref()
         .and_then(serde_json::Value::as_str)
         .and_then(|value| codex_utils_time::OffsetTimestamp::parse_rfc3339(value).ok())
-        .map(|value| value.to_utc()))
+        .map(codex_utils_time::OffsetTimestamp::to_utc))
 }
 
 impl From<&ModelUpgrade> for ModelInfoUpgrade {
