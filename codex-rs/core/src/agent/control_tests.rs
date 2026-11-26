@@ -14,6 +14,7 @@ use crate::context::ManagedDeveloperInstructions;
 use crate::context::MultiAgentRoleInstructions;
 use crate::context::SubagentNotification;
 use crate::init_state_db;
+use crate::tasks::recovery_diagnostics::RecoveryDiagnostics;
 use crate::thread_manager::StartThreadOptions;
 use crate::tools::handlers::multi_agents_common::thread_spawn_source;
 use assert_matches::assert_matches;
@@ -380,6 +381,41 @@ async fn wait_for_subagent_notification(parent_thread: &Arc<CodexThread>) -> boo
 }
 
 async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str) {
+    // Copy only an observed turn ID; never retain a task, execution guard, or
+    // authority across abort. A busy lock or absent ID remains inconclusive.
+    let (before_abort, observed_turn_id) = match thread.session.active_turn.try_lock() {
+        Ok(active) => (
+            "observed",
+            active
+                .as_ref()
+                .and_then(|active| {
+                    active
+                        .task
+                        .as_ref()
+                        .map(|task| &task.turn_context.sub_id)
+                        .or_else(|| {
+                            active
+                                .task_terminalization
+                                .as_ref()
+                                .map(|marker| &marker.turn_context.sub_id)
+                        })
+                        .or_else(|| {
+                            active
+                                .start_transition
+                                .as_ref()
+                                .map(|transition| &transition.turn_id)
+                        })
+                        .or_else(|| {
+                            active
+                                .start_reservation
+                                .as_ref()
+                                .map(|reservation| &reservation.turn_id)
+                        })
+                })
+                .cloned(),
+        ),
+        Err(_) => ("active_lock_busy", None),
+    };
     // These tests only need a durable resume fixture. Stop the child prompt
     // first so this marker records directly instead of waiting behind an
     // unrelated active turn.
@@ -396,7 +432,18 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         }
     })
     .await
-    .expect("aborted fixture turn should reopen admission");
+    .unwrap_or_else(|error| {
+        // Register only after failure, then read once without waiting for
+        // locks. Empty reference IDs cannot establish same-turn attribution.
+        let diagnostics =
+            RecoveryDiagnostics::capture(thread, observed_turn_id.as_deref().unwrap_or(""));
+        let state = diagnostics.snapshot(thread);
+        panic!(
+            "aborted fixture turn should reopen admission: {error:?}; marker={message:?}; \
+             before_abort={before_abort}; observed_turn_id={observed_turn_id:?}; \
+             failure_snapshot={state}"
+        );
+    });
     thread
         .inject_response_items(vec![user_message(message)])
         .await
