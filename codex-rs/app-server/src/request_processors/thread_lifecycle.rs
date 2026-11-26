@@ -295,6 +295,7 @@ pub(super) async fn ensure_listener_task_running(
                         conversation_id,
                         &conversation,
                         codex_home.as_path(),
+                        &thread_manager,
                         &thread_state_manager,
                         &thread_state,
                         &thread_watch_manager,
@@ -480,6 +481,7 @@ pub(super) async fn handle_thread_listener_command(
     conversation_id: ThreadId,
     conversation: &Arc<CodexThread>,
     codex_home: &Path,
+    thread_manager: &ThreadManager,
     thread_state_manager: &ThreadStateManager,
     thread_state: &Arc<Mutex<ThreadState>>,
     thread_watch_manager: &ThreadWatchManager,
@@ -493,6 +495,7 @@ pub(super) async fn handle_thread_listener_command(
                 conversation_id,
                 conversation,
                 codex_home,
+                thread_manager,
                 thread_state_manager,
                 thread_state,
                 thread_watch_manager,
@@ -570,6 +573,7 @@ pub(super) async fn handle_pending_thread_resume_request(
     conversation_id: ThreadId,
     conversation: &Arc<CodexThread>,
     _codex_home: &Path,
+    thread_manager: &ThreadManager,
     thread_state_manager: &ThreadStateManager,
     thread_state: &Arc<Mutex<ThreadState>>,
     thread_watch_manager: &ThreadWatchManager,
@@ -577,6 +581,32 @@ pub(super) async fn handle_pending_thread_resume_request(
     pending_thread_unloads: &Arc<Mutex<HashSet<ThreadId>>>,
     mut pending: crate::thread_state::PendingThreadResumeRequest,
 ) {
+    let is_current = thread_manager
+        .get_thread(conversation_id)
+        .await
+        .is_ok_and(|current| Arc::ptr_eq(&current, conversation));
+    if !is_current
+        || matches!(
+            conversation.agent_status().await,
+            AgentStatus::Shutdown | AgentStatus::NotFound
+        )
+    {
+        outgoing
+            .send_error(
+                pending.request_id,
+                invalid_request(format!(
+                    "thread {conversation_id} is closing; retry thread/resume after the thread is closed"
+                )),
+            )
+            .await;
+        return;
+    }
+    // Owner restoration notifies thread-created asynchronously. Record this current
+    // runtime in the listener's resume sequence, in order with ShutdownComplete.
+    thread_watch_manager
+        .upsert_thread(&conversation_id.to_string())
+        .await;
+
     let active_turn = {
         let state = thread_state.lock().await;
         state.active_turn_snapshot()
@@ -915,3 +945,7 @@ pub(super) fn set_thread_status_and_interrupt_stale_turns(
     }
     thread.status = status;
 }
+
+#[cfg(test)]
+#[path = "thread_lifecycle_tests.rs"]
+mod tests;
