@@ -1,0 +1,434 @@
+{
+  "activated": true,
+  "activation_blockers": [],
+  "boundaries": {
+    "budget_lineage": "Remaining continuation of original Windows1500-second engineering scope: observed48.4359998703003, whole debit49, remaining1451. Source21/tools29/evidence2 are nested conservative subcap debits and not additive costs; no E1–E6/native48/SQLx/utility budget is used.",
+    "cancellation": "Absent terminal, failed Job query/termination, or unknown process closure cannot qualify. Creation-time JOB_LIST removes the user-code Create→Assign gap; no undocumented in-kernel hard-kill rollback guarantee is claimed.",
+    "cpu": "Job CPU summed only when every command reports accounting; otherwise null plus exact unknown labels. Tool-setup CPU is unknown.",
+    "hard_process_deadlines": "Real Job/HANDLE ownership for all coordinator child commands. Tool installation Actions retain one-minute step ceilings; aggregate remaining61s preparation is an admission postcondition. Source39s includes checkout and physical source verification. No precise native hard-kill deadline is claimed for setup Actions.",
+    "output": "Each original command output has a64MiB acceptance bound with sampling; this is not an instantaneous filesystem quota.",
+    "source_and_locks": "Exact actual parent, exact14 delta, full physical tracked bytes/Git blobs before and after; LF checkout and the one original Git symlink handled explicitly.",
+    "whole_clock": "25-minute workflow hard ceiling from integer-minute GitHub scheduling; measured initial-step through upload1451s acceptance and owner absolute deadline. Original48.4359998703003 remains separately retained; Root must also retain actual job/API start/finish and queue."
+  },
+  "branch": "fix/hepta-windows-source-stat-continuation-20261126-7c9e",
+  "budget": {
+    "discovery_seconds": 1110,
+    "evidence_seconds": 118,
+    "native_seconds": 120,
+    "source_seconds": 39,
+    "tools_seconds": 61,
+    "whole_seconds": 1451
+  },
+  "continuation": {
+    "all_original_failures_and_costs_retained": true,
+    "conservative_nested_phase_debits": {
+      "discovery_seconds": 0,
+      "evidence_seconds": 2,
+      "native_seconds": 0,
+      "source_seconds": 21,
+      "tools_seconds": 29,
+      "whole_seconds": 49
+    },
+    "debit_semantics": "Whole49 contains all original elapsed costs. Source21/tools29/evidence2 are conservative nested phase subcap debits, never added to whole49 or presented as exact phase measurements.",
+    "first_open_only": true,
+    "maximum_original_continuation_attempts": 1,
+    "native_qualification_inherited": false,
+    "original_budget": {
+      "discovery_seconds": 1110,
+      "evidence_seconds": 120,
+      "native_seconds": 120,
+      "source_seconds": 60,
+      "tools_seconds": 90,
+      "whole_seconds": 1500
+    },
+    "original_discovery_started": false,
+    "original_native_started": false,
+    "previous_run_rerun_allowed": false,
+    "previous_source_failure": {
+      "artifact_id": 15119642723,
+      "attempt": 1,
+      "checkout_seconds": 18.2769999504089,
+      "command_job_cpu_seconds": 0.125,
+      "discovery_started": false,
+      "error": "ValueError: source-read-race",
+      "head": "bce0acc949e44d096dd118219c05f27688ead126",
+      "job_id": 139929849796,
+      "log_sha256": "61238dfde02fe4354b2f9f814e9bc48ba7b71b3b9c7915917cbefeeb40029d79",
+      "native_started": false,
+      "owner_cpu_seconds": 0.265625,
+      "phase": "source-snapshot",
+      "preparation_cpu_seconds": null,
+      "preparation_seconds": 46.46101427078247,
+      "result_sha256": "e9dea22355c900f269169068f01aef01dfaf4e892ea3153dbac14f0b684d3acf",
+      "run_id": 45825905245,
+      "source_and_evidence_individual_upper_bound_seconds": 1.97498559951783,
+      "status": "failure",
+      "tree": "e075adf05b998323be7a72eadfffc314ea133e6b",
+      "whole_seconds_including_upload": 48.4359998703003
+    },
+    "prior_root_admission_sha256": "1d4770dddca80013ac8f726be5c285cdabc852e2b88cca49ccd9ddbc517d6933",
+    "upper_bound_derivation": {
+      "basis": "Workflow completes setup before Python main records preparation. All source and evidence owner work follows that record and finishes before final after-upload measurement. Separate source/evidence exact elapsed values were not retained.",
+      "evidence_debit_ceiling": 2,
+      "evidence_phase_upper_bound_seconds": 1.97498559951783,
+      "post_preparation_to_upload_seconds": 1.97498559951783,
+      "source_debit_ceiling": 21,
+      "source_phase_upper_bound_seconds": 20.25198554992673,
+      "tools_debit_ceiling": 29,
+      "tools_phase_upper_bound_seconds": 28.18401432037357,
+      "whole_debit_ceiling": 49
+    }
+  },
+  "controls": {
+    "activation_requires_root_original_result": true,
+    "continuation_source_equivalence": {
+      "accepted_by_root": true,
+      "constants": [
+        "branch",
+        "whole_seconds",
+        "source_seconds",
+        "tools_seconds",
+        "evidence_seconds"
+      ],
+      "current_contract_sha256": "dc355db9de9d1955a45aee78451bd4ccfea38b3db0343bf15e80f80a0b3af2b7",
+      "method": "exact-five-constant-reversal",
+      "original_contract_sha256": "f3af8609d9595b2ba8867e73084926da2313b4c0ddcd5165d622c8192e890a7b",
+      "qualification": "Root accepted exact full-source constant-only equivalence; old twelve tests were not rerun.",
+      "root_review_sha256": "af4b143f209e3298f46c1dc96032815a8f4a115d4597d17b520f6db7c52965ce",
+      "test_source_unchanged": true
+    },
+    "execution_authorized": false,
+    "kind": "pure-data source tests, no native owner import or command execution",
+    "method_count": 12,
+    "original_execution": {
+      "elapsed_seconds": 0.051485625095665455,
+      "exact_pass_names": [
+        "test_accepts_exact_discovered_native_binary_and_selected_names",
+        "test_accepts_exact_ten_xml_cases",
+        "test_accepts_ten_passes_with_separate_unselected_count",
+        "test_rejects_arm_binary_as_native_x86",
+        "test_rejects_duplicate_terminal_or_retry",
+        "test_rejects_extra_selected_case",
+        "test_rejects_ignored_selected_case",
+        "test_rejects_leak_despite_passed_summary",
+        "test_rejects_missing_selected_case",
+        "test_rejects_unreported_skip_count",
+        "test_rejects_wrong_binary_identity",
+        "test_rejects_wrong_xml_identity_skip_retry_and_duplicate"
+      ],
+      "exit_code": 0,
+      "kind": "Historical twelve pure-data controls on original source only",
+      "original_contract_sha256": "f3af8609d9595b2ba8867e73084926da2313b4c0ddcd5165d622c8192e890a7b",
+      "original_test_sha256": "bd2997643cdc7348abc3644b22ec7fe282a4423bccd3a2b3ea0be6d67f66ac2a",
+      "result_bytes": 4048,
+      "result_sha256": "2d2e1f163e304ed50c106c4970cf1e7d1c64d314ee6f2ccf966b678ea3a857dc",
+      "status": "passed",
+      "tests_reexecuted_for_continuation": false,
+      "whole_seconds_before_final_io": 0.05240195896476507
+    },
+    "proposed_child_cap_seconds": 5,
+    "proposed_whole_cap_seconds": 15,
+    "repo_path": "qa/b4-no-bypass/test_windows_command_native_contract_v1.py"
+  },
+  "exact_names": [
+    "win::child_exit::tests::initial_observation_error_does_not_start_another_wait",
+    "win::child_exit::tests::native_observed_exit_preserves_23_and_259",
+    "win::child_exit::tests::native_pending_wait_does_not_query_an_exit_code",
+    "win::child_exit::tests::native_signaled_non_process_handle_cannot_supply_an_exit_code",
+    "win::child_exit::tests::native_wait_failure_is_not_an_exit",
+    "win::child_exit::tests::normal_exit_keeps_status_and_never_requests_termination",
+    "win::child_exit::tests::termination_grace_observation_error_cannot_become_an_exit",
+    "win::child_exit::tests::termination_grace_timeout_cannot_become_an_exit",
+    "win::child_exit::tests::timeout_requires_native_exit_within_the_same_grace",
+    "win::child_exit::tests::unexpected_wait_results_do_not_query_or_report_exit"
+  ],
+  "native_report": {
+    "base": "workspace root; independent of CARGO_TARGET_DIR",
+    "exact_selected": 10,
+    "full_repository_qualification": false,
+    "legacy_eight_restored": false,
+    "original_leak_fixed": false,
+    "path": "codex-rs/target/nextest/local/junit.xml",
+    "preexisting_report_rejected": true,
+    "retries": 0,
+    "selected_skip_allowed": 0,
+    "threads": 1,
+    "ui14_qualification": false
+  },
+  "ordinary_ci": {
+    "existing_windows_declared_controls": 167,
+    "new_source_natural_trigger_expected": true,
+    "original_gate_not_suppressed": true,
+    "ui14_scope_separate": true,
+    "whole_pr_cost_separate_from_native10": true,
+    "windows_gate_path": ".github/workflows/hepta-windows-current-ci.yml"
+  },
+  "parent": "5b9b1c5e123aa69bd71c0fb810af8f6b8c9d4ed1",
+  "parent_tree": "a720083f7bd3d1df4222908bd5aa946c9eb43dce",
+  "prior_failure": {
+    "artifact_id": 15089229490,
+    "failed_completed": 8,
+    "head": "5b9b1c5e123aa69bd71c0fb810af8f6b8c9d4ed1",
+    "job_id": 139689520993,
+    "leaked_completed": 1,
+    "manual_replay": false,
+    "old_gate_modified": false,
+    "pending_unqualified": 43,
+    "run_attempt": 1,
+    "run_id": 45754403026,
+    "strict_pass_completed": 115
+  },
+  "publication_paths": [
+    ".github/fixtures/hepta-windows-command-native-exit-v1.json",
+    ".github/scripts/hepta_windows_command_native_contract_v1.py",
+    ".github/scripts/hepta_windows_command_native_exit_v1.py",
+    ".github/scripts/hepta_windows_owned_command_v1.py",
+    ".github/workflows/hepta-windows-command-native-exit-v1.yml",
+    "codex-rs/tui/src/chatwidget/permission_popups.rs",
+    "codex-rs/tui/src/chatwidget/tests.rs",
+    "codex-rs/tui/src/chatwidget/tests/permissions.rs",
+    "codex-rs/tui/src/chatwidget/tests/windows_sandbox_support_tests.rs",
+    "codex-rs/tui/src/chatwidget/windows_sandbox_prompts.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/child_exit.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/child_exit_tests.rs",
+    "qa/b4-no-bypass/test_windows_command_native_contract_v1.py"
+  ],
+  "root_admission": {
+    "accepted": true,
+    "receipt_sha256": "dfc33c694e304acca0fcd51a2eff5aa8c46f4bcd02330ca0fde6271493aa792b",
+    "reviewer": "root"
+  },
+  "schema": "hepta-windows-command-native10-inputs-v1",
+  "source_pins": {
+    ".github/scripts/hepta_windows_command_native_contract_v1.py": {
+      "bytes": 5764,
+      "git_blob": "74476be6dff09bf51b469b9fa1bb57ab1a78dcf8",
+      "mode": "100644",
+      "sha256": "dc355db9de9d1955a45aee78451bd4ccfea38b3db0343bf15e80f80a0b3af2b7"
+    },
+    ".github/scripts/hepta_windows_command_native_exit_v1.py": {
+      "bytes": 28564,
+      "git_blob": "95caee546cab26484446048af6027519dba44289",
+      "mode": "100644",
+      "sha256": "85b071df6b067accf58ae2b57b0ebafcdaffcee731dbc6670f1093ba016584b8"
+    },
+    ".github/scripts/hepta_windows_owned_command_v1.py": {
+      "bytes": 14010,
+      "git_blob": "ace25270d31619f9900429c2e69742a6aa80aad3",
+      "mode": "100644",
+      "sha256": "78859665da4ab46302bfaf66fd3a5a5c9860d3ae3c10e2e1b8e26095519cf3b7"
+    },
+    ".github/workflows/hepta-windows-command-native-exit-v1.yml": {
+      "bytes": 3633,
+      "git_blob": "49c93b98b099d3a9117049102d53caa7cfcf4763",
+      "mode": "100644",
+      "sha256": "c12e48a6b14565cb631990678557049a11856965098703ae8e553e1d67549481"
+    },
+    "codex-rs/tui/src/chatwidget/permission_popups.rs": {
+      "bytes": 20988,
+      "git_blob": "abec13785b62f625cd2245759be917c2ca006e64",
+      "mode": "100644",
+      "sha256": "1ce32ae16f9bacdb6bf5b44588b86cdac4bcea7b1a65659ac9c99fd71da80b35"
+    },
+    "codex-rs/tui/src/chatwidget/tests.rs": {
+      "bytes": 14560,
+      "git_blob": "cd1c7548861876901d26ba9c9cb39ae703b81017",
+      "mode": "100644",
+      "sha256": "8039dd3ed0fcb7244b1c8ceeaa87e24c957258c86d13616011f6937d53c73963"
+    },
+    "codex-rs/tui/src/chatwidget/tests/permissions.rs": {
+      "bytes": 46299,
+      "git_blob": "3c7b709a32f570cac13cb42410db6146cce59a90",
+      "mode": "100644",
+      "sha256": "6dabf8face465624a4099989c025233dbc8d9b2990773bfb0e63a5fb6c5ffda9"
+    },
+    "codex-rs/tui/src/chatwidget/tests/windows_sandbox_support_tests.rs": {
+      "bytes": 5982,
+      "git_blob": "84bcd3a5d15950e06736e98ad4569681e76f0e41",
+      "mode": "100644",
+      "sha256": "d5819c6af21f1438151cb7231cf6bba0522a64fb91d00d3785c81cbd6d427887"
+    },
+    "codex-rs/tui/src/chatwidget/windows_sandbox_prompts.rs": {
+      "bytes": 19356,
+      "git_blob": "acba7fae2605664bbe332682785785bd24e233b5",
+      "mode": "100644",
+      "sha256": "c7b89e4778a4a630523f4efb3f1d86b23a5b833b984d3b7486cfd2c3ef5d250b"
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs": {
+      "bytes": 25339,
+      "git_blob": "5ab9b33373738c93bc30571883517a9267c7dcf8",
+      "mode": "100644",
+      "sha256": "18e03e3435c2c3a647d19a5a73a7bc4ea8ca6da0d44b8264f449c8ce9e53c30c"
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/child_exit.rs": {
+      "bytes": 2695,
+      "git_blob": "85586d0a39b4da847a9033c87c7bc3239ede1e92",
+      "mode": "100644",
+      "sha256": "cb370efdd473938fe16a0cf0f5e83d1af82e4ff81768f63b0963ab05dac37b1f"
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/child_exit_tests.rs": {
+      "bytes": 8220,
+      "git_blob": "318755ff939135f71cd2568d3b468aed832bcba3",
+      "mode": "100644",
+      "sha256": "31169b31417c91059cddadd7c073c420c274c1fce8babc2ce24325df154f34e6"
+    },
+    "qa/b4-no-bypass/test_windows_command_native_contract_v1.py": {
+      "bytes": 7154,
+      "git_blob": "fe7bad063695664874440dd57e3d78d41ed8b00f",
+      "mode": "100644",
+      "sha256": "bd2997643cdc7348abc3644b22ec7fe282a4423bccd3a2b3ea0be6d67f66ac2a"
+    }
+  },
+  "source_stat_controls": {
+    "accepted": true,
+    "count": 8,
+    "elapsed_seconds": 0.030881292186677456,
+    "exact_names": [
+      "test_accepts_different_stable_path_and_handle_ctime",
+      "test_rejects_each_cross_api_identity_field_at_each_observation",
+      "test_rejects_stable_replacement_handle_with_identical_content_metadata",
+      "test_rejects_each_same_api_ctime_transition",
+      "test_rejects_reparse_and_nonregular_at_each_observation",
+      "test_rejects_missing_birthtime_without_zero_fallback",
+      "test_rejects_short_and_extra_bytes",
+      "test_retains_exact_path_and_all_four_failure_observations"
+    ],
+    "execution_count": 1,
+    "external_source_sha256": "0788250d20bf123a0caa26513533baccf08f1bf3eeb0cf21beda60e5316ff047",
+    "native_execution": false,
+    "original_receipt_sha256": "16d85326ba8b2769d24fd9836552204d11f9f6b2a4712fbe003dc506d23856fd",
+    "owner_sha256": "85b071df6b067accf58ae2b57b0ebafcdaffcee731dbc6670f1093ba016584b8",
+    "proposed_child_cap_seconds": 5,
+    "repository_qualification": false,
+    "reviewer": "root"
+  },
+  "support_pins": {
+    ".gitattributes": {
+      "bytes": 910,
+      "git_blob": "ae4d8439181c56b3253b352253740a8ab6e3deee",
+      "mode": "100644",
+      "sha256": "182d9c13a747806ee4eeab7d9a49f368e09eabaf174f393be09ce14519f83396"
+    },
+    ".github/fixtures/windows-current-ci-scope.json": {
+      "bytes": 31537,
+      "git_blob": "bffedc4c1d8634594958859ecb9b3aae54e582b1",
+      "mode": "100644",
+      "sha256": "24f0752a4e01943dbc6212803dd5647a6f620f58351e57c979e4ce84d4c350c0"
+    },
+    ".github/scripts/test_windows_current_ci.py": {
+      "bytes": 7774,
+      "git_blob": "37b431d0fa3aa41b8cd12fe99fe8dccf3db5f171",
+      "mode": "100644",
+      "sha256": "900ee6ddc4aa9832d8a8b53d0a42285c7b19010568a27e1d3e25b0aa605fbd1b"
+    },
+    ".github/scripts/windows_current_ci.py": {
+      "bytes": 11926,
+      "git_blob": "161ed1149c8ffb5f2bb2a8272f555f8b91d729fe",
+      "mode": "100644",
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    ".github/workflows/hepta-windows-current-ci.yml": {
+      "bytes": 2749,
+      "git_blob": "d9dc4986a86a6d29e51203e34b7cc3e4f08c536b",
+      "mode": "100644",
+      "sha256": "cd649ec9a1786c20531c6757ad07743f5a16ecc698d25ad59be8cf2dfd15a794"
+    },
+    "AGENTS.md": {
+      "bytes": 22519,
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "mode": "100644",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1792663,
+      "git_blob": "bb7fb6827f138ca47c750d6c88aec6f5c3bb2775",
+      "mode": "100644",
+      "sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892"
+    },
+    "codex-rs/.cargo/config.toml": {
+      "bytes": 634,
+      "git_blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+      "mode": "100644",
+      "sha256": "b8ae1cea341beb2d4a3c8fb81f97a96f4aee1fd53f769c57f140dfe949806a80"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 6617,
+      "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "mode": "100644",
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 421756,
+      "git_blob": "8a45110e349a11651f403d534467050ee998af3f",
+      "mode": "100644",
+      "sha256": "bc8b1abe42bdb85aa10a9ba2a0c3f022af07bc08e38ac50e94442e58806f9ae1"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 23110,
+      "git_blob": "ed963f9f36eda9f5f634ea7f3ebdf6091a73915d",
+      "mode": "100644",
+      "sha256": "9c055a48d9833d2e2baebbec88cb8dc30a5f666beba7bdaf104290625a667986"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "mode": "100644",
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    "codex-rs/windows-sandbox-rs/BUILD.bazel": {
+      "bytes": 2556,
+      "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "mode": "100644",
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702"
+    },
+    "codex-rs/windows-sandbox-rs/Cargo.toml": {
+      "bytes": 2438,
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "mode": "100644",
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/main.rs": {
+      "bytes": 224,
+      "git_blob": "9fe70c87508e6b171eaa434ffd2bfba7b43e38ba",
+      "mode": "100644",
+      "sha256": "835d7ea6f658300088f835701ebe0cfb7e1ff07e57626d109cfff17db09272a2"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "mode": "100644",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/hepta_ci_junit.py": {
+      "bytes": 6613,
+      "git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+      "mode": "100644",
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "mode": "100644",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "mode": "100644",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    }
+  },
+  "tooling": {
+    "cargo": "1.96.0",
+    "just": "1.51.0",
+    "nextest": "0.9.103",
+    "physical_tool_pins_before_after": true,
+    "process_creation": "CREATE_SUSPENDED with PROC_THREAD_ATTRIBUTE_JOB_LIST and HANDLE_LIST; one private unnamed noninherited Job, KILL_ON_JOB_CLOSE; no breakaway flag.",
+    "python": "Runner-provided CPython >=3.12,<3.15; actual physical executable hash and complete runtime version recorded.",
+    "runner": "windows-2025",
+    "rust": "1.96.0",
+    "target": "x86_64-pc-windows-msvc",
+    "version_command_cap_seconds": 5
+  }
+}

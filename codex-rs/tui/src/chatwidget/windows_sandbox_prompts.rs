@@ -231,13 +231,19 @@ impl ChatWidget {
 
         let allow_unelevated =
             self.windows_sandbox_mode_allowed(WindowsSandboxModeToml::Unelevated);
+        let allow_elevated = self.windows_sandbox_mode_allowed(WindowsSandboxModeToml::Elevated);
         let setup_choice_is_required =
             !allow_unelevated || self.elevated_windows_sandbox_setup_required();
         let mut header = ColumnRenderable::new();
         header.push(*Box::new(
-            Paragraph::new(if allow_unelevated {
+            Paragraph::new(if !allow_elevated {
+                vec![
+                    line!["The non-admin sandbox is unavailable, and your organization does not permit the default sandbox. Contact your administrator to continue with sandboxed commands."],
+                ]
+            } else if allow_unelevated {
                 vec![
                     line!["Set up the Codex agent sandbox to protect your files and control network access. Learn more <https://developers.openai.com/codex/windows>"],
+                    line!["The non-admin sandbox is unavailable. Default sandbox setup requires Administrator permissions and your approval."],
                 ]
             } else {
                 vec![
@@ -249,42 +255,23 @@ impl ChatWidget {
         ));
 
         let accept_otel = self.session_telemetry.clone();
-        let legacy_otel = self.session_telemetry.clone();
-        let legacy_preset = preset.clone();
-        let legacy_profile_selection = profile_selection.clone();
         let quit_otel = self.session_telemetry.clone();
         let retry_preset = preset.clone();
         let retry_profile_selection = profile_selection.clone();
-        let mut items = vec![SelectionItem {
-            name: "Set up default sandbox (requires Administrator permissions)".to_string(),
-            description: None,
-            actions: vec![Box::new(move |tx| {
-                accept_otel.counter(
-                    "codex.windows_sandbox.elevated_prompt_accept",
-                    /*inc*/ 1,
-                    &[],
-                );
-                tx.send(AppEvent::BeginWindowsSandboxElevatedSetup {
-                    preset: preset.clone(),
-                    profile_selection: profile_selection.clone(),
-                });
-            })],
-            dismiss_on_select: true,
-            ..Default::default()
-        }];
-        if allow_unelevated {
+        let mut items = Vec::new();
+        if allow_elevated {
             items.push(SelectionItem {
-                name: "Use non-admin sandbox (higher risk if prompt injected)".to_string(),
+                name: "Set up default sandbox (requires Administrator permissions)".to_string(),
                 description: None,
                 actions: vec![Box::new(move |tx| {
-                    legacy_otel.counter(
-                        "codex.windows_sandbox.elevated_prompt_use_legacy",
+                    accept_otel.counter(
+                        "codex.windows_sandbox.elevated_prompt_accept",
                         /*inc*/ 1,
                         &[],
                     );
-                    tx.send(AppEvent::BeginWindowsSandboxLegacySetup {
-                        preset: legacy_preset.clone(),
-                        profile_selection: legacy_profile_selection.clone(),
+                    tx.send(AppEvent::BeginWindowsSandboxElevatedSetup {
+                        preset: preset.clone(),
+                        profile_selection: profile_selection.clone(),
                     });
                 })],
                 dismiss_on_select: true,
@@ -341,6 +328,7 @@ impl ChatWidget {
 
         let allow_unelevated =
             self.windows_sandbox_mode_allowed(WindowsSandboxModeToml::Unelevated);
+        let allow_elevated = self.windows_sandbox_mode_allowed(WindowsSandboxModeToml::Elevated);
         let setup_choice_is_required =
             !allow_unelevated || self.elevated_windows_sandbox_setup_required();
         let mut lines = Vec::new();
@@ -348,9 +336,13 @@ impl ChatWidget {
             "Couldn't set up your sandbox with Administrator permissions".bold()
         ]);
         lines.push(line![""]);
-        if allow_unelevated {
+        if !allow_elevated {
             lines.push(line![
-                "You can still use Codex in a non-admin sandbox. It carries greater risk if prompt injected."
+                "The non-admin sandbox is unavailable, and your organization does not permit the default sandbox. Contact your administrator to continue with sandboxed commands."
+            ]);
+        } else if allow_unelevated {
+            lines.push(line![
+                "The non-admin sandbox is unavailable. You can retry default sandbox setup with Administrator permissions and your approval."
             ]);
         } else {
             lines.push(line![
@@ -364,50 +356,28 @@ impl ChatWidget {
         let mut header = ColumnRenderable::new();
         header.push(*Box::new(Paragraph::new(lines).wrap(Wrap { trim: false })));
 
-        let elevated_preset = preset.clone();
-        let legacy_preset = preset;
+        let elevated_preset = preset;
         let retry_preset = elevated_preset.clone();
         let retry_profile_selection = profile_selection.clone();
         let elevated_profile_selection = profile_selection.clone();
-        let legacy_profile_selection = profile_selection;
         let quit_otel = self.session_telemetry.clone();
-        let mut items = vec![SelectionItem {
-            name: "Try setting up admin sandbox again".to_string(),
-            description: None,
-            actions: vec![Box::new({
-                let otel = self.session_telemetry.clone();
-                let preset = elevated_preset;
-                move |tx| {
-                    otel.counter(
-                        "codex.windows_sandbox.fallback_retry_elevated",
-                        /*inc*/ 1,
-                        &[],
-                    );
-                    tx.send(AppEvent::BeginWindowsSandboxElevatedSetup {
-                        preset: preset.clone(),
-                        profile_selection: elevated_profile_selection.clone(),
-                    });
-                }
-            })],
-            dismiss_on_select: true,
-            ..Default::default()
-        }];
-        if allow_unelevated {
+        let mut items = Vec::new();
+        if allow_elevated {
             items.push(SelectionItem {
-                name: "Use Codex with non-admin sandbox".to_string(),
+                name: "Try setting up admin sandbox again".to_string(),
                 description: None,
                 actions: vec![Box::new({
                     let otel = self.session_telemetry.clone();
-                    let preset = legacy_preset;
+                    let preset = elevated_preset;
                     move |tx| {
                         otel.counter(
-                            "codex.windows_sandbox.fallback_use_legacy",
+                            "codex.windows_sandbox.fallback_retry_elevated",
                             /*inc*/ 1,
                             &[],
                         );
-                        tx.send(AppEvent::BeginWindowsSandboxLegacySetup {
+                        tx.send(AppEvent::BeginWindowsSandboxElevatedSetup {
                             preset: preset.clone(),
-                            profile_selection: legacy_profile_selection.clone(),
+                            profile_selection: elevated_profile_selection.clone(),
                         });
                     }
                 })],
@@ -458,7 +428,7 @@ impl ChatWidget {
     #[cfg(target_os = "windows")]
     pub(crate) fn maybe_prompt_windows_sandbox_enable(&mut self, show_now: bool) {
         let windows_sandbox_level = crate::windows_sandbox::level_from_config(&self.config);
-        let setup_is_required = windows_sandbox_level == WindowsSandboxLevel::Disabled
+        let setup_is_required = windows_sandbox_level != WindowsSandboxLevel::Elevated
             || self.elevated_windows_sandbox_setup_required();
         if show_now
             && setup_is_required
