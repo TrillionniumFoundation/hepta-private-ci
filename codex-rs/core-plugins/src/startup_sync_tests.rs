@@ -126,7 +126,9 @@ fn downloaded_zip_permissions_do_not_preserve_privileged_bits() {
     let mut archive = ZipArchive::new(std::io::Cursor::new(bytes)).expect("permission archive");
     let entry = archive.by_name("payload").expect("permission entry");
     assert_eq!(entry.external_attributes() >> 16, 0o104755);
-    apply_zip_permissions(entry.unix_mode(), &path).unwrap_or_else(|error| panic!("{error:?}"));
+    let output = File::open(&path).unwrap_or_else(|error| panic!("{error:?}"));
+    apply_zip_permissions(entry.unix_mode(), &output, &path)
+        .unwrap_or_else(|error| panic!("{error:?}"));
     let metadata = std::fs::metadata(&path).unwrap_or_else(|error| panic!("{error:?}"));
     assert_eq!(metadata.permissions().mode() & 0o7777, 0o755);
 }

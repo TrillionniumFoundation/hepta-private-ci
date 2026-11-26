@@ -1055,6 +1055,9 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
     let cursor = std::io::Cursor::new(bytes);
     let mut archive = ZipArchive::new(cursor)
         .map_err(|err| format!("failed to open curated plugins zip archive: {err}"))?;
+    if archive.has_duplicate_names() {
+        return Err("curated plugins zip contains duplicate central directory names".to_string());
+    }
 
     for index in 0..archive.len() {
         let mut entry = archive
@@ -1155,14 +1158,18 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 output_path.display()
             )
         })?;
-        apply_zip_permissions(entry.unix_mode(), &output_path)?;
+        apply_zip_permissions(entry.unix_mode(), &output, &output_path)?;
     }
 
     Ok(())
 }
 
 #[cfg(unix)]
-fn apply_zip_permissions(mode: Option<u32>, output_path: &Path) -> Result<(), String> {
+fn apply_zip_permissions(
+    mode: Option<u32>,
+    output: &File,
+    output_path: &Path,
+) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
 
     let Some(mode) = mode else {
@@ -1171,14 +1178,14 @@ fn apply_zip_permissions(mode: Option<u32>, output_path: &Path) -> Result<(), St
     // Never adopt special bits or group/world writes supplied by an archive.
     // Preserve owner writes and the requested read and execute permissions.
     let safe_mode = safe_zip_file_mode(mode);
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(safe_mode)).map_err(
-        |err| {
+    output
+        .set_permissions(std::fs::Permissions::from_mode(safe_mode))
+        .map_err(|err| {
             format!(
                 "failed to set permissions on curated plugins file {}: {err}",
                 output_path.display()
             )
-        },
-    )
+        })
 }
 
 #[cfg(unix)]
@@ -1187,7 +1194,11 @@ fn safe_zip_file_mode(mode: u32) -> u32 {
 }
 
 #[cfg(not(unix))]
-fn apply_zip_permissions(_mode: Option<u32>, _output_path: &Path) -> Result<(), String> {
+fn apply_zip_permissions(
+    _mode: Option<u32>,
+    _output: &File,
+    _output_path: &Path,
+) -> Result<(), String> {
     Ok(())
 }
 

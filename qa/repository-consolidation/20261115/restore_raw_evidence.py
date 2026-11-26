@@ -77,7 +77,9 @@ ARCHIVED_HISTORY_CONSOLE_RETENTION_INDEX = "qa/repository-consolidation/20261125
 ARCHIVED_NATIVE_CONSOLE_RETENTION_INDEX = "qa/repository-consolidation/20261125/archived-native-console-retention/raw-evidence-storage.json"
 INACTIVE_QUALIFICATION_OUTPUT_CUSTODY_INDEX = "qa/repository-consolidation/20261126/inactive-qualification-output-custody/raw-evidence-storage.json"
 AGE_VERBATIM_TESTKIT_FIXTURES_INDEX = "qa/repository-consolidation/20261126/age-verbatim-testkit-fixtures/raw-evidence-storage.json"
+REFUSAL_HARNESS_CUSTODY_INDEX = "qa/repository-consolidation/20261126/refusal-harness-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    REFUSAL_HARNESS_CUSTODY_INDEX: "5c25beccbe41d17dc8b0da1541fcbf8e5564cf815329b88bafe62d922702f74a",
     AGE_VERBATIM_TESTKIT_FIXTURES_INDEX: "2885456444551f12ab1a3c7975088c61d3ec5181030dccddc520da262e731680",
     INACTIVE_QUALIFICATION_OUTPUT_CUSTODY_INDEX: "f01b8ce53b391a9507305d2d167b6e5f34de724fdf50bf51ef47c67cefb0241b",
     ARCHIVED_NATIVE_CONSOLE_RETENTION_INDEX: "7510da38801df159ee2b22639d8cd5e5a009cb194a39025c6631b7d5f315a6fc",
