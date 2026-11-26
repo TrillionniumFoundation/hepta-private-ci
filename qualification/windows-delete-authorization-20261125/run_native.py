@@ -23,6 +23,7 @@ CASES = {
 }
 LIST_CASE = "list_factor::directory_list_bit_observations"
 NATIVE_OPEN_CASE = "native_open::absolute_nt_and_win32_open_observations"
+DISPOSITION_CASE = "native_disposition::delete_only_handle_marks_closes_and_removes_owned_directory"
 SOURCES = [
     "codex-rs/Cargo.lock",
     "codex-rs/.config/nextest.toml",
@@ -47,6 +48,10 @@ SOURCES = [
     "qualification/windows-delete-authorization-20261125/LIST_FACTOR_PROTOCOL.md",
     "qualification/windows-delete-authorization-20261125/NATIVE_OPEN_PROTOCOL.md",
     ".github/workflows/hepta-windows-delete-authorization.yml",
+    "codex-rs/windows-sandbox-rs/src/token_delete_native_disposition_calls.rs",
+    "codex-rs/windows-sandbox-rs/src/token_delete_native_disposition_tests.rs",
+    "qualification/windows-delete-authorization-20261125/probe/native_disposition.rs",
+    "qualification/windows-delete-authorization-20261125/DISPOSITION_PROTOCOL.md",
 ]
 
 
@@ -174,6 +179,78 @@ def verify_native_open(log):
             "qualifies_original_matrix": False}
 
 
+def verify_native_disposition(log):
+    clean = re.sub(r"\x1b\[[0-9;]*m", "", log)
+    binary = re.escape(PACKAGE + "::native_disposition")
+    passed = re.findall(r"^\s*PASS\s+\[[^]]+\]\s+" + binary
+                        + r"\s+(native_disposition::\S+)\s*$", clean, re.M)
+    if passed != [DISPOSITION_CASE] or not re.search(
+            r"Summary\s+\[[^]]+\] 1 tests? run: 1 passed, 0 skipped", clean):
+        raise RuntimeError("the independent disposition contract did not complete")
+    scenarios = ["Target", "NullParent", "NullTarget", "Neither"]
+
+    def records(marker, expected):
+        rows = re.findall(r"^\s*HEPTA_DISPOSITION_" + marker + r" scenario=(\S+) (.+)$",
+                          clean, re.M)
+        raw = re.findall(r"^\s*HEPTA_DISPOSITION_" + marker + r"\b.*$", clean, re.M)
+        if len(raw) != len(rows) or [name for name, _ in rows] != expected:
+            raise RuntimeError(f"missing, duplicated or reordered disposition {marker} records")
+        return rows
+
+    def fields(details, required):
+        pairs = [part.split("=", 1) for part in details.split()]
+        if any(len(pair) != 2 for pair in pairs):
+            raise RuntimeError("malformed disposition fields")
+        values = dict(pairs)
+        if len(values) != len(pairs) or any(values.get(key) != value
+                                          for key, value in required.items()):
+            raise RuntimeError("incomplete or unknown disposition fields")
+        return values
+
+    opens = records("OPEN", scenarios)
+    for scenario, details in opens:
+        required = {"requested": "0x00010000", "root_handle": "null", "options": "0x00204000"}
+        if scenario == "Neither":
+            required.update(ntstatus="0xc0000022", mapped_win32="5", opened="false",
+                            query_ntstatus="not_opened", query_bytes="0", granted="unknown")
+        else:
+            required.update(ntstatus="0x00000000", mapped_win32="0", opened="true",
+                            io_status="0x00000000", query_ntstatus="0x00000000",
+                            query_bytes="56", granted="Some(65536)")
+        values = fields(details, required)
+        if not re.fullmatch(r"[0-9]+", values.get("io_information", "")) or not re.fullmatch(
+                r"0x[0-9a-f]{8}", values.get("io_status", "")):
+            raise RuntimeError("missing raw open information")
+    marks = records("MARK", scenarios[:3])
+    for _, details in marks:
+        values = fields(details, {"class": "13", "delete_file": "1", "ntstatus": "0x00000000",
+                                  "mapped_win32": "0", "io_status": "0x00000000"})
+        if not re.fullmatch(r"[0-9]+", values.get("io_information", "")):
+            raise RuntimeError("missing raw disposition information")
+    closes = records("CLOSE", scenarios[:3])
+    for _, details in closes:
+        fields(details, {"phase": "disposition", "ntstatus": "0x00000000", "mapped_win32": "0"})
+    namespace = records("NAMESPACE", scenarios)
+    for scenario, details in namespace:
+        expected = "true" if scenario == "Neither" else "false"
+        if details != f"target_exists=Ok({expected})":
+            raise RuntimeError("unknown or unexpected final target namespace")
+    contracts = records("CONTRACT", scenarios)
+    for scenario, details in contracts:
+        deleted, exists, state = (("false", "true", "unchanged") if scenario == "Neither"
+                                   else ("true", "false", "removed"))
+        required = [f"deleted={deleted}", f"target_exists={exists}", f"target_state={state}",
+                    "same_token=true", "parent_descriptor_equal=true", "parent_metadata_valid=true",
+                    "namespace_exact=true", "no_parent_handle=true"]
+        if details.split()[:len(required)] != required:
+            raise RuntimeError("missing complete disposition namespace/token/descriptor contract")
+    if "HEPTA_DISPOSITION_INCOMPLETE" in clean:
+        raise RuntimeError("disposition reported an incomplete operation")
+    return {"test_identity": DISPOSITION_CASE, "rust_tests": 1, "opens": opens, "marks": marks,
+            "closes": closes, "namespace": namespace, "contracts": contracts,
+            "contract_complete": True, "qualifies_original_matrix": False}
+
+
 def main():
     evidence = Path(os.environ["RUNNER_TEMP"]) / "hepta-delete-evidence"
     evidence.mkdir(parents=True, exist_ok=True)
@@ -230,6 +307,11 @@ def main():
                              "--config-file", str(HERE / "probe/nextest.toml"),
                              "--test-threads", "1", "--retries", "0",
                              "--success-output", "immediate", "--failure-output", "immediate"]),
+            ("native-disposition", ["just", "test", "--manifest-path", manifest, "--locked",
+                                    "--test", "native_disposition", "-p", PACKAGE,
+                                    "--config-file", str(HERE / "probe/nextest.toml"),
+                                    "--test-threads", "1", "--retries", "0",
+                                    "--success-output", "immediate", "--failure-output", "immediate"]),
         ]
         for name, args in invocations:
             row = command(args, evidence, name)
@@ -250,6 +332,12 @@ def main():
         except Exception as error:
             failed = True
             receipt["native_open_error"] = f"{type(error).__name__}: {error}"
+        try:
+            receipt["native_disposition_contract"] = verify_native_disposition(
+                (evidence / "native-disposition.log").read_text(encoding="utf-8", errors="replace"))
+        except Exception as error:
+            failed = True
+            receipt["native_disposition_error"] = f"{type(error).__name__}: {error}"
         receipt["native_counts"] = verify_native(
             (evidence / "native.log").read_text(encoding="utf-8", errors="replace"))
     except Exception as error:
