@@ -33,11 +33,19 @@ pub enum SkillParseError {
     #[error("missing YAML frontmatter delimited by ---")]
     MissingFrontmatter,
     #[error("invalid YAML: {0}")]
-    InvalidYaml(#[source] serde_yaml::Error),
+    InvalidYaml(#[source] serde_saphyr::Error),
     #[error("missing field `{0}`")]
     MissingField(&'static str),
     #[error("invalid {field}: {reason}")]
     InvalidField { field: &'static str, reason: String },
+}
+
+/// Enforce strict tags and duplicate identity rejection on untrusted YAML.
+fn safe_yaml_options() -> serde_saphyr::Options {
+    // Untrusted Skill frontmatter cannot inject custom constructor tags.
+    serde_saphyr::options! {
+        reject_unsupported_tags: true,
+    }
 }
 
 /// Parses and validates the metadata frontmatter from `SKILL.md` contents.
@@ -47,19 +55,21 @@ pub fn parse_skill_frontmatter_metadata(
 ) -> Result<ParsedSkillFrontmatter, SkillParseError> {
     let frontmatter = extract_frontmatter(contents).ok_or(SkillParseError::MissingFrontmatter)?;
 
-    let parsed: SkillFrontmatter = match serde_yaml::from_str(&frontmatter) {
-        Ok(parsed) => Ok(parsed),
-        Err(original_error) => match repair_frontmatter_scalar_fields(&frontmatter) {
-            // Some third-party skills use prose like `description: Build for AWS: ECS`
-            // or `argument-hint: <duration: e.g. 7d>`. Keep the repair line-oriented
-            // so unrelated invalid YAML still surfaces.
-            Some(repaired_frontmatter) => {
-                serde_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)
-            }
-            None => Err(original_error),
-        },
-    }
-    .map_err(SkillParseError::InvalidYaml)?;
+    let parsed: SkillFrontmatter =
+        match serde_saphyr::from_str_with_options(&frontmatter, safe_yaml_options()) {
+            Ok(parsed) => Ok(parsed),
+            Err(original_error) => match repair_frontmatter_scalar_fields(&frontmatter) {
+                // Some third-party skills use prose like `description: Build for AWS: ECS`
+                // or `argument-hint: <duration: e.g. 7d>`. Keep the repair line-oriented
+                // so unrelated invalid YAML still surfaces.
+                Some(repaired_frontmatter) => {
+                    serde_saphyr::from_str_with_options(&repaired_frontmatter, safe_yaml_options())
+                        .map_err(|_| original_error)
+                }
+                None => Err(original_error),
+            },
+        }
+        .map_err(SkillParseError::InvalidYaml)?;
 
     let name = parsed
         .name
@@ -150,7 +160,10 @@ fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
             repaired_lines.push(line.to_string());
             continue;
         }
-        if matches!(first_char, '\'' | '"') {
+        if matches!(first_char, '\'' | '"' | '!' | '&' | '*') {
+            // Do not rewrite rejected YAML tags or anchored/aliased values
+            // into quoted strings; the second parse must retain the original
+            // parser's security-relevant syntax and rejection semantics.
             repaired_lines.push(line.to_string());
             continue;
         }
@@ -165,7 +178,11 @@ fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
             }
         }
         let invalid_flow_like_scalar = matches!(first_char, '[' | '{' | '@' | '`')
-            && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();
+            && serde_saphyr::from_str_with_options::<serde_json::Value>(
+                scalar,
+                safe_yaml_options(),
+            )
+            .is_err();
         if !has_colon_separator && !invalid_flow_like_scalar {
             repaired_lines.push(line.to_string());
             continue;

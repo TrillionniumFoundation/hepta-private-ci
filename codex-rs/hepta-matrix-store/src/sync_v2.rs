@@ -8,12 +8,13 @@ use codex_hepta_matrix_protocol::MatrixSyncMutationDispositionV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationOutcomeV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
 use codex_hepta_matrix_protocol::MatrixSyncResultV2;
+use codex_hepta_matrix_protocol::MatrixdEventKind;
 use serde::Serialize;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::Transaction;
 
-use super::sync_v2_tombstone::active_dispatch_exists_tx;
+use super::sync_v2_tombstone::dispatched_source_exists_tx;
 use super::sync_v2_tombstone::has_cancel_capacity_tx;
 use super::sync_v2_tombstone::has_commit_capacity_tx;
 use super::sync_v2_tombstone::inbox_exists_tx;
@@ -349,9 +350,7 @@ impl MatrixDurableStore {
                 return Err(MatrixDurableError::Conflict);
             }
         }
-        if active_dispatch_exists_tx(transaction, mutation).await? {
-            return Err(MatrixDurableError::Conflict);
-        }
+        let dispatched_redaction = dispatched_source_exists_tx(transaction, mutation).await?;
         if let Some(row) = sqlx::query(
             "SELECT mutation_sha256, binding_revision, generation \
              FROM matrix_sync_mutations_v2 WHERE source_event_id = ?",
@@ -382,6 +381,18 @@ impl MatrixDurableStore {
         if !matches!(&mutation.body, MatrixSyncMutationBodyV2::Timeline { .. }) {
             insert_mutation_ledger_tx(transaction, mutation, &semantic_digest).await?;
         }
+        if dispatched_redaction
+            && crate::quarantine::quarantine_dispatched_redaction_tx(transaction, mutation).await?
+        {
+            self.append_control_event(
+                transaction,
+                MatrixdEventKind::ResyncRequired {
+                    reason_code: "dispatched_redaction_quarantine".to_string(),
+                },
+                mutation.received_at_ms.max(1),
+            )
+            .await?;
+        }
 
         let disposition = match &mutation.body {
             MatrixSyncMutationBodyV2::Timeline {
@@ -397,7 +408,37 @@ impl MatrixDurableStore {
                 )
                 .await?
                 {
-                    if inbox_source_exists_tx(transaction, &mutation.source_event_id).await? {
+                    let quarantined = crate::quarantine::is_scope_quarantined_tx(
+                        transaction,
+                        &mutation.room_id,
+                        mutation.binding_revision,
+                        mutation.generation,
+                    )
+                    .await?;
+                    if quarantined {
+                        // Keep source semantics only. Quarantine cannot
+                        // forgive a conflicting existing V1 source identity.
+                        if let Some(existing) =
+                            super::raw_inbox_by_event_tx(transaction, &mutation.source_event_id)
+                                .await?
+                        {
+                            let draft = InboxDraft {
+                                event_id: mutation.source_event_id.clone(),
+                                room_id: mutation.room_id.clone(),
+                                sender: mutation.sender.clone(),
+                                event_type: event_type.clone(),
+                                payload: payload.clone(),
+                                binding_revision: mutation.binding_revision,
+                                generation: mutation.generation,
+                                origin_server_ts_ms: mutation.origin_server_ts_ms,
+                                received_at_ms: mutation.received_at_ms,
+                            };
+                            if !super::inbox_matches_draft(&existing, &draft) {
+                                return Err(MatrixDurableError::Conflict);
+                            }
+                        }
+                    } else if inbox_source_exists_tx(transaction, &mutation.source_event_id).await?
+                    {
                         // A prior V1 inbox row has already been scrubbed, so
                         // its original payload identity can no longer be
                         // compared. Do not let a later V2 timeline certify a
