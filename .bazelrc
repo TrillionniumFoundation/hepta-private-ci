@@ -183,12 +183,10 @@ common:ci-windows --test_env=CODEX_BAZEL_TEST_SKIP_FILTERS=suite::code_mode::cod
 common:ci-linux --config=ci-bazel
 common:ci-linux --build_metadata=TAG_os=linux
 common:ci-linux --platforms=//:rbe
-# The operator trust tests require the host's installed OpenSSH. Only this
-# TestRunner uses native execution; its compile actions remain eligible for RBE.
-common:ci-linux --strategy_regexp=Testing.*//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests=sandboxed,local
-# Core integration tests exercise nested bubblewrap namespaces. Run this test
-# target on the prepared Linux CI host; keep its compile actions on RBE.
-common:ci-linux --strategy_regexp=Testing.*//codex-rs/core:core-all-test($|[^a-zA-Z0-9_-])=sandboxed,local
+# Bazel 9 ignores strategy_regexp for TestRunner. The Core and app-server
+# integration wrappers carry no-remote-exec for nested bubblewrap namespaces;
+# the operator wrapper carries it for host OpenSSH. Their compile helpers stay
+# eligible for RBE, and cached test results remain usable.
 
 # On mac, we can run all the build actions remotely but test actions locally.
 common:ci-macos --config=ci-bazel

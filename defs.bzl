@@ -207,6 +207,7 @@ def codex_rust_crate(
         integration_test_timeout = None,
         test_data_extra = [],
         test_shard_counts = {},
+        native_sharded_test_tags = {},
         test_tags = [],
         test_threads = 0,
         unit_test_timeout = None,
@@ -266,6 +267,10 @@ def codex_rust_crate(
             and then assigns each libtest case to a stable bucket by hashing
             the test name. Matching tests are also marked flaky, which gives
             them Bazel's default three attempts.
+        native_sharded_test_tags: Extra tags keyed by generated test target name,
+            applied only to native sharded integration-test launchers. The Rust
+            compile helpers, unit tests, Wine, and Windows cross wrappers do not
+            inherit these tags.
         test_tags: Tags applied to unit + integration test targets.
             Typically used to disable the sandbox, but see https://bazel.build/reference/be/common-definitions#common.tags
         test_threads: Optional Rust test thread limit for sharded integration tests.
@@ -607,7 +612,7 @@ def codex_rust_crate(
                 test_threads = test_threads,
                 workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
                 target_compatible_with = WINDOWS_GNULLVM_INCOMPATIBLE,
-                tags = test_tags,
+                tags = test_tags + native_sharded_test_tags.get(test_name, []),
                 **test_kwargs
             )
         else:
