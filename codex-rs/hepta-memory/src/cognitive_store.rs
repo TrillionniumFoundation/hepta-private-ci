@@ -1670,7 +1670,59 @@ pub(crate) fn publish_active_database(
     result
 }
 
+#[cfg(windows)]
+fn existing_cognitive_directory_ancestor(path: &Path) -> Result<&Path, CognitiveStoreError> {
+    // This classifies an existing redirect before creating missing descendants.
+    // It grants no authority: the original private-directory acquisition and
+    // post-acquisition canonical check below remain the binding checks.
+    for ancestor in path.ancestors() {
+        match fs::symlink_metadata(ancestor) {
+            Ok(_) => {
+                return canonical_path_without_redirection(ancestor)
+                    .map_err(unavailable)?
+                    .ok_or_else(|| {
+                        CognitiveStoreError::Invalid(
+                            "per-agent cognitive root must be canonical and must not traverse a symlink"
+                                .to_string(),
+                        )
+                    })
+                    .map(|_| ancestor);
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(unavailable(error)),
+        }
+    }
+    Err(CognitiveStoreError::Invalid(
+        "cognitive root has no existing filesystem ancestor".to_string(),
+    ))
+}
+
 fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError> {
+    #[cfg(windows)]
+    let _windows_owner_handles = {
+        let existing = existing_cognitive_directory_ancestor(path)?;
+        let missing = path
+            .ancestors()
+            .take_while(|ancestor| *ancestor != existing)
+            .collect::<Vec<_>>();
+
+        // Open every missing directory with the original no-reparse guarantee.
+        // Holding these handles pins the newly created ancestry through the
+        // canonical check below. Existing owner state is validated, not repaired.
+        let mut handles = missing
+            .iter()
+            .rev()
+            .map(|directory| {
+                codex_utils_path::open_private_state_directory(directory).map_err(unavailable)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        if handles.is_empty() {
+            handles
+                .push(codex_utils_path::open_private_state_directory(path).map_err(unavailable)?);
+        }
+        handles
+    };
+    #[cfg(not(windows))]
     fs::create_dir_all(path).map_err(unavailable)?;
     let canonical = canonical_path_without_redirection(path)
         .map_err(unavailable)?
