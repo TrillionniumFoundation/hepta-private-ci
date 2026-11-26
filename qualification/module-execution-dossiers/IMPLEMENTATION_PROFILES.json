@@ -843,6 +843,10 @@
       "nativeImplementation": {
         "entrypoints": [
           {
+            "path": "codex-rs/hepta-matrixd/src/runner.rs",
+            "symbol": "run"
+          },
+          {
             "path": "codex-rs/hepta-matrixd/src/runtime.rs",
             "symbol": "process_event"
           },
@@ -851,21 +855,47 @@
             "symbol": "recover_pending"
           },
           {
+            "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+            "symbol": "sync_durable_once"
+          },
+          {
+            "path": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
+            "symbol": "dispatch_outbox_once"
+          },
+          {
             "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
             "symbol": "observe_send"
           }
         ],
-        "stateAndRecovery": "MatrixRuntime uses MatrixDurableStore for inbox/thread/outbox recovery. The send-observer BTreeMap separately binds operation/transaction/server/session and keeps unknown sends indeterminate; its state is not a replacement durable sender.",
+        "stateAndRecovery": "The existing per-Agent MatrixDurableStore owns sync/inbox/thread/dispatch/outbox state. Initial durable sync precedes recovery. Exact admitted-turn observation uses a shared outer budget of 16 pages of 100 turns per pass with a durable CAS cursor (migration 0006); parked uncertain send outcomes retain InFlight/stable transaction/issued attempt and survive reopen (0007). Redaction of begun/queued/admitted/completed dispatch durably quarantines (0008) actionable scope while retaining raw already-issued Core dispatch identity; the immutable quarantine cannot self-clear and neither cancels that effect nor infers terminality. Live Sent records a homeserver send event-ID acknowledgement, not independent sync echo or human reading. MatrixSendObserver remains an uncomposed in-memory supplied-input state machine. Bounded pending-inbox keyset windows advance/wrap past old pending rows with a process-local frontier; completion clears exact turn cursors transactionally. Physical stable transactions alone may settle; a later permanent error preserves prior uncertain delivery as parked unknown_delivery. Terminal history admission also requires the canonical input digest, full items and original client identity; quarantined scopes skip thread resume, recovery and projection. Approval socket-write Accepted retains exact durable resolving identity until authoritative ServerRequestResolved. SDK disables general send HTTP retries; malformed ACK decoding stays unknown/retryable. Successful sync has 100ms minimum cadence; mid-sync cancellation fences SDK/ingress and returns Cancelled. The outer turn/RPC window does not bound per-turn Full item hydration: paginated_turn_full_items has no total item/internal-page cap, and five-second client timeout does not cancel server hydration.",
         "testFiles": [
           "codex-rs/hepta-matrixd/src/runtime/tests.rs",
-          "codex-rs/hepta-matrixd/src/send_observer_tests.rs"
+          "codex-rs/hepta-matrixd/src/runner_startup_tests.rs",
+          "codex-rs/hepta-matrixd/src/control_lifecycle_tests.rs",
+          "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
+          "codex-rs/hepta-matrix-sdk/src/sync_tests.rs",
+          "codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs",
+          "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs",
+          "codex-rs/hepta-matrix-store/tests/sync_observation_v1.rs",
+          "codex-rs/hepta-matrix-store/tests/outbox_adversarial.rs",
+          "codex-rs/hepta-matrix-store/tests/outbox_unresolved.rs",
+          "codex-rs/hepta-matrix-store/tests/storage_paths.rs"
         ],
         "runtimeDocuments": [
           "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json",
-          "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
+          "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md",
+          "docs/modules/channel.matrix/TECHNICAL.md",
+          "docs/readiness/LANE_B_NATIVE_HOST.md"
         ],
         "remainingWork": [
-          "Integrate send-observer state with the canonical durable transaction identity, then qualify enrolled homeserver/device transport, encryption, reconnect/redaction and restore."
+          "Consume independently issued current final-use operation/room/final-payload authority and revocation at the existing SDK adapter; digest equality and current configuration are not VerifiedUseToken authentication.",
+          "Compose a durable authenticated terminal observer/reconciler using the existing transaction identity; the in-memory observer is not a second sender, and parked uncertainty is not terminal failure.",
+          "Compose bounded gap fill in the live sync path before accepting limited timelines; current live rejection preserves the cursor but is not reconnect completion.",
+          "Qualify provider-context withdrawal and authenticated resolution for quarantined dispatched-source redactions, restore non-resurrection, exact paired-release/schema compatibility and retained-history capacity.",
+          "Independently qualify provisioned homeserver/user/device/encryption/configuration trust, actual transport and target-host measurement/acceptance; source regression identities do not grant production activation.",
+          "Enforce HTTP predecode byte admission, total retained inbox/outbox capacity and authenticated retention/archival/rotation; normalized bounds operate after decoding, event_capacity covers batch/change/control/scrub work only, and V2 mutation/decision journals each have fixed 65536-record lifetime ceilings.",
+          "Add bounded history item pagination and an owner-side terminal/freshness seam; outer 16x100 turn/RPC windows do not bound Full item hydration memory or terminate server hydration on client timeout."
         ]
       }
     },
