@@ -1,5 +1,14 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 13:22 UTC 后：Split 依赖真实终局及当前集成局部原生回执
+
+- #6799 最新读取精确 head `5607a93991c2c12f42efd34c889e46b021a32a12`，draft=true、merged=false。该候选首屏100条初次观察51 success/22 in_progress/6 failure/14 skipped/6 queued/1 pending，非全分页终局。
+- [Saved continuation 原生作业45827403140/job139934987509](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45827403140/job/139934987509) success；261行原日志的只读汇总为10源、5输入、10 query rows、570 scalar rows（510 eligible、60 null）、6 direct fullraw byte pairs；284 retained candidate expm、28 retained segments；新candidate/reference/expm调用均0，HOLD_NO_GO、all_closed=false。仅签当次原保留算术读回。[N256 joint admission 45827403654/job139934984724](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45827403654/job/139934984724) success，静态 fail-closed envelope、不执行数值，不能签生产或数值准入。
+- [Continuous-adjoint 45827402768/job139934983426](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45827402768/job/139934983426) 400行原日志：冻结源字典断言失败，真实Torch probe被跳过。[FP64 input conversion 45827398935/job139934969893](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45827398935/job/139934969893) 317行原日志：normal/-O各5项通过，README原摘要门仍红。均不盲重跑、不给旧版本通过转移资格。
+- Split 历史精确c440的兼容环境作业 `1a217e6c721-ffbe-475d` 已真实终结 timed_out/124，日志仅有NumPy/SciPy下载，原四数值控制执行0。独立探查确认历史目录仍在，3.14.3隔离环境缺NumPy、宿主缺SciPy、UV 3.10.19缺NumPy；ai395系统3.14.4缺NumPy，main 3.14.3缺SciPy。缓存仅有临时解包元数据，未视为合格安装。新隔离作业 `1a2180a5df1-ffbe-479d` 实际启动，offline安装已明确失败（SciPy 1.17.0 wheel缓存缺失）；改走PyPI精确版本wheel、大小及SHA256核验后安装，再运行尚未执行的原qualify，当前running，未取得数值终局。未修改冻结源码或生产分支。
+- [本轮固定记录](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a56b3ed76a0424384a2fc72243985664cb704943/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/split-dependency-and-current-ci-20261126-1322Z.json) 已提交并逐字回读一致。全仓HOLD，未重派已完成实验，未修改500ms、安全权限、科学判据或原冻结摘要，未合并红门。
+
+
 ## 2026-11-26 12:30 UTC 后：Cell 原生与真实 t=0 capsule 两原件保全；Split 精确来源依赖推进
 
 - 原 #6799 `1d4eb60cfe2516d132c68d01bed083fcbdc39437` 的 [Cell 45814937775/job139892105134](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45814937775/job/139892105134) 已正式 success。原 ZIP [15115877414](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45814937775/artifacts/15115877414) 已独立完整下载并核对 5384B、SHA256 9bc1011bc1ceb99b7f3d22e43797390faf95278d79b2be5a5ef4294fd56facb8、4成员CRC及逐成员摘要。原 SOURCE_HEAD 精确 1d4；逐名解析145个不同方法/实例全部ok（10条有诊断日志穿插，非只数同行ok），21.086s。Py3.12.3/NumPy2.3.5/SciPy1.17.0/Torch2.8.0+cpu。仅签该声明套件与归档保全，不冒充完整模型训练/真实跨来源采用。
