@@ -4,9 +4,9 @@ This is an integrity check, not scientific acceptance, repository CI status,
 or proof that a producer's source/run claims are truthful. ZIPs are inspected
 without extraction. Markdown fragments and external URLs are not validated.
 
-An archived figure named `figure.svg.gz` supplies the original manifest
-member `figure.svg` when the raw path is absent. Use `gzip -dc figure.svg.gz`
-to recover the original SVG bytes.
+A sibling gzip archive supplies the original bytes for a missing SVG or
+registered historical patch. The published manifest still checks the raw
+size and digest. Use `gzip -dc` on the archive to recover the original.
 """
 
 import argparse
@@ -20,6 +20,15 @@ import subprocess
 from urllib.parse import unquote, urlsplit
 import zipfile
 import zlib
+
+
+_ARCHIVED_PATCHES = frozenset(
+    {
+        "qualification/hcsn_differentiable/evidence/localization-v2-20261108/math/stable-intervals.patch",
+        "qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/renderer/program/DIFF-v2-to-v3.patch",
+        "qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/supervisor/program/DIFF-v2-to-v3.patch",
+    }
+)
 
 
 def _sha(path):
@@ -87,14 +96,17 @@ def _zip_check(path):
 def _manifest_member(root, manifest_dir, name, expected_size):
     logical = manifest_dir / name
     logical.resolve().relative_to(manifest_dir)
-    if logical.suffix != ".svg" or logical.exists() or logical.is_symlink():
+    archived_patch = logical.relative_to(root).as_posix() in _ARCHIVED_PATCHES
+    if logical.exists() or logical.is_symlink() or (
+        logical.suffix != ".svg" and not archived_patch
+    ):
         stored = _contained(root, logical)
         stored.relative_to(manifest_dir)
         return stored, dict(bytes=stored.stat().st_size, sha256=_sha(stored)), None
 
-    # Published manifests still bind the original SVG bytes. Only a sibling
-    # archive may supply those bytes, and an existing raw file is never masked.
-    stored = _contained(root, logical.with_suffix(".svg.gz"))
+    # Only a sibling archive may supply bytes, and a raw file is never masked.
+    suffix = ".evidence.gz" if archived_patch else ".gz"
+    stored = _contained(root, logical.with_name(logical.name + suffix))
     stored.relative_to(manifest_dir)
     transport_sha = _sha(stored)
     digest = hashlib.sha256()
@@ -103,7 +115,7 @@ def _manifest_member(root, manifest_dir, name, expected_size):
         while chunk := stream.read(min(64 * 1024, expected_size - size + 1)):
             size += len(chunk)
             if size > expected_size:
-                raise ValueError("archived SVG exceeds the declared byte count")
+                raise ValueError("archived evidence exceeds the declared byte count")
             digest.update(chunk)
     return stored, dict(bytes=size, sha256=digest.hexdigest()), transport_sha
 
@@ -196,7 +208,19 @@ def verify_evidence(repo_root, manifests, markdown=()):
                     parsed = urlsplit(target)
                     if parsed.scheme or parsed.netloc or not parsed.path:
                         continue
-                    path = _contained(root, document.parent / unquote(parsed.path))
+                    link = document.parent / unquote(parsed.path)
+                    try:
+                        path = _contained(root, link)
+                    except FileNotFoundError:
+                        logical = link.resolve().relative_to(root)
+                        archived = archived_files.get(str(logical))
+                        if (
+                            logical.as_posix() not in _ARCHIVED_PATCHES
+                            or archived is None
+                            or link.is_symlink()
+                        ):
+                            raise
+                        path = _contained(root, archived["path"])
                     links.append(
                         dict(
                             document=relative,

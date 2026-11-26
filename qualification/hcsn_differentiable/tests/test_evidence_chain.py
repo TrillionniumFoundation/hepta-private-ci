@@ -128,6 +128,30 @@ class ArtifactEvidenceIntegrityTests(unittest.TestCase):
                 stored.write_bytes(data)
                 self.assertFalse(self.verify()["passed"])
 
+    def test_registered_patch_archive_keeps_the_manifest_and_link_bound(self):
+        relative = (
+            "qualification/hcsn_differentiable/evidence/"
+            "localization-v2-20261108/math/stable-intervals.patch"
+        )
+        patch = self.root / relative
+        patch.parent.mkdir(parents=True)
+        sha = hashlib.sha256(b"immutable patch\n").hexdigest()
+        manifest = self.root / "MANIFEST.json"
+        manifest.write_text(json.dumps({"files": {relative: {"bytes": 16, "sha256": sha}}}))
+        page = self.root / "CURRENT.md"
+        page.write_text(f"[patch]({relative})\n")
+        archive = patch.with_name(patch.name + ".evidence.gz")
+        archive.write_bytes(gzip.compress(b"immutable patch\n", mtime=0))
+        report = verify_evidence(self.root, [manifest], [page])
+        self.assertTrue(report["passed"], report["errors"])
+        self.assertEqual(report["verified_files"][relative]["sha256"], sha)
+        self.assertEqual(report["relative_links"][0]["resolved"], relative + ".evidence.gz")
+        patch.write_bytes(b"changed raw bytes")
+        self.assertFalse(verify_evidence(self.root, [manifest], [page])["passed"])
+        patch.unlink()
+        archive.write_bytes(gzip.compress(b"changed archive", mtime=0))
+        self.assertFalse(verify_evidence(self.root, [manifest], [page])["passed"])
+
     def test_svg_archive_never_masks_an_existing_raw_file(self):
         svg = self.evidence / "figure.svg"
         original = b"<svg>original figure</svg>\n"
