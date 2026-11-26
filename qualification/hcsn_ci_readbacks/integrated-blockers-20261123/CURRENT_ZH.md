@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 09:52 UTC 后：CPU 原生短恢复与 N256 metadata 原门正式终局（全仓 HOLD）
+
+- 精确 47b6fd0b821a443af91c30056fae9fc17582b610 的 [CPU run45786572069](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45786572069) 两个原 job 均 completed/success。adapter 139794716761 原18 archive/relocation + pointer normal 6 / -O 6 全通过（30次测试执行），正负例保留。real-recovery 139804694341 的13个步骤全成功，原 log 623行；真实 checkout 原 artifact 917e488、Python3.12.3、Torch2.8.0+cpu、NumPy2.3.5。原 summary：complete_checkpoint_continuities=6，crash_before_publication_rejected=true，omit_adam_control_detected=true，current_attempt_verified_optimizer_calls=26，whole_wall_seconds=474.582060267，new_independent_complete_training_replays=0，lifetime_total_optimizer_calls=UNKNOWN，scientific_admission=HOLD_NO_GO。原短恢复及pointer托管局部门闭合；不将26调用冒充完整训练重放或清除历史52调用/UNKNOWN。原 [ZIP15102894027](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45786572069/artifacts/15102894027) 27939824B、登记 SHA256 c95c36dd66d56e708c96bbbb7f28acbb431db8b7fc2925e580817f6d884c60dc；Mac独立下载90秒超时，实际仅2423768B，完整ZIP独立复算仍待。未重跑模型。
+- 同精确47b6的 [differentiable run45786572001](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45786572001) source/event及science gate 3/3 completed/success。独立从两原日志（1603/1596行）各解析10批测试110+70+105+16+9+22+15+28+7+3=385，原2074 evidence files每臂0错误；原源码清洁门通过。ZIP 15101457428/15101207857已登记，未独立下载；本次只读原既有作业。
+- 精确32153753a33a86a30d5d38a53483146c66161acd 的 [N256 metadata run45786899259/job139795831557](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45786899259/job/139795831557) completed/success，9步骤均通过，原JSON PASS_METADATA_ONLY_HOLD_ADMISSION；1 child、1 host observation、5 negative controls、6 validation calls，child CPU .328179s、wall .372552s、maxRSS30320KiB；动态/模型/优化/NumPy/SciPy/Torch调用均0，resource_admitted=false、runtime_admitted=false。独立Mac原ZIP15100974608实际28989B，SHA256 881930596a525c4fa5e6f073f1dfeaed02cf8bebb56c8f10478d0425f2505b36，18成员CRC无错误，与登记一致。仅metadata局部门闭合。
+- 另外独立Mac确认既有 physical Torch ZIP15098780710 39828B、SHA256 eaacbabe85e5be5aed94b1a1a806e487c48f3d930789330f9e6343e0fef05e5f、19成员CRC无错误，与登记一致。独立下载进程1a217465677-ffbe-461f因CPU大ZIP超时退出1；随后独立离线核验进程1a2174848b0-ffbe-4624 exit0、stderr空，两份完整ZIP逐字节摘要通过；不冒充重新执行内部数值模型。
+- #6799 原API最新精确head 4ffa56f6d0be94e68d23d1bfe72aa2cbfd50d479，base732e934，draft未合并；首屏100工作流82 queued/5 pending/10 skipped/2 success/1 in_progress，非全分页终局。Windows生产隔离、严格构建、原500ms、N256真实动态及科学全任务采用仍HOLD，未修改判据、冻结源或权限，未合并红门，不重复派发。
+
 <!-- root0198a7-checkpoint-20261126 -->
 ## 2026-11-26：本线程工程修复、冻结原件与 CPU 入口后继 checkpoint（全仓 HOLD）
 
