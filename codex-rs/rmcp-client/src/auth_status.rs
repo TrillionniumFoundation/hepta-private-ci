@@ -405,8 +405,13 @@ mod tests {
         assert!(
             matches!(
                 error.downcast_ref::<AuthError>(),
-                Some(AuthError::MetadataError(reason))
-                    if reason.contains("expected discovery request failure")
+                Some(AuthError::DiscoveryRequestFailed { url, source })
+                    if url.as_str() == "http://example.com/mcp"
+                        && matches!(
+                            source.downcast_ref::<ExecServerError>(),
+                            Some(ExecServerError::HttpRequest(reason))
+                                if reason == "expected discovery request failure"
+                        )
             ),
             "OAuth discovery must preserve the executor transport failure: {error:#}"
         );
@@ -604,8 +609,9 @@ mod tests {
             .mount(&resource_server)
             .await;
 
+        let resource_url = format!("{}/mcp", resource_server.uri());
         let error = discover_streamable_http_oauth(
-            &format!("{}/mcp", resource_server.uri()),
+            &resource_url,
             Some(HashMap::from([(
                 "x-api-key".to_string(),
                 "sensitive-key".to_string(),
@@ -621,13 +627,23 @@ mod tests {
         assert!(
             matches!(
                 error.downcast_ref::<AuthError>(),
-                Some(AuthError::MetadataError(reason))
-                    if reason.contains("OAuth discovery redirect to non-same-origin URL rejected")
-                        && reason.contains(&redirect_url)
+                Some(AuthError::DiscoveryRequestFailed { url, source })
+                    if url.as_str() == resource_url
+                        && source.to_string() == format!(
+                            "OAuth discovery redirect to non-same-origin URL rejected: {redirect_url}"
+                        )
             ),
             "OAuth discovery must preserve the cross-origin redirect rejection: {error:#}"
         );
         redirect_target.verify().await;
+        assert!(
+            redirect_target
+                .received_requests()
+                .await
+                .expect("request recording should be enabled")
+                .is_empty(),
+            "cross-origin redirects must not reach the target with any headers"
+        );
         resource_server.verify().await;
     }
 
@@ -646,9 +662,10 @@ mod tests {
                 .mount(&server)
                 .await;
 
+            let resource_url = format!("{}/mcp", server.uri());
             let error = determine_streamable_http_auth_status(
                 "transient-http-error",
-                &format!("{}/mcp", server.uri()),
+                &resource_url,
                 /*bearer_token_env_var*/ None,
                 /*http_headers*/ None,
                 /*env_http_headers*/ None,
@@ -664,7 +681,9 @@ mod tests {
             assert!(
                 matches!(
                     error.downcast_ref::<AuthError>(),
-                    Some(AuthError::MetadataError(reason)) if reason.contains(status.as_str())
+                    Some(AuthError::DiscoveryRequestFailed { url, source })
+                        if url.as_str() == resource_url
+                            && source.to_string() == format!("unexpected HTTP status {status}")
                 ),
                 "auth-status discovery must preserve HTTP {status}: {error:#}"
             );
@@ -792,50 +811,45 @@ mod tests {
 
     #[tokio::test]
     async fn discover_streamable_http_oauth_follows_protected_resource_metadata() {
-        let authorization_server = spawn_oauth_discovery_server(serde_json::json!({
-            "authorization_endpoint": "https://example.com/authorize",
-            "token_endpoint": "https://example.com/token",
-            "scopes_supported": ["read", " write ", "read"],
-        }))
-        .await;
+        let resource_server = MockServer::start().await;
+        let resource_url = format!("{}/mcp", resource_server.uri());
+        let resource_metadata_url = format!("{}/oauth-resource", resource_server.uri());
+        let authorization_server_url = format!("{}/authorization", resource_server.uri());
 
-        let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
-            .await
-            .expect("listener should bind");
-        let address = listener.local_addr().expect("listener should have address");
-        let resource_metadata_url = format!("http://{address}/oauth-resource");
-        let challenge = format!("Bearer resource_metadata=\"{resource_metadata_url}\"");
-        let authorization_server_url = authorization_server.url.clone();
-        let app = Router::new()
-            .route(
-                "/mcp",
-                get(move || {
-                    let challenge = challenge.clone();
-                    async move { (StatusCode::UNAUTHORIZED, [(WWW_AUTHENTICATE, challenge)]) }
-                }),
-            )
-            .route(
-                "/oauth-resource",
-                get(move || {
-                    let authorization_server_url = authorization_server_url.clone();
-                    async move {
-                        Json(serde_json::json!({
-                            "resource": format!("http://{address}/mcp"),
-                            "authorization_servers": [authorization_server_url],
-                        }))
-                    }
-                }),
-            );
-        let handle = tokio::spawn(async move {
-            axum::serve(listener, app).await.expect("server should run");
-        });
-        let resource_server = TestServer {
-            url: format!("http://{address}/mcp"),
-            handle,
-        };
+        Mock::given(method("GET"))
+            .and(path("/mcp"))
+            .respond_with(ResponseTemplate::new(401).insert_header(
+                "www-authenticate",
+                format!("Bearer resource_metadata=\"{resource_metadata_url}\""),
+            ))
+            .expect(1)
+            .mount(&resource_server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path("/oauth-resource"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "resource": resource_url,
+                "authorization_servers": [authorization_server_url],
+            })))
+            .expect(1)
+            .mount(&resource_server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path(
+                "/.well-known/oauth-authorization-server/authorization",
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "issuer": authorization_server_url,
+                "authorization_endpoint": "https://example.com/authorize",
+                "token_endpoint": "https://example.com/token",
+                "scopes_supported": ["read", " write ", "read"],
+            })))
+            .expect(1)
+            .mount(&resource_server)
+            .await;
 
         let discovery = discover_streamable_http_oauth(
-            &resource_server.url,
+            &resource_url,
             /*http_headers*/ None,
             /*env_http_headers*/ None,
             test_http_client(),
@@ -843,13 +857,95 @@ mod tests {
             StreamableHttpRedirectMode::Legacy,
         )
         .await
-        .expect("discovery should succeed")
+        .expect("discovery should succeed within the configured resource origin")
         .expect("oauth support should be detected");
 
         assert_eq!(
             discovery.scopes_supported,
             Some(vec!["read".to_string(), "write".to_string()])
         );
+        resource_server.verify().await;
+    }
+
+    #[tokio::test]
+    async fn discover_streamable_http_oauth_rejects_unconfigured_loopback_authorization_server() {
+        let authorization_server = MockServer::start().await;
+        let authorization_server_url = format!("{}/authorization", authorization_server.uri());
+        let authorization_metadata_url = format!(
+            "{}/.well-known/oauth-authorization-server/authorization",
+            authorization_server.uri()
+        );
+        Mock::given(method("GET"))
+            .and(path(
+                "/.well-known/oauth-authorization-server/authorization",
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "issuer": authorization_server_url,
+                "authorization_endpoint": "https://example.com/authorize",
+                "token_endpoint": "https://example.com/token",
+            })))
+            .expect(0)
+            .mount(&authorization_server)
+            .await;
+
+        let resource_server = MockServer::start().await;
+        let resource_url = format!("{}/mcp", resource_server.uri());
+        let resource_metadata_url = format!("{}/oauth-resource", resource_server.uri());
+        Mock::given(method("GET"))
+            .and(path("/mcp"))
+            .respond_with(ResponseTemplate::new(401).insert_header(
+                "www-authenticate",
+                format!("Bearer resource_metadata=\"{resource_metadata_url}\""),
+            ))
+            .expect(1)
+            .mount(&resource_server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path("/oauth-resource"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "resource": resource_url,
+                "authorization_servers": [authorization_server_url],
+            })))
+            .expect(1)
+            .mount(&resource_server)
+            .await;
+
+        let error = discover_streamable_http_oauth(
+            &resource_url,
+            /*http_headers*/ None,
+            /*env_http_headers*/ None,
+            test_http_client(),
+            OAuthDiscoveryTimeout::LOCAL,
+            StreamableHttpRedirectMode::Legacy,
+        )
+        .await
+        .expect_err("discovery must not authorize a different loopback origin");
+
+        assert!(
+            matches!(
+                error.downcast_ref::<AuthError>(),
+                Some(AuthError::DiscoveryRequestFailed { url, source })
+                    if url.as_str() == authorization_metadata_url
+                        && matches!(
+                            source.downcast_ref::<ExecServerError>(),
+                            Some(ExecServerError::HttpRequest(reason))
+                                if reason.contains(
+                                    "HTTP destination is outside the configured address capability"
+                                )
+                        )
+            ),
+            "OAuth discovery must preserve the address-capability rejection: {error:#}"
+        );
+        authorization_server.verify().await;
+        assert!(
+            authorization_server
+                .received_requests()
+                .await
+                .expect("request recording should be enabled")
+                .is_empty(),
+            "discovery must not contact an unconfigured loopback authorization server"
+        );
+        resource_server.verify().await;
     }
 
     #[tokio::test]
