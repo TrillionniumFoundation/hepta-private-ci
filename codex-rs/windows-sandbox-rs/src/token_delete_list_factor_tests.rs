@@ -53,7 +53,9 @@ fn directory_list_bit_observations() -> Result<()> {
                 Scenario::NullParent => Dacl::Null,
                 _ => Dacl::Identity(FILE_ALL_ACCESS & !FILE_DELETE_CHILD),
             };
-            support::set_dacl(&parent, parent_policy)?;
+            support::set_dacl(&parent, parent_policy).with_context(|| {
+                format!("configure LIST parent: scenario={scenario:?} list={with_list}")
+            })?;
             support::create_target(&target, Kind::Directory)?;
             let identity = match scenario {
                 Scenario::Target => FILE_ALL_ACCESS,
@@ -68,7 +70,9 @@ fn directory_list_bit_observations() -> Result<()> {
             let capability_sid = support::CAPABILITY;
             let target_sddl =
                 format!("D:P(A;;0x{identity:08x};;;WD)(A;;0x{capability:08x};;;{capability_sid})");
-            support::set_dacl_sddl(&target, &target_sddl)?;
+            support::set_dacl_sddl(&target, &target_sddl).with_context(|| {
+                format!("configure LIST target: scenario={scenario:?} list={with_list}")
+            })?;
             let objects = (
                 integrity::object_facts(&parent)?,
                 integrity::object_facts(&target)?,

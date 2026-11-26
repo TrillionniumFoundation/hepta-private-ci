@@ -396,9 +396,19 @@ pub fn set_dacl_sddl(path: &Path, sddl: &str) -> Result<()> {
             && control & SE_DACL_PROTECTED != 0,
         "fixture DACL protection differs"
     );
+    let observed = acl_bytes(actual_dacl);
     ensure!(
-        acl_bytes(actual_dacl) == expected,
-        "fixture DACL bytes differ"
+        observed == expected,
+        "fixture DACL bytes differ: path={} expected_len={:?} actual_len={:?} expected_prefix={:02x?} actual_prefix={:02x?}",
+        path.display(),
+        expected.as_ref().map(Vec::len),
+        observed.as_ref().map(Vec::len),
+        expected
+            .as_deref()
+            .map(|bytes| &bytes[..bytes.len().min(256)]),
+        observed
+            .as_deref()
+            .map(|bytes| &bytes[..bytes.len().min(256)]),
     );
     Ok(())
 }
