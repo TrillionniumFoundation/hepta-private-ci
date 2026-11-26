@@ -60,6 +60,21 @@ prefix (including longer-fork rejection), exact manifest and ancestor
 eligibility before invoking the read-only consumer. It does not reread or
 retrain the immutable payload.
 
+`with_current` also requires the consumer's trusted `now` in the original
+signed-head time domain. The opaque view retains its verification time, the
+earlier of head and signer expiry, and already-known signer revocation. Clock
+rewind, expiry and that revocation close the cache before invoking the consumer.
+`validity()` retains the same bounds for a post-computation clock check. Newly
+delivered revocations still require fresh discovery through the original owner;
+retaining a window does not distribute upstream trust updates.
+
+Named publication indexes a complete V2 source with
+`ArtifactManifest.support_digest = validated_manifest.manifest_digest`.
+`validate_published_artifact_manifest_v2` reconstructs and validates that exact
+source and compares every projected V1 field. The source dataset set is checked
+separately by the learned consumer against its model and independently selected
+dataset. The legacy V1 dataset-in-support profile remains explicitly distinct.
+
 Every failed refresh closes that consumer permanently. Restoring an old snapshot
 cannot revive it: explicit admission of a new consumer is required. The host
 still owns latest-view discovery, publication/use serialization, body generation

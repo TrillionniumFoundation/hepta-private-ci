@@ -20,6 +20,12 @@ pub(crate) fn publish(staging: &Path, destination: &Path) -> io::Result<()> {
 #[cfg(unix)]
 fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> {
     std::fs::rename(staging, destination)?;
+    #[cfg(test)]
+    if RENAME_SYNC_FAULT.with(|fault| fault.borrow().as_deref() == Some(destination)) {
+        return Err(io::Error::other(
+            "injected parent sync failure after rename",
+        ));
+    }
     let parent = destination.parent().ok_or_else(|| {
         io::Error::new(
             io::ErrorKind::InvalidInput,
@@ -27,6 +33,24 @@ fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> 
         )
     })?;
     std::fs::File::open(parent)?.sync_all()
+}
+
+#[cfg(all(test, unix))]
+std::thread_local! {
+    static RENAME_SYNC_FAULT: std::cell::RefCell<Option<std::path::PathBuf>> = const { std::cell::RefCell::new(None) };
+}
+
+#[cfg(all(test, unix))]
+pub(crate) fn with_rename_sync_fault<T>(destination: &Path, action: impl FnOnce() -> T) -> T {
+    struct Reset;
+    impl Drop for Reset {
+        fn drop(&mut self) {
+            RENAME_SYNC_FAULT.with(|fault| *fault.borrow_mut() = None);
+        }
+    }
+    RENAME_SYNC_FAULT.with(|fault| *fault.borrow_mut() = Some(destination.to_path_buf()));
+    let _reset = Reset;
+    action()
 }
 
 #[cfg(windows)]
