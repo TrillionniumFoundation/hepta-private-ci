@@ -9,6 +9,9 @@
 
 #[path = "embodiment/cart.rs"]
 mod cart;
+mod cell_split_route;
+mod cell_split_route_digest;
+mod cell_split_route_fence;
 #[path = "embodiment/io.rs"]
 mod io;
 mod module_runtime;
@@ -34,6 +37,23 @@ pub use cart::CartSimulatorV1;
 pub use cart::CartStateV1;
 pub use cart::SyntheticCartObservationV1;
 pub use cart::SyntheticCartPlant;
+pub use cell_split_route::CellSplitChildRouteV1;
+pub use cell_split_route::CellSplitDispatchReceiptV1;
+pub use cell_split_route::CellSplitRouteControllerV1;
+pub use cell_split_route::CellSplitRouteErrorV1;
+pub use cell_split_route::CellSplitRouteOwnerV1;
+pub use cell_split_route::CellSplitRoutePhaseV1;
+pub use cell_split_route::CellSplitRouteSelectionV1;
+pub use cell_split_route_digest::cns_child_port_compatibility_digest_v1;
+pub use cell_split_route_digest::cns_circuit_route_digest_v1;
+pub use cell_split_route_digest::cns_organ_abi_digest_v1;
+pub use cell_split_route_digest::cns_organ_abi_set_digest_v1;
+pub use cell_split_route_digest::cns_organ_input_port_digest_v1;
+pub use cell_split_route_digest::cns_organ_termination_port_digest_v1;
+pub use cell_split_route_digest::cns_route_digest_v1;
+pub use cell_split_route_digest::cns_route_port_binding_digest_v1;
+pub use cell_split_route_fence::CellSplitRouteFenceReceiptV1;
+pub use cell_split_route_fence::CellSplitRouteRestartReplayReceiptV1;
 pub use io::EmbodimentIoError;
 pub use io::SyntheticActuatorReceiptV1;
 pub use io::SyntheticCartIoV1;

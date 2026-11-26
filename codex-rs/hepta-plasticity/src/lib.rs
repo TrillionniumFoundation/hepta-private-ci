@@ -8,6 +8,7 @@
 
 #![forbid(unsafe_code)]
 
+mod cell_split;
 mod durable_registry;
 mod generator_v3;
 mod legacy;
@@ -20,6 +21,8 @@ mod topology_registry;
 mod topology_v2;
 mod types;
 
+pub use cell_split::CellSplitTopologyCandidateErrorV1;
+pub use cell_split::CellSplitTopologyCandidateV1;
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
@@ -127,6 +130,10 @@ pub fn propose_versioned(request: ProposalWriteRequest) -> Result<ProposalRecord
             .map(ProposalRecord::ParameterV2),
     }
 }
+
+#[cfg(test)]
+#[path = "cell_split_tests.rs"]
+mod cell_split_tests;
 
 /// Dispatch and validate a typed record without changing its version.
 ///

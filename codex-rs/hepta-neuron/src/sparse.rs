@@ -9,6 +9,11 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 
+use crate::CellStateSplitChildV1;
+use crate::CellStateSplitError;
+use crate::CellStateSplitPlanV1;
+use crate::cell_split::build_child_state_v1;
+
 const Q: i64 = 1 << 24;
 const H: i64 = 8 * Q;
 const ELIGIBILITY_L1: i64 = 4 * Q;
@@ -196,6 +201,38 @@ impl SparseCheckpoint {
 
     pub fn eligibility_digest(&self) -> Digest32 {
         digest_q24(b"hepta.neuron.eligibility.q24.v1", &self.eligibility)
+    }
+
+    /// Project this committed checkpoint into deterministic child state
+    /// snapshots. This is deliberately a pure migration payload: it does not
+    /// mutate the journal, publish a witness, or grant runtime authority.
+    pub fn split_state_v1(
+        &self,
+        plan: &CellStateSplitPlanV1,
+    ) -> Result<Vec<CellStateSplitChildV1>, CellStateSplitError> {
+        if self.calculate_digest() != self.digest {
+            return Err(CellStateSplitError::InvalidCheckpoint);
+        }
+        plan.validate_dimensions(self.temporal.len(), self.activation.len())?;
+        (0..plan.child_count())
+            .map(|child_index| {
+                build_child_state_v1(
+                    plan,
+                    child_index,
+                    self.digest,
+                    self.config,
+                    self.scope,
+                    self.objective,
+                    self.body,
+                    self.sequence,
+                    &self.temporal,
+                    &self.activation,
+                    &self.activity,
+                    &self.threshold,
+                    &self.eligibility,
+                )
+            })
+            .collect()
     }
 
     pub(crate) fn activation_q24(&self) -> &[i64] {
@@ -453,3 +490,7 @@ mod tests;
 #[cfg(test)]
 #[path = "sparse_body_scope_tests.rs"]
 mod body_scope_tests;
+
+#[cfg(test)]
+#[path = "cell_split_tests.rs"]
+mod cell_split_tests;

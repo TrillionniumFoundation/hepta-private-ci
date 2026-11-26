@@ -25,9 +25,17 @@ required-features = ["trusted-inprocess-eval"]
 workspace = true
 
 [dependencies]
+codex-hepta-automation = { workspace = true }
+codex-hepta-cell-roles = { path = "../hepta-cell-roles" }
+codex-hepta-contracts = { workspace = true }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-types = { path = "../hepta-types" }
+serde_json = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-fleet = { workspace = true }
+codex-hepta-paths = { workspace = true }
 ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
