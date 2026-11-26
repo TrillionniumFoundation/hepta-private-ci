@@ -12,6 +12,10 @@ path = "lib.rs"
 name = "list_factor"
 path = "list_factor.rs"
 
+[[test]]
+name = "native_open"
+path = "native_open.rs"
+
 [dependencies]
 anyhow = "=1.0.103"
 windows-sys = { version = "=0.52.0", features = ["Wdk_Foundation", "Wdk_Storage_FileSystem", "Win32_Foundation", "Win32_Security", "Win32_Security_Authorization", "Win32_Storage_FileSystem", "Win32_System_IO", "Win32_System_Kernel", "Win32_System_Threading", "Win32_System_SystemServices", "Win32_System_WindowsProgramming"] }

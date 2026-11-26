@@ -22,6 +22,7 @@ CASES = {
     "matrix::low_integrity_does_not_protect_a_low_outside_null_dacl_object",
 }
 LIST_CASE = "list_factor::directory_list_bit_observations"
+NATIVE_OPEN_CASE = "native_open::absolute_nt_and_win32_open_observations"
 SOURCES = [
     "codex-rs/Cargo.lock",
     "codex-rs/.config/nextest.toml",
@@ -31,15 +32,20 @@ SOURCES = [
     "codex-rs/windows-sandbox-rs/src/token_delete_access_diagnostics.rs",
     "codex-rs/windows-sandbox-rs/src/token_delete_integrity_observations.rs",
     "codex-rs/windows-sandbox-rs/src/token_delete_list_factor_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/token_delete_native_open_calls.rs",
+    "codex-rs/windows-sandbox-rs/src/token_delete_native_open_facts.rs",
+    "codex-rs/windows-sandbox-rs/src/token_delete_native_open_tests.rs",
     "codex-rs/windows-sandbox-rs/src/token_delete_authorization_tests.rs",
     "codex-rs/windows-sandbox-rs/src/filesystem_isolation.rs",
     "qualification/windows-delete-authorization-20261125/probe/lib.rs",
     "qualification/windows-delete-authorization-20261125/probe/list_factor.rs",
+    "qualification/windows-delete-authorization-20261125/probe/native_open.rs",
     "qualification/windows-delete-authorization-20261125/probe/Cargo.toml",
     "qualification/windows-delete-authorization-20261125/probe/Cargo.lock",
     "qualification/windows-delete-authorization-20261125/probe/nextest.toml",
     "qualification/windows-delete-authorization-20261125/run_native.py",
     "qualification/windows-delete-authorization-20261125/LIST_FACTOR_PROTOCOL.md",
+    "qualification/windows-delete-authorization-20261125/NATIVE_OPEN_PROTOCOL.md",
     ".github/workflows/hepta-windows-delete-authorization.yml",
 ]
 
@@ -120,6 +126,50 @@ def verify_list_factor(log):
             "diagnostic_complete": True, "qualifies_original_matrix": False}
 
 
+def verify_native_open(log):
+    clean = re.sub(r"\x1b\[[0-9;]*m", "", log)
+    binary = re.escape(PACKAGE + "::native_open")
+    passed = re.findall(r"^\s*PASS\s+\[[^]]+\]\s+" + binary
+                        + r"\s+(native_open::\S+)\s*$", clean, re.M)
+    if passed != [NATIVE_OPEN_CASE] or not re.search(
+            r"Summary\s+\[[^]]+\] 1 tests? run: 1 passed, 0 skipped", clean):
+        raise RuntimeError("the independent native-open diagnostic did not complete")
+    rows = re.findall(r"^\s*HEPTA_NATIVE_OPEN scenario=(Target|NullParent|NullTarget|Neither) "
+                      r"api=(Win32|NT) requested=0x00010000 opened=(true|false) (.+)$", clean, re.M)
+    scenarios = {"Target", "NullParent", "NullTarget", "Neither"}
+    expected = {(scenario, api) for scenario in scenarios for api in ["Win32", "NT"]}
+    raw_rows = re.findall(r"^\s*HEPTA_NATIVE_OPEN .+$", clean, re.M)
+    if len(raw_rows) != 8 or len(rows) != 8 or {
+            (scenario, api) for scenario, api, _, _ in rows} != expected:
+        raise RuntimeError("expected exactly eight distinct open observations")
+    for scenario, api, opened, details in rows:
+        if opened == "true":
+            grant = re.search(r"\bgranted=Some\((\d+)\)", details)
+            required = ["completion=success", "win32_error=none", "query_ntstatus=0x00000000",
+                        "query_mapped_win32=0", "closed=true", "close_error=None"]
+            required.append("ntstatus=Some(0)" if api == "NT" else "ntstatus=None")
+            if not grant or int(grant.group(1)) & 0x10000 == 0 or any(
+                    field not in details.split() for field in required):
+                raise RuntimeError("successful open lacks verified grant/query/close evidence")
+        else:
+            status = "ntstatus=0xc0000022" if api == "NT" else "ntstatus=not_applicable"
+            required = [status, "win32_error=5", "granted=unknown", "closed=not_opened"]
+            if any(field not in details.split() for field in required):
+                raise RuntimeError("failed open is not the fixed access-denied observation")
+        if (scenario == "NullTarget" and opened != "true") or (
+                scenario == "Neither" and opened != "false"):
+            raise RuntimeError("native-open positive/negative control changed")
+    invariants = re.findall(r"^\s*HEPTA_NATIVE_INVARIANT scenario=(\w+) (.+)$", clean, re.M)
+    required = ["same_token=true", "descriptor_bytes_equal=true", "metadata_equal=true",
+                "namespace_unchanged=true", "no_parent_handle=true"]
+    if len(invariants) != 4 or {name for name, _ in invariants} != scenarios or any(
+            field not in details.split() for _, details in invariants for field in required):
+        raise RuntimeError("missing complete same-token/descriptor/namespace invariants")
+    return {"test_identity": NATIVE_OPEN_CASE, "rust_tests": 1, "observations": rows,
+            "invariants": invariants, "diagnostic_complete": True,
+            "qualifies_original_matrix": False}
+
+
 def main():
     evidence = Path(os.environ["RUNNER_TEMP"]) / "hepta-delete-evidence"
     evidence.mkdir(parents=True, exist_ok=True)
@@ -171,6 +221,11 @@ def main():
                              "--config-file", str(HERE / "probe/nextest.toml"),
                              "--test-threads", "1", "--retries", "0",
                              "--success-output", "immediate", "--failure-output", "immediate"]),
+            ("native-open", ["just", "test", "--manifest-path", manifest, "--locked",
+                             "--test", "native_open", "-p", PACKAGE,
+                             "--config-file", str(HERE / "probe/nextest.toml"),
+                             "--test-threads", "1", "--retries", "0",
+                             "--success-output", "immediate", "--failure-output", "immediate"]),
         ]
         for name, args in invocations:
             row = command(args, evidence, name)
@@ -185,6 +240,12 @@ def main():
         except Exception as error:
             failed = True
             receipt["list_factor_error"] = f"{type(error).__name__}: {error}"
+        try:
+            receipt["native_open_diagnostic"] = verify_native_open(
+                (evidence / "native-open.log").read_text(encoding="utf-8", errors="replace"))
+        except Exception as error:
+            failed = True
+            receipt["native_open_error"] = f"{type(error).__name__}: {error}"
         receipt["native_counts"] = verify_native(
             (evidence / "native.log").read_text(encoding="utf-8", errors="replace"))
     except Exception as error:
