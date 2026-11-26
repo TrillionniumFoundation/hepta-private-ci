@@ -358,6 +358,6 @@ fn registered_cognitive_directory_satisfies_native_owner_contract() -> Result<()
         .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;
     let root = record.layout.cognitive_root();
     assert!(fs::symlink_metadata(root)?.is_dir());
-    codex_utils_path::open_private_state_directory(root)?;
+    codex_utils_path::open_existing_private_state_directory(root)?;
     Ok(())
 }

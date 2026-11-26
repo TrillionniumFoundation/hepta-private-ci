@@ -221,7 +221,7 @@ impl FleetRegistry {
         // The cognitive owner validates this directory on every open. Create
         // the Windows leaf with a private DACL before publishing the registry.
         #[cfg(windows)]
-        codex_utils_path::open_private_state_directory(&cognitive_root)?;
+        codex_utils_path::create_private_state_directory(&cognitive_root)?;
         #[cfg(not(windows))]
         create_private_directory(&cognitive_root)?;
         let matrix_secrets_root = staging_root.join("matrix/secrets");
