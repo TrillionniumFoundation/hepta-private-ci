@@ -92,17 +92,18 @@ async fn cumulative_transcript_survives_delta_lag_and_polling_drains() -> anyhow
     let mut expected = input[..head].to_vec();
     expected.extend(format!("\n... {omitted} bytes omitted ...\n").as_bytes());
     expected.extend(&input[input.len() - tail..]);
-    let transcript = process.output_handles().transcript.lock().await;
-    assert_eq!(
-        (
-            transcript.total_bytes(),
-            transcript.retained_bytes(),
-            transcript.omitted_bytes(),
-            transcript.to_bytes_with_omission_marker(),
-        ),
-        (input.len(), retained, omitted, expected)
-    );
-    drop(transcript);
+    {
+        let transcript = process.output_handles().transcript.lock().await;
+        assert_eq!(
+            (
+                transcript.total_bytes(),
+                transcript.retained_bytes(),
+                transcript.omitted_bytes(),
+                transcript.to_bytes_with_omission_marker(),
+            ),
+            (input.len(), retained, omitted, expected)
+        );
+    }
     assert_eq!(
         process
             .output_handles()
