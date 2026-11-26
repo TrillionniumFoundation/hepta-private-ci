@@ -20,6 +20,7 @@ use codex_protocol::openai_models::ReasoningEffortPreset;
 use codex_protocol::protocol::AgentStatus;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::EventMsg;
+use codex_protocol::protocol::HookEventName;
 use codex_protocol::protocol::MULTI_AGENT_MODE_OPEN_TAG;
 use codex_protocol::protocol::Op;
 use codex_protocol::protocol::SessionSource;
@@ -53,6 +54,7 @@ use core_test_support::test_codex::test_codex;
 use core_test_support::test_codex::turn_permission_fields;
 use core_test_support::wait_for_event;
 use core_test_support::wait_for_event_match;
+use futures::FutureExt;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
 use serde_json::json;
@@ -774,12 +776,147 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
     let _ = wait_for_requests(&first_child_request).await?;
     let _ = wait_for_requests(&second_child_request).await?;
 
-    let subagent_stop_inputs = wait_for_hook_log(
+    let subagent_stop_inputs = match wait_for_hook_log(
         test.codex_home_path(),
         "subagent_stop_hook_log.jsonl",
         /*expected_len*/ 2,
     )
-    .await?;
+    .await
+    {
+        Ok(inputs) => inputs,
+        Err(error) => {
+            // Observe only events already queued after the original deadline has
+            // failed. A request received by the model mock does not establish
+            // that the child has dispatched or completed its final stop hook.
+            let diagnostics: std::result::Result<_, &'static str> = (|| {
+                let child_ids = test
+                    .thread_manager
+                    .list_thread_ids()
+                    .now_or_never()
+                    .ok_or("child catalog pending; child lifecycle unknown")?
+                    .into_iter()
+                    .filter(|id| *id != test.session_configured.thread_id)
+                    .collect::<Vec<_>>();
+                if child_ids.len() != 1 {
+                    return Err("child count differs from one; child lifecycle unknown");
+                }
+                let child = test
+                    .thread_manager
+                    .get_thread(child_ids[0])
+                    .now_or_never()
+                    .ok_or("child lookup pending; child lifecycle unknown")?
+                    .map_err(|_| "child lookup failed; child lifecycle unknown")?;
+                let status = match child
+                    .agent_status()
+                    .now_or_never()
+                    .ok_or("child status pending; child lifecycle unknown")?
+                {
+                    AgentStatus::PendingInit => "pending_init",
+                    AgentStatus::Running => "running",
+                    AgentStatus::Interrupted => "interrupted",
+                    AgentStatus::Completed(_) => "completed",
+                    AgentStatus::Errored(_) => "errored",
+                    AgentStatus::Shutdown => "shutdown",
+                    AgentStatus::NotFound => "not_found",
+                };
+                let mut observed = Vec::new();
+                let mut examined = 0;
+                let mut omitted = 0;
+                let mut queue_state = "scan_limit";
+                let bounded_id = |id: &str| id.chars().take(64).collect::<String>();
+                // The three lookups above and these event polls total at most
+                // 128 non-waiting polls. Unobserved events remain unknown.
+                for _ in 0..125 {
+                    let Some(event) = child.next_event().now_or_never() else {
+                        queue_state = "pending";
+                        break;
+                    };
+                    let event = match event {
+                        Ok(event) => event,
+                        Err(_) => {
+                            queue_state = "error";
+                            if observed.len() < 8 {
+                                observed.push(json!({"kind": "channel_error"}));
+                            } else {
+                                omitted += 1;
+                            }
+                            break;
+                        }
+                    };
+                    examined += 1;
+                    let observation = match event.msg {
+                        EventMsg::HookStarted(event)
+                            if event.run.event_name == HookEventName::SubagentStop =>
+                        {
+                            json!({
+                                "kind": "hook_started",
+                                "turn_id_prefix": event.turn_id.as_deref().map(bounded_id),
+                                "turn_id_bytes": event.turn_id.as_ref().map(String::len),
+                                "event_name": event.run.event_name,
+                                "id_prefix": bounded_id(&event.run.id),
+                                "id_bytes": event.run.id.len(),
+                                "status": event.run.status,
+                            })
+                        }
+                        EventMsg::HookCompleted(event)
+                            if event.run.event_name == HookEventName::SubagentStop =>
+                        {
+                            json!({
+                                "kind": "hook_completed",
+                                "turn_id_prefix": event.turn_id.as_deref().map(bounded_id),
+                                "turn_id_bytes": event.turn_id.as_ref().map(String::len),
+                                "event_name": event.run.event_name,
+                                "id_prefix": bounded_id(&event.run.id),
+                                "id_bytes": event.run.id.len(),
+                                "status": event.run.status, "duration_ms": event.run.duration_ms,
+                                "status_message_bytes": event.run.status_message.as_ref().map(String::len),
+                                "entry_count": event.run.entries.len(),
+                            })
+                        }
+                        EventMsg::TurnComplete(event) => json!({
+                            "kind": "turn_complete",
+                            "turn_id_prefix": bounded_id(&event.turn_id),
+                            "turn_id_bytes": event.turn_id.len(),
+                            "error_present": event.error.is_some(), "duration_ms": event.duration_ms,
+                        }),
+                        EventMsg::Error(event) => json!({
+                            "kind": "error", "message_bytes": event.message.len(),
+                            "codex_error_info_present": event.codex_error_info.is_some(),
+                        }),
+                        _ => continue,
+                    };
+                    if observed.len() < 8 {
+                        observed.push(observation);
+                    } else {
+                        omitted += 1;
+                    }
+                }
+                Ok((status, examined, omitted, queue_state, observed))
+            })();
+            let mut diagnostic = match diagnostics {
+                Ok((status, examined, omitted, queue_state, observed)) => format!(
+                    "subagent stop lifecycle snapshot: status={status}; scanned={examined}; retained={}; omitted={omitted}; queue={queue_state}; absence is unknown; events={}",
+                    observed.len(),
+                    Value::Array(observed),
+                ),
+                Err(diagnostic_error) => format!(
+                    "subagent stop lifecycle snapshot: status=unknown; scanned=0; retained=0; queue=unknown; diagnostic_error={diagnostic_error}"
+                ),
+            };
+            let suffix = "; diagnostic_truncated=true";
+            if diagnostic.len() + "; diagnostic_truncated=false".len() > 4096 {
+                let mut end = 4096 - suffix.len();
+                while !diagnostic.is_char_boundary(end) {
+                    end -= 1;
+                }
+                diagnostic.truncate(end);
+                diagnostic.push_str(suffix);
+            } else {
+                diagnostic.push_str("; diagnostic_truncated=false");
+            }
+            return Err(error).context(diagnostic);
+        }
+    };
     assert_eq!(subagent_stop_inputs.len(), 2);
     assert_eq!(
         subagent_stop_inputs
