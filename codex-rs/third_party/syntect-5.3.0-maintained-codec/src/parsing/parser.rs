@@ -1937,7 +1937,7 @@ contexts:
                       scope: a
                       push: context1
 
-                    
+
                   context1:
                     - match: b
                       scope: b

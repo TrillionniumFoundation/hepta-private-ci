@@ -348,5 +348,17 @@
     "tests/error_handling.rs": "ef65f4f56d8d0c44ceace93d2aadc43b60a4f4c67c3f389082237b3bdd573652",
     "tests/snapshots/public-api.txt": "c9f9e4555fee3b1c4423e7b25fbdacf753e4e6bb5eb1f04eac07cf26f6c1f0b2"
   },
-  "lintFixNote": "Scoped just fix, followed by removal of the now-unused ErrorKind import introduced by the io::Error::other fix; all original assertion values remain."
+  "lintFixNote": "Scoped just fix, followed by removal of the now-unused ErrorKind import introduced by the io::Error::other fix; all original assertion values remain.",
+  "semanticWhitespaceNormalizations": {
+    ".config/nextest.toml": {
+      "afterSha256": "11df322fc66810c8272fa33cea970961049afd99dc8b3dcd536b75d4374afab1",
+      "beforeSha256": "5c2d557e075cc5a648227a71f2038d09a13494ec5c4cd06548cebe4b51625aae",
+      "validation": "TOML parsed-value equality"
+    },
+    "src/parsing/parser.rs": {
+      "afterSha256": "b7a4875b1e2d11a11edb8faa78d6d25766aad0b9bebefa6c3b01ee2e1e8f169c",
+      "beforeSha256": "5407469c70458ee96c4c01e4e0308239768c4e69d063c2f2ead7d45017713f54",
+      "validation": "YAML grammar parsed-value equality"
+    }
+  }
 }
