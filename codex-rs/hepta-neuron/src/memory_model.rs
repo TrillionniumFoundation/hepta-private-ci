@@ -105,10 +105,8 @@ impl MemoryCellArtifactV1 {
         if integer(20) != parameters || bytes.len() != HEADER_BYTES + 2 * parameters {
             return Err(MemoryCellModelError::InvalidArtifact);
         }
-        let weights = bytes[HEADER_BYTES..]
-            .chunks_exact(2)
-            .map(|pair| i16::from_le_bytes([pair[0], pair[1]]))
-            .collect();
+        let (entries, _) = bytes[HEADER_BYTES..].as_chunks::<2>();
+        let weights = entries.iter().copied().map(i16::from_le_bytes).collect();
         Ok(Self {
             input_dimension,
             hidden_width,

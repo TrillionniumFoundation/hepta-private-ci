@@ -133,7 +133,6 @@ struct CurrentPointerV1 {
 }
 
 /// Contents and retention for one journal-generation commit.
-#[derive(Clone, Copy, Debug)]
 pub struct JournalGenerationInput<'a> {
     pub generation: u64,
     pub previous_manifest_sha256: Option<JournalDigest32>,
