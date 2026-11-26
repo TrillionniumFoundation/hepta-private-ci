@@ -1,4 +1,5 @@
 """Synthetic adversarial tests of the auditor; not Rust execution evidence."""
+
 from pathlib import Path
 import copy
 import importlib.util
@@ -16,10 +17,22 @@ CORPUS = ROOT / "qualification/codex-exec-p2e/corpus.json"
 class AuditorTests(unittest.TestCase):
     def setUp(self):
         self.corpus = p2e.load_corpus(CORPUS)
-        self.hepta = {c["id"]: {"id": c["id"], "accepted": c["hepta_accepts"],
-                               "effect_authority": False} for c in self.corpus["cases"]}
-        self.native = {c["id"]: {"id": c["id"], "accepted": c["native_accepts"],
-                                "projection": p2e.expected_projection(c)} for c in self.corpus["cases"]}
+        self.hepta = {
+            c["id"]: {
+                "id": c["id"],
+                "accepted": c["hepta_accepts"],
+                "effect_authority": False,
+            }
+            for c in self.corpus["cases"]
+        }
+        self.native = {
+            c["id"]: {
+                "id": c["id"],
+                "accepted": c["native_accepts"],
+                "projection": p2e.expected_projection(c),
+            }
+            for c in self.corpus["cases"]
+        }
 
     def test_complete_synthetic_rows_only_test_the_auditor(self):
         result = p2e.audit(self.corpus, self.hepta, self.native, self.native)
@@ -87,7 +100,9 @@ class AuditorTests(unittest.TestCase):
             path.write_text(row * 2 + "test result: ok. 1 passed; 0 failed\n")
             with self.assertRaises(ValueError):
                 p2e.rows(path, "P2E_NATIVE_ROW ")
-            path.write_text("test probe ... " + row + "test result: ok. 1 passed; 0 failed\n")
+            path.write_text(
+                "test probe ... " + row + "test result: ok. 1 passed; 0 failed\n"
+            )
             self.assertEqual(set(p2e.rows(path, "P2E_NATIVE_ROW ")), {"minimal"})
 
 

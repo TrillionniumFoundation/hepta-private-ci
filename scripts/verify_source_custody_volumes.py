@@ -317,7 +317,9 @@ def verify_collection(repository, directory):
                 if row["path"] in LF_NOTICE_PROJECTIONS
                 else original
             )
-            if row["path"] == APACHE_NOTICE_EOF_PROJECTION and expected.endswith(b"\n\n"):
+            if row["path"] == APACHE_NOTICE_EOF_PROJECTION and expected.endswith(
+                b"\n\n"
+            ):
                 expected = expected[:-1]
             require(
                 current in (original, expected),

@@ -5,6 +5,7 @@ Only the 161 local workspace crate versions may move from 0.0.0 to
 0.162.1. No external dependency, checksum, source, feature or git ref may
 change. The immutable upstream checkout is never modified.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -23,7 +24,9 @@ EXPECTED_LOCAL_PACKAGES = 161
 VERSION_LINE = re.compile(rb'(?m)^version = "0\.0\.0"$')
 
 
-def qualify_release_lock(data: bytes, release: str = RELEASE_VERSION) -> tuple[bytes, list[str]]:
+def qualify_release_lock(
+    data: bytes, release: str = RELEASE_VERSION
+) -> tuple[bytes, list[str]]:
     if len(data) > 1024 * 1024 or not data.startswith(b"# This file is automatically"):
         raise ValueError("unexpected or oversized pinned Cargo.lock")
     original = tomllib.loads(data.decode("utf-8"))
@@ -37,7 +40,9 @@ def qualify_release_lock(data: bytes, release: str = RELEASE_VERSION) -> tuple[b
         raise ValueError("refuse changing an external dependency version")
     if any(pkg["version"] == release for pkg in packages):
         raise ValueError("release already present in source lock")
-    target = data.replace(b'version = "0.0.0"', ('version = "' + release + '"').encode())
+    target = data.replace(
+        b'version = "0.0.0"', ('version = "' + release + '"').encode()
+    )
     if len(VERSION_LINE.findall(data)) != EXPECTED_LOCAL_PACKAGES:
         raise ValueError("unexpected version-line layout")
     if target == data:
@@ -58,7 +63,10 @@ def qualify_release_lock(data: bytes, release: str = RELEASE_VERSION) -> tuple[b
 def git(root: Path, *args: str) -> str:
     return subprocess.run(
         ["git", "-C", str(root), *args],
-        capture_output=True, check=True, text=True, timeout=30,
+        capture_output=True,
+        check=True,
+        text=True,
+        timeout=30,
     ).stdout.strip()
 
 
@@ -91,7 +99,9 @@ def main() -> None:
     observed = qualified_path.read_bytes()
     if args.mode == "apply":
         if observed != original:
-            raise ValueError("qualified worktree did not start from exact original lock")
+            raise ValueError(
+                "qualified worktree did not start from exact original lock"
+            )
         qualified_path.write_bytes(qualified)
     elif observed != qualified:
         raise ValueError("qualified lock no longer matches the reviewed transformation")

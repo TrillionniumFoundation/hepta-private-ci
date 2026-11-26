@@ -115,6 +115,7 @@ class Source53LogCustodyTests(unittest.TestCase):
                 live_notice.write_bytes((REPOSITORY / name).read_bytes())
                 carrier = self.repository / entry["stored_path"]
                 shutil.copyfile(REPOSITORY / entry["stored_path"], carrier)
+
                 def read_original():
                     return storage.read_verified(
                         self.repository,
