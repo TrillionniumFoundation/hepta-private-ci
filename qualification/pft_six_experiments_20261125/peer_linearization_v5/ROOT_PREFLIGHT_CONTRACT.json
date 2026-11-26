@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.peer-v5.preflight-contract.v1",
+  "active": false,
+  "execution_performed_by_author": false,
+  "owner": "root",
+  "physical_pair": ["ai395", "pocket4"],
+  "direction": "ai395 initiates one existing strict SSH session to pocket4",
+  "main_role": "bootstrap, metadata collection and ProfHepta publication; no contribution relay",
+  "ai395_new_root": "/home/qq/pft-peer-linearization-v5-20261126-8a32",
+  "pocket4_new_root": "/home/alex/pft-peer-linearization-v5-20261126-8a32",
+  "existing_transport_source": {
+    "path": "/home/qq/.ssh/hepta-transport/ssh_transport.py",
+    "bytes": 15526,
+    "sha256": "62806672b699d794e2fe9c738a281727fa1fd6595266440a747f8a4145d449e9"
+  },
+  "existing_inventory": {
+    "path": "/home/qq/.ssh/hepta-transport/inventory.json",
+    "bytes": 7558,
+    "sha256": "130f7f8f5fb4eb8bd6717f532f07ba069fe8110e842dfeb95c4132cc7aa8007f"
+  },
+  "existing_known_hosts": {
+    "path": "/home/qq/.ssh/hepta-transport/known_hosts",
+    "bytes": 5391,
+    "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+  },
+  "observed_alias": {
+    "host": "pocket4",
+    "hostname": "10.77.0.4",
+    "user": "alex",
+    "port": 22,
+    "identity_file_path_only": "/home/qq/.ssh/id_ed25519_ai395_mesh",
+    "host_key_alias": "hepta-node-pocket4",
+    "proxy_use_fdpass": true,
+    "strict_host_key_checking": true,
+    "control_path": "none"
+  },
+  "required_selected_route": {
+    "local_address": "10.77.0.2",
+    "remote_address": "10.77.0.4",
+    "port": 22,
+    "transport": "usb4",
+    "interface": "br-usb4",
+    "interface_bound": true
+  },
+  "probe": {
+    "source_script": "preflight.py",
+    "admissions": 1,
+    "ssh_attempts": 1,
+    "outer_wall_seconds": 15,
+    "internal_body_deadline_seconds": 12,
+    "owned_group_cleanup_seconds": 2,
+    "connect_timeout_seconds": 8,
+    "stdout_bytes_cap": 4096,
+    "stderr_bytes_cap": 16384,
+    "final_metadata_record_bytes_cap": 65536,
+    "python_cpu_seconds": 2,
+    "remote_python": "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+    "remote_metadata_only": ["hostname", "uid", "executable", "CPython version", "SSH_CONNECTION"],
+    "source_or_model_imports": 0,
+    "filesystem_writes": 0,
+    "new_listeners": 0,
+    "data_or_contribution_bytes": 0,
+    "automatic_retries": 0
+  },
+  "prior_proof_scope": "Prior ai395/pocket4 success supplies route lineage, not current reachability or a v5 result.",
+  "original_experiments": "E1-E6 remain 16/16 exhausted and frozen"
+}

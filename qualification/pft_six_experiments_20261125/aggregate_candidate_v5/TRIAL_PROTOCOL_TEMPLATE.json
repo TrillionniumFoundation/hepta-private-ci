@@ -1,0 +1,78 @@
+{
+  "activation": "Root registers a separate single-use slot, fills actual retained peer hashes (and accepted aggregate trial hash for cold), verifies every source pin, then writes and hashes a distinct active protocol. This template authorizes no execution.",
+  "actual_reduction_gate": {
+    "absolute_floor": 1e-12,
+    "minimum_ratio": 0.1,
+    "relative_floor": 1e-06,
+    "rule": "pred > tau and ared > tau and ared/pred >= minimum_ratio",
+    "tau": "absolute_floor + relative_floor * max(abs(Phi0), abs(Phi_trial))"
+  },
+  "budget": {
+    "candidate_exports": 1,
+    "cpu_seconds": 120,
+    "historical_matrix_runs": 0,
+    "model_loads": 1,
+    "physical_forward_calls": 1,
+    "quadratic_solves": 0,
+    "retries": 0,
+    "training_updates": 0,
+    "vjp_calls": 0,
+    "wall_seconds": 120
+  },
+  "cold_comparison": {
+    "atol": 1e-12,
+    "rtol": 1e-11
+  },
+  "mode": "trial",
+  "objective": {
+    "max_step_norm": 1.0,
+    "observation_weights": [
+      1.0,
+      1.0
+    ],
+    "residual": "prediction minus target",
+    "ridge": 0.001,
+    "state": "fresh complete four-tick trajectory; rebuild initial_state after the edit",
+    "target_offset": [
+      0.0001,
+      -0.0001
+    ],
+    "target_rule": "retained base_output + [0.0001,-0.0001]"
+  },
+  "original_failed_result_sha256": "15fbd987921708767c8143185c0a98a5caeb50e9984b4a88bc629fbf81af4105",
+  "parent_checkpoint_sha256": "0127a056c779930fc5ab27558e84aecbd242caa64951f21e47d7885465f0b86f",
+  "parent_profile_sha256": "4a8feafa490224f0ad14d318835f51d1147b8b6b93c7a56e9f9eb3ddc3d43d77",
+  "peer_input_sha256": {
+    "ai395": null,
+    "common": null,
+    "pocket4": null
+  },
+  "peer_source_sha256": {
+    "exact_equations.py": "8b74a166038456754685c003264ff1c1d892a6856f2f562ba35a31cbb34d5c0d",
+    "peer.py": "ecdffbfb1c2fc2d98658542e93f935fb53639d911a522550ddb19be425b27513",
+    "profile_io.py": "3c6d4d0d6ad478460e3b422bfb22220406080c48a5ef1d33e2cb3479e43e738f"
+  },
+  "ready_for_execution": false,
+  "runtime": {
+    "device": "cpu",
+    "interop_threads": 1,
+    "numpy": "2.5.5",
+    "python": "3.14.4",
+    "threads": 1,
+    "torch": "2.15.0+cpu"
+  },
+  "schema": "hepta.smallhcsn.aggregate-candidate-protocol.v1",
+  "source_sha256": {
+    "aggregate_candidate_v5/aggregate_candidate.py": "e57e5fae1adade64926b0f9fa5137f055b745fb5c5f701992c1627a338a6a02b",
+    "native_profile_v4/bounded_process.py": "776e37c8ac04f9a5e2eda773b071521dfb689567e3abe4f9550124d399728805",
+    "native_profile_v4/numeric_runner.py": "0d3fbb8c849f442d254f83a12a5ad433f2c678cb6723bcb04018c4b05a97d472",
+    "native_profile_v4/profile_io.py": "3c6d4d0d6ad478460e3b422bfb22220406080c48a5ef1d33e2cb3479e43e738f",
+    "native_profile_v4/small_hcsn_profile.py": "a1c28b0a8a05d52d6394dde21381fb791bdcff8f10909947f50afc84d13cfd5a",
+    "native_profile_v4/source_binding.py": "72f29914e87a5c35d1e33c41267da7057a739a077047513b11d8dcf48c2a42a3",
+    "native_profile_v4/verify_nonsmooth_cold.py": "93e278863a7e73cde336e540a1fa707478693a4027d69115533b8058a58d40e7",
+    "nonsmooth_trial_v4/nonsmooth_trial.py": "8e3de69622c23f36660f49bb0f66a232aa113a97b858cfe1c24c41a02defee95",
+    "sensitivity_v4/first_order.py": "eecdf0a2f6aabbdbc65b79ed44c96b5badbd406c51252d89643260a923b5a55f",
+    "sensitivity_v4/verify_first_order.py": "8506d27e0a5740901e0bdb40da17478de009d41629125d0888ba81ece01c374d"
+  },
+  "trial_result_sha256": null
+}
