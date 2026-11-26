@@ -1,0 +1,44 @@
+{
+  "archive": "CPU_POINTER_STATE_01.tar.xz",
+  "archive_bytes": 21048,
+  "archive_members": 20,
+  "archive_sha256": "c83b48749eabe8bbb72446da881dfbf464e4cdd5600097289aee2949e090a800",
+  "corrected_test_sha256": "56741fb935d2497334c127d31ad900bff22c67983f72de70aa0a65ba790f96b9",
+  "format_before_test": true,
+  "new_ci": {
+    "complete_six_fit_replay": false,
+    "cpu_short_diagnostic_planned_calls_if_gate_passes": 26,
+    "manual_rerun_or_dispatch": false,
+    "other_differentiable_workflow_accounted_separately": true,
+    "pr_created": false,
+    "trigger": "one ordinary source branch push"
+  },
+  "original_adapter": {
+    "migration_methods_passed": 18,
+    "normal_pointer_failures": 1,
+    "normal_pointer_methods": 5,
+    "optimized_outer_suite_executed": false
+  },
+  "original_failed_job": 139778698521,
+  "original_failed_run": 45781771974,
+  "original_real_recovery_job": {
+    "actual_diagnostic_calls": 0,
+    "conclusion": "skipped",
+    "id": 139782175664,
+    "steps": []
+  },
+  "parent": "51bed2bd21b3e7505a4123fdc88865ed154b4e71",
+  "regression": {
+    "model_calls": 0,
+    "nested_pointer_children_each": 8,
+    "normal_methods_passed": 6,
+    "optimized_methods_passed": 6,
+    "optimizer_calls": 0,
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]"
+  },
+  "regression_result_sha256": "ad7c1894cb05f540a820162392601c2eaf4ecd335dadf26b82195bc8f5ad1748",
+  "runtime_profile_qualified": false,
+  "schema": "hcsn-pointer-state-regression-v1",
+  "scientific_hold_unchanged": true
+}

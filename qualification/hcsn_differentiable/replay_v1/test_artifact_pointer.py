@@ -64,10 +64,15 @@ class ArtifactPointerTests(unittest.TestCase):
             with self.subTest(raw=raw), self.assertRaises(ValueError):
                 validate_pointer(raw)
 
-    def test_real_missing_pointer_refuses(self):
-        raw = Path(__file__).with_name("CPU-ARTIFACT.json").read_bytes()
+    def test_missing_pointer_refuses_after_publication(self):
+        pointer = json.loads(Path(__file__).with_name("CPU-ARTIFACT.json").read_bytes())
+        pointer["status"] = "MISSING"
         with self.assertRaisesRegex(ValueError, "HOLD: immutable archive publication"):
-            validate_pointer(raw)
+            validate_pointer(json.dumps(pointer))
+
+    def test_published_pointer_returns_registered_identity(self):
+        raw = Path(__file__).with_name("CPU-ARTIFACT.json").read_bytes()
+        self.assertEqual(validate_pointer(raw), json.loads(raw))
 
     def test_subprocess_optimization_cannot_skip_admission(self):
         variants = []
