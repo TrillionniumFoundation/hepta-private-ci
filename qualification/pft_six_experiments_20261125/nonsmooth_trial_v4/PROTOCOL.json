@@ -1,0 +1,134 @@
+{
+  "actual_reduction_gate": {
+    "absolute_floor": 1e-12,
+    "minimum_ratio": 0.1,
+    "relative_floor": 1e-06,
+    "rule": "pred > tau and ared > tau and ared/pred >= minimum_ratio",
+    "tau": "absolute_floor + relative_floor * max(abs(Phi0), abs(Phi_trial))"
+  },
+  "admission_and_success": [
+    "Only the exact original FAILED result byte SHA is admitted; its raw_cost[4] nonconvergent one-sided gap remains an unresolved classical-derivative gate.",
+    "Retained base and matrix bytes, full metadata hash, all six coordinate names/indices/scales, fixture and complete parent/source/runtime identities match exactly.",
+    "The retained matrix is called a midpoint primitive-VJP surrogate. It is not certified as a classical Jacobian or a member of the full-map Clarke generalized Jacobian.",
+    "The surrogate solve reports the unregularized rank and nullity. Two outputs cannot identify six coordinates, and ridge uniqueness is not data identification.",
+    "The temporary candidate forward uses the original model and checks complete initial and final physical populations, all output finiteness and the clock.",
+    "Every parent tensor, including buffers, is restored in finally and checked by torch.equal and the native full-state digest; parameter trainability, accumulated gradients and diagnostics are preserved.",
+    "ACCEPTED requires the fixed actual-reduction gate, including the same ridge penalty used in the proposal objective.",
+    "REJECTED is retained as a negative observation with no retry, changed target, changed coordinate, changed tolerance, backtracking or candidate export.",
+    "Only after ACCEPTED, write the immutable trial evidence and edit receipt, then export the complete candidate through the existing profile API. The candidate binds the actual trial evidence and all parent/source identities.",
+    "Exit code zero means the procedure completed; consumers must separately require COMPLETED_SINGLE_TRIAL, decision ACCEPTED and a successful export pin.",
+    "Independent cold loading/prediction of an accepted export requires its own later scope and is not included in this one-forward budget."
+  ],
+  "budget": {
+    "backtracking_steps": 0,
+    "candidate_exports": 1,
+    "finite_difference_calls": 0,
+    "interop_threads": 1,
+    "intraop_threads": 1,
+    "maximum_cpu_seconds": 120,
+    "maximum_wall_seconds": 120,
+    "new_linearizations": 0,
+    "physical_forward_calls": 1,
+    "quadratic_solves": 1,
+    "retries": 0,
+    "runs": 1,
+    "scalar_output_vjp_calls": 0,
+    "training_loop_updates": 0
+  },
+  "coordinates": [
+    {
+      "flat_index": 4,
+      "name": "raw_cost",
+      "scale": 1.0
+    },
+    {
+      "flat_index": 0,
+      "name": "input_drive.weight",
+      "scale": 1.0
+    },
+    {
+      "flat_index": 0,
+      "name": "input_mark.weight",
+      "scale": 1.0
+    },
+    {
+      "flat_index": 96,
+      "name": "recurrent.weight",
+      "scale": 1.0
+    },
+    {
+      "flat_index": 0,
+      "name": "readout.weight",
+      "scale": 1.0
+    },
+    {
+      "flat_index": 0,
+      "name": "readout.bias",
+      "scale": 1.0
+    }
+  ],
+  "failed_sensitivity_result_sha256": "15fbd987921708767c8143185c0a98a5caeb50e9984b4a88bc629fbf81af4105",
+  "objective": {
+    "max_step_norm": 1.0,
+    "observation_weights": [
+      1.0,
+      1.0
+    ],
+    "residual": "prediction minus target",
+    "ridge": 0.001,
+    "state": "fresh complete four-tick trajectory; rebuild initial_state after the edit",
+    "target_offset": [
+      0.0001,
+      -0.0001
+    ],
+    "target_rule": "retained base_output + [0.0001,-0.0001]"
+  },
+  "parent_checkpoint_bytes": 9605,
+  "parent_checkpoint_sha256": "0127a056c779930fc5ab27558e84aecbd242caa64951f21e47d7885465f0b86f",
+  "parent_profile_sha256": "4a8feafa490224f0ad14d318835f51d1147b8b6b93c7a56e9f9eb3ddc3d43d77",
+  "quantity_definitions": {
+    "actual": "Phi(delta) = 0.5*||fresh_physical_output(theta0+S*delta)-target||^2 + 0.5*ridge*||delta||^2",
+    "ared": "Phi(0)-Phi(delta)",
+    "base_evidence": "Reuse the exact retained base prediction, parameter fingerprint, source/runtime identity, input and initial-margin digests; no new base forward.",
+    "candidate_exports": "At most one full state_dict research artifact, strictly after the actual reduction gate is ACCEPTED. No export after a failed gate.",
+    "coordinate_map": "theta[c] = theta0[c] + coordinate.scale * delta[c]; one shared six-coordinate model for both trajectories",
+    "physical_forward_calls": "At most one complete four-tick, two-trajectory call to the original real model; loading and its QVI constructor are not trajectory forwards.",
+    "pre_forward_gate": "Reject if radius is exceeded, predicted reduction <= 1e-12+1e-6*abs(Phi0), or no representable parameter element changes. No clipping or second solve.",
+    "pred": "m(0)-m(delta)",
+    "surrogate": "m(delta) = 0.5*||J*delta-(target-base_output)||^2 + 0.5*ridge*||delta||^2"
+  },
+  "ready_for_execution": true,
+  "registration_owner": "root",
+  "runtime": {
+    "device": "cpu",
+    "interop_threads": 1,
+    "numpy": "2.5.5",
+    "python": "3.14.4",
+    "threads": 1,
+    "torch": "2.15.0+cpu"
+  },
+  "schema": "hepta.smallhcsn.nonsmooth-single-trial.v1",
+  "scope": {
+    "candidate_cold_reload_in_this_scope": false,
+    "classical_jacobian_admitted": false,
+    "full_weight_identification_claim": false,
+    "historical_matrix_rerun": false,
+    "name": "actual-reduction-guarded single nonsmooth surrogate trial",
+    "natural_task_benefit_claim": false,
+    "new_multihost_training": false,
+    "old_training_or_test_data_read": false,
+    "original_failure_modified": false,
+    "original_smooth_status": "FAILED",
+    "production_adoption": false,
+    "source_executed_by_author": false,
+    "verified_semismooth_newton_method": false
+  },
+  "source_sha256": {
+    "native_profile_v4/profile_io.py": "3c6d4d0d6ad478460e3b422bfb22220406080c48a5ef1d33e2cb3479e43e738f",
+    "native_profile_v4/small_hcsn_profile.py": "a1c28b0a8a05d52d6394dde21381fb791bdcff8f10909947f50afc84d13cfd5a",
+    "native_profile_v4/source_binding.py": "72f29914e87a5c35d1e33c41267da7057a739a077047513b11d8dcf48c2a42a3",
+    "nonsmooth_trial_v4/nonsmooth_trial.py": "8e3de69622c23f36660f49bb0f66a232aa113a97b858cfe1c24c41a02defee95",
+    "sensitivity_v4/first_order.py": "eecdf0a2f6aabbdbc65b79ed44c96b5badbd406c51252d89643260a923b5a55f",
+    "sensitivity_v4/verify_first_order.py": "8506d27e0a5740901e0bdb40da17478de009d41629125d0888ba81ece01c374d"
+  }
+}
