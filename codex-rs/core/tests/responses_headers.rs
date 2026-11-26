@@ -1,9 +1,11 @@
 use std::process::Command;
 use std::sync::Arc;
+use std::time::Duration;
 
 use codex_core::ModelClient;
 use codex_core::Prompt;
 use codex_core::ResponseEvent;
+use codex_core::TurnInputRequest;
 use codex_features::Feature;
 use codex_login::CodexAuth;
 use codex_login::auth::AgentIdentityAuthPolicy;
@@ -15,13 +17,18 @@ use codex_protocol::ThreadId;
 use codex_protocol::config_types::ReasoningSummary;
 use codex_protocol::models::ContentItem;
 use codex_protocol::models::ResponseItem;
+use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::SubAgentSource;
+use codex_protocol::turn_input::NotSubmittedReason;
+use codex_protocol::turn_input::StartIfIdleSubmission;
+use codex_protocol::user_input::UserInput;
 use core_test_support::TestCodexResponsesRequestKind;
 use core_test_support::load_default_config_for_test;
 use core_test_support::responses;
 use core_test_support::responses_metadata as test_responses_metadata;
 use core_test_support::test_codex::test_codex;
+use core_test_support::wait_for_event_with_timeout;
 use futures::StreamExt;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -583,9 +590,41 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
     )
     .await;
 
-    test.submit_turn("hello")
-        .await
-        .expect("submit post-git turn prompt");
+    let budget = Duration::from_secs(30);
+    let admitted_turn_id = tokio::time::timeout(budget, async {
+        let turn_id = loop {
+            let submission = test
+                .codex
+                .start_turn_if_idle(TurnInputRequest::user_input(vec![UserInput::Text {
+                    text: "hello".to_string(),
+                    text_elements: Vec::new(),
+                }]))
+                .await
+                .expect("submit post-git turn prompt");
+            match submission {
+                StartIfIdleSubmission::Started { turn_id } => break turn_id,
+                StartIfIdleSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::NotIdle,
+                } => {
+                    // The previous TurnComplete can precede retirement of its
+                    // finish owner. A declined start has not enqueued any input.
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+                StartIfIdleSubmission::NotSubmitted { reason } => {
+                    panic!("post-git turn was declined: {reason:?}");
+                }
+            }
+        };
+        wait_for_event_with_timeout(
+            &test.codex,
+            |event| matches!(event, EventMsg::TurnComplete(done) if done.turn_id == turn_id),
+            budget,
+        )
+        .await;
+        turn_id
+    })
+    .await
+    .expect("post-git turn should start and finish within the original completion budget");
 
     let requests = request_log.requests();
     assert_eq!(requests.len(), 2, "expected two requests in one turn");
@@ -643,6 +682,7 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
         first_turn_id, second_turn_id,
         "requests should share turn_id"
     );
+    assert_eq!(first_turn_id, admitted_turn_id.as_str());
     assert_ne!(
         second_turn_id,
         initial_turn_id.as_str(),
