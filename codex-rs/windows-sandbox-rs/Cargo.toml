@@ -22,12 +22,9 @@ path = "src/bin/command_runner/main.rs"
 workspace = true
 
 [dependencies]
+jiff = { workspace = true }
 anyhow = "1.0"
 base64 = { workspace = true }
-chrono = { version = "0.4.42", default-features = false, features = [
-    "clock",
-    "std",
-] }
 codex-utils-pty = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 codex-utils-string = { workspace = true }
@@ -93,4 +90,5 @@ features = [
 version = "0.52"
 
 [dev-dependencies]
+codex-utils-cargo-bin = { workspace = true }
 pretty_assertions = { workspace = true }

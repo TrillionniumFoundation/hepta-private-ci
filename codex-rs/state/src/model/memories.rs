@@ -1,5 +1,3 @@
-use chrono::DateTime;
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use std::path::PathBuf;
 
@@ -10,13 +8,13 @@ use super::ThreadMetadata;
 pub struct Stage1Output {
     pub thread_id: ThreadId,
     pub rollout_path: PathBuf,
-    pub source_updated_at: DateTime<Utc>,
+    pub source_updated_at: codex_utils_time::Timestamp,
     pub raw_memory: String,
     pub rollout_summary: String,
     pub rollout_slug: Option<String>,
     pub cwd: PathBuf,
     pub git_branch: Option<String>,
-    pub generated_at: DateTime<Utc>,
+    pub generated_at: codex_utils_time::Timestamp,
 }
 
 /// Bounded, summary-only stage-1 material exposed to recall extensions.
@@ -27,9 +25,9 @@ pub struct Stage1Output {
 #[derive(Clone, PartialEq, Eq)]
 pub struct Stage1RecallCandidate {
     pub thread_id: ThreadId,
-    pub source_updated_at: DateTime<Utc>,
+    pub source_updated_at: codex_utils_time::Timestamp,
     pub rollout_summary: String,
-    pub generated_at: DateTime<Utc>,
+    pub generated_at: codex_utils_time::Timestamp,
 }
 
 /// Result of trying to claim a stage-1 memory extraction job.

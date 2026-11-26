@@ -1,9 +1,12 @@
 use std::process::Command;
 use std::sync::Arc;
+use std::time::Duration;
 
+use anyhow::Context;
 use codex_core::ModelClient;
 use codex_core::Prompt;
 use codex_core::ResponseEvent;
+use codex_core::TurnInputRequest;
 use codex_features::Feature;
 use codex_login::CodexAuth;
 use codex_login::auth::AgentIdentityAuthPolicy;
@@ -15,13 +18,18 @@ use codex_protocol::ThreadId;
 use codex_protocol::config_types::ReasoningSummary;
 use codex_protocol::models::ContentItem;
 use codex_protocol::models::ResponseItem;
+use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::SubAgentSource;
+use codex_protocol::turn_input::NotSubmittedReason;
+use codex_protocol::turn_input::StartIfIdleSubmission;
+use codex_protocol::user_input::UserInput;
 use core_test_support::TestCodexResponsesRequestKind;
 use core_test_support::load_default_config_for_test;
 use core_test_support::responses;
 use core_test_support::responses_metadata as test_responses_metadata;
 use core_test_support::test_codex::test_codex;
+use core_test_support::wait_for_event_with_timeout;
 use futures::StreamExt;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -55,8 +63,8 @@ fn test_turn_responses_metadata(
 }
 
 #[tokio::test]
-async fn responses_stream_includes_subagent_header_on_review() {
-    core_test_support::skip_if_no_network!();
+async fn responses_stream_includes_subagent_header_on_review() -> anyhow::Result<()> {
+    core_test_support::skip_if_no_network!(Ok(()));
 
     let server = responses::start_mock_server().await;
     let response_body = responses::sse(vec![
@@ -92,7 +100,7 @@ async fn responses_stream_includes_subagent_header_on_review() {
         supports_standalone_web_search: false,
     };
 
-    let codex_home = TempDir::new().expect("failed to create TempDir");
+    let codex_home = TempDir::new().context("failed to create TempDir")?;
     let mut config = load_default_config_for_test(&codex_home).await;
     config.model_provider_id = provider.name.clone();
     config.model_provider = provider.clone();
@@ -163,7 +171,7 @@ async fn responses_stream_includes_subagent_header_on_review() {
             &codex_rollout_trace::InferenceTraceContext::disabled(),
         )
         .await
-        .expect("stream failed");
+        .context("stream failed")?;
     while let Some(event) = stream.next().await {
         if matches!(event, Ok(ResponseEvent::Completed { .. })) {
             break;
@@ -189,11 +197,12 @@ async fn responses_stream_includes_subagent_header_on_review() {
         Some(expected_window_id.as_str())
     );
     assert_eq!(request.header("x-codex-sandbox"), None);
+    Ok(())
 }
 
 #[tokio::test]
-async fn responses_stream_includes_subagent_header_on_other() {
-    core_test_support::skip_if_no_network!();
+async fn responses_stream_includes_subagent_header_on_other() -> anyhow::Result<()> {
+    core_test_support::skip_if_no_network!(Ok(()));
 
     let server = responses::start_mock_server().await;
     let response_body = responses::sse(vec![
@@ -229,7 +238,7 @@ async fn responses_stream_includes_subagent_header_on_other() {
         supports_standalone_web_search: false,
     };
 
-    let codex_home = TempDir::new().expect("failed to create TempDir");
+    let codex_home = TempDir::new().context("failed to create TempDir")?;
     let mut config = load_default_config_for_test(&codex_home).await;
     config.model_provider_id = provider.name.clone();
     config.model_provider = provider.clone();
@@ -300,7 +309,7 @@ async fn responses_stream_includes_subagent_header_on_other() {
             &codex_rollout_trace::InferenceTraceContext::disabled(),
         )
         .await
-        .expect("stream failed");
+        .context("stream failed")?;
     while let Some(event) = stream.next().await {
         if matches!(event, Ok(ResponseEvent::Completed { .. })) {
             break;
@@ -312,11 +321,12 @@ async fn responses_stream_includes_subagent_header_on_other() {
         request.header("x-openai-subagent").as_deref(),
         Some("my-task")
     );
+    Ok(())
 }
 
 #[tokio::test]
-async fn responses_respects_model_info_overrides_from_config() {
-    core_test_support::skip_if_no_network!();
+async fn responses_respects_model_info_overrides_from_config() -> anyhow::Result<()> {
+    core_test_support::skip_if_no_network!(Ok(()));
 
     let server = responses::start_mock_server().await;
     let response_body = responses::sse(vec![
@@ -347,7 +357,7 @@ async fn responses_respects_model_info_overrides_from_config() {
         supports_standalone_web_search: false,
     };
 
-    let codex_home = TempDir::new().expect("failed to create TempDir");
+    let codex_home = TempDir::new().context("failed to create TempDir")?;
     let mut config = load_default_config_for_test(&codex_home).await;
     config.model = Some("gpt-3.5-turbo".to_string());
     config.model_provider_id = provider.name.clone();
@@ -355,7 +365,7 @@ async fn responses_respects_model_info_overrides_from_config() {
     config.model_reasoning_summary = Some(ReasoningSummary::Detailed);
     let effort = config.model_reasoning_effort.clone();
     let summary = config.model_reasoning_summary;
-    let model = config.model.clone().expect("model configured");
+    let model = config.model.clone().context("model configured")?;
     let config = Arc::new(config);
 
     let thread_id = ThreadId::new();
@@ -422,7 +432,7 @@ async fn responses_respects_model_info_overrides_from_config() {
             &codex_rollout_trace::InferenceTraceContext::disabled(),
         )
         .await
-        .expect("stream failed");
+        .context("stream failed")?;
     while let Some(event) = stream.next().await {
         if matches!(event, Ok(ResponseEvent::Completed { .. })) {
             break;
@@ -448,11 +458,13 @@ async fn responses_respects_model_info_overrides_from_config() {
             .and_then(|value| value.as_str()),
         Some("detailed")
     );
+    Ok(())
 }
 
 #[tokio::test]
-async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() {
-    core_test_support::skip_if_no_network!();
+async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() -> anyhow::Result<()>
+{
+    core_test_support::skip_if_no_network!(Ok(()));
 
     let server = responses::start_mock_server().await;
     let response_body = responses::sse(vec![
@@ -460,23 +472,26 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
         responses::ev_completed("resp-1"),
     ]);
 
-    let test = test_codex().build(&server).await.expect("build test codex");
+    let test = test_codex()
+        .build(&server)
+        .await
+        .context("build test codex")?;
     let cwd = test.cwd_path();
 
     let first_request = responses::mount_sse_once(&server, response_body.clone()).await;
     test.submit_turn("hello")
         .await
-        .expect("submit first turn prompt");
+        .context("submit first turn prompt")?;
     let initial_request = first_request.single_request();
     let initial_header = initial_request
         .header("x-codex-turn-metadata")
-        .expect("x-codex-turn-metadata header should be present");
-    let initial_parsed: serde_json::Value =
-        serde_json::from_str(&initial_header).expect("x-codex-turn-metadata should be valid JSON");
+        .context("x-codex-turn-metadata header should be present")?;
+    let initial_parsed: serde_json::Value = serde_json::from_str(&initial_header)
+        .context("x-codex-turn-metadata should be valid JSON")?;
     let initial_turn_id = initial_parsed
         .get("turn_id")
         .and_then(serde_json::Value::as_str)
-        .expect("turn_id should be present")
+        .context("turn_id should be present")?
         .to_string();
     assert!(
         !initial_turn_id.is_empty(),
@@ -485,7 +500,7 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
     let initial_turn_started_at_unix_ms = initial_parsed
         .get("turn_started_at_unix_ms")
         .and_then(serde_json::Value::as_i64)
-        .expect("turn_started_at_unix_ms should be present");
+        .context("turn_started_at_unix_ms should be present")?;
     assert!(
         initial_turn_started_at_unix_ms > 0,
         "turn_started_at_unix_ms should be positive"
@@ -505,9 +520,9 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
     let body_metadata: serde_json::Value = serde_json::from_str(
         initial_request.body_json()["client_metadata"]["x-codex-turn-metadata"]
             .as_str()
-            .expect("request body should include x-codex-turn-metadata"),
+            .context("request body should include x-codex-turn-metadata")?,
     )
-    .expect("body x-codex-turn-metadata should be valid JSON");
+    .context("body x-codex-turn-metadata should be valid JSON")?;
     assert_eq!(
         body_metadata
             .get("sandbox_mode")
@@ -522,15 +537,15 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
     );
 
     let git_config_global = cwd.join("empty-git-config");
-    std::fs::write(&git_config_global, "").expect("write empty git config");
-    let run_git = |args: &[&str]| {
+    std::fs::write(&git_config_global, "").context("write empty git config")?;
+    let run_git = |args: &[&str]| -> anyhow::Result<std::process::Output> {
         let output = Command::new("git")
             .env("GIT_CONFIG_GLOBAL", &git_config_global)
             .env("GIT_CONFIG_NOSYSTEM", "1")
             .args(args)
             .current_dir(cwd)
             .output()
-            .expect("git command should run");
+            .context("git command should run")?;
         assert!(
             output.status.success(),
             "git {:?} failed: stdout={} stderr={}",
@@ -538,28 +553,28 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
             String::from_utf8_lossy(&output.stdout),
             String::from_utf8_lossy(&output.stderr)
         );
-        output
+        Ok(output)
     };
 
-    run_git(&["init"]);
-    run_git(&["config", "user.name", "Test User"]);
-    run_git(&["config", "user.email", "test@example.com"]);
-    std::fs::write(cwd.join("README.md"), "hello").expect("write README");
-    run_git(&["add", "."]);
-    run_git(&["commit", "-m", "initial commit"]);
+    run_git(&["init"])?;
+    run_git(&["config", "user.name", "Test User"])?;
+    run_git(&["config", "user.email", "test@example.com"])?;
+    std::fs::write(cwd.join("README.md"), "hello").context("write README")?;
+    run_git(&["add", "."])?;
+    run_git(&["commit", "-m", "initial commit"])?;
     run_git(&[
         "remote",
         "add",
         "origin",
         "https://github.com/openai/codex.git",
-    ]);
+    ])?;
 
-    let expected_head = String::from_utf8(run_git(&["rev-parse", "HEAD"]).stdout)
-        .expect("git rev-parse output should be valid UTF-8")
+    let expected_head = String::from_utf8(run_git(&["rev-parse", "HEAD"])?.stdout)
+        .context("git rev-parse output should be valid UTF-8")?
         .trim()
         .to_string();
-    let expected_origin = String::from_utf8(run_git(&["remote", "get-url", "origin"]).stdout)
-        .expect("git remote get-url output should be valid UTF-8")
+    let expected_origin = String::from_utf8(run_git(&["remote", "get-url", "origin"])?.stdout)
+        .context("git remote get-url output should be valid UTF-8")?
         .trim()
         .to_string();
 
@@ -583,9 +598,41 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
     )
     .await;
 
-    test.submit_turn("hello")
-        .await
-        .expect("submit post-git turn prompt");
+    let budget = Duration::from_secs(30);
+    let admitted_turn_id = tokio::time::timeout(budget, async {
+        let turn_id = loop {
+            let submission = test
+                .codex
+                .start_turn_if_idle(TurnInputRequest::user_input(vec![UserInput::Text {
+                    text: "hello".to_string(),
+                    text_elements: Vec::new(),
+                }]))
+                .await
+                .context("submit post-git turn prompt")?;
+            match submission {
+                StartIfIdleSubmission::Started { turn_id } => break turn_id,
+                StartIfIdleSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::NotIdle,
+                } => {
+                    // The previous TurnComplete can precede retirement of its
+                    // finish owner. A declined start has not enqueued any input.
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+                StartIfIdleSubmission::NotSubmitted { reason } => {
+                    anyhow::bail!("post-git turn was declined: {reason:?}");
+                }
+            }
+        };
+        wait_for_event_with_timeout(
+            &test.codex,
+            |event| matches!(event, EventMsg::TurnComplete(done) if done.turn_id == turn_id),
+            budget,
+        )
+        .await;
+        Ok::<_, anyhow::Error>(turn_id)
+    })
+    .await
+    .context("post-git turn should start and finish within the original completion budget")??;
 
     let requests = request_log.requests();
     assert_eq!(requests.len(), 2, "expected two requests in one turn");
@@ -593,32 +640,32 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
     let first_parsed: serde_json::Value = serde_json::from_str(
         &requests[0]
             .header("x-codex-turn-metadata")
-            .expect("first request should include turn metadata"),
+            .context("first request should include turn metadata")?,
     )
-    .expect("first metadata should be valid json");
+    .context("first metadata should be valid json")?;
     let second_parsed: serde_json::Value = serde_json::from_str(
         &requests[1]
             .header("x-codex-turn-metadata")
-            .expect("second request should include turn metadata"),
+            .context("second request should include turn metadata")?,
     )
-    .expect("second metadata should be valid json");
+    .context("second metadata should be valid json")?;
 
     let first_turn_id = first_parsed
         .get("turn_id")
         .and_then(serde_json::Value::as_str)
-        .expect("first turn_id should be present");
+        .context("first turn_id should be present")?;
     let second_turn_id = second_parsed
         .get("turn_id")
         .and_then(serde_json::Value::as_str)
-        .expect("second turn_id should be present");
+        .context("second turn_id should be present")?;
     let first_turn_started_at_unix_ms = first_parsed
         .get("turn_started_at_unix_ms")
         .and_then(serde_json::Value::as_i64)
-        .expect("first turn_started_at_unix_ms should be present");
+        .context("first turn_started_at_unix_ms should be present")?;
     let second_turn_started_at_unix_ms = second_parsed
         .get("turn_started_at_unix_ms")
         .and_then(serde_json::Value::as_i64)
-        .expect("second turn_started_at_unix_ms should be present");
+        .context("second turn_started_at_unix_ms should be present")?;
     assert!(
         first_turn_started_at_unix_ms > 0,
         "first turn_started_at_unix_ms should be positive"
@@ -643,6 +690,7 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
         first_turn_id, second_turn_id,
         "requests should share turn_id"
     );
+    assert_eq!(first_turn_id, admitted_turn_id.as_str());
     assert_ne!(
         second_turn_id,
         initial_turn_id.as_str(),
@@ -661,7 +709,7 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
         .and_then(serde_json::Value::as_object)
         .and_then(|workspaces| workspaces.values().next())
         .cloned()
-        .expect("second request should include git workspace metadata");
+        .context("second request should include git workspace metadata")?;
     assert_eq!(
         workspace
             .get("latest_git_commit_hash")
@@ -685,4 +733,5 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
             .and_then(serde_json::Value::as_bool),
         Some(false)
     );
+    Ok(())
 }
