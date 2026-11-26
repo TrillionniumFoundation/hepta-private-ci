@@ -376,6 +376,8 @@ impl CognitiveStore {
     /// This entry point has no independent current-cut witness and cannot detect
     /// rollback to an internally valid old backup. Hosts requiring that guarantee
     /// must use `open_with_recovery` and never fall back here on recovery failure.
+    /// An existing Unix database must be private before SQLite opens it.
+    /// Opening a store never repairs existing database permissions.
     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
         let root = create_private_directory(layout.cognitive_root())?;
         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
@@ -388,23 +390,24 @@ impl CognitiveStore {
         open_guard: Arc<CognitiveStoreOpenGuard>,
     ) -> Result<Self, CognitiveStoreError> {
         let path = resolve_active_database_path(&root)?;
-        // SQLite creates WAL/SHM during its first open. Seed only a genuinely
-        // new initial database with private mode before those files can exist.
-        // Existing databases (including recovered generations) are not changed.
-        #[cfg(unix)]
-        if path == root.join(COGNITIVE_DB_FILENAME) {
-            create_private_initial_database(&path)?;
-        }
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        let sqlite_config = SqliteConfig::from_sqlite_home(sqlite_home);
+        // SQLite derives sidecar permissions from the main file. Recovery
+        // generations must already exist and are validated by the pointer reader.
+        #[cfg(unix)]
+        if path == root.join(COGNITIVE_DB_FILENAME) {
+            sqlite_config
+                .prepare_private_bootstrap_database(&path)
+                .map_err(unavailable)?;
+        }
         let commit_gate = CognitiveCommitGate::default();
         let connection_gate = commit_gate.clone();
-        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        let pool = sqlite_config
             .open_durable_evidence_pool_guarded(&path, move || connection_gate.commit_allowed())
             .await
             .map_err(unavailable)?;
         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
-        protect_database_file(&path)?;
         sqlx::query(
             "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
              VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
@@ -1664,9 +1667,14 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
     {
         use std::os::unix::fs::MetadataExt;
         let metadata = fs::metadata(&canonical).map_err(unavailable)?;
-        if !metadata.is_file() || metadata.nlink() != 1 || metadata.mode() & 0o7777 != 0o600 {
+        let owner = rustix::process::geteuid().as_raw();
+        if !metadata.is_file()
+            || metadata.uid() != owner
+            || metadata.nlink() != 1
+            || metadata.mode() & 0o7777 != 0o600
+        {
             return Err(CognitiveStoreError::Corrupt(
-                "active cognitive database is not one private regular file".to_string(),
+                "active cognitive database is not one owner-held private regular file".to_string(),
             ));
         }
     }
@@ -1812,31 +1820,17 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
     Ok(canonical)
 }
 
-#[cfg(unix)]
+#[cfg(all(test, unix))]
 fn create_private_initial_database(path: &Path) -> Result<(), CognitiveStoreError> {
-    use std::os::unix::fs::MetadataExt;
-    use std::os::unix::fs::OpenOptionsExt;
-
-    let file = match OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .mode(0o600)
-        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
-        .open(path)
-    {
-        Ok(file) => file,
-        // Never replace, truncate, chmod or repair pre-existing crash evidence.
-        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => return Ok(()),
-        Err(error) => return Err(unavailable(error)),
-    };
-    let metadata = file.metadata().map_err(unavailable)?;
-    if !metadata.is_file() || metadata.nlink() != 1 || metadata.mode() & 0o7777 != 0o600 {
-        return Err(CognitiveStoreError::Corrupt(
-            "new cognitive database must be one private regular file".to_string(),
-        ));
-    }
-    file.sync_all().map_err(unavailable)?;
-    Ok(())
+    let parent = path
+        .parent()
+        .ok_or_else(|| CognitiveStoreError::Invalid("missing test database parent".to_string()))?;
+    let root = create_private_directory(parent)?;
+    let home = AbsolutePathBuf::try_from(root)
+        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+    SqliteConfig::from_sqlite_home(home)
+        .prepare_private_bootstrap_database(path)
+        .map_err(unavailable)
 }
 
 fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
@@ -1910,7 +1904,7 @@ mod additional_initial_database_permissions_tests {
         fs::write(&path, b"existing crash evidence").expect("existing file");
         fs::set_permissions(&path, fs::Permissions::from_mode(0o640))
             .expect("mark existing permission");
-        create_private_initial_database(&path).expect("leave existing source unchanged");
+        assert!(create_private_initial_database(&path).is_err());
         assert_eq!(
             fs::read(&path).expect("existing bytes").as_slice(),
             b"existing crash evidence"
@@ -1925,3 +1919,7 @@ mod additional_initial_database_permissions_tests {
         );
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "cognitive_database_init_tests.rs"]
+mod database_init_tests;
