@@ -7,8 +7,6 @@
 //! This module only applies narrowly scoped compatibility rewrites for shapes we know existed in
 //! persisted rollouts. It does not decide turn boundaries, rollback behavior, or what gets written
 //! into paginated history.
-
-use chrono::DateTime;
 use codex_rollout::RolloutLine;
 use codex_utils_path_uri::LegacyAppPathString;
 use codex_utils_path_uri::PathUri;
@@ -127,7 +125,7 @@ fn normalize_legacy_rate_limit_resets(value: &mut Value) {
         let Some(resets_at) = window.get("resets_at").and_then(Value::as_str) else {
             continue;
         };
-        let Ok(resets_at) = DateTime::parse_from_rfc3339(resets_at) else {
+        let Ok(resets_at) = codex_utils_time::Timestamp::parse_from_rfc3339(resets_at) else {
             continue;
         };
         window.insert("resets_at".to_string(), Value::from(resets_at.timestamp()));

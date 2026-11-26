@@ -1,10 +1,4 @@
 #![allow(clippy::unwrap_used)]
-use codex_utils_absolute_path::test_support::PathExt;
-use std::io::Write;
-use std::path::Path;
-use std::path::PathBuf;
-
-use chrono::Utc;
 use codex_core::RolloutRecorder;
 use codex_core::RolloutRecorderParams;
 use codex_core::config::ConfigBuilder;
@@ -17,7 +11,11 @@ use codex_protocol::protocol::SessionSource;
 use codex_rollout::StateDbHandle;
 use codex_state::StateRuntime;
 use codex_state::ThreadMetadataBuilder;
+use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
+use std::io::Write;
+use std::path::Path;
+use std::path::PathBuf;
 use tempfile::TempDir;
 use uuid::Uuid;
 
@@ -80,7 +78,7 @@ async fn upsert_thread_metadata(
     let mut builder = ThreadMetadataBuilder::new(
         thread_id,
         rollout_path,
-        Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::default(),
     );
     builder.cwd = codex_home.to_path_buf();
