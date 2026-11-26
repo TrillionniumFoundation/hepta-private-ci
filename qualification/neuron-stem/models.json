@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.neuron-stem-candidate-registry.v1",
+  "license_and_remote_code_review_required": true,
+  "models": [
+    {"id": "mmbert-small", "repository": "jhu-clsp/mmBERT-small", "reported_parameters": 140000000, "use": "multilingual_shared_stem"},
+    {"id": "modernbert-base", "repository": "answerdotai/ModernBERT-base", "reported_parameters": 149000000, "use": "english_code_control"},
+    {"id": "jina-v2-base-zh", "repository": "jinaai/jina-embeddings-v2-base-zh", "reported_parameters": 161000000, "requires_pinned_remote_code_review": true, "use": "bilingual_retrieval_control"},
+    {"id": "bge-small-zh", "repository": "BAAI/bge-small-zh-v1.5", "reported_parameters": 24000000, "use": "small_chinese_control"}
+  ],
+  "external_teacher_baselines": [
+    {"id": "laya-421m", "family": "NandhaKishorM/laya", "size_from_hepta_proposal": 421000000, "loaded_only_by_canonical_inference_owner": true},
+    {"id": "laya-multilingual-322m", "family": "Laya Multilingual", "size_from_hepta_proposal": 322000000, "loaded_only_by_canonical_inference_owner": true}
+  ],
+  "locked_revisions": "Per-run full 40-hex model SHA required; never default to a floating main branch",
+  "train_steps": 100,
+  "few_shot_sizes": [8, 32, 128],
+  "heads": ["linear", "film", "rank8", "rank16", "mlp", "swiglu"],
+  "head_parameter_ceilings": [2048, 16384, 65536, 262144],
+  "representation_modes": ["joint", "sentence", "landmark", "cross_attention"],
+  "logical_cell_scales": [64, 256, 1024, 4096],
+  "scaling_factors": {
+    "active_fraction": [0.05, 0.25, 1.0],
+    "input_repeat_fraction": [0.0, 0.5, 0.9],
+    "task_similarity": ["low", "medium", "high"]
+  },
+  "output_authority": "shadow_only"
+}
