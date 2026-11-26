@@ -171,7 +171,7 @@ pub async fn initialize_configured_mcp_server(
             elicitation_reviewer: None,
             elicitation_lifecycle: None,
         })
-        .await;
+        .await?;
         if !runtime.latest_wait_for_server_ready(server, timeout).await {
             runtime.shutdown().await;
             return Err(anyhow!("original Runtime MCP server did not initialize"));

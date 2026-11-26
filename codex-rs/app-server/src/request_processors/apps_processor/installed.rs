@@ -105,7 +105,7 @@ impl AppsRequestProcessor {
                         elicitation_reviewer: None,
                         elicitation_lifecycle: None,
                     })
-                    .await;
+                    .await?;
 
                     let result = if runtime
                         .latest_wait_for_server_ready(

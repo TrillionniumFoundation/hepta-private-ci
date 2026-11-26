@@ -402,7 +402,12 @@ pub(crate) async fn run_turn(
             .or_cancel(&cancellation_token)
             .await
         {
-            Ok(requirements) => requirements,
+            Ok(Ok(requirements)) => requirements,
+            Ok(Err(err)) => {
+                run_hooks_and_record_inputs(&sess, &turn_context, &input, PersistContext::Standard)
+                    .await;
+                return Err(err);
+            }
             Err(err) => {
                 run_hooks_and_record_inputs(&sess, &turn_context, &input, PersistContext::Standard)
                     .await;
@@ -447,7 +452,7 @@ pub(crate) async fn run_turn(
     let (injection_items, explicitly_enabled_connectors) = if recovering_first_generation {
         (Vec::new(), HashSet::new())
     } else {
-        let Some(injections) = build_skills_and_plugins(
+        match build_skills_and_plugins(
             &sess,
             first_step_context.as_ref(),
             &user_input,
@@ -455,10 +460,15 @@ pub(crate) async fn run_turn(
             &cancellation_token,
         )
         .await
-        else {
-            return Ok(None);
-        };
-        injections
+        {
+            Ok(Some(injections)) => injections,
+            Ok(None) => return Ok(None),
+            Err(error) => {
+                run_hooks_and_record_inputs(&sess, &turn_context, &input, PersistContext::Standard)
+                    .await;
+                return Err(error);
+            }
+        }
     };
 
     if run_origin != TurnRunOrigin::Recovery
@@ -561,7 +571,7 @@ pub(crate) async fn run_turn(
                     &pending_user_input,
                 )
                 .or_cancel(&cancellation_token)
-                .await?;
+                .await??;
                 sess.capture_step_context_with_required_mcp_servers(
                     Arc::clone(&turn_context),
                     &cancellation_token,
@@ -936,14 +946,16 @@ async fn required_mcp_servers_for_input(
     sess: &Arc<Session>,
     turn_context: &TurnContext,
     user_input: &[UserInput],
-) -> (Vec<String>, Vec<crate::plugins::PluginCapabilitySummary>) {
+) -> CodexResult<(Vec<String>, Vec<crate::plugins::PluginCapabilitySummary>)> {
     if crate::guardian::is_guardian_reviewer_source(&turn_context.session_source) {
-        return (Vec::new(), Vec::new());
+        return Ok((Vec::new(), Vec::new()));
     }
 
     // Plugin capabilities depend on authentication, so project them only after
     // the runtime has aligned the plugin manager with its current account.
-    sess.refresh_mcp_if_dirty().await;
+    sess.refresh_mcp_if_dirty()
+        .await
+        .map_err(|error| CodexErr::Fatal(format!("MCP runtime refresh failed: {error:#}")))?;
     let loaded_plugins = sess
         .services
         .plugins_manager
@@ -1029,7 +1041,7 @@ async fn required_mcp_servers_for_input(
         }
     }
 
-    (required_servers.into_iter().collect(), mentioned_plugins)
+    Ok((required_servers.into_iter().collect(), mentioned_plugins))
 }
 
 #[instrument(level = "trace", skip_all)]
@@ -1039,12 +1051,12 @@ async fn build_skills_and_plugins(
     user_input: &[UserInput],
     mentioned_plugins: &[crate::plugins::PluginCapabilitySummary],
     cancellation_token: &CancellationToken,
-) -> Option<(Vec<ResponseItem>, HashSet<String>)> {
+) -> CodexResult<Option<(Vec<ResponseItem>, HashSet<String>)>> {
     let turn_context = step_context.turn.as_ref();
     // Guardian input embeds the parent transcript as untrusted evidence. Do not interpret skill or
     // plugin mentions from that generated prompt as requests to inject additional instructions.
     if crate::guardian::is_guardian_reviewer_source(&turn_context.session_source) {
-        return Some((Vec::new(), HashSet::new()));
+        return Ok(Some((Vec::new(), HashSet::new())));
     }
 
     let tracking = build_track_events_context(
@@ -1078,9 +1090,11 @@ async fn build_skills_and_plugins(
     let skills_snapshot = turn_context.skills_snapshot();
     let skills_outcome = skills_snapshot.outcome();
     let connector_slug_counts = build_connector_slug_counts(&available_connectors);
-    let extension_injection_items =
-        build_extension_turn_input_items(sess, step_context, user_input, cancellation_token)
-            .await?;
+    let Some(extension_injection_items) =
+        build_extension_turn_input_items(sess, step_context, user_input, cancellation_token).await
+    else {
+        return Ok(None);
+    };
     let skill_name_counts_lower =
         build_skill_name_counts(&skills_outcome.skills, &skills_outcome.disabled_paths).1;
     let mentioned_skills =
@@ -1092,7 +1106,10 @@ async fn build_skills_and_plugins(
         &mentioned_skills,
         Some(sess.mcp_elicitation_reviewer()),
     )
-    .await;
+    .await
+    .map_err(|error| {
+        CodexErr::Fatal(format!("MCP dependency runtime refresh failed: {error:#}"))
+    })?;
 
     let injected_host_skill_prompts = turn_context
         .extension_data
@@ -1168,7 +1185,7 @@ async fn build_skills_and_plugins(
     };
     injection_items.extend(plugin_items);
     injection_items.extend(extension_injection_items);
-    Some((injection_items, explicitly_enabled_connectors))
+    Ok(Some((injection_items, explicitly_enabled_connectors)))
 }
 
 #[tracing::instrument(

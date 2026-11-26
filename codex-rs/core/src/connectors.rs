@@ -276,7 +276,7 @@ pub async fn list_accessible_connectors_from_mcp_tools_with_mcp_manager(
         elicitation_reviewer: None,
         elicitation_lifecycle: None,
     })
-    .await;
+    .await?;
 
     let refreshed_tools = if force_refetch {
         match mcp_runtime

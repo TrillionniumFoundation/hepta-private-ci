@@ -45,7 +45,11 @@ impl Session {
                 tokio::select! {
                     biased;
                     _ = shutdown.cancelled() => break,
-                    _ = session.refresh_mcp_if_dirty() => {},
+                    result = session.refresh_mcp_if_dirty() => {
+                        if let Err(error) = result {
+                            warn!(%error, "MCP prewarm refresh failed");
+                        }
+                    },
                 }
             }
         });

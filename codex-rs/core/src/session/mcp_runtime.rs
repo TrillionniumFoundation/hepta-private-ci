@@ -66,12 +66,13 @@ impl Session {
     }
 
     /// Waits on this session's refreshed server before tool execution is admitted.
-    pub(crate) async fn wait_for_mcp_server(self: &Arc<Self>, server: &str) {
-        self.refresh_mcp_if_dirty().await;
+    pub(crate) async fn wait_for_mcp_server(self: &Arc<Self>, server: &str) -> anyhow::Result<()> {
+        self.refresh_mcp_if_dirty().await?;
         self.services
             .mcp_runtime
             .wait_for_server_startup(server)
             .await;
+        Ok(())
     }
 
     /// Captures this session's current MCP client and catalog for one tool call.
@@ -79,13 +80,17 @@ impl Session {
         self: &Arc<Self>,
         server: &str,
         tool: &str,
-    ) -> Option<PreparedMcpCall> {
-        self.refresh_mcp_if_dirty().await;
-        self.services
+    ) -> anyhow::Result<Option<PreparedMcpCall>> {
+        self.refresh_mcp_if_dirty().await?;
+        let Some(binding) = self
+            .services
             .mcp_runtime
             .current_binding_for_call(server)
-            .await?
-            .prepare_call(server, tool)
+            .await
+        else {
+            return Ok(None);
+        };
+        Ok(binding.prepare_call(server, tool))
     }
 
     pub(super) async fn latest_mcp_desired_state(
@@ -154,7 +159,7 @@ impl Session {
             "session_init.mcp_manager_init",
             otel.name = "session_init.mcp_manager_init",
         ))
-        .await;
+        .await?;
 
         self.services.mcp_runtime.validate_required_servers().await
     }
@@ -300,7 +305,7 @@ impl Session {
         mcp_projection: McpRuntimeProjection,
         ready_selected_capability_roots: &[SelectedCapabilityRoot],
         elicitation_reviewer: Option<ElicitationReviewerHandle>,
-    ) {
+    ) -> anyhow::Result<()> {
         // Initial startup and both refresh paths must publish executor-owned
         // HTTP servers through the same requirements and environment authority
         // checks used by the diagnostic projection.
@@ -318,11 +323,14 @@ impl Session {
             ready_selected_capability_roots,
             elicitation_reviewer,
         );
-        self.replace_mcp_runtime_future(input).await;
+        self.replace_mcp_runtime_future(input).await
     }
 
     #[inline(never)]
-    fn replace_mcp_runtime_future(&self, input: McpRuntimeInput) -> BoxFuture<'_, ()> {
+    fn replace_mcp_runtime_future(
+        &self,
+        input: McpRuntimeInput,
+    ) -> BoxFuture<'_, anyhow::Result<()>> {
         self.services.mcp_runtime.replace(input).boxed()
     }
 
