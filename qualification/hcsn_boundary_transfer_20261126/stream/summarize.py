@@ -79,6 +79,8 @@ def main():
     (args.output/"summary.json").write_text(json.dumps(info,indent=2,sort_keys=True,allow_nan=False)+"\n")
     with (args.output/"slots.csv").open("w",newline="") as f:
         keys=sorted(set().union(*(r.keys() for r in rows)))
-        writer=csv.DictWriter(f,fieldnames=keys);writer.writeheader();writer.writerows(rows)
+        writer=csv.DictWriter(f,fieldnames=keys,lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
 
 if __name__=="__main__":main()
