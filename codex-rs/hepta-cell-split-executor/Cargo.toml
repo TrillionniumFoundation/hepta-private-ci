@@ -1,0 +1,21 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-cell-split-executor"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_cell_split_executor"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
+codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
+codex-hepta-runtime = { path = "../hepta-runtime" }
+codex-hepta-supervisor = { path = "../hepta-supervisor" }
+codex-hepta-types = { path = "../hepta-types" }

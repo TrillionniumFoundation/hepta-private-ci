@@ -112,6 +112,20 @@ pub struct RuntimeTopologyApplyReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+/// Readback from the *live*, in-process authoritative CNS owner, tied to an
+/// exact successful Final-use apply receipt. A restart discards this proof;
+/// it is NOT a persistent CNS CAS receipt, remote attestation or release gate.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RuntimeTopologyNativeCutoverReadbackV1 {
+    pub final_use_request_digest: Digest32,
+    pub handoff_plan_digest: Digest32,
+    pub predecessor_hierarchy_digest: Digest32,
+    pub successor_hierarchy_digest: Digest32,
+    pub observed_generation: Generation,
+    pub native_ack_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
 #[derive(Debug)]
 pub enum RuntimeTopologyExecutionError {
     Governance(TopologyGovernanceErrorV1),

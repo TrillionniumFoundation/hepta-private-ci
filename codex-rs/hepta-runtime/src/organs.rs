@@ -48,6 +48,7 @@ use crate::RuntimeStatus;
 use crate::topology_execution::RuntimeTopologyApplyReceiptV1;
 use crate::topology_execution::RuntimeTopologyApplyRequestV1;
 use crate::topology_execution::RuntimeTopologyExecutionError;
+use crate::topology_execution::RuntimeTopologyNativeCutoverReadbackV1;
 use crate::topology_execution::RuntimeTopologySnapshotV1;
 use crate::topology_execution::validate_runtime_topology_recovery_v1;
 use crate::topology_execution::validate_runtime_topology_transition_v1;
@@ -63,6 +64,9 @@ pub(crate) struct RuntimeOrgans {
 struct StatusHost {
     host: CnsOrganHostV1,
     route: CnsRouteV1,
+    // Volatile by design: process restart must never launder an in-process
+    // route replacement into a supposedly durable native acknowledgement.
+    last_apply: Option<RuntimeTopologyApplyReceiptV1>,
 }
 
 impl RuntimeOrgans {
@@ -122,6 +126,10 @@ impl RuntimeOrgans {
             successor,
             ..
         } = request;
+        // Any authorized replacement attempt can change, stop or quarantine
+        // the graph. Never keep the previous volatile success witness live
+        // across an ambiguous or failed attempt.
+        host.last_apply = None;
         let replacement = authority.with_verified_use(token, &binding, || {
             host.host.replace_read_only_generation_with_migration(
                 validated.predecessor_generation,
@@ -132,7 +140,7 @@ impl RuntimeOrgans {
         replacement?;
         host.route = successor.route;
 
-        Ok(RuntimeTopologyApplyReceiptV1 {
+        let receipt = RuntimeTopologyApplyReceiptV1 {
             proposal_id: validated.proposal_id,
             candidate_id: validated.candidate_id,
             admission_digest: validated.admission_digest,
@@ -143,7 +151,11 @@ impl RuntimeOrgans {
             successor_hierarchy_digest: validated.successor_hierarchy_digest,
             final_use_request_digest: validated.final_use_request_digest,
             authority: AuthorityPosture::DENY_ALL,
-        })
+        };
+        // Only record the exact return value after the final-use-guarded
+        // migration and CNS graph replacement have both succeeded.
+        host.last_apply = Some(receipt.clone());
+        Ok(receipt)
     }
 
     pub(crate) fn recover_governed_topology(
@@ -169,6 +181,10 @@ impl RuntimeOrgans {
             successor,
             ..
         } = request;
+        // Any authorized replacement attempt can change, stop or quarantine
+        // the graph. Never keep the previous volatile success witness live
+        // across an ambiguous or failed attempt.
+        host.last_apply = None;
         let replacement = authority.with_verified_use(token, &binding, || {
             host.host.recover_read_only_generation_with_migration(
                 validated.predecessor_generation,
@@ -179,7 +195,7 @@ impl RuntimeOrgans {
         replacement?;
         host.route = successor.route;
 
-        Ok(RuntimeTopologyApplyReceiptV1 {
+        let receipt = RuntimeTopologyApplyReceiptV1 {
             proposal_id: validated.proposal_id,
             candidate_id: validated.candidate_id,
             admission_digest: validated.admission_digest,
@@ -189,6 +205,73 @@ impl RuntimeOrgans {
             predecessor_hierarchy_digest: validated.predecessor_hierarchy_digest,
             successor_hierarchy_digest: validated.successor_hierarchy_digest,
             final_use_request_digest: validated.final_use_request_digest,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        // Only record the exact return value after the final-use-guarded
+        // migration and CNS graph replacement have both succeeded.
+        host.last_apply = Some(receipt.clone());
+        Ok(receipt)
+    }
+
+    /// Native readback from the actual locked live CNS host, not a caller
+    /// supplied snapshot or digest. The last successful Final-use apply
+    /// receipt must still be held by this same process and the graph must
+    /// still be at the exact successor generation. A process restart has
+    /// no last_apply and therefore fails closed.
+    pub(crate) fn observe_governed_topology_cutover(
+        &self,
+        receipt: &RuntimeTopologyApplyReceiptV1,
+    ) -> Result<RuntimeTopologyNativeCutoverReadbackV1, RuntimeTopologyExecutionError> {
+        let guard = self
+            .host
+            .lock()
+            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+        let host = guard
+            .as_ref()
+            .map_err(|_| RuntimeTopologyExecutionError::Unavailable)?;
+        // Re-query the actual CNS graph rather than trusting the host's
+        // cached route descriptor alone.
+        let actual = host
+            .host
+            .route(
+                &host.route.source.system,
+                &host.route.source.organ,
+                host.route.output_port,
+            )
+            .map_err(RuntimeTopologyExecutionError::Runtime)?;
+        if actual != host.route {
+            return Err(RuntimeTopologyExecutionError::Binding);
+        }
+        if host.last_apply.as_ref() != Some(receipt)
+            || receipt.authority != AuthorityPosture::DENY_ALL
+            || host.host.generation() != receipt.successor_generation
+            || host.route.generation != receipt.successor_generation
+            || host.route.hierarchy_digest != receipt.successor_hierarchy_digest
+            || receipt.predecessor_hierarchy_digest == receipt.successor_hierarchy_digest
+            || receipt.final_use_request_digest.is_zero()
+            || receipt.handoff_plan_digest.is_zero()
+        {
+            return Err(RuntimeTopologyExecutionError::Binding);
+        }
+        let mut bytes = b"hepta.runtime.topology-native-cutover-readback.v1\0".to_vec();
+        for digest in [
+            receipt.admission_digest,
+            receipt.final_use_request_digest,
+            receipt.handoff_plan_digest,
+            receipt.predecessor_hierarchy_digest,
+            receipt.successor_hierarchy_digest,
+        ] {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        bytes.extend_from_slice(&receipt.predecessor_generation.get().to_be_bytes());
+        bytes.extend_from_slice(&host.route.generation.get().to_be_bytes());
+        Ok(RuntimeTopologyNativeCutoverReadbackV1 {
+            final_use_request_digest: receipt.final_use_request_digest,
+            handoff_plan_digest: receipt.handoff_plan_digest,
+            predecessor_hierarchy_digest: receipt.predecessor_hierarchy_digest,
+            successor_hierarchy_digest: host.route.hierarchy_digest,
+            observed_generation: host.route.generation,
+            native_ack_digest: Digest32::of_bytes(&bytes),
             authority: AuthorityPosture::DENY_ALL,
         })
     }
@@ -368,7 +451,11 @@ fn build_host_generation(
         .collect();
     let host = verified.into_hierarchical_host(hierarchy, catalog)?;
     let route = host.route(&control_system, &ingress, /*output_port*/ 0)?;
-    Ok(StatusHost { host, route })
+    Ok(StatusHost {
+        host,
+        route,
+        last_apply: None,
+    })
 }
 
 #[derive(Debug)]

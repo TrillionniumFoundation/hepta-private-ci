@@ -21,6 +21,7 @@ use crate::ArtifactPublicationPhaseV1;
 use crate::ArtifactPublicationReceiptV1;
 use crate::ArtifactPublicationTransactionV1;
 use crate::ArtifactRegistry;
+use crate::CellSplitArtifactCasReadbackV1;
 use crate::DatasetWithdrawalRegistry;
 use crate::LearningArtifactOwnerHost;
 use crate::RegistryHeadRequirementV1;
@@ -126,6 +127,47 @@ impl LearningArtifactOwnerService {
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
         Ok(self.host.current_registry_view(now)?)
+    }
+
+    /// Native Cell Split CAS observation through the *single product writer*
+    /// service. Never bypass a pending publication or a newer withdrawal
+    /// frontier: a signed historical artifact is not sufficient authority to
+    /// reuse revoked training lineage. No new artifact is published here.
+    pub fn observe_cell_split_artifact_cas_v1(
+        &self,
+        operation_id: &StableId,
+        artifact_id: &StableId,
+        expected_content_digest: Digest32,
+        now: u64,
+    ) -> Result<CellSplitArtifactCasReadbackV1, LearningArtifactOwnerServiceError> {
+        self.host.require_cell_split_anti_rollback_floor_v1(now)?;
+        if let Some(blocked) = &self.recovery_required {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                blocked.clone(),
+            ));
+        }
+        let checkpoint = self
+            .host
+            .recover_publication(operation_id)?
+            .ok_or(ArtifactOwnerHostError::Indeterminate)?;
+        if checkpoint.checkpoint.withdrawal_scope_digest
+            != self
+                .withdrawal_registry
+                .scope_digest()
+                .ok_or(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict)?
+            || checkpoint.checkpoint.withdrawal_head_digest
+                != self.withdrawal_registry.head_digest()
+        {
+            return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
+        }
+        self.host
+            .observe_cell_split_artifact_cas_v1(
+                operation_id,
+                artifact_id,
+                expected_content_digest,
+                now,
+            )
+            .map_err(Into::into)
     }
 
     #[must_use]
@@ -643,6 +685,17 @@ mod tests {
         );
 
         let receipt = service.publish(request.clone()).fixture("publish");
+        assert!(matches!(
+            service.observe_cell_split_artifact_cas_v1(
+                &id("operation"),
+                &id("candidate"),
+                digest("payload"),
+                20,
+            ),
+            Err(LearningArtifactOwnerServiceError::Host(
+                ArtifactOwnerHostError::CurrentHeadRollback
+            ))
+        ));
         let retry = service.publish(request.clone()).fixture("terminal retry");
         assert_eq!(retry, receipt);
         let current_view = service
@@ -672,6 +725,29 @@ mod tests {
             receipt.registry_head_digest
         );
         assert!(reopened.recovery_required().is_none());
+        let reopened_native = reopened
+            .observe_cell_split_artifact_cas_v1(
+                &id("operation"),
+                &id("candidate"),
+                digest("payload"),
+                21,
+            )
+            .fixture("native CAS receipt after owner restart");
+        assert_eq!(reopened_native.operation_id, id("operation"));
+        assert_eq!(reopened_native.artifact_id, id("candidate"));
+        assert_eq!(reopened_native.readback_digest, digest("payload"));
+        assert!(!reopened_native.native_ack_digest.is_zero());
+        assert_eq!(
+            reopened
+                .observe_cell_split_artifact_cas_v1(
+                    &id("operation"),
+                    &id("candidate"),
+                    digest("payload"),
+                    21,
+                )
+                .fixture("idempotent anchored native readback"),
+            reopened_native,
+        );
         assert_eq!(
             reopened
                 .current_registry_view(21)
