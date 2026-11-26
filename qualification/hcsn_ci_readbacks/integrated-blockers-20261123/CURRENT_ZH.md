@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 14:40 UTC 后：Split 依赖第二次真实终局及上一候选原生检查
+
+- #6799 当前真实 head `5a39d736fcec8abed27a14e204ad17d5e61fd368`，base `732e934ba496d90fbe042b8d41d479ef901643e5`，draft、未合并；相对 `5607a93991c2c12f42efd34c889e46b021a32a12` ahead 16/behind 0。新 head 首屏100条86 queued/8 skipped/4 pending/2 in_progress；前一 head 首屏100条终态68 success/16 failure/14 skipped/2 cancelled；均非全分页。保留各候选独立资格。
+- 前一精确 head 的 [Reset-aligned physical and law gradients](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45827403632/job/139934984316) 原生日志367行，14项通过、58.166s；[exact refractory packet checks](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45827403150/job/139934982334) 原生日志357行，12项通过、0.185s。仅签各自声明的有限测试范围；不外推任意时变自由边界或全网训练收益，不重复派发。
+- [blocking-ci 45827398455](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45827398455) 仍失败：[Blob size policy](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45827398455/job/139934971797) 的52行原日志明确 Fence local_control_inventory_unavailable / socket_ownership unavailable / observed_ownership_incomplete,identity_not_reviewed，保护挂载证据不可用，不能签 blob policy；[SDK](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45827398455/job/139936315457) 原日志8424行，47测试中46过1失败，MCP OAuth 动态注册 HTTP404、scope 不足和 callback 失败跨两个协议版本出现，根因尚未归属。repo fmt、Linux GNU/musl 原生及 Windows shard2/4 亦红，macOS ARM若干取消。未降安全门或重派无新因果的失败。
+- Split 历史候选 `c440d2baff9c2befaef3ea96148b77f2ae3582b6` 的 Mac 后继依赖作业 `1a2180a5df1-ffbe-479d` 已实际终结 timed_out/124，output_complete=true、terminal_publication_confirmed=true，stdout `offline_rc 1`，stderr 明确 SciPy 1.17.0 cp314 macOS arm64 wheel 未命中离线缓存，后继获取未产生成功回执。原四项数值测试仍执行0。新增只读探查：desktop `1a2184ec8b2-ffbe-4837` Python3.12.3/NumPy1.26.4/无SciPy；pocket4 `1a2184f8af9-ffbe-4838` Python3.14.4/NumPy2.3.5/无SciPy；rog `1a2184ff9b5-ffbe-4839` Python3.14.4/NumPy2.3.5/SciPy1.16.3。隔离聊天容器 Python3.13.5/NumPy2.3.5/SciPy1.17.0 已实测可导入，但当前无冻结源码，不能当已执行。新依赖获取超时原件保留；不盲重试，不以1.16.3替代精确环境冒充历史资格。
+- 全仓 HOLD。未修改产品、冻结摘要、500ms、安全权限或科学判据；未合并红门。仅新增原生回执及依赖终局，待源码和合格环境同宿主可用再执行原尚未完成的控制。
+
 ## 2026-11-26 13:22 UTC 后：Split 依赖真实终局及当前集成局部原生回执
 
 - #6799 最新读取精确 head `5607a93991c2c12f42efd34c889e46b021a32a12`，draft=true、merged=false。该候选首屏100条初次观察51 success/22 in_progress/6 failure/14 skipped/6 queued/1 pending，非全分页终局。
