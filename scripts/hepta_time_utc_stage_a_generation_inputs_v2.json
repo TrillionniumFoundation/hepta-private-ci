@@ -1,0 +1,755 @@
+{
+  "activated": true,
+  "activation_blockers": [],
+  "actual_cargo_lock_scope": {
+    "evidence_from": "SQLx owner readback of accepted bc8 main Cargo.lock",
+    "keep_frozen_cargo_1_96_and_reject_any_actual_drift": true,
+    "main_lock_has_unused_patch_rows": false,
+    "nightly_cargo_fixture_qualification_not_borrowed": true,
+    "sqlx_fixture_random_unused_patch_order_not_transferred_as_a_main_lock_failure": true
+  },
+  "baseline_workspace_members": 193,
+  "branch": "fix/hepta-time-stage-a-bazel-version-continuation-20261126-7c9e",
+  "budgets": {
+    "automatic_command_retries": 0,
+    "engineering_cap_seconds": 883,
+    "engineering_original_cap_seconds": 900,
+    "engineering_previous_conservative_charge_seconds": 17,
+    "engineering_previous_observed_seconds": 16.625500185000007,
+    "final_reserve_seconds": 100,
+    "old_E1_E6_seconds_used": 0,
+    "old_native48_seconds_used": 0,
+    "source_original_cap_seconds": 300,
+    "source_previous_seconds": 246.16948156717888,
+    "source_remaining_seconds": 53.83051843282112
+  },
+  "controls": [
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::serde_preserves_legacy_autosi_zero_three_six_nine_digits"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::serde_normalizes_offsets_before_canonical_bytes"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::public_rfc3339_parser_keeps_relaxed_forms_at_serde_boundary"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::negative_epoch_seconds_and_milliseconds_floor"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::explicit_numeric_schemas_keep_integers_and_old_units"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::numeric_constructors_never_infer_units_from_small_values"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::fixed_precision_and_explicit_utc_suffix_do_not_round"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::display_and_debug_keep_their_distinct_legacy_shapes"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::four_digit_utc_range_is_checked_after_offset_normalization"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::unsupported_chrono_leap_and_expanded_year_inputs_are_explicit_errors"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::malformed_and_non_string_inputs_are_not_coerced"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::numeric_range_errors_do_not_saturate_into_an_instant"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::legacy_duration_boundary_remains_exact_to_one_nanosecond"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::checked_arithmetic_preserves_instant_and_rejects_range_overflow"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::system_clock_conversion_preserves_pre_epoch_fraction"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::signed_age_keeps_future_timestamp_negative"
+    }
+  ],
+  "existing_bazel_reference": {
+    "artifact_bytes": 471888,
+    "artifact_id": 15091806526,
+    "artifact_sha256": "172ec583f916793b74a55297eed3613e3126f3e95fbaa42be19d7cd570cfe3fd",
+    "baseline_lock_generation_repeated_by_new_owner": false,
+    "downloaded_here": false,
+    "empty_original_patch_bytes": 0,
+    "generated_lock_accepted_here": false,
+    "head": "5b9b1c5e123aa69bd71c0fb810af8f6b8c9d4ed1",
+    "independent_readback": {
+      "bytes": 13055,
+      "path": "HEPTA_5B9_BAZEL_STABILITY_HG_INDEPENDENT_READBACK_V1.json",
+      "sha256": "be93711c2af3010bbaebf728f6714289f57e2229c66f1a8d3ef93af212c0d6aa"
+    },
+    "job_id": 139689521234,
+    "original_lock_equals_existing_5b9_lock": true,
+    "read_only_original_members_verified_here": true,
+    "root_acceptance_pending": false,
+    "root_original_unchanged_lock_readback_accepted": true,
+    "run_attempt": 1,
+    "run_id": 45754403268,
+    "stage_a_new_manifest_still_requires_actual_from_cargo_generation": true,
+    "unchanged_lock_sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892"
+  },
+  "generated_lock_paths": [
+    "codex-rs/Cargo.lock",
+    "MODULE.bazel.lock"
+  ],
+  "identity_contract": {
+    "github_environment_and_event_never_rewritten": true,
+    "local_candidate_role": "LOCAL_DERIVED_CANDIDATE_ONLY",
+    "local_candidate_soleparent": "actual published generation head",
+    "no_github_write_capability_in_owner": true,
+    "original_recorder_source_inputs": "SOURCE_SHA and TESTED_SHA set only for the explicitly declared local native candidate; GITHUB_* unchanged",
+    "raw_commit_and_tree_and_full_source_maps_required": true,
+    "root_review_before_any_publication_transfer": true
+  },
+  "native_command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-utils-time",
+    "--lib",
+    "--retries",
+    "0",
+    "--test-threads",
+    "1",
+    "--status-level",
+    "pass",
+    "--final-status-level",
+    "fail",
+    "-E",
+    "(binary_id(=codex-utils-time) & test(=tests::serde_preserves_legacy_autosi_zero_three_six_nine_digits)) | (binary_id(=codex-utils-time) & test(=tests::serde_normalizes_offsets_before_canonical_bytes)) | (binary_id(=codex-utils-time) & test(=tests::public_rfc3339_parser_keeps_relaxed_forms_at_serde_boundary)) | (binary_id(=codex-utils-time) & test(=tests::negative_epoch_seconds_and_milliseconds_floor)) | (binary_id(=codex-utils-time) & test(=tests::explicit_numeric_schemas_keep_integers_and_old_units)) | (binary_id(=codex-utils-time) & test(=tests::numeric_constructors_never_infer_units_from_small_values)) | (binary_id(=codex-utils-time) & test(=tests::fixed_precision_and_explicit_utc_suffix_do_not_round)) | (binary_id(=codex-utils-time) & test(=tests::display_and_debug_keep_their_distinct_legacy_shapes)) | (binary_id(=codex-utils-time) & test(=tests::four_digit_utc_range_is_checked_after_offset_normalization)) | (binary_id(=codex-utils-time) & test(=tests::unsupported_chrono_leap_and_expanded_year_inputs_are_explicit_errors)) | (binary_id(=codex-utils-time) & test(=tests::malformed_and_non_string_inputs_are_not_coerced)) | (binary_id(=codex-utils-time) & test(=tests::numeric_range_errors_do_not_saturate_into_an_instant)) | (binary_id(=codex-utils-time) & test(=tests::legacy_duration_boundary_remains_exact_to_one_nanosecond)) | (binary_id(=codex-utils-time) & test(=tests::checked_arithmetic_preserves_instant_and_rejects_range_overflow)) | (binary_id(=codex-utils-time) & test(=tests::system_clock_conversion_preserves_pre_epoch_fraction)) | (binary_id(=codex-utils-time) & test(=tests::signed_age_keeps_future_timestamp_negative))"
+  ],
+  "native_list_command": [
+    "cargo",
+    "nextest",
+    "list",
+    "--locked",
+    "--manifest-path",
+    "codex-rs/Cargo.toml",
+    "-p",
+    "codex-utils-time",
+    "--lib",
+    "--message-format",
+    "json",
+    "-E",
+    "(binary_id(=codex-utils-time) & test(=tests::serde_preserves_legacy_autosi_zero_three_six_nine_digits)) | (binary_id(=codex-utils-time) & test(=tests::serde_normalizes_offsets_before_canonical_bytes)) | (binary_id(=codex-utils-time) & test(=tests::public_rfc3339_parser_keeps_relaxed_forms_at_serde_boundary)) | (binary_id(=codex-utils-time) & test(=tests::negative_epoch_seconds_and_milliseconds_floor)) | (binary_id(=codex-utils-time) & test(=tests::explicit_numeric_schemas_keep_integers_and_old_units)) | (binary_id(=codex-utils-time) & test(=tests::numeric_constructors_never_infer_units_from_small_values)) | (binary_id(=codex-utils-time) & test(=tests::fixed_precision_and_explicit_utc_suffix_do_not_round)) | (binary_id(=codex-utils-time) & test(=tests::display_and_debug_keep_their_distinct_legacy_shapes)) | (binary_id(=codex-utils-time) & test(=tests::four_digit_utc_range_is_checked_after_offset_normalization)) | (binary_id(=codex-utils-time) & test(=tests::unsupported_chrono_leap_and_expanded_year_inputs_are_explicit_errors)) | (binary_id(=codex-utils-time) & test(=tests::malformed_and_non_string_inputs_are_not_coerced)) | (binary_id(=codex-utils-time) & test(=tests::numeric_range_errors_do_not_saturate_into_an_instant)) | (binary_id(=codex-utils-time) & test(=tests::legacy_duration_boundary_remains_exact_to_one_nanosecond)) | (binary_id(=codex-utils-time) & test(=tests::checked_arithmetic_preserves_instant_and_rejects_range_overflow)) | (binary_id(=codex-utils-time) & test(=tests::system_clock_conversion_preserves_pre_epoch_fraction)) | (binary_id(=codex-utils-time) & test(=tests::signed_age_keeps_future_timestamp_negative))"
+  ],
+  "original_runtime_reuse": {
+    "command_stdout_bytes_maximum": 67108864,
+    "native_log_remains_original_combined": true,
+    "old_budgets_used": false,
+    "old_entry_points_called": [],
+    "only": [
+      "Scope constructor",
+      "Scope.run",
+      "Scope.read_git",
+      "Scope.receipt",
+      "source_snapshot",
+      "require_tree",
+      "require",
+      "digest",
+      "json_value"
+    ],
+    "original_stdout_stderr_separate": true,
+    "path": "scripts/run_chrono_hooks_cli_lock_scope_v1.py",
+    "sha256": "9f7611b839ebe6518260e40cae81344169e7037a8551b1be00a2f20f28513ac2",
+    "stderr_bound_type": "retained and acceptance-checked after each command; no real-time stderr byte-cap claim",
+    "storage_acceptance": {
+      "evidence_bytes_maximum": 536870912,
+      "free_bytes_minimum": 4294967296
+    }
+  },
+  "parent": "5b9b1c5e123aa69bd71c0fb810af8f6b8c9d4ed1",
+  "parent_tree": "a720083f7bd3d1df4222908bd5aa946c9eb43dce",
+  "phase_caps_seconds": {
+    "bazel-analysis": 180,
+    "bazel-lock-error-mode": 90,
+    "bazel-lock-update": 180,
+    "bazel-query": 90,
+    "cargo-workspace-update": 120,
+    "download-bazel": 45,
+    "download-dotslash": 20,
+    "locked-metadata": 120,
+    "native16": 180,
+    "nextest-list": 120,
+    "scoped-fix": 180,
+    "scoped-format": 45,
+    "version": 5
+  },
+  "previous_attempt": {
+    "artifact_id": 15120002925,
+    "attempt": 1,
+    "engineering_conservative_charge_seconds": 17,
+    "engineering_elapsed_seconds_through_artifact_upload": 16.625500185000007,
+    "failure": "ValueError: actual command failed: version-bazel",
+    "head": "98f3e7e3ccd38ca18244cb58a183bccad556df4f",
+    "job_id": 139930742628,
+    "lock_generation_started": false,
+    "native16_started": false,
+    "pull_request": 7135,
+    "run_id": 45826166498,
+    "source_admission_status": "SOURCE_ACQUIRED_ENGINEERING_ADMITTED",
+    "source_cumulative_seconds": 246.16948156717888,
+    "source_elapsed_seconds": 15.131083567000005,
+    "source_previous_seconds": 231.03839800017886,
+    "status": "FAIL",
+    "tree": "58fc9f9008a1c0dd9f153eb350d432aa8544959f"
+  },
+  "prior_cost_evidence": [
+    {
+      "bytes": 5413,
+      "path": "hepta-5b9-source-preparation-v1/RESULT.json",
+      "sha256": "1739ff1325dfabba7afd0e762227fe1df586c69a7938719f2f09c24d689de633",
+      "status": "original clone failed; retained"
+    },
+    {
+      "path": "hepta-5b9-source-archive-continuation-v2/RESULT.json",
+      "status": "original archive timed out after partial592822B; retained; exact combined cost preserved in budget"
+    },
+    {
+      "bytes": 1583,
+      "path": "hepta-5b9-local-source-inventory-v3/RESULT.json",
+      "sha256": "ccf7db9af69e44827932bb8ac07a8dc530b80500c4b89d9ca10348a1b2df0b30",
+      "status": "inventory succeeded; 8548 missing/different leaves266702738B, local completion abandoned"
+    },
+    {
+      "bytes": 2346,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7134-7135-two-original-artifacts-root-v1-continuation-v2/members/15120002925/source-admission.json",
+      "sha256": "7e7ade6b5566ebfddf07c82136d804570f8065f8c256c7e6642a66ac1c44a03d",
+      "status": "Original full physical source acquisition passed; actual source cost retained."
+    },
+    {
+      "bytes": 25605,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7134-7135-two-original-artifacts-root-v1-continuation-v2/members/15120002925/generate.RESULT.json",
+      "sha256": "e2e1b010dc5caf5590b549b8a15ddb71effb92c4a8461002ff7300d38bfe3cbd",
+      "status": "Original generation invocation failed during version-bazel; overlay/lock generation/native16 were not started."
+    },
+    {
+      "bytes": 136,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7134-7135-two-original-artifacts-root-v1-continuation-v2/members/15120002925/generate-14-version-bazel.stderr",
+      "sha256": "cbf21dc1aef7edc82bae8367b6a32c1796c4fd4b195e33949680e1c0f7fcb7aa",
+      "status": "Actual unknown startup option --version, original exit2."
+    }
+  ],
+  "proposal_files": [
+    {
+      "after": {
+        "bytes": 23128,
+        "git_blob": "ffc71ca6fa5c41cb61ee5bed502e17b13022113c",
+        "mode": "100644",
+        "sha256": "3ae45c743cf4b2171864a196c3185d1eb84b6a42e2f03653c4001e5b968769af"
+      },
+      "before": {
+        "bytes": 23110,
+        "git_blob": "ed963f9f36eda9f5f634ea7f3ebdf6091a73915d",
+        "mode": "100644",
+        "sha256": "9c055a48d9833d2e2baebbec88cb8dc30a5f666beba7bdaf104290625a667986"
+      },
+      "encoding": "unique-text-edit-v1",
+      "proposal": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__Cargo.toml.source",
+      "proposal_pin": {
+        "bytes": 103,
+        "git_blob": "c5a5c13d06523d53bba538f132773203d4ede4a8",
+        "mode": "100644",
+        "sha256": "68221fda612c80a058f022e64ce42bc4dff374145bc9af837c6ee19847abbc54"
+      },
+      "target": "codex-rs/Cargo.toml"
+    },
+    {
+      "after": {
+        "bytes": 117,
+        "git_blob": "b725da93b52392313965396f58c617d68275b00b",
+        "mode": "100644",
+        "sha256": "c1dd95f2ed759f0b5014b59ef109867d2e4bb27bc7ef870a3294709e7972916f"
+      },
+      "before": null,
+      "encoding": "raw-postimage",
+      "proposal": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__BUILD.bazel.source",
+      "proposal_pin": {
+        "bytes": 117,
+        "git_blob": "b725da93b52392313965396f58c617d68275b00b",
+        "mode": "100644",
+        "sha256": "c1dd95f2ed759f0b5014b59ef109867d2e4bb27bc7ef870a3294709e7972916f"
+      },
+      "target": "codex-rs/utils/time/BUILD.bazel"
+    },
+    {
+      "after": {
+        "bytes": 404,
+        "git_blob": "5691d095896a72494262f07b10cf492b9e84492a",
+        "mode": "100644",
+        "sha256": "e9f5ce918274ee877ed4de72b1b1af06a2ad8514b415fc2b604c3791fec418a6"
+      },
+      "before": null,
+      "encoding": "raw-postimage",
+      "proposal": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__Cargo.toml.source",
+      "proposal_pin": {
+        "bytes": 404,
+        "git_blob": "5691d095896a72494262f07b10cf492b9e84492a",
+        "mode": "100644",
+        "sha256": "e9f5ce918274ee877ed4de72b1b1af06a2ad8514b415fc2b604c3791fec418a6"
+      },
+      "target": "codex-rs/utils/time/Cargo.toml"
+    },
+    {
+      "after": {
+        "bytes": 12843,
+        "git_blob": "a292df71e5d82ed57f3eebdcc9b7715bd575522b",
+        "mode": "100644",
+        "sha256": "4caccb02d1e33289ca788ed4692473300b5560e82954d19cb52c92c2af73a4bf"
+      },
+      "before": null,
+      "encoding": "raw-postimage",
+      "proposal": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__lib.rs.source",
+      "proposal_pin": {
+        "bytes": 12843,
+        "git_blob": "a292df71e5d82ed57f3eebdcc9b7715bd575522b",
+        "mode": "100644",
+        "sha256": "4caccb02d1e33289ca788ed4692473300b5560e82954d19cb52c92c2af73a4bf"
+      },
+      "target": "codex-rs/utils/time/src/lib.rs"
+    },
+    {
+      "after": {
+        "bytes": 4816,
+        "git_blob": "377abc51507b959c0aa514816ff39ac9c3719af1",
+        "mode": "100644",
+        "sha256": "b23b3d23c08676f0f48fdfc75648337d7d021386c28f3e69123a811f4f00ed6d"
+      },
+      "before": null,
+      "encoding": "raw-postimage",
+      "proposal": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__parser.rs.source",
+      "proposal_pin": {
+        "bytes": 4816,
+        "git_blob": "377abc51507b959c0aa514816ff39ac9c3719af1",
+        "mode": "100644",
+        "sha256": "b23b3d23c08676f0f48fdfc75648337d7d021386c28f3e69123a811f4f00ed6d"
+      },
+      "target": "codex-rs/utils/time/src/parser.rs"
+    },
+    {
+      "after": {
+        "bytes": 11808,
+        "git_blob": "54e64522678c072e2af827aa78f48d5cb88dffaf",
+        "mode": "100644",
+        "sha256": "779a0d578b4fc5297734d0418459dcac1809fdc3d0f6a3be5107dd6d02ac40fd"
+      },
+      "before": null,
+      "encoding": "raw-postimage",
+      "proposal": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__utc_timestamp_tests.rs.source",
+      "proposal_pin": {
+        "bytes": 11808,
+        "git_blob": "54e64522678c072e2af827aa78f48d5cb88dffaf",
+        "mode": "100644",
+        "sha256": "779a0d578b4fc5297734d0418459dcac1809fdc3d0f6a3be5107dd6d02ac40fd"
+      },
+      "target": "codex-rs/utils/time/src/utc_timestamp_tests.rs"
+    }
+  ],
+  "publication_paths": [
+    ".github/workflows/hepta-time-utc-stage-a-generation-v2.yml",
+    "qualification/time_utc_stage_a_generation_admission_v1.json",
+    "scripts/hepta_time_stage_a_v2/contract.py",
+    "scripts/hepta_time_stage_a_v2/generation.py",
+    "scripts/hepta_time_stage_a_v2/native.py",
+    "scripts/hepta_time_stage_a_v2/runtime.py",
+    "scripts/hepta_time_stage_a_v2/source.py",
+    "scripts/hepta_time_stage_a_v2/tools.py",
+    "scripts/hepta_time_utc_stage_a_generation_inputs_v2.json",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__Cargo.toml.source",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__BUILD.bazel.source",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__Cargo.toml.source",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__lib.rs.source",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__parser.rs.source",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__utc_timestamp_tests.rs.source",
+    "scripts/run_time_utc_stage_a_generation_v2.py"
+  ],
+  "publication_roster_complete_for_future_combined_candidate": true,
+  "qualifications": {
+    "adoption_qualified": false,
+    "chrono_advisory_closed": false,
+    "cloud_cache_migration_activated": false,
+    "final_use_qualified": false,
+    "generation_head_native_qualified": false,
+    "models_cache_migration_activated": false,
+    "old_campaign_qualification_transferred": false,
+    "old_chrono_input_domain_fully_preserved": false,
+    "ordinary_ci_qualified": false,
+    "published_candidate_qualified": false,
+    "whole_repo_or_platforms_qualified": false
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewed_sources": [
+    {
+      "bytes": 14000,
+      "git_blob": "59c6850487b948779389a481de5161c64fd21ff5",
+      "mode": "100644",
+      "path": ".bazelrc",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "cf2d7b0511a3b7872a0be581ce32a6010fdd2c40cff30905d6a9f96d1ca2b2b4"
+    },
+    {
+      "bytes": 6,
+      "git_blob": "b13d146a7b02b96e4c30340e69388d539c9721be",
+      "mode": "100644",
+      "path": ".bazelversion",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef"
+    },
+    {
+      "bytes": 10079,
+      "git_blob": "96b661e74381282a619e93994bbbb50d08da9491",
+      "mode": "100644",
+      "path": ".github/workflows/hepta-time-utc-stage-a-generation-v2.yml",
+      "role": "new inactive modular generation source",
+      "sha256": "b76774df5d954d7ed74de773ecbae823df974dc000080314d73881eced24a6c8"
+    },
+    {
+      "bytes": 24531,
+      "git_blob": "87681a96a17ef5baee4367c00e1c1fd7282c278d",
+      "mode": "100644",
+      "path": "MODULE.bazel",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "6ba415cd3a19ed66dcb78eb916eb21a09e6d613832c6ddc09d0f3f7c0ea11cdf"
+    },
+    {
+      "bytes": 1792663,
+      "git_blob": "bb7fb6827f138ca47c750d6c88aec6f5c3bb2775",
+      "mode": "100644",
+      "path": "MODULE.bazel.lock",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892"
+    },
+    {
+      "bytes": 634,
+      "git_blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+      "mode": "100644",
+      "path": "codex-rs/.cargo/config.toml",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "b8ae1cea341beb2d4a3c8fb81f97a96f4aee1fd53f769c57f140dfe949806a80"
+    },
+    {
+      "bytes": 6617,
+      "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "mode": "100644",
+      "path": "codex-rs/.config/nextest.toml",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    {
+      "bytes": 421756,
+      "git_blob": "8a45110e349a11651f403d534467050ee998af3f",
+      "mode": "100644",
+      "path": "codex-rs/Cargo.lock",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "bc8b1abe42bdb85aa10a9ba2a0c3f022af07bc08e38ac50e94442e58806f9ae1"
+    },
+    {
+      "bytes": 23110,
+      "git_blob": "ed963f9f36eda9f5f634ea7f3ebdf6091a73915d",
+      "mode": "100644",
+      "path": "codex-rs/Cargo.toml",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "9c055a48d9833d2e2baebbec88cb8dc30a5f666beba7bdaf104290625a667986"
+    },
+    {
+      "bytes": 78,
+      "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "mode": "100644",
+      "path": "codex-rs/rust-toolchain.toml",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    {
+      "bytes": 35087,
+      "git_blob": "ab9b8e8153e3813cbbc068932bf626a0699cd9f2",
+      "mode": "100644",
+      "path": "defs.bzl",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "4e66b41eba180daab2b4e249501420c9c4bc33371d64746faf558b5a7276db09"
+    },
+    {
+      "bytes": 7838,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "mode": "100644",
+      "path": "justfile",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "bytes": 23850,
+      "git_blob": "355a79bde14155fb58c12dd6b6c4a76656293f60",
+      "mode": "100644",
+      "path": "qualification/time_utc_stage_a_generation_admission_v1.json",
+      "role": "Root frozen engineering execution admission for this exact publication",
+      "sha256": "c894f6b27637e20471126881c42a44dee2e56a3156efa34d12ae7e957f4dff0c"
+    },
+    {
+      "bytes": 16599,
+      "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "mode": "100644",
+      "path": "scripts/format.py",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    },
+    {
+      "bytes": 17064,
+      "git_blob": "491caed67eda5d820473d05717aaaa03b1828609",
+      "mode": "100644",
+      "path": "scripts/hepta_ci_exec.py",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "ccabe2e8066c01a612a378d42cd7580ab183870b59921442a0d208b5ac528cba"
+    },
+    {
+      "bytes": 6613,
+      "git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+      "mode": "100644",
+      "path": "scripts/hepta_ci_junit.py",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    {
+      "bytes": 6816,
+      "git_blob": "0a4ab3e12362af51813e032a0372679dd44372e7",
+      "mode": "100644",
+      "path": "scripts/hepta_time_stage_a_v2/contract.py",
+      "role": "new inactive modular generation source",
+      "sha256": "5db38c9a56a0a0c9ee501807fcf0619cd1eb8a119d268d2040a35e8eb2a5dd1f"
+    },
+    {
+      "bytes": 12414,
+      "git_blob": "13f90fdbb976aae7832e212188ba368507ca7db5",
+      "mode": "100644",
+      "path": "scripts/hepta_time_stage_a_v2/generation.py",
+      "role": "new inactive modular generation source",
+      "sha256": "2bfc7746d37b435d5bef954c4a57e98f93e641f73e7d2fd9b366e2da025f8901"
+    },
+    {
+      "bytes": 12754,
+      "git_blob": "dbf51ac8b94729ef8b18c359031187fc33fe20dd",
+      "mode": "100644",
+      "path": "scripts/hepta_time_stage_a_v2/native.py",
+      "role": "new inactive modular generation source",
+      "sha256": "16c10a28916f914150e9335f9ea2c0d0b2725d37e3f4cb04f7ce9da5abddfa40"
+    },
+    {
+      "bytes": 7600,
+      "git_blob": "fa4f17911f8e4b957f4de3853ffcde36355082a4",
+      "mode": "100644",
+      "path": "scripts/hepta_time_stage_a_v2/runtime.py",
+      "role": "new inactive modular generation source",
+      "sha256": "324304077cb834631a2d35144c0012d9764abf6d7ae0394dad99fd6f2d59171b"
+    },
+    {
+      "bytes": 11032,
+      "git_blob": "d4c213760c87d45698a6b5209513bfde362dacba",
+      "mode": "100644",
+      "path": "scripts/hepta_time_stage_a_v2/source.py",
+      "role": "new inactive modular generation source",
+      "sha256": "ca6aedca19c8b74f361a7e29959f5fa94a3ff7d7133100beb55a5c561052beb4"
+    },
+    {
+      "bytes": 9482,
+      "git_blob": "8e960ae3ac670df9e82481dbb87c2534b6ee1a72",
+      "mode": "100644",
+      "path": "scripts/hepta_time_stage_a_v2/tools.py",
+      "role": "new inactive modular generation source",
+      "sha256": "eef77a58b53568f99184fcc87de0c820a9915c352e71eface7905e3489f64f05"
+    },
+    {
+      "bytes": 103,
+      "git_blob": "c5a5c13d06523d53bba538f132773203d4ede4a8",
+      "mode": "100644",
+      "path": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__Cargo.toml.source",
+      "role": "inactive reviewed Stage A proposal data",
+      "sha256": "68221fda612c80a058f022e64ce42bc4dff374145bc9af837c6ee19847abbc54"
+    },
+    {
+      "bytes": 117,
+      "git_blob": "b725da93b52392313965396f58c617d68275b00b",
+      "mode": "100644",
+      "path": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__BUILD.bazel.source",
+      "role": "inactive reviewed Stage A proposal data",
+      "sha256": "c1dd95f2ed759f0b5014b59ef109867d2e4bb27bc7ef870a3294709e7972916f"
+    },
+    {
+      "bytes": 404,
+      "git_blob": "5691d095896a72494262f07b10cf492b9e84492a",
+      "mode": "100644",
+      "path": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__Cargo.toml.source",
+      "role": "inactive reviewed Stage A proposal data",
+      "sha256": "e9f5ce918274ee877ed4de72b1b1af06a2ad8514b415fc2b604c3791fec418a6"
+    },
+    {
+      "bytes": 12843,
+      "git_blob": "a292df71e5d82ed57f3eebdcc9b7715bd575522b",
+      "mode": "100644",
+      "path": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__lib.rs.source",
+      "role": "inactive reviewed Stage A proposal data",
+      "sha256": "4caccb02d1e33289ca788ed4692473300b5560e82954d19cb52c92c2af73a4bf"
+    },
+    {
+      "bytes": 4816,
+      "git_blob": "377abc51507b959c0aa514816ff39ac9c3719af1",
+      "mode": "100644",
+      "path": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__parser.rs.source",
+      "role": "inactive reviewed Stage A proposal data",
+      "sha256": "b23b3d23c08676f0f48fdfc75648337d7d021386c28f3e69123a811f4f00ed6d"
+    },
+    {
+      "bytes": 11808,
+      "git_blob": "54e64522678c072e2af827aa78f48d5cb88dffaf",
+      "mode": "100644",
+      "path": "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__utc_timestamp_tests.rs.source",
+      "role": "inactive reviewed Stage A proposal data",
+      "sha256": "779a0d578b4fc5297734d0418459dcac1809fdc3d0f6a3be5107dd6d02ac40fd"
+    },
+    {
+      "bytes": 2030,
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "mode": "100644",
+      "path": "scripts/just-shell.py",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    {
+      "bytes": 10206,
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "mode": "100644",
+      "path": "scripts/run-nextest.py",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "bytes": 51480,
+      "git_blob": "dd2415007a34be01e8206dcc726d6379450ee111",
+      "mode": "100644",
+      "path": "scripts/run_chrono_hooks_cli_lock_scope_v1.py",
+      "role": "unchanged original generic process/source owner; no old registration or execution scope imported",
+      "sha256": "9f7611b839ebe6518260e40cae81344169e7037a8551b1be00a2f20f28513ac2"
+    },
+    {
+      "bytes": 16468,
+      "git_blob": "6f565c87ef7f7deb9e72917250e13a74035dcb6c",
+      "mode": "100644",
+      "path": "scripts/run_time_utc_stage_a_generation_v2.py",
+      "role": "new inactive modular generation source",
+      "sha256": "b14c394de3b483e930efac3b54fa50d7dd0b457ffbc7a1547ec0d5cd9f7d1c91"
+    },
+    {
+      "bytes": 2172,
+      "git_blob": "d18dd60ac6b317d06c6ccf850654b2e06e29395d",
+      "mode": "100755",
+      "path": "tools/buildifier",
+      "role": "unchanged actual5b9 primary source; final combined-head pins require Root review if changed",
+      "sha256": "818bfc01e21fceb0d83ddaf4614531418ea763e25499f7f9fd03c7a853948fe6"
+    }
+  ],
+  "root_admission": {
+    "authorizer": "root",
+    "engineering_execution_authorized": true,
+    "github_write_authorized": false,
+    "local_candidate_only": true,
+    "receipt_path": "qualification/time_utc_stage_a_generation_admission_v1.json",
+    "receipt_sha256": "c894f6b27637e20471126881c42a44dee2e56a3156efa34d12ae7e957f4dff0c",
+    "source_preparation_only": false
+  },
+  "root_manifest_compact_edit": {
+    "edit": {
+      "after": "    \"utils/elapsed\",\n    \"utils/time\",\n",
+      "before": "    \"utils/elapsed\",\n"
+    },
+    "full_reviewed_postimage_exact": true,
+    "postimage": {
+      "bytes": 23128,
+      "git_blob": "ffc71ca6fa5c41cb61ee5bed502e17b13022113c",
+      "mode": "100644",
+      "sha256": "3ae45c743cf4b2171864a196c3185d1eb84b6a42e2f03653c4001e5b968769af"
+    },
+    "preimage": {
+      "bytes": 23110,
+      "git_blob": "ed963f9f36eda9f5f634ea7f3ebdf6091a73915d",
+      "mode": "100644",
+      "sha256": "9c055a48d9833d2e2baebbec88cb8dc30a5f666beba7bdaf104290625a667986"
+    },
+    "unique_anchor_count": 1
+  },
+  "schema": "hepta.time-utc-stage-a-generation-inputs.v2",
+  "scope": {
+    "cloud_activation": false,
+    "leap_seconds_supported": false,
+    "legacy_extended_year_and_leap_compatibility_open": true,
+    "models_activation": false,
+    "new_package": "codex-utils-time",
+    "old_cloud_or_models_or_native48_controls_rerun": false,
+    "source_control_count": 16,
+    "source_reference_manifest": {
+      "bytes": 6063,
+      "path": "HEPTA_7120_TIME_UTC_CLOUD_SOURCE_ONLY_V3/STAGE_A_SOURCE_MANIFEST.json",
+      "sha256": "2316fe9e7a1c8041df493e4779ff41d108416b959f740a2e011bbddcc5f9ede2"
+    },
+    "stage": "A only",
+    "supported_utc_years": [
+      0,
+      9999
+    ]
+  },
+  "stage_paths": [
+    "codex-rs/Cargo.toml",
+    "codex-rs/utils/time/BUILD.bazel",
+    "codex-rs/utils/time/Cargo.toml",
+    "codex-rs/utils/time/src/lib.rs",
+    "codex-rs/utils/time/src/parser.rs",
+    "codex-rs/utils/time/src/utc_timestamp_tests.rs"
+  ],
+  "tool_payloads": {
+    "bazel": {
+      "bytes": 77023347,
+      "format": "elf",
+      "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+      "url": "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64"
+    },
+    "dotslash": {
+      "bytes": 775216,
+      "format": "tar.gz",
+      "sha256": "7400dd0dbdf05d3be4e604b62807eb1bcbaa0d1bced010d30746243759e0ac03",
+      "url": "https://github.com/meta/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.tar.gz"
+    }
+  },
+  "tooling": {
+    "bazel": "9.3.0",
+    "buildifier": "8.5.1",
+    "dotslash": "0.5.9",
+    "just": "1.51.0",
+    "native_host": "x86_64-unknown-linux-gnu",
+    "nextest": "0.9.103",
+    "nextest_commit": "d2e7b879fb79975e8b47a8e3ce569b651e6381c0",
+    "nextest_date": "2025-08-25",
+    "rust": "1.96.0"
+  }
+}
