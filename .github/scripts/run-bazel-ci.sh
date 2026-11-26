@@ -196,14 +196,14 @@ print_bazel_test_log_tails() {
               sub(/\r$/, "")
               if (($1 == "FAIL:" || $1 == "FLAKY:" || $1 == "TIMEOUT:") && $2 == target) {
                 in_summary = $0 ~ /\(Summary\)[[:space:]]*$/
-                if ($0 ~ / \(see .*[\\/](test|attempt_[0-9]+)\.log\)[[:space:]]*$/) {
+                if ($0 ~ / \(see .*[\/\\](test|attempt_[0-9]+)\.log\)[[:space:]]*$/) {
                   sub(/^.* \(see /, "")
                   sub(/\)[[:space:]]*$/, "")
                   print
                 }
                 next
               }
-              if (in_summary && /^[[:space:]]+/ && /[\\/](test|attempt_[0-9]+)\.log[[:space:]]*$/) {
+              if (in_summary && /^[[:space:]]+/ && /[\/\\](test|attempt_[0-9]+)\.log[[:space:]]*$/) {
                 sub(/^[[:space:]]+/, "")
                 sub(/[[:space:]]+$/, "")
                 print
