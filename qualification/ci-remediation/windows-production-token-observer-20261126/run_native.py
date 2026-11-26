@@ -168,6 +168,126 @@ def verify_native(texts, listing):
             "raw_privilege_attributes_note": "Equality includes usage bits; inequality is not proof of an authorization change."}
 
 
+def verify_child_token(texts):
+    prefix = "HEPTA_LEGACY_SPAWN_TOKEN "
+    records = []
+
+    def exact_keys(value, keys):
+        require(type(value) is dict and set(value) == set(keys.split()),
+                "child-token record has unexpected fields")
+
+    def integer(value, minimum=0, maximum=0xFFFFFFFF):
+        require(type(value) is int and minimum <= value <= maximum,
+                "child-token numeric field is outside its typed bound")
+
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            require(key not in result, "duplicate child-token JSON key")
+            result[key] = value
+        return result
+
+    def roles(value):
+        allowed = {"token_user", "token_default_owner", "world", "administrators",
+                   "users", "authenticated_users", "system", "other"}
+        require(type(value) is list and 1 <= len(value) <= len(allowed)
+                and all(type(role) is str and role in allowed for role in value)
+                and len(set(value)) == len(value), "invalid child-token role summary")
+        require("other" not in value or value == ["other"], "ambiguous other role")
+
+    def facts(value):
+        exact_keys(value, "token_type user_roles user_attributes owner_roles group_count groups "
+                   "restricting_count restricting privilege_count privileges_luid_and_raw_attributes "
+                   "integrity_rid integrity_attributes mandatory_policy")
+        integer(value["token_type"], 1, 1)
+        roles(value["user_roles"])
+        roles(value["owner_roles"])
+        require("token_user" in value["user_roles"]
+                and "token_default_owner" in value["owner_roles"], "missing token identity role")
+        for field in ("user_attributes", "integrity_rid", "integrity_attributes", "mandatory_policy"):
+            integer(value[field])
+        for count_key, entries_key in (("group_count", "groups"), ("restricting_count", "restricting")):
+            integer(value[count_key], 0, 64)
+            entries = value[entries_key]
+            require(type(entries) is list and len(entries) == value[count_key],
+                    "child-token group count mismatch")
+            for entry in entries:
+                exact_keys(entry, "roles attributes")
+                roles(entry["roles"])
+                integer(entry["attributes"])
+        integer(value["privilege_count"], 0, 64)
+        entries = value["privileges_luid_and_raw_attributes"]
+        require(type(entries) is list and len(entries) == value["privilege_count"],
+                "child-token privilege count mismatch")
+        for entry in entries:
+            require(type(entry) is list and len(entry) == 3, "invalid child-token privilege tuple")
+            integer(entry[0], -(2**31), 2**31 - 1)
+            integer(entry[1])
+            integer(entry[2])
+
+    for text in texts:
+        before_summary = re.split(r"(?m)^\s*Summary\s+\[", ANSI.sub("", text), maxsplit=1)[0]
+        for line in before_summary.splitlines():
+            if "HEPTA_LEGACY_SPAWN_TOKEN" not in line:
+                continue
+            line = line.lstrip()
+            require(line.startswith(prefix) and len(line.encode("utf-8")) + 1 <= 16 * 1024,
+                    "malformed or oversized child-token record")
+            records.append(json.loads(line[len(prefix):], object_pairs_hook=unique_object))
+    require(len(records) == 1, "missing or duplicate child-token observation")
+    record = records[0]
+    exact_keys(record, "status poll_count hook_count overlapping_scope launch_input actual_child_primary comparison")
+    require(record["status"] == "observed" and record["overlapping_scope"] is False,
+            "child-token observation is unknown or overlapping")
+    integer(record["poll_count"], 1, 2**64 - 1)
+    integer(record["hook_count"], 1, 1)
+    for name in ("launch_input", "actual_child_primary"):
+        exact_keys(record[name], "status facts")
+        require(record[name]["status"] == "observed", "token snapshot is unknown")
+        facts(record[name]["facts"])
+    comparison = record["comparison"]
+    exact_keys(comparison, "raw_observed_fields_equal user_equal owner_equal groups_equal "
+               "restricting_equal raw_privileges_equal integrity_equal mandatory_policy_equal token_type_equal")
+    require(all(type(value) is bool for value in comparison.values()), "untyped token comparison")
+    require(comparison["raw_observed_fields_equal"] == all(
+        value for key, value in comparison.items() if key != "raw_observed_fields_equal"),
+        "inconsistent aggregate token comparison")
+    launch = record["launch_input"]["facts"]
+    child = record["actual_child_primary"]["facts"]
+    for name, fields in (
+        ("token_type_equal", ("token_type",)),
+        ("integrity_equal", ("integrity_rid", "integrity_attributes")),
+        ("mandatory_policy_equal", ("mandatory_policy",)),
+        ("raw_privileges_equal", ("privileges_luid_and_raw_attributes",)),
+    ):
+        require(comparison[name] == all(launch[field] == child[field] for field in fields),
+                "token comparison contradicts complete visible facts")
+    for name, count, entries in (("groups_equal", "group_count", "groups"),
+                                  ("restricting_equal", "restricting_count", "restricting")):
+        if launch[count] == 0 and child[count] == 0:
+            require(comparison[name], "two empty raw SID arrays must compare equal")
+        if comparison[name]:
+            require(launch[count] == child[count]
+                    and [entry["attributes"] for entry in launch[entries]]
+                    == [entry["attributes"] for entry in child[entries]],
+                    "equal raw SID arrays contradict visible count or attributes")
+    require(not comparison["user_equal"] or launch["user_attributes"] == child["user_attributes"],
+            "equal raw users contradict visible attributes")
+    # Lossy role summaries cannot establish either equality or inequality of raw SIDs.
+    return record
+
+
+def record_child_token(report, texts):
+    observation = {"status": "unknown", "observation_complete": False,
+                   "production_confinement_qualified": False}
+    report["native"]["child_token_observation"] = observation
+    try:
+        observation["record"] = verify_child_token(texts)
+        observation.update({"status": "observed", "observation_complete": True})
+    except Exception as error:
+        report["errors"].append(f"child-token-observation: {type(error).__name__}: {error}")
+
+
 def main():
     evidence = Path(os.environ["RUNNER_TEMP"]) / "hepta-production-delete-evidence"
     evidence.mkdir(parents=True, exist_ok=True)
@@ -246,6 +366,7 @@ def main():
             "-E", FILTER, "--test-threads", "1", "--retries", "0",
             "--success-output", "immediate", "--failure-output", "immediate"])
         report["native"] = {"status": "command_completed", "exit": code, "observation": "unverified"}
+        record_child_token(report, [out.read_text(encoding="utf-8"), err.read_text(encoding="utf-8")])
         report["native"].update(verify_native(
             [out.read_text(encoding="utf-8"), err.read_text(encoding="utf-8")], listing))
     except Exception as error:
