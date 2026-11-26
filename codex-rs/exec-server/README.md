@@ -379,6 +379,8 @@ for invalid or unavailable paths. Native absolute path strings are rejected;
 callers must convert them to `file:` URIs before sending requests:
 
 - `fs/readFile`
+- `fs/readFileAuthorized` (bounded reads with a required sandbox and the
+  `stableHandleAuthorizedRead` capability)
 - `fs/open`, `fs/readBlock`, and `fs/close` (internal transport for
   `ExecutorFileSystem::read_file_stream`)
 - `fs/writeFile`
@@ -389,11 +391,22 @@ callers must convert them to `file:` URIs before sending requests:
 - `fs/remove`
 - `fs/copy`
 
-Each filesystem request accepts an optional `sandbox` object. When `sandbox`
-contains a `ReadOnly` or `WorkspaceWrite` policy, the operation runs in a
+Ordinary filesystem requests accept an optional `sandbox` object; authorized
+reads require one. When an ordinary request contains a `ReadOnly` or
+`WorkspaceWrite` policy, the operation runs in a
 hidden helper process launched from the top-level `codex` executable and
 prepared through the shared sandbox transform path. Helper requests and
 responses are passed over stdin/stdout.
+
+Authorized reads keep the initial file descriptor alive while admitting a
+second descriptor against the resolved physical path and permission policy.
+Linux requires a successful runtime probe of `openat2` link-resolution flags,
+descriptor paths, mount identity, and single-link regular-file checks; a kernel
+without these primitives advertises no capability and rejects the operation.
+Namespace, mount, device/inode and physical-path mismatches reject admission.
+Reads after admission use only the admitted descriptor, so later replacement or
+hardlink creation does not redirect an authorized read. Linux checks link count
+after opening; this does not provide Darwin's atomic `O_UNIQUE` semantics.
 
 ## Errors
 
@@ -402,6 +415,11 @@ The server returns JSON-RPC errors with these codes:
 - `-32600`: invalid request
 - `-32602`: invalid params
 - `-32603`: internal error
+- `-32012`: `fs/readFileAuthorized` exceeded its byte bound
+
+Authorized-read clients preserve the existing invalid-request code for
+permission rejection and translate the method-specific bound code to a fixed
+bound error. Neither exposes arbitrary remote error messages.
 
 Typical error cases:
 
