@@ -125,7 +125,14 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 60
+    env:
+      # Preserve the exact Rust test profile's runtime debug assertions while
+      # omitting bulky native debug symbols and incremental compilation state.
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -133,6 +140,23 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Reclaim unused hosted SDK storage for complete Rust reverse-consumer tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          # GitHub ubuntu images contain unrelated Android, GHC, and .NET
+          # toolchains that consume many GiB; the scoped lane qualifies Rust.
+          # These are fixed runner paths, never repository paths or caches
+          # containing verified candidate artifacts.
+          df -h "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/scoped-disk-before.txt"
+          for sdk in /usr/local/lib/android /opt/ghc /usr/share/dotnet; do
+            if [ -d "$sdk" ]; then
+              sudo du -sh "$sdk"
+              sudo rm -rf -- "$sdk"
+            fi
+          done
+          df -h "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/scoped-disk-after-reclaim.txt"
 
       - name: Prepare native test prerequisites before compilation
         run: |
@@ -164,6 +188,12 @@ jobs:
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
 
+      - name: Observe scoped native disk state after full reverse-consumer test
+        if: always()
+        shell: bash
+        run: |
+          df -h "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/scoped-disk-after-tests.txt"
+
       - name: Retain dependency plan and real command output
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -172,6 +202,7 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/scoped-disk-*.txt
           if-no-files-found: error
           retention-days: 14
 
