@@ -16,3 +16,11 @@ workspace = true
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
+ed25519-dalek = { workspace = true }
+sha2 = { workspace = true }
+sqlx = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

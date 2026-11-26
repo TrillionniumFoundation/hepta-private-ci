@@ -21,7 +21,12 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 const MAX_CITATIONS: usize = 64;
-const MAX_RECORDS: usize = 16_384;
+
+/// Maximum number of records in one canonical cognitive snapshot.
+///
+/// `compact.engine` consumes this value as its authoritative source-record
+/// ceiling, so the snapshot and compaction protocols cannot silently drift.
+pub const MAX_COGNITIVE_SNAPSHOT_RECORDS: usize = 65_536;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum MemoryKind {
@@ -194,7 +199,7 @@ pub fn build_snapshot(
 }
 
 fn validate_records(records: &[MemoryRecord]) -> Result<(), Error> {
-    if records.len() > MAX_RECORDS {
+    if records.len() > MAX_COGNITIVE_SNAPSHOT_RECORDS {
         return Err(Error::RecordLimitExceeded);
     }
     let mut identities = BTreeSet::new();

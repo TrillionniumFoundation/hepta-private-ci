@@ -3473,6 +3473,7 @@ dependencies = [
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-store",
  "codex-hepta-cognitive-types",
+ "codex-hepta-compact-engine",
  "codex-hepta-context-compiler",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
@@ -3635,6 +3636,7 @@ name = "codex-hepta-cognitive-types"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "ed25519-dalek",
  "serde",
  "serde_json",
 ]
@@ -3645,6 +3647,12 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "sha2 0.10.9",
+ "sqlx",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
 ]
 
 [[package]]
