@@ -1,0 +1,22 @@
+{
+  "archive": {
+    "bytes": 838476,
+    "members": 19,
+    "sha256": "503b3d8886d61a85ec601ea44dc7e850ef54ac69cf68eb99edec5452987f95c5"
+  },
+  "member_index_inside_archive": "MEMBERS.json",
+  "orderedparts": [
+    {
+      "bytes": 430000,
+      "file": "CPU_DOWNLOAD_FAILURES_01.part-000",
+      "sha256": "a4930ed55f692fe169ad0ee925c7dc3a1e3af5808daa345dd4ed6d0b12dac5ea"
+    },
+    {
+      "bytes": 408476,
+      "file": "CPU_DOWNLOAD_FAILURES_01.part-001",
+      "sha256": "166adf8a5699ee1e2945376de221b48156753d004863f55e1a6856a1f354f068"
+    }
+  ],
+  "schema": "hepta.original-cpu-download-failures.v1",
+  "scope": "Both failed HTTP2 transfers retained unmodified; these are not complete original archives. No network, model or validation rerun."
+}

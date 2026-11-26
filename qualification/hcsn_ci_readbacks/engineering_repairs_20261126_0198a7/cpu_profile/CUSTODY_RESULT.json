@@ -1,0 +1,122 @@
+{
+  "actual_cpu_recovery_qualified": false,
+  "all_member_sha256_and_crc_verified": true,
+  "archive": {
+    "bytes": 11397159,
+    "git_blob": "2afc4e810f1c75a1ff5b9fb85464f6dda6c43245",
+    "matches_observed_git_path_blob": true,
+    "sha256": "37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75"
+  },
+  "artifact_commit": "917e4886658ae9f0c342eb1fa0f545d79c39e2c8",
+  "auditor_cpu_s": 0.47057243200000004,
+  "auditor_sha256": "a65ce04770e2102988efadeb3b72041336a0c03b363409213f3f875ead0e7a08",
+  "budget_status": "HOLD_UNKNOWN_UNCHANGED",
+  "byte_source": "Original retained desktop export; no GitHub binary download claimed",
+  "checkpoint_payloads_interpreted": false,
+  "commands": [],
+  "complete_original_plan_bindings_verified": true,
+  "execution_admission_granted": false,
+  "finished_utc": "2026-11-26T07:31:02.162355+00:00",
+  "forward_calls": 0,
+  "git_binary_download_attempts": [
+    {
+      "host": "main",
+      "result_sha256": "9f7d05b53ae1c413c589a50b7f58be7ae93212d3b08aa09739ff1e6d7f65a7f7",
+      "status": "FAILED_RETAINED"
+    },
+    {
+      "host": "main",
+      "result_sha256": "df601869da7842ded9b9cf8be0699c596d18ee203b655d151d704eee3a84b61e",
+      "status": "FAILED_RETAINED"
+    }
+  ],
+  "git_path_metadata_observed_at_commit": "917e4886658ae9f0c342eb1fa0f545d79c39e2c8",
+  "indexed_original_files": 555,
+  "model_loads": 0,
+  "optimizer_updates": 0,
+  "original_file_raw_bytes": 56675710,
+  "original_index_sha256": "5f9b3e5b19078a6200dc2d32dbc52a297498775c222942a94287796edd79eda9",
+  "original_path": "/home/qian-qi/hcsn-real-replay-c06d-export-v1.zip",
+  "original_plan_sha256": "49a624205233078044c3dcf5d53f26ca83a76f4e0e897dc39c98ffb9d5f41653",
+  "original_pointer_status": "MISSING",
+  "pickle_deserializations": 0,
+  "pointer_claim_stale": true,
+  "pointer_modified": false,
+  "schema": "hepta.hcsn.original-cpu-archive-independent-audit.v1",
+  "six_checkpoints": [
+    {
+      "bound_model_sources": 37,
+      "checkpoint": {
+        "bytes": 450552,
+        "sha256": "eb017f86a0e3f7a1268591b10ef4f2727c36daf2edeed3aa9e5316d6eaa6c30b"
+      },
+      "checkpoint_member": "root/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1/inputs/hcsn-s101-lr0.001.pt",
+      "epoch": 116,
+      "fit": "hcsn-s101-lr0.001",
+      "logical_main_updates": 1392
+    },
+    {
+      "bound_model_sources": 37,
+      "checkpoint": {
+        "bytes": 450552,
+        "sha256": "bdd2342af17e2e04bd4403af6c4f0aef5875bb192faa254396ad3b5d56c810e5"
+      },
+      "checkpoint_member": "root/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1/inputs/hcsn-s101-lr0.003.pt",
+      "epoch": 76,
+      "fit": "hcsn-s101-lr0.003",
+      "logical_main_updates": 912
+    },
+    {
+      "bound_model_sources": 37,
+      "checkpoint": {
+        "bytes": 450552,
+        "sha256": "e98973d5d41621727444a2c117b89a7f33925b96066f092136c2f945b1453da3"
+      },
+      "checkpoint_member": "root/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1/inputs/hcsn-s211-lr0.001.pt",
+      "epoch": 126,
+      "fit": "hcsn-s211-lr0.001",
+      "logical_main_updates": 1512
+    },
+    {
+      "bound_model_sources": 37,
+      "checkpoint": {
+        "bytes": 450552,
+        "sha256": "1fd9f82188a7e376cc5f81b190144f72e477f3043d87d3c0612618fa7a2e1a0f"
+      },
+      "checkpoint_member": "root/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1/inputs/hcsn-s211-lr0.003.pt",
+      "epoch": 50,
+      "fit": "hcsn-s211-lr0.003",
+      "logical_main_updates": 600
+    },
+    {
+      "bound_model_sources": 37,
+      "checkpoint": {
+        "bytes": 450552,
+        "sha256": "032d43dc0e6f20a6d4113102ae32faa57809c714875beec4ab2ab76358e93441"
+      },
+      "checkpoint_member": "root/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1/inputs/hcsn-s307-lr0.001.pt",
+      "epoch": 127,
+      "fit": "hcsn-s307-lr0.001",
+      "logical_main_updates": 1524
+    },
+    {
+      "bound_model_sources": 37,
+      "checkpoint": {
+        "bytes": 450616,
+        "sha256": "31241e7158ef0b921fe80bd8f1ebc32614e3b6a8bc270ead1997ed49df93b2ee"
+      },
+      "checkpoint_member": "root/home/qian-qi/hcsn-real-checkpoint-replay-20261112-c06d-run-v1/inputs/hcsn-s307-lr0.003.pt",
+      "epoch": 72,
+      "fit": "hcsn-s307-lr0.003",
+      "logical_main_updates": 864
+    }
+  ],
+  "source_commit": "5cb83d9c76beedf4c1c917e4bf561f5f26261ce7",
+  "started_utc": "2026-11-26T07:31:01.691778+00:00",
+  "status": "PASS_ORIGINAL_ARCHIVE_CUSTODY",
+  "torch_imports": 0,
+  "training_replays": 0,
+  "wall_s": 0.47060703590977937,
+  "zip_members": 556,
+  "zip_raw_bytes_with_index": 56881834
+}
