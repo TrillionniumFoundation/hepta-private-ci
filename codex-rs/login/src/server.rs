@@ -41,7 +41,6 @@ use crate::success_page::jwt_auth_claims;
 use crate::token_data::TokenData;
 use crate::token_data::parse_chatgpt_jwt_claims;
 use base64::Engine;
-use chrono::Utc;
 use codex_config::types::AuthCredentialsStoreMode;
 use codex_protocol::auth::AuthMode;
 use codex_utils_template::Template;
@@ -911,7 +910,7 @@ pub(crate) async fn persist_tokens_async(
             auth_mode: Some(AuthMode::Chatgpt),
             openai_api_key: api_key,
             tokens: Some(tokens),
-            last_refresh: Some(Utc::now()),
+            last_refresh: Some(codex_utils_time::Timestamp::now()),
             agent_identity: None,
             personal_access_token: None,
             bedrock_api_key: None,
