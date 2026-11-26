@@ -307,25 +307,54 @@ pub async fn submit_thread_settings(
     codex: &CodexThread,
     thread_settings: codex_protocol::protocol::ThreadSettingsOverrides,
 ) -> anyhow::Result<()> {
+    use codex_protocol::protocol::CodexErrorInfo;
     use codex_protocol::protocol::EventMsg;
     use codex_protocol::protocol::Op;
     use tokio::time::Duration;
     use tokio::time::timeout;
 
-    let submission_id = codex.submit(Op::ThreadSettings { thread_settings }).await?;
-    loop {
-        let ev = timeout(Duration::from_secs(10), codex.next_event())
-            .await
-            .expect("timeout waiting for thread settings update")
-            .expect("stream ended unexpectedly");
-        if ev.id == submission_id {
-            match ev.msg {
-                EventMsg::ThreadSettingsApplied(_) => return Ok(()),
-                EventMsg::Error(err) => panic!("thread settings update failed: {}", err.message),
-                other => panic!("unexpected thread settings update event: {other:?}"),
+    let apply = async {
+        loop {
+            let submission_id = codex
+                .submit(Op::ThreadSettings {
+                    thread_settings: thread_settings.clone(),
+                })
+                .await?;
+            loop {
+                let event = codex
+                    .next_event()
+                    .await
+                    .context("settings event stream ended")?;
+                if event.id != submission_id {
+                    continue;
+                }
+                match event.msg {
+                    EventMsg::ThreadSettingsApplied(_) => return Ok(()),
+                    EventMsg::Error(error)
+                        if error.codex_error_info == Some(CodexErrorInfo::BadRequest)
+                            && error.message
+                                == "failed to apply thread settings override: turn is terminalizing and cannot accept a standalone settings update" =>
+                    {
+                        // A completed response can precede the finish owner's release.
+                        // Only this pre-apply refusal allows a fresh submission.
+                        if let Some(completion) = codex.pending_admission_fence_completion() {
+                            completion.await;
+                        } else {
+                            tokio::task::yield_now().await;
+                        }
+                        break;
+                    }
+                    EventMsg::Error(error) => {
+                        anyhow::bail!("thread settings update failed: {}", error.message);
+                    }
+                    other => anyhow::bail!("unexpected thread settings update event: {other:?}"),
+                }
             }
         }
-    }
+    };
+    timeout(Duration::from_secs(10), apply)
+        .await
+        .context("timeout waiting for thread settings update")?
 }
 
 pub async fn wait_for_event_match<T, F>(codex: &CodexThread, matcher: F) -> T
@@ -344,15 +373,27 @@ pub async fn wait_for_event_with_timeout<F>(
 where
     F: FnMut(&codex_protocol::protocol::EventMsg) -> bool,
 {
+    use codex_protocol::protocol::EventMsg;
     use tokio::time::Duration;
     use tokio::time::timeout;
+    let wait_time = wait_time.max(Duration::from_secs(10));
     loop {
         // Allow a bit more time to accommodate async startup work (e.g. config IO, tool discovery)
-        let ev = timeout(wait_time.max(Duration::from_secs(10)), codex.next_event())
+        let ev = timeout(wait_time, codex.next_event())
             .await
             .expect("timeout waiting for event")
             .expect("stream ended unexpectedly");
         if predicate(&ev.msg) {
+            // Sequential fixtures start new work after a normal completion.
+            // Wait for that event's finish owner, never an interrupted or unrelated turn.
+            if let EventMsg::TurnComplete(complete) = &ev.msg
+                && let Some(completion) =
+                    codex.pending_normal_turn_finish_completion(&complete.turn_id)
+            {
+                timeout(wait_time, completion)
+                    .await
+                    .expect("timeout waiting for the completed turn's finish owner");
+            }
             return ev.msg;
         }
     }
