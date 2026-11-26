@@ -2,10 +2,10 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "v8-poc",
-    crate_features = select({
-        "@llvm//constraints/windows/abi:msvc": [],
-        "//conditions:default": ["sandbox"],
-    }),
+    # The prebuilt V8 150.4.0 artifact reports sandbox enabled on MSVC too.
+    # Keep the Rust crate feature in sync with the *linked* V8 ABI on all OSes,
+    # rather than suppressing the Windows feature and hiding a runtime mismatch.
+    crate_features = ["sandbox"],
     crate_name = "codex_v8_poc",
     deps_extra = ["@crates//:v8"],
 )
