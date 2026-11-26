@@ -321,44 +321,25 @@ async fn reconcile_reopened_operations(
     }
 }
 
-/// Classify a missing destination receipt after an operation-owner error.
+/// Preserve uncertainty after an owner error and a missing receipt observation.
 ///
-/// Only deterministic failures proven to occur before the destination owner can
-/// commit are eligible for `NotApplied`. Storage unavailability, queue
-/// uncertainty, timer fencing and dispatch-unknown outcomes are deliberately
-/// quarantined: a missing read is not proof that a prior domain transaction did
-/// not commit, so reopening must reconcile the exact destination identity before
-/// any retry. This keeps an unknown external effect from becoming a retryable
-/// absence merely because the observer was unavailable.
+/// An error label is not an authenticated absence proof: even `AccessDenied`
+/// can arise while reading the task after its transaction has committed. The
+/// caller handles a present authoritative receipt before reaching this path.
+/// A missing receipt snapshot alone does not fence an outstanding effect, so
+/// no error here authorizes another dispatch.
+///
+/// `Quarantined` is an immutable terminal state in the current source store.
+/// Reopen reconciliation skips it, and a later destination receipt cannot
+/// replace it through this host. An authenticated quarantine-recovery path is
+/// still missing; this terminal marker is not proof that no effect committed.
 fn classify_destination_absence(error: &AutomationError) -> (ReconciliationOutcome, Digest32) {
-    match error {
-        // These are rejected while validating the operation/draft or checking
-        // the destination's owner contract, before a destination transaction
-        // can commit. They are the only absence outcomes safe to terminalize
-        // as NotApplied without a later owner lookup.
-        AutomationError::Invalid | AutomationError::AccessDenied => (
-            ReconciliationOutcome::NotApplied,
-            Digest32::of_bytes(NOT_APPLIED_DOMAIN),
-        ),
-        // A conflict/corruption may have been raised after a destination
-        // transaction committed (for example while reading its receipt), and
-        // all storage, fencing and dispatch errors can hide a committed effect.
-        // Keep every such case quarantined until the exact destination owner
-        // supplies a receipt or a proof of absence.
-        AutomationError::Conflict
-        | AutomationError::Corrupt
-        | AutomationError::TimerFenced
-        | AutomationError::Unavailable
-        | AutomationError::Dispatch
-        | AutomationError::DispatchUnknown => {
-            let mut bytes = UNKNOWN_EFFECT_DOMAIN.to_vec();
-            bytes.extend_from_slice(error.to_string().as_bytes());
-            (
-                ReconciliationOutcome::Quarantined,
-                Digest32::of_bytes(&bytes),
-            )
-        }
-    }
+    let mut bytes = UNKNOWN_EFFECT_DOMAIN.to_vec();
+    bytes.extend_from_slice(error.to_string().as_bytes());
+    (
+        ReconciliationOutcome::Quarantined,
+        Digest32::of_bytes(&bytes),
+    )
 }
 
 fn queue_digest(domain: &[u8], intent: &OperationIntentV1, fence: u64) -> Digest32 {
@@ -377,38 +358,8 @@ fn task_id_from_operation(
 }
 
 #[cfg(test)]
-mod classification_tests {
-    use super::classify_destination_absence;
-    use codex_hepta_automation::AutomationError;
-    use codex_hepta_operations::ReconciliationOutcome;
-
-    #[test]
-    fn only_proven_precontact_failures_are_not_applied() {
-        for error in [AutomationError::Invalid, AutomationError::AccessDenied] {
-            let (outcome, _) = classify_destination_absence(&error);
-            assert_eq!(outcome, ReconciliationOutcome::NotApplied);
-        }
-    }
-
-    #[test]
-    fn uncertain_owner_paths_are_quarantined_and_have_reason_bound_evidence() {
-        let errors = [
-            AutomationError::Conflict,
-            AutomationError::Corrupt,
-            AutomationError::TimerFenced,
-            AutomationError::Unavailable,
-            AutomationError::Dispatch,
-            AutomationError::DispatchUnknown,
-        ];
-        let mut digests = std::collections::BTreeSet::new();
-        for error in errors {
-            let (outcome, digest) = classify_destination_absence(&error);
-            assert_eq!(outcome, ReconciliationOutcome::Quarantined);
-            assert!(!digest.is_zero());
-            assert!(digests.insert(digest));
-        }
-    }
-}
+#[path = "operations_host_classification_tests.rs"]
+mod classification_tests;
 
 #[cfg(test)]
 #[path = "operations_host_tests.rs"]
