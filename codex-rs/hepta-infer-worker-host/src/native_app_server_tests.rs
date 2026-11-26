@@ -399,21 +399,46 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
 
 #[test]
 fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
+    let source = include_str!("native_app_server.rs")
+        .split_whitespace()
+        .collect::<String>();
     let durable_dispatch = source
         .find("control.dispatch_native_with_pre_effect_abort(")
         .expect("durable native dispatch");
     let revalidation = source
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
+    let authority_entry = source
+        .find("letentered_use=matchverified_use.enter(&authority_binding)")
+        .expect("final-use authority entry");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mutclient,entered_use,turn_params)")
+        .expect("authorized physical turn start");
+    let authorized_sender = r#"
+        async fn send_authorized_turn_start(
+            client: &mut RemoteAppServerClient,
+            _entered: EnteredUseToken,
+            params: TurnStartParams,
+        ) -> std::result::Result<TurnStartResponse, RemoteObservedTypedRequestError> {
+            client.request_typed_observed(ClientRequest::TurnStart {
+                request_id: RequestId::Integer(2),
+                params,
+            }).await
+        }
+    "#
+    .split_whitespace()
+    .collect::<String>();
+    assert!(
+        source.contains(&authorized_sender),
+        "the entered authority token must accompany the exact observed TurnStart request"
+    );
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
+    assert!(revalidation < authority_entry);
+    assert!(authority_entry < turn_start);
     assert!(durable_stop < turn_start);
 }
 

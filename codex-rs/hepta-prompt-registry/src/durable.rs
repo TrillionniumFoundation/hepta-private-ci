@@ -76,6 +76,12 @@ impl fmt::Debug for DurablePromptRegistry {
 }
 
 impl DurablePromptRegistry {
+    /// Opens the authoritative durable store using the current Unix backend.
+    ///
+    /// On non-Unix platforms, this returns
+    /// [`DurableRegistryError::UnsafeStateDirectory`] before creating or changing
+    /// the directory, lock, metadata, or payload files. This restriction belongs
+    /// to this durable adapter; the pure [`crate::PromptRegistry`] is separate.
     pub fn open_state_dir(
         directory: &Path,
         maximum_records: usize,
@@ -2811,3 +2817,7 @@ mod tests {
 #[cfg(all(test, unix))]
 #[path = "durable_payloads_tests.rs"]
 mod payload_tests;
+
+#[cfg(all(test, not(unix)))]
+#[path = "durable_non_unix_boundary_tests.rs"]
+mod non_unix_boundary_tests;

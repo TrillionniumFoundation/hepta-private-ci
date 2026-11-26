@@ -17,11 +17,13 @@ use super::TrustPolicy;
 use super::validate_ed25519_blob;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
+use crate::test_support::SigningMode;
 use crate::test_support::private_tempdir;
+use crate::test_support::unsigned_ssh_public_key;
 
 #[test]
 fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
-    let fixture = TrustFixture::new();
+    let fixture = TrustFixture::new_signed();
     let anchor = fixture.load_anchor();
     let statement = b"canonical operator acceptance statement";
 
@@ -121,21 +123,49 @@ struct TrustFixture {
 
 impl TrustFixture {
     fn new() -> Self {
+        Self::with_signing(SigningMode::Unsigned)
+    }
+
+    fn new_signed() -> Self {
+        Self::with_signing(SigningMode::OpenSsh)
+    }
+
+    fn with_signing(signing: SigningMode) -> Self {
         let temporary = private_tempdir("temporary trust directory");
         let root = temporary
             .path()
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
-            .args(["-q", "-t", "ed25519", "-N", "", "-f"])
-            .arg(&key)
-            .status()
-            .expect("start ssh-keygen");
-        assert!(generated.success(), "generate test-only Ed25519 key");
+        let (public, fingerprint) = match signing {
+            SigningMode::OpenSsh => {
+                let generated = Command::new("/usr/bin/ssh-keygen")
+                    .args(["-q", "-t", "ed25519", "-N", "", "-f"])
+                    .arg(&key)
+                    .status()
+                    .expect("start ssh-keygen");
+                assert!(generated.success(), "generate test-only Ed25519 key");
 
-        let public =
-            std::fs::read_to_string(key.with_extension("pub")).expect("read generated public key");
+                let public = std::fs::read_to_string(key.with_extension("pub"))
+                    .expect("read generated public key");
+                let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+                    .args(["-E", "sha256", "-lf"])
+                    .arg(key.with_extension("pub"))
+                    .output()
+                    .expect("fingerprint generated public key");
+                assert!(fingerprint_output.status.success());
+                let fingerprint_line = std::str::from_utf8(&fingerprint_output.stdout)
+                    .expect("UTF-8 fingerprint output");
+                let fingerprint = fingerprint_line
+                    .split_ascii_whitespace()
+                    .nth(1)
+                    .expect("OpenSSH fingerprint field")
+                    .to_string();
+
+                (public, fingerprint)
+            }
+            SigningMode::Unsigned => unsigned_ssh_public_key(),
+        };
         let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
         assert_eq!(fields.first().copied(), Some("ssh-ed25519"));
         let allowed_signers = root.join("allowed_signers");
@@ -143,20 +173,6 @@ impl TrustFixture {
             &allowed_signers,
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
-
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
-            .args(["-E", "sha256", "-lf"])
-            .arg(key.with_extension("pub"))
-            .output()
-            .expect("fingerprint generated public key");
-        assert!(fingerprint_output.status.success());
-        let fingerprint_line =
-            std::str::from_utf8(&fingerprint_output.stdout).expect("UTF-8 fingerprint output");
-        let fingerprint = fingerprint_line
-            .split_ascii_whitespace()
-            .nth(1)
-            .expect("OpenSSH fingerprint field")
-            .to_string();
 
         let policy_value = TrustPolicy {
             acceptance_store_root: root.to_string_lossy().into_owned(),
