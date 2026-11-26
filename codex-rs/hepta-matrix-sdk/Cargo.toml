@@ -8,6 +8,8 @@ publish = false
 [features]
 default = []
 qualification-failpoints = []
+synapse-sdk-qualification = []
+crypto-migration-qualification = []
 
 [lib]
 name = "codex_hepta_matrix_sdk"
@@ -29,7 +31,20 @@ tokio = { workspace = true, features = ["macros", "rt-multi-thread", "sync", "ti
 tokio-util = { workspace = true, features = ["rt"] }
 url = { workspace = true }
 
+[[test]]
+name = "synapse_sdk_upgrade"
+required-features = ["synapse-sdk-qualification"]
+
+[[test]]
+name = "crypto_store_upgrade"
+required-features = ["crypto-migration-qualification"]
+
 [dev-dependencies]
+blake3 = "=1.8.7"
+wiremock = { workspace = true }
+matrix-sdk-sqlite = { version = "=0.19.1", features = ["event-cache-store"] }
+rusqlite = { version = "0.40.2", default-features = false }
+matrix-sdk-crypto = { version = "=0.19.1", features = ["experimental-send-custom-to-device"] }
 pretty_assertions = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 tempfile = { workspace = true }

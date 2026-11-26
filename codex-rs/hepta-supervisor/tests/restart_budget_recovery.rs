@@ -18,6 +18,7 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::AdoptSpec;
 use codex_hepta_supervisor::Adoption;
+use codex_hepta_supervisor::AgentFault;
 use codex_hepta_supervisor::AgentRelease;
 use codex_hepta_supervisor::ManagedProcess;
 use codex_hepta_supervisor::ProcessDriver;
@@ -33,6 +34,7 @@ use codex_hepta_supervisor::SupervisorConfig;
 use codex_hepta_supervisor::SupervisorError;
 use codex_hepta_supervisor::SupervisorEventKind;
 use codex_hepta_supervisor::TickReport;
+use pretty_assertions::assert_eq;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
@@ -303,7 +305,15 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        supervisor.tick(now),
+        TickReport {
+            faults: vec![AgentFault {
+                agent_id: agent_id.clone(),
+                message: SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string(),
+            }],
+        }
+    );
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
     assert!(snapshot.events.iter().any(|event| matches!(
