@@ -1,0 +1,136 @@
+{
+  "observed": "2026-11-26T12:10:00Z window",
+  "candidate": "1d4eb60cfe2516d132c68d01bed083fcbdc39437",
+  "pr": 6799,
+  "draft": true,
+  "merged": false,
+  "first_page_only": {
+    "success": 51,
+    "failure": 19,
+    "skipped": 13,
+    "in_progress": 16,
+    "queued": 1
+  },
+  "jobs": [
+    {
+      "run": 45814937462,
+      "job": 139892104661,
+      "conclusion": "success",
+      "tests": 14,
+      "seconds": 16.176,
+      "artifact_count": 0
+    },
+    {
+      "run": 45814938692,
+      "job": 139892108664,
+      "conclusion": "failure",
+      "reason": "split source differs from its dedicated manifest",
+      "tests_executed": 0,
+      "artifact": {
+        "id": 15115791644,
+        "bytes": 1746,
+        "sha256": "efc2aa3678f339ccec3fa96318bf9615be3b1c050af3c62cd9a1df2d8022baed",
+        "downloaded": false
+      }
+    },
+    {
+      "run": 45814939361,
+      "job": 139892110453,
+      "conclusion": "failure",
+      "reason": "verify_sweep.py:19 source SHA assertion"
+    },
+    {
+      "run": 45814936230,
+      "job": 139892099299,
+      "conclusion": "failure",
+      "reason": "verify_retained.py:32 source SHA assertion"
+    },
+    {
+      "run": 45814940273,
+      "job": 139892113840,
+      "conclusion": "failure",
+      "reason": "precision policy README mismatch",
+      "normal_tests": 5,
+      "optimized_tests": 5
+    },
+    {
+      "run": 45814940003,
+      "job": 139892114098,
+      "conclusion": "failure",
+      "reason": "FP64 input conversion README mismatch"
+    },
+    {
+      "run": 45814934846,
+      "job": 139892095140,
+      "conclusion": "failure",
+      "reason": "independence review README mismatch"
+    },
+    {
+      "run": 45814935550,
+      "job": 139892097786,
+      "conclusion": "failure",
+      "reason": "corrected t0 readback provider README source size drift"
+    }
+  ],
+  "split": {
+    "manifest_blob": "6af14a5912634b3ce4ae2e32fb135609f0051a98",
+    "expected_entries": 33,
+    "exact_current_matches": 31,
+    "hash_method": "Independent JavaScript SHA256 on GitHub UTF-8 source content; known abc vector checked. Three batches covering all 33 manifest paths.",
+    "historical_base": "a12f564d5d15258f6ef5d64ceaa5966d2fd04f8f",
+    "mismatch": [
+      {
+        "path": "qualification/hcsn_joint_dde/model.py",
+        "current_sha256": "d7d6b2c6dd612ad3d412042dc4962d6b78adf18a6872c8c15e2a3b9a36b610fc",
+        "expected_sha256": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+        "old_blob": "5183735889cbd7ef436049e7bd69fa4b7d1b9002",
+        "current_blob": "6cd13303b218cb0351334c76da359e35098f6214",
+        "historical_bytes": 14672,
+        "change": "one LF",
+        "older_dense_expected_sha256": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+        "older_dense_source": "98335129e0ed61dcf07aef7ab59d8941f14643ab"
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/audit_graded.py",
+        "current_sha256": "ffe6e3ee2aadb346ff0d26696c8901be2b1971d307224441918d779c8236ffcf",
+        "expected_sha256": "634735fef3008ee5e6e6781d692b6a6f31b1c857f255671b1c46f450d778dfcd",
+        "old_blob": "28ab8b4dce5d045e730f8f1929cdac83e89f9951",
+        "current_blob": "2b2d863ef2807d6370ebed2c29e4d405556a3c39",
+        "historical_bytes": 14996,
+        "change": "current audit adds state_io.py to source listing; retain current version on integration, historical replay only"
+      }
+    ],
+    "replay_branch": "evidence/hcsn-split-exact-historical-source-20261126-1210",
+    "replay_commit": "c440d2baff9c2befaef3ea96148b77f2ae3582b6",
+    "compare": {
+      "ahead": 2,
+      "behind": 0,
+      "files": 2,
+      "additions": 1,
+      "deletions": 1
+    },
+    "changed_objects_exact_readback": true,
+    "manifest_unchanged": true,
+    "expected_source_coverage_after_exact_replacements": 33,
+    "native_four_controls_executed": false,
+    "adoption": "HOLD"
+  },
+  "precision": {
+    "manifest_and_parent_entries": 10,
+    "current_matches": 7,
+    "mismatch_all_one_missing_lf": true,
+    "existing_exact_candidate": "035cad4dcb61cdcd6b741228f69646c4f08ea4dc",
+    "prior_candidate_readback_three_exact": true,
+    "prior_blobs": [
+      "fdc639b486837cb06a9e40b442efe3c1c60e6617",
+      "64f8a83076286c2b19706c11c1a903471ee40096",
+      "29003253dd75c0352eb6a81b451c664f099d341f"
+    ],
+    "duplicate_patch": false
+  },
+  "execution_limit": "Mac, ai395 and main native process invocations returned internal errors before a verifiable job ID; no new native execution or independent numerical replay claimed.",
+  "global_status": "HOLD",
+  "merged_red_pr": false,
+  "changed_integrated_product": false,
+  "changed_frozen_manifest": false
+}
