@@ -97,7 +97,9 @@ COMPANION_DOCUMENT_ORIGINALS_INDEX = "qa/repository-consolidation/20261126/compa
 CONTEXT_DOCUMENT_ORIGINALS_INDEX = "qa/repository-consolidation/20261126/context-document-originals/raw-evidence-storage.json"
 ARCHIVED_PAIRED_OWNER_LOGS_INDEX = "qa/repository-consolidation/20261126/archived-paired-owner-logs/raw-evidence-storage.json"
 HCSN_SPLIT_REPLAY_INDEX = "qa/repository-consolidation/20261126/hcsn-split-replay/raw-evidence-storage.json"
+HCSN_NATIVE_READBACK_INDEX = "qa/repository-consolidation/20261126/hcsn-native-readback-storage.json"
 INDEX_SHA256 = {
+    HCSN_NATIVE_READBACK_INDEX: "ea18725861c54e448ae74aacce27aa8902065c38b8de0c09f90336149d600375",
     HCSN_SPLIT_REPLAY_INDEX: "f9be5d3969f4f798bc1b35e9366d1f522642f6cb6759538ffc8f44c41f52a90d",
     ARCHIVED_PAIRED_OWNER_LOGS_INDEX: "9618111bf18d8a228f8681a7ba59db9b308a08906572de6d75fa6565ed86eece",
     CONTEXT_DOCUMENT_ORIGINALS_INDEX: "7db67de4c3a3fe9c69b9cc7a9d30f7f4cbe79a6851bbabab2965d7a1246139d7",
