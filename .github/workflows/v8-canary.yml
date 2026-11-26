@@ -399,20 +399,30 @@ jobs:
           rustup toolchain install 1.91.0 --profile minimal --no-self-update
           rustup target add --toolchain 1.91.0 "${TARGET}"
 
-      - name: Write upstream submodule status
+      - name: Record upstream source-cache identity
         shell: bash
         working-directory: upstream-rusty-v8
-        run: git submodule status --recursive > git_submodule_status.txt
+        run: |
+          set -euo pipefail
+          : "${ImageOS:?runner image OS is required for cache compatibility}"
+          : "${ImageVersion:?runner image version is required for cache compatibility}"
+          git submodule status --recursive > git_submodule_status.txt
+          {
+            git rev-parse HEAD
+            rustc +1.91.0 -vV
+            printf 'ImageOS=%s\nImageVersion=%s\n' "${ImageOS}" "${ImageVersion}"
+          } > git_cache_identity.txt
 
       - name: Restore upstream source-build cache
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+        id: source_cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: |
             ${{ steps.setup_ci.outputs.cargo-target-dir }}/sccache
             ${{ steps.setup_ci.outputs.cargo-target-dir }}/${{ matrix.target }}/release/gn_out
-          key: rusty-v8-source-${{ matrix.target }}-${{ matrix.runner }}-sandbox-${{ hashFiles('upstream-rusty-v8/Cargo.lock', 'upstream-rusty-v8/build.rs', 'upstream-rusty-v8/git_submodule_status.txt') }}
+          key: rusty-v8-source-v2-${{ matrix.target }}-${{ matrix.runner }}-sandbox-${{ hashFiles('upstream-rusty-v8/Cargo.lock', 'upstream-rusty-v8/build.rs', 'upstream-rusty-v8/git_submodule_status.txt', 'upstream-rusty-v8/git_cache_identity.txt', '.github/workflows/v8-canary.yml', '.github/actions/setup-ci/action.yml') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            rusty-v8-source-${{ matrix.target }}-${{ matrix.runner }}-sandbox-
+            rusty-v8-source-v2-${{ matrix.target }}-${{ matrix.runner }}-sandbox-${{ hashFiles('upstream-rusty-v8/Cargo.lock', 'upstream-rusty-v8/build.rs', 'upstream-rusty-v8/git_submodule_status.txt', 'upstream-rusty-v8/git_cache_identity.txt', '.github/workflows/v8-canary.yml', '.github/actions/setup-ci/action.yml') }}-
 
       - name: Install and start sccache
         shell: pwsh
@@ -438,6 +448,9 @@ jobs:
         run: python3 tools/clang/scripts/update.py
 
       - name: Build upstream rusty_v8 sandbox release pair
+        id: source_build
+        # Keep the job's 30-minute cap; leave time to retain stopped build state.
+        timeout-minutes: 20
         env:
           SCCACHE_IDLE_TIMEOUT: 0
           TARGET: ${{ matrix.target }}
@@ -484,6 +497,36 @@ jobs:
         with:
           name: v8-canary-${{ needs.metadata.outputs.v8_version }}-ptrcomp-sandbox-${{ matrix.target }}
           path: dist/${{ matrix.target }}/*
+
+      - name: Check source-cache writers have stopped
+        id: source_cache_stopped
+        if: always() && !cancelled() && (steps.source_build.outcome == 'success' || steps.source_build.outcome == 'failure')
+        timeout-minutes: 1
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & sccache --stop-server
+          $stopStatus = $LASTEXITCODE
+          $writerNames = @('cargo', 'rustc', 'gn', 'ninja', 'clang', 'clang-cl', 'clang++', 'cl', 'lld', 'lld-link', 'link', 'sccache')
+          $processes = @(Get-Process -ErrorAction Stop)
+          $writers = @($processes | Where-Object { $writerNames -contains $_.ProcessName })
+          if ($stopStatus -ne 0 -or $writers.Count -ne 0) {
+            Write-Output '::warning::Source-cache writers are not confirmed stopped; no cache will be saved.'
+            Write-Output 'ready=false' >> $env:GITHUB_OUTPUT
+          } else {
+            Write-Output 'ready=true' >> $env:GITHUB_OUTPUT
+          }
+          exit 0
+
+      - name: Save stopped upstream source-build cache
+        if: always() && !cancelled() && steps.source_cache_stopped.outputs.ready == 'true'
+        timeout-minutes: 3
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+        with:
+          path: |
+            ${{ steps.setup_ci.outputs.cargo-target-dir }}/sccache
+            ${{ steps.setup_ci.outputs.cargo-target-dir }}/${{ matrix.target }}/release/gn_out
+          key: ${{ steps.source_cache.outputs.cache-primary-key }}
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
