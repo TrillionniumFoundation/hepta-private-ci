@@ -1,0 +1,291 @@
+//! Exact-pair integration through the actual sealed PoN adapter and native Chain.
+//! The explicit CI invocation supplies a source-pinned release binary. No fixture
+//! binary, missing-environment skip, model-install authority or network claim.
+use super::super::AgentdProviderEffectAdapter;
+use super::super::PonLocalProviderEffectAdapter;
+use super::super::pon_executable::PinnedExecutable;
+use super::Outcome;
+use super::run;
+use codex_hepta_contracts::ProviderEffectDispatch;
+use codex_hepta_contracts::ProviderEffectIntent;
+use codex_hepta_contracts::ProviderEffectKey;
+use codex_hepta_contracts::ProviderEffectLookup;
+use codex_hepta_contracts::Sha256Digest;
+use serde_json::Value;
+use std::fs;
+use std::io;
+use std::path::Path;
+use std::path::PathBuf;
+use std::process::Command;
+use std::time::Duration;
+use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+type TestResult = Result<(), Box<dyn std::error::Error>>;
+
+struct Chain {
+    binary: PathBuf,
+    digest: Sha256Digest,
+    genesis_time: u64,
+    backend: &'static str,
+}
+impl Chain {
+    fn command(&self, operation: &str, store: &Path, executable: &Path) -> Command {
+        let mut command = Command::new(executable);
+        command
+            .arg(operation)
+            .arg("--development")
+            .arg("--store")
+            .arg(store)
+            .arg("--state-backend")
+            .arg(self.backend)
+            .arg("--genesis-time")
+            .arg(self.genesis_time.to_string())
+            .arg("--evaluation-policy")
+            .arg("legacy-first-two-v3")
+            .arg("--task-profile")
+            .arg("legacy-task-v1")
+            .arg("--model-profile")
+            .arg("linear-expert-dev-v1")
+            .arg("--workers")
+            .arg("1");
+        command
+    }
+    async fn call(
+        &self,
+        operation: &str,
+        store: &Path,
+        args: &[String],
+    ) -> Result<Value, io::Error> {
+        let deadline = Instant::now() + Duration::from_secs(30);
+        let executable = PinnedExecutable::prepare(&self.binary, self.digest.as_str(), deadline)?;
+        let mut command = self.command(operation, store, executable.path());
+        command.args(args);
+        let Outcome::Complete(bytes) = run(command, b"", deadline, 64 * 1024).await else {
+            return Err(io::Error::other(format!(
+                "native Chain {operation} did not complete"
+            )));
+        };
+        serde_json::from_slice(&bytes).map_err(io::Error::other)
+    }
+    fn adapter(&self, store: PathBuf) -> PonLocalProviderEffectAdapter {
+        PonLocalProviderEffectAdapter {
+            binary: self.binary.clone(),
+            binary_sha256: self.digest.clone(),
+            store,
+            state_backend: self.backend.to_owned(),
+            genesis_time: self.genesis_time,
+            evaluation_policy: "legacy-first-two-v3".into(),
+            task_profile: "legacy-task-v1".into(),
+            model_profile: "linear-expert-dev-v1".into(),
+            workers: 1,
+            min_confirmation_depth: 1,
+            min_confirmation_work_depth_hex: format!("{}02", "00".repeat(63)),
+            timeout: Duration::from_secs(30),
+        }
+    }
+    async fn packet(
+        &self,
+        operation: &str,
+        store: &Path,
+        output: &Path,
+        timestamp: u64,
+    ) -> Result<Vec<u8>, io::Error> {
+        self.call(
+            operation,
+            store,
+            &[
+                "--timestamp".into(),
+                timestamp.to_string(),
+                "--output".into(),
+                output
+                    .to_str()
+                    .ok_or_else(|| io::Error::other("non-UTF8 fixture path"))?
+                    .into(),
+            ],
+        )
+        .await?;
+        let bytes = fs::read(output)?;
+        if bytes.is_empty() || bytes.len() > 1024 * 1024 {
+            return Err(io::Error::other("native Chain packet dimensions"));
+        }
+        Ok(bytes)
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires the exact Chain release binary; mandatory in the paired native CI lane"]
+async fn real_chain_sealed_submit_reconcile_confirm_reorg() -> TestResult {
+    let source = std::env::var("HEPTA_PON_CHAIN_SOURCE")?;
+    if source.len() != 40
+        || !source
+            .bytes()
+            .all(|v| v.is_ascii_digit() || (b'a'..=b'f').contains(&v))
+    {
+        return Err(io::Error::other("missing exact Chain source identity").into());
+    }
+    let binary = PathBuf::from(std::env::var("HEPTA_PON_CHAIN_BINARY")?).canonicalize()?;
+    let digest =
+        Sha256Digest::parse(std::env::var("HEPTA_PON_CHAIN_SHA256")?).map_err(io::Error::other)?;
+    if Sha256Digest::for_bytes(&fs::read(&binary)?) != digest {
+        return Err(io::Error::other("exact Chain binary hash mismatch").into());
+    }
+    let genesis_time = SystemTime::now()
+        .duration_since(UNIX_EPOCH)?
+        .as_secs()
+        .checked_sub(3600)
+        .ok_or_else(|| io::Error::other("fixture clock"))?;
+    for backend in ["legacy-v2", "authenticated-v1"] {
+        let temp = tempfile::tempdir()?;
+        let root = temp.path().canonicalize()?;
+        let store = root.join("receiver");
+        let alternate = root.join("alternate");
+        let chain = Chain {
+            binary: binary.clone(),
+            digest: digest.clone(),
+            genesis_time,
+            backend,
+        };
+        chain.call("status", &store, &[]).await?;
+        chain.call("status", &alternate, &[]).await?;
+        let wire = chain
+            .packet(
+                "make",
+                &store,
+                &root.join("first.packet"),
+                genesis_time + 10,
+            )
+            .await?;
+        let key =
+            ProviderEffectKey::for_operation("pon-exact-pair", backend, "contribution-submit")
+                .map_err(|error| io::Error::other(format!("{error:?}")))?;
+        let intent = ProviderEffectIntent::new(key, Sha256Digest::for_bytes(&wire));
+        let adapter = chain.adapter(store.clone());
+        let before = {
+            let adapter = adapter.clone();
+            let intent = intent.clone();
+            let wire = wire.clone();
+            tokio::task::spawn_blocking(move || adapter.lookup_blocking(intent, wire)).await?
+        };
+        assert_eq!(before, ProviderEffectLookup::Unknown);
+        let dispatched = {
+            let adapter = adapter.clone();
+            let intent = intent.clone();
+            let wire = wire.clone();
+            tokio::task::spawn_blocking(move || adapter.dispatch_blocking(intent, wire)).await?
+        };
+        let ProviderEffectDispatch::Ack(ack) = dispatched else {
+            return Err(io::Error::other("native submit was not acknowledged").into());
+        };
+        ack.validate_for(&intent)
+            .map_err(|error| io::Error::other(format!("{error:?}")))?;
+        // Throw away the dispatch observation at the consumer, reopen the adapter,
+        // and recover from the already durable exact packet. No second submit.
+        let reopened = chain.adapter(store.clone());
+        let recovered = {
+            let adapter = reopened.clone();
+            let intent = intent.clone();
+            let wire = wire.clone();
+            tokio::task::spawn_blocking(move || adapter.lookup_blocking(intent, wire)).await?
+        };
+        assert_eq!(recovered, ProviderEffectLookup::Ack(ack.clone()));
+        let host = AgentdProviderEffectAdapter::Pon(reopened.clone());
+        let included = host
+            .current_chain_observation(&intent, Some(&wire))
+            .await
+            .ok_or_else(|| io::Error::other("missing exact-packet observation"))?;
+        assert!(included.stored_exact && included.active_chain_member);
+        assert_eq!(included.active_depth, Some(0));
+        assert!(!included.confirmation_policy_satisfied);
+        assert_eq!(
+            included.provider_effect_key.as_deref(),
+            Some(intent.key.as_str())
+        );
+        assert_eq!(
+            included.payload_sha256.as_deref(),
+            Some(intent.payload_sha256.as_str())
+        );
+        chain
+            .packet(
+                "mine",
+                &store,
+                &root.join("second.packet"),
+                genesis_time + 20,
+            )
+            .await?;
+        let confirmed = host
+            .current_chain_observation(&intent, Some(&wire))
+            .await
+            .ok_or_else(|| io::Error::other("missing confirmed observation"))?;
+        assert_eq!(confirmed.active_depth, Some(1));
+        assert!(confirmed.confirmation_policy_satisfied);
+        assert!(!confirmed.finality_authority && !confirmed.execution_authority);
+        assert!(confirmed.owner_generation > included.owner_generation);
+        // A distinct three-block branch is heavier than the receiver's two.
+        // Use native packets and ordinary submit for every branch block.
+        for height in 1..=3u64 {
+            let alternative = chain
+                .packet(
+                    "mine",
+                    &alternate,
+                    &root.join(format!("alternate-{height}.packet")),
+                    genesis_time + height * 10 + 1,
+                )
+                .await?;
+            let fork_key = ProviderEffectKey::for_operation(
+                "pon-exact-pair",
+                backend,
+                &format!("fork-{height}"),
+            )
+            .map_err(|error| io::Error::other(format!("{error:?}")))?;
+            let fork_intent =
+                ProviderEffectIntent::new(fork_key, Sha256Digest::for_bytes(&alternative));
+            let adapter = reopened.clone();
+            let result = tokio::task::spawn_blocking(move || {
+                adapter.dispatch_blocking(fork_intent, alternative)
+            })
+            .await?;
+            assert!(matches!(result, ProviderEffectDispatch::Ack(_)));
+        }
+        let orphaned = host
+            .current_chain_observation(&intent, Some(&wire))
+            .await
+            .ok_or_else(|| io::Error::other("missing orphaned observation"))?;
+        assert!(orphaned.stored_exact && !orphaned.active_chain_member);
+        assert_eq!(orphaned.active_depth, None);
+        assert_eq!(orphaned.active_work_depth_hex, None);
+        assert!(!orphaned.confirmation_policy_satisfied);
+        assert!(orphaned.owner_generation > confirmed.owner_generation);
+        let terminal = {
+            let adapter = reopened.clone();
+            let intent = intent.clone();
+            let wire = wire.clone();
+            tokio::task::spawn_blocking(move || adapter.lookup_blocking(intent, wire)).await?
+        };
+        assert_eq!(terminal, ProviderEffectLookup::Ack(ack));
+        let wrong =
+            ProviderEffectIntent::new(intent.key.clone(), Sha256Digest::for_bytes(b"other-packet"));
+        assert!(
+            host.current_chain_observation(&wrong, Some(&wire))
+                .await
+                .is_none()
+        );
+        assert!(
+            host.current_chain_observation(&intent, None)
+                .await
+                .is_none()
+        );
+        println!(
+            "PON_EXACT_PAIR {}",
+            serde_json::json!({
+                "chain_source":source,"binary_sha256":digest.as_str(),"backend":backend,
+                "included":included,"confirmed":confirmed,"orphaned":orphaned,
+                "lost_ack_reconciled":true,"terminal_ack_preserved_after_reorg":true,
+                "actual_model_installation_verified":false,"independent_operators":false,
+                "production_activation":false
+            })
+        );
+    }
+    Ok(())
+}
