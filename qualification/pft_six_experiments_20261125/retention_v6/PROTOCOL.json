@@ -1,0 +1,119 @@
+{
+  "automatic_retries": 0,
+  "budget": {
+    "candidate_exports": 0,
+    "cpu_seconds": 20,
+    "examples": 256,
+    "model_loads": 1,
+    "parent_forward_calls": 0,
+    "physical_forward_calls": 16,
+    "quadratic_solves": 0,
+    "retries": 0,
+    "training_updates": 0,
+    "vjp_calls": 0,
+    "wall_seconds": 55
+  },
+  "candidate_sha256": "981304e53920d71cf95672df6317a4f81b0aff4f7b380f6d3bdd8b3e4033ee1c",
+  "chunk_size": 16,
+  "count_per_population": 128,
+  "evaluator_sha256": "e29d1fea430b69897fb04ca87f8022ded656e01af3686090da61eda7af30d78a",
+  "first_candidate_outputs_on_this_panel_observed": false,
+  "gate": {
+    "accuracy_drop_max": 0,
+    "classification_rule": "margin > 0",
+    "floating_tolerance": 0.0,
+    "lost_parent_correct_max": 0,
+    "mse_increase_max": 0.001,
+    "per_population": true
+  },
+  "historical_parent_summary_already_observed": true,
+  "input_files": {
+    "archive_manifest": {
+      "bytes": 12717,
+      "path": "pft-hcsn-p2p-v2-20261125-root/evaluation_archives_v1/MANIFEST.json",
+      "sha256": "1ebebacf2b2673063ac378876f07e5887cf15e4fb139b368f56854fa6f98e4fd"
+    },
+    "candidate": {
+      "bytes": 9855,
+      "path": "pft-continuation-20261126-8a32/v5/aggregate_trial_execution_01/aggregate_candidate.pt",
+      "sha256": "981304e53920d71cf95672df6317a4f81b0aff4f7b380f6d3bdd8b3e4033ee1c"
+    },
+    "candidate_profile": {
+      "bytes": 1196,
+      "path": "pft-continuation-20261126-8a32/v5/aggregate_cold_execution_01/CANDIDATE_PROFILE.json",
+      "sha256": "3c628f2e9eac40fa51e0087a7bd9ab86fb9bc8a37c8120cd50641aa7f1ca904f"
+    },
+    "evaluation": {
+      "bytes": 16146,
+      "path": "pft-hcsn-p2p-v2-20261125-root/evaluation_v1/RESULT.json",
+      "sha256": "7d2cea214251752b133f3d3b4fe3e6c593a4605be6f9b65afd417676b6b3f89c"
+    },
+    "features": {
+      "bytes": 5339,
+      "path": "pft-hcsn-p2p-v2-20261125-root/code_v1/features.py",
+      "sha256": "0eacf1123cdd99f2036911ce7b2066b665c28b6dcefc1b97d71216bf8c71fc47"
+    },
+    "original_evaluator": {
+      "bytes": 9676,
+      "path": "pft-hcsn-p2p-v2-20261125-root/code_v1/evaluate.py",
+      "sha256": "c17e6b9c0002e6cacec32288cab589cb6ede20a5a19c9d07d0986b3ca2cf4416"
+    },
+    "original_protocol": {
+      "bytes": 3300,
+      "path": "pft-hcsn-p2p-v2-20261125-root/code_v1/PROTOCOL.json",
+      "sha256": "5d5e6193ff962ded6e912238f0f87ea969d362bbd7345cf0885f9625c81c89c1"
+    },
+    "parent": {
+      "bytes": 9605,
+      "path": "pft-hcsn-p2p-v2-20261125-root/evaluation_v1/adopted_n8_s271901.pt",
+      "sha256": "0127a056c779930fc5ab27558e84aecbd242caa64951f21e47d7885465f0b86f"
+    },
+    "parent_profile": {
+      "bytes": 1235,
+      "path": "pft-continuation-20261126-8a32/v4/PROFILE.json",
+      "sha256": "4a8feafa490224f0ad14d318835f51d1147b8b6b93c7a56e9f9eb3ddc3d43d77"
+    },
+    "prediction_ai395": {
+      "bytes": 2654,
+      "path": "pft-hcsn-p2p-v2-20261125-root/evaluation_v1/predictions_n8_s271901_ai395.npz",
+      "sha256": "cc77e3cbd7126d637cdf3b1d90f95b584718d6f6d220e08c5b0211a75f50685c"
+    },
+    "prediction_pocket4": {
+      "bytes": 2646,
+      "path": "pft-hcsn-p2p-v2-20261125-root/evaluation_v1/predictions_n8_s271901_pocket4.npz",
+      "sha256": "ea2d21a2c30f7041717112698e42c1ebe09ad70fe1d88e891d76f7feb6e5f149"
+    }
+  },
+  "old_E1_E6_budget": "16/16 exhausted and unchanged",
+  "parameter_or_threshold_search": false,
+  "parent_sha256": "0127a056c779930fc5ab27558e84aecbd242caa64951f21e47d7885465f0b86f",
+  "population_noninferiority_claim": false,
+  "populations": [
+    {
+      "data_sha256": "df1eb46f5e7ae172e8dca916b5fb2f0d64dd5de67f17f4e46130ede498e2d368",
+      "node": "pocket4",
+      "prediction_bytes": 2646,
+      "prediction_sha256": "ea2d21a2c30f7041717112698e42c1ebe09ad70fe1d88e891d76f7feb6e5f149",
+      "source": 730000
+    },
+    {
+      "data_sha256": "17ea301e49851990eb151a647bc31ce0dfb182e378d8fe672dcf588ac82fe7c4",
+      "node": "ai395",
+      "prediction_bytes": 2654,
+      "prediction_sha256": "cc77e3cbd7126d637cdf3b1d90f95b584718d6f6d220e08c5b0211a75f50685c",
+      "source": 730100
+    }
+  ],
+  "profile_module_dir": "pft-continuation-20261126-8a32/v4/native_profile_v4",
+  "profile_sources": {
+    "profile_io.py": "3c6d4d0d6ad478460e3b422bfb22220406080c48a5ef1d33e2cb3479e43e738f",
+    "small_hcsn_profile.py": "a1c28b0a8a05d52d6394dde21381fb791bdcff8f10909947f50afc84d13cfd5a",
+    "source_binding.py": "72f29914e87a5c35d1e33c41267da7057a739a077047513b11d8dcf48c2a42a3"
+  },
+  "ready_for_execution": true,
+  "real_independent_users_claim": false,
+  "schema": "hepta.smallhcsn.candidate-retention.v1",
+  "scope": "New immutable V5 peer candidate on two historical synthetic held-out populations; only candidate forward calls; no parent replay.",
+  "seed": 271901,
+  "steps": 12
+}
