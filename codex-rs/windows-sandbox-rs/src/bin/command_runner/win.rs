@@ -9,6 +9,7 @@
 
 #![allow(unsafe_op_in_unsafe_fn)]
 
+mod child_exit;
 mod cwd_junction;
 
 use anyhow::Context;
@@ -25,7 +26,6 @@ use codex_windows_sandbox::Message;
 use codex_windows_sandbox::OutputPayload;
 use codex_windows_sandbox::OutputStream;
 use codex_windows_sandbox::PipeSpawnHandles;
-use codex_windows_sandbox::RUNNER_TERMINATION_WAIT_MS;
 use codex_windows_sandbox::ResizePayload;
 use codex_windows_sandbox::SpawnReady;
 use codex_windows_sandbox::SpawnRequest;
@@ -65,20 +65,17 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::OPEN_EXISTING;
 use windows_sys::Win32::System::Console::COORD;
 use windows_sys::Win32::System::Console::ResizePseudoConsole;
-use windows_sys::Win32::System::Threading::GetExitCodeProcess;
 use windows_sys::Win32::System::Threading::GetProcessId;
 use windows_sys::Win32::System::Threading::INFINITE;
 use windows_sys::Win32::System::Threading::MUTEX_ALL_ACCESS;
 use windows_sys::Win32::System::Threading::OpenMutexW;
 use windows_sys::Win32::System::Threading::PROCESS_INFORMATION;
 use windows_sys::Win32::System::Threading::TerminateProcess;
-use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
 // Kept in sync with codex_exec_server::CODEX_FS_HELPER_ARG1 without introducing
 // a dependency cycle.
 const FS_HELPER_ARG: &str = "--codex-run-as-fs-helper";
 const READ_ACL_MUTEX_NAME: &str = "Local\\CodexSandboxReadAcl";
-const WAIT_TIMEOUT: u32 = 0x0000_0102;
 
 struct IpcSpawnedProcess {
     log_dir: PathBuf,
@@ -656,40 +653,25 @@ pub fn main() -> Result<()> {
     );
 
     let timeout = req.timeout_ms.map(|ms| ms as u32).unwrap_or(INFINITE);
-    let wait_res = unsafe { WaitForSingleObject(pi.hProcess, timeout) };
-    let timed_out = wait_res == WAIT_TIMEOUT;
-    let child_stopped = if timed_out {
-        terminate_job_or_process(&job, pi.hProcess, log_dir);
-        let termination_wait =
-            unsafe { WaitForSingleObject(pi.hProcess, RUNNER_TERMINATION_WAIT_MS) };
-        if termination_wait == WAIT_TIMEOUT {
-            log_note(
-                "runner root process did not exit after termination",
-                log_dir,
-            );
-            false
-        } else {
-            true
+    let observed_exit = child_exit::observe_command_exit(
+        timeout,
+        |wait_ms| child_exit::wait_for_native_child(pi.hProcess, wait_ms),
+        || terminate_job_or_process(&job, pi.hProcess, log_dir),
+    )?;
+    let (exit_code, timed_out) = match observed_exit {
+        child_exit::CommandExit::Normal(exit_code) => {
+            if let Err(err) = job.preserve_descendants() {
+                log_note(
+                    &format!("runner failed to preserve descendants after root exit: {err}"),
+                    log_dir,
+                );
+            }
+            (exit_code, false)
         }
-    } else {
-        if let Err(err) = job.preserve_descendants() {
-            log_note(
-                &format!("runner failed to preserve descendants after root exit: {err}"),
-                log_dir,
-            );
-        }
-        true
+        child_exit::CommandExit::TimedOut => (128 + 64, true),
     };
 
-    let exit_code: i32;
     unsafe {
-        if timed_out {
-            exit_code = 128 + 64;
-        } else {
-            let mut raw_exit: u32 = 1;
-            GetExitCodeProcess(pi.hProcess, &mut raw_exit);
-            exit_code = raw_exit as i32;
-        }
         if pi.hThread != 0 {
             CloseHandle(pi.hThread);
         }
@@ -703,15 +685,13 @@ pub fn main() -> Result<()> {
     }
     drop(conpty_owner.take());
 
-    if child_stopped {
-        if out_thread.join().is_err() {
-            log_note("runner stdout reader thread panicked", log_dir);
-        }
-        if let Some(thread) = err_thread
-            && thread.join().is_err()
-        {
-            log_note("runner stderr reader thread panicked", log_dir);
-        }
+    if out_thread.join().is_err() {
+        log_note("runner stdout reader thread panicked", log_dir);
+    }
+    if let Some(thread) = err_thread
+        && thread.join().is_err()
+    {
+        log_note("runner stderr reader thread panicked", log_dir);
     }
 
     let exit_msg = FramedMessage {
