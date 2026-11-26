@@ -6,6 +6,14 @@
 
 #![forbid(unsafe_code)]
 
+// Preserve the compile-time SQLite WAL-reset corruption protection formerly
+// inherited through codex-state. This applies even when the Matrix durable
+// store is compiled without any Codex application/state-runtime components.
+const _: () = assert!(
+    libsqlite3_sys::SQLITE_VERSION_NUMBER >= 3_051_003,
+    "bundled SQLite must include the WAL-reset corruption fix",
+);
+
 mod model;
 mod store;
 
