@@ -793,6 +793,10 @@ impl Session {
     /// a replacement may be admitted as soon as the old slot CAS succeeds,
     /// while shutdown still has to wait for the old owner's post-CAS recovery
     /// and lifecycle side effects.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the registry binds the owner, completion, handoff witnesses and target turn"
+    )]
     fn register_task_terminalization(
         &self,
         identity: Arc<()>,
@@ -801,6 +805,7 @@ impl Session {
         suspension_handoff: Option<SuspensionHandoffSlot>,
         abort_handoff: Option<TaskAbortHandoffSlot>,
         finish_handoff: Option<TaskFinishHandoffSlot>,
+        turn_id: String,
     ) {
         self.pending_task_terminalization_completions
             .lock()
@@ -814,6 +819,7 @@ impl Session {
                 suspension_handoff,
                 abort_handoff,
                 finish_handoff,
+                turn_id,
             ));
     }
 
@@ -832,7 +838,7 @@ impl Session {
             })
             .iter()
             .filter_map(
-                |(identity, _, kind, handoff, _abort_handoff, _finish_handoff)| {
+                |(identity, _, kind, handoff, _abort_handoff, _finish_handoff, _turn_id)| {
                     if *kind != TaskTerminalizationKind::Suspend
                         || excluded_identity.is_some_and(|excluded| Arc::ptr_eq(identity, excluded))
                     {
@@ -872,6 +878,7 @@ impl Session {
                     _suspension_handoff,
                     abort_handoff,
                     _finish_handoff,
+                    _turn_id,
                 )| {
                     if *kind != TaskTerminalizationKind::Abort
                         || excluded_identity.is_some_and(|excluded| Arc::ptr_eq(identity, excluded))
@@ -917,6 +924,7 @@ impl Session {
                     _suspension_handoff,
                     _abort_handoff,
                     finish_handoff,
+                    _turn_id,
                 )| {
                     if *kind != TaskTerminalizationKind::Finish
                         || excluded_identity.is_some_and(|excluded| Arc::ptr_eq(identity, excluded))
@@ -957,6 +965,7 @@ impl Session {
                 _handoff,
                 _abort_handoff,
                 _finish_handoff,
+                _turn_id,
             )| {
                 !(Arc::ptr_eq(current_identity, identity)
                     && Arc::ptr_eq(current_completion, completion))
@@ -976,10 +985,10 @@ impl Session {
                 panic!("task terminalization completion registry mutex poisoned: {error:?}")
             })
             .iter()
-            .filter(|(identity, _, _, _, _, _)| {
+            .filter(|(identity, _, _, _, _, _, _)| {
                 excluded_identity.is_none_or(|excluded| !Arc::ptr_eq(identity, excluded))
             })
-            .map(|(_, completion, _, _, _, _)| Arc::clone(completion))
+            .map(|(_, completion, _, _, _, _, _)| Arc::clone(completion))
             .collect()
     }
 
@@ -1071,6 +1080,36 @@ impl Session {
         }))
     }
 
+    /// Observes only a normal completion's matching finish owner. The caller
+    /// must have received TurnComplete, never TurnAborted: recovery can reuse
+    /// an interrupted turn ID, whereas normal completion retires that lineage.
+    /// A delayed event must not wait for another turn's start or terminalizer.
+    pub(crate) fn pending_normal_turn_finish_completion(
+        &self,
+        turn_id: &str,
+    ) -> Option<BoxFuture<'static, ()>> {
+        let completions: Vec<_> = self
+            .pending_task_terminalization_completions
+            .lock()
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            })
+            .iter()
+            .filter(|(_, _, kind, _, _, _, owner_turn_id)| {
+                *kind == TaskTerminalizationKind::Finish && owner_turn_id == turn_id
+            })
+            .map(|(_, completion, _, _, _, _, _)| Arc::clone(completion))
+            .collect();
+        if completions.is_empty() {
+            return None;
+        }
+        Some(Box::pin(async move {
+            for completion in completions {
+                completion.wait().await;
+            }
+        }))
+    }
+
     pub(crate) fn has_pending_start_transition(&self) -> bool {
         self.has_pending_start_transition_except(/*ignored_identity*/ None)
     }
@@ -1109,7 +1148,7 @@ impl Session {
                 panic!("task terminalization completion registry mutex poisoned: {error:?}")
             })
             .iter()
-            .any(|(identity, _, _, _, _, _)| {
+            .any(|(identity, _, _, _, _, _, _)| {
                 ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
             })
     }
@@ -1487,6 +1526,7 @@ impl Session {
             suspension_handoff,
             abort_handoff,
             finish_handoff,
+            turn_context.sub_id.clone(),
         );
         Some((identity, completion))
     }

@@ -27,7 +27,7 @@ impl Session {
                     panic!("task terminalization registry mutex poisoned: {error:?}")
                 })
                 .iter()
-                .map(|(_, completion, _, _, _, _)| Arc::clone(completion)),
+                .map(|(_, completion, _, _, _, _, _)| Arc::clone(completion)),
         );
         completions.retain(|completion| !completion.is_complete());
         completions
