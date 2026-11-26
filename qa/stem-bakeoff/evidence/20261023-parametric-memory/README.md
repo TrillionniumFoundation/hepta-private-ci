@@ -231,9 +231,10 @@ At **2026-10-23 07:11:35 UTC**, the exact-source full-confirmation
 [push run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39912356783)
 and the new
 [catalog run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39916012060)
-were queued. The [latest status snapshot](remote-ci/status-071135Z.json) explicitly
+were queued. The [latest status snapshot](remote-ci/status-071135Z.json.evidence.gz) explicitly
 distinguishes current run observations from older job metadata. The earlier
-[runner snapshot](remote-ci/snapshot-064709Z.json) records the wider queue context.
+[runner snapshot](remote-ci/snapshot-064709Z.json.evidence.gz) records the wider queue context.
+The linked gzip files retain the original JSON bytes and can be decompressed directly.
 Observed lack of assigned runners is consistent with shared backlog; no exact
 quota or root cause has been established. Local success is not remote CI success.
 The PRs remain drafts. No production gate was relaxed, status fabricated, or other
