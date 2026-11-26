@@ -1,0 +1,39 @@
+{
+  "classical_differentiability_proved": false,
+  "counts": {
+    "candidate_exports": 0,
+    "candidate_loads": 1,
+    "completed_physical_forwards": 26,
+    "physical_forward_calls": 26,
+    "quadratic_solves": 0,
+    "retries": 0,
+    "scalar_output_vjp_calls": 2,
+    "scalar_output_vjp_upper_bound": 2,
+    "training_matrix_runs": 0,
+    "training_updates": 0
+  },
+  "global_smoothness_claim": false,
+  "identifiability": "two scalar outputs for six coordinates; data rank at most two, nullity at least four",
+  "job": "pocket4/1a216919c41-ffbe-4454",
+  "job_succeeded_exit_zero_complete_durable_terminal_confirmed_both_eof": true,
+  "original_failed_result_sha256": "15fbd987921708767c8143185c0a98a5caeb50e9984b4a88bc629fbf81af4105",
+  "original_failure_modified": false,
+  "original_smooth_status": "FAILED",
+  "restoration": {
+    "config_unchanged_before_cleanup": true,
+    "diagnostics_restored": true,
+    "gradients_restored": true,
+    "gradients_unchanged_before_cleanup": true,
+    "modes_unchanged_before_cleanup": true,
+    "state_restored": true,
+    "state_unchanged_before_cleanup": true,
+    "trainability_restored": true,
+    "trainability_unchanged_before_cleanup": true
+  },
+  "result_sha256": "c793e48fa356920d051970fe63cb261b7ae1637f30283667ec046982b0edac30",
+  "schema": "hepta.v5.accepted-point-acceptance.v1",
+  "scope": "One fixed stencil at already accepted complete candidate; no parent search, tuning, solve, training matrix, or adoption.",
+  "source_formatted_before_first_execution": true,
+  "source_gate_job": "main/1a2168f751c-ffbe-444a",
+  "status": "PASSED_FIXED_NEW_POINT_STENCIL"
+}
