@@ -1,0 +1,294 @@
+{
+  "schema": "hcsn-common-source-census-readback-v1",
+  "observed_after_utc": "2026-11-26T20:42:00Z",
+  "head": "923c7b1815c4798ee9d42328b8b67fb742655fcf",
+  "common": {
+    "run": 45892015129,
+    "job": 140156719788,
+    "conclusion": "failure",
+    "artifact": 15152187214,
+    "artifact_bytes": 2336,
+    "artifact_sha256": "fd4b2c327d802159561cdabd309613542d744eb6f86941c9a21f04d913af853f",
+    "artifact_crc_pass": true,
+    "artifact_members": [
+      {
+        "path": "SOURCE_BEFORE.json",
+        "bytes": 5620,
+        "sha256": "360a769fcb69e9a57c07f368b6de717d648ee6f3a53fdcc866ad9290ec898f82"
+      }
+    ],
+    "manifest_blob": "864f0d4438e0fabd476dab7424d47595dc79e017",
+    "declared_sources": {
+      "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+      "qualification/hcsn_boundary_audit/spatial_generator.py": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+      "qualification/hcsn_joint_dde/audit_graded.py": "634735fef3008ee5e6e6781d692b6a6f31b1c857f255671b1c46f450d778dfcd",
+      "qualification/hcsn_joint_dde/basis.py": "514df92e13970f2839e9bea6d03e24b4cf52fde57915425e4684fe6de866e13d",
+      "qualification/hcsn_joint_dde/graded.py": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da",
+      "qualification/hcsn_joint_dde/graded_migration.py": "ac2fc4ed94d87f20dbd6cb6ee2ba8d91342538cbef70426c4bad26a126d8a1a4",
+      "qualification/hcsn_joint_dde/model.py": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+      "qualification/hcsn_joint_dde/qualify_state.py": "339db2c38b1950ea814e83ddba94c0f7de27384869062d162825f3932d9b1a06",
+      "qualification/hcsn_joint_dde/reference.py": "9e8ea431118229c8eb1bec0fe809faffc158b3decd2157a52331551d675d18de",
+      "qualification/hcsn_joint_dde/short_gap_reference.py": "426b1b47732f7044d14b610abc9d7ab3f67a34173caec8d9f43297b38c47812c",
+      "qualification/hcsn_joint_dde/state_io.py": "43aafa029d1cbcb2bacfad936ee2f9e9496ae7e7a85f3139bf5eab5b10f5d446",
+      "qualification/hcsn_joint_dde/test_graded.py": "9b2b1453c82d0adfacc7b3211a211650c1317de2b85fae6a3f1efc24ccce4092",
+      "qualification/hcsn_joint_dde/test_migration_binding.py": "b49e3aabf8ff9efa267cd2503b0bf3ef2f1235afbf7329b91ee6dba6e9add3aa",
+      "qualification/hcsn_joint_dde/test_model.py": "195e4e43d619dbb5434154bf406a256e51ef45ec448c1f73323e03c762e675dc",
+      "qualification/hcsn_joint_dde/test_state.py": "52ac862ca2bcaccadb758d9267507d18f38cb6360d2067b08168ca30e1ea29d7",
+      "qualification/hcsn_reset_aligned/first_hit.py": "61bd86f5ff25b8dc2fdc8129d8faa65aa13871ff70bfc5ca8e15e759d73af144",
+      "qualification/hcsn_reset_aligned/mesh.py": "9b2d57a70ee677e9d71a18d16ec555b15bc18b3dca636cbaa3b7afd5941bf3a8",
+      "qualification/hcsn_reset_aligned/perpetual.py": "d0bf03ddb9cf17310a2e353f4d851b9552872533e14ebfc713f83f9dbdd8e537",
+      "qualification/hcsn_reset_aligned/qualify_common.py": "5ef9369b13cd14c6bf7732a6d9e28ce2dc19bc8041b895ffbd42a612ce3fe4d4",
+      "qualification/hcsn_reset_aligned/sensitivities.py": "4cb4e0d285a301020a9c25b97cbd4fed106957b02eeb31bd98e9d437e8bb9983",
+      "qualification/hcsn_reset_aligned/test_common_state.py": "e2274ef90f2670f5c08a31d56409da2082295a5eed09d7ec12775116dc024fa4",
+      "qualification/hcsn_reset_aligned/test_first_hit.py": "e0e420ed6615f3f9c9eabb4cce0aa9384eac20c01b144667301d41e701a89538",
+      "qualification/hcsn_reset_aligned/test_model.py": "479735238fdcdd4ad4ec5ff3a04edde95efe7e178d8ed7db82df790b92eaf491",
+      "qualification/hcsn_reset_aligned/test_perpetual.py": "987d9a6023011532c5c47224114d225a746a8ac6bb7968711ddd4e1be63c7106",
+      "qualification/hcsn_reset_aligned/test_readouts_torch.py": "47d4910ceb0bd0a4c17a069f7fab655d1927a7ec7c5b0ca337248b126d69cfc3",
+      "qualification/hcsn_reset_aligned/test_torch.py": "b8f8f756c2b75d2f928ad229bb82fdcbc2a15d1317d34dbb444f1ec606a1bf48",
+      "qualification/hcsn_reset_aligned/torch_first_hit.py": "5484e8d1dce5d2aecb8ad61021ce14cc813ff2d7b944b4e312a5975957899ea2",
+      "qualification/hcsn_reset_aligned/torch_flow.py": "1d599043ab5b997f6863c5c05266712c80d6aaccf70c3e395ac22aea9182b6a9",
+      "qualification/hcsn_reset_aligned/torch_perpetual.py": "bf277899f36e4a0067b486f9df995ece216244a336bbcd8ca664af1115a341a3"
+    },
+    "native_actual_count": 46,
+    "native_expected_count": 29,
+    "native_matching_declared": 27,
+    "native_mismatches": [
+      {
+        "path": "qualification/hcsn_joint_dde/model.py",
+        "expected": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+        "actual": "d7d6b2c6dd612ad3d412042dc4962d6b78adf18a6872c8c15e2a3b9a36b610fc"
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/audit_graded.py",
+        "expected": "634735fef3008ee5e6e6781d692b6a6f31b1c857f255671b1c46f450d778dfcd",
+        "actual": "ffe6e3ee2aadb346ff0d26696c8901be2b1971d307224441918d779c8236ffcf"
+      }
+    ],
+    "native_extra_count": 17,
+    "native_missing_count": 0,
+    "independent_git_directory_count": 46,
+    "independent_git_extra_files": [
+      {
+        "path": "qualification/hcsn_joint_dde/audit_visits.py",
+        "blob": "3625a15aaa5df64bbbcc9af926457de0397976b8",
+        "bytes": 11113
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/check_sparse_jacobian.py",
+        "blob": "df0fc8940a4c82b920d4ac3578a7663de697767e",
+        "bytes": 4795
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/export_first_cell_control.py",
+        "blob": "0ca3a107ae4b448d0de1213c93326830af40f803",
+        "bytes": 3488
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/export_recovered_original.py",
+        "blob": "4209764f7dd288c811f317cff8500fc46c73880d",
+        "bytes": 5346
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/graded_sensitivities.py",
+        "blob": "1cb72a57521667f8c4da0f44c100c4517a1ad1a6",
+        "bytes": 1747
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/native_gradient_probe.py",
+        "blob": "b5133bf27e6e2edc8f88a54b1bf2a826153f6534",
+        "bytes": 12639
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/probe_large_partials.py",
+        "blob": "2039f0e7f4e994b879b713492c4b49fd6fed8c5e",
+        "bytes": 12336
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/qualify_common.py",
+        "blob": "3136a29edb22de966c0cd727cac622c74e54b590",
+        "bytes": 6651
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/run_cascade_checks.py",
+        "blob": "fab192e6c0185f2396fcf5c93a7988da197f3b49",
+        "bytes": 3441
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/sensitivities.py",
+        "blob": "9562c8c644b00753070bdaba20e7ef78e4df2b7c",
+        "bytes": 14518
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/test_graded_sensitivities.py",
+        "blob": "91f0ecd8bf401ebc586df9f8c13e59b4f615738d",
+        "bytes": 9348
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/test_retained_values.py",
+        "blob": "7da412a79ff4f48674c93c92b0dc6e699791e0eb",
+        "bytes": 2635
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/test_sensitivities.py",
+        "blob": "2a289b47cffd3c51bccea2dfddfd5c293ad6fbfc",
+        "bytes": 9736
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/test_torch_cascade.py",
+        "blob": "e4153f6783015518e69a8243edfd415df634f126",
+        "bytes": 7359
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/torch_cascade.py",
+        "blob": "64b79ae441a98c351b0874d1a6cc5c8a327e0670",
+        "bytes": 10936
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/torch_physical.py",
+        "blob": "4c19a72774ac1ab1106f92216dcac62ad6d3a838",
+        "bytes": 4461
+      },
+      {
+        "path": "qualification/hcsn_joint_dde/verify_retained_values.py",
+        "blob": "30e4746073f779877469d0841efe60988ebb1e0e",
+        "bytes": 3931
+      }
+    ],
+    "independent_git_missing_declared": [],
+    "independent_method": "Downloaded original ZIP, verified SHA256 and CRC, parsed source-before JSON and compared its 46 keys/hashes with frozen manifest; independently enumerated both exact GitHub directories plus two explicit boundary files; separately recomputed SHA1 Git blob and SHA256 for four exact current/historical objects on ROG. Remaining 27 native matched values not independently rehashed.",
+    "independent_hash_job": {
+      "status": {
+        "at_unix_ms": 1795725852748,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a21999fcb2-ffbe-4aab",
+        "launch_nonce": "75fdf9ef3a6de9f617af1d98de1e8f56",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1087,
+            "stored": 1087
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout": [
+        {
+          "ref": "923c7b1815c4798ee9d42328b8b67fb742655fcf",
+          "path": "qualification/hcsn_joint_dde/model.py",
+          "blob": "6cd13303b218cb0351334c76da359e35098f6214",
+          "bytes": 14671,
+          "sha256": "d7d6b2c6dd612ad3d412042dc4962d6b78adf18a6872c8c15e2a3b9a36b610fc",
+          "blob_match": true
+        },
+        {
+          "ref": "923c7b1815c4798ee9d42328b8b67fb742655fcf",
+          "path": "qualification/hcsn_joint_dde/audit_graded.py",
+          "blob": "2b2d863ef2807d6370ebed2c29e4d405556a3c39",
+          "bytes": 15023,
+          "sha256": "ffe6e3ee2aadb346ff0d26696c8901be2b1971d307224441918d779c8236ffcf",
+          "blob_match": true
+        },
+        {
+          "ref": "c440d2baff9c2befaef3ea96148b77f2ae3582b6",
+          "path": "qualification/hcsn_joint_dde/model.py",
+          "blob": "5183735889cbd7ef436049e7bd69fa4b7d1b9002",
+          "bytes": 14672,
+          "sha256": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4",
+          "blob_match": true
+        },
+        {
+          "ref": "c440d2baff9c2befaef3ea96148b77f2ae3582b6",
+          "path": "qualification/hcsn_joint_dde/audit_graded.py",
+          "blob": "28ab8b4dce5d045e730f8f1929cdac83e89f9951",
+          "bytes": 14996,
+          "sha256": "634735fef3008ee5e6e6781d692b6a6f31b1c857f255671b1c46f450d778dfcd",
+          "blob_match": true
+        }
+      ]
+    },
+    "original_45_checks_executed": 0,
+    "original_120_optimizer_updates_executed": 0,
+    "repair_strategy": "Separate exact historical 29-file view from evolving live package; reuse historical objects from c440d2ba for the two mismatches. Keep all 17 live files, do not weaken equality, do not change frozen manifest, do not claim historical or live scientific gate passed. Verify prior execution ledger before any costly native experiment."
+  },
+  "other_readbacks": [
+    {
+      "head": "923c7b1815c4798ee9d42328b8b67fb742655fcf",
+      "run": 45892017209,
+      "job": 140156726133,
+      "conclusion": "failure",
+      "tests": 12,
+      "passed": 10,
+      "errors": 2,
+      "reason": "source size drift: qualification/hcsn_currentstate_n256_uniformization_provider_intent/README.md",
+      "numerical_relaunch": false
+    },
+    {
+      "head": "9b3406a4d54d40b587193dbc43caef3bbfefb86f",
+      "run": 45884655999,
+      "job": 140132237087,
+      "conclusion": "failure",
+      "tests": 12,
+      "passed": 10,
+      "errors": 2,
+      "reason": "same provider README size drift"
+    },
+    {
+      "head": "923c7b1815c4798ee9d42328b8b67fb742655fcf",
+      "run": 45892015777,
+      "job": 140156722252,
+      "conclusion": "failure",
+      "reason": "Ubuntu 26.04 x64 setup-python cannot resolve exact 3.12.3"
+    },
+    {
+      "head": "923c7b1815c4798ee9d42328b8b67fb742655fcf",
+      "run": 45892014594,
+      "job": 140156717747,
+      "conclusion": "success",
+      "tests": 7,
+      "rows": 36,
+      "maximum_n128_error": 0.000042076805424839936,
+      "maximum_irregular_row_tv": 2.3680974444838937e-15,
+      "maximum_mass_error": 3.9968028886505635e-15,
+      "scope": "finite killed spatial generator only"
+    }
+  ],
+  "workflow_first_page": {
+    "head": "923c7b1815c4798ee9d42328b8b67fb742655fcf",
+    "success": 45,
+    "queued": 16,
+    "skipped": 7,
+    "pending": 1,
+    "failure": 10,
+    "in_progress": 21,
+    "previous_head": "9b3406a4d54d40b587193dbc43caef3bbfefb86f",
+    "previous_success": 64,
+    "previous_skipped": 12,
+    "previous_failure": 24
+  },
+  "product_sources_changed": 0,
+  "scientific_budget_changed": false,
+  "all_closed": false
+}
