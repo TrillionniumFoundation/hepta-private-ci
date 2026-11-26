@@ -188,6 +188,23 @@ INDEX_SHA256 = {
     SOURCE84_INDEX: "a4b240eef423bab829e2150c63a603a5d0c3f001220ae5616b2f87eed7ec8184",
     SOURCE0A5_INDEX: "dde0cc0c597ed9d85d10aa68d0b4bbaaa32fd949efce445aeb1b346f08742f55",
 }
+
+# Human-readable archive notices are distinct from the historical bytes.
+ARCHIVE_NOTICE_SHA256 = {
+    "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/REMAINING_TERMINAL_V8_REPORT.md": (
+        "4785c96609cf424bc30d1a2d88b45e2c0559b8108fe18b46f34cedaadbf314de"
+    ),
+    "qualification/cell-p0-converged-20261110-f7c0/caller-cb/RESULTS.md": (
+        "a1715f39fc8090b24159f759e12e15c8112775851f54bf3a782a33d98583d9ec"
+    ),
+    "qualification/learn-ordinary-ce434/ordinary-input-handoff-8bf-addendum-20261112/README.md": (
+        "e9f06ad0392d1dba0bbb16c19b8243bd24affa5c56408cefb2ca504127225173"
+    ),
+    "qualification/learn-ordinary-ce434/positive-model-version-20261112/original-policy-eligibility-audit.md": (
+        "701980a419884d9ad5d49e054a22d691e57545d21eb83a6c898100440f391a06"
+    ),
+}
+
 MAX_BYTES = 8 * 1024 * 1024
 
 
@@ -266,9 +283,15 @@ def read_verified(repo, relative, expected_bytes, expected_sha256):
         raise ValueError("invalid original evidence checksum")
     relative = relative_path(str(relative)).as_posix()
     path = repo / relative
-    if path.exists() or path.is_symlink():
-        data = read_regular(repo, relative, expected_bytes)
-    else:
+    data = (
+        read_regular(repo, relative, expected_bytes)
+        if path.exists() or path.is_symlink()
+        else None
+    )
+    if data is None or (
+        relative in ARCHIVE_NOTICE_SHA256
+        and hashlib.sha256(data).hexdigest() == ARCHIVE_NOTICE_SHA256[relative]
+    ):
         entry = entries(repo)[relative]
         if (
             entry["original_bytes"] != expected_bytes
