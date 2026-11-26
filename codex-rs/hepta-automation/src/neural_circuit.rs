@@ -398,7 +398,11 @@ pub fn validate_circuit_successor_v1(
     if current.circuit_id != successor.circuit_id {
         return Err(invalid("circuit successor changes stable circuit identity"));
     }
-    if successor.version != current.version.saturating_add(1) {
+    let next_version = current
+        .version
+        .checked_add(1)
+        .ok_or_else(|| invalid("circuit version is exhausted; no successor can be admitted"))?;
+    if successor.version != next_version {
         return Err(invalid("circuit successor version is not monotone by one"));
     }
     if successor.predecessor_digest.as_ref() != Some(&current.circuit_digest) {
@@ -640,5 +644,38 @@ mod tests {
             digest("resources"),
         );
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn successor_rejects_version_exhaustion_but_accepts_last_increment() {
+        let initial = v1();
+        let make_at_version = |version, predecessor| {
+            NeuralCircuitCandidateV1::new(
+                initial.circuit_id.clone(),
+                version,
+                Some(predecessor),
+                CircuitProgramV1 {
+                    entry_node: initial.entry_node.clone(),
+                    nodes: initial.nodes.clone(),
+                    edges: initial.edges.clone(),
+                    capability_set: initial.capability_set.clone(),
+                },
+                initial.route_policy_digest.clone(),
+                initial.parameter_bundle_digest.clone(),
+                initial.resource_profile_digest.clone(),
+            )
+            .expect("valid candidate shape")
+        };
+        let penultimate = make_at_version(u32::MAX - 1, digest("prior-circuit"));
+        let last = make_at_version(u32::MAX, penultimate.circuit_digest.clone());
+        validate_circuit_successor_v1(&penultimate, &last)
+            .expect("last representable version remains admissible");
+
+        let same_version = make_at_version(u32::MAX, last.circuit_digest.clone());
+        assert!(matches!(
+            validate_circuit_successor_v1(&last, &same_version),
+            Err(TaskFlowError::Invalid(message))
+                if message == "circuit version is exhausted; no successor can be admitted"
+        ));
     }
 }
