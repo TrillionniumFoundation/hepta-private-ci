@@ -165,5 +165,25 @@
     },
     "patch": "HEPTA-formatting.patch",
     "patchSha256": "b0e0b461149fcb4cfd16e952dfdc4270d7861e3bbce1b93d17e5e0fae406af2a"
+  },
+  "semanticWhitespaceNormalizations": {
+    "CHANGELOG.md": {
+      "afterSha256": "f581623c505eefeac6a12fab98afcb866153b132e5686b90edfae9b2d6b7258e",
+      "beforeSha256": "2e10d6b534a3d1837b6284f86960f66188213d50b834b0e672096a65ffed0c66",
+      "originalRecoveryPath": "qa/repository-consolidation/20261126/bm25-format-originals/bm25-2.3.2-stable-hash/CHANGELOG.md.original",
+      "validation": "CommonMark with tables rendered HTML equality"
+    },
+    "README.md": {
+      "afterSha256": "d891493e63c46f465ca99e2196b0e34aeb9cf4a5ff0fca0cd3fe2bf01536a05a",
+      "beforeSha256": "3f3291efb256eeade33fb29e1c7a694a4bb44b182b6741d05c26147feaa11546",
+      "originalRecoveryPath": "qa/repository-consolidation/20261126/bm25-format-originals/bm25-2.3.2-stable-hash/README.md.original",
+      "validation": "CommonMark with tables rendered HTML equality"
+    },
+    "RELEASING.md": {
+      "afterSha256": "23707e374cf30a0f669f21f8041d69e141dea2a2bd196b8308b37a8b3fb6d9a7",
+      "beforeSha256": "c350f8403413f319c1717308ec745156822b64c4f7f26717a6b6b24539c3355b",
+      "originalRecoveryPath": "qa/repository-consolidation/20261126/bm25-format-originals/bm25-2.3.2-stable-hash/RELEASING.md.original",
+      "validation": "CommonMark with tables rendered HTML equality"
+    }
   }
 }

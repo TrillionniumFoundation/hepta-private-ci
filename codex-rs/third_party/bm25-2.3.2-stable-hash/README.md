@@ -23,7 +23,7 @@ See [bm25-demo](https://michael-jb.github.io/bm25-demo) for a WebAssembly demo o
 - Modular and customisable
 - Configurable via compile-time features
 
-## The BM25 algorithm 
+## The BM25 algorithm
 
 [BM25](https://en.wikipedia.org/wiki/Okapi_BM25) is an algorithm for scoring the relevance of a
 query to documents in a corpus. You can make this scoring more efficient by pre-computing a
@@ -415,4 +415,3 @@ cargo add bm25 --features parallelism
 ## License
 
 [MIT License](https://github.com/Michael-JB/bm25/blob/main/LICENSE)
-
