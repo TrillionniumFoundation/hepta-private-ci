@@ -68,8 +68,11 @@ fn directory_list_bit_observations() -> Result<()> {
             };
             let capability = base_capability | if with_list { FILE_LIST_DIRECTORY } else { 0 };
             let capability_sid = support::CAPABILITY;
-            let target_sddl =
-                format!("D:P(A;;0x{identity:08x};;;WD)(A;;0x{capability:08x};;;{capability_sid})");
+            let target_sddl = if capability == 0 {
+                format!("D:P(A;;0x{identity:08x};;;WD)")
+            } else {
+                format!("D:P(A;;0x{identity:08x};;;WD)(A;;0x{capability:08x};;;{capability_sid})")
+            };
             support::set_dacl_sddl(&target, &target_sddl).with_context(|| {
                 format!("configure LIST target: scenario={scenario:?} list={with_list}")
             })?;

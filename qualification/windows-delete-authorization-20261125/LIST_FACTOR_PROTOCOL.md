@@ -10,7 +10,7 @@ two passes, two failures, fifteen completed deletion cells, 32 OS5 opens and
 The added test identity is
 `list_factor::directory_list_bit_observations`. It uses six newly owned
 empty temporary directories. Each pair changes only the target restricting
-capability ACE's `FILE_LIST_DIRECTORY` bit (0x1). The same Full restricted token
+capability grant's `FILE_LIST_DIRECTORY` bit (0x1). The same Full restricted token
 and exact single restricting SID are reused. No privilege or token is changed.
 
 | Pair | Parent DACL | Target WD mask | Target capability mask, first / second |
@@ -19,14 +19,44 @@ and exact single restricting SID are reused. No privilege or token is changed.
 | NullParent | NULL | FA without DELETE | 0 / LIST_DIRECTORY |
 | Neither | WD: FA without FILE_DELETE_CHILD | FA without DELETE | 0 / LIST_DIRECTORY |
 
-WD is the ordinary identity grant, never a restricting SID. Zero-mask ACEs are
-explicit in both new baselines to keep each pair's ACE structure constant. The
-four original test functions are not rewritten to use those ACEs: their old
+WD is the ordinary identity grant, never a restricting SID. A zero capability
+mask is represented by the absence of a capability ACE; a nonzero mask retains
+the explicit capability ACE. The observed reason for this representation is
+recorded below. The four original test functions are not rewritten: their old
 byte-exact source and policies stay in place. Parent policy is installed before
 target creation.
 Every new DACL is installed and read back on the same handle using the existing
 strict fixture setter. No generic World-FA capability helper constructs the
 NullParent or Neither target.
+
+### Observed zero-mask representation correction
+
+Head `0fd960740b30e7c21afdfc4ff2eac4fc1b3d6ef7`, normal run `45737633950`,
+retained strict Clippy success, the original matrix's two passes/two failures,
+and the LIST diagnostic's zero passes/one failure. Only the Target pair's two
+observations completed, both returning OS5 for open and delete; four planned
+observations did not complete. The complete artifact is `15079844768`, SHA-256
+`ce3aaf3d5c547ef756f9e2fa8520ea230bf709c341373e0684d976cc3f5b886b`.
+
+The original protocol explicitly included a zero-mask capability ACE to keep
+ACE counts equal. Its NullParent/false target setup actually read back a
+28-byte, one-ACE DACL instead of the expected 64-byte, two-ACE DACL. The WD ACE
+was byte-identical, including mask `0x001e01ff` (FA without DELETE). The sole
+omitted ACE was the 36-byte capability allow ACE with mask zero. This is an
+observation of that same-handle installation/readback, not a claim about every
+Windows version, ACL, or the internal component that removed it. The original
+full byte-equality check correctly failed and is retained unchanged.
+
+The revised fixture constructs the expected zero-right descriptor directly
+without that no-permission capability ACE. Nonzero capability descriptors keep
+their exact former construction. No access bit, ordinary WD mask, token,
+baseline expectation, negative control, cleanup boundary, or original test is
+changed. The NullParent and Neither ACL representations now differ in ACE
+count between zero and LIST, while the capability access grant differs only
+by the preregistered LIST bit. Every constructed DACL must still match its
+complete same-handle readback exactly. This correction itself has no native
+result before its own execution; it does not turn the previous two observations
+into six, or qualify the original eighteen-cell matrix.
 
 For each object, the test first issues the old DELETE-only, overlapped,
 BACKUP_SEMANTICS + OPEN_REPARSE_POINT, all-sharing CreateFileW probe. It closes
