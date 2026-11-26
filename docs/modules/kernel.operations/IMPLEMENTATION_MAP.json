@@ -59,7 +59,7 @@
           "role": "declared_module_dependency_not_callsite_proof"
         }
       ],
-      "sourceBlob": "ba5e42081ea35c0d43c5e1d77be43f2f6a1d3966"
+      "sourceBlob": "0f642dc4d5edc02f7b75a1f6b084c67fbe9199a2"
     },
     {
       "operation": "claim_outbox",
@@ -107,7 +107,7 @@
           "role": "declared_module_dependency_not_callsite_proof"
         }
       ],
-      "sourceBlob": "ba5e42081ea35c0d43c5e1d77be43f2f6a1d3966"
+      "sourceBlob": "0f642dc4d5edc02f7b75a1f6b084c67fbe9199a2"
     },
     {
       "operation": "observe_cognitive_terminal",
@@ -149,7 +149,7 @@
           "role": "declared_module_dependency_not_callsite_proof"
         }
       ],
-      "sourceBlob": "39d127250b8e825292c25f8c34ec360d5d94ff60"
+      "sourceBlob": "c25f0907bed6f626a32531f3868aeaf5fe6a9646"
     },
     {
       "operation": "agentd_runtime_composition",
@@ -170,7 +170,7 @@
           "role": "declared_module_dependency_not_callsite_proof"
         }
       ],
-      "sourceBlob": "ca57d28162bd5788ef6ad6a5234e671a930175a9"
+      "sourceBlob": "28ce06434e6d0ab97e8da925211c50a9c094471b"
     },
     {
       "operation": "automation_operation_consumer",
@@ -191,7 +191,7 @@
           "role": "declared_module_dependency_not_callsite_proof"
         }
       ],
-      "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "sourceBlob": "a7aa6c0c49ce4bbda456203c686188b000a1e38c"
     },
     {
       "operation": "reference_operationledger",
@@ -273,7 +273,7 @@
       },
       {
         "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
-        "blobSha": "dee563ef38697226da24f71dd2f9c4a0a2d45321"
+        "blobSha": "38cc3585aebb42aca0813cbf1316b79a89f12403"
       },
       {
         "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
@@ -285,7 +285,7 @@
       },
       {
         "path": "codex-rs/hepta-memory/src/production_writer.rs",
-        "blobSha": "ba5e42081ea35c0d43c5e1d77be43f2f6a1d3966"
+        "blobSha": "0f642dc4d5edc02f7b75a1f6b084c67fbe9199a2"
       },
       {
         "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
@@ -293,35 +293,35 @@
       },
       {
         "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
-        "blobSha": "ac96e86b614f95a5da9fb68d13752b26bc857933"
+        "blobSha": "4011ea7f114d564798a9c0b70c87826b42b37978"
       },
       {
         "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
-        "blobSha": "39d127250b8e825292c25f8c34ec360d5d94ff60"
+        "blobSha": "c25f0907bed6f626a32531f3868aeaf5fe6a9646"
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+        "blobSha": "a7aa6c0c49ce4bbda456203c686188b000a1e38c"
       },
       {
         "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-        "blobSha": "2f0a8cea98cecc940a785dae606861ab2053a109"
+        "blobSha": "d3e64f1ee9e52dfe67fac41d72b68990822334d6"
       },
       {
         "path": "codex-rs/hepta-agentd/src/config.rs",
-        "blobSha": "cb7eea63c83bbe4cb9dd993a26334d5f7ba53a97"
+        "blobSha": "986957c1eb4f7bebd5f421d0508549339f4e4bbb"
       },
       {
         "path": "codex-rs/hepta-agentd/src/runtime.rs",
-        "blobSha": "ca57d28162bd5788ef6ad6a5234e671a930175a9"
+        "blobSha": "28ce06434e6d0ab97e8da925211c50a9c094471b"
       },
       {
         "path": "codex-rs/hepta-agentd/src/state.rs",
-        "blobSha": "df7372299a9c6edce9d219f85493a617becc6213"
+        "blobSha": "e612ae7b1d013e89a37ee6ac1152fb04f6895b26"
       },
       {
         "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
-        "blobSha": "6cad747e3c4bba52665aea4b37208528201b09ae"
+        "blobSha": "e7104b88e2a4127963dbebc5bc789257d324c6d6"
       },
       {
         "path": "codex-rs/hepta-agentd/src/config_tests.rs",
@@ -330,8 +330,8 @@
     ]
   },
   "observedAtHead": {
-    "commit": "38bd86afdec6ee0558af47ae58bb2813e2ad788e",
-    "tree": "62f767b394adbda686f21499f4af5cb4584673dc"
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -348,7 +348,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "c0197bcf49b3901353650c8cc6e5465c4bb6ba84"
+      "object": "f97f84f82b4dff3face3060633631e9573552537"
     },
     {
       "path": "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
@@ -356,7 +356,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/config.rs",
-      "object": "cb7eea63c83bbe4cb9dd993a26334d5f7ba53a97"
+      "object": "986957c1eb4f7bebd5f421d0508549339f4e4bbb"
     },
     {
       "path": "codex-rs/hepta-agentd/src/config_tests.rs",
@@ -364,43 +364,43 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
-      "object": "39d127250b8e825292c25f8c34ec360d5d94ff60"
+      "object": "c25f0907bed6f626a32531f3868aeaf5fe6a9646"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
-      "object": "ca57d28162bd5788ef6ad6a5234e671a930175a9"
+      "object": "28ce06434e6d0ab97e8da925211c50a9c094471b"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
-      "object": "6cad747e3c4bba52665aea4b37208528201b09ae"
+      "object": "e7104b88e2a4127963dbebc5bc789257d324c6d6"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "df7372299a9c6edce9d219f85493a617becc6213"
+      "object": "e612ae7b1d013e89a37ee6ac1152fb04f6895b26"
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "aee364bc68d7ceb6bbc16ad3e7bd8e3f4b51f60d"
+      "object": "8b1fffc4f22282ed091a509679a9733dc384bf26"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "object": "a7aa6c0c49ce4bbda456203c686188b000a1e38c"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
+      "object": "d3e64f1ee9e52dfe67fac41d72b68990822334d6"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+      "object": "c900b1b34e024e1ad3ccb814ed44f4d25d2a0bf0"
     },
     {
       "path": "codex-rs/hepta-cognitive-store",
-      "object": "b321d1157ea310845ed7642e2692ef829ee3e0f8"
+      "object": "f3aa3b701b94471ad3e542e7f2b924a22728bd00"
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "38bbb2a2befdd2eeb5968ae8a2bfc6849a608623"
+      "object": "a8edfdb7a39b7008d9e17f3f6d984f56df5a9561"
     },
     {
       "path": "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
@@ -412,7 +412,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
-      "object": "dee563ef38697226da24f71dd2f9c4a0a2d45321"
+      "object": "38cc3585aebb42aca0813cbf1316b79a89f12403"
     },
     {
       "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
@@ -428,15 +428,15 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
-      "object": "ac96e86b614f95a5da9fb68d13752b26bc857933"
+      "object": "4011ea7f114d564798a9c0b70c87826b42b37978"
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "ba5e42081ea35c0d43c5e1d77be43f2f6a1d3966"
+      "object": "0f642dc4d5edc02f7b75a1f6b084c67fbe9199a2"
     },
     {
       "path": "codex-rs/hepta-operations",
-      "object": "cebb9a832e00f4170536bcda44eed9359c15b2b1"
+      "object": "0560b7e47ddbb075261c37d2b2e0d2cec44fcd10"
     },
     {
       "path": "codex-rs/hepta-operations/src/ledger.rs",

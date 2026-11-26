@@ -35,7 +35,7 @@
       "designOperation": "claim_deliver_dispatch_external_trust_and_epoch_issuer_rotation",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "e6e40ac106c6d1c07f8bfc17da1a0c5c763224cd"
+      "sourceBlob": "5f94e0f7e5c314c64d8ce3838971f2cae77d559f"
     },
     {
       "operation": "store",
@@ -50,7 +50,7 @@
       "designOperation": "store",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "d014fce0c1396b094d4497c58ef905c53e80669f"
+      "sourceBlob": "7cc9e5f2d90c07ba5a11a469e8f7bab6c4b25b61"
     },
     {
       "operation": "authority_lease_registry",
@@ -80,7 +80,7 @@
       "designOperation": "independent_final_use_approval_with_epoch_key_rotation",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "41b1d83586fdab55b143471dab85679c3efebbe8"
+      "sourceBlob": "5e368d3a13a79f55cc3f7173ae1f260fe65022e8"
     },
     {
       "operation": "final_use_revocation_feed_verifier",
@@ -95,7 +95,7 @@
       "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "41b1d83586fdab55b143471dab85679c3efebbe8"
+      "sourceBlob": "5e368d3a13a79f55cc3f7173ae1f260fe65022e8"
     },
     {
       "operation": "authority_external_trust",
@@ -126,7 +126,7 @@
       "designOperation": "verify_enrolled_node_revocation_convergence",
       "mappingClass": "owner_native_verifier",
       "delegatedCallees": [],
-      "sourceBlob": "41b1d83586fdab55b143471dab85679c3efebbe8"
+      "sourceBlob": "5e368d3a13a79f55cc3f7173ae1f260fe65022e8"
     },
     {
       "operation": "verified_use_witness_v1",
@@ -227,7 +227,7 @@
   "sourceObjects": [
     {
       "path": "apps/hepta-browser/src/runtime-host.js",
-      "object": "543407f89cd69f00804136ef8ba9f8cc2d0540f4"
+      "object": "74d85b572bfbba5f0db8545e164f5b682018834e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
@@ -235,15 +235,15 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
-      "object": "89bf62c8da8808a59047718313b43ed74bcf5ac5"
+      "object": "cae6fed18df80032237271fefbe045a6c2d75103"
     },
     {
       "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
-      "object": "7840a3aab99080c99849c04553611fd728df1332"
+      "object": "a919d24d5c68c4e5db9b22a0633b77445939cce9"
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "38bbb2a2befdd2eeb5968ae8a2bfc6849a608623"
+      "object": "a8edfdb7a39b7008d9e17f3f6d984f56df5a9561"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
@@ -255,19 +255,19 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "e6e40ac106c6d1c07f8bfc17da1a0c5c763224cd"
+      "object": "5f94e0f7e5c314c64d8ce3838971f2cae77d559f"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "object": "41b1d83586fdab55b143471dab85679c3efebbe8"
+      "object": "5e368d3a13a79f55cc3f7173ae1f260fe65022e8"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "d014fce0c1396b094d4497c58ef905c53e80669f"
+      "object": "7cc9e5f2d90c07ba5a11a469e8f7bab6c4b25b61"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-      "object": "0ac7b948a66a47fbac688dfd6cb6d4666ade5e6e"
+      "object": "066aa446cf9b95dadc7fe3d2d4607bef218dbd03"
     },
     {
       "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
@@ -279,7 +279,7 @@
     },
     {
       "path": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "object": "13fe1b3def1e894ba9fbd755662f9da4a23204e9"
+      "object": "02f1a99ac62c397badcd13770652fc5388d42940"
     },
     {
       "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
@@ -292,8 +292,8 @@
   ],
   "mappingSourceIdentityMode": "exact_blob",
   "observedAtHead": {
-    "commit": "38bd86afdec6ee0558af47ae58bb2813e2ad788e",
-    "tree": "62f767b394adbda686f21499f4af5cb4584673dc"
+    "commit": "cbe6d722f7912c01f05dd9276f69d8ba61a99c81",
+    "tree": "92cffecc25eee581e127efc3e557ea277a25ac90"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
