@@ -71,7 +71,10 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
         .unwrap();
     let msg = wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandEnd(_))).await;
     let EventMsg::ExecCommandEnd(ExecCommandEndEvent {
-        stdout, exit_code, ..
+        turn_id: list_turn,
+        stdout,
+        exit_code,
+        ..
     }) = msg
     else {
         unreachable!()
@@ -82,6 +85,16 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
         "ls output should include {file_name}, got: {stdout:?}"
     );
 
+    // Command output precedes turn cleanup. Wait for it before starting a separate turn.
+    let completed = wait_for_event_match(&codex, |event| match event {
+        EventMsg::TurnComplete(completed) if completed.turn_id == list_turn => {
+            Some(completed.clone())
+        }
+        _ => None,
+    })
+    .await;
+    assert_eq!(completed.error, None);
+
     // 2) shell command should print the file contents verbatim
     let cat_cmd = format!("cat {file_name}");
     codex
@@ -90,6 +103,7 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
         .unwrap();
     let msg = wait_for_event(&codex, |ev| matches!(ev, EventMsg::ExecCommandEnd(_))).await;
     let EventMsg::ExecCommandEnd(ExecCommandEndEvent {
+        turn_id: cat_turn,
         mut stdout,
         exit_code,
         ..
@@ -97,6 +111,7 @@ async fn user_shell_cmd_ls_and_cat_in_temp_dir() {
     else {
         unreachable!()
     };
+    assert_ne!(cat_turn, list_turn);
     assert_eq!(exit_code, 0);
     if cfg!(windows) {
         // Windows shells emit CRLF line endings; normalize so the assertion remains portable.
