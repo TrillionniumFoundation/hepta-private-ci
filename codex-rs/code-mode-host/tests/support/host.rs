@@ -3,13 +3,19 @@ use std::time::Duration;
 
 use anyhow::Context;
 use anyhow::Result;
+#[cfg(not(unix))]
 use futures::FutureExt;
 use tokio::io::AsyncBufReadExt;
+#[cfg(not(unix))]
 use tokio::io::AsyncReadExt;
 use tokio::io::BufReader;
 use tokio::process::Child;
 use tokio::process::Command;
 use tokio::time::timeout;
+
+#[cfg(unix)]
+#[path = "startup_pipe.rs"]
+mod startup_pipe;
 
 pub(crate) struct HostHarness {
     pub(crate) _child: Child,
@@ -59,7 +65,7 @@ impl HostHarness {
 }
 
 /// Observe an already failed startup without extending its deadline or waiting
-/// for the child. A pending single stderr read does not prove that stderr is empty.
+/// for the child. The child status and stderr are separate observations.
 pub(crate) fn startup_failure_context(child: &mut Child) -> String {
     let state = match child.try_wait() {
         Ok(Some(status)) => format!("exited({status})"),
@@ -70,7 +76,14 @@ pub(crate) fn startup_failure_context(child: &mut Child) -> String {
             error.raw_os_error(),
         ),
     };
+    #[cfg(unix)]
+    let stderr = match child.stderr.as_mut() {
+        Some(stderr) => startup_pipe::observe(stderr),
+        None => "not_captured".to_string(),
+    };
+    #[cfg(not(unix))]
     let mut buffer = [0_u8; 4096];
+    #[cfg(not(unix))]
     let stderr = match child.stderr.as_mut() {
         Some(stderr) => match stderr.read(&mut buffer).now_or_never() {
             Some(Ok(bytes)) => format!(
