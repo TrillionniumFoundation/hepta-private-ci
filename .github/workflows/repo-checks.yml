@@ -118,6 +118,36 @@ jobs:
       - name: Test host-native state and fleet roots
         run: just test --locked -p codex-hepta-paths
 
+      - name: Probe the admitted Windows directory flush API
+        id: windows-directory-flush-probe
+        if: >-
+          always() && !cancelled() && runner.os == 'Windows' &&
+          github.event_name == 'pull_request' && github.event.action == 'opened' &&
+          github.run_attempt == 1 &&
+          github.head_ref == 'fix/pft-windows-backend-contract-v7-20261126-8a32' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        timeout-minutes: 2
+        shell: pwsh
+        env:
+          HEPTA_WINDOWS_DIRECTORY_PROBE: once-v1
+        run: |
+          python -I -B .github/scripts/windows_directory_flush_probe.py --expected-source-sha256 e47e07562f0deb54c92a82a5e8b926f92dd17bc8b444508345cb0dfdbd62e15c
+          exit $LASTEXITCODE
+
+      - name: Retain Windows directory probe evidence
+        if: >-
+          always() && !cancelled() && runner.os == 'Windows' &&
+          github.event_name == 'pull_request' && github.event.action == 'opened' &&
+          github.run_attempt == 1 &&
+          github.head_ref == 'fix/pft-windows-backend-contract-v7-20261126-8a32' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-directory-flush-probe-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-directory-flush-probe_${{ github.run_id }}_${{ github.run_attempt }}_${{ github.job }}
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Check for a clean worktree
         if: always() && !cancelled()
         uses: ./.github/actions/check-clean-worktree
