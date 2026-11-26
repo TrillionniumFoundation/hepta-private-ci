@@ -1,3 +1,5 @@
+#![cfg(unix)]
+
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -59,23 +61,23 @@ fn candidate(tree: char) -> EvidenceCandidateV1 {
 fn issuer(principal: &str, seed: u8) -> (IssuerRegistration, SigningKey) {
     let key = SigningKey::from_bytes(&[seed; 32]);
     (
-        IssuerRegistration {
-            issuer_id: StableId::new(principal).expect("principal"),
-            key_epoch: Generation::new(1).expect("epoch"),
-            verifying_key: key.verifying_key(),
-            revoked: false,
-        },
+        crate::authbus_test_support::message_registration(
+            StableId::new(principal).expect("principal"),
+            Generation::new(1).expect("epoch"),
+            key.verifying_key(),
+            false,
+        ),
         key,
     )
 }
 
 fn issuer_with_key(principal: &str, key: &SigningKey) -> IssuerRegistration {
-    IssuerRegistration {
-        issuer_id: StableId::new(principal).expect("principal"),
-        key_epoch: Generation::new(1).expect("epoch"),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    }
+    crate::authbus_test_support::message_registration(
+        StableId::new(principal).expect("principal"),
+        Generation::new(1).expect("epoch"),
+        key.verifying_key(),
+        false,
+    )
 }
 
 fn trust_binding(

@@ -1,11 +1,16 @@
+use std::ops::Deref;
+
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
 
 use crate::AuthBusAuthorityError;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
+use crate::IssuerRecord;
+use crate::IssuerRegistrationView;
 use crate::push_id;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -14,11 +19,58 @@ pub enum SettlementStatus {
     Rejected,
 }
 
+/// Sealed settlement issuer handle. Only the durable AuthBus issuer registry
+/// can construct it; callers cannot substitute their own verification key.
+#[derive(Clone, Debug)]
 pub struct SettlementIssuerRegistration {
-    pub issuer_id: StableId,
-    pub key_epoch: Generation,
-    pub verifying_key: VerifyingKey,
-    pub revoked: bool,
+    view: IssuerRegistrationView,
+    registry_digest: Digest32,
+    registry_revision: u64,
+}
+
+impl Deref for SettlementIssuerRegistration {
+    type Target = IssuerRegistrationView;
+
+    fn deref(&self) -> &Self::Target {
+        &self.view
+    }
+}
+
+impl SettlementIssuerRegistration {
+    pub fn registry_digest(&self) -> Digest32 {
+        self.registry_digest
+    }
+
+    pub fn registry_revision(&self) -> u64 {
+        self.registry_revision
+    }
+
+    pub(crate) fn from_record(record: &IssuerRecord) -> Result<Self, AuthBusAuthorityError> {
+        if record.purpose != IssuerPurpose::Settlement {
+            return Err(AuthBusAuthorityError::SettlementIssuerMismatch);
+        }
+        let view = IssuerRegistrationView {
+            issuer_id: record.issuer_id.clone(),
+            key_epoch: record.key_epoch,
+            verifying_key: record.verifying_key,
+            revoked: record.state != IssuerLifecycleState::Active,
+        };
+        let mut bytes = b"hepta.authbus.settlement-issuer-registration.v1\0".to_vec();
+        push_id(&mut bytes, &view.issuer_id);
+        bytes.extend_from_slice(&view.key_epoch.get().to_be_bytes());
+        bytes.extend_from_slice(&view.verifying_key.to_bytes());
+        bytes.push(match record.state {
+            IssuerLifecycleState::Active => 1,
+            IssuerLifecycleState::Revoked => 2,
+            IssuerLifecycleState::Retired => 3,
+        });
+        bytes.extend_from_slice(&record.revision.to_be_bytes());
+        Ok(Self {
+            view,
+            registry_digest: Digest32::of_bytes(&bytes),
+            registry_revision: record.revision,
+        })
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

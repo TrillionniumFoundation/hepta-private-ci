@@ -7,11 +7,16 @@
 //! `AuthorityPosture::DENY_ALL`.
 
 #![forbid(unsafe_code)]
+#![doc = include_str!("../SEALED_API.md")]
 
 mod authority;
 mod authority_schema;
 mod authority_store;
 mod host;
+mod issuer_registry;
+mod metrics;
+mod operations;
+mod owner_fence;
 mod quota;
 mod quota_store;
 mod recovery;
@@ -21,14 +26,24 @@ mod signed;
 mod sqlite;
 mod trust;
 mod trust_store;
+mod worker;
 pub use authority::AuthBusAuthorityError;
 pub use authority::AuthPolicy;
 pub use authority::PolicyDecision;
 pub use authority::PolicyEffect;
 pub use authority::PolicySpec;
 pub use authority::TrustedTimeSample;
-pub use authority_store::AuthBusAuthorityStore;
+pub(crate) use authority_store::AuthBusAuthorityStore;
 pub use host::AuthBusAuthorityHost;
+pub use issuer_registry::IssuerRegistryError;
+pub use issuer_registry::PrivateIssuerRegistryDocument;
+pub use operations::AuthBusAlertKind;
+pub use operations::AuthBusAlertSeverity;
+pub use operations::AuthBusMaintenanceReport;
+pub use operations::AuthBusOperationalAlert;
+pub use operations::AuthBusOperationalSnapshot;
+pub use operations::AuthBusSloPolicy;
+pub use quota::ExpiredReservationSweep;
 pub use quota::QuotaReservation;
 pub use quota::QuotaSnapshot;
 pub use quota::QuotaSpec;
@@ -42,6 +57,7 @@ pub use settlement::SettlementStatus;
 pub use settlement::SignedSettlementEvidence;
 pub use signed::AuthenticatedMessage;
 pub use signed::IssuerRegistration;
+pub use signed::IssuerRegistrationView;
 pub use signed::SignedMessage;
 pub use signed::SignedMessageClaims;
 pub use trust::IssuerLifecycleState;
@@ -51,6 +67,8 @@ pub use trust::IssuerRetirement;
 pub use trust::IssuerSpec;
 pub use trust::SignedTrustedTimeAttestation;
 pub use trust::TrustedTimeAttestationClaims;
+pub use worker::AuthBusAuthorityWorker;
+pub use worker::AuthBusAuthorityWorkerConfig;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;

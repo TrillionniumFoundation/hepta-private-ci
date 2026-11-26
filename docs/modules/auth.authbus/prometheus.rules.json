@@ -1,0 +1,20 @@
+{
+  "groups": [
+    {
+      "name": "hepta-authbus-safety",
+      "interval": "30s",
+      "rules": [
+        {"alert": "AuthBusExporterUnavailable", "expr": "up{job=\"hepta-authbus\"} == 0", "for": "1m", "labels": {"severity": "critical", "module": "auth.authbus"}, "annotations": {"summary": "AuthBus metrics transport is unavailable; do not infer health from missing reports."}},
+        {"alert": "AuthBusSnapshotMissing", "expr": "up{job=\"hepta-authbus\"} == 1 unless on(instance, job) hepta_authbus_observed_at_ms", "for": "1m", "labels": {"severity": "critical", "module": "auth.authbus"}, "annotations": {"summary": "The exporter is reachable but has no AuthBus snapshot."}},
+        {"alert": "AuthBusSnapshotStale", "expr": "time() * 1000 - hepta_authbus_observed_at_ms > 120000", "for": "30s", "labels": {"severity": "critical", "module": "auth.authbus"}, "annotations": {"summary": "No fresh authority maintenance snapshot; investigate worker and trusted-time provider."}},
+        {"alert": "AuthBusCheckpointDirty", "expr": "hepta_authbus_checkpoint_dirty > 0", "for": "30s", "labels": {"severity": "critical", "module": "auth.authbus"}, "annotations": {"summary": "Checkpoint publication has not converged. Stop new effects and reconcile; never reset witness generation."}},
+        {"alert": "AuthBusRecoveryRequired", "expr": "hepta_authbus_recovery_required > 0", "for": "30s", "labels": {"severity": "critical", "module": "auth.authbus"}, "annotations": {"summary": "Authority recovery remains incomplete."}},
+        {"alert": "AuthBusExpiredActiveReservations", "expr": "hepta_authbus_expired_active_reservations > 0", "for": "1m", "labels": {"severity": "critical", "module": "auth.authbus"}, "annotations": {"summary": "Bounded sweeps are not draining eligible expired reservations."}},
+        {"alert": "AuthBusIndeterminateReservations", "expr": "hepta_authbus_indeterminate_reservations > 0", "for": "1m", "labels": {"severity": "warning", "module": "auth.authbus"}, "annotations": {"summary": "Reconcile with the effect provider; do not release uncertain reservations by timeout."}},
+        {"alert": "AuthBusActiveCapacity", "expr": "hepta_authbus_active_reservations >= 13107", "for": "1m", "labels": {"severity": "warning", "module": "auth.authbus"}, "annotations": {"summary": "Active reservations are at the configured capacity warning threshold."}},
+        {"alert": "AuthBusQuotaUtilization", "expr": "hepta_authbus_quota_utilization_basis_points >= 9000", "for": "1m", "labels": {"severity": "warning", "module": "auth.authbus"}, "annotations": {"summary": "Aggregate quota utilization is high; inspect individual quota units before action."}},
+        {"alert": "AuthBusOldestReservation", "expr": "hepta_authbus_oldest_active_reservation_age_ms >= 120000", "for": "1m", "labels": {"severity": "warning", "module": "auth.authbus"}, "annotations": {"summary": "An active reservation exceeds the expected lifetime; inspect provider reconciliation."}}
+      ]
+    }
+  ]
+}

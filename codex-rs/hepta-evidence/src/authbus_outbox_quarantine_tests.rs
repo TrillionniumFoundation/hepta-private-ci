@@ -1,3 +1,5 @@
+#![cfg(unix)]
+
 use std::time::Duration;
 
 use codex_hepta_authbus::Error;
@@ -24,12 +26,12 @@ async fn enqueue(
     sequence: u64,
 ) -> (IssuerRegistration, AuthBusDeliveryStatus) {
     let key = SigningKey::from_bytes(&[43; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new("issuer:relay").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer = crate::authbus_test_support::message_registration(
+        StableId::new("issuer:relay").unwrap(),
+        Generation::new(1).unwrap(),
+        key.verifying_key(),
+        false,
+    );
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
@@ -238,7 +240,12 @@ async fn quarantine_rechecks_current_issuer_and_does_not_retire_other_messages()
         .authbus_delivery_status(queued.delivery_id)
         .await
         .unwrap();
-    issuer.key_epoch = Generation::new(2).unwrap();
+    issuer = crate::authbus_test_support::message_registration(
+        issuer.issuer_id.clone(),
+        Generation::new(2).unwrap(),
+        issuer.verifying_key,
+        issuer.revoked,
+    );
     assert!(matches!(
         store
             .quarantine_authbus_delivery(&issuer, &delivery.lease)
@@ -254,8 +261,18 @@ async fn quarantine_rechecks_current_issuer_and_does_not_retire_other_messages()
             .unwrap(),
         expected
     );
-    issuer.key_epoch = queued.key_epoch;
-    issuer.revoked = true;
+    issuer = crate::authbus_test_support::message_registration(
+        issuer.issuer_id.clone(),
+        queued.key_epoch,
+        issuer.verifying_key,
+        issuer.revoked,
+    );
+    issuer = crate::authbus_test_support::message_registration(
+        issuer.issuer_id.clone(),
+        issuer.key_epoch,
+        issuer.verifying_key,
+        true,
+    );
     assert!(matches!(
         store
             .quarantine_authbus_delivery(&issuer, &delivery.lease)

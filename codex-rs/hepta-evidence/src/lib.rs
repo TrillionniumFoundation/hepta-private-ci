@@ -135,3 +135,6 @@ mod authbus_outbox_quarantine_tests;
 #[cfg(test)]
 #[path = "qualification_tests.rs"]
 mod qualification_tests;
+
+#[cfg(all(test, unix))]
+mod authbus_test_support;

@@ -2,15 +2,25 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 use super::*;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
+use crate::IssuerRecord;
 
-fn fixture() -> (IssuerRegistration, SignedMessage) {
-    let key = SigningKey::from_bytes(&[7; 32]);
-    let issuer = IssuerRegistration {
+fn registration(key: &SigningKey, epoch: u64, state: IssuerLifecycleState) -> IssuerRegistration {
+    IssuerRegistration::from_record(&IssuerRecord {
         issuer_id: StableId::new("issuer:one").unwrap(),
-        key_epoch: Generation::new(1).unwrap(),
+        purpose: IssuerPurpose::Message,
+        key_epoch: Generation::new(epoch).unwrap(),
         verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+        state,
+        revision: 1,
+    })
+    .unwrap()
+}
+
+fn fixture() -> (SigningKey, IssuerRegistration, SignedMessage) {
+    let key = SigningKey::from_bytes(&[7; 32]);
+    let issuer = registration(&key, 1, IssuerLifecycleState::Active);
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
@@ -22,12 +32,12 @@ fn fixture() -> (IssuerRegistration, SignedMessage) {
         expires_at_ms: 2_000,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    (issuer, SignedMessage { claims, signature })
+    (key, issuer, SignedMessage { claims, signature })
 }
 
 #[test]
 fn signed_admission_rejects_payload_and_replay_identity_substitution() {
-    let (issuer, message) = fixture();
+    let (_key, issuer, message) = fixture();
     let scope = message.claims.scope_digest;
     let payload = message.claims.payload_digest;
     assert!(
@@ -36,7 +46,7 @@ fn signed_admission_rejects_payload_and_replay_identity_substitution() {
             .is_ok()
     );
     for field in 0..7 {
-        let (_, mut substituted) = fixture();
+        let (_, issuer, mut substituted) = fixture();
         match field {
             0 => substituted.claims.payload_digest = Digest32::of_bytes(b"other"),
             1 => substituted.claims.scope_digest = Digest32::of_bytes(b"other"),
@@ -56,21 +66,19 @@ fn signed_admission_rejects_payload_and_replay_identity_substitution() {
 
 #[test]
 fn trusted_registration_and_current_expiry_are_required() {
-    let (mut issuer, message) = fixture();
+    let (key, issuer, message) = fixture();
     let scope = message.claims.scope_digest;
     let payload = message.claims.payload_digest;
-    issuer.key_epoch = Generation::new(2).unwrap();
+    let wrong_epoch = registration(&key, 2, IssuerLifecycleState::Active);
     assert!(matches!(
-        message.authenticate(&issuer, scope, payload, /*now_ms*/ 1_000),
+        message.authenticate(&wrong_epoch, scope, payload, /*now_ms*/ 1_000),
         Err(Error::IssuerMismatch)
     ));
-    issuer.key_epoch = message.claims.key_epoch;
-    issuer.revoked = true;
+    let revoked = registration(&key, 1, IssuerLifecycleState::Revoked);
     assert!(matches!(
-        message.authenticate(&issuer, scope, payload, /*now_ms*/ 1_000),
+        message.authenticate(&revoked, scope, payload, /*now_ms*/ 1_000),
         Err(Error::Revoked)
     ));
-    issuer.revoked = false;
     assert!(matches!(
         message.authenticate(&issuer, scope, payload, /*now_ms*/ 2_000),
         Err(Error::Expired)
