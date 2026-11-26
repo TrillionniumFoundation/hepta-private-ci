@@ -1,5 +1,12 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 16:37 UTC 后：Split Mesh ROG 精确依赖与四项原离散控制实际闭合
+
+- 原 ROG job `1a218969f49-ffbe-48bb` 已实际 succeeded、exit0、stderr 0B、stdout 136416B、output_complete/durable/terminal_publication_confirmed=true；未重新派发。全部分段合并为34995775B官方 SciPy 1.17.0 wheel，SHA256 `00fb5f8ec8398ad90215008d8b6009c9db9fa924fd4c7d6be307c6f945f9cd73` 匹配，隔离安装成功。Python3.14.4、NumPy2.3.5、SciPy1.17.0；历史 c440d2ba 的33源清单保持。原 qualify 报告 PASS_DISCRETE_CHECKS_ONLY，4/4、0 skip、4.323410154996964s；具名范围为 inherited grading/common operator、negative drift low noise generator FD、two fixed geometries full delayed physical partials、retained short rare continuum failure。依赖和历史有限离散验证局部门闭合，不转移当前集成资格。
+- 独立逐字节读取原job stdout全部九个区间，解析报告6个记录；独立逐坐标复算20组已保留 FD/variational 向量共2760坐标，最大绝对差 1.1239178233646285e-5，20组所报最大差与独立复算最大差异0；原报告最大 tolerance_scaled_error 0.14357375035992614。两几何 forward max 4.4610899696539974e-10 / 1.098493865314687e-10；另60个低噪声生成器差值记录没有原始向量，不冒充独立重算。未再执行模型或改变冻结门。
+- 连续稀有事件原负结果保留：t=.01 半线1.9367990970040437e-23，graded CTMC 4.0258038596278504e-17、uniform 1.5574113082154263e-17；独立相对误差分别2078585.191957237、804115.0854652002。t=.1 相对误差约+.0010296611/- .0054347761。原 continuum_rare_gate_closed=false、fixed_physical_prior_jacobian=false、torch_adapter_supplied=false、exploratory_only=true；不将负控制通过等同连续极限通过。完整原 stdout [不可变原件951c81e2](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/951c81e22a4b1732fccdb8337e786e030560f09b/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/split-rog-native-original-20261126-1637Z.txt) 已全文回读相等，blob `378bba8964095b74c233504a3a55df3f8d7db6b5`。
+- #6799 最新读取精确 head `c06c9d5f585895065faa07978bc897989271678f`、base732e934、draft=true/merged=false。首屏100条83 queued/8 skipped/6 pending/2 in_progress/1 failure；前一9518首屏100条31 success/8 failure/22 cancelled/12 skipped/20 queued/7 in_progress；均非全分页终局。全仓 HOLD；未改产品、原冻结摘要、科学判据、500ms、安全权限，未合并红门。保留其余原工程和科学开放门。
+
 ## 2026-11-26 15:50 UTC 后：ROG Split 冻结源码实物齐备、分段依赖获取及 N256 原生读回
 
 - #6799 最新观察精确 head `9518a3d9a415bdc74ff5fbc69b193d6f423a5fc8`，base `732e934ba496d90fbe042b8d41d479ef901643e5`，draft=true、merged=false。首屏100条88 queued/5 skipped/3 in_progress/4 pending；前一精确 `5a39d736fcec8abed27a14e204ad17d5e61fd368` 首屏54 success/22 failure/13 skipped/9 cancelled/1 in_progress/1 queued；均非全分页，旧候选亦未全终结。不得跨源码转移资格。
