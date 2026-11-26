@@ -386,5 +386,25 @@
     },
     "patch": "HEPTA-formatting.patch",
     "patchSha256": "5d33e240257a3731f23ee6594af9e3cd0097cad6bdcc8f507890d669a3b44792"
+  },
+  "verbatimTestkitStorage": {
+    "scope": "Test fixtures only; upstream and i18n source lineage are unchanged",
+    "fixtureRegistry": "qa/repository-consolidation/20261126/age-verbatim-testkit-fixtures/raw-evidence-storage.json",
+    "fixtureRegistrySha256": "2885456444551f12ab1a3c7975088c61d3ec5181030dccddc520da262e731680",
+    "testkitLoaderBeforeSha256": "0b08b324d600534ee38bf92d16948e3430e92289393d70292623eaa6bdeed9a6",
+    "testkitLoaderAfterSha256": "73535b2e406ee42cbbe416c50c25f5af5f9f6bb295535a39cc5ee708195b9112"
+  },
+  "semanticWhitespaceNormalizations": {
+    "LICENSE-APACHE": {
+      "afterSha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "archivedOriginal": "HEPTA_LICENSE-APACHE.original.evidence.gz",
+      "beforeSha256": "3708458dee7f359ac6c9c5558023ed481be87e5372c43ebd7f2ca7ad23c12026",
+      "validation": "Only one blank line at EOF removed; original license terms and text preserved"
+    },
+    "i18n/es-AR/age.ftl": {
+      "afterSha256": "f1f85190ea3f82cbdabb8f50f2697cca6cf683b46a9b3cb6e66217789fc1e6df",
+      "beforeSha256": "07773077c8a1a4908e2efa9d08547424d268955aaab97f225f2382ca3c09574d",
+      "validation": "Fluent 0.12.0 AST equality"
+    }
   }
 }
